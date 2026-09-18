@@ -1,6 +1,6 @@
 // Sistema de decisión de Lúmina.
-// Genera y evalúa posibilidades sin imponer una acción concreta.
-// Las decisiones futuras podrán incorporar memoria, conocimiento y relaciones.
+// Las necesidades crean presión; el conocimiento y la experiencia modifican
+// cómo se valoran las oportunidades. No existe una historia prefijada.
 
 export function createDecisionContext(agent, perception) {
   return {
@@ -13,7 +13,6 @@ export function createDecisionContext(agent, perception) {
   };
 }
 
-// Las posibilidades son oportunidades disponibles, no órdenes.
 export function evaluateOptions(context, options) {
   return options
     .map(option => ({
@@ -25,11 +24,8 @@ export function evaluateOptions(context, options) {
 
 export function chooseOption(context, options, randomness = 0.15) {
   const evaluated = evaluateOptions(context, options);
-
   if (evaluated.length === 0) return null;
 
-  // Una pequeña variación evita que dos situaciones idénticas siempre produzcan
-  // exactamente el mismo resultado. No se utiliza para fabricar una historia.
   const candidates = evaluated.slice(0, Math.min(3, evaluated.length));
   const weighted = candidates.map(option => ({
     option,
@@ -46,7 +42,7 @@ export function chooseOption(context, options, randomness = 0.15) {
 function calculateScore(context, option) {
   let score = option.baseValue ?? 0;
 
-  // Las necesidades influyen en la valoración, pero no determinan la acción.
+  // Una necesidad baja genera presión hacia acciones que puedan aliviarla.
   if (option.effects?.hunger) {
     score += unmetNeed(context.needs.hunger) * option.effects.hunger;
   }
@@ -63,8 +59,7 @@ function calculateScore(context, option) {
     score += unmetNeed(context.needs.social) * option.effects.social;
   }
 
-  // Conocimientos y recuerdos pueden modificar una opción en versiones futuras.
-  // Por ahora se mantienen disponibles en el contexto sin convertirlos en reglas.
+  // La experiencia personal puede favorecer o desfavorecer una acción.
   if (option.knowledgeBonus) {
     score += option.knowledgeBonus(context.knowledge);
   }
