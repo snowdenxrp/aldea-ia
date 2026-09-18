@@ -39,8 +39,12 @@ export function createAgent({ id, name, age = 15, home = null, position = { x: 0
     // Historial de experiencias importantes.
     experiences: [],
 
-    // Objetivo o intención actual, cuando el sistema de decisión exista.
-    currentIntent: null
+    // Objetivo o intención actual.
+    currentIntent: null,
+
+    // Última acción realmente ejecutada; sirve para evitar repeticiones ciegas.
+    lastActionName: null,
+    lastActionResult: null
   };
 }
 
