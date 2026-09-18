@@ -5,6 +5,7 @@ import { perceiveWorld } from "./perception.js";
 import { updateNeeds, applyNeedConsequences } from "./needs.js";
 import { createDecisionContext, chooseOption } from "./decision.js";
 import { advanceWorldDay } from "./world.js";
+import { getKnownActions } from "./discovery.js";
 
 export function createSimulation(world, agents) {
   return {
@@ -31,7 +32,44 @@ export function recordEvent(simulation, event) {
   return stored;
 }
 
-// Avanza el mundo sin asumir que los habitantes harán algo concreto.
+// Genera posibilidades únicamente a partir de capacidades básicas,
+// acciones descubiertas y lo que el habitante puede percibir.
+// No contiene una historia predeterminada.
+function generateOptions(agent, perception) {
+  const knownActions = getKnownActions(agent);
+  const options = [];
+
+  // Descansar es una capacidad corporal básica, no conocimiento del mundo.
+  options.push({
+    name: "rest",
+    baseValue: 1,
+    effects: { energy: 0.8 }
+  });
+
+  // Beber solo aparece como posibilidad cuando el agua está realmente cerca.
+  const seesWater = perception.nearbyResources.some(resource => resource.type === "water");
+  if (seesWater) {
+    options.push({
+      name: "drink",
+      amount: 5,
+      baseValue: 2,
+      effects: { thirst: 1.5 }
+    });
+  }
+
+  // Las demás acciones solo pueden aparecer después de ser descubiertas.
+  for (const action of knownActions) {
+    if (["rest", "drink"].includes(action.name)) continue;
+    options.push({
+      name: action.name,
+      baseValue: action.confidence
+    });
+  }
+
+  return options;
+}
+
+// Avanza el mundo sin asumir resultados concretos.
 export function tick(simulation, hours = 1) {
   if (hours <= 0) return;
 
@@ -46,13 +84,10 @@ export function tick(simulation, hours = 1) {
     const perception = perceiveWorld(agent, simulation.world, simulation.agents);
     agent.lastPerception = perception;
 
-    // Todavía no imponemos acciones. Si existen posibilidades creadas por otros
-    // sistemas, este motor puede evaluarlas; si no existen, el habitante permanece
-    // en su actividad actual.
-    if (agent.availableOptions?.length) {
-      const context = createDecisionContext(agent, perception);
-      agent.currentIntent = chooseOption(context, agent.availableOptions);
-    }
+    const options = generateOptions(agent, perception);
+    const context = createDecisionContext(agent, perception);
+    agent.availableOptions = options;
+    agent.currentIntent = chooseOption(context, options);
   }
 
   while (simulation.hour >= 24) {
