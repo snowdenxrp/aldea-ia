@@ -93,7 +93,16 @@ function generateOptions(agent, perception) {
     options.push(option);
   }
 
-  options.push({ name: "explore_area", baseValue: 0.28, explorationValue: 0.7, novelty: 0.8, distance: 3, target: createExplorationTarget(agent) });
+  const explorationTarget = createExplorationTarget(agent, world);
+  const explorationDistance = Math.hypot(explorationTarget.x - agent.position.x, explorationTarget.z - agent.position.z);
+  options.push({
+    name: "explore_area",
+    baseValue: 0.28,
+    explorationValue: 0.7,
+    novelty: 0.8,
+    distance: explorationDistance,
+    target: explorationTarget
+  });
   return options;
 }
 
@@ -105,10 +114,14 @@ function getKnownActionDistance(actionName, perception) {
   return perception.nearbyResources.find(resource => resource.type === type)?.distance ?? 25;
 }
 
-function createExplorationTarget(agent) {
+function createExplorationTarget(agent, world) {
+  const bounds = world.bounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 };
   const angle = Math.random() * Math.PI * 2;
   const distance = 4 + Math.random() * 6;
-  return { x: agent.position.x + Math.cos(angle) * distance, z: agent.position.z + Math.sin(angle) * distance };
+  return {
+    x: Math.max(bounds.minX, Math.min(bounds.maxX, agent.position.x + Math.cos(angle) * distance)),
+    z: Math.max(bounds.minZ, Math.min(bounds.maxZ, agent.position.z + Math.sin(angle) * distance))
+  };
 }
 
 function getActionTarget(agent, actionName, perception, world) {
