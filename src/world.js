@@ -98,19 +98,19 @@ export const world = {
   }
 };
 
-export function advanceWorldDay() {
-  const wood = world.resources.wood;
+export function advanceWorldDay(targetWorld = world) {
+  const wood = targetWorld.resources.wood;
   wood.amount = Math.min(240, wood.amount + wood.regenerationPerDay);
 
-  const land = world.resources.fertile_land;
+  const land = targetWorld.resources.fertile_land;
   land.quality = Math.min(1, land.quality + land.regenerationPerDay / 100);
 
-  const plants = world.resources.wild_plants;
+  const plants = targetWorld.resources.wild_plants;
   plants.amount = Math.min(80, plants.amount + plants.regenerationPerDay);
 
-  const fish = world.resources.fish;
+  const fish = targetWorld.resources.fish;
   fish.amount = Math.min(60, fish.amount + fish.regenerationPerDay);
 
-  const clay = world.resources.clay;
+  const clay = targetWorld.resources.clay;
   clay.amount = Math.min(90, clay.amount + clay.regenerationPerDay);
 }
