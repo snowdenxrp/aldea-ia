@@ -326,10 +326,6 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let pointerStart = null;
 
-renderer.domElement.addEventListener("pointerdown", e => {
-  if (activePointers.size === 0) pointerStart = { x: e.clientX, y: e.clientY };
-});
-
 const keys = new Set();
 addEventListener("keydown", e => keys.add(e.key.toLowerCase()));
 addEventListener("keyup", e => keys.delete(e.key.toLowerCase()));
@@ -350,6 +346,7 @@ function pointerAngle(a, b) {
 }
 
 renderer.domElement.addEventListener("pointerdown", e => {
+  if (activePointers.size === 0) pointerStart = { x: e.clientX, y: e.clientY };
   activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
 
   if (activePointers.size === 1) {
@@ -399,7 +396,7 @@ renderer.domElement.addEventListener("pointermove", e => {
   lastPointerX = e.clientX;
   lastPointerY = e.clientY;
 
-  const sensitivity = 0.055;
+  const sensitivity = 0.075;
   const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw));
   const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw));
 
