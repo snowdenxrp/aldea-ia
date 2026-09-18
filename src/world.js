@@ -63,7 +63,13 @@ export const world = {
       radius: 10,
       perceptionRadius: 14,
       regenerationPerDay: 0.7,
-      possibleUses: ["food", "medicine", "fiber"]
+      possibleUses: ["food", "medicine", "fiber"],
+      // Propiedades reales del recurso; los habitantes no las conocen de antemano.
+      foodProperties: {
+        edible: true,
+        nutrition: 0.85,
+        toxicity: 0
+      }
     },
 
     fish: {
