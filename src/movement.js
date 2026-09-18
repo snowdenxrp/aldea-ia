@@ -10,9 +10,13 @@ export function createMovementState() {
   };
 }
 
-export function setMovementTarget(agent, target) {
+export function setMovementTarget(agent, target, bounds = null) {
   agent.movement ??= createMovementState();
-  agent.movement.target = { x: target.x, z: target.z };
+  const limits = bounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 };
+  agent.movement.target = {
+    x: Math.max(limits.minX, Math.min(limits.maxX, target.x)),
+    z: Math.max(limits.minZ, Math.min(limits.maxZ, target.z))
+  };
   agent.movement.moving = true;
 }
 
