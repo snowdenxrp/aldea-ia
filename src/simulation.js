@@ -453,6 +453,47 @@ function discoverNearbyActions(agent, perception, simulation) {
   for (const discovery of discoveries) discoverAction(agent, discovery);
 }
 
+function handleDeath(simulation, agent) {
+  agent.alive = false;
+  agent.needs.health = 0;
+  agent.currentActivity = "dead";
+  agent.currentIntent = null;
+
+  const nearbyAgents = simulation.agents.filter(other =>
+    other.id !== agent.id &&
+    other.alive &&
+    Math.hypot(agent.position.x - other.position.x, agent.position.z - other.position.z) <= 15
+  );
+
+  const event = recordEvent(simulation, {
+    type: "death",
+    description: agent.name + " murió.",
+    participants: [agent.id, ...nearbyAgents.map(other => other.id)]
+  });
+
+  remember(agent, {
+    id: event.id,
+    day: simulation.day,
+    type: "death",
+    description: event.description,
+    participants: [agent.id],
+    emotionalWeight: -1,
+    importance: 1
+  });
+
+  for (const other of nearbyAgents) {
+    remember(other, {
+      id: event.id,
+      day: simulation.day,
+      type: "death",
+      description: agent.name + " murió cerca de mí.",
+      participants: [agent.id, other.id],
+      emotionalWeight: -0.8,
+      importance: 0.95
+    });
+  }
+}
+
 function improveSkillFromAction(agent, actionName, day) {
   const existing = agent.skills.find(skill => skill.name === actionName);
 
@@ -501,6 +542,11 @@ export function tick(simulation, hours = 1) {
 
     agent.needs = updateNeeds(agent.needs, hours, agent.currentActivity);
     agent.needs = applyNeedConsequences(agent.needs, hours);
+
+    if (agent.needs.health <= 0) {
+      handleDeath(simulation, agent);
+      continue;
+    }
 
     const perception = perceiveWorld(agent, simulation.world, simulation.agents);
     agent.lastPerception = perception;
