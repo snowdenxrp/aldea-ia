@@ -42,8 +42,10 @@ function generateOptions(agent, perception) {
 
   options.push({
     name: "rest",
-    baseValue: 0.8,
-    effects: { energy: 0.9 }
+    // Descansar no debe ser una actividad atractiva por sí sola:
+    // su valor debe surgir de la falta de energía.
+    baseValue: 0,
+    effects: { energy: 1.2 }
   });
 
   const seesWater = perception.nearbyResources.some(resource => resource.type === "water");
