@@ -148,7 +148,11 @@ function createAgentMesh(agent) {
   return group;
 }
 
-for (const agent of agents) agentMeshes.set(agent.id, createAgentMesh(agent));
+for (const agent of agents) {
+  const mesh = createAgentMesh(agent);
+  agentMeshes.set(agent.id, mesh);
+  scene.add(mesh);
+}
 
 // Panel de observación: tocar un habitante permite consultar su estado,
 // sin mostrar pensamientos internos ni alterar sus decisiones.
@@ -430,9 +434,19 @@ function endPointer(e) {
     pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObjects([...agentMeshes.values()], false)[0];
-    if (hit?.object?.userData?.agentId) {
-      const selected = simulation.agents.find(agent => agent.id === hit.object.userData.agentId);
+
+    const hits = raycaster.intersectObjects([...agentMeshes.values()], true);
+    const hit = hits[0];
+    let selectedId = hit?.object?.userData?.agentId ?? null;
+    let object = hit?.object;
+
+    while (!selectedId && object?.parent) {
+      object = object.parent;
+      selectedId = object.userData?.agentId ?? null;
+    }
+
+    if (selectedId) {
+      const selected = simulation.agents.find(agent => agent.id === selectedId);
       if (selected) openAgentPanel(selected);
     }
   }
