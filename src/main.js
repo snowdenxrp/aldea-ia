@@ -254,13 +254,17 @@ function translateAction(value) {
     socialize: "Socializar",
     share_knowledge: "Compartir conocimiento",
     explore_plants: "Investigar plantas",
-    explore_fishing: "Investigar pesca"
+    explore_fishing: "Investigar pesca",
+    explore_wood: "Investigar madera",
+    explore_stone: "Investigar piedra",
+    explore_area: "Explorar el entorno",
+    eat_fish: "Comer pescado"
   };
   return labels[value] ?? value;
 }
 
 function translateItem(value) {
-  const labels = { fish: "pez", wood: "madera", stone: "piedra" };
+  const labels = { fish: "pescado", wood: "madera", stone: "piedra" };
   return labels[value] ?? value;
 }
 
@@ -275,7 +279,11 @@ function translateKnowledgeTopic(value) {
     "action:socialize": "Acción: socializar",
     "action:share_knowledge": "Acción: compartir conocimiento",
     "action:explore_plants": "Acción: investigar plantas",
-    "action:explore_fishing": "Acción: investigar pesca"
+    "action:explore_fishing": "Acción: investigar pesca",
+    "action:explore_wood": "Acción: investigar madera",
+    "action:explore_stone": "Acción: investigar piedra",
+    "action:explore_area": "Acción: explorar el entorno",
+    "action:eat_fish": "Acción: comer pescado"
   };
   return labels[value] ?? value.replace(/^action:/, "Acción: ");
 }
