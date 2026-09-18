@@ -40,112 +40,94 @@ function generateOptions(agent, perception) {
   const knownActions = getKnownActions(agent);
   const options = [];
 
-  options.push({
-    name: "rest",
-    // Descansar no debe ser una actividad atractiva por sí sola:
-    // su valor debe surgir de la falta de energía.
-    baseValue: 0,
-    effects: { energy: 1.2 }
-  });
+  options.push({ name: "rest", baseValue: 0, effects: { energy: 1.2 }, distance: 0 });
 
-  const seesWater = perception.nearbyResources.some(resource => resource.type === "water");
-  if (seesWater) {
-    options.push({
-      name: "drink",
-      amount: 5,
-      baseValue: 0.5,
-      effects: { thirst: 1.8 }
-    });
-  }
+  const water = perception.nearbyResources.find(resource => resource.type === "water");
+  if (water) options.push({ name: "drink", amount: 5, baseValue: 0.5, effects: { thirst: 1.8 }, distance: water.distance });
 
-  // Un encuentro solo es posible si hay otra persona realmente cerca.
   if (perception.visibleAgents.length > 0) {
+    const nearest = [...perception.visibleAgents].sort((a, b) => a.distance - b.distance)[0];
     options.push({
-      name: "socialize",
-      baseValue: 0.25,
-      effects: { social: 1.4 }
+      name: "socialize", baseValue: 0.25, effects: { social: 1.4 }, distance: nearest.distance,
+      relationshipBonus: relationships => {
+        const relationship = relationships.find(item => item.agentId === nearest.id);
+        if (!relationship) return 0.15;
+        return Math.max(-0.2, relationship.affection * 0.25 + relationship.trust * 0.15 - relationship.tension * 0.2);
+      }
     });
-
     const shareable = agent.knowledge.some(item => item.confidence >= 0.3);
-    if (shareable) {
-      options.push({
-        name: "share_knowledge",
-        baseValue: 0.05,
-        effects: { social: 0.6 },
-        knowledgeBonus: knowledge => Math.min(0.35, knowledge.filter(item => item.confidence >= 0.3).length * 0.08)
-      });
-    }
+    if (shareable) options.push({ name: "share_knowledge", baseValue: 0.05, effects: { social: 0.6 }, distance: nearest.distance, knowledgeBonus: knowledge => Math.min(0.35, knowledge.filter(item => item.confidence >= 0.3).length * 0.08) });
   }
 
   for (const action of knownActions) {
     if (["rest", "drink"].includes(action.name)) continue;
-
+    if (action.name === "eat_fish" && !agent.inventory.some(item => item.type === "fish" && item.amount > 0)) continue;
     const option = {
       name: action.name,
       baseValue: action.confidence,
+      distance: getKnownActionDistance(action.name, perception),
       knowledgeBonus: knowledge => {
         const item = knowledge.find(entry => entry.topic === "action:" + action.name);
         return item ? item.confidence * 0.15 : 0;
       }
     };
-
-    if (action.name === "eat_plant") {
-      option.effects = { hunger: 2.2 };
-      option.amount = 1;
-    }
-
-    if (action.name === "catch_fish") {
-      option.effects = { hunger: 1.6 };
-      option.amount = 1;
-    }
-
+    if (action.name === "eat_plant") { option.effects = { hunger: 2.2 }; option.amount = 1; }
+    if (action.name === "eat_fish") { option.effects = { hunger: 2.3 }; option.amount = 1; }
+    if (action.name === "catch_fish") { option.effects = { hunger: 1.6 }; option.amount = 1; }
     options.push(option);
   }
 
-  const seesPlants = perception.nearbyResources.some(resource => resource.type === "wild_plants");
-  if (seesPlants && !knownActions.some(action => action.name === "eat_plant")) {
-    options.push({
-      name: "explore_plants",
-      baseValue: 0.35,
-      // Investigar una posible fuente de alimento compite de forma natural
-      // con descansar cuando el hambre empieza a ser relevante.
-      effects: { hunger: 0.8 },
-      memoryBonus: memories =>
-        memories.some(memory => memory.description.toLowerCase().includes("planta"))
-          ? 0.25
-          : 0
-    });
+  const resourceDiscovery = [
+    ["wild_plants", "explore_plants", "eat_plant", "planta", 0.9, 0.8],
+    ["fish", "explore_fishing", "catch_fish", "pesca", 0.85, 0.75],
+    ["wood", "explore_wood", "gather_wood", "madera", 0.75, 0.65],
+    ["stone", "explore_stone", "gather_stone", "piedra", 0.75, 0.65]
+  ];
+
+  for (const [resourceType, optionName, actionName, keyword, explorationValue, baseValue] of resourceDiscovery) {
+    const resource = perception.nearbyResources.find(item => item.type === resourceType);
+    if (!resource || knownActions.some(action => action.name === actionName)) continue;
+    const option = { name: optionName, baseValue, explorationValue, novelty: 1, knowledgeTopic: "action:" + actionName, memoryKeyword: keyword, distance: resource.distance };
+    if (resourceType === "wild_plants") option.effects = { hunger: 0.8 };
+    if (resourceType === "fish") option.effects = { hunger: 0.65 };
+    options.push(option);
   }
 
-  const seesFish = perception.nearbyResources.some(resource => resource.type === "fish");
-  if (seesFish && !knownActions.some(action => action.name === "catch_fish")) {
-    options.push({
-      name: "explore_fishing",
-      baseValue: 0.3,
-      // Explorar la pesca también adquiere valor cuando falta alimento.
-      effects: { hunger: 0.65 }
-    });
-  }
-
+  options.push({ name: "explore_area", baseValue: 0.28, explorationValue: 0.7, novelty: 0.8, distance: 3, target: createExplorationTarget(agent) });
   return options;
 }
 
+function getKnownActionDistance(actionName, perception) {
+  if (actionName === "eat_fish") return 0;
+  const map = { drink: "water", eat_plant: "wild_plants", catch_fish: "fish", gather_wood: "wood", gather_stone: "stone" };
+  const type = map[actionName];
+  if (!type) return 0;
+  return perception.nearbyResources.find(resource => resource.type === type)?.distance ?? 25;
+}
+
+function createExplorationTarget(agent) {
+  const angle = Math.random() * Math.PI * 2;
+  const distance = 4 + Math.random() * 6;
+  return { x: agent.position.x + Math.cos(angle) * distance, z: agent.position.z + Math.sin(angle) * distance };
+}
+
 function getActionTarget(agent, actionName, perception, world) {
+  if (actionName === "explore_area") return agent.currentIntent?.target ?? null;
   if (actionName === "drink") return world.resources.water.position;
-  if (actionName === "gather_wood") return world.resources.wood.position;
-  if (actionName === "gather_stone") return world.resources.stone.position;
+  if (actionName === "gather_wood" || actionName === "explore_wood") return world.resources.wood.position;
+  if (actionName === "gather_stone" || actionName === "explore_stone") return world.resources.stone.position;
   if (actionName === "eat_plant" || actionName === "explore_plants") return world.resources.wild_plants.position;
   if (actionName === "catch_fish" || actionName === "explore_fishing") return world.resources.fish.position;
-
-  if (actionName === "socialize" && perception.visibleAgents.length > 0) {
+  if (actionName === "socialize" || actionName === "share_knowledge") {
+    if (perception.visibleAgents.length === 0) return null;
     const nearest = [...perception.visibleAgents].sort((a, b) => a.distance - b.distance)[0];
     const other = simulationAgentById(agent, nearest.id);
     return other?.position ?? null;
   }
-
   return null;
 }
 
+let currentSimulationAgents
 let currentSimulationAgents = [];
 
 function simulationAgentById(agent, id) {
@@ -172,12 +154,24 @@ function performDecision(simulation, agent) {
 
   if (intent.name === "socialize") {
     performSocialInteraction(simulation, agent);
+    agent.lastActionName = "socialize";
     agent.currentIntent = null;
     return;
   }
 
   if (intent.name === "share_knowledge") {
     performKnowledgeSharing(simulation, agent);
+    agent.lastActionName = "share_knowledge";
+    agent.currentIntent = null;
+    return;
+  }
+
+  if (intent.name === "explore_area") {
+    const description = agent.name + " exploró una zona nueva de su entorno.";
+    const event = recordEvent(simulation, { type: "exploration", description, participants: [agent.id] });
+    remember(agent, { id: event.id, day: simulation.day, type: "exploration", description, importance: 0.45, emotionalWeight: 0.03 });
+    agent.lastActionName = "explore_area";
+    agent.lastActionResult = { success: true, effect: "area_explored" };
     agent.currentIntent = null;
     return;
   }
@@ -193,6 +187,7 @@ function performDecision(simulation, agent) {
       day: simulation.day
     });
     recordExploration(simulation, agent, "plantas");
+    agent.lastActionName = intent.name;
     agent.currentIntent = null;
     return;
   }
@@ -208,12 +203,31 @@ function performDecision(simulation, agent) {
       day: simulation.day
     });
     recordExploration(simulation, agent, "pesca");
+    agent.lastActionName = intent.name;
+    agent.currentIntent = null;
+    return;
+  }
+
+  if (intent.name === "explore_wood" || intent.name === "explore_stone") {
+    const actionName = intent.name === "explore_wood" ? "gather_wood" : "gather_stone";
+    discoverAction(agent, {
+      actionName,
+      belief: actionName === "gather_wood" ? "Creo que puedo recoger madera aquí." : "Creo que puedo recoger piedra aquí.",
+      confidence: 0.15,
+      evidence: actionName === "gather_wood" ? "Observé madera y decidí investigar si puedo recogerla." : "Observé piedra y decidí investigar si puedo recogerla.",
+      outcome: 0.1,
+      reliability: 0.4,
+      day: simulation.day
+    });
+    recordExploration(simulation, agent, actionName === "gather_wood" ? "madera" : "piedra");
+    agent.lastActionName = intent.name;
     agent.currentIntent = null;
     return;
   }
 
   const result = executeAction(simulation, agent, intent);
   agent.lastActionResult = result;
+  agent.lastActionName = result.success ? intent.name : null;
 
   if (result.success) {
     improveSkillFromAction(agent, intent.name, simulation.day);
@@ -551,7 +565,6 @@ export function tick(simulation, hours = 1) {
     const perception = perceiveWorld(agent, simulation.world, simulation.agents);
     agent.lastPerception = perception;
 
-    discoverNearbyActions(agent, perception, simulation);
 
     if (agent.currentIntent?.target) {
       const target = agent.currentIntent.target;
