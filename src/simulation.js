@@ -4,7 +4,7 @@
 
 import { perceiveWorld } from "./perception.js";
 import { updateNeeds, applyNeedConsequences } from "./needs.js";
-import { createDecisionContext, chooseOption } from "./decision.js";
+import { createDecisionContext, evaluateOptions, chooseOption } from "./decision.js";
 import { advanceWorldDay } from "./world.js";
 import { getKnownActions, discoverAction, updateActionBelief } from "./discovery.js";
 import { executeAction } from "./actions.js";
@@ -516,8 +516,29 @@ export function tick(simulation, hours = 1) {
     if (!agent.currentIntent || !agent.currentIntent.target) {
       const options = generateOptions(agent, perception);
       const context = createDecisionContext(agent, perception);
+      const evaluatedOptions = evaluateOptions(context, options);
+
       agent.availableOptions = options;
+      agent.decisionSnapshot = {
+        chosen: null,
+        considered: evaluatedOptions
+          .slice()
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3)
+          .map(option => ({
+            name: option.name,
+            score: option.score
+          }))
+      };
+
       agent.currentIntent = chooseOption(context, options);
+
+      if (agent.currentIntent) {
+        agent.decisionSnapshot.chosen = {
+          name: agent.currentIntent.name,
+          score: agent.currentIntent.score
+        };
+      }
     }
 
     performDecision(simulation, agent);
