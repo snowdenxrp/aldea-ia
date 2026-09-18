@@ -93,23 +93,26 @@ function createAgentMesh(agent) {
 
 for (const agent of agents) agentMeshes.set(agent.id, createAgentMesh(agent));
 
-// Controles del observador: teclado, arrastre de 1 dedo y zoom con 2 dedos.
+// Controles del observador estilo mapa:
+// 1 dedo = agarrar y desplazar el mundo.
+// 2 dedos = pellizcar para zoom.
+// No se usa el gesto de 1 dedo para rotar, para que el desplazamiento sea natural en móvil.
 const keys = new Set();
 addEventListener("keydown", e => keys.add(e.key.toLowerCase()));
 addEventListener("keyup", e => keys.delete(e.key.toLowerCase()));
 
 let dragging = false;
-let lastPointerX = 0, lastPointerY = 0;
+let lastPointerX = 0;
+let lastPointerY = 0;
 let pinchDistance = null;
+const activePointers = new Map();
 
 function pointerDistance(a, b) {
   return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
 }
 
-const activePointers = new Map();
-
 renderer.domElement.addEventListener("pointerdown", e => {
-  activePointers.set(e.pointerId, e);
+  activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
 
   if (activePointers.size === 1) {
     dragging = true;
@@ -125,15 +128,16 @@ renderer.domElement.addEventListener("pointerdown", e => {
 });
 
 renderer.domElement.addEventListener("pointermove", e => {
-  activePointers.set(e.pointerId, e);
+  if (!activePointers.has(e.pointerId)) return;
+  activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
 
   if (activePointers.size === 2) {
     const points = [...activePointers.values()];
     const distance = pointerDistance(points[0], points[1]);
 
     if (pinchDistance !== null) {
-      const change = pinchDistance - distance;
-      cameraDistance = Math.max(10, Math.min(65, cameraDistance + change * 0.045));
+      const zoomChange = pinchDistance - distance;
+      cameraDistance = Math.max(10, Math.min(65, cameraDistance + zoomChange * 0.055));
     }
 
     pinchDistance = distance;
@@ -142,13 +146,22 @@ renderer.domElement.addEventListener("pointermove", e => {
 
   if (!dragging) return;
 
+  // El mundo se mueve en la misma dirección que el dedo,
+  // como cuando se arrastra un mapa físico.
   const dx = e.clientX - lastPointerX;
   const dy = e.clientY - lastPointerY;
   lastPointerX = e.clientX;
   lastPointerY = e.clientY;
 
-  cameraYaw -= dx * 0.006;
-  cameraPitch = Math.max(0.28, Math.min(1.2, cameraPitch - dy * 0.005));
+  const sensitivity = 0.055;
+  const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw));
+  const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw));
+
+  cameraTarget.addScaledVector(right, -dx * sensitivity);
+  cameraTarget.addScaledVector(forward, -dy * sensitivity);
+
+  cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x));
+  cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z));
 });
 
 function endPointer(e) {
@@ -197,8 +210,6 @@ buttons.forEach(button => {
     e.preventDefault();
     e.stopPropagation();
     moveOnce();
-
-    // Mantener pulsado permite desplazarse continuamente.
     holdTimer = setTimeout(() => {
       interval = setInterval(moveOnce, 100);
     }, 250);
