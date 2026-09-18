@@ -148,6 +148,21 @@ function translateItem(value) {
   return labels[value] ?? value;
 }
 
+function translateKnowledgeTopic(value) {
+  const labels = {
+    "action:rest": "Acción: descansar",
+    "action:drink": "Acción: beber agua",
+    "action:eat_plant": "Acción: comer planta",
+    "action:catch_fish": "Acción: pescar",
+    "action:gather_wood": "Acción: recolectar madera",
+    "action:gather_stone": "Acción: recolectar piedra",
+    "action:socialize": "Acción: socializar",
+    "action:explore_plants": "Acción: investigar plantas",
+    "action:explore_fishing": "Acción: investigar pesca"
+  };
+  return labels[value] ?? value.replace(/^action:/, "Acción: ");
+}
+
 function renderAgentPanel(agent) {
   agentName.textContent = agent.name;
   agentAge.textContent = `Edad: ${agent.age} años · ${agent.alive ? "Vivo" : "Fallecido"}`;
@@ -180,7 +195,7 @@ function renderAgentPanel(agent) {
 
   const knowledge = agent.knowledge ?? [];
   agentKnowledge.innerHTML = knowledge.length
-    ? knowledge.slice(-12).reverse().map(item => `<span class="agentTag">${item.topic} · ${Math.round(item.confidence * 100)}%</span>`).join("")
+    ? knowledge.slice(-12).reverse().map(item => `<span class="agentTag">${translateKnowledgeTopic(item.topic)} · ${Math.round(item.confidence * 100)}%</span>`).join("")
     : '<div class="agentEmpty">Todavía no ha adquirido conocimiento del mundo.</div>';
 
   const relationships = agent.relationships ?? [];
