@@ -7,6 +7,10 @@ export function executeAction(simulation, agent, action) {
       return rest(agent, action.duration ?? 1);
     case "drink":
       return drink(simulation, agent, action.amount ?? 5);
+    case "eat_plant":
+      return eatPlant(simulation, agent, action.amount ?? 1);
+    case "catch_fish":
+      return catchFish(simulation, agent, action.amount ?? 1);
     case "gather_wood":
       return gatherWood(simulation, agent, action.amount ?? 1);
     case "gather_stone":
@@ -32,6 +36,40 @@ function drink(simulation, agent, amount) {
   agent.currentActivity = "drinking";
 
   return { success: true, effect: "thirst_recovered", amount: used };
+}
+
+function eatPlant(simulation, agent, amount) {
+  const plants = simulation.world.resources.wild_plants;
+  if (plants.amount <= 0) return { success: false, reason: "no_plants" };
+
+  const eaten = Math.min(amount, plants.amount);
+  plants.amount -= eaten;
+
+  // La primera vez no asumimos que el alimento sea perfecto:
+  // su calidad influye en el beneficio obtenido.
+  const nutrition = 14 * plants.quality;
+  agent.needs.hunger = Math.min(100, agent.needs.hunger + nutrition * eaten);
+  agent.currentActivity = "eating";
+
+  return {
+    success: true,
+    effect: "hunger_recovered",
+    amount: eaten,
+    quality: plants.quality
+  };
+}
+
+function catchFish(simulation, agent, amount) {
+  const fish = simulation.world.resources.fish;
+  if (fish.amount <= 0) return { success: false, reason: "no_fish" };
+
+  const caught = Math.min(amount, fish.amount);
+  fish.amount -= caught;
+  agent.inventory.push({ type: "fish", amount: caught });
+  agent.needs.energy = Math.max(0, agent.needs.energy - caught * 3);
+  agent.currentActivity = "fishing";
+
+  return { success: true, effect: "fish_caught", amount: caught };
 }
 
 function gatherWood(simulation, agent, amount) {
