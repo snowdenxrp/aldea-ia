@@ -13,11 +13,13 @@ export function perceiveWorld(agent, world, agents = []) {
     .filter(other => other.distance <= 15);
 
   const nearbyResources = Object.entries(world.resources)
-    .filter(([, resource]) => resource.location)
+    .filter(([, resource]) => resource.position)
     .map(([type, resource]) => ({
       type,
-      location: resource.location
-    }));
+      location: resource.location,
+      distance: distance(agent.position, resource.position)
+    }))
+    .filter(resource => resource.distance <= (world.resources[resource.type].radius ?? 10));
 
   return {
     position: { ...agent.position },
