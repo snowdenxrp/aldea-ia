@@ -548,6 +548,8 @@ function describeAction(agent, actionName, result) {
       return `${agent.name} experimentó comiendo una planta y observó sus efectos.`;
     case "catch_fish":
       return `${agent.name} capturó ${result.amount} pez/peces.`;
+    case "eat_fish":
+      return `${agent.name} comió ${result.amount} pez/peces que tenía en su inventario.`;
     case "gather_wood":
       return `${agent.name} recogió ${result.amount} unidad(es) de madera.`;
     case "gather_stone":
