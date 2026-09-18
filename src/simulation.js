@@ -105,7 +105,9 @@ function generateOptions(agent, perception) {
     options.push({
       name: "explore_plants",
       baseValue: 0.35,
-      effects: { hunger: 0.25 },
+      // Investigar una posible fuente de alimento compite de forma natural
+      // con descansar cuando el hambre empieza a ser relevante.
+      effects: { hunger: 0.8 },
       memoryBonus: memories =>
         memories.some(memory => memory.description.toLowerCase().includes("planta"))
           ? 0.25
@@ -117,7 +119,9 @@ function generateOptions(agent, perception) {
   if (seesFish && !knownActions.some(action => action.name === "catch_fish")) {
     options.push({
       name: "explore_fishing",
-      baseValue: 0.3
+      baseValue: 0.3,
+      // Explorar la pesca también adquiere valor cuando falta alimento.
+      effects: { hunger: 0.65 }
     });
   }
 
@@ -131,7 +135,6 @@ function getActionTarget(agent, actionName, perception, world) {
   if (actionName === "eat_plant" || actionName === "explore_plants") return world.resources.wild_plants.position;
   if (actionName === "catch_fish" || actionName === "explore_fishing") return world.resources.fish.position;
 
-  // Para socializar, nos dirigimos hacia la persona visible más cercana.
   if (actionName === "socialize" && perception.visibleAgents.length > 0) {
     const nearest = [...perception.visibleAgents].sort((a, b) => a.distance - b.distance)[0];
     const other = simulationAgentById(agent, nearest.id);
@@ -141,8 +144,6 @@ function getActionTarget(agent, actionName, perception, world) {
   return null;
 }
 
-// Se asigna durante cada llamada a performDecision para resolver al habitante visible.
-// No expone información que el agente no pueda percibir.
 let currentSimulationAgents = [];
 
 function simulationAgentById(agent, id) {
@@ -267,7 +268,6 @@ function performSocialInteraction(simulation, agent) {
   const other = simulation.agents.find(candidate => candidate.id === visible[0].id && candidate.alive);
   if (!other) return;
 
-  // El primer encuentro queda registrado permanentemente como evento histórico.
   const firstMeeting = !agent.relationships.some(rel => rel.agentId === other.id);
 
   const roll = Math.random();
