@@ -111,6 +111,43 @@ function formatPercent(value) {
   return Math.round(Math.max(0, Math.min(100, value)));
 }
 
+function translateActivity(value) {
+  const labels = {
+    idle: "Sin actividad",
+    resting: "Descansando",
+    drinking: "Bebiendo",
+    eating: "Comiendo",
+    fishing: "Pescando",
+    gathering: "Recolectando",
+    moving: "Desplazándose"
+  };
+  return labels[value] ?? value;
+}
+
+function translateAction(value) {
+  const labels = {
+    rest: "Descansar",
+    drink: "Beber agua",
+    eat_plant: "Comer planta",
+    catch_fish: "Pescar",
+    gather_wood: "Recolectar madera",
+    gather_stone: "Recolectar piedra",
+    socialize: "Socializar",
+    explore_plants: "Investigar plantas",
+    explore_fishing: "Investigar pesca"
+  };
+  return labels[value] ?? value;
+}
+
+function translateItem(value) {
+  const labels = {
+    fish: "pez",
+    wood: "madera",
+    stone: "piedra"
+  };
+  return labels[value] ?? value;
+}
+
 function renderAgentPanel(agent) {
   agentName.textContent = agent.name;
   agentAge.textContent = `Edad: ${agent.age} años · ${agent.alive ? "Vivo" : "Fallecido"}`;
@@ -126,8 +163,8 @@ function renderAgentPanel(agent) {
   ];
 
   agentStatus.innerHTML = `
-    <div class="agentRow"><span>Actividad</span><strong>${agent.currentActivity}</strong></div>
-    <div class="agentRow"><span>Intención actual</span><strong>${agent.currentIntent?.name ?? "ninguna"}</strong></div>
+    <div class="agentRow"><span>Actividad</span><strong>${translateActivity(agent.currentActivity)}</strong></div>
+    <div class="agentRow"><span>Intención actual</span><strong>${agent.currentIntent ? translateAction(agent.currentIntent.name) : "Ninguna"}</strong></div>
     ${needs.map(([label, value]) => `
       <div class="agentRow"><span>${label}</span><strong>${formatPercent(value)}%</strong></div>
       <div class="agentBar"><span style="width:${formatPercent(value)}%"></span></div>
@@ -138,7 +175,7 @@ function renderAgentPanel(agent) {
   agentResources.innerHTML = `
     <div class="agentRow"><span>Monedas</span><strong>${agent.money}</strong></div>
     <div class="agentRow"><span>Posición</span><strong>${agent.position.x.toFixed(1)}, ${agent.position.z.toFixed(1)}</strong></div>
-    <div class="agentRow"><span>Inventario</span><strong>${inventory.length ? inventory.map(item => item.type + " × " + item.amount).join(", ") : "vacío"}</strong></div>
+    <div class="agentRow"><span>Inventario</span><strong>${inventory.length ? inventory.map(item => translateItem(item.type) + " × " + item.amount).join(", ") : "vacío"}</strong></div>
   `;
 
   const knowledge = agent.knowledge ?? [];
