@@ -87,16 +87,106 @@ function createAgentMesh(agent) {
   const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.45, 1.1, 4, 8), new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x345b8c : 0x8c4f34 }));
   body.position.set(agent.position.x, 1.15, agent.position.z);
   body.castShadow = true;
+  body.userData.agentId = agent.id;
   scene.add(body);
   return body;
 }
 
 for (const agent of agents) agentMeshes.set(agent.id, createAgentMesh(agent));
 
+// Panel de observación: tocar un habitante permite consultar su estado,
+// sin mostrar pensamientos internos ni alterar sus decisiones.
+const agentPanel = document.querySelector("#agentPanel");
+const closeAgentPanel = document.querySelector("#closeAgentPanel");
+const agentAvatar = document.querySelector("#agentAvatar");
+const agentName = document.querySelector("#agentName");
+const agentAge = document.querySelector("#agentAge");
+const agentStatus = document.querySelector("#agentStatus");
+const agentResources = document.querySelector("#agentResources");
+const agentKnowledge = document.querySelector("#agentKnowledge");
+const agentRelationships = document.querySelector("#agentRelationships");
+const agentExperiences = document.querySelector("#agentExperiences");
+
+function formatPercent(value) {
+  return Math.round(Math.max(0, Math.min(100, value)));
+}
+
+function renderAgentPanel(agent) {
+  agentName.textContent = agent.name;
+  agentAge.textContent = `Edad: ${agent.age} años · ${agent.alive ? "Vivo" : "Fallecido"}`;
+  agentAvatar.style.background = agent.id === "alex" ? "#345b8c" : "#8c4f34";
+
+  const needs = [
+    ["Hambre", agent.needs.hunger],
+    ["Sed", agent.needs.thirst],
+    ["Energía", agent.needs.energy],
+    ["Social", agent.needs.social],
+    ["Seguridad", agent.needs.safety],
+    ["Salud", agent.needs.health]
+  ];
+
+  agentStatus.innerHTML = `
+    <div class="agentRow"><span>Actividad</span><strong>${agent.currentActivity}</strong></div>
+    <div class="agentRow"><span>Intención actual</span><strong>${agent.currentIntent?.name ?? "ninguna"}</strong></div>
+    ${needs.map(([label, value]) => `
+      <div class="agentRow"><span>${label}</span><strong>${formatPercent(value)}%</strong></div>
+      <div class="agentBar"><span style="width:${formatPercent(value)}%"></span></div>
+    `).join("")}
+  `;
+
+  const inventory = agent.inventory ?? [];
+  agentResources.innerHTML = `
+    <div class="agentRow"><span>Monedas</span><strong>${agent.money}</strong></div>
+    <div class="agentRow"><span>Posición</span><strong>${agent.position.x.toFixed(1)}, ${agent.position.z.toFixed(1)}</strong></div>
+    <div class="agentRow"><span>Inventario</span><strong>${inventory.length ? inventory.map(item => item.type + " × " + item.amount).join(", ") : "vacío"}</strong></div>
+  `;
+
+  const knowledge = agent.knowledge ?? [];
+  agentKnowledge.innerHTML = knowledge.length
+    ? knowledge.slice(-12).reverse().map(item => `<span class="agentTag">${item.topic} · ${Math.round(item.confidence * 100)}%</span>`).join("")
+    : '<div class="agentEmpty">Todavía no ha adquirido conocimiento del mundo.</div>';
+
+  const relationships = agent.relationships ?? [];
+  agentRelationships.innerHTML = relationships.length
+    ? relationships.map(rel => {
+        const other = agents.find(item => item.id === rel.agentId);
+        const name = other?.name ?? rel.agentId;
+        return `<div class="agentRow"><span>${name}</span><strong>confianza ${Math.round(rel.trust * 100)}% · familiaridad ${Math.round(rel.familiarity * 100)}%</strong></div>`;
+      }).join("")
+    : '<div class="agentEmpty">Aún no tiene relaciones registradas.</div>';
+
+  const experiences = agent.experiences ?? [];
+  agentExperiences.innerHTML = experiences.length
+    ? experiences.slice(-8).reverse().map(exp => `<div class="agentExperience"><strong>Día ${exp.day ?? "—"}</strong> · ${exp.description}</div>`).join("")
+    : '<div class="agentEmpty">Aún no hay experiencias registradas.</div>';
+}
+
+function openAgentPanel(agent) {
+  renderAgentPanel(agent);
+  agentPanel.classList.add("open");
+  agentPanel.setAttribute("aria-hidden", "false");
+}
+
+function closePanel() {
+  agentPanel.classList.remove("open");
+  agentPanel.setAttribute("aria-hidden", "true");
+}
+
+closeAgentPanel.addEventListener("click", closePanel);
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let pointerStart = null;
+
+renderer.domElement.addEventListener("pointerdown", e => {
+  if (activePointers.size === 0) {
+    pointerStart = { x: e.clientX, y: e.clientY };
+  }
+});
+
 // Controles del observador estilo mapa:
 // 1 dedo = agarrar y desplazar el mundo.
 // 2 dedos = pellizcar para zoom + girar para rotar.
-// No se usa el gesto de 1 dedo para rotar, para que el desplazamiento sea natural en móvil.
 const keys = new Set();
 addEventListener("keydown", e => keys.add(e.key.toLowerCase()));
 addEventListener("keyup", e => keys.delete(e.key.toLowerCase()));
@@ -149,11 +239,8 @@ renderer.domElement.addEventListener("pointermove", e => {
 
     if (pinchAngle !== null) {
       let angleChange = angle - pinchAngle;
-
-      // Evita saltos al cruzar de +PI a -PI.
       if (angleChange > Math.PI) angleChange -= Math.PI * 2;
       if (angleChange < -Math.PI) angleChange += Math.PI * 2;
-
       cameraYaw += angleChange;
     }
 
@@ -164,8 +251,6 @@ renderer.domElement.addEventListener("pointermove", e => {
 
   if (!dragging) return;
 
-  // El mundo se mueve en la misma dirección que el dedo,
-  // como cuando se arrastra un mapa físico.
   const dx = e.clientX - lastPointerX;
   const dy = e.clientY - lastPointerY;
   lastPointerX = e.clientX;
@@ -183,6 +268,9 @@ renderer.domElement.addEventListener("pointermove", e => {
 });
 
 function endPointer(e) {
+  const wasSingleTap = activePointers.size === 1 && pointerStart &&
+    Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y) < 10;
+
   activePointers.delete(e.pointerId);
 
   if (activePointers.size < 2) {
@@ -202,6 +290,20 @@ function endPointer(e) {
   if (renderer.domElement.hasPointerCapture(e.pointerId)) {
     renderer.domElement.releasePointerCapture(e.pointerId);
   }
+
+  if (wasSingleTap) {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const hit = raycaster.intersectObjects([...agentMeshes.values()], false)[0];
+    if (hit?.object?.userData?.agentId) {
+      const selected = simulation.agents.find(agent => agent.id === hit.object.userData.agentId);
+      if (selected) openAgentPanel(selected);
+    }
+  }
+
+  pointerStart = null;
 }
 
 renderer.domElement.addEventListener("pointerup", endPointer);
@@ -284,7 +386,6 @@ function updateSimulation() {
   const elapsed = Math.min((now - lastSimulationTime) / 1000, 0.25);
   lastSimulationTime = now;
 
-  // Por ahora: 1 hora simulada cada 60 segundos reales.
   tick(simulation, elapsed / 60);
 
   for (const agent of simulation.agents) {
