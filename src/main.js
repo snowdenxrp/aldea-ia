@@ -1,4 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+import { world } from "./world.js";
+import { createInitialAgents } from "./agents.js";
+import { createSimulation, tick } from "./simulation.js";
 
 const app = document.querySelector("#app");
 const scene = new THREE.Scene();
@@ -20,97 +23,91 @@ sun.castShadow = true;
 scene.add(sun);
 scene.add(new THREE.HemisphereLight(0xbfe7ff, 0x6f8f58, 1.2));
 
-const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(90, 90),
-  new THREE.MeshStandardMaterial({ color: 0x6f9b58 })
-);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshStandardMaterial({ color: 0x6f9b58 }));
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
 
 function flatPatch(x, z, w, d, color) {
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(w, d),
-    new THREE.MeshStandardMaterial({ color, roughness: 1 })
-  );
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({ color, roughness: 1 }));
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.set(x, 0.025, z);
   scene.add(mesh);
-  return mesh;
 }
 
-// River: the first permanent water resource of Lúmina.
-const river = new THREE.Mesh(
-  new THREE.PlaneGeometry(10, 90),
-  new THREE.MeshStandardMaterial({ color: 0x4f9ed1, roughness: 0.25 })
-);
+const river = new THREE.Mesh(new THREE.PlaneGeometry(10, 90), new THREE.MeshStandardMaterial({ color: 0x4f9ed1, roughness: 0.25 }));
 river.rotation.x = -Math.PI / 2;
 river.position.set(-18, 0.03, 0);
 scene.add(river);
 
-// Fertile land: a distinct zone where future crops can be grown.
 flatPatch(2, -22, 32, 12, 0x789f52);
-
-// Rocky zone: a future source of stone and minerals.
 flatPatch(24, 15, 18, 20, 0x77756d);
 
-// Forest zone: trees are resources, not decoration.
 function addTree(x, z, scale = 1) {
-  const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.22 * scale, 0.32 * scale, 1.8 * scale, 8),
-    new THREE.MeshStandardMaterial({ color: 0x765333 })
-  );
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22 * scale, 0.32 * scale, 1.8 * scale, 8), new THREE.MeshStandardMaterial({ color: 0x765333 }));
   trunk.position.set(x, 0.9 * scale, z);
   trunk.castShadow = true;
   scene.add(trunk);
-
-  const crown = new THREE.Mesh(
-    new THREE.SphereGeometry(1.25 * scale, 12, 8),
-    new THREE.MeshStandardMaterial({ color: 0x3f743e })
-  );
+  const crown = new THREE.Mesh(new THREE.SphereGeometry(1.25 * scale, 12, 8), new THREE.MeshStandardMaterial({ color: 0x3f743e }));
   crown.position.set(x, 2.4 * scale, z);
   crown.castShadow = true;
   scene.add(crown);
 }
 
-for (const [x, z, s] of [
-  [18, -14, 1.2], [25, -9, 1], [16, -3, 1.3], [26, 2, .9],
-  [20, 9, 1.1], [29, 13, .9], [12, 16, 1.2], [4, 14, 1],
-  [-10, 15, 1.1], [-6, 21, .9], [-13, 7, 1.2], [-5, 10, 1]
-]) addTree(x, z, s);
+for (const [x, z, s] of [[18,-14,1.2],[25,-9,1],[16,-3,1.3],[26,2,.9],[20,9,1.1],[29,13,.9],[12,16,1.2],[4,14,1],[-10,15,1.1],[-6,21,.9],[-13,7,1.2],[-5,10,1]]) addTree(x, z, s);
 
 function addHouse(x, z) {
   const group = new THREE.Group();
-  const base = new THREE.Mesh(
-    new THREE.BoxGeometry(4, 2.4, 4),
-    new THREE.MeshStandardMaterial({ color: 0xc8a27b })
-  );
+  const base = new THREE.Mesh(new THREE.BoxGeometry(4, 2.4, 4), new THREE.MeshStandardMaterial({ color: 0xc8a27b }));
   base.position.y = 1.2;
   base.castShadow = true;
   group.add(base);
-
-  const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(3.2, 2.4, 4),
-    new THREE.MeshStandardMaterial({ color: 0x7c4935 })
-  );
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(3.2, 2.4, 4), new THREE.MeshStandardMaterial({ color: 0x7c4935 }));
   roof.rotation.y = Math.PI / 4;
   roof.position.y = 3.6;
   roof.castShadow = true;
   group.add(roof);
-
   group.position.set(x, 0, z);
   scene.add(group);
 }
 
-addHouse(-5, -7);
-addHouse(4, -6);
-addHouse(8, 2);
-addHouse(1, 8);
+addHouse(-5, -7); addHouse(4, -6); addHouse(8, 2); addHouse(1, 8);
+
+// Primer vínculo entre simulación y representación 3D.
+const agents = createInitialAgents();
+const simulation = createSimulation(world, agents);
+const agentMeshes = new Map();
+
+function createAgentMesh(agent) {
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.45, 1.1, 4, 8), new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x345b8c : 0x8c4f34 }));
+  body.position.set(agent.position.x, 1.15, agent.position.z);
+  body.castShadow = true;
+  scene.add(body);
+  return body;
+}
+
+for (const agent of agents) agentMeshes.set(agent.id, createAgentMesh(agent));
+
+let lastSimulationTime = performance.now();
+function updateSimulation() {
+  const now = performance.now();
+  const elapsed = Math.min((now - lastSimulationTime) / 1000, 0.25);
+  lastSimulationTime = now;
+
+  // Por ahora: 1 hora simulada cada 60 segundos reales. La velocidad queda en 1x.
+  tick(simulation, elapsed / 60);
+
+  for (const agent of simulation.agents) {
+    const mesh = agentMeshes.get(agent.id);
+    if (!mesh) continue;
+    mesh.position.set(agent.position.x, 1.15, agent.position.z);
+  }
+}
 
 const clock = new THREE.Clock();
-
 function animate() {
   requestAnimationFrame(animate);
+  updateSimulation();
   const t = clock.getElapsedTime();
   sun.position.x = Math.sin(t * 0.04) * 18;
   renderer.render(scene, camera);
