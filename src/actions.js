@@ -92,37 +92,55 @@ function catchFish(simulation, agent, amount) {
   const fish = simulation.world.resources.fish;
   if (fish.amount <= 0) return { success: false, reason: "no_fish" };
 
+  const skill = getSkillLevel(agent, "catch_fish");
+  const successChance = Math.min(0.95, 0.35 + skill * 0.55);
+
+  if (Math.random() > successChance) {
+    agent.needs.energy = Math.max(0, agent.needs.energy - 1.5);
+    agent.currentActivity = "fishing";
+    return { success: false, reason: "fish_escaped", skillLevel: skill };
+  }
+
   const caught = Math.min(amount, fish.amount);
   fish.amount -= caught;
   agent.inventory.push({ type: "fish", amount: caught });
   agent.needs.energy = Math.max(0, agent.needs.energy - caught * 3);
   agent.currentActivity = "fishing";
 
-  return { success: true, effect: "fish_caught", amount: caught };
+  return { success: true, effect: "fish_caught", amount: caught, skillLevel: skill };
 }
 
 function gatherWood(simulation, agent, amount) {
   const wood = simulation.world.resources.wood;
-  const gathered = Math.min(amount, wood.amount);
+  const skill = getSkillLevel(agent, "gather_wood");
+  const efficiency = 0.6 + skill * 0.8;
+  const gathered = Math.min(amount * efficiency, wood.amount);
   if (gathered <= 0) return { success: false, reason: "no_wood" };
 
   wood.amount -= gathered;
   agent.inventory.push({ type: "wood", amount: gathered });
-  agent.needs.energy = Math.max(0, agent.needs.energy - gathered * 2);
+  agent.needs.energy = Math.max(0, agent.needs.energy - gathered * Math.max(1.2, 2 - skill));
   agent.currentActivity = "gathering";
 
-  return { success: true, effect: "wood_gathered", amount: gathered };
+  return { success: true, effect: "wood_gathered", amount: gathered, skillLevel: skill };
 }
 
 function gatherStone(simulation, agent, amount) {
   const stone = simulation.world.resources.stone;
-  const gathered = Math.min(amount, stone.amount);
+  const skill = getSkillLevel(agent, "gather_stone");
+  const efficiency = 0.55 + skill * 0.85;
+  const gathered = Math.min(amount * efficiency, stone.amount);
   if (gathered <= 0) return { success: false, reason: "no_stone" };
 
   stone.amount -= gathered;
   agent.inventory.push({ type: "stone", amount: gathered });
-  agent.needs.energy = Math.max(0, agent.needs.energy - gathered * 2.5);
+  agent.needs.energy = Math.max(0, agent.needs.energy - gathered * Math.max(1.5, 2.5 - skill));
   agent.currentActivity = "gathering";
 
-  return { success: true, effect: "stone_gathered", amount: gathered };
+  return { success: true, effect: "stone_gathered", amount: gathered, skillLevel: skill };
+}
+
+function getSkillLevel(agent, actionName) {
+  const skill = agent.skills.find(item => item.name === actionName);
+  return Math.max(0, Math.min(1, skill?.level ?? 0));
 }
