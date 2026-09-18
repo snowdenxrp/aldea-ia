@@ -45,17 +45,46 @@ function eatPlant(simulation, agent, amount) {
   const eaten = Math.min(amount, plants.amount);
   plants.amount -= eaten;
 
-  // La primera vez no asumimos que el alimento sea perfecto:
-  // su calidad influye en el beneficio obtenido.
-  const nutrition = 14 * plants.quality;
-  agent.needs.hunger = Math.min(100, agent.needs.hunger + nutrition * eaten);
+  // La planta tiene una propiedad real en el mundo que el agente desconoce.
+  // El resultado de la experiencia puede ser bueno, neutro o malo.
+  const roll = Math.random();
+
+  let outcome;
+  if (roll < 0.60) {
+    outcome = {
+      kind: "beneficial",
+      hungerGain: 12 * plants.quality,
+      healthChange: 0,
+      belief: "Esta planta parece ser un alimento útil."
+    };
+  } else if (roll < 0.85) {
+    outcome = {
+      kind: "neutral",
+      hungerGain: 3 * plants.quality,
+      healthChange: 0,
+      belief: "Comer esta planta no pareció tener mucho efecto."
+    };
+  } else {
+    outcome = {
+      kind: "harmful",
+      hungerGain: 0,
+      healthChange: -8,
+      belief: "Esta planta me hizo sentir mal."
+    };
+  }
+
+  agent.needs.hunger = Math.min(100, agent.needs.hunger + outcome.hungerGain * eaten);
+  agent.needs.health = Math.max(0, Math.min(100, agent.needs.health + outcome.healthChange * eaten));
   agent.currentActivity = "eating";
 
   return {
     success: true,
-    effect: "hunger_recovered",
+    effect: "plant_experiment",
     amount: eaten,
-    quality: plants.quality
+    outcome: outcome.kind,
+    hungerGain: outcome.hungerGain * eaten,
+    healthChange: outcome.healthChange * eaten,
+    belief: outcome.belief
   };
 }
 
