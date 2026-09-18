@@ -12,6 +12,8 @@ export const world = {
       amount: 1000,
       quality: 1,
       location: "river",
+      position: { x: -18, z: 0 },
+      radius: 6,
       knownUses: ["beber", "regar"]
     },
     wood: {
@@ -19,6 +21,8 @@ export const world = {
       amount: 240,
       quality: 1,
       location: "forest",
+      position: { x: 20, z: 8 },
+      radius: 18,
       regenerationPerDay: 0.4,
       knownUses: ["unknown"]
     },
@@ -27,6 +31,8 @@ export const world = {
       amount: 180,
       quality: 1,
       location: "rocky_zone",
+      position: { x: 24, z: 15 },
+      radius: 12,
       knownUses: ["unknown"]
     },
     fertile_land: {
@@ -34,6 +40,8 @@ export const world = {
       amount: 100,
       quality: 0.9,
       location: "fertile_zone",
+      position: { x: 2, z: -22 },
+      radius: 16,
       regenerationPerDay: 0.1,
       knownUses: ["unknown"]
     }
@@ -41,8 +49,6 @@ export const world = {
 };
 
 export function advanceWorldDay() {
-  world.day += 1;
-
   const wood = world.resources.wood;
   wood.amount = Math.min(240, wood.amount + wood.regenerationPerDay);
 
