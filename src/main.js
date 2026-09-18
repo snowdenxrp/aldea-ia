@@ -102,6 +102,7 @@ const agentAvatar = document.querySelector("#agentAvatar");
 const agentName = document.querySelector("#agentName");
 const agentAge = document.querySelector("#agentAge");
 const agentStatus = document.querySelector("#agentStatus");
+const agentDecision = document.querySelector("#agentDecision");
 const agentResources = document.querySelector("#agentResources");
 const agentKnowledge = document.querySelector("#agentKnowledge");
 const agentRelationships = document.querySelector("#agentRelationships");
@@ -133,6 +134,7 @@ function translateAction(value) {
     gather_wood: "Recolectar madera",
     gather_stone: "Recolectar piedra",
     socialize: "Socializar",
+    share_knowledge: "Compartir conocimiento",
     explore_plants: "Investigar plantas",
     explore_fishing: "Investigar pesca"
   };
@@ -157,6 +159,7 @@ function translateKnowledgeTopic(value) {
     "action:gather_wood": "Acción: recolectar madera",
     "action:gather_stone": "Acción: recolectar piedra",
     "action:socialize": "Acción: socializar",
+    "action:share_knowledge": "Acción: compartir conocimiento",
     "action:explore_plants": "Acción: investigar plantas",
     "action:explore_fishing": "Acción: investigar pesca"
   };
@@ -185,6 +188,21 @@ function renderAgentPanel(agent) {
       <div class="agentBar"><span style="width:${formatPercent(value)}%"></span></div>
     `).join("")}
   `;
+
+  const decision = agent.decisionSnapshot;
+  if (decision?.chosen) {
+    const considered = (decision.considered ?? [])
+      .map(option => `${translateAction(option.name)} (${Number(option.score).toFixed(2)})`)
+      .join(" · ");
+
+    agentDecision.innerHTML = `
+      <div class="agentRow"><span>Elección</span><strong>${translateAction(decision.chosen.name)}</strong></div>
+      <div class="agentRow"><span>Prioridad</span><strong>${Number(decision.chosen.score).toFixed(2)}</strong></div>
+      <div class="agentExperience"><strong>Opciones consideradas:</strong> ${considered || "—"}</div>
+    `;
+  } else {
+    agentDecision.innerHTML = '<div class="agentEmpty">Todavía no hay una decisión registrada.</div>';
+  }
 
   const inventory = agent.inventory ?? [];
   const inventoryTotals = inventory.reduce((totals, item) => {
@@ -247,9 +265,6 @@ renderer.domElement.addEventListener("pointerdown", e => {
   }
 });
 
-// Controles del observador estilo mapa:
-// 1 dedo = agarrar y desplazar el mundo.
-// 2 dedos = pellizcar para zoom + girar para rotar.
 const keys = new Set();
 addEventListener("keydown", e => keys.add(e.key.toLowerCase()));
 addEventListener("keyup", e => keys.delete(e.key.toLowerCase()));
