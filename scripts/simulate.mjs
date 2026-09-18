@@ -46,7 +46,7 @@ function advance(simulation, seconds) {
     tick(simulation, delta / 37.5);
     for (const agent of simulation.agents) {
       if (!agent.alive) continue;
-      if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target);
+      if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target, simulation.world.bounds);
       moveAgent(agent, delta);
     }
     remaining -= delta;
