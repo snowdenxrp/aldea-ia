@@ -187,10 +187,21 @@ function renderAgentPanel(agent) {
   `;
 
   const inventory = agent.inventory ?? [];
+  const inventoryTotals = inventory.reduce((totals, item) => {
+    const type = item.type;
+    const amount = Number(item.amount) || 0;
+    totals[type] = (totals[type] ?? 0) + amount;
+    return totals;
+  }, {});
+  const inventoryText = Object.entries(inventoryTotals)
+    .filter(([, amount]) => amount > 0)
+    .map(([type, amount]) => `${translateItem(type)} × ${amount.toFixed(2)}`)
+    .join(", ");
+
   agentResources.innerHTML = `
     <div class="agentRow"><span>Monedas</span><strong>${agent.money}</strong></div>
     <div class="agentRow"><span>Posición</span><strong>${agent.position.x.toFixed(1)}, ${agent.position.z.toFixed(1)}</strong></div>
-    <div class="agentRow"><span>Inventario</span><strong>${inventory.length ? inventory.map(item => translateItem(item.type) + " × " + item.amount).join(", ") : "vacío"}</strong></div>
+    <div class="agentRow"><span>Inventario</span><strong>${inventoryText || "vacío"}</strong></div>
   `;
 
   const knowledge = agent.knowledge ?? [];
