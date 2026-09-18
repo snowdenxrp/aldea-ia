@@ -78,7 +78,6 @@ function addHouse(x, z) {
 
 addHouse(-5, -7); addHouse(4, -6); addHouse(8, 2); addHouse(1, 8);
 
-// Primer vínculo entre simulación y representación 3D.
 const agents = createInitialAgents();
 const simulation = createSimulation(world, agents);
 const agentMeshes = new Map();
@@ -86,6 +85,7 @@ const agentMeshes = new Map();
 function createAgentMesh(agent) {
   const group = new THREE.Group();
   group.position.set(agent.position.x, 0, agent.position.z);
+  group.scale.setScalar(1.35);
   group.userData.agentId = agent.id;
 
   const skin = new THREE.MeshStandardMaterial({ color: 0xe0b08a, roughness: 0.9 });
@@ -94,6 +94,19 @@ function createAgentMesh(agent) {
     roughness: 0.85
   });
   const dark = new THREE.MeshStandardMaterial({ color: 0x3c3028, roughness: 0.9 });
+
+  const marker = new THREE.Mesh(
+    new THREE.TorusGeometry(0.62, 0.07, 8, 32),
+    new THREE.MeshStandardMaterial({
+      color: agent.id === "alex" ? 0x4da3ff : 0xffa347,
+      emissive: agent.id === "alex" ? 0x123b66 : 0x663000,
+      emissiveIntensity: 0.8
+    })
+  );
+  marker.rotation.x = -Math.PI / 2;
+  marker.position.y = 0.08;
+  marker.userData.agentId = agent.id;
+  group.add(marker);
 
   const torso = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.9, 0.42), clothing);
   torso.position.y = 1.15;
@@ -154,8 +167,6 @@ for (const agent of agents) {
   scene.add(mesh);
 }
 
-// Panel de observación: tocar un habitante permite consultar su estado,
-// sin mostrar pensamientos internos ni alterar sus decisiones.
 const agentPanel = document.querySelector("#agentPanel");
 const closeAgentPanel = document.querySelector("#closeAgentPanel");
 const agentAvatar = document.querySelector("#agentAvatar");
@@ -202,11 +213,7 @@ function translateAction(value) {
 }
 
 function translateItem(value) {
-  const labels = {
-    fish: "pez",
-    wood: "madera",
-    stone: "piedra"
-  };
+  const labels = { fish: "pez", wood: "madera", stone: "piedra" };
   return labels[value] ?? value;
 }
 
@@ -320,9 +327,7 @@ const pointer = new THREE.Vector2();
 let pointerStart = null;
 
 renderer.domElement.addEventListener("pointerdown", e => {
-  if (activePointers.size === 0) {
-    pointerStart = { x: e.clientX, y: e.clientY };
-  }
+  if (activePointers.size === 0) pointerStart = { x: e.clientX, y: e.clientY };
 });
 
 const keys = new Set();
@@ -400,7 +405,6 @@ renderer.domElement.addEventListener("pointermove", e => {
 
   cameraTarget.addScaledVector(right, -dx * sensitivity);
   cameraTarget.addScaledVector(forward, -dy * sensitivity);
-
   cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x));
   cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z));
 });
@@ -425,9 +429,7 @@ function endPointer(e) {
     dragging = false;
   }
 
-  if (renderer.domElement.hasPointerCapture(e.pointerId)) {
-    renderer.domElement.releasePointerCapture(e.pointerId);
-  }
+  if (renderer.domElement.hasPointerCapture(e.pointerId)) renderer.domElement.releasePointerCapture(e.pointerId);
 
   if (wasSingleTap) {
     const rect = renderer.domElement.getBoundingClientRect();
