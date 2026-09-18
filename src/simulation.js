@@ -621,7 +621,7 @@ export function tick(simulation, hours = 1) {
     simulation.day += 1;
     simulation.world.day = simulation.day;
     simulation.world.timeOfDay = simulation.hour;
-    advanceWorldDay();
+    advanceWorldDay(simulation.world);
   }
 
   simulation.world.timeOfDay = simulation.hour;
