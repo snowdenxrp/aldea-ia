@@ -622,7 +622,7 @@ function updateSimulation() {
   tick(simulation, elapsed / 37.5);
 
   for (const agent of simulation.agents) {
-    if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target);
+    if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target, world.bounds);
     moveAgent(agent, elapsed);
     const mesh = agentMeshes.get(agent.id);
     if (!mesh) continue;
