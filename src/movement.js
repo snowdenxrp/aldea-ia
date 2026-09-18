@@ -43,9 +43,17 @@ export function moveAgent(agent, deltaSeconds) {
   }
 
   const step = Math.min(distance, movement.speed * deltaSeconds);
-  agent.position.x += (dx / distance) * step;
-  agent.position.z += (dz / distance) * step;
-  movement.distanceTravelled += step;
+  let nextX = agent.position.x + (dx / distance) * step;
+  let nextZ = agent.position.z + (dz / distance) * step;
+
+  const bounds = agent.worldBounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 };
+  nextX = Math.max(bounds.minX, Math.min(bounds.maxX, nextX));
+  nextZ = Math.max(bounds.minZ, Math.min(bounds.maxZ, nextZ));
+
+  const actualStep = Math.hypot(nextX - agent.position.x, nextZ - agent.position.z);
+  agent.position.x = nextX;
+  agent.position.z = nextZ;
+  movement.distanceTravelled += actualStep;
   movement.moving = true;
 
   return true;
