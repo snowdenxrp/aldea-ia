@@ -11,6 +11,8 @@ export function executeAction(simulation, agent, action) {
       return eatPlant(simulation, agent, action.amount ?? 1);
     case "catch_fish":
       return catchFish(simulation, agent, action.amount ?? 1);
+    case "eat_fish":
+      return eatFish(agent, action.amount ?? 1);
     case "gather_wood":
       return gatherWood(simulation, agent, action.amount ?? 1);
     case "gather_stone":
@@ -45,31 +47,40 @@ function eatPlant(simulation, agent, amount) {
   const eaten = Math.min(amount, plants.amount);
   plants.amount -= eaten;
 
-  // La planta tiene una propiedad real en el mundo que el agente desconoce.
-  // El resultado de la experiencia puede ser bueno, neutro o malo.
-  const roll = Math.random();
+  const properties = plants.foodProperties ?? {
+    edible: true,
+    nutrition: 0.5,
+    toxicity: 0
+  };
 
   let outcome;
-  if (roll < 0.60) {
-    outcome = {
-      kind: "beneficial",
-      hungerGain: 12 * plants.quality,
-      healthChange: 0,
-      belief: "Esta planta parece ser un alimento útil."
-    };
-  } else if (roll < 0.85) {
-    outcome = {
-      kind: "neutral",
-      hungerGain: 3 * plants.quality,
-      healthChange: 0,
-      belief: "Comer esta planta no pareció tener mucho efecto."
-    };
-  } else {
+  if (!properties.edible) {
     outcome = {
       kind: "harmful",
       hungerGain: 0,
-      healthChange: -8,
+      healthChange: -8 * (1 + properties.toxicity),
+      belief: "Esta planta no parece comestible."
+    };
+  } else if (properties.toxicity > 0.5) {
+    outcome = {
+      kind: "harmful",
+      hungerGain: 0,
+      healthChange: -8 * properties.toxicity,
       belief: "Esta planta me hizo sentir mal."
+    };
+  } else if (properties.nutrition >= 0.6) {
+    outcome = {
+      kind: "beneficial",
+      hungerGain: 12 * properties.nutrition * plants.quality,
+      healthChange: 0,
+      belief: "Esta planta parece ser un alimento útil."
+    };
+  } else {
+    outcome = {
+      kind: "neutral",
+      hungerGain: 3 * properties.nutrition * plants.quality,
+      healthChange: 0,
+      belief: "Comer esta planta no pareció tener mucho efecto."
     };
   }
 
@@ -85,6 +96,27 @@ function eatPlant(simulation, agent, amount) {
     hungerGain: outcome.hungerGain * eaten,
     healthChange: outcome.healthChange * eaten,
     belief: outcome.belief
+  };
+}
+
+function eatFish(agent, amount) {
+  const stack = agent.inventory.find(item => item.type === "fish" && item.amount > 0);
+  if (!stack) return { success: false, reason: "no_fish_in_inventory" };
+
+  const eaten = Math.min(amount, stack.amount);
+  stack.amount -= eaten;
+  agent.needs.hunger = Math.min(100, agent.needs.hunger + eaten * 14);
+  agent.currentActivity = "eating";
+
+  if (stack.amount <= 0) {
+    agent.inventory = agent.inventory.filter(item => item !== stack);
+  }
+
+  return {
+    success: true,
+    effect: "fish_eaten",
+    amount: eaten,
+    hungerGain: eaten * 14
   };
 }
 
