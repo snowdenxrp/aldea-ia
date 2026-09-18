@@ -80,6 +80,51 @@ addHouse(-5, -7); addHouse(4, -6); addHouse(8, 2); addHouse(1, 8);
 
 const agents = createInitialAgents();
 const simulation = createSimulation(world, agents);
+
+const SAVE_KEY = "lumina-world-v2";
+let lastSaveTime = performance.now();
+
+function restoreSimulation() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false;
+
+    const saved = JSON.parse(raw);
+    if (saved?.version !== 2 || !Array.isArray(saved.agents) || !saved.world) return false;
+
+    Object.assign(world, saved.world);
+    if (!world.resources) return false;
+    Object.assign(simulation, {
+      hour: Number(saved.hour) || world.timeOfDay || 0,
+      day: Number(saved.day) || world.day || 1,
+      events: Array.isArray(saved.events) ? saved.events.slice(-500) : []
+    });
+
+    agents.splice(0, agents.length, ...saved.agents);
+    return agents.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function saveSimulation() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      version: 2,
+      savedAt: Date.now(),
+      day: simulation.day,
+      hour: simulation.hour,
+      world,
+      agents,
+      events: simulation.events.slice(-500)
+    }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const restored = restoreSimulation();
 const agentMeshes = new Map();
 
 function createAgentMesh(agent) {
@@ -186,6 +231,7 @@ function formatPercent(value) {
 function translateActivity(value) {
   const labels = {
     idle: "Sin actividad",
+    dead: "Fallecido",
     resting: "Descansando",
     drinking: "Bebiendo",
     eating: "Comiendo",
@@ -235,7 +281,7 @@ function translateKnowledgeTopic(value) {
 
 function renderAgentPanel(agent) {
   agentName.textContent = agent.name;
-  agentAge.textContent = `Edad: ${agent.age} años · ${agent.alive ? "Vivo" : "Fallecido"}`;
+  agentAge.textContent = `Edad: ${agent.age} años · ${agent.alive ? "Vivo" : "Fallecido"} · Día ${simulation.day}`;
   agentAvatar.style.background = agent.id === "alex" ? "#345b8c" : "#8c4f34";
 
   const needs = [
@@ -250,6 +296,7 @@ function renderAgentPanel(agent) {
   agentStatus.innerHTML = `
     <div class="agentRow"><span>Actividad</span><strong>${translateActivity(agent.currentActivity)}</strong></div>
     <div class="agentRow"><span>Intención actual</span><strong>${agent.currentIntent ? translateAction(agent.currentIntent.name) : "Ninguna"}</strong></div>
+    <div class="agentRow"><span>Última acción</span><strong>${agent.lastActionName ? translateAction(agent.lastActionName) : "Ninguna"}</strong></div>
     ${needs.map(([label, value]) => `
       <div class="agentRow"><span>${label}</span><strong>${formatPercent(value)}%</strong></div>
       <div class="agentBar"><span style="width:${formatPercent(value)}%"></span></div>
@@ -542,9 +589,17 @@ function updateSimulation() {
     moveAgent(agent, elapsed);
     const mesh = agentMeshes.get(agent.id);
     if (!mesh) continue;
+    mesh.visible = agent.alive;
     mesh.position.set(agent.position.x, 0, agent.position.z);
   }
+
+  if (now - lastSaveTime >= 2000) {
+    saveSimulation();
+    lastSaveTime = now;
+  }
 }
+
+addEventListener("beforeunload", saveSimulation);
 
 const clock = new THREE.Clock();
 function animate() {
