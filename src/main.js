@@ -533,7 +533,9 @@ function updateSimulation() {
   const elapsed = Math.min((now - lastSimulationTime) / 1000, 0.25);
   lastSimulationTime = now;
 
-  tick(simulation, elapsed / 60);
+  // 1 día simulado = 15 minutos reales a velocidad 1x.
+  // 24 horas / 900 segundos = 0.026666... horas simuladas por segundo real.
+  tick(simulation, elapsed / 37.5);
 
   for (const agent of simulation.agents) {
     if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target);
