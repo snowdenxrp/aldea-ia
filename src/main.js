@@ -155,7 +155,7 @@ const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
   updateSimulation();
-  moveCamera(delta);
+  moveCamera(Math.min(clock.getDelta(), 0.05));
   const t = clock.getElapsedTime();
   sun.position.x = Math.sin(t * 0.04) * 18;
   renderer.render(scene, camera);
