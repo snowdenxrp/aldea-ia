@@ -64,6 +64,17 @@ export function applyNeedConsequences(needs, hours) {
     next.health -= hours * 0.1;
   }
 
+  // La recuperación aparece cuando las necesidades básicas vuelven a estar cubiertas.
+  // No es instantánea y no puede superar la salud máxima.
+  if (
+    next.hunger >= 70 &&
+    next.thirst >= 70 &&
+    next.energy >= 40 &&
+    next.social >= 20
+  ) {
+    next.health += hours * 0.35;
+  }
+
   next.health = clamp(next.health);
   return next;
 }
