@@ -5,6 +5,7 @@ import { createSimulation, tick } from "./simulation.js";
 import { setMovementTarget, moveAgent } from "./movement.js";
 
 const app = document.querySelector("#app");
+const worldTime = document.querySelector("#worldTime");
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x9ec9df);
 
@@ -576,6 +577,11 @@ function moveCamera(deltaSeconds) {
 
 let lastSimulationTime = performance.now();
 function updateSimulation() {
+  if (worldTime) {
+    const hour = Math.floor(simulation.hour);
+    const minute = Math.floor((simulation.hour - hour) * 60);
+    worldTime.textContent = `Aldea IA · Día ${simulation.day} · ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} · Velocidad 1x`;
+  }
   const now = performance.now();
   const elapsed = Math.min((now - lastSimulationTime) / 1000, 0.25);
   lastSimulationTime = now;
