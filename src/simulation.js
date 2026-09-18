@@ -8,7 +8,7 @@ import { createDecisionContext, chooseOption } from "./decision.js";
 import { advanceWorldDay } from "./world.js";
 import { getKnownActions, discoverAction, updateActionBelief } from "./discovery.js";
 import { executeAction } from "./actions.js";
-import { remember } from "./memory.js";
+import { remember, learnFromEvidence } from "./memory.js";
 import { recordInteraction } from "./relationships.js";
 
 export function createSimulation(world, agents) {
@@ -63,6 +63,16 @@ function generateOptions(agent, perception) {
       baseValue: 0.25,
       effects: { social: 1.4 }
     });
+
+    const shareable = agent.knowledge.some(item => item.confidence >= 0.3);
+    if (shareable) {
+      options.push({
+        name: "share_knowledge",
+        baseValue: 0.05,
+        effects: { social: 0.6 },
+        knowledgeBonus: knowledge => Math.min(0.35, knowledge.filter(item => item.confidence >= 0.3).length * 0.08)
+      });
+    }
   }
 
   for (const action of knownActions) {
@@ -155,6 +165,12 @@ function performDecision(simulation, agent) {
 
   if (intent.name === "socialize") {
     performSocialInteraction(simulation, agent);
+    agent.currentIntent = null;
+    return;
+  }
+
+  if (intent.name === "share_knowledge") {
+    performKnowledgeSharing(simulation, agent);
     agent.currentIntent = null;
     return;
   }
@@ -323,6 +339,61 @@ function performSocialInteraction(simulation, agent) {
     effect: firstMeeting ? "first_meeting" : "social_interaction",
     otherAgentId: other.id
   };
+}
+
+function performKnowledgeSharing(simulation, agent) {
+  const visible = agent.lastPerception.visibleAgents.filter(other => other.distance <= 1.8).sort((a, b) => a.distance - b.distance);
+  if (visible.length === 0) {
+    agent.lastActionResult = { success: false, reason: "no_person_nearby" };
+    return;
+  }
+
+  const other = simulation.agents.find(candidate => candidate.id === visible[0].id && candidate.alive);
+  if (!other) return;
+
+  const candidates = agent.knowledge.filter(item => item.confidence >= 0.3);
+  if (candidates.length === 0) {
+    agent.lastActionResult = { success: false, reason: "nothing_to_share" };
+    return;
+  }
+
+  const relationship = agent.relationships.find(rel => rel.agentId === other.id);
+  const trust = relationship?.trust ?? 0;
+  const cooperation = relationship?.cooperation ?? 0;
+  const shareProbability = Math.max(0.15, Math.min(0.9, 0.35 + trust * 0.25 + cooperation * 0.2));
+
+  if (Math.random() > shareProbability) {
+    const description = `${agent.name} habló con ${other.name}, pero decidió no compartir información importante.`;
+    const event = recordEvent(simulation, { type: "withheld_knowledge", description, participants: [agent.id, other.id] });
+    remember(agent, { id: event.id, day: simulation.day, type: "social", description, participants: [agent.id, other.id], emotionalWeight: 0, importance: 0.35 });
+    agent.lastActionResult = { success: true, effect: "knowledge_withheld" };
+    return;
+  }
+
+  const knowledge = candidates[Math.floor(Math.random() * candidates.length)];
+  const communicationFidelity = Math.max(0.55, Math.min(0.95, 0.75 + trust * 0.15));
+  const event = recordEvent(simulation, {
+    type: "knowledge_shared",
+    description: `${agent.name} compartió con ${other.name} lo que cree saber sobre "${knowledge.topic}".`,
+    participants: [agent.id, other.id]
+  });
+
+  learnFromEvidence(other, {
+    topic: knowledge.topic,
+    belief: knowledge.belief,
+    description: `${agent.name} me contó que: ${knowledge.belief}`,
+    outcome: trust >= 0 ? 0.4 : -0.1,
+    reliability: communicationFidelity,
+    source: "testimony:" + agent.id,
+    day: simulation.day
+  });
+
+  remember(agent, { id: event.id, day: simulation.day, type: "knowledge_shared", description: event.description, participants: [agent.id, other.id], emotionalWeight: 0.05, importance: 0.55 });
+  remember(other, { id: event.id, day: simulation.day, type: "knowledge_received", description: `${agent.name} me contó que: ${knowledge.belief}`, participants: [agent.id, other.id], emotionalWeight: trust >= 0 ? 0.05 : -0.03, importance: 0.6 });
+
+  agent.needs.social = Math.min(100, agent.needs.social + 10);
+  other.needs.social = Math.min(100, other.needs.social + 8);
+  agent.lastActionResult = { success: true, effect: "knowledge_shared", topic: knowledge.topic, receiverId: other.id };
 }
 
 function recordExploration(simulation, agent, subject) {
