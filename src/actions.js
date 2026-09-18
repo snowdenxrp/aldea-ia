@@ -1,0 +1,61 @@
+// Acciones físicas y sus consecuencias en el mundo.
+// Una acción no decide si debe ejecutarse: solo define qué ocurre si el habitante la realiza.
+
+export function executeAction(simulation, agent, action) {
+  switch (action.name) {
+    case "rest":
+      return rest(agent, action.duration ?? 1);
+    case "drink":
+      return drink(simulation, agent, action.amount ?? 5);
+    case "gather_wood":
+      return gatherWood(simulation, agent, action.amount ?? 1);
+    case "gather_stone":
+      return gatherStone(simulation, agent, action.amount ?? 1);
+    default:
+      return { success: false, reason: "unknown_action" };
+  }
+}
+
+function rest(agent, hours) {
+  agent.currentActivity = "resting";
+  agent.needs.energy = Math.min(100, agent.needs.energy + hours * 7);
+  return { success: true, effect: "energy_recovered" };
+}
+
+function drink(simulation, agent, amount) {
+  const water = simulation.world.resources.water;
+  if (water.amount <= 0) return { success: false, reason: "no_water" };
+
+  const used = Math.min(amount, water.amount);
+  water.amount -= used;
+  agent.needs.thirst = Math.min(100, agent.needs.thirst + used * 4);
+  agent.currentActivity = "drinking";
+
+  return { success: true, effect: "thirst_recovered", amount: used };
+}
+
+function gatherWood(simulation, agent, amount) {
+  const wood = simulation.world.resources.wood;
+  const gathered = Math.min(amount, wood.amount);
+  if (gathered <= 0) return { success: false, reason: "no_wood" };
+
+  wood.amount -= gathered;
+  agent.inventory.push({ type: "wood", amount: gathered });
+  agent.needs.energy = Math.max(0, agent.needs.energy - gathered * 2);
+  agent.currentActivity = "gathering";
+
+  return { success: true, effect: "wood_gathered", amount: gathered };
+}
+
+function gatherStone(simulation, agent, amount) {
+  const stone = simulation.world.resources.stone;
+  const gathered = Math.min(amount, stone.amount);
+  if (gathered <= 0) return { success: false, reason: "no_stone" };
+
+  stone.amount -= gathered;
+  agent.inventory.push({ type: "stone", amount: gathered });
+  agent.needs.energy = Math.max(0, agent.needs.energy - gathered * 2.5);
+  agent.currentActivity = "gathering";
+
+  return { success: true, effect: "stone_gathered", amount: gathered };
+}
