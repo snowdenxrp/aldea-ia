@@ -19,7 +19,7 @@ export function perceiveWorld(agent, world, agents = []) {
       location: resource.location,
       distance: distance(agent.position, resource.position)
     }))
-    .filter(resource => resource.distance <= (world.resources[resource.type].radius ?? 10));
+    .filter(resource => resource.distance <= (world.resources[resource.type].perceptionRadius ?? world.resources[resource.type].radius ?? 10));
 
   return {
     position: { ...agent.position },
