@@ -15,11 +15,52 @@ html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; font-family
 #controls button:nth-child(4) { grid-column: 3; grid-row: 2; }
 @media (max-width: 600px) { #status { font-size: 10px; max-width: 190px; } }
 
-
-/* Interacción táctil tipo mapa */
 #app, #app canvas {
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
 }
+
+#agentPanel {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  right: 0;
+  width: min(390px, 92vw);
+  height: 100%;
+  padding: 20px 18px 28px;
+  overflow-y: auto;
+  background: rgba(18, 25, 31, .96);
+  color: #f4f7f8;
+  box-shadow: -10px 0 30px rgba(0,0,0,.28);
+  transform: translateX(105%);
+  transition: transform .22s ease;
+  pointer-events: none;
+}
+#agentPanel.open { transform: translateX(0); pointer-events: auto; }
+#closeAgentPanel {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.1);
+  color: white;
+  font-size: 30px;
+  line-height: 1;
+}
+#agentHeader { display: flex; align-items: center; gap: 12px; padding: 34px 42px 18px 4px; border-bottom: 1px solid rgba(255,255,255,.12); }
+#agentAvatar { width: 34px; height: 56px; border-radius: 16px 16px 10px 10px; background: #345b8c; box-shadow: inset 0 8px 0 rgba(255,255,255,.08); }
+#agentName { font-size: 25px; font-weight: 800; }
+#agentAge { margin-top: 2px; opacity: .7; }
+.agentSection { padding: 15px 4px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.agentSection h3 { margin: 0 0 9px; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; opacity: .65; }
+.agentRow { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 14px; }
+.agentBar { height: 7px; margin-top: 3px; border-radius: 8px; background: rgba(255,255,255,.1); overflow: hidden; }
+.agentBar span { display: block; height: 100%; border-radius: inherit; background: rgba(150,210,170,.85); }
+.agentTag { display: inline-block; margin: 3px 4px 3px 0; padding: 5px 8px; border-radius: 8px; background: rgba(255,255,255,.08); font-size: 12px; }
+.agentEmpty { opacity: .55; font-size: 13px; }
+.agentExperience { padding: 7px 0; font-size: 13px; line-height: 1.35; }
