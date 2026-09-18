@@ -127,7 +127,6 @@ function getActionTarget(agent, actionName, perception, world) {
   return null;
 }
 
-let currentSimulationAgents
 let currentSimulationAgents = [];
 
 function simulationAgentById(agent, id) {
@@ -248,6 +247,18 @@ function performDecision(simulation, agent) {
     });
 
     updateActionBelief(agent, intent.name, 1, simulation.day, description);
+
+    if (intent.name === "catch_fish" && result.amount > 0) {
+      discoverAction(agent, {
+        actionName: "eat_fish",
+        belief: "Creo que el pez que capturé puede servirme como alimento.",
+        confidence: 0.12,
+        evidence: "Capturé un pez y ahora tengo uno en mi inventario.",
+        outcome: 0.1,
+        reliability: 0.35,
+        day: simulation.day
+      });
+    }
   } else {
     const description = `${agent.name} intentó ${intent.name}, pero no pudo hacerlo (${result.reason ?? "sin resultado"}).`;
     const event = recordEvent(simulation, {
