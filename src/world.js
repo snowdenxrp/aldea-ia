@@ -15,6 +15,7 @@ export const world = {
       location: "river",
       position: { x: -18, z: 0 },
       radius: 6,
+      perceptionRadius: 30,
       possibleUses: ["drink", "irrigate"]
     },
 
@@ -25,6 +26,7 @@ export const world = {
       location: "forest",
       position: { x: 20, z: 8 },
       radius: 18,
+      perceptionRadius: 24,
       regenerationPerDay: 0.4,
       possibleUses: ["fuel", "construction", "tools"]
     },
@@ -36,6 +38,7 @@ export const world = {
       location: "rocky_zone",
       position: { x: 24, z: 15 },
       radius: 12,
+      perceptionRadius: 18,
       possibleUses: ["construction", "tools"]
     },
 
@@ -46,6 +49,7 @@ export const world = {
       location: "fertile_zone",
       position: { x: 2, z: -22 },
       radius: 16,
+      perceptionRadius: 22,
       regenerationPerDay: 0.1,
       possibleUses: ["farming"]
     },
@@ -57,6 +61,7 @@ export const world = {
       location: "meadow",
       position: { x: -2, z: -8 },
       radius: 10,
+      perceptionRadius: 14,
       regenerationPerDay: 0.7,
       possibleUses: ["food", "medicine", "fiber"]
     },
@@ -68,6 +73,7 @@ export const world = {
       location: "river",
       position: { x: -18, z: 8 },
       radius: 7,
+      perceptionRadius: 11,
       regenerationPerDay: 0.25,
       possibleUses: ["food"]
     },
@@ -79,6 +85,7 @@ export const world = {
       location: "riverbank",
       position: { x: -12, z: -16 },
       radius: 8,
+      perceptionRadius: 12,
       regenerationPerDay: 0.05,
       possibleUses: ["containers", "construction"]
     }
