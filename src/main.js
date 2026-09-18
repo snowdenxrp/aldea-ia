@@ -82,7 +82,7 @@ addHouse(-5, -7); addHouse(4, -6); addHouse(8, 2); addHouse(1, 8);
 const agents = createInitialAgents();
 const simulation = createSimulation(world, agents);
 
-const SAVE_KEY = "lumina-world-v2";
+const SAVE_KEY = "lumina-world-v3";
 let lastSaveTime = performance.now();
 
 function restoreSimulation() {
@@ -91,7 +91,7 @@ function restoreSimulation() {
     if (!raw) return false;
 
     const saved = JSON.parse(raw);
-    if (saved?.version !== 2 || !Array.isArray(saved.agents) || !saved.world) return false;
+    if (!Array.isArray(saved.agents) || !saved.world) return false;
 
     Object.assign(world, saved.world);
     if (!world.resources) return false;
@@ -111,7 +111,7 @@ function restoreSimulation() {
 function saveSimulation() {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
-      version: 2,
+      version: 3,
       savedAt: Date.now(),
       day: simulation.day,
       hour: simulation.hour,
@@ -125,7 +125,30 @@ function saveSimulation() {
   }
 }
 
-const restored = restoreSimulation();
+async function restoreRemoteSimulation() {
+  try {
+    const response = await fetch("./world-state.json?ts=" + Date.now(), { cache: "no-store" });
+    if (!response.ok) return false;
+
+    const saved = await response.json();
+    if (saved?.version < 3 || !Array.isArray(saved.agents) || !saved.world) return false;
+
+    Object.assign(world, saved.world);
+    if (!world.resources) return false;
+
+    simulation.hour = Number(saved.hour) || world.timeOfDay || 0;
+    simulation.day = Number(saved.day) || world.day || 1;
+    simulation.events = Array.isArray(saved.events) ? saved.events.slice(-500) : [];
+
+    agents.splice(0, agents.length, ...saved.agents);
+    return agents.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+const restoredRemote = await restoreRemoteSimulation();
+if (!restoredRemote) restoreSimulation();
 const agentMeshes = new Map();
 
 function createAgentMesh(agent) {
