@@ -7,6 +7,15 @@ export const world = {
   timeOfDay: 8,
   speed: 1,
 
+  // Territorio jugable de Lúmina. La exploración no puede sacar a los habitantes
+  // de la zona física representada por el terreno.
+  bounds: {
+    minX: -34,
+    maxX: 34,
+    minZ: -34,
+    maxZ: 34
+  },
+
   resources: {
     water: {
       type: "renewable",
