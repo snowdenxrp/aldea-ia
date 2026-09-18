@@ -11,13 +11,52 @@
     <div class="title">LÚMINA</div>
     <div class="subtitle">Aldea IA · Día 1 · Velocidad 1x</div>
   </div>
-  <div id="status">1 dedo: mirar · 2 dedos: zoom · Botones: mover</div>
+
+  <div id="status">☝️ Mover · 🤏 Zoom · 🔄 Rotar</div>
+
   <div id="controls" aria-label="Controles de cámara">
     <button data-move="w" aria-label="Avanzar">▲</button>
     <button data-move="a" aria-label="Mover izquierda">◀</button>
     <button data-move="s" aria-label="Retroceder">▼</button>
     <button data-move="d" aria-label="Mover derecha">▶</button>
   </div>
+
+  <aside id="agentPanel" aria-hidden="true">
+    <button id="closeAgentPanel" aria-label="Cerrar">×</button>
+    <div id="agentHeader">
+      <div id="agentAvatar"></div>
+      <div>
+        <div id="agentName">Habitante</div>
+        <div id="agentAge">Edad: —</div>
+      </div>
+    </div>
+
+    <section class="agentSection">
+      <h3>Estado</h3>
+      <div id="agentStatus"></div>
+    </section>
+
+    <section class="agentSection">
+      <h3>Recursos</h3>
+      <div id="agentResources"></div>
+    </section>
+
+    <section class="agentSection">
+      <h3>Conocimiento</h3>
+      <div id="agentKnowledge"></div>
+    </section>
+
+    <section class="agentSection">
+      <h3>Relaciones</h3>
+      <div id="agentRelationships"></div>
+    </section>
+
+    <section class="agentSection">
+      <h3>Experiencias recientes</h3>
+      <div id="agentExperiences"></div>
+    </section>
+  </aside>
+
   <div id="app"></div>
   <script type="module" src="./src/main.js"></script>
 </body>
