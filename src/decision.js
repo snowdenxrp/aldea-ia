@@ -9,7 +9,8 @@ export function createDecisionContext(agent, perception) {
     perception,
     knowledge: agent.knowledge.map(item => ({ ...item })),
     relationships: agent.relationships.map(item => ({ ...item })),
-    memories: agent.memories.map(item => ({ ...item }))
+    memories: agent.memories.map(item => ({ ...item })),
+    recentAction: agent.lastActionName ?? null
   };
 }
 
@@ -42,7 +43,6 @@ export function chooseOption(context, options, randomness = 0.15) {
 function calculateScore(context, option) {
   let score = option.baseValue ?? 0;
 
-  // Una necesidad baja genera presión hacia acciones que puedan aliviarla.
   if (option.effects?.hunger) {
     score += unmetNeed(context.needs.hunger) * option.effects.hunger;
   }
@@ -59,13 +59,18 @@ function calculateScore(context, option) {
     score += unmetNeed(context.needs.social) * option.effects.social;
   }
 
-  // La experiencia personal puede favorecer o desfavorecer una acción.
   if (option.knowledgeBonus) {
     score += option.knowledgeBonus(context.knowledge);
   }
 
   if (option.memoryBonus) {
     score += option.memoryBonus(context.memories);
+  }
+
+  // Evita bucles de conducta: una acción recién realizada pierde atractivo
+  // durante la siguiente decisión. Una necesidad crítica puede superar esta fricción.
+  if (context.recentAction === option.name) {
+    score -= 2;
   }
 
   return score;
