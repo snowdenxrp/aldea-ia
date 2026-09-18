@@ -95,7 +95,7 @@ for (const agent of agents) agentMeshes.set(agent.id, createAgentMesh(agent));
 
 // Controles del observador estilo mapa:
 // 1 dedo = agarrar y desplazar el mundo.
-// 2 dedos = pellizcar para zoom.
+// 2 dedos = pellizcar para zoom + girar para rotar.
 // No se usa el gesto de 1 dedo para rotar, para que el desplazamiento sea natural en móvil.
 const keys = new Set();
 addEventListener("keydown", e => keys.add(e.key.toLowerCase()));
@@ -105,10 +105,15 @@ let dragging = false;
 let lastPointerX = 0;
 let lastPointerY = 0;
 let pinchDistance = null;
+let pinchAngle = null;
 const activePointers = new Map();
 
 function pointerDistance(a, b) {
   return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+}
+
+function pointerAngle(a, b) {
+  return Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX);
 }
 
 renderer.domElement.addEventListener("pointerdown", e => {
@@ -122,6 +127,7 @@ renderer.domElement.addEventListener("pointerdown", e => {
     dragging = false;
     const points = [...activePointers.values()];
     pinchDistance = pointerDistance(points[0], points[1]);
+    pinchAngle = pointerAngle(points[0], points[1]);
   }
 
   renderer.domElement.setPointerCapture(e.pointerId);
@@ -134,13 +140,25 @@ renderer.domElement.addEventListener("pointermove", e => {
   if (activePointers.size === 2) {
     const points = [...activePointers.values()];
     const distance = pointerDistance(points[0], points[1]);
+    const angle = pointerAngle(points[0], points[1]);
 
     if (pinchDistance !== null) {
       const zoomChange = pinchDistance - distance;
       cameraDistance = Math.max(10, Math.min(65, cameraDistance + zoomChange * 0.055));
     }
 
+    if (pinchAngle !== null) {
+      let angleChange = angle - pinchAngle;
+
+      // Evita saltos al cruzar de +PI a -PI.
+      if (angleChange > Math.PI) angleChange -= Math.PI * 2;
+      if (angleChange < -Math.PI) angleChange += Math.PI * 2;
+
+      cameraYaw += angleChange;
+    }
+
     pinchDistance = distance;
+    pinchAngle = angle;
     return;
   }
 
@@ -167,7 +185,10 @@ renderer.domElement.addEventListener("pointermove", e => {
 function endPointer(e) {
   activePointers.delete(e.pointerId);
 
-  if (activePointers.size < 2) pinchDistance = null;
+  if (activePointers.size < 2) {
+    pinchDistance = null;
+    pinchAngle = null;
+  }
 
   if (activePointers.size === 1) {
     const remaining = [...activePointers.values()][0];
