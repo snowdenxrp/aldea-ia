@@ -84,12 +84,68 @@ const simulation = createSimulation(world, agents);
 const agentMeshes = new Map();
 
 function createAgentMesh(agent) {
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.45, 1.1, 4, 8), new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x345b8c : 0x8c4f34 }));
-  body.position.set(agent.position.x, 1.15, agent.position.z);
-  body.castShadow = true;
-  body.userData.agentId = agent.id;
-  scene.add(body);
-  return body;
+  const group = new THREE.Group();
+  group.position.set(agent.position.x, 0, agent.position.z);
+  group.userData.agentId = agent.id;
+
+  const skin = new THREE.MeshStandardMaterial({ color: 0xe0b08a, roughness: 0.9 });
+  const clothing = new THREE.MeshStandardMaterial({
+    color: agent.id === "alex" ? 0x345b8c : 0x8c4f34,
+    roughness: 0.85
+  });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x3c3028, roughness: 0.9 });
+
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.9, 0.42), clothing);
+  torso.position.y = 1.15;
+  torso.castShadow = true;
+  group.add(torso);
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), skin);
+  head.position.y = 1.86;
+  head.castShadow = true;
+  group.add(head);
+
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.58), dark);
+  hair.position.y = 2.02;
+  hair.castShadow = true;
+  group.add(hair);
+
+  const armGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.72, 8);
+  const legGeometry = new THREE.CylinderGeometry(0.12, 0.12, 0.78, 8);
+
+  const leftArm = new THREE.Mesh(armGeometry, skin);
+  leftArm.position.set(-0.47, 1.17, 0);
+  leftArm.rotation.z = -0.08;
+  leftArm.castShadow = true;
+  group.add(leftArm);
+
+  const rightArm = new THREE.Mesh(armGeometry, skin);
+  rightArm.position.set(0.47, 1.17, 0);
+  rightArm.rotation.z = 0.08;
+  rightArm.castShadow = true;
+  group.add(rightArm);
+
+  const leftLeg = new THREE.Mesh(legGeometry, dark);
+  leftLeg.position.set(-0.2, 0.58, 0);
+  leftLeg.castShadow = true;
+  group.add(leftLeg);
+
+  const rightLeg = new THREE.Mesh(legGeometry, dark);
+  rightLeg.position.set(0.2, 0.58, 0);
+  rightLeg.castShadow = true;
+  group.add(rightLeg);
+
+  const leftFoot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.12, 0.42), dark);
+  leftFoot.position.set(-0.2, 0.15, 0.08);
+  leftFoot.castShadow = true;
+  group.add(leftFoot);
+
+  const rightFoot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.12, 0.42), dark);
+  rightFoot.position.set(0.2, 0.15, 0.08);
+  rightFoot.castShadow = true;
+  group.add(rightFoot);
+
+  return group;
 }
 
 for (const agent of agents) agentMeshes.set(agent.id, createAgentMesh(agent));
@@ -471,7 +527,7 @@ function updateSimulation() {
     moveAgent(agent, elapsed);
     const mesh = agentMeshes.get(agent.id);
     if (!mesh) continue;
-    mesh.position.set(agent.position.x, 1.15, agent.position.z);
+    mesh.position.set(agent.position.x, 0, agent.position.z);
   }
 }
 
