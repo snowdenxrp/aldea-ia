@@ -9,6 +9,7 @@ import { advanceWorldDay } from "./world.js";
 import { getKnownActions, discoverAction, updateActionBelief } from "./discovery.js";
 import { executeAction } from "./actions.js";
 import { remember } from "./memory.js";
+import { recordInteraction } from "./relationships.js";
 
 export function createSimulation(world, agents) {
   return {
@@ -39,7 +40,6 @@ function generateOptions(agent, perception) {
   const knownActions = getKnownActions(agent);
   const options = [];
 
-  // Descansar siempre es físicamente posible.
   options.push({
     name: "rest",
     baseValue: 0.8,
@@ -56,8 +56,15 @@ function generateOptions(agent, perception) {
     });
   }
 
-  // Comer y pescar solo aparecen si el habitante ya aprendió esas acciones.
-  // El mundo no le entrega conocimiento gratis.
+  // Un encuentro solo es posible si hay otra persona realmente cerca.
+  if (perception.visibleAgents.length > 0) {
+    options.push({
+      name: "socialize",
+      baseValue: 0.25,
+      effects: { social: 1.4 }
+    });
+  }
+
   for (const action of knownActions) {
     if (["rest", "drink"].includes(action.name)) continue;
 
@@ -79,8 +86,6 @@ function generateOptions(agent, perception) {
     options.push(option);
   }
 
-  // Una oportunidad desconocida puede despertar exploración,
-  // pero no se convierte automáticamente en una acción concreta.
   const seesPlants = perception.nearbyResources.some(resource => resource.type === "wild_plants");
   if (seesPlants && !knownActions.some(action => action.name === "eat_plant")) {
     options.push({
@@ -109,16 +114,30 @@ function getActionTarget(agent, actionName, perception, world) {
   if (actionName === "drink") return world.resources.water.position;
   if (actionName === "gather_wood") return world.resources.wood.position;
   if (actionName === "gather_stone") return world.resources.stone.position;
-  if (actionName === "eat_plant" || actionName === "explore_plants") {
-    return world.resources.wild_plants.position;
+  if (actionName === "eat_plant" || actionName === "explore_plants") return world.resources.wild_plants.position;
+  if (actionName === "catch_fish" || actionName === "explore_fishing") return world.resources.fish.position;
+
+  // Para socializar, nos dirigimos hacia la persona visible más cercana.
+  if (actionName === "socialize" && perception.visibleAgents.length > 0) {
+    const nearest = [...perception.visibleAgents].sort((a, b) => a.distance - b.distance)[0];
+    const other = simulationAgentById(agent, nearest.id);
+    return other?.position ?? null;
   }
-  if (actionName === "catch_fish" || actionName === "explore_fishing") {
-    return world.resources.fish.position;
-  }
+
   return null;
 }
 
+// Se asigna durante cada llamada a performDecision para resolver al habitante visible.
+// No expone información que el agente no pueda percibir.
+let currentSimulationAgents = [];
+
+function simulationAgentById(agent, id) {
+  return currentSimulationAgents.find(other => other.id === id && other.alive && other.id !== agent.id) ?? null;
+}
+
 function performDecision(simulation, agent) {
+  currentSimulationAgents = simulation.agents;
+
   const intent = agent.currentIntent;
   if (!intent) return;
   if (agent.movement?.moving) return;
@@ -134,8 +153,12 @@ function performDecision(simulation, agent) {
     }
   }
 
-  // Explorar no produce automáticamente una recompensa:
-  // la experiencia puede revelar una nueva posibilidad.
+  if (intent.name === "socialize") {
+    performSocialInteraction(simulation, agent);
+    agent.currentIntent = null;
+    return;
+  }
+
   if (intent.name === "explore_plants") {
     discoverAction(agent, {
       actionName: "eat_plant",
@@ -210,6 +233,98 @@ function performDecision(simulation, agent) {
   agent.currentIntent = null;
 }
 
+function performSocialInteraction(simulation, agent) {
+  const visible = agent.lastPerception.visibleAgents
+    .filter(other => other.distance <= 1.8)
+    .sort((a, b) => a.distance - b.distance);
+
+  if (visible.length === 0) {
+    agent.lastActionResult = { success: false, reason: "no_person_nearby" };
+    return;
+  }
+
+  const other = simulation.agents.find(candidate => candidate.id === visible[0].id && candidate.alive);
+  if (!other) return;
+
+  // El primer encuentro queda registrado permanentemente como evento histórico.
+  const firstMeeting = !agent.relationships.some(rel => rel.agentId === other.id);
+
+  const roll = Math.random();
+  let interaction;
+
+  if (roll < 0.55) {
+    interaction = {
+      type: "conversation",
+      description: `${agent.name} y ${other.name} tuvieron una interacción cordial.`,
+      trust: 0.08,
+      cooperation: 0.05,
+      affection: 0.03,
+      tension: 0,
+      resentment: 0
+    };
+  } else if (roll < 0.85) {
+    interaction = {
+      type: "conversation",
+      description: `${agent.name} y ${other.name} se encontraron, pero la interacción fue neutral.`,
+      trust: 0.01,
+      cooperation: 0,
+      affection: 0,
+      tension: 0.01,
+      resentment: 0
+    };
+  } else {
+    interaction = {
+      type: "conversation",
+      description: `${agent.name} y ${other.name} tuvieron un encuentro incómodo.`,
+      trust: -0.05,
+      cooperation: -0.02,
+      affection: -0.01,
+      tension: 0.08,
+      resentment: 0.04
+    };
+  }
+
+  recordInteraction(agent, other, { ...interaction, day: simulation.day });
+  recordInteraction(other, agent, { ...interaction, day: simulation.day });
+
+  agent.needs.social = Math.min(100, agent.needs.social + 18);
+  other.needs.social = Math.min(100, other.needs.social + 18);
+
+  const event = recordEvent(simulation, {
+    type: firstMeeting ? "first_meeting" : "social_interaction",
+    description: firstMeeting
+      ? `${agent.name} conoció por primera vez a ${other.name}. ${interaction.description}`
+      : interaction.description,
+    participants: [agent.id, other.id]
+  });
+
+  remember(agent, {
+    id: event.id,
+    day: simulation.day,
+    type: firstMeeting ? "first_meeting" : "social",
+    description: event.description,
+    participants: [agent.id, other.id],
+    emotionalWeight: interaction.affection - interaction.resentment,
+    importance: firstMeeting ? 0.9 : 0.4
+  });
+
+  remember(other, {
+    id: event.id,
+    day: simulation.day,
+    type: firstMeeting ? "first_meeting" : "social",
+    description: event.description,
+    participants: [agent.id, other.id],
+    emotionalWeight: interaction.affection - interaction.resentment,
+    importance: firstMeeting ? 0.9 : 0.4
+  });
+
+  agent.lastActionResult = {
+    success: true,
+    effect: firstMeeting ? "first_meeting" : "social_interaction",
+    otherAgentId: other.id
+  };
+}
+
 function recordExploration(simulation, agent, subject) {
   const description = `${agent.name} investigó ${subject} y obtuvo nueva información.`;
   const event = recordEvent(simulation, {
@@ -267,7 +382,7 @@ function describeAction(agent, actionName, result) {
     case "drink":
       return `${agent.name} bebió agua y recuperó parte de la sed.`;
     case "eat_plant":
-      return `${agent.name} comió plantas silvestres y recuperó parte del hambre.`;
+      return `${agent.name} experimentó comiendo una planta y observó sus efectos.`;
     case "catch_fish":
       return `${agent.name} capturó ${result.amount} pez/peces.`;
     case "gather_wood":
