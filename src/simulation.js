@@ -80,7 +80,11 @@ function generateOptions(agent, perception) {
 
     const option = {
       name: action.name,
-      baseValue: action.confidence
+      baseValue: action.confidence,
+      knowledgeBonus: knowledge => {
+        const item = knowledge.find(entry => entry.topic === "action:" + action.name);
+        return item ? item.confidence * 0.15 : 0;
+      }
     };
 
     if (action.name === "eat_plant") {
@@ -209,6 +213,7 @@ function performDecision(simulation, agent) {
   agent.lastActionResult = result;
 
   if (result.success) {
+    improveSkillFromAction(agent, intent.name, simulation.day);
     const description = describeAction(agent, intent.name, result);
     const event = recordEvent(simulation, {
       type: "action",
@@ -444,6 +449,25 @@ function discoverNearbyActions(agent, perception, simulation) {
   }
 
   for (const discovery of discoveries) discoverAction(agent, discovery);
+}
+
+function improveSkillFromAction(agent, actionName, day) {
+  const existing = agent.skills.find(skill => skill.name === actionName);
+
+  if (!existing) {
+    agent.skills.push({
+      name: actionName,
+      level: 0.1,
+      uses: 1,
+      learnedOnDay: day,
+      lastPracticedDay: day
+    });
+    return;
+  }
+
+  existing.uses += 1;
+  existing.level = Math.min(1, existing.level + 0.06 * (1 - existing.level));
+  existing.lastPracticedDay = day;
 }
 
 function describeAction(agent, actionName, result) {
