@@ -6,7 +6,6 @@ export function createRandom(seed = null) {
 
   let state = normalizeSeed(seed);
   return () => {
-    // Mulberry32: simple, rápido y determinista para simulaciones/tests.
     state |= 0;
     state = (state + 0x6D2B79F5) | 0;
     let value = Math.imul(state ^ (state >>> 15), 1 | state);
@@ -14,6 +13,8 @@ export function createRandom(seed = null) {
     return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
   };
 }
+
+export const createSeededRandom = createRandom;
 
 function normalizeSeed(seed) {
   if (typeof seed === "number" && Number.isFinite(seed)) return seed | 0;
@@ -25,7 +26,6 @@ function normalizeSeed(seed) {
   }
   return hash | 0;
 }
-
 
 export function getRandom(simulation) {
   return typeof simulation?.random === "function" ? simulation.random : Math.random;
