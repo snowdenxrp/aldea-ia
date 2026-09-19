@@ -213,19 +213,19 @@ export function tick(simulation, deltaHours = 0.01) {
 }
 
 export function recoverCoreAgent(agent) {
-  agent.alive = true;
   agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
   agent.currentIntent = agent.currentIntent ?? null;
   agent.needs ??= { hunger: 80, thirst: 80, energy: 80, social: 80, safety: 100, health: 100 };
-  if (!Number.isFinite(Number(agent.needs.health)) || agent.needs.health <= 0) agent.needs.health = 100;
+  if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
   for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
     if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
     agent.needs[key] = Math.max(0, Math.min(100, Number(agent.needs[key])));
   }
+  agent.needs.health = Math.max(0, Math.min(100, Number(agent.needs.health)));
 }
 
 function handleDeath(simulation, agent) {
-  if (["alex", "bruno"].includes(agent.id)) { recoverCoreAgent(agent); return; }
+  if (agent.alive === false) return;
   agent.alive = false;
   agent.currentActivity = "dead";
   agent.currentIntent = null;
