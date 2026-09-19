@@ -422,6 +422,7 @@ function updateSimulation() {
   try {
     if (!simulationFault) tick(simulation, elapsed / 37.5);
     syncAgentMeshes();
+    addVisualDiagnostics();
     for (const agent of simulation.agents) {
       if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target, world.bounds);
       moveAgent(agent, elapsed);
