@@ -25,6 +25,12 @@ jobs:
         with:
           node-version: 22
 
+      - name: Validar asistentes de Lúmina
+        run: npm test
+
+      - name: Ejecutar diagnóstico de asistentes
+        run: npm run assistants
+
       - name: Avanzar simulación
         run: npm run simulate
 
