@@ -215,7 +215,7 @@ export function tick(simulation, deltaHours = 0.01) {
       // Emergencia de supervivencia: con sed crítica, beber no puede ser reemplazado
       // por otra decisión mientras haya agua perceptible. La intención se conserva hasta completar.
       const water = perception.nearbyResources.find(resource => resource.type === "water");
-      if (water && simulation.world.resources.water.amount > 0 && agent.needs.thirst <= 10) {
+      if (water && simulation.world.resources.water.amount > 0 && agent.needs.thirst <= 25) {
         agent.currentIntent = {
           name: "drink",
           amount: 5,
