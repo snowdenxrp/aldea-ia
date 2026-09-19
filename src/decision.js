@@ -15,7 +15,7 @@ export function createDecisionContext(agent, perception) {
 }
 
 export function survivalUrgency(needs) {
-  return Math.max(needPressure(needs.hunger), needPressure(needs.thirst));
+  return needPressure(needs.hunger) + needPressure(needs.thirst);
 }
 
 export function evaluateOptions(context, options) {
