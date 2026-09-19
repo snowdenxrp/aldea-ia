@@ -33,13 +33,81 @@ function renderAgentPanel(a){if(!a)return;document.querySelector("#agentName").t
 function openAgent(id){const a=agents.find(x=>x.id===id);if(a){centerOnAgent(a);renderAgentPanel(a);}}
 document.querySelector("#closeAgentPanel")?.addEventListener("click",()=>{const p=document.querySelector("#agentPanel");p.classList.remove("open");p.setAttribute("aria-hidden","true");});
 document.querySelector("#agentDebug")?.addEventListener("click",centerOnAgents);
-// Cámara móvil: arrastrar mueve el mapa; pellizcar y rueda hacen zoom.
-let dragging=false,lastX=0,lastY=0,pinchStart=0;const pointers=new Map();const clamp=()=>{cameraTarget.x=Math.max(world.bounds.minX,Math.min(world.bounds.maxX,cameraTarget.x));cameraTarget.z=Math.max(world.bounds.minZ,Math.min(world.bounds.maxZ,cameraTarget.z));};const dist=(a,b)=>Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
-renderer.domElement.addEventListener("pointerdown",e=>{pointers.set(e.pointerId,e);renderer.domElement.setPointerCapture(e.pointerId);if(pointers.size===1){dragging=true;lastX=e.clientX;lastY=e.clientY;}else if(pointers.size===2){dragging=false;const p=[...pointers.values()];pinchStart=dist(p[0],p[1]);}});
-renderer.domElement.addEventListener("pointermove",e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,e);if(pointers.size===2){const p=[...pointers.values()],d=dist(p[0],p[1]);if(pinchStart)cameraDistance=Math.max(10,Math.min(75,cameraDistance+(pinchStart-d)*.06));pinchStart=d;return;}if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;const s=.08,right=new THREE.Vector3(Math.cos(cameraYaw),0,-Math.sin(cameraYaw)),forward=new THREE.Vector3(Math.sin(cameraYaw),0,Math.cos(cameraYaw));cameraTarget.addScaledVector(right,-dx*s);cameraTarget.addScaledVector(forward,-dy*s);clamp();});
-function endPointer(e){pointers.delete(e.pointerId);if(pointers.size<2)pinchStart=0;dragging=pointers.size===1;if(dragging){const p=[...pointers.values()][0];lastX=p.clientX;lastY=p.clientY;}if(renderer.domElement.hasPointerCapture(e.pointerId))renderer.domElement.releasePointerCapture(e.pointerId);}renderer.domElement.addEventListener("pointerup",endPointer);renderer.domElement.addEventListener("pointercancel",endPointer);renderer.domElement.addEventListener("wheel",e=>{e.preventDefault();cameraDistance=Math.max(10,Math.min(75,cameraDistance+e.deltaY*.035));},{passive:false});
-addEventListener("keydown",e=>{const s=1.2;if(e.key==="w"||e.key==="ArrowUp")cameraTarget.z-=s;if(e.key==="s"||e.key==="ArrowDown")cameraTarget.z+=s;if(e.key==="a"||e.key==="ArrowLeft")cameraTarget.x-=s;if(e.key==="d"||e.key==="ArrowRight")cameraTarget.x+=s;if(e.key==="+"||e.key==="=")cameraDistance=Math.max(10,cameraDistance-2);if(e.key==="-")cameraDistance=Math.min(75,cameraDistance+2);clamp();});
-// Toque directo sobre un habitante abre su ficha.
-const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let tapStart=null;renderer.domElement.addEventListener("pointerdown",e=>{tapStart={x:e.clientX,y:e.clientY};});renderer.domElement.addEventListener("pointerup",e=>{if(!tapStart||pointers.size>0)return;if(Math.hypot(e.clientX-tapStart.x,e.clientY-tapStart.y)>10)return;const r=renderer.domElement.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects([...meshes.values()],true)[0];let o=hit?.object,id=null;while(o&&!id){id=o.userData?.agentId;o=o.parent;}if(id)openAgent(id);tapStart=null;});
+// Cámara estable: un dedo arrastra, dos dedos hacen pinch-zoom/rotación y la rueda hace zoom.
+let dragging=false,lastX=0,lastY=0,pinchStart=0,gestureStart=null,gestureMoved=false;
+const pointers=new Map();
+const clampCamera=()=>{cameraTarget.x=Math.max(world.bounds.minX,Math.min(world.bounds.maxX,cameraTarget.x));cameraTarget.z=Math.max(world.bounds.minZ,Math.min(world.bounds.maxZ,cameraTarget.z));};
+const distance=(a,b)=>Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+const angle=(a,b)=>Math.atan2(b.clientY-a.clientY,b.clientX-a.clientX);
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+function pickAgent(clientX,clientY){
+  const r=renderer.domElement.getBoundingClientRect();
+  pointer.x=((clientX-r.left)/r.width)*2-1;
+  pointer.y=-((clientY-r.top)/r.height)*2+1;
+  raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObjects([...meshes.values()],true)[0];
+  let o=hit?.object,id=null;
+  while(o&&!id){id=o.userData?.agentId;o=o.parent;}
+  if(id) openAgent(id);
+  return !!id;
+}
+renderer.domElement.addEventListener("pointerdown",e=>{
+  if(e.pointerType==="mouse"&&e.button!==0)return;
+  pointers.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY,startX:e.clientX,startY:e.clientY});
+  renderer.domElement.setPointerCapture(e.pointerId);
+  if(pointers.size===1){
+    dragging=true; lastX=e.clientX; lastY=e.clientY;
+    gestureStart={x:e.clientX,y:e.clientY,id:e.pointerId}; gestureMoved=false;
+  }else if(pointers.size===2){
+    dragging=false;
+    const p=[...pointers.values()];
+    pinchStart=distance(p[0],p[1]);
+    gestureMoved=true;
+  }
+});
+renderer.domElement.addEventListener("pointermove",e=>{
+  const p=pointers.get(e.pointerId); if(!p)return;
+  const dxTotal=e.clientX-p.startX,dyTotal=e.clientY-p.startY;
+  if(Math.hypot(dxTotal,dyTotal)>8)gestureMoved=true;
+  p.clientX=e.clientX;p.clientY=e.clientY;
+  if(pointers.size===2){
+    const pts=[...pointers.values()],d=distance(pts[0],pts[1]);
+    if(pinchStart)cameraDistance=Math.max(10,Math.min(75,cameraDistance+(pinchStart-d)*.07));
+    pinchStart=d;
+    return;
+  }
+  if(!dragging)return;
+  const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+  const s=.105;
+  const right=new THREE.Vector3(Math.cos(cameraYaw),0,-Math.sin(cameraYaw));
+  const forward=new THREE.Vector3(Math.sin(cameraYaw),0,Math.cos(cameraYaw));
+  cameraTarget.addScaledVector(right,-dx*s);
+  cameraTarget.addScaledVector(forward,-dy*s);
+  clampCamera();
+});
+function endPointer(e){
+  const wasTap=pointers.size===1 && !gestureMoved && gestureStart?.id===e.pointerId;
+  const x=e.clientX,y=e.clientY;
+  pointers.delete(e.pointerId);
+  if(pointers.size<2)pinchStart=0;
+  dragging=pointers.size===1;
+  if(dragging){const p=[...pointers.values()][0];lastX=p.clientX;lastY=p.clientY;}
+  if(renderer.domElement.hasPointerCapture(e.pointerId))renderer.domElement.releasePointerCapture(e.pointerId);
+  if(wasTap)pickAgent(x,y);
+  if(pointers.size===0){gestureStart=null;gestureMoved=false;dragging=false;}
+}
+renderer.domElement.addEventListener("pointerup",endPointer);
+renderer.domElement.addEventListener("pointercancel",endPointer);
+renderer.domElement.addEventListener("wheel",e=>{e.preventDefault();cameraDistance=Math.max(10,Math.min(75,cameraDistance+e.deltaY*.035));},{passive:false});
+addEventListener("keydown",e=>{
+  const s=1.2;
+  if(e.key==="w"||e.key==="ArrowUp")cameraTarget.z-=s;
+  if(e.key==="s"||e.key==="ArrowDown")cameraTarget.z+=s;
+  if(e.key==="a"||e.key==="ArrowLeft")cameraTarget.x-=s;
+  if(e.key==="d"||e.key==="ArrowRight")cameraTarget.x+=s;
+  if(e.key==="+"||e.key==="=")cameraDistance=Math.max(10,cameraDistance-2);
+  if(e.key==="-")cameraDistance=Math.min(75,cameraDistance+2);
+  clampCamera();
+});
 function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;if(fault)return;try{tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);}syncMeshes();if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60);worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Velocidad 1x`;}if(now-lastSave>=2000){save();lastSave=now;}}catch(e){fault=e;console.error("Lúmina",e);}}
 loadLocal();normalize();syncMeshes();centerOnAgents();loadRemoteIfNeeded();updateCamera();addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});addEventListener("beforeunload",save);function animate(){requestAnimationFrame(animate);update();updateCamera();renderer.render(scene,camera);}animate();
