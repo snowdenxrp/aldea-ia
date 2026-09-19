@@ -4,7 +4,7 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { createRandom } from "../src/random.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
-const HORIZONS = [100, 500, 1000];
+const HORIZONS = [1, 7, 30, 100, 500, 1000];
 const AUDIT_SEED = "lumina-audit-2026";
 const HOURS_PER_DAY = 24;
 const MOVEMENT_SECONDS_PER_SIM_HOUR = 37.5;
@@ -77,6 +77,7 @@ function run(days) {
   const actionStreaks = new Map();
   const maxStreak = new Map();
   const healthFloor = new Map();
+  const firstDeathHour = new Map();
 
   for (let hour = 1; hour <= totalHours; hour++) {
     tick(simulation, 1);
@@ -88,7 +89,10 @@ function run(days) {
       const action = agent.lastActionName ?? "none";
       const key = agent.id + ":" + action;
       actionCounts.set(key, (actionCounts.get(key) ?? 0) + 1);
-      if (agent.alive === false) deaths.set(agent.id, (deaths.get(agent.id) ?? 0) + 1);
+      if (agent.alive === false) {
+        deaths.set(agent.id, (deaths.get(agent.id) ?? 0) + 1);
+        if (!firstDeathHour.has(agent.id)) firstDeathHour.set(agent.id, hour);
+      }
       const previous = agent.__auditPreviousAction;
       const streak = action === previous ? (agent.__auditStreak ?? 0) + 1 : 1;
       agent.__auditPreviousAction = action;
@@ -106,6 +110,7 @@ function run(days) {
     actionCounts: Object.fromEntries(actionCounts),
     deaths: Object.fromEntries(deaths),
     maxActionStreak: Object.fromEntries(maxStreak),
+    firstDeathHour: Object.fromEntries(firstDeathHour),
     healthFloor: Object.fromEntries(healthFloor),
     problemCounts: Object.fromEntries(problemCounts)
   };
