@@ -14,16 +14,16 @@ function recoverCoreAgents(agents) {
   for (const fallback of initial) {
     let agent = agents.find(item => item?.id === fallback.id);
     if (!agent) { agents.push(clone(fallback)); agent = agents[agents.length - 1]; }
-    agent.alive = true;
     agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
     agent.currentIntent = agent.currentIntent ?? null;
     agent.position ??= { ...fallback.position };
     agent.needs ??= clone(fallback.needs);
-    if (!Number.isFinite(Number(agent.needs.health)) || agent.needs.health <= 0) agent.needs.health = 100;
+    if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
     for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
       if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
-      agent.needs[key] = Math.max(20, Math.min(100, Number(agent.needs[key])));
+      agent.needs[key] = Math.max(0, Math.min(100, Number(agent.needs[key])));
     }
+    agent.needs.health = Math.max(0, Math.min(100, Number(agent.needs.health)));
   }
 }
 
