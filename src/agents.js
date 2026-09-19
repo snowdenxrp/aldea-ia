@@ -66,6 +66,7 @@ export function createInitialAgents() {
 }
 
 const MAX_EXPERIENCES = 2000;
+const MAX_SIMPLE_MEMORIES = 2000;
 
 // Registra una experiencia sin convertirla automáticamente en conocimiento.
 export function addExperience(agent, experience) {
@@ -89,6 +90,7 @@ export function addMemory(agent, memory) {
     description: memory.description,
     emotionalWeight: memory.emotionalWeight ?? 0
   });
+  if (agent.memories.length > MAX_SIMPLE_MEMORIES) agent.memories = agent.memories.slice(-MAX_SIMPLE_MEMORIES);
 }
 
 // Añade conocimiento individual.
