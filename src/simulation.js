@@ -227,7 +227,7 @@ export function tick(simulation, deltaHours = 0.01) {
           agent.decisionSnapshot = { chosen: { name: criticalFood.name, score: 999 }, considered: [{ name: criticalFood.name, score: 999 }] };
         }
       }
-      if (!agent.currentIntent || !agent.currentIntent.target) {
+      if (!agent.currentIntent) {
         const options = generateOptions(agent, perception, simulation.world, getRandom(simulation));
         const context = createDecisionContext(agent, perception);
         const evaluatedOptions = evaluateOptions(context, options);
