@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "simulate": "node scripts/simulate.mjs"
+    "simulate": "node scripts/simulate.mjs",
+    "assistants": "node scripts/assistants.mjs",
+    "test": "node tests/assistants.test.mjs"
   }
 }
