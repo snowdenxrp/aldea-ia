@@ -35,6 +35,23 @@ recoverCoreAgent(core);
 assert.equal(core.needs.hunger, 19);
 assert.equal(core.needs.thirst, 17);
 
+// Regression: si ya llegó al agua, una intención de beber no debe quedarse bloqueada por el estado de movimiento.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  const water = sim.world.resources.water;
+  alex.position = { x: water.position.x, z: water.position.z };
+  alex.needs = { hunger: 100, thirst: 10, energy: 80, social: 80, safety: 100, health: 100 };
+  alex.currentIntent = { name: "drink", target: { ...water.position } };
+  alex.lastPerception = { nearbyResources: [{ type: "water", distance: 0 }], visibleAgents: [] };
+  alex.movement = { target: { ...water.position }, moving: true, speed: 1.8, distanceTravelled: 0 };
+  const beforeWater = water.amount;
+  tick(sim, 0.01);
+  assert.equal(alex.lastActionName, "drink", "Una intención de beber en el agua no debe quedar bloqueada por movement.moving.");
+  assert(water.amount < beforeWater, "La acción bloqueada debe llegar a consumir agua.");
+  assert(alex.needs.thirst > 10, "Beber debe recuperar la sed.");
+}
+
 // Pruebas de comportamiento de supervivencia: la presión debe llegar hasta la acción física.
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
