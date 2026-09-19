@@ -59,6 +59,7 @@ export function updateActionBelief(agent, actionName, outcome, day, description)
     outcome,
     reliability
   });
+  if (knowledge.evidence.length > 500) knowledge.evidence = knowledge.evidence.slice(-500);
 
   return knowledge;
 }
