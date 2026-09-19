@@ -23,7 +23,7 @@ export function recordEvent(simulation, event) {
   return stored;
 }
 
-function generateOptions(agent, perception, world) {
+function generateOptions(agent, perception, world, random = Math.random) {
   const knownActions = getKnownActions(agent);
   const options = [];
   options.push({ name: "rest", baseValue: 0, effects: { energy: 1.2 }, distance: 0 });
@@ -56,7 +56,7 @@ function generateOptions(agent, perception, world) {
     if (resourceType === "fish") option.effects = { hunger: 0.65 };
     options.push(option);
   }
-  const explorationTarget = createExplorationTarget(agent, world, getRandom({ random: agent.__simulationRandom }));
+  const explorationTarget = createExplorationTarget(agent, world, random);
   const explorationDistance = Math.hypot(explorationTarget.x - agent.position.x, explorationTarget.z - agent.position.z);
   options.push({ name: "explore_area", baseValue: 0.28, explorationValue: 0.7, novelty: 0.8, distance: explorationDistance, target: explorationTarget });
   return options;
@@ -194,7 +194,7 @@ export function tick(simulation, deltaHours = 0.01) {
           considered: [{ name: "drink", score: 999 }]
         };
       } else if (!agent.currentIntent || !agent.currentIntent.target) {
-        const options = generateOptions(agent, perception, simulation.world);
+        const options = generateOptions(agent, perception, simulation.world, getRandom(simulation));
         const context = createDecisionContext(agent, perception);
         const evaluatedOptions = evaluateOptions(context, options);
         agent.availableOptions = options;
