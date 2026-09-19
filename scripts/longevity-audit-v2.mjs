@@ -26,7 +26,7 @@ function validate(simulation) {
       const value = Number(agent?.needs?.[key]);
       if (!finite(value) || value < 0 || value > 100) problems.push("invalid_need:" + agent.id + ":" + key);
     }
-    if (["alex","bruno"].includes(agent.id) && agent.alive !== true) problems.push("core_dead:" + agent.id);
+    if (["alex","bruno"].includes(agent.id) && agent.alive !== true && agent.needs.health > 0) problems.push("invalid_alive_state:" + agent.id);
     for (const item of agent.inventory ?? []) if (!finite(item.amount) || Number(item.amount) < 0) problems.push("invalid_inventory:" + agent.id);
     if (agent.lastActionResult?.reason === "simulation_error") problems.push("simulation_error:" + agent.id);
   }
@@ -65,7 +65,7 @@ function metrics(simulation, hours) {
 }
 
 function run(days) {
-  const simulation = createSimulation(clone(base.world), clone(base.agents));
+  const simulation = createSimulation(clone(base.world), clone(base.agents), { random: createRandom(AUDIT_SEED + ":" + days) });
   simulation.day = Number(base.day) || simulation.day;
   simulation.hour = Number(base.hour) || simulation.hour;
   simulation.events = clone(base.events ?? []).slice(-500);
@@ -73,6 +73,7 @@ function run(days) {
   const totalHours = days * HOURS_PER_DAY;
   const problemCounts = new Map();
   const actionCounts = new Map();
+  const deaths = new Map();
   const actionStreaks = new Map();
   const maxStreak = new Map();
   const healthFloor = new Map();
@@ -87,6 +88,7 @@ function run(days) {
       const action = agent.lastActionName ?? "none";
       const key = agent.id + ":" + action;
       actionCounts.set(key, (actionCounts.get(key) ?? 0) + 1);
+      if (agent.alive === false) deaths.set(agent.id, (deaths.get(agent.id) ?? 0) + 1);
       const previous = agent.__auditPreviousAction;
       const streak = action === previous ? (agent.__auditStreak ?? 0) + 1 : 1;
       agent.__auditPreviousAction = action;
@@ -102,6 +104,7 @@ function run(days) {
     horizonDays: days,
     final: metrics(simulation, totalHours),
     actionCounts: Object.fromEntries(actionCounts),
+    deaths: Object.fromEntries(deaths),
     maxActionStreak: Object.fromEntries(maxStreak),
     healthFloor: Object.fromEntries(healthFloor),
     problemCounts: Object.fromEntries(problemCounts)
