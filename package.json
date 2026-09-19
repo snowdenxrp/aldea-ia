@@ -5,6 +5,6 @@
   "scripts": {
     "simulate": "node scripts/simulate.mjs",
     "assistants": "node scripts/assistants.mjs",
-    "test": "node tests/assistants.test.mjs"
+    "test": "node tests/assistants.test.mjs && node tests/randomness.test.mjs"
   }
 }
