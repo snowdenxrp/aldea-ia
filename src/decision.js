@@ -10,7 +10,7 @@ export function createDecisionContext(agent, perception) {
     knowledge: agent.knowledge.map(item => ({ ...item })),
     relationships: agent.relationships.map(item => ({ ...item })),
     memories: agent.memories.map(item => ({ ...item })),
-    recentAction: agent.lastActionName ?? null,
+    recentAction: agent.lastAttemptedAction ?? agent.lastActionName ?? null,
     recentActionResult: agent.lastActionResult ? { ...agent.lastActionResult } : null
   };
 }
