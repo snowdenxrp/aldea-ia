@@ -204,7 +204,6 @@ export function tick(simulation, deltaHours = 0.01) {
         agent.currentActivity = "idle";
       }
       agent.needs = updateNeeds(agent.needs, hours, agent.currentActivity);
-      agent.needs = applyNeedConsequences(agent.needs, hours);
       if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
       const perception = perceiveWorld(agent, simulation.world, simulation.agents);
       agent.lastPerception = perception;
@@ -248,6 +247,8 @@ export function tick(simulation, deltaHours = 0.01) {
         if (agent.currentIntent) agent.decisionSnapshot.chosen = { name: agent.currentIntent.name, score: agent.currentIntent.score };
       }
       performDecision(simulation, agent);
+      agent.needs = applyNeedConsequences(agent.needs, hours);
+      if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
     } catch (error) {
       agent.currentActivity = "idle";
       agent.currentIntent = null;
