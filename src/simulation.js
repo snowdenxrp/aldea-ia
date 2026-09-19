@@ -220,7 +220,8 @@ export function tick(simulation, deltaHours = 0.01) {
       }
       // Emergencia de supervivencia: con sed crítica, beber no puede ser reemplazado
       // por otra decisión mientras haya agua perceptible. La intención se conserva hasta completar.
-      const water = perception.nearbyResources.find(resource => resource.type === "water");
+      const rememberedWater = agent.knownResources?.water;
+      const water = perception.nearbyResources.find(resource => resource.type === "water") ?? (rememberedWater ? { type: "water", distance: Math.hypot(agent.position.x - rememberedWater.x, agent.position.z - rememberedWater.z) } : null);
       const criticalFood = buildCriticalHungerIntent(simulation, agent, perception);
       if (criticalFood && agent.needs.hunger <= 70) {
         agent.currentIntent = criticalFood;
