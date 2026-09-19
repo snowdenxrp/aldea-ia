@@ -82,26 +82,62 @@ addHouse(-5, -7); addHouse(4, -6); addHouse(8, 2); addHouse(1, 8);
 const agents = createInitialAgents();
 const simulation = createSimulation(world, agents);
 
-const SAVE_KEY = "lumina-world-v4";
+const SAVE_KEY = "lumina-world-v5";
 let lastSaveTime = performance.now();
 let simulationFault = null;
+
+function normalizeAgent(agent, fallback) {
+  const source = agent ?? fallback;
+  source.alive = source.alive !== false;
+  source.position ??= { ...(fallback?.position ?? { x: 0, z: 0 }) };
+  const x = Number(source.position.x);
+  const z = Number(source.position.z);
+  const bounds = world.bounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 };
+  source.position.x = Number.isFinite(x) ? Math.max(bounds.minX, Math.min(bounds.maxX, x)) : fallback.position.x;
+  source.position.z = Number.isFinite(z) ? Math.max(bounds.minZ, Math.min(bounds.maxZ, z)) : fallback.position.z;
+  source.currentActivity ??= "idle";
+  source.currentIntent ??= null;
+  source.lastActionName ??= null;
+  source.lastActionResult ??= null;
+  source.needs ??= { hunger: 100, thirst: 100, energy: 100, social: 100, safety: 100, health: 100 };
+  source.inventory ??= [];
+  source.knowledge ??= [];
+  source.memories ??= [];
+  source.relationships ??= [];
+  source.skills ??= [];
+  source.experiences ??= [];
+  return source;
+}
+
+function ensureCoreAgents() {
+  const initial = createInitialAgents();
+  const byId = new Map(agents.map(agent => [agent.id, agent]));
+  for (const fallback of initial) {
+    if (!byId.has(fallback.id)) {
+      agents.push(fallback);
+      continue;
+    }
+    normalizeAgent(byId.get(fallback.id), fallback);
+  }
+  for (let i = agents.length - 1; i >= 0; i--) {
+    if (!agents[i]?.id || !agents[i]?.name) agents.splice(i, 1);
+  }
+}
 
 function restoreSimulation() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return false;
-
     const saved = JSON.parse(raw);
     if (!saved || !Array.isArray(saved.agents) || !saved.world?.resources) return false;
-
     Object.assign(world, saved.world);
     Object.assign(simulation, {
       hour: Number.isFinite(Number(saved.hour)) ? Number(saved.hour) : (world.timeOfDay ?? 8),
       day: Number.isFinite(Number(saved.day)) ? Number(saved.day) : (world.day ?? 1),
       events: Array.isArray(saved.events) ? saved.events.slice(-500) : []
     });
-
     agents.splice(0, agents.length, ...saved.agents);
+    ensureCoreAgents();
     return agents.length > 0;
   } catch (error) {
     console.warn("Lúmina: estado local inválido; se usará el estado inicial.", error);
@@ -112,15 +148,7 @@ function restoreSimulation() {
 
 function saveSimulation() {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({
-      version: 4,
-      savedAt: Date.now(),
-      day: simulation.day,
-      hour: simulation.hour,
-      world,
-      agents,
-      events: simulation.events.slice(-500)
-    }));
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ version: 5, savedAt: Date.now(), day: simulation.day, hour: simulation.hour, world, agents, events: simulation.events.slice(-500) }));
     return true;
   } catch (error) {
     console.warn("Lúmina: no se pudo guardar el estado local.", error);
@@ -131,30 +159,22 @@ function saveSimulation() {
 async function restoreRemoteSimulation() {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2500);
-
   try {
-    const response = await fetch("./world-state.json?ts=" + Date.now(), {
-      cache: "no-store",
-      signal: controller.signal
-    });
+    const response = await fetch("./world-state.json?ts=" + Date.now(), { cache: "no-store", signal: controller.signal });
     if (!response.ok) return false;
-
     const saved = await response.json();
     if (saved?.version < 3 || !Array.isArray(saved.agents) || !saved.world?.resources) return false;
-
-    // Never replace a newer browser state with an older GitHub state.
     const localRaw = localStorage.getItem(SAVE_KEY);
     const local = localRaw ? JSON.parse(localRaw) : null;
     const remoteSavedAt = Number(saved.savedAt) || 0;
     const localSavedAt = Number(local?.savedAt) || 0;
     if (localSavedAt > remoteSavedAt) return false;
-
     Object.assign(world, saved.world);
     simulation.hour = Number.isFinite(Number(saved.hour)) ? Number(saved.hour) : (world.timeOfDay ?? 8);
     simulation.day = Number.isFinite(Number(saved.day)) ? Number(saved.day) : (world.day ?? 1);
     simulation.events = Array.isArray(saved.events) ? saved.events.slice(-500) : [];
-
     agents.splice(0, agents.length, ...saved.agents);
+    ensureCoreAgents();
     saveSimulation();
     return agents.length > 0;
   } catch (error) {
@@ -166,42 +186,26 @@ async function restoreRemoteSimulation() {
 }
 
 restoreSimulation();
+ensureCoreAgents();
+for (const agent of agents) normalizeAgent(agent, createInitialAgents().find(item => item.id === agent.id) ?? createInitialAgents()[0]);
 const agentMeshes = new Map();
 
 function createAgentMesh(agent) {
   const group = new THREE.Group();
   const position = agent.position ?? { x: 0, z: 0 };
-  group.position.set(Number(position.x) || 0, 0, Number(position.z) || 0);
+  group.position.set(Number.isFinite(Number(position.x)) ? Number(position.x) : 0, 0, Number.isFinite(Number(position.z)) ? Number(position.z) : 0);
   group.scale.setScalar(1.35);
   group.userData.agentId = agent.id;
+  group.frustumCulled = false;
 
   const skin = new THREE.MeshStandardMaterial({ color: 0xe0b08a, roughness: 0.9 });
-  const clothing = new THREE.MeshStandardMaterial({
-    color: agent.id === "alex" ? 0x345b8c : 0x8c4f34,
-    roughness: 0.85
-  });
+  const clothing = new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x345b8c : 0x8c4f34, roughness: 0.85 });
   const dark = new THREE.MeshStandardMaterial({ color: 0x3c3028, roughness: 0.9 });
-
-  const marker = new THREE.Mesh(
-    new THREE.TorusGeometry(0.62, 0.07, 8, 32),
-    new THREE.MeshStandardMaterial({
-      color: agent.id === "alex" ? 0x4da3ff : 0xffa347,
-      emissive: agent.id === "alex" ? 0x123b66 : 0x663000,
-      emissiveIntensity: 0.8
-    })
-  );
-  marker.rotation.x = -Math.PI / 2;
-  marker.position.y = 0.08;
-  marker.userData.agentId = agent.id;
-  group.add(marker);
-
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.9, 0.42), clothing);
-  torso.position.y = 1.15; torso.castShadow = true; group.add(torso);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), skin);
-  head.position.y = 1.86; head.castShadow = true; group.add(head);
-  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.58), dark);
-  hair.position.y = 2.02; hair.castShadow = true; group.add(hair);
-
+  const marker = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.07, 8, 32), new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x4da3ff : 0xffa347, emissive: agent.id === "alex" ? 0x123b66 : 0x663000, emissiveIntensity: 0.8 }));
+  marker.rotation.x = -Math.PI / 2; marker.position.y = 0.08; marker.userData.agentId = agent.id; group.add(marker);
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.9, 0.42), clothing); torso.position.y = 1.15; torso.castShadow = true; group.add(torso);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), skin); head.position.y = 1.86; head.castShadow = true; group.add(head);
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.58), dark); hair.position.y = 2.02; hair.castShadow = true; group.add(hair);
   const armGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.72, 8);
   const legGeometry = new THREE.CylinderGeometry(0.12, 0.12, 0.78, 8);
   const leftArm = new THREE.Mesh(armGeometry, skin); leftArm.position.set(-0.47, 1.17, 0); leftArm.rotation.z = -0.08; leftArm.castShadow = true; group.add(leftArm);
@@ -210,19 +214,15 @@ function createAgentMesh(agent) {
   const rightLeg = new THREE.Mesh(legGeometry, dark); rightLeg.position.set(0.2, 0.58, 0); rightLeg.castShadow = true; group.add(rightLeg);
   const leftFoot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.12, 0.42), dark); leftFoot.position.set(-0.2, 0.15, 0.08); leftFoot.castShadow = true; group.add(leftFoot);
   const rightFoot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.12, 0.42), dark); rightFoot.position.set(0.2, 0.15, 0.08); rightFoot.castShadow = true; group.add(rightFoot);
-
+  group.traverse(object => { if (object.isMesh) object.frustumCulled = false; });
   return group;
 }
 
-for (const agent of agents) {
-  const mesh = createAgentMesh(agent);
-  agentMeshes.set(agent.id, mesh);
-  scene.add(mesh);
-}
-
-restoreRemoteSimulation().then(restored => {
-  if (!restored) return;
+function syncAgentMeshes() {
+  ensureCoreAgents();
   for (const agent of agents) {
+    const fallback = createInitialAgents().find(item => item.id === agent.id) ?? { position: { x: 0, z: 0 } };
+    normalizeAgent(agent, fallback);
     let mesh = agentMeshes.get(agent.id);
     if (!mesh) {
       mesh = createAgentMesh(agent);
@@ -230,13 +230,15 @@ restoreRemoteSimulation().then(restored => {
       scene.add(mesh);
     }
     mesh.visible = agent.alive !== false;
-    const position = agent.position ?? { x: 0, z: 0 };
-    mesh.position.set(Number(position.x) || 0, 0, Number(position.z) || 0);
+    mesh.position.set(agent.position.x, 0, agent.position.z);
   }
   for (const [id, mesh] of agentMeshes) {
     if (!agents.some(agent => agent.id === id)) mesh.visible = false;
   }
-}).catch(() => {});
+}
+
+syncAgentMeshes();
+restoreRemoteSimulation().then(restored => { if (restored) syncAgentMeshes(); }).catch(() => {});
 
 const agentPanel = document.querySelector("#agentPanel");
 const closeAgentPanel = document.querySelector("#closeAgentPanel");
@@ -251,19 +253,10 @@ const agentRelationships = document.querySelector("#agentRelationships");
 const agentExperiences = document.querySelector("#agentExperiences");
 
 function formatPercent(value) { return Math.round(Math.max(0, Math.min(100, value))); }
-function translateActivity(value) {
-  const labels = { idle: "Sin actividad", dead: "Fallecido", resting: "Descansando", drinking: "Bebiendo", eating: "Comiendo", fishing: "Pescando", gathering: "Recolectando", moving: "Desplazándose" };
-  return labels[value] ?? value;
-}
-function translateAction(value) {
-  const labels = { rest: "Descansar", drink: "Beber agua", eat_plant: "Comer planta", catch_fish: "Pescar", gather_wood: "Recolectar madera", gather_stone: "Recolectar piedra", socialize: "Socializar", share_knowledge: "Compartir conocimiento", explore_plants: "Investigar plantas", explore_fishing: "Investigar pesca", explore_wood: "Investigar madera", explore_stone: "Investigar piedra", explore_area: "Explorar el entorno", eat_fish: "Comer pescado" };
-  return labels[value] ?? value;
-}
+function translateActivity(value) { const labels = { idle: "Sin actividad", dead: "Fallecido", resting: "Descansando", drinking: "Bebiendo", eating: "Comiendo", fishing: "Pescando", gathering: "Recolectando", moving: "Desplazándose" }; return labels[value] ?? value; }
+function translateAction(value) { const labels = { rest: "Descansar", drink: "Beber agua", eat_plant: "Comer planta", catch_fish: "Pescar", gather_wood: "Recolectar madera", gather_stone: "Recolectar piedra", socialize: "Socializar", share_knowledge: "Compartir conocimiento", explore_plants: "Investigar plantas", explore_fishing: "Investigar pesca", explore_wood: "Investigar madera", explore_stone: "Investigar piedra", explore_area: "Explorar el entorno", eat_fish: "Comer pescado" }; return labels[value] ?? value; }
 function translateItem(value) { return ({ fish: "pescado", wood: "madera", stone: "piedra" })[value] ?? value; }
-function translateKnowledgeTopic(value) {
-  const labels = { "action:rest": "Acción: descansar", "action:drink": "Acción: beber agua", "action:eat_plant": "Acción: comer planta", "action:catch_fish": "Acción: pescar", "action:gather_wood": "Acción: recolectar madera", "action:gather_stone": "Acción: recolectar piedra", "action:socialize": "Acción: socializar", "action:share_knowledge": "Acción: compartir conocimiento", "action:explore_plants": "Acción: investigar plantas", "action:explore_fishing": "Acción: investigar pesca", "action:explore_wood": "Acción: investigar madera", "action:explore_stone": "Acción: investigar piedra", "action:explore_area": "Acción: explorar el entorno", "action:eat_fish": "Acción: comer pescado" };
-  return labels[value] ?? value.replace(/^action:/, "Acción: ");
-}
+function translateKnowledgeTopic(value) { const labels = { "action:rest": "Acción: descansar", "action:drink": "Acción: beber agua", "action:eat_plant": "Acción: comer planta", "action:catch_fish": "Acción: pescar", "action:gather_wood": "Acción: recolectar madera", "action:gather_stone": "Acción: recolectar piedra", "action:socialize": "Acción: socializar", "action:share_knowledge": "Acción: compartir conocimiento", "action:explore_plants": "Acción: investigar plantas", "action:explore_fishing": "Acción: investigar pesca", "action:explore_wood": "Acción: investigar madera", "action:explore_stone": "Acción: investigar piedra", "action:explore_area": "Acción: explorar el entorno", "action:eat_fish": "Acción: comer pescado" }; return labels[value] ?? String(value).replace(/^action:/, "Acción: "); }
 
 function renderAgentPanel(agent) {
   agentName.textContent = agent.name;
@@ -272,10 +265,7 @@ function renderAgentPanel(agent) {
   const needs = [["Hambre", agent.needs.hunger], ["Sed", agent.needs.thirst], ["Energía", agent.needs.energy], ["Social", agent.needs.social], ["Seguridad", agent.needs.safety], ["Salud", agent.needs.health]];
   agentStatus.innerHTML = `<div class="agentRow"><span>Actividad</span><strong>${translateActivity(agent.currentActivity)}</strong></div><div class="agentRow"><span>Intención actual</span><strong>${agent.currentIntent ? translateAction(agent.currentIntent.name) : "Ninguna"}</strong></div><div class="agentRow"><span>Última acción</span><strong>${agent.lastActionName ? translateAction(agent.lastActionName) : "Ninguna"}</strong></div>${needs.map(([label, value]) => `<div class="agentRow"><span>${label}</span><strong>${formatPercent(value)}%</strong></div><div class="agentBar"><span style="width:${formatPercent(value)}%"></span></div>`).join("")}`;
   const decision = agent.decisionSnapshot;
-  if (decision?.chosen) {
-    const considered = (decision.considered ?? []).map(option => `${translateAction(option.name)} (${Number(option.score).toFixed(2)})`).join(" · ");
-    agentDecision.innerHTML = `<div class="agentRow"><span>Elección</span><strong>${translateAction(decision.chosen.name)}</strong></div><div class="agentRow"><span>Prioridad</span><strong>${Number(decision.chosen.score).toFixed(2)}</strong></div><div class="agentExperience"><strong>Opciones consideradas:</strong> ${considered || "—"}</div>`;
-  } else agentDecision.innerHTML = '<div class="agentEmpty">Todavía no hay una decisión registrada.</div>';
+  if (decision?.chosen) { const considered = (decision.considered ?? []).map(option => `${translateAction(option.name)} (${Number(option.score).toFixed(2)})`).join(" · "); agentDecision.innerHTML = `<div class="agentRow"><span>Elección</span><strong>${translateAction(decision.chosen.name)}</strong></div><div class="agentRow"><span>Prioridad</span><strong>${Number(decision.chosen.score).toFixed(2)}</strong></div><div class="agentExperience"><strong>Opciones consideradas:</strong> ${considered || "—"}</div>`; } else agentDecision.innerHTML = '<div class="agentEmpty">Todavía no hay una decisión registrada.</div>';
   const inventoryTotals = (agent.inventory ?? []).reduce((totals, item) => { const type = item.type; const amount = Number(item.amount) || 0; totals[type] = (totals[type] ?? 0) + amount; return totals; }, {});
   const inventoryText = Object.entries(inventoryTotals).filter(([, amount]) => amount > 0).map(([type, amount]) => `${translateItem(type)} × ${amount.toFixed(2)}`).join(", ");
   agentResources.innerHTML = `<div class="agentRow"><span>Monedas</span><strong>${agent.money}</strong></div><div class="agentRow"><span>Posición</span><strong>${agent.position.x.toFixed(1)}, ${agent.position.z.toFixed(1)}</strong></div><div class="agentRow"><span>Inventario</span><strong>${inventoryText || "vacío"}</strong></div>`;
@@ -304,120 +294,39 @@ let pinchAngle = null;
 const activePointers = new Map();
 function pointerDistance(a, b) { return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); }
 function pointerAngle(a, b) { return Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX); }
-
-renderer.domElement.addEventListener("pointerdown", e => {
-  if (activePointers.size === 0) pointerStart = { x: e.clientX, y: e.clientY };
-  activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
-  if (activePointers.size === 1) { dragging = true; lastPointerX = e.clientX; lastPointerY = e.clientY; }
-  else if (activePointers.size === 2) { dragging = false; const points = [...activePointers.values()]; pinchDistance = pointerDistance(points[0], points[1]); pinchAngle = pointerAngle(points[0], points[1]); }
-  renderer.domElement.setPointerCapture(e.pointerId);
-});
-renderer.domElement.addEventListener("pointermove", e => {
-  if (!activePointers.has(e.pointerId)) return;
-  activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY });
-  if (activePointers.size === 2) {
-    const points = [...activePointers.values()]; const distance = pointerDistance(points[0], points[1]); const angle = pointerAngle(points[0], points[1]);
-    if (pinchDistance !== null) cameraDistance = Math.max(10, Math.min(65, cameraDistance + (pinchDistance - distance) * 0.055));
-    if (pinchAngle !== null) { let angleChange = angle - pinchAngle; if (angleChange > Math.PI) angleChange -= Math.PI * 2; if (angleChange < -Math.PI) angleChange += Math.PI * 2; cameraYaw += angleChange; }
-    pinchDistance = distance; pinchAngle = angle; return;
-  }
-  if (!dragging) return;
-  const dx = e.clientX - lastPointerX; const dy = e.clientY - lastPointerY; lastPointerX = e.clientX; lastPointerY = e.clientY;
-  const sensitivity = 0.075; const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw)); const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw));
-  cameraTarget.addScaledVector(right, -dx * sensitivity); cameraTarget.addScaledVector(forward, -dy * sensitivity); cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x)); cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z));
-});
-function endPointer(e) {
-  const wasSingleTap = activePointers.size === 1 && pointerStart && Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y) < 10;
-  activePointers.delete(e.pointerId);
-  if (activePointers.size < 2) { pinchDistance = null; pinchAngle = null; }
-  if (activePointers.size === 1) { const remaining = [...activePointers.values()][0]; dragging = true; lastPointerX = remaining.clientX; lastPointerY = remaining.clientY; } else dragging = false;
-  if (renderer.domElement.hasPointerCapture(e.pointerId)) renderer.domElement.releasePointerCapture(e.pointerId);
-  if (wasSingleTap) {
-    const rect = renderer.domElement.getBoundingClientRect(); pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1; raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObjects([...agentMeshes.values()], true)[0]; let selectedId = hit?.object?.userData?.agentId ?? null; let object = hit?.object;
-    while (!selectedId && object?.parent) { object = object.parent; selectedId = object.userData?.agentId ?? null; }
-    if (selectedId) { const selected = simulation.agents.find(agent => agent.id === selectedId); if (selected) openAgentPanel(selected); }
-  }
-  pointerStart = null;
-}
+renderer.domElement.addEventListener("pointerdown", e => { if (activePointers.size === 0) pointerStart = { x: e.clientX, y: e.clientY }; activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY }); if (activePointers.size === 1) { dragging = true; lastPointerX = e.clientX; lastPointerY = e.clientY; } else if (activePointers.size === 2) { dragging = false; const points = [...activePointers.values()]; pinchDistance = pointerDistance(points[0], points[1]); pinchAngle = pointerAngle(points[0], points[1]); } renderer.domElement.setPointerCapture(e.pointerId); });
+renderer.domElement.addEventListener("pointermove", e => { if (!activePointers.has(e.pointerId)) return; activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY }); if (activePointers.size === 2) { const points = [...activePointers.values()]; const distance = pointerDistance(points[0], points[1]); const angle = pointerAngle(points[0], points[1]); if (pinchDistance !== null) cameraDistance = Math.max(10, Math.min(65, cameraDistance + (pinchDistance - distance) * 0.055)); if (pinchAngle !== null) { let angleChange = angle - pinchAngle; if (angleChange > Math.PI) angleChange -= Math.PI * 2; if (angleChange < -Math.PI) angleChange += Math.PI * 2; cameraYaw += angleChange; } pinchDistance = distance; pinchAngle = angle; return; } if (!dragging) return; const dx = e.clientX - lastPointerX; const dy = e.clientY - lastPointerY; lastPointerX = e.clientX; lastPointerY = e.clientY; const sensitivity = 0.075; const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw)); const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw)); cameraTarget.addScaledVector(right, -dx * sensitivity); cameraTarget.addScaledVector(forward, -dy * sensitivity); cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x)); cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z)); });
+function endPointer(e) { const wasSingleTap = activePointers.size === 1 && pointerStart && Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y) < 10; activePointers.delete(e.pointerId); if (activePointers.size < 2) { pinchDistance = null; pinchAngle = null; } if (activePointers.size === 1) { const remaining = [...activePointers.values()][0]; dragging = true; lastPointerX = remaining.clientX; lastPointerY = remaining.clientY; } else dragging = false; if (renderer.domElement.hasPointerCapture(e.pointerId)) renderer.domElement.releasePointerCapture(e.pointerId); if (wasSingleTap) { const rect = renderer.domElement.getBoundingClientRect(); pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1; raycaster.setFromCamera(pointer, camera); const hit = raycaster.intersectObjects([...agentMeshes.values()], true)[0]; let selectedId = hit?.object?.userData?.agentId ?? null; let object = hit?.object; while (!selectedId && object?.parent) { object = object.parent; selectedId = object.userData?.agentId ?? null; } if (selectedId) { const selected = simulation.agents.find(agent => agent.id === selectedId); if (selected) openAgentPanel(selected); } } pointerStart = null; }
 renderer.domElement.addEventListener("pointerup", endPointer);
 renderer.domElement.addEventListener("pointercancel", endPointer);
 renderer.domElement.addEventListener("wheel", e => { e.preventDefault(); cameraDistance = Math.max(10, Math.min(65, cameraDistance + e.deltaY * 0.03)); }, { passive: false });
 
-const buttons = document.querySelectorAll("[data-move]");
-buttons.forEach(button => {
-  const key = button.dataset.move; let holdTimer = null; let interval = null;
-  const moveOnce = () => { const distance = 4; if (key === "w") cameraTarget.z += distance; if (key === "s") cameraTarget.z -= distance; if (key === "d") cameraTarget.x += distance; if (key === "a") cameraTarget.x -= distance; cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x)); cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z)); };
-  const down = e => { e.preventDefault(); e.stopPropagation(); moveOnce(); holdTimer = setTimeout(() => { interval = setInterval(moveOnce, 100); }, 250); };
-  const up = e => { e.preventDefault(); e.stopPropagation(); clearTimeout(holdTimer); clearInterval(interval); holdTimer = null; interval = null; };
-  button.addEventListener("pointerdown", down); button.addEventListener("pointerup", up); button.addEventListener("pointercancel", up); button.addEventListener("pointerleave", up); button.addEventListener("contextmenu", e => e.preventDefault());
-});
-
-function moveCamera(deltaSeconds) {
-  const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw));
-  const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw));
-  const direction = new THREE.Vector3();
-  if (keys.has("w") || keys.has("arrowup")) direction.add(forward);
-  if (keys.has("s") || keys.has("arrowdown")) direction.sub(forward);
-  if (keys.has("d") || keys.has("arrowright")) direction.add(right);
-  if (keys.has("a") || keys.has("arrowleft")) direction.sub(right);
-  if (direction.lengthSq() > 0) { direction.normalize(); cameraTarget.addScaledVector(direction, 18 * deltaSeconds); cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x)); cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z)); }
-  const horizontal = cameraDistance * Math.cos(cameraPitch);
-  camera.position.set(cameraTarget.x + Math.sin(cameraYaw) * horizontal, cameraTarget.y + cameraDistance * Math.sin(cameraPitch), cameraTarget.z + Math.cos(cameraYaw) * horizontal);
-  camera.lookAt(cameraTarget);
-}
+function moveCamera(deltaSeconds) { const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw)); const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw)); const direction = new THREE.Vector3(); if (keys.has("w") || keys.has("arrowup")) direction.add(forward); if (keys.has("s") || keys.has("arrowdown")) direction.sub(forward); if (keys.has("d") || keys.has("arrowright")) direction.add(right); if (keys.has("a") || keys.has("arrowleft")) direction.sub(right); if (direction.lengthSq() > 0) { direction.normalize(); cameraTarget.addScaledVector(direction, 18 * deltaSeconds); cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x)); cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z)); } const horizontal = cameraDistance * Math.cos(cameraPitch); camera.position.set(cameraTarget.x + Math.sin(cameraYaw) * horizontal, cameraTarget.y + cameraDistance * Math.sin(cameraPitch), cameraTarget.z + Math.cos(cameraYaw) * horizontal); camera.lookAt(cameraTarget); }
 
 let lastSimulationTime = performance.now();
 function updateSimulation() {
   const now = performance.now();
   const elapsed = Math.min((now - lastSimulationTime) / 1000, 0.25);
   lastSimulationTime = now;
-
-  if (worldTime) {
-    const hour = Math.floor(simulation.hour);
-    const minute = Math.floor((simulation.hour - hour) * 60);
-    worldTime.textContent = `Aldea IA · Día ${simulation.day} · ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} · Velocidad 1x`;
-  }
-
+  if (worldTime) { const hour = Math.floor(simulation.hour); const minute = Math.floor((simulation.hour - hour) * 60); worldTime.textContent = `Aldea IA · Día ${simulation.day} · ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} · Velocidad 1x`; }
   try {
     if (!simulationFault) tick(simulation, elapsed / 37.5);
-
+    syncAgentMeshes();
     for (const agent of simulation.agents) {
-      if (!agent.position) agent.position = { x: 0, z: 0 };
       if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target, world.bounds);
       moveAgent(agent, elapsed);
       const mesh = agentMeshes.get(agent.id);
-      if (!mesh) continue;
-      mesh.visible = agent.alive !== false;
-      mesh.position.set(Number(agent.position.x) || 0, 0, Number(agent.position.z) || 0);
+      if (mesh) { mesh.visible = agent.alive !== false; mesh.position.set(agent.position.x, 0, agent.position.z); }
     }
   } catch (error) {
     simulationFault = error;
     console.error("Lúmina: error durante la simulación; se mantiene el mundo visible.", error);
   }
-
-  if (now - lastSaveTime >= 2000) {
-    saveSimulation();
-    lastSaveTime = now;
-  }
+  if (now - lastSaveTime >= 2000) { saveSimulation(); lastSaveTime = now; }
 }
 
 addEventListener("beforeunload", saveSimulation);
-
 const clock = new THREE.Clock();
-function animate() {
-  requestAnimationFrame(animate);
-  updateSimulation();
-  moveCamera(Math.min(clock.getDelta(), 0.05));
-  const t = clock.getElapsedTime();
-  sun.position.x = Math.sin(t * 0.04) * 18;
-  renderer.render(scene, camera);
-}
-
-addEventListener("resize", () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
-
+function animate() { requestAnimationFrame(animate); updateSimulation(); moveCamera(Math.min(clock.getDelta(), 0.05)); const t = clock.getElapsedTime(); sun.position.x = Math.sin(t * 0.04) * 18; renderer.render(scene, camera); }
+addEventListener("resize", () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 animate();
