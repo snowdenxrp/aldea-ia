@@ -4,30 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lúmina — Aldea IA</title>
-  <link rel="stylesheet" href="./style.css?v=3" />
+  <link rel="stylesheet" href="./style.css?v=4" />
 </head>
 <body>
   <div id="hud">
     <div class="title">LÚMINA</div>
     <div id="worldTime" class="subtitle">Aldea IA · Día 1 · 08:00 · Velocidad 1x</div>
   </div>
-
   <button id="agentDebug" type="button" aria-label="Centrar cámara en los habitantes">
     <strong>Habitantes: 2</strong>
     <span>Alex 🔵 · Bruno 🟠</span>
+    <small>Toca un habitante o este panel para ver información</small>
   </button>
-
   <div id="status"></div>
-
   <aside id="agentPanel" aria-hidden="true">
     <button id="closeAgentPanel" aria-label="Cerrar">×</button>
-    <div id="agentHeader">
-      <div id="agentAvatar"></div>
-      <div>
-        <div id="agentName">Habitante</div>
-        <div id="agentAge">Edad: —</div>
-      </div>
-    </div>
+    <div id="agentHeader"><div id="agentAvatar"></div><div><div id="agentName">Habitante</div><div id="agentAge">Edad: —</div></div></div>
     <section class="agentSection"><h3>Estado</h3><div id="agentStatus"></div></section>
     <section class="agentSection"><h3>Decisión</h3><div id="agentDecision"></div></section>
     <section class="agentSection"><h3>Recursos</h3><div id="agentResources"></div></section>
@@ -35,8 +27,7 @@
     <section class="agentSection"><h3>Relaciones</h3><div id="agentRelationships"></div></section>
     <section class="agentSection"><h3>Experiencias recientes</h3><div id="agentExperiences"></div></section>
   </aside>
-
   <div id="app"></div>
-  <script type="module" src="./src/main-stable.js?v=1"></script>
+  <script type="module" src="./src/main-stable.js?v=2"></script>
 </body>
 </html>
