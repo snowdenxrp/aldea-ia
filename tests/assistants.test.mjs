@@ -3,7 +3,7 @@ import { world } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { createSimulation, tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
-import { runDebugger, runTester, analyzeLumina } from "../src/assistants/index.js";
+import { runDebugger, runTester, analyzeLumina, classifyRenderProbe } from "../src/assistants/index.js";
 
 const simulation = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
 
@@ -18,3 +18,9 @@ const analysis = analyzeLumina({ simulation, debuggerReport: debug, testerReport
 assert.notEqual(analysis.status, "error");
 
 console.log("Lúmina assistants: todas las pruebas pasaron.");
+
+assert.equal(classifyRenderProbe({ exists:false }), "MESH_MISSING");
+assert.equal(classifyRenderProbe({ exists:true, inScene:false }), "NOT_IN_SCENE");
+assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:false }), "HIDDEN");
+assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:true, onScreen:false }), "OFFSCREEN");
+assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:true, onScreen:true }), "OK");
