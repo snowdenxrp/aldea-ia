@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   contents: write
@@ -14,6 +16,7 @@ concurrency:
 
 jobs:
   simulate:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, 'Actualizar estado')
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
@@ -43,5 +46,5 @@ jobs:
             echo "Sin cambios que guardar."
             exit 0
           fi
-          git commit -m "Actualizar estado y aprendizaje de Lúmina"
+          git commit -m "Actualizar estado de Lúmina"
           git push
