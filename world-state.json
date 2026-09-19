@@ -10,7 +10,7 @@
     "resources": {
       "water": {
         "type": "renewable",
-        "amount": 960,
+        "amount": 1000,
         "quality": 1,
         "location": "river",
         "position": {
