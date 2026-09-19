@@ -49,6 +49,9 @@ function generateOptions(agent, perception, world, random = Math.random) {
   for (const action of knownActions) {
     if (["rest", "drink"].includes(action.name)) continue;
     if (action.name === "eat_fish" && !agent.inventory.some(item => item.type === "fish" && item.amount > 0)) continue;
+    const resourceByAction = { eat_plant: "wild_plants", catch_fish: "fish", gather_wood: "wood", gather_stone: "stone" };
+    const requiredResource = resourceByAction[action.name];
+    if (requiredResource && Number(world.resources?.[requiredResource]?.amount ?? 0) <= 0) continue;
     const option = { name: action.name, baseValue: action.confidence, distance: getKnownActionDistance(action.name, perception), knowledgeBonus: knowledge => { const item = knowledge.find(entry => entry.topic === "action:" + action.name); return item ? item.confidence * 0.15 : 0; } };
     if (action.name === "eat_plant") { option.effects = { hunger: 2.2 }; option.amount = 1; }
     if (action.name === "eat_fish") { option.effects = { hunger: 2.3 }; option.amount = 1; }
