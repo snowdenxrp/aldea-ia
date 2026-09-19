@@ -119,6 +119,9 @@ function performDecision(simulation, agent) {
   if (result.success) { improveSkillFromAction(agent, intent.name, simulation.day); const description = describeAction(agent, intent.name, result); const event = recordEvent(simulation, { type: "action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: intent.name === "rest" ? 0.2 : 0.5, emotionalWeight: 0 }); updateActionBelief(agent, intent.name, 1, simulation.day, description); if (intent.name === "catch_fish" && result.amount > 0) discoverAction(agent, { actionName: "eat_fish", belief: "Creo que el pez que capturé puede servirme como alimento.", confidence: 0.12, evidence: "Capturé un pez y ahora tengo uno en mi inventario.", outcome: 0.1, reliability: 0.35, day: simulation.day }); }
   else { const description = `${agent.name} intentó ${intent.name}, pero no pudo hacerlo (${result.reason ?? "sin resultado"}).`; const event = recordEvent(simulation, { type: "failed_action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: 0.45, emotionalWeight: -0.15 }); updateActionBelief(agent, intent.name, -1, simulation.day, description); }
   agent.currentIntent = null;
+  if (["drinking", "eating", "fishing", "gathering", "resting"].includes(agent.currentActivity)) {
+    agent.currentActivity = "idle";
+  }
 }
 
 function performSocialInteraction(simulation, agent) {
@@ -169,7 +172,7 @@ export function tick(simulation, deltaHours = 0.01) {
       // Emergencia de supervivencia: con sed crítica, beber no puede ser reemplazado
       // por otra decisión mientras haya agua perceptible. La intención se conserva hasta completar.
       const water = perception.nearbyResources.find(resource => resource.type === "water");
-      if (water && agent.needs.thirst <= 10 && (!agent.currentIntent || agent.currentIntent.name === "drink")) {
+      if (water && agent.needs.thirst <= 10) {
         agent.currentIntent = {
           name: "drink",
           amount: 5,
@@ -194,7 +197,8 @@ export function tick(simulation, deltaHours = 0.01) {
       }
       performDecision(simulation, agent);
     } catch (error) {
-      agent.currentActivity = agent.currentActivity ?? "idle";
+      agent.currentActivity = "idle";
+      agent.currentIntent = null;
       agent.lastActionResult = { success: false, reason: "simulation_error" };
       console.error("Lúmina: error procesando a " + (agent.name ?? agent.id ?? "habitante"), error);
     }
