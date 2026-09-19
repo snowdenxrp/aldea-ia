@@ -19,7 +19,7 @@ function normalizeCoreAgents(agents) {
   for (const fallback of initial) {
     let agent = agents.find(item => item?.id === fallback.id);
     if (!agent) { agents.push(structuredClone(fallback)); agent = agents[agents.length - 1]; }
-    agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
+    agent.currentActivity = agent.alive === false ? "dead" : (agent.currentActivity ?? "idle");
     agent.needs ??= structuredClone(fallback.needs);
     if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
     for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
