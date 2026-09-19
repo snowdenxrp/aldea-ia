@@ -85,6 +85,7 @@ const simulation = createSimulation(world, agents);
 const SAVE_KEY = "lumina-world-v5";
 let lastSaveTime = performance.now();
 let simulationFault = null;
+let frameCount = 0;
 
 function normalizeAgent(agent, fallback) {
   const source = agent ?? fallback;
@@ -181,6 +182,9 @@ function saveSimulation() {
 }
 
 async function restoreRemoteSimulation() {
+  // El estado remoto es una plantilla inicial, no debe sobrescribir el progreso local.
+  const existingLocal = localStorage.getItem(SAVE_KEY);
+  if (existingLocal) return false;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2500);
   try {
@@ -330,6 +334,7 @@ function moveCamera(deltaSeconds) { const forward = new THREE.Vector3(Math.sin(c
 let lastSimulationTime = performance.now();
 function updateSimulation() {
   const now = performance.now();
+  frameCount += 1;
   const elapsed = Math.min((now - lastSimulationTime) / 1000, 0.25);
   lastSimulationTime = now;
   if (worldTime) { const hour = Math.floor(simulation.hour); const minute = Math.floor((simulation.hour - hour) * 60); worldTime.textContent = `Aldea IA · Día ${simulation.day} · ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} · Velocidad 1x`; }
