@@ -1,14 +1,11 @@
-import fs from "node:fs/promises";
+import { world as defaultWorld } from "../src/world.js";
+import { createInitialAgents } from "../src/agents.js";
 import { createSimulation, tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 
-const STATE_PATH = new URL("../world-state.json", import.meta.url);
-const HORIZONS = [100, 500, 1000];
+const HORIZONS = [30, 100, 500, 1000];
 const HOURS_PER_DAY = 24;
 const REAL_SECONDS_PER_SIMULATED_HOUR = 37.5;
-
-const raw = await fs.readFile(STATE_PATH, "utf8");
-const base = JSON.parse(raw);
 
 function clone(value) { return structuredClone(value); }
 function finite(value) { return Number.isFinite(Number(value)); }
@@ -46,9 +43,7 @@ function validate(simulation) {
 
 function metrics(simulation, hours) {
   const agents = simulation.agents;
-  const needs = {};
-  for (const agent of agents) needs[agent.id] = { ...agent.needs };
-
+  const needs = Object.fromEntries(agents.map(agent => [agent.id, { ...agent.needs }]));
   return {
     simulatedDays: hours / HOURS_PER_DAY,
     day: simulation.day,
@@ -59,7 +54,6 @@ function metrics(simulation, hours) {
     resources: Object.fromEntries(Object.entries(simulation.world.resources ?? {}).map(([k,v]) => [k, v.amount])),
     knownActions: Object.fromEntries(agents.map(a => [a.id, (a.knowledge ?? []).filter(k => String(k.topic).startsWith("action:")).length])),
     memories: Object.fromEntries(agents.map(a => [a.id, (a.memories ?? []).length])),
-    experiences: Object.fromEntries(agents.map(a => [a.id, (a.experiences ?? []).length])),
     relationshipHistory: Object.fromEntries(agents.map(a => [a.id, (a.relationships ?? []).reduce((sum,r) => sum + (r.history?.length ?? 0), 0)])),
     skills: Object.fromEntries(agents.map(a => [a.id, (a.skills ?? []).length])),
     events: simulation.events.length,
@@ -76,11 +70,7 @@ function advanceMovement(simulation) {
 }
 
 function run(days) {
-  const simulation = createSimulation(clone(base.world), clone(base.agents));
-  simulation.day = Number(base.day) || simulation.day;
-  simulation.hour = Number(base.hour) || simulation.hour;
-  simulation.events = clone(base.events ?? []).slice(-500);
-
+  const simulation = createSimulation(clone(defaultWorld), createInitialAgents().map(clone));
   const totalHours = days * HOURS_PER_DAY;
   const samples = [];
   const problemCounts = new Map();
@@ -103,7 +93,6 @@ function run(days) {
 
     const problems = validate(simulation);
     for (const problem of problems) problemCounts.set(problem, (problemCounts.get(problem) ?? 0) + 1);
-
     if (hour % 24 === 0 || hour === totalHours) samples.push(metrics(simulation, hour));
   }
 
@@ -117,16 +106,10 @@ function run(days) {
 }
 
 const results = HORIZONS.map(run);
-
 const report = {
   audit: "lumina-longevity",
   generatedAt: new Date().toISOString(),
-  baseState: {
-    version: base.version,
-    day: base.day,
-    hour: base.hour,
-    agents: base.agents?.length ?? 0
-  },
+  baseState: { source: "clean_default_world", agents: createInitialAgents().length },
   results,
   verdict: results.every(r => Object.keys(r.problemCounts).length === 0) ? "no_invariant_failures" : "invariant_failures_detected"
 };
