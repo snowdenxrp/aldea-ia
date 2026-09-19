@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "savedAt": 0,
+  "savedAt": 1789776280601,
   "day": 1,
   "hour": 8,
   "world": {
@@ -8,18 +8,191 @@
     "timeOfDay": 8,
     "speed": 1,
     "resources": {
-      "water": {"type":"renewable","amount":1000,"quality":1,"location":"river","position":{"x":-18,"z":0},"radius":6,"perceptionRadius":30,"possibleUses":["drink","irrigate"]},
-      "wood": {"type":"renewable","amount":240,"quality":1,"location":"forest","position":{"x":20,"z":8},"radius":18,"perceptionRadius":24,"regenerationPerDay":0.4,"possibleUses":["fuel","construction","tools"]},
-      "stone": {"type":"finite","amount":180,"quality":1,"location":"rocky_zone","position":{"x":24,"z":15},"radius":12,"perceptionRadius":18,"possibleUses":["construction","tools"]},
-      "fertile_land": {"type":"renewable","amount":100,"quality":0.9,"location":"fertile_zone","position":{"x":2,"z":-22},"radius":16,"perceptionRadius":22,"regenerationPerDay":0.1,"possibleUses":["farming"]},
-      "wild_plants": {"type":"renewable","amount":80,"quality":0.85,"location":"meadow","position":{"x":-2,"z":-8},"radius":10,"perceptionRadius":14,"regenerationPerDay":0.7,"possibleUses":["food","medicine","fiber"],"foodProperties":{"edible":true,"nutrition":0.85,"toxicity":0}},
-      "fish": {"type":"renewable","amount":60,"quality":0.9,"location":"river","position":{"x":-18,"z":8},"radius":7,"perceptionRadius":11,"regenerationPerDay":0.25,"possibleUses":["food"]},
-      "clay": {"type":"renewable","amount":90,"quality":0.8,"location":"riverbank","position":{"x":-12,"z":-16},"radius":8,"perceptionRadius":12,"regenerationPerDay":0.05,"possibleUses":["containers","construction"]}
+      "water": {
+        "type": "renewable",
+        "amount": 1000,
+        "quality": 1,
+        "location": "river",
+        "position": {
+          "x": -18,
+          "z": 0
+        },
+        "radius": 6,
+        "perceptionRadius": 30,
+        "possibleUses": [
+          "drink",
+          "irrigate"
+        ]
+      },
+      "wood": {
+        "type": "renewable",
+        "amount": 240,
+        "quality": 1,
+        "location": "forest",
+        "position": {
+          "x": 20,
+          "z": 8
+        },
+        "radius": 18,
+        "perceptionRadius": 24,
+        "regenerationPerDay": 0.4,
+        "possibleUses": [
+          "fuel",
+          "construction",
+          "tools"
+        ]
+      },
+      "stone": {
+        "type": "finite",
+        "amount": 180,
+        "quality": 1,
+        "location": "rocky_zone",
+        "position": {
+          "x": 24,
+          "z": 15
+        },
+        "radius": 12,
+        "perceptionRadius": 18,
+        "possibleUses": [
+          "construction",
+          "tools"
+        ]
+      },
+      "fertile_land": {
+        "type": "renewable",
+        "amount": 100,
+        "quality": 0.9,
+        "location": "fertile_zone",
+        "position": {
+          "x": 2,
+          "z": -22
+        },
+        "radius": 16,
+        "perceptionRadius": 22,
+        "regenerationPerDay": 0.1,
+        "possibleUses": [
+          "farming"
+        ]
+      },
+      "wild_plants": {
+        "type": "renewable",
+        "amount": 80,
+        "quality": 0.85,
+        "location": "meadow",
+        "position": {
+          "x": -2,
+          "z": -8
+        },
+        "radius": 10,
+        "perceptionRadius": 14,
+        "regenerationPerDay": 0.7,
+        "possibleUses": [
+          "food",
+          "medicine",
+          "fiber"
+        ],
+        "foodProperties": {
+          "edible": true,
+          "nutrition": 0.85,
+          "toxicity": 0
+        }
+      },
+      "fish": {
+        "type": "renewable",
+        "amount": 60,
+        "quality": 0.9,
+        "location": "river",
+        "position": {
+          "x": -18,
+          "z": 8
+        },
+        "radius": 7,
+        "perceptionRadius": 11,
+        "regenerationPerDay": 0.25,
+        "possibleUses": [
+          "food"
+        ]
+      },
+      "clay": {
+        "type": "renewable",
+        "amount": 90,
+        "quality": 0.8,
+        "location": "riverbank",
+        "position": {
+          "x": -12,
+          "z": -16
+        },
+        "radius": 8,
+        "perceptionRadius": 12,
+        "regenerationPerDay": 0.05,
+        "possibleUses": [
+          "containers",
+          "construction"
+        ]
+      }
     }
   },
   "agents": [
-    {"id":"alex","name":"Alex","age":15,"alive":true,"needs":{"hunger":100,"thirst":100,"energy":100,"social":100,"safety":100,"health":100},"position":{"x":-8,"z":-8},"currentActivity":"idle","inventory":[],"money":100,"home":null,"knowledge":[],"memories":[],"relationships":[],"skills":[],"experiences":[],"currentIntent":null,"lastActionName":null,"lastActionResult":null},
-    {"id":"bruno","name":"Bruno","age":15,"alive":true,"needs":{"hunger":100,"thirst":100,"energy":100,"social":100,"safety":100,"health":100},"position":{"x":10,"z":10},"currentActivity":"idle","inventory":[],"money":100,"home":null,"knowledge":[],"memories":[],"relationships":[],"skills":[],"experiences":[],"currentIntent":null,"lastActionName":null,"lastActionResult":null}
+    {
+      "id": "alex",
+      "name": "Alex",
+      "age": 15,
+      "alive": true,
+      "needs": {
+        "hunger": 100,
+        "thirst": 100,
+        "energy": 100,
+        "social": 100,
+        "safety": 100,
+        "health": 100
+      },
+      "position": {
+        "x": -8,
+        "z": -8
+      },
+      "currentActivity": "idle",
+      "inventory": [],
+      "money": 100,
+      "home": null,
+      "knowledge": [],
+      "memories": [],
+      "relationships": [],
+      "skills": [],
+      "experiences": [],
+      "currentIntent": null,
+      "lastActionName": null,
+      "lastActionResult": null
+    },
+    {
+      "id": "bruno",
+      "name": "Bruno",
+      "age": 15,
+      "alive": true,
+      "needs": {
+        "hunger": 100,
+        "thirst": 100,
+        "energy": 100,
+        "social": 100,
+        "safety": 100,
+        "health": 100
+      },
+      "position": {
+        "x": 10,
+        "z": 10
+      },
+      "currentActivity": "idle",
+      "inventory": [],
+      "money": 100,
+      "home": null,
+      "knowledge": [],
+      "memories": [],
+      "relationships": [],
+      "skills": [],
+      "experiences": [],
+      "currentIntent": null,
+      "lastActionName": null,
+      "lastActionResult": null
+    }
   ],
   "events": []
 }
