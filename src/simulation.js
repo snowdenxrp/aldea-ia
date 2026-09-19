@@ -107,7 +107,8 @@ function buildCriticalHungerIntent(simulation, agent, perception) {
   if (fishInventory && knownActions.some(action => action.name === "eat_fish")) {
     return { name: "eat_fish", amount: Math.max(1, Math.min(3, Math.ceil((20 - agent.needs.hunger) / 14))), baseValue: 999, effects: { hunger: 14 }, target: null };
   }
-  const plants = perception.nearbyResources.find(resource => resource.type === "wild_plants");
+  const rememberedPlants = agent.knownResources?.wild_plants;
+  const plants = perception.nearbyResources.find(resource => resource.type === "wild_plants") ?? (rememberedPlants ? { type: "wild_plants", distance: Math.hypot(agent.position.x - rememberedPlants.x, agent.position.z - rememberedPlants.z) } : null);
   if (plants && simulation.world.resources.wild_plants.amount > 0) {
     if (knownActions.some(action => action.name === "eat_plant")) {
       return { name: "eat_plant", amount: Math.max(1, Math.min(4, Math.ceil((20 - agent.needs.hunger) / 8.67))), baseValue: 999, effects: { hunger: 8.67 }, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } };
@@ -207,6 +208,11 @@ export function tick(simulation, deltaHours = 0.01) {
       if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
       const perception = perceiveWorld(agent, simulation.world, simulation.agents);
       agent.lastPerception = perception;
+      agent.knownResources ??= {};
+      for (const resource of perception.nearbyResources) {
+        const source = simulation.world.resources[resource.type];
+        if (source?.position) agent.knownResources[resource.type] = { ...source.position, learnedDay: simulation.day };
+      }
       if (agent.currentIntent?.target) {
         const target = agent.currentIntent.target;
         const distance = Math.hypot(agent.position.x - target.x, agent.position.z - target.z);
