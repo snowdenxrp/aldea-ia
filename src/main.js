@@ -347,6 +347,24 @@ function addVisualDiagnostics() {
 
   const alex = agents.find(a => a.id === "alex");
   const bruno = agents.find(a => a.id === "bruno");
+  const probes = [alex, bruno].filter(Boolean).map(agent => {
+    const mesh = agentMeshes.get(agent.id);
+    if (!mesh) return false;
+    mesh.updateWorldMatrix(true, true);
+    const ndc = mesh.getWorldPosition(new THREE.Vector3()).project(camera);
+    return Number.isFinite(ndc.x) && Number.isFinite(ndc.y) && Number.isFinite(ndc.z) && Math.abs(ndc.x) <= 1.15 && Math.abs(ndc.y) <= 1.15 && ndc.z >= -1 && ndc.z <= 1;
+  });
+  if (!autoFramingDone && !cameraInteracted && frameCount > 20 && probes.length === 2 && probes.every(value => !value)) {
+    const core = [alex, bruno];
+    cameraTarget.set(
+      core.reduce((sum, agent) => sum + Number(agent.position.x), 0) / core.length,
+      0,
+      core.reduce((sum, agent) => sum + Number(agent.position.z), 0) / core.length
+    );
+    cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x));
+    cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z));
+    autoFramingDone = true;
+  }
   panel.textContent = [
     "LÚMINA DEBUG · RENDER PROBE",
     `frames=${frameCount} agents=${agents.length} sceneChildren=${scene.children.length} canvas=${renderer.domElement.width}x${renderer.domElement.height} calls=${renderer.info.render.calls}`,
@@ -419,22 +437,24 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let pointerStart = null;
 const keys = new Set();
-addEventListener("keydown", e => keys.add(e.key.toLowerCase()));
+addEventListener("keydown", e => { cameraInteracted = true; keys.add(e.key.toLowerCase()); });
 addEventListener("keyup", e => keys.delete(e.key.toLowerCase()));
 let dragging = false;
 let lastPointerX = 0;
 let lastPointerY = 0;
 let pinchDistance = null;
 let pinchAngle = null;
+let cameraInteracted = false;
+let autoFramingDone = false;
 const activePointers = new Map();
 function pointerDistance(a, b) { return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); }
 function pointerAngle(a, b) { return Math.atan2(b.clientY - a.clientY, b.clientX - a.clientX); }
-renderer.domElement.addEventListener("pointerdown", e => { if (activePointers.size === 0) pointerStart = { x: e.clientX, y: e.clientY }; activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY }); if (activePointers.size === 1) { dragging = true; lastPointerX = e.clientX; lastPointerY = e.clientY; } else if (activePointers.size === 2) { dragging = false; const points = [...activePointers.values()]; pinchDistance = pointerDistance(points[0], points[1]); pinchAngle = pointerAngle(points[0], points[1]); } renderer.domElement.setPointerCapture(e.pointerId); });
+renderer.domElement.addEventListener("pointerdown", e => { cameraInteracted = true; if (activePointers.size === 0) pointerStart = { x: e.clientX, y: e.clientY }; activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY }); if (activePointers.size === 1) { dragging = true; lastPointerX = e.clientX; lastPointerY = e.clientY; } else if (activePointers.size === 2) { dragging = false; const points = [...activePointers.values()]; pinchDistance = pointerDistance(points[0], points[1]); pinchAngle = pointerAngle(points[0], points[1]); } renderer.domElement.setPointerCapture(e.pointerId); });
 renderer.domElement.addEventListener("pointermove", e => { if (!activePointers.has(e.pointerId)) return; activePointers.set(e.pointerId, { clientX: e.clientX, clientY: e.clientY }); if (activePointers.size === 2) { const points = [...activePointers.values()]; const distance = pointerDistance(points[0], points[1]); const angle = pointerAngle(points[0], points[1]); if (pinchDistance !== null) cameraDistance = Math.max(10, Math.min(65, cameraDistance + (pinchDistance - distance) * 0.055)); if (pinchAngle !== null) { let angleChange = angle - pinchAngle; if (angleChange > Math.PI) angleChange -= Math.PI * 2; if (angleChange < -Math.PI) angleChange += Math.PI * 2; cameraYaw += angleChange; } pinchDistance = distance; pinchAngle = angle; return; } if (!dragging) return; const dx = e.clientX - lastPointerX; const dy = e.clientY - lastPointerY; lastPointerX = e.clientX; lastPointerY = e.clientY; const sensitivity = 0.105; const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw)); const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw)); cameraTarget.addScaledVector(right, -dx * sensitivity); cameraTarget.addScaledVector(forward, -dy * sensitivity); cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x)); cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z)); });
 function endPointer(e) { const wasSingleTap = activePointers.size === 1 && pointerStart && Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y) < 10; activePointers.delete(e.pointerId); if (activePointers.size < 2) { pinchDistance = null; pinchAngle = null; } if (activePointers.size === 1) { const remaining = [...activePointers.values()][0]; dragging = true; lastPointerX = remaining.clientX; lastPointerY = remaining.clientY; } else dragging = false; if (renderer.domElement.hasPointerCapture(e.pointerId)) renderer.domElement.releasePointerCapture(e.pointerId); if (wasSingleTap) { const rect = renderer.domElement.getBoundingClientRect(); pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1; raycaster.setFromCamera(pointer, camera); const hit = raycaster.intersectObjects([...agentMeshes.values()], true)[0]; let selectedId = hit?.object?.userData?.agentId ?? null; let object = hit?.object; while (!selectedId && object?.parent) { object = object.parent; selectedId = object.userData?.agentId ?? null; } if (selectedId) { const selected = simulation.agents.find(agent => agent.id === selectedId); if (selected) openAgentPanel(selected); } } pointerStart = null; }
 renderer.domElement.addEventListener("pointerup", endPointer);
 renderer.domElement.addEventListener("pointercancel", endPointer);
-renderer.domElement.addEventListener("wheel", e => { e.preventDefault(); cameraDistance = Math.max(10, Math.min(65, cameraDistance + e.deltaY * 0.03)); }, { passive: false });
+renderer.domElement.addEventListener("wheel", e => { cameraInteracted = true; e.preventDefault(); cameraDistance = Math.max(10, Math.min(65, cameraDistance + e.deltaY * 0.03)); }, { passive: false });
 
 function moveCamera(deltaSeconds) { const forward = new THREE.Vector3(Math.sin(cameraYaw), 0, Math.cos(cameraYaw)); const right = new THREE.Vector3(Math.cos(cameraYaw), 0, -Math.sin(cameraYaw)); const direction = new THREE.Vector3(); if (keys.has("w") || keys.has("arrowup")) direction.add(forward); if (keys.has("s") || keys.has("arrowdown")) direction.sub(forward); if (keys.has("d") || keys.has("arrowright")) direction.add(right); if (keys.has("a") || keys.has("arrowleft")) direction.sub(right); if (direction.lengthSq() > 0) { direction.normalize(); cameraTarget.addScaledVector(direction, 18 * deltaSeconds); cameraTarget.x = Math.max(-38, Math.min(38, cameraTarget.x)); cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z)); } const horizontal = cameraDistance * Math.cos(cameraPitch); camera.position.set(cameraTarget.x + Math.sin(cameraYaw) * horizontal, cameraTarget.y + cameraDistance * Math.sin(cameraPitch), cameraTarget.z + Math.cos(cameraYaw) * horizontal); camera.lookAt(cameraTarget); }
 
