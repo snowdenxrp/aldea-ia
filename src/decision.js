@@ -14,6 +14,10 @@ export function createDecisionContext(agent, perception) {
   };
 }
 
+export function survivalUrgency(needs) {
+  return Math.max(needPressure(needs.hunger), needPressure(needs.thirst));
+}
+
 export function evaluateOptions(context, options) {
   return options
     .map(option => ({
@@ -49,6 +53,11 @@ export function chooseOption(context, options, randomness = 0.12) {
 
 function calculateScore(context, option) {
   let score = option.baseValue ?? 0;
+
+  const survival = survivalUrgency(context.needs);
+  if (survival > 70 && (option.effects?.hunger || option.effects?.thirst)) {
+    score += (survival - 70) * 0.8;
+  }
 
   if (option.effects?.hunger) {
     score += needPressure(context.needs.hunger) * option.effects.hunger;
