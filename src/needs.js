@@ -47,7 +47,9 @@ export function applyNeedConsequences(needs, hours) {
   if (next.thirst < 10) next.health -= hours * 2.5;
   if (next.hunger < 10) next.health -= hours * 1.5;
   if (next.energy < 5) next.health -= hours * 0.03;
-  if (next.social < 10) next.health -= hours * 0.02;
+  // El aislamiento prolongado afecta el bienestar, pero no debe convertir una
+  // simulación socialmente pobre en una muerte inevitable.
+  if (next.social < 10) next.health -= hours * 0.002;
 
   if (next.hunger >= 60 && next.thirst >= 60 && next.energy >= 20) {
     next.health += hours * 1.5;
