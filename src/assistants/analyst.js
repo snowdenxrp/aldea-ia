@@ -1,14 +1,14 @@
-export function analyzeLumina({ simulation, debuggerReport = null, testerReport = null } = {}) {
+export function analyzeLumina({ simulation, debuggerReport = null, testerReport = null, learnedRules = [] } = {}) {
   const agents = Array.isArray(simulation?.agents) ? simulation.agents : [];
   const observations = [];
   const conclusions = [];
-
   const alive = agents.filter(a => a?.alive !== false);
   const withIntent = agents.filter(a => a?.currentIntent);
   const moving = agents.filter(a => a?.movement?.moving);
 
   observations.push(`Habitantes: ${agents.length}; vivos: ${alive.length}; con intención: ${withIntent.length}; moviéndose: ${moving.length}.`);
   if (simulation) observations.push(`Tiempo: día ${simulation.day}, hora ${Number(simulation.hour).toFixed(2)}.`);
+  if (learnedRules.length) observations.push(`Memoria de aprendizaje: ${learnedRules.length} regla(s) acumulada(s).`);
 
   if (!agents.length) conclusions.push({ severity: "error", message: "No hay habitantes: la simulación no puede comportarse como aldea." });
   if (debuggerReport?.status === "error") conclusions.push({ severity: "error", message: "Debugger encontró errores estructurales; corregirlos antes de interpretar el comportamiento." });
