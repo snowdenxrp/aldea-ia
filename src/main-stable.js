@@ -12,7 +12,7 @@ const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,1
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0x6f9b58})); ground.rotation.x=-Math.PI/2; scene.add(ground);
 const river=new THREE.Mesh(new THREE.PlaneGeometry(10,90),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
 for(const [x,z] of [[-5,-7],[4,-6],[8,2],[1,8]]){const h=new THREE.Mesh(new THREE.BoxGeometry(4,2.4,4),new THREE.MeshStandardMaterial({color:0xc8a27b}));h.position.set(x,1.2,z);scene.add(h);}
-const agents=createInitialAgents(),simulation=createSimulation(world,agents),SAVE_KEY="lumina-world-v6";
+const agents=createInitialAgents(),simulation=createSimulation(world,agents),SAVE_KEY="lumina-world-v7";
 let selectedAgentId=null;
 let cameraTarget=new THREE.Vector3(1,0,1),cameraDistance=34,cameraYaw=.55,cameraPitch=.58,last=performance.now(),lastSave=last,fault=null;
 const meshes=new Map();
