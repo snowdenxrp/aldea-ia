@@ -125,3 +125,15 @@ assert.equal(core.needs.thirst, 17);
   assert.equal(alex.lastActionResult?.success, false);
   assert.equal(alex.currentActivity, "idle", "Un fallo al beber debe devolver al habitante a idle.");
 }
+
+
+// Regresión: un estado "drinking" viejo sin intención activa debe limpiarse en el siguiente tick.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  alex.currentActivity = "drinking";
+  alex.currentIntent = null;
+  alex.needs = { hunger: 80, thirst: 50, energy: 80, social: 80, safety: 100, health: 100 };
+  tick(sim, 0.01);
+  assert.notEqual(alex.currentActivity, "drinking", "Una actividad de beber sin intención activa no debe quedar pegada.");
+}
