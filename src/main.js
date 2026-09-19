@@ -324,6 +324,28 @@ function syncAgentMeshes() {
   }
 }
 
+function addVisualDiagnostics() {
+  let panel = document.querySelector("#luminaDiag");
+  if (!panel) {
+    panel = document.createElement("div");
+    panel.id = "luminaDiag";
+    panel.style.cssText = "position:fixed;left:10px;bottom:10px;z-index:9999;padding:8px 10px;background:rgba(0,0,0,.75);color:#fff;font:12px monospace;border-radius:8px;pointer-events:none;max-width:90vw;";
+    document.body.appendChild(panel);
+  }
+  const alex = agents.find(a => a.id === "alex");
+  const bruno = agents.find(a => a.id === "bruno");
+  const am = agentMeshes.get("alex");
+  const bm = agentMeshes.get("bruno");
+  panel.textContent = [
+    "LÚMINA DEBUG",
+    "frames: " + frameCount,
+    "agents: " + agents.length,
+    "Alex: " + (alex ? "OK" : "MISSING") + " mesh=" + (!!am) + " vis=" + (am?.visible ?? false) + " pos=" + (alex ? alex.position.x.toFixed(1)+","+alex.position.z.toFixed(1) : "—"),
+    "Bruno: " + (bruno ? "OK" : "MISSING") + " mesh=" + (!!bm) + " vis=" + (bm?.visible ?? false) + " pos=" + (bruno ? bruno.position.x.toFixed(1)+","+bruno.position.z.toFixed(1) : "—"),
+    "fault: " + (simulationFault ? (simulationFault.message || simulationFault) : "none")
+  ].join(" · ");
+}
+
 syncAgentMeshes();
 restoreRemoteSimulation().then(restored => { if (restored) syncAgentMeshes(); }).catch(() => {});
 
