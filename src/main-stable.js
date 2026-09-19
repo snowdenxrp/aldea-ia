@@ -7,7 +7,7 @@ import { setMovementTarget, moveAgent } from "./movement.js";
 const app=document.querySelector("#app"), worldTime=document.querySelector("#worldTime");
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df);
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,500);
-const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); app.appendChild(renderer.domElement);
+const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.domElement.style.touchAction="none"; renderer.domElement.style.userSelect="none"; app.appendChild(renderer.domElement);
 const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,10); scene.add(light,new THREE.HemisphereLight(0xbfe7ff,0x6f8f58,1.2));
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0x6f9b58})); ground.rotation.x=-Math.PI/2; scene.add(ground);
 const river=new THREE.Mesh(new THREE.PlaneGeometry(10,90),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
@@ -80,7 +80,7 @@ renderer.domElement.addEventListener("pointermove",e=>{
     let da=a-lastAngle;
     if(da>Math.PI)da-=Math.PI*2;
     if(da<-Math.PI)da+=Math.PI*2;
-    cameraYaw-=da*0.9;
+    cameraYaw-=da*1.35;
     lastAngle=a;
     return;
   }
