@@ -3,7 +3,7 @@ import { createSimulation, tick } from "../src/simulation.js";
 import { world } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
-import { createSeededRandom } from "../src/random.js";
+import { createRandom } from "../src/random.js";
 
 const HORIZONS = [1, 7, 30, 100, 500, 1000];
 const AUDIT_SEED = "lumina-audit-2026";
