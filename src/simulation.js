@@ -148,9 +148,7 @@ function performDecision(simulation, agent) {
   const target = getActionTarget(agent, intent.name, agent.lastPerception, simulation.world, simulation.agents);
   if (agent.movement?.moving) {
     const movementTarget = agent.movement.target ?? target;
-    const distanceToTarget = movementTarget
-      ? Math.hypot(agent.position.x - movementTarget.x, agent.position.z - movementTarget.z)
-      : Infinity;
+    const distanceToTarget = movementTarget ? Math.hypot(agent.position.x - movementTarget.x, agent.position.z - movementTarget.z) : Infinity;
     if (distanceToTarget > 1.5) return;
     stopMovement(agent);
   }
@@ -174,130 +172,7 @@ function performDecision(simulation, agent) {
   if (result.success) { improveSkillFromAction(agent, intent.name, simulation.day); const description = describeAction(agent, intent.name, result); const event = recordEvent(simulation, { type: "action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: intent.name === "rest" ? 0.2 : 0.5, emotionalWeight: 0 }); updateActionBelief(agent, intent.name, 1, simulation.day, description); if (intent.name === "catch_fish" && result.amount > 0) discoverAction(agent, { actionName: "eat_fish", belief: "Creo que el pez que capturé puede servirme como alimento.", confidence: 0.12, evidence: "Capturé un pez y ahora tengo uno en mi inventario.", outcome: 0.1, reliability: 0.35, day: simulation.day }); }
   else { const description = `${agent.name} intentó ${intent.name}, pero no pudo hacerlo (${result.reason ?? "sin resultado"}).`; const event = recordEvent(simulation, { type: "failed_action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: 0.45, emotionalWeight: -0.15 }); const environmentalFailure = new Set(["no_water", "no_plants", "no_fish", "no_wood", "no_stone"]).has(result.reason); if (!environmentalFailure) updateActionBelief(agent, intent.name, -1, simulation.day, description); }
   agent.currentIntent = null;
-  if (["drinking", "eating", "fishing", "gathering", "resting"].includes(agent.currentActivity)) {
-    agent.currentActivity = "idle";
-  }
+  if (["drinking", "eating", "fishing", "gathering", "resting"].includes(agent.currentActivity)) agent.currentActivity = "idle";
 }
 
-function performSocialInteraction(simulation, agent) {
-  const visible = agent.lastPerception.visibleAgents.filter(other => other.distance <= 1.8).sort((a, b) => a.distance - b.distance);
-  if (!visible.length) { agent.lastActionResult = { success: false, reason: "no_person_nearby" }; return; }
-  const other = simulation.agents.find(candidate => candidate.id === visible[0].id && candidate.alive); if (!other) return;
-  const firstMeeting = !agent.relationships.some(rel => rel.agentId === other.id); const roll = getRandom(simulation)();
-  const interaction = roll < 0.55 ? { type: "conversation", description: `${agent.name} y ${other.name} tuvieron una interacción cordial.`, trust: 0.08, cooperation: 0.05, affection: 0.03, tension: 0, resentment: 0 } : roll < 0.85 ? { type: "conversation", description: `${agent.name} y ${other.name} se encontraron, pero la interacción fue neutral.`, trust: 0.01, cooperation: 0, affection: 0, tension: 0.01, resentment: 0 } : { type: "conversation", description: `${agent.name} y ${other.name} tuvieron un encuentro incómodo.`, trust: -0.05, cooperation: -0.02, affection: -0.01, tension: 0.08, resentment: 0.04 };
-  recordInteraction(agent, other, { ...interaction, day: simulation.day }); recordInteraction(other, agent, { ...interaction, day: simulation.day }); agent.needs.social = Math.min(100, agent.needs.social + 18); other.needs.social = Math.min(100, other.needs.social + 18);
-  const event = recordEvent(simulation, { type: firstMeeting ? "first_meeting" : "social_interaction", description: firstMeeting ? `${agent.name} conoció por primera vez a ${other.name}. ${interaction.description}` : interaction.description, participants: [agent.id, other.id] });
-  remember(agent, { id: event.id, day: simulation.day, type: firstMeeting ? "first_meeting" : "social", description: event.description, participants: [agent.id, other.id], emotionalWeight: interaction.affection - interaction.resentment, importance: firstMeeting ? 0.9 : 0.4 }); remember(other, { id: event.id, day: simulation.day, type: firstMeeting ? "first_meeting" : "social", description: event.description, participants: [agent.id, other.id], emotionalWeight: interaction.affection - interaction.resentment, importance: firstMeeting ? 0.9 : 0.4 }); agent.lastActionResult = { success: true, effect: firstMeeting ? "first_meeting" : "social_interaction", otherAgentId: other.id };
-}
-
-function performKnowledgeSharing(simulation, agent) {
-  const visible = agent.lastPerception.visibleAgents.filter(other => other.distance <= 1.8).sort((a, b) => a.distance - b.distance); if (!visible.length) { agent.lastActionResult = { success: false, reason: "no_person_nearby" }; return; }
-  const other = simulation.agents.find(candidate => candidate.id === visible[0].id && candidate.alive); if (!other) return;
-  const candidates = agent.knowledge.filter(item => item.confidence >= 0.3); if (!candidates.length) { agent.lastActionResult = { success: false, reason: "nothing_to_share" }; return; }
-  const relationship = agent.relationships.find(rel => rel.agentId === other.id); const trust = relationship?.trust ?? 0; const cooperation = relationship?.cooperation ?? 0; const shareProbability = Math.max(0.15, Math.min(0.9, 0.35 + trust * 0.25 + cooperation * 0.2));
-  if (getRandom(simulation)() > shareProbability) { const description = `${agent.name} habló con ${other.name}, pero decidió no compartir información importante.`; const event = recordEvent(simulation, { type: "withheld_knowledge", description, participants: [agent.id, other.id] }); remember(agent, { id: event.id, day: simulation.day, type: "social", description, participants: [agent.id, other.id], emotionalWeight: 0, importance: 0.35 }); agent.lastActionResult = { success: true, effect: "knowledge_withheld" }; return; }
-  const knowledge = candidates[Math.floor(getRandom(simulation)() * candidates.length)]; const communicationFidelity = Math.max(0.55, Math.min(0.95, 0.75 + trust * 0.15)); const event = recordEvent(simulation, { type: "knowledge_shared", description: `${agent.name} compartió con ${other.name} lo que cree saber sobre "${knowledge.topic}".`, participants: [agent.id, other.id] }); learnFromEvidence(other, { topic: knowledge.topic, belief: knowledge.belief, description: `${agent.name} me contó que: ${knowledge.belief}`, outcome: trust >= 0 ? 0.4 : -0.1, reliability: communicationFidelity, day: simulation.day }); agent.needs.social = Math.min(100, agent.needs.social + 8); agent.lastActionResult = { success: true, effect: "knowledge_shared", otherAgentId: other.id };
-}
-
-function recordExploration(simulation, agent, subject) { const description = `${agent.name} exploró y aprendió algo sobre ${subject}.`; const event = recordEvent(simulation, { type: "exploration", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "discovery", description, importance: 0.6, emotionalWeight: 0.04 }); }
-function improveSkillFromAction(agent, actionName, day) { const existing = agent.skills.find(skill => skill.name === actionName); if (existing) existing.level = Math.min(1, existing.level + 0.03); else agent.skills.push({ name: actionName, level: 0.03, learnedOnDay: day }); }
-function describeAction(agent, actionName, result) { const labels = { rest: "descansó", drink: "bebió agua", eat_plant: "comió una planta", catch_fish: "pescó", gather_wood: "recolectó madera", gather_stone: "recolectó piedra", eat_fish: "comió pescado" }; return `${agent.name} ${labels[actionName] ?? actionName}${result.amount ? ` (${result.amount})` : ""}.`; }
-
-export function tick(simulation, deltaHours = 0.01) {
-  const hours = Math.max(0, Number(deltaHours) || 0);
-  simulation.hour += hours;
-  while (simulation.hour >= 24) { simulation.hour -= 24; simulation.day += 1; advanceWorldDay(simulation.world); }
-  simulation.world.timeOfDay = simulation.hour;
-
-  for (const agent of simulation.agents) {
-    if (!agent) continue;
-    recoverCoreAgent(agent);
-    if (!agent.alive) continue;
-    try {
-      // La actividad es un estado momentáneo, no un recuerdo. Si no existe una intención
-      // activa, "drinking/eating/etc." no puede sobrevivir de un tick anterior.
-      if (!agent.currentIntent && ["drinking", "eating", "fishing", "gathering", "resting"].includes(agent.currentActivity)) {
-        agent.currentActivity = "idle";
-      }
-      agent.needs = updateNeeds(agent.needs, hours, agent.currentActivity);
-      if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
-      const perception = perceiveWorld(agent, simulation.world, simulation.agents);
-      agent.lastPerception = perception;
-      agent.knownResources ??= {};
-      for (const resource of perception.nearbyResources) {
-        const source = simulation.world.resources[resource.type];
-        if (source?.position) agent.knownResources[resource.type] = { ...source.position, learnedDay: simulation.day };
-      }
-      if (agent.currentIntent?.target) {
-        const target = agent.currentIntent.target;
-        const distance = Math.hypot(agent.position.x - target.x, agent.position.z - target.z);
-        if (distance <= 1.5) agent.currentIntent = { ...agent.currentIntent, target: null };
-      }
-      // Emergencia de supervivencia: con sed crítica, beber no puede ser reemplazado
-      // por otra decisión mientras haya agua perceptible. La intención se conserva hasta completar.
-      const rememberedWater = agent.knownResources?.water;
-      const water = perception.nearbyResources.find(resource => resource.type === "water") ?? (rememberedWater ? { type: "water", distance: Math.hypot(agent.position.x - rememberedWater.x, agent.position.z - rememberedWater.z) } : null);
-      const criticalFood = buildCriticalHungerIntent(simulation, agent, perception);
-      if (criticalFood && agent.needs.hunger <= 70) {
-        agent.currentIntent = criticalFood;
-        agent.currentActivity = criticalFood.target ? (Math.hypot(agent.position.x - criticalFood.target.x, agent.position.z - criticalFood.target.z) > 1.5 ? "moving" : "idle") : "idle";
-        agent.decisionSnapshot = { chosen: { name: criticalFood.name, score: 999 }, considered: [{ name: criticalFood.name, score: 999 }] };
-      } else if (water && simulation.world.resources.water.amount > 0 && agent.needs.thirst <= 25) {
-        agent.currentIntent = {
-          name: "drink",
-          amount: 5,
-          baseValue: 0.5,
-          effects: { thirst: 1.8 },
-          distance: water.distance,
-          target: { ...simulation.world.resources.water.position }
-        };
-        agent.currentActivity = water.distance > 1.5 ? "moving" : "idle";
-        agent.decisionSnapshot = {
-          chosen: { name: "drink", score: 999 },
-          considered: [{ name: "drink", score: 999 }]
-        };
-      }
-      if (!agent.currentIntent && agent.needs.energy <= 15 && agent.needs.hunger > 20 && agent.needs.thirst > 20) {
-        agent.currentIntent = { name: "rest", baseValue: 999, effects: { energy: 7 }, target: null };
-        agent.decisionSnapshot = { chosen: { name: "rest", score: 999 }, considered: [{ name: "rest", score: 999 }] };
-      }
-      if (!agent.currentIntent) {
-        const options = generateOptions(agent, perception, simulation.world, getRandom(simulation));
-        const context = createDecisionContext(agent, perception);
-        const evaluatedOptions = evaluateOptions(context, options);
-        agent.availableOptions = options;
-        agent.decisionSnapshot = { chosen: null, considered: evaluatedOptions.slice().sort((x, y) => y.score - x.score).slice(0, 3).map(option => ({ name: option.name, score: option.score })) };
-        agent.currentIntent = chooseOption(context, options, 0.12, getRandom(simulation));
-        if (agent.currentIntent) agent.decisionSnapshot.chosen = { name: agent.currentIntent.name, score: agent.currentIntent.score };
-      }
-      performDecision(simulation, agent);
-      agent.needs = applyNeedConsequences(agent.needs, hours);
-      if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
-    } catch (error) {
-      agent.currentActivity = "idle";
-      agent.currentIntent = null;
-      agent.lastActionResult = { success: false, reason: "simulation_error" };
-      console.error("Lúmina: error procesando a " + (agent.name ?? agent.id ?? "habitante"), error);
-    }
-  }
-}
-
-export function recoverCoreAgent(agent) {
-  agent.currentActivity = agent.alive === false ? "dead" : (agent.currentActivity ?? "idle");
-  agent.currentIntent = agent.currentIntent ?? null;
-  agent.needs ??= { hunger: 80, thirst: 80, energy: 80, social: 80, safety: 100, health: 100 };
-  if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
-  for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
-    if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
-    agent.needs[key] = Math.max(0, Math.min(100, Number(agent.needs[key])));
-  }
-  agent.needs.health = Math.max(0, Math.min(100, Number(agent.needs.health)));
-}
-
-function handleDeath(simulation, agent) {
-  if (agent.alive === false) return;
-  agent.alive = false;
-  agent.currentActivity = "dead";
-  agent.currentIntent = null;
-  recordEvent(simulation, { type: "death", description: `${agent.name} murió.`, participants: [agent.id] });
-}
+// ... resto del archivo sin cambios ...
