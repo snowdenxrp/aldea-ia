@@ -1,11 +1,11 @@
 {
   "version": 3,
-  "savedAt": 1789785443210,
-  "day": 11,
-  "hour": 12.336240000003484,
+  "savedAt": 1789786145847,
+  "day": 12,
+  "hour": 7.073226666670395,
   "world": {
-    "day": 11,
-    "timeOfDay": 12.336240000003484,
+    "day": 12,
+    "timeOfDay": 7.073226666670395,
     "speed": 1,
     "resources": {
       "water": {
@@ -61,7 +61,7 @@
       "fertile_land": {
         "type": "renewable",
         "amount": 100,
-        "quality": 0.91,
+        "quality": 0.911,
         "location": "fertile_zone",
         "position": {
           "x": 2,
@@ -76,7 +76,7 @@
       },
       "wild_plants": {
         "type": "renewable",
-        "amount": 69.00000000000003,
+        "amount": 69.70000000000003,
         "quality": 0.85,
         "location": "meadow",
         "position": {
@@ -99,7 +99,7 @@
       },
       "fish": {
         "type": "renewable",
-        "amount": 2.25,
+        "amount": 2.5,
         "quality": 0.9,
         "location": "river",
         "position": {
