@@ -126,8 +126,14 @@ function saveSimulation() {
 }
 
 async function restoreRemoteSimulation() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2500);
+
   try {
-    const response = await fetch("./world-state.json?ts=" + Date.now(), { cache: "no-store" });
+    const response = await fetch("./world-state.json?ts=" + Date.now(), {
+      cache: "no-store",
+      signal: controller.signal
+    });
     if (!response.ok) return false;
 
     const saved = await response.json();
@@ -144,11 +150,14 @@ async function restoreRemoteSimulation() {
     return agents.length > 0;
   } catch {
     return false;
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
-const restoredRemote = await restoreRemoteSimulation();
-if (!restoredRemote) restoreSimulation();
+// IMPORTANT: never block scene creation on the remote state request.
+// If GitHub Pages/network/cache is slow, Lúmina must still render the world.
+restoreSimulation();
 const agentMeshes = new Map();
 
 function createAgentMesh(agent) {
