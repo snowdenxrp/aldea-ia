@@ -48,16 +48,16 @@ export function updateNeeds(needs, hours, activity = "normal") {
 export function applyNeedConsequences(needs, hours) {
   const next = { ...needs };
 
-  if (next.thirst < 20) {
+  if (next.thirst < 10) {
     next.health -= hours * 2.5;
   }
 
-  if (next.hunger < 20) {
+  if (next.hunger < 10) {
     next.health -= hours * 1.5;
   }
 
-  if (next.energy < 10) {
-    next.health -= hours * 0.8;
+  if (next.energy < 5) {
+    next.health -= hours * 0.15;
   }
 
   if (next.social < 10) {
