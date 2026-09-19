@@ -19,42 +19,31 @@ export function updateNeeds(needs, hours, activity = "normal") {
   next.hunger -= hours * 2.2;
   next.thirst -= hours * 3.2;
 
-  if (activity === "sleeping") {
-    next.energy += hours * 12;
-  } else if (activity === "resting") {
-    next.energy += hours * 7;
-  } else if (activity === "heavy") {
-    next.energy -= hours * 10;
-  } else {
-    next.energy -= hours * 2.5;
-  }
+  if (activity === "sleeping") next.energy += hours * 12;
+  else if (activity === "resting") next.energy += hours * 7;
+  else if (activity === "heavy") next.energy -= hours * 10;
+  else next.energy -= hours * 2.5;
 
   next.social -= hours * 0.5;
-
   next.hunger = clamp(next.hunger);
   next.thirst = clamp(next.thirst);
   next.energy = clamp(next.energy);
   next.social = clamp(next.social);
   next.safety = clamp(next.safety);
   next.health = clamp(next.health);
-
   return next;
 }
 
 export function applyNeedConsequences(needs, hours) {
   const next = { ...needs };
-
   if (next.thirst < 10) next.health -= hours * 2.5;
   if (next.hunger < 10) next.health -= hours * 1.5;
   if (next.energy < 5) next.health -= hours * 0.03;
   // El aislamiento prolongado afecta el bienestar, pero no debe convertir una
   // simulación socialmente pobre en una muerte inevitable.
   if (next.social < 10) next.health -= hours * 0.002;
-
-  if (next.hunger >= 60 && next.thirst >= 60 && next.energy >= 20) {
-    next.health += hours * 1.5;
-  }
-
+  // La recuperación física comienza cuando las necesidades básicas están razonablemente cubiertas.
+  if (next.hunger >= 25 && next.thirst >= 25 && next.energy >= 20) next.health += hours * 1.5;
   next.health = clamp(next.health);
   return next;
 }
