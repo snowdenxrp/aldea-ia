@@ -342,7 +342,9 @@ function addVisualDiagnostics() {
     const ndc = p.clone().project(camera);
     const onScreen = Number.isFinite(ndc.x) && Number.isFinite(ndc.y) && Number.isFinite(ndc.z)
       && Math.abs(ndc.x) <= 1.15 && Math.abs(ndc.y) <= 1.15 && ndc.z >= -1 && ndc.z <= 1;
-    return `mesh=YES vis=${mesh.visible} children=${mesh.children.length} world=${p.x.toFixed(1)},${p.y.toFixed(1)},${p.z.toFixed(1)} ndc=${ndc.x.toFixed(2)},${ndc.y.toFixed(2)},${ndc.z.toFixed(2)} screen=${onScreen ? "YES" : "NO"}`;
+    const inScene = mesh === scene || !!scene.getObjectById(mesh.id);
+    const renderable = mesh.visible && mesh.children.length > 0 && inScene;
+    return `mesh=YES vis=${mesh.visible} children=${mesh.children.length} scene=${inScene ? "YES" : "NO"} renderable=${renderable ? "YES" : "NO"} world=${p.x.toFixed(1)},${p.y.toFixed(1)},${p.z.toFixed(1)} ndc=${ndc.x.toFixed(2)},${ndc.y.toFixed(2)},${ndc.z.toFixed(2)} screen=${onScreen ? "YES" : "NO"}`;
   };
 
   const alex = agents.find(a => a.id === "alex");
