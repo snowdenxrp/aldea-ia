@@ -1,9 +1,11 @@
 import fs from "node:fs/promises";
 import { createSimulation, tick } from "../src/simulation.js";
+import { setMovementTarget, moveAgent } from "../src/movement.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
 const HORIZONS = [100, 500, 1000];
 const HOURS_PER_DAY = 24;
+const REAL_SECONDS_PER_SIMULATED_HOUR = 37.5;
 
 const raw = await fs.readFile(STATE_PATH, "utf8");
 const base = JSON.parse(raw);
@@ -45,9 +47,7 @@ function validate(simulation) {
 function metrics(simulation, hours) {
   const agents = simulation.agents;
   const needs = {};
-  for (const agent of agents) {
-    needs[agent.id] = { ...agent.needs };
-  }
+  for (const agent of agents) needs[agent.id] = { ...agent.needs };
 
   return {
     simulatedDays: hours / HOURS_PER_DAY,
@@ -67,6 +67,14 @@ function metrics(simulation, hours) {
   };
 }
 
+function advanceMovement(simulation) {
+  for (const agent of simulation.agents) {
+    if (!agent.alive) continue;
+    if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target, simulation.world.bounds);
+    moveAgent(agent, REAL_SECONDS_PER_SIMULATED_HOUR);
+  }
+}
+
 function run(days) {
   const simulation = createSimulation(clone(base.world), clone(base.agents));
   simulation.day = Number(base.day) || simulation.day;
@@ -82,6 +90,7 @@ function run(days) {
 
   for (let hour = 1; hour <= totalHours; hour++) {
     tick(simulation, 1);
+    advanceMovement(simulation);
 
     for (const agent of simulation.agents) {
       const action = agent.lastActionName ?? agent.currentIntent?.name ?? "none";
@@ -95,9 +104,7 @@ function run(days) {
     const problems = validate(simulation);
     for (const problem of problems) problemCounts.set(problem, (problemCounts.get(problem) ?? 0) + 1);
 
-    if (hour % 24 === 0 || hour === totalHours) {
-      samples.push(metrics(simulation, hour));
-    }
+    if (hour % 24 === 0 || hour === totalHours) samples.push(metrics(simulation, hour));
   }
 
   return {
