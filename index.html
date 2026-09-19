@@ -4,18 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lúmina — Aldea IA</title>
-  <link rel="stylesheet" href="./style.css?v=4" />
+  <link rel="stylesheet" href="./style.css?v=5" />
 </head>
 <body>
   <div id="hud">
     <div class="title">LÚMINA</div>
     <div id="worldTime" class="subtitle">Aldea IA · Día 1 · 08:00 · Velocidad 1x</div>
   </div>
-  <button id="agentDebug" type="button" aria-label="Centrar cámara en los habitantes">
+  <div id="agentDebug" aria-label="Habitantes de Lúmina">
     <strong>Habitantes: 2</strong>
-    <span>Alex 🔵 · Bruno 🟠</span>
-    <small>Toca un habitante o este panel para ver información</small>
-  </button>
+    <div class="agentQuick">
+      <button type="button" data-agent="alex">Alex 🔵</button>
+      <button type="button" data-agent="bruno">Bruno 🟠</button>
+    </div>
+    <small>Arrastra/pellizca el mapa · toca un habitante para abrir su ficha</small>
+  </div>
   <div id="status"></div>
   <aside id="agentPanel" aria-hidden="true">
     <button id="closeAgentPanel" aria-label="Cerrar">×</button>
@@ -28,6 +31,6 @@
     <section class="agentSection"><h3>Experiencias recientes</h3><div id="agentExperiences"></div></section>
   </aside>
   <div id="app"></div>
-  <script type="module" src="./src/main-stable.js?v=2"></script>
+  <script type="module" src="./src/main-stable.js?v=3"></script>
 </body>
 </html>
