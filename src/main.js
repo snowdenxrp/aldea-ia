@@ -245,6 +245,33 @@ for (const agent of agents) {
   scene.add(mesh);
 }
 
+// Load the latest persistent state after the visual scene already exists.
+// This keeps the page visible even if the network request is slow or unavailable.
+restoreRemoteSimulation().then(restored => {
+  if (!restored) return;
+
+  for (const agent of agents) {
+    let mesh = agentMeshes.get(agent.id);
+
+    if (!mesh) {
+      mesh = createAgentMesh(agent);
+      agentMeshes.set(agent.id, mesh);
+      scene.add(mesh);
+    }
+
+    mesh.visible = agent.alive;
+    mesh.position.set(agent.position.x, 0, agent.position.z);
+  }
+
+  for (const [id, mesh] of agentMeshes) {
+    if (!agents.some(agent => agent.id === id)) {
+      mesh.visible = false;
+    }
+  }
+}).catch(() => {
+  // The local state remains valid if the remote state cannot be loaded.
+});
+
 const agentPanel = document.querySelector("#agentPanel");
 const closeAgentPanel = document.querySelector("#closeAgentPanel");
 const agentAvatar = document.querySelector("#agentAvatar");
