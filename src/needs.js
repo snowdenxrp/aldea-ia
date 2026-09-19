@@ -69,9 +69,9 @@ export function applyNeedConsequences(needs, hours) {
   if (
     next.hunger >= 60 &&
     next.thirst >= 60 &&
-    next.energy >= 30
+    next.energy >= 20
   ) {
-    next.health += hours * 1;
+    next.health += hours * 1.5;
   }
 
   next.health = clamp(next.health);
