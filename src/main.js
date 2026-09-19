@@ -329,20 +329,31 @@ function addVisualDiagnostics() {
   if (!panel) {
     panel = document.createElement("div");
     panel.id = "luminaDiag";
-    panel.style.cssText = "position:fixed;left:10px;bottom:10px;z-index:9999;padding:8px 10px;background:rgba(0,0,0,.75);color:#fff;font:12px monospace;border-radius:8px;pointer-events:none;max-width:90vw;";
+    panel.style.cssText = "position:fixed;left:10px;bottom:10px;z-index:9999;padding:8px 10px;background:rgba(0,0,0,.78);color:#fff;font:11px monospace;border-radius:8px;pointer-events:none;max-width:96vw;line-height:1.45;";
     document.body.appendChild(panel);
   }
+
+  const probe = agent => {
+    const mesh = agentMeshes.get(agent?.id);
+    if (!mesh) return "mesh=NO";
+    mesh.updateWorldMatrix(true, true);
+    const p = new THREE.Vector3();
+    mesh.getWorldPosition(p);
+    const ndc = p.clone().project(camera);
+    const onScreen = Number.isFinite(ndc.x) && Number.isFinite(ndc.y) && Number.isFinite(ndc.z)
+      && Math.abs(ndc.x) <= 1.15 && Math.abs(ndc.y) <= 1.15 && ndc.z >= -1 && ndc.z <= 1;
+    return `mesh=YES vis=${mesh.visible} children=${mesh.children.length} world=${p.x.toFixed(1)},${p.y.toFixed(1)},${p.z.toFixed(1)} ndc=${ndc.x.toFixed(2)},${ndc.y.toFixed(2)},${ndc.z.toFixed(2)} screen=${onScreen ? "YES" : "NO"}`;
+  };
+
   const alex = agents.find(a => a.id === "alex");
   const bruno = agents.find(a => a.id === "bruno");
-  const am = agentMeshes.get("alex");
-  const bm = agentMeshes.get("bruno");
   panel.textContent = [
-    "LÚMINA DEBUG",
-    "frames: " + frameCount,
-    "agents: " + agents.length,
-    "Alex: " + (alex ? "OK" : "MISSING") + " mesh=" + (!!am) + " vis=" + (am?.visible ?? false) + " pos=" + (alex ? alex.position.x.toFixed(1)+","+alex.position.z.toFixed(1) : "—"),
-    "Bruno: " + (bruno ? "OK" : "MISSING") + " mesh=" + (!!bm) + " vis=" + (bm?.visible ?? false) + " pos=" + (bruno ? bruno.position.x.toFixed(1)+","+bruno.position.z.toFixed(1) : "—"),
-    "fault: " + (simulationFault ? (simulationFault.message || simulationFault) : "none")
+    "LÚMINA DEBUG · RENDER PROBE",
+    `frames=${frameCount} agents=${agents.length} sceneChildren=${scene.children.length} canvas=${renderer.domElement.width}x${renderer.domElement.height} calls=${renderer.info.render.calls}`,
+    `camera=${camera.position.x.toFixed(1)},${camera.position.y.toFixed(1)},${camera.position.z.toFixed(1)} target=${cameraTarget.x.toFixed(1)},${cameraTarget.z.toFixed(1)}`,
+    `Alex ${alex ? "OK " + probe(alex) : "MISSING"}`,
+    `Bruno ${bruno ? "OK " + probe(bruno) : "MISSING"}`,
+    `fault=${simulationFault ? (simulationFault.message || simulationFault) : "none"}`
   ].join(" · ");
 }
 
