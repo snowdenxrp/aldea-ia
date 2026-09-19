@@ -14,7 +14,7 @@ function recoverCoreAgents(agents) {
   for (const fallback of initial) {
     let agent = agents.find(item => item?.id === fallback.id);
     if (!agent) { agents.push(clone(fallback)); agent = agents[agents.length - 1]; }
-    agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
+    agent.currentActivity = agent.alive === false ? "dead" : (agent.currentActivity ?? "idle");
     agent.currentIntent = agent.currentIntent ?? null;
     agent.position ??= { ...fallback.position };
     agent.needs ??= clone(fallback.needs);
