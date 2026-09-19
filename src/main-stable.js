@@ -35,7 +35,7 @@ document.querySelector("#closeAgentPanel")?.addEventListener("click",()=>{const 
 document.querySelector("#agentDebug")?.addEventListener("click",centerOnAgents);
 document.querySelectorAll("[data-agent]")?.forEach(button=>button.addEventListener("click",e=>{e.stopPropagation();openAgent(button.dataset.agent);}));
 // Cámara estable: un dedo arrastra, dos dedos hacen pinch-zoom/rotación y la rueda hace zoom.
-let dragging=false,lastX=0,lastY=0,pinchStart=0,gestureStart=null,gestureMoved=false;
+let dragging=false,lastX=0,lastY=0,pinchStart=0,gestureStart=null,gestureMoved=false,lastAngle=0;
 const pointers=new Map();
 const clampCamera=()=>{cameraTarget.x=Math.max(world.bounds.minX,Math.min(world.bounds.maxX,cameraTarget.x));cameraTarget.z=Math.max(world.bounds.minZ,Math.min(world.bounds.maxZ,cameraTarget.z));};
 const distance=(a,b)=>Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
@@ -63,6 +63,7 @@ renderer.domElement.addEventListener("pointerdown",e=>{
     dragging=false;
     const p=[...pointers.values()];
     pinchStart=distance(p[0],p[1]);
+    lastAngle=angle(p[0],p[1]);
     gestureMoved=true;
   }
 });
@@ -75,6 +76,12 @@ renderer.domElement.addEventListener("pointermove",e=>{
     const pts=[...pointers.values()],d=distance(pts[0],pts[1]);
     if(pinchStart)cameraDistance=Math.max(10,Math.min(75,cameraDistance+(pinchStart-d)*.07));
     pinchStart=d;
+    const a=angle(pts[0],pts[1]);
+    let da=a-lastAngle;
+    if(da>Math.PI)da-=Math.PI*2;
+    if(da<-Math.PI)da+=Math.PI*2;
+    cameraYaw-=da*0.9;
+    lastAngle=a;
     return;
   }
   if(!dragging)return;
@@ -90,7 +97,7 @@ function endPointer(e){
   const wasTap=pointers.size===1 && !gestureMoved && gestureStart?.id===e.pointerId;
   const x=e.clientX,y=e.clientY;
   pointers.delete(e.pointerId);
-  if(pointers.size<2)pinchStart=0;
+  if(pointers.size<2){pinchStart=0;lastAngle=0;}
   dragging=pointers.size===1;
   if(dragging){const p=[...pointers.values()][0];lastX=p.clientX;lastY=p.clientY;}
   if(renderer.domElement.hasPointerCapture(e.pointerId))renderer.domElement.releasePointerCapture(e.pointerId);
