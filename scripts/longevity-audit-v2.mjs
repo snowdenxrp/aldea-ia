@@ -79,6 +79,7 @@ function run(days) {
   const maxStreak = new Map();
   const healthFloor = new Map();
   const firstDeathHour = new Map();
+  const deathSnapshots = new Map();
 
   for (let hour = 1; hour <= totalHours; hour++) {
     tick(simulation, 1);
@@ -92,7 +93,19 @@ function run(days) {
       actionCounts.set(key, (actionCounts.get(key) ?? 0) + 1);
       if (agent.alive === false) {
         deaths.set(agent.id, (deaths.get(agent.id) ?? 0) + 1);
-        if (!firstDeathHour.has(agent.id)) firstDeathHour.set(agent.id, hour);
+        if (!firstDeathHour.has(agent.id)) {
+          firstDeathHour.set(agent.id, hour);
+          deathSnapshots.set(agent.id, {
+            hour,
+            day: simulation.day,
+            needs: { ...agent.needs },
+            position: { ...agent.position },
+            lastAction: agent.lastActionName ?? null,
+            lastResult: agent.lastActionResult ?? null,
+            inventory: clone(agent.inventory ?? []),
+            knownActions: (agent.knowledge ?? []).filter(k => String(k.topic).startsWith("action:")).map(k => k.topic)
+          });
+        }
       }
       const previous = agent.__auditPreviousAction;
       const streak = action === previous ? (agent.__auditStreak ?? 0) + 1 : 1;
@@ -112,6 +125,7 @@ function run(days) {
     deaths: Object.fromEntries(deaths),
     maxActionStreak: Object.fromEntries(maxStreak),
     firstDeathHour: Object.fromEntries(firstDeathHour),
+    deathSnapshots: Object.fromEntries(deathSnapshots),
     healthFloor: Object.fromEntries(healthFloor),
     problemCounts: Object.fromEntries(problemCounts)
   };
