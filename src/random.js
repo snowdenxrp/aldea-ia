@@ -25,3 +25,8 @@ function normalizeSeed(seed) {
   }
   return hash | 0;
 }
+
+
+export function getRandom(simulation) {
+  return typeof simulation?.random === "function" ? simulation.random : Math.random;
+}
