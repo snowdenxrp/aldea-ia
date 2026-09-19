@@ -27,7 +27,7 @@ export function evaluateOptions(context, options) {
     .sort((a, b) => b.score - a.score);
 }
 
-export function chooseOption(context, options, randomness = 0.12) {
+export function chooseOption(context, options, randomness = 0.12, random = Math.random) {
   const evaluated = evaluateOptions(context, options);
   if (evaluated.length === 0) return null;
 
@@ -40,9 +40,9 @@ export function chooseOption(context, options, randomness = 0.12) {
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
   if (!Number.isFinite(totalWeight) || totalWeight <= 0) return candidates[0];
 
-  if (Math.random() >= randomness) return candidates[0];
+  if (random() >= randomness) return candidates[0];
 
-  let pick = Math.random() * totalWeight;
+  let pick = random() * totalWeight;
   for (let index = 0; index < candidates.length; index += 1) {
     pick -= weights[index];
     if (pick <= 0) return candidates[index];
@@ -59,38 +59,15 @@ function calculateScore(context, option) {
     score += (survival - 70) * 0.8;
   }
 
-  if (option.effects?.hunger) {
-    score += needPressure(context.needs.hunger) * option.effects.hunger;
-  }
+  if (option.effects?.hunger) score += needPressure(context.needs.hunger) * option.effects.hunger;
+  if (option.effects?.thirst) score += needPressure(context.needs.thirst) * option.effects.thirst;
+  if (option.effects?.energy) score += energyPressure(context.needs.energy) * option.effects.energy;
+  if (option.effects?.social) score += needPressure(context.needs.social) * option.effects.social;
+  if (option.knowledgeBonus) score += option.knowledgeBonus(context.knowledge);
+  if (option.memoryBonus) score += option.memoryBonus(context.memories);
+  if (option.explorationValue) score += option.explorationValue * explorationPressure(context, option);
 
-  if (option.effects?.thirst) {
-    score += needPressure(context.needs.thirst) * option.effects.thirst;
-  }
-
-  if (option.effects?.energy) {
-    score += energyPressure(context.needs.energy) * option.effects.energy;
-  }
-
-  if (option.effects?.social) {
-    score += needPressure(context.needs.social) * option.effects.social;
-  }
-
-  if (option.knowledgeBonus) {
-    score += option.knowledgeBonus(context.knowledge);
-  }
-
-  if (option.memoryBonus) {
-    score += option.memoryBonus(context.memories);
-  }
-
-  if (option.explorationValue) {
-    score += option.explorationValue * explorationPressure(context, option);
-  }
-
-  if (Number.isFinite(option.distance)) {
-    // Viajar tiene un coste real. Las necesidades críticas pueden superar este coste.
-    score -= Math.min(2.5, Math.max(0, option.distance) * 0.06);
-  }
+  if (Number.isFinite(option.distance)) score -= Math.min(2.5, Math.max(0, option.distance) * 0.06);
 
   if (context.recentAction === option.name) {
     const pressure = Math.max(
@@ -102,10 +79,7 @@ function calculateScore(context, option) {
     score -= pressure > 55 ? 0.35 : 2.5;
   }
 
-  if (option.relationshipBonus) {
-    score += option.relationshipBonus(context.relationships);
-  }
-
+  if (option.relationshipBonus) score += option.relationshipBonus(context.relationships);
   return score;
 }
 
@@ -121,11 +95,7 @@ function energyPressure(value) {
 
 function explorationPressure(context, option) {
   const novelty = option.novelty ?? 0.5;
-  const knowledgeCount = context.knowledge.filter(item =>
-    item.topic === option.knowledgeTopic
-  ).length;
-  const memoryPenalty = context.memories.filter(memory =>
-    memory.description.toLowerCase().includes(option.memoryKeyword ?? "")
-  ).length;
+  const knowledgeCount = context.knowledge.filter(item => item.topic === option.knowledgeTopic).length;
+  const memoryPenalty = context.memories.filter(memory => memory.description.toLowerCase().includes(option.memoryKeyword ?? "")).length;
   return Math.max(0.15, novelty - knowledgeCount * 0.25 - Math.min(0.25, memoryPenalty * 0.03));
 }

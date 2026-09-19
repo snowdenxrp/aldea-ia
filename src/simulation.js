@@ -11,6 +11,7 @@ import { executeAction } from "./actions.js";
 import { remember, learnFromEvidence } from "./memory.js";
 import { recordInteraction } from "./relationships.js";
 import { stopMovement } from "./movement.js";
+import { getRandom } from "./random.js";
 
 export function createSimulation(world, agents) {
   return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false };
@@ -22,7 +23,7 @@ export function recordEvent(simulation, event) {
   return stored;
 }
 
-function generateOptions(agent, perception, world) {
+function generateOptions(agent, perception, world, random = Math.random) {
   const knownActions = getKnownActions(agent);
   const options = [];
   options.push({ name: "rest", baseValue: 0, effects: { energy: 1.2 }, distance: 0 });
@@ -55,7 +56,7 @@ function generateOptions(agent, perception, world) {
     if (resourceType === "fish") option.effects = { hunger: 0.65 };
     options.push(option);
   }
-  const explorationTarget = createExplorationTarget(agent, world);
+  const explorationTarget = createExplorationTarget(agent, world, random);
   const explorationDistance = Math.hypot(explorationTarget.x - agent.position.x, explorationTarget.z - agent.position.z);
   options.push({ name: "explore_area", baseValue: 0.28, explorationValue: 0.7, novelty: 0.8, distance: explorationDistance, target: explorationTarget });
   return options;
@@ -69,10 +70,10 @@ function getKnownActionDistance(actionName, perception) {
   return perception.nearbyResources.find(resource => resource.type === type)?.distance ?? 25;
 }
 
-function createExplorationTarget(agent, world) {
+function createExplorationTarget(agent, world, random = Math.random) {
   const bounds = world?.bounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 };
-  const angle = Math.random() * Math.PI * 2;
-  const distance = 4 + Math.random() * 6;
+  const angle = random() * Math.PI * 2;
+  const distance = 4 + random() * 6;
   return { x: Math.max(bounds.minX, Math.min(bounds.maxX, agent.position.x + Math.cos(angle) * distance)), z: Math.max(bounds.minZ, Math.min(bounds.maxZ, agent.position.z + Math.sin(angle) * distance)) };
 }
 
@@ -129,7 +130,7 @@ function performSocialInteraction(simulation, agent) {
   const visible = agent.lastPerception.visibleAgents.filter(other => other.distance <= 1.8).sort((a, b) => a.distance - b.distance);
   if (!visible.length) { agent.lastActionResult = { success: false, reason: "no_person_nearby" }; return; }
   const other = simulation.agents.find(candidate => candidate.id === visible[0].id && candidate.alive); if (!other) return;
-  const firstMeeting = !agent.relationships.some(rel => rel.agentId === other.id); const roll = Math.random();
+  const firstMeeting = !agent.relationships.some(rel => rel.agentId === other.id); const roll = getRandom(simulation)();
   const interaction = roll < 0.55 ? { type: "conversation", description: `${agent.name} y ${other.name} tuvieron una interacción cordial.`, trust: 0.08, cooperation: 0.05, affection: 0.03, tension: 0, resentment: 0 } : roll < 0.85 ? { type: "conversation", description: `${agent.name} y ${other.name} se encontraron, pero la interacción fue neutral.`, trust: 0.01, cooperation: 0, affection: 0, tension: 0.01, resentment: 0 } : { type: "conversation", description: `${agent.name} y ${other.name} tuvieron un encuentro incómodo.`, trust: -0.05, cooperation: -0.02, affection: -0.01, tension: 0.08, resentment: 0.04 };
   recordInteraction(agent, other, { ...interaction, day: simulation.day }); recordInteraction(other, agent, { ...interaction, day: simulation.day }); agent.needs.social = Math.min(100, agent.needs.social + 18); other.needs.social = Math.min(100, other.needs.social + 18);
   const event = recordEvent(simulation, { type: firstMeeting ? "first_meeting" : "social_interaction", description: firstMeeting ? `${agent.name} conoció por primera vez a ${other.name}. ${interaction.description}` : interaction.description, participants: [agent.id, other.id] });
@@ -141,8 +142,8 @@ function performKnowledgeSharing(simulation, agent) {
   const other = simulation.agents.find(candidate => candidate.id === visible[0].id && candidate.alive); if (!other) return;
   const candidates = agent.knowledge.filter(item => item.confidence >= 0.3); if (!candidates.length) { agent.lastActionResult = { success: false, reason: "nothing_to_share" }; return; }
   const relationship = agent.relationships.find(rel => rel.agentId === other.id); const trust = relationship?.trust ?? 0; const cooperation = relationship?.cooperation ?? 0; const shareProbability = Math.max(0.15, Math.min(0.9, 0.35 + trust * 0.25 + cooperation * 0.2));
-  if (Math.random() > shareProbability) { const description = `${agent.name} habló con ${other.name}, pero decidió no compartir información importante.`; const event = recordEvent(simulation, { type: "withheld_knowledge", description, participants: [agent.id, other.id] }); remember(agent, { id: event.id, day: simulation.day, type: "social", description, participants: [agent.id, other.id], emotionalWeight: 0, importance: 0.35 }); agent.lastActionResult = { success: true, effect: "knowledge_withheld" }; return; }
-  const knowledge = candidates[Math.floor(Math.random() * candidates.length)]; const communicationFidelity = Math.max(0.55, Math.min(0.95, 0.75 + trust * 0.15)); const event = recordEvent(simulation, { type: "knowledge_shared", description: `${agent.name} compartió con ${other.name} lo que cree saber sobre "${knowledge.topic}".`, participants: [agent.id, other.id] }); learnFromEvidence(other, { topic: knowledge.topic, belief: knowledge.belief, description: `${agent.name} me contó que: ${knowledge.belief}`, outcome: trust >= 0 ? 0.4 : -0.1, reliability: communicationFidelity, day: simulation.day }); agent.needs.social = Math.min(100, agent.needs.social + 8); agent.lastActionResult = { success: true, effect: "knowledge_shared", otherAgentId: other.id };
+  if (getRandom(simulation)() > shareProbability) { const description = `${agent.name} habló con ${other.name}, pero decidió no compartir información importante.`; const event = recordEvent(simulation, { type: "withheld_knowledge", description, participants: [agent.id, other.id] }); remember(agent, { id: event.id, day: simulation.day, type: "social", description, participants: [agent.id, other.id], emotionalWeight: 0, importance: 0.35 }); agent.lastActionResult = { success: true, effect: "knowledge_withheld" }; return; }
+  const knowledge = candidates[Math.floor(getRandom(simulation)() * candidates.length)]; const communicationFidelity = Math.max(0.55, Math.min(0.95, 0.75 + trust * 0.15)); const event = recordEvent(simulation, { type: "knowledge_shared", description: `${agent.name} compartió con ${other.name} lo que cree saber sobre "${knowledge.topic}".`, participants: [agent.id, other.id] }); learnFromEvidence(other, { topic: knowledge.topic, belief: knowledge.belief, description: `${agent.name} me contó que: ${knowledge.belief}`, outcome: trust >= 0 ? 0.4 : -0.1, reliability: communicationFidelity, day: simulation.day }); agent.needs.social = Math.min(100, agent.needs.social + 8); agent.lastActionResult = { success: true, effect: "knowledge_shared", otherAgentId: other.id };
 }
 
 function recordExploration(simulation, agent, subject) { const description = `${agent.name} exploró y aprendió algo sobre ${subject}.`; const event = recordEvent(simulation, { type: "exploration", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "discovery", description, importance: 0.6, emotionalWeight: 0.04 }); }
@@ -193,12 +194,12 @@ export function tick(simulation, deltaHours = 0.01) {
           considered: [{ name: "drink", score: 999 }]
         };
       } else if (!agent.currentIntent || !agent.currentIntent.target) {
-        const options = generateOptions(agent, perception, simulation.world);
+        const options = generateOptions(agent, perception, simulation.world, getRandom(simulation));
         const context = createDecisionContext(agent, perception);
         const evaluatedOptions = evaluateOptions(context, options);
         agent.availableOptions = options;
         agent.decisionSnapshot = { chosen: null, considered: evaluatedOptions.slice().sort((x, y) => y.score - x.score).slice(0, 3).map(option => ({ name: option.name, score: option.score })) };
-        agent.currentIntent = chooseOption(context, options);
+        agent.currentIntent = chooseOption(context, options, 0.12, getRandom(simulation));
         if (agent.currentIntent) agent.decisionSnapshot.chosen = { name: agent.currentIntent.name, score: agent.currentIntent.score };
       }
       performDecision(simulation, agent);

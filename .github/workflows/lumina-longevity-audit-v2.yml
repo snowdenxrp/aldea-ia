@@ -1,0 +1,24 @@
+name: Lúmina — auditoría de longevidad v2
+
+on:
+  push:
+    branches:
+      - "audit/longevity-2026-09-19"
+
+permissions:
+  contents: read
+
+jobs:
+  longevity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Auditoría de 100, 500 y 1000 días con movimiento
+        run: node scripts/longevity-audit-v2.mjs
+      - name: Pruebas existentes como referencia
+        run: npm test
+        continue-on-error: true

@@ -1,0 +1,1 @@
+Estas pruebas son parte de la auditoría y deliberadamente no modifican el motor. Ejecutar `node --test tests/lumina-invariants.test.mjs tests/lumina-invariants-v2.test.mjs` desde la raíz.
