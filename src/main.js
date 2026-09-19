@@ -124,12 +124,35 @@ function ensureCoreAgents() {
   }
 }
 
+function parseSavedState(raw) {
+  try {
+    const saved = JSON.parse(raw);
+    if (!saved || !Array.isArray(saved.agents) || !saved.world?.resources) return null;
+    return saved;
+  } catch {
+    return null;
+  }
+}
+
 function restoreSimulation() {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return false;
-    const saved = JSON.parse(raw);
-    if (!saved || !Array.isArray(saved.agents) || !saved.world?.resources) return false;
+    const current = parseSavedState(localStorage.getItem(SAVE_KEY) ?? "");
+    // En versiones anteriores guardábamos en v3/v4. No debemos perder el progreso
+    // simplemente por cambiar la versión interna del formato.
+    const legacy = ["lumina-world-v4", "lumina-world-v3"]
+      .map(key => ({ key, saved: parseSavedState(localStorage.getItem(key) ?? "") }))
+      .filter(item => item.saved);
+
+    // Si v5 acaba de arrancar en el estado inicial pero existe un progreso anterior
+    // (por ejemplo, Día 9), recuperar automáticamente ese progreso.
+    let saved = current;
+    if ((!saved || (Number(saved.day) <= 1 && Number(saved.hour) <= 8)) && legacy.length) {
+      const bestLegacy = legacy
+        .sort((a, b) => (Number(b.saved.savedAt) || 0) - (Number(a.saved.savedAt) || 0))[0]?.saved;
+      if (bestLegacy && (Number(bestLegacy.day) > 1 || Number(bestLegacy.hour) > 8)) saved = bestLegacy;
+    }
+    if (!saved) return false;
+
     Object.assign(world, saved.world);
     Object.assign(simulation, {
       hour: Number.isFinite(Number(saved.hour)) ? Number(saved.hour) : (world.timeOfDay ?? 8),
@@ -138,10 +161,11 @@ function restoreSimulation() {
     });
     agents.splice(0, agents.length, ...saved.agents);
     ensureCoreAgents();
+    // Migrar el estado recuperado al formato actual sin borrar las versiones antiguas.
+    saveSimulation();
     return agents.length > 0;
   } catch (error) {
     console.warn("Lúmina: estado local inválido; se usará el estado inicial.", error);
-    localStorage.removeItem(SAVE_KEY);
     return false;
   }
 }
