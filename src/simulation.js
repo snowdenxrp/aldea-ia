@@ -115,11 +115,13 @@ function buildCriticalHungerIntent(simulation, agent, perception) {
     return { name: "explore_plants", baseValue: 999, explorationValue: 1, novelty: 1, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } };
   }
   const fish = perception.nearbyResources.find(resource => resource.type === "fish");
-  if (fish && simulation.world.resources.fish.amount > 0 && knownActions.some(action => action.name === "catch_fish") && agent.needs.energy > 0) {
+  const fishFailures = Number(agent.actionFailures?.catch_fish ?? 0);
+  if (fish && simulation.world.resources.fish.amount > 0 && knownActions.some(action => action.name === "catch_fish") && fishFailures < 3 && agent.needs.energy > 0) {
     return { name: "catch_fish", amount: 1, baseValue: 999, effects: { hunger: 1.6 }, distance: fish.distance, target: { ...simulation.world.resources.fish.position } };
   }
-  if (agent.needs.energy <= 10) {
-    return { name: "rest", amount: 1, baseValue: 999, effects: { energy: 7 }, target: null };
+  if (fishFailures >= 3 || agent.needs.energy <= 10) {
+    const target = createExplorationTarget(agent, simulation.world, getRandom(simulation));
+    return { name: "explore_area", baseValue: 999, explorationValue: 1, novelty: 1, target };
   }
   return null;
 }
@@ -149,6 +151,9 @@ function performDecision(simulation, agent) {
     recordExploration(simulation, agent, data[1]); agent.lastActionName = intent.name; agent.currentIntent = null; return;
   }
   const result = executeAction(simulation, agent, intent); agent.lastActionResult = result; agent.lastAttemptedAction = intent.name; agent.lastActionName = result.success ? intent.name : null;
+  agent.actionFailures ??= {};
+  if (result.success) agent.actionFailures[intent.name] = 0;
+  else agent.actionFailures[intent.name] = (agent.actionFailures[intent.name] ?? 0) + 1;
   if (!result.success && intent.name === "drink") agent.currentActivity = "idle";
   if (result.success) { improveSkillFromAction(agent, intent.name, simulation.day); const description = describeAction(agent, intent.name, result); const event = recordEvent(simulation, { type: "action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: intent.name === "rest" ? 0.2 : 0.5, emotionalWeight: 0 }); updateActionBelief(agent, intent.name, 1, simulation.day, description); if (intent.name === "catch_fish" && result.amount > 0) discoverAction(agent, { actionName: "eat_fish", belief: "Creo que el pez que capturé puede servirme como alimento.", confidence: 0.12, evidence: "Capturé un pez y ahora tengo uno en mi inventario.", outcome: 0.1, reliability: 0.35, day: simulation.day }); }
   else { const description = `${agent.name} intentó ${intent.name}, pero no pudo hacerlo (${result.reason ?? "sin resultado"}).`; const event = recordEvent(simulation, { type: "failed_action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: 0.45, emotionalWeight: -0.15 }); const environmentalFailure = new Set(["no_water", "no_plants", "no_fish", "no_wood", "no_stone"]).has(result.reason); if (!environmentalFailure) updateActionBelief(agent, intent.name, -1, simulation.day, description); }
