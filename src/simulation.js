@@ -121,6 +121,10 @@ function buildCriticalHungerIntent(simulation, agent, perception) {
     return { name: "catch_fish", amount: 1, baseValue: 999, effects: { hunger: 1.6 }, distance: fish.distance, target: { ...simulation.world.resources.fish.position } };
   }
   if (fishFailures >= 3 || agent.needs.energy <= 10) {
+    const anchor = agent.knownResources?.water ?? agent.knownResources?.fish;
+    if (anchor) {
+      return { name: "explore_area", baseValue: 999, explorationValue: 1, novelty: 1, target: { x: anchor.x, z: anchor.z } };
+    }
     const target = createExplorationTarget(agent, simulation.world, getRandom(simulation));
     return { name: "explore_area", baseValue: 999, explorationValue: 1, novelty: 1, target };
   }
