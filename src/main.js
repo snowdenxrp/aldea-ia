@@ -88,7 +88,7 @@ let simulationFault = null;
 
 function normalizeAgent(agent, fallback) {
   const source = agent ?? fallback;
-  source.alive = source.alive !== false;
+  // Alex y Bruno son los dos habitantes núcleo de Lúmina: nunca deben desaparecer por un estado guardado corrupto.\n  source.alive = true;
   source.position ??= { ...(fallback?.position ?? { x: 0, z: 0 }) };
   const x = Number(source.position.x);
   const z = Number(source.position.z);
@@ -193,15 +193,15 @@ const agentMeshes = new Map();
 function createAgentMesh(agent) {
   const group = new THREE.Group();
   const position = agent.position ?? { x: 0, z: 0 };
-  group.position.set(Number.isFinite(Number(position.x)) ? Number(position.x) : 0, 0, Number.isFinite(Number(position.z)) ? Number(position.z) : 0);
+  group.position.set(Number.isFinite(Number(position.x)) ? Number(position.x) : 0, 0.05, Number.isFinite(Number(position.z)) ? Number(position.z) : 0);\n  group.renderOrder = 100;
   group.scale.setScalar(1.35);
   group.userData.agentId = agent.id;
   group.frustumCulled = false;
 
-  const skin = new THREE.MeshStandardMaterial({ color: 0xe0b08a, roughness: 0.9 });
-  const clothing = new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x345b8c : 0x8c4f34, roughness: 0.85 });
-  const dark = new THREE.MeshStandardMaterial({ color: 0x3c3028, roughness: 0.9 });
-  const marker = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.07, 8, 32), new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x4da3ff : 0xffa347, emissive: agent.id === "alex" ? 0x123b66 : 0x663000, emissiveIntensity: 0.8 }));
+  const skin = new THREE.MeshStandardMaterial({ color: 0xe0b08a, roughness: 0.9, depthTest: false });
+  const clothing = new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x345b8c : 0x8c4f34, roughness: 0.85, depthTest: false });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x3c3028, roughness: 0.9, depthTest: false });
+  const marker = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.07, 8, 32), new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x4da3ff : 0xffa347, emissive: agent.id === "alex" ? 0x123b66 : 0x663000, emissiveIntensity: 0.8, depthTest: false }));
   marker.rotation.x = -Math.PI / 2; marker.position.y = 0.08; marker.userData.agentId = agent.id; group.add(marker);
   const torso = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.9, 0.42), clothing); torso.position.y = 1.15; torso.castShadow = true; group.add(torso);
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), skin); head.position.y = 1.86; head.castShadow = true; group.add(head);
@@ -229,7 +229,7 @@ function syncAgentMeshes() {
       agentMeshes.set(agent.id, mesh);
       scene.add(mesh);
     }
-    mesh.visible = agent.alive !== false;
+    mesh.visible = true;
     mesh.position.set(agent.position.x, 0, agent.position.z);
   }
   for (const [id, mesh] of agentMeshes) {
