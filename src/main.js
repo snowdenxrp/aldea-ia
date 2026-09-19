@@ -249,9 +249,13 @@ function createAgentMesh(agent) {
 }
 
 function syncAgentMeshes() {
+  // Los dos habitantes núcleo deben tener siempre una representación visual,
+  // independientemente de lo que contenga el estado guardado.
   ensureCoreAgents();
-  for (const agent of agents) {
-    const fallback = createInitialAgents().find(item => item.id === agent.id) ?? { position: { x: 0, z: 0 } };
+  const core = createInitialAgents();
+  for (const fallback of core) {
+    const agent = agents.find(item => item.id === fallback.id);
+    if (!agent) continue;
     normalizeAgent(agent, fallback);
     let mesh = agentMeshes.get(agent.id);
     if (!mesh) {
@@ -262,8 +266,15 @@ function syncAgentMeshes() {
     mesh.visible = true;
     mesh.position.set(agent.position.x, 0, agent.position.z);
   }
-  for (const [id, mesh] of agentMeshes) {
-    if (!agents.some(agent => agent.id === id)) mesh.visible = false;
+  for (const agent of agents) {
+    if (agentMeshes.has(agent.id)) continue;
+    const fallback = { position: { x: 0, z: 0 } };
+    normalizeAgent(agent, fallback);
+    const mesh = createAgentMesh(agent);
+    agentMeshes.set(agent.id, mesh);
+    scene.add(mesh);
+    mesh.visible = true;
+    mesh.position.set(agent.position.x, 0, agent.position.z);
   }
 }
 
