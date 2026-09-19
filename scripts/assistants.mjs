@@ -14,19 +14,19 @@ async function readJson(path, fallback) {
   try { return JSON.parse(await fs.readFile(path, "utf8")); } catch { return fallback; }
 }
 
-function recoverCoreAgents(agents) {
+function normalizeCoreAgents(agents) {
   const initial = createInitialAgents();
   for (const fallback of initial) {
     let agent = agents.find(item => item?.id === fallback.id);
     if (!agent) { agents.push(structuredClone(fallback)); agent = agents[agents.length - 1]; }
-    agent.alive = true;
     agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
     agent.needs ??= structuredClone(fallback.needs);
-    if (!Number.isFinite(Number(agent.needs.health)) || agent.needs.health <= 0) agent.needs.health = 100;
+    if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
     for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
       if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
-      agent.needs[key] = Math.max(20, Math.min(100, Number(agent.needs[key])));
+      agent.needs[key] = Math.max(0, Math.min(100, Number(agent.needs[key])));
     }
+    agent.needs.health = Math.max(0, Math.min(100, Number(agent.needs.health)));
   }
 }
 
@@ -38,7 +38,7 @@ const simulation = createSimulation(
 simulation.day = Number(persisted?.day) || simulation.world.day || 1;
 simulation.hour = Number.isFinite(Number(persisted?.hour)) ? Number(persisted.hour) : (simulation.world.timeOfDay || 8);
 simulation.events = Array.isArray(persisted?.events) ? persisted.events.slice(-500) : [];
-recoverCoreAgents(simulation.agents);
+normalizeCoreAgents(simulation.agents);
 
 const codeFiles = {};
 for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "src/movement.js", "src/agents.js"]) {
