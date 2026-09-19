@@ -433,7 +433,6 @@ function updateSimulation() {
   try {
     if (!simulationFault) tick(simulation, elapsed / 37.5);
     syncAgentMeshes();
-    addVisualDiagnostics();
     for (const agent of simulation.agents) {
       if (agent.currentIntent?.target) setMovementTarget(agent, agent.currentIntent.target, world.bounds);
       moveAgent(agent, elapsed);
@@ -449,6 +448,6 @@ function updateSimulation() {
 
 addEventListener("beforeunload", saveSimulation);
 const clock = new THREE.Clock();
-function animate() { requestAnimationFrame(animate); updateSimulation(); moveCamera(Math.min(clock.getDelta(), 0.05)); const t = clock.getElapsedTime(); sun.position.x = Math.sin(t * 0.04) * 18; renderer.render(scene, camera); }
+function animate() { requestAnimationFrame(animate); updateSimulation(); moveCamera(Math.min(clock.getDelta(), 0.05)); addVisualDiagnostics(); const t = clock.getElapsedTime(); sun.position.x = Math.sin(t * 0.04) * 18; renderer.render(scene, camera); }
 addEventListener("resize", () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 animate();
