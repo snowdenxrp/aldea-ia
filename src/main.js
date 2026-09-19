@@ -3,6 +3,7 @@ import { world } from "./world.js";
 import { createInitialAgents } from "./agents.js";
 import { createSimulation, tick } from "./simulation.js";
 import { setMovementTarget, moveAgent } from "./movement.js";
+import { classifyRenderProbe, buildRenderEvidence } from "./assistants/render.js";
 
 const app = document.querySelector("#app");
 const worldTime = document.querySelector("#worldTime");
@@ -367,7 +368,7 @@ function addVisualDiagnostics() {
     cameraTarget.z = Math.max(-38, Math.min(38, cameraTarget.z));
     autoFramingDone = true;
   }
-  panel.textContent = [
+  window.__luminaRenderProbe = { renderer:true, sceneChildren:scene.children.length, agents:Object.fromEntries([alex,bruno].filter(Boolean).map(agent => { const mesh=agentMeshes.get(agent.id); if(!mesh) return [agent.id,{exists:false}]; mesh.updateWorldMatrix(true,true); const p=mesh.getWorldPosition(new THREE.Vector3()); const ndc=p.clone().project(camera); const onScreen=Number.isFinite(ndc.x)&&Number.isFinite(ndc.y)&&Number.isFinite(ndc.z)&&Math.abs(ndc.x)<=1.15&&Math.abs(ndc.y)<=1.15&&ndc.z>=-1&&ndc.z<=1; return [agent.id,{exists:true,inScene:!!scene.getObjectById(mesh.id),visible:mesh.visible,onScreen}]; })) };\n  panel.textContent = [
     "LÚMINA DEBUG · RENDER PROBE",
     `frames=${frameCount} agents=${agents.length} sceneChildren=${scene.children.length} canvas=${renderer.domElement.width}x${renderer.domElement.height} calls=${renderer.info.render.calls}`,
     `camera=${camera.position.x.toFixed(1)},${camera.position.y.toFixed(1)},${camera.position.z.toFixed(1)} target=${cameraTarget.x.toFixed(1)},${cameraTarget.z.toFixed(1)}`,
