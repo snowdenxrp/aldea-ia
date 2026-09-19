@@ -4,17 +4,15 @@
 
 export function createNeeds() {
   return {
-    hunger: 100,      // 100 = satisfecho, 0 = hambre extrema
-    thirst: 100,      // 100 = bien hidratado, 0 = sed extrema
-    energy: 100,      // 100 = máxima energía, 0 = agotamiento
-    social: 100,      // 100 = buena conexión social, 0 = aislamiento prolongado
-    safety: 100,      // estado contextual de seguridad
-    health: 100       // salud general
+    hunger: 100,
+    thirst: 100,
+    energy: 100,
+    social: 100,
+    safety: 100,
+    health: 100
   };
 }
 
-// Actualiza necesidades durante un intervalo de tiempo simulado.
-// 'hours' representa horas del mundo, no horas reales.
 export function updateNeeds(needs, hours, activity = "normal") {
   const next = { ...needs };
 
@@ -28,7 +26,7 @@ export function updateNeeds(needs, hours, activity = "normal") {
   } else if (activity === "heavy") {
     next.energy -= hours * 10;
   } else {
-    next.energy -= hours * 5;
+    next.energy -= hours * 2.5;
   }
 
   next.social -= hours * 0.5;
@@ -43,34 +41,15 @@ export function updateNeeds(needs, hours, activity = "normal") {
   return next;
 }
 
-// Consecuencias físicas básicas de necesidades muy bajas.
-// No prescribe acciones: solamente modifica el estado del habitante.
 export function applyNeedConsequences(needs, hours) {
   const next = { ...needs };
 
-  if (next.thirst < 10) {
-    next.health -= hours * 2.5;
-  }
+  if (next.thirst < 10) next.health -= hours * 2.5;
+  if (next.hunger < 10) next.health -= hours * 1.5;
+  if (next.energy < 5) next.health -= hours * 0.03;
+  if (next.social < 10) next.health -= hours * 0.02;
 
-  if (next.hunger < 10) {
-    next.health -= hours * 1.5;
-  }
-
-  if (next.energy < 5) {
-    next.health -= hours * 0.03;
-  }
-
-  if (next.social < 10) {
-    next.health -= hours * 0.02;
-  }
-
-  // La recuperación aparece cuando las necesidades básicas vuelven a estar cubiertas.
-  // No es instantánea y no puede superar la salud máxima.
-  if (
-    next.hunger >= 60 &&
-    next.thirst >= 60 &&
-    next.energy >= 20
-  ) {
+  if (next.hunger >= 60 && next.thirst >= 60 && next.energy >= 20) {
     next.health += hours * 1.5;
   }
 
