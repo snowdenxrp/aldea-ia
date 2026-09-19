@@ -159,6 +159,11 @@ export function tick(simulation, deltaHours = 0.01) {
     if (["alex", "bruno"].includes(agent.id)) recoverCoreAgent(agent);
     if (!agent.alive) continue;
     try {
+      // La actividad es un estado momentáneo, no un recuerdo. Si no existe una intención
+      // activa, "drinking/eating/etc." no puede sobrevivir de un tick anterior.
+      if (!agent.currentIntent && ["drinking", "eating", "fishing", "gathering", "resting"].includes(agent.currentActivity)) {
+        agent.currentActivity = "idle";
+      }
       agent.needs = updateNeeds(agent.needs, hours, agent.currentActivity);
       agent.needs = applyNeedConsequences(agent.needs, hours);
       if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
@@ -172,7 +177,7 @@ export function tick(simulation, deltaHours = 0.01) {
       // Emergencia de supervivencia: con sed crítica, beber no puede ser reemplazado
       // por otra decisión mientras haya agua perceptible. La intención se conserva hasta completar.
       const water = perception.nearbyResources.find(resource => resource.type === "water");
-      if (water && agent.needs.thirst <= 10) {
+      if (water && simulation.world.resources.water.amount > 0 && agent.needs.thirst <= 10) {
         agent.currentIntent = {
           name: "drink",
           amount: 5,
