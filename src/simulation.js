@@ -116,6 +116,7 @@ function performDecision(simulation, agent) {
     recordExploration(simulation, agent, data[1]); agent.lastActionName = intent.name; agent.currentIntent = null; return;
   }
   const result = executeAction(simulation, agent, intent); agent.lastActionResult = result; agent.lastActionName = result.success ? intent.name : null;
+  if (!result.success && intent.name === "drink") agent.currentActivity = "idle";
   if (result.success) { improveSkillFromAction(agent, intent.name, simulation.day); const description = describeAction(agent, intent.name, result); const event = recordEvent(simulation, { type: "action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: intent.name === "rest" ? 0.2 : 0.5, emotionalWeight: 0 }); updateActionBelief(agent, intent.name, 1, simulation.day, description); if (intent.name === "catch_fish" && result.amount > 0) discoverAction(agent, { actionName: "eat_fish", belief: "Creo que el pez que capturé puede servirme como alimento.", confidence: 0.12, evidence: "Capturé un pez y ahora tengo uno en mi inventario.", outcome: 0.1, reliability: 0.35, day: simulation.day }); }
   else { const description = `${agent.name} intentó ${intent.name}, pero no pudo hacerlo (${result.reason ?? "sin resultado"}).`; const event = recordEvent(simulation, { type: "failed_action", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "experience", description, importance: 0.45, emotionalWeight: -0.15 }); updateActionBelief(agent, intent.name, -1, simulation.day, description); }
   agent.currentIntent = null;
@@ -186,7 +187,7 @@ export function tick(simulation, deltaHours = 0.01) {
           distance: water.distance,
           target: { ...simulation.world.resources.water.position }
         };
-        agent.currentActivity = water.distance > 1.5 ? "moving" : "drinking";
+        agent.currentActivity = water.distance > 1.5 ? "moving" : "idle";
         agent.decisionSnapshot = {
           chosen: { name: "drink", score: 999 },
           considered: [{ name: "drink", score: 999 }]
