@@ -220,34 +220,80 @@ for (const agent of agents) normalizeAgent(agent, createInitialAgents().find(ite
 const agentMeshes = new Map();
 
 function createAgentMesh(agent) {
+  // Renderizado deliberadamente simple y brillante: evita que iluminación, sombras,
+  // materiales o profundidad hagan desaparecer a un habitante.
   const group = new THREE.Group();
   const position = agent.position ?? { x: 0, z: 0 };
-  group.position.set(Number.isFinite(Number(position.x)) ? Number(position.x) : 0, 0.05, Number.isFinite(Number(position.z)) ? Number(position.z) : 0);
-  group.renderOrder = 100;
-  group.scale.setScalar(1.35);
+  group.position.set(Number(position.x) || 0, 0.1, Number(position.z) || 0);
+  group.scale.setScalar(1.55);
+  group.renderOrder = 1000;
   group.userData.agentId = agent.id;
   group.frustumCulled = false;
 
-  const skin = new THREE.MeshStandardMaterial({ color: 0xe0b08a, roughness: 0.9, depthTest: false });
-  const clothing = new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x345b8c : 0x8c4f34, roughness: 0.85, depthTest: false });
-  const dark = new THREE.MeshStandardMaterial({ color: 0x3c3028, roughness: 0.9, depthTest: false });
-  const marker = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.07, 8, 32), new THREE.MeshStandardMaterial({ color: agent.id === "alex" ? 0x4da3ff : 0xffa347, emissive: agent.id === "alex" ? 0x123b66 : 0x663000, emissiveIntensity: 0.8, depthTest: false }));
-  marker.rotation.x = -Math.PI / 2; marker.position.y = 0.08; marker.userData.agentId = agent.id; group.add(marker);
-  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.9, 0.42), clothing); torso.position.y = 1.15; torso.castShadow = true; group.add(torso);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), skin); head.position.y = 1.86; head.castShadow = true; group.add(head);
-  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.58), dark); hair.position.y = 2.02; hair.castShadow = true; group.add(hair);
-  const armGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.72, 8);
-  const legGeometry = new THREE.CylinderGeometry(0.12, 0.12, 0.78, 8);
-  const leftArm = new THREE.Mesh(armGeometry, skin); leftArm.position.set(-0.47, 1.17, 0); leftArm.rotation.z = -0.08; leftArm.castShadow = true; group.add(leftArm);
-  const rightArm = new THREE.Mesh(armGeometry, skin); rightArm.position.set(0.47, 1.17, 0); rightArm.rotation.z = 0.08; rightArm.castShadow = true; group.add(rightArm);
-  const leftLeg = new THREE.Mesh(legGeometry, dark); leftLeg.position.set(-0.2, 0.58, 0); leftLeg.castShadow = true; group.add(leftLeg);
-  const rightLeg = new THREE.Mesh(legGeometry, dark); rightLeg.position.set(0.2, 0.58, 0); rightLeg.castShadow = true; group.add(rightLeg);
-  const leftFoot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.12, 0.42), dark); leftFoot.position.set(-0.2, 0.15, 0.08); leftFoot.castShadow = true; group.add(leftFoot);
-  const rightFoot = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.12, 0.42), dark); rightFoot.position.set(0.2, 0.15, 0.08); rightFoot.castShadow = true; group.add(rightFoot);
-  group.traverse(object => { if (object.isMesh) object.frustumCulled = false; });
+  const isAlex = agent.id === "alex";
+  const bodyColor = isAlex ? 0x2f7de1 : 0xe87832;
+  const glowColor = isAlex ? 0x59b7ff : 0xffb15c;
+
+  const bodyMat = new THREE.MeshBasicMaterial({ color: bodyColor, depthTest: false, depthWrite: false });
+  const skinMat = new THREE.MeshBasicMaterial({ color: 0xf0bd91, depthTest: false, depthWrite: false });
+  const darkMat = new THREE.MeshBasicMaterial({ color: 0x292929, depthTest: false, depthWrite: false });
+  const glowMat = new THREE.MeshBasicMaterial({ color: glowColor, depthTest: false, depthWrite: false });
+
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.09, 10, 40), glowMat);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.08;
+  group.add(ring);
+
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(0.82, 1.0, 0.48), bodyMat);
+  torso.position.y = 1.18;
+  group.add(torso);
+
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.38, 20, 14), skinMat);
+  head.position.y = 1.98;
+  group.add(head);
+
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.39, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.58), darkMat);
+  hair.position.y = 2.12;
+  group.add(hair);
+
+  const armGeometry = new THREE.CylinderGeometry(0.11, 0.11, 0.78, 10);
+  const leftArm = new THREE.Mesh(armGeometry, skinMat);
+  leftArm.position.set(-0.53, 1.18, 0);
+  leftArm.rotation.z = -0.1;
+  group.add(leftArm);
+  const rightArm = new THREE.Mesh(armGeometry, skinMat);
+  rightArm.position.set(0.53, 1.18, 0);
+  rightArm.rotation.z = 0.1;
+  group.add(rightArm);
+
+  const legGeometry = new THREE.CylinderGeometry(0.13, 0.13, 0.82, 10);
+  const leftLeg = new THREE.Mesh(legGeometry, darkMat);
+  leftLeg.position.set(-0.22, 0.56, 0);
+  group.add(leftLeg);
+  const rightLeg = new THREE.Mesh(legGeometry, darkMat);
+  rightLeg.position.set(0.22, 0.56, 0);
+  group.add(rightLeg);
+
+  const leftFoot = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.14, 0.45), darkMat);
+  leftFoot.position.set(-0.22, 0.14, 0.08);
+  group.add(leftFoot);
+  const rightFoot = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.14, 0.45), darkMat);
+  rightFoot.position.set(0.22, 0.14, 0.08);
+  group.add(rightFoot);
+
+  // Gran punto luminoso sobre la cabeza: sirve como identificador inequívoco.
+  const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), glowMat);
+  beacon.position.y = 2.65;
+  group.add(beacon);
+
+  group.traverse(object => {
+    if (object.isMesh) {
+      object.frustumCulled = false;
+      object.renderOrder = 1000;
+    }
+  });
   return group;
 }
-
 function syncAgentMeshes() {
   // Los dos habitantes núcleo deben tener siempre una representación visual,
   // independientemente de lo que contenga el estado guardado.
