@@ -10,6 +10,7 @@ import { getKnownActions, discoverAction, updateActionBelief } from "./discovery
 import { executeAction } from "./actions.js";
 import { remember, learnFromEvidence } from "./memory.js";
 import { recordInteraction } from "./relationships.js";
+import { stopMovement } from "./movement.js";
 
 export function createSimulation(world, agents) {
   return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false };
@@ -92,8 +93,16 @@ function getActionTarget(agent, actionName, perception, world, agents) {
 
 function performDecision(simulation, agent) {
   const intent = agent.currentIntent;
-  if (!intent || agent.movement?.moving) return;
+  if (!intent) return;
   const target = getActionTarget(agent, intent.name, agent.lastPerception, simulation.world, simulation.agents);
+  if (agent.movement?.moving) {
+    const movementTarget = agent.movement.target ?? target;
+    const distanceToTarget = movementTarget
+      ? Math.hypot(agent.position.x - movementTarget.x, agent.position.z - movementTarget.z)
+      : Infinity;
+    if (distanceToTarget > 1.5) return;
+    stopMovement(agent);
+  }
   if (target) {
     const distance = Math.hypot(agent.position.x - target.x, agent.position.z - target.z);
     if (distance > 1.5) { agent.currentActivity = "moving"; agent.currentIntent = { ...intent, target: { x: target.x, z: target.z } }; return; }
