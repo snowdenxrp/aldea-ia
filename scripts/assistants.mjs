@@ -41,7 +41,7 @@ simulation.events = Array.isArray(persisted?.events) ? persisted.events.slice(-5
 normalizeCoreAgents(simulation.agents);
 
 const codeFiles = {};
-for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "src/movement.js", "src/agents.js"]) {
+for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "src/movement.js", "src/agents.js", "src/needs.js", "src/actions.js", "src/world.js", "src/decision.js", "src/perception.js", "src/discovery.js", "src/memory.js", "src/relationships.js", "src/random.js"]) {
   try { codeFiles[path] = await fs.readFile(new URL("../" + path, import.meta.url), "utf8"); } catch {}
 }
 
