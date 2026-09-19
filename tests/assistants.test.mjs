@@ -137,3 +137,20 @@ assert.equal(core.needs.thirst, 17);
   tick(sim, 0.01);
   assert.notEqual(alex.currentActivity, "drinking", "Una actividad de beber sin intención activa no debe quedar pegada.");
 }
+
+
+// Invariante de ciclo de vida: la simulación debe marcar como muerto a un habitante
+// cuando su salud llega a cero y no debe revivirlo en el siguiente tick.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  alex.needs = { hunger: 0, thirst: 0, energy: 0, social: 0, safety: 100, health: 0.1 };
+  tick(sim, 1);
+  assert.equal(alex.alive, false, "Salud agotada debe producir muerte real.");
+  assert.equal(alex.currentActivity, "dead");
+  const healthAtDeath = alex.needs.health;
+  tick(sim, 24);
+  assert.equal(alex.alive, false, "Un habitante muerto no debe ser procesado ni revivir.");
+  assert.equal(alex.currentActivity, "dead");
+  assert.equal(alex.needs.health, healthAtDeath, "La salud de un muerto no debe cambiar por ticks posteriores.");
+}
