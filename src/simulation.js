@@ -100,6 +100,24 @@ function getActionTarget(agent, actionName, perception, world, agents) {
   return null;
 }
 
+function buildCriticalHungerIntent(simulation, agent, perception) {
+  if (agent.needs.hunger > 10) return null;
+  const knownActions = getKnownActions(agent);
+  const fishInventory = agent.inventory?.some(item => item.type === "fish" && item.amount > 0);
+  if (fishInventory && knownActions.some(action => action.name === "eat_fish")) {
+    return { name: "eat_fish", amount: 1, baseValue: 999, effects: { hunger: 14 }, target: null };
+  }
+  const plants = perception.nearbyResources.find(resource => resource.type === "wild_plants");
+  if (plants && simulation.world.resources.wild_plants.amount > 0 && knownActions.some(action => action.name === "eat_plant")) {
+    return { name: "eat_plant", amount: 1, baseValue: 999, effects: { hunger: 2.2 }, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } };
+  }
+  const fish = perception.nearbyResources.find(resource => resource.type === "fish");
+  if (fish && simulation.world.resources.fish.amount > 0 && knownActions.some(action => action.name === "catch_fish")) {
+    return { name: "catch_fish", amount: 1, baseValue: 999, effects: { hunger: 1.6 }, distance: fish.distance, target: { ...simulation.world.resources.fish.position } };
+  }
+  return null;
+}
+
 function performDecision(simulation, agent) {
   const intent = agent.currentIntent;
   if (!intent) return;
@@ -201,7 +219,15 @@ export function tick(simulation, deltaHours = 0.01) {
           chosen: { name: "drink", score: 999 },
           considered: [{ name: "drink", score: 999 }]
         };
-      } else if (!agent.currentIntent || !agent.currentIntent.target) {
+      } else {
+        const criticalFood = buildCriticalHungerIntent(simulation, agent, perception);
+        if (criticalFood) {
+          agent.currentIntent = criticalFood;
+          agent.currentActivity = criticalFood.target ? (Math.hypot(agent.position.x - criticalFood.target.x, agent.position.z - criticalFood.target.z) > 1.5 ? "moving" : "idle") : "idle";
+          agent.decisionSnapshot = { chosen: { name: criticalFood.name, score: 999 }, considered: [{ name: criticalFood.name, score: 999 }] };
+        }
+      }
+      if (!agent.currentIntent || !agent.currentIntent.target) {
         const options = generateOptions(agent, perception, simulation.world, getRandom(simulation));
         const context = createDecisionContext(agent, perception);
         const evaluatedOptions = evaluateOptions(context, options);
