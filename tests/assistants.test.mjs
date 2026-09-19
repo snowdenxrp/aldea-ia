@@ -4,6 +4,7 @@ import { createInitialAgents } from "../src/agents.js";
 import { createSimulation, tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, classifyRenderProbe } from "../src/assistants/index.js";
+import { survivalUrgency } from "../src/decision.js";
 
 const simulation = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
 
@@ -24,3 +25,6 @@ assert.equal(classifyRenderProbe({ exists:true, inScene:false }), "NOT_IN_SCENE"
 assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:false }), "HIDDEN");
 assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:true, onScreen:false }), "OFFSCREEN");
 assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:true, onScreen:true }), "OK");
+
+assert(survivalUrgency({ hunger: 10, thirst: 80, energy: 80, social: 80 }) > survivalUrgency({ hunger: 80, thirst: 80, energy: 80, social: 80 }));
+assert(survivalUrgency({ hunger: 10, thirst: 10, energy: 80, social: 80 }) > survivalUrgency({ hunger: 10, thirst: 80, energy: 80, social: 80 }));
