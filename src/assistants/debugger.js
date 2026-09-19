@@ -13,7 +13,8 @@ export function runDebugger({ files = {}, simulation = null } = {}) {
         ["ANIMATION_LOOP_MISSING", /requestAnimationFrame\(animate\)/, "No se encontró el bucle requestAnimationFrame."],
         ["MESH_SCENE_ADD_MISSING", /scene\.add\(mesh\)/, "No se encontró la adición de meshes de habitantes a la escena."],
         ["CAMERA_MISSING", /new THREE\.PerspectiveCamera\s*\(/, "No se encontró una cámara PerspectiveCamera."],
-        ["CAMERA_LOOKAT_MISSING", /camera\.lookAt\(/, "No se encontró camera.lookAt()."],\n        ["RENDER_PROBE_MISSING", /addVisualDiagnostics\s*\(/, "No se encontró el diagnóstico visual de habitantes."]
+        ["CAMERA_LOOKAT_MISSING", /camera\.lookAt\(/, "No se encontró camera.lookAt()."],
+        ["RENDER_PROBE_MISSING", /addVisualDiagnostics\s*\(/, "No se encontró el diagnóstico visual de habitantes."]
       ];
       for (const [code, pattern, message] of checks) {
         if (!pattern.test(content)) add("error", code, message, path);
