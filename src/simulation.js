@@ -166,7 +166,24 @@ export function tick(simulation, deltaHours = 0.01) {
         const distance = Math.hypot(agent.position.x - target.x, agent.position.z - target.z);
         if (distance <= 1.5) agent.currentIntent = { ...agent.currentIntent, target: null };
       }
-      if (!agent.currentIntent || !agent.currentIntent.target) {
+      // Emergencia de supervivencia: con sed crítica, beber no puede ser reemplazado
+      // por otra decisión mientras haya agua perceptible. La intención se conserva hasta completar.
+      const water = perception.nearbyResources.find(resource => resource.type === "water");
+      if (water && agent.needs.thirst <= 10 && (!agent.currentIntent || agent.currentIntent.name === "drink")) {
+        agent.currentIntent = {
+          name: "drink",
+          amount: 5,
+          baseValue: 0.5,
+          effects: { thirst: 1.8 },
+          distance: water.distance,
+          target: { ...simulation.world.resources.water.position }
+        };
+        agent.currentActivity = water.distance > 1.5 ? "moving" : "drinking";
+        agent.decisionSnapshot = {
+          chosen: { name: "drink", score: 999 },
+          considered: [{ name: "drink", score: 999 }]
+        };
+      } else if (!agent.currentIntent || !agent.currentIntent.target) {
         const options = generateOptions(agent, perception, simulation.world);
         const context = createDecisionContext(agent, perception);
         const evaluatedOptions = evaluateOptions(context, options);
