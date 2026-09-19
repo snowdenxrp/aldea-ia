@@ -105,12 +105,12 @@ function buildCriticalHungerIntent(simulation, agent, perception) {
   const knownActions = getKnownActions(agent);
   const fishInventory = agent.inventory?.some(item => item.type === "fish" && item.amount > 0);
   if (fishInventory && knownActions.some(action => action.name === "eat_fish")) {
-    return { name: "eat_fish", amount: 1, baseValue: 999, effects: { hunger: 14 }, target: null };
+    return { name: "eat_fish", amount: Math.max(1, Math.min(3, Math.ceil((20 - agent.needs.hunger) / 14))), baseValue: 999, effects: { hunger: 14 }, target: null };
   }
   const plants = perception.nearbyResources.find(resource => resource.type === "wild_plants");
   if (plants && simulation.world.resources.wild_plants.amount > 0) {
     if (knownActions.some(action => action.name === "eat_plant")) {
-      return { name: "eat_plant", amount: 1, baseValue: 999, effects: { hunger: 2.2 }, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } };
+      return { name: "eat_plant", amount: Math.max(1, Math.min(4, Math.ceil((20 - agent.needs.hunger) / 10.2))), baseValue: 999, effects: { hunger: 10.2 }, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } };
     }
     return { name: "explore_plants", baseValue: 999, explorationValue: 1, novelty: 1, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } };
   }
