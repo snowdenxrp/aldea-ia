@@ -132,63 +132,40 @@ function performKnowledgeSharing(simulation, agent) {
   const knowledge = candidates[Math.floor(Math.random() * candidates.length)]; const communicationFidelity = Math.max(0.55, Math.min(0.95, 0.75 + trust * 0.15)); const event = recordEvent(simulation, { type: "knowledge_shared", description: `${agent.name} compartió con ${other.name} lo que cree saber sobre "${knowledge.topic}".`, participants: [agent.id, other.id] }); learnFromEvidence(other, { topic: knowledge.topic, belief: knowledge.belief, description: `${agent.name} me contó que: ${knowledge.belief}`, outcome: trust >= 0 ? 0.4 : -0.1, reliability: communicationFidelity, day: simulation.day }); agent.needs.social = Math.min(100, agent.needs.social + 8); agent.lastActionResult = { success: true, effect: "knowledge_shared", otherAgentId: other.id };
 }
 
-function recordExploration(simulation, agent, subject) { const description = `${agent.name} exploró y aprendió algo sobre ${subject}.`; const event = recordEvent(simulation, { type: "discovery", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "discovery", description, importance: 0.55, emotionalWeight: 0.05 }); }
-function improveSkillFromAction(agent, actionName, day) { const skill = agent.skills.find(item => item.name === actionName); if (!skill) return; skill.uses += 1; skill.level = Math.min(1, skill.level + 0.06 * (1 - skill.level)); skill.lastPracticedDay = day; }
-function describeAction(agent, actionName, result) { switch (actionName) { case "rest": return `${agent.name} descansó y recuperó energía.`; case "drink": return `${agent.name} bebió agua y recuperó parte de la sed.`; case "eat_plant": return `${agent.name} experimentó comiendo una planta y observó sus efectos.`; case "catch_fish": return `${agent.name} capturó ${result.amount} pez/peces.`; case "eat_fish": return `${agent.name} comió ${result.amount} pez/peces que tenía en su inventario.`; case "gather_wood": return `${agent.name} recogió ${result.amount} unidad(es) de madera.`; case "gather_stone": return `${agent.name} recogió ${result.amount} unidad(es) de piedra.`; default: return `${agent.name} realizó la acción ${actionName}.`; } }
+function recordExploration(simulation, agent, subject) { const description = `${agent.name} exploró y aprendió algo sobre ${subject}.`; const event = recordEvent(simulation, { type: "exploration", description, participants: [agent.id] }); remember(agent, { id: event.id, day: simulation.day, type: "discovery", description, importance: 0.6, emotionalWeight: 0.04 }); }
+function improveSkillFromAction(agent, actionName, day) { const existing = agent.skills.find(skill => skill.name === actionName); if (existing) existing.level = Math.min(1, existing.level + 0.03); else agent.skills.push({ name: actionName, level: 0.03, learnedOnDay: day }); }
+function describeAction(agent, actionName, result) { const labels = { rest: "descansó", drink: "bebió agua", eat_plant: "comió una planta", catch_fish: "pescó", gather_wood: "recolectó madera", gather_stone: "recolectó piedra", eat_fish: "comió pescado" }; return `${agent.name} ${labels[actionName] ?? actionName}${result.amount ? ` (${result.amount})` : ""}.`; }
 
-export function tick(simulation, hours = 1) {
-  if (!Number.isFinite(hours) || hours <= 0) return;
-
-  // El reloj avanza antes de procesar a los habitantes. Así, un fallo aislado
-  // de una decisión nunca puede congelar el tiempo del mundo.
+export function tick(simulation, deltaHours = 0.01) {
+  const hours = Math.max(0, Number(deltaHours) || 0);
   simulation.hour += hours;
-  while (simulation.hour >= 24) {
-    simulation.hour -= 24;
-    simulation.day += 1;
-    simulation.world.day = simulation.day;
-    simulation.world.timeOfDay = simulation.hour;
-    advanceWorldDay(simulation.world);
-  }
+  while (simulation.hour >= 24) { simulation.hour -= 24; simulation.day += 1; advanceWorldDay(simulation.world); }
   simulation.world.timeOfDay = simulation.hour;
 
   for (const agent of simulation.agents) {
-    if (!agent || !agent.alive) continue;
+    if (!agent) continue;
+    if (["alex", "bruno"].includes(agent.id)) recoverCoreAgent(agent);
+    if (!agent.alive) continue;
     try {
       agent.needs = updateNeeds(agent.needs, hours, agent.currentActivity);
       agent.needs = applyNeedConsequences(agent.needs, hours);
-      if (agent.needs.health <= 0) {
-        handleDeath(simulation, agent);
-        continue;
-      }
-
+      if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
       const perception = perceiveWorld(agent, simulation.world, simulation.agents);
       agent.lastPerception = perception;
-
       if (agent.currentIntent?.target) {
         const target = agent.currentIntent.target;
         const distance = Math.hypot(agent.position.x - target.x, agent.position.z - target.z);
         if (distance <= 1.5) agent.currentIntent = { ...agent.currentIntent, target: null };
       }
-
       if (!agent.currentIntent || !agent.currentIntent.target) {
         const options = generateOptions(agent, perception, simulation.world);
         const context = createDecisionContext(agent, perception);
         const evaluatedOptions = evaluateOptions(context, options);
         agent.availableOptions = options;
-        agent.decisionSnapshot = {
-          chosen: null,
-          considered: evaluatedOptions.slice().sort((x, y) => y.score - x.score).slice(0, 3)
-            .map(option => ({ name: option.name, score: option.score }))
-        };
+        agent.decisionSnapshot = { chosen: null, considered: evaluatedOptions.slice().sort((x, y) => y.score - x.score).slice(0, 3).map(option => ({ name: option.name, score: option.score })) };
         agent.currentIntent = chooseOption(context, options);
-        if (agent.currentIntent) {
-          agent.decisionSnapshot.chosen = {
-            name: agent.currentIntent.name,
-            score: agent.currentIntent.score
-          };
-        }
+        if (agent.currentIntent) agent.decisionSnapshot.chosen = { name: agent.currentIntent.name, score: agent.currentIntent.score };
       }
-
       performDecision(simulation, agent);
     } catch (error) {
       agent.currentActivity = agent.currentActivity ?? "idle";
@@ -197,4 +174,23 @@ export function tick(simulation, hours = 1) {
     }
   }
 }
-function handleDeath(simulation, agent) { agent.alive = false; agent.currentActivity = "dead"; agent.currentIntent = null; recordEvent(simulation, { type: "death", description: `${agent.name} murió.`, participants: [agent.id] }); }
+
+function recoverCoreAgent(agent) {
+  agent.alive = true;
+  agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
+  agent.currentIntent = agent.currentIntent ?? null;
+  agent.needs ??= { hunger: 80, thirst: 80, energy: 80, social: 80, safety: 100, health: 100 };
+  if (!Number.isFinite(Number(agent.needs.health)) || agent.needs.health <= 0) agent.needs.health = 100;
+  for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
+    if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
+    agent.needs[key] = Math.max(20, Math.min(100, Number(agent.needs[key])));
+  }
+}
+
+function handleDeath(simulation, agent) {
+  if (["alex", "bruno"].includes(agent.id)) { recoverCoreAgent(agent); return; }
+  agent.alive = false;
+  agent.currentActivity = "dead";
+  agent.currentIntent = null;
+  recordEvent(simulation, { type: "death", description: `${agent.name} murió.`, participants: [agent.id] });
+}
