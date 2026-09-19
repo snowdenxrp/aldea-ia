@@ -1,3 +1,5 @@
+import { getRandom } from "./random.js";
+
 // Acciones físicas y sus consecuencias en el mundo.
 // Una acción no decide si debe ejecutarse: solo define qué ocurre si el habitante la realiza.
 
@@ -127,7 +129,7 @@ function catchFish(simulation, agent, amount) {
   const skill = getSkillLevel(agent, "catch_fish");
   const successChance = Math.min(0.95, 0.35 + skill * 0.55);
 
-  if (Math.random() > successChance) {
+  if (getRandom(simulation)() > successChance) {
     agent.needs.energy = Math.max(0, agent.needs.energy - 1.5);
     agent.currentActivity = "fishing";
     return { success: false, reason: "fish_escaped", skillLevel: skill };
