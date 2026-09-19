@@ -138,25 +138,63 @@ function describeAction(agent, actionName, result) { switch (actionName) { case 
 
 export function tick(simulation, hours = 1) {
   if (!Number.isFinite(hours) || hours <= 0) return;
+
+  // El reloj avanza antes de procesar a los habitantes. Así, un fallo aislado
+  // de una decisión nunca puede congelar el tiempo del mundo.
   simulation.hour += hours;
+  while (simulation.hour >= 24) {
+    simulation.hour -= 24;
+    simulation.day += 1;
+    simulation.world.day = simulation.day;
+    simulation.world.timeOfDay = simulation.hour;
+    advanceWorldDay(simulation.world);
+  }
+  simulation.world.timeOfDay = simulation.hour;
+
   for (const agent of simulation.agents) {
     if (!agent || !agent.alive) continue;
-    agent.needs = updateNeeds(agent.needs, hours, agent.currentActivity); agent.needs = applyNeedConsequences(agent.needs, hours); if (agent.needs.health <= 0) { handleDeath(simulation, agent); continue; }
-    const perception = perceiveWorld(agent, simulation.world, simulation.agents); agent.lastPerception = perception;
-    if (agent.currentIntent?.target) { const target = agent.currentIntent.target; const distance = Math.hypot(agent.position.x - target.x, agent.position.z - target.z); if (distance <= 1.5) agent.currentIntent = { ...agent.currentIntent, target: null }; }
-    if (!agent.currentIntent || !agent.currentIntent.target) {
-      // FIX: pass the actual world into generateOptions. Previously `world` was
-      // referenced inside generateOptions without being defined, so every tick
-      // threw a ReferenceError before a decision could be recorded.
-      const options = generateOptions(agent, perception, simulation.world);
-      const context = createDecisionContext(agent, perception); const evaluatedOptions = evaluateOptions(context, options);
-      agent.availableOptions = options; agent.decisionSnapshot = { chosen: null, considered: evaluatedOptions.slice().sort((a, b) => b.score - a.score).slice(0, 3).map(option => ({ name: option.name, score: option.score })) };
-      agent.currentIntent = chooseOption(context, options); if (agent.currentIntent) agent.decisionSnapshot.chosen = { name: agent.currentIntent.name, score: agent.currentIntent.score };
-    }
-    performDecision(simulation, agent);
-  }
-  while (simulation.hour >= 24) { simulation.hour -= 24; simulation.day += 1; simulation.world.day = simulation.day; simulation.world.timeOfDay = simulation.hour; advanceWorldDay(simulation.world); }
-  simulation.world.timeOfDay = simulation.hour;
-}
+    try {
+      agent.needs = updateNeeds(agent.needs, hours, agent.currentActivity);
+      agent.needs = applyNeedConsequences(agent.needs, hours);
+      if (agent.needs.health <= 0) {
+        handleDeath(simulation, agent);
+        continue;
+      }
 
+      const perception = perceiveWorld(agent, simulation.world, simulation.agents);
+      agent.lastPerception = perception;
+
+      if (agent.currentIntent?.target) {
+        const target = agent.currentIntent.target;
+        const distance = Math.hypot(agent.position.x - target.x, agent.position.z - target.z);
+        if (distance <= 1.5) agent.currentIntent = { ...agent.currentIntent, target: null };
+      }
+
+      if (!agent.currentIntent || !agent.currentIntent.target) {
+        const options = generateOptions(agent, perception, simulation.world);
+        const context = createDecisionContext(agent, perception);
+        const evaluatedOptions = evaluateOptions(context, options);
+        agent.availableOptions = options;
+        agent.decisionSnapshot = {
+          chosen: null,
+          considered: evaluatedOptions.slice().sort((x, y) => y.score - x.score).slice(0, 3)
+            .map(option => ({ name: option.name, score: option.score }))
+        };
+        agent.currentIntent = chooseOption(context, options);
+        if (agent.currentIntent) {
+          agent.decisionSnapshot.chosen = {
+            name: agent.currentIntent.name,
+            score: agent.currentIntent.score
+          };
+        }
+      }
+
+      performDecision(simulation, agent);
+    } catch (error) {
+      agent.currentActivity = agent.currentActivity ?? "idle";
+      agent.lastActionResult = { success: false, reason: "simulation_error" };
+      console.error("Lúmina: error procesando a " + (agent.name ?? agent.id ?? "habitante"), error);
+    }
+  }
+}
 function handleDeath(simulation, agent) { agent.alive = false; agent.currentActivity = "dead"; agent.currentIntent = null; recordEvent(simulation, { type: "death", description: `${agent.name} murió.`, participants: [agent.id] }); }
