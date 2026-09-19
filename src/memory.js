@@ -10,6 +10,7 @@ export function remember(agent, event) {
     id: event.id,
     day: event.day,
     type: event.type,
+    topic: event.topic ?? null,
     description: event.description,
     participants: event.participants ?? [],
     emotionalWeight: clamp(event.emotionalWeight ?? 0, -1, 1),
