@@ -46,7 +46,8 @@ export function createAgent({ id, name, age = 15, home = null, position = { x: 0
     lastActionName: null,
     lastActionResult: null,
     lastAttemptedAction: null,
-    actionFailures: {}
+    actionFailures: {},
+    knownResources: {}
   };
 }
 
