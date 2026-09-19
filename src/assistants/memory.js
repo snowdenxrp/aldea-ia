@@ -48,7 +48,7 @@ export function learnFromReports(memory, reports, context = {}) {
       const lesson = {
         trigger: conclusion.message,
         rule: "No dar por resuelto un problema hasta que las pruebas correspondientes pasen.",
-        source: "Analista de Lúmina",
+        source: "Analista de Lúmina",\n        causeCode: conclusion.code ?? null,
         learnedAt: new Date().toISOString()
       };
       if (!next.lessons.some(item => item.trigger === lesson.trigger && item.rule === lesson.rule)) next.lessons.push(lesson);
