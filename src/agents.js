@@ -65,6 +65,8 @@ export function createInitialAgents() {
   ];
 }
 
+const MAX_EXPERIENCES = 2000;
+
 // Registra una experiencia sin convertirla automáticamente en conocimiento.
 export function addExperience(agent, experience) {
   agent.experiences.push({
@@ -75,6 +77,7 @@ export function addExperience(agent, experience) {
     participants: experience.participants ?? [],
     consequences: experience.consequences ?? []
   });
+  if (agent.experiences.length > MAX_EXPERIENCES) agent.experiences = agent.experiences.slice(-MAX_EXPERIENCES);
 }
 
 // Registra un recuerdo de algo que el habitante realmente vivió.
