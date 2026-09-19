@@ -254,6 +254,10 @@ export function tick(simulation, deltaHours = 0.01) {
           considered: [{ name: "drink", score: 999 }]
         };
       }
+      if (!agent.currentIntent && agent.needs.energy <= 15 && agent.needs.hunger > 20 && agent.needs.thirst > 20) {
+        agent.currentIntent = { name: "rest", baseValue: 999, effects: { energy: 7 }, target: null };
+        agent.decisionSnapshot = { chosen: { name: "rest", score: 999 }, considered: [{ name: "rest", score: 999 }] };
+      }
       if (!agent.currentIntent) {
         const options = generateOptions(agent, perception, simulation.world, getRandom(simulation));
         const context = createDecisionContext(agent, perception);
