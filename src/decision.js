@@ -10,7 +10,8 @@ export function createDecisionContext(agent, perception) {
     knowledge: agent.knowledge.map(item => ({ ...item })),
     relationships: agent.relationships.map(item => ({ ...item })),
     memories: agent.memories.map(item => ({ ...item })),
-    recentAction: agent.lastActionName ?? null
+    recentAction: agent.lastActionName ?? null,
+    recentActionResult: agent.lastActionResult ? { ...agent.lastActionResult } : null
   };
 }
 
@@ -77,6 +78,11 @@ function calculateScore(context, option) {
       needPressure(context.needs.social)
     );
     score -= pressure > 55 ? 0.35 : 2.5;
+  }
+
+  if (context.recentAction === option.name && context.recentActionResult?.success === false) {
+    const failurePenalty = context.needs.hunger < 40 || context.needs.thirst < 40 ? 1.5 : 0.8;
+    score -= failurePenalty;
   }
 
   if (option.relationshipBonus) score += option.relationshipBonus(context.relationships);
