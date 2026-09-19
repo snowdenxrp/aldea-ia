@@ -1,9 +1,11 @@
 import fs from "node:fs/promises";
 import { createSimulation, tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
+import { createRandom } from "../src/random.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
 const HORIZONS = [100, 500, 1000];
+const AUDIT_SEED = "lumina-audit-2026";
 const HOURS_PER_DAY = 24;
 const MOVEMENT_SECONDS_PER_SIM_HOUR = 37.5;
 
