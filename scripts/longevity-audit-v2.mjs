@@ -66,7 +66,7 @@ function metrics(simulation, hours) {
 }
 
 function run(days) {
-  const simulation = createSimulation(clone(base.world), clone(base.agents), { random: createSeededRandom(AUDIT_SEED + ":" + days) });
+  const simulation = createSimulation(clone(base.world), clone(base.agents), { random: createRandom(AUDIT_SEED + ":" + days) });
   simulation.day = Number(base.day) || simulation.day;
   simulation.hour = Number(base.hour) || simulation.hour;
   simulation.events = [];
