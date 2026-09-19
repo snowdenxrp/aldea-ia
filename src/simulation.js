@@ -158,7 +158,7 @@ export function tick(simulation, deltaHours = 0.01) {
 
   for (const agent of simulation.agents) {
     if (!agent) continue;
-    if (["alex", "bruno"].includes(agent.id)) recoverCoreAgent(agent);
+    recoverCoreAgent(agent);
     if (!agent.alive) continue;
     try {
       // La actividad es un estado momentáneo, no un recuerdo. Si no existe una intención
