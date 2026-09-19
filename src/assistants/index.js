@@ -1,6 +1,7 @@
 export { runDebugger } from "./debugger.js";
 export { runTester } from "./tester.js";
-export { analyzeLumina } from "./analyst.js";\nexport { classifyRenderProbe, buildRenderEvidence } from "./render.js";
+export { analyzeLumina } from "./analyst.js";
+export { classifyRenderProbe, buildRenderEvidence } from "./render.js";
 
 export function buildAssistantReport({ debuggerReport, testerReport, analystReport }) {
   const reports = [debuggerReport, testerReport, analystReport].filter(Boolean);
