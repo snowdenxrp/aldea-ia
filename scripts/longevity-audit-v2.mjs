@@ -1,15 +1,16 @@
 import fs from "node:fs/promises";
 import { createSimulation, tick } from "../src/simulation.js";
+import { world } from "../src/world.js";
+import { createInitialAgents } from "../src/agents.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { createRandom } from "../src/random.js";
 
-const STATE_PATH = new URL("../world-state.json", import.meta.url);
 const HORIZONS = [1, 7, 30, 100, 500, 1000];
 const AUDIT_SEED = "lumina-audit-2026";
 const HOURS_PER_DAY = 24;
 const MOVEMENT_SECONDS_PER_SIM_HOUR = 37.5;
 
-const base = JSON.parse(await fs.readFile(STATE_PATH, "utf8"));
+const base = { world: structuredClone(world), agents: structuredClone(createInitialAgents()), day: world.day, hour: world.timeOfDay, version: 3 };
 const clone = value => structuredClone(value);
 const finite = value => Number.isFinite(Number(value));
 
@@ -68,7 +69,7 @@ function run(days) {
   const simulation = createSimulation(clone(base.world), clone(base.agents), { random: createRandom(AUDIT_SEED + ":" + days) });
   simulation.day = Number(base.day) || simulation.day;
   simulation.hour = Number(base.hour) || simulation.hour;
-  simulation.events = clone(base.events ?? []).slice(-500);
+  simulation.events = [];
 
   const totalHours = days * HOURS_PER_DAY;
   const problemCounts = new Map();
