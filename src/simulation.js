@@ -215,7 +215,12 @@ export function tick(simulation, deltaHours = 0.01) {
       // Emergencia de supervivencia: con sed crítica, beber no puede ser reemplazado
       // por otra decisión mientras haya agua perceptible. La intención se conserva hasta completar.
       const water = perception.nearbyResources.find(resource => resource.type === "water");
-      if (water && simulation.world.resources.water.amount > 0 && agent.needs.thirst <= 25) {
+      const criticalFood = buildCriticalHungerIntent(simulation, agent, perception);
+      if (criticalFood && agent.needs.hunger <= 70) {
+        agent.currentIntent = criticalFood;
+        agent.currentActivity = criticalFood.target ? (Math.hypot(agent.position.x - criticalFood.target.x, agent.position.z - criticalFood.target.z) > 1.5 ? "moving" : "idle") : "idle";
+        agent.decisionSnapshot = { chosen: { name: criticalFood.name, score: 999 }, considered: [{ name: criticalFood.name, score: 999 }] };
+      } else if (water && simulation.world.resources.water.amount > 0 && agent.needs.thirst <= 25) {
         agent.currentIntent = {
           name: "drink",
           amount: 5,
@@ -229,13 +234,6 @@ export function tick(simulation, deltaHours = 0.01) {
           chosen: { name: "drink", score: 999 },
           considered: [{ name: "drink", score: 999 }]
         };
-      } else {
-        const criticalFood = buildCriticalHungerIntent(simulation, agent, perception);
-        if (criticalFood) {
-          agent.currentIntent = criticalFood;
-          agent.currentActivity = criticalFood.target ? (Math.hypot(agent.position.x - criticalFood.target.x, agent.position.z - criticalFood.target.z) > 1.5 ? "moving" : "idle") : "idle";
-          agent.decisionSnapshot = { chosen: { name: criticalFood.name, score: 999 }, considered: [{ name: criticalFood.name, score: 999 }] };
-        }
       }
       if (!agent.currentIntent) {
         const options = generateOptions(agent, perception, simulation.world, getRandom(simulation));
