@@ -13,8 +13,16 @@ import { recordInteraction } from "./relationships.js";
 import { stopMovement } from "./movement.js";
 import { getRandom } from "./random.js";
 
-export function createSimulation(world, agents) {
-  return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false };
+export function createSimulation(world, agents, options = {}) {
+  return {
+    world,
+    agents,
+    hour: Number(world.timeOfDay) || 8,
+    day: Number(world.day) || 1,
+    events: [],
+    running: false,
+    random: options.random ?? null
+  };
 }
 
 export function recordEvent(simulation, event) {
