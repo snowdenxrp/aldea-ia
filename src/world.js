@@ -21,6 +21,7 @@ export const world = {
       type: "renewable",
       amount: 1000,
       quality: 1,
+      regenerationPerDay: 1000,
       location: "river",
       position: { x: -18, z: 0 },
       radius: 6,
@@ -108,6 +109,9 @@ export const world = {
 };
 
 export function advanceWorldDay(targetWorld = world) {
+  const water = targetWorld.resources.water;
+  water.amount = Math.min(1000, water.amount + (water.regenerationPerDay ?? 1000));
+
   const wood = targetWorld.resources.wood;
   wood.amount = Math.min(240, wood.amount + wood.regenerationPerDay);
 
