@@ -120,6 +120,7 @@ function buildCriticalHungerIntent(simulation, agent, perception) {
   if (fish && simulation.world.resources.fish.amount > 0 && knownActions.some(action => action.name === "catch_fish") && fishFailures < 3 && agent.needs.energy > 0) {
     return { name: "catch_fish", amount: 1, baseValue: 999, effects: { hunger: 1.6 }, distance: fish.distance, target: { ...simulation.world.resources.fish.position } };
   }
+  if (agent.needs.thirst <= 25) return null;
   if (fishFailures >= 3 || agent.needs.energy <= 10) {
     const anchor = agent.knownResources?.water ?? agent.knownResources?.fish;
     if (anchor) {
