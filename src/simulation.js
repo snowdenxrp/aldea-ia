@@ -221,7 +221,7 @@ export function tick(simulation, deltaHours = 0.01) {
 }
 
 export function recoverCoreAgent(agent) {
-  agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
+  agent.currentActivity = agent.alive === false ? "dead" : (agent.currentActivity ?? "idle");
   agent.currentIntent = agent.currentIntent ?? null;
   agent.needs ??= { hunger: 80, thirst: 80, energy: 80, social: 80, safety: 100, health: 100 };
   if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
