@@ -33,6 +33,7 @@ function renderAgentPanel(a){if(!a)return;document.querySelector("#agentName").t
 function openAgent(id){const a=agents.find(x=>x.id===id);if(a){centerOnAgent(a);renderAgentPanel(a);}}
 document.querySelector("#closeAgentPanel")?.addEventListener("click",()=>{const p=document.querySelector("#agentPanel");p.classList.remove("open");p.setAttribute("aria-hidden","true");});
 document.querySelector("#agentDebug")?.addEventListener("click",centerOnAgents);
+document.querySelectorAll("[data-agent]")?.forEach(button=>button.addEventListener("click",e=>{e.stopPropagation();openAgent(button.dataset.agent);}));
 // Cámara estable: un dedo arrastra, dos dedos hacen pinch-zoom/rotación y la rueda hace zoom.
 let dragging=false,lastX=0,lastY=0,pinchStart=0,gestureStart=null,gestureMoved=false;
 const pointers=new Map();
