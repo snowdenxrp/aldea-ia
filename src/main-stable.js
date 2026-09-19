@@ -32,7 +32,9 @@ const activity=v=>({idle:"Sin actividad",resting:"Descansando",drinking:"Bebiend
 function renderAgentPanel(a){if(!a)return;document.querySelector("#agentName").textContent=a.name;document.querySelector("#agentAge").textContent=`Edad: ${a.age} años · ${a.alive?"Vivo":"Fallecido"} · Día ${simulation.day}`;document.querySelector("#agentAvatar").style.background=a.id==="alex"?"#345b8c":"#8c4f34";const n=[["Hambre",a.needs?.hunger],["Sed",a.needs?.thirst],["Energía",a.needs?.energy],["Social",a.needs?.social],["Seguridad",a.needs?.safety],["Salud",a.needs?.health]];document.querySelector("#agentStatus").innerHTML=n.map(([k,v])=>`<div class="agentRow"><span>${k}</span><strong>${pct(v)}%</strong></div><div class="agentBar"><span style="width:${pct(v)}%"></span></div>`).join("")+`<div class="agentRow"><span>Actividad</span><strong>${activity(a.currentActivity)}</strong></div><div class="agentRow"><span>Intención</span><strong>${action(a.currentIntent?.name)}</strong></div><div class="agentRow"><span>Última acción</span><strong>${action(a.lastActionName)}</strong></div>`;const d=a.decisionSnapshot;document.querySelector("#agentDecision").innerHTML=d?.chosen?`<div class="agentRow"><span>Elección</span><strong>${action(d.chosen.name)}</strong></div><div class="agentRow"><span>Puntuación</span><strong>${Number(d.chosen.score).toFixed(2)}</strong></div>`:'<div class="agentEmpty">Todavía no hay una decisión registrada.</div>';const inv=(a.inventory??[]).reduce((o,i)=>(o[i.type]=(o[i.type]||0)+(Number(i.amount)||0),o),{});document.querySelector("#agentResources").innerHTML=`<div class="agentRow"><span>Monedas</span><strong>${a.money??0}</strong></div><div class="agentRow"><span>Posición</span><strong>${(+a.position?.x||0).toFixed(1)}, ${(+a.position?.z||0).toFixed(1)}</strong></div><div class="agentRow"><span>Inventario</span><strong>${Object.entries(inv).map(([k,v])=>`${k} × ${v.toFixed(1)}`).join(", ")||"vacío"}</strong></div>`;document.querySelector("#agentKnowledge").innerHTML=(a.knowledge??[]).length?a.knowledge.slice(-10).reverse().map(k=>`<span class="agentTag">${String(k.topic).replace(/^action:/,"")} · ${pct((k.confidence??0)*100)}%</span>`).join(""):"<div class=\"agentEmpty\">Aún no ha adquirido conocimiento.</div>";document.querySelector("#agentRelationships").innerHTML=(a.relationships??[]).length?a.relationships.map(r=>`<div class="agentRow"><span>${agents.find(x=>x.id===r.agentId)?.name??r.agentId}</span><strong>confianza ${pct((r.trust??0)*100)}%</strong></div>`).join(""):"<div class=\"agentEmpty\">Aún no tiene relaciones registradas.</div>";document.querySelector("#agentExperiences").innerHTML=(a.experiences??[]).length?a.experiences.slice(-8).reverse().map(e=>`<div class="agentExperience"><strong>Día ${e.day??"—"}</strong> · ${e.description??"Experiencia registrada"}</div>`).join(""):"<div class=\"agentEmpty\">Aún no hay experiencias registradas.</div>";const p=document.querySelector("#agentPanel");p.classList.add("open");p.setAttribute("aria-hidden","false");}
 function openAgent(id){const a=agents.find(x=>x.id===id);if(a){centerOnAgent(a);renderAgentPanel(a);}}
 document.querySelector("#closeAgentPanel")?.addEventListener("click",()=>{const p=document.querySelector("#agentPanel");p.classList.remove("open");p.setAttribute("aria-hidden","true");});
-document.querySelector("#agentDebug")?.addEventListener("click",centerOnAgents);\n// Limpieza defensiva: elimina cualquier texto de instrucciones antiguo que haya quedado en una versión cacheada del DOM.\ndocument.querySelectorAll("small").forEach(el=>{if(/arrastra|pellizca|toca un habitante/i.test(el.textContent||""))el.remove();});
+document.querySelector("#agentDebug")?.addEventListener("click",centerOnAgents);
+// Limpieza defensiva: elimina cualquier texto de instrucciones antiguo que haya quedado en una versión cacheada del DOM.
+document.querySelectorAll("small").forEach(el=>{if(/arrastra|pellizca|toca un habitante/i.test(el.textContent||""))el.remove();});
 document.querySelectorAll("[data-agent]")?.forEach(button=>button.addEventListener("click",e=>{e.stopPropagation();openAgent(button.dataset.agent);}));
 // Cámara estable: un dedo arrastra, dos dedos hacen pinch-zoom/rotación y la rueda hace zoom.
 let dragging=false,lastX=0,lastY=0,pinchStart=0,gestureStart=null,gestureMoved=false,lastAngle=0;
@@ -52,7 +54,42 @@ function pickAgent(clientX,clientY){
   if(id) openAgent(id);
   return !!id;
 }
-// Gestos táctiles nativos: Android recibe aquí los dos dedos directamente, evitando que el navegador intercepte la rotación.\nlet nativeTouch=false,nativeTouchStart=null,nativeTouchLast=null;\nconst touchPoint=t=>({x:t.clientX,y:t.clientY});\nconst touchDistance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);\nconst touchAngle=(a,b)=>Math.atan2(b.y-a.y,b.x-a.x);\nrenderer.domElement.addEventListener("touchstart",e=>{\n  e.preventDefault(); nativeTouch=true;\n  if(e.touches.length===1){const p=touchPoint(e.touches[0]);nativeTouchStart=p;nativeTouchLast=p;}\n  else if(e.touches.length===2){const a=touchPoint(e.touches[0]),b=touchPoint(e.touches[1]);nativeTouchStart={a,b,d:touchDistance(a,b),angle:touchAngle(a,b)};nativeTouchLast=nativeTouchStart;}\n},{passive:false});\nrenderer.domElement.addEventListener("touchmove",e=>{\n  e.preventDefault();\n  if(e.touches.length===2){\n    const a=touchPoint(e.touches[0]),b=touchPoint(e.touches[1]);\n    const d=touchDistance(a,b),ang=touchAngle(a,b),prev=nativeTouchLast;\n    if(prev&&"a" in prev){\n      cameraDistance=Math.max(10,Math.min(75,cameraDistance+(prev.d-d)*.09));\n      let da=ang-prev.angle; if(da>Math.PI)da-=Math.PI*2; if(da<-Math.PI)da+=Math.PI*2;\n      cameraYaw-=da*1.8;\n    }\n    nativeTouchLast={a,b,d,angle:ang};\n  } else if(e.touches.length===1 && nativeTouchLast && !("a" in nativeTouchLast)){\n    const p=touchPoint(e.touches[0]),dx=p.x-nativeTouchLast.x,dy=p.y-nativeTouchLast.y,s=.105;\n    const right=new THREE.Vector3(Math.cos(cameraYaw),0,-Math.sin(cameraYaw));\n    const forward=new THREE.Vector3(Math.sin(cameraYaw),0,Math.cos(cameraYaw));\n    cameraTarget.addScaledVector(right,-dx*s); cameraTarget.addScaledVector(forward,-dy*s); clampCamera(); nativeTouchLast=p;\n  }\n},{passive:false});\nrenderer.domElement.addEventListener("touchend",e=>{\n  e.preventDefault();\n  if(e.touches.length===0){\n    if(nativeTouchStart&&!nativeTouchStart.a&&nativeTouchLast&&Math.hypot(nativeTouchLast.x-nativeTouchStart.x,nativeTouchLast.y-nativeTouchStart.y)<10)pickAgent(nativeTouchLast.x,nativeTouchLast.y);\n    nativeTouch=false; nativeTouchStart=null; nativeTouchLast=null;\n  } else if(e.touches.length===1){nativeTouchLast=touchPoint(e.touches[0]);}\n},{passive:false});\nrenderer.domElement.addEventListener("pointerdown",e=>{
+// Gestos táctiles nativos: Android recibe aquí los dos dedos directamente, evitando que el navegador intercepte la rotación.
+let nativeTouch=false,nativeTouchStart=null,nativeTouchLast=null;
+const touchPoint=t=>({x:t.clientX,y:t.clientY});
+const touchDistance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const touchAngle=(a,b)=>Math.atan2(b.y-a.y,b.x-a.x);
+renderer.domElement.addEventListener("touchstart",e=>{
+  e.preventDefault(); nativeTouch=true;
+  if(e.touches.length===1){const p=touchPoint(e.touches[0]);nativeTouchStart=p;nativeTouchLast=p;}
+  else if(e.touches.length===2){const a=touchPoint(e.touches[0]),b=touchPoint(e.touches[1]);nativeTouchStart={a,b,d:touchDistance(a,b),angle:touchAngle(a,b)};nativeTouchLast=nativeTouchStart;}
+},{passive:false});
+renderer.domElement.addEventListener("touchmove",e=>{
+  e.preventDefault();
+  if(e.touches.length===2){
+    const a=touchPoint(e.touches[0]),b=touchPoint(e.touches[1]);
+    const d=touchDistance(a,b),ang=touchAngle(a,b),prev=nativeTouchLast;
+    if(prev&&"a" in prev){
+      cameraDistance=Math.max(10,Math.min(75,cameraDistance+(prev.d-d)*.09));
+      let da=ang-prev.angle; if(da>Math.PI)da-=Math.PI*2; if(da<-Math.PI)da+=Math.PI*2;
+      cameraYaw-=da*1.8;
+    }
+    nativeTouchLast={a,b,d,angle:ang};
+  } else if(e.touches.length===1 && nativeTouchLast && !("a" in nativeTouchLast)){
+    const p=touchPoint(e.touches[0]),dx=p.x-nativeTouchLast.x,dy=p.y-nativeTouchLast.y,s=.105;
+    const right=new THREE.Vector3(Math.cos(cameraYaw),0,-Math.sin(cameraYaw));
+    const forward=new THREE.Vector3(Math.sin(cameraYaw),0,Math.cos(cameraYaw));
+    cameraTarget.addScaledVector(right,-dx*s); cameraTarget.addScaledVector(forward,-dy*s); clampCamera(); nativeTouchLast=p;
+  }
+},{passive:false});
+renderer.domElement.addEventListener("touchend",e=>{
+  e.preventDefault();
+  if(e.touches.length===0){
+    if(nativeTouchStart&&!nativeTouchStart.a&&nativeTouchLast&&Math.hypot(nativeTouchLast.x-nativeTouchStart.x,nativeTouchLast.y-nativeTouchStart.y)<10)pickAgent(nativeTouchLast.x,nativeTouchLast.y);
+    nativeTouch=false; nativeTouchStart=null; nativeTouchLast=null;
+  } else if(e.touches.length===1){nativeTouchLast=touchPoint(e.touches[0]);}
+},{passive:false});
+renderer.domElement.addEventListener("pointerdown",e=>{
   if(e.pointerType==="mouse"&&e.button!==0)return;
   pointers.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY,startX:e.clientX,startY:e.clientY});
   renderer.domElement.setPointerCapture(e.pointerId);
