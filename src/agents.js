@@ -45,7 +45,8 @@ export function createAgent({ id, name, age = 15, home = null, position = { x: 0
     // Última acción realmente ejecutada; sirve para evitar repeticiones ciegas.
     lastActionName: null,
     lastActionResult: null,
-    lastAttemptedAction: null
+    lastAttemptedAction: null,
+    actionFailures: {}
   };
 }
 
