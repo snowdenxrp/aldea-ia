@@ -101,7 +101,7 @@ function getActionTarget(agent, actionName, perception, world, agents) {
 }
 
 function buildCriticalHungerIntent(simulation, agent, perception) {
-  if (agent.needs.hunger > 10) return null;
+  if (agent.needs.hunger > 20) return null;
   const knownActions = getKnownActions(agent);
   const fishInventory = agent.inventory?.some(item => item.type === "fish" && item.amount > 0);
   if (fishInventory && knownActions.some(action => action.name === "eat_fish")) {
