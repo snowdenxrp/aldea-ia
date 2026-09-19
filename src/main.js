@@ -89,7 +89,8 @@ let frameCount = 0;
 
 function normalizeAgent(agent, fallback) {
   const source = agent ?? fallback;
-  // Alex y Bruno son los dos habitantes núcleo de Lúmina: nunca deben desaparecer por un estado guardado corrupto.\n  source.alive = true;
+  // Alex y Bruno son los dos habitantes núcleo de Lúmina: nunca deben desaparecer por un estado guardado corrupto.
+  source.alive = true;
   source.position ??= { ...(fallback?.position ?? { x: 0, z: 0 }) };
   const x = Number(source.position.x);
   const z = Number(source.position.z);
@@ -221,7 +222,8 @@ const agentMeshes = new Map();
 function createAgentMesh(agent) {
   const group = new THREE.Group();
   const position = agent.position ?? { x: 0, z: 0 };
-  group.position.set(Number.isFinite(Number(position.x)) ? Number(position.x) : 0, 0.05, Number.isFinite(Number(position.z)) ? Number(position.z) : 0);\n  group.renderOrder = 100;
+  group.position.set(Number.isFinite(Number(position.x)) ? Number(position.x) : 0, 0.05, Number.isFinite(Number(position.z)) ? Number(position.z) : 0);
+  group.renderOrder = 100;
   group.scale.setScalar(1.35);
   group.userData.agentId = agent.id;
   group.frustumCulled = false;
