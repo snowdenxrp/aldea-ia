@@ -175,7 +175,7 @@ export function tick(simulation, deltaHours = 0.01) {
   }
 }
 
-function recoverCoreAgent(agent) {
+export function recoverCoreAgent(agent) {
   agent.alive = true;
   agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
   agent.currentIntent = agent.currentIntent ?? null;
@@ -183,7 +183,7 @@ function recoverCoreAgent(agent) {
   if (!Number.isFinite(Number(agent.needs.health)) || agent.needs.health <= 0) agent.needs.health = 100;
   for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
     if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
-    agent.needs[key] = Math.max(20, Math.min(100, Number(agent.needs[key])));
+    agent.needs[key] = Math.max(0, Math.min(100, Number(agent.needs[key])));
   }
 }
 
