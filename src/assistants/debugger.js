@@ -5,7 +5,7 @@ export function runDebugger({ files = {}, simulation = null } = {}) {
 
   for (const [path, content] of Object.entries(files)) {
     if (typeof content !== "string") continue;
-    if (/\\bNaN\\b/.test(content)) add("warning", "STATIC_NAN", `Possible NaN reference in ${path}.`);
+    if (/\bNaN\b/.test(content)) add("warning", "STATIC_NAN", `Possible NaN reference in ${path}.`);
     if (/TODO|FIXME/.test(content)) add("info", "TODO", `Pending TODO/FIXME markers in ${path}.`);
   }
 
