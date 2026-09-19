@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "runs": [
+    {
+      "at": "2026-09-19T11:58:44.707Z",
+      "status": "warning",
+      "day": 22,
+      "hour": 5.944320000007121,
+      "agents": 2,
+      "findings": 2,
+      "testFailures": 0
+    }
+  ],
+  "lessons": [
+    {
+      "trigger": "warning|AGENT_DEAD|Alex no está marcado como vivo.",
+      "rule": "No interpretar un habitante como ausente sin comprobar si el estado lo marcó como fallecido.",
+      "source": "Debugger",
+      "learnedAt": "2026-09-19T11:58:44.707Z"
+    },
+    {
+      "trigger": "warning|AGENT_DEAD|Bruno no está marcado como vivo.",
+      "rule": "No interpretar un habitante como ausente sin comprobar si el estado lo marcó como fallecido.",
+      "source": "Debugger",
+      "learnedAt": "2026-09-19T11:58:44.707Z"
+    },
+    {
+      "trigger": "Ningún habitante tiene intención actual; conviene revisar decisión/percepción.",
+      "rule": "No dar por resuelto un problema hasta que las pruebas correspondientes pasen.",
+      "source": "Analista de Lúmina",
+      "causeCode": "NO_INTENT",
+      "learnedAt": "2026-09-19T11:58:44.707Z"
+    }
+  ],
+  "patterns": [
+    {
+      "signature": "warning|AGENT_DEAD|Alex no está marcado como vivo.",
+      "seen": 1,
+      "firstSeen": "2026-09-19T11:58:44.707Z",
+      "lastSeen": "2026-09-19T11:58:44.707Z"
+    },
+    {
+      "signature": "warning|AGENT_DEAD|Bruno no está marcado como vivo.",
+      "seen": 1,
+      "firstSeen": "2026-09-19T11:58:44.707Z",
+      "lastSeen": "2026-09-19T11:58:44.707Z"
+    }
+  ]
+}
