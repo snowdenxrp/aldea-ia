@@ -25,15 +25,11 @@ export function runTester({ simulation, tick, moveAgent, setMovementTarget } = {
     return Number(simulation.hour) >= before;
   });
   test("movement reaches a nearby target", () => {
-    if (!simulation || typeof moveAgent !== "function" || typeof setMovementTarget !== "function") return false;
-    const agent = simulation.agents[0];
-    const original = { ...agent.position };
-    setMovementTarget(agent, { x: original.x + 1, z: original.z }, simulation.world?.bounds);
-    for (let i = 0; i < 20; i++) moveAgent(agent, 0.1);
-    const reached = Math.hypot(agent.position.x - (original.x + 1), agent.position.z - original.z) < 0.15;
-    agent.position.x = original.x;
-    agent.position.z = original.z;
-    return reached;
+    if (typeof moveAgent !== "function" || typeof setMovementTarget !== "function") return false;
+    const probe = { id: "movement-probe", alive: true, position: { x: 0, z: 0 } };
+    setMovementTarget(probe, { x: 1, z: 0 }, simulation?.world?.bounds);
+    for (let i = 0; i < 20; i++) moveAgent(probe, 0.1);
+    return Math.hypot(probe.position.x - 1, probe.position.z) < 0.15;
   });
 
   const failed = results.filter(r => r.status === "fail").length;
