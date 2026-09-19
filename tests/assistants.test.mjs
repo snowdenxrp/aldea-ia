@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { world } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
-import { createSimulation, tick } from "../src/simulation.js";
+import { createSimulation, tick, recoverCoreAgent } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, classifyRenderProbe } from "../src/assistants/index.js";
 import { survivalUrgency } from "../src/decision.js";
@@ -28,3 +28,9 @@ assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:true, onSc
 
 assert(survivalUrgency({ hunger: 10, thirst: 80, energy: 80, social: 80 }) > survivalUrgency({ hunger: 80, thirst: 80, energy: 80, social: 80 }));
 assert(survivalUrgency({ hunger: 10, thirst: 10, energy: 80, social: 80 }) > survivalUrgency({ hunger: 10, thirst: 80, energy: 80, social: 80 }));
+
+const core = structuredClone(createInitialAgents()[0]);
+core.needs = { hunger: 19, thirst: 17, energy: 18, social: 16, safety: 100, health: 100 };
+recoverCoreAgent(core);
+assert.equal(core.needs.hunger, 19);
+assert.equal(core.needs.thirst, 17);
