@@ -96,3 +96,32 @@ assert.equal(core.needs.thirst, 17);
   assert(alex.needs.health < 50, "Necesidades críticas ignoradas deben deteriorar salud.");
 }
 
+
+
+// Regresión: beber desde sed 0 debe recuperar la necesidad y terminar en estado idle.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  const water = sim.world.resources.water;
+  alex.position = { x: water.position.x, z: water.position.z };
+  alex.needs = { hunger: 100, thirst: 0, energy: 80, social: 80, safety: 100, health: 100 };
+  tick(sim, 0.01);
+  assert.equal(alex.lastActionName, "drink");
+  assert(alex.needs.thirst > 0, "El agua debe recuperar la sed incluso desde 0.");
+  assert.equal(alex.currentActivity, "idle", "Beber no debe quedar como actividad permanente.");
+}
+
+// Regresión: si el agua se agotó, un intento fallido no debe dejar "drinking" pegado.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  const water = sim.world.resources.water;
+  water.amount = 0;
+  alex.position = { x: water.position.x, z: water.position.z };
+  alex.needs = { hunger: 100, thirst: 0, energy: 80, social: 80, safety: 100, health: 100 };
+  alex.currentActivity = "drinking";
+  alex.currentIntent = { name: "drink", target: { ...water.position }, amount: 5 };
+  tick(sim, 0.01);
+  assert.equal(alex.lastActionResult?.success, false);
+  assert.equal(alex.currentActivity, "idle", "Un fallo al beber debe devolver al habitante a idle.");
+}
