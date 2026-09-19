@@ -1,4 +1,6 @@
-import { classifyRenderProbe } from "./render.js";\n\nexport function analyzeLumina({ simulation, debuggerReport = null, testerReport = null, learnedRules = [], renderProbe = null } = {}) {
+import { classifyRenderProbe } from "./render.js";
+
+export function analyzeLumina({ simulation, debuggerReport = null, testerReport = null, learnedRules = [], renderProbe = null } = {}) {
   const agents = Array.isArray(simulation?.agents) ? simulation.agents : [];
   const observations = [];
   const conclusions = [];
@@ -9,21 +11,21 @@ import { classifyRenderProbe } from "./render.js";\n\nexport function analyzeLum
   observations.push(`Habitantes: ${agents.length}; vivos: ${alive.length}; con intención: ${withIntent.length}; moviéndose: ${moving.length}.`);
   if (simulation) observations.push(`Tiempo: día ${simulation.day}, hora ${Number(simulation.hour).toFixed(2)}.`);
   if (learnedRules.length) observations.push(`Memoria de aprendizaje: ${learnedRules.length} regla(s) acumulada(s).`);
-  if (renderProbe) observations.push(`Render: ${renderProbe.renderer ? "renderer OK" : "renderer ausente"}; escena ${renderProbe.sceneChildren ?? "?"} objetos; Alex ${renderProbe.alex ?? "?"}; Bruno ${renderProbe.bruno ?? "?"}.`);
+  if (renderProbe) observations.push(`Render: ${renderProbe.renderer ? "renderer OK" : "renderer ausente"}; escena ${renderProbe.sceneChildren ?? "?"} objetos.`);
 
-  const visual = renderProbe?.agents ?? {};
-  for (const [id, probe] of Object.entries(visual)) {
+  for (const [id, probe] of Object.entries(renderProbe?.agents ?? {})) {
+    const causeCode = classifyRenderProbe(probe);
     if (causeCode === "MESH_MISSING") conclusions.push({ severity: "error", code: causeCode, message: `${id}: el mesh no existe; revisar creación/sincronización visual.` });
-    else if (probe?.inScene === false) conclusions.push({ severity: "error", message: `${id}: el mesh existe pero no pertenece a la escena; revisar scene.add().` });
-    else if (probe?.visible === false) conclusions.push({ severity: "error", message: `${id}: el mesh existe y está en la escena, pero está oculto.` });
+    else if (causeCode === "NOT_IN_SCENE") conclusions.push({ severity: "error", code: causeCode, message: `${id}: el mesh existe pero no pertenece a la escena; revisar scene.add().` });
+    else if (causeCode === "HIDDEN") conclusions.push({ severity: "error", code: causeCode, message: `${id}: el mesh existe y está en la escena, pero está oculto.` });
     else if (causeCode === "OFFSCREEN") conclusions.push({ severity: "warning", code: causeCode, message: `${id}: el mesh es renderizable pero está fuera del campo visual; revisar cámara/encuadre.` });
   }
 
-  if (!agents.length) conclusions.push({ severity: "error", message: "No hay habitantes: la simulación no puede comportarse como aldea." });
-  if (debuggerReport?.status === "error") conclusions.push({ severity: "error", message: "Debugger encontró errores estructurales; corregirlos antes de interpretar el comportamiento." });
-  if (testerReport?.status === "fail") conclusions.push({ severity: "error", message: "Hay pruebas fallidas; una corrección no debe considerarse validada." });
-  if (agents.length && withIntent.length === 0) conclusions.push({ severity: "warning", message: "Ningún habitante tiene intención actual; conviene revisar decisión/percepción." });
-  if (agents.length && moving.length === 0) conclusions.push({ severity: "info", message: "No hay habitantes en movimiento en esta muestra; puede ser normal según sus intenciones." });
+  if (!agents.length) conclusions.push({ severity: "error", code: "NO_AGENTS", message: "No hay habitantes: la simulación no puede comportarse como aldea." });
+  if (debuggerReport?.status === "error") conclusions.push({ severity: "error", code: "DEBUGGER_ERROR", message: "Debugger encontró errores estructurales; corregirlos antes de interpretar el comportamiento." });
+  if (testerReport?.status === "fail") conclusions.push({ severity: "error", code: "TEST_FAILURE", message: "Hay pruebas fallidas; una corrección no debe considerarse validada." });
+  if (agents.length && withIntent.length === 0) conclusions.push({ severity: "warning", code: "NO_INTENT", message: "Ningún habitante tiene intención actual; conviene revisar decisión/percepción." });
+  if (agents.length && moving.length === 0) conclusions.push({ severity: "info", code: "NO_MOVEMENT_SAMPLE", message: "No hay habitantes en movimiento en esta muestra; puede ser normal según sus intenciones." });
 
   return {
     assistant: "Analista de Lúmina",
