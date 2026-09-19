@@ -54,7 +54,18 @@ const analystReport = analyzeLumina({
   testerReport,
   learnedRules: memory.lessons
 });
-const report = buildAssistantReport({ debuggerReport, testerReport, analystReport });
+const structuralFindings = [];
+for (const agent of simulation.agents) {
+  if (agent.alive === false && agent.needs?.health > 0) structuralFindings.push({ severity: "warning", code: "DEAD_WITH_HEALTH", message: agent.name + " está muerto pero conserva salud > 0." });
+  if (agent.alive === false && agent.currentActivity !== "dead") structuralFindings.push({ severity: "error", code: "DEAD_STATE_MISMATCH", message: agent.name + " está muerto pero su actividad no es dead." });
+}
+const structuralReport = {
+  assistant: "StateAuditor",
+  status: structuralFindings.some(f => f.severity === "error") ? "error" : structuralFindings.length ? "warning" : "ok",
+  summary: structuralFindings.length ? `${structuralFindings.length} hallazgo(s) de consistencia de estado` : "Estado estructural consistente.",
+  findings: structuralFindings
+};
+const report = buildAssistantReport({ debuggerReport, testerReport, analystReport, structuralReport });
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
