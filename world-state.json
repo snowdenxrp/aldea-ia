@@ -1,11 +1,11 @@
 {
   "version": 3,
-  "savedAt": 1789825414465,
+  "savedAt": 1789825479137,
   "day": 55,
-  "hour": 22.236373333351867,
+  "hour": 23.960960000018574,
   "world": {
     "day": 48,
-    "timeOfDay": 22.236373333351867,
+    "timeOfDay": 23.960960000018574,
     "speed": 1,
     "resources": {
       "water": {
@@ -99,7 +99,7 @@
       },
       "fish": {
         "type": "renewable",
-        "amount": 11.25,
+        "amount": 10.25,
         "quality": 0.9,
         "location": "river",
         "position": {
@@ -139,18 +139,18 @@
       "age": 15,
       "alive": true,
       "needs": {
-        "hunger": 33.29323199999996,
+        "hunger": 29.499141333333252,
         "thirst": 20,
-        "energy": 38.80280000000003,
-        "social": 67.35726666666157,
+        "energy": 37.17986666666673,
+        "social": 66.4949733333281,
         "safety": 100,
-        "health": 81.48076000000017
+        "health": 77.16929333333375
       },
       "position": {
-        "x": -16.858663064328812,
-        "z": -0.5706649357535394
+        "x": -17.843936954687162,
+        "z": 5.357685494760975
       },
-      "currentActivity": "idle",
+      "currentActivity": "moving",
       "inventory": [],
       "money": 100,
       "home": null,
@@ -46035,6 +46035,312 @@
           "participants": [],
           "emotionalWeight": -0.15,
           "importance": 0.45
+        },
+        {
+          "id": "event-501",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-503",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-505",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-507",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-509",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-511",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-519",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-520",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-521",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-522",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-523",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-524",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-525",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-533",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-535",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-537",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-539",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex descansó.",
+          "participants": [],
+          "emotionalWeight": 0,
+          "importance": 0.2
+        },
+        {
+          "id": "event-540",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-541",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-542",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-543",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-545",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-546",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-547",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-548",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-549",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-551",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-553",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-555",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-557",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-559",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-560",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-561",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-562",
+          "day": 55,
+          "type": "experience",
+          "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
         }
       ],
       "relationships": [
@@ -46813,7 +47119,20 @@
         }
       ],
       "experiences": [],
-      "currentIntent": null,
+      "currentIntent": {
+        "name": "drink",
+        "amount": 5,
+        "baseValue": 0.5,
+        "effects": {
+          "thirst": 1.8
+        },
+        "distance": 6.569557978835695,
+        "score": 271.58058039708095,
+        "target": {
+          "x": -18,
+          "z": 0
+        }
+      },
       "lastActionName": null,
       "lastActionResult": {
         "success": false,
@@ -46821,36 +47140,36 @@
       },
       "lastPerception": {
         "position": {
-          "x": -16.858663064328812,
-          "z": -0.5706649357535394
+          "x": -17.80871767491747,
+          "z": 6.566772655528342
         },
         "visibleAgents": [
           {
             "id": "bruno",
             "name": "Bruno",
-            "distance": 1.2760519071048357
+            "distance": 6.569557978835693
           }
         ],
         "nearbyResources": [
           {
             "type": "water",
             "location": "river",
-            "distance": 1.2760519071048355
+            "distance": 6.569557978835695
           },
           {
             "type": "fish",
             "location": "river",
-            "distance": 8.64632566132473
+            "distance": 1.445935527203844
           }
         ],
-        "currentActivity": "idle",
+        "currentActivity": "moving",
         "needs": {
-          "hunger": 33.29323199999996,
-          "thirst": 14.113791999999954,
-          "energy": 38.80280000000003,
-          "social": 67.35726666666157,
+          "hunger": 29.499141333333252,
+          "thirst": 14.481322666666617,
+          "energy": 37.17986666666673,
+          "social": 66.4949733333281,
           "safety": 100,
-          "health": 81.48076000000017
+          "health": 77.16929333333375
         }
       },
       "availableOptions": [
@@ -46869,7 +47188,7 @@
           "effects": {
             "thirst": 1.8
           },
-          "distance": 1.2760519071048355
+          "distance": 6.569557978835695
         },
         {
           "name": "socialize",
@@ -46877,7 +47196,7 @@
           "effects": {
             "social": 1.4
           },
-          "distance": 1.2760519071048357
+          "distance": 6.569557978835693
         },
         {
           "name": "share_knowledge",
@@ -46885,7 +47204,7 @@
           "effects": {
             "social": 0.6
           },
-          "distance": 1.2760519071048357
+          "distance": 6.569557978835693
         },
         {
           "name": "eat_plant",
@@ -46899,7 +47218,7 @@
         {
           "name": "catch_fish",
           "baseValue": 0.05583543992418305,
-          "distance": 8.64632566132473,
+          "distance": 1.445935527203844,
           "effects": {
             "hunger": 1.6
           },
@@ -46910,38 +47229,41 @@
           "baseValue": 0.28,
           "explorationValue": 0.7,
           "novelty": 0.8,
-          "distance": 7.2957550096196755,
+          "distance": 5.19946378005784,
           "target": {
-            "x": -23.237500923126056,
-            "z": 2.97030509116925
+            "x": -22.16030520085384,
+            "z": 3.721054889436921
           }
         }
       ],
       "decisionSnapshot": {
         "chosen": {
           "name": "drink",
-          "score": 268.6435832217214
+          "score": 271.58058039708095
         },
         "considered": [
           {
             "name": "drink",
-            "score": 268.6435832217214
+            "score": 271.58058039708095
           },
           {
             "name": "eat_plant",
-            "score": 230.16221805257732
+            "score": 249.1564775236435
           },
           {
             "name": "catch_fish",
-            "score": 189.4338099013274
+            "score": 204.93986468605195
           }
         ]
       },
       "movement": {
-        "target": null,
+        "target": {
+          "x": -18,
+          "z": 0
+        },
         "speed": 1.8,
-        "moving": false,
-        "distanceTravelled": 7106.876754405026
+        "moving": true,
+        "distanceTravelled": 7162.086354405032
       }
     },
     {
@@ -46950,19 +47272,24 @@
       "age": 15,
       "alive": true,
       "needs": {
-        "hunger": 33.29323199999996,
+        "hunger": 29.499141333333252,
         "thirst": 20,
-        "energy": 24.802800000000033,
-        "social": 67.34393333332824,
+        "energy": 20,
+        "social": 66.48163999999477,
         "safety": 100,
-        "health": 79.64876000000017
+        "health": 75.33729333333375
       },
       "position": {
         "x": -18,
         "z": 4.440892098500626e-16
       },
       "currentActivity": "moving",
-      "inventory": [],
+      "inventory": [
+        {
+          "type": "fish",
+          "amount": 1
+        }
+      ],
       "money": 100,
       "home": null,
       "knowledge": [
@@ -46999,7 +47326,7 @@
         {
           "topic": "action:catch_fish",
           "belief": "Creo que puedo investigar pesca aquí.",
-          "confidence": 0.047388938356442124,
+          "confidence": 0.09501949143862001,
           "evidence": [
             {
               "day": 1,
@@ -48067,6 +48394,12 @@
               "day": 52,
               "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
               "outcome": -1,
+              "reliability": 0.5
+            },
+            {
+              "day": 55,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
               "reliability": 0.5
             }
           ],
@@ -91097,6 +91430,267 @@
           "participants": [],
           "emotionalWeight": -0.15,
           "importance": 0.45
+        },
+        {
+          "id": "event-502",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-504",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-506",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-508",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-510",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-512",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-513",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-514",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-515",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-516",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-517",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-518",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-526",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-527",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-528",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-529",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-530",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-531",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-532",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-534",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-536",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-538",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-544",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0,
+          "importance": 0.5
+        },
+        {
+          "id": "event-550",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-552",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-554",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-556",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-558",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
+        },
+        {
+          "id": "event-563",
+          "day": 55,
+          "type": "experience",
+          "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+          "participants": [],
+          "emotionalWeight": -0.15,
+          "importance": 0.45
         }
       ],
       "relationships": [
@@ -91865,7 +92459,7 @@
         },
         {
           "name": "catch_fish",
-          "level": 0.03,
+          "level": 0.06,
           "learnedOnDay": 50
         },
         {
@@ -91890,7 +92484,7 @@
           {
             "id": "alex",
             "name": "Alex",
-            "distance": 1.2760519071048357
+            "distance": 6.569557978835693
           }
         ],
         "nearbyResources": [
@@ -91907,12 +92501,12 @@
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 33.29323199999996,
-          "thirst": 14.113791999999954,
-          "energy": 24.802800000000033,
-          "social": 67.34393333332824,
+          "hunger": 29.499141333333252,
+          "thirst": 14.481322666666617,
+          "energy": 13.179866666666731,
+          "social": 66.48163999999477,
           "safety": 100,
-          "health": 79.64876000000017
+          "health": 75.33729333333375
         }
       },
       "availableOptions": [
@@ -91939,7 +92533,7 @@
           "effects": {
             "social": 1.4
           },
-          "distance": 1.2760519071048357
+          "distance": 6.569557978835693
         },
         {
           "name": "share_knowledge",
@@ -91947,7 +92541,7 @@
           "effects": {
             "social": 0.6
           },
-          "distance": 1.2760519071048357
+          "distance": 6.569557978835693
         },
         {
           "name": "gather_wood",
@@ -91961,10 +92555,19 @@
         },
         {
           "name": "catch_fish",
-          "baseValue": 0.047388938356442124,
+          "baseValue": 0.09501949143862001,
           "distance": 8,
           "effects": {
             "hunger": 1.6
+          },
+          "amount": 1
+        },
+        {
+          "name": "eat_fish",
+          "baseValue": 0.811117887730215,
+          "distance": 0,
+          "effects": {
+            "hunger": 2.3
           },
           "amount": 1
         },
@@ -91982,30 +92585,30 @@
           "baseValue": 0.28,
           "explorationValue": 0.7,
           "novelty": 0.8,
-          "distance": 8.538151604274658,
+          "distance": 9.087720848635893,
           "target": {
-            "x": -17.215834614497837,
-            "z": 8.502065482325936
+            "x": -9.06471562422149,
+            "z": 1.657517223651061
           }
         }
       ],
       "decisionSnapshot": {
         "chosen": {
           "name": "drink",
-          "score": 268.7201463361477
+          "score": 271.9747538758111
         },
         "considered": [
           {
             "name": "drink",
-            "score": 268.7201463361477
+            "score": 271.9747538758111
+          },
+          {
+            "name": "eat_fish",
+            "score": 257.9605035151557
           },
           {
             "name": "eat_plant",
-            "score": 230.14835449592417
-          },
-          {
-            "name": "catch_fish",
-            "score": 189.46287596420402
+            "score": 249.1426139669904
           }
         ]
       },
@@ -92013,641 +92616,11 @@
         "target": null,
         "speed": 1.8,
         "moving": false,
-        "distanceTravelled": 7615.267420577817
+        "distanceTravelled": 7679.844508217819
       }
     }
   ],
   "events": [
-    {
-      "id": "event-1198",
-      "day": 55,
-      "hour": 14.700133333351696,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1199",
-      "day": 55,
-      "hour": 14.700133333351696,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1200",
-      "day": 55,
-      "hour": 14.726800000018363,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1201",
-      "day": 55,
-      "hour": 14.726800000018363,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1202",
-      "day": 55,
-      "hour": 14.75346666668503,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1203",
-      "day": 55,
-      "hour": 14.75346666668503,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1204",
-      "day": 55,
-      "hour": 14.780133333351698,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1205",
-      "day": 55,
-      "hour": 14.780133333351698,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1206",
-      "day": 55,
-      "hour": 14.806800000018365,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1207",
-      "day": 55,
-      "hour": 14.806800000018365,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1208",
-      "day": 55,
-      "hour": 14.833466666685032,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1209",
-      "day": 55,
-      "hour": 14.833466666685032,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1210",
-      "day": 55,
-      "hour": 14.8601333333517,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1211",
-      "day": 55,
-      "hour": 14.8601333333517,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1212",
-      "day": 55,
-      "hour": 14.886800000018367,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1213",
-      "day": 55,
-      "hour": 14.886800000018367,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1214",
-      "day": 55,
-      "hour": 14.913466666685034,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1215",
-      "day": 55,
-      "hour": 14.913466666685034,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1216",
-      "day": 55,
-      "hour": 14.940133333351701,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1217",
-      "day": 55,
-      "hour": 14.940133333351701,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1218",
-      "day": 55,
-      "hour": 14.966800000018369,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1219",
-      "day": 55,
-      "hour": 14.966800000018369,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1220",
-      "day": 55,
-      "hour": 14.993466666685036,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1221",
-      "day": 55,
-      "hour": 14.993466666685036,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1222",
-      "day": 55,
-      "hour": 15.020133333351703,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1223",
-      "day": 55,
-      "hour": 15.020133333351703,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1224",
-      "day": 55,
-      "hour": 15.04680000001837,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1225",
-      "day": 55,
-      "hour": 15.04680000001837,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1226",
-      "day": 55,
-      "hour": 15.073466666685038,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1227",
-      "day": 55,
-      "hour": 15.073466666685038,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1228",
-      "day": 55,
-      "hour": 15.100133333351705,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1229",
-      "day": 55,
-      "hour": 15.100133333351705,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1230",
-      "day": 55,
-      "hour": 15.126800000018372,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1231",
-      "day": 55,
-      "hour": 15.126800000018372,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1232",
-      "day": 55,
-      "hour": 15.15346666668504,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1233",
-      "day": 55,
-      "hour": 15.15346666668504,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1234",
-      "day": 55,
-      "hour": 15.180133333351707,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1235",
-      "day": 55,
-      "hour": 15.180133333351707,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1236",
-      "day": 55,
-      "hour": 15.206800000018374,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1237",
-      "day": 55,
-      "hour": 15.206800000018374,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1238",
-      "day": 55,
-      "hour": 15.233466666685041,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1239",
-      "day": 55,
-      "hour": 15.233466666685041,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1240",
-      "day": 55,
-      "hour": 15.260133333351709,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1241",
-      "day": 55,
-      "hour": 15.260133333351709,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1242",
-      "day": 55,
-      "hour": 15.286800000018376,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1243",
-      "day": 55,
-      "hour": 15.286800000018376,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1244",
-      "day": 55,
-      "hour": 15.313466666685043,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1245",
-      "day": 55,
-      "hour": 15.313466666685043,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1246",
-      "day": 55,
-      "hour": 15.34013333335171,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1247",
-      "day": 55,
-      "hour": 15.34013333335171,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1248",
-      "day": 55,
-      "hour": 15.366800000018378,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1249",
-      "day": 55,
-      "hour": 15.366800000018378,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1250",
-      "day": 55,
-      "hour": 15.393466666685045,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1251",
-      "day": 55,
-      "hour": 15.393466666685045,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1252",
-      "day": 55,
-      "hour": 15.420133333351712,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1253",
-      "day": 55,
-      "hour": 15.420133333351712,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1254",
-      "day": 55,
-      "hour": 15.44680000001838,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1255",
-      "day": 55,
-      "hour": 15.44680000001838,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1256",
-      "day": 55,
-      "hour": 15.473466666685047,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1257",
-      "day": 55,
-      "hour": 15.473466666685047,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1258",
-      "day": 55,
-      "hour": 15.500133333351714,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-1259",
-      "day": 55,
-      "hour": 15.500133333351714,
-      "type": "failed_action",
-      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-1260",
-      "day": 55,
-      "hour": 15.526800000018381,
-      "type": "failed_action",
-      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
-      "participants": [
-        "alex"
-      ]
-    },
     {
       "id": "event-1261",
       "day": 55,
@@ -97012,6 +96985,636 @@
       "id": "event-572",
       "day": 55,
       "hour": 22.236373333351867,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 55,
+      "hour": 22.263040000018535,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 55,
+      "hour": 22.263040000018535,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-503",
+      "day": 55,
+      "hour": 22.289706666685202,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-504",
+      "day": 55,
+      "hour": 22.289706666685202,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-505",
+      "day": 55,
+      "hour": 22.31637333335187,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-506",
+      "day": 55,
+      "hour": 22.31637333335187,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-507",
+      "day": 55,
+      "hour": 22.343040000018537,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-508",
+      "day": 55,
+      "hour": 22.343040000018537,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-509",
+      "day": 55,
+      "hour": 22.369706666685204,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-510",
+      "day": 55,
+      "hour": 22.369706666685204,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-511",
+      "day": 55,
+      "hour": 22.39637333335187,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-512",
+      "day": 55,
+      "hour": 22.39637333335187,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-513",
+      "day": 55,
+      "hour": 22.42304000001854,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-514",
+      "day": 55,
+      "hour": 22.449706666685206,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-515",
+      "day": 55,
+      "hour": 22.476373333351873,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-516",
+      "day": 55,
+      "hour": 22.50304000001854,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-517",
+      "day": 55,
+      "hour": 22.529706666685207,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-518",
+      "day": 55,
+      "hour": 22.556373333351875,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-519",
+      "day": 55,
+      "hour": 22.60970666668521,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-520",
+      "day": 55,
+      "hour": 22.636373333351877,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-521",
+      "day": 55,
+      "hour": 22.663040000018544,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-522",
+      "day": 55,
+      "hour": 22.68970666668521,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-523",
+      "day": 55,
+      "hour": 22.71637333335188,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-524",
+      "day": 55,
+      "hour": 22.743040000018546,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-525",
+      "day": 55,
+      "hour": 22.769706666685213,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-526",
+      "day": 55,
+      "hour": 23.116373333351888,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-527",
+      "day": 55,
+      "hour": 23.143040000018555,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-528",
+      "day": 55,
+      "hour": 23.169706666685222,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-529",
+      "day": 55,
+      "hour": 23.19637333335189,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-530",
+      "day": 55,
+      "hour": 23.223040000018557,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-531",
+      "day": 55,
+      "hour": 23.249706666685224,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-532",
+      "day": 55,
+      "hour": 23.27637333335189,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-533",
+      "day": 55,
+      "hour": 23.30304000001856,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-534",
+      "day": 55,
+      "hour": 23.30304000001856,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-535",
+      "day": 55,
+      "hour": 23.329706666685226,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-536",
+      "day": 55,
+      "hour": 23.329706666685226,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-537",
+      "day": 55,
+      "hour": 23.356373333351893,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-538",
+      "day": 55,
+      "hour": 23.356373333351893,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-539",
+      "day": 55,
+      "hour": 23.38304000001856,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-540",
+      "day": 55,
+      "hour": 23.409706666685228,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-541",
+      "day": 55,
+      "hour": 23.436373333351895,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-542",
+      "day": 55,
+      "hour": 23.463040000018562,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-543",
+      "day": 55,
+      "hour": 23.48970666668523,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-544",
+      "day": 55,
+      "hour": 23.48970666668523,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-545",
+      "day": 55,
+      "hour": 23.516373333351897,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-546",
+      "day": 55,
+      "hour": 23.543040000018564,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-547",
+      "day": 55,
+      "hour": 23.56970666668523,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-548",
+      "day": 55,
+      "hour": 23.5963733333519,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-549",
+      "day": 55,
+      "hour": 23.623040000018566,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-550",
+      "day": 55,
+      "hour": 23.623040000018566,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-551",
+      "day": 55,
+      "hour": 23.649706666685233,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-552",
+      "day": 55,
+      "hour": 23.649706666685233,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-553",
+      "day": 55,
+      "hour": 23.6763733333519,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-554",
+      "day": 55,
+      "hour": 23.6763733333519,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-555",
+      "day": 55,
+      "hour": 23.703040000018568,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-556",
+      "day": 55,
+      "hour": 23.703040000018568,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-557",
+      "day": 55,
+      "hour": 23.729706666685235,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-558",
+      "day": 55,
+      "hour": 23.729706666685235,
+      "type": "failed_action",
+      "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-559",
+      "day": 55,
+      "hour": 23.756373333351902,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-560",
+      "day": 55,
+      "hour": 23.78304000001857,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-561",
+      "day": 55,
+      "hour": 23.809706666685237,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-562",
+      "day": 55,
+      "hour": 23.836373333351904,
+      "type": "failed_action",
+      "description": "Alex intentó drink, pero no pudo hacerlo (no_water).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-563",
+      "day": 55,
+      "hour": 23.960960000018574,
       "type": "failed_action",
       "description": "Bruno intentó drink, pero no pudo hacerlo (no_water).",
       "participants": [
