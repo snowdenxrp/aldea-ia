@@ -66,6 +66,7 @@ function calculateScore(context, option) {
   if (option.effects?.social) score += needPressure(context.needs.social) * option.effects.social;
   if (option.knowledgeBonus) score += option.knowledgeBonus(context.knowledge);
   if (option.memoryBonus) score += option.memoryBonus(context.memories);
+  else score += memoryExperienceValue(context.memories, option.name);
   if (option.explorationValue) score += option.explorationValue * explorationPressure(context, option);
 
   if (Number.isFinite(option.distance)) score -= Math.min(2.5, Math.max(0, option.distance) * 0.06);
@@ -104,6 +105,16 @@ function calculateScore(context, option) {
 
   if (option.relationshipBonus) score += option.relationshipBonus(context.relationships);
   return score;
+}
+
+function memoryExperienceValue(memories, actionName) {
+  const relevant = (memories ?? []).filter(memory => memory.topic === "action:" + actionName);
+  if (relevant.length === 0) return 0;
+  return relevant.slice(-5).reduce((sum, memory) => {
+    const outcome = Number.isFinite(+memory.emotionalWeight) ? +memory.emotionalWeight : 0;
+    const importance = Number.isFinite(+memory.importance) ? +memory.importance : 0.5;
+    return sum + outcome * importance;
+  }, 0);
 }
 
 function needPressure(value) {
