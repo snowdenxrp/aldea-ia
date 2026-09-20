@@ -11,7 +11,7 @@ import { specializationBonus } from "./specialization.js";\n\nexport function cr
     relationships: agent.relationships.map(item => ({ ...item })),
     memories: agent.memories.map(item => ({ ...item })),
     recentAction: agent.lastAttemptedAction ?? agent.lastActionName ?? null,
-    recentActionResult: agent.lastActionResult ? { ...agent.lastActionResult } : null,\n    specialization: agent.specialization ? { ...agent.specialization } : null
+    recentActionResult: agent.lastActionResult ? { ...agent.lastActionResult } : null,\n    specialization: agent.specialization ? { ...agent.specialization } : null,\n    skills: agent.skills.map(skill => ({ ...skill }))
   };
 }
 
