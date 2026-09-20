@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import { createInitialAgents } from "../src/agents.js";
+import { createSimulation } from "../src/simulation.js";
+import { executeAction } from "../src/actions.js";
+import { world } from "../src/world.js";
+import { canCraftTool, canFarm } from "../src/production.js";
+
+const sim=createSimulation(structuredClone(world),[createInitialAgents()[0]],{random:()=>0});
+const a=sim.agents[0];
+a.inventory=[{type:"wood",amount:20},{type:"stone",amount:6}];
+assert(canCraftTool(a));
+assert.equal(executeAction(sim,a,{name:"craft_tool"}).success,true);
+assert(a.skills.some(s=>s.name==="toolmaking"));
+assert(canFarm(a));
+assert.equal(executeAction(sim,a,{name:"farm"}).success,true);
+assert.equal(sim.world.structures.farms.length,1);
+sim.world.structures.farms[0].food=4;
+a.knowledge=[{topic:"action:harvest",belief:"puedo cosechar",confidence:.8,evidence:[]}];
+assert.equal(executeAction(sim,a,{name:"harvest"}).success,true);
+assert(a.inventory.some(i=>i.type==="farm_food"));
+console.log("Lúmina production audit: herramientas, cultivos y cosecha verificados.");
