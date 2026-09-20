@@ -24,7 +24,8 @@ import { getInstitutionOptions, normalizeInstitutionWorld } from "./institutions
 export function createSimulation(world, agents, options = {}) {
   normalizeDevelopmentWorld(world);
   normalizeSocietyWorld(world);
-  normalizeCollectiveWorld(world);\n  normalizeInstitutionWorld(world);
+  normalizeCollectiveWorld(world);
+  normalizeInstitutionWorld(world);
   for (const agent of agents) normalizeAgentLife(agent);
   return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false, random: options.random ?? null };
 }
