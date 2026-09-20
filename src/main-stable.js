@@ -92,6 +92,14 @@ function createMesh(a){
   const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.58,6,9),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
   const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),shoeMat), footR=footL.clone(); footL.scale.set(1,.55,1.45); footR.scale.set(1,.55,1.45); footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
   const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false})); marker.position.y=2.47;
+  const role=a.specialization?.role??a.socialRole;
+  const accessoryGroup=new THREE.Group();
+  if(role==="farmer"){const hat=new THREE.Mesh(new THREE.ConeGeometry(.34,.22,12),material(0x6b4b2d));hat.position.y=2.28;accessoryGroup.add(hat);}
+  if(role==="builder"||role==="craftsperson"){const belt=new THREE.Mesh(new THREE.TorusGeometry(.29,.035,6,16),darkMat);belt.rotation.x=Math.PI/2;belt.position.y=.92;accessoryGroup.add(belt);}
+  if(role==="trader"){const bag=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0x6a4d38));bag.scale.set(1,.8,.7);bag.position.set(.43,1.02,.08);accessoryGroup.add(bag);}
+  if(role==="gatherer"){const basket=new THREE.Mesh(new THREE.TorusGeometry(.18,.055,6,12),material(0x9a6b35));basket.rotation.x=Math.PI/2;basket.position.set(-.43,.98,.08);accessoryGroup.add(basket);}
+  accessoryGroup.position.z=.02;
+  g.add(accessoryGroup); g.userData.accessoryRole=role??null;
   g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};
   g.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.renderOrder=1000;}}); return (scene.add(g),g);
 }
