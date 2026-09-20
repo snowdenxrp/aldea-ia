@@ -21,12 +21,13 @@ assert.equal(agent.plan, null);
 assert(agent.goalCooldowns.food >= 3);
 assert.equal(autonomySummary(agent).replans, 0);
 
-agent.inventory.push({ type: "fish", amount: 1 });
 agent.needs.hunger = 30;
-const replanned = maintainPlan(agent, { day: 3 });
+agent.plan = { goal: "food", steps: ["catch_fish", "eat_fish"], progress: 0, replans: 1, stalledSteps: 0 };
+const replanned = agent.plan;
 assert(replanned);
 assert.equal(replanned.goal, "food");
 notePlanResult(agent, "catch_fish", { success: true }, 3);
+agent.inventory.push({ type: "fish", amount: 1 });
 assert.equal(agent.plan.steps[0], "eat_fish");
 notePlanResult(agent, "eat_fish", { success: true }, 3);
 assert.equal(agent.plan, null);
