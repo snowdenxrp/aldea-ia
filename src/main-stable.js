@@ -55,41 +55,6 @@ function pickAgent(clientX,clientY){
   if(id) openAgent(id);
   return !!id;
 }
-// Gestos táctiles nativos: Android recibe aquí los dos dedos directamente, evitando que el navegador intercepte la rotación.
-let nativeTouch=false,nativeTouchStart=null,nativeTouchLast=null;
-const touchPoint=t=>({x:t.clientX,y:t.clientY});
-const touchDistance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-const touchAngle=(a,b)=>Math.atan2(b.y-a.y,b.x-a.x);
-renderer.domElement.addEventListener("touchstart",e=>{
-  e.preventDefault(); nativeTouch=true;
-  if(e.touches.length===1){const p=touchPoint(e.touches[0]);nativeTouchStart=p;nativeTouchLast=p;}
-  else if(e.touches.length===2){const a=touchPoint(e.touches[0]),b=touchPoint(e.touches[1]);nativeTouchStart={a,b,d:touchDistance(a,b),angle:touchAngle(a,b)};nativeTouchLast=nativeTouchStart;}
-},{passive:false});
-renderer.domElement.addEventListener("touchmove",e=>{
-  e.preventDefault();
-  if(e.touches.length===2){
-    const a=touchPoint(e.touches[0]),b=touchPoint(e.touches[1]);
-    const d=touchDistance(a,b),ang=touchAngle(a,b),prev=nativeTouchLast;
-    if(prev&&"a" in prev){
-      cameraDistance=Math.max(10,Math.min(75,cameraDistance+(prev.d-d)*.09));
-      let da=ang-prev.angle; if(da>Math.PI)da-=Math.PI*2; if(da<-Math.PI)da+=Math.PI*2;
-      cameraYaw-=da*1.8;
-    }
-    nativeTouchLast={a,b,d,angle:ang};
-  } else if(e.touches.length===1 && nativeTouchLast && !("a" in nativeTouchLast)){
-    const p=touchPoint(e.touches[0]),dx=p.x-nativeTouchLast.x,dy=p.y-nativeTouchLast.y,s=.105;
-    const right=new THREE.Vector3(Math.cos(cameraYaw),0,-Math.sin(cameraYaw));
-    const forward=new THREE.Vector3(Math.sin(cameraYaw),0,Math.cos(cameraYaw));
-    cameraTarget.addScaledVector(right,-dx*s); cameraTarget.addScaledVector(forward,-dy*s); clampCamera(); nativeTouchLast=p;
-  }
-},{passive:false});
-renderer.domElement.addEventListener("touchend",e=>{
-  e.preventDefault();
-  if(e.touches.length===0){
-    if(nativeTouchStart&&!nativeTouchStart.a&&nativeTouchLast&&Math.hypot(nativeTouchLast.x-nativeTouchStart.x,nativeTouchLast.y-nativeTouchStart.y)<10)pickAgent(nativeTouchLast.x,nativeTouchLast.y);
-    nativeTouch=false; nativeTouchStart=null; nativeTouchLast=null;
-  } else if(e.touches.length===1){nativeTouchLast=touchPoint(e.touches[0]);}
-},{passive:false});
 renderer.domElement.addEventListener("pointerdown",e=>{
   if(e.pointerType==="mouse"&&e.button!==0)return;
   pointers.set(e.pointerId,{clientX:e.clientX,clientY:e.clientY,startX:e.clientX,startY:e.clientY});
@@ -98,21 +63,19 @@ renderer.domElement.addEventListener("pointerdown",e=>{
     dragging=true; lastX=e.clientX; lastY=e.clientY;
     gestureStart={x:e.clientX,y:e.clientY,id:e.pointerId}; gestureMoved=false;
   }else if(pointers.size===2){
-    dragging=false;
-    const p=[...pointers.values()];
-    pinchStart=distance(p[0],p[1]);
-    lastAngle=angle(p[0],p[1]);
-    gestureMoved=true;
+    dragging=false; gestureMoved=true;
+    const pts=[...pointers.values()];
+    pinchStart=distance(pts[0],pts[1]);
+    lastAngle=angle(pts[0],pts[1]);
   }
 });
 renderer.domElement.addEventListener("pointermove",e=>{
   const p=pointers.get(e.pointerId); if(!p)return;
-  const dxTotal=e.clientX-p.startX,dyTotal=e.clientY-p.startY;
-  if(Math.hypot(dxTotal,dyTotal)>8)gestureMoved=true;
-  p.clientX=e.clientX;p.clientY=e.clientY;
+  p.clientX=e.clientX; p.clientY=e.clientY;
   if(pointers.size===2){
-    const pts=[...pointers.values()],d=distance(pts[0],pts[1]);
-    if(pinchStart)cameraDistance=Math.max(10,Math.min(75,cameraDistance+(pinchStart-d)*.07));
+    const pts=[...pointers.values()];
+    const d=distance(pts[0],pts[1]);
+    if(pinchStart>0)cameraDistance=Math.max(10,Math.min(75,cameraDistance+(pinchStart-d)*.07));
     pinchStart=d;
     const a=angle(pts[0],pts[1]);
     let da=a-lastAngle;
@@ -122,13 +85,15 @@ renderer.domElement.addEventListener("pointermove",e=>{
     lastAngle=a;
     return;
   }
-  if(!dragging)return;
-  const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;
+  if(pointers.size!==1||!dragging)return;
+  const dx=e.clientX-p.startX,dy=e.clientY-p.startY;
+  if(Math.hypot(dx,dy)>8)gestureMoved=true;
+  const mdx=e.clientX-lastX,mdy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
   const s=.105;
   const right=new THREE.Vector3(Math.cos(cameraYaw),0,-Math.sin(cameraYaw));
   const forward=new THREE.Vector3(Math.sin(cameraYaw),0,Math.cos(cameraYaw));
-  cameraTarget.addScaledVector(right,-dx*s);
-  cameraTarget.addScaledVector(forward,-dy*s);
+  cameraTarget.addScaledVector(right,-mdx*s);
+  cameraTarget.addScaledVector(forward,-mdy*s);
   clampCamera();
 });
 function endPointer(e){
@@ -136,11 +101,13 @@ function endPointer(e){
   const x=e.clientX,y=e.clientY;
   pointers.delete(e.pointerId);
   if(pointers.size<2){pinchStart=0;lastAngle=0;}
-  dragging=pointers.size===1;
-  if(dragging){const p=[...pointers.values()][0];lastX=p.clientX;lastY=p.clientY;}
+  if(pointers.size===1){
+    const p=[...pointers.values()][0];
+    dragging=true; lastX=p.clientX; lastY=p.clientY;
+  }else{dragging=false;}
   if(renderer.domElement.hasPointerCapture(e.pointerId))renderer.domElement.releasePointerCapture(e.pointerId);
   if(wasTap)pickAgent(x,y);
-  if(pointers.size===0){gestureStart=null;gestureMoved=false;dragging=false;}
+  if(pointers.size===0){gestureStart=null;gestureMoved=false;}
 }
 renderer.domElement.addEventListener("pointerup",endPointer);
 renderer.domElement.addEventListener("pointercancel",endPointer);
