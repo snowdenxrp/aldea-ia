@@ -5,7 +5,7 @@ import { createInitialAgents } from "../src/agents.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { createSeededRandom } from "../src/random.js";
 
-const HORIZONS = [1, 7, 30, 100, 500, 1000, 2500];
+const HORIZONS = [1, 7, 30, 100, 500, 1000, 2500, 3000];
 const AUDIT_SEED = "lumina-audit-2026";
 const HOURS_PER_DAY = 24;
 const MOVEMENT_SECONDS_PER_SIM_HOUR = 37.5;
