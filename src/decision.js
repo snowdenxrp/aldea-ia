@@ -2,7 +2,7 @@
 // Las necesidades crean presión; el conocimiento y la experiencia modifican
 // cómo se valoran las oportunidades. No existe una historia prefijada.
 
-export function createDecisionContext(agent, perception) {
+import { specializationBonus } from "./specialization.js";\n\nexport function createDecisionContext(agent, perception) {
   return {
     agentId: agent.id,
     needs: { ...agent.needs },
@@ -11,7 +11,7 @@ export function createDecisionContext(agent, perception) {
     relationships: agent.relationships.map(item => ({ ...item })),
     memories: agent.memories.map(item => ({ ...item })),
     recentAction: agent.lastAttemptedAction ?? agent.lastActionName ?? null,
-    recentActionResult: agent.lastActionResult ? { ...agent.lastActionResult } : null
+    recentActionResult: agent.lastActionResult ? { ...agent.lastActionResult } : null,\n    specialization: agent.specialization ? { ...agent.specialization } : null
   };
 }
 
@@ -53,7 +53,7 @@ export function chooseOption(context, options, randomness = 0.12, random = Math.
 }
 
 function calculateScore(context, option) {
-  let score = option.baseValue ?? 0;
+  let score = option.baseValue ?? 0;\n  score += specializationBonus(context, option.name);
 
   const survival = survivalUrgency(context.needs);
   if (survival > 70 && (option.effects?.hunger || option.effects?.thirst)) {
