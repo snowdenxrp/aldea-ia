@@ -11,7 +11,40 @@ const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio
 const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,10); scene.add(light,new THREE.HemisphereLight(0xbfe7ff,0x6f8f58,1.2));
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0x6f9b58})); ground.rotation.x=-Math.PI/2; scene.add(ground);
 const river=new THREE.Mesh(new THREE.PlaneGeometry(10,90),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
-for(const [x,z] of [[-5,-7],[4,-6],[8,2],[1,8]]){const h=new THREE.Mesh(new THREE.BoxGeometry(4,2.4,4),new THREE.MeshStandardMaterial({color:0xc8a27b}));h.position.set(x,1.2,z);scene.add(h);}
+const structureMeshes=new Map();
+function material(color,roughness=.8){return new THREE.MeshStandardMaterial({color,roughness});}
+function box(w,h,d,color){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material(color));}
+function createHouse(s){
+  const g=new THREE.Group(); g.userData.structureId=s.id;
+  const wall=box(3.8,2.5,3.4,0xc89b6b); wall.position.y=1.25;
+  const roof=new THREE.Mesh(new THREE.ConeGeometry(2.75,1.65,4),material(0x7a4b32)); roof.rotation.y=Math.PI/4; roof.position.y=3.32;
+  const door=box(.72,1.35,.12,0x593823); door.position.set(0,.68,1.75);
+  const knob=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),material(0xd5b36b)); knob.position.set(.22,.72,1.84);
+  const winL=box(.65,.58,.08,0x7db8c9); winL.position.set(-1.12,1.45,1.73);
+  const winR=winL.clone(); winR.position.x=1.12;
+  const chimney=box(.38,.9,.38,0x6a4435); chimney.position.set(1.15,3.55,0);
+  const step=box(1,.18,.5,0x8c735e); step.position.set(0,.09,1.98);
+  g.add(wall,roof,door,knob,winL,winR,chimney,step);
+  g.position.set(s.position?.x??0,0,s.position?.z??0);
+  return g;
+}
+function createFarm(s){
+  const g=new THREE.Group(); g.userData.structureId=s.id;
+  const soil=box(4,.12,3.2,0x795332); soil.position.y=.06;
+  for(let x=-1.5;x<=1.5;x+=.75) for(let z=-1.1;z<=1.1;z+=.7){
+    const stem=new THREE.Mesh(new THREE.CylinderGeometry(.025,.04,.28,5),material(0x4c7a36)); stem.position.set(x,.25,z);
+    const leaf=new THREE.Mesh(new THREE.SphereGeometry(.1,7,5),material(0x5f913d)); leaf.position.set(x,.39,z); g.add(stem,leaf);
+  }
+  g.add(soil); g.position.set(s.position?.x??0,.0,s.position?.z??0); return g;
+}
+function syncStructures(){
+  const structures=simulation.world.structures??{};
+  const all=[...(structures.shelters??[]).map(s=>({...s,type:"shelter"})),...(structures.farms??[]).map(s=>({...s,type:"farm"}))];
+  const live=new Set(all.map(s=>s.id));
+  for(const s of all){if(structureMeshes.has(s.id)) continue; const m=s.type==="farm"?createFarm(s):createHouse(s); structureMeshes.set(s.id,m); scene.add(m);}
+  for(const [id,m] of structureMeshes) m.visible=live.has(id);
+}
+
 const agents=createInitialAgents(),simulation=createSimulation(world,agents),SAVE_KEY="lumina-world-v10";
 let selectedAgentId=null;
 let cameraTarget=new THREE.Vector3(1,0,1),cameraDistance=34,cameraYaw=.55,cameraPitch=.58,last=performance.now(),lastSave=last,fault=null;
@@ -27,53 +60,28 @@ if(Number(remote?.version)<4){
   if(plants && Number(plants.amount)<=0) plants.amount=80;
   if(fish && Number(fish.amount)<=0) fish.amount=60;
 }
-const localStamp=(Number(local?.day)||0)*24+(Number(local?.hour)||0);const remoteStamp=(Number(remote?.day)||0)*24+(Number(remote?.hour)||0);if(!validState(local)||remoteStamp>localStamp){applyState(remote);save();syncMeshes();centerOnAgents();}}catch{}}
+const localStamp=(Number(local?.day)||0)*24+(Number(local?.hour)||0);const remoteStamp=(Number(remote?.day)||0)*24+(Number(remote?.hour)||0);if(!validState(local)||remoteStamp>localStamp){applyState(remote);save();syncMeshes();syncStructures();centerOnAgents();}}catch{}}
 function createMesh(a){
-  const g=new THREE.Group();
-  g.userData.agentId=a.id;
-  g.scale.setScalar(1.35);
-  g.frustumCulled=false;
-
-  const blue=a.id==="alex";
-  const skin=0xf0bd91;
-  const clothes=blue?0x2f7de1:0xe87832;
-  const dark=blue?0x1f4f8c:0xb45624;
-
-  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.34,.62,6,10),new THREE.MeshStandardMaterial({color:clothes,roughness:.82}));
-  torso.position.y=1.18;
-
-  const pelvis=new THREE.Mesh(new THREE.CapsuleGeometry(.31,.22,6,10),new THREE.MeshStandardMaterial({color:dark,roughness:.86}));
-  pelvis.position.y=.76;
-
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.34,18,14),new THREE.MeshStandardMaterial({color:skin,roughness:.9}));
-  head.scale.set(1,.98,.96);
-  head.position.y=1.91;
-
-  const hair=new THREE.Mesh(new THREE.SphereGeometry(.355,18,10,0,Math.PI*2,0,Math.PI*.58),new THREE.MeshStandardMaterial({color:0x3b2a22,roughness:1}));
-  hair.position.y=2.04;
-
-  const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.095,.48,5,8),new THREE.MeshStandardMaterial({color:clothes,roughness:.84}));
-  const armR=armL.clone();
-  armL.position.set(-.39,1.2,0); armR.position.set(.39,1.2,0);
-  armL.rotation.z=-.06; armR.rotation.z=.06;
-
-  const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.58,5,8),new THREE.MeshStandardMaterial({color:dark,roughness:.9}));
-  const legR=legL.clone();
-  legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
-
-  const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),new THREE.MeshStandardMaterial({color:0x3b332f,roughness:1}));
-  const footR=footL.clone();
-  footL.scale.set(1,.55,1.45); footR.scale.set(1,.55,1.45);
-  footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
-
-  const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false}));
-  marker.position.y=2.47;
-
-  g.add(torso,pelvis,head,hair,armL,armR,legL,legR,footL,footR,marker);
-  g.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.renderOrder=1000;}});
-  return (scene.add(g),g);
+  const g=new THREE.Group(); g.userData.agentId=a.id; g.scale.setScalar(1.42); g.frustumCulled=false;
+  const blue=a.id==="alex", skin=0xf0bd91, clothes=blue?0x2f7de1:0xe87832, dark=blue?0x1f4f8c:0xb45624;
+  const skinMat=material(skin,.9), clothMat=material(clothes,.82), darkMat=material(dark,.88), hairMat=material(0x3b2a22,1), shoeMat=material(0x3b332f,1);
+  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.34,.62,8,12),clothMat); torso.position.y=1.18;
+  const collar=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,6,16),skinMat); collar.rotation.x=Math.PI/2; collar.position.y=1.52;
+  const pelvis=new THREE.Mesh(new THREE.CapsuleGeometry(.31,.22,8,12),darkMat); pelvis.position.y=.76;
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.34,20,16),skinMat); head.scale.set(1,.98,.96); head.position.y=1.91;
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(.355,20,12,0,Math.PI*2,0,Math.PI*.58),hairMat); hair.position.y=2.04;
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),skinMat); nose.position.set(0,1.91,.335);
+  const eyeMat=new THREE.MeshBasicMaterial({color:0x18222b,depthTest:false});
+  const eyeL=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),eyeMat), eyeR=eyeL.clone(); eyeL.position.set(-.115,1.98,.315); eyeR.position.set(.115,1.98,.315);
+  const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.095,.48,6,9),clothMat), armR=armL.clone(); armL.position.set(-.39,1.2,0); armR.position.set(.39,1.2,0); armL.rotation.z=-.08; armR.rotation.z=.08;
+  const handL=new THREE.Mesh(new THREE.SphereGeometry(.105,10,8),skinMat), handR=handL.clone(); handL.position.set(-.39,.89,0); handR.position.set(.39,.89,0);
+  const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.58,6,9),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
+  const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),shoeMat), footR=footL.clone(); footL.scale.set(1,.55,1.45); footR.scale.set(1,.55,1.45); footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
+  const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false})); marker.position.y=2.47;
+  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker);
+  g.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.renderOrder=1000;}}); return (scene.add(g),g);
 }
-function syncMeshes(){normalize();for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,0,a.position.z);}}
+function syncMeshes(){normalize();syncStructures();for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,0,a.position.z);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
 function centerOnAgent(a){if(a)cameraTarget.set(+a.position.x||0,0,+a.position.z||0);}
 function updateCamera(){const h=cameraDistance*Math.cos(cameraPitch);camera.position.set(cameraTarget.x+Math.sin(cameraYaw)*h,cameraTarget.y+cameraDistance*Math.sin(cameraPitch),cameraTarget.z+Math.cos(cameraYaw)*h);camera.lookAt(cameraTarget);}
