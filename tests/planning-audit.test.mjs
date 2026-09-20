@@ -7,5 +7,6 @@ assert(plan && plan.goal==="food");
 assert.deepEqual(plan.steps,["catch_fish","eat_fish"]);
 agent.inventory.push({type:"fish",amount:1}); agent.needs.hunger=80;
 maintainPlan(agent,world);
-assert.equal(agent.plan,null);
+assert(agent.plan);
+assert.equal(agent.plan.goal,"shelter");
 console.log("Lúmina planning audit: planes adaptativos verificados.");
