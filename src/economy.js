@@ -66,3 +66,34 @@ export function recordCooperation(simulation, a, b, type = "cooperation") {
   if (simulation.world.cooperation.length > 5000) simulation.world.cooperation = simulation.world.cooperation.slice(-5000);
   return event;
 }
+
+
+export function normalizeEconomyWorld(world) {
+  world.economy ??= { trades: [], priceMemory: {}, priceHistory: [] };
+  world.economy.trades ??= [];
+  world.economy.priceMemory ??= {};
+  world.economy.priceHistory ??= [];
+}
+
+export function getDynamicPrice(world, type) {
+  normalizeEconomyWorld(world);
+  return Number(world.economy.priceMemory[type] ?? DEFAULT_PRICES[type] ?? 1);
+}
+
+export function advanceEconomyDay(simulation) {
+  normalizeEconomyWorld(simulation.world);
+  const agents = simulation.agents.filter(a => a.alive);
+  const types = Object.keys(DEFAULT_PRICES);
+  for (const type of types) {
+    const stock = agents.reduce((sum, a) => sum + inventoryAmount(a, type), 0);
+    const population = Math.max(1, agents.length);
+    const perCapita = stock / population;
+    const target = type === "fish" || type === "farm_food" ? 4 : type === "tool" ? 0.7 : 6;
+    const scarcity = Math.max(-0.35, Math.min(0.65, (target - perCapita) / Math.max(target, 1)));
+    const previous = getDynamicPrice(simulation.world, type);
+    const next = Math.max(0.5, Math.min(DEFAULT_PRICES[type] * 4, previous * (1 + scarcity * 0.08)));
+    simulation.world.economy.priceMemory[type] = Number(next.toFixed(3));
+    simulation.world.economy.priceHistory.push({ day: simulation.day, type, price: simulation.world.economy.priceMemory[type], stock, perCapita });
+  }
+  simulation.world.economy.priceHistory = simulation.world.economy.priceHistory.slice(-2000);
+}
