@@ -14,6 +14,8 @@ export function normalizeSpatialWorld(world) {
   world.spatial.regions ??= {};
   world.spatial.biomes ??= {};
   world.spatial.regionVersion ??= 1;
+  world.spatial.settlementDefaults ??= { activity: 0, structures: 0, population: 0 };
+
   return world.spatial;
 }
 
@@ -129,4 +131,48 @@ function stableHash(value) {
   let hash = 2166136261;
   for (const char of String(value)) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
   return Math.abs(hash >>> 0);
+}
+
+export function updateSettlementState(world, agents = []) {
+  normalizeSpatialWorld(world);
+  const byRegion = new Map();
+  const structures = [
+    ...(world.structures?.shelters ?? []),
+    ...(world.structures?.farms ?? [])
+  ];
+  for (const agent of agents ?? []) {
+    if (!agent?.alive) continue;
+    const key = getRegionKey(agent.position, world);
+    const entry = byRegion.get(key) ?? { population: 0, structures: 0 };
+    entry.population += 1;
+    byRegion.set(key, entry);
+  }
+  for (const structure of structures) {
+    const position = structure.position;
+    if (!position) continue;
+    const key = getRegionKey(position, world);
+    const entry = byRegion.get(key) ?? { population: 0, structures: 0 };
+    entry.structures += 1;
+    byRegion.set(key, entry);
+  }
+  for (const [key, state] of Object.entries(world.spatial.regions)) {
+    const live = byRegion.get(key) ?? { population: 0, structures: 0 };
+    state.population = live.population;
+    state.structures = live.structures;
+    state.settlementLevel = Math.min(5, Math.floor((live.population + live.structures) / 2));
+    state.activity = Math.min(1, live.population * 0.12 + live.structures * 0.08);
+  }
+  for (const [key, live] of byRegion) {
+    const region = world.spatial.regions[key] ??= { key, visits: 0, discovered: true };
+    const biome = getBiomeForRegion(getRegionForPosition({
+      x: region.x ?? 0,
+      z: region.z ?? 0
+    }, world), world);
+    region.biome ??= biome.type;
+    region.population = live.population;
+    region.structures = live.structures;
+    region.settlementLevel = Math.min(5, Math.floor((live.population + live.structures) / 2));
+    region.activity = Math.min(1, live.population * 0.12 + live.structures * 0.08);
+  }
+  return world.spatial.regions;
 }
