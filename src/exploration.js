@@ -7,6 +7,7 @@ export function normalizeExplorationWorld(world) {
   world.exploration.discoveredAreas ??= [];
   world.exploration.nextAreaId ??= 1;
   normalizeSpatialWorld(world);
+  world.spatial.knownRegions ??= [];
 }
 
 export function discoverArea(simulation, agent) {
@@ -19,6 +20,10 @@ export function discoverArea(simulation, agent) {
   }
 
   const regionKey = getRegionKey(agent.position, simulation.world);
+  if (!simulation.world.spatial.knownRegions.includes(regionKey)) {
+    simulation.world.spatial.knownRegions.push(regionKey);
+    simulation.world.spatial.knownRegions = simulation.world.spatial.knownRegions.slice(-2000);
+  }
   const resources = Object.values(simulation.world.resources || {})
     .filter(resource => resource?.position && distance(resource.position, agent.position) <= (resource.perceptionRadius || 10))
     .map(resource => ({ type: resource.type, quality: resource.quality ?? 1 }));
