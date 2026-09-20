@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import { getRegionForPosition, getBiomeForRegion, updateSettlementState } from "../src/spatial.js";
+import { createWorld } from "../src/world.js";
+const world=createWorld();
+const position={x:24,z:15};
+const region=getRegionForPosition(position,world);
+const biome=getBiomeForRegion(region,world);
+world.structures={shelters:[{id:"remote",position}],farms:[]};
+updateSettlementState(world,[{id:"agent",alive:true,position}]);
+const state=world.spatial.regions[region.key];
+assert.equal(state.x,region.x);
+assert.equal(state.z,region.z);
+assert.equal(state.biome,biome.type);
+console.log(JSON.stringify({audit:"spatial-region-state",region:region.key,biome:biome.type,verdict:"PASS"},null,2));
