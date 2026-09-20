@@ -59,7 +59,9 @@ function applyState(state) {
   simulation.day = Number(state.day) || world.day || 1;
   simulation.hour = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (world.timeOfDay || 8);
   simulation.events = Array.isArray(state.events) ? state.events.slice(-500) : [];
-  simulation.world.day = simulation.day;\n  simulation.world.timeOfDay = simulation.hour;\n  return simulation;
+  simulation.world.day = simulation.day;
+  simulation.world.timeOfDay = simulation.hour;
+  return simulation;
 }
 
 function advance(simulation, seconds) {
