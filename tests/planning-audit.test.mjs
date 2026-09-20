@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import { maintainPlan } from "../src/planning.js";
+const world={day:1};
+const agent={needs:{hunger:30,safety:100},inventory:[{type:"wood",amount:2}],home:null,farm:null};
+const plan=maintainPlan(agent,world);
+assert(plan && plan.goal==="food");
+assert.deepEqual(plan.steps,["catch_fish","eat_fish"]);
+agent.inventory.push({type:"fish",amount:1}); agent.needs.hunger=80;
+maintainPlan(agent,world);
+assert.equal(agent.plan,null);
+console.log("Lúmina planning audit: planes adaptativos verificados.");
