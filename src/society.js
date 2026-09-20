@@ -83,7 +83,8 @@ function processPregnancies(simulation) {
     child.generation = Math.max(mother.generation || 0, father?.generation || 0) + 1;
     child.needs = { hunger: 100, thirst: 100, energy: 85, social: 80, safety: 90, health: 100 }; child.money = 0;
     child.knowledge = inheritedKnowledge(mother, father);
-    child.cultureKnowledge = [...new Set([...(mother.cultureKnowledge || []), ...(father?.cultureKnowledge || [])])].slice(0, 20);\n    child.specialization = inheritSpecialization(mother, father);
+    child.cultureKnowledge = [...new Set([...(mother.cultureKnowledge || []), ...(father?.cultureKnowledge || [])])].slice(0, 20);
+    child.specialization = inheritSpecialization(mother, father);
     simulation.agents.push(child); mother.children.push(child.id); if (father) father.children.push(child.id); mother.pregnancy = null;
     simulation.world.life.births += 1; simulation.world.life.generations = Math.max(simulation.world.life.generations, child.generation);
     const event = { id, day: simulation.day, hour: 0, type: "birth", description: child.name + " nació en Lúmina.", participants: child.parents };
