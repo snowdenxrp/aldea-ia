@@ -20,6 +20,7 @@ import { discoverArea, rememberAreaVisit } from "./exploration.js";
 import { maintainPlan, notePlanResult, autonomySummary } from "./planning.js";
 import { canCooperate, contributeToProject, findOrCreateProject, getNearbyCooperationTarget, normalizeCollectiveWorld } from "./collective.js";
 import { getInstitutionOptions, normalizeInstitutionWorld } from "./institutions.js";
+import { normalizeSpatialWorld, getActiveRegionKeys } from "./spatial.js";
 import { normalizeSpatialWorld } from "./spatial.js";
 
 export function createSimulation(world, agents, options = {}) {
@@ -27,6 +28,7 @@ export function createSimulation(world, agents, options = {}) {
   normalizeSocietyWorld(world);
   normalizeCollectiveWorld(world);
   normalizeInstitutionWorld(world);
+  normalizeSpatialWorld(world);
   normalizeSpatialWorld(world);
   for (const agent of agents) normalizeAgentLife(agent);
   return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false, random: options.random ?? null };
