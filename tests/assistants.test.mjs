@@ -56,6 +56,7 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
   const alex = sim.agents.find(agent => agent.id === "alex");
   alex.position = { x: 20, z: 8 };
   alex.needs = { hunger: 80, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
+  alex.currentIntent = { name: "gather_wood", amount: 1, baseValue: 0, target: { ...sim.world.resources.wood.position } };
   tick(sim, 0.01);
   const chosen = alex.currentIntent?.name;
   assert(chosen, "Debe existir una intención activa para probar estabilidad durante movimiento.");
