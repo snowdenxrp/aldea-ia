@@ -30,6 +30,11 @@ export function normalizeResearchWorld(world) {
   world.research.experiments ??= [];
   world.research.evidence ??= [];
   world.research.history ??= [];
+  for (const topic of world.research.topics) {
+    topic.supportedCount ??= 0;
+    topic.contradictedCount ??= 0;
+    topic.independentReplications ??= Math.max(0, (topic.contributors?.length ?? 0) - 1);
+  }
   return world.research;
 }
 
