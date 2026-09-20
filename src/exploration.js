@@ -20,6 +20,11 @@ export function discoverArea(simulation, agent) {
   }
 
   const regionKey = getRegionKey(agent.position, simulation.world);
+  const spatialRegion = simulation.world.spatial.regions[regionKey] ?? { key: regionKey, visits: 0, discovered: false };
+  spatialRegion.visits = Number(spatialRegion.visits ?? 0) + 1;
+  spatialRegion.discovered = true;
+  spatialRegion.lastVisitDay = simulation.day;
+  simulation.world.spatial.regions[regionKey] = spatialRegion;
   if (!simulation.world.spatial.knownRegions.includes(regionKey)) {
     simulation.world.spatial.knownRegions.push(regionKey);
     simulation.world.spatial.knownRegions = simulation.world.spatial.knownRegions.slice(-2000);
