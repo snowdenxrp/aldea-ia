@@ -16,6 +16,7 @@ export function createRelationship(agentId) {
 }
 
 export function getOrCreateRelationship(agent, otherAgentId) {
+  agent.relationships ??= [];
   let relationship = agent.relationships.find(
     item => item.agentId === otherAgentId
   );
