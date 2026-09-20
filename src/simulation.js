@@ -16,6 +16,9 @@ import { getInventoryAmount, canBuildShelter, normalizeDevelopmentWorld } from "
 import { canCraftTool, canFarm } from "./production.js";
 import { inventoryAmount, DEFAULT_PRICES, getDynamicPrice } from "./economy.js";
 import { normalizeSocietyWorld, normalizeAgentLife, advanceSocietyDay } from "./society.js";
+import { normalizeEcosystemWorld } from "./ecosystem.js";
+import { normalizeTechnologyWorld } from "./technology.js";
+import { normalizeGovernanceWorld } from "./governance.js";
 import { discoverArea, rememberAreaVisit } from "./exploration.js";
 import { maintainPlan, notePlanResult, autonomySummary } from "./planning.js";
 import { canCooperate, contributeToProject, findOrCreateProject, getNearbyCooperationTarget, normalizeCollectiveWorld } from "./collective.js";
@@ -26,6 +29,9 @@ import { getTerritorialContext } from "./territorial.js";
 export function createSimulation(world, agents, options = {}) {
   normalizeDevelopmentWorld(world);
   normalizeSocietyWorld(world);
+  normalizeEcosystemWorld(world);
+  normalizeTechnologyWorld(world);
+  normalizeGovernanceWorld(world);
   normalizeCollectiveWorld(world);
   normalizeInstitutionWorld(world);
   normalizeSpatialWorld(world);
@@ -77,8 +83,7 @@ function generateTradeOptions(agent, perception, world, agents = []) {
           name: "trade",
           partnerId: partner.id,
           offerType: type,
-          amount: 1,
-          unitPrice,
+          amount: 1,          unitPrice,
           baseValue: 0.1 + survivalNeed * 0.025,
           effects: { hunger: survivalNeed > 0 ? 1.5 : 0.05 },
           distance: other.distance,
