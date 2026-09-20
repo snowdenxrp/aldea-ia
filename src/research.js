@@ -109,6 +109,7 @@ export function advanceResearchDay(simulation) {
 }
 
 export function runResearchExperiment(simulation, agent, topic) {
+  const research = normalizeResearchWorld(simulation.world);
   const before = measureTopic(simulation, agent, topic);
   if (!before) return null;
 
