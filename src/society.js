@@ -6,6 +6,7 @@ import { getOrCreateRelationship, recordInteraction } from "./relationships.js";
 import { discoverAction } from "./discovery.js";
 import { normalizeTechnologyWorld, advanceTechnologyDay } from "./technology.js";
 import { normalizeInstitutionWorld, advanceInstitutionDay } from "./institutions.js";
+import { normalizeGovernanceWorld, advanceGovernanceDay } from "./governance.js";
 
 const DAY = 1 / 365;
 const MAX_AGE = 95;
@@ -31,6 +32,7 @@ export function advanceSocietyDay(simulation) {
   updateCulture(simulation); propagateSocialLearning(simulation); advanceTechnology(simulation);
   propagateCulture(simulation);
   advanceInstitutionDay(simulation);
+  advanceGovernanceDay(simulation);
   advanceTechnologyDay(simulation);
 }
 function advanceAges(simulation) {
