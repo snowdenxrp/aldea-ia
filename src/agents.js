@@ -4,11 +4,12 @@ import { remember } from "./memory.js";
 // Estructura base de un habitante.
 // Aquí almacenamos quién es y qué ha vivido, pero todavía NO decidimos sus acciones.
 
-export function createAgent({ id, name, age = 15, home = null, position = { x: 0, z: 0 } }) {
+export function createAgent({ id, name, age = 15, home = null, position = { x: 0, z: 0 }, sex = null }) {
   return {
     id,
     name,
     age,
+    sex,
     alive: true,
 
     // Estado físico y necesidades.
@@ -57,12 +58,14 @@ export function createInitialAgents() {
   return [
     createAgent({
       id: "alex",
+      sex: "female",
       name: "Alex",
       age: 15,
       position: { x: -8, z: -8 }
     }),
     createAgent({
       id: "bruno",
+      sex: "male",
       name: "Bruno",
       age: 15,
       position: { x: 10, z: 10 }
