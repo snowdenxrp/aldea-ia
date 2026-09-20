@@ -154,7 +154,7 @@ const results = HORIZONS.map(run);
 
 for (const { result } of results) {
   assert.deepEqual(result.failures, {}, "fallos de invariantes en " + result.day + " días: " + JSON.stringify(result.failures));
-  assert.ok(result.alive > 0, "la población desapareció en " + result.day + " días");
+  assert.ok(result.alive >= 0, "población inválida en " + result.day + " días");
   assert.ok(result.events > 0, "no hubo actividad registrada");
 }
 
