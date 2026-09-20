@@ -15,7 +15,7 @@ export function createDecisionContext(agent, perception) {
     recentAction: agent.lastAttemptedAction ?? agent.lastActionName ?? null,
     recentActionResult: agent.lastActionResult ? { ...agent.lastActionResult } : null,
     specialization: agent.specialization ? { ...agent.specialization } : null,
-    skills: agent.skills.map(skill => ({ ...skill }))
+    skills: (agent.skills ?? []).map(skill => ({ ...skill }))
   };
 }
 

@@ -28,7 +28,51 @@ if(Number(remote?.version)<4){
   if(fish && Number(fish.amount)<=0) fish.amount=60;
 }
 const localStamp=(Number(local?.day)||0)*24+(Number(local?.hour)||0);const remoteStamp=(Number(remote?.day)||0)*24+(Number(remote?.hour)||0);if(!validState(local)||remoteStamp>localStamp){applyState(remote);save();syncMeshes();centerOnAgents();}}catch{}}
-function createMesh(a){const g=new THREE.Group();g.userData.agentId=a.id;g.scale.setScalar(1.55);g.frustumCulled=false;const blue=a.id==="alex";const body=new THREE.Mesh(new THREE.BoxGeometry(.82,1,.48),new THREE.MeshBasicMaterial({color:blue?0x2f7de1:0xe87832,depthTest:false}));body.position.y=1.18;const head=new THREE.Mesh(new THREE.SphereGeometry(.38,16,12),new THREE.MeshBasicMaterial({color:0xf0bd91,depthTest:false}));head.position.y=1.98;const marker=new THREE.Mesh(new THREE.SphereGeometry(.13,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false}));marker.position.y=2.65;g.add(body,head,marker);g.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.renderOrder=1000;}});scene.add(g);return g;}
+function createMesh(a){
+  const g=new THREE.Group();
+  g.userData.agentId=a.id;
+  g.scale.setScalar(1.35);
+  g.frustumCulled=false;
+
+  const blue=a.id==="alex";
+  const skin=0xf0bd91;
+  const clothes=blue?0x2f7de1:0xe87832;
+  const dark=blue?0x1f4f8c:0xb45624;
+
+  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.34,.62,6,10),new THREE.MeshStandardMaterial({color:clothes,roughness:.82}));
+  torso.position.y=1.18;
+
+  const pelvis=new THREE.Mesh(new THREE.CapsuleGeometry(.31,.22,6,10),new THREE.MeshStandardMaterial({color:dark,roughness:.86}));
+  pelvis.position.y=.76;
+
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.34,18,14),new THREE.MeshStandardMaterial({color:skin,roughness:.9}));
+  head.scale.set(1,.98,.96);
+  head.position.y=1.91;
+
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(.355,18,10,0,Math.PI*2,0,Math.PI*.58),new THREE.MeshStandardMaterial({color:0x3b2a22,roughness:1}));
+  hair.position.y=2.04;
+
+  const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.095,.48,5,8),new THREE.MeshStandardMaterial({color:clothes,roughness:.84}));
+  const armR=armL.clone();
+  armL.position.set(-.39,1.2,0); armR.position.set(.39,1.2,0);
+  armL.rotation.z=-.06; armR.rotation.z=.06;
+
+  const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.58,5,8),new THREE.MeshStandardMaterial({color:dark,roughness:.9}));
+  const legR=legL.clone();
+  legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
+
+  const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),new THREE.MeshStandardMaterial({color:0x3b332f,roughness:1}));
+  const footR=footL.clone();
+  footL.scale.set(1,.55,1.45); footR.scale.set(1,.55,1.45);
+  footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
+
+  const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false}));
+  marker.position.y=2.47;
+
+  g.add(torso,pelvis,head,hair,armL,armR,legL,legR,footL,footR,marker);
+  g.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.renderOrder=1000;}});
+  return (scene.add(g),g);
+}
 function syncMeshes(){normalize();for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,0,a.position.z);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
 function centerOnAgent(a){if(a)cameraTarget.set(+a.position.x||0,0,+a.position.z||0);}
