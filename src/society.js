@@ -7,6 +7,7 @@ import { discoverAction } from "./discovery.js";
 import { normalizeTechnologyWorld, advanceTechnologyDay } from "./technology.js";
 import { normalizeInstitutionWorld, advanceInstitutionDay } from "./institutions.js";
 import { normalizeGovernanceWorld, advanceGovernanceDay } from "./governance.js";
+import { normalizeSpecializationWorld, normalizeSpecializationAgent, advanceSpecializationDay } from "./specialization.js";
 
 const DAY = 1 / 365;
 const MAX_AGE = 95;
@@ -17,6 +18,7 @@ export function normalizeSocietyWorld(world) {
   world.culture.traditions ??= []; world.culture.values ??= {}; world.culture.history ??= [];
   world.life ??= { births: 0, deaths: 0, generations: 0 };
   world.life.births ??= 0; world.life.deaths ??= 0; world.life.generations ??= 0;
+  normalizeSpecializationWorld(world);
 }
 export function normalizeAgentLife(agent) {
   agent.age = Number.isFinite(Number(agent.age)) ? Number(agent.age) : 15;
@@ -24,6 +26,7 @@ export function normalizeAgentLife(agent) {
   if (!agent.sex && agent.id === "bruno") agent.sex = "male";
   agent.parents ??= []; agent.children ??= []; agent.pregnancy ??= null;
   agent.generation ??= 0; agent.lifeExperience ??= 0; agent.cultureKnowledge ??= [];
+  normalizeSpecializationAgent(agent);
 }
 export function advanceSocietyDay(simulation) {
   normalizeSocietyWorld(simulation.world);
@@ -31,8 +34,10 @@ export function advanceSocietyDay(simulation) {
   advanceAges(simulation); processPregnancies(simulation); considerConception(simulation);
   updateCulture(simulation); propagateSocialLearning(simulation); advanceTechnology(simulation);
   propagateCulture(simulation);
+  teachSpecialization(simulation);
   advanceInstitutionDay(simulation);
   advanceGovernanceDay(simulation);
+  advanceSpecializationDay(simulation);
   advanceTechnologyDay(simulation);
 }
 function advanceAges(simulation) {
@@ -117,4 +122,29 @@ function propagateCulture(simulation) {
   const strong = simulation.world.culture.traditions.filter(t => t.strength >= 0.35).slice(0,5);
   for (const agent of simulation.agents) { if (!agent.alive) continue; agent.cultureKnowledge = [...new Set([...(agent.cultureKnowledge || []), ...strong.map(t=>t.key)])].slice(-20); }
 }
+function teachSpecialization(simulation) {
+  const adults = simulation.agents.filter(a => a.alive && a.age >= 18);
+  for (const teacher of adults) {
+    const role = teacher.specialization?.role;
+    if (!role) continue;
+    const skills = { gatherer: ["gather_wood", "gather_stone", "catch_fish"], farmer: ["farm", "harvest"], builder: ["build_shelter"], craftsperson: ["craft_tool", "toolmaking"], trader: ["trade"], teacher: ["share_knowledge"], organizer: ["cooperate"] }[role] || [];
+    const students = simulation.agents.filter(s => s.alive && s.id !== teacher.id && s.age < 18 && distance(teacher, s) <= 3.2);
+    for (const student of students.slice(0, 2)) {
+      const relationship = teacher.relationships.find(r => r.agentId === student.id);
+      if ((relationship?.trust ?? 0) < 0.1) continue;
+      const skillName = skills.slice().sort((a,b) => Number(teacher.skills.find(s=>s.name===b)?.level||0) - Number(teacher.skills.find(s=>s.name===a)?.level||0))[0];
+      if (!skillName) continue;
+      const source = Number(teacher.skills.find(s => s.name === skillName)?.level || 0);
+      if (source < 0.35) continue;
+      const target = student.skills.find(s => s.name === skillName);
+      if (target) target.level = Math.min(1, target.level + 0.025);
+      else student.skills.push({ name: skillName, level: 0.025, learnedOnDay: simulation.day, source: "mentorship" });
+      student.specialization.mentorship.learned += 1;
+      teacher.specialization.mentorship.taught += 1;
+      student.cultureKnowledge = [...new Set([...(student.cultureKnowledge || []), "role:" + role])].slice(-20);
+      simulation.events.push({ id: "event-" + (simulation.events.length + 1), day: simulation.day, hour: 0, type: "mentorship", description: teacher.name + " enseñó a " + student.name + " sobre " + skillName + ".", participants: [teacher.id, student.id] });
+    }
+  }
+}
+
 function distance(a,b) { return Math.hypot(a.position.x-b.position.x,a.position.z-b.position.z); }
