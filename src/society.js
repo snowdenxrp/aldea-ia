@@ -17,7 +17,9 @@ export function normalizeSocietyWorld(world) {
 }
 export function normalizeAgentLife(agent) {
   agent.age = Number.isFinite(Number(agent.age)) ? Number(agent.age) : 15;
-  agent.sex ??= null; agent.parents ??= []; agent.children ??= []; agent.pregnancy ??= null;
+  if (!agent.sex && agent.id === "alex") agent.sex = "female";
+  if (!agent.sex && agent.id === "bruno") agent.sex = "male";
+  agent.parents ??= []; agent.children ??= []; agent.pregnancy ??= null;
   agent.generation ??= 0; agent.lifeExperience ??= 0; agent.cultureKnowledge ??= [];
 }
 export function advanceSocietyDay(simulation) {
