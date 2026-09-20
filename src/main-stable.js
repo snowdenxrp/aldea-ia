@@ -126,8 +126,6 @@ function animateHumanoid(m,a,t){
     armL=-.9*work; armR=-.15; legL=.02; legR=-.02;
   } else if(activity==="resting"){
     armL=Math.sin(t*1.5)*.035; armR=-armL;
-  } else if(activity==="cooperating"){
-    armL=.35+Math.sin(t*3)*.12; armR=-.2;
   } else {
     armL=Math.sin(t*2)*.035; armR=-armL;
   }
