@@ -4,6 +4,7 @@ import { createAgent } from "./agents.js";
 import { remember } from "./memory.js";
 import { getOrCreateRelationship, recordInteraction } from "./relationships.js";
 import { discoverAction } from "./discovery.js";
+import { normalizeInstitutionWorld, advanceInstitutionDay } from "./institutions.js";
 
 const DAY = 1 / 365;
 const MAX_AGE = 95;
@@ -27,7 +28,7 @@ export function advanceSocietyDay(simulation) {
   for (const agent of simulation.agents) normalizeAgentLife(agent);
   advanceAges(simulation); processPregnancies(simulation); considerConception(simulation);
   updateCulture(simulation); propagateSocialLearning(simulation); advanceTechnology(simulation);
-  propagateCulture(simulation);
+  propagateCulture(simulation);\n  advanceInstitutionDay(simulation);
 }
 function advanceAges(simulation) {
   for (const agent of simulation.agents) {
