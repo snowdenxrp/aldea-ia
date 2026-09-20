@@ -1,3 +1,4 @@
+import { updateSettlementState } from "./spatial.js";
 // Sociedad, ciclo de vida y cultura emergente de Lúmina.
 // Las reglas producen posibilidades; no existe una historia prefijada.
 import { createAgent } from "./agents.js";
@@ -46,6 +47,7 @@ export function advanceSocietyDay(simulation) {
   advanceResearchDay(simulation);
   advanceEconomyDay(simulation);
   advanceTechnologyDay(simulation);
+  updateSettlementState(simulation.world, simulation.agents);
 }
 function advanceAges(simulation) {
   for (const agent of simulation.agents) {
