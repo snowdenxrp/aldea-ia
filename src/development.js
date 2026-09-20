@@ -30,7 +30,7 @@ export function buildShelter(simulation, agent) {
   consumeInventory(agent, "stone", cost.stone);
   simulation.world.structures ??= { shelters: [], farms: [] };
   const id = `shelter-${simulation.world.structures.shelters.length + 1}`;
-  const structure = { id, type: "shelter", ownerId: agent.id, position: { ...agent.position }, builtOnDay: simulation.day, durability: 100 };
+  const techLevel = Number(simulation.world.technology?.levels?.construction ?? 0); const structure = { id, type: "shelter", ownerId: agent.id, position: { ...agent.position }, builtOnDay: simulation.day, durability: 100 * (1 + techLevel * 0.2) };
   simulation.world.structures.shelters.push(structure);
   agent.home = id;
   agent.needs.safety = Math.min(100, agent.needs.safety + 25);

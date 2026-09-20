@@ -17,7 +17,7 @@ export function executeAction(simulation, agent, action) {
     case "gather_wood": return gatherWood(simulation, agent, action.amount ?? 1);
     case "gather_stone": return gatherStone(simulation, agent, action.amount ?? 1);
     case "build_shelter": return buildShelter(simulation, agent);
-    case "craft_tool": return craftTool(agent);
+    case "craft_tool": return craftTool(agent, simulation.world);
     case "farm": return farm(simulation, agent);
     case "harvest": return harvest(simulation, agent);
     case "eat_farm_food": return eatFarmFood(agent, action.amount ?? 1);
