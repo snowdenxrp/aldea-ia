@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - "audit/longevity-2026-09-19"
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -11,14 +14,15 @@ permissions:
 jobs:
   longevity:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Auditoría de 100, 500 y 1000 días con movimiento
+      - name: Auditoría de longevidad con movimiento
         run: node scripts/longevity-audit-v2.mjs
-      - name: Pruebas existentes como referencia
+      - name: Suite base
         run: npm test
-
+      - name: Auditoría integral de 10 áreas
+        run: node tests/system-audit.test.mjs
