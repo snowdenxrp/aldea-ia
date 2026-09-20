@@ -82,6 +82,16 @@ function auditState(simulation) {
 
   const institution = world.institutions;
   if (!institution || !Array.isArray(institution.history)) problems.push("invalid_institution_state");
+  const research = world.research;
+  if (!research || !Array.isArray(research.topics) || !Array.isArray(research.experiments) || !Array.isArray(research.evidence)) problems.push("invalid_research_state");
+  for (const topic of research?.topics ?? []) {
+    if (!finite(topic.confidence) || Number(topic.confidence) < 0 || Number(topic.confidence) > 0.95) problems.push("invalid_research_confidence:" + topic.id);
+    if (!Array.isArray(topic.contributors) || Number(topic.experimentCount) < 0) problems.push("invalid_research_topic:" + topic.id);
+  }
+  for (const experiment of research?.experiments ?? []) {
+    if (!experiment.agentId || !experiment.topicId || !finite(experiment.baseline) || !finite(experiment.result)) problems.push("invalid_research_experiment");
+  }
+
   const governance = world.governance;
   if (!governance || !Array.isArray(governance.proposals) || !Array.isArray(governance.history)) problems.push("invalid_governance_state");
 
@@ -94,6 +104,7 @@ function snapshot(simulation) {
   const knowledge = alive.reduce((sum, a) => sum + (a.knowledge?.length ?? 0), 0);
   const mentorship = alive.reduce((sum, a) => sum + Number(a.specialization?.mentorship?.learned ?? 0), 0);
   const technology = simulation.world.technology;
+  const research = simulation.world.research;
   return {
     day: simulation.day,
     alive: alive.length,
@@ -104,6 +115,9 @@ function snapshot(simulation) {
     knowledge,
     mentorship,
     discoveries: technology?.discoveries?.length ?? 0,
+    researchTopics: research?.topics?.length ?? 0,
+    researchExperiments: research?.experiments?.length ?? 0,
+    reproducedResearch: research?.topics?.filter(topic => topic.contributors?.length >= 2).length ?? 0,
     techLevels: { ...(technology?.levels ?? {}) },
     institutions: simulation.world.institutions?.history?.length ?? 0,
     governanceHistory: simulation.world.governance?.history?.length ?? 0,
@@ -142,6 +156,8 @@ for (const { result } of results) {
 
 const long = results.at(-1).result;
 assert.ok(long.knowledge > 0, "no se conserva conocimiento");
+assert.ok(long.researchTopics > 0, "no surgieron temas de investigación");
+assert.ok(long.researchExperiments > 0, "no se realizaron experimentos de investigación");
 assert.ok(long.roles > 0, "no emergieron especializaciones en la prueba larga");
 assert.ok(long.discoveries > 0 || Object.values(long.techLevels).some(Number), "no hubo acumulación tecnológica");
 assert.ok(long.institutions >= 0 && long.governanceHistory >= 0, "estado institucional/gubernamental inválido");

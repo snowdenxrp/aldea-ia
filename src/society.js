@@ -9,6 +9,7 @@ import { normalizeInstitutionWorld, advanceInstitutionDay } from "./institutions
 import { normalizeGovernanceWorld, advanceGovernanceDay } from "./governance.js";
 import { normalizeSpecializationWorld, normalizeSpecializationAgent, advanceSpecializationDay, inheritSpecialization } from "./specialization.js";
 import { normalizeEconomyWorld, advanceEconomyDay } from "./economy.js";
+import { normalizeResearchWorld, normalizeResearchAgent, advanceResearchDay } from "./research.js";
 
 const DAY = 1 / 365;
 const MAX_AGE = 95;
@@ -21,6 +22,7 @@ export function normalizeSocietyWorld(world) {
   world.life.births ??= 0; world.life.deaths ??= 0; world.life.generations ??= 0;
   normalizeSpecializationWorld(world);
   normalizeEconomyWorld(world);
+  normalizeResearchWorld(world);
 }
 export function normalizeAgentLife(agent) {
   agent.age = Number.isFinite(Number(agent.age)) ? Number(agent.age) : 15;
@@ -29,6 +31,7 @@ export function normalizeAgentLife(agent) {
   agent.parents ??= []; agent.children ??= []; agent.pregnancy ??= null;
   agent.generation ??= 0; agent.lifeExperience ??= 0; agent.cultureKnowledge ??= [];
   normalizeSpecializationAgent(agent);
+  normalizeResearchAgent(agent);
 }
 export function advanceSocietyDay(simulation) {
   normalizeSocietyWorld(simulation.world);
@@ -40,6 +43,7 @@ export function advanceSocietyDay(simulation) {
   advanceInstitutionDay(simulation);
   advanceGovernanceDay(simulation);
   advanceSpecializationDay(simulation);
+  advanceResearchDay(simulation);
   advanceEconomyDay(simulation);
   advanceTechnologyDay(simulation);
 }
