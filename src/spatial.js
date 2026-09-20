@@ -11,6 +11,9 @@ export function normalizeSpatialWorld(world) {
   world.spatial.version ??= 1;
   world.spatial.activeRegionPadding = Math.max(0, Number(world.spatial.activeRegionPadding ?? 1));
   world.spatial.knownRegions ??= [];
+  world.spatial.regions ??= {};
+  world.spatial.biomes ??= {};
+  world.spatial.regionVersion ??= 1;
   return world.spatial;
 }
 
@@ -72,4 +75,58 @@ export function spatialSummary(world, agents = []) {
     activeRegions: active.length,
     coverageRatio: columns * rows ? active.length / (columns * rows) : 0
   };
+}
+
+
+export const BIOME_DEFINITIONS = Object.freeze({
+  forest: { food: 1.15, wood: 1.35, stone: 0.9, water: 1.0, movement: 0.95 },
+  plains: { food: 1.25, wood: 0.8, stone: 0.9, water: 1.0, movement: 1.05 },
+  mountain: { food: 0.65, wood: 0.7, stone: 1.45, water: 0.85, movement: 0.8 },
+  wetland: { food: 1.3, wood: 0.95, stone: 0.7, water: 1.4, movement: 0.85 },
+  arid: { food: 0.55, wood: 0.45, stone: 1.0, water: 0.35, movement: 1.0 }
+});
+
+export function getBiomeForRegion(region, world) {
+  normalizeSpatialWorld(world);
+  const key = region.key ?? getRegionKey(region, world);
+  if (world.spatial.biomes[key]) return world.spatial.biomes[key];
+
+  const hash = stableHash(key);
+  const edge = Math.min(region.x, region.z);
+  const maxEdge = Math.max(region.x, region.z);
+  let type = "plains";
+  if ((hash + edge * 3) % 17 === 0) type = "mountain";
+  else if ((hash + maxEdge * 5) % 13 === 0) type = "wetland";
+  else if ((hash + region.x * 7 + region.z * 11) % 11 === 0) type = "forest";
+  else if ((hash + region.x * 5 + region.z * 3) % 19 === 0) type = "arid";
+
+  const definition = BIOME_DEFINITIONS[type];
+  const biome = { key, type, ...definition };
+  world.spatial.biomes[key] = biome;
+  world.spatial.regions[key] ??= { key, visits: 0, discovered: false, biome: type };
+  return biome;
+}
+
+export function discoverRegion(world, position) {
+  normalizeSpatialWorld(world);
+  const region = getRegionForPosition(position, world);
+  const biome = getBiomeForRegion(region, world);
+  const state = world.spatial.regions[region.key] ??= { key: region.key, visits: 0, discovered: false, biome: biome.type };
+  state.discovered = true;
+  state.lastDiscoveryDay = world.day ?? 0;
+  return { ...region, biome };
+}
+
+export function recordRegionVisit(world, position, day = world.day ?? 0) {
+  const result = discoverRegion(world, position);
+  const state = world.spatial.regions[result.key];
+  state.visits = Number(state.visits ?? 0) + 1;
+  state.lastVisitDay = day;
+  return result;
+}
+
+function stableHash(value) {
+  let hash = 2166136261;
+  for (const char of String(value)) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+  return Math.abs(hash >>> 0);
 }
