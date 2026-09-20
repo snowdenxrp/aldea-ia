@@ -68,6 +68,7 @@ function calculateScore(context, option) {
   if (option.memoryBonus) score += option.memoryBonus(context.memories);
   else score += memoryExperienceValue(context.memories, option.name);
   if (option.explorationValue) score += option.explorationValue * explorationPressure(context, option);
+  if (option.tradeValue) score += option.tradeValue(context);
 
   if (Number.isFinite(option.distance)) score -= Math.min(2.5, Math.max(0, option.distance) * 0.06);
 
