@@ -10,7 +10,8 @@ const ACTION_BY_RESOURCE = Object.freeze({
 export function getTerritorialContext(agent, world) {
   normalizeSpatialWorld(world);
   const region=getRegionForPosition(agent.position,world);
-  const biome=getBiomeForRegion(region,world);\n  const modifiers=biome.modifiers ?? biome;
+  const biome=getBiomeForRegion(region,world);
+  const modifiers=biome.modifiers ?? biome;
   const nearby=Object.entries(world.resources??{}).map(([type,r])=>{
     const dx=Number(r.position?.x??0)-Number(agent.position?.x??0), dz=Number(r.position?.z??0)-Number(agent.position?.z??0);
     return {type,distance:Math.hypot(dx,dz),quality:Math.max(0,Number(r.quality??1)),amount:Math.max(0,Number(r.amount??0))};
