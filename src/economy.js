@@ -1,5 +1,6 @@
 // Economía emergente: los habitantes pueden transferir bienes por dinero o cooperación.
 // El motor decide cuándo tiene sentido intercambiar; este módulo solo aplica consecuencias reales.
+import { recordInteraction } from "./relationships.js";
 
 export const DEFAULT_PRICES = Object.freeze({
   fish: 4,
@@ -46,6 +47,8 @@ export function trade(simulation, seller, buyer, offerType, amount, price = DEFA
   buyer.money = Number(buyer.money ?? 0) - total;
   seller.currentActivity = "trading";
   buyer.currentActivity = "trading";
+  recordInteraction(seller, buyer, { day: simulation.day, type: "trade", description: seller.name + " intercambió " + quantity + " " + offerType + " con " + buyer.name + ".", trust: 0.025, cooperation: 0.04, tension: 0 });
+  recordInteraction(buyer, seller, { day: simulation.day, type: "trade", description: buyer.name + " compró " + quantity + " " + offerType + " a " + seller.name + ".", trust: 0.025, cooperation: 0.04, tension: 0 });
 
   simulation.world.economy ??= { trades: [], priceMemory: {} };
   simulation.world.economy.trades ??= [];
