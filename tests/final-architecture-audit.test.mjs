@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import { spatialSummary, normalizeSpatialWorld } from "../src/spatial.js";
+import { createSimulation } from "../src/simulation.js";
+import { createWorld } from "../src/world.js";
+const world=createWorld();
+normalizeSpatialWorld(world);
+const agents=[{id:"a",alive:true,position:{x:0,z:0},needs:{hunger:80,thirst:80,energy:80,social:80,safety:80},inventory:[],skills:[],knowledge:[],memories:[],relationships:[]}];
+const simulation=createSimulation(world,agents);
+const summary=spatialSummary(world,agents);
+assert.ok(summary.totalRegions>0);
+assert.ok(summary.activeRegions>0);
+assert.ok(summary.coverageRatio>0);
+assert.ok(Number.isFinite(simulation.day));
+assert.equal(simulation.agents.length,1);
+console.log(JSON.stringify({audit:"final-architecture",regions:summary.totalRegions,activeRegions:summary.activeRegions,verdict:"PASS"},null,2));
