@@ -31,9 +31,24 @@ async function loadState() {
   try {
     const raw = await fs.readFile(STATE_PATH, "utf8");
     const state = JSON.parse(raw);
-    if (state?.version >= 3 && Array.isArray(state.agents) && state.world) return state;
+    if (state?.version >= 3 && Array.isArray(state.agents) && state.world) {
+      state.world.day = Number(state.day) || state.world.day || 1;
+      state.world.timeOfDay = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (state.world.timeOfDay || 8);
+      for (const type of ["wild_plants", "fish"]) {
+        const persisted = state.world.resources?.[type];
+        const defaults = defaultWorld.resources?.[type];
+        if (persisted && defaults) {
+          persisted.regenerationPerDay = defaults.regenerationPerDay;
+          if (Number(state.version) < 4 && Number(persisted.amount) <= 0) {
+            persisted.amount = defaults.amount;
+          }
+        }
+      }
+      state.version = Math.max(4, Number(state.version) || 4);
+      return state;
+    }
   } catch {}
-  return { version: 3, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [] };
+  return { version: 4, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [] };
 }
 
 function applyState(state) {
@@ -44,7 +59,7 @@ function applyState(state) {
   simulation.day = Number(state.day) || world.day || 1;
   simulation.hour = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (world.timeOfDay || 8);
   simulation.events = Array.isArray(state.events) ? state.events.slice(-500) : [];
-  return simulation;
+  simulation.world.day = simulation.day;\n  simulation.world.timeOfDay = simulation.hour;\n  return simulation;
 }
 
 function advance(simulation, seconds) {
@@ -71,6 +86,6 @@ const simulation = applyState(state);
 advance(simulation, elapsedSeconds);
 const persistedSavedAt = previousSavedAt + elapsedSeconds * 1000;
 
-await fs.writeFile(STATE_PATH, JSON.stringify({ version: 3, savedAt: persistedSavedAt, day: simulation.day, hour: simulation.hour, world: simulation.world, agents: simulation.agents, events: simulation.events.slice(-500) }, null, 2) + "\n", "utf8");
+await fs.writeFile(STATE_PATH, JSON.stringify({ version: 4, savedAt: persistedSavedAt, day: simulation.day, hour: simulation.hour, world: simulation.world, agents: simulation.agents, events: simulation.events.slice(-500) }, null, 2) + "\n", "utf8");
 
 console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive) }));
