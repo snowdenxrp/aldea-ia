@@ -47,7 +47,16 @@ export function normalizeResearchAgent(agent) {
 export function getResearchTopics(agent, world) {
   normalizeResearchAgent(agent);
   const role = agent.specialization?.role;
-  const definitions = TOPIC_DEFINITIONS[role] ?? [];
+  let definitions = TOPIC_DEFINITIONS[role] ?? [];
+  if (!definitions.length) {
+    const known = new Set((agent.knowledge ?? []).map(item => String(item.topic ?? "").replace(/^action:/, "")));
+    const skills = new Set((agent.skills ?? []).map(item => item.name));
+    if (known.has("eat_plant") || known.has("catch_fish") || skills.has("gather_wood")) definitions = TOPIC_DEFINITIONS.gatherer;
+    else if (known.has("farm") || skills.has("farm")) definitions = TOPIC_DEFINITIONS.farmer;
+    else if (known.has("build_shelter") || skills.has("build_shelter")) definitions = TOPIC_DEFINITIONS.builder;
+    else if (known.has("craft_tool") || skills.has("craft_tool")) definitions = TOPIC_DEFINITIONS.craftsperson;
+    else if (known.has("trade") || skills.has("trade")) definitions = TOPIC_DEFINITIONS.trader;
+  }
   return definitions.filter(definition => isTopicRelevant(definition, world));
 }
 
