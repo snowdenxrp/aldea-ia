@@ -26,3 +26,5 @@ jobs:
         run: npm test
       - name: Auditoría integral de 10 áreas
         run: node tests/system-audit.test.mjs
+
+# Última verificación de estabilidad de decisiones.
