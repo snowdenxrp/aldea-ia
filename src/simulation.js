@@ -19,11 +19,13 @@ import { normalizeSocietyWorld, normalizeAgentLife, advanceSocietyDay } from "./
 import { discoverArea, rememberAreaVisit } from "./exploration.js";
 import { maintainPlan, notePlanResult, autonomySummary } from "./planning.js";
 import { canCooperate, contributeToProject, findOrCreateProject, getNearbyCooperationTarget, normalizeCollectiveWorld } from "./collective.js";
+import { getInstitutionOptions, normalizeInstitutionWorld } from "./institutions.js";
 
 export function createSimulation(world, agents, options = {}) {
   normalizeDevelopmentWorld(world);
   normalizeSocietyWorld(world);
   normalizeCollectiveWorld(world);
+  normalizeInstitutionWorld(world);
   for (const agent of agents) normalizeAgentLife(agent);
   return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false, random: options.random ?? null };
 }
@@ -41,6 +43,7 @@ function generateOptions(agent, perception, world, random = Math.random, agents 
   if (knownActions.some(action => action.name === "harvest") && simulationFarmReady(world, agent)) options.push({ name: "harvest", baseValue: 0.35, effects: { hunger: 1 }, distance: 0 });
   if (knownActions.some(action => action.name === "eat_farm_food") && agent.inventory?.some(i => i.type === "farm_food" && i.amount > 0)) options.push({ name: "eat_farm_food", baseValue: 0.8, effects: { hunger: 2.4 }, distance: 0 });
   if (knownActions.some(action => action.name === "trade")) options.push(...generateTradeOptions(agent, perception, world, agents));
+  options.push(...getInstitutionOptions(agent, world));
   for (const action of knownActions) { if (["rest", "drink"].includes(action.name)) continue; if (action.name === "eat_fish" && !agent.inventory.some(item => item.type === "fish" && item.amount > 0)) continue; const resourceByAction = { eat_plant: "wild_plants", catch_fish: "fish", gather_wood: "wood", gather_stone: "stone" }; const requiredResource = resourceByAction[action.name]; if (requiredResource && Number(world.resources?.[requiredResource]?.amount ?? 0) <= 0) continue; const option = { name: action.name, baseValue: action.confidence, distance: getKnownActionDistance(action.name, perception), knowledgeBonus: knowledge => { const item = knowledge.find(entry => entry.topic === "action:" + action.name); return item ? item.confidence * 0.15 : 0; }, memoryBonus: memories => { const relevant = memories.filter(memory => memory.topic === "action:" + action.name); if (!relevant.length) return 0; const recent = relevant.slice(-5); const valence = recent.reduce((sum, memory) => sum + (memory.importance ?? 0.5) * (memory.emotionalWeight ?? 0), 0); return Math.max(-0.25, Math.min(0.25, valence * 0.5)); } }; if (action.name === "eat_plant") { option.effects = { hunger: 2.2 }; option.amount = 1; } if (action.name === "eat_fish") { option.effects = { hunger: 2.3 }; option.amount = 1; } if (action.name === "catch_fish") { option.effects = { hunger: 1.6 }; option.amount = 1; } options.push(option); }
   const resourceDiscovery = [["wild_plants", "explore_plants", "eat_plant", "planta", 0.9, 0.8], ["fish", "explore_fishing", "catch_fish", "pesca", 0.85, 0.75], ["wood", "explore_wood", "gather_wood", "madera", 0.75, 0.65], ["stone", "explore_stone", "gather_stone", "piedra", 0.75, 0.65], ["fertile_land", "explore_farming", "farm", "tierra fértil", 0.7, 0.7]];
   for (const [resourceType, optionName, actionName, keyword, explorationValue, baseValue] of resourceDiscovery) { const resource = perception.nearbyResources.find(item => item.type === resourceType); if (!resource || knownActions.some(action => action.name === actionName)) continue; const option = { name: optionName, baseValue, explorationValue, novelty: 1, knowledgeTopic: "action:" + actionName, memoryKeyword: keyword, distance: resource.distance }; if (resourceType === "wild_plants") option.effects = { hunger: 0.8 }; if (resourceType === "fish") option.effects = { hunger: 0.65 }; options.push(option); }
