@@ -1,16 +1,16 @@
 {
   "version": 3,
-  "savedAt": 1789881675439,
+  "savedAt": 1789881961045,
   "day": 118,
-  "hour": 10.529013333372877,
+  "hour": 18.14517333337305,
   "world": {
     "day": 48,
-    "timeOfDay": 10.529013333372877,
+    "timeOfDay": 18.14517333337305,
     "speed": 1,
     "resources": {
       "water": {
         "type": "renewable",
-        "amount": 780,
+        "amount": 515,
         "quality": 1,
         "location": "river",
         "position": {
@@ -140,11 +140,11 @@
       "alive": true,
       "needs": {
         "hunger": 0,
-        "thirst": 99.59799466666665,
-        "energy": 86.19473333333451,
-        "social": 99.00385333333318,
+        "thirst": 99.948288,
+        "energy": 81.15433333333559,
+        "social": 98.39191999999974,
         "safety": 100,
-        "health": 9.066431999999157
+        "health": 2.973503999999132
       },
       "position": {
         "x": -18,
@@ -9570,240 +9570,6 @@
         },
         {
           "id": "event-648",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-650",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-652",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-654",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-656",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-658",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-660",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-662",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-664",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-666",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-668",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-669",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-670",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-671",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-673",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-675",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-676",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-677",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-678",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-679",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-680",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-681",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-682",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-683",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-684",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-685",
-          "day": 113,
-          "type": "experience",
-          "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-686",
           "day": 113,
           "type": "experience",
           "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
@@ -22682,6 +22448,266 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-501",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-503",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-505",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-507",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-509",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-511",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-513",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-515",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-517",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-519",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-521",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-523",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-525",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-527",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-529",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-531",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-535",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-537",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-539",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-541",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-543",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-547",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-549",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-551",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-555",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-557",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -23933,6 +23959,16 @@
               "tension": 0.01,
               "affection": 0,
               "resentment": 0
+            },
+            {
+              "day": 118,
+              "type": "conversation",
+              "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
             }
           ]
         }
@@ -23999,11 +24035,11 @@
         "currentActivity": "idle",
         "needs": {
           "hunger": 0,
-          "thirst": 99.59799466666665,
-          "energy": 86.19473333333451,
-          "social": 99.00385333333318,
+          "thirst": 99.948288,
+          "energy": 81.15433333333559,
+          "social": 98.39191999999974,
           "safety": 100,
-          "health": 9.081599999999156
+          "health": 2.986431999999132
         }
       },
       "availableOptions": [
@@ -24045,10 +24081,10 @@
           "baseValue": 0.28,
           "explorationValue": 0.7,
           "novelty": 0.8,
-          "distance": 5.093217671385734,
+          "distance": 7.857234884477121,
           "target": {
-            "x": -13.188520492741791,
-            "z": -1.6704883116472924
+            "x": -11.229977053183143,
+            "z": -3.9878477063971984
           }
         }
       ],
@@ -24064,11 +24100,11 @@
           },
           {
             "name": "rest",
-            "score": 8.659925729279067
+            "score": 13.27018465285123
           },
           {
             "name": "socialize",
-            "score": 0.845770962414951
+            "score": 1.1960820735261206
           }
         ]
       },
@@ -24078,7 +24114,7 @@
         "moving": false,
         "distanceTravelled": 65844.2124009177
       },
-      "decisionCooldownHours": 0.12437333333333335,
+      "decisionCooldownHours": 0.23384000000000016,
       "knownResources": {
         "water": {
           "x": -18,
@@ -24120,12 +24156,12 @@
       "age": 15,
       "alive": true,
       "needs": {
-        "hunger": 29.171365333332975,
-        "thirst": 99.59799466666665,
-        "energy": 97.01926666666684,
-        "social": 99.00385333333318,
+        "hunger": 12.415813333332792,
+        "thirst": 99.09495466666662,
+        "energy": 89.62626666666765,
+        "social": 98.37858666666641,
         "safety": 100,
-        "health": 42.194466666664404
+        "health": 48.43446666666427
       },
       "position": {
         "x": -19.183940740321756,
@@ -161296,249 +161332,6 @@
           "importance": 0.45
         },
         {
-          "id": "event-1024",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1027",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1029",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1030",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1031",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1032",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1033",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1034",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1035",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1037",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1039",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1041",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1043",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1045",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1047",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1054",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1055",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1056",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1065",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1067",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1069",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1071",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1073",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1075",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1077",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1079",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
-          "id": "event-1081",
-          "day": 113,
-          "type": "experience",
-          "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-          "participants": [],
-          "emotionalWeight": -0.15,
-          "importance": 0.45
-        },
-        {
           "id": "event-1123",
           "day": 113,
           "type": "experience",
@@ -173427,6 +173220,276 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-502",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-504",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-508",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-510",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-512",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-514",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-516",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-518",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-520",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-522",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-524",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-526",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-528",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-530",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-532",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-534",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-536",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-538",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-540",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-542",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-544",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-546",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-548",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-550",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-552",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-554",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-556",
+          "day": 118,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -174678,6 +174741,16 @@
               "tension": 0.01,
               "affection": 0,
               "resentment": 0
+            },
+            {
+              "day": 118,
+              "type": "conversation",
+              "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
             }
           ]
         }
@@ -174711,11 +174784,10 @@
       ],
       "experiences": [],
       "currentIntent": null,
-      "lastActionName": "drink",
+      "lastActionName": "rest",
       "lastActionResult": {
         "success": true,
-        "effect": "thirst_recovered",
-        "amount": 5
+        "effect": "energy_recovered"
       },
       "lastPerception": {
         "position": {
@@ -174743,12 +174815,12 @@
         ],
         "currentActivity": "idle",
         "needs": {
-          "hunger": 29.171365333332975,
-          "thirst": 99.59799466666665,
-          "energy": 97.01926666666684,
-          "social": 99.00385333333318,
+          "hunger": 12.415813333332792,
+          "thirst": 99.09495466666662,
+          "energy": 89.62626666666765,
+          "social": 98.37858666666641,
           "safety": 100,
-          "health": 42.1660266666644
+          "health": 48.43446666666427
         }
       },
       "availableOptions": [
@@ -174800,30 +174872,30 @@
           "baseValue": 0.28,
           "explorationValue": 0.7,
           "novelty": 0.8,
-          "distance": 8.475232697590764,
+          "distance": 7.499815210331219,
           "target": {
-            "x": -24.099135361649054,
-            "z": 6.573530582008614
+            "x": -26.234234399908914,
+            "z": 2.2266101383616297
           }
         }
       ],
       "decisionSnapshot": {
         "chosen": {
-          "name": "drink",
-          "score": 3.6973063225983864
+          "name": "rest",
+          "score": 11.92533333333245
         },
         "considered": [
           {
             "name": "drink",
-            "score": 3.6973063225983864
+            "score": 29.953433191728926
           },
           {
             "name": "rest",
-            "score": 1.365333333333251
+            "score": 11.92533333333245
           },
           {
             "name": "socialize",
-            "score": 0.845770962414951
+            "score": 1.203215229081677
           }
         ]
       },
@@ -174833,7 +174905,7 @@
         "moving": false,
         "distanceTravelled": 67109.83681605967
       },
-      "decisionCooldownHours": 0.12437333333333335,
+      "decisionCooldownHours": 0.23384000000000016,
       "knownResources": {
         "water": {
           "x": -18,
@@ -174846,7 +174918,7 @@
           "learnedDay": 118
         }
       },
-      "lastAttemptedAction": "drink",
+      "lastAttemptedAction": "rest",
       "actionFailures": {
         "drink": 0,
         "catch_fish": 0,
@@ -174856,586 +174928,6 @@
     }
   ],
   "events": [
-    {
-      "id": "event-933",
-      "day": 117,
-      "hour": 8.27458666670582,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-934",
-      "day": 117,
-      "hour": 8.301253333372488,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-935",
-      "day": 117,
-      "hour": 8.327920000039155,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-936",
-      "day": 117,
-      "hour": 8.354586666705822,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-937",
-      "day": 117,
-      "hour": 8.38125333337249,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-938",
-      "day": 117,
-      "hour": 8.407920000039157,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-939",
-      "day": 117,
-      "hour": 8.514586666705826,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-940",
-      "day": 117,
-      "hour": 8.541253333372493,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-941",
-      "day": 117,
-      "hour": 8.56792000003916,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-942",
-      "day": 117,
-      "hour": 8.594586666705828,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-943",
-      "day": 117,
-      "hour": 8.621253333372495,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-944",
-      "day": 117,
-      "hour": 8.914586666705835,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-945",
-      "day": 117,
-      "hour": 8.941253333372503,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-946",
-      "day": 117,
-      "hour": 8.96792000003917,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-947",
-      "day": 117,
-      "hour": 8.994586666705837,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-948",
-      "day": 117,
-      "hour": 9.021253333372504,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-949",
-      "day": 117,
-      "hour": 9.047920000039172,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-950",
-      "day": 117,
-      "hour": 9.074586666705839,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-951",
-      "day": 117,
-      "hour": 9.101253333372506,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-952",
-      "day": 117,
-      "hour": 9.127920000039174,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-953",
-      "day": 117,
-      "hour": 9.15458666670584,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-954",
-      "day": 117,
-      "hour": 9.181253333372508,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-955",
-      "day": 117,
-      "hour": 9.207920000039175,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-956",
-      "day": 117,
-      "hour": 9.234586666705843,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-957",
-      "day": 117,
-      "hour": 9.26125333337251,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-958",
-      "day": 117,
-      "hour": 9.287920000039177,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-959",
-      "day": 117,
-      "hour": 9.287920000039177,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-960",
-      "day": 117,
-      "hour": 9.314586666705845,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-961",
-      "day": 117,
-      "hour": 9.341253333372512,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-962",
-      "day": 117,
-      "hour": 9.36792000003918,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-963",
-      "day": 117,
-      "hour": 9.394586666705846,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-964",
-      "day": 117,
-      "hour": 9.421253333372514,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-965",
-      "day": 117,
-      "hour": 9.794586666705856,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-966",
-      "day": 117,
-      "hour": 9.821253333372523,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-967",
-      "day": 117,
-      "hour": 9.84792000003919,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-968",
-      "day": 117,
-      "hour": 9.874586666705857,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-969",
-      "day": 117,
-      "hour": 9.901253333372525,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-970",
-      "day": 117,
-      "hour": 9.927920000039192,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-971",
-      "day": 117,
-      "hour": 9.95458666670586,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-972",
-      "day": 117,
-      "hour": 9.981253333372527,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-973",
-      "day": 117,
-      "hour": 10.007920000039194,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-974",
-      "day": 117,
-      "hour": 10.034586666705861,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-975",
-      "day": 117,
-      "hour": 10.061253333372528,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-976",
-      "day": 117,
-      "hour": 10.087920000039196,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-977",
-      "day": 117,
-      "hour": 10.087920000039196,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-978",
-      "day": 117,
-      "hour": 10.114586666705863,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-979",
-      "day": 117,
-      "hour": 10.114586666705863,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-980",
-      "day": 117,
-      "hour": 10.14125333337253,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-981",
-      "day": 117,
-      "hour": 10.14125333337253,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-982",
-      "day": 117,
-      "hour": 10.167920000039198,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-983",
-      "day": 117,
-      "hour": 10.167920000039198,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-984",
-      "day": 117,
-      "hour": 10.194586666705865,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-985",
-      "day": 117,
-      "hour": 10.194586666705865,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-986",
-      "day": 117,
-      "hour": 10.221253333372532,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-987",
-      "day": 117,
-      "hour": 10.2479200000392,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-988",
-      "day": 117,
-      "hour": 10.274586666705867,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-989",
-      "day": 117,
-      "hour": 10.301253333372534,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-990",
-      "day": 117,
-      "hour": 10.327920000039201,
-      "type": "failed_action",
-      "description": "Alex intentó eat_plant, pero no pudo hacerlo (no_plants).",
-      "participants": [
-        "alex"
-      ]
-    },
     {
       "id": "event-991",
       "day": 117,
@@ -179865,6 +179357,587 @@
       "hour": 10.403386666706208,
       "type": "action",
       "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 118,
+      "hour": 10.662346666706213,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 118,
+      "hour": 10.662346666706213,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-503",
+      "day": 118,
+      "hour": 10.929013333372886,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-504",
+      "day": 118,
+      "hour": 10.929013333372886,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-505",
+      "day": 118,
+      "hour": 11.195680000039559,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-506",
+      "day": 118,
+      "hour": 11.195680000039559,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-507",
+      "day": 118,
+      "hour": 11.462346666706232,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-508",
+      "day": 118,
+      "hour": 11.462346666706232,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-509",
+      "day": 118,
+      "hour": 11.729013333372905,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-510",
+      "day": 118,
+      "hour": 11.729013333372905,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-511",
+      "day": 118,
+      "hour": 11.995680000039577,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-512",
+      "day": 118,
+      "hour": 11.995680000039577,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-513",
+      "day": 118,
+      "hour": 12.26234666670625,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-514",
+      "day": 118,
+      "hour": 12.26234666670625,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-515",
+      "day": 118,
+      "hour": 12.529013333372923,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-516",
+      "day": 118,
+      "hour": 12.529013333372923,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-517",
+      "day": 118,
+      "hour": 12.795680000039596,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-518",
+      "day": 118,
+      "hour": 12.795680000039596,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-519",
+      "day": 118,
+      "hour": 13.062346666706269,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-520",
+      "day": 118,
+      "hour": 13.062346666706269,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-521",
+      "day": 118,
+      "hour": 13.329013333372941,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-522",
+      "day": 118,
+      "hour": 13.329013333372941,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-523",
+      "day": 118,
+      "hour": 13.595680000039614,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-524",
+      "day": 118,
+      "hour": 13.595680000039614,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-525",
+      "day": 118,
+      "hour": 13.862346666706287,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-526",
+      "day": 118,
+      "hour": 13.862346666706287,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-527",
+      "day": 118,
+      "hour": 14.12901333337296,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-528",
+      "day": 118,
+      "hour": 14.12901333337296,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-529",
+      "day": 118,
+      "hour": 14.395680000039633,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-530",
+      "day": 118,
+      "hour": 14.395680000039633,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-531",
+      "day": 118,
+      "hour": 14.662346666706306,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-532",
+      "day": 118,
+      "hour": 14.662346666706306,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-533",
+      "day": 118,
+      "hour": 14.929013333372978,
+      "type": "social_interaction",
+      "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+      "participants": [
+        "alex",
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-534",
+      "day": 118,
+      "hour": 14.929013333372978,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-535",
+      "day": 118,
+      "hour": 15.195680000039651,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-536",
+      "day": 118,
+      "hour": 15.195680000039651,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-537",
+      "day": 118,
+      "hour": 15.462346666706324,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-538",
+      "day": 118,
+      "hour": 15.462346666706324,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-539",
+      "day": 118,
+      "hour": 15.729013333372997,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-540",
+      "day": 118,
+      "hour": 15.729013333372997,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-541",
+      "day": 118,
+      "hour": 15.99568000003967,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-542",
+      "day": 118,
+      "hour": 15.99568000003967,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-543",
+      "day": 118,
+      "hour": 16.262346666706343,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-544",
+      "day": 118,
+      "hour": 16.262346666706343,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-545",
+      "day": 118,
+      "hour": 16.529013333373015,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-546",
+      "day": 118,
+      "hour": 16.529013333373015,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-547",
+      "day": 118,
+      "hour": 16.795680000039688,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-548",
+      "day": 118,
+      "hour": 16.795680000039688,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-549",
+      "day": 118,
+      "hour": 17.06234666670636,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-550",
+      "day": 118,
+      "hour": 17.06234666670636,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-551",
+      "day": 118,
+      "hour": 17.329013333373034,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-552",
+      "day": 118,
+      "hour": 17.329013333373034,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-553",
+      "day": 118,
+      "hour": 17.595680000039707,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-554",
+      "day": 118,
+      "hour": 17.595680000039707,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-555",
+      "day": 118,
+      "hour": 17.86234666670638,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-556",
+      "day": 118,
+      "hour": 17.86234666670638,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-557",
+      "day": 118,
+      "hour": 18.129013333373052,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-558",
+      "day": 118,
+      "hour": 18.129013333373052,
+      "type": "action",
+      "description": "Bruno descansó.",
       "participants": [
         "bruno"
       ]
