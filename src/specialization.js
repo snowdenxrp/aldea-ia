@@ -45,11 +45,11 @@ export function advanceSpecializationDay(simulation) {
   simulation.world.specialization.history = simulation.world.specialization.history.slice(-1000);
 }
 
-export function specializationBonus(agent, actionName) {
-  normalizeSpecializationAgent(agent);
-  const role = ROLE_DEFS[agent.specialization.role];
+export function specializationBonus(context, actionName) {
+  const specialization = context.specialization ?? context;
+  const role = ROLE_DEFS[specialization?.role];
   if (!role || !role.skills.includes(actionName)) return 0;
-  return Math.min(2, 0.35 + agent.specialization.confidence * 0.8);
+  return Math.min(2, 0.35 + Number(specialization.confidence || 0) * 0.8);
 }
 
 export function getSpecializationSummary(agent) {
