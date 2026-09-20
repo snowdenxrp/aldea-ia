@@ -51,6 +51,29 @@ function createFarm(s){
   }
   g.add(soil); g.position.set(s.position?.x??0,.0,s.position?.z??0); return g;
 }
+function syncSettlementVisualState(){
+  const regions=simulation.world.spatial?.regions??{};
+  const populationByRegion=new Map();
+  for(const agent of simulation.agents??[]){
+    if(!agent?.alive)continue;
+    const key=agent.position?getRegionKeyForVisual(agent.position):null;
+    if(key)populationByRegion.set(key,(populationByRegion.get(key)||0)+1);
+  }
+  for(const [id,m] of structureMeshes){
+    const x=m.position.x,z=m.position.z;
+    const key=getRegionKeyForVisual({x,z});
+    const state=regions[key];
+    const level=Number(state?.settlementLevel??0);
+    m.scale.setScalar(1+Math.min(.12,level*.02));
+    m.userData.settlementLevel=level;
+  }
+}
+function getRegionKeyForVisual(position){
+  const size=Number(simulation.world.spatial?.regionSize??8);
+  const minX=Number(simulation.world.bounds?.minX??-34), minZ=Number(simulation.world.bounds?.minZ??-34);
+  return Math.floor((Number(position.x)-minX)/size)+":"+Math.floor((Number(position.z)-minZ)/size);
+}
+
 function syncStructures(){
   const structures=simulation.world.structures??{};
   const all=[...(structures.shelters??[]).map(s=>({...s,type:"shelter"})),...(structures.farms??[]).map(s=>({...s,type:"farm"}))];
@@ -74,9 +97,9 @@ if(Number(remote?.version)<4){
   if(plants && Number(plants.amount)<=0) plants.amount=80;
   if(fish && Number(fish.amount)<=0) fish.amount=60;
 }
-const localStamp=(Number(local?.day)||0)*24+(Number(local?.hour)||0);const remoteStamp=(Number(remote?.day)||0)*24+(Number(remote?.hour)||0);if(!validState(local)||remoteStamp>localStamp){applyState(remote);save();syncMeshes();syncStructures();centerOnAgents();}}catch{}}
+const localStamp=(Number(local?.day)||0)*24+(Number(local?.hour)||0);const remoteStamp=(Number(remote?.day)||0)*24+(Number(remote?.hour)||0);if(!validState(local)||remoteStamp>localStamp){applyState(remote);save();syncMeshes();syncStructures();syncSettlementVisualState();centerOnAgents();}}catch{}}
 function createMesh(a){
-  const g=new THREE.Group(); g.userData.agentId=a.id; g.scale.setScalar(1.42); g.frustumCulled=false;
+  const g=new THREE.Group(); g.userData.agentId=a.id; g.scale.setScalar(1.42);
   const blue=a.id==="alex", skin=0xf0bd91, clothes=blue?0x2f7de1:0xe87832, dark=blue?0x1f4f8c:0xb45624;
   const skinMat=material(skin,.9), clothMat=material(clothes,.82), darkMat=material(dark,.88), hairMat=material(0x3b2a22,1), shoeMat=material(0x3b332f,1);
   const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.34,.62,8,12),clothMat); torso.position.y=1.18;
@@ -101,7 +124,7 @@ function createMesh(a){
   accessoryGroup.position.z=.02;
   g.add(accessoryGroup); g.userData.accessoryRole=role??null;
   g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};
-  g.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.renderOrder=1000;}}); return (scene.add(g),g);
+  g.traverse(o=>{if(o.isMesh)o.renderOrder=1000;}); return (scene.add(g),g);
 }
 function animateHumanoid(m,a,t){
   const parts=m.userData.parts; if(!parts)return;
