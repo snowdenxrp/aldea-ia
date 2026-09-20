@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { createInitialAgents, createSimulation, tick } from "../src/simulation.js";
+import { createInitialAgents } from "../src/agents.js";
+import { createSimulation, tick } from "../src/simulation.js";
 import { world } from "../src/world.js";
 
 // Existing assistant regressions
@@ -48,4 +49,4 @@ import { world } from "../src/world.js";
     "La decisión no debe cambiar durante la ventana de compromiso.");
 }
 
-console.log("Lúmina assistants: todas las pruebas pasaron.");
+console.log("Lúmina assistants: todas las pruebas pasaron.\n");
