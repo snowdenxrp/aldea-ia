@@ -38,7 +38,7 @@ export function advanceGovernanceDay(simulation) {
   }
 
   for (const proposal of governance.proposals.filter(p => p.status === "open")) {
-    const institution = institutions.find(i => i.id === p.institutionId);
+    const institution = institutions.find(i => i.id === proposal.institutionId);
     if (!institution) { proposal.status = "rejected"; continue; }
     for (const memberId of institution.members) {
       if (proposal.votes.some(v => v.agentId === memberId)) continue;
