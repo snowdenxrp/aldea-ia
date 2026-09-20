@@ -31,6 +31,15 @@ export function runDebugger({ files = {}, simulation = null } = {}) {
         add("error", "AGENT_POSITION", `Posición inválida para ${agent?.name ?? agent?.id ?? "habitante"}.`);
       }
       if (agent?.alive !== true) add("warning", "AGENT_DEAD", `${agent?.name ?? agent?.id ?? "Habitante"} no está marcado como vivo.`);
+      for (const key of ["hunger","thirst","energy","social","safety","health"]) {
+        const value = Number(agent?.needs?.[key]);
+        if (!Number.isFinite(value) || value < 0 || value > 100) add("error", "INVALID_NEED", `Necesidad inválida ${key} en ${agent?.name ?? agent?.id ?? "habitante"}.`, value);
+      }
+      if (Array.isArray(agent?.memories) && agent.memories.length > 5000) add("warning", "MEMORY_GROWTH", `${agent.name ?? agent.id} tiene ${agent.memories.length} recuerdos.`);
+      if (Array.isArray(agent?.experiences) && agent.experiences.length > 5000) add("warning", "EXPERIENCE_GROWTH", `${agent.name ?? agent.id} tiene ${agent.experiences.length} experiencias.`);
+      for (const relationship of agent?.relationships ?? []) {
+        if ((relationship.history?.length ?? 0) > 5000) add("warning", "RELATIONSHIP_GROWTH", `${agent.name ?? agent.id} acumula demasiadas interacciones con ${relationship.agentId}.`);
+      }
     }
     const ids = new Set(agents.map(a => a?.id));
     for (const id of ["alex", "bruno"]) {

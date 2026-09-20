@@ -18,6 +18,10 @@ export function runTester({ simulation, tick, moveAgent, setMovementTarget } = {
   test("positions are finite", () => simulation?.agents?.every(a =>
     Number.isFinite(Number(a.position?.x)) && Number.isFinite(Number(a.position?.z))
   ));
+  test("needs remain finite and bounded", () => simulation?.agents?.every(a =>
+    ["hunger","thirst","energy","social","safety","health"].every(k => Number.isFinite(Number(a.needs?.[k])) && Number(a.needs[k]) >= 0 && Number(a.needs[k]) <= 100)
+  ));
+  test("dead inhabitants stay dead", () => simulation?.agents?.every(a => a.alive !== false || a.currentActivity === "dead"));
   test("tick advances time", () => {
     if (!simulation || typeof tick !== "function") return false;
     const before = Number(simulation.hour);

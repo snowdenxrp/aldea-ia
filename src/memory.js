@@ -2,11 +2,15 @@
 // Este sistema registra lo que ocurrió y permite actualizar creencias
 // a partir de evidencia. No decide qué debe hacer un habitante.
 
+const MAX_MEMORIES = 2000;
+const MAX_EVIDENCE_PER_KNOWLEDGE = 500;
+
 export function remember(agent, event) {
   const memory = {
     id: event.id,
     day: event.day,
     type: event.type,
+    topic: event.topic ?? null,
     description: event.description,
     participants: event.participants ?? [],
     emotionalWeight: clamp(event.emotionalWeight ?? 0, -1, 1),
@@ -14,6 +18,7 @@ export function remember(agent, event) {
   };
 
   agent.memories.push(memory);
+  trimMemories(agent);
   return memory;
 }
 
@@ -43,6 +48,9 @@ export function learnFromEvidence(agent, evidence) {
   }
 
   existing.evidence.push(createEvidenceRecord(evidence));
+  if (existing.evidence.length > MAX_EVIDENCE_PER_KNOWLEDGE) {
+    existing.evidence = existing.evidence.slice(-MAX_EVIDENCE_PER_KNOWLEDGE);
+  }
 
   // Evidencia favorable aumenta confianza; evidencia contraria la reduce.
   // La actualización es gradual para evitar que un único evento cree certeza.
@@ -61,7 +69,7 @@ export function learnFromEvidence(agent, evidence) {
 export function recallRelevantMemories(agent, topic, limit = 5) {
   return agent.memories
     .filter(memory =>
-      memory.description.toLowerCase().includes(topic.toLowerCase())
+      memory.topic === topic || memory.description.toLowerCase().includes(topic.toLowerCase())
     )
     .sort((a, b) => {
       const importanceDifference = b.importance - a.importance;
@@ -78,6 +86,19 @@ function createEvidenceRecord(evidence) {
     outcome: clamp(evidence.outcome ?? 0, -1, 1),
     reliability: clamp(evidence.reliability ?? 0.5, 0, 1)
   };
+}
+
+function trimMemories(agent) {
+  if (agent.memories.length <= MAX_MEMORIES) return;
+  const ranked = agent.memories
+    .map((memory, index) => ({ memory, index }))
+    .sort((a, b) => {
+      const importance = b.memory.importance - a.memory.importance;
+      if (importance !== 0) return importance;
+      return b.memory.day - a.memory.day;
+    });
+  const keep = new Set(ranked.slice(0, MAX_MEMORIES).map(item => item.index));
+  agent.memories = agent.memories.filter((_, index) => keep.has(index));
 }
 
 function clamp(value, min, max) {

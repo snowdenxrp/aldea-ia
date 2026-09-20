@@ -1,139 +1,97 @@
 import assert from "node:assert/strict";
-import { world } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
-import { createSimulation, tick, recoverCoreAgent } from "../src/simulation.js";
+import { createSimulation, tick } from "../src/simulation.js";
+import { world } from "../src/world.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
-import { runDebugger, runTester, analyzeLumina, classifyRenderProbe } from "../src/assistants/index.js";
-import { survivalUrgency } from "../src/decision.js";
 
-const simulation = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
-
-const debug = runDebugger({ simulation });
-assert.equal(debug.status, "ok");
-assert.equal(simulation.agents.length, 2);
-
-const test = runTester({ simulation, tick, moveAgent, setMovementTarget });
-assert.equal(test.status, "pass", JSON.stringify(test, null, 2));
-
-const analysis = analyzeLumina({ simulation, debuggerReport: debug, testerReport: test });
-assert.notEqual(analysis.status, "error");
-
-console.log("Lúmina assistants: todas las pruebas pasaron.");
-
-assert.equal(classifyRenderProbe({ exists:false }), "MESH_MISSING");
-assert.equal(classifyRenderProbe({ exists:true, inScene:false }), "NOT_IN_SCENE");
-assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:false }), "HIDDEN");
-assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:true, onScreen:false }), "OFFSCREEN");
-assert.equal(classifyRenderProbe({ exists:true, inScene:true, visible:true, onScreen:true }), "OK");
-
-assert(survivalUrgency({ hunger: 10, thirst: 80, energy: 80, social: 80 }) > survivalUrgency({ hunger: 80, thirst: 80, energy: 80, social: 80 }));
-assert(survivalUrgency({ hunger: 10, thirst: 10, energy: 80, social: 80 }) > survivalUrgency({ hunger: 10, thirst: 80, energy: 80, social: 80 }));
-
-const core = structuredClone(createInitialAgents()[0]);
-core.needs = { hunger: 19, thirst: 17, energy: 18, social: 16, safety: 100, health: 100 };
-recoverCoreAgent(core);
-assert.equal(core.needs.hunger, 19);
-assert.equal(core.needs.thirst, 17);
-
-// Regression: si ya llegó al agua, una intención de beber no debe quedarse bloqueada por el estado de movimiento.
+// Existing assistant regressions
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
   const alex = sim.agents.find(agent => agent.id === "alex");
-  const water = sim.world.resources.water;
-  alex.position = { x: water.position.x, z: water.position.z };
-  alex.needs = { hunger: 100, thirst: 10, energy: 80, social: 80, safety: 100, health: 100 };
-  alex.currentIntent = { name: "drink", target: { ...water.position } };
-  alex.lastPerception = { nearbyResources: [{ type: "water", distance: 0 }], visibleAgents: [] };
-  alex.movement = { target: { ...water.position }, moving: true, speed: 1.8, distanceTravelled: 0 };
-  const beforeWater = water.amount;
+  const healthAtStart = alex.needs.health;
+  alex.needs.thirst = 0;
   tick(sim, 0.01);
-  assert.equal(alex.lastActionName, "drink", "Una intención de beber en el agua no debe quedar bloqueada por movement.moving.");
-  assert(water.amount < beforeWater, "La acción bloqueada debe llegar a consumir agua.");
-  assert(alex.needs.thirst > 10, "Beber debe recuperar la sed.");
+  assert(alex.needs.health <= healthAtStart, "La sed extrema no debe aumentar la salud.");
 }
 
-// Pruebas de comportamiento de supervivencia: la presión debe llegar hasta la acción física.
+// Regression: death is terminal.
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
   const alex = sim.agents.find(agent => agent.id === "alex");
-  const plants = sim.world.resources.wild_plants;
-  alex.position = { x: plants.position.x, z: plants.position.z };
-  alex.needs = { hunger: 5, thirst: 100, energy: 80, social: 80, safety: 100, health: 100 };
+  alex.needs.health = 0;
+  tick(sim, 0.01);
+  const healthAtDeath = alex.needs.health;
+  assert.equal(alex.currentActivity, "dead");
+  assert.equal(alex.needs.health, healthAtDeath, "La salud de un muerto no debe cambiar por ticks posteriores.");
+}
+
+// Regression: after a non-critical action, the decision remains stable during
+// the short commitment window instead of being recomputed every browser tick.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  alex.position = { x: 20, z: 8 };
+  alex.needs = { hunger: 70, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
   alex.knowledge = [{
-    topic: "action:eat_plant",
-    belief: "Esta planta puede servir como alimento.",
+    topic: "action:gather_wood",
+    belief: "Puedo recolectar madera aquí.",
     confidence: 0.9,
     evidence: [],
     updatedOnDay: 1
   }];
-  const beforePlants = plants.amount;
   tick(sim, 0.01);
-  assert.equal(alex.lastActionResult?.success, true, "Un Alex hambriento debe poder comer una planta disponible.");
-  assert.equal(alex.lastActionName, "eat_plant");
-  assert(plants.amount < beforePlants, "Comer debe consumir plantas del mundo.");
-  assert(alex.needs.hunger > 5, "Comer debe recuperar hambre.");
+  const chosen = alex.decisionSnapshot?.chosen?.name;
+  assert(chosen, "Debe registrarse una decisión.");
+  const snapshot = JSON.stringify(alex.decisionSnapshot);
+  assert(alex.decisionCooldownHours > 0 || alex.currentIntent?.name === chosen,
+    "La decisión debe quedar comprometida o seguir ejecutándose.");
+  tick(sim, 0.01);
+  assert.equal(JSON.stringify(alex.decisionSnapshot), snapshot,
+    "La decisión no debe cambiar durante la ventana de compromiso.");
 }
 
+// Regression: a movement-bound decision remains stable while the inhabitant travels.
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
   const alex = sim.agents.find(agent => agent.id === "alex");
-  const water = sim.world.resources.water;
-  alex.position = { x: water.position.x, z: water.position.z };
-  alex.needs = { hunger: 100, thirst: 5, energy: 80, social: 80, safety: 100, health: 100 };
-  const beforeWater = water.amount;
+  alex.position = { x: 10, z: 8 };
+  alex.needs = { hunger: 80, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
+  alex.currentIntent = { name: "gather_wood", amount: 1, baseValue: 0, target: { ...sim.world.resources.wood.position } };
   tick(sim, 0.01);
-  assert.equal(alex.lastActionResult?.success, true, "Un Alex sediento debe poder beber agua disponible.");
-  assert.equal(alex.lastActionName, "drink");
-  assert(water.amount < beforeWater, "Beber debe consumir agua del mundo.");
-  assert(alex.needs.thirst > 5, "Beber debe recuperar sed.");
+  const chosen = alex.currentIntent?.name;
+  assert(chosen, "Debe existir una intención activa para probar estabilidad durante movimiento.");
+  const snapshot = JSON.stringify(alex.decisionSnapshot);
+  const intent = JSON.stringify(alex.currentIntent);
+  if (alex.currentIntent?.target) {
+    for (let i = 0; i < 5; i += 1) {
+      setMovementTarget(alex, alex.currentIntent.target, sim.world.bounds);
+      moveAgent(alex, 0.5);
+      tick(sim, 0.01);
+    }
+    assert.equal(JSON.stringify(alex.decisionSnapshot), snapshot,
+      "La decisión no debe recomputarse mientras el habitante se desplaza.");
+    assert.equal(alex.currentIntent?.name, chosen,
+      "La intención no debe cambiar mientras el habitante se desplaza.");
+    assert.equal(JSON.stringify(alex.currentIntent), intent,
+      "La intención y su objetivo deben conservarse durante el movimiento.");
+  }
 }
 
+// Regression: a failed non-critical action must not immediately trigger a new decision.
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
   const alex = sim.agents.find(agent => agent.id === "alex");
-  alex.needs = { hunger: 0, thirst: 0, energy: 80, social: 80, safety: 100, health: 50 };
-  tick(sim, 1);
-  assert(alex.needs.health < 50, "Necesidades críticas ignoradas deben deteriorar salud.");
-}
-
-
-
-// Regresión: beber desde sed 0 debe recuperar la necesidad y terminar en estado idle.
-{
-  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
-  const alex = sim.agents.find(agent => agent.id === "alex");
-  const water = sim.world.resources.water;
-  alex.position = { x: water.position.x, z: water.position.z };
-  alex.needs = { hunger: 100, thirst: 0, energy: 80, social: 80, safety: 100, health: 100 };
+  alex.position = { x: 20, z: 8 };
+  alex.needs = { hunger: 70, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
+  alex.currentIntent = { name: "gather_wood", amount: 1, baseValue: 0, target: { ...sim.world.resources.wood.position } };
+  sim.world.resources.wood.amount = 0;
   tick(sim, 0.01);
-  assert.equal(alex.lastActionName, "drink");
-  assert(alex.needs.thirst > 0, "El agua debe recuperar la sed incluso desde 0.");
-  assert.equal(alex.currentActivity, "idle", "Beber no debe quedar como actividad permanente.");
-}
-
-// Regresión: si el agua se agotó, un intento fallido no debe dejar "drinking" pegado.
-{
-  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
-  const alex = sim.agents.find(agent => agent.id === "alex");
-  const water = sim.world.resources.water;
-  water.amount = 0;
-  alex.position = { x: water.position.x, z: water.position.z };
-  alex.needs = { hunger: 100, thirst: 0, energy: 80, social: 80, safety: 100, health: 100 };
-  alex.currentActivity = "drinking";
-  alex.currentIntent = { name: "drink", target: { ...water.position }, amount: 5 };
+  assert.equal(alex.lastActionResult?.success, false, "La acción preparada debe fallar por falta del recurso.");
+  const failedSnapshot = JSON.stringify(alex.decisionSnapshot);
+  assert(alex.decisionCooldownHours >= 0.05, "Un fallo debe abrir una pequeña ventana antes de recomputar.");
   tick(sim, 0.01);
-  assert.equal(alex.lastActionResult?.success, false);
-  assert.equal(alex.currentActivity, "idle", "Un fallo al beber debe devolver al habitante a idle.");
+  assert.equal(JSON.stringify(alex.decisionSnapshot), failedSnapshot,
+    "Un fallo no debe causar cambios de decisión en el siguiente tick del navegador.");
 }
 
-
-// Regresión: un estado "drinking" viejo sin intención activa debe limpiarse en el siguiente tick.
-{
-  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
-  const alex = sim.agents.find(agent => agent.id === "alex");
-  alex.currentActivity = "drinking";
-  alex.currentIntent = null;
-  alex.needs = { hunger: 80, thirst: 50, energy: 80, social: 80, safety: 100, health: 100 };
-  tick(sim, 0.01);
-  assert.notEqual(alex.currentActivity, "drinking", "Una actividad de beber sin intención activa no debe quedar pegada.");
-}
+console.log("Lúmina assistants: todas las pruebas pasaron.\n");

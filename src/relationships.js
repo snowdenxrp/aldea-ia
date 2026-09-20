@@ -28,6 +28,8 @@ export function getOrCreateRelationship(agent, otherAgentId) {
   return relationship;
 }
 
+const MAX_RELATIONSHIP_HISTORY = 1000;
+
 // Registra una interacción real entre dos habitantes.
 // Los valores recibidos representan el resultado observado de la interacción;
 // este módulo no decide por qué ocurrió ni qué deben hacer después.
@@ -46,6 +48,7 @@ export function recordInteraction(agent, otherAgent, interaction) {
   };
 
   relationship.history.push(change);
+  if (relationship.history.length > MAX_RELATIONSHIP_HISTORY) relationship.history = relationship.history.slice(-MAX_RELATIONSHIP_HISTORY);
   relationship.familiarity = clamp(relationship.familiarity + 0.08, 0, 1);
   relationship.trust = clamp(relationship.trust + change.trust, -1, 1);
   relationship.cooperation = clamp(relationship.cooperation + change.cooperation, -1, 1);

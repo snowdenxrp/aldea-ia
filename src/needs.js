@@ -3,82 +3,33 @@
 // Solo representa su estado y cómo cambia con el paso del tiempo.
 
 export function createNeeds() {
-  return {
-    hunger: 100,      // 100 = satisfecho, 0 = hambre extrema
-    thirst: 100,      // 100 = bien hidratado, 0 = sed extrema
-    energy: 100,      // 100 = máxima energía, 0 = agotamiento
-    social: 100,      // 100 = buena conexión social, 0 = aislamiento prolongado
-    safety: 100,      // estado contextual de seguridad
-    health: 100       // salud general
-  };
+  return { hunger: 100, thirst: 100, energy: 100, social: 100, safety: 100, health: 100 };
 }
 
-// Actualiza necesidades durante un intervalo de tiempo simulado.
-// 'hours' representa horas del mundo, no horas reales.
 export function updateNeeds(needs, hours, activity = "normal") {
   const next = { ...needs };
-
   next.hunger -= hours * 2.2;
   next.thirst -= hours * 3.2;
-
-  if (activity === "sleeping") {
-    next.energy += hours * 12;
-  } else if (activity === "resting") {
-    next.energy += hours * 7;
-  } else if (activity === "heavy") {
-    next.energy -= hours * 10;
-  } else {
-    next.energy -= hours * 5;
-  }
-
+  if (activity === "sleeping") next.energy += hours * 12;
+  else if (activity === "resting") next.energy += hours * 7;
+  else if (activity === "heavy") next.energy -= hours * 10;
+  else next.energy -= hours * 2.5;
   next.social -= hours * 0.5;
-
-  next.hunger = clamp(next.hunger);
-  next.thirst = clamp(next.thirst);
-  next.energy = clamp(next.energy);
-  next.social = clamp(next.social);
-  next.safety = clamp(next.safety);
-  next.health = clamp(next.health);
-
+  next.hunger = clamp(next.hunger); next.thirst = clamp(next.thirst); next.energy = clamp(next.energy); next.social = clamp(next.social); next.safety = clamp(next.safety); next.health = clamp(next.health);
   return next;
 }
 
-// Consecuencias físicas básicas de necesidades muy bajas.
-// No prescribe acciones: solamente modifica el estado del habitante.
 export function applyNeedConsequences(needs, hours) {
   const next = { ...needs };
-
-  if (next.thirst < 20) {
-    next.health -= hours * 2.5;
-  }
-
-  if (next.hunger < 20) {
-    next.health -= hours * 1.5;
-  }
-
-  if (next.energy < 10) {
-    next.health -= hours * 0.8;
-  }
-
-  if (next.social < 10) {
-    next.health -= hours * 0.1;
-  }
-
-  // La recuperación aparece cuando las necesidades básicas vuelven a estar cubiertas.
-  // No es instantánea y no puede superar la salud máxima.
-  if (
-    next.hunger >= 70 &&
-    next.thirst >= 70 &&
-    next.energy >= 40 &&
-    next.social >= 20
-  ) {
-    next.health += hours * 0.35;
-  }
-
+  // Solo el hambre/sed realmente extremos producen daño directo; los estados intermedios
+  // son señales para la toma de decisiones, no una sentencia de muerte.
+  if (next.thirst < 5) next.health -= hours * 1.5;
+  if (next.hunger < 5) next.health -= hours * 0.8;
+  if (next.energy < 5) next.health -= hours * 0.03;
+  if (next.social < 10) next.health -= hours * 0.002;
+  // La recuperación comienza antes de llegar a niveles perfectos para que una mala racha pueda revertirse.
+  if (next.hunger >= 20 && next.thirst >= 20 && next.energy >= 20) next.health += hours * 1.5;
   next.health = clamp(next.health);
   return next;
 }
-
-function clamp(value) {
-  return Math.max(0, Math.min(100, value));
-}
+function clamp(value) { return Math.max(0, Math.min(100, value)); }

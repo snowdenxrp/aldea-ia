@@ -1,4 +1,5 @@
 import { createNeeds } from "./needs.js";
+import { remember } from "./memory.js";
 
 // Estructura base de un habitante.
 // Aquí almacenamos quién es y qué ha vivido, pero todavía NO decidimos sus acciones.
@@ -41,10 +42,14 @@ export function createAgent({ id, name, age = 15, home = null, position = { x: 0
 
     // Objetivo o intención actual.
     currentIntent: null,
+    decisionCooldownHours: 0,
 
     // Última acción realmente ejecutada; sirve para evitar repeticiones ciegas.
     lastActionName: null,
-    lastActionResult: null
+    lastActionResult: null,
+    lastAttemptedAction: null,
+    actionFailures: {},
+    knownResources: {}
   };
 }
 
@@ -65,6 +70,8 @@ export function createInitialAgents() {
   ];
 }
 
+const MAX_EXPERIENCES = 2000;
+
 // Registra una experiencia sin convertirla automáticamente en conocimiento.
 export function addExperience(agent, experience) {
   agent.experiences.push({
@@ -75,17 +82,12 @@ export function addExperience(agent, experience) {
     participants: experience.participants ?? [],
     consequences: experience.consequences ?? []
   });
+  if (agent.experiences.length > MAX_EXPERIENCES) agent.experiences = agent.experiences.slice(-MAX_EXPERIENCES);
 }
 
 // Registra un recuerdo de algo que el habitante realmente vivió.
 export function addMemory(agent, memory) {
-  agent.memories.push({
-    id: memory.id,
-    day: memory.day,
-    type: memory.type,
-    description: memory.description,
-    emotionalWeight: memory.emotionalWeight ?? 0
-  });
+  return remember(agent, memory);
 }
 
 // Añade conocimiento individual.

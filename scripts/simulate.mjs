@@ -14,16 +14,16 @@ function recoverCoreAgents(agents) {
   for (const fallback of initial) {
     let agent = agents.find(item => item?.id === fallback.id);
     if (!agent) { agents.push(clone(fallback)); agent = agents[agents.length - 1]; }
-    agent.alive = true;
-    agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
+    agent.currentActivity = agent.alive === false ? "dead" : (agent.currentActivity ?? "idle");
     agent.currentIntent = agent.currentIntent ?? null;
     agent.position ??= { ...fallback.position };
     agent.needs ??= clone(fallback.needs);
-    if (!Number.isFinite(Number(agent.needs.health)) || agent.needs.health <= 0) agent.needs.health = 100;
+    if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
     for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
       if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
-      agent.needs[key] = Math.max(20, Math.min(100, Number(agent.needs[key])));
+      agent.needs[key] = Math.max(0, Math.min(100, Number(agent.needs[key])));
     }
+    agent.needs.health = Math.max(0, Math.min(100, Number(agent.needs.health)));
   }
 }
 
@@ -69,7 +69,8 @@ const previousSavedAt = Number(state.savedAt) || now;
 const elapsedSeconds = Math.max(0, Math.min((now - previousSavedAt) / 1000, MAX_CATCHUP_SECONDS));
 const simulation = applyState(state);
 advance(simulation, elapsedSeconds);
+const persistedSavedAt = previousSavedAt + elapsedSeconds * 1000;
 
-await fs.writeFile(STATE_PATH, JSON.stringify({ version: 3, savedAt: now, day: simulation.day, hour: simulation.hour, world: simulation.world, agents: simulation.agents, events: simulation.events.slice(-500) }, null, 2) + "\n", "utf8");
+await fs.writeFile(STATE_PATH, JSON.stringify({ version: 3, savedAt: persistedSavedAt, day: simulation.day, hour: simulation.hour, world: simulation.world, agents: simulation.agents, events: simulation.events.slice(-500) }, null, 2) + "\n", "utf8");
 
 console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive) }));

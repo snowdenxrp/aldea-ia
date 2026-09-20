@@ -14,19 +14,19 @@ async function readJson(path, fallback) {
   try { return JSON.parse(await fs.readFile(path, "utf8")); } catch { return fallback; }
 }
 
-function recoverCoreAgents(agents) {
+function normalizeCoreAgents(agents) {
   const initial = createInitialAgents();
   for (const fallback of initial) {
     let agent = agents.find(item => item?.id === fallback.id);
     if (!agent) { agents.push(structuredClone(fallback)); agent = agents[agents.length - 1]; }
-    agent.alive = true;
-    agent.currentActivity = agent.currentActivity === "dead" ? "idle" : (agent.currentActivity ?? "idle");
+    agent.currentActivity = agent.alive === false ? "dead" : (agent.currentActivity ?? "idle");
     agent.needs ??= structuredClone(fallback.needs);
-    if (!Number.isFinite(Number(agent.needs.health)) || agent.needs.health <= 0) agent.needs.health = 100;
+    if (!Number.isFinite(Number(agent.needs.health))) agent.needs.health = 100;
     for (const key of ["hunger", "thirst", "energy", "social", "safety"]) {
       if (!Number.isFinite(Number(agent.needs[key]))) agent.needs[key] = 80;
-      agent.needs[key] = Math.max(20, Math.min(100, Number(agent.needs[key])));
+      agent.needs[key] = Math.max(0, Math.min(100, Number(agent.needs[key])));
     }
+    agent.needs.health = Math.max(0, Math.min(100, Number(agent.needs.health)));
   }
 }
 
@@ -38,10 +38,10 @@ const simulation = createSimulation(
 simulation.day = Number(persisted?.day) || simulation.world.day || 1;
 simulation.hour = Number.isFinite(Number(persisted?.hour)) ? Number(persisted.hour) : (simulation.world.timeOfDay || 8);
 simulation.events = Array.isArray(persisted?.events) ? persisted.events.slice(-500) : [];
-recoverCoreAgents(simulation.agents);
+normalizeCoreAgents(simulation.agents);
 
 const codeFiles = {};
-for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "src/movement.js", "src/agents.js"]) {
+for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "src/movement.js", "src/agents.js", "src/needs.js", "src/actions.js", "src/world.js", "src/decision.js", "src/perception.js", "src/discovery.js", "src/memory.js", "src/relationships.js", "src/random.js"]) {
   try { codeFiles[path] = await fs.readFile(new URL("../" + path, import.meta.url), "utf8"); } catch {}
 }
 
@@ -54,7 +54,18 @@ const analystReport = analyzeLumina({
   testerReport,
   learnedRules: memory.lessons
 });
-const report = buildAssistantReport({ debuggerReport, testerReport, analystReport });
+const structuralFindings = [];
+for (const agent of simulation.agents) {
+  if (agent.alive === false && agent.needs?.health > 0) structuralFindings.push({ severity: "warning", code: "DEAD_WITH_HEALTH", message: agent.name + " está muerto pero conserva salud > 0." });
+  if (agent.alive === false && agent.currentActivity !== "dead") structuralFindings.push({ severity: "error", code: "DEAD_STATE_MISMATCH", message: agent.name + " está muerto pero su actividad no es dead." });
+}
+const structuralReport = {
+  assistant: "StateAuditor",
+  status: structuralFindings.some(f => f.severity === "error") ? "error" : structuralFindings.length ? "warning" : "ok",
+  summary: structuralFindings.length ? `${structuralFindings.length} hallazgo(s) de consistencia de estado` : "Estado estructural consistente.",
+  findings: structuralFindings
+};
+const report = buildAssistantReport({ debuggerReport, testerReport, analystReport, structuralReport });
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
