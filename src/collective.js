@@ -44,7 +44,8 @@ export function findOrCreateProject(simulation, agent, other) {
 
   const combinedWood = getInventoryAmount(agent, "wood") + getInventoryAmount(other, "wood");
   const combinedStone = getInventoryAmount(agent, "stone") + getInventoryAmount(other, "stone");
-  if (agent.home || other.home || combinedWood <= 0 || combinedStone <= 0) return null;
+  const cost = PROJECT_COSTS.shared_shelter;
+  if (agent.home || other.home || combinedWood < cost.wood || combinedStone < cost.stone) return null;
 
   const id = "collective-" + (simulation.world.collectiveProjects.length + 1);
   const project = {
