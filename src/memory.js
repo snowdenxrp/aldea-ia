@@ -69,7 +69,7 @@ export function learnFromEvidence(agent, evidence) {
 export function recallRelevantMemories(agent, topic, limit = 5) {
   return agent.memories
     .filter(memory =>
-      memory.description.toLowerCase().includes(topic.toLowerCase())
+      memory.topic === topic || memory.description.toLowerCase().includes(topic.toLowerCase())
     )
     .sort((a, b) => {
       const importanceDifference = b.importance - a.importance;
