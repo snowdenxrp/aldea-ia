@@ -6,6 +6,7 @@ import { world } from "../src/world.js";
 import { evaluateOptions } from "../src/decision.js";
 import { updateActionBelief } from "../src/discovery.js";
 import { remember } from "../src/memory.js";
+import { recordInteraction } from "../src/relationships.js";
 
 function agent() {
   return createInitialAgents()[0];
@@ -62,6 +63,17 @@ function agent() {
     updateActionBelief(a, "test-" + i, 1, i, "evidencia");
   }
   assert(a.knowledge.every(item => item.evidence.length <= 500));
+}
+
+{
+  const a = agent();
+  const b = createInitialAgents()[1];
+  for (let i = 0; i < 1100; i += 1) {
+    recordInteraction(a, b, { day: i + 1, type: "test", description: "interacción", trust: 0.01 });
+  }
+  assert.equal(a.relationships[0].history.length, 1000);
+  assert(a.relationships[0].trust <= 1);
+  assert(a.relationships[0].familiarity <= 1);
 }
 
 console.log("Lúmina cognition audit: aprendizaje, memoria y habilidades verificadas.");
