@@ -29,7 +29,6 @@ export function createSimulation(world, agents, options = {}) {
   normalizeCollectiveWorld(world);
   normalizeInstitutionWorld(world);
   normalizeSpatialWorld(world);
-  normalizeSpatialWorld(world);
   for (const agent of agents) normalizeAgentLife(agent);
   return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false, random: options.random ?? null };
 }

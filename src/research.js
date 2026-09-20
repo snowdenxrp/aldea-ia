@@ -288,7 +288,27 @@ function interventionFor(topic, before) {
 }
 
 function measureIntervention(simulation, agent, topic, before, intervention) {
-  return { value: before.value * intervention.factor };
+  if (topic.id === "soil-yield") {
+    const soil = Number(simulation.world.ecosystem?.soilQuality ?? 0);
+    return { value: Math.max(0, 1.5 * Math.min(1, soil * intervention.factor)) };
+  }
+  if (topic.id === "shelter-durability") {
+    const skill = Number(agent.skills?.find(item => item.name === "build_shelter")?.level ?? 0);
+    return { value: 20 * (1 + Math.min(1, skill * intervention.factor) * 0.5) };
+  }
+  if (topic.id === "tool-durability") {
+    const skill = Number(agent.skills?.find(item => item.name === "toolmaking")?.level ?? 0);
+    return { value: 20 * (1 + Math.min(1, skill * intervention.factor) * 0.5) };
+  }
+  if (topic.id === "resource-regeneration") {
+    const pressure = Number(simulation.world.ecosystem?.humanPressure ?? 0);
+    return { value: Math.max(0, 1 - Math.min(1, pressure * (2 - intervention.factor))) };
+  }
+  if (topic.id === "scarcity-price") {
+    const price = Number(simulation.world.economy?.priceMemory?.farm_food ?? 3);
+    return { value: Math.max(0.01, price * intervention.factor) };
+  }
+  return { value: before.value };
 }
 
 function trimTopics(research) {
