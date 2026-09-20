@@ -50,7 +50,11 @@ export function createAgent({ id, name, age = 15, home = null, position = { x: 0
     lastActionResult: null,
     lastAttemptedAction: null,
     actionFailures: {},
-    knownResources: {}
+    knownResources: {},
+
+    // Participación institucional y rol social emergente.
+    institutions: [],
+    socialRole: null
   };
 }
 
