@@ -5,7 +5,7 @@ import { createInitialAgents } from "../src/agents.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { createSeededRandom } from "../src/random.js";
 
-const HORIZONS = [1, 7, 30, 100, 500, 1000];
+const HORIZONS = [1, 7, 30, 100, 500, 1000, 2500];
 const AUDIT_SEED = "lumina-audit-2026";
 const HOURS_PER_DAY = 24;
 const MOVEMENT_SECONDS_PER_SIM_HOUR = 37.5;
@@ -30,8 +30,16 @@ function validate(simulation) {
     if (["alex","bruno"].includes(agent.id) && agent.alive !== true && agent.needs.health > 0) problems.push("invalid_alive_state:" + agent.id);
     for (const item of agent.inventory ?? []) if (!finite(item.amount) || Number(item.amount) < 0) problems.push("invalid_inventory:" + agent.id);
     if (agent.lastActionResult?.reason === "simulation_error") problems.push("simulation_error:" + agent.id);
+    if (agent.plan && (!Number.isFinite(Number(agent.plan.progress)) || Number(agent.plan.progress) < 0)) problems.push("invalid_plan:" + agent.id);
+    for (const tool of agent.inventory ?? []) if (tool.type === "tool" && (!finite(tool.durability) || Number(tool.durability) < 0)) problems.push("invalid_tool:" + agent.id);
   }
 
+  const ecosystem = simulation.world?.ecosystem;
+  if (ecosystem) for (const key of ["biodiversity", "soilQuality", "waterQuality", "humanPressure"]) if (!finite(ecosystem[key]) || ecosystem[key] < 0 || ecosystem[key] > 1) problems.push("invalid_ecosystem:" + key);
+  for (const project of simulation.world?.collectiveProjects ?? []) {
+    if (!Array.isArray(project.participants) || project.participants.length < 2) problems.push("invalid_collective_project:" + (project.id ?? "?"));
+    if (!finite(project.progress?.wood) || !finite(project.progress?.stone)) problems.push("invalid_collective_progress:" + (project.id ?? "?"));
+  }
   for (const [name, resource] of Object.entries(simulation.world?.resources ?? {})) {
     if (resource.amount !== undefined && (!finite(resource.amount) || Number(resource.amount) < 0)) problems.push("invalid_resource:" + name);
   }
@@ -60,6 +68,9 @@ function metrics(simulation, hours) {
     experiences: Object.fromEntries(simulation.agents.map(a => [a.id, (a.experiences ?? []).length])),
     relationshipHistory: Object.fromEntries(simulation.agents.map(a => [a.id, (a.relationships ?? []).reduce((n,r) => n + (r.history?.length ?? 0), 0)])),
     events: simulation.events.length,
+    ecosystem: simulation.world.ecosystem ? { ...simulation.world.ecosystem } : null,
+    collectiveProjects: (simulation.world.collectiveProjects ?? []).length,
+    autonomy: Object.fromEntries(simulation.agents.map(a => [a.id, a.autonomySnapshot ?? null])),
     actions: actionStats(simulation),
     problems: validate(simulation)
   };
