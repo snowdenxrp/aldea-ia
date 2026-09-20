@@ -21,4 +21,4 @@ jobs:
         run: node scripts/longevity-audit-v2.mjs
       - name: Pruebas existentes como referencia
         run: npm test
-        continue-on-error: true
+
