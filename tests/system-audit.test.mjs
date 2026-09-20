@@ -94,5 +94,8 @@ const ui = await fs.readFile(new URL("../src/main-stable.js", import.meta.url), 
 assert(ui.includes('from "./simulation.js"'), "La UI debe consumir el motor de simulación real.");
 assert(ui.includes("decisionSnapshot"), "La UI debe mostrar el snapshot de decisión real.");
 assert(ui.includes("currentIntent"), "La UI debe reflejar la intención real del habitante.");
+assert(!/arrastra|pellizca/i.test(ui), "La UI no debe conservar instrucciones de gesto antiguas.");
+assert(ui.includes("cooperate:\"Cooperar\""), "La UI debe representar la cooperación colectiva.");
+assert(ui.includes("const s=.14"), "El desplazamiento táctil del mapa debe conservar la velocidad ajustada.");
 
 console.log("Lúmina system audit: 10 áreas de invariantes verificadas.");
