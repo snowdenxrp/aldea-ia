@@ -1,4 +1,5 @@
 import { getRandom } from "./random.js";
+import { buildShelter } from "./development.js";
 
 // Acciones físicas y sus consecuencias en el mundo.
 // Una acción no decide si debe ejecutarse: solo define qué ocurre si el habitante la realiza.

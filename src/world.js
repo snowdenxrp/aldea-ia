@@ -16,6 +16,11 @@ export const world = {
     maxZ: 34
   },
 
+  structures: {
+    shelters: [],
+    farms: []
+  },
+
   resources: {
     water: {
       type: "renewable",
