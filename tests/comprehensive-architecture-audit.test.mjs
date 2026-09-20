@@ -80,8 +80,12 @@ function auditState(simulation) {
     }
   }
 
-  const institution = world.institutions;
-  if (!institution || !Array.isArray(institution.history)) problems.push("invalid_institution_state");
+  const institutions = world.institutions;
+  if (!Array.isArray(institutions)) problems.push("invalid_institution_state");
+  for (const institution of institutions ?? []) {
+    if (!institution?.id || !institution?.type || !Array.isArray(institution?.members) || !institution?.norms) problems.push("invalid_institution_state");
+    if (institution?.history !== undefined && !Array.isArray(institution.history)) problems.push("invalid_institution_history:" + institution.id);
+  }
   const research = world.research;
   if (!research || !Array.isArray(research.topics) || !Array.isArray(research.experiments) || !Array.isArray(research.evidence)) problems.push("invalid_research_state");
   for (const topic of research?.topics ?? []) {
@@ -93,7 +97,7 @@ function auditState(simulation) {
   }
 
   const governance = world.governance;
-  if (!governance || !Array.isArray(governance.proposals) || !Array.isArray(governance.history)) problems.push("invalid_governance_state");
+  if (!governance || !Array.isArray(governance.proposals) || !Array.isArray(governance.decisions)) problems.push("invalid_governance_state");
 
   return problems;
 }
