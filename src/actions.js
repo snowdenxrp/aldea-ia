@@ -2,6 +2,7 @@ import { getRandom } from "./random.js";
 import { buildShelter } from "./development.js";
 import { craftTool, farm, harvest, getBestTool, useTool } from "./production.js";
 import { trade } from "./economy.js";
+import { applyInstitutionAction } from "./institutions.js";
 
 // Acciones físicas y sus consecuencias en el mundo.
 // Una acción no decide si debe ejecutarse: solo define qué ocurre si el habitante la realiza.
@@ -20,7 +21,7 @@ export function executeAction(simulation, agent, action) {
     case "farm": return farm(simulation, agent);
     case "harvest": return harvest(simulation, agent);
     case "eat_farm_food": return eatFarmFood(agent, action.amount ?? 1);
-    case "trade": {
+    case "contribute_commons":\n    case "withdraw_commons": return applyInstitutionAction(simulation, agent, action);\n    case "trade": {
       const partner = simulation.agents.find(candidate => candidate.id === action.partnerId && candidate.alive);
       return trade(simulation, agent, partner, action.offerType, action.amount ?? 1, action.unitPrice);
     }
