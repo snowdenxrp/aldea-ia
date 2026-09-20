@@ -77,7 +77,24 @@ function calculateScore(context, option) {
       energyPressure(context.needs.energy),
       needPressure(context.needs.social)
     );
-    score -= pressure > 55 ? 0.35 : 2.5;
+    const repeatPenalty = pressure > 55 ? 0.35 : 2.5;
+    score -= repeatPenalty;
+  }
+
+  // Evita bucles de una misma intención cuando existen alternativas.
+  // La presión de supervivencia puede superar esta penalización de forma natural.
+  const recentSameActionCount = (context.memories ?? [])
+    .slice(-8)
+    .filter(memory => memory.topic === "action:" + option.name).length;
+  if (recentSameActionCount > 1) {
+    const pressure = Math.max(
+      needPressure(context.needs.hunger),
+      needPressure(context.needs.thirst),
+      energyPressure(context.needs.energy),
+      needPressure(context.needs.social)
+    );
+    const repetitionPenalty = Math.min(4, (recentSameActionCount - 1) * 1.25);
+    score -= pressure > 55 ? repetitionPenalty * 0.25 : repetitionPenalty;
   }
 
   if (context.recentAction === option.name && context.recentActionResult?.success === false) {
