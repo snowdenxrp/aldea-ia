@@ -72,7 +72,7 @@ export const world = {
       position: { x: -2, z: -8 },
       radius: 10,
       perceptionRadius: 14,
-      regenerationPerDay: 15,
+      regenerationPerDay: 60,
       possibleUses: ["food", "medicine", "fiber"],
       // Propiedades reales del recurso; los habitantes no las conocen de antemano.
       foodProperties: {
@@ -90,7 +90,7 @@ export const world = {
       position: { x: -18, z: 8 },
       radius: 7,
       perceptionRadius: 11,
-      regenerationPerDay: 12,
+      regenerationPerDay: 20,
       possibleUses: ["food"]
     },
 
