@@ -3,6 +3,7 @@
 // cómo se valoran las oportunidades. No existe una historia prefijada.
 
 import { specializationBonus } from "./specialization.js";
+import { territorialActionBonus } from "./territorial.js";
 
 export function createDecisionContext(agent, perception) {
   return {
@@ -59,6 +60,7 @@ export function chooseOption(context, options, randomness = 0.12, random = Math.
 function calculateScore(context, option) {
   let score = option.baseValue ?? 0;
   score += specializationBonus(context, option.name);
+  score += territorialActionBonus(context, option.name);
 
   const survival = survivalUrgency(context.needs);
   if (survival > 70 && (option.effects?.hunger || option.effects?.thirst)) {
