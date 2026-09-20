@@ -98,6 +98,27 @@ assert.equal(core.needs.thirst, 17);
 
 
 
+// Regresión: una necesidad crítica no debe reconstruir la misma intención en cada tick.
+// La intención debe permanecer estable mientras el habitante todavía se desplaza hacia su objetivo.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  const water = sim.world.resources.water;
+  alex.position = { x: 0, z: 0 };
+  alex.needs = { hunger: 100, thirst: 20, energy: 80, social: 80, safety: 100, health: 100 };
+  alex.currentIntent = { name: "drink", amount: 5, baseValue: 999, effects: { thirst: 1.8 }, target: { ...water.position } };
+  alex.currentActivity = "moving";
+  alex.movement = { target: { ...water.position }, moving: true, speed: 1.8, distanceTravelled: 0 };
+  alex.decisionSnapshot = { chosen: { name: "drink", score: 999 }, considered: [{ name: "drink", score: 999 }] };
+  const targetBefore = { ...alex.currentIntent.target };
+  const snapshotBefore = JSON.stringify(alex.decisionSnapshot);
+  tick(sim, 0.01);
+  tick(sim, 0.01);
+  assert.equal(alex.currentIntent?.name, "drink", "La intención crítica debe mantenerse estable mientras se desplaza.");
+  assert.deepEqual(alex.currentIntent?.target, targetBefore, "El objetivo de la intención no debe reconstruirse en cada tick.");
+  assert.equal(JSON.stringify(alex.decisionSnapshot), snapshotBefore, "La decisión registrada no debe cambiar mientras la intención sigue activa.");
+}
+
 // Regresión: beber desde sed 0 debe recuperar la necesidad y terminar en estado idle.
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
