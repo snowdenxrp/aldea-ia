@@ -54,7 +54,7 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
   const alex = sim.agents.find(agent => agent.id === "alex");
-  alex.position = { x: -8, z: -8 };
+  alex.position = { x: 20, z: 8 };
   alex.needs = { hunger: 80, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
   tick(sim, 0.01);
   const chosen = alex.currentIntent?.name;
@@ -82,13 +82,7 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
   const alex = sim.agents.find(agent => agent.id === "alex");
   alex.position = { x: 20, z: 8 };
   alex.needs = { hunger: 70, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
-  alex.knowledge = [{
-    topic: "action:gather_wood",
-    belief: "Puedo recolectar madera aquí.",
-    confidence: 0.9,
-    evidence: [],
-    updatedOnDay: 1
-  }];
+  alex.currentIntent = { name: "gather_wood", amount: 1, baseValue: 0, target: { ...sim.world.resources.wood.position } };
   sim.world.resources.wood.amount = 0;
   tick(sim, 0.01);
   assert.equal(alex.lastActionResult?.success, false, "La acción preparada debe fallar por falta del recurso.");
