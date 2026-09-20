@@ -130,5 +130,6 @@ export function advanceWorldDay(targetWorld = world) {
   fish.amount = Math.min(60, fish.amount + fish.regenerationPerDay);
 
   const clay = targetWorld.resources.clay;
+  if (targetWorld.structures?.farms?.length) { for (const farm of targetWorld.structures.farms) farm.food = Math.min(100, (farm.food ?? 0) + 1.5 * targetWorld.resources.fertile_land.quality); }
   clay.amount = Math.min(90, clay.amount + clay.regenerationPerDay);
 }
