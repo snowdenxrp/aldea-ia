@@ -105,7 +105,7 @@ export function getBiomeForRegion(region, world) {
   const definition = BIOME_DEFINITIONS[type];
   const biome = { key, type, ...definition };
   world.spatial.biomes[key] = biome;
-  world.spatial.regions[key] ??= { key, visits: 0, discovered: false, biome: type };
+  world.spatial.regions[key] ??= { key, x: region.x, z: region.z, visits: 0, discovered: false, biome: type };
   return biome;
 }
 
@@ -113,7 +113,9 @@ export function discoverRegion(world, position) {
   normalizeSpatialWorld(world);
   const region = getRegionForPosition(position, world);
   const biome = getBiomeForRegion(region, world);
-  const state = world.spatial.regions[region.key] ??= { key: region.key, visits: 0, discovered: false, biome: biome.type };
+  const state = world.spatial.regions[region.key] ??= { key: region.key, x: region.x, z: region.z, visits: 0, discovered: false, biome: biome.type };
+  state.x ??= region.x;
+  state.z ??= region.z;
   state.discovered = true;
   state.lastDiscoveryDay = world.day ?? 0;
   return { ...region, biome };
@@ -164,10 +166,10 @@ export function updateSettlementState(world, agents = []) {
   }
   for (const [key, live] of byRegion) {
     const region = world.spatial.regions[key] ??= { key, visits: 0, discovered: true };
-    const biome = getBiomeForRegion(getRegionForPosition({
-      x: region.x ?? 0,
-      z: region.z ?? 0
-    }, world), world);
+    const regionPosition = region.x != null && region.z != null
+      ? { x: world.bounds.minX + Number(region.x) * world.spatial.regionSize + world.spatial.regionSize / 2, z: world.bounds.minZ + Number(region.z) * world.spatial.regionSize + world.spatial.regionSize / 2 }
+      : null;
+    const biome = getBiomeForRegion(regionPosition ? getRegionForPosition(regionPosition, world) : getRegionForPosition({x:0,z:0}, world), world);
     region.biome ??= biome.type;
     region.population = live.population;
     region.structures = live.structures;
