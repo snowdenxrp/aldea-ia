@@ -70,3 +70,24 @@ function recordRole(simulation, agent, role, reason) {
   simulation.world.specialization.history.push(event);
   simulation.events.push({ id: `event-${simulation.events.length + 1}`, day: simulation.day, hour: 0, type: "role_emerged", description: agent.name + " desarrolló el rol de " + ROLE_DEFS[role].label + ".", participants: [agent.id] });
 }
+
+
+export function inheritSpecialization(mother, father) {
+  const parents = [mother, father].filter(Boolean).map(a => a.specialization).filter(Boolean);
+  if (!parents.length) return { role: null, confidence: 0, history: [], mentorship: { taught: 0, learned: 0 } };
+  const counts = new Map();
+  for (const spec of parents) if (spec.role) counts.set(spec.role, (counts.get(spec.role) || 0) + Math.max(0.1, Number(spec.confidence) || 0));
+  const best = [...counts.entries()].sort((a,b) => b[1] - a[1])[0];
+  if (!best) return { role: null, confidence: 0, history: [], mentorship: { taught: 0, learned: 0 } };
+  return { role: best[0], confidence: Math.min(0.35, best[1] * 0.25), history: [{ source: "family", role: best[0] }], mentorship: { taught: 0, learned: 0 } };
+}
+
+export function professionalLineageSummary(world) {
+  normalizeSpecializationWorld(world);
+  const lineage = {};
+  for (const event of world.specialization.history) {
+    if (!event.role) continue;
+    lineage[event.role] = (lineage[event.role] || 0) + 1;
+  }
+  return lineage;
+}
