@@ -8,6 +8,7 @@ import { normalizeTechnologyWorld, advanceTechnologyDay } from "./technology.js"
 import { normalizeInstitutionWorld, advanceInstitutionDay } from "./institutions.js";
 import { normalizeGovernanceWorld, advanceGovernanceDay } from "./governance.js";
 import { normalizeSpecializationWorld, normalizeSpecializationAgent, advanceSpecializationDay } from "./specialization.js";
+import { normalizeEconomyWorld, advanceEconomyDay } from "./economy.js";
 
 const DAY = 1 / 365;
 const MAX_AGE = 95;
@@ -19,6 +20,7 @@ export function normalizeSocietyWorld(world) {
   world.life ??= { births: 0, deaths: 0, generations: 0 };
   world.life.births ??= 0; world.life.deaths ??= 0; world.life.generations ??= 0;
   normalizeSpecializationWorld(world);
+  normalizeEconomyWorld(world);
 }
 export function normalizeAgentLife(agent) {
   agent.age = Number.isFinite(Number(agent.age)) ? Number(agent.age) : 15;
@@ -38,6 +40,7 @@ export function advanceSocietyDay(simulation) {
   advanceInstitutionDay(simulation);
   advanceGovernanceDay(simulation);
   advanceSpecializationDay(simulation);
+  advanceEconomyDay(simulation);
   advanceTechnologyDay(simulation);
 }
 function advanceAges(simulation) {

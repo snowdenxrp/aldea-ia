@@ -14,7 +14,7 @@ import { stopMovement } from "./movement.js";
 import { getRandom } from "./random.js";
 import { getInventoryAmount, canBuildShelter, normalizeDevelopmentWorld } from "./development.js";
 import { canCraftTool, canFarm } from "./production.js";
-import { inventoryAmount, DEFAULT_PRICES } from "./economy.js";
+import { inventoryAmount, DEFAULT_PRICES, getDynamicPrice } from "./economy.js";
 import { normalizeSocietyWorld, normalizeAgentLife, advanceSocietyDay } from "./society.js";
 import { discoverArea, rememberAreaVisit } from "./exploration.js";
 import { maintainPlan, notePlanResult, autonomySummary } from "./planning.js";
@@ -67,7 +67,7 @@ function generateTradeOptions(agent, perception, world, agents = []) {
     for (const type of ["farm_food", "fish", "wood", "stone", "tool"]) {
       const partnerAmount = inventoryAmount(partner, type);
       const myAmount = inventoryAmount(agent, type);
-      const unitPrice = Number(priceMemory[type] ?? DEFAULT_PRICES[type] ?? 1);
+      const unitPrice = getDynamicPrice(world, type);
       if (partnerAmount > 0 && Number(agent.money ?? 0) >= unitPrice) {
         const survivalNeed = type === "farm_food" || type === "fish" ? Math.max(0, 55 - agent.needs.hunger) : 0;
         options.push({
