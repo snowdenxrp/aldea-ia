@@ -21,7 +21,9 @@ export function executeAction(simulation, agent, action) {
     case "farm": return farm(simulation, agent);
     case "harvest": return harvest(simulation, agent);
     case "eat_farm_food": return eatFarmFood(agent, action.amount ?? 1);
-    case "contribute_commons":\n    case "withdraw_commons": return applyInstitutionAction(simulation, agent, action);\n    case "trade": {
+    case "contribute_commons":
+    case "withdraw_commons": return applyInstitutionAction(simulation, agent, action);
+    case "trade": {
       const partner = simulation.agents.find(candidate => candidate.id === action.partnerId && candidate.alive);
       return trade(simulation, agent, partner, action.offerType, action.amount ?? 1, action.unitPrice);
     }
