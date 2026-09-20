@@ -175,3 +175,28 @@ assert.equal(core.needs.thirst, 17);
   assert.equal(alex.currentActivity, "dead");
   assert.equal(alex.needs.health, healthAtDeath, "La salud de un muerto no debe cambiar por ticks posteriores.");
 }
+
+
+// Regresión: tras completar una acción no crítica, la decisión debe mantenerse estable
+// durante una breve ventana de compromiso en lugar de cambiar en cada tick del navegador.
+{
+  const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
+  const alex = sim.agents.find(agent => agent.id === "alex");
+  alex.position = { x: 20, z: 8 };
+  alex.needs = { hunger: 70, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
+  alex.knowledge = [{
+    topic: "action:gather_wood",
+    belief: "Puedo recolectar madera aquí.",
+    confidence: 0.9,
+    evidence: [],
+    updatedOnDay: 1
+  }];
+  tick(sim, 0.01);
+  const chosen = alex.decisionSnapshot?.chosen?.name;
+  assert(chosen, "Debe registrarse una decisión.");
+  const snapshot = JSON.stringify(alex.decisionSnapshot);
+  assert.equal(alex.currentIntent, null, "La acción inmediata debe haber terminado antes de iniciar el compromiso.");
+  assert(alex.decisionCooldownHours > 0, "Una acción completada debe iniciar una ventana de compromiso.");
+  tick(sim, 0.01);
+  assert.equal(JSON.stringify(alex.decisionSnapshot), snapshot, "La decisión no debe cambiar durante la ventana de compromiso.");
+}
