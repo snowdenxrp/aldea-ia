@@ -176,7 +176,6 @@ function gatherStone(simulation, agent, amount) {
   return { success: true, effect: "stone_gathered", amount: gathered, skillLevel: skill };
 }
 
-function getSkillLevel(agent, actionName) {
-  const skill = agent.skills.find(item => item.name === actionName);
-  return Math.max(0, Math.min(1, skill?.level ?? 0));
-}
+function eatFarmFood(agent, amount) { const stack=agent.inventory.find(item=>item.type==="farm_food"&&item.amount>0); if(!stack)return{success:false,reason:"no_farm_food"}; const eaten=Math.min(amount,stack.amount); stack.amount-=eaten; agent.needs.hunger=Math.min(100,agent.needs.hunger+eaten*10); if(stack.amount<=0)agent.inventory=agent.inventory.filter(item=>item!==stack); agent.currentActivity="eating"; return{success:true,effect:"farm_food_eaten",amount:eaten,hungerGain:eaten*10}; }
+
+function getSkillLevel(agent, actionName) { const skill=agent.skills.find(item=>item.name===actionName); const tools=agent.skills.find(item=>item.name==="toolmaking"); const base=skill?.level??0; const toolBonus=(actionName==="gather_wood"||actionName==="gather_stone")?(tools?.level??0)*0.25:0; return Math.max(0,Math.min(1,base+toolBonus)); }
