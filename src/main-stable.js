@@ -41,7 +41,7 @@ function openAgent(id){const a=agents.find(x=>x.id===id);if(a){selectedAgentId=i
 document.querySelector("#closeAgentPanel")?.addEventListener("click",()=>{const p=document.querySelector("#agentPanel");p.classList.remove("open");p.setAttribute("aria-hidden","true");});
 document.querySelector("#agentDebug")?.addEventListener("click",centerOnAgents);
 document.querySelectorAll("[data-agent]")?.forEach(button=>button.addEventListener("click",e=>{e.stopPropagation();openAgent(button.dataset.agent);}));
-// Cámara estable: un dedo arrastra, dos dedos hacen pinch-zoom/rotación y la rueda hace zoom.
+// Cámara estable: un dedo desplaza, dos dedos hacen zoom/rotación y la rueda hace zoom.
 let dragging=false,lastX=0,lastY=0,pinchStart=0,gestureStart=null,gestureMoved=false,lastAngle=0;
 const pointers=new Map();
 const clampCamera=()=>{cameraTarget.x=Math.max(world.bounds.minX,Math.min(world.bounds.maxX,cameraTarget.x));cameraTarget.z=Math.max(world.bounds.minZ,Math.min(world.bounds.maxZ,cameraTarget.z));};
