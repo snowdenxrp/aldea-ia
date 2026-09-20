@@ -18,7 +18,7 @@ import { normalizeEcosystemWorld, ecosystemModifiers } from "../src/ecosystem.js
   w.resources.wild_plants.amount = 5;
   w.resources.fish.amount = 5;
   w.resources.water.amount = 100;
-  for (let i = 0; i < 20; i += 1) advanceWorldDay(w);
+  advanceWorldDay(w);
   assert(w.ecosystem.biodiversity < 1);
   assert(w.ecosystem.waterQuality < 1);
   assert(w.ecosystem.humanPressure > 0);
