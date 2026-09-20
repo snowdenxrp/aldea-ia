@@ -23,8 +23,8 @@ import { normalizeEcosystemWorld, ecosystemModifiers } from "../src/ecosystem.js
   assert(w.ecosystem.waterQuality < 1);
   assert(w.ecosystem.humanPressure > 0);
   const modifiers = ecosystemModifiers(w);
-  assert(modifiers.plantRegeneration < 1);
-  assert(modifiers.fishRegeneration < 1);
+  assert(modifiers.biodiversity < 1);
+  assert(modifiers.waterQuality < 1);
 }
 
 {
