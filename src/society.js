@@ -28,7 +28,8 @@ export function advanceSocietyDay(simulation) {
   for (const agent of simulation.agents) normalizeAgentLife(agent);
   advanceAges(simulation); processPregnancies(simulation); considerConception(simulation);
   updateCulture(simulation); propagateSocialLearning(simulation); advanceTechnology(simulation);
-  propagateCulture(simulation);\n  advanceInstitutionDay(simulation);
+  propagateCulture(simulation);
+  advanceInstitutionDay(simulation);
 }
 function advanceAges(simulation) {
   for (const agent of simulation.agents) {
