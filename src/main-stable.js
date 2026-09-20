@@ -7,9 +7,23 @@ import { setMovementTarget, moveAgent } from "./movement.js";
 const app=document.querySelector("#app"), worldTime=document.querySelector("#worldTime");
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df);
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,500);
-const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.domElement.style.touchAction="none"; renderer.domElement.style.userSelect="none"; app.appendChild(renderer.domElement);
-const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,10); scene.add(light,new THREE.HemisphereLight(0xbfe7ff,0x6f8f58,1.2));
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90),new THREE.MeshStandardMaterial({color:0x6f9b58})); ground.rotation.x=-Math.PI/2; scene.add(ground);
+const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.domElement.style.touchAction="none"; renderer.domElement.style.userSelect="none"; app.appendChild(renderer.domElement);
+const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,10); light.castShadow=true; light.shadow.mapSize.set(2048,2048); scene.add(light,new THREE.HemisphereLight(0xbfe7ff,0x6f8f58,1.2));
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90,12,12),new THREE.MeshStandardMaterial({color:0x6f9b58,roughness:1})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+const environmentMeshes=[];
+function addTree(x,z,scale=1){
+  const g=new THREE.Group(); const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,1.3,7),material(0x68452f)); trunk.position.y=.65; const crown=new THREE.Mesh(new THREE.SphereGeometry(.85,10,8),material(0x3f7138)); crown.position.y=1.55; crown.scale.set(1,.9,1); g.add(trunk,crown); g.scale.setScalar(scale); g.position.set(x,0,z); g.traverse(o=>{if(o.isMesh)o.castShadow=true;}); scene.add(g); environmentMeshes.push(g);
+}
+function addRock(x,z,scale=1){
+  const m=new THREE.Mesh(new THREE.DodecahedronGeometry(.55,1),material(0x77736b,.95)); m.scale.set(scale,scale*.72,scale*1.15); m.position.set(x,.4*scale,z); m.castShadow=true; scene.add(m); environmentMeshes.push(m);
+}
+function addPlant(x,z,scale=1){
+  const g=new THREE.Group(); for(let i=0;i<5;i++){const p=new THREE.Mesh(new THREE.ConeGeometry(.08,.55,5),material(0x5f8d3c)); p.position.set(Math.cos(i*1.256)*.13,.27,Math.sin(i*1.256)*.13); p.rotation.z=(i%2?.2:-.2); g.add(p);} g.scale.setScalar(scale); g.position.set(x,0,z); scene.add(g); environmentMeshes.push(g);
+}
+for(let i=0;i<24;i++){const a=i*2.399; addTree(20+Math.cos(a)*12,8+Math.sin(a)*12,.75+(i%4)*.08);}
+for(let i=0;i<12;i++){const a=i*2.618; addRock(24+Math.cos(a)*8,15+Math.sin(a)*8,.7+(i%3)*.12);}
+for(let i=0;i<18;i++){const a=i*2.399; addPlant(-2+Math.cos(a)*7,-8+Math.sin(a)*7,.75+(i%3)*.12);}
+
 const river=new THREE.Mesh(new THREE.PlaneGeometry(10,90),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
 const structureMeshes=new Map();
 function material(color,roughness=.8){return new THREE.MeshStandardMaterial({color,roughness});}
@@ -78,10 +92,19 @@ function createMesh(a){
   const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.58,6,9),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
   const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),shoeMat), footR=footL.clone(); footL.scale.set(1,.55,1.45); footR.scale.set(1,.55,1.45); footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
   const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false})); marker.position.y=2.47;
-  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker);
+  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};
   g.traverse(o=>{if(o.isMesh){o.frustumCulled=false;o.renderOrder=1000;}}); return (scene.add(g),g);
 }
-function syncMeshes(){normalize();syncStructures();for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,0,a.position.z);}}
+function animateHumanoid(m,a,t){
+  const parts=m.userData.parts; if(!parts)return;
+  const moving=a.currentActivity==="moving"||a.currentActivity==="gathering"||a.currentActivity==="fishing"||a.currentActivity==="cooperating";
+  const phase=t*7+(a.id==="alex"?0:1.7);
+  const swing=moving?Math.sin(phase)*.45:Math.sin(t*2)*.035;
+  parts.armL.rotation.x=swing; parts.armR.rotation.x=-swing;
+  parts.legL.rotation.x=-swing*.75; parts.legR.rotation.x=swing*.75;
+  m.position.y=moving?Math.abs(Math.sin(phase*2))*.025:0;
+}
+function syncMeshes(){normalize();syncStructures();const t=performance.now()/1000;for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,m.position.y??0,a.position.z);animateHumanoid(m,a,t);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
 function centerOnAgent(a){if(a)cameraTarget.set(+a.position.x||0,0,+a.position.z||0);}
 function updateCamera(){const h=cameraDistance*Math.cos(cameraPitch);camera.position.set(cameraTarget.x+Math.sin(cameraYaw)*h,cameraTarget.y+cameraDistance*Math.sin(cameraPitch),cameraTarget.z+Math.cos(cameraYaw)*h);camera.lookAt(cameraTarget);}
