@@ -36,8 +36,6 @@ assert.equal(second.success, true);
 assert.equal(second.completed, false);
 const third = contributeToProject(sim, alex, project);
 assert.equal(third.success, true);
-const fourth = contributeToProject(sim, bruno, project);
-assert.equal(fourth.success, true);
 assert.equal(project.status, "completed");
 assert.equal(project.progress.wood, 12);
 assert.equal(project.progress.stone, 6);
