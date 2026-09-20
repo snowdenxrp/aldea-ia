@@ -54,7 +54,7 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
 {
   const sim = createSimulation(structuredClone(world), structuredClone(createInitialAgents()));
   const alex = sim.agents.find(agent => agent.id === "alex");
-  alex.position = { x: 20, z: 8 };
+  alex.position = { x: 10, z: 8 };
   alex.needs = { hunger: 80, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
   alex.currentIntent = { name: "gather_wood", amount: 1, baseValue: 0, target: { ...sim.world.resources.wood.position } };
   tick(sim, 0.01);
