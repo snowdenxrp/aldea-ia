@@ -6,6 +6,8 @@ export const world = {
   day: 1,
   timeOfDay: 8,
   speed: 1,
+  climate: { season: "spring", weather: "clear", temperature: 22, dayLength: 12 },
+  exploration: { discoveredAreas: [], nextAreaId: 1 },
 
   // Territorio jugable de Lúmina. La exploración no puede sacar a los habitantes
   // de la zona física representada por el terreno.
@@ -114,6 +116,15 @@ export const world = {
 };
 
 export function advanceWorldDay(targetWorld = world) {
+  targetWorld.climate ??= { season: "spring", weather: "clear", temperature: 22, dayLength: 12 };
+  targetWorld.exploration ??= { discoveredAreas: [], nextAreaId: 1 };
+  const cycle = ["spring", "summer", "autumn", "winter"];
+  const seasonIndex = Math.floor(((Number(targetWorld.day) - 1) % 120) / 30);
+  targetWorld.climate.season = cycle[seasonIndex];
+  const weatherRoll = ((Number(targetWorld.day || 1) * 9301 + 49297) % 233280) / 233280;
+  targetWorld.climate.weather = weatherRoll < 0.08 ? "storm" : weatherRoll < 0.2 ? "rain" : weatherRoll < 0.25 ? "drought" : "clear";
+  const seasonal = { spring: 1.05, summer: 1.15, autumn: 0.9, winter: 0.65 }[targetWorld.climate.season] ?? 1;
+  targetWorld.climate.temperature = { spring: 20, summer: 28, autumn: 18, winter: 10 }[targetWorld.climate.season];
   const water = targetWorld.resources.water;
   water.amount = Math.min(1000, water.amount + (water.regenerationPerDay ?? 1000));
 
@@ -124,12 +135,14 @@ export function advanceWorldDay(targetWorld = world) {
   land.quality = Math.min(1, land.quality + land.regenerationPerDay / 100);
 
   const plants = targetWorld.resources.wild_plants;
-  plants.amount = Math.min(80, plants.amount + plants.regenerationPerDay);
+  plants.amount = Math.min(80, plants.amount + plants.regenerationPerDay * seasonal * (targetWorld.climate.weather === "drought" ? 0.35 : targetWorld.climate.weather === "rain" ? 1.25 : 1));
 
   const fish = targetWorld.resources.fish;
-  fish.amount = Math.min(60, fish.amount + fish.regenerationPerDay);
+  fish.amount = Math.min(60, fish.amount + fish.regenerationPerDay * seasonal);
 
   const clay = targetWorld.resources.clay;
   if (targetWorld.structures?.farms?.length) { for (const farm of targetWorld.structures.farms) farm.food = Math.min(100, (farm.food ?? 0) + 1.5 * targetWorld.resources.fertile_land.quality); }
-  clay.amount = Math.min(90, clay.amount + clay.regenerationPerDay);
+  clay.amount = Math.min(90, clay.amount + clay.regenerationPerDay * (targetWorld.climate.weather === "rain" ? 1.3 : 1));
+  if (targetWorld.climate.weather === "storm") targetWorld.resources.wood.amount = Math.max(0, targetWorld.resources.wood.amount - 1);
+  if (targetWorld.climate.weather === "drought") targetWorld.resources.water.amount = Math.max(0, targetWorld.resources.water.amount - 40);
 }
