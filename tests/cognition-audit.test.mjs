@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createInitialAgents } from "../src/agents.js";
 import { executeAction } from "../src/actions.js";
-import { createSimulation } from "../src/simulation.js";
+import { createSimulation, tick } from "../src/simulation.js";
 import { world } from "../src/world.js";
 import { evaluateOptions } from "../src/decision.js";
 import { updateActionBelief } from "../src/discovery.js";
@@ -23,13 +23,12 @@ function agent() {
 
 {
   const a = agent();
-  a.knowledge = [{ topic: "action:catch_fish", belief: "puedo pescar", confidence: 0.2, evidence: [] }];
+  a.knowledge = [{ topic: "action:catch_fish", belief: "puedo pescar", confidence: 0.5, evidence: [] }];
+  const context = { agentId: a.id, needs: { ...a.needs }, perception: { visibleAgents: [], nearbyResources: [] }, knowledge: a.knowledge, relationships: [], memories: [], recentAction: null, recentActionResult: null };
+  const withoutMemory = evaluateOptions(context, [{ name: "catch_fish", baseValue: 0, effects: { hunger: 1 }, distance: 0 }])[0].score;
   remember(a, { id: "m1", day: 1, type: "experience", topic: "action:catch_fish", description: "capturé un pez", importance: 1 });
-  const context = { agentId: a.id, needs: { ...a.needs }, perception: { visibleAgents: [], nearbyResources: [] }, knowledge: a.knowledge, relationships: [], memories: a.memories, recentAction: null, recentActionResult: null };
-  const low = evaluateOptions(context, [{ name: "catch_fish", baseValue: 0, effects: { hunger: 1 }, distance: 0 }])[0].score;
-  a.knowledge[0].confidence = 0.8;
-  const high = evaluateOptions({ ...context, knowledge: a.knowledge }, [{ name: "catch_fish", baseValue: 0, effects: { hunger: 1 }, distance: 0 }])[0].score;
-  assert(high > low, "La confianza aprendida debe cambiar la valoración.");
+  const withMemory = evaluateOptions({ ...context, memories: a.memories }, [{ name: "catch_fish", baseValue: 0, effects: { hunger: 1 }, distance: 0 }])[0].score;
+  assert(withMemory > withoutMemory, "Un recuerdo de la acción debe cambiar su valoración.");
 }
 
 {
@@ -40,6 +39,20 @@ function agent() {
   a.skills.push({ name: "catch_fish", level: 1, learnedOnDay: 1 });
   const second = executeAction(sim, a, { name: "catch_fish", amount: 1 });
   assert.equal(second.success, true, "La habilidad adquirida debe aumentar causalmente la probabilidad de éxito.");
+}
+
+{
+  const source = agent();
+  const recipient = createInitialAgents()[1];
+  source.position = { x: 0, z: 0 };
+  recipient.position = { x: 0, z: 0 };
+  source.knowledge = [{ topic: "action:catch_fish", belief: "puedo pescar", confidence: 0.8, evidence: [] }];
+  const sim = createSimulation(structuredClone(world), [source, recipient], { random: () => 0 });
+  source.currentIntent = { name: "share_knowledge" };
+  tick(sim, 0.01);
+  const learned = recipient.knowledge.find(item => item.topic === "action:catch_fish");
+  assert(learned, "El conocimiento compartido debe llegar al receptor.");
+  assert(learned.confidence > 0.1, "La evidencia social debe modificar la confianza del receptor.");
 }
 
 {
