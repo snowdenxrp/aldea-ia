@@ -63,6 +63,10 @@ export function advanceResearchDay(simulation) {
 
     record.experimentCount += 1;
     record.lastExperimentDay = simulation.day;
+    if (evidence.record.supported) record.supportedCount += 1;
+    else record.contradictedCount += 1;
+    const priorIndependent = research.experiments.some(item => item.topicId === topic.id && item.agentId !== agent.id);
+    if (priorIndependent) record.independentReplications += 1;
     if (!record.contributors.includes(agent.id)) record.contributors.push(agent.id);
     record.contributors = record.contributors.slice(-24);
 
@@ -146,7 +150,7 @@ export function runResearchExperiment(simulation, agent, topic) {
       intervention: intervention.label,
       result: round(after.value),
       supported,
-      reproducible: false
+      reproducible: research.experiments.some(item => item.topicId === topic.id && item.agentId !== agent.id && item.supported === supported)
     }
   };
 }
@@ -175,7 +179,10 @@ export function researchSummary(world) {
       id: topic.id,
       confidence: topic.confidence,
       contributors: topic.contributors.length,
-      experiments: topic.experimentCount
+      experiments: topic.experimentCount,
+      independentReplications: topic.independentReplications,
+      supported: topic.supportedCount,
+      contradicted: topic.contradictedCount
     }))
   };
 }
@@ -195,7 +202,10 @@ function getOrCreateTopic(research, definition, day) {
     contributors: [],
     createdDay: day,
     lastExperimentDay: null,
-    status: "open"
+    status: "open",
+    supportedCount: 0,
+    contradictedCount: 0,
+    independentReplications: 0
   };
   research.topics.push(topic);
   return topic;
@@ -204,8 +214,11 @@ function getOrCreateTopic(research, definition, day) {
 function updateResearchConfidence(topic) {
   const independent = Math.min(1, topic.contributors.length / 4);
   const repetition = Math.min(1, topic.experimentCount / 8);
-  topic.confidence = Math.max(0, Math.min(0.95, 0.1 + independent * 0.35 + repetition * 0.4));
-  if (topic.contributors.length >= 2 && topic.experimentCount >= 4) topic.status = "reproduced";
+  const supportRatio = topic.experimentCount > 0 ? topic.supportedCount / topic.experimentCount : 0.5;
+  const agreement = 1 - Math.abs(supportRatio - 0.5) * 2;
+  const replication = Math.min(1, topic.independentReplications / 3);
+  topic.confidence = Math.max(0, Math.min(0.95, 0.08 + independent * 0.28 + repetition * 0.28 + Math.max(supportRatio, 1 - supportRatio) * 0.24 + replication * 0.12 + agreement * 0.08));
+  if (topic.independentReplications >= 2 && topic.experimentCount >= 4) topic.status = "reproduced";
   else if (topic.experimentCount >= 2) topic.status = "tested";
 }
 
