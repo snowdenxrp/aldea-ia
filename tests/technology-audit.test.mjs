@@ -8,7 +8,8 @@ const clone = value => structuredClone(value);
 const agents = clone(createInitialAgents());
 agents.push({ ...clone(agents[0]), id: "carla", name: "Carla", relationships: [], inventory: [], skills: [] });
 for (const agent of agents) {
-  agent.skills = [{ name: "toolmaking", level: 0.5 }, { name: "build_shelter", level: 0.46 }, { name: "farm", level: 0.46 }];
+  const level = agent.id === "carla" ? 0.1 : 0.5;
+  agent.skills = [{ name: "toolmaking", level }, { name: "build_shelter", level: level < 0.2 ? 0.1 : 0.46 }, { name: "farm", level: level < 0.2 ? 0.1 : 0.46 }];
 }
 const sim = createSimulation(clone(world), agents, { random: () => 0 });
 sim.day = 10; sim.world.day = 10;
