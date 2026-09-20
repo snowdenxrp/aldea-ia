@@ -27,9 +27,13 @@ function agent() {
   a.knowledge = [{ topic: "action:catch_fish", belief: "puedo pescar", confidence: 0.5, evidence: [] }];
   const context = { agentId: a.id, needs: { ...a.needs }, perception: { visibleAgents: [], nearbyResources: [] }, knowledge: a.knowledge, relationships: [], memories: [], recentAction: null, recentActionResult: null };
   const withoutMemory = evaluateOptions(context, [{ name: "catch_fish", baseValue: 0, effects: { hunger: 1 }, distance: 0 }])[0].score;
-  remember(a, { id: "m1", day: 1, type: "experience", topic: "action:catch_fish", description: "capturé un pez", importance: 1 });
+  remember(a, { id: "m1", day: 1, type: "experience", topic: "action:catch_fish", description: "capturé un pez", importance: 1, emotionalWeight: 0.1 });
   const withMemory = evaluateOptions({ ...context, memories: a.memories }, [{ name: "catch_fish", baseValue: 0, effects: { hunger: 1 }, distance: 0 }])[0].score;
-  assert(withMemory > withoutMemory, "Un recuerdo de la acción debe cambiar su valoración.");
+  assert(withMemory > withoutMemory, "Un recuerdo positivo de la acción debe aumentar su valoración.");
+  const failed = structuredClone(context);
+  failed.memories = [{ id: "m2", day: 2, type: "experience", topic: "action:catch_fish", description: "el pez escapó", importance: 1, emotionalWeight: -0.2 }];
+  const withFailureMemory = evaluateOptions(failed, [{ name: "catch_fish", baseValue: 0, effects: { hunger: 1 }, distance: 0 }])[0].score;
+  assert(withFailureMemory < withoutMemory, "Un recuerdo negativo de la acción debe reducir su valoración.");
 }
 
 {
