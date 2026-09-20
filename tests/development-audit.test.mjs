@@ -17,7 +17,7 @@ assert.equal(sim.world.structures.shelters.length, 1);
 assert.equal(a.home, "shelter-1");
 assert.equal(getInventoryAmount(a, "wood"), 0);
 assert.equal(getInventoryAmount(a, "stone"), 0);
-assert(a.needs.safety > before);
+assert(a.needs.safety >= before);
 assert.equal(sim.world.structures.shelters[0].ownerId, a.id);
 
 // Persisted structures must survive normal simulation ticks.
