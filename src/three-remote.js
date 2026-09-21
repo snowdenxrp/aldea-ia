@@ -11,11 +11,11 @@ function withTimeout(promise, ms) {
   ]);
 }
 
-let lastError;
+let three = null;
+let lastError = null;
 for (const url of SOURCES) {
   try {
-    const mod = await withTimeout(import(url), 7000);
-    exported = mod;
+    three = await withTimeout(import(url), 7000);
     break;
   } catch (error) {
     lastError = error;
@@ -23,9 +23,8 @@ for (const url of SOURCES) {
   }
 }
 
-if (!exported) {
+if (!three) {
   throw new Error(`No se pudo cargar Three.js desde ningún CDN. Último error: ${lastError?.message ?? lastError}`);
 }
 
-export default exported;
-export * from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+export default three;
