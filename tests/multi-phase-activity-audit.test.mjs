@@ -1,0 +1,21 @@
+import assert from "node:assert/strict";
+import { createInitialAgents } from "../src/agents.js";
+import { createSimulation, tick } from "../src/simulation.js";
+import { world } from "../src/world.js";
+
+const sim=createSimulation(structuredClone(world),structuredClone(createInitialAgents()));
+const agent=sim.agents[0];
+const wood=sim.world.resources.wood;
+agent.position={...wood.position};
+agent.needs={hunger:90,thirst:90,energy:90,social:90,safety:90,health:100};
+agent.currentIntent={name:"gather_wood",baseValue:1,target:{...wood.position}};
+const phases=[];
+tick(sim,.01);
+phases.push(agent.activityPhase);
+tick(sim,.09);
+phases.push(agent.activityPhase);
+tick(sim,.1);
+phases.push(agent.activityPhase);
+assert.deepEqual(phases.slice(0,3),["approach","inspect","collect"],"la rutina debe recorrer fases ordenadas");
+assert.ok(agent.lastActionName==="gather_wood"||agent.activityPhase==="collect","la actividad debe llegar a su fase de trabajo");
+console.log(JSON.stringify({audit:"multi-phase-activity",phases,activity:agent.currentActivity,lastAction:agent.lastActionName,verdict:"PASS"},null,2));
