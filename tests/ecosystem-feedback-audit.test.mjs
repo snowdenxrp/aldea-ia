@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { advanceWorldDay, world } from "../src/world.js";
 import { normalizeEcosystemWorld, ecosystemModifiers } from "../src/ecosystem.js";
+import { getRegionalEcology, updateRegionalEcology } from "../src/spatial.js";
 
 {
   const w = structuredClone(world);
@@ -9,6 +10,8 @@ import { normalizeEcosystemWorld, ecosystemModifiers } from "../src/ecosystem.js
   assert.equal(w.ecosystem.soilQuality, 1);
   assert.equal(w.ecosystem.waterQuality, 1);
   const before = w.resources.wild_plants.amount;
+  updateRegionalEcology(w, w.resources, 2);
+  assert.equal(getRegionalEcology(w, w.resources.wild_plants.position).biodiversity, 1);
   advanceWorldDay(w);
   assert.equal(w.resources.wild_plants.amount, before);
 }
@@ -22,6 +25,8 @@ import { normalizeEcosystemWorld, ecosystemModifiers } from "../src/ecosystem.js
   assert(w.ecosystem.biodiversity < 1);
   assert(w.ecosystem.waterQuality < 1);
   assert(w.ecosystem.humanPressure > 0);
+  updateRegionalEcology(w, w.resources, 10);
+  assert.ok(getRegionalEcology(w, w.resources.wild_plants.position).humanPressure > 0);
   const modifiers = ecosystemModifiers(w);
   assert(modifiers.biodiversity < 1);
   assert(modifiers.waterQuality < 1);
@@ -35,4 +40,5 @@ import { normalizeEcosystemWorld, ecosystemModifiers } from "../src/ecosystem.js
   assert(modifiers.farmYield < 1);
 }
 
-console.log("Lúmina ecosystem audit: presión, resiliencia y regeneración adaptativa verificadas.");
+assert.ok(Object.keys(w.spatial?.ecology ?? {}).length > 0);
+console.log("Lúmina ecosystem audit: presión global y causalidad ecológica regional verificadas.");
