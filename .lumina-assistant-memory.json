@@ -2,15 +2,6 @@
   "version": 1,
   "runs": [
     {
-      "at": "2026-09-20T01:44:01.352Z",
-      "status": "ok",
-      "day": 103,
-      "hour": 2.623920000034453,
-      "agents": 2,
-      "findings": 0,
-      "testFailures": 0
-    },
-    {
       "at": "2026-09-20T01:54:51.245Z",
       "status": "ok",
       "day": 103,
@@ -897,6 +888,15 @@
       "status": "ok",
       "day": 254,
       "hour": 2.2237600000853917,
+      "agents": 2,
+      "findings": 0,
+      "testFailures": 0
+    },
+    {
+      "at": "2026-09-21T15:44:49.386Z",
+      "status": "ok",
+      "day": 255,
+      "hour": 1.0023466667523957,
       "agents": 2,
       "findings": 0,
       "testFailures": 0
