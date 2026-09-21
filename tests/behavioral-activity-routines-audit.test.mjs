@@ -16,7 +16,7 @@ const seen = new Set();
 alex.currentIntent = { name: "share_knowledge" };
 tick(sim, 0.1);
 seen.add(alex.currentActivity);
-assert.equal(alex.activitySequence?.phase, "teaching", "la rutina social debe avanzar a su fase de enseñanza");
+assert.equal(alex.activitySequence?.phase, "teach", "la rutina social debe avanzar a su fase de enseñanza");
 
 tick(sim, 0.35);
 seen.add(alex.currentActivity);
