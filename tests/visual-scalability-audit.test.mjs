@@ -4,7 +4,7 @@ const source=fs.readFileSync(new URL("../src/main-stable.js",import.meta.url),"u
 assert.ok(source.includes("syncSettlementVisualState"));
 assert.ok(source.includes("getRegionKeyForVisual"));
 assert.ok(source.includes("syncSettlementDecorations"));
-for(const token of ["settlementDecorationMeshes","createSettlementDecoration","storage","workbench","fence"]) assert.ok(source.includes(token),"faltó capa de asentamiento: "+token);
+for(const token of ["settlementDecorationMeshes","createSettlementDecoration","storage","workbench","fence","populationByRegion","settlementPopulation","settlementActivity"]) assert.ok(source.includes(token),"faltó capa visual: "+token);
 assert.ok(!source.includes("g.frustumCulled=false"));
 assert.ok(!source.includes("o.frustumCulled=false"));
-console.log(JSON.stringify({audit:"visual-scalability",culling:"default",settlementState:"connected",verdict:"PASS"},null,2));
+console.log(JSON.stringify({audit:"visual-scalability",culling:"default",settlementState:"connected",densityActivity:"connected",verdict:"PASS"},null,2));
