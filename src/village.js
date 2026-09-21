@@ -21,7 +21,7 @@ function house(scene,x,z,r=0,s=1){
  g.add(foundation,wall,roof,eave,door,step,knob);
  for(const sx of [-.92,.92]){const w=meshBox(.55,.52,.07,0x7fb7c7,.35);w.position.set(sx,1.35,1.38);const v=meshBox(.045,.52,.08,0x593a28);v.position.set(sx,1.35,1.43);const h=meshBox(.55,.045,.08,0x593a28);h.position.set(sx,1.35,1.43);g.add(w,v,h);}
  const chim=meshBox(.32,.72,.32,0x654235);chim.position.set(.82,3.15,-.35);g.add(chim);
- g.position.set(x,0,z);g.rotation.y=r;g.scale.setScalar(s);return add(g,scene);
+ g.position.set(x,0,z);g.rotation.y=r;g.scale.setScalar(s*1.45);return add(g,scene);
 }
 function lamp(scene,x,z){const g=new THREE.Group(),p=C(.055,.075,1.65,0x4b382c,8),a=meshBox(.48,.06,.06,0x4b382c),l=new THREE.Mesh(new THREE.SphereGeometry(.11,12,8),new THREE.MeshBasicMaterial({color:0xffd783}));p.position.y=.82;a.position.set(.2,1.56,0);l.position.set(.43,1.43,0);const glow=new THREE.PointLight(0xffd08a,.75,9,2);glow.position.set(.43,1.35,0);g.add(p,a,l,glow);g.position.set(x,0,z);scene.add(g);}
 function well(scene,x,z){const g=new THREE.Group();for(let i=0;i<12;i++){const a=i*Math.PI*2/12,s=C(.34,.34,.28,0x817a70,8);s.position.set(Math.cos(a)*.85,.14,Math.sin(a)*.85);g.add(s)}for(const px of [-.78,.78]){const p=meshBox(.12,1.75,.12,0x5a3c2a);p.position.set(px,.9,0);g.add(p)}const beam=meshBox(1.75,.13,.13,0x5a3c2a);beam.position.y=1.68;const roof=new THREE.Mesh(new THREE.ConeGeometry(1.18,.7,4),M(0x74452f));roof.rotation.y=Math.PI/4;roof.position.y=2.05;g.add(beam,roof);g.position.set(x,0,z);return add(g,scene);}
@@ -36,7 +36,7 @@ function bridge(scene,x,z){
  for(const sx of [-6.1,6.1])for(const sz of [-1.45,1.45]){const cap=C(.2,.2,.16,0x65452f,8);cap.position.set(sx,.72,sz);g.add(cap)}
  g.position.set(x,0,z);return add(g,scene);
 }
-function tree(scene,x,z,s=1){const g=new THREE.Group();const trunk=C(.16,.22,1.5,0x68452f,8);trunk.position.y=.75;const crown=new THREE.Mesh(new THREE.SphereGeometry(1.05,12,9),M(0x4f7f43,.92));crown.position.y=1.75;crown.scale.set(1.05,.92,1.05);g.add(trunk,crown);g.position.set(x,0,z);g.scale.setScalar(s);return add(g,scene);}
+function tree(scene,x,z,s=1){const g=new THREE.Group();const trunk=C(.24,.34,2.7,0x68452f,8);trunk.position.y=1.35;const crown=new THREE.Mesh(new THREE.SphereGeometry(1.7,14,10),M(0x4f7f43,.92));crown.position.y=3.25;crown.scale.set(1.08,.98,1.08);g.add(trunk,crown);g.position.set(x,0,z);g.scale.setScalar(s);return add(g,scene);}
 function barn(scene,x,z){const g=new THREE.Group();const w=meshBox(4,2.5,3.2,0xa96f45);w.position.y=1.25;const r=new THREE.Mesh(new THREE.ConeGeometry(2.8,1.6,4),M(0x623b2c));r.rotation.y=Math.PI/4;r.position.y=3.3;const d=meshBox(1.2,1.8,.12,0x4b3025);d.position.set(0,.9,1.62);g.add(w,r,d);g.position.set(x,0,z);return add(g,scene);}
 function tower(scene,x,z){const g=new THREE.Group(),b=C(.9,1.1,5,0x8d7966,10);b.position.y=2.5;const r=new THREE.Mesh(new THREE.ConeGeometry(1.25,1.1,8),M(0x56392d));r.position.y=5.55;g.add(b,r);g.position.set(x,0,z);return add(g,scene);}
 function bank(scene,x,z,w,d){const m=meshBox(w,.12,d,0x8e7657,1);m.position.set(x,.06,z);m.rotation.y=.02;scene.add(m);for(let i=0;i<Math.max(4,Math.floor(w*d/12));i++){const a=i*2.41;const t=C(.035,.05,.22,0x638d4c,6);t.position.set(x+Math.cos(a)*(w*.42),.18,z+Math.sin(a)*(d*.42));scene.add(t);}}
