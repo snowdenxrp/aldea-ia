@@ -5,7 +5,7 @@ import { moveAgent, setMovementTarget } from "../src/movement.js";
 import { world } from "../src/world.js";
 
 const sim=createSimulation(structuredClone(world),structuredClone(createInitialAgents()));
-for(let step=0;step<140;step++){
+for(let step=0;step<280;step++){
   tick(sim,.2);
   for(const agent of sim.agents){
     if(agent.currentIntent?.target)setMovementTarget(agent,agent.currentIntent.target,sim.world.bounds);
