@@ -133,6 +133,11 @@ function createMesh(a){
   if(role==="gatherer"){const basket=new THREE.Mesh(new THREE.TorusGeometry(.18,.055,6,12),material(0x9a6b35));basket.rotation.x=Math.PI/2;basket.position.set(-.43,.98,.08);accessoryGroup.add(basket);}
   accessoryGroup.position.z=.02;
   g.add(accessoryGroup); g.userData.accessoryRole=role??null;
+  const activityToolGroup=new THREE.Group();
+  const handle=box(.045,.55,.045,0x6b4b32),toolHead=box(.22,.08,.08,0x8b9298);
+  handle.position.y=.28; toolHead.position.set(0,.55,0); activityToolGroup.add(handle,toolHead);
+  activityToolGroup.position.set(.48,1.02,.18); activityToolGroup.visible=false;
+  g.add(activityToolGroup); g.userData.activityTools={group:activityToolGroup,handle,toolHead};
   g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};
   g.traverse(o=>{if(o.isMesh)o.renderOrder=1000;}); return (scene.add(g),g);
 }
