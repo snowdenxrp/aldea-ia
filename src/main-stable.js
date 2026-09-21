@@ -17,11 +17,17 @@ captureBar.style.cssText="position:fixed;right:12px;bottom:12px;z-index:50;displ
 const captureBtn=document.createElement("button");
 captureBtn.textContent="📸 Capturar aldea";
 captureBtn.style.cssText="padding:9px 12px;border:0;border-radius:10px;background:#1f2937;color:#fff;box-shadow:0 3px 12px #0005";
-captureBtn.onclick=()=>{
+captureBtn.onclick=async()=>{
   renderer.render(scene,camera);
+  const dataUrl=renderer.domElement.toDataURL("image/png");
+  const blob=await (await fetch(dataUrl)).blob();
+  const file=new File([blob],"lumina-screenshot.png",{type:"image/png"});
+  if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+    try{await navigator.share({title:"Lúmina · auditoría visual",text:"Captura de la aldea para auditoría visual.",files:[file]});return;}catch(e){}
+  }
   const a=document.createElement("a");
   a.download="lumina-screenshot.png";
-  a.href=renderer.domElement.toDataURL("image/png");
+  a.href=dataUrl;
   a.click();
 };
 captureBar.appendChild(captureBtn);
