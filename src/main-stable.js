@@ -48,7 +48,9 @@ function createHouse(s){
   const winR=winL.clone(); winR.position.x=1.12;
   const chimney=box(.38,.9,.38,0x6a4435); chimney.position.set(1.15,3.55,0);
   const step=box(1,.18,.5,0x8c735e); step.position.set(0,.09,1.98);
-  g.add(wall,roof,door,knob,winL,winR,chimney,step);
+  const beam=box(3.45,.12,.12,0x5b3b28); beam.position.set(0,2.05,1.73);
+  const cross=box(.06,.58,.09,0x5b3b28); cross.position.set(-1.12,1.45,1.78); const crossR=cross.clone(); crossR.position.x=1.12;
+  g.add(wall,roof,door,knob,winL,winR,chimney,step,beam,cross,crossR);
   g.position.set(s.position?.x??0,0,s.position?.z??0);
   return g;
 }
@@ -177,64 +179,62 @@ function createMesh(a){
   if(role==="builder"||role==="craftsperson"){const belt=new THREE.Mesh(new THREE.TorusGeometry(.29,.035,6,16),darkMat);belt.rotation.x=Math.PI/2;belt.position.y=.92;accessoryGroup.add(belt);}
   if(role==="trader"){const bag=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0x6a4d38));bag.scale.set(1,.8,.7);bag.position.set(.43,1.02,.08);accessoryGroup.add(bag);}
   if(role==="gatherer"){const basket=new THREE.Mesh(new THREE.TorusGeometry(.18,.055,6,12),material(0x9a6b35));basket.rotation.x=Math.PI/2;basket.position.set(-.43,.98,.08);accessoryGroup.add(basket);}
+  if(role==="teacher"){const book=box(.22,.28,.06,0x6f5138);book.position.set(.34,1.0,.28);accessoryGroup.add(book);}
+  if(role==="organizer"){const sash=box(.08,.72,.04,0xd8c08a);sash.position.set(.22,1.18,.32);sash.rotation.z=-.22;accessoryGroup.add(sash);}
   accessoryGroup.position.z=.02;
   g.add(accessoryGroup); g.userData.accessoryRole=role??null;
   const activityToolGroup=new THREE.Group();
-  const woodMat=material(0x6b4b32),metalMat=material(0x8b9298),greenMat=material(0x5f913d);
+  const woodMat=material(0x6b4b32),metalMat=material(0x8b9298),greenMat=material(0x5f913d),stoneMat=material(0x777777);
   const axeHandle=box(.045,.62,.045,woodMat),axeHead=box(.24,.12,.07,metalMat); axeHandle.position.y=.31; axeHead.position.set(.02,.62,0); axeHead.rotation.z=-.18;
   const hammerHandle=box(.045,.55,.045,woodMat),hammerHead=box(.3,.1,.1,metalMat); hammerHandle.position.y=.275; hammerHead.position.set(0,.55,0);
   const hoeHandle=box(.04,.62,.04,woodMat),hoeHead=box(.26,.06,.05,metalMat); hoeHandle.position.y=.31; hoeHead.position.set(0,.62,0); hoeHead.rotation.z=-.3;
   const rodHandle=box(.025,.72,.025,woodMat),rodTip=box(.025,.28,.025,woodMat); rodHandle.position.y=.36; rodHandle.rotation.z=-.42; rodTip.position.set(.14,.72,0); rodTip.rotation.z=.42;
   const crop=new THREE.Group(); const cropStem=box(.035,.32,.035,greenMat),cropLeaf=box(.16,.035,.035,greenMat); cropStem.position.y=.16; cropLeaf.position.set(.08,.27,0); crop.add(cropStem,cropLeaf);
-  const parts={axe:new THREE.Group(),hammer:new THREE.Group(),hoe:new THREE.Group(),rod:new THREE.Group(),crop};
+  const stoneTool=box(.18,.18,.18,stoneMat); stoneTool.position.set(0,.18,0); const basketLoad=new THREE.Group(); basketLoad.add(stoneTool);
+  const parts={axe:new THREE.Group(),hammer:new THREE.Group(),hoe:new THREE.Group(),rod:new THREE.Group(),crop,basketLoad};
   parts.axe.add(axeHandle,axeHead); parts.hammer.add(hammerHandle,hammerHead); parts.hoe.add(hoeHandle,hoeHead); parts.rod.add(rodHandle,rodTip);
   Object.values(parts).forEach(p=>{p.visible=false;activityToolGroup.add(p);});
   activityToolGroup.position.set(.48,1.02,.18); g.add(activityToolGroup);
   g.userData.activityTools={group:activityToolGroup,parts};
-  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};
+  const shadow=new THREE.Mesh(new THREE.CircleGeometry(.34,20),material(0x2b241f,.95)); shadow.scale.set(1,.55,1); shadow.rotation.x=-Math.PI/2; shadow.position.y=.012; g.add(shadow); g.userData.shadow=shadow;
+  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};addVisualDetail(g,a);
   g.traverse(o=>{if(o.isMesh)o.renderOrder=1000;}); return (scene.add(g),g);
 }
 function animateHumanoid(m,a,t){
   const parts=m.userData.parts; if(!parts)return;
   const activity=a.currentActivity??"idle";
-  const phase=t*7+(a.id==="alex"?0:1.7);
-  const walk=Math.sin(phase);
-  const moving=["moving","gathering","fishing","cooperating"].includes(activity);
-  let armL=0,armR=0,legL=0,legR=0,bounce=0;
-  if(activity==="moving"||activity==="cooperating"){
-    armL=walk*.45; armR=-walk*.45; legL=-walk*.75; legR=walk*.75; bounce=Math.abs(Math.sin(phase*2))*.025;
-  } else if(activity==="gathering"){
-    const work=Math.sin(t*10);
-    armL=-.35+work*.8; armR=.18-work*.35; legL=.08; legR=-.08; bounce=Math.abs(work)*.012;
-  } else if(activity==="fishing"){
-    const work=Math.sin(t*2.6);
-    armL=-.15+work*.22; armR=-.25+work*.18; legL=.04; legR=-.04;
-  } else if(activity==="eating"){
-    const work=(Math.sin(t*5)+1)*.5;
-    armL=-.65*work; armR=-.65*work; legL=.03; legR=-.03;
-  } else if(activity==="drinking"){
-    const work=(Math.sin(t*3)+1)*.5;
-    armL=-.9*work; armR=-.15; legL=.02; legR=-.02;
-  } else if(activity==="resting"){
-    armL=Math.sin(t*1.5)*.035; armR=-armL;
-  } else {
-    armL=Math.sin(t*2)*.035; armR=-armL;
-  }
-  parts.armL.rotation.x=armL; parts.armR.rotation.x=armR;
-  parts.legL.rotation.x=legL; parts.legR.rotation.x=legR;
-  m.position.y=bounce;
+  const phase=t*7+(a.id==="alex"?0:1.7),walk=Math.sin(phase);
+  const moving=Boolean(a.movement?.moving)||activity==="moving";
+  let armL=0,armR=0,legL=0,legR=0,bounce=0,lean=0;
+  if(moving){armL=walk*.55;armR=-walk*.55;legL=-walk*.85;legR=walk*.85;bounce=Math.abs(Math.sin(phase*2))*.035;lean=.025*Math.cos(phase);}
+  else if(activity==="gathering"){const w=Math.sin(t*9);armL=-.55+w*.9;armR=.2-w*.4;legL=.08;legR=-.08;bounce=Math.abs(w)*.018;}
+  else if(activity==="building"||activity==="crafting"){const w=Math.sin(t*8);armL=-.45+w*.95;armR=-.25-w*.65;legL=.05;legR=-.05;bounce=Math.abs(w)*.01;}
+  else if(activity==="farming"||activity==="planting"||activity==="harvesting"){const w=Math.sin(t*6);armL=-.35+w*.7;armR=.05-w*.55;legL=.1;legR=-.1;bounce=Math.abs(w)*.014;}
+  else if(activity==="fishing"){const w=Math.sin(t*2.8);armL=-.2+w*.25;armR=-.35+w*.2;legL=.035;legR=-.035;}
+  else if(activity==="eating"){const w=(Math.sin(t*5)+1)*.5;armL=-.8*w;armR=-.55*w;legL=.03;legR=-.03;}
+  else if(activity==="drinking"){const w=(Math.sin(t*3)+1)*.5;armL=-1.0*w;armR=-.15;legL=.02;legR=-.02;}
+  else if(activity==="cooperating"||activity==="socializing"){const w=Math.sin(t*2.2);armL=-.2+w*.18;armR=.2-w*.18;lean=w*.035;}
+  else if(activity==="resting"){armL=Math.sin(t*1.5)*.045;armR=-armL;lean=Math.sin(t*.8)*.015;}
+  else {armL=Math.sin(t*2)*.045;armR=-armL;}
+  parts.armL.rotation.x=armL;parts.armR.rotation.x=armR;parts.legL.rotation.x=legL;parts.legR.rotation.x=legR;
+  m.rotation.z=lean;m.position.y=bounce;
   const tool=m.userData.activityTools;
-  if(tool){
-    const p=tool.parts;
-    Object.values(p).forEach(v=>v.visible=false);
+  if(tool){const p=tool.parts;p.axe.visible=false;p.hammer.visible=false;p.hoe.visible=false;p.rod.visible=false;p.crop.visible=false;p.basketLoad.visible=false;
     if(activity==="gathering"){p.axe.visible=true;tool.group.position.set(.42,1.02,.18);p.axe.rotation.z=-.18+Math.sin(t*8)*.12;}
-    else if(activity==="building"||activity==="crafting"){p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*8)*.35;}
+    else if(activity==="building"||activity==="crafting"||activity==="cooperating"){p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*8)*.35;}
     else if(activity==="farming"||activity==="harvesting"){p.hoe.visible=true;tool.group.position.set(.4,1.02,.18);p.hoe.rotation.z=-.45+Math.sin(t*5)*.18;}
     else if(activity==="fishing"){p.rod.visible=true;tool.group.position.set(-.38,1.02,.28);p.rod.rotation.z=-.18+Math.sin(t*2.6)*.08;}
-    else if(activity==="cooperating"){p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*4)*.12;}
     else if(activity==="planting"){p.crop.visible=true;tool.group.position.set(.42,.72,.3);}
+    else if(activity==="gathering"&&a.lastActionName==="gather_stone"){p.basketLoad.visible=true;tool.group.position.set(-.42,.72,.18);}
   }
-  m.userData.animationActivity=activity;
+  m.userData.animationActivity=activity;m.userData.isLocomoting=moving;
+}
+function addVisualDetail(g,a){
+  const detail=material(a.id==="alex"?0x345b8c:0x8c4f34,.68);
+  const trim=material(0xc6a36a,.72);
+  const belt=box(.62,.09,.18,trim);belt.position.set(0,.72,.34);g.add(belt);
+  const chest=box(.34,.16,.05,detail);chest.position.set(0,1.18,.43);g.add(chest);
+  const badge=new THREE.Mesh(new THREE.CircleGeometry(.055,16),trim);badge.position.set(.13,1.19,.46);badge.rotation.x=-Math.PI/2;g.add(badge);
 }
 function syncMeshes(){normalize();syncStructures();const t=performance.now()/1000;for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,m.position.y??0,a.position.z);animateHumanoid(m,a,t);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
