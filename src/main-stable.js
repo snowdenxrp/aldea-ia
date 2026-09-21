@@ -197,44 +197,30 @@ function createMesh(a){
 function animateHumanoid(m,a,t){
   const parts=m.userData.parts; if(!parts)return;
   const activity=a.currentActivity??"idle";
-  const phase=t*7+(a.id==="alex"?0:1.7);
-  const walk=Math.sin(phase);
-  const moving=["moving","gathering","fishing","cooperating"].includes(activity);
-  let armL=0,armR=0,legL=0,legR=0,bounce=0;
-  if(activity==="moving"||activity==="cooperating"){
-    armL=walk*.45; armR=-walk*.45; legL=-walk*.75; legR=walk*.75; bounce=Math.abs(Math.sin(phase*2))*.025;
-  } else if(activity==="gathering"){
-    const work=Math.sin(t*10);
-    armL=-.35+work*.8; armR=.18-work*.35; legL=.08; legR=-.08; bounce=Math.abs(work)*.012;
-  } else if(activity==="fishing"){
-    const work=Math.sin(t*2.6);
-    armL=-.15+work*.22; armR=-.25+work*.18; legL=.04; legR=-.04;
-  } else if(activity==="eating"){
-    const work=(Math.sin(t*5)+1)*.5;
-    armL=-.65*work; armR=-.65*work; legL=.03; legR=-.03;
-  } else if(activity==="drinking"){
-    const work=(Math.sin(t*3)+1)*.5;
-    armL=-.9*work; armR=-.15; legL=.02; legR=-.02;
-  } else if(activity==="resting"){
-    armL=Math.sin(t*1.5)*.035; armR=-armL;
-  } else {
-    armL=Math.sin(t*2)*.035; armR=-armL;
-  }
-  parts.armL.rotation.x=armL; parts.armR.rotation.x=armR;
-  parts.legL.rotation.x=legL; parts.legR.rotation.x=legR;
-  m.position.y=bounce;
+  const phase=t*7+(a.id==="alex"?0:1.7),walk=Math.sin(phase);
+  const moving=Boolean(a.movement?.moving)||activity==="moving";
+  let armL=0,armR=0,legL=0,legR=0,bounce=0,lean=0;
+  if(moving){armL=walk*.55;armR=-walk*.55;legL=-walk*.85;legR=walk*.85;bounce=Math.abs(Math.sin(phase*2))*.035;lean=.025*Math.cos(phase);}
+  else if(activity==="gathering"){const w=Math.sin(t*9);armL=-.55+w*.9;armR=.2-w*.4;legL=.08;legR=-.08;bounce=Math.abs(w)*.018;}
+  else if(activity==="building"||activity==="crafting"){const w=Math.sin(t*8);armL=-.45+w*.95;armR=-.25-w*.65;legL=.05;legR=-.05;bounce=Math.abs(w)*.01;}
+  else if(activity==="farming"||activity==="planting"||activity==="harvesting"){const w=Math.sin(t*6);armL=-.35+w*.7;armR=.05-w*.55;legL=.1;legR=-.1;bounce=Math.abs(w)*.014;}
+  else if(activity==="fishing"){const w=Math.sin(t*2.8);armL=-.2+w*.25;armR=-.35+w*.2;legL=.035;legR=-.035;}
+  else if(activity==="eating"){const w=(Math.sin(t*5)+1)*.5;armL=-.8*w;armR=-.55*w;legL=.03;legR=-.03;}
+  else if(activity==="drinking"){const w=(Math.sin(t*3)+1)*.5;armL=-1.0*w;armR=-.15;legL=.02;legR=-.02;}
+  else if(activity==="cooperating"||activity==="socializing"){const w=Math.sin(t*2.2);armL=-.2+w*.18;armR=.2-w*.18;lean=w*.035;}
+  else if(activity==="resting"){armL=Math.sin(t*1.5)*.045;armR=-armL;lean=Math.sin(t*.8)*.015;}
+  else {armL=Math.sin(t*2)*.045;armR=-armL;}
+  parts.armL.rotation.x=armL;parts.armR.rotation.x=armR;parts.legL.rotation.x=legL;parts.legR.rotation.x=legR;
+  m.rotation.z=lean;m.position.y=bounce;
   const tool=m.userData.activityTools;
-  if(tool){
-    const p=tool.parts;
-    Object.values(p).forEach(v=>v.visible=false);
+  if(tool){const p=tool.parts;p.axe.visible=false;p.hammer.visible=false;p.hoe.visible=false;p.rod.visible=false;p.crop.visible=false;
     if(activity==="gathering"){p.axe.visible=true;tool.group.position.set(.42,1.02,.18);p.axe.rotation.z=-.18+Math.sin(t*8)*.12;}
-    else if(activity==="building"||activity==="crafting"){p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*8)*.35;}
+    else if(activity==="building"||activity==="crafting"||activity==="cooperating"){p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*8)*.35;}
     else if(activity==="farming"||activity==="harvesting"){p.hoe.visible=true;tool.group.position.set(.4,1.02,.18);p.hoe.rotation.z=-.45+Math.sin(t*5)*.18;}
     else if(activity==="fishing"){p.rod.visible=true;tool.group.position.set(-.38,1.02,.28);p.rod.rotation.z=-.18+Math.sin(t*2.6)*.08;}
-    else if(activity==="cooperating"){p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*4)*.12;}
     else if(activity==="planting"){p.crop.visible=true;tool.group.position.set(.42,.72,.3);}
   }
-  m.userData.animationActivity=activity;
+  m.userData.animationActivity=activity;m.userData.isLocomoting=moving;
 }
 function syncMeshes(){normalize();syncStructures();const t=performance.now()/1000;for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,m.position.y??0,a.position.z);animateHumanoid(m,a,t);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
