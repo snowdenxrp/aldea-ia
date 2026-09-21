@@ -9,3 +9,4 @@ console.log(JSON.stringify({audit:"lumina-visual-world-animation",environment:["
 
 assert.ok(source.includes("socializing")); assert.ok(source.includes("building")); assert.ok(source.includes("farming")); assert.ok(source.includes("m.rotation.y"));
 for(const token of ["createFirePit","animateEnvironment","environmentType","type==="+"\"tree\"","type==="+"\"plant\"","fireMeshes"]) assert.ok(source.includes(token),"faltó vida ambiental: "+token);
+assert.ok(source.includes("createWaterRipples")); assert.ok(source.includes("waterMeshes")); assert.ok(source.includes("animateLighting")); assert.ok(source.includes("light.intensity"));
