@@ -56,6 +56,7 @@ export function getResearchTopics(agent, world) {
     else if (known.has("build_shelter") || skills.has("build_shelter")) definitions = TOPIC_DEFINITIONS.builder;
     else if (known.has("craft_tool") || skills.has("craft_tool")) definitions = TOPIC_DEFINITIONS.craftsperson;
     else if (known.has("trade") || skills.has("trade")) definitions = TOPIC_DEFINITIONS.trader;
+    else definitions = TOPIC_DEFINITIONS.gatherer;
   }
   return definitions.filter(definition => isTopicRelevant(definition, world));
 }
