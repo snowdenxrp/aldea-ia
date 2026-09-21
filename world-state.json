@@ -1,11 +1,11 @@
 {
   "version": 4,
-  "savedAt": 1790019654014,
+  "savedAt": 1790019679792,
   "day": 271,
-  "hour": 17.957680000091337,
+  "hour": 18.645093333424686,
   "world": {
     "day": 271,
-    "timeOfDay": 17.957680000091337,
+    "timeOfDay": 18.645093333424686,
     "speed": 1,
     "resources": {
       "water": {
@@ -12765,10 +12765,10 @@
       "age": 15.416438356164264,
       "alive": true,
       "needs": {
-        "hunger": 95.56180799999996,
-        "thirst": 91.06978133333283,
-        "energy": 85.62326666666748,
-        "social": 0,
+        "hunger": 94.04949866666661,
+        "thirst": 88.87005866666604,
+        "energy": 83.90473333333424,
+        "social": 53.84295999999998,
         "safety": 100,
         "health": 100
       },
@@ -12776,7 +12776,7 @@
         "x": 23.221088789282135,
         "z": 3.3423871006589687
       },
-      "currentActivity": "moving",
+      "currentActivity": "teaching",
       "inventory": [
         {
           "type": "stone",
@@ -50787,6 +50787,36 @@
               "tension": 0.08,
               "affection": -0.01,
               "resentment": 0.04
+            },
+            {
+              "day": 271,
+              "type": "conversation",
+              "description": "Alex y Bruno tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
+            },
+            {
+              "day": 271,
+              "type": "conversation",
+              "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 271,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron un encuentro incómodo.",
+              "trust": -0.05,
+              "cooperation": -0.02,
+              "tension": 0.08,
+              "affection": -0.01,
+              "resentment": 0.04
             }
           ]
         }
@@ -50825,55 +50855,50 @@
       ],
       "experiences": [],
       "currentIntent": {
-        "name": "socialize",
-        "baseValue": 0.25,
+        "name": "share_knowledge",
+        "baseValue": 0.05,
         "effects": {
-          "social": 1.4
+          "social": 0.6
         },
-        "distance": 8.781114782422936,
-        "score": 188.9131331130546,
-        "target": {
-          "x": 23.619758790015606,
-          "z": 3.249646485904184
-        }
+        "distance": 0.7624852175770992,
+        "score": 38.47075755361205
       },
-      "lastActionName": "explore_area",
+      "lastActionName": "socialize",
       "lastActionResult": {
         "success": true,
-        "effect": "area_explored",
-        "areaId": "area-45",
-        "regionKey": "6:4"
+        "effect": "social_interaction",
+        "otherAgentId": "bruno"
       },
       "lastPerception": {
         "position": {
-          "x": 22.0797630250521,
-          "z": 3.6078880232652124
+          "x": 23.221088789282135,
+          "z": 3.3423871006589687
         },
         "visibleAgents": [
           {
             "id": "bruno",
             "name": "Bruno",
-            "distance": 1.5811147824229366
+            "distance": 0.7624852175770992
           }
         ],
         "nearbyResources": [
           {
             "type": "wood",
             "location": "forest",
-            "distance": 4.859635979839541
+            "distance": 5.662929534132225
           },
           {
             "type": "stone",
             "location": "rocky_zone",
-            "distance": 11.552814606424759
+            "distance": 11.683605658574086
           }
         ],
-        "currentActivity": "moving",
+        "currentActivity": "teaching",
         "needs": {
-          "hunger": 95.56180799999996,
-          "thirst": 91.06978133333283,
-          "energy": 85.62326666666748,
-          "social": 0,
+          "hunger": 94.04949866666661,
+          "thirst": 88.87005866666604,
+          "energy": 83.90473333333424,
+          "social": 53.84295999999998,
           "safety": 100,
           "health": 100
         }
@@ -50893,7 +50918,7 @@
           "effects": {
             "social": 1.4
           },
-          "distance": 8.781114782422936
+          "distance": 0.7624852175770992
         },
         {
           "name": "share_knowledge",
@@ -50901,7 +50926,7 @@
           "effects": {
             "social": 0.6
           },
-          "distance": 8.781114782422936
+          "distance": 0.7624852175770992
         },
         {
           "name": "catch_fish",
@@ -50924,14 +50949,22 @@
           "novelty": 1,
           "knowledgeTopic": "action:gather_wood",
           "memoryKeyword": "madera",
-          "distance": 5.652986245155119
+          "distance": 5.662929534132225
+        },
+        {
+          "name": "discover_trade",
+          "baseValue": 0.22,
+          "explorationValue": 0.5,
+          "novelty": 1,
+          "knowledgeTopic": "action:trade",
+          "distance": 0.7624852175770992
         },
         {
           "name": "explore_area",
           "baseValue": 0.38,
           "explorationValue": 0.9,
           "novelty": 0.8,
-          "distance": 34.85740911617118,
+          "distance": 41.06297408869366,
           "target": {
             "x": -14,
             "z": -14
@@ -50940,31 +50973,28 @@
       ],
       "decisionSnapshot": {
         "chosen": {
-          "name": "socialize",
-          "score": 188.9131331130546
+          "name": "share_knowledge",
+          "score": 38.47075755361205
         },
         "considered": [
           {
             "name": "socialize",
-            "score": 188.9131331130546
+            "score": 89.41276644250097
           },
           {
             "name": "share_knowledge",
-            "score": 80.84313311305462
+            "score": 38.47075755361205
           },
           {
             "name": "rest",
-            "score": 7.385813333332817
+            "score": 10.731904096052558
           }
         ]
       },
       "movement": {
-        "target": {
-          "x": 23.619758790015606,
-          "z": 3.249646485904184
-        },
+        "target": null,
         "speed": 1.8,
-        "moving": true,
+        "moving": false,
         "distanceTravelled": 98489.96670008881
       },
       "decisionCooldownHours": 0,
@@ -51127,7 +51157,7 @@
       ],
       "researchExperiments": 113,
       "socialRole": "Recolector",
-      "activityRemainingHours": 0,
+      "activityRemainingHours": 0.13591999999999999,
       "explorationState": {
         "lastDay": 271,
         "regionsVisited": 61,
@@ -51136,13 +51166,15 @@
         "target": null
       },
       "activitySequence": {
-        "intentName": "socialize",
-        "phaseIndex": 0,
-        "phase": "approach",
-        "remainingHours": 0.05,
-        "completedPhases": []
+        "intentName": "share_knowledge",
+        "phaseIndex": 1,
+        "phase": "teach",
+        "remainingHours": 0.29592,
+        "completedPhases": [
+          "approach"
+        ]
       },
-      "activityPhase": "approach"
+      "activityPhase": "teach"
     },
     {
       "id": "bruno",
@@ -51150,10 +51182,10 @@
       "age": 15.416438356164264,
       "alive": true,
       "needs": {
-        "hunger": 95.56180799999996,
-        "thirst": 90.98444799999949,
-        "energy": 85.55660000000081,
-        "social": 0,
+        "hunger": 94.04949866666661,
+        "thirst": 88.7847253333327,
+        "energy": 83.83806666666757,
+        "social": 53.82962666666664,
         "safety": 100,
         "health": 100
       },
@@ -51161,7 +51193,7 @@
         "x": 22.47843302578557,
         "z": 3.5151474085104275
       },
-      "currentActivity": "moving",
+      "currentActivity": "socializing",
       "inventory": [
         {
           "type": "wood",
@@ -90079,6 +90111,36 @@
               "tension": 0.08,
               "affection": -0.01,
               "resentment": 0.04
+            },
+            {
+              "day": 271,
+              "type": "conversation",
+              "description": "Alex y Bruno tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
+            },
+            {
+              "day": 271,
+              "type": "conversation",
+              "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 271,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron un encuentro incómodo.",
+              "trust": -0.05,
+              "cooperation": -0.02,
+              "tension": 0.08,
+              "affection": -0.01,
+              "resentment": 0.04
             }
           ]
         }
@@ -90131,56 +90193,43 @@
         }
       ],
       "experiences": [],
-      "currentIntent": {
-        "name": "socialize",
-        "baseValue": 0.25,
-        "effects": {
-          "social": 1.4
-        },
-        "distance": 1.5811147824229366,
-        "score": 189.34513311305463,
-        "target": {
-          "x": 22.0797630250521,
-          "z": 3.6078880232652124
-        }
-      },
-      "lastActionName": "explore_area",
+      "currentIntent": null,
+      "lastActionName": "socialize",
       "lastActionResult": {
         "success": true,
-        "effect": "area_explored",
-        "areaId": "area-23",
-        "regionKey": "7:4"
+        "effect": "social_interaction",
+        "otherAgentId": "alex"
       },
       "lastPerception": {
         "position": {
-          "x": 23.619758790015606,
-          "z": 3.249646485904184
+          "x": 22.47843302578557,
+          "z": 3.5151474085104275
         },
         "visibleAgents": [
           {
             "id": "alex",
             "name": "Alex",
-            "distance": 1.5811147824229366
+            "distance": 0.7624852175770992
           }
         ],
         "nearbyResources": [
           {
             "type": "wood",
             "location": "forest",
-            "distance": 5.97231213239711
+            "distance": 5.124112901829481
           },
           {
             "type": "stone",
             "location": "rocky_zone",
-            "distance": 11.756504203375862
+            "distance": 11.585206303957854
           }
         ],
-        "currentActivity": "moving",
+        "currentActivity": "socializing",
         "needs": {
-          "hunger": 95.56180799999996,
-          "thirst": 90.98444799999949,
-          "energy": 85.55660000000081,
-          "social": 0,
+          "hunger": 94.04949866666661,
+          "thirst": 88.7847253333327,
+          "energy": 83.83806666666757,
+          "social": 53.82962666666664,
           "safety": 100,
           "health": 100
         }
@@ -90200,7 +90249,7 @@
           "effects": {
             "social": 1.4
           },
-          "distance": 1.5811147824229366
+          "distance": 0.7624852175770992
         },
         {
           "name": "share_knowledge",
@@ -90208,7 +90257,7 @@
           "effects": {
             "social": 0.6
           },
-          "distance": 1.5811147824229366
+          "distance": 0.7624852175770992
         },
         {
           "name": "harvest",
@@ -90221,7 +90270,7 @@
         {
           "name": "gather_wood",
           "baseValue": 0.40641329832031253,
-          "distance": 5.97231213239711
+          "distance": 5.124112901829481
         },
         {
           "name": "catch_fish",
@@ -90252,7 +90301,7 @@
           "baseValue": 0.38,
           "explorationValue": 0.9,
           "novelty": 0.8,
-          "distance": 38.74018858411967,
+          "distance": 37.69899343778831,
           "target": {
             "x": -14,
             "z": -6
@@ -90262,33 +90311,30 @@
       "decisionSnapshot": {
         "chosen": {
           "name": "socialize",
-          "score": 189.34513311305463
+          "score": 89.44324537583431
         },
         "considered": [
           {
             "name": "socialize",
-            "score": 189.34513311305463
+            "score": 89.44324537583431
           },
           {
             "name": "share_knowledge",
-            "score": 81.30513311305461
+            "score": 38.51381995361206
           },
           {
             "name": "rest",
-            "score": 7.642079999999465
+            "score": 10.789520202719219
           }
         ]
       },
       "movement": {
-        "target": {
-          "x": 22.0797630250521,
-          "z": 3.6078880232652124
-        },
+        "target": null,
         "speed": 1.8,
-        "moving": true,
+        "moving": false,
         "distanceTravelled": 98944.82272884811
       },
-      "decisionCooldownHours": 0,
+      "decisionCooldownHours": 0.2025866666666667,
       "knownResources": {
         "water": {
           "x": -18,
@@ -90440,7 +90486,7 @@
       ],
       "researchExperiments": 113,
       "socialRole": "Recolector",
-      "activityRemainingHours": 0,
+      "activityRemainingHours": 0.4025866666666667,
       "explorationState": {
         "lastDay": 271,
         "regionsVisited": 62,
@@ -90450,45 +90496,20 @@
       },
       "activitySequence": {
         "intentName": "socialize",
-        "phaseIndex": 0,
-        "phase": "approach",
-        "remainingHours": 0.05,
-        "completedPhases": []
+        "phaseIndex": 1,
+        "phase": "talk",
+        "remainingHours": 0,
+        "completedPhases": [
+          "approach",
+          "talk",
+          "talk"
+        ],
+        "activityComplete": true
       },
-      "activityPhase": "approach"
+      "activityPhase": "talk"
     }
   ],
   "events": [
-    {
-      "id": "event-2061",
-      "day": 271,
-      "hour": 8.779706666757791,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-2062",
-      "day": 271,
-      "hour": 8.806373333424458,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-2063",
-      "day": 271,
-      "hour": 8.806373333424458,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
     {
       "id": "event-2064",
       "day": 271,
@@ -95457,6 +95478,39 @@
       "description": "Bruno exploró una zona nueva de su entorno.",
       "participants": [
         "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 271,
+      "hour": 18.33101333342468,
+      "type": "social_interaction",
+      "description": "Alex y Bruno tuvieron una interacción cordial.",
+      "participants": [
+        "alex",
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 271,
+      "hour": 18.33101333342468,
+      "type": "social_interaction",
+      "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+      "participants": [
+        "bruno",
+        "alex"
+      ]
+    },
+    {
+      "id": "event-503",
+      "day": 271,
+      "hour": 18.59768000009135,
+      "type": "social_interaction",
+      "description": "Bruno y Alex tuvieron un encuentro incómodo.",
+      "participants": [
+        "bruno",
+        "alex"
       ]
     }
   ]
