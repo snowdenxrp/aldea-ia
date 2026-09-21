@@ -45,7 +45,7 @@ export function buildVillage(scene){
  const layout=getVillageLayout();
  const root=new THREE.Group();root.name="LuminaVillageVisual";scene.add(root);
  // Textura procedural local: no depende de imágenes externas y mantiene detalle al acercar la cámara.
- terrainPatch(root, -28.5, 0, 11, 150);terrainPatch(root, 8.5, 0, 43, 150);
+ terrainPatch(root, 0, 0, 150, 150);
  const plaza=new THREE.Mesh(new THREE.CircleGeometry(layout.plaza.radius,40),M(0xb8a27e,1));plaza.rotation.x=-Math.PI/2;plaza.position.set(layout.plaza.x,.035,layout.plaza.z);root.add(plaza);
  for(const p of layout.paths)path(root,p.x,p.z,p.width,p.length,p.rotation);
  bank(root,-23.2,-10,2.4,22);bank(root,-23.2,11,2.4,22);bank(root,-12.8,-10,2.4,22);bank(root,-12.8,11,2.4,22);
