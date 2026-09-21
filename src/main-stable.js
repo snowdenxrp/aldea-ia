@@ -10,6 +10,22 @@ const app=document.querySelector("#app"), worldTime=document.querySelector("#wor
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df); scene.fog=new THREE.Fog(0x9ec9df,55,150);
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,500);
 const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.domElement.style.touchAction="none"; renderer.domElement.style.userSelect="none"; app.appendChild(renderer.domElement);
+
+// Auditoría visual: captura el canvas 3D y permite descargarla desde cualquier móvil.
+const captureBar=document.createElement("div");
+captureBar.style.cssText="position:fixed;right:12px;bottom:12px;z-index:50;display:flex;gap:6px;font:600 12px system-ui";
+const captureBtn=document.createElement("button");
+captureBtn.textContent="📸 Capturar aldea";
+captureBtn.style.cssText="padding:9px 12px;border:0;border-radius:10px;background:#1f2937;color:#fff;box-shadow:0 3px 12px #0005";
+captureBtn.onclick=()=>{
+  renderer.render(scene,camera);
+  const a=document.createElement("a");
+  a.download="lumina-screenshot.png";
+  a.href=renderer.domElement.toDataURL("image/png");
+  a.click();
+};
+captureBar.appendChild(captureBtn);
+app.appendChild(captureBar);
 const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,10); light.castShadow=true; light.shadow.mapSize.set(2048,2048); scene.add(light,new THREE.HemisphereLight(0xbfe7ff,0x6f8f58,1.2));
 normalizeSpatialWorld(world);
 const homeRegion=getRegionForPosition({x:0,z:0},world);
