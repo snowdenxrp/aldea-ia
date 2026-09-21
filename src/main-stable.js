@@ -113,8 +113,13 @@ function syncSettlementVisualState(){
     const key=getRegionKeyForVisual({x,z});
     const state=regions[key];
     const level=Number(state?.settlementLevel??0);
-    m.scale.setScalar(1+Math.min(.12,level*.02));
+    const population=populationByRegion.get(key)??Number(state?.population??0);
+    const activity=Math.max(0,Math.min(1,Number(state?.activity??0)));
+    m.scale.setScalar(1+Math.min(.12,level*.02)+Math.min(.03,population*.004));
     m.userData.settlementLevel=level;
+    m.userData.settlementPopulation=population;
+    m.userData.settlementActivity=activity;
+    m.userData.activityPulse=0.96+activity*.04;
   }
 }
 function getRegionKeyForVisual(position){
