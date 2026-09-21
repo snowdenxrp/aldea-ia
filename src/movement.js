@@ -13,11 +13,20 @@ export function createMovementState() {
 export function setMovementTarget(agent, target, bounds = null) {
   agent.movement ??= createMovementState();
   const limits = bounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 };
+  const x=Number(target?.x), z=Number(target?.z);
+  if(!Number.isFinite(x)||!Number.isFinite(z)){
+    stopMovement(agent);
+    return false;
+  }
+  if(!agent.position||!Number.isFinite(Number(agent.position.x))||!Number.isFinite(Number(agent.position.z))){
+    agent.position={x:0,z:0};
+  }
   agent.movement.target = {
-    x: Math.max(limits.minX, Math.min(limits.maxX, target.x)),
-    z: Math.max(limits.minZ, Math.min(limits.maxZ, target.z))
+    x: Math.max(limits.minX, Math.min(limits.maxX, x)),
+    z: Math.max(limits.minZ, Math.min(limits.maxZ, z))
   };
   agent.movement.moving = true;
+  return true;
 }
 
 export function stopMovement(agent) {
@@ -30,7 +39,10 @@ export function moveAgent(agent, deltaSeconds) {
   agent.movement ??= createMovementState();
   const movement = agent.movement;
 
-  if (!movement.target || !agent.alive) {
+  if (!agent.position||!Number.isFinite(Number(agent.position.x))||!Number.isFinite(Number(agent.position.z))) {
+    agent.position={x:0,z:0};
+  }
+  if (!movement.target || !Number.isFinite(Number(movement.target.x)) || !Number.isFinite(Number(movement.target.z)) || !agent.alive) {
     movement.moving = false;
     return false;
   }
