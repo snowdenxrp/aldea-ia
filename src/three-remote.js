@@ -1,7 +1,7 @@
 const SOURCES = [
-  "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
   "https://unpkg.com/three@0.180.0/build/three.module.js",
-  "https://esm.sh/three@0.180.0"
+  "https://esm.sh/three@0.180.0",
+  "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
 ];
 
 function withTimeout(promise, ms) {
@@ -15,7 +15,7 @@ let three = null;
 let lastError = null;
 for (const url of SOURCES) {
   try {
-    three = await withTimeout(import(url), 7000);
+    three = await withTimeout(import(url), 4000);
     break;
   } catch (error) {
     lastError = error;
