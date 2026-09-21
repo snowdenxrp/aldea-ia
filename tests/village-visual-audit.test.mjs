@@ -17,7 +17,7 @@ assert.ok(layout.plaza && layout.well && layout.market,"la aldea debe tener un c
 // Auditoría aproximada de huella: una casa debe quedar fuera del rectángulo
 // de cada camino con un margen visual de 2.4 unidades (media huella residencial).
 const residentialHalf=2.4;
-const relevantPaths=layout.paths.filter(p=>["north","south","east","west","market-link","garden-link"].includes(p.name));
+const relevantPaths=layout.paths.filter(p=>["residential-north","residential-south","main-axis","west-link","market-link","garden-link"].includes(p.name));
 function distanceToPath(h,p){
   const hw=p.width/2,hl=p.length/2;
   const horizontal=["east","west","market-link","garden-link"].includes(p.name);
@@ -47,3 +47,9 @@ console.log(JSON.stringify({
   treeMinScale:Math.min(...layout.trees.map(t=>t[2])),
   verdict:"PASS"
 },null,2));
+
+const north=houses.filter(h=>h.z>0),south=houses.filter(h=>h.z<0);
+assert.equal(north.length,5,"la fila residencial norte debe tener cinco casas");
+assert.equal(south.length,5,"la fila residencial sur debe tener cinco casas");
+assert.ok(north.every(h=>Math.abs(h.z-16.3)<0.01),"las casas del norte deben formar una fila");
+assert.ok(south.every(h=>Math.abs(h.z+16.3)<0.01),"las casas del sur deben formar una fila");
