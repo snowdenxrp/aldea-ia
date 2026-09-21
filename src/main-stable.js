@@ -204,34 +204,83 @@ function animateHumanoid(m,a,t){
   const parts=m.userData.parts; if(!parts)return;
   const activity=a.currentActivity??"idle";
   const phase=a.activityPhase??null;
-  const cycle=t*7+(a.id==="alex"?0:1.7),walk=Math.sin(cycle);
-  const moving=Boolean(a.movement?.moving)||activity==="moving";
-  let armL=0,armR=0,legL=0,legR=0,bounce=0,lean=0;
-  if(moving){armL=walk*.55;armR=-walk*.55;legL=-walk*.85;legR=walk*.85;bounce=Math.abs(Math.sin(cycle*2))*.035;lean=.025*Math.cos(cycle);}
-  else if(activity==="gathering"){const w=Math.sin(t*9);armL=-.55+w*.9;armR=.2-w*.4;legL=.08;legR=-.08;bounce=Math.abs(w)*.018;}
-  else if(activity==="building"||activity==="crafting"){const w=Math.sin(t*8);armL=-.45+w*.95;armR=-.25-w*.65;legL=.05;legR=-.05;bounce=Math.abs(w)*.01;}
-  else if(activity==="farming"||activity==="planting"||activity==="harvesting"){const w=Math.sin(t*6);armL=-.35+w*.7;armR=.05-w*.55;legL=.1;legR=-.1;bounce=Math.abs(w)*.014;}
-  else if(activity==="fishing"){const w=Math.sin(t*2.8);armL=-.2+w*.25;armR=-.35+w*.2;legL=.035;legR=-.035;}
-  else if(activity==="eating"){const w=(Math.sin(t*5)+1)*.5;armL=-.8*w;armR=-.55*w;legL=.03;legR=-.03;}
-  else if(activity==="drinking"){const w=(Math.sin(t*3)+1)*.5;armL=-1.0*w;armR=-.15;legL=.02;legR=-.02;}
-  else if(activity==="cooperating"||activity==="socializing"){const w=Math.sin(t*2.2);armL=-.2+w*.18;armR=.2-w*.18;lean=w*.035;}
-  else if(activity==="resting"){armL=Math.sin(t*1.5)*.045;armR=-armL;lean=Math.sin(t*.8)*.015;}
-  else {armL=Math.sin(t*2)*.045;armR=-armL;}
-  parts.armL.rotation.x=armL;parts.armR.rotation.x=armR;parts.legL.rotation.x=legL;parts.legR.rotation.x=legR;
+  const cycle=t*7+(a.id==="alex"?0:1.7),walk=Math.sin(cycle),slow=Math.sin(t*2.2),fast=Math.sin(t*8);
+  const moving=Boolean(a.movement?.moving)||activity==="moving"||phase==="approach";
+  let armL=0,armR=0,legL=0,legR=0,bounce=0,lean=0,headTurn=0;
+  // La fase tiene prioridad sobre la etiqueta de actividad: cada tramo de una rutina
+  // produce una postura/movimiento reconocible sin convertir la acción en un instante.
+  if(phase==="approach"||moving){
+    armL=walk*.55;armR=-walk*.55;legL=-walk*.85;legR=walk*.85;
+    bounce=Math.abs(Math.sin(cycle*2))*.035;lean=.025*Math.cos(cycle);
+  }
+  if(phase==="inspect"){
+    armL=-.18+slow*.08;armR=.18-slow*.08;legL=.035;legR=-.035;
+    headTurn=Math.sin(t*1.3)*.18;lean=Math.sin(t*.9)*.025;
+  } else if(phase==="collect"){
+    armL=-.55+fast*.9;armR=.2-fast*.4;legL=.08;legR=-.08;bounce=Math.abs(fast)*.018;
+  } else if(phase==="cast"){
+    armL=-.65+slow*.28;armR=-1.0+slow*.22;legL=.025;legR=-.025;lean=-.04;
+  } else if(phase==="wait"){
+    armL=-.12+slow*.05;armR=.12-slow*.05;legL=.02;legR=-.02;headTurn=Math.sin(t*.7)*.1;
+  } else if(phase==="discover"){
+    armL=-.28+slow*.16;armR=.28-slow*.16;legL=.04;legR=-.04;headTurn=Math.sin(t*1.1)*.35;lean=Math.sin(t*.8)*.035;
+  } else if(phase==="prepare"){
+    armL=-.25+fast*.35;armR=.2-fast*.3;legL=.06;legR=-.06;bounce=Math.abs(fast)*.01;
+  } else if(phase==="construct"||phase==="craft"){
+    armL=-.45+fast*.95;armR=-.25-fast*.65;legL=.05;legR=-.05;bounce=Math.abs(fast)*.01;
+  } else if(phase==="plant"){
+    armL=-.35+slow*.7;armR=.05-slow*.55;legL=.1;legR=-.1;lean=-.07;
+  } else if(phase==="harvest"){
+    armL=-.5+fast*.8;armR=.1-fast*.55;legL=.09;legR=-.09;lean=-.04;
+  } else if(phase==="talk"){
+    armL=-.2+slow*.18;armR=.2-slow*.18;lean=slow*.035;headTurn=Math.sin(t*1.5)*.12;
+  } else if(phase==="teach"){
+    armL=-.65+slow*.18;armR=.12-slow*.12;lean=.02;headTurn=Math.sin(t*.9)*.08;
+  } else if(phase==="work"){
+    armL=-.38+fast*.72;armR=.18-fast*.52;legL=.05;legR=-.05;
+  } else if(phase==="exchange"){
+    armL=-.38+slow*.2;armR=.38-slow*.2;lean=slow*.025;
+  } else if(!phase){
+    if(activity==="gathering"){armL=-.55+fast*.9;armR=.2-fast*.4;legL=.08;legR=-.08;bounce=Math.abs(fast)*.018;}
+    else if(activity==="building"||activity==="crafting"){armL=-.45+fast*.95;armR=-.25-fast*.65;legL=.05;legR=-.05;bounce=Math.abs(fast)*.01;}
+    else if(activity==="farming"||activity==="planting"||activity==="harvesting"){armL=-.35+fast*.7;armR=.05-fast*.55;legL=.1;legR=-.1;bounce=Math.abs(fast)*.014;}
+    else if(activity==="fishing"){armL=-.2+slow*.25;armR=-.35+slow*.2;legL=.035;legR=-.035;}
+    else if(activity==="eating"){const w=(Math.sin(t*5)+1)*.5;armL=-.8*w;armR=-.55*w;legL=.03;legR=-.03;}
+    else if(activity==="drinking"){const w=(Math.sin(t*3)+1)*.5;armL=-1.0*w;armR=-.15;legL=.02;legR=-.02;}
+    else if(activity==="cooperating"||activity==="socializing"){armL=-.2+slow*.18;armR=.2-slow*.18;lean=slow*.035;}
+    else if(activity==="resting"){armL=Math.sin(t*1.5)*.045;armR=-armL;lean=Math.sin(t*.8)*.015;}
+    else {armL=Math.sin(t*2)*.045;armR=-armL;}
+  }
+  parts.armL.rotation.x=armL;parts.armR.rotation.x=armR;
+  parts.legL.rotation.x=legL;parts.legR.rotation.x=legR;
   m.rotation.z=lean;m.position.y=bounce;
   if(moving&&a.movement?.target){const dx=a.movement.target.x-a.position.x,dz=a.movement.target.z-a.position.z;if(Math.hypot(dx,dz)>.05)m.rotation.y=Math.atan2(dx,dz);}
-  const head=m.userData.parts.head;if(head)head.rotation.z=Math.sin(t*1.7)*.018;
+  const head=m.userData.parts.head;if(head)head.rotation.z=headTurn+Math.sin(t*1.7)*.018;
   const tool=m.userData.activityTools;
-  if(tool){const p=tool.parts;p.axe.visible=false;p.hammer.visible=false;p.hoe.visible=false;p.rod.visible=false;p.crop.visible=false;p.basketLoad.visible=false;
-    if(activity==="gathering"){p.axe.visible=true;tool.group.position.set(.42,1.02,.18);p.axe.rotation.z=-.18+Math.sin(t*8)*.12;}
-    else if(activity==="building"||activity==="crafting"||activity==="cooperating"){p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*8)*.35;}
-    else if(activity==="farming"||activity==="harvesting"){p.hoe.visible=true;tool.group.position.set(.4,1.02,.18);p.hoe.rotation.z=-.45+Math.sin(t*5)*.18;}
-    else if(activity==="fishing"){p.rod.visible=true;tool.group.position.set(-.38,1.02,.28);p.rod.rotation.z=-.18+Math.sin(t*2.6)*.08;}
-    else if(activity==="planting"){p.crop.visible=true;tool.group.position.set(.42,.72,.3);}
-    else if(activity==="gathering"&&a.lastActionName==="gather_stone"){p.basketLoad.visible=true;tool.group.position.set(-.42,.72,.18);}
+  if(tool){
+    const p=tool.parts;
+    p.axe.visible=p.hammer.visible=p.hoe.visible=p.rod.visible=p.crop.visible=p.basketLoad.visible=false;
+    if(phase==="collect"||(!phase&&activity==="gathering")){
+      p.axe.visible=a.lastActionName!=="gather_stone";
+      p.basketLoad.visible=a.lastActionName==="gather_stone";
+      tool.group.position.set(.42,1.02,.18);
+      p.axe.rotation.z=-.18+Math.sin(t*8)*.12;
+      if(p.basketLoad.visible)tool.group.position.set(-.42,.72,.18);
+    } else if(phase==="construct"||phase==="craft"||phase==="work"||(!phase&&(activity==="building"||activity==="crafting"||activity==="cooperating"))){
+      p.hammer.visible=true;tool.group.position.set(.44,1.02,.18);p.hammer.rotation.z=Math.sin(t*8)*.35;
+    } else if(phase==="plant"||phase==="harvest"||(!phase&&(activity==="farming"||activity==="harvesting"||activity==="planting"))){
+      p.hoe.visible=phase!=="plant";p.crop.visible=phase==="plant";
+      tool.group.position.set(.4,phase==="plant"?.72:1.02,.3);
+      p.hoe.rotation.z=-.45+Math.sin(t*5)*.18;
+    } else if(phase==="cast"||phase==="wait"||(!phase&&activity==="fishing")){
+      p.rod.visible=true;tool.group.position.set(-.38,1.02,.28);p.rod.rotation.z=-.18+Math.sin(t*2.6)*.08;
+    }
   }
-  m.userData.animationActivity=activity;m.userData.animationPhase=phase;m.userData.isLocomoting=moving;
-  const marker=m.children.find(o=>o.geometry?.type==="SphereGeometry"&&o.position?.y>2.4); if(marker){const pulse=phase?1+Math.sin(t*6)*.12:1;marker.scale.setScalar(pulse);}
+  m.userData.animationActivity=activity;
+  m.userData.animationPhase=phase;
+  m.userData.isLocomoting=moving;
+  const marker=m.children.find(o=>o.geometry?.type==="SphereGeometry"&&o.position?.y>2.4);
+  if(marker){const pulse=phase?1+Math.sin(t*6)*.12:1;marker.scale.setScalar(pulse);}
 }
 function addVisualDetail(g,a){
   const detail=material(a.id==="alex"?0x345b8c:0x8c4f34,.68);
