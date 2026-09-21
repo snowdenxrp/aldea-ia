@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { getRegionForPosition, getBiomeForRegion, updateSettlementState } from "../src/spatial.js";
-import { createWorld } from "../src/world.js";
-const world=createWorld();
+import { world as baseWorld } from "../src/world.js";
+const world=structuredClone(baseWorld);
 const position={x:24,z:15};
 const region=getRegionForPosition(position,world);
 const biome=getBiomeForRegion(region,world);

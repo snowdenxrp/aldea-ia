@@ -11,6 +11,7 @@ export function getTerritorialContext(agent, world) {
   normalizeSpatialWorld(world);
   const region=getRegionForPosition(agent.position,world);
   const biome=getBiomeForRegion(region,world);
+  const modifiers=biome.modifiers ?? biome;
   const nearby=Object.entries(world.resources??{}).map(([type,r])=>{
     const dx=Number(r.position?.x??0)-Number(agent.position?.x??0), dz=Number(r.position?.z??0)-Number(agent.position?.z??0);
     return {type,distance:Math.hypot(dx,dz),quality:Math.max(0,Number(r.quality??1)),amount:Math.max(0,Number(r.amount??0))};
@@ -19,14 +20,14 @@ export function getTerritorialContext(agent, world) {
   for(const [action,type] of Object.entries(ACTION_BY_RESOURCE)){
     const r=nearby.find(x=>x.type===type);
     let value=r ? Math.max(0,Math.min(2,(r.quality+.25)*(1-r.distance/30))) : 0;
-    if(type==="wood") value*=biome.modifiers.wood;
-    if(type==="stone") value*=biome.modifiers.stone;
-    if(type==="fish"||type==="water") value*=biome.modifiers.water;
-    if(type==="fertile_land"||type==="wild_plants") value*=biome.modifiers.food;
+    if(type==="wood") value*=modifiers.wood;
+    if(type==="stone") value*=modifiers.stone;
+    if(type==="fish"||type==="water") value*=modifiers.water;
+    if(type==="fertile_land"||type==="wild_plants") value*=modifiers.food;
     opportunities[action]=Math.min(2,value);
   }
   const state=world.spatial.regions?.[region.key]??{};
-  return {regionKey:region.key,biome:biome.type,movement:biome.modifiers.movement,opportunities,
+  return {regionKey:region.key,biome:biome.type,movement:modifiers.movement,opportunities,
     settlementLevel:Math.max(0,Number(state.settlementLevel??0)),visits:Math.max(0,Number(state.visits??0))};
 }
 export function territorialActionBonus(context,actionName) {
