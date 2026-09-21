@@ -81,8 +81,16 @@ export function buildVillage(scene){
  terrainPatch(root, 0, 0, 150, 150);
  const plaza=new THREE.Mesh(new THREE.CircleGeometry(layout.plaza.radius,40),M(0xb8a27e,1));plaza.rotation.x=-Math.PI/2;plaza.position.set(layout.plaza.x,.035,layout.plaza.z);root.add(plaza);
  for(const p of layout.paths)path(root,p.x,p.z,p.width,p.length,p.rotation);
+ for(const p of (layout.yardPaths??[]))path(root,p.x,p.z,p.width,p.length,p.rotation);
  bank(root,-23.2,-10,2.4,22);bank(root,-23.2,11,2.4,22);bank(root,-12.8,-10,2.4,22);bank(root,-12.8,11,2.4,22);
  for(const b of layout.buildings){if(b.type==="house")house(root,b.x,b.z,b.rotation,b.scale);else if(b.type==="barn")barn(root,b.x,b.z);else if(b.type==="tower")tower(root,b.x,b.z);}
+ // Patios y cercas bajas: separan visualmente cada vivienda sin bloquear los caminos.
+ for(const b of layout.buildings.filter(v=>v.type==="house")){
+   const fenceMat=M(0x69462f,.95);
+   const side=b.z>0?-1:1;
+   for(const dx of [-1.9,0,1.9]){const post=meshBox(.08,.55,.08,0x69462f);post.position.set(b.x+dx,b.z*0+0.275,b.z+side*3.05);root.add(post);}
+   const rail=meshBox(3.9,.08,.08,0x69462f);rail.position.set(b.x,.42,b.z+side*3.05);root.add(rail);
+ }
  well(root,layout.well.x,layout.well.z);market(root,layout.market.x,layout.market.z);garden(root,layout.garden.x,layout.garden.z);bridge(root,layout.bridge.x,layout.bridge.z);
  for(const p of layout.trees)tree(root,p[0],p[1],p[2]);
  for(const p of [[-4,1],[7,1],[2,-7],[2,9],[12,5],[-7,4],[-15,0],[-11,0]])lamp(root,p[0],p[1]);
