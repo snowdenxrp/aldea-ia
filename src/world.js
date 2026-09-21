@@ -13,10 +13,10 @@ export const world = {
   // Territorio jugable de Lúmina. La exploración no puede sacar a los habitantes
   // de la zona física representada por el terreno.
   bounds: {
-    minX: -34,
-    maxX: 34,
-    minZ: -34,
-    maxZ: 34
+    minX: -46,
+    maxX: 46,
+    minZ: -46,
+    maxZ: 46
   },
 
   structures: {
