@@ -23,7 +23,7 @@ import { discoverArea, rememberAreaVisit } from "./exploration.js";
 import { maintainPlan, notePlanResult, autonomySummary } from "./planning.js";
 import { canCooperate, contributeToProject, findOrCreateProject, getNearbyCooperationTarget, normalizeCollectiveWorld } from "./collective.js";
 import { getInstitutionOptions, normalizeInstitutionWorld } from "./institutions.js";
-import { normalizeSpatialWorld, getActiveRegionKeys } from "./spatial.js";
+import { normalizeSpatialWorld, getActiveRegionKeys, getRegionKey } from "./spatial.js";
 import { getTerritorialContext } from "./territorial.js";
 
 export function createSimulation(world, agents, options = {}) {
@@ -64,9 +64,13 @@ function generateOptions(agent, perception, world, random = Math.random, agents 
       options.push({ name: "discover_trade", baseValue: 0.22, explorationValue: 0.5, novelty: 1, knowledgeTopic: "action:trade", distance: nearbyPotentialTrader.distance });
     }
   }
-  const explorationTarget = createExplorationTarget(agent, world, random); const explorationDistance = Math.hypot(explorationTarget.x - agent.position.x, explorationTarget.z - agent.position.z); options.push({ name: "explore_area", baseValue: 0.28, explorationValue: 0.7, novelty: 0.8, distance: explorationDistance, target: explorationTarget }); const plannedStep = agent.plan?.steps?.[0]; if (plannedStep) { const planned = options.find(option => option.name === plannedStep); if (planned) planned.baseValue = (planned.baseValue ?? 0) + 2.5 + Math.min(2, Number(agent.plan.priority ?? 0) * 0.03); } return options;
+  const explorationTarget=createExplorationTarget(agent,world,random);
+  const explorationDistance=Math.hypot(explorationTarget.x-agent.position.x,explorationTarget.z-agent.position.z);
+  const currentRegion=world.spatial?.regions?.[getRegionKeyForAgent(agent,world)];
+  const explorationNovelty=Math.max(.35,1-Math.min(1,Number(currentRegion?.visits??0)/5));
+  options.push({name:"explore_area",baseValue:.38,explorationValue:.9,novelty:explorationNovelty,distance:explorationDistance,target:explorationTarget}); const plannedStep = agent.plan?.steps?.[0]; if (plannedStep) { const planned = options.find(option => option.name === plannedStep); if (planned) planned.baseValue = (planned.baseValue ?? 0) + 2.5 + Math.min(2, Number(agent.plan.priority ?? 0) * 0.03); } return options;
 }
-function generateTradeOptions(agent, perception, world, agents = []) {
+function getRegionKeyForAgent(agent,world){return getRegionKey(agent.position,world);}\nfunction generateTradeOptions(agent, perception, world, agents = []) {
   const visible = perception.visibleAgents.filter(other => other.distance <= 2.0);
   const options = [];
   for (const other of visible) {
@@ -109,7 +113,23 @@ function generateTradeOptions(agent, perception, world, agents = []) {
 }
 function simulationFarmReady(world, agent) { return (world.structures?.farms ?? []).some(f => f.ownerId === agent.id && Number(f.food) > 0); }
 function getKnownActionDistance(actionName, perception) { if (actionName === "eat_fish") return 0; const map = { drink: "water", eat_plant: "wild_plants", catch_fish: "fish", gather_wood: "wood", gather_stone: "stone" }; const type = map[actionName]; if (!type) return 0; return perception.nearbyResources.find(resource => resource.type === type)?.distance ?? 25; }
-function createExplorationTarget(agent, world, random = Math.random) { const bounds = world?.bounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 }; const angle = random() * Math.PI * 2; const distance = 4 + random() * 6; return { x: Math.max(bounds.minX, Math.min(bounds.maxX, agent.position.x + Math.cos(angle) * distance)), z: Math.max(bounds.minZ, Math.min(bounds.maxZ, agent.position.z + Math.sin(angle) * distance)) }; }
+function createExplorationTarget(agent, world, random = Math.random) {
+  const bounds=world?.bounds??{minX:-64,maxX:64,minZ:-64,maxZ:64};
+  const known=new Set(world?.spatial?.knownRegions??[]);
+  const size=Number(world?.spatial?.regionSize??8);
+  const minX=Number(bounds.minX),minZ=Number(bounds.minZ);
+  const candidates=[];
+  for(let x=minX+size/2;x<=Number(bounds.maxX)-size/2;x+=size) for(let z=minZ+size/2;z<=Number(bounds.maxZ)-size/2;z+=size){
+    const rx=Math.floor((x-minX)/size),rz=Math.floor((z-minZ)/size),key=rx+":"+rz;
+    const d=Math.hypot(x-agent.position.x,z-agent.position.z);
+    if(d>=14&&!known.has(key)) candidates.push({x,z,d,score:d*(.8+random()*.4)});
+  }
+  candidates.sort((a,b)=>b.score-a.score);
+  const pick=candidates[0];
+  if(pick)return {x:Math.max(minX,Math.min(Number(bounds.maxX),pick.x)),z:Math.max(minZ,Math.min(Number(bounds.maxZ),pick.z))};
+  const angle=random()*Math.PI*2,distance=18+random()*24;
+  return {x:Math.max(minX,Math.min(Number(bounds.maxX),agent.position.x+Math.cos(angle)*distance)),z:Math.max(minZ,Math.min(Number(bounds.maxZ),agent.position.z+Math.sin(angle)*distance))};
+}
 function getActionTarget(agent, actionName, perception, world, agents) { if (actionName === "build_shelter" || actionName === "trade" || actionName === "discover_trade") return null; if (actionName === "explore_area") return agent.currentIntent?.target ?? null; if (actionName === "drink") return world.resources.water.position; if (actionName === "gather_wood" || actionName === "explore_wood") return world.resources.wood.position; if (actionName === "gather_stone" || actionName === "explore_stone") return world.resources.stone.position; if (actionName === "eat_plant" || actionName === "explore_plants") return world.resources.wild_plants.position; if (actionName === "catch_fish" || actionName === "explore_fishing") return world.resources.fish.position; if (actionName === "socialize" || actionName === "share_knowledge" || actionName === "cooperate") { const nearest = [...perception.visibleAgents].sort((a, b) => a.distance - b.distance)[0]; const other = agents.find(candidate => candidate.id === nearest?.id && candidate.alive && candidate.id !== agent.id); return other?.position ?? null; } return null; }
 function buildCriticalHungerIntent(simulation, agent, perception) { if (agent.needs.hunger > 70) return null; const knownActions = getKnownActions(agent); if (agent.needs.thirst <= 25) return null; const fishInventory = agent.inventory?.some(item => item.type === "fish" && item.amount > 0); if (fishInventory && knownActions.some(action => action.name === "eat_fish")) return { name: "eat_fish", amount: Math.max(1, Math.min(3, Math.ceil((20 - agent.needs.hunger) / 14))), baseValue: 999, effects: { hunger: 14 }, target: null }; const rememberedPlants = agent.knownResources?.wild_plants; const plants = perception.nearbyResources.find(resource => resource.type === "wild_plants") ?? (rememberedPlants ? { type: "wild_plants", distance: Math.hypot(agent.position.x - rememberedPlants.x, agent.position.z - rememberedPlants.z) } : null); if (plants && simulation.world.resources.wild_plants.amount > 0) { if (knownActions.some(action => action.name === "eat_plant")) return { name: "eat_plant", amount: Math.max(1, Math.min(4, Math.ceil((20 - agent.needs.hunger) / 8.67))), baseValue: 999, effects: { hunger: 8.67 }, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } }; return { name: "explore_plants", baseValue: 999, explorationValue: 1, novelty: 1, distance: plants.distance, target: { ...simulation.world.resources.wild_plants.position } }; } const fish = perception.nearbyResources.find(resource => resource.type === "fish"); const fishFailures = Number(agent.actionFailures?.catch_fish ?? 0); if (fish && simulation.world.resources.fish.amount > 0 && knownActions.some(action => action.name === "catch_fish") && fishFailures < 3 && agent.needs.energy > 0) return { name: "catch_fish", amount: 1, baseValue: 999, effects: { hunger: 1.6 }, distance: fish.distance, target: { ...fish.position } }; if (fishFailures >= 3 || agent.needs.energy <= 10) { const anchor = agent.knownResources?.water ?? agent.knownResources?.fish; if (anchor) { const angle = getRandom(simulation)() * Math.PI * 2; const distance = 8 + getRandom(simulation)() * 10; const bounds = simulation.world.bounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 }; const target = { x: Math.max(bounds.minX, Math.min(bounds.maxX, anchor.x + Math.cos(angle) * distance)), z: Math.max(bounds.minZ, Math.min(bounds.maxZ, anchor.z + Math.sin(angle) * distance)) }; return { name: "explore_area", baseValue: 999, explorationValue: 1, novelty: 1, target }; } const target = createExplorationTarget(agent, simulation.world, getRandom(simulation)); return { name: "explore_area", baseValue: 999, explorationValue: 1, target }; } return null; }
 const DECISION_COOLDOWN_HOURS = 0.25; const FAILED_DECISION_COOLDOWN_HOURS = 0.05;
