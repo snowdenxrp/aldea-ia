@@ -18,19 +18,24 @@ export function getVillageLayout(){
   // Escala residencial más abierta: cada casa tiene aire alrededor y
   // ninguna se coloca directamente sobre un camino principal.
   const buildings=[
-    {type:"house",x:-10,z:-6,rotation:-.18,scale:1.02},
-    {type:"house",x:5,z:-6.5,rotation:.05,scale:1.00},
-    {type:"house",x:12.2,z:-6.8,rotation:.2,scale:1.04},
-    {type:"house",x:21.0,z:-5.0,rotation:.42,scale:1.00},
-    {type:"house",x:20.2,z:6.2,rotation:.62,scale:1.05},
-    {type:"house",x:11.8,z:13.0,rotation:.95,scale:1.02},
-    {type:"house",x:1.0,z:16.0,rotation:-.9,scale:1.06},
-    {type:"house",x:-8.8,z:10.8,rotation:-1,scale:1.00},
-    {type:"house",x:27.0,z:2.0,rotation:.2,scale:1.02},
-    {type:"house",x:27.0,z:12.0,rotation:.35,scale:1.00},
-    {type:"house",x:4.0,z:-17.0,rotation:.1,scale:1.02},
-    {type:"house",x:15.0,z:-16.0,rotation:-.2,scale:1.00},
-    {type:"barn",x:24,z:-12},
+    // Anillo residencial norte: fachadas hacia calles, no sobre ellas.
+    {type:"house",x:-7.5,z:9.0,rotation:-.25,scale:1.04},
+    {type:"house",x:1.0,z:15.0,rotation:-.05,scale:1.02},
+    {type:"house",x:10.5,z:13.8,rotation:.18,scale:1.06},
+    {type:"house",x:19.5,z:10.5,rotation:.38,scale:1.03},
+    {type:"house",x:26.5,z:6.5,rotation:.52,scale:1.00},
+
+    // Anillo residencial sur: separado del eje central y con patios entre casas.
+    {type:"house",x:-8.5,z:-7.2,rotation:-.35,scale:1.03},
+    {type:"house",x:2.8,z:-6.2,rotation:.05,scale:1.00},
+    {type:"house",x:13.0,z:-7.0,rotation:.25,scale:1.05},
+    {type:"house",x:21.5,z:-5.5,rotation:.45,scale:1.02},
+    {type:"house",x:28.0,z:-1.5,rotation:.58,scale:1.00},
+    {type:"house",x:7.5,z:-17.0,rotation:.10,scale:1.04},
+    {type:"house",x:18.5,z:-16.0,rotation:-.18,scale:1.02},
+
+    // Edificios públicos/productivos en el borde.
+    {type:"barn",x:25,z:-12},
     {type:"tower",x:-10,z:15}
   ];
 
