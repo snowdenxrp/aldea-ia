@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lúmina — Aldea IA</title>
-  <link rel="stylesheet" href="./style.css?v=13" />
+  <link rel="stylesheet" href="./style.css?v=14" />
 </head>
 <body>
   <div id="hud">
     <div class="title">LÚMINA</div>
-    <div id="worldTime" class="subtitle">Aldea IA · Cargando mundo…</div>
+    <div id="worldTime" class="subtitle">Aldea IA · Iniciando simulación…</div>
   </div>
   <div id="agentDebug" aria-label="Habitantes de Lúmina">
     <strong>Habitantes: 2</strong>
@@ -30,6 +30,35 @@
     <section class="agentSection"><h3>Experiencias recientes</h3><div id="agentExperiences"></div></section>
   </aside>
   <div id="app"></div>
-  <script type="module" src="./src/main-stable.js?v=16"></script>
+  <script>
+    window.__luminaBoot = { startedAt: Date.now(), errors: [] };
+    function showBootError(message) {
+      const box = document.getElementById('status');
+      if (box) {
+        box.textContent = '⚠️ Error de arranque de Lúmina: ' + message;
+        box.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:99999;padding:12px 14px;background:#5b1f1f;color:#fff;border:1px solid #ff8d8d;border-radius:10px;font:14px/1.4 system-ui,sans-serif;white-space:pre-wrap;';
+      }
+      const hud = document.getElementById('worldTime');
+      if (hud) hud.textContent = 'Lúmina · diagnóstico de arranque';
+    }
+    window.addEventListener('error', e => {
+      const msg = e.error?.stack || e.message || 'error desconocido';
+      window.__luminaBoot.errors.push(msg);
+      showBootError(msg);
+    });
+    window.addEventListener('unhandledrejection', e => {
+      const msg = e.reason?.stack || String(e.reason || 'promesa rechazada');
+      window.__luminaBoot.errors.push(msg);
+      showBootError(msg);
+    });
+  </script>
+  <script type="module">
+    try {
+      await import('./src/main-stable.js?v=17');
+    } catch (error) {
+      showBootError(error?.stack || error?.message || String(error));
+      console.error('Lúmina boot failure', error);
+    }
+  </script>
 </body>
 </html>
