@@ -222,13 +222,34 @@ function normalize(){for(const fallback of createInitialAgents()){let a=agents.f
 function applyState(s){Object.assign(world,structuredClone(s.world));simulation.day=Number(s.day)||world.day||1;simulation.hour=Number.isFinite(+s.hour)?+s.hour:(world.timeOfDay||8);simulation.events=Array.isArray(s.events)?s.events.slice(-500):[];agents.splice(0,agents.length,...structuredClone(s.agents));normalize();world.day=simulation.day;world.timeOfDay=simulation.hour;}
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({version:8,savedAt:Date.now(),day:simulation.day,hour:simulation.hour,world,agents,events:simulation.events.slice(-500)}));}catch{}}
 function loadLocal(){try{const current=JSON.parse(localStorage.getItem(SAVE_KEY)||"null"),legacy=["lumina-world-v8","lumina-world-v7","lumina-world-v6","lumina-world-v5","lumina-world-v4","lumina-world-v3"].map(k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch{return null}}).filter(validState);let chosen=validState(current)?current:null;if(legacy.length){const best=legacy.sort((a,b)=>(+b.savedAt||0)-(+a.savedAt||0))[0];if(!chosen||(+best.day>+chosen.day||(+best.day===+chosen.day&&+best.hour>+chosen.hour)))chosen=best;}if(chosen)applyState(chosen);}catch{}}
-async function loadRemoteIfNeeded(){try{const local=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");const r=await fetch("./world-state.json?ts="+Date.now(),{cache:"no-store"});if(!r.ok)return;const remote=await r.json();if(!validState(remote))return;
-if(Number(remote?.version)<4){
-  const plants=remote.world?.resources?.wild_plants, fish=remote.world?.resources?.fish;
-  if(plants && Number(plants.amount)<=0) plants.amount=80;
-  if(fish && Number(fish.amount)<=0) fish.amount=60;
+async function loadRemoteIfNeeded(){
+  try{
+    const local=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");
+    const remoteUrl=new URL("../world-state.json",import.meta.url);
+    remoteUrl.searchParams.set("ts",Date.now().toString());
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),8000);
+    const r=await fetch(remoteUrl.href,{cache:"no-store",headers:{"Cache-Control":"no-cache"},signal:controller.signal});
+    clearTimeout(timeout);
+    if(!r.ok)throw new Error("world-state HTTP "+r.status);
+    const remote=await r.json();
+    if(!validState(remote))throw new Error("world-state inválido");
+    if(Number(remote?.version)<4){
+      const plants=remote.world?.resources?.wild_plants, fish=remote.world?.resources?.fish;
+      if(plants && Number(plants.amount)<=0) plants.amount=80;
+      if(fish && Number(fish.amount)<=0) fish.amount=60;
+    }
+    // world-state.json is the canonical simulation snapshot. Never let an old
+    // browser save (for example day 1) hide a newer published simulation.
+    const localStamp=(Number(local?.day)||0)*24+(Number(local?.hour)||0);
+    const remoteStamp=(Number(remote?.day)||0)*24+(Number(remote?.hour)||0);
+    if(!validState(local)||remoteStamp>=localStamp){
+      applyState(remote); save(); syncMeshes(); syncStructures(); syncSettlementVisualState(); centerOnAgents();
+    }
+  }catch(e){
+    console.warn("Lúmina: no se pudo cargar world-state remoto",e);
+  }
 }
-const localStamp=(Number(local?.day)||0)*24+(Number(local?.hour)||0);const remoteStamp=(Number(remote?.day)||0)*24+(Number(remote?.hour)||0);if(!validState(local)||remoteStamp>localStamp){applyState(remote);save();syncMeshes();syncStructures();syncSettlementVisualState();centerOnAgents();}}catch{}}
 function createMesh(a){
   const g=new THREE.Group(); g.userData.agentId=a.id; g.scale.setScalar(1.42);
   const blue=a.id==="alex", skin=0xf0bd91, clothes=blue?0x2f7de1:0xe87832, dark=blue?0x1f4f8c:0xb45624;
