@@ -202,17 +202,26 @@ function createMesh(a){
   const g=new THREE.Group(); g.userData.agentId=a.id; g.scale.setScalar(1.42);
   const blue=a.id==="alex", skin=0xf0bd91, clothes=blue?0x2f7de1:0xe87832, dark=blue?0x1f4f8c:0xb45624;
   const skinMat=material(skin,.9), clothMat=material(clothes,.82), darkMat=material(dark,.88), hairMat=material(0x3b2a22,1), shoeMat=material(0x3b332f,1);
-  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.39,.58,8,12),clothMat); torso.position.y=1.18;
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(.42,.34,.72,12),clothMat); torso.position.y=1.18;
   const collar=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,6,16),skinMat); collar.rotation.x=Math.PI/2; collar.position.y=1.52;
-  const pelvis=new THREE.Mesh(new THREE.CapsuleGeometry(.31,.22,8,12),darkMat); pelvis.position.y=.76;
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,.18,10),skinMat); neck.position.y=1.66;
+  const pelvis=new THREE.Mesh(new THREE.CylinderGeometry(.34,.31,.32,12),darkMat); pelvis.position.y=.76;
+  const shoulderL=new THREE.Mesh(new THREE.SphereGeometry(.17,12,10),clothMat), shoulderR=shoulderL.clone(); shoulderL.position.set(-.38,1.43,0); shoulderR.position.set(.38,1.43,0);
   const head=new THREE.Mesh(new THREE.SphereGeometry(.32,24,18),skinMat); head.scale.set(1,.98,.96); head.position.y=1.91;
+  const earL=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),skinMat), earR=earL.clone(); earL.position.set(-.305,1.91,0); earR.position.set(.305,1.91,0);
   const hair=new THREE.Mesh(new THREE.SphereGeometry(.335,24,14,0,Math.PI*2,0,Math.PI*.58),hairMat); hair.position.y=2.04;
   const nose=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),skinMat); nose.position.set(0,1.91,.335);
+  const eyeWhiteMat=new THREE.MeshBasicMaterial({color:0xf5f2e8,depthTest:false});
   const eyeMat=new THREE.MeshBasicMaterial({color:0x18222b,depthTest:false});
-  const eyeL=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),eyeMat), eyeR=eyeL.clone(); eyeL.position.set(-.115,1.98,.315); eyeR.position.set(.115,1.98,.315);
+  const eyeWL=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),eyeWhiteMat), eyeWR=eyeWL.clone(); eyeWL.position.set(-.115,1.98,.315); eyeWR.position.set(.115,1.98,.315);
+  const eyeL=new THREE.Mesh(new THREE.SphereGeometry(.026,8,6),eyeMat), eyeR=eyeL.clone(); eyeL.position.set(-.115,1.98,.365); eyeR.position.set(.115,1.98,.365);
+  const mouth=box(.11,.018,.018,0x713f3a); mouth.position.set(0,1.81,.315);
   const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.085,.44,7,10),clothMat), armR=armL.clone(); armL.position.set(-.39,1.2,0); armR.position.set(.39,1.2,0); armL.rotation.z=-.08; armR.rotation.z=.08;
   const handL=new THREE.Mesh(new THREE.SphereGeometry(.105,10,8),skinMat), handR=handL.clone(); handL.position.set(-.39,.89,0); handR.position.set(.39,.89,0);
   const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.56,7,10),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
+  const kneeMat=material(blue?0x255fae:0xc75f2d,.86);
+  const kneeL=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),kneeMat), kneeR=kneeL.clone(); kneeL.scale.set(1,.72,.8); kneeR.scale.set(1,.72,.8); kneeL.position.set(-.16,.49,.105); kneeR.position.set(.16,.49,.105);
+  const cuffL=new THREE.Mesh(new THREE.TorusGeometry(.105,.018,6,12),darkMat), cuffR=cuffL.clone(); cuffL.rotation.x=Math.PI/2; cuffR.rotation.x=Math.PI/2; cuffL.position.set(-.39,.91,.02); cuffR.position.set(.39,.91,.02);
   const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),shoeMat), footR=footL.clone(); footL.scale.set(1,.55,1.45); footR.scale.set(1,.55,1.45); footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
   const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false})); marker.position.y=2.47;
   const role=a.specialization?.role??a.socialRole;
@@ -239,7 +248,7 @@ function createMesh(a){
   activityToolGroup.position.set(.48,1.02,.18); g.add(activityToolGroup);
   g.userData.activityTools={group:activityToolGroup,parts};
   const shadow=new THREE.Mesh(new THREE.CircleGeometry(.34,20),material(0x2b241f,.95)); shadow.scale.set(1,.55,1); shadow.rotation.x=-Math.PI/2; shadow.position.y=.012; g.add(shadow); g.userData.shadow=shadow;
-  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR,head};addVisualDetail(g,a);
+  g.add(torso,collar,neck,pelvis,shoulderL,shoulderR,head,earL,earR,hair,nose,eyeWL,eyeWR,eyeL,eyeR,mouth,armL,armR,handL,handR,cuffL,cuffR,legL,legR,kneeL,kneeR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR,head};addVisualDetail(g,a);
   g.traverse(o=>{if(o.isMesh)o.renderOrder=1000;}); return (scene.add(g),g);
 }
 function animateHumanoid(m,a,t){
