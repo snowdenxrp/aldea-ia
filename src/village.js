@@ -56,7 +56,7 @@ function addGrassField(scene,layout){
    if(Math.abs(jx-layout.river.centerX)<layout.river.width/2+1.5)continue;
    if(Math.hypot(jx-layout.plaza.x,jz-layout.plaza.z)<layout.plaza.radius+1.2)continue;
    if(layout.paths.some(p=>insideRect(jx,jz,1.4,p)))continue;
-   if(layout.buildings.some(b=>b.type==="house"&&Math.hypot(jx-b.x,jz-b.z)<4.2))continue;
+   if(layout.buildings.some(b=>Math.hypot(jx-b.x,jz-b.z)<4.5))continue;
    const s=.55+hash2(ix+3,iz+7)*.8;
    dummy.position.set(jx,.17*s,jz);
    dummy.scale.set(1,s,1);
