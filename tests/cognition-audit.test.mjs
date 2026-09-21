@@ -56,7 +56,8 @@ function agent() {
   source.currentIntent = { name: "share_knowledge" };
   // Knowledge sharing is now a multi-phase activity. Advance through the
   // approach/teaching routine before asserting the resulting social learning.
-  tick(sim, 0.5);
+  tick(sim, 0.05);
+  tick(sim, 0.32);
   const learned = recipient.knowledge.find(item => item.topic === "action:catch_fish");
   assert(learned, "El conocimiento compartido debe llegar al receptor.");
   assert(learned.confidence > 0.1, "La evidencia social debe modificar la confianza del receptor.");
