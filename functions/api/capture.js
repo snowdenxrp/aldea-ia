@@ -47,6 +47,7 @@ export async function onRequestPost({request,env}){
   const historyMetadataPath="audits/visual/history/"+id+".json";
   const encoded=toBase64(new Uint8Array(await image.arrayBuffer()));
   const meta=JSON.stringify({...metadata,serverSavedAt:now.toISOString(),imageBytes:image.size,historyPath,latestPath},null,2);
+  const metaEncoded=toBase64(new TextEncoder().encode(meta));
   async function put(path,content,message){
     let sha;
     try{const existing=await github("/repos/"+REPO+"/contents/"+path+"?ref="+encodeURIComponent(BRANCH),{},env.GITHUB_TOKEN);sha=existing.sha;}catch(e){if(!String(e.message).includes("404"))throw e;}
@@ -57,7 +58,7 @@ export async function onRequestPost({request,env}){
   }
   await put(historyPath,encoded,"audit: save visual capture "+id);
   await put(latestPath,encoded,"audit: update latest visual capture");
-  await put(historyMetadataPath,btoa(unescape(encodeURIComponent(meta))),"audit: save visual capture metadata "+id);
+  await put(historyMetadataPath,metaEncoded,"audit: save visual capture metadata "+id);
   await put(metadataPath,btoa(unescape(encodeURIComponent(meta))),"audit: update latest visual metadata");
   return json({ok:true,latestPath,historyPath,metadataPath,githubUrl:"https://github.com/"+REPO+"/blob/"+BRANCH+"/"+latestPath});
 }
