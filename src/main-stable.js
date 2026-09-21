@@ -4,6 +4,7 @@ import { createInitialAgents } from "./agents.js";
 import { createSimulation, tick } from "./simulation.js";
 import { setMovementTarget, moveAgent } from "./movement.js";
 import { getRegionForPosition, getBiomeForRegion, normalizeSpatialWorld } from "./spatial.js";
+import { buildVillage } from "./village.js";
 
 const app=document.querySelector("#app"), worldTime=document.querySelector("#worldTime");
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df); scene.fog=new THREE.Fog(0x9ec9df,55,150);
@@ -106,6 +107,7 @@ function createWaterRipples(){
   }
 }
 createWaterRipples();
+buildVillage(scene);
 const structureMeshes=new Map();
 function material(color,roughness=.8){return new THREE.MeshStandardMaterial({color,roughness});}
 function box(w,h,d,color){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material(color));}
