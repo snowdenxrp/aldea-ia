@@ -2,6 +2,7 @@ export { runDebugger } from "./debugger.js";
 export { runTester } from "./tester.js";
 export { analyzeLumina } from "./analyst.js";
 export { classifyRenderProbe, buildRenderEvidence } from "./render.js";
+export { runAssistantSquad, runVisualAssistant, runExplorerAssistant, runBehaviorAssistant, runEcosystemAssistant, runSocietyAssistant, runAuditAgent } from "./squad.js";
 
 export function buildAssistantReport({ debuggerReport, testerReport, analystReport }) {
   const reports = [debuggerReport, testerReport, analystReport].filter(Boolean);

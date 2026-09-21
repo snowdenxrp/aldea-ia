@@ -142,7 +142,7 @@ function syncStructures(){
 
 const agents=createInitialAgents(),simulation=createSimulation(world,agents),SAVE_KEY="lumina-world-v10";
 let selectedAgentId=null;
-let cameraTarget=new THREE.Vector3(1,0,1),cameraDistance=44,cameraYaw=.55,cameraPitch=.58,last=performance.now(),lastSave=last,fault=null;
+let cameraTarget=new THREE.Vector3(1,0,1),cameraDistance=56,cameraYaw=.55,cameraPitch=.58,last=performance.now(),lastSave=last,fault=null;
 const meshes=new Map();
 function validState(s){return s&&s.world?.resources&&Array.isArray(s.agents)&&s.agents.some(a=>a?.id==="alex")&&s.agents.some(a=>a?.id==="bruno");}
 function normalize(){for(const fallback of createInitialAgents()){let a=agents.find(x=>x.id===fallback.id);if(!a){a=structuredClone(fallback);agents.push(a);}if (typeof a.alive !== "boolean") a.alive = fallback.alive;a.position??={...fallback.position};a.position.x=Number.isFinite(+a.position.x)?+a.position.x:fallback.position.x;a.position.z=Number.isFinite(+a.position.z)?+a.position.z:fallback.position.z;a.position.x=Math.max(world.bounds.minX,Math.min(world.bounds.maxX,a.position.x));a.position.z=Math.max(world.bounds.minZ,Math.min(world.bounds.maxZ,a.position.z));a.currentActivity??="idle";a.currentIntent??=null;a.worldBounds={minX:world.bounds.minX,maxX:world.bounds.maxX,minZ:world.bounds.minZ,maxZ:world.bounds.maxZ};a.decisionCooldownHours=Number.isFinite(+a.decisionCooldownHours)?Math.max(0,+a.decisionCooldownHours):0;a.lastActionName??=null;a.needs??={hunger:100,thirst:100,energy:100,social:100,safety:100,health:100};a.inventory??=[];a.knowledge??=[];a.relationships??=[];a.experiences??=[];}}
@@ -288,7 +288,7 @@ renderer.domElement.addEventListener("pointermove",e=>{
   if(pointers.size===2){
     const pts=[...pointers.values()];
     const d=distance(pts[0],pts[1]);
-    if(pinchStart>0)cameraDistance=Math.max(10,Math.min(75,cameraDistance+(pinchStart-d)*.07));
+    if(pinchStart>0)cameraDistance=Math.max(10,Math.min(110,cameraDistance+(pinchStart-d)*.07));
     pinchStart=d;
     const a=angle(pts[0],pts[1]);
     let da=a-lastAngle;
@@ -324,7 +324,7 @@ function endPointer(e){
 }
 renderer.domElement.addEventListener("pointerup",endPointer);
 renderer.domElement.addEventListener("pointercancel",endPointer);
-renderer.domElement.addEventListener("wheel",e=>{e.preventDefault();cameraDistance=Math.max(10,Math.min(75,cameraDistance+e.deltaY*.035));},{passive:false});
+renderer.domElement.addEventListener("wheel",e=>{e.preventDefault();cameraDistance=Math.max(10,Math.min(110,cameraDistance+e.deltaY*.035));},{passive:false});
 addEventListener("keydown",e=>{
   const s=1.2;
   if(e.key==="w"||e.key==="ArrowUp")cameraTarget.z-=s;
@@ -332,7 +332,7 @@ addEventListener("keydown",e=>{
   if(e.key==="a"||e.key==="ArrowLeft")cameraTarget.x-=s;
   if(e.key==="d"||e.key==="ArrowRight")cameraTarget.x+=s;
   if(e.key==="+"||e.key==="=")cameraDistance=Math.max(10,cameraDistance-2);
-  if(e.key==="-")cameraDistance=Math.min(75,cameraDistance+2);
+  if(e.key==="-")cameraDistance=Math.min(110,cameraDistance+2);
   clampCamera();
 });
 function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;if(fault)return;try{for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);}syncMeshes();const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}if(now-lastSave>=2000){save();lastSave=now;}}catch(e){fault=e;console.error("Lúmina",e);}}
