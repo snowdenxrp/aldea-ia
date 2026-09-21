@@ -467,5 +467,14 @@ addEventListener("keydown",e=>{
   if(e.key==="-")cameraDistance=Math.min(110,cameraDistance+2);
   clampCamera();
 });
-function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;if(fault)return;try{animateLighting(simulation.hour);animateEnvironment(now/1000);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);}syncMeshes();const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}if(now-lastSave>=2000){save();lastSave=now;}}catch(e){fault=e;console.error("Lúmina",e);}}
+function update(){
+  const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;
+  // El render nunca debe congelar la simulación completa por un fallo visual aislado.
+  try{animateLighting(simulation.hour);}catch(e){console.error("Lúmina lighting",e);}
+  try{animateEnvironment(now/1000);}catch(e){console.error("Lúmina environment",e);}
+  try{for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);}}catch(e){console.error("Lúmina simulation",e);}
+  try{syncMeshes();}catch(e){console.error("Lúmina meshes",e);}
+  try{const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}}catch(e){console.error("Lúmina UI",e);}
+  if(now-lastSave>=2000){try{save();}catch(e){console.error("Lúmina save",e);}lastSave=now;}
+}
 loadLocal();normalize();syncMeshes();centerOnAgents();loadRemoteIfNeeded();updateCamera();addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});addEventListener("beforeunload",save);function animate(){requestAnimationFrame(animate);update();updateCamera();renderer.render(scene,camera);}animate();
