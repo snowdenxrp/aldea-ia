@@ -172,14 +172,27 @@ function advanceActivityRoutine(agent,hours){
   if(!sequence)return false;
   const phases=ACTIVITY_ROUTINES[sequence.intentName];
   if(!phases){agent.activitySequence=null;agent.activityPhase=null;return false;}
-  sequence.remainingHours=Math.max(0,Number(sequence.remainingHours??0)-hours);
-  while(sequence.remainingHours<=0&&sequence.phaseIndex<phases.length-1){
+  let remaining=Math.max(0,Number(hours)||0);
+  while(remaining>0){
+    const phaseRemaining=Math.max(0,Number(sequence.remainingHours??0));
+    if(remaining<phaseRemaining){
+      sequence.remainingHours=phaseRemaining-remaining;
+      remaining=0;
+      break;
+    }
+    remaining-=phaseRemaining;
     sequence.completedPhases.push(sequence.phase);
+    if(sequence.phaseIndex>=phases.length-1){
+      sequence.remainingHours=0;
+      sequence.activityComplete=true;
+      break;
+    }
     sequence.phaseIndex+=1;
     sequence.phase=phases[sequence.phaseIndex].name;
     sequence.remainingHours=Number(phases[sequence.phaseIndex].hours)||0;
   }
-  return sequence.phaseIndex<phases.length-1||sequence.remainingHours>0;
+  agent.activityPhase=sequence.phase;
+  return !(sequence.activityComplete===true);
 }
 const DECISION_COOLDOWN_HOURS = 0.25; const FAILED_DECISION_COOLDOWN_HOURS = 0.05;
 const NON_LEARNING_FAILURES = new Set(["no_water","no_plants","no_fish","no_wood","no_stone","no_fish_in_inventory","no_farm_food","no_ready_crop","no_person_nearby","nothing_to_share","cooperation_not_available","no_shared_project","invalid_partner","seller_lacks_goods","buyer_lacks_money","insufficient_materials","no_fertile_land","no_institution_membership","invalid_commons_resource","insufficient_contribution","commons_empty"]);
