@@ -204,10 +204,10 @@ function animateHumanoid(m,a,t){
   const parts=m.userData.parts; if(!parts)return;
   const activity=a.currentActivity??"idle";
   const phase=a.activityPhase??null;
-  const phase=t*7+(a.id==="alex"?0:1.7),walk=Math.sin(phase);
+  const cycle=t*7+(a.id==="alex"?0:1.7),walk=Math.sin(cycle);
   const moving=Boolean(a.movement?.moving)||activity==="moving";
   let armL=0,armR=0,legL=0,legR=0,bounce=0,lean=0;
-  if(moving){armL=walk*.55;armR=-walk*.55;legL=-walk*.85;legR=walk*.85;bounce=Math.abs(Math.sin(phase*2))*.035;lean=.025*Math.cos(phase);}
+  if(moving){armL=walk*.55;armR=-walk*.55;legL=-walk*.85;legR=walk*.85;bounce=Math.abs(Math.sin(cycle*2))*.035;lean=.025*Math.cos(cycle);}
   else if(activity==="gathering"){const w=Math.sin(t*9);armL=-.55+w*.9;armR=.2-w*.4;legL=.08;legR=-.08;bounce=Math.abs(w)*.018;}
   else if(activity==="building"||activity==="crafting"){const w=Math.sin(t*8);armL=-.45+w*.95;armR=-.25-w*.65;legL=.05;legR=-.05;bounce=Math.abs(w)*.01;}
   else if(activity==="farming"||activity==="planting"||activity==="harvesting"){const w=Math.sin(t*6);armL=-.35+w*.7;armR=.05-w*.55;legL=.1;legR=-.1;bounce=Math.abs(w)*.014;}
