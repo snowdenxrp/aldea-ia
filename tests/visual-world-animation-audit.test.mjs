@@ -6,3 +6,5 @@ for(const token of ['activity==="gathering"','activity==="fishing"','activity===
 for(const token of ["activityToolGroup","parts.axe","parts.hammer","parts.hoe","parts.rod","crop"]) assert.ok(source.includes(token),"faltó herramienta visual: "+token);
 assert.ok(!source.includes("\\n"),"se detectaron saltos de línea literales");
 console.log(JSON.stringify({audit:"lumina-visual-world-animation",environment:["trees","rocks","plants"],animation:"activity-driven-limb-motion",verdict:"PASS"},null,2));
+
+assert.ok(source.includes("socializing")); assert.ok(source.includes("building")); assert.ok(source.includes("farming")); assert.ok(source.includes("m.rotation.y"));
