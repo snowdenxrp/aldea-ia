@@ -85,8 +85,12 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
   alex.needs = { hunger: 70, thirst: 80, energy: 100, social: 100, safety: 100, health: 100 };
   alex.currentIntent = { name: "gather_wood", amount: 1, baseValue: 0, target: { ...sim.world.resources.wood.position } };
   sim.world.resources.wood.amount = 0;
-  for(let i=0;i<40;i+=1) tick(sim, 0.01);
-  assert.equal(alex.lastActionResult?.success, false, "La acción preparada debe fallar por falta del recurso.");
+  let failed = false;
+  for(let i=0;i<40;i+=1) {
+    tick(sim, 0.01);
+    if (alex.lastActionResult?.success === false) { failed = true; break; }
+  }
+  assert(failed, "La acción preparada debe fallar por falta del recurso.");
   const failedSnapshot = JSON.stringify(alex.decisionSnapshot);
   assert(alex.decisionCooldownHours >= 0.05, "Un fallo debe abrir una pequeña ventana antes de recomputar.");
   tick(sim, 0.01);

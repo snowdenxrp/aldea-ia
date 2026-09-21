@@ -30,6 +30,8 @@ function validate(simulation) {
     if (["alex","bruno"].includes(agent.id) && agent.alive !== true && agent.needs.health > 0) problems.push("invalid_alive_state:" + agent.id);
     for (const item of agent.inventory ?? []) if (!finite(item.amount) || Number(item.amount) < 0) problems.push("invalid_inventory:" + agent.id);
     if (agent.lastActionResult?.reason === "simulation_error") problems.push("simulation_error:" + agent.id);
+    if (agent.alive === false && agent.currentActivity !== "dead") problems.push("dead_agent_not_terminal:" + agent.id);
+    if (agent.alive === false && agent.movement?.moving) problems.push("dead_agent_moving:" + agent.id);
     if (agent.plan && (!Number.isFinite(Number(agent.plan.progress)) || Number(agent.plan.progress) < 0)) problems.push("invalid_plan:" + agent.id);
     for (const tool of agent.inventory ?? []) if (tool.type === "tool" && (!finite(tool.durability) || Number(tool.durability) < 0)) problems.push("invalid_tool:" + agent.id);
   }
