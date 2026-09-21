@@ -8,7 +8,7 @@ export function getVillageLayout(){
     {name:"bridge-west",x:-24.8,z:0,width:4.2,length:8,rotation:0},
     {name:"bridge-east",x:-11.2,z:0,width:4.2,length:8,rotation:0},
     {name:"north",x:3,z:10.8,width:3.2,length:23,rotation:0},
-    {name:"south",x:3,z:-10.8,width:3.2,length:23,rotation:0},
+    {name:"south",x:0,z:-10.8,width:3.2,length:23,rotation:0},
     {name:"east",x:15.2,z:1,width:3.1,length:29,rotation:0},
     {name:"west",x:-5.8,z:1,width:3.1,length:18,rotation:0},
     {name:"market-link",x:8.7,z:1,width:2.8,length:9,rotation:0},
