@@ -61,6 +61,44 @@ function createFarm(s){
   }
   g.add(soil); g.position.set(s.position?.x??0,.0,s.position?.z??0); return g;
 }
+const settlementDecorationMeshes=new Map();
+function createSettlementDecoration(id,type,position){
+  const g=new THREE.Group(); g.userData.decorationId=id; g.userData.decorationType=type;
+  if(type==="storage"){
+    const body=box(1.15,.7,.8,0x8b633f); body.position.y=.35;
+    const lid=box(1.25,.12,.86,0x5f422d); lid.position.y=.76; g.add(body,lid);
+  } else if(type==="workbench"){
+    const top=box(1.35,.12,.65,0x795332); top.position.y=.78;
+    for(const x of [-.52,.52]){const leg=box(.1,.75,.1,0x5f422d);leg.position.set(x,.38,0);g.add(leg);}
+    const tool=box(.8,.06,.08,0x8b9298); tool.position.set(0,.88,.08); g.add(top,tool);
+  } else {
+    for(const x of [-.9,0,.9]){const post=box(.09,.55,.09,0x6b4b32);post.position.set(x,.275,0);g.add(post);}
+    const rail=box(2.0,.09,.09,0x6b4b32);rail.position.set(0,.38,0);g.add(rail);
+  }
+  g.position.set(position.x??0,.0,position.z??0); return g;
+}
+function syncSettlementDecorations(){
+  const regions=simulation.world.spatial?.regions??{};
+  const structures=simulation.world.structures??{};
+  const all=[...(structures.shelters??[]).map(s=>({...s,type:"shelter"})),...(structures.farms??[]).map(s=>({...s,type:"farm"}))];
+  const live=new Set();
+  for(const s of all){
+    const key=getRegionKeyForVisual({x:s.position?.x??0,z:s.position?.z??0});
+    const state=regions[key]; const level=Math.max(0,Math.min(5,Number(state?.settlementLevel??0)));
+    const base={x:(s.position?.x??0),z:(s.position?.z??0)};
+    const wanted=[];
+    if(level>=2) wanted.push(["fence",{x:base.x+2.5,z:base.z}]);
+    if(level>=3) wanted.push(["storage",{x:base.x-2.4,z:base.z+.3}]);
+    if(level>=4) wanted.push(["workbench",{x:base.x,z:base.z-2.4}]);
+    for(const [type,pos] of wanted){
+      const id=s.id+":"+type; live.add(id);
+      let m=settlementDecorationMeshes.get(id);
+      if(!m){m=createSettlementDecoration(id,type,pos);settlementDecorationMeshes.set(id,m);scene.add(m);}
+      m.position.set(pos.x,0,pos.z); m.visible=true; m.userData.settlementLevel=level;
+    }
+  }
+  for(const [id,m] of settlementDecorationMeshes) if(!live.has(id)) m.visible=false;
+}
 function syncSettlementVisualState(){
   const regions=simulation.world.spatial?.regions??{};
   const populationByRegion=new Map();
@@ -69,6 +107,7 @@ function syncSettlementVisualState(){
     const key=agent.position?getRegionKeyForVisual(agent.position):null;
     if(key)populationByRegion.set(key,(populationByRegion.get(key)||0)+1);
   }
+  syncSettlementDecorations();
   for(const [id,m] of structureMeshes){
     const x=m.position.x,z=m.position.z;
     const key=getRegionKeyForVisual({x,z});
