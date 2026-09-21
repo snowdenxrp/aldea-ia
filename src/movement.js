@@ -42,6 +42,21 @@ export function moveAgent(agent, deltaSeconds) {
   if (!agent.position||!Number.isFinite(Number(agent.position.x))||!Number.isFinite(Number(agent.position.z))) {
     agent.position={x:0,z:0};
   }
+  // Si la IA todavía no ha elegido una acción, el habitante no debe quedarse
+  // congelado: activa un paseo autónomo corto y reversible. En cuanto existe
+  // una intención real con objetivo, ésta tiene prioridad.
+  if (!movement.target && agent.alive && !agent.currentIntent && agent.currentActivity === "idle") {
+    const bounds = agent.worldBounds ?? { minX: -34, maxX: 34, minZ: -34, maxZ: 34 };
+    const seed = (agent.id === "alex" ? 0 : 1) + Math.floor(Date.now() / 9000);
+    const angle = seed * 2.399;
+    const radius = 5 + (seed % 4) * 1.5;
+    setMovementTarget(agent, {
+      x: agent.position.x + Math.cos(angle) * radius,
+      z: agent.position.z + Math.sin(angle) * radius
+    }, bounds);
+    agent.currentActivity = "moving";
+  }
+
   if (!movement.target || !Number.isFinite(Number(movement.target.x)) || !Number.isFinite(Number(movement.target.z)) || !agent.alive) {
     movement.moving = false;
     return false;
