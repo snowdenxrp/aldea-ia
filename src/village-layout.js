@@ -18,8 +18,8 @@ export function getVillageLayout(){
   // Escala residencial más abierta: cada casa tiene aire alrededor y
   // ninguna se coloca directamente sobre un camino principal.
   const buildings=[
-    {type:"house",x:-8.8,z:-7.2,rotation:-.18,scale:1.02},
-    {type:"house",x:2.8,z:-8.1,rotation:.05,scale:1.00},
+    {type:"house",x:-10,z:-6,rotation:-.18,scale:1.02},
+    {type:"house",x:3,z:-6.5,rotation:.05,scale:1.00},
     {type:"house",x:12.2,z:-6.8,rotation:.2,scale:1.04},
     {type:"house",x:21.0,z:-5.0,rotation:.42,scale:1.00},
     {type:"house",x:20.2,z:6.2,rotation:.62,scale:1.05},
