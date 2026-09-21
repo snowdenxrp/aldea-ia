@@ -70,6 +70,7 @@ export function moveAgent(agent, deltaSeconds) {
     agent.position.x = movement.target.x;
     agent.position.z = movement.target.z;
     stopMovement(agent);
+    if (!agent.currentIntent && agent.currentActivity === "moving") agent.currentActivity = "idle";
     return true;
   }
 
