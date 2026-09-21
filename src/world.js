@@ -1,4 +1,5 @@
 import { advanceEcosystemDay, ecosystemModifiers, normalizeEcosystemWorld } from "./ecosystem.js";
+import { getRegionalEcology, updateRegionalEcology, getBiomeForRegion, getRegionForPosition } from "./spatial.js";
 // Estado físico y recursos de Lúmina.
 // Describe posibilidades del mundo, no conocimientos de los habitantes.
 // "possibleUses" pertenece al mundo; los agentes deben descubrir sus usos.
@@ -128,6 +129,7 @@ export function advanceWorldDay(targetWorld = world) {
   const seasonal = { spring: 1.05, summer: 1.15, autumn: 0.9, winter: 0.65 }[targetWorld.climate.season] ?? 1;
   targetWorld.climate.temperature = { spring: 20, summer: 28, autumn: 18, winter: 10 }[targetWorld.climate.season];
   advanceEcosystemDay(targetWorld, targetWorld.population ?? targetWorld.agents?.length ?? 0);
+  updateRegionalEcology(targetWorld, targetWorld.resources, targetWorld.population ?? targetWorld.agents?.length ?? 0);
   const updatedModifiers = ecosystemModifiers(targetWorld);
   const water = targetWorld.resources.water;
   water.amount = Math.min(1000, water.amount + (water.regenerationPerDay ?? 1000));
@@ -139,14 +141,24 @@ export function advanceWorldDay(targetWorld = world) {
   land.quality = Math.min(1, land.quality + land.regenerationPerDay / 100);
 
   const plants = targetWorld.resources.wild_plants;
-  plants.amount = Math.min(80, plants.amount + plants.regenerationPerDay * seasonal * updatedModifiers.plantRegeneration * (targetWorld.climate.weather === "drought" ? 0.35 : targetWorld.climate.weather === "rain" ? 1.25 : 1));
+  const plantRegion = getRegionForPosition(plants.position, targetWorld);
+  const plantEcology = getRegionalEcology(targetWorld, plants.position);
+  const plantBiome = getBiomeForRegion(plantRegion, targetWorld);
+  const plantRegionalModifier = Math.max(0.45, Math.min(1.25, plantEcology.biodiversity * 0.85 + Number(plantBiome.food ?? 1) * 0.15));
+  plants.amount = Math.min(80, plants.amount + plants.regenerationPerDay * seasonal * updatedModifiers.plantRegeneration * plantRegionalModifier * (targetWorld.climate.weather === "drought" ? 0.35 : targetWorld.climate.weather === "rain" ? 1.25 : 1));
 
   const fish = targetWorld.resources.fish;
-  fish.amount = Math.min(60, fish.amount + fish.regenerationPerDay * seasonal * updatedModifiers.fishRegeneration);
+  const fishRegion = getRegionForPosition(fish.position, targetWorld);
+  const fishEcology = getRegionalEcology(targetWorld, fish.position);
+  const fishBiome = getBiomeForRegion(fishRegion, targetWorld);
+  const fishRegionalModifier = Math.max(0.45, Math.min(1.25, fishEcology.waterQuality * 0.85 + Number(fishBiome.water ?? 1) * 0.15));
+  fish.amount = Math.min(60, fish.amount + fish.regenerationPerDay * seasonal * updatedModifiers.fishRegeneration * fishRegionalModifier);
 
   const clay = targetWorld.resources.clay;
+  const clayEcology = getRegionalEcology(targetWorld, clay.position);
+  const clayRegionalModifier = Math.max(0.55, Math.min(1.2, 0.8 + clayEcology.waterQuality * 0.2));
   if (targetWorld.structures?.farms?.length) { for (const farm of targetWorld.structures.farms) farm.food = Math.min(100, (farm.food ?? 0) + 1.5 * targetWorld.resources.fertile_land.quality * updatedModifiers.farmYield); }
-  clay.amount = Math.min(90, clay.amount + clay.regenerationPerDay * (targetWorld.climate.weather === "rain" ? 1.3 : 1));
+  clay.amount = Math.min(90, clay.amount + clay.regenerationPerDay * clayRegionalModifier * (targetWorld.climate.weather === "rain" ? 1.3 : 1));
   if (targetWorld.climate.weather === "storm") targetWorld.resources.wood.amount = Math.max(0, targetWorld.resources.wood.amount - 1);
   if (targetWorld.climate.weather === "drought") targetWorld.resources.water.amount = Math.max(0, targetWorld.resources.water.amount - 40);
 }
