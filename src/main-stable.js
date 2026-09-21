@@ -14,7 +14,7 @@ normalizeSpatialWorld(world);
 const homeRegion=getRegionForPosition({x:0,z:0},world);
 const homeBiome=getBiomeForRegion(homeRegion,world);
 const biomeGroundColors={forest:0x587f4a,plains:0x6f9b58,mountain:0x77715f,wetland:0x5f8a70,arid:0x9a8557};
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90,12,12),new THREE.MeshStandardMaterial({color:biomeGroundColors[homeBiome.type]??biomeGroundColors.plains,roughness:1})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(150,150,24,24),new THREE.MeshStandardMaterial({color:biomeGroundColors[homeBiome.type]??biomeGroundColors.plains,roughness:1})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
 const environmentMeshes=[];
 function addTree(x,z,scale=1){
   const g=new THREE.Group(); const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,1.3,7),material(0x68452f)); trunk.position.y=.65; const crown=new THREE.Mesh(new THREE.SphereGeometry(.85,10,8),material(0x3f7138)); crown.position.y=1.55; crown.scale.set(1,.9,1); g.add(trunk,crown); g.scale.setScalar(scale); g.position.set(x,0,z); g.traverse(o=>{if(o.isMesh)o.castShadow=true;}); scene.add(g); environmentMeshes.push(g);
@@ -140,7 +140,7 @@ function syncStructures(){
 
 const agents=createInitialAgents(),simulation=createSimulation(world,agents),SAVE_KEY="lumina-world-v10";
 let selectedAgentId=null;
-let cameraTarget=new THREE.Vector3(1,0,1),cameraDistance=34,cameraYaw=.55,cameraPitch=.58,last=performance.now(),lastSave=last,fault=null;
+let cameraTarget=new THREE.Vector3(1,0,1),cameraDistance=44,cameraYaw=.55,cameraPitch=.58,last=performance.now(),lastSave=last,fault=null;
 const meshes=new Map();
 function validState(s){return s&&s.world?.resources&&Array.isArray(s.agents)&&s.agents.some(a=>a?.id==="alex")&&s.agents.some(a=>a?.id==="bruno");}
 function normalize(){for(const fallback of createInitialAgents()){let a=agents.find(x=>x.id===fallback.id);if(!a){a=structuredClone(fallback);agents.push(a);}if (typeof a.alive !== "boolean") a.alive = fallback.alive;a.position??={...fallback.position};a.position.x=Number.isFinite(+a.position.x)?+a.position.x:fallback.position.x;a.position.z=Number.isFinite(+a.position.z)?+a.position.z:fallback.position.z;a.position.x=Math.max(world.bounds.minX,Math.min(world.bounds.maxX,a.position.x));a.position.z=Math.max(world.bounds.minZ,Math.min(world.bounds.maxZ,a.position.z));a.currentActivity??="idle";a.currentIntent??=null;a.worldBounds={minX:world.bounds.minX,maxX:world.bounds.maxX,minZ:world.bounds.minZ,maxZ:world.bounds.maxZ};a.decisionCooldownHours=Number.isFinite(+a.decisionCooldownHours)?Math.max(0,+a.decisionCooldownHours):0;a.lastActionName??=null;a.needs??={hunger:100,thirst:100,energy:100,social:100,safety:100,health:100};a.inventory??=[];a.knowledge??=[];a.relationships??=[];a.experiences??=[];}}
