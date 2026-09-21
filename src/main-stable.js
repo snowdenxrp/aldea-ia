@@ -48,7 +48,9 @@ function createHouse(s){
   const winR=winL.clone(); winR.position.x=1.12;
   const chimney=box(.38,.9,.38,0x6a4435); chimney.position.set(1.15,3.55,0);
   const step=box(1,.18,.5,0x8c735e); step.position.set(0,.09,1.98);
-  g.add(wall,roof,door,knob,winL,winR,chimney,step);
+  const beam=box(3.45,.12,.12,0x5b3b28); beam.position.set(0,2.05,1.73);
+  const cross=box(.06,.58,.09,0x5b3b28); cross.position.set(-1.12,1.45,1.78); const crossR=cross.clone(); crossR.position.x=1.12;
+  g.add(wall,roof,door,knob,winL,winR,chimney,step,beam,cross,crossR);
   g.position.set(s.position?.x??0,0,s.position?.z??0);
   return g;
 }
