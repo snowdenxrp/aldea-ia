@@ -4,6 +4,8 @@ const content=fs.readFileSync(new URL("../src/main-stable.js",import.meta.url),"
 assert.ok(content.includes("addTree"));
 assert.ok(content.includes("addRock"));
 assert.ok(content.includes("addPlant"));
-assert.ok(content.includes("terrain") || content.includes("ground") || content.includes("createHouse"));
+assert.ok(content.includes("biome"));
+assert.ok(content.includes("biomeType"));
+assert.ok(content.includes("palette"));
 assert.ok(!content.includes("\\n"));
-console.log(JSON.stringify({audit:"biome-aware-visual",environment:["trees","rocks","plants"],verdict:"PASS"},null,2));
+console.log(JSON.stringify({audit:"biome-aware-visual",environment:["trees","rocks","plants"],settlementIdentity:"biome-connected",verdict:"PASS"},null,2));
