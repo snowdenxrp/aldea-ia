@@ -397,5 +397,26 @@ renderer.domElement.addEventListener("pointermove",e=>{const p=pointers.get(e.po
 function endPointer(e){const wasTap=pointers.size===1&&!gestureMoved&&gestureStart?.id===e.pointerId;const x=e.clientX,y=e.clientY;pointers.delete(e.pointerId);if(pointers.size<2){pinchStart=0;lastAngle=0;}if(pointers.size===1){const p=[...pointers.values()][0];dragging=true;lastX=p.clientX;lastY=p.clientY;}else{dragging=false;}if(renderer.domElement.hasPointerCapture(e.pointerId))renderer.domElement.releasePointerCapture(e.pointerId);if(wasTap)pickAgent(x,y);if(pointers.size===0){gestureStart=null;gestureMoved=false;}}
 renderer.domElement.addEventListener("pointerup",endPointer);renderer.domElement.addEventListener("pointercancel",endPointer);renderer.domElement.addEventListener("wheel",e=>{e.preventDefault();cameraDistance=Math.max(10,Math.min(110,cameraDistance+e.deltaY*.035));},{passive:false});
 addEventListener("keydown",e=>{const s=1.2;if(e.key==="w"||e.key==="ArrowUp")cameraTarget.z-=s;if(e.key==="s"||e.key==="ArrowDown")cameraTarget.z+=s;if(e.key==="a"||e.key==="ArrowLeft")cameraTarget.x-=s;if(e.key==="d"||e.key==="ArrowRight")cameraTarget.x+=s;if(e.key==="+"||e.key==="=")cameraDistance=Math.max(10,cameraDistance-2);if(e.key==="-")cameraDistance=Math.min(110,cameraDistance+2);clampCamera();});
-function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;try{animateLighting(simulation.hour);}catch(e){console.error("Lúmina lighting",e);}try{animateEnvironment(now/1000);}catch(e){console.error("Lúmina environment",e);}try{for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);}}catch(e){console.error("Lúmina simulation",e);}try{syncMeshes();}catch(e){console.error("Lúmina meshes",e);}try{const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}}catch(e){console.error("Lúmina UI",e);}if(now-lastSave>=2000){try{save();}catch(e){console.error("Lúmina save",e);}lastSave=now;}}
+function ensureVisibleMotion(agent,now,dt){
+  agent.__motionWatch ??={lastX:agent.position.x,lastZ:agent.position.z,lastMoveAt:now,lastTargetAt:0};
+  const w=agent.__motionWatch;
+  const moved=Math.hypot(agent.position.x-w.lastX,agent.position.z-w.lastZ)>.035;
+  if(moved){w.lastX=agent.position.x;w.lastZ=agent.position.z;w.lastMoveAt=now;}
+  // Watchdog: si un estado persistido deja al habitante inmóvil demasiado tiempo,
+  // recupera el paseo sin tocar una intención real en curso.
+  if(!agent.currentIntent && agent.alive && !agent.movement?.moving && now-w.lastMoveAt>7){
+    const seed=(agent.id==="alex"?17:43)+Math.floor(now/7000);
+    const angle=seed*2.399;
+    const radius=5.5+(seed%4)*1.25;
+    setMovementTarget(agent,{
+      x:agent.position.x+Math.cos(angle)*radius,
+      z:agent.position.z+Math.sin(angle)*radius
+    },world.bounds);
+    agent.currentActivity="moving";
+    w.lastMoveAt=now;
+    w.lastTargetAt=now;
+  }
+}
+
+function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;try{animateLighting(simulation.hour);}catch(e){console.error("Lúmina lighting",e);}try{animateEnvironment(now/1000);}catch(e){console.error("Lúmina environment",e);}try{for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);ensureVisibleMotion(a,now/1000,dt);}}catch(e){console.error("Lúmina simulation",e);}try{syncMeshes();}catch(e){console.error("Lúmina meshes",e);}try{const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}}catch(e){console.error("Lúmina UI",e);}if(now-lastSave>=2000){try{save();}catch(e){console.error("Lúmina save",e);}lastSave=now;}}
 loadLocal();normalize();syncMeshes();centerOnAgents();loadRemoteIfNeeded();updateCamera();addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});addEventListener("beforeunload",save);function animate(){requestAnimationFrame(animate);update();updateCamera();renderer.render(scene,camera);}animate();
