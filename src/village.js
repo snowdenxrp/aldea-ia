@@ -47,11 +47,11 @@ function insideRect(x,z,pad,extra=0){
 function addGrassField(scene,layout){
  const geo=new THREE.ConeGeometry(.055,.34,3);
  const mat=M(0x4f813b,.98);
- const inst=new THREE.InstancedMesh(geo,mat,720);
+ const inst=new THREE.InstancedMesh(geo,mat,1100);
  const dummy=new THREE.Object3D();
  let count=0;
- for(let ix=-72;ix<72&&count<720;ix+=4){
-  for(let iz=-72;iz<72&&count<720;iz+=4){
+ for(let ix=-72;ix<72&&count<1100;ix+=3.1){
+  for(let iz=-72;iz<72&&count<1100;iz+=3.1){
    const jx=ix+((hash2(ix,iz)-.5)*3.2),jz=iz+((hash2(ix+17,iz-9)-.5)*3.2);
    if(Math.abs(jx-layout.river.centerX)<layout.river.width/2+1.5)continue;
    if(Math.hypot(jx-layout.plaza.x,jz-layout.plaza.z)<layout.plaza.radius+1.2)continue;
@@ -67,6 +67,7 @@ function addGrassField(scene,layout){
  }
  inst.count=count;
  inst.instanceMatrix.needsUpdate=true;
+ inst.frustumCulled=false;
  inst.castShadow=false;
  inst.receiveShadow=false;
  scene.add(inst);
