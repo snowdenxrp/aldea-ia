@@ -3,13 +3,18 @@ import { world } from "./world.js";
 import { createInitialAgents } from "./agents.js";
 import { createSimulation, tick } from "./simulation.js";
 import { setMovementTarget, moveAgent } from "./movement.js";
+import { getRegionForPosition, getBiomeForRegion, normalizeSpatialWorld } from "./spatial.js";
 
 const app=document.querySelector("#app"), worldTime=document.querySelector("#worldTime");
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df);
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,500);
 const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.domElement.style.touchAction="none"; renderer.domElement.style.userSelect="none"; app.appendChild(renderer.domElement);
 const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,10); light.castShadow=true; light.shadow.mapSize.set(2048,2048); scene.add(light,new THREE.HemisphereLight(0xbfe7ff,0x6f8f58,1.2));
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90,12,12),new THREE.MeshStandardMaterial({color:0x6f9b58,roughness:1})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+normalizeSpatialWorld(world);
+const homeRegion=getRegionForPosition({x:0,z:0},world);
+const homeBiome=getBiomeForRegion(homeRegion,world);
+const biomeGroundColors={forest:0x587f4a,plains:0x6f9b58,mountain:0x77715f,wetland:0x5f8a70,arid:0x9a8557};
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(90,90,12,12),new THREE.MeshStandardMaterial({color:biomeGroundColors[homeBiome.type]??biomeGroundColors.plains,roughness:1})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
 const environmentMeshes=[];
 function addTree(x,z,scale=1){
   const g=new THREE.Group(); const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,1.3,7),material(0x68452f)); trunk.position.y=.65; const crown=new THREE.Mesh(new THREE.SphereGeometry(.85,10,8),material(0x3f7138)); crown.position.y=1.55; crown.scale.set(1,.9,1); g.add(trunk,crown); g.scale.setScalar(scale); g.position.set(x,0,z); g.traverse(o=>{if(o.isMesh)o.castShadow=true;}); scene.add(g); environmentMeshes.push(g);
@@ -20,9 +25,14 @@ function addRock(x,z,scale=1){
 function addPlant(x,z,scale=1){
   const g=new THREE.Group(); for(let i=0;i<5;i++){const p=new THREE.Mesh(new THREE.ConeGeometry(.08,.55,5),material(0x5f8d3c)); p.position.set(Math.cos(i*1.256)*.13,.27,Math.sin(i*1.256)*.13); p.rotation.z=(i%2?.2:-.2); g.add(p);} g.scale.setScalar(scale); g.position.set(x,0,z); scene.add(g); environmentMeshes.push(g);
 }
-for(let i=0;i<24;i++){const a=i*2.399; addTree(20+Math.cos(a)*12,8+Math.sin(a)*12,.75+(i%4)*.08);}
-for(let i=0;i<12;i++){const a=i*2.618; addRock(24+Math.cos(a)*8,15+Math.sin(a)*8,.7+(i%3)*.12);}
-for(let i=0;i<18;i++){const a=i*2.399; addPlant(-2+Math.cos(a)*7,-8+Math.sin(a)*7,.75+(i%3)*.12);}
+const BIOME_VISUALS={forest:{trees:42,rocks:7,plants:24,treeScale:1.05,plantScale:1},plains:{trees:12,rocks:7,plants:34,treeScale:.82,plantScale:.95},mountain:{trees:8,rocks:30,plants:8,treeScale:.78,plantScale:.7},wetland:{trees:18,rocks:10,plants:42,treeScale:.9,plantScale:1.08},arid:{trees:3,rocks:22,plants:7,treeScale:.72,plantScale:.65}};
+function buildBiomeEnvironment(biomeType){
+  const v=BIOME_VISUALS[biomeType]??BIOME_VISUALS.plains;
+  for(let i=0;i<v.trees;i++){const a=i*2.399;const r=9+(i%7)*2;addTree(18+Math.cos(a)*r,8+Math.sin(a)*r,v.treeScale*(.8+(i%4)*.08));}
+  for(let i=0;i<v.rocks;i++){const a=i*2.618;const r=7+(i%5)*2;addRock(24+Math.cos(a)*r,15+Math.sin(a)*r,.6+(i%3)*.12);}
+  for(let i=0;i<v.plants;i++){const a=i*2.399;const r=6+(i%6)*1.4;addPlant(-2+Math.cos(a)*r,-8+Math.sin(a)*r,v.plantScale*(.8+(i%3)*.1));}
+}
+buildBiomeEnvironment(homeBiome.type);
 
 const river=new THREE.Mesh(new THREE.PlaneGeometry(10,90),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
 const structureMeshes=new Map();
