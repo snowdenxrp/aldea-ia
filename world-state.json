@@ -1,16 +1,16 @@
 {
   "version": 4,
-  "savedAt": 1789956984670,
-  "day": 202,
-  "hour": 2.7751733334011965,
+  "savedAt": 1789957959670,
+  "day": 203,
+  "hour": 4.7751733334015345,
   "world": {
-    "day": 202,
-    "timeOfDay": 2.7751733334011965,
+    "day": 203,
+    "timeOfDay": 4.7751733334015345,
     "speed": 1,
     "resources": {
       "water": {
         "type": "renewable",
-        "amount": 1000,
+        "amount": 960,
         "quality": 1,
         "location": "river",
         "position": {
@@ -99,7 +99,7 @@
       },
       "fish": {
         "type": "renewable",
-        "amount": 26,
+        "amount": 16,
         "quality": 0.9,
         "location": "river",
         "position": {
@@ -152,21 +152,21 @@
       "traditions": [
         {
           "key": "action",
-          "strength": 0.9400000000000007,
+          "strength": 0.9500000000000007,
           "originDay": 120,
-          "lastObservedDay": 202
+          "lastObservedDay": 203
         },
         {
           "key": "social_interaction",
-          "strength": 0.9400000000000007,
+          "strength": 0.9500000000000007,
           "originDay": 120,
-          "lastObservedDay": 202
+          "lastObservedDay": 203
         },
         {
           "key": "failed_action",
-          "strength": 0.8300000000000006,
+          "strength": 0.8400000000000006,
           "originDay": 120,
-          "lastObservedDay": 202
+          "lastObservedDay": 203
         },
         {
           "key": "exploration",
@@ -248,8 +248,8 @@
       "biodiversity": 1,
       "soilQuality": 1,
       "waterQuality": 1,
-      "humanPressure": 0.2917825698985262,
-      "lastUpdateDay": 202
+      "humanPressure": 0.29065596430664414,
+      "lastUpdateDay": 203
     },
     "institutions": [],
     "commons": {
@@ -262,7 +262,7 @@
     },
     "specialization": {
       "roles": {
-        "gatherer": 88
+        "gatherer": 90
       },
       "history": [
         {
@@ -1828,6 +1828,41 @@
           "price": 48,
           "stock": 0,
           "perCapita": 0
+        },
+        {
+          "day": 203,
+          "type": "fish",
+          "price": 16,
+          "stock": 3,
+          "perCapita": 1.5
+        },
+        {
+          "day": 203,
+          "type": "farm_food",
+          "price": 12,
+          "stock": 0,
+          "perCapita": 0
+        },
+        {
+          "day": 203,
+          "type": "wood",
+          "price": 8,
+          "stock": 0.7040000000000002,
+          "perCapita": 0.3520000000000001
+        },
+        {
+          "day": 203,
+          "type": "stone",
+          "price": 8,
+          "stock": 0,
+          "perCapita": 0
+        },
+        {
+          "day": 203,
+          "type": "tool",
+          "price": 48,
+          "stock": 0,
+          "perCapita": 0
         }
       ]
     },
@@ -1841,17 +1876,17 @@
           "variable": "humanPressure",
           "measure": "regeneration",
           "confidence": 0.86,
-          "experimentCount": 88,
+          "experimentCount": 90,
           "contributors": [
             "alex",
             "bruno"
           ],
           "createdDay": 159,
-          "lastExperimentDay": 202,
+          "lastExperimentDay": 203,
           "status": "reproduced",
-          "supportedCount": 88,
+          "supportedCount": 90,
           "contradictedCount": 0,
-          "independentReplications": 87
+          "independentReplications": 89
         }
       ],
       "experiments": [
@@ -3084,6 +3119,34 @@
           "baseline": 0.708217,
           "intervention": "comparación controlada",
           "result": 0.679039,
+          "supported": true,
+          "reproducible": false
+        },
+        {
+          "id": "experiment-203-alex-resource-regeneration",
+          "day": 203,
+          "topicId": "resource-regeneration",
+          "question": "¿La presión sobre un recurso afecta su recuperación?",
+          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
+          "agentId": "alex",
+          "variable": "humanPressure",
+          "baseline": 0.709344,
+          "intervention": "comparación controlada",
+          "result": 0.680278,
+          "supported": true,
+          "reproducible": false
+        },
+        {
+          "id": "experiment-203-bruno-resource-regeneration",
+          "day": 203,
+          "topicId": "resource-regeneration",
+          "question": "¿La presión sobre un recurso afecta su recuperación?",
+          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
+          "agentId": "bruno",
+          "variable": "humanPressure",
+          "baseline": 0.709344,
+          "intervention": "comparación controlada",
+          "result": 0.680278,
           "supported": true,
           "reproducible": false
         }
@@ -4320,6 +4383,34 @@
           "delta": -0.029178,
           "supported": true,
           "reliability": 0.65
+        },
+        {
+          "id": "experiment-203-alex-resource-regeneration-evidence",
+          "experimentId": "experiment-203-alex-resource-regeneration",
+          "day": 203,
+          "topicId": "resource-regeneration",
+          "agentId": "alex",
+          "variable": "humanPressure",
+          "baseline": 0.709344,
+          "intervention": "comparación controlada",
+          "result": 0.680278,
+          "delta": -0.029066,
+          "supported": true,
+          "reliability": 0.65
+        },
+        {
+          "id": "experiment-203-bruno-resource-regeneration-evidence",
+          "experimentId": "experiment-203-bruno-resource-regeneration",
+          "day": 203,
+          "topicId": "resource-regeneration",
+          "agentId": "bruno",
+          "variable": "humanPressure",
+          "baseline": 0.709344,
+          "intervention": "comparación controlada",
+          "result": 0.680278,
+          "delta": -0.029066,
+          "supported": true,
+          "reliability": 0.65
         }
       ],
       "history": [
@@ -4674,6 +4765,14 @@
             "alex",
             "bruno"
           ]
+        },
+        {
+          "day": 203,
+          "type": "research_day",
+          "contributors": [
+            "alex",
+            "bruno"
+          ]
         }
       ]
     },
@@ -4701,17 +4800,14 @@
       "version": 1,
       "activeRegionPadding": 1,
       "activeRegions": [
-        "1:3",
         "1:4",
         "1:5",
-        "2:3",
+        "1:6",
         "2:4",
         "2:5",
-        "3:3",
+        "2:6",
         "3:4",
         "3:5",
-        "1:6",
-        "2:6",
         "3:6"
       ],
       "knownRegions": [],
@@ -4735,10 +4831,10 @@
           "visits": 0,
           "discovered": false,
           "biome": "plains",
-          "population": 1,
+          "population": 2,
           "structures": 0,
-          "settlementLevel": 0,
-          "activity": 0.12
+          "settlementLevel": 1,
+          "activity": 0.24
         },
         "2:4": {
           "key": "2:4",
@@ -4747,10 +4843,10 @@
           "visits": 0,
           "discovered": false,
           "biome": "plains",
-          "population": 1,
+          "population": 0,
           "structures": 1,
-          "settlementLevel": 1,
-          "activity": 0.2
+          "settlementLevel": 0,
+          "activity": 0.08
         },
         "3:3": {
           "key": "3:3",
@@ -4963,22 +5059,31 @@
     {
       "id": "alex",
       "name": "Alex",
-      "age": 15.227397260273907,
+      "age": 15.230136986301304,
       "alive": true,
       "needs": {
-        "hunger": 63.00820266666626,
-        "thirst": 43.377749333331856,
-        "energy": 57.297200000001716,
-        "social": 88.4594399999982,
+        "hunger": 98.12266666666665,
+        "thirst": 98.46399999999991,
+        "energy": 94.20000000000016,
+        "social": 98.34666666666641,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": -17.98914644513634,
-        "z": 5.771194395488319
+        "x": -18,
+        "z": 7.2
       },
-      "currentActivity": "moving",
-      "inventory": [],
+      "currentActivity": "idle",
+      "inventory": [
+        {
+          "type": "fish",
+          "amount": 1
+        },
+        {
+          "type": "fish",
+          "amount": 1
+        }
+      ],
       "money": 100,
       "home": null,
       "knowledge": [
@@ -4988,60 +5093,6 @@
           "confidence": 0.95,
           "evidence": [
             {
-              "day": 147,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 147,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 147,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 147,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 147,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 147,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 148,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 148,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 148,
-              "description": "Alex comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
               "day": 148,
               "description": "Alex comió una planta (1).",
               "outcome": 1,
@@ -7983,6 +8034,60 @@
             },
             {
               "day": 201,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
               "description": "Alex comió una planta (1).",
               "outcome": 1,
               "reliability": 0.5
@@ -7994,93 +8099,9 @@
         {
           "topic": "action:catch_fish",
           "belief": "Creo que puedo investigar pesca aquí.",
-          "confidence": 0.8228595431494672,
+          "confidence": 0.913613031404901,
           "evidence": [
             {
-              "day": 158,
-              "description": "Alex intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
-              "outcome": -1,
-              "reliability": 0.5
-            },
-            {
-              "day": 158,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 158,
-              "description": "Alex intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
-              "outcome": -1,
-              "reliability": 0.5
-            },
-            {
-              "day": 158,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 158,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 158,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 158,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 158,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 159,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 159,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 159,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 159,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 159,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 159,
-              "description": "Alex pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
               "day": 159,
               "description": "Alex pescó (1).",
               "outcome": 1,
@@ -10992,6 +11013,90 @@
             },
             {
               "day": 201,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Alex pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
               "description": "Alex pescó (1).",
               "outcome": 1,
               "reliability": 0.5
@@ -11006,78 +11111,6 @@
           "confidence": 0.95,
           "evidence": [
             {
-              "day": 153,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 153,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 154,
-              "description": "Alex comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
               "day": 154,
               "description": "Alex comió pescado (1).",
               "outcome": 1,
@@ -14001,6 +14034,78 @@
             },
             {
               "day": 201,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Alex comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
               "description": "Alex comió pescado (1).",
               "outcome": 1,
               "reliability": 0.5
@@ -14247,136 +14352,6 @@
           "importance": 0.6
         },
         {
-          "id": "event-608",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-610",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-612",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-503",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-508",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-511",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-514",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-516",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-519",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-521",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-524",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-527",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-529",
-          "day": 156,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
           "id": "event-541",
           "day": 157,
           "type": "experience",
@@ -14438,396 +14413,6 @@
         },
         {
           "id": "event-561",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-564",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-566",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-569",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-572",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-574",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-578",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-582",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-584",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-586",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-590",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-592",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-594",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-598",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-600",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-606",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-610",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-612",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-614",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-618",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-620",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-623",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-628",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-630",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-636",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-640",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-643",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-645",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-649",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-501",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-502",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-506",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-508",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-514",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-518",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_plant",
-          "description": "Alex comió una planta (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-520",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-523",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Alex pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-526",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Alex comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-530",
-          "day": 157,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-533",
           "day": 157,
           "type": "experience",
           "topic": "action:catch_fish",
@@ -34205,6 +33790,526 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-503",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-506",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-508",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-510",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-519",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-522",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-526",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-530",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-534",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-539",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-541",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-545",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-550",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-551",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-555",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-557",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-561",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-565",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-568",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-571",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-573",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-577",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-580",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-583",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-586",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-588",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-594",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-598",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-600",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-603",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-607",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-611",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-613",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-617",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-621",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Alex comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-624",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-626",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-630",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-632",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-634",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-640",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-642",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-644",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-648",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-650",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-652",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-656",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-658",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-660",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-664",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Alex comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-667",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-669",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Alex pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -41006,6 +41111,76 @@
               "tension": 0.01,
               "affection": 0,
               "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Alex y Bruno tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron un encuentro incómodo.",
+              "trust": -0.05,
+              "cooperation": -0.02,
+              "tension": 0.08,
+              "affection": -0.01,
+              "resentment": 0.04
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Alex y Bruno tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
+            },
+            {
+              "day": 203,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
             }
           ]
         }
@@ -41038,56 +41213,44 @@
         }
       ],
       "experiences": [],
-      "currentIntent": {
-        "name": "socialize",
-        "baseValue": 0.25,
-        "effects": {
-          "social": 1.4
-        },
-        "distance": 1.7919056826824071,
-        "score": 2.092547881261575,
-        "target": {
-          "x": -17.993140409307482,
-          "z": 6.587490307415913
-        }
-      },
-      "lastActionName": "eat_fish",
+      "currentIntent": null,
+      "lastActionName": "catch_fish",
       "lastActionResult": {
         "success": true,
-        "effect": "fish_eaten",
+        "effect": "fish_caught",
         "amount": 1,
-        "hungerGain": 14
+        "skillLevel": 1
       },
       "lastPerception": {
         "position": {
-          "x": -17.98437309671058,
-          "z": 4.795606072913212
+          "x": -18,
+          "z": 7.2
         },
         "visibleAgents": [
           {
             "id": "bruno",
             "name": "Bruno",
-            "distance": 1.7919056826824071
+            "distance": 0.6081322642872891
           }
         ],
         "nearbyResources": [
           {
             "type": "water",
             "location": "river",
-            "distance": 4.795631533663579
+            "distance": 7.2
           },
           {
             "type": "fish",
             "location": "river",
-            "distance": 3.204432030806256
+            "distance": 0.7999999999999998
           }
         ],
-        "currentActivity": "moving",
+        "currentActivity": "idle",
         "needs": {
-          "hunger": 63.00820266666626,
-          "thirst": 43.377749333331856,
-          "energy": 57.297200000001716,
-          "social": 88.4594399999982,
+          "hunger": 98.12266666666665,
+          "thirst": 98.46399999999991,
+          "energy": 94.20000000000016,
+          "social": 98.34666666666641,
           "safety": 100,
           "health": 100
         }
@@ -41108,7 +41271,7 @@
           "effects": {
             "thirst": 1.8
           },
-          "distance": 6.587493878880121
+          "distance": 4.440892098500626e-16
         },
         {
           "name": "socialize",
@@ -41116,7 +41279,7 @@
           "effects": {
             "social": 1.4
           },
-          "distance": 1.7919056826824071
+          "distance": 2.9918677357131993
         },
         {
           "name": "share_knowledge",
@@ -41124,7 +41287,7 @@
           "effects": {
             "social": 0.6
           },
-          "distance": 1.7919056826824071
+          "distance": 2.9918677357131993
         },
         {
           "name": "eat_plant",
@@ -41137,10 +41300,19 @@
         },
         {
           "name": "catch_fish",
-          "baseValue": 0.8228595431494672,
-          "distance": 1.4125263486492776,
+          "baseValue": 0.9090663488472642,
+          "distance": 8,
           "effects": {
             "hunger": 1.6
+          },
+          "amount": 1
+        },
+        {
+          "name": "eat_fish",
+          "baseValue": 0.95,
+          "distance": 0,
+          "effects": {
+            "hunger": 2.3
           },
           "amount": 1
         },
@@ -41154,68 +41326,65 @@
           "baseValue": 0.28,
           "explorationValue": 0.7,
           "novelty": 0.8,
-          "distance": 8.788714106748728,
+          "distance": 6.623227676590049,
           "target": {
-            "x": -24.969583764780218,
-            "z": 11.932650151428478
+            "x": -12.1344969735507,
+            "z": -3.07620205816564
           }
         }
       ],
       "decisionSnapshot": {
         "chosen": {
-          "name": "socialize",
-          "score": 2.092547881261575
+          "name": "catch_fish",
+          "score": 1.4254590585076965
         },
         "considered": [
           {
-            "name": "socialize",
-            "score": 2.092547881261575
-          },
-          {
-            "name": "drink",
-            "score": 1.6587824952673502
-          },
-          {
             "name": "catch_fish",
-            "score": 1.399548289960201
+            "score": 1.4254590585076965
+          },
+          {
+            "name": "eat_plant",
+            "score": 1.2060946733625633
+          },
+          {
+            "name": "rest",
+            "score": 1.1496533333332646
           }
         ]
       },
       "movement": {
-        "target": {
-          "x": -17.993140409307482,
-          "z": 6.587490307415913
-        },
+        "target": null,
         "speed": 1.8,
-        "moving": true,
-        "distanceTravelled": 93215.12990550628
+        "moving": false,
+        "distanceTravelled": 93570.87954951862
       },
-      "decisionCooldownHours": 0,
+      "decisionCooldownHours": 0.1433333333333333,
       "knownResources": {
         "water": {
           "x": -18,
           "z": 0,
-          "learnedDay": 202
+          "learnedDay": 203
         },
         "fertile_land": {
           "x": 2,
           "z": -22,
-          "learnedDay": 201
+          "learnedDay": 202
         },
         "wild_plants": {
           "x": -2,
           "z": -8,
-          "learnedDay": 201
+          "learnedDay": 202
         },
         "fish": {
           "x": -18,
           "z": 8,
-          "learnedDay": 202
+          "learnedDay": 203
         },
         "clay": {
           "x": -12,
           "z": -16,
-          "learnedDay": 201
+          "learnedDay": 202
         },
         "wood": {
           "x": 20,
@@ -41223,7 +41392,7 @@
           "learnedDay": 190
         }
       },
-      "lastAttemptedAction": "eat_fish",
+      "lastAttemptedAction": "catch_fish",
       "actionFailures": {
         "catch_fish": 0,
         "drink": 0,
@@ -41238,7 +41407,7 @@
       "children": [],
       "pregnancy": null,
       "generation": 0,
-      "lifeExperience": 83,
+      "lifeExperience": 84,
       "cultureKnowledge": [
         "action",
         "social_interaction",
@@ -41298,35 +41467,43 @@
           "topicId": "resource-regeneration",
           "belief": "Una presión humana mayor reduce la recuperación de recursos.",
           "confidence": 0.95,
-          "evidenceCount": 44,
-          "lastTestedDay": 202
+          "evidenceCount": 45,
+          "lastTestedDay": 203
         }
       ],
-      "researchExperiments": 44,
+      "researchExperiments": 45,
       "socialRole": "Recolector"
     },
     {
       "id": "bruno",
       "name": "Bruno",
-      "age": 15.227397260273907,
+      "age": 15.230136986301304,
       "alive": true,
       "needs": {
-        "hunger": 62.30420266666625,
-        "thirst": 44.3164159999985,
-        "energy": 57.830533333335076,
-        "social": 88.44610666666486,
+        "hunger": 98.12266666666665,
+        "thirst": 98.37866666666658,
+        "energy": 94.20000000000016,
+        "social": 98.34666666666641,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": -17.988367060881725,
-        "z": 5.611901984840806
+        "x": -17.99999964326613,
+        "z": 6.591867735712816
       },
-      "currentActivity": "moving",
+      "currentActivity": "idle",
       "inventory": [
         {
           "type": "wood",
           "amount": 0.7040000000000002
+        },
+        {
+          "type": "fish",
+          "amount": 1
+        },
+        {
+          "type": "fish",
+          "amount": 1
         }
       ],
       "money": 100,
@@ -41407,110 +41584,8 @@
         {
           "topic": "action:catch_fish",
           "belief": "Creo que puedo investigar pesca aquí.",
-          "confidence": 0.86200625,
+          "confidence": 0.8648168495661657,
           "evidence": [
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 160,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 161,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 161,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 161,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 161,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 161,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 161,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 161,
-              "description": "Bruno pescó (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
             {
               "day": 161,
               "description": "Bruno pescó (1).",
@@ -44408,6 +44483,108 @@
               "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
               "outcome": -1,
               "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
+              "outcome": -1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
+              "outcome": -1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
+              "outcome": -1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Bruno pescó (1).",
+              "outcome": 1,
+              "reliability": 0.5
             }
           ],
           "source": "discovery",
@@ -44418,78 +44595,6 @@
           "belief": "Creo que el pez que capturé puede servirme como alimento.",
           "confidence": 0.95,
           "evidence": [
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 156,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 157,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 157,
-              "description": "Bruno comió pescado (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
             {
               "day": 157,
               "description": "Bruno comió pescado (1).",
@@ -47417,6 +47522,78 @@
               "description": "Bruno comió pescado (1).",
               "outcome": 1,
               "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 203,
+              "description": "Bruno comió pescado (1).",
+              "outcome": 1,
+              "reliability": 0.5
             }
           ],
           "source": "discovery",
@@ -47428,54 +47605,6 @@
           "confidence": 0.95,
           "evidence": [
             {
-              "day": 141,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 141,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 141,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 142,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 142,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 142,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 142,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 142,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
               "day": 142,
               "description": "Bruno comió una planta (1).",
               "outcome": 1,
@@ -50423,6 +50552,54 @@
             },
             {
               "day": 201,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
               "description": "Bruno comió una planta (1).",
               "outcome": 1,
               "reliability": 0.5
@@ -50563,7 +50740,7 @@
         {
           "topic": "action:harvest",
           "belief": "Un cultivo maduro puede convertirse en alimento.",
-          "confidence": 0.31006163646060736,
+          "confidence": 0.32733062690569814,
           "evidence": [
             {
               "day": 147,
@@ -51506,6 +51683,18 @@
               "description": "Bruno intentó harvest, pero no pudo hacerlo (no_ready_crop).",
               "outcome": -1,
               "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno cosechó alimento (1.5).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno intentó harvest, pero no pudo hacerlo (no_ready_crop).",
+              "outcome": -1,
+              "reliability": 0.5
             }
           ],
           "source": "discovery",
@@ -51514,7 +51703,7 @@
         {
           "topic": "action:eat_farm_food",
           "belief": "El alimento cultivado puede quitarme el hambre.",
-          "confidence": 0.4185524732332008,
+          "confidence": 0.4752436070929637,
           "evidence": [
             {
               "day": 148,
@@ -52751,6 +52940,18 @@
               "description": "Bruno comió alimento cultivado (0.5).",
               "outcome": 1,
               "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió alimento cultivado (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 202,
+              "description": "Bruno comió alimento cultivado (0.5).",
+              "outcome": 1,
+              "reliability": 0.5
             }
           ],
           "source": "discovery",
@@ -52815,116 +53016,6 @@
           "participants": [],
           "emotionalWeight": 0.04,
           "importance": 0.6
-        },
-        {
-          "id": "event-512",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-513",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-515",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-519",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-521",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-524",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-528",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-529",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-532",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-535",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-538",
-          "day": 159,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
         },
         {
           "id": "event-669",
@@ -53042,436 +53133,6 @@
           "type": "experience",
           "topic": "action:eat_fish",
           "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-703",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-705",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-709",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-710",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-712",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-716",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-718",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-720",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-725",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-727",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-730",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-733",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-735",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-738",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-741",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-743",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-746",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-749",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-751",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-753",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-757",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-759",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-761",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-765",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-767",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-770",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-773",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-775",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-777",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-780",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-782",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-785",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-789",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-791",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-793",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-797",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-799",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-800",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-804",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-806",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-807",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:catch_fish",
-          "description": "Bruno pescó (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-811",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:eat_fish",
-          "description": "Bruno comió pescado (1).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-813",
-          "day": 160,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
@@ -72755,6 +72416,546 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-504",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-505",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-507",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-509",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-511",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-517",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-520",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-525",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-531",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-533",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-544",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-546",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-549",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-552",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-554",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-560",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-564",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-566",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-569",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-574",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-578",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-579",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:harvest",
+          "description": "Bruno cosechó alimento (1.5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-582",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-584",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-587",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-589",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_farm_food",
+          "description": "Bruno comió alimento cultivado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-593",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-595",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-597",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_farm_food",
+          "description": "Bruno comió alimento cultivado (0.5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-601",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-602",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-605",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-608",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-610",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-614",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-616",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-620",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-622",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-625",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-629",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-631",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-633",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-637",
+          "day": 202,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-641",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-643",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-647",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-651",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-653",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-657",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-659",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-661",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-665",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:eat_fish",
+          "description": "Bruno comió pescado (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-666",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-668",
+          "day": 203,
+          "type": "experience",
+          "topic": "action:catch_fish",
+          "description": "Bruno pescó (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -79556,6 +79757,76 @@
               "tension": 0.01,
               "affection": 0,
               "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Alex y Bruno tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron un encuentro incómodo.",
+              "trust": -0.05,
+              "cooperation": -0.02,
+              "tension": 0.08,
+              "affection": -0.01,
+              "resentment": 0.04
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 202,
+              "type": "conversation",
+              "description": "Alex y Bruno tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
+            },
+            {
+              "day": 203,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
             }
           ]
         }
@@ -79608,54 +79879,44 @@
         }
       ],
       "experiences": [],
-      "currentIntent": {
-        "name": "socialize",
-        "baseValue": 0.25,
-        "effects": {
-          "social": 1.4
-        },
-        "distance": 5.391905682682408,
-        "score": 1.868797481261573,
-        "target": {
-          "x": -17.98437309671058,
-          "z": 4.795606072913212
-        }
-      },
-      "lastActionName": "rest",
+      "currentIntent": null,
+      "lastActionName": "catch_fish",
       "lastActionResult": {
         "success": true,
-        "effect": "energy_recovered"
+        "effect": "fish_caught",
+        "amount": 1,
+        "skillLevel": 1
       },
       "lastPerception": {
         "position": {
-          "x": -17.993140409307482,
-          "z": 6.587490307415913
+          "x": -17.99999964326613,
+          "z": 6.591867735712816
         },
         "visibleAgents": [
           {
             "id": "alex",
             "name": "Alex",
-            "distance": 1.7919056826824071
+            "distance": 0.6081322642872891
           }
         ],
         "nearbyResources": [
           {
             "type": "water",
             "location": "river",
-            "distance": 6.587493878880121
+            "distance": 6.5918677357128255
           },
           {
             "type": "fish",
             "location": "river",
-            "distance": 1.4125263486492776
+            "distance": 1.4081322642872296
           }
         ],
-        "currentActivity": "moving",
+        "currentActivity": "idle",
         "needs": {
-          "hunger": 62.30420266666625,
-          "thirst": 44.3164159999985,
-          "energy": 57.830533333335076,
-          "social": 88.44610666666486,
+          "hunger": 98.12266666666665,
+          "thirst": 98.37866666666658,
+          "energy": 94.20000000000016,
+          "social": 98.34666666666641,
           "safety": 100,
           "health": 100
         }
@@ -79676,7 +79937,7 @@
           "effects": {
             "thirst": 1.8
           },
-          "distance": 1.196111143479012
+          "distance": 1.191867735714236
         },
         {
           "name": "socialize",
@@ -79684,7 +79945,7 @@
           "effects": {
             "social": 1.4
           },
-          "distance": 5.391905682682408
+          "distance": 1.1918677357142355
         },
         {
           "name": "share_knowledge",
@@ -79692,7 +79953,15 @@
           "effects": {
             "social": 0.6
           },
-          "distance": 5.391905682682408
+          "distance": 1.1918677357142355
+        },
+        {
+          "name": "harvest",
+          "baseValue": 0.35,
+          "effects": {
+            "hunger": 1
+          },
+          "distance": 0
         },
         {
           "name": "gather_wood",
@@ -79706,10 +79975,19 @@
         },
         {
           "name": "catch_fish",
-          "baseValue": 0.86200625,
-          "distance": 6.804432030587124,
+          "baseValue": 0.8577019469117533,
+          "distance": 6.808132264287231,
           "effects": {
             "hunger": 1.6
+          },
+          "amount": 1
+        },
+        {
+          "name": "eat_fish",
+          "baseValue": 0.95,
+          "distance": 0,
+          "effects": {
+            "hunger": 2.3
           },
           "amount": 1
         },
@@ -79729,81 +80007,86 @@
         },
         {
           "name": "harvest",
-          "baseValue": 0.31006163646060736,
+          "baseValue": 0.32733062690569814,
           "distance": 0
         },
         {
           "name": "eat_farm_food",
-          "baseValue": 0.4185524732332008,
+          "baseValue": 0.4752436070929637,
           "distance": 0
+        },
+        {
+          "name": "discover_trade",
+          "baseValue": 0.22,
+          "explorationValue": 0.5,
+          "novelty": 1,
+          "knowledgeTopic": "action:trade",
+          "distance": 1.1918677357142355
         },
         {
           "name": "explore_area",
           "baseValue": 0.28,
           "explorationValue": 0.7,
           "novelty": 0.8,
-          "distance": 6.27283865100193,
+          "distance": 5.415981779782854,
           "target": {
-            "x": -18.27005146468012,
-            "z": 7.461151424077976
+            "x": -18.397776166690633,
+            "z": -4.2094868525372835
           }
         }
       ],
       "decisionSnapshot": {
         "chosen": {
-          "name": "socialize",
-          "score": 1.868797481261573
+          "name": "catch_fish",
+          "score": 1.5774912146172455
         },
         "considered": [
           {
-            "name": "socialize",
-            "score": 1.868797481261573
-          },
-          {
             "name": "catch_fish",
-            "score": 1.4770915453470956
+            "score": 1.5774912146172455
           },
           {
-            "name": "drink",
-            "score": 1.1589981313913635
+            "name": "socialize",
+            "score": 1.1627368247461622
+          },
+          {
+            "name": "eat_plant",
+            "score": 1.1405648822264096
           }
         ]
       },
       "movement": {
-        "target": {
-          "x": -17.98437309671058,
-          "z": 4.795606072913212
-        },
+        "target": null,
         "speed": 1.8,
-        "moving": true,
-        "distanceTravelled": 93387.65974899585
+        "moving": false,
+        "distanceTravelled": 93666.19711143877
       },
-      "decisionCooldownHours": 0,
+      "decisionCooldownHours": 0.08999999999999997,
       "knownResources": {
         "water": {
           "x": -18,
           "z": 0,
-          "learnedDay": 202
+          "learnedDay": 203
         },
         "fish": {
           "x": -18,
           "z": 8,
-          "learnedDay": 202
+          "learnedDay": 203
         },
         "wild_plants": {
           "x": -2,
           "z": -8,
-          "learnedDay": 201
+          "learnedDay": 202
         },
         "fertile_land": {
           "x": 2,
           "z": -22,
-          "learnedDay": 201
+          "learnedDay": 202
         },
         "clay": {
           "x": -12,
           "z": -16,
-          "learnedDay": 201
+          "learnedDay": 202
         },
         "wood": {
           "x": 20,
@@ -79816,10 +80099,10 @@
           "learnedDay": 145
         }
       },
-      "lastAttemptedAction": "rest",
+      "lastAttemptedAction": "catch_fish",
       "actionFailures": {
         "drink": 0,
-        "catch_fish": 1,
+        "catch_fish": 0,
         "eat_fish": 0,
         "rest": 0,
         "eat_plant": 0,
@@ -79834,7 +80117,7 @@
       "children": [],
       "pregnancy": null,
       "generation": 0,
-      "lifeExperience": 83,
+      "lifeExperience": 84,
       "cultureKnowledge": [
         "action",
         "social_interaction",
@@ -79880,1714 +80163,15 @@
           "topicId": "resource-regeneration",
           "belief": "Una presión humana mayor reduce la recuperación de recursos.",
           "confidence": 0.95,
-          "evidenceCount": 44,
-          "lastTestedDay": 202
+          "evidenceCount": 45,
+          "lastTestedDay": 203
         }
       ],
-      "researchExperiments": 44,
+      "researchExperiments": 45,
       "socialRole": "Recolector"
     }
   ],
   "events": [
-    {
-      "id": "event-6657",
-      "day": 198,
-      "hour": 5.161573333399854,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6658",
-      "day": 198,
-      "hour": 5.508240000066517,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6659",
-      "day": 198,
-      "hour": 5.641573333399849,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6660",
-      "day": 198,
-      "hour": 5.774906666733181,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6661",
-      "day": 198,
-      "hour": 6.014906666733179,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6662",
-      "day": 198,
-      "hour": 6.041573333399845,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6663",
-      "day": 198,
-      "hour": 6.281573333399843,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6664",
-      "day": 198,
-      "hour": 6.308240000066509,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6665",
-      "day": 198,
-      "hour": 6.548240000066507,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6666",
-      "day": 198,
-      "hour": 6.574906666733173,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6667",
-      "day": 198,
-      "hour": 6.89490666673317,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6668",
-      "day": 198,
-      "hour": 6.921573333399836,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6669",
-      "day": 198,
-      "hour": 7.241573333399833,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6670",
-      "day": 198,
-      "hour": 7.454906666733164,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6671",
-      "day": 198,
-      "hour": 7.508240000066497,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6672",
-      "day": 198,
-      "hour": 7.721573333399828,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6673",
-      "day": 198,
-      "hour": 7.774906666733161,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6674",
-      "day": 198,
-      "hour": 7.988240000066492,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6675",
-      "day": 198,
-      "hour": 8.121573333399828,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6676",
-      "day": 198,
-      "hour": 8.468240000066503,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6677",
-      "day": 198,
-      "hour": 8.49490666673317,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6678",
-      "day": 198,
-      "hour": 8.734906666733176,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6679",
-      "day": 198,
-      "hour": 8.761573333399843,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6680",
-      "day": 198,
-      "hour": 9.001573333399849,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6681",
-      "day": 198,
-      "hour": 9.028240000066516,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6682",
-      "day": 198,
-      "hour": 9.348240000066523,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6683",
-      "day": 198,
-      "hour": 9.428240000066525,
-      "type": "social_interaction",
-      "description": "Bruno y Alex tuvieron un encuentro incómodo.",
-      "participants": [
-        "bruno",
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6684",
-      "day": 198,
-      "hour": 9.694906666733198,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6685",
-      "day": 198,
-      "hour": 9.881573333399869,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6686",
-      "day": 198,
-      "hour": 10.041573333399873,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6687",
-      "day": 198,
-      "hour": 10.148240000066542,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6688",
-      "day": 198,
-      "hour": 10.308240000066546,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6689",
-      "day": 198,
-      "hour": 10.414906666733215,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6690",
-      "day": 198,
-      "hour": 10.574906666733218,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6691",
-      "day": 198,
-      "hour": 10.841573333399891,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6692",
-      "day": 198,
-      "hour": 10.921573333399893,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6693",
-      "day": 198,
-      "hour": 11.108240000066564,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6694",
-      "day": 198,
-      "hour": 11.294906666733235,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6695",
-      "day": 198,
-      "hour": 11.454906666733239,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6696",
-      "day": 198,
-      "hour": 11.561573333399908,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6697",
-      "day": 198,
-      "hour": 11.721573333399911,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6698",
-      "day": 198,
-      "hour": 11.82824000006658,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6699",
-      "day": 198,
-      "hour": 12.068240000066586,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6700",
-      "day": 198,
-      "hour": 12.094906666733253,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6701",
-      "day": 198,
-      "hour": 12.334906666733259,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6702",
-      "day": 198,
-      "hour": 12.361573333399926,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6703",
-      "day": 198,
-      "hour": 12.681573333399934,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6704",
-      "day": 198,
-      "hour": 12.708240000066601,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6705",
-      "day": 198,
-      "hour": 12.948240000066606,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6706",
-      "day": 198,
-      "hour": 12.974906666733274,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6707",
-      "day": 198,
-      "hour": 13.21490666673328,
-      "type": "social_interaction",
-      "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
-      "participants": [
-        "bruno",
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6708",
-      "day": 198,
-      "hour": 13.241573333399947,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6709",
-      "day": 198,
-      "hour": 13.481573333399952,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6710",
-      "day": 198,
-      "hour": 13.588240000066621,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6711",
-      "day": 198,
-      "hour": 13.748240000066625,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6712",
-      "day": 198,
-      "hour": 13.854906666733294,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6713",
-      "day": 198,
-      "hour": 14.0949066667333,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6714",
-      "day": 198,
-      "hour": 14.201573333399969,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6715",
-      "day": 198,
-      "hour": 14.361573333399972,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6716",
-      "day": 198,
-      "hour": 14.468240000066642,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6717",
-      "day": 198,
-      "hour": 14.734906666733314,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6718",
-      "day": 198,
-      "hour": 14.948240000066653,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6719",
-      "day": 198,
-      "hour": 15.001573333399987,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6720",
-      "day": 198,
-      "hour": 15.214906666733325,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6721",
-      "day": 198,
-      "hour": 15.481573333399998,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6722",
-      "day": 198,
-      "hour": 15.534906666733333,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6723",
-      "day": 198,
-      "hour": 15.801573333400006,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6724",
-      "day": 198,
-      "hour": 16.014906666733342,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6725",
-      "day": 198,
-      "hour": 16.068240000066677,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6726",
-      "day": 198,
-      "hour": 16.281573333400015,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6727",
-      "day": 198,
-      "hour": 16.33490666673335,
-      "type": "failed_action",
-      "description": "Alex intentó farm, pero no pudo hacerlo (insufficient_materials).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6728",
-      "day": 198,
-      "hour": 16.388240000066684,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6729",
-      "day": 198,
-      "hour": 16.548240000066688,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6730",
-      "day": 198,
-      "hour": 16.894906666733362,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6731",
-      "day": 198,
-      "hour": 16.948240000066697,
-      "type": "social_interaction",
-      "description": "Bruno y Alex tuvieron una interacción cordial.",
-      "participants": [
-        "bruno",
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6732",
-      "day": 198,
-      "hour": 17.161573333400035,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6733",
-      "day": 198,
-      "hour": 17.241573333400037,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6734",
-      "day": 198,
-      "hour": 17.50824000006671,
-      "type": "exploration",
-      "description": "Alex exploró una zona nueva de su entorno.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6735",
-      "day": 198,
-      "hour": 17.50824000006671,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6736",
-      "day": 198,
-      "hour": 18.041573333400056,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6737",
-      "day": 198,
-      "hour": 18.09490666673339,
-      "type": "social_interaction",
-      "description": "Alex y Bruno tuvieron una interacción cordial.",
-      "participants": [
-        "alex",
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6738",
-      "day": 198,
-      "hour": 18.30824000006673,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6739",
-      "day": 198,
-      "hour": 18.361573333400063,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6740",
-      "day": 198,
-      "hour": 18.5749066667334,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_farm_food, pero no pudo hacerlo (no_farm_food).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6741",
-      "day": 198,
-      "hour": 18.628240000066736,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6742",
-      "day": 198,
-      "hour": 18.628240000066736,
-      "type": "failed_action",
-      "description": "Bruno intentó harvest, pero no pudo hacerlo (no_ready_crop).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6743",
-      "day": 198,
-      "hour": 18.68157333340007,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6744",
-      "day": 198,
-      "hour": 19.134906666733414,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6745",
-      "day": 198,
-      "hour": 19.214906666733416,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6746",
-      "day": 198,
-      "hour": 19.401573333400087,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6747",
-      "day": 198,
-      "hour": 19.48157333340009,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6748",
-      "day": 198,
-      "hour": 19.66824000006676,
-      "type": "social_interaction",
-      "description": "Alex y Bruno tuvieron una interacción cordial.",
-      "participants": [
-        "alex",
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6749",
-      "day": 198,
-      "hour": 19.74824000006676,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_farm_food, pero no pudo hacerlo (no_farm_food).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6750",
-      "day": 198,
-      "hour": 19.881573333400098,
-      "type": "exploration",
-      "description": "Bruno exploró una zona nueva de su entorno.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6751",
-      "day": 198,
-      "hour": 19.988240000066767,
-      "type": "exploration",
-      "description": "Alex exploró una zona nueva de su entorno.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6752",
-      "day": 198,
-      "hour": 20.14824000006677,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6753",
-      "day": 198,
-      "hour": 20.308240000066775,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6754",
-      "day": 198,
-      "hour": 20.574906666733447,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6755",
-      "day": 198,
-      "hour": 20.601573333400115,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6756",
-      "day": 198,
-      "hour": 20.921573333400122,
-      "type": "exploration",
-      "description": "Alex exploró una zona nueva de su entorno.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6757",
-      "day": 198,
-      "hour": 21.13490666673346,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6758",
-      "day": 198,
-      "hour": 21.401573333400133,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6759",
-      "day": 198,
-      "hour": 21.481573333400135,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6760",
-      "day": 198,
-      "hour": 21.668240000066806,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_farm_food, pero no pudo hacerlo (no_farm_food).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6761",
-      "day": 198,
-      "hour": 21.748240000066808,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6762",
-      "day": 198,
-      "hour": 21.801573333400142,
-      "type": "exploration",
-      "description": "Bruno exploró una zona nueva de su entorno.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6763",
-      "day": 198,
-      "hour": 22.01490666673348,
-      "type": "failed_action",
-      "description": "Alex intentó farm, pero no pudo hacerlo (insufficient_materials).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6764",
-      "day": 198,
-      "hour": 22.068240000066815,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6765",
-      "day": 198,
-      "hour": 22.30824000006682,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6766",
-      "day": 198,
-      "hour": 22.574906666733494,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6767",
-      "day": 198,
-      "hour": 22.574906666733494,
-      "type": "action",
-      "description": "Bruno comió una planta (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6768",
-      "day": 198,
-      "hour": 22.8949066667335,
-      "type": "exploration",
-      "description": "Alex exploró una zona nueva de su entorno.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6769",
-      "day": 198,
-      "hour": 23.081573333400172,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6770",
-      "day": 198,
-      "hour": 23.21490666673351,
-      "type": "social_interaction",
-      "description": "Alex y Bruno tuvieron una interacción cordial.",
-      "participants": [
-        "alex",
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6771",
-      "day": 198,
-      "hour": 23.348240000066845,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6772",
-      "day": 198,
-      "hour": 23.48157333340018,
-      "type": "social_interaction",
-      "description": "Alex y Bruno tuvieron una interacción cordial.",
-      "participants": [
-        "alex",
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6773",
-      "day": 198,
-      "hour": 23.614906666733518,
-      "type": "social_interaction",
-      "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
-      "participants": [
-        "bruno",
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6774",
-      "day": 198,
-      "hour": 23.88157333340019,
-      "type": "failed_action",
-      "description": "Bruno intentó eat_farm_food, pero no pudo hacerlo (no_farm_food).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6775",
-      "day": 198,
-      "hour": 23.934906666733525,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6776",
-      "day": 198,
-      "hour": 23.98824000006686,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "research-event-6776",
-      "day": 199,
-      "hour": 0,
-      "type": "research_experiment",
-      "description": "Alex realizó un experimento sobre resource-regeneration.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "research-event-6777",
-      "day": 199,
-      "hour": 0,
-      "type": "research_experiment",
-      "description": "Bruno realizó un experimento sobre resource-regeneration.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6779",
-      "day": 199,
-      "hour": 0.25490666673352697,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6780",
-      "day": 199,
-      "hour": 0.3082400000668603,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6781",
-      "day": 199,
-      "hour": 0.5749066667335269,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6782",
-      "day": 199,
-      "hour": 0.7615733334001932,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6783",
-      "day": 199,
-      "hour": 0.841573333400193,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6784",
-      "day": 199,
-      "hour": 1.1082400000668593,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6785",
-      "day": 199,
-      "hour": 1.134906666733526,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6786",
-      "day": 199,
-      "hour": 1.401573333400192,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6787",
-      "day": 199,
-      "hour": 1.4549066667335253,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6788",
-      "day": 199,
-      "hour": 1.6682400000668582,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6789",
-      "day": 199,
-      "hour": 1.7215733334001915,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6790",
-      "day": 199,
-      "hour": 1.9349066667335244,
-      "type": "failed_action",
-      "description": "Alex intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6791",
-      "day": 199,
-      "hour": 1.9882400000668576,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6792",
-      "day": 199,
-      "hour": 1.9882400000668576,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6793",
-      "day": 199,
-      "hour": 2.254906666733526,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6794",
-      "day": 199,
-      "hour": 2.3349066667335263,
-      "type": "failed_action",
-      "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6795",
-      "day": 199,
-      "hour": 2.38824000006686,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-6796",
-      "day": 199,
-      "hour": 2.521573333400194,
-      "type": "action",
-      "description": "Alex comió pescado (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-6797",
-      "day": 199,
-      "hour": 2.6549066667335284,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 199,
-      "hour": 2.8962666667335157,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 199,
-      "hour": 3.002933333400183,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-503",
-      "day": 199,
-      "hour": 3.162933333400184,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-504",
-      "day": 199,
-      "hour": 3.2696000000668515,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-505",
-      "day": 199,
-      "hour": 3.4296000000668525,
-      "type": "social_interaction",
-      "description": "Alex y Bruno tuvieron una interacción cordial.",
-      "participants": [
-        "alex",
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-506",
-      "day": 199,
-      "hour": 3.53626666673352,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-507",
-      "day": 199,
-      "hour": 3.8029333334001882,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-508",
-      "day": 199,
-      "hour": 3.9629333334001893,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-509",
-      "day": 199,
-      "hour": 4.1496000000668545,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-510",
-      "day": 199,
-      "hour": 4.416266666733518,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-511",
-      "day": 199,
-      "hour": 4.496266666733518,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-512",
-      "day": 199,
-      "hour": 4.682933333400182,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-513",
-      "day": 199,
-      "hour": 4.7629333334001815,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-514",
-      "day": 199,
-      "hour": 4.949600000066846,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-515",
-      "day": 199,
-      "hour": 5.21626666673351,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 199,
-      "hour": 5.282400000066843,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 199,
-      "hour": 5.549066666733507,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-503",
-      "day": 199,
-      "hour": 5.549066666733507,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-504",
-      "day": 199,
-      "hour": 5.815733333400171,
-      "type": "action",
-      "description": "Alex comió una planta (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-505",
-      "day": 199,
-      "hour": 5.815733333400171,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-506",
-      "day": 199,
-      "hour": 6.162400000066834,
-      "type": "action",
-      "description": "Bruno pescó (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-507",
-      "day": 199,
-      "hour": 6.322400000066833,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-508",
-      "day": 199,
-      "hour": 6.429066666733498,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-509",
-      "day": 199,
-      "hour": 6.695733333400162,
-      "type": "action",
-      "description": "Alex pescó (1).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-510",
-      "day": 199,
-      "hour": 6.7757333334001615,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-511",
-      "day": 199,
-      "hour": 6.962400000066826,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-512",
-      "day": 199,
-      "hour": 7.042400000066825,
-      "type": "action",
-      "description": "Bruno comió pescado (1).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-513",
-      "day": 199,
-      "hour": 7.22906666673349,
-      "type": "failed_action",
-      "description": "Alex intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
-      "participants": [
-        "alex"
-      ]
-    },
     {
       "id": "event-514",
       "day": 199,
@@ -84916,6 +83500,1703 @@
       "description": "Bruno realizó un experimento sobre resource-regeneration.",
       "participants": [
         "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 202,
+      "hour": 2.8018400000678634,
+      "type": "social_interaction",
+      "description": "Alex y Bruno tuvieron una interacción cordial.",
+      "participants": [
+        "alex",
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 202,
+      "hour": 2.8018400000678634,
+      "type": "social_interaction",
+      "description": "Bruno y Alex tuvieron un encuentro incómodo.",
+      "participants": [
+        "bruno",
+        "alex"
+      ]
+    },
+    {
+      "id": "event-503",
+      "day": 202,
+      "hour": 3.1218400000678654,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-504",
+      "day": 202,
+      "hour": 3.1218400000678654,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-505",
+      "day": 202,
+      "hour": 3.228506666734533,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-506",
+      "day": 202,
+      "hour": 3.6285066667345354,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-507",
+      "day": 202,
+      "hour": 3.7351733334012027,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-508",
+      "day": 202,
+      "hour": 3.8951733334012038,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-509",
+      "day": 202,
+      "hour": 4.108506666734536,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-510",
+      "day": 202,
+      "hour": 4.401840000067867,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-511",
+      "day": 202,
+      "hour": 4.481840000067866,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-512",
+      "day": 202,
+      "hour": 4.6685066667345305,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-513",
+      "day": 202,
+      "hour": 4.74850666673453,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-514",
+      "day": 202,
+      "hour": 4.9351733334011945,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-515",
+      "day": 202,
+      "hour": 5.015173333401194,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-516",
+      "day": 202,
+      "hour": 5.201840000067858,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-517",
+      "day": 202,
+      "hour": 5.281840000067858,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-518",
+      "day": 202,
+      "hour": 5.5485066667345215,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-519",
+      "day": 202,
+      "hour": 5.70850666673452,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-520",
+      "day": 202,
+      "hour": 5.8151733334011855,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-521",
+      "day": 202,
+      "hour": 6.081840000067849,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-522",
+      "day": 202,
+      "hour": 6.215173333401181,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-523",
+      "day": 202,
+      "hour": 6.348506666734513,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-524",
+      "day": 202,
+      "hour": 6.481840000067845,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-525",
+      "day": 202,
+      "hour": 6.881840000067841,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-526",
+      "day": 202,
+      "hour": 6.988506666734507,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-527",
+      "day": 202,
+      "hour": 7.148506666734505,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-528",
+      "day": 202,
+      "hour": 7.255173333401171,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-529",
+      "day": 202,
+      "hour": 7.415173333401169,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-530",
+      "day": 202,
+      "hour": 7.521840000067835,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-531",
+      "day": 202,
+      "hour": 7.681840000067833,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-532",
+      "day": 202,
+      "hour": 7.788506666734499,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-533",
+      "day": 202,
+      "hour": 8.215173333401168,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-534",
+      "day": 202,
+      "hour": 8.29517333340117,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-535",
+      "day": 202,
+      "hour": 8.481840000067841,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-536",
+      "day": 202,
+      "hour": 8.561840000067843,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-537",
+      "day": 202,
+      "hour": 8.855173333401183,
+      "type": "failed_action",
+      "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-538",
+      "day": 202,
+      "hour": 8.908506666734517,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-539",
+      "day": 202,
+      "hour": 8.935173333401185,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-540",
+      "day": 202,
+      "hour": 9.17517333340119,
+      "type": "failed_action",
+      "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-541",
+      "day": 202,
+      "hour": 9.201840000067858,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-542",
+      "day": 202,
+      "hour": 9.228506666734525,
+      "type": "social_interaction",
+      "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+      "participants": [
+        "bruno",
+        "alex"
+      ]
+    },
+    {
+      "id": "event-543",
+      "day": 202,
+      "hour": 9.46850666673453,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-544",
+      "day": 202,
+      "hour": 9.495173333401198,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-545",
+      "day": 202,
+      "hour": 9.735173333401203,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-546",
+      "day": 202,
+      "hour": 9.76184000006787,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-547",
+      "day": 202,
+      "hour": 10.001840000067876,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-548",
+      "day": 202,
+      "hour": 10.028506666734543,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-549",
+      "day": 202,
+      "hour": 10.295173333401216,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-550",
+      "day": 202,
+      "hour": 10.375173333401218,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-551",
+      "day": 202,
+      "hour": 10.64184000006789,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-552",
+      "day": 202,
+      "hour": 10.668506666734558,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-553",
+      "day": 202,
+      "hour": 10.908506666734564,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-554",
+      "day": 202,
+      "hour": 10.93517333340123,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-555",
+      "day": 202,
+      "hour": 11.175173333401236,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-556",
+      "day": 202,
+      "hour": 11.201840000067904,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-557",
+      "day": 202,
+      "hour": 11.548506666734578,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-558",
+      "day": 202,
+      "hour": 11.575173333401246,
+      "type": "social_interaction",
+      "description": "Bruno y Alex se encontraron, pero la interacción fue neutral.",
+      "participants": [
+        "bruno",
+        "alex"
+      ]
+    },
+    {
+      "id": "event-559",
+      "day": 202,
+      "hour": 11.815173333401251,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-560",
+      "day": 202,
+      "hour": 11.841840000067918,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-561",
+      "day": 202,
+      "hour": 12.081840000067924,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-562",
+      "day": 202,
+      "hour": 12.108506666734591,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-563",
+      "day": 202,
+      "hour": 12.348506666734597,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-564",
+      "day": 202,
+      "hour": 12.481840000067933,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-565",
+      "day": 202,
+      "hour": 12.721840000067939,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-566",
+      "day": 202,
+      "hour": 12.748506666734606,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-567",
+      "day": 202,
+      "hour": 13.015173333401279,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-568",
+      "day": 202,
+      "hour": 13.09517333340128,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-569",
+      "day": 202,
+      "hour": 13.281840000067952,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-570",
+      "day": 202,
+      "hour": 13.361840000067954,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-571",
+      "day": 202,
+      "hour": 13.628506666734626,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-572",
+      "day": 202,
+      "hour": 13.655173333401294,
+      "type": "failed_action",
+      "description": "Bruno intentó catch_fish, pero no pudo hacerlo (fish_escaped).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-573",
+      "day": 202,
+      "hour": 13.8951733334013,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-574",
+      "day": 202,
+      "hour": 14.028506666734636,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-575",
+      "day": 202,
+      "hour": 14.161840000067972,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-576",
+      "day": 202,
+      "hour": 14.295173333401308,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-577",
+      "day": 202,
+      "hour": 14.535173333401314,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-578",
+      "day": 202,
+      "hour": 14.561840000067981,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-579",
+      "day": 202,
+      "hour": 14.828506666734654,
+      "type": "action",
+      "description": "Bruno cosechó alimento (1.5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-580",
+      "day": 202,
+      "hour": 15.06850666673466,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-581",
+      "day": 202,
+      "hour": 15.335173333401332,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-582",
+      "day": 202,
+      "hour": 15.335173333401332,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-583",
+      "day": 202,
+      "hour": 15.601840000068005,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-584",
+      "day": 202,
+      "hour": 15.708506666734674,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-585",
+      "day": 202,
+      "hour": 15.975173333401347,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-586",
+      "day": 202,
+      "hour": 16.13517333340135,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-587",
+      "day": 202,
+      "hour": 16.24184000006802,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-588",
+      "day": 202,
+      "hour": 16.401840000068024,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-589",
+      "day": 202,
+      "hour": 16.508506666734693,
+      "type": "action",
+      "description": "Bruno comió alimento cultivado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-590",
+      "day": 202,
+      "hour": 16.668506666734697,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-591",
+      "day": 202,
+      "hour": 16.775173333401366,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-592",
+      "day": 202,
+      "hour": 17.01517333340137,
+      "type": "social_interaction",
+      "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+      "participants": [
+        "alex",
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-593",
+      "day": 202,
+      "hour": 17.12184000006804,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-594",
+      "day": 202,
+      "hour": 17.30850666673471,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-595",
+      "day": 202,
+      "hour": 17.388506666734713,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-596",
+      "day": 202,
+      "hour": 17.575173333401384,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-597",
+      "day": 202,
+      "hour": 17.655173333401386,
+      "type": "action",
+      "description": "Bruno comió alimento cultivado (0.5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-598",
+      "day": 202,
+      "hour": 17.841840000068057,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-599",
+      "day": 202,
+      "hour": 17.92184000006806,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-600",
+      "day": 202,
+      "hour": 18.10850666673473,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-601",
+      "day": 202,
+      "hour": 18.18850666673473,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-602",
+      "day": 202,
+      "hour": 18.455173333401405,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-603",
+      "day": 202,
+      "hour": 18.481840000068072,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-604",
+      "day": 202,
+      "hour": 18.748506666734745,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-605",
+      "day": 202,
+      "hour": 18.80184000006808,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-606",
+      "day": 202,
+      "hour": 19.068506666734752,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-607",
+      "day": 202,
+      "hour": 19.121840000068087,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-608",
+      "day": 202,
+      "hour": 19.335173333401425,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-609",
+      "day": 202,
+      "hour": 19.38850666673476,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-610",
+      "day": 202,
+      "hour": 19.601840000068098,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-611",
+      "day": 202,
+      "hour": 19.655173333401432,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-612",
+      "day": 202,
+      "hour": 19.86850666673477,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-613",
+      "day": 202,
+      "hour": 20.028506666734774,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-614",
+      "day": 202,
+      "hour": 20.215173333401445,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-615",
+      "day": 202,
+      "hour": 20.295173333401447,
+      "type": "social_interaction",
+      "description": "Alex y Bruno tuvieron una interacción cordial.",
+      "participants": [
+        "alex",
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-616",
+      "day": 202,
+      "hour": 20.56184000006812,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-617",
+      "day": 202,
+      "hour": 20.828506666734793,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-618",
+      "day": 202,
+      "hour": 20.828506666734793,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-619",
+      "day": 202,
+      "hour": 21.095173333401465,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-620",
+      "day": 202,
+      "hour": 21.095173333401465,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-621",
+      "day": 202,
+      "hour": 21.36184000006814,
+      "type": "action",
+      "description": "Alex comió una planta (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-622",
+      "day": 202,
+      "hour": 21.44184000006814,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-623",
+      "day": 202,
+      "hour": 21.708506666734813,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-624",
+      "day": 202,
+      "hour": 21.895173333401484,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-625",
+      "day": 202,
+      "hour": 22.24184000006816,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-626",
+      "day": 202,
+      "hour": 22.268506666734826,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-627",
+      "day": 202,
+      "hour": 22.50850666673483,
+      "type": "failed_action",
+      "description": "Bruno intentó harvest, pero no pudo hacerlo (no_ready_crop).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-628",
+      "day": 202,
+      "hour": 22.5351733334015,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-629",
+      "day": 202,
+      "hour": 22.561840000068166,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-630",
+      "day": 202,
+      "hour": 22.80184000006817,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-631",
+      "day": 202,
+      "hour": 23.068506666734844,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-632",
+      "day": 202,
+      "hour": 23.175173333401514,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-633",
+      "day": 202,
+      "hour": 23.441840000068186,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-634",
+      "day": 202,
+      "hour": 23.548506666734855,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-635",
+      "day": 202,
+      "hour": 23.70850666673486,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-636",
+      "day": 202,
+      "hour": 23.81517333340153,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-637",
+      "day": 202,
+      "hour": 23.975173333401532,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "research-event-637",
+      "day": 203,
+      "hour": 0,
+      "type": "research_experiment",
+      "description": "Alex realizó un experimento sobre resource-regeneration.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "research-event-638",
+      "day": 203,
+      "hour": 0,
+      "type": "research_experiment",
+      "description": "Bruno realizó un experimento sobre resource-regeneration.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-640",
+      "day": 203,
+      "hour": 0.08184000006819929,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-641",
+      "day": 203,
+      "hour": 0.3218400000681993,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-642",
+      "day": 203,
+      "hour": 0.45517333340153265,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-643",
+      "day": 203,
+      "hour": 0.6685066667348657,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-644",
+      "day": 203,
+      "hour": 0.8285066667348654,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-645",
+      "day": 203,
+      "hour": 0.9351733334015319,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-646",
+      "day": 203,
+      "hour": 1.0951733334015317,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-647",
+      "day": 203,
+      "hour": 1.2018400000681981,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-648",
+      "day": 203,
+      "hour": 1.3618400000681978,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-649",
+      "day": 203,
+      "hour": 1.4685066667348643,
+      "type": "social_interaction",
+      "description": "Bruno y Alex tuvieron una interacción cordial.",
+      "participants": [
+        "bruno",
+        "alex"
+      ]
+    },
+    {
+      "id": "event-650",
+      "day": 203,
+      "hour": 1.7351733334015305,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-651",
+      "day": 203,
+      "hour": 1.8151733334015303,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-652",
+      "day": 203,
+      "hour": 2.108506666734864,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-653",
+      "day": 203,
+      "hour": 2.1618400000681977,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-654",
+      "day": 203,
+      "hour": 2.3751733334015324,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-655",
+      "day": 203,
+      "hour": 2.428506666734866,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-656",
+      "day": 203,
+      "hour": 2.6418400000682007,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-657",
+      "day": 203,
+      "hour": 2.6951733334015344,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-658",
+      "day": 203,
+      "hour": 3.0151733334015365,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-659",
+      "day": 203,
+      "hour": 3.0418400000682033,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-660",
+      "day": 203,
+      "hour": 3.388506666734872,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-661",
+      "day": 203,
+      "hour": 3.388506666734872,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-662",
+      "day": 203,
+      "hour": 3.6551733334015406,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-663",
+      "day": 203,
+      "hour": 3.6551733334015406,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-664",
+      "day": 203,
+      "hour": 3.921840000068209,
+      "type": "action",
+      "description": "Alex comió pescado (1).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-665",
+      "day": 203,
+      "hour": 3.921840000068209,
+      "type": "action",
+      "description": "Bruno comió pescado (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-666",
+      "day": 203,
+      "hour": 4.268506666734873,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-667",
+      "day": 203,
+      "hour": 4.295173333401539,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-668",
+      "day": 203,
+      "hour": 4.615173333401536,
+      "type": "action",
+      "description": "Bruno pescó (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-669",
+      "day": 203,
+      "hour": 4.668506666734869,
+      "type": "action",
+      "description": "Alex pescó (1).",
+      "participants": [
+        "alex"
       ]
     }
   ]
