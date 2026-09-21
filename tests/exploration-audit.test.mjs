@@ -18,3 +18,7 @@ const third = discoverArea(sim, agent);
 assert.notEqual(third.id, first.id);
 assert.equal(sim.world.exploration.discoveredAreas.length, 2);
 console.log("Lúmina exploration audit: territorio persistente verificado.");
+
+import assert from "node:assert/strict";
+import { getRegionKey } from "../src/spatial.js";
+assert.ok(getRegionKey({x:40,z:40},{bounds:{minX:-64,maxX:64,minZ:-64,maxZ:64},spatial:{regionSize:8}}));
