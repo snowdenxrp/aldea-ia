@@ -6,6 +6,7 @@ import { tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
 import { createLearningMemory, learnFromReports } from "../src/assistants/memory.js";
+import { runAssistantSquad } from "../src/assistants/squad.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
 const MEMORY_PATH = new URL("../.lumina-assistant-memory.json", import.meta.url);
@@ -65,7 +66,9 @@ const structuralReport = {
   summary: structuralFindings.length ? `${structuralFindings.length} hallazgo(s) de consistencia de estado` : "Estado estructural consistente.",
   findings: structuralFindings
 };
+const squadReport = runAssistantSquad({ simulation });
 const report = buildAssistantReport({ debuggerReport, testerReport, analystReport, structuralReport });
+report.assistantSquad = squadReport;
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
