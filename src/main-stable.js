@@ -1,4 +1,4 @@
-import THREE from "./three-remote.js";
+import * as THREE from "./three.module.js";
 import { world } from "./world.js";
 import { createInitialAgents } from "./agents.js";
 import { createSimulation, tick } from "./simulation.js";
