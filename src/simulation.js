@@ -70,7 +70,8 @@ function generateOptions(agent, perception, world, random = Math.random, agents 
   const explorationNovelty=Math.max(.35,1-Math.min(1,Number(currentRegion?.visits??0)/5));
   options.push({name:"explore_area",baseValue:.38,explorationValue:.9,novelty:explorationNovelty,distance:explorationDistance,target:explorationTarget}); const plannedStep = agent.plan?.steps?.[0]; if (plannedStep) { const planned = options.find(option => option.name === plannedStep); if (planned) planned.baseValue = (planned.baseValue ?? 0) + 2.5 + Math.min(2, Number(agent.plan.priority ?? 0) * 0.03); } return options;
 }
-function getRegionKeyForAgent(agent,world){return getRegionKey(agent.position,world);}\nfunction generateTradeOptions(agent, perception, world, agents = []) {
+function getRegionKeyForAgent(agent,world){return getRegionKey(agent.position,world);}
+function generateTradeOptions(agent, perception, world, agents = []) {
   const visible = perception.visibleAgents.filter(other => other.distance <= 2.0);
   const options = [];
   for (const other of visible) {
