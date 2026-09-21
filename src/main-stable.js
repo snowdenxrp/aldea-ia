@@ -191,7 +191,7 @@ function createMesh(a){
   Object.values(parts).forEach(p=>{p.visible=false;activityToolGroup.add(p);});
   activityToolGroup.position.set(.48,1.02,.18); g.add(activityToolGroup);
   g.userData.activityTools={group:activityToolGroup,parts};
-  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};
+  g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};addVisualDetail(g,a);
   g.traverse(o=>{if(o.isMesh)o.renderOrder=1000;}); return (scene.add(g),g);
 }
 function animateHumanoid(m,a,t){
@@ -221,6 +221,13 @@ function animateHumanoid(m,a,t){
     else if(activity==="planting"){p.crop.visible=true;tool.group.position.set(.42,.72,.3);}
   }
   m.userData.animationActivity=activity;m.userData.isLocomoting=moving;
+}
+function addVisualDetail(g,a){
+  const detail=material(a.id==="alex"?0x345b8c:0x8c4f34,.68);
+  const trim=material(0xc6a36a,.72);
+  const belt=box(.62,.09,.18,trim);belt.position.set(0,.72,.34);g.add(belt);
+  const chest=box(.34,.16,.05,detail);chest.position.set(0,1.18,.43);g.add(chest);
+  const badge=new THREE.Mesh(new THREE.CircleGeometry(.055,16),trim);badge.position.set(.13,1.19,.46);badge.rotation.x=-Math.PI/2;g.add(badge);
 }
 function syncMeshes(){normalize();syncStructures();const t=performance.now()/1000;for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,m.position.y??0,a.position.z);animateHumanoid(m,a,t);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
