@@ -4,5 +4,6 @@ const content=fs.readFileSync(new URL("../src/main-stable.js",import.meta.url),"
 assert.ok(content.includes("addTree"));
 assert.ok(content.includes("addRock"));
 assert.ok(content.includes("addPlant"));
+assert.ok(content.includes("getBiomeForRegion") || content.includes("biomeGroundColors"));
 assert.ok(!content.includes("\\n"));
 console.log(JSON.stringify({audit:"biome-aware-visual",environment:["trees","rocks","plants"],verdict:"PASS"},null,2));
