@@ -3,6 +3,8 @@ import fs from "node:fs";
 const source=fs.readFileSync(new URL("../src/main-stable.js",import.meta.url),"utf8");
 assert.ok(source.includes("syncSettlementVisualState"));
 assert.ok(source.includes("getRegionKeyForVisual"));
+assert.ok(source.includes("syncSettlementDecorations"));
+for(const token of ["settlementDecorationMeshes","createSettlementDecoration","type===\"storage\"","type===\"workbench\"","type===\"fence\""]) assert.ok(source.includes(token),"faltó capa de asentamiento: "+token);
 assert.ok(!source.includes("g.frustumCulled=false"));
 assert.ok(!source.includes("o.frustumCulled=false"));
 console.log(JSON.stringify({audit:"visual-scalability",culling:"default",settlementState:"connected",verdict:"PASS"},null,2));
