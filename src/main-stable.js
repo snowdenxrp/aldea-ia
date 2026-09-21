@@ -21,8 +21,8 @@ const fireMeshes=[];
 const waterMeshes=[];
 function addTree(x,z,scale=1){
   const g=new THREE.Group(); g.userData.environmentType="tree";
-  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,1.3,7),material(0x68452f)); trunk.position.y=.65;
-  const crown=new THREE.Mesh(new THREE.SphereGeometry(.85,10,8),material(0x3f7138)); crown.position.y=1.55; crown.scale.set(1,.9,1);
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.24,.34,2.7,8),material(0x68452f)); trunk.position.y=1.35;
+  const crown=new THREE.Mesh(new THREE.SphereGeometry(1.65,14,10),material(0x3f7138)); crown.position.y=3.2; crown.scale.set(1.08,.98,1.08);
   g.add(trunk,crown); g.scale.setScalar(scale); g.position.set(x,0,z); g.traverse(o=>{if(o.isMesh)o.castShadow=true;}); scene.add(g); environmentMeshes.push(g);
 }
 function addRock(x,z,scale=1){
