@@ -39,6 +39,38 @@ function bridge(scene,x,z){
 function tree(scene,x,z,s=1){const g=new THREE.Group();const trunk=C(.24,.34,2.7,0x68452f,8);trunk.position.y=1.35;const crown=new THREE.Mesh(new THREE.SphereGeometry(1.7,14,10),M(0x4f7f43,.92));crown.position.y=3.25;crown.scale.set(1.08,.98,1.08);g.add(trunk,crown);g.position.set(x,0,z);g.scale.setScalar(s);return add(g,scene);}
 function barn(scene,x,z){const g=new THREE.Group();const w=meshBox(4,2.5,3.2,0xa96f45);w.position.y=1.25;const r=new THREE.Mesh(new THREE.ConeGeometry(2.8,1.6,4),M(0x623b2c));r.rotation.y=Math.PI/4;r.position.y=3.3;const d=meshBox(1.2,1.8,.12,0x4b3025);d.position.set(0,.9,1.62);g.add(w,r,d);g.position.set(x,0,z);return add(g,scene);}
 function tower(scene,x,z){const g=new THREE.Group(),b=C(.9,1.1,5,0x8d7966,10);b.position.y=2.5;const r=new THREE.Mesh(new THREE.ConeGeometry(1.25,1.1,8),M(0x56392d));r.position.y=5.55;g.add(b,r);g.position.set(x,0,z);return add(g,scene);}
+function hash2(x,z){let n=(x*374761393+z*668265263)|0;n=(n^(n>>>13))*1274126177;return ((n^(n>>>16))>>>0)/4294967295;}
+function insideRect(x,z,pad,extra=0){
+ const hw=p.width/2+pad,hl=p.length/2+pad;
+ return x>=p.x-hw-extra&&x<=p.x+hw+extra&&z>=p.z-hl-extra&&z<=p.z+hl+extra;
+}
+function addGrassField(scene,layout){
+ const geo=new THREE.ConeGeometry(.055,.34,3);
+ const mat=M(0x4f813b,.98);
+ const inst=new THREE.InstancedMesh(geo,mat,720);
+ const dummy=new THREE.Object3D();
+ let count=0;
+ for(let ix=-72;ix<72&&count<720;ix+=4){
+  for(let iz=-72;iz<72&&count<720;iz+=4){
+   const jx=ix+((hash2(ix,iz)-.5)*3.2),jz=iz+((hash2(ix+17,iz-9)-.5)*3.2);
+   if(Math.abs(jx-layout.river.centerX)<layout.river.width/2+1.5)continue;
+   if(Math.hypot(jx-layout.plaza.x,jz-layout.plaza.z)<layout.plaza.radius+1.2)continue;
+   if(layout.paths.some(p=>insideRect(jx,jz,1.4,p)))continue;
+   if(layout.buildings.some(b=>b.type==="house"&&Math.hypot(jx-b.x,jz-b.z)<4.2))continue;
+   const s=.55+hash2(ix+3,iz+7)*.8;
+   dummy.position.set(jx,.17*s,jz);
+   dummy.scale.set(1,s,1);
+   dummy.rotation.y=hash2(ix-4,iz+12)*Math.PI;
+   dummy.updateMatrix();
+   inst.setMatrixAt(count++,dummy.matrix);
+  }
+ }
+ inst.count=count;
+ inst.instanceMatrix.needsUpdate=true;
+ inst.castShadow=false;
+ inst.receiveShadow=false;
+ scene.add(inst);
+}
 function bank(scene,x,z,w,d){const m=meshBox(w,.12,d,0x8e7657,1);m.position.set(x,.06,z);m.rotation.y=.02;scene.add(m);for(let i=0;i<Math.max(4,Math.floor(w*d/12));i++){const a=i*2.41;const t=C(.035,.05,.22,0x638d4c,6);t.position.set(x+Math.cos(a)*(w*.42),.18,z+Math.sin(a)*(d*.42));scene.add(t);}}
 
 export function buildVillage(scene){
