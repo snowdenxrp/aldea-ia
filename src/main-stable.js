@@ -179,6 +179,8 @@ function createMesh(a){
   if(role==="builder"||role==="craftsperson"){const belt=new THREE.Mesh(new THREE.TorusGeometry(.29,.035,6,16),darkMat);belt.rotation.x=Math.PI/2;belt.position.y=.92;accessoryGroup.add(belt);}
   if(role==="trader"){const bag=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),material(0x6a4d38));bag.scale.set(1,.8,.7);bag.position.set(.43,1.02,.08);accessoryGroup.add(bag);}
   if(role==="gatherer"){const basket=new THREE.Mesh(new THREE.TorusGeometry(.18,.055,6,12),material(0x9a6b35));basket.rotation.x=Math.PI/2;basket.position.set(-.43,.98,.08);accessoryGroup.add(basket);}
+  if(role==="teacher"){const book=box(.22,.28,.06,0x6f5138);book.position.set(.34,1.0,.28);accessoryGroup.add(book);}
+  if(role==="organizer"){const sash=box(.08,.72,.04,0xd8c08a);sash.position.set(.22,1.18,.32);sash.rotation.z=-.22;accessoryGroup.add(sash);}
   accessoryGroup.position.z=.02;
   g.add(accessoryGroup); g.userData.accessoryRole=role??null;
   const activityToolGroup=new THREE.Group();
@@ -193,6 +195,7 @@ function createMesh(a){
   Object.values(parts).forEach(p=>{p.visible=false;activityToolGroup.add(p);});
   activityToolGroup.position.set(.48,1.02,.18); g.add(activityToolGroup);
   g.userData.activityTools={group:activityToolGroup,parts};
+  const shadow=new THREE.Mesh(new THREE.CircleGeometry(.34,20),material(0x2b241f,.95)); shadow.scale.set(1,.55,1); shadow.rotation.x=-Math.PI/2; shadow.position.y=.012; g.add(shadow); g.userData.shadow=shadow;
   g.add(torso,collar,pelvis,head,hair,nose,eyeL,eyeR,armL,armR,handL,handR,legL,legR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR};addVisualDetail(g,a);
   g.traverse(o=>{if(o.isMesh)o.renderOrder=1000;}); return (scene.add(g),g);
 }
