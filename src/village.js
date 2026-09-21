@@ -1,0 +1,29 @@
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+const M=(c,r=.82)=>new THREE.MeshStandardMaterial({color:c,roughness:r});
+const B=(w,h,d,c)=>new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c));
+const C=(a,b,h,c,s=10)=>new THREE.Mesh(new THREE.CylinderGeometry(a,b,h,s),M(c));
+function path(scene,x,z,w,d,r=0){const m=B(w,.035,d,0xb59a72);m.position.set(x,.025,z);m.rotation.y=r;m.receiveShadow=true;scene.add(m);}
+function house(scene,x,z,r=0,s=1){
+ const g=new THREE.Group(), wall=B(3,2,2.7,0xc99868), roof=new THREE.Mesh(new THREE.ConeGeometry(2.15,1.35,4),M(0x70452f));
+ wall.position.y=1;roof.position.y=2.67;roof.rotation.y=Math.PI/4;
+ const door=B(.58,1.12,.1,0x543522);door.position.set(0,.56,1.38);
+ for(const sx of [-.92,.92]){const w=B(.55,.52,.07,0x7fb7c7);w.position.set(sx,1.25,1.38);const v=B(.045,.52,.08,0x593a28);v.position.set(sx,1.25,1.43);const h=B(.55,.045,.08,0x593a28);h.position.set(sx,1.25,1.43);g.add(w,v,h);}
+ const chim=B(.32,.72,.32,0x654235);chim.position.set(.82,3.02,-.35);g.add(wall,roof,door,chim);g.position.set(x,0,z);g.rotation.y=r;g.scale.setScalar(s);
+ g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});scene.add(g);
+}
+function lamp(scene,x,z){const g=new THREE.Group(),p=C(.055,.075,1.65,0x4b382c,8),a=B(.48,.06,.06,0x4b382c),l=new THREE.Mesh(new THREE.SphereGeometry(.11,12,8),new THREE.MeshBasicMaterial({color:0xffd783}));p.position.y=.82;a.position.set(.2,1.56,0);l.position.set(.43,1.43,0);g.add(p,a,l);g.position.set(x,0,z);scene.add(g);}
+function well(scene,x,z){const g=new THREE.Group();for(let i=0;i<10;i++){const a=i*Math.PI*2/10,s=C(.34,.34,.28,0x817a70,8);s.position.set(Math.cos(a)*.85,.14,Math.sin(a)*.85);g.add(s)}for(const x of [-.78,.78]){const p=B(.12,1.75,.12,0x5a3c2a);p.position.set(x,.9,0);g.add(p)}const beam=B(1.75,.13,.13,0x5a3c2a);beam.position.y=1.68;const roof=new THREE.Mesh(new THREE.ConeGeometry(1.18,.7,4),M(0x74452f));roof.rotation.y=Math.PI/4;roof.position.y=2.05;g.add(beam,roof);g.position.set(x,z?0:0,z);scene.add(g);}
+function market(scene,x,z){const g=new THREE.Group();for(const sx of [-1.5,1.5]){const p=B(.12,1.9,.12,0x5d3e29);p.position.set(sx,.95,0);g.add(p)}const top=B(3.35,.12,1.65,0x8f5e3c);top.position.y=.76;const roof=B(3.55,.12,1.85,0xb36d4a);roof.position.y=2;g.add(top,roof);for(let i=0;i<4;i++){const q=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),M([0x8b5a32,0xc78f3e,0x6f8f45,0xd1a14c][i]));q.position.set(-.95+i*.65,.95,.2);g.add(q)}g.position.set(x,0,z);scene.add(g);}
+function garden(scene,x,z){const g=new THREE.Group(),soil=B(4,.08,2.7,0x795331);soil.position.y=.04;g.add(soil);for(let x=-1.5;x<=1.5;x+=.75)for(let z=-.9;z<=.9;z+=.65){const s=C(.035,.045,.3,0x4f7d38,6);s.position.set(x,.23,z);const l=new THREE.Mesh(new THREE.SphereGeometry(.11,7,5),M(0x609044));l.scale.y=.65;l.position.set(x+.05,.43,z);g.add(s,l)}g.position.set(x,0,z);scene.add(g);}
+function bridge(scene,x,z){const g=new THREE.Group(),d=B(4.6,.22,2.6,0x7b5739);d.position.y=.12;g.add(d);for(const sx of [-2,-.65,.65,2])for(const sz of [-1.18,1.18]){const p=B(.11,.8,.11,0x553a29);p.position.set(sx,.48,sz);g.add(p)}for(const sz of [-1.18,1.18]){const r=B(4.35,.1,.1,0x553a29);r.position.set(0,.83,sz);g.add(r)}g.position.set(x,0,z);g.rotation.y=Math.PI/2;scene.add(g);}
+export function buildVillage(scene){
+ const root=new THREE.Group();root.name="LuminaVillageVisual";scene.add(root);
+ const plaza=new THREE.Mesh(new THREE.CircleGeometry(7.2,32),M(0xb8a27e,1));plaza.rotation.x=-Math.PI/2;plaza.position.set(2,.035,1);root.add(plaza);
+ path(scene,2,11,4.2,20);path(scene,2,-9,4.2,18);path(scene,13,1,22,3.4);path(scene,-8,1,18,3.4);
+ house(scene,-7,-6,-.18,.95);house(scene,2,-8,.05,.9);house(scene,11,-5,.2,.92);house(scene,14,4,.65,.95);house(scene,8,10,.95,.9);house(scene,-2,11,-.9,.94);house(scene,-9,6,-1,.9);house(scene,18,0,.2,.82);
+ well(scene,2,1);market(scene,8,1);garden(scene,-1,-13);bridge(scene,-18,0);
+ for(const p of [[-4,1],[7,1],[2,-7],[2,9],[12,5],[-7,4]])lamp(scene,p[0],p[1]);
+ for(const z of [-3.4,5.4])for(const x of [-4.8,-3.6,10.8,12]){const p=B(.09,.52,.09,0x69462f);p.position.set(x,.26,z);root.add(p);}
+ const fire=new THREE.Mesh(new THREE.ConeGeometry(.28,.85,8),new THREE.MeshBasicMaterial({color:0xffa83d,transparent:true,opacity:.9}));fire.position.set(2,.55,7.1);root.add(fire);
+ root.traverse(o=>{if(o.isMesh)o.receiveShadow=true});return root;
+}
