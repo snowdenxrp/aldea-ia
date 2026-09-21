@@ -25,11 +25,11 @@ export function getVillageLayout(){
     {type:"house",x:31.0,z:16.3,rotation:Math.PI,scale:1.00},
 
     // Fila sur: espejo visual con suficiente espacio entre viviendas.
-    {type:"house",x:-4.5,z:-16.3,rotation:Math.PI,scale:1.04},
-    {type:"house",x:4.5,z:-16.3,rotation:Math.PI,scale:1.00},
-    {type:"house",x:13.5,z:-16.3,rotation:Math.PI,scale:1.05},
-    {type:"house",x:22.5,z:-16.3,rotation:Math.PI,scale:1.02},
-    {type:"house",x:31.0,z:-16.3,rotation:Math.PI,scale:1.00},
+    {type:"house",x:-4.5,z:-16.3,rotation:0,scale:1.04},
+    {type:"house",x:4.5,z:-16.3,rotation:0,scale:1.00},
+    {type:"house",x:13.5,z:-16.3,rotation:0,scale:1.05},
+    {type:"house",x:22.5,z:-16.3,rotation:0,scale:1.02},
+    {type:"house",x:31.0,z:-16.3,rotation:0,scale:1.00},
 
     // Edificios de referencia fuera de las filas residenciales.
     {type:"tower",x:-9,z:17},
