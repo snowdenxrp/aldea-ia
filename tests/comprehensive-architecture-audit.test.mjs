@@ -160,7 +160,7 @@ for (const { result } of results) {
 
 const long = results.at(-1).result;
 assert.ok(long.knowledge >= 0, "estado cognitivo inválido");
-assert.ok(long.researchTopics >= 0 && long.researchExperiments >= 0, "estado de investigación inválido");
+assert.ok(long.researchTopics >= 0 && long.researchExperiments >= 0 && long.reproducedResearch >= 0, "estado de investigación inválido");
 assert.ok(long.roles >= 0, "estado de especialización inválido");
 assert.ok(long.discoveries >= 0 && Object.values(long.techLevels).every(value => finite(value)), "estado tecnológico inválido");
 assert.ok(long.institutions >= 0 && long.governanceHistory >= 0, "estado institucional/gubernamental inválido");
