@@ -3,6 +3,7 @@ import { createInitialAgents } from "../src/agents.js";
 import { createSimulation } from "../src/simulation.js";
 import { discoverArea, rememberAreaVisit } from "../src/exploration.js";
 import { world } from "../src/world.js";
+import { getRegionKey } from "../src/spatial.js";
 const sim = createSimulation(structuredClone(world), [createInitialAgents()[0]]);
 const agent = sim.agents[0];
 const first = discoverArea(sim, agent);
@@ -17,4 +18,7 @@ agent.position = { x: 30, z: -30 };
 const third = discoverArea(sim, agent);
 assert.notEqual(third.id, first.id);
 assert.equal(sim.world.exploration.discoveredAreas.length, 2);
+const expandedWorld={bounds:{minX:-64,maxX:64,minZ:-64,maxZ:64},spatial:{regionSize:8}};
+assert.ok(getRegionKey({x:40,z:40},expandedWorld));
 console.log("Lúmina exploration audit: territorio persistente verificado.");
+
