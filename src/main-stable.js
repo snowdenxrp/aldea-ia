@@ -16,8 +16,12 @@ const homeBiome=getBiomeForRegion(homeRegion,world);
 const biomeGroundColors={forest:0x587f4a,plains:0x6f9b58,mountain:0x77715f,wetland:0x5f8a70,arid:0x9a8557};
 const ground=new THREE.Mesh(new THREE.PlaneGeometry(150,150,24,24),new THREE.MeshStandardMaterial({color:biomeGroundColors[homeBiome.type]??biomeGroundColors.plains,roughness:1})); ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
 const environmentMeshes=[];
+const fireMeshes=[];
 function addTree(x,z,scale=1){
-  const g=new THREE.Group(); const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,1.3,7),material(0x68452f)); trunk.position.y=.65; const crown=new THREE.Mesh(new THREE.SphereGeometry(.85,10,8),material(0x3f7138)); crown.position.y=1.55; crown.scale.set(1,.9,1); g.add(trunk,crown); g.scale.setScalar(scale); g.position.set(x,0,z); g.traverse(o=>{if(o.isMesh)o.castShadow=true;}); scene.add(g); environmentMeshes.push(g);
+  const g=new THREE.Group(); g.userData.environmentType="tree";
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,1.3,7),material(0x68452f)); trunk.position.y=.65;
+  const crown=new THREE.Mesh(new THREE.SphereGeometry(.85,10,8),material(0x3f7138)); crown.position.y=1.55; crown.scale.set(1,.9,1);
+  g.add(trunk,crown); g.scale.setScalar(scale); g.position.set(x,0,z); g.traverse(o=>{if(o.isMesh)o.castShadow=true;}); scene.add(g); environmentMeshes.push(g);
 }
 function addRock(x,z,scale=1){
   const m=new THREE.Mesh(new THREE.DodecahedronGeometry(.55,1),material(0x77736b,.95)); m.scale.set(scale,scale*.72,scale*1.15); m.position.set(x,.4*scale,z); m.castShadow=true; scene.add(m); environmentMeshes.push(m);
@@ -33,6 +37,44 @@ function buildBiomeEnvironment(biomeType){
   for(let i=0;i<v.plants;i++){const a=i*2.399;const r=8+(i%7)*3;addPlant(Math.cos(a)*r+(i%3-1)*16,Math.sin(a)*r+(i%4-1.5)*14,v.plantScale*(.8+(i%3)*.1));}
 }
 buildBiomeEnvironment(homeBiome.type);
+
+function createFirePit(x,z){
+  const g=new THREE.Group(); g.userData.environmentType="fire";
+  const stoneMat=material(0x77716a,.95);
+  for(let i=0;i<7;i++){const a=i*Math.PI*2/7;const stone=new THREE.Mesh(new THREE.DodecahedronGeometry(.18,1),stoneMat);stone.position.set(Math.cos(a)*.52,.14,Math.sin(a)*.52);stone.scale.set(1,.7,1);g.add(stone);}
+  const flameMat=new THREE.MeshBasicMaterial({color:0xffb23e,transparent:true,opacity:.9});
+  const flame=new THREE.Mesh(new THREE.ConeGeometry(.23,.7,7),flameMat);flame.position.y=.48;g.add(flame);
+  const emberMat=new THREE.MeshBasicMaterial({color:0xff6a2a,transparent:true,opacity:.85});
+  const ember=new THREE.Mesh(new THREE.SphereGeometry(.13,8,6),emberMat);ember.position.y=.22;g.add(ember);
+  const smokeMat=new THREE.MeshBasicMaterial({color:0xd7d2c8,transparent:true,opacity:.16,depthWrite:false});
+  for(let i=0;i<3;i++){const smoke=new THREE.Mesh(new THREE.SphereGeometry(.16+i*.035,8,6),smokeMat);smoke.position.set((i-1)*.07,.95+i*.34,0);g.add(smoke);}
+  g.position.set(x,0,z); scene.add(g); fireMeshes.push(g);
+}
+createFirePit(-5,-3.9);
+createFirePit(8,5.2);
+
+function animateEnvironment(t){
+  for(let i=0;i<environmentMeshes.length;i++){
+    const g=environmentMeshes[i],type=g.userData.environmentType;
+    if(type==="tree"){
+      const sway=Math.sin(t*.9+i*.73)*.018;
+      g.rotation.z=sway;
+      const crown=g.children[1];
+      if(crown)crown.scale.y=.9+Math.sin(t*1.4+i)*.018;
+    } else if(type==="plant"){
+      g.rotation.z=Math.sin(t*1.8+i)*.035;
+    }
+  }
+  for(let i=0;i<fireMeshes.length;i++){
+    const g=fireMeshes[i],w=Math.sin(t*7+i*1.7);
+    const flame=g.children[7],ember=g.children[8];
+    if(flame){flame.scale.set(1+w*.12,1+Math.abs(w)*.2,1-w*.08);flame.rotation.y=t*1.5;}
+    if(ember)ember.scale.setScalar(.9+Math.abs(w)*.25);
+    for(let j=9;j<g.children.length;j++){
+      const smoke=g.children[j]; smoke.position.x=Math.sin(t*.55+j)*.05; smoke.position.y=.95+((t*.22+j*.31)%1.15); smoke.material.opacity=.08+Math.abs(Math.sin(t*.7+j))*.08;
+    }
+  }
+}
 
 const river=new THREE.Mesh(new THREE.PlaneGeometry(10,150),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
 const structureMeshes=new Map();
@@ -387,5 +429,5 @@ addEventListener("keydown",e=>{
   if(e.key==="-")cameraDistance=Math.min(110,cameraDistance+2);
   clampCamera();
 });
-function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;if(fault)return;try{for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);}syncMeshes();const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}if(now-lastSave>=2000){save();lastSave=now;}}catch(e){fault=e;console.error("Lúmina",e);}}
+function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;if(fault)return;try{animateEnvironment(now/1000);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);}syncMeshes();const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}if(now-lastSave>=2000){save();lastSave=now;}}catch(e){fault=e;console.error("Lúmina",e);}}
 loadLocal();normalize();syncMeshes();centerOnAgents();loadRemoteIfNeeded();updateCamera();addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});addEventListener("beforeunload",save);function animate(){requestAnimationFrame(animate);update();updateCamera();renderer.render(scene,camera);}animate();
