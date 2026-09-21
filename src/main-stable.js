@@ -6,7 +6,7 @@ import { setMovementTarget, moveAgent } from "./movement.js";
 import { getRegionForPosition, getBiomeForRegion, normalizeSpatialWorld } from "./spatial.js";
 
 const app=document.querySelector("#app"), worldTime=document.querySelector("#worldTime");
-const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df);
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df); scene.fog=new THREE.Fog(0x9ec9df,55,150);
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,500);
 const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.domElement.style.touchAction="none"; renderer.domElement.style.userSelect="none"; app.appendChild(renderer.domElement);
 const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(12,25,10); light.castShadow=true; light.shadow.mapSize.set(2048,2048); scene.add(light,new THREE.HemisphereLight(0xbfe7ff,0x6f8f58,1.2));
@@ -28,13 +28,13 @@ function addPlant(x,z,scale=1){
 const BIOME_VISUALS={forest:{trees:42,rocks:7,plants:24,treeScale:1.05,plantScale:1},plains:{trees:12,rocks:7,plants:34,treeScale:.82,plantScale:.95},mountain:{trees:8,rocks:30,plants:8,treeScale:.78,plantScale:.7},wetland:{trees:18,rocks:10,plants:42,treeScale:.9,plantScale:1.08},arid:{trees:3,rocks:22,plants:7,treeScale:.72,plantScale:.65}};
 function buildBiomeEnvironment(biomeType){
   const v=BIOME_VISUALS[biomeType]??BIOME_VISUALS.plains;
-  for(let i=0;i<v.trees;i++){const a=i*2.399;const r=9+(i%7)*2;addTree(18+Math.cos(a)*r,8+Math.sin(a)*r,v.treeScale*(.8+(i%4)*.08));}
-  for(let i=0;i<v.rocks;i++){const a=i*2.618;const r=7+(i%5)*2;addRock(24+Math.cos(a)*r,15+Math.sin(a)*r,.6+(i%3)*.12);}
-  for(let i=0;i<v.plants;i++){const a=i*2.399;const r=6+(i%6)*1.4;addPlant(-2+Math.cos(a)*r,-8+Math.sin(a)*r,v.plantScale*(.8+(i%3)*.1));}
+  for(let i=0;i<v.trees;i++){const a=i*2.399;const r=10+(i%9)*4;addTree(Math.cos(a)*r+(i%3-1)*14,Math.sin(a)*r+(i%4-1.5)*12,v.treeScale*(.8+(i%4)*.08));}
+  for(let i=0;i<v.rocks;i++){const a=i*2.618;const r=10+(i%6)*4;addRock(Math.cos(a)*r+(i%2?20:-20),Math.sin(a)*r+(i%3-1)*18,.6+(i%3)*.12);}
+  for(let i=0;i<v.plants;i++){const a=i*2.399;const r=8+(i%7)*3;addPlant(Math.cos(a)*r+(i%3-1)*16,Math.sin(a)*r+(i%4-1.5)*14,v.plantScale*(.8+(i%3)*.1));}
 }
 buildBiomeEnvironment(homeBiome.type);
 
-const river=new THREE.Mesh(new THREE.PlaneGeometry(10,90),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
+const river=new THREE.Mesh(new THREE.PlaneGeometry(10,150),new THREE.MeshStandardMaterial({color:0x4f9ed1})); river.rotation.x=-Math.PI/2; river.position.set(-18,.03,0); scene.add(river);
 const structureMeshes=new Map();
 function material(color,roughness=.8){return new THREE.MeshStandardMaterial({color,roughness});}
 function box(w,h,d,color){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material(color));}
@@ -160,17 +160,17 @@ function createMesh(a){
   const g=new THREE.Group(); g.userData.agentId=a.id; g.scale.setScalar(1.42);
   const blue=a.id==="alex", skin=0xf0bd91, clothes=blue?0x2f7de1:0xe87832, dark=blue?0x1f4f8c:0xb45624;
   const skinMat=material(skin,.9), clothMat=material(clothes,.82), darkMat=material(dark,.88), hairMat=material(0x3b2a22,1), shoeMat=material(0x3b332f,1);
-  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.34,.62,8,12),clothMat); torso.position.y=1.18;
+  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.39,.58,8,12),clothMat); torso.position.y=1.18;
   const collar=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,6,16),skinMat); collar.rotation.x=Math.PI/2; collar.position.y=1.52;
   const pelvis=new THREE.Mesh(new THREE.CapsuleGeometry(.31,.22,8,12),darkMat); pelvis.position.y=.76;
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.34,20,16),skinMat); head.scale.set(1,.98,.96); head.position.y=1.91;
-  const hair=new THREE.Mesh(new THREE.SphereGeometry(.355,20,12,0,Math.PI*2,0,Math.PI*.58),hairMat); hair.position.y=2.04;
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.32,24,18),skinMat); head.scale.set(1,.98,.96); head.position.y=1.91;
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(.335,24,14,0,Math.PI*2,0,Math.PI*.58),hairMat); hair.position.y=2.04;
   const nose=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),skinMat); nose.position.set(0,1.91,.335);
   const eyeMat=new THREE.MeshBasicMaterial({color:0x18222b,depthTest:false});
   const eyeL=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),eyeMat), eyeR=eyeL.clone(); eyeL.position.set(-.115,1.98,.315); eyeR.position.set(.115,1.98,.315);
-  const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.095,.48,6,9),clothMat), armR=armL.clone(); armL.position.set(-.39,1.2,0); armR.position.set(.39,1.2,0); armL.rotation.z=-.08; armR.rotation.z=.08;
+  const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.085,.44,7,10),clothMat), armR=armL.clone(); armL.position.set(-.39,1.2,0); armR.position.set(.39,1.2,0); armL.rotation.z=-.08; armR.rotation.z=.08;
   const handL=new THREE.Mesh(new THREE.SphereGeometry(.105,10,8),skinMat), handR=handL.clone(); handL.position.set(-.39,.89,0); handR.position.set(.39,.89,0);
-  const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.58,6,9),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
+  const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.105,.56,7,10),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
   const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),shoeMat), footR=footL.clone(); footL.scale.set(1,.55,1.45); footR.scale.set(1,.55,1.45); footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
   const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false})); marker.position.y=2.47;
   const role=a.specialization?.role??a.socialRole;
