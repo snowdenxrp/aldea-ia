@@ -121,9 +121,9 @@ function snapshot(simulation) {
     discoveries: technology?.discoveries?.length ?? 0,
     researchTopics: research?.topics?.length ?? 0,
     researchExperiments: research?.experiments?.length ?? 0,
-    reproducedResearch: research?.topics?.filter(topic => topic.contributors?.length >= 2).length ?? 0,
+    reproducedResearch: research?.topics?.filter(topic => topic.status === "reproduced").length ?? 0,
     techLevels: { ...(technology?.levels ?? {}) },
-    institutions: simulation.world.institutions?.history?.length ?? 0,
+    institutions: Array.isArray(simulation.world.institutions) ? simulation.world.institutions.length : 0,
     governanceHistory: simulation.world.governance?.history?.length ?? 0,
     trades: simulation.world.economy?.trades?.length ?? 0,
     projects: simulation.world.collectiveProjects?.length ?? 0,
@@ -160,7 +160,7 @@ for (const { result } of results) {
 
 const long = results.at(-1).result;
 assert.ok(long.knowledge >= 0, "estado cognitivo inválido");
-assert.ok(long.researchTopics >= 0 && long.researchExperiments >= 0, "estado de investigación inválido");
+assert.ok(long.researchTopics >= 0 && long.researchExperiments >= 0 && long.reproducedResearch >= 0, "estado de investigación inválido");
 assert.ok(long.roles >= 0, "estado de especialización inválido");
 assert.ok(long.discoveries >= 0 && Object.values(long.techLevels).every(value => finite(value)), "estado tecnológico inválido");
 assert.ok(long.institutions >= 0 && long.governanceHistory >= 0, "estado institucional/gubernamental inválido");
