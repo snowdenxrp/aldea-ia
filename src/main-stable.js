@@ -11,24 +11,52 @@ const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df); scene
 const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,500);
 const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(innerWidth,innerHeight); renderer.domElement.style.touchAction="none"; renderer.domElement.style.userSelect="none"; app.appendChild(renderer.domElement);
 
-// Auditoría visual: captura el canvas 3D y permite descargarla desde cualquier móvil.
+// Auditoría visual: captura el canvas 3D y la envía automáticamente al buzón visual de GitHub.
+// El endpoint corre fuera del navegador para mantener el token de GitHub completamente fuera del cliente.
 const captureBar=document.createElement("div");
 captureBar.style.cssText="position:fixed;right:12px;bottom:12px;z-index:50;display:flex;gap:6px;font:600 12px system-ui";
 const captureBtn=document.createElement("button");
-captureBtn.textContent="📸 Capturar aldea";
+captureBtn.textContent="📸 Capturar + guardar";
 captureBtn.style.cssText="padding:9px 12px;border:0;border-radius:10px;background:#1f2937;color:#fff;box-shadow:0 3px 12px #0005";
+const CAPTURE_ENDPOINT=window.__LUMINA_CAPTURE_ENDPOINT||"/api/capture";
+function captureAuditMetadata(){
+  return {
+    capturedAt:new Date().toISOString(),
+    day:Number(simulation.day??0),
+    hour:Number(simulation.hour??0),
+    camera:{x:Number(camera.position.x.toFixed(3)),y:Number(camera.position.y.toFixed(3)),z:Number(camera.position.z.toFixed(3)),targetX:Number(cameraTarget.x.toFixed(3)),targetZ:Number(cameraTarget.z.toFixed(3)),distance:Number(cameraDistance.toFixed(3)),yaw:Number(cameraYaw.toFixed(3)),pitch:Number(cameraPitch.toFixed(3))},
+    inhabitants:(agents??[]).filter(a=>a?.alive!==false).map(a=>({id:a.id,name:a.name,x:Number(a.position?.x?.toFixed?.(3)??0),z:Number(a.position?.z?.toFixed?.(3)??0),activity:a.currentActivity??"idle",intent:a.currentIntent?.name??null,phase:a.activityPhase??null})),
+    viewport:{width:innerWidth,height:innerHeight,pixelRatio:renderer.getPixelRatio()},
+    userAgent:navigator.userAgent,
+    captureVersion:"github-visual-audit-v1"
+  };
+}
 captureBtn.onclick=async()=>{
-  renderer.render(scene,camera);
-  const dataUrl=renderer.domElement.toDataURL("image/png");
-  const blob=await (await fetch(dataUrl)).blob();
-  const file=new File([blob],"lumina-screenshot.png",{type:"image/png"});
-  if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
-    try{await navigator.share({title:"Lúmina · auditoría visual",text:"Captura de la aldea para auditoría visual.",files:[file]});return;}catch(e){}
+  const original=captureBtn.textContent;
+  captureBtn.disabled=true;
+  captureBtn.textContent="⏳ Guardando…";
+  try{
+    renderer.render(scene,camera);
+    const blob=await new Promise(resolve=>renderer.domElement.toBlob(resolve,"image/png"));
+    if(!blob)throw new Error("No se pudo generar PNG");
+    const form=new FormData();
+    form.append("image",blob,"lumina-screenshot.png");
+    form.append("metadata",JSON.stringify(captureAuditMetadata()));
+    const response=await fetch(CAPTURE_ENDPOINT,{method:"POST",body:form,headers:{"Accept":"application/json"}});
+    if(!response.ok)throw new Error("Servidor de captura respondió HTTP "+response.status);
+    const result=await response.json();
+    captureBtn.textContent="✅ Guardada en GitHub";
+    setTimeout(()=>{captureBtn.textContent=original;captureBtn.disabled=false;},1800);
+    console.info("Lúmina visual audit saved",result);
+  }catch(error){
+    console.warn("Captura automática no disponible; se conserva el fallback local.",error);
+    captureBtn.textContent="📤 Guardar manualmente";
+    try{
+      const dataUrl=renderer.domElement.toDataURL("image/png");
+      const a=document.createElement("a");a.download="lumina-screenshot.png";a.href=dataUrl;a.click();
+    }catch{}
+    setTimeout(()=>{captureBtn.textContent=original;captureBtn.disabled=false;},1800);
   }
-  const a=document.createElement("a");
-  a.download="lumina-screenshot.png";
-  a.href=dataUrl;
-  a.click();
 };
 captureBar.appendChild(captureBtn);
 app.appendChild(captureBar);
