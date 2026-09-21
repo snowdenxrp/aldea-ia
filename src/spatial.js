@@ -10,6 +10,7 @@ export function normalizeSpatialWorld(world) {
   world.spatial.regionSize = Math.max(1, Number(world.spatial.regionSize ?? DEFAULT_REGION_SIZE));
   world.spatial.version ??= 1;
   world.spatial.activeRegionPadding = Math.max(0, Number(world.spatial.activeRegionPadding ?? 1));
+  world.spatial.activeRegions ??= [];
   world.spatial.knownRegions ??= [];
   world.spatial.regions ??= {};
   world.spatial.biomes ??= {};
