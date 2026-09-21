@@ -45,10 +45,15 @@ export function getVillageLayout(){
     {type:"barn",x:30,z:-5},
   ];
 
+  const yardPaths=buildings.filter(b=>b.type==="house").map((b,i)=>({
+    name:"yard-"+i,x:b.x,z:b.z+(b.rotation>0? (b.z>0?-2.8:2.8) : (b.z>0?-2.8:2.8)),width:1.15,length:5.5,rotation:0
+  }));
+
   return {
     river,
     bridge,
     paths,
+    yardPaths,
     plaza:{x:5,z:0,radius:7.0},
     well:{x:5,z:0},
     market:{x:12,z:0},
