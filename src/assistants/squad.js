@@ -41,14 +41,14 @@ export function runSocietyAssistant({simulation}={}){
   return {assistant:"SocietyAgent",status:findings.length?"warning":"ok",observations:{averageSocial:bounded(avg/100)*100},findings};
 }
 
-export function runAuditAgent({simulation,reports=[]}={}){
+export function runRoutineAssistant({simulation}={}){ const agents=safeAgents(simulation); const routines=agents.map(a=>({id:a.id,phase:a.activityPhase??null,sequence:a.activitySequence?.intentName??null,remaining:Number(a.activitySequence?.remainingHours??0)})); const active=routines.filter(r=>r.sequence); const findings=[]; for(const r of active) if(!r.phase) findings.push({severity:"error",code:"ROUTINE_PHASE_MISSING",agent:r.id,message:"Existe una rutina activa sin fase observable."}); return {assistant:"RoutineAgent",status:findings.length?"error":"ok",observations:{activeRoutines:active.length,routines},findings}; }\n\nexport function runAuditAgent({simulation,reports=[]}={}){
   const errors=reports.flatMap(r=>r?.findings??[]).filter(f=>f.severity==="error").length;
   const warnings=reports.flatMap(r=>r?.findings??[]).filter(f=>f.severity==="warning").length;
   return {assistant:"AuditAgent",status:errors?"error":warnings?"warning":"ok",observations:{specialists:reports.length,errors,warnings},findings:errors?[{severity:"error",code:"SPECIALIST_ERRORS",message:"Hay hallazgos críticos que requieren integración."}]:[]};
 }
 
 export function runAssistantSquad({simulation,renderProbe=null}={}){
-  const reports=[runVisualAssistant({simulation,renderProbe}),runExplorerAssistant({simulation}),runBehaviorAssistant({simulation}),runEcosystemAssistant({simulation}),runSocietyAssistant({simulation})];
+  const reports=[runVisualAssistant({simulation,renderProbe}),runExplorerAssistant({simulation}),runBehaviorAssistant({simulation}),runRoutineAssistant({simulation}),runEcosystemAssistant({simulation}),runSocietyAssistant({simulation})];
   const audit=runAuditAgent({simulation,reports});
   return {version:1,reports:[...reports,audit],status:audit.status};
 }
