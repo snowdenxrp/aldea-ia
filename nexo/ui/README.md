@@ -1,0 +1,1 @@
+# UI\n\nReserved for presentation layers. UI failure must not terminate Core.\n
