@@ -1,0 +1,1 @@
+# Offline\n\nReserved for local knowledge and resilient operation without internet.\n
