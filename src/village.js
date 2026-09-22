@@ -3,6 +3,13 @@ import { getVillageLayout } from "./village-layout.js";
 import { createTerrainMaterial } from "./terrain-material.js";
 
 const M=(c,r=.82,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+const MAT_CACHE=new Map();
+function mat(c,r=.82,m=0){
+  const key=c+":"+r+":"+m;
+  if(!MAT_CACHE.has(key))MAT_CACHE.set(key,M(c,r,m));
+  return MAT_CACHE.get(key);
+}
+function detail(g,level="medium",type="prop"){g.userData.detailLevel=level;g.userData.visualType=type;return g;}
 const B=(w,h,d)=>new THREE.BoxGeometry(w,h,d);
 const meshBox=(w,h,d,c,r=.82)=>new THREE.Mesh(B(w,h,d),M(c,r));
 const C=(a,b,h,c,s=10)=>new THREE.Mesh(new THREE.CylinderGeometry(a,b,h,s),M(c));
@@ -13,14 +20,28 @@ function house(scene,x,z,r=0,s=1){
  const g=new THREE.Group();
  const foundation=meshBox(3.25,.22,2.95,0x8c735e);foundation.position.y=.11;
  const wall=meshBox(3,2,2.7,0xc99868,.92);wall.position.y=1.15;
- const roof=new THREE.Mesh(new THREE.ConeGeometry(2.18,1.35,4),M(0x70452f,.8));roof.position.y=2.82;roof.rotation.y=Math.PI/4;
- const eave=meshBox(3.35,.13,2.95,0x5f3e2b);eave.position.y=2.18;
+ const lower=meshBox(3.04,.48,2.74,0xb9855d,.94);lower.position.y=.48;
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(2.28,1.48,4),M(0x70452f,.78));roof.position.y=2.86;roof.rotation.y=Math.PI/4;
+ const eave=meshBox(3.4,.14,2.98,0x5f3e2b);eave.position.y=2.2;
  const door=meshBox(.58,1.12,.1,0x543522);door.position.set(0,.67,1.38);
  const step=meshBox(.8,.14,.42,0x8b765e);step.position.set(0,.18,1.48);
  const knob=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),M(0xd2ad68));knob.position.set(.2,.7,1.45);
- g.add(foundation,wall,roof,eave,door,step,knob);
+ g.add(foundation,lower,wall,roof,eave,door,step,knob);
+ // Contraventanas y marco de puerta: aumentan la lectura de la casa a distancia media.
+ const doorFrameL=meshBox(.08,1.28,.12,0x6b452d);doorFrameL.position.set(-.34,.74,1.43);
+ const doorFrameR=doorFrameL.clone();doorFrameR.position.x=.34;
+ const lintel=meshBox(.76,.09,.12,0x6b452d);lintel.position.set(0,1.34,1.43);
+ g.add(doorFrameL,doorFrameR,lintel);
+ const roofTrimL=meshBox(3.1,.08,.1,0x8a5a3b);roofTrimL.position.set(0,2.25,1.48);
+ const roofTrimR=roofTrimL.clone();roofTrimR.position.z=-1.48;g.add(roofTrimL,roofTrimR);
+ // Ventanas luminosas con marco profundo.
+
  for(const sx of [-.92,.92]){const w=meshBox(.55,.52,.07,0x7fb7c7,.35);w.position.set(sx,1.35,1.38);const v=meshBox(.045,.52,.08,0x593a28);v.position.set(sx,1.35,1.43);const h=meshBox(.55,.045,.08,0x593a28);h.position.set(sx,1.35,1.43);g.add(w,v,h);}
- const chim=meshBox(.32,.72,.32,0x654235);chim.position.set(.82,3.15,-.35);g.add(chim);
+ const chim=meshBox(.34,.78,.34,0x654235);chim.position.set(.82,3.18,-.35);
+ const chimCap=meshBox(.44,.09,.44,0x52362c);chimCap.position.set(.82,3.58,-.35);
+ g.add(chim,chimCap);
+ const porch=meshBox(1.35,.08,.65,0x795034);porch.position.set(0,.18,1.72);g.add(porch);
+ detail(g,"medium","house");
  g.position.set(x,0,z);g.rotation.y=r;g.scale.setScalar(s*1.45);return add(g,scene);
 }
 function lamp(scene,x,z){const g=new THREE.Group(),p=C(.055,.075,1.65,0x4b382c,8),a=meshBox(.48,.06,.06,0x4b382c),l=new THREE.Mesh(new THREE.SphereGeometry(.11,12,8),new THREE.MeshBasicMaterial({color:0xffd783}));p.position.y=.82;a.position.set(.2,1.56,0);l.position.set(.43,1.43,0);const glow=new THREE.PointLight(0xffd08a,.75,9,2);glow.position.set(.43,1.35,0);g.add(p,a,l,glow);g.position.set(x,0,z);scene.add(g);}
@@ -29,16 +50,61 @@ function market(scene,x,z){const g=new THREE.Group();for(const sx of [-1.5,1.5])
 function garden(scene,x,z){const g=new THREE.Group(),soil=meshBox(4,.08,2.7,0x795331,1);soil.position.y=.04;g.add(soil);for(let px=-1.5;px<=1.5;px+=.75)for(let pz=-.9;pz<=.9;pz+=.65){const s=C(.035,.045,.3,0x4f7d38,6);s.position.set(px,.23,pz);const l=new THREE.Mesh(new THREE.SphereGeometry(.11,7,5),M(0x609044));l.scale.y=.65;l.position.set(px+.05,.43,pz);g.add(s,l)}g.position.set(x,0,z);return add(g,scene);}
 function bridge(scene,x,z){
  const g=new THREE.Group();
- const deck=meshBox(12.5,.28,3.4,0x765238,.82);deck.position.y=.55;g.add(deck);
- const beam=meshBox(12.8,.22,.28,0x563a27);beam.position.set(0,.38,0);g.add(beam);
- for(const sx of [-5.4,-3.6,-1.8,0,1.8,3.6,5.4])for(const sz of [-1.45,1.45]){const p=meshBox(.14,1.05,.14,0x553a29);p.position.set(sx,.98,sz);g.add(p)}
- for(const sz of [-1.45,1.45]){const r=meshBox(11.7,.12,.12,0x553a29);r.position.set(0,1.42,sz);g.add(r);for(const sx of [-5.4,-3.6,-1.8,0,1.8,3.6,5.4]){const d=meshBox(.09,.58,.09,0x60402b);d.position.set(sx,1.15,sz);g.add(d)}}
- for(const sx of [-6.1,6.1])for(const sz of [-1.45,1.45]){const cap=C(.2,.2,.16,0x65452f,8);cap.position.set(sx,.72,sz);g.add(cap)}
+ const deck=meshBox(12.5,.30,3.55,0x765238,.78);deck.position.y=.58;g.add(deck);
+ // Vigas longitudinales y travesaños: la estructura se lee incluso desde arriba.
+ for(const sz of [-1.42,1.42]){
+   const beam=meshBox(12.9,.30,.28,0x563a27);beam.position.set(0,.38,sz);g.add(beam);
+ }
+ for(const sx of [-5.5,-3.7,-1.85,0,1.85,3.7,5.5]){
+   const cross=meshBox(.25,.24,3.15,0x5d3d29);cross.position.set(sx,.40,0);g.add(cross);
+ }
+ for(const sz of [-1.55,1.55]){
+   const rail=meshBox(12.15,.13,.13,0x4e3426);rail.position.set(0,1.52,sz);g.add(rail);
+   for(const sx of [-5.6,-4.2,-2.8,-1.4,0,1.4,2.8,4.2,5.6]){
+     const post=meshBox(.12,1.18,.12,0x553a29);post.position.set(sx,1.02,sz);g.add(post);
+     const brace=meshBox(.09,.70,.09,0x69462f);brace.position.set(sx,1.08,sz*0.94);brace.rotation.z=(sx%2===0?.22:-.22);g.add(brace);
+   }
+ }
+ // Rampas de entrada para que no parezca suspendido sobre las orillas.
+ for(const sx of [-1,1]){
+   const ramp=meshBox(1.4,.16,3.55,0x765238,.82);ramp.position.set(sx*6.55,.30,0);ramp.rotation.z=sx*.12;g.add(ramp);
+ }
+ for(const sx of [-6.25,6.25])for(const sz of [-1.55,1.55]){
+   const cap=C(.20,.20,.18,0x65452f,8);cap.position.set(sx,.75,sz);g.add(cap);
+ }
+ const ropeMat=mat(0x9b744d,.96);
+ for(const sz of [-1.55,1.55])for(const sx of [-5.9,-4.4,-2.9,-1.4,0,1.4,2.9,4.4,5.9]){
+   const knot=new THREE.Mesh(new THREE.SphereGeometry(.075,8,6),ropeMat);knot.position.set(sx,1.47,sz);g.add(knot);
+ }
+ detail(g,"close","bridge");
  g.position.set(x,0,z);return add(g,scene);
 }
-function tree(scene,x,z,s=1){const g=new THREE.Group();const trunk=C(.24,.34,2.7,0x68452f,8);trunk.position.y=1.35;const crown=new THREE.Mesh(new THREE.SphereGeometry(1.7,14,10),M(0x4f7f43,.92));crown.position.y=3.25;crown.scale.set(1.08,.98,1.08);g.add(trunk,crown);g.position.set(x,0,z);g.scale.setScalar(s);return add(g,scene);}
-function barn(scene,x,z){const g=new THREE.Group();const w=meshBox(4,2.5,3.2,0xa96f45);w.position.y=1.25;const r=new THREE.Mesh(new THREE.ConeGeometry(2.8,1.6,4),M(0x623b2c));r.rotation.y=Math.PI/4;r.position.y=3.3;const d=meshBox(1.2,1.8,.12,0x4b3025);d.position.set(0,.9,1.62);g.add(w,r,d);g.position.set(x,0,z);return add(g,scene);}
-function tower(scene,x,z){const g=new THREE.Group(),b=C(.9,1.1,5,0x8d7966,10);b.position.y=2.5;const r=new THREE.Mesh(new THREE.ConeGeometry(1.25,1.1,8),M(0x56392d));r.position.y=5.55;g.add(b,r);g.position.set(x,0,z);return add(g,scene);}
+function tree(scene,x,z,s=1){
+ const g=new THREE.Group();
+ const trunk=C(.24,.34,2.7,0x68452f,8);trunk.position.y=1.35;
+ const branchL=C(.07,.11,1.25,0x5b3d2b,7);branchL.position.set(-.38,2.05,0);branchL.rotation.z=-.45;
+ const branchR=branchL.clone();branchR.position.x=.38;branchR.rotation.z=.45;
+ const crown1=new THREE.Mesh(new THREE.SphereGeometry(1.28,14,10),M(0x4f7f43,.92));crown1.position.set(0,3.05,0);
+ const crown2=new THREE.Mesh(new THREE.SphereGeometry(1.0,12,9),M(0x5d8c48,.94));crown2.position.set(-.62,3.35,.18);
+ const crown3=new THREE.Mesh(new THREE.SphereGeometry(.95,12,9),M(0x466f3c,.94));crown3.position.set(.62,3.32,-.08);
+ g.add(trunk,branchL,branchR,crown1,crown2,crown3);detail(g,"far","tree");
+ g.position.set(x,0,z);g.scale.setScalar(s);return add(g,scene);
+}
+function barn(scene,x,z){
+ const g=new THREE.Group();const w=meshBox(4.2,2.6,3.35,0xa96f45);w.position.y=1.3;
+ const r=new THREE.Mesh(new THREE.ConeGeometry(2.9,1.72,4),M(0x623b2c,.78));r.rotation.y=Math.PI/4;r.position.y=3.42;
+ const d=meshBox(1.3,1.85,.12,0x4b3025);d.position.set(0,.93,1.69);
+ const loft=meshBox(1.55,.75,.08,0x6f452f);loft.position.set(0,2.0,1.71);
+ g.add(w,r,d,loft);detail(g,"medium","barn");g.position.set(x,0,z);return add(g,scene);
+}
+function tower(scene,x,z){
+ const g=new THREE.Group(),b=C(.9,1.1,5,0x8d7966,10);b.position.y=2.5;
+ const r=new THREE.Mesh(new THREE.ConeGeometry(1.3,1.15,8),M(0x56392d,.78));r.position.y=5.58;
+ for(const y of [1.35,2.7,4.0]){const band=C(0.94,0.94,.13,0x6e6257,10);band.position.y=y;g.add(band);}
+ const slitMat=mat(0x263238,.35);
+ for(const y of [2.0,3.2,4.35]){const slit=meshBox(.18,.42,.08,0x3c332e,.8);slit.position.set(0,y,1.03);g.add(slit);}
+ g.add(b,r);detail(g,"far","tower");g.position.set(x,0,z);return add(g,scene);
+}
 function hash2(x,z){let n=(x*374761393+z*668265263)|0;n=(n^(n>>>13))*1274126177;return ((n^(n>>>16))>>>0)/4294967295;}
 function insideRect(x,z,pad,extra=0){
  const hw=p.width/2+pad,hl=p.length/2+pad;
@@ -68,6 +134,7 @@ function addGrassField(scene,layout){
  inst.count=count;
  inst.instanceMatrix.needsUpdate=true;
  inst.frustumCulled=false;
+ detail(inst,"far","grass");
  inst.castShadow=false;
  inst.receiveShadow=false;
  scene.add(inst);
@@ -76,7 +143,7 @@ function bank(scene,x,z,w,d){const m=meshBox(w,.12,d,0x8e7657,1);m.position.set(
 
 export function buildVillage(scene){
  const layout=getVillageLayout();
- const root=new THREE.Group();root.name="LuminaVillageVisual";scene.add(root);
+ const root=new THREE.Group();root.name="LuminaVillageVisual";root.userData.visualVersion=2;scene.add(root);
  // Textura procedural local: no depende de imágenes externas y mantiene detalle al acercar la cámara.
  terrainPatch(root, 0, 0, 150, 150);
  const plaza=new THREE.Mesh(new THREE.CircleGeometry(layout.plaza.radius,40),M(0xb8a27e,1));plaza.rotation.x=-Math.PI/2;plaza.position.set(layout.plaza.x,.035,layout.plaza.z);root.add(plaza);
@@ -97,5 +164,7 @@ export function buildVillage(scene){
  for(const z of [-3.4,5.4])for(const x of [-4.8,-3.6,10.8,12]){const p=meshBox(.09,.52,.09,0x69462f);p.position.set(x,.26,z);root.add(p);}
  const fire=new THREE.Mesh(new THREE.ConeGeometry(.28,.85,8),new THREE.MeshBasicMaterial({color:0xffa83d,transparent:true,opacity:.9}));fire.position.set(2,.55,7.1);root.add(fire);
  const sign=meshBox(1.8,.5,.12,0x6b4a31);sign.position.set(2,2.8,-6.2);root.add(sign);
- root.traverse(o=>{if(o.isMesh)o.receiveShadow=true});return root;
+ // LOD tags: el pueblo completo conserva una silueta legible al alejarse.
+ root.traverse(o=>{if(o.isMesh)o.receiveShadow=true;if(o.isGroup&&!o.userData.detailLevel)o.userData.detailLevel="medium";});
+ return root;
 }
