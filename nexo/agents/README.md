@@ -1,0 +1,1 @@
+# Agents\n\nReserved for specialized agent roles and orchestration contracts.\n
