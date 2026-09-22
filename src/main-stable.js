@@ -5,6 +5,7 @@ import { createSimulation, tick } from "./simulation.js";
 import { setMovementTarget, moveAgent } from "./movement.js";
 import { getRegionForPosition, getBiomeForRegion, normalizeSpatialWorld } from "./spatial.js";
 import { buildVillage } from "./village.js";
+import { getVillageDetailLevel, applyVillageDetailLevel } from "./village-lod.js";
 
 const app=document.querySelector("#app"), worldTime=document.querySelector("#worldTime");
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df); scene.fog=new THREE.Fog(0x9ec9df,55,150);
@@ -157,7 +158,9 @@ function createWaterRipples(){
   }
 }
 createWaterRipples();
-buildVillage(scene);
+const villageRoot=buildVillage(scene);
+let villageDetailLevel=null;
+function syncVillageLOD(){const level=getVillageDetailLevel(cameraDistance);if(level!==villageDetailLevel){villageDetailLevel=level;applyVillageDetailLevel(villageRoot,level);}}
 const structureMeshes=new Map();
 function material(color,roughness=.8){return new THREE.MeshStandardMaterial({color,roughness});}
 function box(w,h,d,color){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material(color));}
@@ -404,7 +407,7 @@ function addVisualDetail(g,a){
 function syncMeshes(){normalize();syncStructures();const t=performance.now()/1000;for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,m.position.y??0,a.position.z);animateHumanoid(m,a,t);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
 function centerOnAgent(a){if(a)cameraTarget.set(+a.position.x||0,0,+a.position.z||0);}
-function updateCamera(){const h=cameraDistance*Math.cos(cameraPitch);camera.position.set(cameraTarget.x+Math.sin(cameraYaw)*h,cameraTarget.y+cameraDistance*Math.sin(cameraPitch),cameraTarget.z+Math.cos(cameraYaw)*h);camera.lookAt(cameraTarget);}
+function updateCamera(){syncVillageLOD();const h=cameraDistance*Math.cos(cameraPitch);camera.position.set(cameraTarget.x+Math.sin(cameraYaw)*h,cameraTarget.y+cameraDistance*Math.sin(cameraPitch),cameraTarget.z+Math.cos(cameraYaw)*h);camera.lookAt(cameraTarget);}
 function pct(v){return Math.round(Math.max(0,Math.min(100,+v||0)));}
 const action=v=>({rest:"Descansar",drink:"Beber agua",eat_plant:"Comer planta",catch_fish:"Pescar",gather_wood:"Recolectar madera",gather_stone:"Recolectar piedra",socialize:"Socializar",share_knowledge:"Compartir conocimiento",cooperate:"Cooperar",build_shelter:"Construir refugio",craft_tool:"Fabricar herramienta",farm:"Preparar cultivo",harvest:"Cosechar",eat_farm_food:"Comer alimento cultivado",trade:"Comerciar",explore_plants:"Investigar plantas",explore_fishing:"Investigar pesca",explore_wood:"Investigar madera",explore_stone:"Investigar piedra",explore_area:"Explorar entorno",eat_fish:"Comer pescado"})[v]??v??"Ninguna";
 const activity=v=>({idle:"Sin actividad",resting:"Descansando",drinking:"Bebiendo",eating:"Comiendo",fishing:"Pescando",gathering:"Recolectando",moving:"Explorando / desplazándose",cooperating:"Cooperando",socializing:"Socializando",building:"Construyendo",crafting:"Fabricando",farming:"Cultivando",planting:"Plantando",harvesting:"Cosechando",trading:"Comerciando",teaching:"Enseñando",dead:"Fallecido"})[v]??v??"Sin actividad";
