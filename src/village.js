@@ -41,7 +41,7 @@ function house(scene,x,z,r=0,s=1){
  const chimCap=meshBox(.44,.09,.44,0x52362c);chimCap.position.set(.82,3.58,-.35);
  g.add(chim,chimCap);
  const porch=meshBox(1.35,.08,.65,0x795034);porch.position.set(0,.18,1.72);g.add(porch);
- detail(g,"medium","house");
+ detail(g,"far","house");
  g.position.set(x,0,z);g.rotation.y=r;g.scale.setScalar(s*1.45);return add(g,scene);
 }
 function lamp(scene,x,z){const g=new THREE.Group(),p=C(.055,.075,1.65,0x4b382c,8),a=meshBox(.48,.06,.06,0x4b382c),l=new THREE.Mesh(new THREE.SphereGeometry(.11,12,8),new THREE.MeshBasicMaterial({color:0xffd783}));p.position.y=.82;a.position.set(.2,1.56,0);l.position.set(.43,1.43,0);const glow=new THREE.PointLight(0xffd08a,.75,9,2);glow.position.set(.43,1.35,0);g.add(p,a,l,glow);g.position.set(x,0,z);scene.add(g);}
@@ -76,7 +76,7 @@ function bridge(scene,x,z){
  for(const sz of [-1.55,1.55])for(const sx of [-5.9,-4.4,-2.9,-1.4,0,1.4,2.9,4.4,5.9]){
    const knot=new THREE.Mesh(new THREE.SphereGeometry(.075,8,6),ropeMat);knot.position.set(sx,1.47,sz);g.add(knot);
  }
- detail(g,"close","bridge");
+ detail(g,"far","bridge");
  g.position.set(x,0,z);return add(g,scene);
 }
 function tree(scene,x,z,s=1){
@@ -95,7 +95,7 @@ function barn(scene,x,z){
  const r=new THREE.Mesh(new THREE.ConeGeometry(2.9,1.72,4),M(0x623b2c,.78));r.rotation.y=Math.PI/4;r.position.y=3.42;
  const d=meshBox(1.3,1.85,.12,0x4b3025);d.position.set(0,.93,1.69);
  const loft=meshBox(1.55,.75,.08,0x6f452f);loft.position.set(0,2.0,1.71);
- g.add(w,r,d,loft);detail(g,"medium","barn");g.position.set(x,0,z);return add(g,scene);
+ g.add(w,r,d,loft);detail(g,"far","barn");g.position.set(x,0,z);return add(g,scene);
 }
 function tower(scene,x,z){
  const g=new THREE.Group(),b=C(.9,1.1,5,0x8d7966,10);b.position.y=2.5;
