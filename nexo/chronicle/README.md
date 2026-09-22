@@ -1,0 +1,1 @@
+# Chronicle\n\nReserved for factual, versioned history of Nexo.\n
