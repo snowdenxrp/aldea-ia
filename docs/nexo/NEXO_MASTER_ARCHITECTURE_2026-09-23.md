@@ -399,3 +399,6 @@ Current PG-009 next point: correct/expand formal recovery modeling, add dependen
 
 ### Formal continuation — recovery + common-mode — 2026-09-24
 New formal sketch: `docs/nexo/formal/PG-009_RECOVERY_COMMON_MODE_SKETCH_2026-09-24.tla`. It adds dependency domains, UNKNOWN dependency state, compromised domains, assurance degradation, and explicit release blocking for unknown/compromised modeled dependencies. It remains NOT TLC-VERIFIED. Commit: `b713cbad246da9769f916ac6a107f1f03378f322`.
+
+### Executable safety-claim contract — 2026-09-24
+Common-mode analysis now has a machine-readable schema draft at `docs/nexo/schema/SAFETY_CLAIM_DEPENDENCY_CLOSURE.schema.json` and a companion contract at `docs/nexo/PG-009_EXECUTABLE_SAFETY_CLAIM_CONTRACT_2026-09-24.md`. The intended evaluator is deterministic and non-authoritative: it computes dependency closure, failure-domain overlap, correlated pairs and assurance restrictions; it cannot execute effects or grant authority. Schema validity is not safety verification. Commits: `7d05723135fe75ace2874a4f2ee37626c547c364`, `812bf58903ac40d1173145b1eb01a1b53b3444e5`.
