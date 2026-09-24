@@ -1922,3 +1922,79 @@ MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → 
 
 PG-009 remains OPEN.
 Next research: epistemic memory and provenance under compression, summarization, caching and retrieval — ensuring that Nexo's memory cannot silently lose uncertainty, scope, contradictions or provenance as it becomes large.
+
+## Research continuation — epistemic memory and provenance under compression, summarization, caching and retrieval
+
+NIST defines provenance as the chronology of origin, development, ownership, location and changes associated with data, and NIST evidence-preservation guidance emphasizes preservation and chain-of-custody concerns for digital evidence. NASA data-management guidance requires sufficient metadata for retrieval and emphasizes provenance; NASA also notes that copied data can become stale relative to an authoritative source. citeturn0search2turn0search1turn0search12turn0search38
+
+### Core finding
+Memory compression is a semantic transformation. It can preserve bytes and still destroy epistemic meaning.
+
+The dangerous transformation is:
+epistemic state + provenance → summary text
+where the summary retains payload but loses uncertainty, scope, freshness or provenance.
+
+Therefore Nexo treats summarization, embedding, deduplication, caching, indexing and archival movement as governed transformations.
+
+### Epistemic Memory Contract
+Every critical memory item binds memory_id/version; proposition/content; epistemic state; provenance lineage; source identity; scope/target; acquisition and validity times; freshness policy; assumptions; contradictions/conflict set; transformations; dependencies; sensitivity/retention; semantic version; integrity identifier; authoritative source/reference; and revalidation trigger.
+
+### Transformation classes
+M0 LOSSLESS — all decision-relevant semantics preserved.
+M1 LOSSLESS_WITH_REPRESENTATION_CHANGE — representation changes but semantics and metadata remain recoverable.
+M2 LOSSY_NONCRITICAL — information intentionally removed outside critical closure.
+M3 LOSSY_CRITICAL — decision-relevant information lost; prohibited for critical memory unless governed and explicitly re-established.
+M4 UNKNOWN — preservation properties not established.
+
+A derived summary cannot inherit the assurance level of its source merely because it was generated from it.
+
+### Semantic preservation
+For critical memory, required meaning and required epistemic/provenance metadata must remain attached or reconstructably linked. If a summary cannot preserve uncertainty, scope, temporal validity or provenance, it cannot serve as a verified substitute for the source.
+
+### Source-of-truth hierarchy
+AUTHORITATIVE SOURCE → DURABLE PRIMARY RECORD → DERIVED MEMORY → CACHE → SUMMARY → EMBEDDING/INDEX
+
+Lower layers accelerate retrieval but do not automatically supersede higher-authority records. Stale caches cannot silently outrank authoritative state.
+
+### Provenance DAG
+Every derived memory retains source → transformation → derived artifact → consumer lineage. Transformations include summarization, extraction, translation, normalization, migration, embedding, deduplication and aggregation.
+
+Reverse tracing from a critical decision to the authoritative source must remain possible.
+
+### Epistemic markers
+Critical summaries preserve explicit states such as UNKNOWN, STALE, CONFLICTING, ASSUMED, INFERRED, VERIFIED and INVALIDATED. They cannot be converted into ambiguous natural-language implications that disappear during later summarization.
+
+### Retrieval and deduplication
+Retrieval returns epistemic metadata with content. Relevance ranking and semantic similarity do not override epistemic validity. Identical text can still differ in source, time, scope, authority, epistemic state or purpose; deduplication therefore requires governed semantic equivalence.
+
+### Conflict and cache preservation
+Contradictory memories remain a durable conflict set even when summaries are generated. Caches carry source version, retrieval time, freshness, semantic version, scope and invalidation conditions. Cache miss is not fact absence; cache hit is not current truth.
+
+### Migration and forgetting
+Rebuilding indexes/embeddings is a derived transformation, not permission to rewrite primary history. Forgetting/deletion is separately governed from compression; deleting a cache does not delete the primary record. Critical deletion requires explicit retention/disposition policy.
+
+### New invariants
+INV-481 — critical memory transformations are semantic transformations and require governed preservation properties.
+INV-482 — compression cannot silently remove epistemic state, provenance, scope or freshness needed downstream.
+INV-483 — derived memory cannot automatically inherit source assurance.
+INV-484 — critical memory retains traceable lineage to authoritative source or declares irreversible loss.
+INV-485 — source authority is distinct from retrieval relevance and semantic similarity.
+INV-486 — stale cache cannot silently outrank current authoritative state.
+INV-487 — embeddings/indices are derived artifacts, not authoritative facts.
+INV-488 — deduplication requires semantic equivalence; identical text does not prove identical epistemic meaning.
+INV-489 — conflict sets remain durable when summaries are generated.
+INV-490 — cache metadata includes scope, freshness, source version and invalidation conditions.
+INV-491 — memory migration preserves epistemic/provenance semantics or declares governed loss.
+INV-492 — deletion/retention is distinct from semantic compression and is policy-governed.
+INV-493 — critical summaries support reverse provenance to source.
+INV-494 — semantic transformations cannot increase epistemic assurance.
+INV-495 — UNKNOWN/STALE/CONFLICTING/INVALIDATED states cannot be silently normalized into positive facts.
+INV-496 — memory retrieval must expose epistemic metadata to decision layers.
+INV-497 — loss of critical provenance is an assurance downgrade and may block critical use.
+INV-498 — a derived artifact cannot become authoritative solely through repeated caching, retrieval or reuse.
+
+### Architectural result
+MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → ASSUMPTIONS/ENVIRONMENT → OBSERVATION → EPISTEMIC STATE → DECISION CLOSURE → MEMORY/PROVENANCE → RISK/AUTHORITY → EXECUTION → WORLD VERIFICATION → DURABLE HISTORY
+
+PG-009 remains OPEN.
+Next research: epistemic memory garbage collection, retention and safe forgetting — how Nexo can forget safely without deleting evidence, contradictions, obligations or safety-critical history.
