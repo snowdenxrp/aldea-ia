@@ -771,3 +771,43 @@ Status:
 - TLA state-variable priming: HARDENED;
 - SANY/TLC: NOT RUN;
 - transition semantics: improved but NOT FORMALLY VERIFIED.
+
+
+### 2026-09-23 — recovery concurrency / owner fencing checkpoint
+
+A concurrency-focused audit of the PG-009 recovery/common-mode TLA+ sketch found several concrete weaknesses and corrected them.
+
+Findings and corrections:
+- AcquireRecovery(o, owner) now requires that no recovery owner is currently held for the operation and that the prior token is not CURRENT. This prevents a second owner from silently overwriting a live recovery owner.
+- RevalidateAssurance and AuthorizeRelease now take an explicit owner identity and require recoveryOwner[o] = owner plus recoveryAuthorityEpoch[o] = authorityEpoch[o]. A stale owner/authority epoch therefore cannot authorize recovery or release.
+- Release rechecks current release eligibility and the current recovery authority epoch instead of trusting a previously stored boolean alone.
+- Commit retains the admitted-authority-epoch fence and additionally requires known world state and clean operation-scoped dependencies.
+- RequestStop now interrupts both ADMITTED and RUNNING execution to OFFLINE, closing the gate and forcing recovery through the explicit restart/quarantine path.
+- RevokeAuthority is modeled as a hard admission fence for ADMITTED/RUNNING work: it invalidates recovery/release state and forces the process OFFLINE with stop/gate enforcement. This is an admission/control-plane fence, not a claim that an already-completed external effect can be physically undone.
+- Invalid concurrency invariants were removed when inspection showed they were overstrong: release can legitimately leave a quarantined state after authorization invalidation, and commit count can legitimately increase again after a later clean recovery cycle. The model now records valid state obligations instead of claiming universal at-most-once effects.
+- Added concurrency fixture scenarios for double recovery acquisition, stale-owner action, double release, double commit, revoke-before-commit, and stop-before-commit.
+
+Formal obligations added/retained:
+- SingleRecoveryOwner
+- RecoveryOwnerRequiresCurrentToken
+- StaleOwnerCannotAuthorize
+- ReleaseRequiresAuthorization
+- RunningImpliesPriorCommit
+- AdmissionEpochMatchesAuthority
+
+Status:
+- owner fencing: IMPLEMENTED in model sketch;
+- authority-epoch fencing: IMPLEMENTED;
+- release/commit race guards: IMPLEMENTED;
+- concurrency correspondence fixture: IMPLEMENTED;
+- CAS/linearizability semantics: NOT PROVEN;
+- liveness/fairness: NOT MODELED;
+- SANY/TLC: NOT RUN;
+- Python ↔ TLA+ semantic equivalence: NOT PROVEN;
+- external-world cancellation/compensation: NOT PROVEN.
+
+Git checkpoints:
+- TLA concurrency hardening: 4f2e8be26d2f5c1ee1d400296fe072aeb1f3ebc1
+- concurrency correspondence fixture: 1d3e741c3d240070667a19594c37174fa63e1d1c
+
+Next attack: model recovery-owner lease/generation fencing explicitly, including concurrent owner acquisition, expiry/transfer, stale-owner commit, and recovery release races; then reconcile those transitions with the existing external-effect/reconciliation lease model.
