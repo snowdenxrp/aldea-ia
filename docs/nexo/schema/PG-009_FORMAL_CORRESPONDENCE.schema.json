@@ -8,6 +8,11 @@
     "domain_mapping",
     "state_mapping",
     "assurance_mapping",
+    "component_mapping",
+    "dependency_relation",
+    "failure_domain_mapping",
+    "trust_root_mapping",
+    "authority_mapping",
     "coverage"
   ],
   "properties": {
@@ -69,6 +74,36 @@
             "UNMAPPED"
           ]
         }
+      }
+    },
+    "component_mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "dependency_relation": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "failure_domain_mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "trust_root_mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "authority_mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
       }
     }
   },
