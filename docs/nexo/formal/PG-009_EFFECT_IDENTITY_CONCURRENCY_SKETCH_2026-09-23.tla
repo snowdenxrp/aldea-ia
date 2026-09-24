@@ -388,3 +388,43 @@ InvReceiptNotWorldTruth ==
    database concurrency guarantees from application-level invariants and warns that
    internal locks do not guarantee exclusive access to resources outside Spanner.
 *)
+
+
+(* DEPENDENCY DISCOVERY / HIDDEN-CONFLICT REFINEMENT
+   A conflict graph is only as safe as its declared dependency relation.
+   Nexo therefore distinguishes:
+
+     DECLARED_DEPENDENCY   = dependency asserted by the operation contract
+     OBSERVED_DEPENDENCY   = dependency discovered from runtime evidence
+     INFERRED_DEPENDENCY   = dependency derived from policy/invariant analysis
+     UNKNOWN_DEPENDENCY    = dependency status cannot be established
+
+   Each critical operation carries a dependency footprint:
+     ReadSet, WriteSet, EffectSet, ResourceSet, InvariantSet, ExternalSystemSet,
+     AuthorityDomainSet, and causal predecessors.
+
+   Conflict analysis computes edges across the union of these footprints.
+   However, absence of a declared edge is NOT proof of independence. For critical
+   execution, dependency completeness must itself be an assurance property.
+
+   Hidden-dependency controls:
+     1. invariant ownership registry maps invariants to authoritative state/domains;
+     2. policy requires operations touching an invariant domain to declare it;
+     3. runtime evidence can add discovered edges but cannot silently remove declared ones;
+     4. dependency omissions enter UNKNOWN / QUARANTINED classification;
+     5. critical execution requires a dependency-completeness proof or conservative
+        serialization over the affected domain.
+
+   Common-mode dependency is modeled separately: two operations may touch disjoint
+   resources but share the same external dependency, authority domain, quota, safety
+   invariant, or verifier. Such edges are GLOBAL_INVARIANT / COMMON_MODE, not ignored
+   merely because resource IDs differ.
+
+   Dependency graphs are versioned artifacts. Changes to invariant definitions,
+   resource topology, policy, or operation schemas can invalidate prior conflict
+   analysis and require recomputation.
+
+   IMPORTANT: graph completeness is not established merely because every node has a
+   dependency list. The acceptance oracle must test known counterexamples, omitted
+   edges, topology changes, and adversarially hidden dependencies.
+*)
