@@ -389,3 +389,15 @@ Contract commit: `812bf58903ac40d1173145b1eb01a1b53b3444e5`.
 The evaluator is explicitly non-authoritative: it computes dependency closure, shared failure domains, correlated pairs, uncertainty/compromise findings and a maximum admissible assurance level; it does not execute effects or grant authority.
 
 Schema validity is not safety verification. Runtime integration, dependency resolution, TLC and fault injection remain undone.
+
+## Deterministic evaluator implementation — 2026-09-24
+The first non-authoritative dependency-closure evaluator is implemented at src/nexo/dependency_closure_evaluator.py with tests at tests/nexo/test_dependency_closure_evaluator.py.
+
+Implementation commit: 8a9ca450e1e473f4478e1359f0004650ca59853d.
+Test commit: 90090693cadcaa1b3e4a34dfc7eed1ca377a3ba8.
+
+The evaluator resolves transitive dependencies, detects missing/cyclic references, identifies UNKNOWN/COMPROMISED/STALE/INVALIDATED dependencies, exposes shared failure domains/trust roots/authority, and emits a conservative assurance ceiling. It has no effect-execution or authority-granting capability.
+
+A local test execution was attempted but the environment could not fetch the committed files because outbound DNS/network access was unavailable. Therefore tests are not claimed as passed.
+
+New invariants INV-691..696. Runtime integration and formal verification remain pending.
