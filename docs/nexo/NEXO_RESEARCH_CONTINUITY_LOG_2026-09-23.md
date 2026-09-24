@@ -1194,3 +1194,14 @@ Artifacts:
 - docs/nexo/NEXO_V9_TO_V10_SEMANTIC_GATE.md — b4b43962878a537a2727290e22226c75a904c986
 
 Status: V10 SPECIFIED; NOT IMPLEMENTED; NOT SANY/TLC CHECKED.
+
+
+### 2026-09-23 — V10 lease implementation draft and immediate adversarial audit
+
+V10 structural draft added `expiresAt` and explicit Expire actions for execution, reconciliation and recovery, with owner+generation+expiry guards. Immediate audit found that EXPIRED has no takeover path because acquisition still accepts only FREE; recovery expiry also leaves release authorization marked valid although Commit cannot use it due current lease/generation checks. Execution expiry leaves operation state unchanged (safe under current guards but requiring explicit future handling). STOP still lacks an independent actuation fence, and acquisition safety-context guards need scoped semantics.
+
+Decision: do not patch V10 incrementally. V11 should define a generic finite lease transition relation with Acquire/Expire/Takeover, explicit authorization invalidation, and operation-scoped STOP/actuation fencing.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V10.tla — 07fd0f4d75af8a1d797e53630d8ec8f6c7d511f7
+- docs/nexo/NEXO_CANONICAL_CORE_V10_AUDIT.md — 7f01792955c3bda32738c4890e4983a19d69e4bb
