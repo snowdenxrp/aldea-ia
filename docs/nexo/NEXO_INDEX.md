@@ -138,3 +138,6 @@ Execution Reservation and Reconciliation Lease are now explicitly distinct in th
 
 ## Latest PG-009 refinement
 Added world-version / execution-fence semantics to the formal sketch (commit dd722aafc9dfeadc4e7395721949d413f0124162). A target-local version is evidence, not automatically a hard fence; critical execution requires a target-enforced conditional/CAS transition where supported. Version mismatch causes STALE_PRECONDITION and revalidation/replanning. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: stale-precondition and retry/replan refinement
+A stale world version now invalidates the execution assumption while preserving mission lineage. The architecture distinguishes same-operation retry, same-mission replan, and genuinely new operation. A new operation ID cannot be used to evade effect-deduplication. Target consistency guarantees are recorded as operation-specific capability classes C0-C4; a read/version token is not itself an execution fence. Formal commit: 7144e2b56424ebed3b639e89a0958b05d6be289c. **NOT TLC-VERIFIED.**
