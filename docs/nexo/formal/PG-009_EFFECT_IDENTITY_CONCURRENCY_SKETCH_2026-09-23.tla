@@ -519,3 +519,47 @@ InvReceiptNotWorldTruth ==
    does not itself authorize a new interpretation or operation. Historical events
    remain bound to the policy/invariant versions governing them.
 *)
+
+
+(* POLICY CHANGE DURING REMOTE-UNKNOWN EXECUTION
+   Critical case: an operation crossed its old policy/world fence, was dispatched,
+   then the local runtime lost certainty about the external outcome while policy,
+   invariant, or authority changed.
+
+   Required separation:
+     OLD_AUTHORITY_FOR_EXECUTION
+     NEW_AUTHORITY_FOR_RECOVERY
+
+   The new authority does not retroactively authorize the old dispatch, but it
+   governs what Nexo may do NOW: reconcile, observe, contain, compensate, or stop.
+
+   State refinement:
+     IN_FLIGHT_OLD_POLICY
+       -> REMOTE_UNKNOWN_POLICY_CHANGED
+       -> RECOVERY_RECONCILIATION
+       ->
+          EFFECT_PRESENT      -> verify under current policy, then reconcile/contain
+          EFFECT_ABSENT       -> decide whether a new attempt is admissible under
+                                 current policy and fresh preconditions
+          EFFECT_AMBIGUOUS    -> remain UNKNOWN/BLOCKED
+
+   Forbidden:
+     - retrying merely because the old operation has no local commit;
+     - using old authority to perform a new external attempt after policy expiry;
+     - using new authority to claim the old effect was authorized under the new rule;
+     - treating cancellation intent as proof of cancellation;
+     - silently changing operation identity to bypass effect collision controls.
+
+   Authority rule:
+     OLD_AUTHORITY may explain/validate the historical dispatch only.
+     NEW_AUTHORITY controls all post-transition actions.
+     No authority may rewrite the historical authorization context.
+
+   If the current policy forbids the old effect, the system may still need to
+   observe/reconcile it because world state is not erased by policy change. The
+   response becomes containment/reconciliation, not retroactive invalidation of fact.
+
+   Safety invariant: when policy/authority changes during remote uncertainty,
+   autonomy cannot increase. At minimum it stays equal or decreases until the
+   external outcome and current admission conditions are established.
+*)
