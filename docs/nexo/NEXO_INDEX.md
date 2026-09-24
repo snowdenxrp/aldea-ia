@@ -144,3 +144,6 @@ A stale world version now invalidates the execution assumption while preserving 
 
 ## Latest PG-009: global conflict / serialization
 Added global conflict classes and the rule that pairwise-valid concurrent operations do not automatically form a globally valid execution. Critical operations require proven independence/commutativity, target-side transaction guarantees that cover the invariant, atomic reservation of the complete conflict domain, or durable serialization. Database serializability does not automatically prove external-world/application invariants. Formal commit: 10b98bd451678c787d7cf78d46b45c941d589114. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: dependency completeness / hidden conflicts
+The formal model now treats dependency completeness as an assurance property. Dependencies are DECLARED, OBSERVED, INFERRED, or UNKNOWN; critical operations carry read/write/effect/resource/invariant/external-system/authority/causal footprints. Missing edges cannot be treated as proof of independence. Common-mode dependencies can connect operations with different resource IDs. Versioned dependency graphs and invariant ownership are required; incomplete graphs lead to UNKNOWN/quarantine or conservative serialization. Formal commit: 40219c636903c46565a486dd784c65ec4fd056cf. **NOT TLC-VERIFIED.**
