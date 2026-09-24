@@ -458,3 +458,5 @@ Status: CORRECTED / NOT TLC-VERIFIED.
 - Git: formal follow-up `18943e5791b24b6dcea95009a834e397ac019d87`; final formal checkpoint `54ab167b28db62a836b65a0c38296733adee7426`; fixture `bb9e4e1a70bfa13c0f20a1c408e8a4e26748ed71`; continuity `d9ef4047bd0a071d5bb9fd5d5b9ac00158a6c31b`.
 
 - 2026-09-24 lease-expiry takeover race closed: `LeaseExpire` now clears owner/token/lease and preserves generation, allowing takeover only with the next generation. Formal checkpoint `a6e7746353368fb72f33ebce122773bbd7f39067`; continuity checkpoint `1e8efb39b576205795451ce768a4cd9f051be96c`.
+
+- 2026-09-24 reconciliation lease model: separate reconciliation owner/generation/lease state added; recovery and reconciliation leases are mutually exclusive in the formal sketch, and reconciliation lease cannot grant recovery authority. Formal `aa2df29bdc308c52afce677adc458e8b2abdfa79`; fixture `d83232beb0b9990f2edf13d169ede57a09ec212e`; continuity `9bf24a27e87115ca2285cae7d1eb0775424e3507`.
