@@ -352,3 +352,39 @@ InvReceiptNotWorldTruth ==
    C0 cannot silently inherit C2+ guarantees. A C1 read/version check without
    target-side atomic enforcement is not a hard execution fence.
 *)
+
+
+(* GLOBAL CONFLICT / SERIALIZATION REFINEMENT
+   Pairwise-valid operations can still violate a shared mission/global invariant.
+   Therefore local precondition validity is insufficient for critical concurrent
+   effects. Nexo must classify conflicts using read-set/write-set/effect-set
+   overlap and explicit global invariants.
+
+   Conceptual conflict classes:
+     INDEPENDENT       = no relevant shared state/invariant
+     READ_WRITE        = one operation changes state relied upon by another
+     WRITE_WRITE       = both mutate the same protected state/effect domain
+     EFFECT_COLLISION  = distinct operation IDs may produce the same forbidden effect
+     GLOBAL_INVARIANT  = effects touch different resources but jointly violate an invariant
+     UNKNOWN           = dependency/visibility information insufficient
+
+   Safe concurrency requires either:
+     (a) proven commutativity / independence,
+     (b) target-enforced serializable/transactional ordering,
+     (c) atomic reservation covering the invariant's full conflict domain, or
+     (d) explicit scheduler serialization with durable authority.
+
+   Pairwise checks must not be mistaken for global safety: A valid alone + B valid
+   alone does not imply A||B is valid. The admission relation therefore evaluates
+   the combined post-state/invariant set for concurrent critical operations.
+
+   If conflict information is incomplete, the default is UNKNOWN/BLOCK or safe
+   serialization, not optimistic independence.
+
+   IMPORTANT: external database serializability protects the database transaction's
+   consistency; it does not automatically prove Nexo's application-level/global
+   invariant unless that invariant is represented inside the transaction or enforced
+   by an independent control layer. Spanner documentation explicitly distinguishes
+   database concurrency guarantees from application-level invariants and warns that
+   internal locks do not guarantee exclusive access to resources outside Spanner.
+*)
