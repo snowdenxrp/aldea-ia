@@ -579,3 +579,8 @@ Next: model component-to-domain relations and transitive closure, then build fix
 While aligning the evaluator with the TLA+ recovery/common-mode sketch, a reachability defect was found: Quarantine required stopState = QUARANTINED before performing the transition to QUARANTINED. Corrected to ENFORCED -> QUARANTINED in commit 338ac91f5db4361b9b822008a315e411eb099648, with documentation follow-up in 5908790e5049781c163c32e8b7783901bb092ad3.
 
 Important: this demonstrates why correspondence must be executable/model-checkable rather than semantic-only. TLC verification remains pending; the model has not been declared verified.
+
+## PG-009 — correspondence hardening defects — 2026-09-24
+A second formal-model consistency defect was found while inspecting the Quarantine action: stopState' was assigned while stopState was also declared UNCHANGED. Removed in commit 1a5e325ad03b43271bb7a3c7d0d259e729a86654. The executable evaluator also had an unsupported `authority` dependency-domain branch; aligned with schema enum in commit 1584fea1f3f320c816ab3bad53c31cef61eafde6. Correspondence status documented in 3af8154880abc63ecd366c9cfa646884af6aae64.
+
+Lesson: the correspondence layer is already finding concrete cross-layer defects. TLA+ remains NOT TLC-VERIFIED and semantic equivalence remains unproven.
