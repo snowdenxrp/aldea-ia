@@ -318,3 +318,8 @@ Nexo now separates direct instruction, preference, standing authorization, tempo
 New Intent Contract and invariants INV-557..576.
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: human override/interruption/revocation during active execution.
+
+
+## Latest PG-009: human override, interruption and revocation
+Human STOP/revocation is now a first-class authority boundary. Nexo separates revoking future authority, local interruption, queued cancellation, remote cancellation request, remote cancellation confirmation, world reconciliation and verified termination. STOP does not erase in-flight effects; UNKNOWN after STOP blocks blind retry; compensation is a fresh governed effect. Emergency stop must be independently governed from the executor it can stop. New invariants INV-577..592. Architecture remains NOT TLC-VERIFIED.
+Next: independent emergency-stop architecture and fail-safe/fail-operational boundaries.
