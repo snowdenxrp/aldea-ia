@@ -91,6 +91,8 @@ AcquireRecovery(o, owner) ==
   /\ processState[o] = "QUARANTINED"
   /\ stopState[o] = "QUARANTINED"
   /\ owner # "NONE"
+  /\ recoveryOwner[o] = "NONE"
+  /\ recoveryToken[o] # "CURRENT"
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
   /\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
   /\ recoveryAuthorityEpoch' = [recoveryAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
@@ -108,7 +110,7 @@ RevokeAuthority(o) ==
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ UNCHANGED <<stopState,gateState,processState,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
-      recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
+      worldState,dependencyState,compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
   /\ recoveryOwner[o] # "NONE"
@@ -168,7 +170,10 @@ RestoreDependency(o, d) ==
       recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
       worldState,compromisedDependencies,assuranceState,commitCount>>
 
-RevalidateAssurance(o) ==
+RevalidateAssurance(o, owner) ==
+  /\ owner # "NONE"
+  /\ recoveryOwner[o] = owner
+  /\ recoveryAuthorityEpoch[o] = authorityEpoch[o]
   /\ GraphReferencesKnown
   /\ stopState[o] = "QUARANTINED"
   /\ gateState[o] = "CLOSED"
@@ -183,7 +188,10 @@ RevalidateAssurance(o) ==
       recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,worldState,dependencyState,
       compromisedDependencies,commitCount>>
 
-AuthorizeRelease(o) ==
+AuthorizeRelease(o, owner) ==
+  /\ owner # "NONE"
+  /\ recoveryOwner[o] = owner
+  /\ recoveryAuthorityEpoch[o] = authorityEpoch[o]
   /\ GraphReferencesKnown
   /\ stopState[o] = "QUARANTINED"
   /\ gateState[o] = "CLOSED"
@@ -203,6 +211,8 @@ Release(o) ==
   /\ stopState[o] = "QUARANTINED"
   /\ gateState[o] = "CLOSED"
   /\ recoveryToken[o] = "CURRENT"
+  /\ recoveryAuthorityEpoch[o] = authorityEpoch[o]
+  /\ EvaluatorReleaseEligible(o)
   /\ recoveryEpoch[o] > stopEpoch[o]
   /\ gateState' = [gateState EXCEPT ![o] = "OPEN"]
   /\ stopState' = [stopState EXCEPT ![o] = "CLEAR"]
@@ -219,11 +229,36 @@ Commit(o) ==
   /\ gateState[o] = "OPEN"
   /\ assuranceState[o] = "NORMAL"
   /\ admittedAuthorityEpoch[o] = authorityEpoch[o]
+  /\ worldState[o] = "KNOWN"
+  /\ AllOperationDependenciesKnown(o)
+  /\ NoCompromisedOperationDependencies(o)
   /\ commitCount' = [commitCount EXCEPT ![o] = @ + 1]
   /\ processState' = [processState EXCEPT ![o] = "RUNNING"]
   /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
       dependencyState,compromisedDependencies,assuranceState>>
+
+SingleRecoveryOwner ==
+  \A o \in Operations :
+    recoveryOwner[o] # "NONE" => recoveryToken[o] = "CURRENT"
+
+RecoveryEpochMonotonic ==
+  \A o \in Operations : recoveryEpoch[o] >= stopEpoch[o]
+
+StaleOwnerCannotAuthorize ==
+  \A o \in Operations :
+    releaseAuthorized[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT"
+
+DoubleReleaseImpossible ==
+  \A o \in Operations :
+    releaseAuthorized[o] = FALSE => ~(stopState[o] = "QUARANTINED" /\ gateState[o] = "CLOSED" /\ processState[o] = "ADMITTED")
+
+DoubleCommitImpossible ==
+  \A o \in Operations : commitCount[o] <= 1
+
+AuthorityRevocationBlocksCommit ==
+  \A o \in Operations :
+    admittedAuthorityEpoch[o] # authorityEpoch[o] => processState[o] # "RUNNING"
 
 NoCommitDuringStop ==
   \A o \in Operations :
