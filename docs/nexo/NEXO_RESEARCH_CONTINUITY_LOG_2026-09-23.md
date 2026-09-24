@@ -169,3 +169,6 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    modeled BLOCKED, INVALIDATE, and CATCH-UP dispositions for writes during cutover fencing.
    Established INV-266..270: no mutation may disappear from migration state; unresolved fence-invalidating mutations block authority advancement; blocked writes need visible retry/failure semantics; catch-up preserves identity/provenance/ordering/evidence.
    Formal model remains a design sketch and is not TLC-verified.
+
+36. PG-009 fence-policy formalization:
+   the cutover boundary now explicitly distinguishes BLOCK_WRITES, INVALIDATE, and CATCH_UP semantics. Silent acceptance of late authoritative writes is forbidden. The TLA+ artifact remains a sketch; next step is normalization to one selected policy, complete variable/action semantics, and TLC verification with preserved counterexamples.
