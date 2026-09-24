@@ -606,3 +606,54 @@ InvReceiptNotWorldTruth ==
    Recovery decisions are historical facts tied to their exact boundary; a later
    policy/epoch cannot rewrite them, but can require a new reconciliation decision.
 *)
+
+
+(* ATOMIC RECONCILIATION COMMIT / STALE-OWNER RACE REFINEMENT
+
+   A lease by itself is not sufficient protection for an external or durable
+   critical commit. The commit must be guarded by a fencing/ownership token that
+   the authoritative state store validates atomically. etcd documents this pattern:
+   transactions can compare a key revision/version atomically, and its lock/election
+   ownership revision can be tested during a transaction. A lease can expire while
+   a client still believes it owns the resource, so the lease is coordination/liveness
+   support, not the final mutual-exclusion proof.
+
+   Required commit predicate (conceptual):
+     CommitAllowed ==
+       Owner(effectKey) = reconciliation_id / fence_token
+       /\\ FenceVersion = token_version
+       /\\ AuthorityEpoch = current_epoch
+       /\\ PolicyVersionApplicable
+       /\\ EffectIdentityStillBound
+       /\\ WorldPreconditionStillValid
+       /\\ EvidenceSufficientAndFresh
+
+   The predicate and the durable recovery record must be evaluated/committed as one
+   atomic transition in the authoritative coordination store whenever the store
+   provides that primitive. A stale owner that races with lease expiry/transfer must
+   lose the conditional commit, even if it sends its request after the lease expired.
+
+   Important boundary: atomicity of the coordination-store commit does NOT make an
+   external side effect atomic with that store. The external effect remains subject
+   to the existing REMOTE_UNKNOWN/reconciliation model.
+
+   Race cases:
+     R1 lease expires -> R2 acquires -> R1 commits: REJECT R1.
+     R1 commits -> R2 acquires: R2 must observe R1's durable outcome and reconcile;
+       ownership transfer does not erase R1 history.
+     R1 and R2 commit concurrently: authoritative conditional transaction serializes;
+       at most one matching ownership transition succeeds.
+     ABA owner/value reuse: token must be unique/monotonic or otherwise generation-bound;
+       equality of owner identity alone is insufficient.
+
+   New safety obligations:
+     INV-303 stale reconciler cannot durably commit after fencing/ownership changes.
+     INV-304 lease expiry transfers coordination but does not prove effect absence.
+     INV-305 ownership transfer preserves prior attempt/evidence history.
+     INV-306 critical reconciliation commit validates current authority/policy/effect
+              identity/world preconditions in the same authoritative transition.
+     INV-307 owner identity alone cannot defeat ABA; generation/fence token is required.
+     INV-308 coordination-store atomicity cannot be promoted into external-world atomicity.
+     INV-309 concurrent recovery commits resolve through one authoritative serialization
+              point; no last-writer-wins recovery for critical effects.
+*)
