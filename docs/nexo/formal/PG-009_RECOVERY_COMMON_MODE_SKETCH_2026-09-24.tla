@@ -109,8 +109,20 @@ RevokeAuthority(o) ==
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
-  /\ UNCHANGED <<stopState,gateState,processState,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
-      worldState,dependencyState,compromisedDependencies,commitCount>>
+  /\ IF processState[o] \in {"ADMITTED", "RUNNING"}
+        THEN processState' = [processState EXCEPT ![o] = "OFFLINE"]
+        ELSE UNCHANGED processState
+  /\ IF processState[o] \in {"ADMITTED", "RUNNING"}
+        THEN gateState' = [gateState EXCEPT ![o] = "CLOSED"]
+        ELSE UNCHANGED gateState
+  /\ IF processState[o] \in {"ADMITTED", "RUNNING"}
+        THEN stopState' = [stopState EXCEPT ![o] = "ENFORCED"]
+        ELSE UNCHANGED stopState
+  /\ IF processState[o] \in {"ADMITTED", "RUNNING"}
+        THEN stopEpoch' = [stopEpoch EXCEPT ![o] = @ + 1]
+        ELSE UNCHANGED stopEpoch
+  /\ UNCHANGED <<recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,
+      compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
   /\ recoveryOwner[o] # "NONE"
@@ -242,6 +254,10 @@ SingleRecoveryOwner ==
   \A o \in Operations :
     recoveryOwner[o] # "NONE" => recoveryToken[o] = "CURRENT"
 
+RecoveryOwnerRequiresCurrentToken ==
+  \A o \in Operations :
+    recoveryToken[o] = "CURRENT" => recoveryOwner[o] # "NONE"
+
 RecoveryEpochIsNonNegative ==
   \A o \in Operations : recoveryEpoch[o] >= 0
 
@@ -257,9 +273,9 @@ RunningImpliesPriorCommit ==
   \A o \in Operations :
     processState[o] = "RUNNING" => commitCount[o] >= 1
 
-AuthorityRevocationBlocksCommit ==
+AdmissionEpochMatchesAuthority ==
   \A o \in Operations :
-    admittedAuthorityEpoch[o] # authorityEpoch[o] => processState[o] # "RUNNING"
+    processState[o] = "ADMITTED" => admittedAuthorityEpoch[o] = authorityEpoch[o]
 
 NoCommitDuringStop ==
   \A o \in Operations :
