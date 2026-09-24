@@ -18,6 +18,8 @@ VARIABLES
   admittedAuthorityEpoch,
   recoveryOwner,
   recoveryToken,
+  recoveryGeneration,
+  recoveryLeaseValid,
   releaseAuthorized,
   worldState,
   dependencyState,
@@ -27,7 +29,7 @@ VARIABLES
 
 vars ==
   <<stopState, gateState, processState, authorityEpoch, stopEpoch,
-    recoveryEpoch, recoveryAuthorityEpoch, admittedAuthorityEpoch, recoveryOwner, recoveryToken, releaseAuthorized,
+    recoveryEpoch, recoveryAuthorityEpoch, admittedAuthorityEpoch, recoveryOwner, recoveryToken, recoveryGeneration, recoveryLeaseValid, releaseAuthorized,
     worldState, dependencyState, compromisedDependencies, assuranceState,
     commitCount>>
 
@@ -49,6 +51,8 @@ Init ==
   /\ admittedAuthorityEpoch = [o \in Operations |-> 0]
   /\ recoveryOwner = [o \in Operations |-> "NONE"]
   /\ recoveryToken = [o \in Operations |-> "NONE"]
+  /\ recoveryGeneration = [o \in Operations |-> 0]
+  /\ recoveryLeaseValid = [o \in Operations |-> FALSE]
   /\ releaseAuthorized = [o \in Operations |-> FALSE]
   /\ worldState = [o \in Operations |-> "UNKNOWN"]
   /\ dependencyState = [o \in Operations |-> [d \in Dependencies |-> "KNOWN"]]
@@ -87,18 +91,21 @@ Quarantine(o) ==
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
       dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
-AcquireRecovery(o, owner) ==
-  /\ processState[o] = "QUARANTINED"
-  /\ stopState[o] = "QUARANTINED"
-  /\ owner # "NONE"
-  /\ recoveryOwner[o] = "NONE"
-  /\ recoveryToken[o] # "CURRENT"
-  /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
-  /\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
-  /\ recoveryAuthorityEpoch' = [recoveryAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
-  /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "CURRENT"]
-  /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
-  /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
+AcquireRecovery(o, owner, expectedGeneration) ==
+  /\\ processState[o] = "QUARANTINED"
+  /\\ stopState[o] = "QUARANTINED"
+  /\\ owner # "NONE"
+  /\\ recoveryOwner[o] = "NONE"
+  /\\ recoveryToken[o] # "CURRENT"
+  /\\ expectedGeneration = recoveryGeneration[o] + 1
+  /\\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
+  /\\ recoveryGeneration' = [recoveryGeneration EXCEPT ![o] = expectedGeneration]
+  /\\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = TRUE]
+  /\\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
+  /\\ recoveryAuthorityEpoch' = [recoveryAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
+  /\\ recoveryToken' = [recoveryToken EXCEPT ![o] = "CURRENT"]
+  /\\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
+  /\\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       worldState,dependencyState,compromisedDependencies,
       assuranceState,commitCount>>
 
@@ -107,6 +114,7 @@ RevokeAuthority(o) ==
   /\ authorityEpoch' = [authorityEpoch EXCEPT ![o] = @ + 1]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
+  /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = FALSE]
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ IF processState[o] \in {"ADMITTED", "RUNNING"}
@@ -121,17 +129,18 @@ RevokeAuthority(o) ==
   /\ IF processState[o] \in {"ADMITTED", "RUNNING"}
         THEN stopEpoch' = [stopEpoch EXCEPT ![o] = @ + 1]
         ELSE UNCHANGED stopEpoch
-  /\ UNCHANGED <<recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,
+  /\ UNCHANGED <<recoveryEpoch,recoveryGeneration,recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,
       compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
   /\ recoveryOwner[o] # "NONE"
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
+  /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = FALSE]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
+      recoveryEpoch,recoveryGeneration,recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 MarkDependencyUnknown(o, d) ==
   /\ d \in Dependencies
@@ -182,9 +191,11 @@ RestoreDependency(o, d) ==
       recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
       worldState,compromisedDependencies,assuranceState,commitCount>>
 
-RevalidateAssurance(o, owner) ==
+RevalidateAssurance(o, owner, generation) ==
   /\ owner # "NONE"
   /\ recoveryOwner[o] = owner
+  /\ generation = recoveryGeneration[o]
+  /\ recoveryLeaseValid[o]
   /\ recoveryAuthorityEpoch[o] = authorityEpoch[o]
   /\ GraphReferencesKnown
   /\ stopState[o] = "QUARANTINED"
@@ -200,9 +211,11 @@ RevalidateAssurance(o, owner) ==
       recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,worldState,dependencyState,
       compromisedDependencies,commitCount>>
 
-AuthorizeRelease(o, owner) ==
+AuthorizeRelease(o, owner, generation) ==
   /\ owner # "NONE"
   /\ recoveryOwner[o] = owner
+  /\ generation = recoveryGeneration[o]
+  /\ recoveryLeaseValid[o]
   /\ recoveryAuthorityEpoch[o] = authorityEpoch[o]
   /\ GraphReferencesKnown
   /\ stopState[o] = "QUARANTINED"
@@ -223,6 +236,7 @@ Release(o) ==
   /\ stopState[o] = "QUARANTINED"
   /\ gateState[o] = "CLOSED"
   /\ recoveryToken[o] = "CURRENT"
+  /\ recoveryLeaseValid[o]
   /\ recoveryAuthorityEpoch[o] = authorityEpoch[o]
   /\ EvaluatorReleaseEligible(o)
   /\ recoveryEpoch[o] > stopEpoch[o]
@@ -247,7 +261,7 @@ Commit(o) ==
   /\ commitCount' = [commitCount EXCEPT ![o] = @ + 1]
   /\ processState' = [processState EXCEPT ![o] = "RUNNING"]
   /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
-      recoveryOwner,recoveryToken,releaseAuthorized,worldState,
+      recoveryOwner,recoveryToken,recoveryGeneration,recoveryLeaseValid,releaseAuthorized,worldState,
       dependencyState,compromisedDependencies,assuranceState>>
 
 SingleRecoveryOwner ==
@@ -260,6 +274,24 @@ RecoveryOwnerRequiresCurrentToken ==
 
 RecoveryEpochIsNonNegative ==
   \A o \in Operations : recoveryEpoch[o] >= 0
+
+RecoveryGenerationMonotonic ==
+  \A o \in Operations : recoveryGeneration[o] >= 0
+
+CurrentOwnerMatchesGeneration ==
+  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\\ recoveryToken[o] = "CURRENT"
+
+StaleGenerationCannotAuthorize ==
+  \A o \in Operations : releaseAuthorized[o] => recoveryLeaseValid[o] /\\ recoveryGeneration[o] > 0
+
+ExpiredLeaseCannotAct ==
+  \A o \in Operations : ~recoveryLeaseValid[o] => ~releaseAuthorized[o]
+
+TakeoverInvalidatesPriorOwner ==
+  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE"
+
+RecoveryReleaseOwnerCleanup ==
+  \A o \in Operations : processState[o] = "ADMITTED" => ~releaseAuthorized[o]
 
 StaleOwnerCannotAuthorize ==
   \A o \in Operations :
@@ -456,6 +488,8 @@ ReleaseAuthorizedImpliesEligible ==
   - graph validity is required before revalidation/authorization;
   - recoveryEpoch is distinct from stopEpoch;
   - recoveryAuthorityEpoch binds recovery to the authority epoch that admitted it;
+  - recoveryGeneration + recoveryLeaseValid model explicit owner-generation fencing; takeover requires the next generation and invalidates stale-owner actions;
+  - lease validity is a coordination fence, not proof that an external effect is absent or reversible;
   - admittedAuthorityEpoch prevents authority revocation between Release and Commit from becoming a stale-admission race;
   - authority revocation explicitly invalidates recovery and release authorization;
   - an emergency stop interrupts a RUNNING process into OFFLINE so the no-commit-during-stop invariant remains reachable;
