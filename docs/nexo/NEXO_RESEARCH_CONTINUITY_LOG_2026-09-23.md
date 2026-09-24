@@ -210,3 +210,5 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    NOT TLC-VERIFIED. It also intentionally does not claim that receipt proves world truth.
    Next refinement: model multiple effects sharing a target/effect key, legitimate repeats,
    semantic collisions, stale observations, and explicit forbidden blind retry transitions.
+
+42. PG-009 refinement review: current external-effect sketch is intentionally single-effect and is not sufficient for semantic deduplication. Current AWS guidance reinforces that idempotency must be applied deliberately, keys must remain stable across retries, and indiscriminate idempotency can be an anti-pattern. This supports the next refinement: distinguish SAME_OPERATION_REPLAY, SAME_EFFECT_LEGITIMATE_REPEAT, EFFECT_COLLISION, and UNKNOWN before suppressing execution. The sketch scope was explicitly marked before concurrency refinement. Commit 0d0a6c53996a010f99cd39058e8b7501efd148e8.
