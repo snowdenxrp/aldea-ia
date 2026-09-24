@@ -568,3 +568,9 @@ The evaluator is deliberately non-authoritative: it resolves transitive dependen
 Test execution was attempted, but outbound DNS/network access was unavailable in the execution environment, so the test suite could not be fetched/executed. No passing test result is claimed.
 
 New invariants INV-691..696. Status: IMPLEMENTED / NOT TEST-PASSED / NOT FORMALLY VERIFIED.
+
+## PG-009 — evaluator/formal correspondence — 2026-09-24
+The executable dependency evaluator and recovery/common-mode TLA+ sketch were aligned at the vocabulary level. Formal checkpoint commit: 07fdaeac63867f893f7ac7bc1c7f47f090c7f4c8. The alignment is not an equivalence proof: the formal model still lacks explicit component-to-domain mapping, transitive closure, graph fingerprints, and full finding taxonomy.
+
+Status: DESIGNED + IMPLEMENTED correspondence vocabulary / NOT TLC-VERIFIED / NOT formally equivalent.
+Next: model component-to-domain relations and transitive closure, then build fixture-based cross-checks.
