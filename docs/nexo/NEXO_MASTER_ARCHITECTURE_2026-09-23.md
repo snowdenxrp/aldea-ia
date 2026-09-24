@@ -396,3 +396,6 @@ Common-mode/correlated-failure analysis across safety, recovery, update, identit
 Process/service separation does not establish independence. Critical safety claims now require dependency closure, failure-domain analysis, common-mode analysis, diversity/independence evidence and an explicit assurance level. UNKNOWN dependencies cannot silently increase assurance. New invariants INV-669..690. Artifact: docs/nexo/PG-009_COMMON_MODE_CORRELATED_FAILURE_2026-09-24.md. NOT implemented/TLC-verified.
 
 Current PG-009 next point: correct/expand formal recovery modeling, add dependency/failure-domain state, model update/rollback transitions, define executable safety-claim/dependency-closure schema, implement fault injection, run TLC, then perform final semantic reconciliation.
+
+### Formal continuation — recovery + common-mode — 2026-09-24
+New formal sketch: `docs/nexo/formal/PG-009_RECOVERY_COMMON_MODE_SKETCH_2026-09-24.tla`. It adds dependency domains, UNKNOWN dependency state, compromised domains, assurance degradation, and explicit release blocking for unknown/compromised modeled dependencies. It remains NOT TLC-VERIFIED. Commit: `b713cbad246da9769f916ac6a107f1f03378f322`.
