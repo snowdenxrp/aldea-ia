@@ -699,3 +699,49 @@ InvReceiptNotWorldTruth ==
      INV-314 broader world verification remains distinct from successful conditional
               mutation/receipt.
 *)
+
+
+(* GUARANTEE BUDGET / C0-C4 TARGET CAPABILITY REFINEMENT
+
+   Nexo must never claim a stronger end-to-end guarantee than the target protocol
+   actually enforces. Separate four properties:
+     authorization safety, duplicate-effect safety, outcome knowledge, and
+     reversibility/compensation.
+
+   Target classes:
+     C0: no reliable conditional/version fence or deterministic reconciliation.
+       Critical irreversible effect: BLOCK unless a separately governed protocol
+       supplies equivalent protection.
+     C1: observable version/readback but no atomic remote precondition.
+       Observation can improve reconciliation, but cannot close the TOCTOU window.
+       Critical irreversible effect needs another guarantee or remains BLOCKED.
+     C2: atomic conditional/CAS at target.
+       Can provide target-local stale-precondition rejection and, for suitable
+       idempotent operations, safe retry semantics. Does not prove broader external
+       invariants outside the target transaction.
+     C3: transactional conflict validation / serializable semantics.
+       Can coordinate multi-item invariants covered by that transaction boundary.
+       Guarantees remain scoped to participating items/system.
+     C4: stronger externally ordered semantics.
+       May provide stronger ordering/transaction properties, but Nexo must record
+       exact scope and failure model rather than map C4 to universal exactly-once.
+
+   Alternative protection for C0/C1 can be composed only when each component's
+   semantics are explicit: stable idempotency key, target-side deduplication,
+   deterministic readback, compensating action, durable intent, and reconciliation.
+   Composition cannot manufacture atomicity when an irreversible external effect
+   occurs outside every authoritative transaction/fence.
+
+   Compensation is not rollback: compensation is a new effect that can itself fail,
+   be delayed, be unauthorized under current policy, or have different semantics.
+   If neither safe retry nor reliable reconciliation nor acceptable compensation is
+   available, the correct state is UNKNOWN/BLOCKED, not guessed success/failure.
+
+   New obligations:
+     INV-315 guarantee claims are bounded by target protocol scope/failure model.
+     INV-316 C0/C1 cannot receive C2-style safety merely from local orchestration.
+     INV-317 idempotency + reconciliation + compensation is not equivalent to atomicity.
+     INV-318 compensation requires fresh authority, effect identity, preconditions,
+              verification, and its own retry/reconciliation state.
+     INV-319 critical unknown outcomes without a safe resolution path remain blocked.
+*)
