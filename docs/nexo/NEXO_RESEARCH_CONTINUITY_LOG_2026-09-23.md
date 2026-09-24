@@ -378,3 +378,16 @@ New invariants INV-465..480.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: epistemic memory and provenance under compression, summarization, caching and retrieval.
+
+## Latest PG-009 — epistemic memory and provenance under compression
+
+Cross-check with NIST provenance and digital-evidence preservation guidance and NASA technical/scientific data management. NIST defines provenance as chronology of origin/change/ownership/location of data; NASA emphasizes metadata/provenance and warns copied data can become stale relative to authoritative sources. citeturn0search2turn0search1turn0search12turn0search38
+
+New Epistemic Memory Contract. Summarization, embedding, deduplication, caching, indexing and archival movement are semantic transformations. Critical transformations are classified M0-M4 by preservation/loss characteristics.
+
+New rules: authoritative-source hierarchy, provenance DAG, explicit preservation of UNKNOWN/STALE/CONFLICTING/ASSUMED/INFERRED/VERIFIED states, cache safety, semantic deduplication, durable conflict sets, governed deletion and reverse provenance.
+
+New invariants INV-481..498.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: epistemic memory garbage collection, retention and safe forgetting.
