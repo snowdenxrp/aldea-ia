@@ -129,3 +129,6 @@ Added `docs/nexo/formal/PG-009_EFFECT_IDENTITY_CONCURRENCY_SKETCH_2026-09-23.tla
 
 ## Next refinement
 Strengthen concurrent uniqueness/fencing and separate the independent acceptance relation from executor state. Same effect key across different operation IDs remains a collision candidate requiring classification, not automatic deduplication.
+
+## Latest PG-009 refinement
+Atomic reservation + authority epoch was added to PG-009_EFFECT_IDENTITY_CONCURRENCY_SKETCH_2026-09-23.tla (commit 2a24cdfcad3d5ddbe6e13d796bf15cb0d9ec1fe3). The reservation boundary must be atomic; executor-side check-then-set is insufficient. Reservations are epoch-bound and invalidated by revocation/epoch change. External unknown outcomes remain reconciliation state. **NOT TLC-VERIFIED.**
