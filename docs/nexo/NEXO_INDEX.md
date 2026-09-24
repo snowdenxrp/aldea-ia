@@ -323,3 +323,20 @@ Next: human override/interruption/revocation during active execution.
 ## Latest PG-009: human override, interruption and revocation
 Human STOP/revocation is now a first-class authority boundary. Nexo separates revoking future authority, local interruption, queued cancellation, remote cancellation request, remote cancellation confirmation, world reconciliation and verified termination. STOP does not erase in-flight effects; UNKNOWN after STOP blocks blind retry; compensation is a fresh governed effect. Emergency stop must be independently governed from the executor it can stop. New invariants INV-577..592. Architecture remains NOT TLC-VERIFIED.
 Next: independent emergency-stop architecture and fail-safe/fail-operational boundaries.
+
+
+## Latest PG-009 — independent emergency-stop architecture
+
+Human STOP/revocation is now separated into an Emergency Safety Plane rather than being treated as an ordinary executor command. The architecture distinguishes stop request, stop enforcement, stop verification, world reconciliation and release authorization. Emergency-stop classes E0-E4 are bounded by the actual enforcement boundary; Nexo must not claim independent stopping merely because an executor acknowledged a STOP.
+
+The EmergencyStopContract binds stop scope, authority, emergency class, independent enforcement path, dependency/common-mode domains, expected response, verification, fallback, policy/authority versions, evidence and release conditions. Independence is treated as an evidenced dependency claim, not a boolean.
+
+Fail-safe, fail-operational and UNKNOWN states are explicitly separated. Loss of required emergency evidence cannot silently increase autonomy. Critical release is sticky and requires a fresh governed transition; reboot, timeout, lease expiry, process restart or loss of the stop signal cannot implicitly release a critical stop.
+
+New formal sketch: `docs/nexo/formal/PG-009_EMERGENCY_STOP_SKETCH_2026-09-23.tla`. It is explicitly NOT TLC-VERIFIED.
+
+New research artifact: `docs/nexo/PG-009_EMERGENCY_STOP_ARCHITECTURE_2026-09-23.md`.
+
+New invariants INV-593..610.
+
+PG-009 remains OPEN. Next: emergency-stop observability and proof of enforcement, followed by recovery/restart fencing, safety-plane update/rollback, common-mode analysis, and actual TLC verification.
