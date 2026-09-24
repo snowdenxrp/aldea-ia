@@ -944,3 +944,65 @@ InvReceiptNotWorldTruth ==
      INV-342 retry load contributes to shared-resource/blast-radius exposure.
      INV-343 aggregate-risk escalation cannot retroactively authorize forbidden effects.
 *)
+
+
+(* DYNAMIC RISK DRIFT / IN-FLIGHT ADMISSION REVALIDATION
+
+   An admission decision is a bounded statement about a specific effect under a
+   specific policy/world/dependency/risk boundary. It is not permanent authority.
+   Risk may drift after admission because world state, policy, authority, dependency
+   topology, cumulative exposure, target capability, or evidence freshness changes.
+
+   Bind each admitted effect to an admission_epoch containing at least:
+     risk_profile_version
+     policy_version
+     authority_epoch
+     dependency_graph_version
+     world_precondition/version
+     target_consistency capability
+     aggregate-risk budget version
+     evidence freshness boundary
+     expiry / revalidation deadline
+
+   Drift classes:
+     BENIGN_REPRESENTATION_DRIFT
+     WORLD_PRECONDITION_DRIFT
+     POLICY_DRIFT
+     AUTHORITY_DRIFT
+     DEPENDENCY_DRIFT
+     TARGET_CAPABILITY_DRIFT
+     EVIDENCE_FRESHNESS_DRIFT
+     AGGREGATE_RISK_DRIFT
+     UNKNOWN_DRIFT
+
+   Revalidation policy must be effect-class-specific:
+     reversible/low-risk operations may continue under bounded stale windows if policy
+       explicitly permits;
+     high/critical operations require current admission conditions before irreversible
+       transitions;
+     material drift fences new external effects and routes the operation to REVALIDATE,
+       DRAIN, RECONCILE, ABORT, or HUMAN_REQUIRED according to its cancellation and
+       observability class.
+
+   A policy change does not retroactively erase historical authorization, but it can
+   invalidate future execution under the old admission. An in-flight irreversible
+   effect that already crossed the external boundary cannot be assumed cancellable.
+
+   Revalidation must not become an infinite loop. Every effect has a revalidation budget
+   and stability policy; repeated material drift leads to REVALIDATION_UNSTABLE/BLOCKED
+   or governed escalation rather than unbounded autonomous cycling.
+
+   No stale admission may be renewed merely by copying its prior decision. Renewal is
+   a new decision with fresh evidence and current policy/authority/risk evaluation.
+
+   New obligations:
+     INV-344 admission is bounded by an explicit admission epoch/version set.
+     INV-345 material policy/authority/world/dependency/risk drift invalidates future
+              critical execution until revalidated.
+     INV-346 historical authorization is preserved and is not rewritten by later policy.
+     INV-347 external irreversible effects already dispatched cannot be assumed cancellable.
+     INV-348 admission renewal is a new governed decision, not copied authority.
+     INV-349 repeated revalidation drift has bounded progress and can enter BLOCKED/
+              REVALIDATION_UNSTABLE.
+     INV-350 stale admission cannot silently increase autonomy.
+*)
