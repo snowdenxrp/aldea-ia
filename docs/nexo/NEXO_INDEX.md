@@ -156,3 +156,6 @@ A material policy/invariant change is now a governed boundary for in-flight work
 
 ## Latest PG-009: policy change during remote uncertainty
 Formalized the case where an old-policy operation becomes REMOTE_UNKNOWN while policy/authority changes. Historical authorization remains immutable; only current authority governs new recovery actions. No blind retry, old-authority continuation, retroactive authorization, or identity substitution. If the old effect is prohibited now, reconciliation/containment can still be required because policy does not erase world state. Autonomy cannot increase during this uncertainty. Formal commit: 862cf0bebe412bc5318f77fe75c58de99d5f6546. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: continuous-epoch reconciliation / ABA
+Reconciliation is now treated as critical authorized work that can itself become stale. Recovery commits require current fencing/ownership, authority and policy versions, dependency graph, world/precondition version, and sufficient fresh evidence. Lease expiry transfers coordination, not knowledge. A→B→A state cycles are not treated as no change; versions/epochs/causal positions are required. Repeated transitions may yield RECONCILIATION_UNSTABLE/BLOCKED with bounded retries and escalation. Formal commit: 8296d83cd7e384c588d2329789653f17637107f1. **NOT TLC-VERIFIED.**
