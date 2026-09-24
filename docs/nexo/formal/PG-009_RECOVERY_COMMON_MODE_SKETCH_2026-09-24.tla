@@ -14,6 +14,7 @@ VARIABLES
   authorityEpoch,
   stopEpoch,
   recoveryEpoch,
+  recoveryAuthorityEpoch,
   recoveryOwner,
   recoveryToken,
   releaseAuthorized,
@@ -25,7 +26,7 @@ VARIABLES
 
 vars ==
   <<stopState, gateState, processState, authorityEpoch, stopEpoch,
-    recoveryEpoch, recoveryOwner, recoveryToken, releaseAuthorized,
+    recoveryEpoch, recoveryAuthorityEpoch, recoveryOwner, recoveryToken, releaseAuthorized,
     worldState, dependencyState, compromisedDependencies, assuranceState,
     commitCount>>
 
@@ -43,6 +44,7 @@ Init ==
   /\ authorityEpoch = [o \in Operations |-> 0]
   /\ stopEpoch = [o \in Operations |-> 0]
   /\ recoveryEpoch = [o \in Operations |-> 0]
+  /\ recoveryAuthorityEpoch = [o \in Operations |-> 0]
   /\ recoveryOwner = [o \in Operations |-> "NONE"]
   /\ recoveryToken = [o \in Operations |-> "NONE"]
   /\ releaseAuthorized = [o \in Operations |-> FALSE]
@@ -59,6 +61,10 @@ RequestStop(o) ==
   /\ stopEpoch' = [stopEpoch EXCEPT ![o] = @ + 1]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
+  /\ processState' =
+      IF processState[o] = "RUNNING"
+        THEN [processState EXCEPT ![o] = "OFFLINE"]
+        ELSE processState
   /\ UNCHANGED <<authorityEpoch,recoveryEpoch,recoveryOwner,
       recoveryToken,worldState,dependencyState,compromisedDependencies,commitCount>>
 
@@ -85,11 +91,22 @@ AcquireRecovery(o, owner) ==
   /\ owner # "NONE"
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
   /\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
+  /\ recoveryAuthorityEpoch' = [recoveryAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "CURRENT"]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       worldState,dependencyState,compromisedDependencies,
       assuranceState,commitCount>>
+
+
+RevokeAuthority(o) ==
+  /\ authorityEpoch' = [authorityEpoch EXCEPT ![o] = @ + 1]
+  /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
+  /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
+  /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
+  /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
+  /\ UNCHANGED <<stopState,gateState,processState,stopEpoch,recoveryEpoch,
+      recoveryAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
   /\ recoveryOwner[o] # "NONE"
@@ -349,7 +366,7 @@ EvaluatorAuthorityGranted(o) == FALSE
 
 EvaluatorEffectsExecuted(o) == FALSE
 
-ReleaseAuthorizationMatchesEligibility ==
+ReleaseAuthorizationMatchesEligibility(o) ==
   releaseAuthorized[o] = TRUE <=> EvaluatorReleaseEligible(o)
 
 ReleaseAuthorizedImpliesEligible ==
@@ -382,6 +399,9 @@ ReleaseAuthorizedImpliesEligible ==
   - world UNKNOWN and recovery acquisition explicitly clear prior release authorization;
   - graph validity is required before revalidation/authorization;
   - recoveryEpoch is distinct from stopEpoch;
+  - recoveryAuthorityEpoch binds recovery to the authority epoch that admitted it;
+  - authority revocation explicitly invalidates recovery and release authorization;
+  - an emergency stop interrupts a RUNNING process into OFFLINE so the no-commit-during-stop invariant remains reachable;
   - recovery invalidation explicitly blocks release.
 
   Remaining limitations:
