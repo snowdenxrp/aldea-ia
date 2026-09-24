@@ -195,3 +195,32 @@ Graph integrity and graph completeness are now separate claims. Nexo defines sco
 
 ## Latest PG-009: invariant coverage
 Dependency graphs now require explicit mapping to the invariants they can affect. Each critical invariant gets a versioned Invariant Coverage Contract with protected state, closure, enforcement/verification points, assumptions, evidence, freshness, and blind spots. Coverage classes IC0 UNKNOWN through IC4 INDEPENDENTLY VERIFIED. Closure is semantic/governed rather than mere graph reachability; hidden/global state and invariant interactions are included. New invariants INV-387..396. Architecture commit: ca475c7d24ea989111bafa678f882c09ae1dac52. **NOT TLC-VERIFIED.**
+
+
+## Latest PG-009 — invariant specification integrity
+
+Current OPEN subproblem: prevent Nexo from formally proving an invariant that is valid in its model but does not adequately represent the real goal/safety obligation.
+
+New separation:
+- invariant validity;
+- invariant enforcement;
+- invariant verification;
+- invariant adequacy;
+- invariant-set coverage/adequacy.
+
+New contract: **Invariant Specification Contract**.
+New traceability chain:
+`MISSION/CONSTITUTION → GOAL → SAFETY OBJECTIVE → INVARIANT → PROTECTED STATE/CLOSURE → ENFORCEMENT → VERIFICATION → EVIDENCE`
+
+New controls:
+- assumption firewall;
+- vacuity/trivial-proof defense;
+- bad-state/counterexample registry;
+- specification mutation testing;
+- bidirectional goal/invariant/evidence traceability;
+- independent adequacy review.
+
+New invariants: INV-397..410.
+
+PG-009 remains OPEN. Existing TLA+ artifacts remain **NOT TLC-VERIFIED**.
+Next: investigate invariant completeness/adequacy under evolving goals and threat models, including hazard derivation, assumption invalidation and independent specification review.
