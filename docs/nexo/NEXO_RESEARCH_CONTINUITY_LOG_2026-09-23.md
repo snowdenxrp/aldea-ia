@@ -350,3 +350,18 @@ New invariants INV-423..435.
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 
 Next: observability completeness and epistemic boundary integrity — whether Nexo can reliably know when the world is unobservable, partially observable, stale or semantically ambiguous, and how uncertainty propagates into verification and authority.
+
+## Latest PG-009 — epistemic state transitions and uncertainty propagation
+
+Cross-check with NIST AI RMF Measure and NIST 2026 deployed-AI monitoring, plus NASA V&V/model uncertainty guidance. NIST requires uncertainty-aware measurement and regular operational testing; NASA distinguishes verification from realistic-environment validation and emphasizes model uncertainty/propagation. citeturn0search18turn0search0turn0search11turn0search24
+
+New Epistemic State Contract. Uncertainty is a durable state that propagates through memory, planning, risk, authority and execution. New states include UNKNOWN, ASSUMED, INFERRED, OBSERVED, VALIDATED, CORROBORATED, VERIFIED, CONFLICTING, STALE, PARTIAL and INVALIDATED.
+
+Core rule: no increase in epistemic assurance without an admissible evidence transition. UNKNOWN cannot silently become true, stale data cannot silently become current, and model confidence cannot create authority.
+
+New contradiction handling, uncertainty budgets, dependency lineage, epistemic memory preservation and recovery semantics.
+
+New invariants INV-449..464.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: epistemic closure and decision-theoretic action under uncertainty.
