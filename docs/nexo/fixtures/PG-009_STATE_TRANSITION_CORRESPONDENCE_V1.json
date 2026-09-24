@@ -108,11 +108,12 @@
     "StaleOwnerCannotAuthorize",
     "ReleaseRequiresAuthorization",
     "RunningImpliesPriorCommit",
-    "AuthorityRevocationBlocksCommit"
+    "AdmissionEpochMatchesAuthority"
   ],
   "notes": [
     "Concurrency is modeled as atomic state transitions; this is not yet a proof of implementation-level CAS/linearizability.",
     "Recovery owner identity is now an explicit transition input for revalidation and release authorization; recoveryAuthorityEpoch fences stale authority.",
-    "Double-release and double-commit are transition-precondition properties, not universal at-most-once effect guarantees."
+    "Double-release and double-commit are transition-precondition properties, not universal at-most-once effect guarantees.",
+    "Authority revocation is modeled as a hard admission fence: ADMITTED/RUNNING transitions to OFFLINE with stop/gate enforced, requiring fresh recovery before execution can resume. This does not claim physical cancellation of an already-completed external effect."
   ]
 }
