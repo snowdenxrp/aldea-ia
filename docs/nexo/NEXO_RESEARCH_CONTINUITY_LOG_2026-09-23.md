@@ -416,3 +416,14 @@ New Continuity Contract. Restore, snapshot, fork, merge and model replacement pr
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: succession and human relationship continuity.
+
+
+## Latest PG-009 — succession and human relationship continuity
+
+Cross-check with NIST account-recovery/key-recovery guidance and NASA change-control guidance. NIST warns account recovery can become a weak point when new authenticators can be bound after claimed loss; key recovery is a governed lifecycle function. NASA separates change authority, controlled baselines and implementation roles. citeturn0search10turn0search36turn0search0turn0search13
+
+New Human Relationship Contract. Separate principal identity, operational authority, recovery authority, succession authority, emergency authority and technical possession. Recovery does not imply succession. New-device enrollment does not inherit all capabilities. Critical recovery may use independently governed threshold recovery. Emergency trusteeship is temporary and non-escalating.
+
+New invariants INV-539..556.
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: delegated human intent and consent continuity.
