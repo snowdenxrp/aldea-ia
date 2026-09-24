@@ -166,8 +166,8 @@ AuthorizeRelease(o) ==
   /\ recoveryToken[o] = "CURRENT"
   /\ worldState[o] = "KNOWN"
   /\ assuranceState[o] = "NORMAL"
-  /\ \A d \in Dependencies : dependencyState[o][d] = "KNOWN"
-  /\ \A d \in Dependencies : d \notin compromisedDependencies
+  /\ AllOperationDependenciesKnown(o)
+  /\ NoCompromisedOperationDependencies(o)
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = TRUE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,worldState,
@@ -212,18 +212,18 @@ RestartDoesNotRelease ==
 
 UnknownDependencyBlocksRelease ==
   \A o \in Operations :
-    (\E d \in Dependencies : dependencyState[o][d] = "UNKNOWN")
+    (\E d \in OperationDependencies(o) : dependencyState[o][d] = "UNKNOWN")
       => releaseAuthorized[o] = FALSE
 
 CompromisedDependencyBlocksRelease ==
   \A o \in Operations :
-    (\E d \in Dependencies : d \in compromisedDependencies)
+    (\E d \in OperationDependencies(o) : d \in compromisedDependencies)
       => releaseAuthorized[o] = FALSE
 
 NormalAssuranceRequiresKnownDependencies ==
   \A o \in Operations :
     assuranceState[o] = "NORMAL"
-      => \A d \in Dependencies : dependencyState[o][d] = "KNOWN"
+      => AllOperationDependenciesKnown(o)
 
 StaleRecoveryCannotRelease ==
   \A o \in Operations :
