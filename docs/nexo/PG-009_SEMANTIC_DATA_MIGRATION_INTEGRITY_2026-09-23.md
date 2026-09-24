@@ -997,3 +997,77 @@ INV-365: canonicalization/integrity evidence does not establish truth of the und
 INV-366: materiality tests include both over-normalization and under-normalization counterexamples.
 
 Status: architecture refined; formal model still NOT TLC-VERIFIED.
+
+## Concurrent admissions and complete conflict domains — 2026-09-23
+
+Research cross-check:
+- AWS documents optimistic locking via version + conditional writes and pessimistic locking/transactions for concurrent updates; DynamoDB transactions can provide serializable isolation within their defined scope, while other operations and cross-region replication have weaker boundaries. This demonstrates that concurrency guarantees are scope-bound to the protected state, not automatically global. 
+- NIST AC-3/AC-4/AC-5 establishes access enforcement, information-flow enforcement, and separation of duties as distinct controls. For Nexo this supports treating authorization, conflict enforcement, and execution as separate enforcement responsibilities.
+
+### Problem
+Two admissions can each be locally valid while their combination violates a global invariant:
+O1: reserve resource R for mission A
+O2: reserve resource R for mission B
+Both may have valid capability, risk, binding, and target checks. Pairwise local validity does not imply joint safety.
+
+### Conflict-domain contract
+Every critical effect declares a governed conflict footprint:
+- ReadSet
+- WriteSet
+- EffectSet / effect keys
+- ResourceSet
+- InvariantSet
+- ExternalSystemSet
+- AuthorityDomainSet
+- causal predecessors where relevant
+
+Each dependency is classified DECLARED, OBSERVED, INFERRED, or UNKNOWN. UNKNOWN dependency is not independence.
+
+A conflict relation is versioned and classifies pairs/sets as:
+INDEPENDENT, COMMUTATIVE, ORDER_SENSITIVE, READ_WRITE, WRITE_WRITE, EFFECT_COLLISION, GLOBAL_INVARIANT_INTERACTION, COMMON_MODE, UNKNOWN.
+
+### Admission rule
+A critical concurrent admission is allowed only when at least one applicable safety mechanism is established for the complete conflict domain:
+1. proven independence/commutativity;
+2. target-enforced atomic transaction/conditional conflict validation covering the invariant;
+3. atomic reservation/fencing over the full conflict domain;
+4. durable scheduler serialization over the full conflict domain;
+5. explicit human/governance decision where required.
+
+Checking only the apparent target is insufficient if the invariant spans hidden/shared resources or common-mode dependencies.
+
+### Pairwise is insufficient
+If A conflicts with B and B conflicts with C, a scheduler that only checks a local pair can still admit a globally unsafe set. Aggregate admission therefore evaluates the active mission window, shared resources, dependency overlap, common-mode domains, cumulative exposure, and global invariants.
+
+### Unknown dependency
+If a required dependency is UNKNOWN, Nexo must not infer independence merely because the operations touch different object IDs. The result is RESTRICTED/REVALIDATION/BLOCKED according to risk class and effect guarantees.
+
+### Conflict-control ownership
+Separate authority domains:
+- INVARIANT_AUTHORITY defines the invariant and its scope.
+- DEPENDENCY_AUTHORITY defines/approves dependency topology.
+- SCHEDULER_AUTHORITY chooses ordering only within granted authority.
+- EXECUTOR_AUTHORITY performs admitted work.
+- VERIFIER_AUTHORITY verifies the resulting state.
+
+No executor may weaken an invariant or declare its own hidden dependency irrelevant.
+
+### Concurrency and world versions
+A world version/read observation is evidence of state, not automatically a write fence. For a critical effect, the target must either enforce the precondition atomically or Nexo must hold an equivalent coordination mechanism. Otherwise the world may change between admission and effect.
+
+### Failure semantics
+Conflict detection failure is not proof of independence. If conflict-domain completeness cannot be established, preserve UNKNOWN and reduce autonomy. Never convert missing dependency information into LOW risk.
+
+### New invariants
+INV-367: locally valid admissions do not imply jointly safe execution.
+INV-368: critical effect admissions require a complete conflict-domain contract or an explicit bounded alternative.
+INV-369: UNKNOWN dependency is not independence.
+INV-370: conflict relations and dependency graphs are versioned security inputs.
+INV-371: critical concurrent execution requires proven independence/commutativity, target-enforced atomic conflict control, full-domain reservation/fencing, durable serialization, or governed escalation.
+INV-372: pairwise checks cannot substitute for aggregate/global invariant analysis where interactions are transitive or common-mode.
+INV-373: world-version observation is not itself an execution fence.
+INV-374: executor cannot weaken invariant/dependency authority.
+INV-375: failure to establish conflict completeness cannot increase autonomy.
+INV-376: material dependency/conflict-topology changes invalidate affected critical admissions/bindings.
+
+Status: architecture refined; formal model NOT TLC-VERIFIED.
