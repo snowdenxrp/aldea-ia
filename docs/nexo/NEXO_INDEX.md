@@ -86,3 +86,6 @@ First TLA+ concurrency model sketch added at `docs/nexo/formal/PG-009_MIGRATION_
 
 ## Latest PG-009 formal recovery work
 The TLA+ sketch now includes durable journal/in-flight distinction and recovery actions. PG-009 adds INV-256..260. The model remains explicitly unverified until TLC/model review is actually run.
+
+## Latest PG-009 finding — cutover race
+Formal reasoning exposed a concrete race: after CUTOVER_PREPARED, a late source write can create divergence before authority commit. The architecture now requires a final cutover fence plus revalidation. Added INV-261..265. Formal model remains unverified; next step is to make the fence a complete state transition and model the allowed late-write behavior.
