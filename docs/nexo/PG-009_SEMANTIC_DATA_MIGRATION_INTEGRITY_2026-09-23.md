@@ -1998,3 +1998,121 @@ MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → 
 
 PG-009 remains OPEN.
 Next research: epistemic memory garbage collection, retention and safe forgetting — how Nexo can forget safely without deleting evidence, contradictions, obligations or safety-critical history.
+
+## Research continuation — safe forgetting, retention and epistemic garbage collection
+
+NIST treats data processing as a full lifecycle including retention, transformation and disposal, and its privacy guidance supports minimization: retain information only as long as necessary for the authorized purpose. NIST evidence-management work separately emphasizes retention, preservation, integrity and disposition of evidence. NASA's records lifecycle distinguishes active, inactive and disposition phases and preserves records with enduring value while disposing of temporary records under approved schedules. citeturn0search6turn0search9turn0search12turn0search0turn0search1
+
+### Core finding
+For Nexo, forgetting cannot be one operation. It must distinguish:
+- forgetting for reasoning;
+- eviction from fast memory;
+- archival;
+- redaction/de-identification;
+- deletion;
+- destruction of cryptographic access;
+- irreversible loss of provenance.
+
+A memory may leave active cognition while remaining recoverable in durable history. Conversely, deleting a primary record can destroy the ability to prove why a past decision was made.
+
+### Memory classes
+M0 WORKING — short-lived reasoning/context.
+M1 EPISODIC — recoverable interaction/experience.
+M2 SEMANTIC — durable generalized knowledge linked to sources.
+M3 EVIDENTIARY — provenance-bearing observations/claims required for verification or audit.
+M4 OBLIGATION — open missions, commitments, deadlines, revocations, unresolved conflicts and safety-relevant state.
+M5 CONSTITUTIONAL/HISTORICAL — governance, authority, invariant, identity/continuity and critical lineage.
+
+These classes are not storage tiers only; they determine deletion authority and recovery obligations.
+
+### Forgetting modes
+EVICT — remove from active working set; durable source remains.
+ARCHIVE — move to slower durable storage.
+SUMMARIZE — derive a new representation while preserving lineage.
+REDACT — remove or transform protected content under policy while preserving required audit semantics.
+TOMBSTONE — record that an item was intentionally removed and why, without retaining forbidden payload.
+CRYPTO_ERASE — destroy access material so encrypted content becomes unrecoverable.
+DESTROY — irreversible removal under explicit disposition authority.
+
+No mode is equivalent to another.
+
+### Obligation firewall
+An item cannot be destroyed while it is referenced by:
+open mission, unresolved external effect, active capability/revocation, unresolved contradiction, critical invariant evidence, checkpoint/recovery dependency, pending audit/incident, legal/retention hold, or another declared preservation obligation.
+
+References must be explicit rather than inferred from textual search alone.
+
+### Dependency-aware garbage collection
+Garbage collection operates on a provenance/dependency graph, not only recency or access frequency.
+
+A candidate is collectible only if:
+1. no preservation obligation references it;
+2. no active decision closure depends on it;
+3. no unresolved conflict depends on it;
+4. required replacement/source provenance is preserved;
+5. retention/disposition policy permits removal;
+6. deletion operation is itself authorized and durable.
+
+### Safety-critical memory has roots
+Nexo maintains GC roots such as:
+constitution, identity/continuity anchors, authority history, invariant specifications, unresolved obligations, effect ledgers, world-verification evidence, incident/counterexample registry, checkpoints, migration lineage and critical provenance anchors.
+
+Derived caches can disappear freely when no active dependency remains; roots cannot.
+
+### Deletion as an event
+Deletion/disposition creates a durable event containing:
+item identity/version, disposition class, authority, policy version, reason, scope, dependencies checked, retention/hold result, execution evidence, verification result and timestamp.
+
+The event must not recreate deleted sensitive content.
+
+### Tombstone semantics
+A tombstone may establish:
+“this artifact existed and was intentionally disposed under policy X”
+without revealing its original content.
+
+A tombstone is not proof that the underlying proposition was true.
+
+### Forgetting and epistemic state
+Forgetting a claim does not make it false. Deleting evidence does not erase historical effects. Loss of evidence must be represented as provenance/assurance loss.
+
+If critical evidence is deleted lawfully, affected future decisions may require stronger independent evidence or become UNKNOWN.
+
+### Privacy versus continuity
+Privacy/minimization can require deletion, while safety/audit/continuity can require preservation. Nexo needs a governed conflict-resolution policy rather than allowing either side to silently override the other.
+
+No model or executor decides this conflict alone.
+
+### Recovery implications
+Recovery must know which memory classes are reconstructable, which are archival, and which are irrecoverably destroyed. A checkpoint cannot claim a fact merely because the original evidence was once present.
+
+### Anti-GC races
+Garbage collection must be fenced against concurrent creation of preservation dependencies:
+DISCOVER → SNAPSHOT_DEPENDENCIES → RESERVE/LEASE → RECHECK → DISPOSITION → VERIFY.
+
+If a new critical dependency appears before disposition commits, the deletion is blocked or re-planned.
+
+### New invariants
+INV-499 — forgetting mode is explicit; eviction, archive, summary, redaction, tombstone, crypto-erasure and destruction are not interchangeable.
+INV-500 — critical memory cannot be destroyed while an unresolved preservation obligation references it.
+INV-501 — garbage collection is dependency/provenance-aware, not recency-only.
+INV-502 — constitutional, identity, authority, invariant, obligation and critical evidentiary roots are protected GC roots.
+INV-503 — deletion is an authorized, durable and verifiable event.
+INV-504 — tombstone existence does not prove the truth of deleted content.
+INV-505 — loss of critical evidence is an assurance downgrade, not proof that the underlying event/fact never existed.
+INV-506 — lawful deletion cannot silently rewrite historical execution or world facts.
+INV-507 — privacy/minimization and continuity/preservation conflicts require explicit governance.
+INV-508 — garbage collection must recheck dependencies before irreversible disposition.
+INV-509 — concurrent creation of a preservation dependency fences or invalidates pending destruction.
+INV-510 — deletion authority cannot be granted by the item being deleted or by its executor alone.
+INV-511 — derived caches may be evicted without deleting authoritative records.
+INV-512 — recovery distinguishes reconstructable, archived and irrecoverably destroyed state.
+INV-513 — critical deletion preserves required provenance/disposition metadata without retaining forbidden payload.
+INV-514 — irreversible destruction requires a stronger assurance envelope than ordinary cache eviction.
+INV-515 — forgetting a memory does not imply falsity, non-occurrence or cancellation of the represented event.
+INV-516 — preservation obligations are explicit, versioned and freshness-bounded.
+
+### Architectural result
+MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → ASSUMPTIONS/ENVIRONMENT → OBSERVATION → EPISTEMIC STATE → DECISION CLOSURE → MEMORY/PROVENANCE → RETENTION/DISPOSITION → RISK/AUTHORITY → EXECUTION → WORLD VERIFICATION → DURABLE HISTORY
+
+PG-009 remains OPEN.
+Next research: **identity/continuity across forgetting, archival restore, snapshot/branch/fork and model replacement** — ensuring Nexo does not accidentally inherit or lose authority, obligations or identity when memory is restored, pruned or reconstructed.
