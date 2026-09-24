@@ -55,7 +55,8 @@
     "Release",
     "Commit",
     "AcquireReconciliation",
-    "ExpireReconciliationLease"
+    "ExpireReconciliationLease",
+    "ReconcileEffect"
   ],
   "forbidden_shortcuts": [
     "evaluator→authority",
@@ -222,6 +223,48 @@
       "guards": [
         "recovery authority epoch remains independently fenced"
       ]
+    },
+    {
+      "id": "cross_operation_effect_substitution",
+      "transition": "ReconcileEffect/AuthorizeRelease",
+      "expected": "evidence bound to effect A cannot authorize release for operation B",
+      "guards": [
+        "EffectOperation[effect] == target operation",
+        "reconciliationEffect == effect"
+      ]
+    },
+    {
+      "id": "stale_effect_identity",
+      "transition": "ExpireReconciliation/ReconcileEffect",
+      "expected": "expired reconciliation ownership cannot submit or reuse evidence",
+      "guards": [
+        "lease valid",
+        "current owner/generation"
+      ]
+    },
+    {
+      "id": "unknown_effect_identity",
+      "transition": "ReconcileWorld/AuthorizeRelease",
+      "expected": "UNKNOWN effect identity blocks release",
+      "guards": [
+        "reconciliationEffect == UNKNOWN => releaseAuthorized == FALSE"
+      ]
+    },
+    {
+      "id": "target_binding_mismatch",
+      "transition": "ReconcileEffect/AuthorizeRelease",
+      "expected": "target must equal authoritative effect target before release",
+      "guards": [
+        "reconciliationTarget == EffectTarget[effect]"
+      ]
+    },
+    {
+      "id": "effect_replay_after_takeover",
+      "transition": "ExpireReconciliation/AcquireReconciliation/ReconcileEffect",
+      "expected": "old generation evidence cannot be reused by successor",
+      "guards": [
+        "generation == current reconciliationGeneration"
+      ]
     }
   ],
   "formal_invariants": [
@@ -238,7 +281,11 @@
     "TakeoverInvalidatesPriorOwner",
     "RecoveryReleaseOwnerCleanup",
     "ReconciliationGenerationNonNegative",
-    "ReconciliationLeaseDoesNotGrantRecoveryAuthority"
+    "ReconciliationLeaseDoesNotGrantRecoveryAuthority",
+    "NoCrossOperationEvidence",
+    "TargetBindingCorrect",
+    "UnknownEffectIdentityBlocksRelease",
+    "StaleOwnerCannotReconcile"
   ],
   "notes": [
     "Concurrency is modeled as atomic state transitions; this is not yet a proof of implementation-level CAS/linearizability.",
@@ -249,6 +296,7 @@
     "Recovery generation is distinct from authority epoch: generation fences ownership; authority epoch fences authorization. Authority revocation invalidates both.",
     "A takeover must be modeled as an atomic ownership-generation transition; implementation-level CAS/linearizability remains unproven.",
     "Reconciliation-lease interaction remains a documented pending model extension; it is not claimed as a formal invariant until a separate reconciliation lease state is modeled.",
-    "Reconciliation lease is modeled as separate coordination state and mutually exclusive with recovery lease for an operation. This does not establish implementation-level mutual exclusion, linearizability, or external-world truth."
+    "Reconciliation lease is modeled as separate coordination state and mutually exclusive with recovery lease for an operation. This does not establish implementation-level mutual exclusion, linearizability, or external-world truth.",
+    "External-effect identity is isolated in PG-009_EXTERNAL_EFFECT_IDENTITY_SKETCH_2026-09-24.tla. It binds reconciliation to operation/effect/target, but does not yet model freshness, provenance, dependency common-mode, or implementation linearizability."
   ]
 }
