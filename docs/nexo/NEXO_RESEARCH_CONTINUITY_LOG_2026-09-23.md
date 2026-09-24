@@ -1229,3 +1229,14 @@ Decision: reject V12 for formal checking. V13 should define a separate `Expired(
 Artifacts:
 - docs/nexo/formal/NEXO_CANONICAL_CORE_V12_LEASE_KERNEL.tla — b65882661a9a9a6cec132d75ec43576362f88a6a
 - docs/nexo/NEXO_CANONICAL_CORE_V12_LEASE_KERNEL_AUDIT.md — ad842cb4b94a0dd6e011e9125b188ab6bfbd1efc
+
+
+### 2026-09-23 — V13 lease kernel
+
+V13 structurally rebuilt the lease kernel after V12 rejection. `LeaseValid` and `ExpiredLease` are now distinct predicates; expiry is reachable at `expiresAt <= now`, generation advances on successful acquire/takeover and is preserved on expiry, and a concrete `ProtectedAction` consumes exact owner + generation + current expiry, making stale-owner fencing non-vacuous at model level.
+
+Audit: recovery/reconciliation protected transitions are still missing; release authorization/evidence/version semantics remain outside the kernel; execution vs recovery/reconciliation concurrency policy remains intentionally unresolved. No SANY/TLC verification was performed.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V13_LEASE_KERNEL.tla — 7cd39d707ea3942dc699eb79677d8ebccb3a09ba
+- docs/nexo/NEXO_CANONICAL_CORE_V13_LEASE_KERNEL_AUDIT.md — 2be64a4ad9fd58a144b68949c2dbb1c3773b30b0
