@@ -22,64 +22,64 @@ vars ==
     cancellationAck, worldVerified, operationId, effectKey>>
 
 Init ==
-  /\\ authorityEpoch = Epoch0
-  /\\ revoked = FALSE
-  /\\ opStatus = "PREPARED"
-  /\\ externalEffect = EffectNone
-  /\\ cancellationAck = FALSE
-  /\\ worldVerified = FALSE
-  /\\ operationId = OpA
-  /\\ effectKey = "EFFECT-A"
+  /\ authorityEpoch = Epoch0
+  /\ revoked = FALSE
+  /\ opStatus = "PREPARED"
+  /\ externalEffect = EffectNone
+  /\ cancellationAck = FALSE
+  /\ worldVerified = FALSE
+  /\ operationId = OpA
+  /\ effectKey = "EFFECT-A"
 
 Revoke ==
-  /\\ revoked' = TRUE
-  /\\ authorityEpoch' = Epoch1
-  /\\ UNCHANGED <<opStatus, externalEffect, cancellationAck,
+  /\ revoked' = TRUE
+  /\ authorityEpoch' = Epoch1
+  /\ UNCHANGED <<opStatus, externalEffect, cancellationAck,
       worldVerified, operationId, effectKey>>
 
 Dispatch ==
-  /\\ ~revoked
-  /\\ opStatus = "PREPARED"
-  /\\ opStatus' = "DISPATCHED"
-  /\\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
+  /\ ~revoked
+  /\ opStatus = "PREPARED"
+  /\ opStatus' = "DISPATCHED"
+  /\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
       cancellationAck, worldVerified, operationId, effectKey>>
 
 RemoteCommit ==
-  /\\ opStatus = "DISPATCHED"
-  /\\ externalEffect' = EffectPresent
-  /\\ opStatus' = "REMOTE_COMMITTED"
-  /\\ UNCHANGED <<authorityEpoch, revoked, cancellationAck,
+  /\ opStatus = "DISPATCHED"
+  /\ externalEffect' = EffectPresent
+  /\ opStatus' = "REMOTE_COMMITTED"
+  /\ UNCHANGED <<authorityEpoch, revoked, cancellationAck,
       worldVerified, operationId, effectKey>>
 
 LocalStop ==
-  /\\ opStatus \\in {"PREPARED", "DISPATCHED", "REMOTE_COMMITTED"}
-  /\\ opStatus' = "LOCAL_STOPPED"
-  /\\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
+  /\ opStatus \in {"PREPARED", "DISPATCHED", "REMOTE_COMMITTED"}
+  /\ opStatus' = "LOCAL_STOPPED"
+  /\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
       cancellationAck, worldVerified, operationId, effectKey>>
 
 RemoteCancelAck ==
-  /\\ opStatus = "LOCAL_STOPPED"
-  /\\ cancellationAck' = TRUE
-  /\\ opStatus' = "REMOTE_CANCEL_ACK"
-  /\\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
+  /\ opStatus = "LOCAL_STOPPED"
+  /\ cancellationAck' = TRUE
+  /\ opStatus' = "REMOTE_CANCEL_ACK"
+  /\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
       worldVerified, operationId, effectKey>>
 
 VerifyWorld ==
-  /\\ opStatus \\in {"LOCAL_STOPPED", "REMOTE_CANCEL_ACK", "REMOTE_COMMITTED"}
-  /\\ worldVerified' = TRUE
-  /\\ opStatus' =
+  /\ opStatus \in {"LOCAL_STOPPED", "REMOTE_CANCEL_ACK", "REMOTE_COMMITTED"}
+  /\ worldVerified' = TRUE
+  /\ opStatus' =
         IF externalEffect = EffectPresent
         THEN "EFFECT_PRESENT_VERIFIED"
         ELSE "VERIFIED_TERMINATED"
-  /\\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
+  /\ UNCHANGED <<authorityEpoch, revoked, externalEffect,
       cancellationAck, operationId, effectKey>>
 
 BlindRetry ==
-  /\\ FALSE
-  /\\ UNCHANGED vars
+  /\ FALSE
+  /\ UNCHANGED vars
 
 Next ==
-  \\/ Revoke
+  \/ Revoke
   \/ Dispatch
   \/ RemoteCommit
   \/ LocalStop
@@ -91,10 +91,10 @@ NoDispatchAfterEffectiveRevoke ==
   revoked = TRUE => opStatus # "DISPATCHED"
 
 UnknownBlocksBlindRetry ==
-  ~(externalEffect = Unknown /\\ opStatus = "DISPATCHED")
+  ~(externalEffect = Unknown /\ opStatus = "DISPATCHED")
 
 EffectHistoryImmutable ==
-  externalEffect = EffectPresent => externalEffect' = EffectPresent \\/ TRUE
+  externalEffect = EffectPresent => externalEffect' = EffectPresent \/ TRUE
 
 ====
 
