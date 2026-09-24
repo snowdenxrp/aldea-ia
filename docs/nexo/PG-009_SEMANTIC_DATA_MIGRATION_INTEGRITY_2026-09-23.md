@@ -1843,3 +1843,82 @@ MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → 
 
 PG-009 remains OPEN.
 Next research: epistemic closure and decision-theoretic action under uncertainty — when uncertainty may safely be tolerated, when information-gathering is required, and how Nexo avoids reckless action and infinite paralysis.
+
+## Research continuation — epistemic closure and decision-making under uncertainty
+
+NIST AI RMF states that risk tolerance is contextual and should be documented, and its Measure function expects uncertainty to be characterized and systems to fail safely beyond knowledge limits. NASA decision-analysis guidance states that not every decision requires the same analysis effort and that uncertainty should be reduced when it could change the decision. NASA risk-informed decision making likewise uses risk and uncertainty information to select alternatives. citeturn0search32turn0search0turn0search11turn0search5
+
+### Core finding
+Nexo must not require certainty for every action, but it also must not use uncertainty as a blanket excuse to act.
+
+The correct question is: Is the currently available epistemic state sufficient for this specific decision, effect class, risk envelope and world boundary?
+
+This is an epistemic closure problem.
+
+### Decision Sufficiency Contract
+A decision binds: decision_id; objective/effect; required propositions; admissible epistemic states; required observation completeness; tolerated staleness; unresolved conflicts allowed; uncertainty budget; risk/reversibility class; target consistency class; dependency/conflict closure; authority/policy requirements; whether additional information could materially change the decision; and required post-action verification.
+
+### Epistemic closure
+RequiredKnowledge(D) is the set of propositions whose uncertainty can materially change authorization, safety, effect identity, target or outcome.
+
+Closure is satisfied when every material proposition is sufficiently established, covered by a governed conservative abstraction that cannot change the protected decision, or explicitly accepted as residual uncertainty within the authorized risk envelope.
+
+Unknown facts outside the material closure need not block the action.
+
+### Value of information
+Before acting under uncertainty, Nexo evaluates whether obtaining more information could materially change the decision. Conceptually, information value is expected reduction in decision-relevant loss minus the cost, delay and risk of gathering it. This may be qualitative rather than numerical.
+
+Nexo distinguishes information that can change the decision from information that merely increases confidence cosmetically, and from information whose collection is riskier than proceeding.
+
+### Safe action under uncertainty
+Action may proceed when unknowns are outside the material closure, or the decision is robust across all permitted states represented by the uncertainty, and the risk/reversibility envelope allows it, and residual uncertainty is explicitly bounded and monitored, and uncertainty does not expand authority.
+
+### Robustness criterion
+For critical decisions: would the decision remain authorized and safe across every materially plausible world state consistent with current evidence? If NO, obtain information, narrow the action, choose a reversible alternative, escalate or block.
+
+### Information-gathering as an action
+Information gathering itself has operation identity, capability, authority, cost, latency, privacy/security risk and epistemic provenance. It cannot recursively justify its own authority.
+
+NEED_INFO → AUTHORIZE_INFO_ACTION → OBSERVE → UPDATE_EPISTEMIC_STATE → REASSESS_DECISION
+
+### Decision classes
+D0 INFORMATIONAL — no external effect.
+D1 REVERSIBLE/LOW_BLAST_RADIUS — bounded uncertainty may be tolerated.
+D2 MATERIAL/REVIEWABLE — stronger closure and risk controls.
+D3 HIGH_CONSEQUENCE/IRREVERSIBLE — strong closure, observation, authority and verification; unresolved material unknowns normally block.
+D4 CRITICAL — highest assurance envelope; unresolved material uncertainty blocks unless explicit emergency policy provides a bounded alternative.
+
+These are architecture classes; actual thresholds are policy-defined.
+
+### Anti-paralysis controls
+Information-gathering budget; deadline; diminishing-return threshold; maximum revalidation cycles; stable uncertainty classification; fallback safe action; escalation; explicit WAITING_FOR_INFORMATION state. Repeated requests that produce no decision-relevant epistemic progress are treated as a stalled loop.
+
+### Anti-recklessness controls
+Material unknown; unresolved conflict; insufficient observation coverage; stale critical precondition; exceeded risk envelope; authority mismatch; target/world ambiguity; inadequate verification path → RESTRICT / HUMAN_REQUIRED / BLOCK.
+
+### Decision robustness record
+Every critical decision records decision_id, knowledge_closure, epistemic states, assumptions, uncertainty budget, alternatives, information considered, robustness result, residual uncertainty, authority/policy, risk profile, execution binding and verification plan.
+
+### New invariants
+INV-465 — action sufficiency is decision-specific; global certainty is not required.
+INV-466 — every critical decision declares its material knowledge closure.
+INV-467 — material unknowns cannot be silently excluded from decision closure.
+INV-468 — action under uncertainty requires explicit bounded residual uncertainty and authorized risk envelope.
+INV-469 — if materially different plausible world states imply different authorization or safety outcomes, Nexo must reduce uncertainty, narrow the action, escalate or block.
+INV-470 — information gathering is governed and cannot create authority implicitly.
+INV-471 — value-of-information reasoning cannot override policy, capability or authority.
+INV-472 — robust action must remain acceptable across the materially relevant uncertainty set defined by its contract.
+INV-473 — critical irreversible actions require stronger epistemic closure than reversible low-blast-radius actions.
+INV-474 — uncertainty budgets are effect-class and policy specific.
+INV-475 — repeated information gathering without decision-relevant epistemic progress cannot continue indefinitely.
+INV-476 — decision records preserve epistemic state and residual uncertainty.
+INV-477 — fallback actions cannot use uncertainty to expand authority or bypass verification.
+INV-478 — emergency policy may alter process under uncertainty only within pre-authorized bounds; it does not convert UNKNOWN into VERIFIED.
+INV-479 — epistemic closure is scoped to decision, target, time, environment and semantics.
+INV-480 — decision robustness does not imply world truth; post-action verification remains required.
+
+### Architectural result
+MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → ASSUMPTIONS/ENVIRONMENT → OBSERVATION → EPISTEMIC STATE → DECISION CLOSURE → RISK/AUTHORITY → EXECUTION → WORLD VERIFICATION → DURABLE HISTORY
+
+PG-009 remains OPEN.
+Next research: epistemic memory and provenance under compression, summarization, caching and retrieval — ensuring that Nexo's memory cannot silently lose uncertainty, scope, contradictions or provenance as it becomes large.
