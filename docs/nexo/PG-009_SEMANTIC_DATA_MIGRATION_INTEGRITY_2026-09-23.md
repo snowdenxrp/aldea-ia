@@ -554,3 +554,19 @@ INV-267 — a mutation cannot be both accepted by the source and invisible to mi
 INV-268 — authority cannot advance while a fence-invalidating mutation remains unresolved.
 INV-269 — a blocked mutation must have an externally visible failure/retry outcome; silent loss is forbidden.
 INV-270 — catch-up during the fence must preserve operation identity, provenance, ordering/causal constraints, and verification evidence.
+
+
+## Cutover fence policy analysis
+
+The formal sketch now makes the late-write policy explicit rather than leaving it implicit. Three policy families are modeled:
+1. BLOCK_WRITES — source writes are rejected/frozen at the consistency boundary.
+2. INVALIDATE — a late write breaks the prepared cutover and forces revalidation/catch-up.
+3. CATCH_UP — the late write is incorporated into the target before authority commit.
+
+Architecturally, the forbidden behavior is silently accepting a late source write while proceeding with an authority switch based on stale validation. The implementation must declare which fence semantics it provides and prove the corresponding invariant.
+
+Important: the current TLA+ artifact remains a sketch and is not yet TLC-verified. The next step is to normalize the model so exactly one policy is selected, make all state variables/actions complete, and run model checking. Any counterexample becomes a regression artifact rather than being discarded.
+
+INV-266 — cutover fence semantics are explicit, not implicit.
+INV-267 — a late authoritative write cannot be silently ignored during the consistency boundary.
+INV-268 — the chosen fence policy must determine the allowed state transition before authority commit.
