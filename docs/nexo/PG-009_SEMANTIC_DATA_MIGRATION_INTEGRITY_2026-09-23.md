@@ -1071,3 +1071,92 @@ INV-375: failure to establish conflict completeness cannot increase autonomy.
 INV-376: material dependency/conflict-topology changes invalidate affected critical admissions/bindings.
 
 Status: architecture refined; formal model NOT TLC-VERIFIED.
+
+## Dependency-graph integrity and completeness — 2026-09-23
+
+Research cross-check:
+- NIST defines an SBOM as a formal record of components and supply-chain relationships, useful as inventory but not by itself proof of semantic completeness.
+- SLSA 1.2 Dependency Provenance records how each dependency entered an ingestion environment and can link transitive dependencies through resolvedFrom. SLSA also explicitly notes that provenance verification and dependency guarantees are scoped; older SLSA material distinguishes completeness as a separate property. Therefore a signed/provenance-backed graph is not automatically a complete graph.
+- SLSA provenance describes verifiable production relationships and its specifications distinguish integrity/authenticity from completeness. This directly supports Nexo's separation of graph integrity from graph completeness.
+
+### New principle
+Dependency graph integrity and dependency graph completeness are separate claims:
+- INTEGRITY: the graph/edges we have recorded have not been altered and their provenance is valid.
+- COMPLETENESS: all security-relevant dependencies/edges that can affect the decision are represented within the declared scope.
+
+A graph can be perfectly authentic and still omit a hidden dependency.
+
+### Dependency Graph Contract
+Every security-relevant graph snapshot binds:
+- graph_id and graph_version;
+- scope/boundary declaration;
+- node identities and versions;
+- edge identities and relation types;
+- source/provenance for each edge;
+- discovery method;
+- completeness claim and completeness class;
+- unknown/unresolved dependency set;
+- excluded/deferred dependency set with rationale;
+- invariant/authority domains covered;
+- tool/runtime/environment version;
+- observation timestamp/freshness;
+- graph hash/Merkle root and signer;
+- independent verification evidence;
+- expiry/revalidation conditions.
+
+### Completeness classes
+CG0 UNKNOWN — no meaningful completeness claim.
+CG1 DECLARED — based on declared dependencies/configuration only.
+CG2 OBSERVED — runtime/build observation captured dependencies within an observed scope.
+CG3 ENFORCED — controlled boundary prevents relevant dependencies from bypassing the discovery chokepoint.
+CG4 PROVEN-BOUNDED — completeness is justified for a precisely defined domain by a trusted mechanism/proof and independently verified.
+
+These classes do not mean the graph is semantically correct; they describe completeness assurance only.
+
+### Hidden dependency detection
+Nexo should compare multiple dependency planes where applicable:
+1. Declared graph
+2. Resolved graph
+3. Build/runtime observation graph
+4. External/system-resource graph
+5. Authority/invariant graph
+
+Disagreement produces GRAPH_DIVERGENCE, not silent merge. Examples:
+- declared A→B, runtime A→C;
+- two components share an unmodeled external service;
+- common configuration/secret/queue/database;
+- environment variable, filesystem, network, clock, identity provider, policy service, or model endpoint creates a hidden dependency;
+- plugin/tool dynamically loads an undeclared component.
+
+Dynamic discovery is evidence, not automatically authoritative; the observation mechanism itself needs trust and scope.
+
+### Decision rule
+For critical concurrent admission, required conflict-domain completeness must be met for the relevant risk/effect class. If the graph is below required assurance, Nexo must use RESTRICTED, REVALIDATE, SERIALIZE, HUMAN_REQUIRED, or BLOCKED. It must never convert missing graph coverage into independence or LOW risk.
+
+### Graph changes
+A node/edge/topology change can invalidate:
+- conflict analysis;
+- risk profile;
+- effect admission;
+- execution binding;
+- scheduler reservations;
+- verification assumptions.
+
+Material graph change therefore increments graph_version/epoch and triggers affected-admission revalidation.
+
+### Independence of graph verification
+The component that builds or updates the graph must not be the sole authority that declares the graph complete for a critical decision. Independent verification may use a different observation plane, build provenance, runtime telemetry, target-side metadata, or controlled replay. Independence must be assessed by failure-domain, not merely by software process identity.
+
+### New invariants
+INV-377: dependency-graph integrity does not imply dependency-graph completeness.
+INV-378: completeness claims are scoped, typed, versioned, and evidence-backed.
+INV-379: UNKNOWN/unresolved dependencies cannot be treated as independence.
+INV-380: critical conflict admission requires the minimum graph-completeness class mandated by the effect/risk profile.
+INV-381: declared, resolved, observed, and externally observed dependency graphs may diverge; divergence is a security state, not a merge instruction.
+INV-382: the graph producer cannot be the sole critical authority for its own completeness claim.
+INV-383: material graph topology changes invalidate affected conflict/risk/admission/binding state.
+INV-384: dynamic observation is evidence whose own scope, integrity, freshness, and failure modes must be verified.
+INV-385: graph integrity/completeness does not establish semantic truth of the represented dependencies.
+INV-386: failure to establish required graph completeness cannot increase autonomy.
+
+Status: architecture refined; formal model NOT TLC-VERIFIED.
