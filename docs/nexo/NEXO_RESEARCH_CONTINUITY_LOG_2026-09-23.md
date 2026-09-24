@@ -153,3 +153,9 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    divergence/catch-up and protected authority cutover. Status explicitly MODEL SKETCH,
    not TLC-verified. Added INV-251..255. Next: complete phase/recovery semantics, add
    duplicate/retry and cutover races, then run TLC and analyze counterexamples.
+
+34. PG-009 crash-safe formalization:
+   extended the TLA+ sketch with durable journal, in-flight state and recovery action.
+   Added INV-256..260. Explicitly recorded that theorem text is not verification evidence;
+   next work is model cleanup, full crash interleavings, duplicate operation IDs, target/journal
+   consistency, cutover races, semantic abstraction and actual TLC checking.
