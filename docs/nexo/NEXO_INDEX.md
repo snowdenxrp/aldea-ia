@@ -89,3 +89,6 @@ The TLA+ sketch now includes durable journal/in-flight distinction and recovery 
 
 ## Latest PG-009 finding — cutover race
 Formal reasoning exposed a concrete race: after CUTOVER_PREPARED, a late source write can create divergence before authority commit. The architecture now requires a final cutover fence plus revalidation. Added INV-261..265. Formal model remains unverified; next step is to make the fence a complete state transition and model the allowed late-write behavior.
+
+## PG-009 current subproblem: fence disposition
+Three explicit late-write policies are now modeled: BLOCKED, INVALIDATE, and CATCH-UP. Silent acceptance/ignore is prohibited. Every mutation crossing the fence must be classified and remain visible to the consistency model. PG-009 remains open.
