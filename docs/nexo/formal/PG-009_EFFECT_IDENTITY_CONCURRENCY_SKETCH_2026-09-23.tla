@@ -657,3 +657,45 @@ InvReceiptNotWorldTruth ==
      INV-309 concurrent recovery commits resolve through one authoritative serialization
               point; no last-writer-wins recovery for critical effects.
 *)
+
+
+(* EXTERNAL WORLD VERSION / CONDITIONAL EFFECT BOUNDARY
+
+   A local observation such as worldVersion=100 is evidence, not by itself an
+   externally enforced fence. Nexo must classify the target consistency model:
+     C0: no reliable version/fence
+     C1: version is observable evidence only
+     C2: target supports atomic conditional/CAS mutation
+     C3: transactional conflict validation / serializable semantics
+     C4: stronger externally ordered transaction semantics
+
+   A critical operation may be authorized by local state only when its guarantee
+   matches the target class. In particular, C1 must not be treated as C2.
+
+   For C2+, conceptual effect:
+     PRECONDITION = observed_version
+     CONDITIONAL_MUTATE only_if target_version = observed_version
+   If the target rejects the condition, the operation is STALE_PRECONDITION and
+   must revalidate/replan rather than blindly retry.
+
+   For C0/C1, Nexo cannot manufacture a remote fence. A matching observed version
+   cannot prove that the target remained unchanged between observation and effect.
+   Critical irreversible operations therefore require an alternative target-level
+   idempotency/transaction guarantee, a stronger independent observation protocol,
+   or remain BLOCKED/UNKNOWN according to effect risk.
+
+   Acknowledgement/receipt semantics remain separate from world verification.
+   A successful conditional write proves the target accepted the condition and
+   mutation under its own protocol; it does not automatically prove every broader
+   world invariant outside that transaction.
+
+   New obligations:
+     INV-310 world version evidence cannot be promoted into a remote fence unless
+              the target enforces it atomically.
+     INV-311 C1 observation cannot authorize a C2-style conditional claim.
+     INV-312 stale-precondition rejection invalidates the execution assumption and
+              triggers revalidation/replan, not blind retry.
+     INV-313 target consistency class must be recorded per critical effect class.
+     INV-314 broader world verification remains distinct from successful conditional
+              mutation/receipt.
+*)
