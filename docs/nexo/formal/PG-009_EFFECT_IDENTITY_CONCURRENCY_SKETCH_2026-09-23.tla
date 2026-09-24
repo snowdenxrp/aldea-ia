@@ -745,3 +745,66 @@ InvReceiptNotWorldTruth ==
               verification, and its own retry/reconciliation state.
      INV-319 critical unknown outcomes without a safe resolution path remain blocked.
 *)
+
+
+(* RISK / REVERSIBILITY / OBSERVABILITY / TARGET-CAPABILITY ADMISSION REFINEMENT
+
+   Guarantee selection must be policy-driven by effect characteristics, not by model
+   confidence. Risk is treated as consequence magnitude x likelihood, consistent with
+   NIST AI RMF framing; the architecture additionally tracks reversibility,
+   observability, target consistency class, duplicate-effect risk, blast radius,
+   authority criticality, and compensation quality.
+
+   Conceptual effect profile:
+     risk_class
+     consequence_class
+     likelihood_class
+     reversibility_class
+     observability_class
+     target_consistency_class (C0-C4)
+     duplicate_hazard
+     blast_radius
+     authority_criticality
+     compensation_class
+
+   Admission levels:
+     ADMIT: required guarantees demonstrably satisfied.
+     RESTRICTED: allowed only with bounded scope/limits and stronger monitoring.
+     HUMAN_REQUIRED: autonomous execution lacks sufficient assurance but a governed
+                     human decision path may satisfy the required authority.
+     BLOCKED: required guarantee unavailable or outcome remains critically unknown.
+
+   The admission function must be monotonic with uncertainty: increasing uncertainty,
+   risk, blast radius, or loss of reversibility cannot silently increase autonomy.
+   Conversely, lower risk does not override missing authorization or violated policy.
+
+   Example policy shape (not a universal numeric score):
+     low-risk + reversible + observable + C0/C1 -> may admit bounded low-impact work;
+     high-risk + irreversible + C0/C1 -> BLOCKED unless an independent governed
+       protocol supplies equivalent protection;
+     high-risk + C2/C3 + idempotent + verified reconciliation -> may be restricted/admitted
+       within the exact transaction/effect scope;
+     critical authority-changing effects require the highest applicable governance
+       and cannot be admitted solely from model confidence.
+
+   Retry budget is part of the admission contract. Non-idempotent or uncertain effects
+   cannot receive unlimited retries. Distributed retries require bounded attempts,
+   elapsed-time limits, exponential backoff/jitter, and one authoritative retry layer
+   to prevent retry storms.
+
+   The policy must store why an effect was admitted, what guarantees were required,
+   which target capabilities supplied them, and what uncertainty remained. A model's
+   confidence score is evidence at most; it cannot substitute for authorization,
+   target enforcement, or world verification.
+
+   New obligations:
+     INV-320 admission depends on effect profile and required guarantees, not model confidence.
+     INV-321 increasing critical uncertainty/risk/blast radius/reversibility loss cannot increase autonomy.
+     INV-322 target capability must satisfy the minimum guarantee class for the effect.
+     INV-323 authorization/policy violations block regardless of low risk.
+     INV-324 compensation quality cannot be assumed; it must be explicitly classified.
+     INV-325 retry budgets are bounded and part of effect admission.
+     INV-326 retry loops cannot multiply across layers without an explicit owner.
+     INV-327 admission records required guarantees, supplied guarantees, residual uncertainty,
+              and rationale/evidence for audit and later re-evaluation.
+*)
