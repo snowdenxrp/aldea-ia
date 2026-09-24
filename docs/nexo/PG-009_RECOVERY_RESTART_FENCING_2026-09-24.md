@@ -261,6 +261,26 @@ Independence must be assessed across:
 
 If the STOP gate, recovery authority and executor share a failure domain, the architecture must record the reduced assurance rather than label the path independent.
 
+## External-effect identity binding
+
+Reconciliation must be bound to the exact operation/effect being reconciled. A valid reconciliation lease is only coordination authority; it cannot transfer evidence between operations.
+
+Required binding fields for an executable reconciliation record:
+- operation_id;
+- effect_id / effect_key;
+- reconciliation_owner;
+- reconciliation_generation;
+- reconciliation_lease/fence token;
+- authority_epoch;
+- observed effect state;
+- observation timestamp/freshness;
+- evidence provenance and dependency closure;
+- target/resource identity;
+- expected effect/precondition fingerprint;
+- policy/invariant/dependency graph versions.
+
+Critical rule: reconciliation evidence for operation/effect A cannot satisfy reconciliation for operation/effect B. UNKNOWN effect identity, mismatched effect key, stale generation, stale authority epoch, or unresolved target identity must not satisfy recovery release. Reusing a new operation ID must not erase unresolved prior effect uncertainty.
+
 ## Adversarial tests required
 
 1. stale process restarts while STOP remains active;
