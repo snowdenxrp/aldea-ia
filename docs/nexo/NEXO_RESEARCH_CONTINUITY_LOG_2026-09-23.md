@@ -871,3 +871,16 @@ New checkpoint:
 - formal correction: a6e7746353368fb72f33ebce122773bbd7f39067
 
 Remaining limitation: the sketch still does not model implementation-level atomic compare-and-swap/linearizability or a separate reconciliation-lease state. Generation monotonicity is represented as a state property; an executable transition-level proof of the underlying storage primitive is still pending.
+
+
+### 2026-09-24 — separate reconciliation lease model
+
+Extended the formal recovery sketch with an explicit reconciliation coordination domain: reconciliationOwner, reconciliationGeneration, and reconciliationLeaseValid. Recovery acquisition is blocked while reconciliation holds a valid lease, and reconciliation ownership does not grant recovery authority. Added expiry/takeover semantics and explicit races for reconciliation takeover, recovery-vs-reconciliation ownership, UNKNOWN world state, and authority revocation.
+
+The correspondence fixture now includes the reconciliation lease transitions and adversarial scenarios. This closes the previously undocumented gap at the model level while preserving the critical distinction that a reconciliation lease is coordination state, not proof of world truth and not recovery authority.
+
+Status: reconciliation lease separation MODELLED; executable implementation and linearizability still NOT PROVEN; SANY/TLC NOT RUN.
+
+Checkpoints: formal aa2df29bdc308c52afce677adc458e8b2abdfa79; correspondence d83232beb0b9990f2edf13d169ede57a09ec212e.
+
+Next attack: external-effect identity/reconciliation lease binding — test whether a stale reconciliation owner can reconcile the wrong effect, whether UNKNOWN effect identity can be confused across operations, and whether recovery can release after reconciliation of an unbound or mismatched effect.
