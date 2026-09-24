@@ -32,7 +32,9 @@ Recent research:
 - G-A14-01 lineage through minimum kernel, effect-path closure, dynamic footprint, atomicity, shared-footprint and multi-domain expansion
 - Continuity/anti-rollback
 - External resource fencing
-- docs/nexo/NEXO_CROSS_RESOURCE_ATOMICITY_RESEARCH_V1_2026-09-24.md — latest research artifact, commit c7ce38245762d23abe4565baefef599b0f9ddfa5
+- docs/nexo/NEXO_CROSS_RESOURCE_ATOMICITY_RESEARCH_V1_2026-09-24.md — c7ce38245762d23abe4565baefef599b0f9ddfa5
+- docs/nexo/NEXO_POST_COMMIT_PRE_OBSERVATION_FAILURE_RESEARCH_V1_2026-09-24.md — fbbb6e65979bb566ee8d448749c543783f787e81
+- docs/nexo/NEXO_DOUBLE_FAILURE_EXTERNAL_ROLLBACK_RECOVERY_RESEARCH_V1_2026-09-24.md — ccd8f7e411a3f711995a3e0cca99f45934f891cb
 
 ## 4. Clean architecture baseline
 Zones:
@@ -53,7 +55,7 @@ C1/C2 never imply C3.
 
 Canonical objects currently include:
 IdentityContext, AuthorityContext, Operation, EffectBinding, ControlLease/Fence, StopState, RecoveryFence, VersionSet, PolicyBaseline, InvariantBaseline, ExternalEffectIdentity, ExternalEffectState, EvidenceRecord, VerificationClaim, ReconciliationRecord, DecommissionRecord, DurableHistory.
-Candidate objects from current research remain OPEN: PrepareCertificate, TransactionContext, ExternalEffectHistory, ResourceIncarnation, ControlCommit/EffectCommit distinction, EffectClass atomicity model, RetryClass.
+Candidate objects from current research remain OPEN: PrepareCertificate, TransactionContext, ExternalEffectHistory, ResourceIncarnation, ControlCommit/EffectCommit distinction, EffectClass atomicity model, RetryClass, RecoveryProgress, ContinuityAnchor.
 
 Protected transition contract:
 TRANSITION_ID, OWNER, AUTHORITY_BASIS, REQUIRED_SCOPE, INPUT_STATE, PRECONDITIONS, READ_SET, WRITE_SET, AFFECTED_OBJECTS, LINEARIZATION_POINT_OR_EQUIVALENT, POSTCONDITIONS, FORBIDDEN_CONCURRENT_TRANSITIONS, DURABILITY_REQUIREMENT, CRASH_SEMANTICS, PARTITION_SEMANTICS, TIMEOUT_SEMANTICS, RETRY/IDEMPOTENCY_SEMANTICS, EVIDENCE_REQUIREMENTS, INVALIDATION_TRIGGERS, RECOVERY_PATH, VERIFICATION_METHOD, TRACEABILITY.
@@ -118,6 +120,14 @@ HISTORY != AUTHORITY; RESTORATION != REAUTHORIZATION; AUTHENTIC SNAPSHOT != CURR
 ### Resource fencing
 Token issuance != token enforcement. Resource must reject stale actors. Resource incarnation/continuity matters. Fence ACK is evidence of a transition point, not perpetual currentness. Multi-resource claims require complete external fencing footprint where required.
 
+### Post-commit/pre-observation
+External commit can precede local recording. Restored local history must not override newer external evidence. Missing/compacted external history is not evidence of absence. Mixed-generation state is not coherent current context. Reconciliation must be idempotent, generation-aware and monotonic.
+
+### Double-failure / rollback / recovery
+A second crash during recovery is a first-class safety case. RecoveryProgress != RecoveryAuthority. Resource rollback can erase current visibility of a historical effect without proving it never happened. Resource replacement creates a new incarnation. Authentic stale evidence is still stale. Repeated reconciliation must not regress authoritative evidence/context. Recovery checkpoints are not authority. STOP/decommission/recovery barriers must not regress through snapshot restore. Continuity cannot be proven solely from the rollback-vulnerable state it protects. Safe non-convergence (HOLD/QUARANTINE) is preferable to unsafe convergence based on stale/mixed-generation evidence.
+
+Candidate invariants: INV-PCO-01..12 and INV-DF-01..15.
+
 ### Cross-resource atomicity
 A multi-resource effect must declare its atomicity model.
 CONTROL_ATOMICITY != COORDINATION_ATOMICITY != EFFECT_ATOMICITY != OBSERVATION_ATOMICITY.
@@ -144,13 +154,13 @@ No selection.
 
 ## 11. Persistent resume point
 The exact next research attack is:
-POST-COMMIT / PRE-OBSERVATION FAILURE.
+DOUBLE-RECOVERY / SPLIT RECOVERY OWNERSHIP.
 
-Scenario:
-multiple resources commit → Nexo crashes before complete observation/recording → recovery sees mixed current/historical evidence → observers unavailable or stale → resource history may have rolled forward/backward.
+Two recovery actors start from different checkpoints/contexts; both believe they can reconcile/release; one is stale; external effects change concurrently.
 
-Required connections:
-Continuity Root + External Effect History + Reconciliation + Recovery + Evidence + Cross-domain Linearization.
+Analyze recovery fencing, ownership transfer, lease expiry, stale recovery messages, concurrent reconciliation, release linearization, recovery actor replacement/restart, and conflicting recovery decisions.
+
+Then continue adversarially through remaining G-A14 gaps.
 
 Then continue adversarially through remaining G-A14 gaps.
 Do not implement.
