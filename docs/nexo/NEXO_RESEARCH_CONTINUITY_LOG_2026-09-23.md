@@ -723,3 +723,23 @@ Status:
 - two-operation formal fixture: IMPLEMENTED;
 - Python/TLA semantic equivalence: NOT PROVEN;
 - TLC/SANY: NOT RUN.
+
+
+### 2026-09-23 — state-transition and correspondence hardening
+
+The transition audit found a reachability defect in the formal recovery sketch: `RequestStop` had been changed to place the process directly in QUARANTINED, while the intended recovery path requires OFFLINE → RESTARTED → QUARANTINED. That made the `Restart`/ `Quarantine` path unreachable. The stop request now closes the gate/enforces the stop without changing process state; recovery can then restart and quarantine explicitly.
+
+The same audit found a TLA+ state-preservation hazard in `CompromiseDependency`: use of `@` outside an EXCEPT expression was replaced with explicit old-state references, and compromise propagation remains scoped to operation-relevant dependency closure.
+
+The executable/formal correspondence checker was further hardened: trust-root and authority-domain relations are now mandatory mapping fields and are checked per component. The JSON Schema was updated accordingly, with component relation mappings represented as objects.
+
+Status:
+- recovery transition reachability defect: FIXED;
+- compromise state-preservation defect: FIXED;
+- trust-root correspondence gap detection: IMPLEMENTED;
+- authority correspondence gap detection: IMPLEMENTED;
+- adversarial tests: WRITTEN, execution not claimed;
+- TLC/SANY: NOT RUN;
+- semantic equivalence: NOT PROVEN.
+
+This is a meaningful transition-layer checkpoint: the formal model no longer merely describes desired states; its modeled recovery path is structurally reachable under its own transition preconditions.
