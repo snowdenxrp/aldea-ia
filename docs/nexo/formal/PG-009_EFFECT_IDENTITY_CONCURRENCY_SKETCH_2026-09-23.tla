@@ -1075,3 +1075,45 @@ InvReceiptNotWorldTruth ==
      INV-357 TOCTOU revalidation must converge on the exact binding consumed by execution.
      INV-358 changing a material execution parameter requires a new governed admission.
 *)
+
+
+(*
+  INVARIANT SPECIFICATION INTEGRITY — RESEARCH EXTENSION
+
+  Operational model checking proves properties of the supplied model/specification.
+  It does not establish that the chosen invariant is the correct or complete
+  representation of the intended safety obligation.
+
+  Nexo therefore separates:
+    MODEL_VALIDITY
+    ENFORCEMENT
+    INDEPENDENT_VERIFICATION
+    ADEQUACY
+
+  Critical invariant metadata should bind:
+    invariant_id/version
+    goal/safety-objective trace
+    scope/population/quantifiers
+    temporal semantics
+    protected state/domain
+    dependency/invariant closure
+    environment assumptions
+    exclusions
+    known bad states/counterexamples
+    enforcement points
+    independent verification points
+    adequacy evidence
+    independent reviewer
+
+  Required specification-level checks:
+    - assumption audit;
+    - relevant-state reachability;
+    - negative/bad-state fixtures;
+    - mutation/weakening tests;
+    - counterexample regression;
+    - bidirectional goal/invariant/evidence traceability.
+
+  IMPORTANT:
+    These are specification-assurance obligations, not proof that this operational
+    sketch is TLC-verified. The artifact remains NOT TLC-VERIFIED.
+*)
