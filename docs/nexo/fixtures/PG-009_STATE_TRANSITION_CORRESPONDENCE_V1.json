@@ -1,0 +1,65 @@
+{
+  "version": "1",
+  "purpose": "State/transition correspondence contract between executable evaluator and PG-009 formal recovery model.",
+  "mappings": [
+    {
+      "executable": "admissible=false",
+      "formal": "releaseAuthorized=false",
+      "relation": "REQUIRED_FOR_RELEASE",
+      "note": "Python admissibility is assurance-level scoped; this mapping is a release safety condition, not full semantic equivalence."
+    },
+    {
+      "executable": "authority_granted=false",
+      "formal": "no evaluator authority-granting transition",
+      "relation": "NON_AUTHORITY"
+    },
+    {
+      "executable": "effects_executed=false",
+      "formal": "evaluator does not mutate commitCount/processState",
+      "relation": "NON_EXECUTION"
+    },
+    {
+      "executable": "UNKNOWN|STALE|INVALIDATED",
+      "formal": "releaseAuthorized=false; assurance not NORMAL",
+      "relation": "BLOCKING_EPISTEMIC_STATE"
+    },
+    {
+      "executable": "COMPROMISED",
+      "formal": "releaseAuthorized=false for affected operation closure",
+      "relation": "OPERATION_SCOPED_BLOCK"
+    },
+    {
+      "executable": "release eligibility",
+      "formal": "EvaluatorReleaseEligible",
+      "relation": "DERIVED_STATE"
+    },
+    {
+      "executable": "release authorization",
+      "formal": "AuthorizeRelease guarded by current eligibility",
+      "relation": "AUTHORIZED_TRANSITION"
+    },
+    {
+      "executable": "post-authorization invalidation",
+      "formal": "ReleaseAuthorizationMatchesEligibility",
+      "relation": "STALE_AUTHORIZATION_PREVENTION"
+    }
+  ],
+  "required_transitions": [
+    "RequestStop",
+    "Restart",
+    "Quarantine",
+    "AcquireRecovery",
+    "RevalidateAssurance",
+    "AuthorizeRelease",
+    "Release",
+    "Commit"
+  ],
+  "forbidden_shortcuts": [
+    "evaluator→authority",
+    "evaluator→effect",
+    "RUNNING without Release",
+    "release after UNKNOWN world",
+    "release with unknown/stale/invalidated operation dependency",
+    "release with compromised operation dependency"
+  ]
+}
