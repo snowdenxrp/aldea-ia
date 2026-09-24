@@ -861,3 +861,13 @@ Git checkpoints:
 - correspondence fixture: bb9e4e1a70bfa13c0f20a1c408e8a4e26748ed71
 
 Next attack: explicitly model the reconciliation lease as a separate authority/coordination domain and test races between reconciliation ownership, recovery ownership, external-effect uncertainty, and authority revocation; then validate monotonic generation semantics and search for stale-owner paths that can survive restart.
+
+
+### 2026-09-24 — lease-expiry takeover race closed
+
+Adversarial review found a concrete modeling flaw in the first lease-generation pass: LeaseExpire invalidated the lease/token but retained recoveryOwner, which could block legitimate takeover because AcquireRecovery requires no current owner. Corrected LeaseExpire to atomically clear owner, invalidate token/lease, and clear release authorization while preserving the generation counter. The next owner therefore acquires only the next generation rather than reusing the expired generation.
+
+New checkpoint:
+- formal correction: a6e7746353368fb72f33ebce122773bbd7f39067
+
+Remaining limitation: the sketch still does not model implementation-level atomic compare-and-swap/linearizability or a separate reconciliation-lease state. Generation monotonicity is represented as a state property; an executable transition-level proof of the underlying storage primitive is still pending.
