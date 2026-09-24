@@ -134,3 +134,15 @@ InvReceiptNotWorldTruth ==
     effectState[o] = "VERIFIED" => worldState[o] = "PRESENT"
 
 ====
+
+(* REFINEMENT NOTES
+   This sketch intentionally does not claim atomic uniqueness yet.
+   Required next-state refinement:
+   1. represent an atomic reservation/ownership record per effect_key;
+   2. make acquisition a single transition, not check-then-set;
+   3. distinguish SAME_OPERATION_REPLAY from EFFECT_COLLISION;
+   4. permit SAME_EFFECT_LEGITIMATE_REPEAT only under explicit policy;
+   5. stale observations cannot authorize a new irreversible attempt;
+   6. authority/revocation changes invalidate uncommitted reservations;
+   7. crash after external effect but before ledger commit enters UNKNOWN/reconciliation.
+*)
