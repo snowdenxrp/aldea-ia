@@ -1086,3 +1086,14 @@ Artifacts:
   Commit: 81300a674fdc7007b1bb27b4aa473852c08af367
 
 Decision: V4 is not final; no evaluator implementation yet. SANY/TLC NOT RUN; runtime tests NOT RUN.
+
+
+### 2026-09-23 — canonical core V5 executable-model attempt and immediate audit
+
+V5 attempted the structural transition from sketches to a finite TLA+ state model. Immediate audit found 10 blockers: missing EffectBinding variables; missing admitted authority epoch; incomplete finite configuration assumptions; duplicated dependency binding; parallel scalar lease maps; no reachable effect transitions; no reachable evidence observation/verification; no STOP enforcement transition; no recovery/reconciliation acquisition; and no policy/dependency/trust invalidation transitions.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V5.tla — 08d5c14744940f51319ed755936dd991d74e1a9c
+- docs/nexo/NEXO_CANONICAL_CORE_V5_AUDIT.md — 819883a94fe4bf9978cea5f9cb003c5fb1d819f6
+
+Decision: V5 is rejected as non-executable and will not be patched incrementally. V6 will reconstruct complete finite records and reachable transitions, then attempt SANY/TLC.
