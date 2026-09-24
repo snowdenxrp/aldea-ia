@@ -416,3 +416,8 @@ Formal recovery now uses operation-scoped dependency closure, explicit assurance
 ## PG-009 — operation-scope isolation checkpoint
 
 Formal compromise propagation is now restricted to operations whose transitive dependency closure contains the compromised dependency. The canonical TLA binding includes an executor-only operation to exercise this isolation property. Python has a matching unrelated-dependency adversarial test. Verification execution remains pending.
+
+
+## PG-009 — transition reachability checkpoint
+
+The formal recovery path was corrected so STOP enforcement does not skip the OFFLINE → RESTARTED → QUARANTINED sequence. Compromise propagation now preserves unrelated operation state without relying on invalid TLA+ `@` usage. Correspondence now explicitly covers trust-root and authority-domain relations.
