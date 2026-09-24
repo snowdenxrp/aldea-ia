@@ -126,3 +126,42 @@ SafeCommitAfterFence ==
 
 SafeCutoverInvariant ==
     authority = New => migrated = Records /\ divergence = {}
+
+
+\* Fence semantics: a late source write must not bypass the consistency boundary.
+FenceWriteBlocked(r) ==
+    /\ phase = "CUTOVER_FENCED"
+    /\ r \in Records
+    /\ UNCHANGED vars
+
+FenceWriteInvalidates(r) ==
+    /\ phase = "CUTOVER_FENCED"
+    /\ r \in Records
+    /\ sourceVersion' = [sourceVersion EXCEPT ![r] = @ + 1]
+    /\ phase' = "CUTOVER_PREPARED"
+    /\ divergence' = divergence \cup {r}
+    /\ UNCHANGED <<targetVersion, migrated, appliedOps, authority, epoch, journal, inflight>>
+
+FenceCatchUp(r) ==
+    /\ phase = "CUTOVER_FENCED"
+    /\ r \in divergence
+    /\ targetVersion' = [targetVersion EXCEPT ![r] = sourceVersion[r]]
+    /\ divergence' = divergence \ {r}
+    /\ appliedOps' = appliedOps \cup {<<"FENCE_CATCHUP", r, sourceVersion[r]>>}
+    /\ journal' = [journal EXCEPT ![r] = TRUE]
+    /\ UNCHANGED <<sourceVersion, migrated, authority, epoch, phase, inflight>>
+
+NextFence ==
+    \/ Next
+    \/ \E r \in Records : FenceWriteBlocked(r)
+    \/ \E r \in Records : FenceWriteInvalidates(r)
+    \/ \E r \in Records : FenceCatchUp(r)
+    \/ SafeCommitAfterFence
+
+CutoverSafety ==
+    authority = New => phase = "CUTOVER" /\ divergence = {} /\ migrated = Records
+
+THEOREM Spec => []CutoverSafety
+
+\* Design rule: implementations must choose one explicit fence policy;
+\* "late write ignored" is forbidden for authoritative source state.
