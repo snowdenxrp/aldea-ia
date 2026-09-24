@@ -378,3 +378,6 @@ Continuity checkpoint: docs/nexo/NEXO_CONTINUITY_DELTA_2026-09-24_COMMON_MODE.md
 Status: DESIGNED / RESEARCH-CROSS-CHECKED; implementation, fault injection and TLC verification not claimed.
 
 Current PG-009 next action: correct/expand recovery TLA+, add dependency/failure-domain state, model update/rollback transitions, define executable safety-claim/dependency-closure schema, implement fault injection, run TLC, then final semantic reconciliation.
+
+## Latest PG-009 formal continuation — recovery + common-mode
+New formal sketch: `docs/nexo/formal/PG-009_RECOVERY_COMMON_MODE_SKETCH_2026-09-24.tla`. It adds dependency domains, UNKNOWN dependencies, compromised domains, assurance degradation and explicit release blocking. NOT TLC-VERIFIED. Git commit: `b713cbad246da9769f916ac6a107f1f03378f322`.
