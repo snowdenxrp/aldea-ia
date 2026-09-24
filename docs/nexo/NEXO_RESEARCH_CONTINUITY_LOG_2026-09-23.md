@@ -1157,3 +1157,12 @@ Key remaining blockers: owner+generation parameters on every lease-protected act
 Artifacts:
 - docs/nexo/NEXO_CANONICAL_CORE_V8_LEASE_STOP_SCENARIOS_V1.md — a2cec435ebb1e3ce72118e543f88d6f7dc8a268f
 - docs/nexo/NEXO_CANONICAL_CORE_V8_LEASE_STOP_STATIC_CHECKLIST.md — 30911e0824b0edfc29259d46bcc358ce2d891871
+
+
+### 2026-09-23 — Direct V8 source inspection supersedes executability assessment
+
+A direct retrieval of `NEXO_CANONICAL_CORE_V8.tla` found two concrete executability blockers: conjunctions are stored as `/` rather than executable TLA+ `/\\` syntax, and `TypeOK` references undefined domains (`EffectBindingSet`, `AuthoritySet`, `EvidenceSet`, `LeaseSet`, `ReleaseSet`). Therefore V8 is not currently an executable TLA+ module. The previous description of V8 as the first candidate for SANY/TLC execution is superseded by this finding.
+
+Decision: do not patch V8 incrementally. Build V9 structurally from the canonical semantic contract, then perform source-level and toolchain preflight before any formal claim.
+
+Artifact: docs/nexo/NEXO_CANONICAL_CORE_V8_EXECUTABILITY_AUDIT.md — e59290b8f97ea480b6197146238b1bd925666099
