@@ -72,7 +72,7 @@ RequestStop(o) ==
         THEN [processState EXCEPT ![o] = "OFFLINE"]
         ELSE processState
   /\ UNCHANGED <<authorityEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,
-      recoveryToken,worldState,dependencyState,compromisedDependencies,commitCount>>
+      recoveryToken,recoveryGeneration,recoveryLeaseValid,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 Restart(o) ==
   /\ processState[o] = "OFFLINE"
@@ -90,7 +90,7 @@ Quarantine(o) ==
   /\ processState' = [processState EXCEPT ![o] = "QUARANTINED"]
   /\ stopState' = [stopState EXCEPT ![o] = "QUARANTINED"]
   /\ UNCHANGED <<gateState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
-      recoveryOwner,recoveryToken,releaseAuthorized,worldState,
+      recoveryOwner,recoveryToken,recoveryGeneration,recoveryLeaseValid,releaseAuthorized,worldState,
       dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
 AcquireRecovery(o, owner, expectedGeneration) ==
@@ -199,7 +199,7 @@ RestoreDependency(o, d) ==
   /\ dependencyState' =
       [dependencyState EXCEPT ![o] = [@ EXCEPT ![d] = "KNOWN"]]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,recoveryGeneration,recoveryLeaseValid,releaseAuthorized,
       worldState,compromisedDependencies,assuranceState,commitCount>>
 
 RevalidateAssurance(o, owner, generation) ==
@@ -213,6 +213,8 @@ RevalidateAssurance(o, owner, generation) ==
   /\ gateState[o] = "CLOSED"
   /\ recoveryOwner[o] # "NONE"
   /\ recoveryToken[o] = "CURRENT"
+  /\ recoveryLeaseValid[o]
+  /\ recoveryGeneration[o] > 0
   /\ worldState[o] = "KNOWN"
   /\ AllOperationDependenciesKnown(o)
   /\ NoCompromisedOperationDependencies(o)
