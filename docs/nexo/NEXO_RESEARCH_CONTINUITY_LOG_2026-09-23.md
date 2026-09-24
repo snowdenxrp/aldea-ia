@@ -932,3 +932,12 @@ Key findings: PG-009 taxonomy drift; split formal models; stale correspondence s
 Restructuring decision: future gaps must be derived from a canonical layered architecture and canonical state/transition model rather than patched locally. Current holes remain H1 freshness/provenance/version binding, H2 formal unification, H3 TLC, H4 linearizability/CAS, H5 runtime enforcement, H6 fault injection, H7 semantic/data migration.
 
 Master snapshot updated at commit `18fd703c77ab76f51f7b892429d9a32fb0f7142e`; index updated at `5c1e174ef0bfae2961d3d592fbbd69b5a2eba669`.
+
+
+### 2026-09-24 — segunda pasada adversarial y unificación formal
+
+La revisión transversal se amplió con 20 ataques de consistencia (F-01..F-20) y seis contradicciones estructurales U-01..U-06. El resultado está en `docs/nexo/PG-009_FORMAL_UNIFICATION_AUDIT_2026-09-24.md`, commit `1bec42ec1c313d14865b630499aa0d022284bbbb`.
+
+Conclusión nueva: `ReleaseEligible` no debe derivarse de un booleano aislado como `worldState=KNOWN`. Debe derivarse de cinco objetos ligados: Operation, EffectBinding, AuthorityContext, EvidenceRecord y ControlLease. Evidence debe incorporar identidad, target, fingerprint, authority epoch, policy/dependency versions, provenance y freshness. Invalidation posterior debe ser explícita.
+
+No se ejecutó SANY/TLC ni runtime tests en esta pasada; los ataques son obligaciones de prueba, no resultados PASS. Próximo paso obligatorio: construir el modelo formal canónico unificado y derivar de él fixtures, correspondence y tests antes de continuar ampliando propiedades.
