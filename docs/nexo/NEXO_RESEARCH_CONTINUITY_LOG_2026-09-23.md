@@ -1146,3 +1146,14 @@ Artifacts:
 - docs/nexo/NEXO_CANONICAL_CORE_V8_LEASE_STOP_EXTENSION_SPEC.md — 7fb2e79cecc77d4acb3c31058b0a1bb8d6d35798
 
 Decision: preserve V8 as bounded candidate; do not claim formal verification; keep lease/STOP extension as a separate specification until baseline execution is possible.
+
+
+### 2026-09-23 — V8 lease/STOP scenario formalization
+
+Converted S01-S12 into explicit precondition/postcondition contracts and a static consistency checklist. The scenarios now distinguish ownership fencing, external-effect truth, STOP dominance, authority epoch invalidation, evidence freshness, and UNKNOWN semantics. Linearization obligations were explicitly listed for acquire/takeover, STOP, revoke, release authorization and commit.
+
+Key remaining blockers: owner+generation parameters on every lease-protected action, lease expiry/takeover transitions, explicit STOP operation/effect fence, material trust-root/graph changes, and structured provenance snapshots. No formal pass claimed.
+
+Artifacts:
+- docs/nexo/NEXO_CANONICAL_CORE_V8_LEASE_STOP_SCENARIOS_V1.md — a2cec435ebb1e3ce72118e543f88d6f7dc8a268f
+- docs/nexo/NEXO_CANONICAL_CORE_V8_LEASE_STOP_STATIC_CHECKLIST.md — 30911e0824b0edfc29259d46bcc358ce2d891871
