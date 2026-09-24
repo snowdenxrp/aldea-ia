@@ -176,3 +176,11 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
 
 37. PG-009 model normalization:
    replaced the accumulated exploratory TLA+ sketch with a cleaner explicit state machine: BACKFILLING -> VERIFYING -> CUTOVER_PREPARED -> CUTOVER_FENCED -> CUTOVER, explicit FencePolicy, late-write handling, crash/inflight state, recovery, and authority-safety invariant. This remains unverified until a TLC-capable environment executes it. The cleanup is intended to make the next formal check meaningful rather than layering more partial actions onto the earlier sketch.
+
+38. PG-009 operation identity/retry research:
+   extended the formal migration sketch with stable operation identities, an operation ledger,
+   replay-safe same-ID handling, explicit same-ID/different-payload identity conflicts, and
+   authority blocking on unresolved identity conflicts. Added invariants INV-271..280.
+   Important limitation preserved: operation identity establishes logical identity, not semantic correctness.
+   Different operation IDs can still represent the same critical semantic effect; duplicate-effect detection
+   is therefore the next research point. The model remains a sketch and is NOT TLC-verified.
