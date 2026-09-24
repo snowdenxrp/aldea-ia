@@ -352,3 +352,84 @@ PG-009 remains OPEN, but the migration controller is now substantially more conc
 PROFILE → BIND SOURCE VERSION → EXPAND COMPATIBILITY → SNAPSHOT/QUIESCE → BACKFILL → CATCH UP/DUAL WRITE → SHADOW/DUAL READ → DIFFERENTIAL VERIFY → AUTHORITY CUTOVER → DRAIN → CONTRACT → POST-CUTOVER VERIFY
 
 The exact synchronization mechanism remains data-store-specific; Nexo's architecture must therefore model the storage consistency contract instead of assuming one universal migration technique.
+
+
+## Research continuation — non-vacuous semantic equivalence and concurrency model
+
+### Key refinement
+A migration test is meaningless if its equivalence relation is allowed to be defined so loosely that every result passes. TLA+ refinement is useful here because refinement is explicitly semantic: a concrete implementation must correspond to behavior permitted by the abstract specification, rather than merely matching syntax or representation. Sources: TLA+ refinement documentation and data-refinement tutorial. 
+
+### Semantic equivalence must be data-class specific
+Nexo should not use one universal equality rule for migrated data. Each critical class gets a declared observation function and equivalence relation.
+
+Examples:
+- Identity: exact identity continuity, with no authority widening.
+- Timestamp: equivalence under declared clock/precision tolerance; never silently discard causal order.
+- Measurement: canonical unit conversion plus bounded numerical error and range checks.
+- Claim: same proposition/scope, or explicit semantic transformation with provenance.
+- Evidence: same evidentiary lineage and epistemic status; authentication alone is insufficient.
+- Memory: same content meaning plus purpose, provenance, retention and sensitivity constraints.
+- Mission state: same abstract mission position and obligations, even if internal representation differs.
+- Policy: not ordinary data equivalence; requires policy-semantic compatibility and explicit version binding.
+- Authority: non-expansion is mandatory; equivalence cannot permit a broader capability or scope.
+
+### Non-vacuity rule
+Every critical equivalence relation must define:
+1. observable properties;
+2. allowed normalization;
+3. tolerated differences;
+4. forbidden differences;
+5. boundary/unknown behavior;
+6. counterexamples;
+7. independent acceptance criteria.
+
+The migration implementation must not be the sole author of these criteria. Acceptance policy is owned by the migration contract / higher-level specification and verified independently.
+
+### Three-level migration proof
+For critical classes, Nexo should require all applicable levels:
+A. Representation: target data is structurally valid.
+B. Semantic: target abstract state refines the source abstract state under the declared relation.
+C. Operational: relevant observations and decisions remain within the declared behavioral equivalence.
+
+Passing A does not imply B; passing B does not automatically imply C.
+
+### Concurrent-write model
+During backfill, source changes create interleavings. The migration model therefore needs explicit actions for:
+- source write before backfill reads an item;
+- source write after backfill reads it;
+- source write while transformation is in flight;
+- retry after crash;
+- write arriving during catch-up;
+- conflicting update to a previously migrated item;
+- cutover racing with a late source event.
+
+The safe model must establish an ordering/visibility rule for every case. If an interleaving cannot be classified, it becomes UNKNOWN and blocks critical cutover.
+
+### Linearization / snapshot boundary
+For stores supporting a consistent snapshot or equivalent version boundary, the migration should bind the initial semantic state to that boundary. Subsequent writes are then handled by the declared synchronization mechanism. This converts an unbounded moving target into a bounded snapshot plus delta from snapshot to cutover.
+
+Without such a boundary, the migration needs another explicit consistency protocol; eventual copy completion is not a semantic proof.
+
+### Migration acceptance oracle must be external to the transformer
+New architecture:
+SOURCE SPECIFICATION → ACCEPTANCE RELATION → MIGRATION IMPLEMENTATION → TARGET → INDEPENDENT VERIFICATION
+
+Not:
+MIGRATION IMPLEMENTATION → its own comparison → PASS
+
+The acceptance relation may be implemented by a separate verifier, generated from a higher-level specification, or checked through independent fixtures/models. For critical migrations, the verifier should have a different failure mode from the transformer where practical.
+
+### New invariants
+INV-241 — every critical semantic equivalence relation must be explicitly defined and non-vacuous.
+INV-242 — migration code cannot be the sole authority defining its own acceptance relation.
+INV-243 — structural compatibility cannot establish semantic compatibility.
+INV-244 — semantic equivalence cannot be assumed to preserve operational behavior; required observations must be tested separately.
+INV-245 — authority-bearing data requires non-expansion proof, not ordinary equality.
+INV-246 — concurrent source writes must have an explicit visibility/order treatment during migration.
+INV-247 — a migration without a defined consistency boundary cannot claim semantic convergence merely from eventual copy completion.
+INV-248 — unclassified concurrent interleavings are UNKNOWN and block critical cutover.
+INV-249 — critical migration acceptance requires an independent or higher-level verification relation.
+INV-250 — equivalence criteria must include forbidden differences and counterexamples, not only allowed differences.
+
+## Updated PG-009 status
+PG-009 remains OPEN. The major architectural gap is now narrowed to constructing and testing the actual semantic equivalence specifications, especially for mission state, memory, policy and authority, and then expressing the concurrency protocol in a small formal model suitable for model checking. TLA+ refinement mappings are a suitable formalization direction because they relate concrete implementation behavior to an abstract semantic specification.
