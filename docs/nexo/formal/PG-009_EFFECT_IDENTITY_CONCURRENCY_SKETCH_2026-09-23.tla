@@ -146,3 +146,21 @@ InvReceiptNotWorldTruth ==
    6. authority/revocation changes invalidate uncommitted reservations;
    7. crash after external effect but before ledger commit enters UNKNOWN/reconciliation.
 *)
+
+
+(* ATOMIC RESERVATION REFINEMENT
+   reservationKey[o] is the authoritative reservation identity.
+   reservationOwner[k] is either NONE or the operation owning k.
+   Claim(k,o) must be modeled as one atomic transition: it succeeds only if
+   reservationOwner[k] = NONE, otherwise it returns CONFLICT/REPLAY according
+   to the independent acceptance relation. A read followed by a write is not
+   an implementation of Claim.
+
+   Authority epoch is part of the reservation context. A reservation created
+   under epoch E cannot silently authorize execution under E+1. Revocation or
+   epoch change invalidates an uncommitted reservation and requires revalidation.
+
+   External execution remains outside this local atomic boundary. Therefore:
+   reservation acquired + external result unknown = RECONCILING/UNKNOWN,
+   never ABSENT merely because the local completion record is missing.
+*)
