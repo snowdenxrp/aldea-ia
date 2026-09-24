@@ -102,3 +102,10 @@ The formal model now includes stable operation identities across backfill/catch-
 
 ## Next PG-009 action
 Research semantic duplicate-effect detection across different operation IDs, then connect it to external-effect reconciliation and the existing exactly-once/idempotency architecture.
+
+
+## Latest PG-009 — semantic duplicate effects
+Operation identity is now explicitly separated from effect identity. A different operation ID can still represent the same critical semantic effect, while identical-looking effects can also be legitimate repeated operations. Added the Effect Identity / Semantic Deduplication Contract and invariants INV-281..292. Research cross-check uses current distributed-systems idempotency/retry guidance. The model remains NOT TLC-verified.
+
+## Next PG-009 action
+Formalize effect identity and reconciliation, including legitimate repeats, semantic collisions, UNKNOWN external effects, and binding to the existing external-world verification layer. Do not claim universal exactly-once semantics.
