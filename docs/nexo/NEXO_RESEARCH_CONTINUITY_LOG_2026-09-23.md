@@ -574,3 +574,8 @@ The executable dependency evaluator and recovery/common-mode TLA+ sketch were al
 
 Status: DESIGNED + IMPLEMENTED correspondence vocabulary / NOT TLC-VERIFIED / NOT formally equivalent.
 Next: model component-to-domain relations and transitive closure, then build fixture-based cross-checks.
+
+## Formal-model defect found during correspondence — 2026-09-24
+While aligning the evaluator with the TLA+ recovery/common-mode sketch, a reachability defect was found: Quarantine required stopState = QUARANTINED before performing the transition to QUARANTINED. Corrected to ENFORCED -> QUARANTINED in commit 338ac91f5db4361b9b822008a315e411eb099648, with documentation follow-up in 5908790e5049781c163c32e8b7783901bb092ad3.
+
+Important: this demonstrates why correspondence must be executable/model-checkable rather than semantic-only. TLC verification remains pending; the model has not been declared verified.
