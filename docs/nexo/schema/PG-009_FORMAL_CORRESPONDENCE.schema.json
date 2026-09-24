@@ -103,7 +103,7 @@
   "state_mapping": {
     "KNOWN": "dependencyState",
     "UNKNOWN": "dependencyState",
-    "COMPROMISED": "compromisedDomains",
+    "COMPROMISED": "compromisedDependencies",
     "STALE": "dependencyState",
     "INVALIDATED": "dependencyState"
   },
