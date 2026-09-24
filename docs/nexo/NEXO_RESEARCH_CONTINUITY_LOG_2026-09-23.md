@@ -184,3 +184,11 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    Important limitation preserved: operation identity establishes logical identity, not semantic correctness.
    Different operation IDs can still represent the same critical semantic effect; duplicate-effect detection
    is therefore the next research point. The model remains a sketch and is NOT TLC-verified.
+
+39. PG-009 semantic duplicate-effect research:
+   operation identity was separated from effect identity. Research cross-check confirms idempotency
+   tokens protect repeated logical requests but do not provide a universal semantic duplicate detector.
+   Added Effect Identity / Semantic Deduplication Contract, governed effect_key canonicalization,
+   durable effect ledger, UNKNOWN blocking, operation-class-specific duplicate rules and adversarial cases.
+   Added invariants INV-281..292. PG-009 remains OPEN; next step is formalizing effect identity/reconciliation
+   and connecting it to external-world verification without claiming universal exactly-once semantics.
