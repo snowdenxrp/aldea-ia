@@ -224,3 +224,12 @@ New invariants: INV-397..410.
 
 PG-009 remains OPEN. Existing TLA+ artifacts remain **NOT TLC-VERIFIED**.
 Next: investigate invariant completeness/adequacy under evolving goals and threat models, including hazard derivation, assumption invalidation and independent specification review.
+
+
+## Latest PG-009 — invariant completeness under evolving hazards
+
+Nexo now distinguishes invariant validity, adequacy, set completeness, consistency and assurance. New Hazard-to-Invariant Derivation: MISSION/GOAL → HAZARD/FAILURE MODE → SAFETY OBJECTIVE → REQUIRED PROPERTY → INVARIANT → ENFORCEMENT → VERIFICATION. Completeness is cross-checked across independent planes: mission/constitution, threat/failure models, dependencies/conflicts, incidents/counterexamples, environment assumptions, world observations, policy/authority, runtime behavior and adversarial scenarios.
+
+Coverage states: COVERED, PARTIALLY_COVERED, MITIGATED_BY_EXTERNAL_CONTROL, ACCEPTED_RESIDUAL_RISK, UNKNOWN, BLOCKED. New assurance classes HC0..HC5. New invariants INV-411..422.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED. Next: assumption validity and environment-model completeness.
