@@ -18,14 +18,14 @@ VARIABLES
   releaseAuthorized,
   worldState,
   dependencyState,
-  compromisedDomains,
+  compromisedDependencies,
   assuranceState,
   commitCount
 
 vars ==
   <<stopState, gateState, processState, authorityEpoch, stopEpoch,
     recoveryEpoch, recoveryOwner, recoveryToken, releaseAuthorized,
-    worldState, dependencyState, compromisedDomains, assuranceState,
+    worldState, dependencyState, compromisedDependencies, assuranceState,
     commitCount>>
 
 StopStates == {"CLEAR","ENFORCED","QUARANTINED"}
@@ -46,8 +46,8 @@ Init ==
   /\ recoveryToken = [o \in Operations |-> "NONE"]
   /\ releaseAuthorized = [o \in Operations |-> FALSE]
   /\ worldState = [o \in Operations |-> "UNKNOWN"]
-  /\ dependencyState = [o \in Operations |-> [d \in Domains |-> "KNOWN"]]
-  /\ compromisedDomains = {}
+  /\ dependencyState = [o \in Operations |-> [d \in Dependencies |-> "KNOWN"]]
+  /\ compromisedDependencies = {}
   /\ assuranceState = [o \in Operations |-> "HOLD"]
   /\ commitCount = [o \in Operations |-> 0]
 
@@ -59,7 +59,7 @@ RequestStop(o) ==
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ UNCHANGED <<processState,authorityEpoch,recoveryEpoch,recoveryOwner,
-      recoveryToken,worldState,dependencyState,compromisedDomains,commitCount>>
+      recoveryToken,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 Restart(o) ==
   /\ processState[o] = "OFFLINE"
@@ -67,7 +67,7 @@ Restart(o) ==
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,
       recoveryOwner,recoveryToken,worldState,dependencyState,
-      compromisedDomains,assuranceState,commitCount>>
+      compromisedDependencies,assuranceState,commitCount>>
 
 Quarantine(o) ==
   /\ processState[o] = "RESTARTED"
@@ -76,7 +76,7 @@ Quarantine(o) ==
   /\ stopState' = [stopState EXCEPT ![o] = "QUARANTINED"]
   /\ UNCHANGED <<gateState,authorityEpoch,stopEpoch,recoveryEpoch,
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
-      dependencyState,compromisedDomains,assuranceState,commitCount>>
+      dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
 AcquireRecovery(o, owner) ==
   /\ processState[o] = "QUARANTINED"
@@ -86,7 +86,7 @@ AcquireRecovery(o, owner) ==
   /\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "CURRENT"]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      releaseAuthorized,worldState,dependencyState,compromisedDomains,
+      releaseAuthorized,worldState,dependencyState,compromisedDependencies,
       assuranceState,commitCount>>
 
 InvalidateRecovery(o) ==
@@ -96,10 +96,10 @@ InvalidateRecovery(o) ==
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,worldState,dependencyState,compromisedDomains,commitCount>>
+      recoveryEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 MarkDependencyUnknown(o, d) ==
-  /\ d \in Domains
+  /\ d \in Dependencies
   /\ dependencyState[o][d] = "KNOWN"
   /\ dependencyState' =
       [dependencyState EXCEPT ![o] = [@ EXCEPT ![d] = "UNKNOWN"]]
@@ -107,11 +107,11 @@ MarkDependencyUnknown(o, d) ==
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,worldState,
-      compromisedDomains,commitCount>>
+      compromisedDependencies,commitCount>>
 
-CompromiseDomain(d) ==
+CompromiseDependency(d) ==
   /\ d \in Domains
-  /\ compromisedDomains' = compromisedDomains \cup {d}
+  /\ compromisedDependencies' = compromisedDependencies \cup {d}
   /\ assuranceState' =
       [o \in Operations |->
         IF dependencyState[o][d] = "KNOWN"
@@ -131,17 +131,17 @@ ReconcileWorld(o, state) ==
         ELSE UNCHANGED assuranceState
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
-      dependencyState,compromisedDomains,commitCount>>
+      dependencyState,compromisedDependencies,commitCount>>
 
 RestoreDependency(o, d) ==
-  /\ d \in Domains
-  /\ d \notin compromisedDomains
+  /\ d \in Dependencies
+  /\ d \notin compromisedDependencies
   /\ dependencyState[o][d] = "UNKNOWN"
   /\ dependencyState' =
       [dependencyState EXCEPT ![o] = [@ EXCEPT ![d] = "KNOWN"]]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
-      worldState,compromisedDomains,assuranceState,commitCount>>
+      worldState,compromisedDependencies,assuranceState,commitCount>>
 
 AuthorizeRelease(o) ==
   /\ stopState[o] = "QUARANTINED"
@@ -150,12 +150,12 @@ AuthorizeRelease(o) ==
   /\ recoveryToken[o] = "CURRENT"
   /\ worldState[o] = "KNOWN"
   /\ assuranceState[o] = "NORMAL"
-  /\ \A d \in Domains : dependencyState[o][d] = "KNOWN"
-  /\ \A d \in Domains : d \notin compromisedDomains
+  /\ \A d \in Dependencies : dependencyState[o][d] = "KNOWN"
+  /\ \A d \in Domains : d \notin compromisedDependencies
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = TRUE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,worldState,
-      dependencyState,compromisedDomains,assuranceState,commitCount>>
+      dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
 Release(o) ==
   /\ releaseAuthorized[o]
@@ -168,7 +168,7 @@ Release(o) ==
   /\ processState' = [processState EXCEPT ![o] = "ADMITTED"]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<authorityEpoch,stopEpoch,recoveryEpoch,recoveryOwner,
-      recoveryToken,worldState,dependencyState,compromisedDomains,
+      recoveryToken,worldState,dependencyState,compromisedDependencies,
       assuranceState,commitCount>>
 
 Commit(o) ==
@@ -180,7 +180,7 @@ Commit(o) ==
   /\ processState' = [processState EXCEPT ![o] = "RUNNING"]
   /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
-      dependencyState,compromisedDomains,assuranceState>>
+      dependencyState,compromisedDependencies,assuranceState>>
 
 NoCommitDuringStop ==
   \A o \in Operations :
@@ -192,12 +192,12 @@ RestartDoesNotRelease ==
 
 UnknownDependencyBlocksRelease ==
   \A o \in Operations :
-    (\E d \in Domains : dependencyState[o][d] = "UNKNOWN")
+    (\E d \in Dependencies : dependencyState[o][d] = "UNKNOWN")
       => releaseAuthorized[o] = FALSE
 
 CompromisedDependencyBlocksRelease ==
   \A o \in Operations :
-    (\E d \in Domains : d \in compromisedDomains)
+    (\E d \in Domains : d \in compromisedDependencies)
       => releaseAuthorized[o] = FALSE
 
 NormalAssuranceRequiresKnownDependencies ==
@@ -270,9 +270,9 @@ NoFalseIndependence ==
 
 DependencyKnown(o, d) == dependencyState[o][d] = "KNOWN"
 DependencyUncertain(o, d) == dependencyState[o][d] \in {"UNKNOWN", "STALE", "INVALIDATED"}
-DependencyCompromised(d) == d \in compromisedDomains
-AllDependenciesKnown(o) == \A d \in Domains : DependencyKnown(o, d)
-NoCompromisedDependencies == \A d \in Domains : ~DependencyCompromised(d)
+DependencyCompromised(d) == d \in compromisedDependencies
+AllDependenciesKnown(o) == \A d \in Dependencies : DependencyKnown(o, d)
+NoCompromisedDependencies == \A d \in Dependencies : ~DependencyCompromised(d)
 
 EvaluatorReleaseEligible(o) ==
   /\ stopState[o] = "QUARANTINED"
