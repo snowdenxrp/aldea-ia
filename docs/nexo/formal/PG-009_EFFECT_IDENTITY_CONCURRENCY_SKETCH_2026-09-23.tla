@@ -228,3 +228,28 @@ InvReceiptNotWorldTruth ==
    safely transferred or the external outcome cannot be reconciled, the system
    may remain UNKNOWN/BLOCKED rather than guessing.
 *)
+
+
+(* EVIDENCE SUFFICIENCY / FRESHNESS REFINEMENT
+   A fresh observation is not automatically sufficient evidence of absence.
+   Observation quality is modeled separately from freshness.
+
+   Observation metadata must bind at least:
+     target, observed state, observed_at/causal position, source identity,
+     consistency level, visibility scope, query semantics, and verification method.
+
+   For a retry decision, acceptance must establish that the observation can
+   distinguish EFFECT_ABSENT from NOT_VISIBLE/UNKNOWN for the relevant effect
+   class. If the target offers only eventual consistency, a recent ABSENT read
+   may remain insufficient until a declared consistency/freshness boundary is met.
+
+   Therefore:
+     FRESH && ABSENT does not imply SAFE_TO_RETRY.
+     SAFE_TO_RETRY requires an independent acceptance relation over observation
+     sufficiency, target semantics, effect class, authority epoch, and current
+     preconditions.
+
+   A stale observation cannot authorize a critical retry. A fresh but insufficient
+   observation also cannot authorize it. UNKNOWN remains UNKNOWN until evidence
+   crosses the declared sufficiency boundary.
+*)
