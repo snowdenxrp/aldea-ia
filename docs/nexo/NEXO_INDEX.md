@@ -147,3 +147,6 @@ Added global conflict classes and the rule that pairwise-valid concurrent operat
 
 ## Latest PG-009: dependency completeness / hidden conflicts
 The formal model now treats dependency completeness as an assurance property. Dependencies are DECLARED, OBSERVED, INFERRED, or UNKNOWN; critical operations carry read/write/effect/resource/invariant/external-system/authority/causal footprints. Missing edges cannot be treated as proof of independence. Common-mode dependencies can connect operations with different resource IDs. Versioned dependency graphs and invariant ownership are required; incomplete graphs lead to UNKNOWN/quarantine or conservative serialization. Formal commit: 40219c636903c46565a486dd784c65ec4fd056cf. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: invariant/authority separation
+Invariant, dependency, scheduler, executor, and verifier authority are now explicitly separated. Critical invariant definitions are governed/versioned outside the executor; material changes trigger re-admission of affected operations. Scheduler priority never increases authority, and verification cannot retroactively authorize an effect. Formal commit: 46e221e4acb2759801724bc0b14b4d1696e12487. **NOT TLC-VERIFIED.**
