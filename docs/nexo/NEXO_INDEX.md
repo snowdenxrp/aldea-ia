@@ -95,3 +95,10 @@ Three explicit late-write policies are now modeled: BLOCKED, INVALIDATE, and CAT
 
 ## PG-009 formal verification runbook
 Added `docs/nexo/formal/PG-009_TLC_RUNBOOK.md` with the bounded TLC configuration, commands, evidence rules, and verification matrix. Current status is explicitly NOT RUN: Java 21 is available in the working environment, but tla2tools.jar is absent and outbound download is unavailable. No TLC result is claimed.
+
+
+## Latest PG-009 — operation identity and retry safety
+The formal model now includes stable operation identities across backfill/catch-up/recovery, an operation ledger, replay handling, and same-ID/different-payload identity conflicts. New invariants INV-271..280. This is still a MODEL SKETCH and is NOT TLC-verified. Operation identity prevents one class of duplicate/retry ambiguity but does not prove semantic correctness; different operation IDs can still produce the same critical effect.
+
+## Next PG-009 action
+Research semantic duplicate-effect detection across different operation IDs, then connect it to external-effect reconciliation and the existing exactly-once/idempotency architecture.
