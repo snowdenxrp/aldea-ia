@@ -1108,3 +1108,15 @@ Artifacts:
 - docs/nexo/NEXO_CANONICAL_CORE_V6_AUDIT.md — 08d0251d0ae7821309b2c11ad8fb6dc24f8666e7
 
 Decision: V6 is rejected as non-executable and will not be patched incrementally. V7 must define finite record sets/configuration and separate lease/effect/evidence boundaries before SANY/TLC.
+
+
+### 2026-09-23 — canonical core V7 finite-model attempt and audit
+
+V7 introduced explicit record-set aliases and a bounded CFG, but immediate audit found the model still not executable: Spec/Next absent, concrete record initialization absent, unconstrained STRING fields, missing admission, incomplete effect observation semantics, absent context-change transitions, incomplete actuation fencing, absent lease expiry/takeover, and missing generation transition invariants. The CFG was therefore not run through TLC.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V7.tla — 54ebd5c9319256f258ad5718d4d482e8e2378665
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V7.cfg — acfce35023e4f01c246d6eb3e7637f4eae4c5d55
+- docs/nexo/NEXO_CANONICAL_CORE_V7_AUDIT.md — 113c7e3d97ec41204d067e2f44e6316a6dd83851
+
+Decision: V7 is rejected as not testable. V8 will be intentionally minimal and executable-first: concrete finite records, complete Init/Next/Spec, explicit observed effect state, context-change transitions, STOP actuation fence, lease takeover, and bounded invariants before expanding architecture.
