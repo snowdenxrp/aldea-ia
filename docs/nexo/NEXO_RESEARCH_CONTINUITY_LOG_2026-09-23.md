@@ -1120,3 +1120,16 @@ Artifacts:
 - docs/nexo/NEXO_CANONICAL_CORE_V7_AUDIT.md — 113c7e3d97ec41204d067e2f44e6316a6dd83851
 
 Decision: V7 is rejected as not testable. V8 will be intentionally minimal and executable-first: concrete finite records, complete Init/Next/Spec, explicit observed effect state, context-change transitions, STOP actuation fence, lease takeover, and bounded invariants before expanding architecture.
+
+
+### 2026-09-23 — canonical core V8 bounded kernel
+
+V8 is the first deliberately minimal bounded kernel: singleton operation/effect/target/dependency, two owners, two evidence records, explicit finite records, concrete Init, complete Next/Spec, and baseline invariants. Static audit confirms the V6/V7 abstract-record and missing-Spec blockers were structurally addressed. The environment still has no detected tla2tools.jar/SANY/TLC executable, so no syntax/model-check result is claimed.
+
+V8 static findings: global policy/graph version is acceptable only for the minimal kernel; STOP intentionally does not imply external cancellation; lease expiry/takeover remains unmodelled; singleton binding invariant must generalize later.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V8.tla — ab1c755a7dae63b5a8fa80c0b6fc87c619c01224
+- docs/nexo/NEXO_CANONICAL_CORE_V8_AUDIT.md — af816d1c0c0965b8b767fd388090f8a89fb6c29e
+
+Decision: V8 is the first candidate for actual SANY/TLC execution, but no formal pass is claimed. Next: establish toolchain, execute baseline model, record counterexamples, then extend with takeover and STOP/effect races.
