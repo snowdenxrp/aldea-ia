@@ -207,3 +207,24 @@ InvReceiptNotWorldTruth ==
    This prevents split-brain recovery: two recoverers cannot both conclude that
    UNKNOWN means ABSENT and independently trigger the same irreversible effect.
 *)
+
+
+(* SPLIT-BRAIN / FENCED RECONCILIATION REFINEMENT
+   A critical effect key has at most one active reconciliation owner at a time.
+   Reconciliation ownership is separate from execution reservation.
+
+   Let reconciliationEpoch[k] monotonically identify ownership generations and
+   fenceToken[k] identify the currently valid owner. Any reconciliation commit
+   must present the current token and epoch; a stale owner is rejected.
+
+   A lease expiry creates eligibility for a successor but does not itself change
+   worldState. The successor must acquire the new fence atomically, then perform
+   a fresh observation. Previous observations remain historical evidence only.
+
+   Critical retry is permitted only after the acceptance relation evaluates the
+   reconciled state and the target's idempotency/reconciliation capability.
+
+   This is a safety boundary, not a liveness guarantee: if ownership cannot be
+   safely transferred or the external outcome cannot be reconciled, the system
+   may remain UNKNOWN/BLOCKED rather than guessing.
+*)
