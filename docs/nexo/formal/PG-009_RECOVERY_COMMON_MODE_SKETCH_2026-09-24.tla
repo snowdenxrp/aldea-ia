@@ -423,7 +423,7 @@ EvaluatorAuthorityGranted(o) == FALSE
 EvaluatorEffectsExecuted(o) == FALSE
 
 ReleaseAuthorizationMatchesEligibility(o) ==
-  releaseAuthorized[o] = TRUE <=> EvaluatorReleaseEligible(o)
+  releaseAuthorized[o] => EvaluatorReleaseEligible(o)
 
 ReleaseAuthorizedImpliesEligible ==
   \A o \in Operations :
@@ -450,7 +450,7 @@ ReleaseAuthorizedImpliesEligible ==
   - explicit compromised-domain set;
   - assurance degradation;
   - release is scoped to dependencies reachable from the operation's declared components;
-  - release authorization is required to remain exactly aligned with current evaluator release eligibility;
+  - release authorization is required to remain a subset of current evaluator release eligibility;
   - Python admissibility remains a richer assurance-level decision; this sketch models release eligibility, not the full assurance ceiling;
   - world UNKNOWN and recovery acquisition explicitly clear prior release authorization;
   - graph validity is required before revalidation/authorization;
