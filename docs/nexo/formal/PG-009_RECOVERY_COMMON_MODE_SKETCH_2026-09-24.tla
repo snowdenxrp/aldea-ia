@@ -76,6 +76,8 @@ RequestStop(o) ==
 
 Restart(o) ==
   /\ processState[o] = "OFFLINE"
+  /\ stopState[o] = "ENFORCED"
+  /\ gateState[o] = "CLOSED"
   /\ processState' = [processState EXCEPT ![o] = "RESTARTED"]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
@@ -92,20 +94,20 @@ Quarantine(o) ==
       dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
 AcquireRecovery(o, owner, expectedGeneration) ==
-  /\\ processState[o] = "QUARANTINED"
-  /\\ stopState[o] = "QUARANTINED"
-  /\\ owner # "NONE"
-  /\\ recoveryOwner[o] = "NONE"
-  /\\ recoveryToken[o] # "CURRENT"
-  /\\ expectedGeneration = recoveryGeneration[o] + 1
-  /\\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
-  /\\ recoveryGeneration' = [recoveryGeneration EXCEPT ![o] = expectedGeneration]
-  /\\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = TRUE]
-  /\\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
-  /\\ recoveryAuthorityEpoch' = [recoveryAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
-  /\\ recoveryToken' = [recoveryToken EXCEPT ![o] = "CURRENT"]
-  /\\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
-  /\\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
+  /\ processState[o] = "QUARANTINED"
+  /\ stopState[o] = "QUARANTINED"
+  /\ owner # "NONE"
+  /\ recoveryOwner[o] = "NONE"
+  /\ recoveryToken[o] # "CURRENT"
+  /\ expectedGeneration = recoveryGeneration[o] + 1
+  /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
+  /\ recoveryGeneration' = [recoveryGeneration EXCEPT ![o] = expectedGeneration]
+  /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = TRUE]
+  /\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
+  /\ recoveryAuthorityEpoch' = [recoveryAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
+  /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "CURRENT"]
+  /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
+  /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       worldState,dependencyState,compromisedDependencies,
       assuranceState,commitCount>>
 
@@ -131,6 +133,15 @@ RevokeAuthority(o) ==
         ELSE UNCHANGED stopEpoch
   /\ UNCHANGED <<recoveryEpoch,recoveryGeneration,recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,
       compromisedDependencies,commitCount>>
+
+LeaseExpire(o) ==
+  /\ recoveryLeaseValid[o]
+  /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = FALSE]
+  /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
+  /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
+  /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
+  /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryGeneration,
+      recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
   /\ recoveryOwner[o] # "NONE"
@@ -245,9 +256,11 @@ Release(o) ==
   /\ processState' = [processState EXCEPT ![o] = "ADMITTED"]
   /\ admittedAuthorityEpoch' = [admittedAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
-  /\ UNCHANGED <<authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,recoveryOwner,
-      recoveryToken,worldState,dependencyState,compromisedDependencies,
-      assuranceState,commitCount>>
+  /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
+  /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
+  /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = FALSE]
+  /\ UNCHANGED <<authorityEpoch,stopEpoch,recoveryEpoch,recoveryGeneration,recoveryAuthorityEpoch,
+      worldState,dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
 Commit(o) ==
   /\ processState[o] = "ADMITTED"
@@ -279,10 +292,10 @@ RecoveryGenerationMonotonic ==
   \A o \in Operations : recoveryGeneration[o] >= 0
 
 CurrentOwnerMatchesGeneration ==
-  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\\ recoveryToken[o] = "CURRENT"
+  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT"
 
 StaleGenerationCannotAuthorize ==
-  \A o \in Operations : releaseAuthorized[o] => recoveryLeaseValid[o] /\\ recoveryGeneration[o] > 0
+  \A o \in Operations : releaseAuthorized[o] => recoveryLeaseValid[o] /\ recoveryGeneration[o] > 0
 
 ExpiredLeaseCannotAct ==
   \A o \in Operations : ~recoveryLeaseValid[o] => ~releaseAuthorized[o]
@@ -292,6 +305,24 @@ TakeoverInvalidatesPriorOwner ==
 
 RecoveryReleaseOwnerCleanup ==
   \A o \in Operations : processState[o] = "ADMITTED" => ~releaseAuthorized[o]
+
+RecoveryGenerationMonotonic ==
+  \A o \in Operations : recoveryGeneration[o] >= 0
+
+CurrentOwnerMatchesGeneration ==
+  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT" /\ recoveryGeneration[o] > 0
+
+StaleGenerationCannotAuthorize ==
+  \A o \in Operations : releaseAuthorized[o] => recoveryLeaseValid[o] /\ recoveryGeneration[o] > 0
+
+ExpiredLeaseCannotAct ==
+  \A o \in Operations : ~recoveryLeaseValid[o] => ~releaseAuthorized[o]
+
+TakeoverInvalidatesPriorOwner ==
+  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE"
+
+RecoveryReleaseOwnerCleanup ==
+  \A o \in Operations : processState[o] = "ADMITTED" => recoveryOwner[o] = "NONE" /\ recoveryToken[o] = "STALE" /\ ~recoveryLeaseValid[o]
 
 StaleOwnerCannotAuthorize ==
   \A o \in Operations :
