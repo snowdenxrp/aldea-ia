@@ -290,3 +290,13 @@ New invariants INV-499..516.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: identity/continuity across forgetting, restore, snapshot/branch/fork and model replacement.
+
+
+## Latest PG-009 — identity and continuity
+
+Continuity is now explicitly separated into identity, history, memory, software/model, policy, authority, trust and world dimensions. Restore/fork/merge/model replacement cannot silently inherit authority.
+
+New Continuity Contract, classes C0-C4 and invariants INV-517..538.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: succession and human relationship continuity.
