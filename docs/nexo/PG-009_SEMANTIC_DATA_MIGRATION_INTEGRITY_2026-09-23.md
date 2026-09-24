@@ -1611,3 +1611,71 @@ INV-422 — completeness assurance is scoped, versioned and freshness-bounded; i
 MISSION/CONSTITUTION → GOAL → HAZARD/FAILURE MODEL → SAFETY OBJECTIVE → INVARIANT SPECIFICATION → ADEQUACY → COVERAGE → ENFORCEMENT → INDEPENDENT VERIFICATION → WORLD EVIDENCE → ADMISSION
 
 PG-009 remains OPEN.
+
+## Research continuation — assumption validity and environment-model completeness
+
+NIST SP 800-53B explicitly treats assumptions as part of risk framing and notes that invalid assumptions can change control applicability. NIST AI RMF requires context, assumptions and limitations to be documented, recognizes limited visibility/control across lifecycle actors, and calls for ongoing measurement and tracking of emergent risks. citeturn0search36turn0search0
+
+### Finding
+A formal invariant can be valid only because the model assumes conditions that are false, unenforced, unobserved, stale, or outside the model boundary. Therefore an assumption is a governed object, not invisible model text.
+
+### Assumption Contract
+Every critical assumption binds: assumption_id/version; exact proposition; scope/environment; controlling party; assurance type (enforced, observed, contractual, empirical, hypothesized); evidence/provenance; observation method; freshness/expiry; uncertainty; failure condition; affected invariants/goals/admissions; response when invalid; and whether validity is time-varying or revocable.
+
+### Assurance classes
+A0 UNKNOWN
+A1 DECLARED
+A2 EVIDENCE_BACKED
+A3 ENFORCED
+A4 INDEPENDENTLY_VALIDATED
+A5 CONTINUOUSLY_MONITORED
+
+These are scoped, not global trust labels.
+
+### Environment Model Contract
+The model must explicitly define system boundary, external actors/systems, trust boundaries, inputs/outputs, observable and unobservable state, dependency guarantees, failure modes, timing/latency, concurrency/interleavings, communication failures, resource exhaustion, clock assumptions, policy/authority transitions, model/tool/runtime changes, recovery/crash behavior, and external-world state that can invalidate assumptions.
+
+### Assumption-to-control binding
+ASSUMPTION → CONTROL/ENFORCEMENT OR OBSERVATION → EVIDENCE → INVALIDATION DETECTOR → RESPONSE
+
+If no control or observation exists, the assumption is not elevated merely because it appears in the formal specification.
+
+### Boundary completeness
+Nexo distinguishes model-internal, managed external, unmanaged external, and unknown/unobservable state. Unknown external state cannot silently collapse into a safe model default. If a critical invariant depends on an external fact that cannot be observed with sufficient freshness and semantics, assurance is downgraded and critical execution may be blocked.
+
+### Assumption drift
+Invalidation triggers include dependency behavior change, environment change, new threat intelligence, policy/authority change, clock discontinuity, model/tool update, infrastructure change, telemetry threshold crossing, loss of telemetry, loss of observability, or expired evidence.
+
+Loss of observability is itself an uncertainty event: UNKNOWN is not VALID.
+
+### Fail-safe response
+DETECTED → FENCE AFFECTED EFFECTS → REVALIDATE WORLD → REASSESS INVARIANTS → REASSESS RISK/AUTHORITY → CONTINUE / REPLAN / DRAIN / RECONCILE / BLOCK
+
+### Circular assurance
+Nexo must detect cycles such as: invariant proven assuming A, while A is considered valid only because the invariant holds. Executor-only assertions, verifier dependence on executor telemetry, model-only validation of model assumptions, and transformer self-certification are CIRCULAR_ASSURANCE.
+
+### Environment-model mutation testing
+Critical models must be tested with controlled mutations: delayed/stale responses, duplicate/reordered messages, unavailable telemetry, clock changes, concurrent writers, altered external actors, omitted dependencies, resource exhaustion, mid-operation revocation, and policy change during remote uncertainty. If the real failure becomes unreachable only because the model excluded it, that exclusion requires justification or assurance is downgraded.
+
+### Evidence decay
+Assumption evidence has acquisition time, validity interval, freshness requirement, source, consistency level and revalidation trigger. Stale evidence cannot satisfy a current critical assumption unless bounded staleness is explicitly governed.
+
+### New invariants
+INV-423 — critical assumptions are governed objects with explicit scope, provenance and validity conditions.
+INV-424 — a formal assumption is not world truth merely because it appears in the model.
+INV-425 — unknown/lost observability cannot silently satisfy a critical assumption.
+INV-426 — every critical assumption requires an enforcement, observation, or independently justified evidence path.
+INV-427 — assumption invalidation triggers impact analysis for affected invariants/admissions.
+INV-428 — the environment model must represent relevant external actors, trust boundaries, failure modes and unobservable state.
+INV-429 — unmanaged/unknown external state cannot silently map to a safe model state.
+INV-430 — assumption assurance cannot be circular between invariant, executor and verifier.
+INV-431 — critical environment models require negative/fault/interleaving mutation tests.
+INV-432 — assumption evidence is scoped and freshness-bounded.
+INV-433 — loss of observability is uncertainty, not evidence that the safe condition persists.
+INV-434 — critical autonomy cannot increase when a material environment assumption becomes UNKNOWN.
+INV-435 — assurance class is scoped to the exact property, domain, version and time window established.
+
+### Architectural result
+MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → ASSUMPTIONS/ENVIRONMENT MODEL → ADEQUACY → COVERAGE → ENFORCEMENT → INDEPENDENT VERIFICATION → WORLD EVIDENCE → ADMISSION
+
+PG-009 remains OPEN.
