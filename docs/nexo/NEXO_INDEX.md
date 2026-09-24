@@ -135,3 +135,6 @@ Atomic reservation + authority epoch was added to PG-009_EFFECT_IDENTITY_CONCURR
 
 ## Latest PG-009 refinement
 Execution Reservation and Reconciliation Lease are now explicitly distinct in the formal sketch (commit 1c8014aff3e10cdcdba65a1d42f839649ceaf46e). Reconciliation ownership is atomic and fenced; expiry transfers coordination only after a fresh reconciliation boundary and does not imply effect absence. **NOT TLC-VERIFIED.**
+
+## Latest PG-009 refinement
+Added world-version / execution-fence semantics to the formal sketch (commit dd722aafc9dfeadc4e7395721949d413f0124162). A target-local version is evidence, not automatically a hard fence; critical execution requires a target-enforced conditional/CAS transition where supported. Version mismatch causes STALE_PRECONDITION and revalidation/replanning. **NOT TLC-VERIFIED.**
