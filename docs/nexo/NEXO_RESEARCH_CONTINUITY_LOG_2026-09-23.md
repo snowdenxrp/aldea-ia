@@ -406,3 +406,13 @@ New invariants INV-499..516.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: identity/continuity across forgetting, restore, snapshot/branch/fork and model replacement.
+
+
+## Latest PG-009 — identity and continuity
+
+Cross-check with NIST SP 800-63-4 and NASA configuration-management guidance. NIST separates identity proofing, authentication, authenticator lifecycle and federation; NASA requires unique identifiers, controlled baselines, change authority and historical accounting. citeturn0search5turn0search36turn0search0turn0search13
+
+New Continuity Contract. Restore, snapshot, fork, merge and model replacement preserve different dimensions and do not automatically inherit authority. New continuity classes C0-C4 and invariants INV-517..538.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: succession and human relationship continuity.
