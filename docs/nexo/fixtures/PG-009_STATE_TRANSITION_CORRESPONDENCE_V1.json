@@ -53,7 +53,9 @@
     "RevalidateAssurance",
     "AuthorizeRelease",
     "Release",
-    "Commit"
+    "Commit",
+    "AcquireReconciliation",
+    "ExpireReconciliationLease"
   ],
   "forbidden_shortcuts": [
     "evaluator→authority",
@@ -177,6 +179,49 @@
         "reconciliation lease != recovery authority",
         "current recovery owner/generation required for recovery transitions"
       ]
+    },
+    {
+      "id": "reconciliation_lease_cannot_grant_recovery",
+      "transition": "AcquireReconciliation/AcquireRecovery",
+      "expected": "a valid reconciliation lease does not create recovery authority; recovery acquisition is blocked while the reconciliation lease is valid",
+      "guards": [
+        "reconciliationLeaseValid == TRUE",
+        "AcquireRecovery requires reconciliationLeaseValid == FALSE"
+      ]
+    },
+    {
+      "id": "reconciliation_takeover",
+      "transition": "ExpireReconciliationLease/AcquireReconciliation",
+      "expected": "expired reconciliation owner cannot act; successor requires a new reconciliation generation",
+      "guards": [
+        "reconciliationOwner == NONE after expiry",
+        "new generation is greater than prior generation"
+      ]
+    },
+    {
+      "id": "recovery_reconciliation_race",
+      "transition": "AcquireRecovery/AcquireReconciliation",
+      "expected": "recovery and reconciliation leases cannot simultaneously claim the operation in this model",
+      "guards": [
+        "recoveryLeaseValid == TRUE => reconciliationLeaseValid == FALSE",
+        "reconciliationLeaseValid == TRUE => recoveryLeaseValid == FALSE"
+      ]
+    },
+    {
+      "id": "reconciliation_unknown_world",
+      "transition": "AcquireReconciliation/ReconcileWorld",
+      "expected": "reconciliation ownership does not by itself establish world truth; UNKNOWN remains UNKNOWN and cannot authorize release",
+      "guards": [
+        "worldState == UNKNOWN blocks release"
+      ]
+    },
+    {
+      "id": "reconciliation_authority_revoke",
+      "transition": "RevokeAuthority/ExpireReconciliationLease",
+      "expected": "authority revocation does not convert reconciliation ownership into recovery authority",
+      "guards": [
+        "recovery authority epoch remains independently fenced"
+      ]
     }
   ],
   "formal_invariants": [
@@ -191,7 +236,9 @@
     "StaleGenerationCannotAuthorize",
     "ExpiredLeaseCannotAct",
     "TakeoverInvalidatesPriorOwner",
-    "RecoveryReleaseOwnerCleanup"
+    "RecoveryReleaseOwnerCleanup",
+    "ReconciliationGenerationNonNegative",
+    "ReconciliationLeaseDoesNotGrantRecoveryAuthority"
   ],
   "notes": [
     "Concurrency is modeled as atomic state transitions; this is not yet a proof of implementation-level CAS/linearizability.",
@@ -201,6 +248,7 @@
     "Lease validity is an explicit coordination fence, not evidence that an external effect is absent, canceled, or reversible.",
     "Recovery generation is distinct from authority epoch: generation fences ownership; authority epoch fences authorization. Authority revocation invalidates both.",
     "A takeover must be modeled as an atomic ownership-generation transition; implementation-level CAS/linearizability remains unproven.",
-    "Reconciliation-lease interaction remains a documented pending model extension; it is not claimed as a formal invariant until a separate reconciliation lease state is modeled."
+    "Reconciliation-lease interaction remains a documented pending model extension; it is not claimed as a formal invariant until a separate reconciliation lease state is modeled.",
+    "Reconciliation lease is modeled as separate coordination state and mutually exclusive with recovery lease for an operation. This does not establish implementation-level mutual exclusion, linearizability, or external-world truth."
   ]
 }
