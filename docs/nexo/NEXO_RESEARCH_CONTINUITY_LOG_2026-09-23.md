@@ -921,3 +921,14 @@ The state-transition correspondence fixture was extended with these adversarial 
 Status: external-effect identity binding DESIGNED + FORMALLY MODELLED; implementation NOT YET; TESTED = NO; VERIFIED = NO.
 
 Next attack: add freshness/provenance/version binding to reconciliation evidence and test replay of otherwise-correct evidence after policy, dependency, target, or world-version changes.
+
+
+### 2026-09-24 — global contradiction audit and restructuring
+
+A transversal review was performed across the accumulated architecture, recovery fencing, common-mode analysis, safety-plane update model, executable evaluator, formal correspondence, and external-effect identity work. Findings were consolidated in `docs/nexo/NEXO_ARCHITECTURE_RESTRUCTURE_AUDIT_2026-09-24.md` (commit `25a8280f93dbde131de92f349da4ec4967f6dafc`).
+
+Key findings: PG-009 taxonomy drift; split formal models; stale correspondence statements; `KNOWN` too strong in the simplified formal sketch; generation monotonicity not actually temporally proven; lease/effect-truth separation must remain explicit; I0-I5 evaluator ceiling is heuristic; “CLOSED” was too strong as a lifecycle status; process separation is not independence; emergency STOP does not prove external cancellation; rollback is governed transition; correspondence is not equivalence.
+
+Restructuring decision: future gaps must be derived from a canonical layered architecture and canonical state/transition model rather than patched locally. Current holes remain H1 freshness/provenance/version binding, H2 formal unification, H3 TLC, H4 linearizability/CAS, H5 runtime enforcement, H6 fault injection, H7 semantic/data migration.
+
+Master snapshot updated at commit `18fd703c77ab76f51f7b892429d9a32fb0f7142e`; index updated at `5c1e174ef0bfae2961d3d592fbbd69b5a2eba669`.
