@@ -85,6 +85,11 @@ INVESTIGATE → ANALYZE → CONTRAST → RESTRUCTURE/BUILD → VERIFY → SAVE
    compatibility. Se añadió Semantic Migration Contract, explicit mapping,
    information-loss rules, differential/round-trip/metamorphic tests,
    migration state machine e invariants INV-195..215.
+30. Semantic refinement:
+   migration debe relacionar estados fuente/destino mediante una relación
+   semántica y preservar observables. Se añadió commuting-square/replay test,
+   migration algebra, mixed-version states, backfill governance, protected
+   authority switch y governed upcasters. Invariants INV-216..230.
 
 ## Reestructuraciones principales
 - Se creó System Transition Gate como cross-layer commit point.
