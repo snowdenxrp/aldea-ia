@@ -1,0 +1,52 @@
+{
+  "version": "2",
+  "domain_mapping": {
+    "hardware": "Domains",
+    "host": "Domains",
+    "kernel": "Domains",
+    "hypervisor": "Domains",
+    "runtime": "Domains",
+    "storage": "Domains",
+    "network": "Domains",
+    "dns": "Domains",
+    "clock": "Domains",
+    "identity": "Domains",
+    "credential": "Domains",
+    "kms": "Domains",
+    "trust_root": "Domains",
+    "policy": "Domains",
+    "configuration": "Domains",
+    "artifact": "Domains",
+    "builder": "Domains",
+    "package": "Domains",
+    "model_provider": "Domains",
+    "data_source": "Domains",
+    "operator": "Domains",
+    "admin": "Domains",
+    "observability": "Domains",
+    "coordination": "Domains",
+    "recovery": "Domains",
+    "schema_semantics": "Domains"
+  },
+  "state_mapping": {
+    "KNOWN": "dependencyState",
+    "UNKNOWN": "dependencyState",
+    "COMPROMISED": "compromisedDependencies",
+    "STALE": "dependencyState",
+    "INVALIDATED": "dependencyState"
+  },
+  "assurance_mapping": {
+    "I0": "assuranceState",
+    "I1": "assuranceState",
+    "I2": "assuranceState",
+    "I3": "assuranceState",
+    "I4": "assuranceState",
+    "I5": "assuranceState"
+  },
+  "coverage": {
+    "component_to_domain": "MAPPED",
+    "transitive_closure": "MAPPED",
+    "graph_fingerprint": "UNMAPPED",
+    "finding_taxonomy": "UNMAPPED"
+  }
+}
