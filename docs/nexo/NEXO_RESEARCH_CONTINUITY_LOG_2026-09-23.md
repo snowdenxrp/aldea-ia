@@ -1005,3 +1005,23 @@ Artifact: docs/nexo/formal/NEXO_CANONICAL_CORE_SKETCH_2026_09_23.tla
 Commit: eabcc4beabf68a018ec79a47c4268a97b20f527c
 
 Status: DESIGN/RESEARCH SKETCH only; SANY/TLC NOT RUN; not implementation-equivalent. The sketch intentionally exposes unresolved typing, executable syntax and release-lease semantics issues. These are recorded as open findings rather than concealed.
+
+
+### 2026-09-23 — canonical object-boundary and concurrency audit
+
+Fresh concurrency cross-check reinforced that linearizability applies to Nexo's coordination objects, not to proof that an external-world effect occurred. The canonical model must therefore separate coordination atomicity from effect truth and authorization.
+
+New decisions:
+- Operation and EffectBinding are immutable identity anchors.
+- AuthorityContext is epoch/version fenced.
+- EvidenceRecord is durable and explicitly OBSERVED versus VALID, with freshness/provenance/version/dependency binding.
+- Lease expiry changes ownership but does not automatically erase valid evidence or prove external-effect absence.
+- Execution, recovery and reconciliation leases are separate coordination domains.
+- Release eligibility must be recomputed from current evidence, authority, exact effect identity and dependency/safety context; a cached release flag is not authority.
+- Canonical concurrency model must identify linearization points for lease acquisition, stop, revoke, admission, release and commit.
+
+Artifact:
+docs/nexo/NEXO_CANONICAL_OBJECT_BOUNDARY_AUDIT_2026-09-23.md
+Commit: d87ecd57181318ff66e4b9f1f48ff4f407acd05f
+
+Status: design audit only. SANY/TLC NOT RUN; runtime tests NOT RUN; formal equivalence NOT CLAIMED.
