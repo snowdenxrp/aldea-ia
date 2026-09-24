@@ -49,6 +49,7 @@
     "Restart",
     "Quarantine",
     "AcquireRecovery",
+    "LeaseExpire",
     "RevalidateAssurance",
     "AuthorizeRelease",
     "Release",
@@ -190,8 +191,7 @@
     "StaleGenerationCannotAuthorize",
     "ExpiredLeaseCannotAct",
     "TakeoverInvalidatesPriorOwner",
-    "RecoveryReleaseOwnerCleanup",
-    "ReconciliationLeaseDoesNotGrantRecoveryAuthority"
+    "RecoveryReleaseOwnerCleanup"
   ],
   "notes": [
     "Concurrency is modeled as atomic state transitions; this is not yet a proof of implementation-level CAS/linearizability.",
@@ -200,6 +200,7 @@
     "Authority revocation is modeled as a hard admission fence: ADMITTED/RUNNING transitions to OFFLINE with stop/gate enforced, requiring fresh recovery before execution can resume. This does not claim physical cancellation of an already-completed external effect.",
     "Lease validity is an explicit coordination fence, not evidence that an external effect is absent, canceled, or reversible.",
     "Recovery generation is distinct from authority epoch: generation fences ownership; authority epoch fences authorization. Authority revocation invalidates both.",
-    "A takeover must be modeled as an atomic ownership-generation transition; implementation-level CAS/linearizability remains unproven."
+    "A takeover must be modeled as an atomic ownership-generation transition; implementation-level CAS/linearizability remains unproven.",
+    "Reconciliation-lease interaction remains a documented pending model extension; it is not claimed as a formal invariant until a separate reconciliation lease state is modeled."
   ]
 }
