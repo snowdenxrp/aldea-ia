@@ -110,7 +110,7 @@ MarkDependencyUnknown(o, d) ==
       compromisedDependencies,commitCount>>
 
 CompromiseDependency(d) ==
-  /\ d \in Domains
+  /\ d \in Dependencies
   /\ compromisedDependencies' = compromisedDependencies \cup {d}
   /\ assuranceState' =
       [o \in Operations |->
@@ -151,7 +151,7 @@ AuthorizeRelease(o) ==
   /\ worldState[o] = "KNOWN"
   /\ assuranceState[o] = "NORMAL"
   /\ \A d \in Dependencies : dependencyState[o][d] = "KNOWN"
-  /\ \A d \in Domains : d \notin compromisedDependencies
+  /\ \A d \in Dependencies : d \notin compromisedDependencies
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = TRUE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,worldState,
@@ -197,13 +197,13 @@ UnknownDependencyBlocksRelease ==
 
 CompromisedDependencyBlocksRelease ==
   \A o \in Operations :
-    (\E d \in Domains : d \in compromisedDependencies)
+    (\E d \in Dependencies : d \in compromisedDependencies)
       => releaseAuthorized[o] = FALSE
 
 NormalAssuranceRequiresKnownDependencies ==
   \A o \in Operations :
     assuranceState[o] = "NORMAL"
-      => \A d \in Domains : dependencyState[o][d] = "KNOWN"
+      => \A d \in Dependencies : dependencyState[o][d] = "KNOWN"
 
 StaleRecoveryCannotRelease ==
   \A o \in Operations :
