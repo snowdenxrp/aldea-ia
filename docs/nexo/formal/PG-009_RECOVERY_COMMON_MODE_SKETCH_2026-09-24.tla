@@ -118,7 +118,7 @@ CompromiseDependency(d) ==
       [o \in Operations |->
         IF d \in OperationDependencies(o)
            THEN IF dependencyState[o][d] = "KNOWN" THEN "DEGRADED" ELSE "HOLD"
-           ELSE @]
+           ELSE assuranceState[o]]
   /\ releaseAuthorized' =
       [o \in Operations |->
         IF d \in OperationDependencies(o) THEN FALSE ELSE releaseAuthorized[o]]
@@ -349,8 +349,8 @@ EvaluatorAuthorityGranted(o) == FALSE
 
 EvaluatorEffectsExecuted(o) == FALSE
 
-EvaluatorAdmissible(o) ==
-  EvaluatorReleaseEligible(o)
+ReleaseAuthorizationMatchesEligibility ==
+  releaseAuthorized[o] = TRUE <=> EvaluatorReleaseEligible(o)
 
 ReleaseAuthorizedImpliesEligible ==
   \A o \in Operations :
@@ -377,7 +377,8 @@ ReleaseAuthorizedImpliesEligible ==
   - explicit compromised-domain set;
   - assurance degradation;
   - release is scoped to dependencies reachable from the operation's declared components;
-  - release authorization is required to remain a subset of current evaluator release eligibility;
+  - release authorization is required to remain exactly aligned with current evaluator release eligibility;
+  - Python admissibility remains a richer assurance-level decision; this sketch models release eligibility, not the full assurance ceiling;
   - world UNKNOWN and recovery acquisition explicitly clear prior release authorization;
   - graph validity is required before revalidation/authorization;
   - recoveryEpoch is distinct from stopEpoch;
