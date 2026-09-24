@@ -186,3 +186,6 @@ Critical effects now require an explicit Execution Binding that ties admission t
 
 ## Latest PG-009: materiality and canonicalization boundary
 Materiality is now governed externally to the executor. Canonicalization is split into representation normalization, domain semantic normalization, and security-relevant authorization/effect canonicalization. Critical equivalence cannot be broadened by the executor; unknown/ambiguous normalization blocks. Layered identity: raw payload -> representation digest -> semantic payload digest -> effect key, with versioning. New invariants INV-359..366. Architecture commit: 074b1eb9ac7572b6653c075dc08db158ad2778e. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: concurrent admissions and complete conflict domains
+Locally valid admissions may be jointly unsafe. Critical effects now require a governed conflict footprint and versioned dependency/conflict relation. UNKNOWN dependencies are not treated as independence. Safe concurrency requires proven independence/commutativity, target-enforced atomic conflict control, full-domain reservation/fencing, durable serialization, or governed escalation. Pairwise checks are insufficient for transitive/common-mode interactions. New invariants INV-367..376. Architecture commit: 6c9121c2f92749b975ba151d23e332e6b12f2df6. **NOT TLC-VERIFIED.**
