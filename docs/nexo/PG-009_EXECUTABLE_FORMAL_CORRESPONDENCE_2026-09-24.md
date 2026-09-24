@@ -61,4 +61,4 @@ The Python test suite now exercises the canonical fixture and checks the expecte
 
 ## Next step
 
-Replace the one-hop formal helper with an explicit finite transitive-closure relation and then compare the evaluator's closure/correlation results against the formal predicates on the same fixture, followed by TLC execution when tooling is available.
+Compare the evaluator's closure/correlation outputs against the formal predicates on the same canonical fixture, including a deliberately shared failure-domain scenario and compromised/UNKNOWN dependency scenarios. Then run TLC when tooling is available.
