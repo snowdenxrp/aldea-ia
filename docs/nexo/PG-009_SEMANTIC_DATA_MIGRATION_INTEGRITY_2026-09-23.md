@@ -495,3 +495,42 @@ INV-257 — recovery cannot infer successful migration solely from local executi
 INV-258 — every retry of a critical migration operation must have a stable operation identity.
 INV-259 — an UNKNOWN/in-flight migration effect requires reconciliation before critical continuation.
 INV-260 — formal theorem declarations are not verification evidence until the model is actually checked.
+
+
+## Research continuation — cutover race found in the formal model
+
+The concurrency model exposed a concrete architectural hazard: even if `divergence = {}` when the system enters `CUTOVER_PREPARED`, a new source write can occur before the authority switch. Because `SourceWrite` is independently enabled, the state can become:
+`CUTOVER_PREPARED + migrated = Records + divergence = {r}`
+followed by an unsafe `CommitCutover` that changes authority to `New` without re-checking the divergence set.
+
+This is exactly the kind of result we wanted from formalization: the prose rule “no unresolved divergence at cutover” is insufficient unless the final transition revalidates the world/state immediately before committing authority.
+
+### Architectural correction
+Cutover must have a final serialization/fencing boundary. Conceptually:
+`PREPARE → FENCE NEW SOURCE WRITES / ESTABLISH CUTOVER VERSION → REVALIDATE → COMMIT AUTHORITY`
+
+The final commit must bind at least:
+- source version / snapshot position;
+- target version;
+- divergence state;
+- migration completeness;
+- authority epoch;
+- cutover token/fence;
+- freshness bound.
+
+If a late write arrives after preparation but before the commit boundary, it must either be captured by the fence/catch-up mechanism or invalidate the prepared cutover and force revalidation. It cannot silently coexist with the authority switch.
+
+### Important consequence
+This is not merely a migration concern. It is a general Nexo pattern:
+**A precondition checked earlier is not enough when the protected state can change before the irreversible transition.**
+The final PEP/commit boundary must revalidate the state it is about to authorize.
+
+### Formalization status
+The model is still a design sketch and has not been TLC-verified. The discovered race is a reasoning/model result, not a claim that TLC produced a counterexample. The next model revision will encode an explicit cutover fence and test whether the invariant becomes structurally enforced.
+
+### New invariants
+INV-261 — entering CUTOVER_PREPARED does not reserve the right to commit authority if protected state can change.
+INV-262 — the final authority transition must revalidate migration completeness and unresolved divergence.
+INV-263 — late writes between preparation and authority commit must be fenced, incorporated, or invalidate cutover.
+INV-264 — cutover authorization must bind a source/target version or equivalent consistency token.
+INV-265 — an earlier successful precondition check cannot substitute for final-state validation before an irreversible authority transition.
