@@ -248,11 +248,21 @@ ComponentDependencyClosure(c) ==
 ComponentDomainClosure(c) ==
   { DependencyDomain[d] : d \in ComponentDependencyClosure(c) }
 
+ComponentDerivedFailureDomains(c) ==
+  ComponentFailureDomains[c] \cup
+  { d : d \in ComponentDependencyClosure(c) }
+
+ComponentDerivedTrustRoots(c) ==
+  ComponentTrustRoots[c] \cup
+  { d : d \in ComponentDependencyClosure(c) /\
+        [d \in Dependencies] /\
+        DependencyDomain[d] = "trust_root" }
+
 SharedFailureDomain(a, b) ==
-  ComponentFailureDomains[a] \cap ComponentFailureDomains[b] # {}
+  ComponentDerivedFailureDomains(a) \cap ComponentDerivedFailureDomains(b) # {}
 
 SharedTrustRoot(a, b) ==
-  ComponentTrustRoots[a] \cap ComponentTrustRoots[b] # {}
+  ComponentDerivedTrustRoots(a) \cap ComponentDerivedTrustRoots(b) # {}
 
 CorrelatedComponents(a, b) ==
   SharedFailureDomain(a, b) \/ SharedTrustRoot(a, b)
@@ -314,7 +324,7 @@ EvaluatorDoesNotGrantAuthority ==
 
   Remaining limitations:
   - component-to-domain relation is represented explicitly through ComponentDependencyRefs and ComponentFailureDomains;
-  - no transitive dependency closure;
+  - recursive dependency closure is now represented by ReachDependency/ComponentDependencyClosure;
   - no partial domain compromise;
   - no Byzantine behavior;
   - no CAS/linearizability semantics;
