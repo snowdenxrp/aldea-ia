@@ -300,3 +300,12 @@ New Continuity Contract, classes C0-C4 and invariants INV-517..538.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: succession and human relationship continuity.
+
+
+## Latest PG-009 — succession and human relationship continuity
+
+Nexo now separates human identity, operational authority, recovery authority, succession authority, emergency authority and technical possession. Recovery does not imply succession; device possession does not prove ownership; successor authority is bounded by explicitly transferable authority and current policy.
+
+New Human Relationship Contract and invariants INV-539..556.
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: delegated human intent and consent continuity.
