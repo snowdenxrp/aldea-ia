@@ -2234,3 +2234,65 @@ INV-556 — human relationship evidence has provenance, freshness and scope and 
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next research: delegated human intent and consent continuity — distinguishing direct instruction, preference, standing authorization, temporary delegation and inferred intent when context changes or the user is unavailable.
+
+
+## Research continuation — delegated human intent and consent continuity
+
+NIST SP 800-63-4 separates identity proofing, authentication and federated assertions; authentication of a principal is not itself universal authorization. NIST also documents authentication intent as explicit user response in authentication flows, while AI RMF guidance calls for differentiated human roles and documented human oversight. citeturn0search1turn0search8turn0search7turn0search20
+
+### Core finding
+Nexo must not collapse all human-originated information into “user intent.” Classes:
+- DIRECT_INSTRUCTION
+- PREFERENCE
+- STANDING_AUTHORIZATION
+- TEMPORARY_DELEGATION
+- CONDITIONAL_AUTHORIZATION
+- CONSENT
+- INFERRED_INTENT
+- AMBIGUOUS/UNKNOWN
+
+### Intent Contract
+Each authorization candidate binds principal_id, statement, intent_type, target/effect scope, purpose, constraints, temporal validity, confirmation level, provenance, authentication/session context, policy version, authority epoch, delegation chain, revocation status, evidence of user intent, interpretation version and expiry.
+
+### Authentication is not authorization
+Successful authentication establishes a relationship to a principal; it does not authorize every requested effect. NIST's federation guidance treats assertions as identity/subscriber attributes consumed by relying parties; authorization remains contextual. citeturn0search0turn0search1
+
+### Inference and preference firewalls
+“Kevin probably wants X” is a proposal, never authority. A preference can influence planning but cannot silently authorize a new high-impact effect. Personalization, repetition and model confidence cannot raise authorization.
+
+### Delegation and consent
+Standing/temporary delegation requires explicit scope, target/effect classes, constraints, duration/expiry, revocation, maximum authority and lineage. Delegation cannot exceed transferable authority. Consent is purpose/scope bounded and is not automatically operational permission for an external side effect.
+
+### Confirmation ladder
+Governed effect/risk classes select required confirmation: NONE_ALLOWED, PASSIVE_CONTEXT, EXPLICIT_CONFIRMATION, STRONG_REAUTHENTICATION, MULTI_PARTY/HUMAN_REVIEW. The model cannot choose a weaker level at runtime.
+
+### Intent continuity
+Prior authorization can become stale when target, purpose, policy, risk, world state, time, capability, delegation or interpretation changes. Material drift triggers revalidation. Natural-language interpretation is canonicalized into a structured authorization candidate; critical ambiguity blocks execution.
+
+### Prohibitions, silence and revocation
+“Do not do X” is a distinct constraint with scope and override rules. Silence/inactivity is not affirmative consent for critical effects unless a prior governed protocol explicitly defines it for that exact low-risk context. Revocation must propagate to active sessions/capabilities within bounded guarantees. Historical authorization remains history.
+
+### New invariants
+INV-557 — authenticated principal identity does not by itself authorize arbitrary effects.
+INV-558 — inferred intent cannot directly create authority.
+INV-559 — preference is not operational permission unless explicit policy/delegation grants that scope.
+INV-560 — consent is purpose/scope bounded and is not automatically general authorization.
+INV-561 — delegation cannot exceed transferable authority and must carry scope, expiry and revocation.
+INV-562 — material interpretation of natural-language instructions is part of the authorization candidate and must be bound before critical execution.
+INV-563 — model confidence/repetition/personalization cannot increase authorization level.
+INV-564 — critical ambiguous intent is UNKNOWN/BLOCKED, not permission by default.
+INV-565 — silence/inactivity is not affirmative consent for critical effects unless explicitly governed for that exact context.
+INV-566 — material context/policy/risk/world drift invalidates or revalidates stale intent.
+INV-567 — revocation propagates to active sessions/capabilities within bounded guarantees.
+INV-568 — prohibitions are explicit governed objects, not absence of positive authorization.
+INV-569 — historical authorization remains historical and cannot be rewritten after revocation.
+INV-570 — intent conflicts require governed precedence or escalation, not autonomous model selection.
+INV-571 — confirmation requirements are determined by governed effect/risk classes, not runtime model preference.
+INV-572 — user-originated content and model-generated interpretation remain provenance-distinct.
+INV-573 — an authorization candidate binds principal, scope, purpose, target/effect, temporal validity, policy and authority context.
+INV-574 — delegation/recovery/consent chains remain traceable to issuing authority.
+INV-575 — intent semantics are versioned; interpretation-rule changes can require revalidation of stored delegations/preferences.
+INV-576 — uncertainty about intent reduces autonomy rather than increasing inferred permission.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next research: human override, interruption and revocation during active execution.
