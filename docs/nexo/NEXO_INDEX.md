@@ -77,3 +77,6 @@ Continue PG-009 research with formal semantic equivalence, deterministic upcaste
 
 ## Latest PG-009 consolidation
 Concurrent-write migration is now modeled explicitly: snapshot/quiesce, catch-up/dual-write, shadow/dual-read, differential verification, protected authority cutover, durable migration journal, idempotent batches, divergence ledger, and governed old-path contraction. New invariants INV-231..240. PG-009 remains OPEN.
+
+## Latest PG-009 research — semantic equivalence
+PG-009 now requires non-vacuous, data-class-specific equivalence relations; independent acceptance criteria; representation/semantic/operational proof levels; explicit concurrent-write interleavings; consistency boundaries; and an acceptance oracle external to the migration transformer. New invariants INV-241..250. PG-009 remains OPEN.
