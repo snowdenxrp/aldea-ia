@@ -447,3 +447,12 @@ A formal audit found that ReleaseAuthorizationMatchesEligibility had been modele
 
 Git checkpoint: 836e402be35eb1229c55c5ee4ec025808b7e6bee.
 Status: CORRECTED / NOT TLC-VERIFIED.
+
+
+### PG-009 recovery lease/generation fencing — 2026-09-24
+- Formal recovery sketch now uses explicit recovery generation + lease validity fencing; stale owner actions require current owner, generation, lease, and authority epoch.
+- Restart requires enforced stop + closed gate; successful Release clears recovery ownership/token/lease before ADMITTED execution.
+- Lease expiry invalidates recovery authorization; takeover requires the next generation and does not imply external-effect absence/cancellation.
+- Correspondence fixture covers lease takeover/races and recovery-owner cleanup.
+- Status: IMPLEMENTED in formal sketch/fixture; executable tests and SANY/TLC NOT RUN; semantic equivalence NOT PROVEN; reconciliation-lease domain remains pending explicit modeling.
+- Git: formal follow-up `18943e5791b24b6dcea95009a834e397ac019d87`; final formal checkpoint `54ab167b28db62a836b65a0c38296733adee7426`; fixture `bb9e4e1a70bfa13c0f20a1c408e8a4e26748ed71`; continuity `d9ef4047bd0a071d5bb9fd5d5b9ac00158a6c31b`.
