@@ -2,7 +2,7 @@
 EXTENDS Naturals, FiniteSets
 
 CONSTANT Operations, Components, Domains, Dependencies
-CONSTANT ComponentDependencyRefs, DependencyDependsOn, DependencyDomain, ComponentFailureDomains, ComponentTrustRoots
+CONSTANT ComponentDependencyRefs, DependencyDependsOn, DependencyDomain, DependencyFailureDomain, ComponentFailureDomains, ComponentTrustRoots
 
 ASSUME Operations # {} /\ Components # {} /\ Domains # {} /\ Dependencies # {}
 
@@ -250,7 +250,7 @@ ComponentDomainClosure(c) ==
 
 ComponentDerivedFailureDomains(c) ==
   ComponentFailureDomains[c] \cup
-  { d : d \in ComponentDependencyClosure(c) }
+  { DependencyFailureDomain[d] : d \in ComponentDependencyClosure(c) }
 
 ComponentDerivedTrustRoots(c) ==
   ComponentTrustRoots[c] \cup
