@@ -1006,3 +1006,72 @@ InvReceiptNotWorldTruth ==
               REVALIDATION_UNSTABLE.
      INV-350 stale admission cannot silently increase autonomy.
 *)
+
+
+(* ADMISSION-TO-EXECUTION BINDING
+
+   Authorization must be evaluated against the actual execution request, not merely
+   against an earlier abstract intention. AWS IAM models authorization as evaluation
+   of a request context containing principal, action, resource and conditions. NIST
+   key-management guidance emphasizes association protection: the correct keying
+   material must protect the correct data in the correct application/equipment.
+
+   Nexo therefore binds critical execution to an immutable Execution Binding:
+     binding_id
+     operation_id
+     effect_key / semantic effect digest
+     canonical payload digest
+     target identity + target version/precondition
+     principal/agent identity
+     capability identity/version
+     policy version
+     authority epoch
+     risk profile/version
+     dependency graph version
+     world precondition/version
+     admission epoch
+     tool/gateway identity and version
+     execution environment/attestation identity where required
+     expiry / nonce
+
+   The executor must present the binding at the enforcement boundary. Any material
+   mismatch is FAIL-CLOSED and classified rather than normalized away:
+     PAYLOAD_MISMATCH
+     TARGET_MISMATCH
+     EFFECT_MISMATCH
+     CAPABILITY_MISMATCH
+     POLICY_MISMATCH
+     AUTHORITY_EPOCH_MISMATCH
+     RISK_MISMATCH
+     DEPENDENCY_MISMATCH
+     WORLD_PRECONDITION_MISMATCH
+     TOOL_ENVIRONMENT_MISMATCH
+     EXPIRY_OR_NONCE_FAILURE
+     UNKNOWN_BINDING
+
+   A valid signature over the wrong context is still the wrong authorization. Integrity
+   of the binding is necessary but does not establish semantic truth of the requested
+   effect. The semantic effect digest must therefore be produced from a governed,
+   canonical representation and independently checked at the execution boundary.
+
+   TOCTOU rule: revalidation immediately before execution must produce or confirm the
+   same binding version that is consumed by the executor. A new world/policy/risk epoch
+   creates a new binding or blocks execution; it cannot silently mutate the old one.
+
+   Tool gateways are sinks, not passive transport. The gateway must recompute/verify
+   the execution context against the binding and refuse parameters that are not covered
+   by the admission. This closes the approval-substitution pattern:
+       approve(A) -> mutate payload -> execute(B).
+
+   New obligations:
+     INV-351 critical execution consumes an explicit Execution Binding.
+     INV-352 material changes between admission and execution invalidate the binding.
+     INV-353 binding covers operation/effect/payload/target/capability/policy/authority/
+              risk/dependency/world precondition as applicable.
+     INV-354 executor/gateway must independently verify the binding at the enforcement
+              boundary; model output cannot substitute for this check.
+     INV-355 signed/integrity-protected binding does not prove semantic truth.
+     INV-356 a binding mismatch fails closed and creates durable evidence of the mismatch.
+     INV-357 TOCTOU revalidation must converge on the exact binding consumed by execution.
+     INV-358 changing a material execution parameter requires a new governed admission.
+*)
