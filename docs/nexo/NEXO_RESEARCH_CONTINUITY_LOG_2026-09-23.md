@@ -321,3 +321,18 @@ The existing PG-009 operational TLA+ models remain design sketches and **NOT TLC
 ### Next research point
 
 Continue with **invariant specification completeness and adequacy under evolving goals/threat models**, including hazard-derived invariant generation, coverage gaps, assumption invalidation, vacuity detection, mutation testing, and independent adequacy review. Save every material advance.
+
+
+## Latest PG-009 — invariant completeness under evolving hazards
+
+Research cross-check with NASA requirements validation/traceability, NIST AI RMF lifecycle risk mapping and NASA formal-methods work on validation of requirements themselves. New distinction: invariant validity, adequacy, set completeness, consistency and assurance.
+
+New Hazard-to-Invariant Derivation: MISSION/GOAL → HAZARD/FAILURE MODE → SAFETY OBJECTIVE → REQUIRED PROPERTY → INVARIANT → ENFORCEMENT → VERIFICATION.
+
+Completeness is cross-checked across mission/constitution, threat/failure models, dependencies/conflicts, incidents/counterexamples, environment assumptions, world observations, policy/authority, runtime behavior and adversarial scenarios. Material changes trigger hazard/invariant completeness impact analysis.
+
+New coverage states: COVERED, PARTIALLY_COVERED, MITIGATED_BY_EXTERNAL_CONTROL, ACCEPTED_RESIDUAL_RISK, UNKNOWN, BLOCKED. New assurance classes HC0..HC5. New invariants INV-411..422.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+
+Next: investigate assumption validity and environment-model completeness — how Nexo verifies that assumptions used to make invariants hold are actually enforced/observable in the real world and cannot silently exclude the failures being protected against.
