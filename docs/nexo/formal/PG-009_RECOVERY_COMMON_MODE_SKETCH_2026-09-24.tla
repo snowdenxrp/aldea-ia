@@ -1,10 +1,10 @@
 ---- MODULE PG009_Recovery_CommonMode_Sketch ----
 EXTENDS Naturals, FiniteSets
 
-CONSTANT Operations, Components, Domains
-CONSTANT ComponentDependencyRefs, DependencyDependsOn, ComponentFailureDomains, ComponentTrustRoots
+CONSTANT Operations, Components, Domains, Dependencies
+CONSTANT ComponentDependencyRefs, DependencyDependsOn, DependencyDomain, ComponentFailureDomains, ComponentTrustRoots
 
-ASSUME Operations # {} /\ Components # {} /\ Domains # {}
+ASSUME Operations # {} /\ Components # {} /\ Domains # {} /\ Dependencies # {}
 
 VARIABLES
   stopState,
@@ -223,13 +223,15 @@ WorldUnknownBlocksRelease ==
 
 GraphReferencesKnown ==
   /\ \A c \in Components :
-       ComponentDependencyRefs[c] \subseteq Domains
-  /\ \A d \in Domains :
-       DependencyDependsOn[d] \subseteq Domains
+       ComponentDependencyRefs[c] \subseteq Dependencies
+  /\ \A d \in Dependencies :
+       DependencyDependsOn[d] \subseteq Dependencies
+  /\ \A d \in Dependencies :
+       DependencyDomain[d] \in Domains
 
 ComponentDomainClosure(c) ==
-  ComponentDependencyRefs[c] \cup
-  UNION { DependencyDependsOn[d] : d \in ComponentDependencyRefs[c] }
+  { DependencyDomain[d] : d \in ComponentDependencyRefs[c] } \cup
+  UNION { { DependencyDomain[x] : x \in DependencyDependsOn[d] } : d \in ComponentDependencyRefs[c] }
 
 SharedFailureDomain(a, b) ==
   ComponentFailureDomains[a] \cap ComponentFailureDomains[b] # {}
