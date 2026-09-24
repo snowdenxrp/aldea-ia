@@ -7,7 +7,7 @@ This checker detects declared gaps; it does not prove semantic equivalence.
 from __future__ import annotations
 from typing import Any
 
-REQUIRED_MAPPING = ("domain_mapping", "state_mapping", "assurance_mapping", "coverage")
+REQUIRED_MAPPING = ("domain_mapping", "state_mapping", "assurance_mapping", "component_mapping", "dependency_relation", "failure_domain_mapping", "trust_root_mapping", "coverage")
 
 def check_correspondence(claim: dict[str, Any], mapping: dict[str, Any]) -> dict[str, Any]:
     findings: list[dict[str, str]] = []
@@ -19,6 +19,23 @@ def check_correspondence(claim: dict[str, Any], mapping: dict[str, Any]) -> dict
     state_mapping = mapping.get("state_mapping", {})
     assurance_mapping = mapping.get("assurance_mapping", {})
     coverage = mapping.get("coverage", {})
+    component_mapping = mapping.get("component_mapping", {})
+    dependency_relation = mapping.get("dependency_relation", {})
+    failure_domain_mapping = mapping.get("failure_domain_mapping", {})
+
+    for comp in claim.get("components", []):
+        cid = comp.get("component_id")
+        if cid not in component_mapping:
+            findings.append({"code": "FORMAL_COMPONENT_UNMAPPED", "severity": "BLOCK", "message": f"component {cid!r} has no formal mapping"})
+        if cid in component_mapping and "dependency_refs" not in component_mapping[cid]:
+            findings.append({"code": "FORMAL_COMPONENT_RELATION_UNMAPPED", "severity": "BLOCK", "message": f"component {cid!r} has no dependency relation mapping"})
+
+    for dep in claim.get("dependencies", []):
+        did = dep.get("dependency_id")
+        if did not in dependency_relation:
+            findings.append({"code": "FORMAL_DEPENDENCY_RELATION_UNMAPPED", "severity": "BLOCK", "message": f"dependency {did!r} has no formal dependency relation mapping"})
+        if dep.get("failure_domain") and did not in failure_domain_mapping:
+            findings.append({"code": "FORMAL_FAILURE_DOMAIN_UNMAPPED", "severity": "BLOCK", "message": f"dependency {did!r} has no formal failure-domain mapping"})
 
     for dep in claim.get("dependencies", []):
         domain = dep.get("domain")
