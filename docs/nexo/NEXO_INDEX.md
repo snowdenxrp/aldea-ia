@@ -279,3 +279,14 @@ New invariants INV-481..498.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: epistemic memory garbage collection, retention and safe forgetting.
+
+## Latest PG-009 — safe forgetting and epistemic garbage collection
+
+Nexo now distinguishes working, episodic, semantic, evidentiary, obligation and constitutional/historical memory classes. Forgetting is explicit: eviction, archive, summary, redaction, tombstone, crypto-erasure and destruction.
+
+New Obligation Firewall, dependency-aware garbage collection, protected GC roots and durable disposition events. Loss of critical evidence is an assurance downgrade, not proof of non-occurrence.
+
+New invariants INV-499..516.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: identity/continuity across forgetting, restore, snapshot/branch/fork and model replacement.
