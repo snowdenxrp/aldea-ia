@@ -121,3 +121,20 @@ External-effect identity: DESIGNED + isolated formal sketch, not integrated/veri
 Semantic/data migration: OPEN.
 
 Historical artifacts remain immutable records. Current-state claims must come from the reconciled architecture and current continuity ledger.
+
+### 2026-09-23 — canonical core research sketch
+
+A first canonical-core formal sketch was created after the code/formal audit. It introduces the intended five-object center (Operation, EffectBinding, AuthorityContext, EvidenceRecord, ControlLease) plus dependency/trust context and explicitly separates effect state from evidence state.
+
+Artifact:
+docs/nexo/formal/NEXO_CANONICAL_CORE_SKETCH_2026_09_23.tla
+Commit: eabcc4beabf68a018ec79a47c4268a97b20f527c
+
+Important status: this is a DESIGN/RESEARCH SKETCH only. It is NOT syntactically checked, NOT SANY-verified, NOT TLC-verified, and NOT implementation-equivalent. It deliberately exposes the shape of the unified model before implementation.
+
+New design rule:
+Observation may create EvidenceRecord(OBSERVED), but only a separate verification transition may make evidence VALID. Release eligibility must consume exact effect/target binding, current authority/policy/dependency versions, freshness/provenance, lease fencing, and dependency/trust admissibility.
+
+The sketch itself still requires correction before formal execution: concrete target/effect/operation maps and record schemas need a fully typed finite model; the evidence invalidation expression is illustrative rather than executable TLA+; release currently assumes a recovery lease and must be reconciled with the intended distinction between recovery ownership and completed reconciliation evidence. These are intentionally recorded as open work, not hidden.
+
+Next step: continue adversarial study of canonical object boundaries and derive executable contracts/tests only after the formal vocabulary is corrected.
