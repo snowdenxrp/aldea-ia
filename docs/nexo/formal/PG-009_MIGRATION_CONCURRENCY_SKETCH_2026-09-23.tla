@@ -102,3 +102,27 @@ NoUnsafeCutover ==
 
 THEOREM Spec => []NoUnsafeCutover
 ====
+
+
+\* Research finding: after PrepareCutover, SourceWrite remains enabled.
+\* Therefore CommitCutover can currently observe stale preconditions.
+
+CutoverFence(r) ==
+    /\ phase = "CUTOVER_PREPARED"
+    /\ r \in Records
+    /\ divergence = {}
+    /\ sourceVersion' = sourceVersion
+    /\ phase' = "CUTOVER_FENCED"
+    /\ UNCHANGED <<targetVersion, migrated, divergence, appliedOps, authority, epoch, journal, inflight>>
+
+SafeCommitAfterFence ==
+    /\ phase = "CUTOVER_FENCED"
+    /\ migrated = Records
+    /\ divergence = {}
+    /\ authority' = New
+    /\ epoch' = epoch + 1
+    /\ phase' = "CUTOVER"
+    /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence, appliedOps, journal, inflight>>
+
+SafeCutoverInvariant ==
+    authority = New => migrated = Records /\ divergence = {}
