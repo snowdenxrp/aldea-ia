@@ -3,30 +3,116 @@
   "$id": "https://nexo.invalid/schema/pg009-formal-correspondence-1",
   "title": "PG-009 Executable-to-Formal Correspondence Contract",
   "type": "object",
-  "required": ["version", "domain_mapping", "state_mapping", "assurance_mapping", "coverage"],
+  "required": [
+    "version",
+    "domain_mapping",
+    "state_mapping",
+    "assurance_mapping",
+    "coverage"
+  ],
   "properties": {
-    "version": {"type": "string"},
+    "version": {
+      "type": "string"
+    },
     "domain_mapping": {
       "type": "object",
-      "additionalProperties": {"type": "string"}
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "state_mapping": {
       "type": "object",
-      "additionalProperties": {"type": "string"}
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "assurance_mapping": {
       "type": "object",
-      "additionalProperties": {"type": "string"}
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "coverage": {
       "type": "object",
-      "required": ["component_to_domain", "transitive_closure", "graph_fingerprint", "finding_taxonomy"],
+      "required": [
+        "component_to_domain",
+        "transitive_closure",
+        "graph_fingerprint",
+        "finding_taxonomy"
+      ],
       "properties": {
-        "component_to_domain": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]},
-        "transitive_closure": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]},
-        "graph_fingerprint": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]},
-        "finding_taxonomy": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]}
+        "component_to_domain": {
+          "enum": [
+            "MAPPED",
+            "PARTIAL",
+            "UNMAPPED"
+          ]
+        },
+        "transitive_closure": {
+          "enum": [
+            "MAPPED",
+            "PARTIAL",
+            "UNMAPPED"
+          ]
+        },
+        "graph_fingerprint": {
+          "enum": [
+            "MAPPED",
+            "PARTIAL",
+            "UNMAPPED"
+          ]
+        },
+        "finding_taxonomy": {
+          "enum": [
+            "MAPPED",
+            "PARTIAL",
+            "UNMAPPED"
+          ]
+        }
       }
     }
+  },
+  "domain_mapping": {
+    "hardware": "Domains",
+    "host": "Domains",
+    "kernel": "Domains",
+    "hypervisor": "Domains",
+    "runtime": "Domains",
+    "storage": "Domains",
+    "network": "Domains",
+    "dns": "Domains",
+    "clock": "Domains",
+    "identity": "Domains",
+    "credential": "Domains",
+    "kms": "Domains",
+    "trust_root": "Domains",
+    "policy": "Domains",
+    "configuration": "Domains",
+    "artifact": "Domains",
+    "builder": "Domains",
+    "package": "Domains",
+    "model_provider": "Domains",
+    "data_source": "Domains",
+    "operator": "Domains",
+    "admin": "Domains",
+    "observability": "Domains",
+    "coordination": "Domains",
+    "recovery": "Domains",
+    "schema_semantics": "Domains"
+  },
+  "state_mapping": {
+    "KNOWN": "dependencyState",
+    "UNKNOWN": "dependencyState",
+    "COMPROMISED": "compromisedDomains",
+    "STALE": "dependencyState",
+    "INVALIDATED": "dependencyState"
+  },
+  "assurance_mapping": {
+    "I0": "assuranceState",
+    "I1": "assuranceState",
+    "I2": "assuranceState",
+    "I3": "assuranceState",
+    "I4": "assuranceState",
+    "I5": "assuranceState"
   }
 }
