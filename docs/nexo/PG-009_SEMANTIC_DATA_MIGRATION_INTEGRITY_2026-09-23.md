@@ -433,3 +433,27 @@ INV-250 — equivalence criteria must include forbidden differences and countere
 
 ## Updated PG-009 status
 PG-009 remains OPEN. The major architectural gap is now narrowed to constructing and testing the actual semantic equivalence specifications, especially for mission state, memory, policy and authority, and then expressing the concurrency protocol in a small formal model suitable for model checking. TLA+ refinement mappings are a suitable formalization direction because they relate concrete implementation behavior to an abstract semantic specification.
+
+
+## Research continuation — first formal concurrency model
+
+A first bounded TLA+ sketch was added at `docs/nexo/formal/PG-009_MIGRATION_CONCURRENCY_SKETCH_2026-09-23.tla`. It models source versions, target versions, backfill, concurrent source writes, divergence, catch-up, authority cutover and an epoch change.
+
+Important status: this is a MODEL SKETCH, not yet a verified theorem. It has not been run through TLC in this environment. TLC is designed to explore finite-state TLA+ models and find counterexamples to invariants; refinement mappings can relate a concrete specification to a higher-level specification. citeturn0search1turn0search17turn0search18
+
+### Formal target
+The first invariant is deliberately simple:
+`authority = New => migrated = Records /\\ divergence = {}`
+Meaning: the new representation cannot become authoritative while required migration work or unresolved divergence remains.
+
+The next model revision must add crash/recovery, duplicate batch replay, late writes racing with cutover, snapshot/version binding, and an explicit semantic equivalence relation. It must also make the phase progression complete; the current sketch intentionally exposes the architecture before claiming verification.
+
+### Why the model matters
+TLA+ is appropriate here because the dangerous behavior is about interleavings, not just individual functions. TLC can explore different action orderings and report counterexample traces when an invariant fails. That gives Nexo a concrete way to turn a discovered migration bug into a regression model rather than leaving it as prose.
+
+### New invariants
+INV-251 — the first formal model must distinguish model sketch from verified model.
+INV-252 — a formal migration invariant is not evidence that the implementation satisfies it until the model is checked and the implementation is separately validated.
+INV-253 — authority cutover must be represented as an explicit state transition in the formal model.
+INV-254 — concurrent writes and catch-up must be represented as separate actions so their interleavings are model-checkable.
+INV-255 — formal verification scope must state the finite bounds/model assumptions under which results hold.
