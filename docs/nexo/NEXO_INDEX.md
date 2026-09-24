@@ -464,3 +464,5 @@ Status: CORRECTED / NOT TLC-VERIFIED.
 - Reconciliation fencing hardening: owner/generation-bound reconciliation actions, recovery/reconciliation mutual exclusion, and stop/revocation invalidation. Formal `4899130f470cb153fe44c3ac5d18b759f74419fc`; continuity `76cc66d7b71ec310f47b40f9d1ac2cf251d3fe02`.
 
 - External-effect identity formal sketch: operation/effect/target binding plus cross-operation substitution, stale-owner, UNKNOWN identity, target mismatch and replay scenarios. Formal `5f8cca047257f74c3448921c16391d0c543aae6a`; fixture `cf7d889ed6b883b01eb0bd2f6162c13742d527a1`; continuity `a7334cf7b415925644a55270a7161cc4fe7a3737`.
+
+- Global architecture reconciliation: `docs/nexo/NEXO_ARCHITECTURE_RESTRUCTURE_AUDIT_2026-09-24.md` — contradiction ledger, canonical layered architecture, unified state-machine rules, assurance-status correction, and remaining holes. Commit `25a8280f93dbde131de92f349da4ec4967f6dafc`.
