@@ -244,3 +244,16 @@ New invariants INV-423..435.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: observability completeness and epistemic boundary integrity.
+
+## Latest PG-009 — epistemic state transitions and uncertainty propagation
+
+Uncertainty is now modeled as a durable state rather than a confidence number. New Epistemic State Contract preserves proposition, scope, provenance, freshness, assumptions, conflicts, verification method and dependencies.
+
+Core rule: no increase in epistemic assurance without an admissible evidence transition. UNKNOWN, CONFLICTING, STALE and PARTIAL critical inputs must propagate conservatively or trigger block/escalation.
+
+New contradiction handling, uncertainty budgets, epistemic dependency lineage and recovery semantics.
+
+New invariants INV-449..464.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: epistemic closure and decision-theoretic action under uncertainty.
