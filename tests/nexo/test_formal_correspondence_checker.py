@@ -6,6 +6,7 @@ class CorrespondenceTests(unittest.TestCase):
         return {
             "claim_id": "x",
             "assurance_level": "I4",
+            "components": [{"component_id": "c1", "dependency_refs": ["d1"]}],
             "dependencies": [
                 {"dependency_id": "d1", "domain": "host", "state": "KNOWN"},
                 {"dependency_id": "d2", "domain": "trust_root", "state": "COMPROMISED"},
@@ -18,6 +19,10 @@ class CorrespondenceTests(unittest.TestCase):
             "domain_mapping": {"host": "Domains", "trust_root": "Domains"},
             "state_mapping": {"KNOWN": "dependencyState", "COMPROMISED": "compromisedDependencies"},
             "assurance_mapping": {"I4": "assuranceState"},
+            "component_mapping": {"c1": {"dependency_refs": "ComponentDependencyRefs"}},
+            "dependency_relation": {"d1": "DependencyDependsOn", "d2": "DependencyDependsOn"},
+            "failure_domain_mapping": {},
+            "trust_root_mapping": {},
             "coverage": {
                 "component_to_domain": "PARTIAL",
                 "transitive_closure": "PARTIAL",
