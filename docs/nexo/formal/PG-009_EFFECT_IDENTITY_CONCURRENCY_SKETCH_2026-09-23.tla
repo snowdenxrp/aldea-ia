@@ -475,3 +475,47 @@ InvReceiptNotWorldTruth ==
    authority. Recovery preserves the previous invariant history and records the
    change as a new governance event.
 *)
+
+
+(* POLICY / INVARIANT VERSION TRANSITION FOR IN-FLIGHT OPERATIONS
+   A material policy/invariant change creates a new governance boundary. Prepared
+   operations are not all equivalent: their disposition depends on reversibility,
+   external observability, current authority, and whether the changed rule applies
+   to the operation's effect.
+
+   Transition states:
+     PREPARED_UNDER_OLD_RULE
+     FENCED_FOR_REVALIDATION
+     REVALIDATED_UNDER_NEW_RULE
+     DRAINING_OLD_RULE
+     EXECUTING_LEGACY_ALLOWED
+     ABORT_REQUIRED
+     RECONCILIATION_REQUIRED
+     QUARANTINED
+
+   A material rule change must identify an effective boundary (epoch/version/time
+   plus ordering semantics). New admissions use the new rule. In-flight operations
+   must be classified at that boundary; they cannot silently acquire new authority.
+
+   Classification principles:
+     - NOT_STARTED + affected by new restrictive rule -> re-admit or block.
+     - PREPARED + not externally observable -> revalidate before dispatch.
+     - IN_FLIGHT + irreversible -> cannot be assumed cancellable; enter governed
+       drain/reconciliation path and do not invent rollback.
+     - IN_FLIGHT + safely cancellable -> cancel only under target-supported semantics,
+       then verify cancellation/world state.
+     - EFFECT_ALREADY_COMMITTED -> preserve history; verify against the new rule,
+       but never rewrite history as if the old rule had not existed.
+
+   A rule change must not silently widen critical authority. Restrictive changes may
+   reduce availability; expansive changes require explicit governance admission and
+   do not retroactively authorize already-executed effects.
+
+   The transition fence binds at least policy/invariant version, authority epoch,
+   operation/effect identity, and world/precondition boundary. If any required
+   binding is unknown, critical dispatch is blocked or quarantined.
+
+   Schema migration is separate from policy migration: a new data/schema version
+   does not itself authorize a new interpretation or operation. Historical events
+   remain bound to the policy/invariant versions governing them.
+*)
