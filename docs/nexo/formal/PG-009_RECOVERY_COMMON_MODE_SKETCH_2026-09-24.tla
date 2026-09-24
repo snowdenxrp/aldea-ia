@@ -20,6 +20,9 @@ VARIABLES
   recoveryToken,
   recoveryGeneration,
   recoveryLeaseValid,
+  reconciliationOwner,
+  reconciliationGeneration,
+  reconciliationLeaseValid,
   releaseAuthorized,
   worldState,
   dependencyState,
@@ -29,7 +32,7 @@ VARIABLES
 
 vars ==
   <<stopState, gateState, processState, authorityEpoch, stopEpoch,
-    recoveryEpoch, recoveryAuthorityEpoch, admittedAuthorityEpoch, recoveryOwner, recoveryToken, recoveryGeneration, recoveryLeaseValid, releaseAuthorized,
+    recoveryEpoch, recoveryAuthorityEpoch, admittedAuthorityEpoch, recoveryOwner, recoveryToken, recoveryGeneration, recoveryLeaseValid, reconciliationOwner, reconciliationGeneration, reconciliationLeaseValid, releaseAuthorized,
     worldState, dependencyState, compromisedDependencies, assuranceState,
     commitCount>>
 
@@ -53,6 +56,9 @@ Init ==
   /\ recoveryToken = [o \in Operations |-> "NONE"]
   /\ recoveryGeneration = [o \in Operations |-> 0]
   /\ recoveryLeaseValid = [o \in Operations |-> FALSE]
+  /\ reconciliationOwner = [o \in Operations |-> "NONE"]
+  /\ reconciliationGeneration = [o \in Operations |-> 0]
+  /\ reconciliationLeaseValid = [o \in Operations |-> FALSE]
   /\ releaseAuthorized = [o \in Operations |-> FALSE]
   /\ worldState = [o \in Operations |-> "UNKNOWN"]
   /\ dependencyState = [o \in Operations |-> [d \in Dependencies |-> "KNOWN"]]
@@ -93,12 +99,30 @@ Quarantine(o) ==
       recoveryOwner,recoveryToken,recoveryGeneration,recoveryLeaseValid,releaseAuthorized,worldState,
       dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
+AcquireReconciliation(o, owner) ==
+  /\ owner # "NONE"
+  /\ reconciliationOwner[o] = "NONE"
+  /\ reconciliationLeaseValid[o] = FALSE
+  /\ reconciliationOwner' = [reconciliationOwner EXCEPT ![o] = owner]
+  /\ reconciliationGeneration' = [reconciliationGeneration EXCEPT ![o] = @ + 1]
+  /\ reconciliationLeaseValid' = [reconciliationLeaseValid EXCEPT ![o] = TRUE]
+  /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
+      recoveryOwner,recoveryToken,recoveryGeneration,recoveryLeaseValid,releaseAuthorized,worldState,dependencyState,compromisedDependencies,assuranceState,commitCount>>
+
+ExpireReconciliationLease(o) ==
+  /\ reconciliationLeaseValid[o]
+  /\ reconciliationLeaseValid' = [reconciliationLeaseValid EXCEPT ![o] = FALSE]
+  /\ reconciliationOwner' = [reconciliationOwner EXCEPT ![o] = "NONE"]
+  /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
+      recoveryOwner,recoveryToken,recoveryGeneration,recoveryLeaseValid,reconciliationGeneration,releaseAuthorized,worldState,dependencyState,compromisedDependencies,assuranceState,commitCount>>
+
 AcquireRecovery(o, owner, expectedGeneration) ==
   /\ processState[o] = "QUARANTINED"
   /\ stopState[o] = "QUARANTINED"
   /\ owner # "NONE"
   /\ recoveryOwner[o] = "NONE"
   /\ recoveryToken[o] # "CURRENT"
+  /\ reconciliationLeaseValid[o] = FALSE
   /\ expectedGeneration = recoveryGeneration[o] + 1
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
   /\ recoveryGeneration' = [recoveryGeneration EXCEPT ![o] = expectedGeneration]
@@ -208,6 +232,7 @@ RevalidateAssurance(o, owner, generation) ==
   /\ recoveryOwner[o] = owner
   /\ generation = recoveryGeneration[o]
   /\ recoveryLeaseValid[o]
+  /\ reconciliationLeaseValid[o] = FALSE
   /\ recoveryAuthorityEpoch[o] = authorityEpoch[o]
   /\ GraphReferencesKnown
   /\ stopState[o] = "QUARANTINED"
@@ -267,6 +292,7 @@ Release(o) ==
 
 Commit(o) ==
   /\ processState[o] = "ADMITTED"
+  /\ reconciliationLeaseValid[o] = FALSE
   /\ stopState[o] = "CLEAR"
   /\ gateState[o] = "OPEN"
   /\ assuranceState[o] = "NORMAL"
@@ -296,6 +322,12 @@ RecoveryGenerationMonotonic ==
 
 RecoveryGenerationOnlyAdvancesOnAcquire ==
   \A o \in Operations : recoveryGeneration[o] >= 0
+
+ReconciliationLeaseDoesNotGrantRecoveryAuthority ==
+  \A o \in Operations : reconciliationLeaseValid[o] => recoveryLeaseValid[o] = FALSE
+
+ReconciliationGenerationNonNegative ==
+  \A o \in Operations : reconciliationGeneration[o] >= 0
 
 CurrentOwnerMatchesGeneration ==
   \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT"
@@ -525,7 +557,8 @@ ReleaseAuthorizedImpliesEligible ==
   - graph validity is required before revalidation/authorization;
   - recoveryEpoch is distinct from stopEpoch;
   - recoveryAuthorityEpoch binds recovery to the authority epoch that admitted it;
-  - recoveryGeneration + recoveryLeaseValid model explicit owner-generation fencing; takeover requires the next generation and invalidates stale-owner actions;
+  - recoveryGeneration + recoveryLeaseValid model explicit owner-generation fencing;
+  - reconciliationOwner + reconciliationGeneration + reconciliationLeaseValid are separate coordination state and do not grant recovery authority; takeover requires the next generation and invalidates stale-owner actions;
   - lease validity is a coordination fence, not proof that an external effect is absent or reversible;
   - admittedAuthorityEpoch prevents authority revocation between Release and Commit from becoming a stale-admission race;
   - authority revocation explicitly invalidates recovery and release authorization;
@@ -541,6 +574,7 @@ ReleaseAuthorizedImpliesEligible ==
   - no Byzantine behavior;
   - no CAS/linearizability semantics;
   - no operation/effect identity;
+  - reconciliation and recovery leases are modeled as mutually exclusive for the operation, but the underlying storage/CAS primitive is not modeled;
   - no artifact/config/runtime digest;
   - no update transaction;
   - no explicit emergency enforcement proof;
