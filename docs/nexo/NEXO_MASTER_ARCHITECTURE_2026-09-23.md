@@ -377,3 +377,17 @@ No confundir un modelo mejor con mayor autoridad.
 
 ---
 Este documento es un snapshot arquitectónico transferible. No sustituye las fuentes originales, código, pruebas ni evidencia de implementación.
+
+
+## Current PG-009 continuation — 2026-09-24
+
+The snapshot above is historical baseline content. The current PG-009 state is maintained by the canonical index, continuity log, and dated delta artifacts; this section preserves the link without rewriting historical sections.
+
+### Recovery/restart fencing
+After emergency STOP, restart is not release. A durable recovery fence binds stop/gate/recovery epochs, recovery ownership, current authority, capabilities, policy/invariant/dependency versions, world/reconciliation conditions and artifact/config/runtime admission. Checkpoint restore restores state, not authority. INV-629..648. Artifact: docs/nexo/PG-009_RECOVERY_RESTART_FENCING_2026-09-24.md. Formal sketch: docs/nexo/formal/PG-009_RECOVERY_RESTART_FENCING_SKETCH_2026-09-24.tla. NOT TLC-VERIFIED.
+
+### Safety-plane update / rollback / bootstrap trust
+A signed or attested artifact is not automatically authorized or semantically safe. Safety-plane updates require digest binding, provenance/attestation verification, dependency closure, semantic/policy compatibility, common-mode review, independent admission, staged activation, post-activation verification and reconciliation. Rollback is a new governed transition; recovery artifacts require an independently protected authenticated path. INV-649..668. Artifact: docs/nexo/PG-009_SAFETY_PLANE_UPDATE_ROLLBACK_BOOTSTRAP_2026-09-24.md. NOT implemented/TLC-verified.
+
+### Current PG-009 next point
+Common-mode/correlated-failure analysis across safety, recovery, update, identity, storage, network, policy, verifier and executor domains; then expand/correct formal modeling and run TLC when tooling is available.
