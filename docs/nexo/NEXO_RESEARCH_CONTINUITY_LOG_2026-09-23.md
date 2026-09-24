@@ -501,3 +501,31 @@ Emergency-stop assurance is now treated as an evidence chain, not a boolean:
 ### Next research point
 
 Recovery/restart fencing after emergency stop; then safety-plane update/rollback and bootstrap trust; common-mode/correlated-failure analysis; and actual TLC verification.
+
+
+## Latest PG-009 — recovery/restart fencing — 2026-09-24
+
+Research question: after emergency STOP, what prevents stale processes, capabilities, leases, checkpoints, queued operations or recovery workers from regaining critical authority after restart?
+
+Finding: restart is not release. A durable Recovery Fence binds stop/gate/recovery epochs, recovery owner/token, current authority, capability state, policy/invariant/dependency versions, world/reconciliation conditions and artifact/config/runtime admission. Checkpoint restore restores state but not authority. Lease expiry transfers coordination but does not prove effect absence or STOP release. New operation IDs cannot bypass unresolved effect uncertainty.
+
+New invariants INV-629..648.
+Artifact: docs/nexo/PG-009_RECOVERY_RESTART_FENCING_2026-09-24.md. Formal sketch: docs/nexo/formal/PG-009_RECOVERY_RESTART_FENCING_SKETCH_2026-09-24.tla. NOT TLC-VERIFIED.
+Git commits: architecture 5c6630366e36acbce82b01ad4caa39c1e31ba4b; formal 32a4c9134d74c16fad618bf9f2091ada7467d641; continuity 125e0e82991605b3231ba138391f5684667e6e25.
+
+## Latest PG-009 — safety-plane update / rollback / bootstrap trust — 2026-09-24
+
+Research question: how can Nexo update/recover the control plane that enforces safety without the update mechanism itself replacing or weakening the protections?
+
+Cross-check: NIST SP 800-193 supports authenticated update/recovery and independently protected recovery mechanisms. SLSA 1.2 defines verifiable provenance and increasing build tamper resistance. GitHub Artifact Attestations explicitly states that attestations are not themselves proof of artifact security. Sigstore Policy Controller demonstrates policy-enforced admission based on verifiable signatures/attestations and digest binding. These sources support the pattern but do not prove Nexo safety.
+
+Architectural result: UPDATE AUTHENTICITY != UPDATE AUTHORIZATION; PROVENANCE != SAFETY; SIGNATURE VALIDITY != SEMANTIC COMPATIBILITY; ROLLBACK != TIME TRAVEL. Safety-plane updates require digest binding, provenance/attestation verification, dependency closure, semantic/policy compatibility, common-mode analysis, independent admission, staged activation, verification and reconciliation. Recovery must retain an independently protected authenticated path when the active plane is compromised. STOP remains sticky during update/reboot/recovery.
+
+New invariants INV-649..668.
+Artifact: docs/nexo/PG-009_SAFETY_PLANE_UPDATE_ROLLBACK_BOOTSTRAP_2026-09-24.md. Continuity checkpoint: docs/nexo/NEXO_CONTINUITY_DELTA_2026-09-24_SAFETY_PLANE.md.
+Git commits: artifact de070ffcdfb6b55ddeb9aef189a5da509ea74157; continuity dbcde2931da777e3cbd0656645caeb6180b15310.
+
+Status: DESIGNED / RESEARCH-CROSS-CHECKED. Implementation, fault injection and TLC verification are not claimed.
+
+## Next PG-009 research point
+Common-mode/correlated-failure analysis across safety, recovery, update, identity, storage, network, policy, verifier and executor domains. Then correct/expand formal models, implement fault injection, and run TLC when tooling is available. Canonical documentation must remain synchronized without erasing historical snapshots.
