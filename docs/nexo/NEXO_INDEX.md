@@ -180,3 +180,6 @@ Risk is now evaluated over interacting operations, not only isolated labels. Mis
 
 ## Latest PG-009: dynamic risk drift
 Admissions are now bounded by explicit admission epochs and revalidation deadlines. Material world/policy/authority/dependency/target/risk/evidence drift invalidates future critical execution until revalidated. Historical authorization remains immutable history but does not grant future authority. In-flight irreversible external effects are not assumed cancellable. Admission renewal is a new decision, and repeated instability can become REVALIDATION_UNSTABLE/BLOCKED. Invariants INV-344..350. Formal commit: d35f78faf8c52188d1103c8db766f7393f26afa8. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: admission-to-execution binding
+Critical effects now require an explicit Execution Binding that ties admission to the exact execution context: operation/effect/payload/target/capability/policy/authority/risk/dependency/world precondition plus admission epoch and relevant tool/environment identity. The enforcement gateway recomputes/verifies this binding; material mismatches fail closed. Integrity/signature does not prove semantic truth. TOCTOU revalidation must converge on the exact binding consumed. Invariants INV-351..358. Formal commit: 6fe29c5f30b45e0644e8d7c935e1209752ad41db. **NOT TLC-VERIFIED.**
