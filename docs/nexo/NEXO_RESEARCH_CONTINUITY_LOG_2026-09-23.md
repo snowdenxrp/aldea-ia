@@ -1064,3 +1064,25 @@ Artifacts:
   Commit: dbe8f569943d30f15a135db3676cd07ab7f5540b
 
 Decision: do NOT patch V3 incrementally. Perform another structural pass before evaluator implementation. SANY/TLC NOT RUN; runtime tests NOT RUN.
+
+
+### 2026-09-23 — canonical core V4 structural pass
+
+V4 separated first-class EffectState from EvidenceRecord, scoped recovery/reconciliation generations per operation, added logical evidence freshness, scoped stop epochs per operation, and made release authorization consumable by Commit.
+
+Immediate audit found remaining structural work:
+- record schemas and finite domains are not yet SANY-ready;
+- operation-to-authority-domain mapping is still implicit;
+- STOP enforcement/verification transitions are incomplete;
+- effect transition relation is incomplete;
+- post-authorization invalidation on material context changes needs explicit transitions;
+- temporal generation invariants remain to be written;
+- stop/release linearization remains unproven.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V4.tla
+  Commit: 046af54dfaba260c509f078dca007b02839b2e2e
+- docs/nexo/NEXO_CANONICAL_CORE_V4_AUDIT.md
+  Commit: 81300a674fdc7007b1bb27b4aa473852c08af367
+
+Decision: V4 is not final; no evaluator implementation yet. SANY/TLC NOT RUN; runtime tests NOT RUN.
