@@ -1515,3 +1515,99 @@ The formal program should eventually add a separate specification-validation lay
 - negative tests.
 
 The operational TLA+ artifacts remain **NOT TLC-VERIFIED**. No TLC result is claimed.
+
+
+## Research continuation — invariant completeness under evolving hazards and goals
+
+Research cross-check: NASA separates requirements validation from verification and requires bidirectional traceability; NIST AI RMF treats risk mapping as continuous across the AI lifecycle; NASA formal-methods work identifies validation of requirements/specifications themselves as a distinct problem and includes consistency, completeness, scenarios and vacuity as complementary checks. Sources: NASA requirements validation/traceability, NIST AI RMF, NASA NTRS formal-methods research. 
+
+### New distinction
+
+Nexo now separates:
+- Invariant validity — each specified invariant holds in the declared model.
+- Invariant adequacy — each invariant captures its intended obligation.
+- Invariant-set completeness — the collection covers required hazards/goals/domains.
+- Invariant-set consistency — the collection has no unresolved contradictions.
+- Invariant-set assurance — independent evidence supports completeness/adequacy.
+
+A proof of every member does not prove the set is complete.
+
+### Hazard-to-invariant derivation
+
+Critical invariants must be derived through a governed chain:
+
+MISSION/GOAL → HAZARD/FAILURE MODE → SAFETY OBJECTIVE → REQUIRED PROPERTY → INVARIANT → ENFORCEMENT → VERIFICATION
+
+A hazard with no applicable invariant/control disposition is COVERAGE_GAP or UNKNOWN, never implicitly safe. An invariant without a parent goal, hazard, policy obligation or explicitly governed self-derived rationale is an orphan requiring review.
+
+### Completeness cross-check
+
+The hazard/invariant inventory must be cross-checked across multiple planes:
+1. mission and constitution goals;
+2. threat model and abuse cases;
+3. failure-mode analysis;
+4. dependency/conflict graph;
+5. incidents and counterexamples;
+6. environment assumptions;
+7. world-state observations;
+8. policy/authority constraints;
+9. implementation/runtime behavior;
+10. adversarial/red-team scenarios.
+
+Divergence between planes is explicit; absence from one inventory does not prove absence in the world.
+
+### Change-driven completeness
+
+A reviewed invariant set can become incomplete after goal/mission change, new threat or incident, dependency topology change, new external system, policy/authority change, execution-mode change, environment/world change, model/tool/runtime change, newly discovered common-mode dependency, semantic migration, or changed consequence/risk tolerance.
+
+Material change triggers hazard/invariant impact analysis, not merely regression testing.
+
+### Coverage matrix
+
+Introduce a governed matrix:
+
+hazard_id → safety_objective → invariant_ids → protected_state → dependencies → enforcement → verification → evidence → residual_gap
+
+Every critical hazard ends in one of: COVERED, PARTIALLY_COVERED, MITIGATED_BY_EXTERNAL_CONTROL, ACCEPTED_RESIDUAL_RISK, UNKNOWN, BLOCKED. UNKNOWN is not coverage.
+
+### Residual-risk honesty
+
+Nexo distinguishes prevention, detection, blast-radius limitation, external mitigation and accepted residual risk. Detection after an irreversible effect is not prevention. External mitigation is not silently promoted into an invariant claim.
+
+### Completeness challenge set
+
+Critical invariant sets require known hazards, bad-state reachability, boundary conditions, concurrent interleavings, dependency failures, stale/unknown world state, authority/policy transitions, adversarial inputs, component omission, hidden/global state, common-mode failures, recovery/crash paths, incidents and deliberately omitted dependencies.
+
+Deliberate omission tests ask whether removing an invariant/dependency creates an accepted bad state. No effect may indicate redundancy or an inadequate test/model; it is not automatic proof of irrelevance.
+
+### Completeness assurance classes
+
+HC0 UNKNOWN
+HC1 INVENTORIED
+HC2 TRACEABLE
+HC3 CROSS-CHECKED
+HC4 EVIDENCE-BACKED
+HC5 INDEPENDENTLY_REVIEWED
+
+These classes describe assurance about the hazard/invariant inventory, not universal system safety.
+
+### New invariants
+
+INV-411 — proving every specified invariant does not prove the invariant set is complete.
+INV-412 — every critical hazard/failure mode must map to a governed safety objective and applicable invariant/control disposition.
+INV-413 — a hazard with no applicable invariant/control disposition is COVERAGE_GAP or UNKNOWN, never implicitly SAFE.
+INV-414 — every critical invariant must have a traceable parent goal, hazard, policy obligation, or explicitly governed self-derived rationale.
+INV-415 — hazard/invariant completeness must be cross-checked across independent information planes appropriate to the system.
+INV-416 — material goal, threat, dependency, environment, policy, authority, runtime or world changes trigger completeness impact analysis.
+INV-417 — mitigative controls must not be represented as preventive invariants unless they actually prevent the protected effect.
+INV-418 — detection after an irreversible effect does not establish prevention.
+INV-419 — residual risk and accepted risk remain distinct from invariant satisfaction.
+INV-420 — UNKNOWN coverage cannot satisfy a critical completeness threshold.
+INV-421 — deliberately removed/omitted hazards, invariants and dependencies participate in negative completeness tests where feasible.
+INV-422 — completeness assurance is scoped, versioned and freshness-bounded; it is not permanent.
+
+### Architectural result
+
+MISSION/CONSTITUTION → GOAL → HAZARD/FAILURE MODEL → SAFETY OBJECTIVE → INVARIANT SPECIFICATION → ADEQUACY → COVERAGE → ENFORCEMENT → INDEPENDENT VERIFICATION → WORLD EVIDENCE → ADMISSION
+
+PG-009 remains OPEN.
