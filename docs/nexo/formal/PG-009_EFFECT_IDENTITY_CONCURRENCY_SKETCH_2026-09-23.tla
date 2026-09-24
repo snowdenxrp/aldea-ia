@@ -184,3 +184,26 @@ InvReceiptNotWorldTruth ==
    imply that an already-dispatched external effect was cancelled. Recovery must
    reconcile the external world independently.
 *)
+
+
+(* RECONCILIATION-LEASE REFINEMENT
+   ReservationLease and ReconciliationLease are distinct coordination objects.
+   A reservation controls admission to a new external attempt; a reconciliation
+   lease controls who may investigate an already-uncertain attempt.
+
+   ReconcileClaim(effectKey, reconciler, epoch, lease) must be atomic. At most
+   one active reconciler may own a critical effect key at a given reconciliation
+   epoch. A second reconciler must observe ACTIVE_RECONCILIATION and not perform
+   a competing irreversible retry.
+
+   Reconciliation lease expiry does not imply effect absence. A successor first
+   acquires reconciliation ownership, preserves the predecessor attempt history,
+   and re-reads the external world using a fresh observation boundary.
+
+   A stale reconciler cannot commit a new world fact after ownership changes.
+   Commit of reconciliation evidence must bind effectKey + reconciliationEpoch
+   + owner/fencing token + observation freshness/version.
+
+   This prevents split-brain recovery: two recoverers cannot both conclude that
+   UNKNOWN means ABSENT and independently trigger the same irreversible effect.
+*)
