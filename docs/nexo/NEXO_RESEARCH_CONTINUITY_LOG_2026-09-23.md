@@ -427,3 +427,14 @@ New Human Relationship Contract. Separate principal identity, operational author
 New invariants INV-539..556.
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: delegated human intent and consent continuity.
+
+
+## Latest PG-009 — delegated human intent and consent continuity
+
+Cross-check with NIST SP 800-63-4 identity/assertion separation, authentication intent concepts, and NIST AI RMF guidance on differentiated human roles and oversight. citeturn0search1turn0search8turn0search7turn0search20
+
+New Intent Contract and classes DIRECT_INSTRUCTION, PREFERENCE, STANDING_AUTHORIZATION, TEMPORARY_DELEGATION, CONDITIONAL_AUTHORIZATION, CONSENT, INFERRED_INTENT, AMBIGUOUS/UNKNOWN. Added inference/preference/consent firewalls, confirmation ladder, intent drift/revalidation, explicit prohibitions, silence rules, revocation/supersession and conflict handling.
+
+New invariants INV-557..576.
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: human override, interruption and revocation during active execution.
