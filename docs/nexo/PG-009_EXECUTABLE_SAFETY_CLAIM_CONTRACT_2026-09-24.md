@@ -90,3 +90,40 @@ Its output then becomes an input to the existing admission/recovery/update gates
 - TLC: NOT RUN.
 - Fault injection: NOT RUN.
 - Production safety claim: NOT MADE.
+
+## Deterministic evaluator implementation — 2026-09-24
+Implemented the first non-authoritative evaluator:
+`src/nexo/dependency_closure_evaluator.py`
+
+Tests:
+`tests/nexo/test_dependency_closure_evaluator.py`
+
+Implementation commit: `8a9ca450e1e473f4478e1359f0004650ca59853d`
+Test commit: `90090693cadcaa1b3e4a34dfc7eed1ca377a3ba8`
+
+The evaluator currently handles:
+- transitive dependency closure;
+- missing dependency detection;
+- dependency cycles;
+- UNKNOWN/COMPROMISED/STALE/INVALIDATED states;
+- shared failure-domain detection;
+- shared trust-root detection;
+- shared authority detection;
+- conservative assurance ceiling calculation;
+- explicit non-authority output fields.
+
+The assurance ceiling is a conservative architecture heuristic, not a reliability proof or certification. It must eventually be parameterized against the deployment's actual independence evidence and formal model.
+
+### Test execution status
+A local test run was attempted, but the execution environment could not fetch the newly committed repository files because outbound DNS/network access was unavailable. Result: **tests not executed**. No passing test result is claimed.
+
+This preserves the distinction:
+IMPLEMENTED ≠ TESTED ≠ VERIFIED.
+
+## New evaluator invariants
+INV-691 — dependency evaluator cannot grant authority.
+INV-692 — dependency evaluator cannot execute effects.
+INV-693 — evaluator closure includes transitive dependencies or reports the unresolved edge.
+INV-694 — missing/cyclic dependency references are blocking findings.
+INV-695 — shared relevant failure domains/trust roots/authority are exposed as correlated pairs.
+INV-696 — evaluator output cannot be treated as safety verification merely because schema validation succeeds.
