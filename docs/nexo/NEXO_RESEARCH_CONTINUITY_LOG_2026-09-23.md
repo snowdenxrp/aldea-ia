@@ -142,3 +142,8 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    normalized dual-read comparison, protected authority cutover, durable migration journal,
    crash-safe batch recovery, old-path retirement and invariants INV-231..240.
    Cross-check: Fowler Parallel Change/CI/Canary and Debezium schema-history/schema-evolution guidance.
+
+32. PG-009 semantic-equivalence research:
+   defined data-class-specific equivalence, non-vacuity requirements, three-level proof,
+   explicit concurrent-write interleavings, snapshot/consistency boundaries, and independent
+   acceptance relation. Added invariants INV-241..250. Next: formal small TLA+ model and policy/authority historical compatibility.
