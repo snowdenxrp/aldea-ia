@@ -88,6 +88,19 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(r["maximum_admissible_assurance"],"I1")
         self.assertFalse(r["admissible"])
 
+    def test_unrelated_compromised_dependency_does_not_poison_claim_scope(self):
+        c=base_claim()
+        c["dependencies"].append({
+            "dependency_id":"unrelated",
+            "domain":"storage",
+            "state":"COMPROMISED",
+            "failure_domain":"unrelated-fd",
+        })
+        r=evaluate_claim(c)
+        self.assertNotIn("unrelated", r["compromised_dependencies"])
+        self.assertEqual(r["maximum_admissible_assurance"],"I2")
+        self.assertFalse(r["admissible"])
+
     def test_missing_dependency_is_blocking(self):
         c=base_claim()
         c["components"][0]["dependency_refs"].append("missing")
