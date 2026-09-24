@@ -1040,3 +1040,27 @@ Artifacts:
 Key decision: ReleaseEligible is derived from lifecycle, exact effect binding, current authority/safety context, fresh valid evidence, dependencies, STOP fence and current coordination fence. It is not a durable authority bit.
 
 Status: DESIGNED/SPECIFIED. Implementation pending. Runtime tests NOT RUN. SANY/TLC NOT RUN.
+
+
+### 2026-09-23 — canonical core V3 adversarial audit
+
+Drafted V3 to expose critical transitions, then audited it rather than treating the draft as correct.
+
+Findings:
+- release authorization was not actually consumed by Commit;
+- STOP was too globally modeled and lacked enforcement stages/scope;
+- authority epoch was globally scoped rather than authority-domain scoped;
+- version invalidation lacked materiality and trust/dependency transitions;
+- freshness was only a boolean placeholder;
+- reconciliation generation was global rather than operation-scoped;
+- external effect state was missing as a first-class object;
+- linearization semantics were implicit;
+- V3 was not execution-ready TLA+.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V3.tla
+  Commit: c52548705a47384fa7645e51f6476c603cfc9d01
+- docs/nexo/NEXO_CANONICAL_CORE_V3_AUDIT.md
+  Commit: dbe8f569943d30f15a135db3676cd07ab7f5540b
+
+Decision: do NOT patch V3 incrementally. Perform another structural pass before evaluator implementation. SANY/TLC NOT RUN; runtime tests NOT RUN.
