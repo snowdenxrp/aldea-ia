@@ -175,4 +175,11 @@ THEOREM Spec => []InvReceiptNotWorldTruth
 THEOREM Spec => []InvVerifiedRequiresObservation
 THEOREM Spec => []InvRevocationBlocksUnstarted
 THEOREM Spec => []InvStableIdentity
+
+(***********************************************************
+Next refinement: this is intentionally a single-effect sketch.
+It is NOT the final semantic-deduplication model until concurrent
+operations, legitimate repeats, semantic collisions and stale
+observations are modeled and TLC-checked.
+***********************************************************)
 ====
