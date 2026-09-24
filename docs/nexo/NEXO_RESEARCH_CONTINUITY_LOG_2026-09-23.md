@@ -553,3 +553,8 @@ New formal artifact: `docs/nexo/formal/PG-009_RECOVERY_COMMON_MODE_SKETCH_2026-0
 It extends the recovery sketch with explicit dependency domains, UNKNOWN dependency state, compromised-domain state, assurance degradation and release blocking for unknown/compromised modeled dependencies; recovery_epoch remains distinct from stop_epoch.
 Status: NOT TLC-VERIFIED. Git commit: `b713cbad246da9769f916ac6a107f1f03378f322`.
 Remaining gaps are recorded explicitly: component-to-domain mapping, transitive closure, partial/Byzantine compromise, CAS semantics, operation/effect identity, artifact/config/runtime digests, update transactions, enforcement proof, timing/freshness and liveness/fairness.
+
+## PG-009 — executable safety-claim / dependency-closure contract — 2026-09-24
+Created machine-readable schema `docs/nexo/schema/SAFETY_CLAIM_DEPENDENCY_CLOSURE.schema.json` and architecture contract `docs/nexo/PG-009_EXECUTABLE_SAFETY_CLAIM_CONTRACT_2026-09-24.md`.
+Schema commit: `7d05723135fe75ace2874a4f2ee37626c547c364`. Contract commit: `812bf58903ac40d1173145b1eb01a1b53b3444e5`.
+The planned evaluator is deterministic and non-authoritative. It resolves dependency closure, failure-domain overlap, correlated pairs and assurance restrictions. It cannot execute effects or grant authority. Schema validity does not imply safety verification.
