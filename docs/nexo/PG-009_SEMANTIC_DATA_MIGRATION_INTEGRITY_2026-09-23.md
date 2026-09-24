@@ -269,3 +269,86 @@ Remaining research:
 4. Prove crash-safe resume without duplicate or skipped transformations.
 5. Formally model checkpoint/memory migration in TLA+.
 6. Test policy/authority migration against historical decisions.
+
+## Research continuation — concurrent writes, dual-read/dual-write and cutover safety
+
+### Cross-check
+Parallel Change / expand-contract is a well-established pattern: expand compatibility, migrate consumers/data, then contract only after the old path is no longer needed. Fowler also describes reversible intermediate steps and canary/parallel deployment as applications of the pattern. citeturn0search0turn0search1turn0search3
+
+Debezium documentation provides a concrete warning relevant to Nexo: schema evolution can validate or alter structure without proving semantic compatibility, and CDC/schema-history mechanisms must preserve the schema that applied at each historical position. citeturn0search6turn0search16
+
+### New problem: the moving-source problem
+A backfill reads source state at time T0, but live writes continue at T1, T2, and later. Therefore:
+BACKFILL_COMPLETE does not imply TARGET_CURRENT.
+A migration must establish a convergence boundary, not merely a completion percentage.
+
+### Migration synchronization modes
+Nexo now distinguishes:
+- QUIESCED_SOURCE — source writes fenced/paused.
+- SNAPSHOT_BOUND — migration is bound to a consistent source snapshot/version.
+- CDC_CATCHUP — changes after snapshot are captured and applied.
+- DUAL_WRITE — new writes are deliberately represented in both versions.
+- DUAL_READ_COMPARE — reads compare old/new semantic results without changing authority.
+- SHADOW_READ — new representation is observed but not authoritative.
+- CUTOVER_READY — convergence and compatibility gates satisfied.
+- CUTOVER_COMMITTED — authority epoch switched.
+- DRAINING_OLD — old consumers being retired.
+- CONTRACTED — old representation/path removed after final verification.
+
+No single mode is universally safest. The migration contract must choose one based on the storage consistency model and failure modes.
+
+### Dual-write is not automatically safe
+Writing both representations can introduce divergence if one write succeeds and the other fails, if transformations differ, or if writes are applied in different orders. Therefore dual-write requires:
+- one canonical operation_id;
+- deterministic transformation where possible;
+- per-version write evidence;
+- idempotency/retry contract;
+- reconciliation of missing/divergent writes;
+- bounded divergence state;
+- no authority switch while unresolved divergence exists.
+
+### Dual-read comparison
+When both versions can answer the same query, Nexo should compare normalized semantic result, not raw serialization.
+READ_OLD → normalize_old; READ_NEW → normalize_new; then normalize_old approximately equals normalize_new under the declared relation.
+Mismatch classes: REPRESENTATION_DIFFERENCE, SEMANTIC_DIFFERENCE, FRESHNESS_DIFFERENCE, PROVENANCE_DIFFERENCE, UNKNOWN.
+Only semantic equivalence matters for cutover, but freshness/provenance differences can make an apparent match unsafe.
+
+### Cutover is an authority transition
+The new representation must not become authoritative merely because migration coverage reaches 100%.
+Required: source-consistency boundary; backfill complete; post-backfill changes caught up/reconciled; differential/shadow reads within policy; all critical consumers compatible; unresolved divergence zero for required domain; freshness bound satisfied; rollback/recovery boundary defined; authority epoch transition authorized; post-cutover verification active.
+
+### Crash-safe migration controller
+Migration state must be durable and resumable:
+DISCOVERED → SNAPSHOT_BOUND → BACKFILLING → CATCHING_UP → VERIFYING → CUTOVER_PREPARED → CUTOVER → DRAINING → CONTRACTING → VERIFIED
+
+At every state store migration_id, source/target semantic versions, source/target positions, last completed batch, operation IDs, transformation version/hash, error ledger, divergence ledger, authority epoch, policy version, verification evidence and recovery checkpoint.
+
+After crash:
+RECOVER JOURNAL → VERIFY SOURCE POSITION → VERIFY TARGET POSITION → RECONCILE IN-FLIGHT BATCHES → RESUME OR ROLLBACK/REPLAN
+Never infer completed work from a process exit code alone.
+
+### Idempotent batch rule
+Each transformation batch gets a stable operation identity. Replaying a batch must either produce the same target result safely or be detected as already applied and reconciled. If neither is possible, the migration cannot claim crash-safe resumability.
+
+### Old-path retirement
+Contracting is itself a governed transition. Before deleting old fields/events/readers/upcasters: prove no active consumer depends on them; preserve historical interpretation path where required; preserve audit/recovery ability; establish a rollback floor; verify no revoked authority is resurrected by old artifacts.
+
+Historical readability and operational support are separate: an old representation may cease to be active while remaining available to interpret immutable history.
+
+### New invariants
+INV-231 — backfill completion percentage cannot establish migration convergence.
+INV-232 — active source writes require a declared synchronization strategy during migration.
+INV-233 — dual-write divergence blocks critical cutover until reconciled.
+INV-234 — dual-read comparison must compare normalized semantic results, not raw representation alone.
+INV-235 — migration cutover is an authority transition requiring explicit authorization and epoch change.
+INV-236 — crash recovery must use durable migration journal/positions rather than process-local progress.
+INV-237 — replayed migration batches require idempotency or deterministic duplicate detection.
+INV-238 — unresolved source/target divergence blocks critical admission.
+INV-239 — old-path contraction requires consumer/dependency closure and preserved historical interpretation where required.
+INV-240 — migration recovery cannot infer successful external/data effects solely from local process termination.
+
+## Result of this research round
+PG-009 remains OPEN, but the migration controller is now substantially more concrete:
+PROFILE → BIND SOURCE VERSION → EXPAND COMPATIBILITY → SNAPSHOT/QUIESCE → BACKFILL → CATCH UP/DUAL WRITE → SHADOW/DUAL READ → DIFFERENTIAL VERIFY → AUTHORITY CUTOVER → DRAIN → CONTRACT → POST-CUTOVER VERIFY
+
+The exact synchronization mechanism remains data-store-specific; Nexo's architecture must therefore model the storage consistency contract instead of assuming one universal migration technique.
