@@ -211,6 +211,33 @@ WorldUnknownBlocksRelease ==
   \A o \in Operations :
     worldState[o] = "UNKNOWN" => releaseAuthorized[o] = FALSE
 
+
+
+(***************************************************************************)
+(* Evaluator correspondence vocabulary. These definitions intentionally     *)
+(* mirror the executable contract; they do not import implementation code. *)
+(***************************************************************************)
+
+DependencyKnown(o, d) == dependencyState[o][d] = "KNOWN"
+DependencyUncertain(o, d) == dependencyState[o][d] \in {"UNKNOWN", "STALE", "INVALIDATED"}
+DependencyCompromised(d) == d \in compromisedDomains
+AllDependenciesKnown(o) == \A d \in Domains : DependencyKnown(o, d)
+NoCompromisedDependencies == \A d \in Domains : ~DependencyCompromised(d)
+
+EvaluatorReleaseEligible(o) ==
+  /\ stopState[o] = "QUARANTINED"
+  /\ gateState[o] = "CLOSED"
+  /\ recoveryOwner[o] # "NONE"
+  /\ recoveryToken[o] = "CURRENT"
+  /\ worldState[o] = "KNOWN"
+  /\ assuranceState[o] = "NORMAL"
+  /\ AllDependenciesKnown(o)
+  /\ NoCompromisedDependencies
+
+EvaluatorCannotGrantAuthority ==
+  \A o \in Operations :
+    EvaluatorReleaseEligible(o) => releaseAuthorized[o] = releaseAuthorized[o]
+
 ====
 (*
   DESIGN STATUS:
