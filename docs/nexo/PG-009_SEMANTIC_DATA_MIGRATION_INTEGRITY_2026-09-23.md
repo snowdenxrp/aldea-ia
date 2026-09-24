@@ -2296,3 +2296,244 @@ INV-576 — uncertainty about intent reduces autonomy rather than increasing inf
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next research: human override, interruption and revocation during active execution.
+
+
+## Research continuation — human override, interruption and revocation during active execution
+
+### Research cross-check
+
+NIST SP 800-63B-4 treats authenticator invalidation as removal of the authenticator/account binding and requires prompt invalidation in defined cases, including when requested by the subscriber. It separately treats session termination as an explicit lifecycle event; session termination and authenticator invalidation are related but not identical controls. NIST also notes that access tokens may remain valid after the authentication session ends, reinforcing that terminating one security layer does not automatically terminate every downstream authority. [Sources: NIST SP 800-63B-4 Session Management; Authenticator Event Management.]
+
+AWS Step Functions provides an explicit stop operation for running executions, but its service-integration documentation states that cancellation of an underlying task can be only best effort and may fail because of permissions or service outages. This directly supports separating a cancellation request from verified termination of the external activity. [Sources: AWS Step Functions StopExecution; service integration patterns.]
+
+Kubernetes provides a similar operational distinction: graceful termination requests a process stop and waits within a grace period, while forced deletion can remove the control-plane object without waiting for confirmation that the process actually stopped. The documentation warns that force deletion can leave processes running and create inconsistency. [Sources: Kubernetes Pod Lifecycle; kubectl delete.]
+
+### Core finding
+
+A human STOP is an authority/revocation event first, not a magical eraser of already-started effects.
+
+Nexo must distinguish at least:
+
+1. REVOKE_FUTURE_AUTHORITY — prevent new execution/admission after the effective revocation boundary.
+2. INTERRUPT_LOCAL_EXECUTION — stop or fence local computation where technically possible.
+3. CANCEL_QUEUED_WORK — prevent not-yet-dispatched work from starting.
+4. CANCEL_IN_FLIGHT_REQUEST — ask the executor/tool/runtime to terminate an active request.
+5. REMOTE_CANCEL_REQUEST — request cancellation in the external system.
+6. REMOTE_CANCEL_CONFIRMED — independently establish that the external system accepted/implemented cancellation.
+7. EFFECT_RECONCILIATION — determine whether an effect already happened despite the stop.
+8. COMPENSATION — create a new, separately authorized effect when compensation is appropriate.
+9. VERIFIED_TERMINATION — establish that no further relevant execution/effect remains within the declared boundary.
+
+The critical distinction is:
+
+STOP_REQUESTED ≠ LOCAL_STOPPED ≠ REMOTE_CANCEL_REQUESTED ≠ REMOTE_CANCEL_CONFIRMED ≠ NO_EFFECT ≠ EFFECT_REVERSED ≠ VERIFIED_TERMINATED
+
+### Override precedence
+
+A human revocation/override must not be silently downgraded because the mission has higher priority, the model predicts that continuing is desirable, or a previous standing authorization exists.
+
+The effective rule is:
+
+CURRENT_HUMAN_AUTHORITY / GOVERNED_REVOCATION → FENCE FUTURE EFFECTS → CLASSIFY IN-FLIGHT WORK → RECONCILE WORLD
+
+The override cannot rewrite immutable execution history and cannot assert that an external effect did not happen merely because the local executor stopped.
+
+### Effective revocation boundary
+
+Every revocation gets a durable:
+
+- override_id
+- principal_id
+- intent type
+- target/effect scope
+- requested_at
+- effective_at
+- authentication/session context
+- authority epoch
+- policy version
+- affected operation/effect IDs
+- propagation status
+- executor/tool acknowledgement
+- reconciliation requirement
+- expiry if temporary
+- final verification state.
+
+Critical execution must compare its admission/execution binding against the current revocation epoch immediately before dispatch where technically possible, and the gateway must reject bindings whose authority has been revoked.
+
+### Race condition: STOP versus COMMIT
+
+If STOP races with an external effect:
+
+- If the effect is not yet externally observable and the stop fence wins, the effect remains unstarted.
+- If the external system accepted the effect before the stop fence, the effect is historical and must be reconciled.
+- If ordering is unknown, state = UNKNOWN; Nexo must not claim either “stopped before effect” or “effect definitely occurred.”
+- If cancellation was accepted but final world state is not independently observable, state remains cancellation-uncertain until the required verification boundary is satisfied.
+
+No component may manufacture a causal order from timestamps alone when the underlying systems do not provide the required ordering guarantee.
+
+### Revocation propagation
+
+Revocation is multi-layered:
+
+HUMAN → AUTHORITY EPOCH → CAPABILITY/SESSION → SCHEDULER → EXECUTOR → TOOL GATEWAY → EXTERNAL TARGET
+
+Propagation must be bounded and observable. A component that has not received/validated the new epoch cannot be treated as safely stopped for critical effects.
+
+Where immediate propagation cannot be guaranteed, Nexo must reduce autonomy at the affected boundary and prevent blind retry/restart.
+
+### Local stop is not remote stop
+
+Stopping the local process can leave a remote operation running. Conversely, a remote cancellation response can be accepted before the remote system has reached its final terminal state.
+
+Therefore Nexo records separate evidence for:
+
+- local termination;
+- cancellation request;
+- remote acknowledgement;
+- remote terminal state;
+- world observation;
+- final verification.
+
+This mirrors the distinction seen in distributed orchestration systems where cancellation may be best-effort and graceful shutdown may not immediately prove process termination.
+
+### UNKNOWN after STOP
+
+If the user says STOP while an external operation is REMOTE_UNKNOWN:
+
+STOP → BLOCK NEW ATTEMPTS → PRESERVE OPERATION_ID/EFFECT_KEY → RECONCILE EXTERNAL WORLD → CLASSIFY → VERIFY/CONTAIN
+
+The stop does not authorize assigning a fresh operation ID to “try again.”
+
+If the old effect is found, bind it to the historical operation/effect identity. If it is absent but the observation is not strong enough to establish absence, remain UNKNOWN.
+
+### Compensation
+
+Compensation is not rollback magic.
+
+A compensating action is a new external effect with:
+
+- fresh operation identity;
+- explicit effect identity;
+- current authority/policy;
+- current risk classification;
+- current world preconditions;
+- fresh admission/binding;
+- independent verification;
+- reconciliation.
+
+Compensation may itself be impossible, partial, harmful, or semantically different from reversal. The original effect remains part of immutable history.
+
+### Emergency stop path
+
+For critical systems, the stop mechanism should not depend on the same executor/model that is being stopped.
+
+A dedicated emergency-control path should be:
+
+- independently authenticated;
+- outside ordinary model planning;
+- independently authorized;
+- able to fence future capabilities;
+- resistant to executor compromise;
+- durable/auditable;
+- bounded in scope;
+- tested for propagation and race conditions.
+
+An emergency path must not silently acquire unrelated permanent authority merely because it can stop execution.
+
+### Human override state machine
+
+OVERRIDE_REQUESTED → AUTHENTICATED → EFFECT_SCOPE_BOUND → REVOCATION_FENCED → QUEUED_WORK_CANCELLED → LOCAL_EXECUTION_STOPPING → IN_FLIGHT_CLASSIFIED
+
+Branches:
+
+- → REMOTE_CANCEL_REQUESTED → REMOTE_CANCEL_CONFIRMED → VERIFICATION_PENDING → VERIFIED_TERMINATED
+- → REMOTE_UNKNOWN → RECONCILIATION_REQUIRED
+- → EFFECT_PRESENT → VERIFY_EFFECT → COMPENSATION_REQUIRED / PRESERVE
+- → BLOCKED when authority/scope/authentication/target identity cannot be established.
+
+Terminal states must distinguish:
+
+- VERIFIED_TERMINATED
+- VERIFIED_NO_EFFECT
+- EFFECT_PRESENT
+- COMPENSATED_AND_VERIFIED
+- UNKNOWN_REQUIRES_RECONCILIATION
+- ESCALATED.
+
+### Safety-critical conflict
+
+A human STOP can conflict with an already-governed safety mechanism. Nexo must not let the runtime model invent a policy answer.
+
+The constitution/policy layer must define, in advance, whether and under what exact conditions a safety-critical automatic action may continue, complete, or be fenced after a human override. The executor cannot weaken or reinterpret that rule at runtime.
+
+### New invariants
+
+INV-577 — a valid human revocation/override cannot be ignored because a prior mission objective remains desirable.
+
+INV-578 — revocation blocks new critical effects after its effective authority boundary.
+
+INV-579 — revocation does not retroactively erase effects already externally accepted.
+
+INV-580 — local interruption does not imply remote cancellation or absence of external effect.
+
+INV-581 — cancellation request does not imply cancellation success.
+
+INV-582 — remote UNKNOWN after override requires reconciliation and blocks blind retry of the uncertain effect.
+
+INV-583 — STOP versus COMMIT races must preserve the actual observed/verified ordering; no synthetic causal claim may be created.
+
+INV-584 — a new operation ID cannot be used to bypass revocation, effect-collision handling or unresolved uncertainty from a prior operation.
+
+INV-585 — compensation is a new governed effect requiring fresh authority, preconditions, identity and verification.
+
+INV-586 — emergency stop capability must be independently governed from the executor it can stop.
+
+INV-587 — failure of revocation propagation reduces autonomy at the affected boundary; it cannot increase execution authority.
+
+INV-588 — cancellation/termination states must distinguish requested, acknowledged, observed and independently verified outcomes.
+
+INV-589 — human override scope must bind to explicit target/effect/mission boundaries; ambiguous critical scope is UNKNOWN/BLOCKED.
+
+INV-590 — historical authorization and execution evidence remain immutable after revocation.
+
+INV-591 — an override cannot manufacture proof that an external effect did not occur.
+
+INV-592 — safety-critical conflict between human override and automatic safety action must be resolved by pre-governed policy, not runtime model discretion.
+
+### Architectural result
+
+The active-execution control chain becomes:
+
+HUMAN INTENT → AUTHENTICATION → AUTHORIZATION → OVERRIDE/REVOCATION → AUTHORITY EPOCH FENCE → SCHEDULER → EXECUTOR → TOOL GATEWAY → EXTERNAL EFFECT → RECONCILIATION → WORLD VERIFICATION
+
+For a STOP:
+
+STOP → FENCE → INTERRUPT/CANCEL WHERE SUPPORTED → CLASSIFY IN-FLIGHT EFFECT → RECONCILE → VERIFY → PRESERVE HISTORY
+
+This closes an important conceptual gap between revoking authority and proving termination.
+
+### Formalization candidate
+
+The next TLA+ refinement should model at least two independently evolving timelines:
+
+- authority/revocation epoch;
+- external effect state.
+
+It should include a race where Revoke occurs before dispatch, after dispatch but before outcome, and after the remote effect is committed. It must demonstrate that:
+
+1. no new critical dispatch is permitted after an effective revocation epoch;
+2. an in-flight effect can remain UNKNOWN after local stop;
+3. UNKNOWN blocks blind retry;
+4. a confirmed effect remains historical after revocation;
+5. compensation uses a fresh operation/effect identity;
+6. cancellation acknowledgement is not equivalent to world verification.
+
+Formal status: design candidate only; NOT TLC-VERIFIED.
+
+### Evidence limitation
+
+NIST establishes lifecycle distinctions around invalidation and session termination, while AWS/Kubernetes provide concrete examples that stopping/cancellation can be asynchronous or best-effort and may not prove remote termination. These sources do not establish a universal “human override protocol” for autonomous agents. The Nexo contract is therefore an architectural synthesis, not a claim that an external standard already specifies Nexo's complete behavior.
+
+PG-009 remains OPEN.
+
+Next research: independent emergency-stop architecture and fail-safe/fail-operational boundaries, including out-of-band control, control-plane compromise, communication loss, and what guarantees can honestly be made when the stop path itself is degraded.
