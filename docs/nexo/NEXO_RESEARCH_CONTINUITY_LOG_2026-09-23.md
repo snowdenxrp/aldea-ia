@@ -884,3 +884,18 @@ Status: reconciliation lease separation MODELLED; executable implementation and 
 Checkpoints: formal aa2df29bdc308c52afce677adc458e8b2abdfa79; correspondence d83232beb0b9990f2edf13d169ede57a09ec212e.
 
 Next attack: external-effect identity/reconciliation lease binding — test whether a stale reconciliation owner can reconcile the wrong effect, whether UNKNOWN effect identity can be confused across operations, and whether recovery can release after reconciliation of an unbound or mismatched effect.
+
+
+### 2026-09-24 — reconciliation fencing correction / race hardening
+
+Adversarial review found that the first reconciliation-lease extension was incomplete: AcquireReconciliation did not explicitly exclude an active recovery lease, ReconcileWorld was not owner/generation-bound, and emergency-stop/revocation paths did not consistently clear reconciliation ownership. These were corrected in the formal sketch.
+
+Current model rules: reconciliation acquisition requires recovery lease absence; reconciliation actions require the current owner and generation; recovery acquisition requires reconciliation lease absence; emergency stop and authority revocation clear reconciliation ownership/lease; release remains blocked by UNKNOWN world state. The formal model now explicitly treats reconciliation as coordination only, not recovery authority or proof of external-world truth.
+
+The formal invariant block was also deduplicated after the review exposed repeated definitions from incremental edits. Important limitation remains: the generation properties are currently state-domain checks (non-negative) rather than a TLC-proven temporal monotonicity theorem, and CAS/linearizability is not modeled.
+
+Checkpoint: formal `4899130f470cb153fe44c3ac5d18b759f74419fc`. Prior correspondence fixture remains `d83232beb0b9990f2edf13d169ede57a09ec212e`.
+
+Status: Designed = YES; Formal modelled = YES; Executable implementation = NOT YET; Tests = NOT RUN; SANY/TLC = NOT RUN; semantic equivalence = NOT PROVEN.
+
+Next attack remains external-effect identity binding: reconciliation evidence must be bound to the exact operation/effect and stale/mismatched evidence must not satisfy recovery release.
