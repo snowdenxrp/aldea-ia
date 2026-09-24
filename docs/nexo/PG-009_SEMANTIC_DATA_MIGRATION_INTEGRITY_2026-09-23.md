@@ -570,3 +570,101 @@ Important: the current TLA+ artifact remains a sketch and is not yet TLC-verifie
 INV-266 — cutover fence semantics are explicit, not implicit.
 INV-267 — a late authoritative write cannot be silently ignored during the consistency boundary.
 INV-268 — the chosen fence policy must determine the allowed state transition before authority commit.
+
+
+## Research continuation — stable operation identity and retry semantics
+
+The next subproblem is operation identity. A correct cutover fence is insufficient if a catch-up or recovery step can execute twice and create two logical effects.
+
+### Architectural rule
+
+Every critical migration effect receives a stable `operation_id` before execution becomes externally observable. The identity follows the operation across:
+- normal execution;
+- journal commit;
+- retry;
+- crash recovery;
+- catch-up;
+- fence catch-up;
+- reconciliation.
+
+A retry must not manufacture a new identity merely because the previous process instance disappeared.
+
+### Three retry outcomes
+
+1. **Same operation_id + same semantic payload**
+   - treat as the same logical operation;
+   - return/reconcile the existing result;
+   - do not create a second logical effect.
+
+2. **Same operation_id + different semantic payload**
+   - this is an **IDENTITY_CONFLICT**;
+   - do not guess which payload is authoritative;
+   - quarantine/block the operation and prevent critical cutover until resolved.
+
+3. **Different operation_id + apparently same semantic effect**
+   - idempotency alone is insufficient;
+   - the system must detect or reconcile duplicate logical effects when the effect is critical.
+   - This is a semantic duplicate problem, not merely an operation-ID problem.
+
+### Durable operation ledger
+
+The migration journal must retain enough information to bind an operation identity to its semantic payload/result. At minimum:
+- operation_id;
+- migration_id;
+- operation class;
+- source/target identity;
+- semantic version;
+- payload/effect digest;
+- authority epoch;
+- transformation version/hash;
+- execution status;
+- verification evidence;
+- reconciliation status.
+
+The ledger is not merely a log of process activity. It is part of the safety boundary for replay.
+
+### Recovery rule refinement
+
+Recovery remains:
+
+`LOAD JOURNAL → CLASSIFY OPERATION → RECONCILE TARGET → RESUME / MARK COMMITTED / REPLAN`
+
+But **REPLAN** cannot silently reuse the old identity for a materially different operation, and **RETRY** cannot silently create a new identity for an uncertain critical effect. A new operation identity requires explicit evidence that the prior effect is absent or has been reconciled.
+
+### Formal model extension
+
+The TLA+ sketch now introduces:
+- `opLedger` binding operation identity to payload;
+- `appliedOps` for applied identities;
+- `identityConflicts` for same-ID/different-payload attempts;
+- `ReplaySame` for safe duplicate delivery;
+- `ReplayConflict` for identity collision;
+- explicit invariants for unique operation identity and authority blocking on unresolved identity conflicts.
+
+Important status: **MODEL SKETCH — NOT TLC-VERIFIED.** The new actions and invariants are design material awaiting syntax/model-check validation.
+
+### Important limitation
+
+A unique operation ID does not prove semantic correctness. It proves only that the system can consistently identify a logical operation. The target effect still requires:
+`IDEMPOTENCY → EFFECT RECONCILIATION → SEMANTIC VERIFICATION`
+
+### New invariants
+
+INV-271 — critical migration effects receive a stable operation identity before external observability.
+INV-272 — retry/recovery of the same logical operation preserves its operation identity.
+INV-273 — same operation_id with the same semantic payload must be idempotent/reconcilable, not duplicated.
+INV-274 — same operation_id with a different semantic payload is an identity conflict and cannot silently overwrite prior meaning.
+INV-275 — unresolved identity conflict blocks critical authority/cutover.
+INV-276 — operation identity does not establish semantic correctness or truth of the resulting effect.
+INV-277 — recovery cannot create a new identity for an uncertain prior critical effect without reconciliation evidence.
+INV-278 — different operation IDs producing the same critical semantic effect require duplicate-effect detection/reconciliation.
+INV-279 — the durable operation ledger must bind identity to sufficient semantic payload/effect metadata.
+INV-280 — operation identity, journal completion and world/effect verification are distinct facts.
+
+## Updated PG-009 status
+
+PG-009 remains OPEN. The architecture now has an explicit operation-identity/idempotency boundary, but the formal model is still unverified and duplicate semantic effects across different operation IDs remain a research target.
+
+## Next research point
+
+Continue with **semantic duplicate-effect detection across different operation IDs**, then connect that result to external-effect reconciliation and the existing exactly-once/idempotency architecture.
