@@ -116,3 +116,10 @@ PG-009 now connects operation/effect identity to the External Effect Contract. A
 
 ## Next PG-009 action
 Formalize external-effect reconciliation and crash interleavings: before send, after send/before receipt, after receipt/before local commit, after local commit/before world verification, retry, duplicate operation, revocation, and external recovery.
+
+## Latest PG-009 formal artifact
+Added docs/nexo/formal/PG-009_EXTERNAL_EFFECT_RECONCILIATION_SKETCH_2026-09-23.tla (commit ac0b3a8c729106d67e74918099282093c0f33290).
+It models the local/external uncertainty boundary, including crash-before-ledger, REMOTE_UNKNOWN, reconciliation, receipt vs world observation, and revocation. NOT TLC-VERIFIED.
+
+## Next PG-009 refinement
+Extend the model to multiple operations/effects sharing targets or effect keys, legitimate repeated effects, semantic collisions, stale observations, and an explicit forbidden blind-retry transition.
