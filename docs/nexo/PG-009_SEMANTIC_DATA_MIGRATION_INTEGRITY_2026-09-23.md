@@ -813,3 +813,123 @@ PG-009 remains OPEN. We now have two distinct safety boundaries:
 2. **Effect Identity / Semantic Deduplication** — addresses different operations that may produce the same critical world effect.
 
 The second boundary is now the next architectural layer connecting migration semantics to Nexo's existing external-effect reconciliation model.
+
+
+## Research continuation — external effect uncertainty and the "effect happened, ledger did not" crash
+
+A critical boundary now connects PG-009 with Nexo's existing External Effect Contract:
+
+**The ledger is not the world.**
+
+Failure window:
+1. Nexo authorizes operation O.
+2. External system applies the effect.
+3. Nexo crashes before recording the effect as committed/verified.
+4. Recovery sees no local committed result.
+5. A naive recovery retries O.
+6. The external system may apply O again.
+
+Therefore absence of a local commit record is not evidence that the external effect did not occur.
+
+### Required state distinction
+
+For critical external operations, local state must distinguish at least:
+- NOT_STARTED
+- PREPARED
+- SENT
+- REMOTE_UNKNOWN
+- REMOTE_CONFIRMED
+- VERIFICATION_PENDING
+- VERIFIED
+- RECONCILIATION_REQUIRED
+- COMPENSATION_REQUIRED
+- FAILED_NO_EFFECT_EVIDENCE
+
+REMOTE_UNKNOWN is materially different from FAILED_NO_EFFECT_EVIDENCE.
+
+### Recovery rule
+
+Correct recovery sequence:
+
+LOAD DURABLE INTENT → CLASSIFY ATTEMPT → QUERY/RECONCILE EXTERNAL WORLD → CLASSIFY EFFECT → RETRY ONLY IF SAFE → VERIFY → COMMIT LOCAL FACT
+
+Not:
+
+NO LOCAL COMMIT → RETRY
+
+### Four evidence planes
+
+1. Intent evidence — what Nexo intended.
+2. Execution evidence — what the gateway/runtime says it attempted.
+3. External receipt — what the external system acknowledges.
+4. World verification — what an independent observation says actually exists.
+
+A receipt can be valid while still not constituting independent proof of final world state.
+
+### Reconciliation matrix
+
+| Local state | External observation | Allowed critical transition |
+|---|---|---|
+| no durable intent | no effect | new operation may be admitted |
+| durable intent, no attempt | no effect | execute/retry if still authorized |
+| attempt recorded | unknown | reconcile; no blind irreversible retry |
+| attempt recorded | effect present | bind effect to operation and verify |
+| attempt recorded | effect absent | retry only after freshness/authority/precondition checks |
+| effect receipt | world differs | WORLD_MISMATCH; block final verification |
+| effect present | local ledger absent | reconstruct/reconcile ledger; do not blindly repeat |
+| effect ambiguous | effect ambiguous | remain UNKNOWN; escalate/replan/contain |
+
+### External-system capability classes
+
+Classify external targets by reconciliation strength:
+
+- R0 — deterministic readback: external state can be queried reliably enough to identify the effect.
+- R1 — idempotency-aware: target accepts a stable idempotency key and can return prior result.
+- R2 — transaction/query correlation: target exposes a durable transaction identifier or equivalent.
+- R3 — independently observable: effect can be verified through an independent observation path.
+- R4 — weak/irreversible/no reliable readback: outcome may remain permanently UNKNOWN.
+
+Higher reconciliation strength reduces uncertainty but does not automatically establish truth. For R4, Nexo must use stricter admission, bounded retries, compensation where possible, or human-mediated resolution rather than pretending exactly-once is available.
+
+### Important architectural conclusion
+
+**Exactly-once is not a universal execution primitive.**
+
+Nexo should guarantee the strongest property supported by the target:
+- exactly-once logical processing where the target provides suitable idempotency/transaction semantics;
+- at-most-once when duplicate effects are unacceptable and reconciliation is impossible;
+- at-least-once only when the effect is safely idempotent/repeatable;
+- otherwise UNKNOWN + RECONCILIATION, not fabricated certainty.
+
+Current distributed-systems guidance supports this bounded interpretation: AWS notes the difficulty of exactly-once behavior in distributed systems and recommends idempotency tokens for safe repeated requests; AWS Durable Execution documentation distinguishes retry semantics from an end-to-end exactly-once guarantee.
+
+### New invariants
+
+INV-293 — absence of a local commit record does not prove absence of an external effect.
+INV-294 — REMOTE_UNKNOWN must not be collapsed into failure/no-effect.
+INV-295 — critical recovery must reconcile external state before an irreversible retry when prior outcome is uncertain.
+INV-296 — intent, execution evidence, external receipt and world verification are distinct evidence classes.
+INV-297 — external receipt alone does not establish independently verified world truth.
+INV-298 — every critical external operation declares its reconciliation capability class.
+INV-299 — retry semantics must be compatible with the target's actual idempotency/reconciliation guarantees.
+INV-300 — when external outcome cannot be resolved, Nexo must preserve UNKNOWN rather than fabricate success or failure.
+INV-301 — exactly-once guarantees are scope-bound to the target, protocol, identity, region/domain and observation model; they are not universal.
+INV-302 — operation/effect identity must survive crashes across the local/external uncertainty boundary.
+
+## Updated PG-009 status
+
+PG-009 remains OPEN. The migration model is now connected to the existing external-effect architecture. The key new boundary is that local durable history and external world state can diverge during a crash; recovery must reconcile rather than infer.
+
+## Next research point
+
+Formalize the external-effect reconciliation state machine and test crash points around:
+- before send;
+- after send/before receipt;
+- after receipt/before local commit;
+- after local commit/before world verification;
+- during retry;
+- during concurrent duplicate operation;
+- during authority revocation;
+- during external system recovery.
+
+The next formal model must preserve the distinction between local certainty, external receipt, and world verification.
