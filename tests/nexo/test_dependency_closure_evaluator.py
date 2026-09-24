@@ -70,6 +70,26 @@ class EvaluatorTests(unittest.TestCase):
         b=evaluate_claim(base_claim())
         self.assertEqual(a["graph_fingerprint"],b["graph_fingerprint"])
 
+
+    def test_canonical_component_graph_fixture(self):
+        import json
+        from pathlib import Path
+        fixture = json.loads(Path("docs/nexo/fixtures/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.json").read_text())
+        claim = base_claim()
+        claim["components"] = fixture["components"]
+        claim["dependencies"] = fixture["dependencies"]
+        claim["assurance_level"] = fixture["expected"]["requested_assurance"]
+        result = evaluate_claim(claim)
+        self.assertEqual(result["dependency_closure"]["safety_gate"], fixture["expected"]["safety_gate_closure"])
+        self.assertEqual(result["dependency_closure"]["recovery_verifier"], fixture["expected"]["recovery_verifier_closure"])
+        self.assertEqual(result["dependency_closure"]["executor"], fixture["expected"]["executor_closure"])
+        trust_pairs = {
+            tuple(x["components"])
+            for x in result["correlated_component_pairs"]
+            if "trust_root" in x["reasons"]
+        }
+        self.assertIn(tuple(fixture["expected"]["shared_trust_root_components"]), trust_pairs)
+
     def test_schema_missing_field_is_blocking(self):
         c=base_claim()
         del c["policy_version"]
