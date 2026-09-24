@@ -411,3 +411,8 @@ The formal-correspondence schema was corrected so its contract fields are actual
 ## PG-009 — adversarial cross-model alignment
 
 Formal recovery now uses operation-scoped dependency closure, explicit assurance revalidation, and a canonical expected-correlation set. The executable evaluator has matching adversarial coverage for shared failure domains, shared trust roots, transitive UNKNOWN, COMPROMISED, and missing dependencies. Semantic equivalence and TLC/SANY verification remain open.
+
+
+## PG-009 — operation-scope isolation checkpoint
+
+Formal compromise propagation is now restricted to operations whose transitive dependency closure contains the compromised dependency. The canonical TLA binding includes an executor-only operation to exercise this isolation property. Python has a matching unrelated-dependency adversarial test. Verification execution remains pending.
