@@ -79,7 +79,10 @@
     "component_mapping": {
       "type": "object",
       "additionalProperties": {
-        "type": "string"
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
       }
     },
     "dependency_relation": {
