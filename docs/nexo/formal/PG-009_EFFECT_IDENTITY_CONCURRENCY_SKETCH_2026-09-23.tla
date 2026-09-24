@@ -253,3 +253,27 @@ InvReceiptNotWorldTruth ==
    observation also cannot authorize it. UNKNOWN remains UNKNOWN until evidence
    crosses the declared sufficiency boundary.
 *)
+
+
+(* WORLD-VERSION / TOCTOU REFINEMENT
+   An observation is bound to a worldVersion or causal position when the target
+   exposes one. Critical execution must carry the observed version as a
+   precondition/fence. If the target reports a newer version, changed ETag,
+   sequence, revision, or equivalent conflict marker, the prepared execution is
+   invalidated and must revalidate.
+
+   Freshness is therefore necessary but not sufficient:
+     Fresh(obs) /\\ Sufficient(obs) /\\ VersionMatches(obs, precondition)
+   are separate predicates.
+
+   Required critical path:
+     OBSERVE -> BIND_VERSION -> AUTHORIZE -> EXECUTE_IF_VERSION_MATCHES.
+
+   If the target cannot expose a usable version/conditional-write boundary, Nexo
+   must use a weaker target-specific safety class (for example idempotency-aware,
+   reconciliation-only, at-most-once, or UNKNOWN/BLOCKED) rather than pretending
+   it has compare-and-swap semantics.
+
+   A successful execution receipt does not erase the need to verify the resulting
+   world state when the target's receipt is not itself an independent world proof.
+*)
