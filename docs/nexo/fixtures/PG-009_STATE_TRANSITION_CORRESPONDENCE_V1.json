@@ -100,6 +100,82 @@
       "id": "stop_before_commit",
       "transition": "RequestStop",
       "expected": "RUNNING or ADMITTED execution is interrupted to OFFLINE and the gate closes"
+    },
+    {
+      "id": "lease_expiry_takeover",
+      "transition": "LeaseExpire/AcquireRecovery",
+      "expected": "lease expiry invalidates owner; takeover requires next recovery generation and a fresh owner",
+      "guards": [
+        "recoveryLeaseValid == FALSE after expiry",
+        "expectedGeneration == recoveryGeneration + 1",
+        "recoveryOwner == NONE"
+      ]
+    },
+    {
+      "id": "stale_owner_after_takeover",
+      "transition": "RevalidateAssurance",
+      "expected": "owner A with prior generation cannot revalidate after owner B takes over",
+      "guards": [
+        "generation == current recoveryGeneration",
+        "recoveryLeaseValid == TRUE",
+        "recoveryOwner == owner"
+      ]
+    },
+    {
+      "id": "stale_owner_release_after_takeover",
+      "transition": "AuthorizeRelease/Release",
+      "expected": "owner A cannot authorize or release using a stale generation",
+      "guards": [
+        "current owner and generation required",
+        "recoveryAuthorityEpoch == authorityEpoch"
+      ]
+    },
+    {
+      "id": "stale_owner_commit_after_takeover",
+      "transition": "Commit",
+      "expected": "stale recovery ownership cannot bypass the admitted authority epoch fence",
+      "guards": [
+        "admittedAuthorityEpoch == authorityEpoch",
+        "Commit requires current execution state"
+      ]
+    },
+    {
+      "id": "takeover_after_authority_revoke",
+      "transition": "RevokeAuthority/AcquireRecovery",
+      "expected": "revocation invalidates the prior owner and token; any later recovery requires a fresh authority epoch",
+      "guards": [
+        "recoveryToken == STALE after revoke",
+        "recoveryLeaseValid == FALSE",
+        "recoveryAuthorityEpoch == authorityEpoch for new recovery"
+      ]
+    },
+    {
+      "id": "takeover_during_stop",
+      "transition": "RequestStop/AcquireRecovery",
+      "expected": "active recovery is contained by stop; no stale owner may release while stop is enforced/quarantined",
+      "guards": [
+        "stopState != CLEAR blocks release",
+        "releaseAuthorized == FALSE after stop"
+      ]
+    },
+    {
+      "id": "recovery_release_owner_cleanup",
+      "transition": "Release",
+      "expected": "successful recovery release clears recovery ownership/token/lease before ADMITTED execution",
+      "guards": [
+        "recoveryOwner == NONE after Release",
+        "recoveryToken == STALE",
+        "recoveryLeaseValid == FALSE"
+      ]
+    },
+    {
+      "id": "recovery_vs_reconciliation_lease",
+      "transition": "ReconciliationLease/AcquireRecovery",
+      "expected": "a reconciliation lease does not grant recovery authority; recovery owner and generation remain independently fenced",
+      "guards": [
+        "reconciliation lease != recovery authority",
+        "current recovery owner/generation required for recovery transitions"
+      ]
     }
   ],
   "formal_invariants": [
@@ -108,12 +184,22 @@
     "StaleOwnerCannotAuthorize",
     "ReleaseRequiresAuthorization",
     "RunningImpliesPriorCommit",
-    "AdmissionEpochMatchesAuthority"
+    "AdmissionEpochMatchesAuthority",
+    "RecoveryGenerationMonotonic",
+    "CurrentOwnerMatchesGeneration",
+    "StaleGenerationCannotAuthorize",
+    "ExpiredLeaseCannotAct",
+    "TakeoverInvalidatesPriorOwner",
+    "RecoveryReleaseOwnerCleanup",
+    "ReconciliationLeaseDoesNotGrantRecoveryAuthority"
   ],
   "notes": [
     "Concurrency is modeled as atomic state transitions; this is not yet a proof of implementation-level CAS/linearizability.",
     "Recovery owner identity is now an explicit transition input for revalidation and release authorization; recoveryAuthorityEpoch fences stale authority.",
     "Double-release and double-commit are transition-precondition properties, not universal at-most-once effect guarantees.",
-    "Authority revocation is modeled as a hard admission fence: ADMITTED/RUNNING transitions to OFFLINE with stop/gate enforced, requiring fresh recovery before execution can resume. This does not claim physical cancellation of an already-completed external effect."
+    "Authority revocation is modeled as a hard admission fence: ADMITTED/RUNNING transitions to OFFLINE with stop/gate enforced, requiring fresh recovery before execution can resume. This does not claim physical cancellation of an already-completed external effect.",
+    "Lease validity is an explicit coordination fence, not evidence that an external effect is absent, canceled, or reversible.",
+    "Recovery generation is distinct from authority epoch: generation fences ownership; authority epoch fences authorization. Authority revocation invalidates both.",
+    "A takeover must be modeled as an atomic ownership-generation transition; implementation-level CAS/linearizability remains unproven."
   ]
 }
