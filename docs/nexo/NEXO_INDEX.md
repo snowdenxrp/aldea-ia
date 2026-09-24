@@ -394,3 +394,10 @@ Implemented src/nexo/dependency_closure_evaluator.py plus tests/nexo/test_depend
 A canonical graph fixture was added at `docs/nexo/fixtures/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.json`, with a TLA+ constant binding at `docs/nexo/formal/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.cfg`. The formal sketch now represents component → dependency, dependency → dependency, dependency → domain, failure-domain and trust-root relations explicitly.
 
 Status: IMPLEMENTED representation; Python fixture test added but execution not claimed; TLA+ semantic equivalence and TLC verification remain unproven. The formal helper is intentionally only one dependency hop beyond direct references until a finite recursive closure relation is added.
+
+
+## PG-009 — recursive formal closure checkpoint
+
+The TLA+ recovery/common-mode sketch now models recursive dependency reachability with `ReachDependency` and `ComponentDependencyClosure`, and derives correlation inputs from that closure via explicit dependency failure-domain and trust-root mappings. A concrete TLA+ constant binding was added for the canonical JSON fixture.
+
+Status: IMPLEMENTED representation; cross-model semantic equivalence and TLC verification remain unproven. Correspondence work continues with adversarial shared-domain and UNKNOWN/COMPROMISED scenarios.
