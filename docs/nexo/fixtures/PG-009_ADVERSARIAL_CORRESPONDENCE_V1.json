@@ -1,0 +1,61 @@
+{
+  "fixture_id": "pg009-adversarial-correspondence-v1",
+  "purpose": "Cross-model adversarial scenarios for executable evaluator and formal recovery sketch.",
+  "scenarios": [
+    {
+      "id": "shared_failure_domain_transitive",
+      "mutation": "two components depend transitively on shared-host",
+      "expected": {
+        "correlated_pair": [
+          "gate",
+          "verifier"
+        ],
+        "reason": "failure_domain",
+        "maximum_admissible_assurance": "I2"
+      }
+    },
+    {
+      "id": "shared_trust_root",
+      "mutation": "two components depend on root-x",
+      "expected": {
+        "correlated_pair": [
+          "gate",
+          "verifier"
+        ],
+        "reason": "trust_root",
+        "maximum_admissible_assurance": "I2"
+      }
+    },
+    {
+      "id": "unknown_transitive_dependency",
+      "mutation": "reachable dependency state UNKNOWN",
+      "expected": {
+        "admissible": false,
+        "maximum_admissible_assurance": "I1"
+      }
+    },
+    {
+      "id": "compromised_dependency",
+      "mutation": "reachable dependency state COMPROMISED",
+      "expected": {
+        "admissible": false,
+        "maximum_admissible_assurance": "I0"
+      }
+    },
+    {
+      "id": "missing_dependency",
+      "mutation": "component references absent dependency",
+      "expected": {
+        "admissible": false,
+        "maximum_admissible_assurance": "I0"
+      }
+    },
+    {
+      "id": "operation_scoped_release",
+      "mutation": "operation references only a subset of graph components",
+      "expected": {
+        "release_dependency_scope": "transitive closure of OperationComponents only"
+      }
+    }
+  ]
+}
