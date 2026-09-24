@@ -59,7 +59,8 @@ RequestStop(o) ==
   /\ stopEpoch' = [stopEpoch EXCEPT ![o] = @ + 1]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
-  /\ UNCHANGED <<processState,authorityEpoch,recoveryEpoch,recoveryOwner,
+  /\ processState' = [processState EXCEPT ![o] = "QUARANTINED"]
+  /\ UNCHANGED <<authorityEpoch,recoveryEpoch,recoveryOwner,
       recoveryToken,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 Restart(o) ==
