@@ -1160,3 +1160,87 @@ INV-385: graph integrity/completeness does not establish semantic truth of the r
 INV-386: failure to establish required graph completeness cannot increase autonomy.
 
 Status: architecture refined; formal model NOT TLC-VERIFIED.
+
+## Invariant coverage and dependency-to-invariant mapping — 2026-09-23
+
+Research cross-check:
+- NIST SP 800-53 AC-4 treats information-flow control as enforcement based on information characteristics and paths, with policy enforcement at defined boundaries. This supports mapping flows/dependencies to policy-relevant constraints rather than relying only on object-level authorization. NIST also requires trustworthy enforcement mechanisms for critical filtering/inspection and describes explicit attribute binding and metadata validation. cite source: NIST SP 800-53 Rev. 5.1 AC-4
+- SLSA Dependency Provenance provides evidence about dependency ingestion/provenance, but provenance is not itself a proof that every security-relevant invariant affected by a dependency has been identified. cite source: SLSA 1.2 Dependency Provenance
+
+### Invariant Coverage Contract
+For each critical invariant I, Nexo maintains a versioned coverage record:
+- invariant_id/version and formal statement;
+- protected state/domain;
+- authoritative state owner;
+- required dependency closure;
+- dependency-to-invariant edges;
+- assumptions/preconditions;
+- enforcement points;
+- observation/verification points;
+- coverage assurance class;
+- uncovered/unknown dependency set;
+- known blind spots and failure modes;
+- evidence/provenance;
+- freshness/expiry;
+- independent review/verification;
+- affected admissions/bindings.
+
+A dependency graph is insufficient unless Nexo can answer:
+1. Which invariants can this node/edge affect?
+2. Which state/resources jointly determine the invariant?
+3. Where is the invariant enforced?
+4. Where is it independently observed/verified?
+5. What dependencies are outside the current closure?
+6. What evidence justifies the closure?
+
+### Closure
+Define an invariant closure as the least governed dependency/resource/authority set required to evaluate and enforce the invariant under the declared model. The closure is not merely graph reachability: semantic rules, shared resources, common-mode services, authority domains, and hidden/global state can add edges.
+
+### Coverage classes
+IC0 UNKNOWN
+IC1 DECLARED — mapping based on documented design
+IC2 EVIDENCE-BACKED — supported by resolved/runtime/build evidence
+IC3 ENFORCED — enforcement points cover the declared closure
+IC4 INDEPENDENTLY VERIFIED — closure and enforcement verified using an independent failure domain for the declared scope
+
+IC4 is scoped; it does not prove universal completeness.
+
+### Coverage gap behavior
+If an invariant is required for an effect and its coverage is below the required class:
+- do not infer safety;
+- classify UNKNOWN/UNCOVERED;
+- reduce concurrency/autonomy;
+- serialize/revalidate;
+- escalate or block according to risk.
+A dependency outside the closure that could affect the invariant is a coverage gap.
+
+### Cross-invariant interaction
+Invariants themselves can interact. For example, enforcing resource quota may affect availability, while preserving availability may conflict with isolation. Therefore coverage must include an invariant interaction graph:
+- invariant nodes;
+- shared state/resource edges;
+- precedence/dependency edges;
+- conflict edges;
+- common-mode edges;
+- authority ownership.
+
+A local proof of I1 does not imply I1+I2 are jointly preserved.
+
+### Enforcement/verification separation
+For critical invariants, the component enforcing an invariant should not be the sole verifier of its preservation. Verification can use a different observation plane, state replica, target-side readback, audit evidence, or formal/runtime monitor as appropriate. This is assurance separation, not a claim that every verifier must be fully independent in all cases.
+
+### Hidden-state challenge
+The closure must explicitly account for state that is not represented as a normal resource object: global counters, budgets, leases, time, policy epochs, identity state, key/revocation state, queues, rate limits, model/tool versions, environment configuration, and shared external services.
+
+### New invariants
+INV-387: dependency coverage is insufficient unless mapped to the invariants it can affect.
+INV-388: each critical invariant has a versioned coverage contract with scope and assumptions.
+INV-389: invariant closure includes governed semantic/shared/global dependencies, not only graph reachability.
+INV-390: required invariant coverage below threshold yields UNKNOWN/UNCOVERED and cannot authorize increased autonomy.
+INV-391: invariant enforcement and verification are distinct assurance roles for critical invariants.
+INV-392: invariant interactions/common-mode dependencies are included in aggregate safety analysis.
+INV-393: hidden/global state is included when it can affect invariant preservation.
+INV-394: material changes to invariant definition, closure, enforcement point, or verification method invalidate affected admissions/bindings.
+INV-395: coverage evidence is scoped and time-bounded; stale evidence cannot silently establish current coverage.
+INV-396: no single component may silently redefine an invariant's protected state or closure to make coverage appear complete.
+
+Status: architecture refined; formal model NOT TLC-VERIFIED.
