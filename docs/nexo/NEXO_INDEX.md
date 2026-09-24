@@ -369,3 +369,12 @@ Status: DESIGNED / RESEARCH-CROSS-CHECKED; implementation and TLC verification n
 
 ## Current PG-009 next action
 Common-mode/correlated-failure analysis across safety, recovery, update, identity, storage, network, policy, verifier and executor domains; then correct/expand formal models and run TLC when tooling is available. Reconcile canonical documentation without erasing history.
+
+## Latest PG-009 — common-mode / correlated-failure analysis
+Process/service separation is not independence. Critical safety claims now require dependency closure, failure-domain analysis, common-mode analysis, diversity/independence evidence and an explicit assurance level. UNKNOWN dependency is not NO dependency. Evidence from shared sources is not automatically independent. New invariants INV-669..690.
+
+Artifact: docs/nexo/PG-009_COMMON_MODE_CORRELATED_FAILURE_2026-09-24.md
+Continuity checkpoint: docs/nexo/NEXO_CONTINUITY_DELTA_2026-09-24_COMMON_MODE.md
+Status: DESIGNED / RESEARCH-CROSS-CHECKED; implementation, fault injection and TLC verification not claimed.
+
+Current PG-009 next action: correct/expand recovery TLA+, add dependency/failure-domain state, model update/rollback transitions, define executable safety-claim/dependency-closure schema, implement fault injection, run TLC, then final semantic reconciliation.
