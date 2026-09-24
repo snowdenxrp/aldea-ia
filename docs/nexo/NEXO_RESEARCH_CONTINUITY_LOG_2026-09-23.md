@@ -1166,3 +1166,18 @@ A direct retrieval of `NEXO_CANONICAL_CORE_V8.tla` found two concrete executabil
 Decision: do not patch V8 incrementally. Build V9 structurally from the canonical semantic contract, then perform source-level and toolchain preflight before any formal claim.
 
 Artifact: docs/nexo/NEXO_CANONICAL_CORE_V8_EXECUTABILITY_AUDIT.md — e59290b8f97ea480b6197146238b1bd925666099
+
+
+### 2026-09-23 — Canonical Core V9 structural rewrite and immediate audit
+
+V9 was created structurally from the canonical semantic contract rather than incrementally patching V8. It corrects V8's stored conjunction syntax and undefined TypeOK domains, and introduces finite typed records plus explicit owner/generation parameters for lease-protected actions.
+
+Immediate audit found a genuine semantic contradiction: the proposed invariant `COMMITTED => authority.valid` conflicts with a later authority-revocation transition. Historical commit state must remain durable; authority revocation fences active work rather than retroactively uncommitting history. This invariant is therefore rejected as a state invariant and must become a transition-scoped admission/commit guard.
+
+Additional V9 gaps remain: lease expiry/takeover, explicit STOP actuation fence, structured provenance/dependency closure, and separation of observation from verified world truth.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V9.tla — 5750fb09b1f9ec760da65ce972a937881ac96d47
+- docs/nexo/NEXO_CANONICAL_CORE_V9_AUDIT.md — 5ad29544ad4a4f04bb5f39b1b6cc67d374abef67
+
+Status: DESIGN DRAFT / STRUCTURALLY IMPROVED / NOT SANY-CHECKED / NOT TLC-CHECKED.
