@@ -974,3 +974,24 @@ docs/nexo/NEXO_DEEP_RESEARCH_DELTA_2026-09-23.md
 Commit: b08edf54584cd975ec473b5351bc750f75a11416
 
 Status: research cross-check for this delta DONE; canonical consolidation NOT YET; SANY/TLC NOT RUN; runtime tests NOT RUN.
+
+### 2026-09-23 — concrete code/formal audit delta
+
+Inspected the current dependency-closure evaluator, its unit tests, and the recovery/common-mode TLA+ sketch.
+
+Concrete findings:
+- E-01: the executable evaluator derives admissibility from requested assurance versus an assurance ceiling. A BLOCK structural finding can collapse the ceiling to I0; the current tests do not exercise the I0 case. Canonical redesign must separate structural validity, analysis admissibility, and safety-claim acceptance.
+- F-01: the TLA+ worldState=KNOWN path can be reached directly from reconciliation without an explicit evidence/provenance/freshness/verification chain.
+- F-02: current release eligibility lacks exact effect/target/evidence/version/freshness binding and therefore cannot be the canonical release relation.
+- F-03: generation properties assert non-negativity, not temporal monotonicity.
+- F-04: reconciliation lease expiry preserves an untyped world fact; evidence needs explicit validity semantics independent of ownership.
+- F-05: RequestStop contains duplicate assignments for reconciliation owner/lease fields; this will be removed during canonical rewrite.
+- F-06: executable evaluator and TLA+ sketch are overlapping but not semantically equivalent.
+
+Audit artifact:
+docs/nexo/NEXO_CODE_FORMAL_AUDIT_DELTA_2026-09-23.md
+Commit: 62566f498ec6ec3f19a6377e6eb62912dad27620
+
+New test obligations: structural-invalid I0, observation-without-verification, stale policy/authority evidence, cross-effect substitution, target mismatch, lease expiry semantics, trust-root invalidation, dependency graph changes, authority revoke during recovery, and STOP with external UNKNOWN.
+
+Status: findings recorded; canonical evaluator redesign NOT IMPLEMENTED; canonical TLA+ unification NOT IMPLEMENTED; new tests NOT RUN; SANY/TLC NOT RUN.
