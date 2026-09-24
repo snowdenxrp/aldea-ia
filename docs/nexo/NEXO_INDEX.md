@@ -109,3 +109,10 @@ Operation identity is now explicitly separated from effect identity. A different
 
 ## Next PG-009 action
 Formalize effect identity and reconciliation, including legitimate repeats, semantic collisions, UNKNOWN external effects, and binding to the existing external-world verification layer. Do not claim universal exactly-once semantics.
+
+
+## Latest PG-009 — external-effect uncertainty
+PG-009 now connects operation/effect identity to the External Effect Contract. A local missing commit cannot prove that an external effect did not occur. Added REMOTE_UNKNOWN, reconciliation capability classes R0-R4, evidence-plane separation, bounded exactly-once semantics, and invariants INV-293..302. The formal model remains NOT TLC-verified.
+
+## Next PG-009 action
+Formalize external-effect reconciliation and crash interleavings: before send, after send/before receipt, after receipt/before local commit, after local commit/before world verification, retry, duplicate operation, revocation, and external recovery.
