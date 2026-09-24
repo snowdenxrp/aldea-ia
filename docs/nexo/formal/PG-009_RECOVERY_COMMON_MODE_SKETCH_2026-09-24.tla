@@ -15,6 +15,7 @@ VARIABLES
   stopEpoch,
   recoveryEpoch,
   recoveryAuthorityEpoch,
+  admittedAuthorityEpoch,
   recoveryOwner,
   recoveryToken,
   releaseAuthorized,
@@ -26,7 +27,7 @@ VARIABLES
 
 vars ==
   <<stopState, gateState, processState, authorityEpoch, stopEpoch,
-    recoveryEpoch, recoveryAuthorityEpoch, recoveryOwner, recoveryToken, releaseAuthorized,
+    recoveryEpoch, recoveryAuthorityEpoch, admittedAuthorityEpoch, recoveryOwner, recoveryToken, releaseAuthorized,
     worldState, dependencyState, compromisedDependencies, assuranceState,
     commitCount>>
 
@@ -45,6 +46,7 @@ Init ==
   /\ stopEpoch = [o \in Operations |-> 0]
   /\ recoveryEpoch = [o \in Operations |-> 0]
   /\ recoveryAuthorityEpoch = [o \in Operations |-> 0]
+  /\ admittedAuthorityEpoch = [o \in Operations |-> 0]
   /\ recoveryOwner = [o \in Operations |-> "NONE"]
   /\ recoveryToken = [o \in Operations |-> "NONE"]
   /\ releaseAuthorized = [o \in Operations |-> FALSE]
@@ -106,7 +108,7 @@ RevokeAuthority(o) ==
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ UNCHANGED <<stopState,gateState,processState,stopEpoch,recoveryEpoch,
-      recoveryAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
+      recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
   /\ recoveryOwner[o] # "NONE"
@@ -205,6 +207,7 @@ Release(o) ==
   /\ gateState' = [gateState EXCEPT ![o] = "OPEN"]
   /\ stopState' = [stopState EXCEPT ![o] = "CLEAR"]
   /\ processState' = [processState EXCEPT ![o] = "ADMITTED"]
+  /\ admittedAuthorityEpoch' = [admittedAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<authorityEpoch,stopEpoch,recoveryEpoch,recoveryOwner,
       recoveryToken,worldState,dependencyState,compromisedDependencies,
@@ -215,6 +218,7 @@ Commit(o) ==
   /\ stopState[o] = "CLEAR"
   /\ gateState[o] = "OPEN"
   /\ assuranceState[o] = "NORMAL"
+  /\ admittedAuthorityEpoch[o] = authorityEpoch[o]
   /\ commitCount' = [commitCount EXCEPT ![o] = @ + 1]
   /\ processState' = [processState EXCEPT ![o] = "RUNNING"]
   /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,
@@ -400,6 +404,7 @@ ReleaseAuthorizedImpliesEligible ==
   - graph validity is required before revalidation/authorization;
   - recoveryEpoch is distinct from stopEpoch;
   - recoveryAuthorityEpoch binds recovery to the authority epoch that admitted it;
+  - admittedAuthorityEpoch prevents authority revocation between Release and Commit from becoming a stale-admission race;
   - authority revocation explicitly invalidates recovery and release authorization;
   - an emergency stop interrupts a RUNNING process into OFFLINE so the no-commit-during-stop invariant remains reachable;
   - recovery invalidation explicitly blocks release.
