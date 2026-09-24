@@ -61,5 +61,58 @@
     "release after UNKNOWN world",
     "release with unknown/stale/invalidated operation dependency",
     "release with compromised operation dependency"
+  ],
+  "concurrency_scenarios": [
+    {
+      "id": "double_recovery_acquire",
+      "transition": "AcquireRecovery",
+      "expected": "second acquisition is blocked while a current recovery owner exists",
+      "guards": [
+        "recoveryOwner[o] == NONE",
+        "owner != NONE"
+      ]
+    },
+    {
+      "id": "stale_owner_recovery",
+      "transition": "RevalidateAssurance/AuthorizeRelease",
+      "expected": "stale owner cannot act because transition requires owner identity and current recovery authority epoch",
+      "guards": [
+        "recoveryOwner[o] == owner",
+        "recoveryAuthorityEpoch[o] == authorityEpoch[o]"
+      ]
+    },
+    {
+      "id": "double_release",
+      "transition": "Release",
+      "expected": "a second release is blocked because release authorization is consumed and state leaves QUARANTINED/CLOSED"
+    },
+    {
+      "id": "double_commit",
+      "transition": "Commit",
+      "expected": "a second immediate commit is blocked because the first commit leaves ADMITTED and enters RUNNING"
+    },
+    {
+      "id": "revoke_before_commit",
+      "transition": "RevokeAuthority",
+      "expected": "authority epoch changes and admitted execution is blocked until fresh admission"
+    },
+    {
+      "id": "stop_before_commit",
+      "transition": "RequestStop",
+      "expected": "RUNNING or ADMITTED execution is interrupted to OFFLINE and the gate closes"
+    }
+  ],
+  "formal_invariants": [
+    "SingleRecoveryOwner",
+    "RecoveryOwnerRequiresCurrentToken",
+    "StaleOwnerCannotAuthorize",
+    "ReleaseRequiresAuthorization",
+    "RunningImpliesPriorCommit",
+    "AuthorityRevocationBlocksCommit"
+  ],
+  "notes": [
+    "Concurrency is modeled as atomic state transitions; this is not yet a proof of implementation-level CAS/linearizability.",
+    "Recovery owner identity is now an explicit transition input for revalidation and release authorization; recoveryAuthorityEpoch fences stale authority.",
+    "Double-release and double-commit are transition-precondition properties, not universal at-most-once effect guarantees."
   ]
 }
