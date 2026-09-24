@@ -19,6 +19,8 @@ When asked to "retoma Nexo", "continúa Nexo", or equivalent:
 ## Canonical artifacts
 1. Master architecture: docs/nexo/NEXO_MASTER_ARCHITECTURE_2026-09-23.md
 2. Research continuity log: docs/nexo/NEXO_RESEARCH_CONTINUITY_LOG_2026-09-23.md
+3. Preservation addendum: docs/nexo/NEXO_MASTER_PRESERVATION_ADDENDUM_2026-09-23.md
+4. PG-009 research dossier: docs/nexo/PG-009_SEMANTIC_DATA_MIGRATION_INTEGRITY_2026-09-23.md
 
 ## Current state
 - PG-001 Complete Mediation: architecturally closed.
@@ -67,5 +69,8 @@ Never erase an old architectural decision merely to make the current document lo
 ## Recovery invariant
 Loss of conversational context must not imply loss of Nexo's accumulated architecture.
 
+## Current PG-009 research result
+Schema compatibility is not semantic compatibility. Nexo now requires a Semantic Migration Contract, explicit semantic mappings, preservation of epistemic/provenance/authority/temporal meaning, differential and property testing, explicit information-loss handling, and post-migration verification. PG-009 remains OPEN.
+
 ## Next action
-Continue investigation at PG-009 and save every material architectural advance.
+Continue PG-009 research with formal semantic equivalence, deterministic upcaster chains, migration crash recovery, checkpoint/memory migration, policy/authority compatibility, automated semantic diffing, golden fixtures, differential replay, and migration-specific clean recovery. Save every material advance.
