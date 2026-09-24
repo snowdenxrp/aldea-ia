@@ -676,3 +676,32 @@ Status:
 - TLC: NOT RUN.
 
 Git checkpoints: `650c97f8af01b48b54294402a50649a4eb877ec9`, `d1c1a446165bab606477d401059a108da2a32890`, `c12383ff9504c71da1e0cd6bb2154ae3d4592cf2`, `cf3d7ff1b502f22e6dd4d57b5094992bf81fd4f6`.
+
+
+### 2026-09-23 — adversarial cross-model checkpoint
+
+The formal recovery sketch was hardened against two concrete weaknesses.
+
+1. The former `NoCommitDuringStop` predicate was tautological. It now has meaningful state/action alignment: stop transitions quarantine the process, and the invariant requires that a stopped operation is not RUNNING; Commit itself also requires CLEAR stop and OPEN gate. This is still a model-level property, not TLC evidence.
+
+2. Formal release scope previously required every dependency in the entire graph to be known and uncompromised. That was broader than the executable evaluator's component/claim-scoped closure. The formal model now introduces `OperationComponents` and derives `OperationDependencies` from their recursive closure. Release eligibility is therefore operation-scoped rather than globally graph-scoped.
+
+3. A distinct `RevalidateAssurance` transition was added. Restoring a dependency from UNKNOWN to KNOWN no longer implicitly implies NORMAL assurance; release requires an explicit revalidation step with current recovery ownership, known world, and clean operation-scoped dependencies.
+
+4. Formal correlation now derives `FormalCorrelatedPairs` and can be compared against a canonical `ExpectedCorrelatedPairs` fixture, replacing the previous weak implication that could not establish cross-model agreement.
+
+5. A machine-readable adversarial scenario fixture was added covering shared failure domain, shared trust root, transitive UNKNOWN, COMPROMISED, missing dependency, and operation-scoped release.
+
+Research cross-check: Lamport's TLA+ materials describe invariants as state predicates required to remain true across all allowed next-state steps and emphasize that TLC checks properties of the modeled behaviors; this supports treating these predicates as formal-model obligations rather than runtime certification. citeturn0search13turn0search0
+
+Status:
+- formal stop invariant hardening: IMPLEMENTED;
+- operation-scoped release semantics: IMPLEMENTED;
+- explicit assurance revalidation: IMPLEMENTED;
+- expected correlation comparison: IMPLEMENTED;
+- adversarial scenario fixture: IMPLEMENTED;
+- Python adversarial tests: WRITTEN, execution not claimed;
+- TLC/SANY verification: NOT RUN;
+- executable ↔ formal semantic equivalence: NOT PROVEN.
+
+Git checkpoints: `49c324b14e015a4507218a4461831c74072c34fc`, `eb95260015289dd08ae7759ca674181a0a0cc8a5`, `06b4d41f2224b5fe553d2a7b05ea61fdac0cf5f7`, `179e4d8c4567aee290544e79423e2d468717e407`, `9ebe2aedc8ffb685b735d4b76e6561747d22b3c9`, `5be567d4a2357b6aa751eac28248939fe4dc4ae3`.
