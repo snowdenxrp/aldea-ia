@@ -933,3 +933,67 @@ Formalize the external-effect reconciliation state machine and test crash points
 - during external system recovery.
 
 The next formal model must preserve the distinction between local certainty, external receipt, and world verification.
+
+## Materiality and canonicalization boundary — 2026-09-23
+
+Research cross-check:
+- AWS IAM evaluates a request using a request context including principal, action, resources/resource data, and conditions; authorization therefore depends on the actual request context, not merely an earlier abstract approval. AWS explicitly describes action/resource/condition matching at authorization time.
+- RFC 8785 shows why cryptographic hashing/signing needs an invariant canonical representation and defines deterministic JSON canonicalization. It also requires validation before acting on received canonicalized/signed data. This is useful infrastructure, but it is NOT a semantic-equivalence oracle.
+- NIST SP 800-57 requires association protection: the correct keying material must be associated with the correct usage/application and related entities. For Nexo this supports binding protection, not semantic truth.
+
+### Materiality rule
+A change is MATERIAL if it can change any fact that affects authorization, risk, effect identity, target, world preconditions, safety constraints, provenance, policy interpretation, or externally observable semantics. Materiality MUST be determined by a governed contract external to the executor being constrained.
+
+Canonicalization is split into three layers:
+1. Representation canonicalization — deterministic encoding of equivalent representations.
+2. Domain semantic normalization — governed transformations such as units or explicit aliases where equivalence is proven for the domain.
+3. Authorization/effect canonicalization — exact fields defining security-relevant operation/effect identity. These are versioned and cannot be broadened by the executor.
+
+A digest over a representation proves only that representation; a digest over a canonical semantic form proves agreement with that canonicalizer, not truth of the underlying claim/effect.
+
+### Security boundary
+The executor MUST NOT define or relax its own equivalence relation. A separate, versioned Canonicalization/Materiality Contract defines:
+- included/excluded fields;
+- normalization rules;
+- units and precision;
+- aliases and enum mappings;
+- default/null/unknown behavior;
+- target identity rules;
+- effect-class rules;
+- forbidden normalizations;
+- semantic version;
+- acceptance tests and counterexamples;
+- owner/authority and review/expiry.
+
+Unknown or ambiguous normalization is not equivalence. For critical effects, UNKNOWN equivalence blocks execution until independently resolved.
+
+### Layered identity
+Nexo should maintain separate identities where useful:
+raw_payload_digest -> representation_digest -> semantic_payload_digest -> effect_key
+with explicit versioning for each transformation. This prevents one overloaded hash from hiding a semantic transformation.
+
+### Required adversarial tests
+- reordered fields accepted as same representation where allowed;
+- whitespace/serialization changes accepted only when canonicalization says equivalent;
+- 1000 g vs 1 kg equivalent only under the declared unit contract;
+- target A vs target B never equivalent merely because schemas match;
+- omitted field vs explicit default must not be equivalent unless the contract proves it;
+- UNKNOWN/null/absent must not silently become a positive value;
+- enum remapping must be explicit and versioned;
+- rounding/precision changes tested for effect-critical thresholds;
+- Unicode normalization and identifier rules tested;
+- over-normalization counterexamples that would merge two distinct effects;
+- under-normalization cases that would falsely split one effect;
+- canonicalizer version change requires re-admission for affected critical effects.
+
+### New invariants
+INV-359: materiality is defined by a governed contract, not by the executor.
+INV-360: critical effect identity is computed from a versioned canonical semantic representation.
+INV-361: representation normalization cannot silently change semantic/effect identity.
+INV-362: unknown/ambiguous normalization is not equivalence for critical admission.
+INV-363: canonicalization rules are versioned and bound to admission/execution where security-relevant.
+INV-364: canonicalizer changes affecting material semantics invalidate affected critical bindings/admissions.
+INV-365: canonicalization/integrity evidence does not establish truth of the underlying effect or claim.
+INV-366: materiality tests include both over-normalization and under-normalization counterexamples.
+
+Status: architecture refined; formal model still NOT TLC-VERIFIED.
