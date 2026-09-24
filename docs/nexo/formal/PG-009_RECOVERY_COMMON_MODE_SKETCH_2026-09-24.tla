@@ -229,9 +229,24 @@ GraphReferencesKnown ==
   /\ \A d \in Dependencies :
        DependencyDomain[d] \in Domains
 
+RECURSIVE ReachDependency(_,_)
+
+ReachDependency(d, seen) ==
+  IF d \in seen
+    THEN {}
+    ELSE {d} \cup UNION {
+      ReachDependency(child, seen \cup {d}) :
+        child \in DependencyDependsOn[d]
+    }
+
+ComponentDependencyClosure(c) ==
+  UNION {
+    ReachDependency(d, {}) :
+      d \in ComponentDependencyRefs[c]
+  }
+
 ComponentDomainClosure(c) ==
-  { DependencyDomain[d] : d \in ComponentDependencyRefs[c] } \cup
-  UNION { { DependencyDomain[x] : x \in DependencyDependsOn[d] } : d \in ComponentDependencyRefs[c] }
+  { DependencyDomain[d] : d \in ComponentDependencyClosure(c) }
 
 SharedFailureDomain(a, b) ==
   ComponentFailureDomains[a] \cap ComponentFailureDomains[b] # {}
