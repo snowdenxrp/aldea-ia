@@ -7,7 +7,7 @@ This checker detects declared gaps; it does not prove semantic equivalence.
 from __future__ import annotations
 from typing import Any
 
-REQUIRED_MAPPING = ("domain_mapping", "state_mapping", "assurance_mapping", "component_mapping", "dependency_relation", "failure_domain_mapping", "trust_root_mapping", "coverage")
+REQUIRED_MAPPING = ("domain_mapping", "state_mapping", "assurance_mapping", "component_mapping", "dependency_relation", "failure_domain_mapping", "trust_root_mapping", "authority_mapping", "coverage")
 
 def check_correspondence(claim: dict[str, Any], mapping: dict[str, Any]) -> dict[str, Any]:
     findings: list[dict[str, str]] = []
@@ -22,6 +22,8 @@ def check_correspondence(claim: dict[str, Any], mapping: dict[str, Any]) -> dict
     component_mapping = mapping.get("component_mapping", {})
     dependency_relation = mapping.get("dependency_relation", {})
     failure_domain_mapping = mapping.get("failure_domain_mapping", {})
+    trust_root_mapping = mapping.get("trust_root_mapping", {})
+    authority_mapping = mapping.get("authority_mapping", {})
 
     for comp in claim.get("components", []):
         cid = comp.get("component_id")
@@ -36,6 +38,15 @@ def check_correspondence(claim: dict[str, Any], mapping: dict[str, Any]) -> dict
             findings.append({"code": "FORMAL_DEPENDENCY_RELATION_UNMAPPED", "severity": "BLOCK", "message": f"dependency {did!r} has no formal dependency relation mapping"})
         if dep.get("failure_domain") and did not in failure_domain_mapping:
             findings.append({"code": "FORMAL_FAILURE_DOMAIN_UNMAPPED", "severity": "BLOCK", "message": f"dependency {did!r} has no formal failure-domain mapping"})
+
+    for comp in claim.get("components", []):
+        cid = comp.get("component_id")
+        for root in comp.get("trust_roots", []):
+            if cid not in trust_root_mapping:
+                findings.append({"code": "FORMAL_TRUST_ROOT_UNMAPPED", "severity": "BLOCK", "message": f"component {cid!r} trust root relation has no formal mapping"})
+                break
+        if comp.get("authority_domain") and cid not in authority_mapping:
+            findings.append({"code": "FORMAL_AUTHORITY_UNMAPPED", "severity": "BLOCK", "message": f"component {cid!r} authority relation has no formal mapping"})
 
     for dep in claim.get("dependencies", []):
         domain = dep.get("domain")
