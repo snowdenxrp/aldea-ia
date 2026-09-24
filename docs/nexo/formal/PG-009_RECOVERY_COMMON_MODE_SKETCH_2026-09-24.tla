@@ -2,6 +2,7 @@
 EXTENDS Naturals, FiniteSets
 
 CONSTANT Operations, Components, Domains
+CONSTANT ComponentDependencyRefs, DependencyDependsOn, ComponentFailureDomains, ComponentTrustRoots
 
 ASSUME Operations # {} /\ Components # {} /\ Domains # {}
 
@@ -215,6 +216,37 @@ WorldUnknownBlocksRelease ==
 
 
 (***************************************************************************)
+(* Concrete component/dependency graph correspondence. The constants below *)
+(* are supplied by the canonical fixture and deliberately model relations   *)
+(* explicitly; the model does not infer independence from process labels.   *)
+(***************************************************************************)
+
+GraphReferencesKnown ==
+  /\ \A c \in Components :
+       ComponentDependencyRefs[c] \subseteq Domains
+  /\ \A d \in Domains :
+       DependencyDependsOn[d] \subseteq Domains
+
+ComponentDomainClosure(c) ==
+  ComponentDependencyRefs[c] \cup
+  UNION { DependencyDependsOn[d] : d \in ComponentDependencyRefs[c] }
+
+SharedFailureDomain(a, b) ==
+  ComponentFailureDomains[a] \cap ComponentFailureDomains[b] # {}
+
+SharedTrustRoot(a, b) ==
+  ComponentTrustRoots[a] \cap ComponentTrustRoots[b] # {}
+
+CorrelatedComponents(a, b) ==
+  SharedFailureDomain(a, b) \/ SharedTrustRoot(a, b)
+
+NoFalseIndependence ==
+  \A a, b \in Components :
+    a # b /\ CorrelatedComponents(a, b)
+      => ~(ComponentFailureDomains[a] \cap ComponentFailureDomains[b] = {} /\
+           ComponentTrustRoots[a] \cap ComponentTrustRoots[b] = {})
+
+(***************************************************************************)
 (* Evaluator correspondence vocabulary. These definitions intentionally     *)
 (* mirror the executable contract; they do not import implementation code. *)
 (***************************************************************************)
@@ -264,7 +296,7 @@ EvaluatorDoesNotGrantAuthority ==
   - recovery invalidation explicitly blocks release.
 
   Remaining limitations:
-  - no component-to-domain relation yet;
+  - component-to-domain relation is represented explicitly through ComponentDependencyRefs and ComponentFailureDomains;
   - no transitive dependency closure;
   - no partial domain compromise;
   - no Byzantine behavior;
