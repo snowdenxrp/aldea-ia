@@ -135,7 +135,7 @@ def evaluate_claim(claim: dict[str, Any]) -> dict[str, Any]:
                 domains.add("independence:" + str(dep["independence_group"]))
             if dep.get("domain") == "trust_root":
                 roots.add(dep_id)
-            if dep.get("domain") in {"authority","identity","credential","kms"}:
+            if dep.get("domain") in {"identity","credential","kms"}:
                 auth.add(dep_id)
         comp_domains[cid], comp_roots[cid], comp_authority[cid] = domains, roots, auth
 
