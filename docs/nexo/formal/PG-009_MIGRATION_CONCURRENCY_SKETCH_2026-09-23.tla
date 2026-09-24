@@ -165,3 +165,29 @@ THEOREM Spec => []CutoverSafety
 
 \* Design rule: implementations must choose one explicit fence policy;
 \* "late write ignored" is forbidden for authoritative source state.
+
+
+\* Explicit policy selection for the cutover fence.
+CONSTANTS FencePolicy
+ASSUME FencePolicy \in {"BLOCK_WRITES", "INVALIDATE", "CATCH_UP"}
+
+FenceWrite(r) ==
+    /\ phase = "CUTOVER_FENCED"
+    /\ r \in Records
+    /\ IF FencePolicy = "BLOCK_WRITES" THEN
+          UNCHANGED vars
+       ELSE IF FencePolicy = "INVALIDATE" THEN
+          /\ sourceVersion' = [sourceVersion EXCEPT ![r] = @ + 1]
+          /\ divergence' = divergence \cup {r}
+          /\ phase' = "CUTOVER_PREPARED"
+          /\ UNCHANGED <<targetVersion, migrated, appliedOps, authority, epoch, journal, inflight>>
+       ELSE
+          /\ sourceVersion' = [sourceVersion EXCEPT ![r] = @ + 1]
+          /\ targetVersion' = [targetVersion EXCEPT ![r] = @ + 1]
+          /\ appliedOps' = appliedOps \cup {<<"FENCE_CATCHUP", r, sourceVersion'[r]>>}
+          /\ journal' = [journal EXCEPT ![r] = TRUE]
+          /\ UNCHANGED <<migrated, divergence, authority, epoch, phase, inflight>>
+
+FencePolicyInvariant ==
+    phase = "CUTOVER" => authority = New
+
