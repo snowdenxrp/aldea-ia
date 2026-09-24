@@ -2116,3 +2116,61 @@ MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → 
 
 PG-009 remains OPEN.
 Next research: **identity/continuity across forgetting, archival restore, snapshot/branch/fork and model replacement** — ensuring Nexo does not accidentally inherit or lose authority, obligations or identity when memory is restored, pruned or reconstructed.
+
+
+## Research continuation — identity and continuity across restore, fork, snapshot, forgetting and model replacement
+
+NIST SP 800-63-4 separates identity proofing, authentication, authenticator lifecycle and federation/assertions. NASA configuration management requires unique identifiers, controlled baselines, change authority and historical configuration accounting. These support a key distinction for Nexo: identity assertions, configuration continuity and current authority are related but not interchangeable. citeturn0search5turn0search36turn0search0turn0search13
+
+### Core finding
+Continuity is multidimensional. A successor can preserve lineage, history or memory without automatically inheriting current authority.
+
+Continuity dimensions: identity, constitution/governance, authority, obligations, durable history, epistemic state, memory, capabilities, policy, software/runtime, model, world relationship and cryptographic trust anchors.
+
+### Continuity Contract
+Binds continuity_id, predecessor/successor, transition type, checkpoint/history root, identity lineage, constitution/policy versions, authority epoch, capabilities, software/runtime/model identities, memory and obligation roots, world boundary, trust-anchor status, migration versions, verification evidence, divergence set and inheritance disposition.
+
+### Restore and snapshot
+Restore authenticates checkpoint/history, validates versions and history consistency, identifies intentionally absent state, revalidates obligations and external unknowns, establishes runtime/session identity, and re-earns current authority as required. A restored state is not proof of current external-world state. Snapshot omissions remain UNKNOWN or require revalidation.
+
+### Fork and merge
+Fork lineage is explicit: parent -> child. Shared history does not duplicate exclusive external authority, capabilities, leases, one-time obligations or effect reservations. Merge must preserve divergent histories and reconcile authority, obligations, provenance and world observations; it cannot rewrite incompatible external effects into one history.
+
+### Model replacement
+Model identity is separate from Nexo identity. Replacing a model does not automatically create a new Nexo identity, but it also does not automatically preserve authority. Material model changes trigger capability/risk/policy/admission review. The replacement model cannot self-certify continuity.
+
+### Capability and trust inheritance
+Default successor capabilities are NONE except narrowly bounded recovery capabilities explicitly authorized for reconstruction. Trust-anchor/key continuity requires independent validation. Uncertain continuity reduces autonomy before inheritance is attempted.
+
+### Continuity classes
+C0 NO_CONTINUITY; C1 STATE_CONTINUITY; C2 IDENTITY_CONTINUITY; C3 GOVERNED_CONTINUITY; C4 FULL_OPERATIONAL_CONTINUITY. These are scoped claims, not universal identity levels.
+
+### Failure states
+UNKNOWN_CONTINUITY, HISTORY_MISMATCH, CHECKPOINT_MISMATCH, POLICY_DIVERGENCE, AUTHORITY_DIVERGENCE, MEMORY_DIVERGENCE, WORLD_DIVERGENCE, TRUST_DIVERGENCE, FORK_CONFLICT, MERGE_CONFLICT.
+
+### New invariants
+INV-517 — continuity is multidimensional; identical files/model do not prove identity or authority continuity.
+INV-518 — identity continuity does not imply authority continuity.
+INV-519 — restored state does not imply current external-world state.
+INV-520 — snapshot omissions remain UNKNOWN or require revalidation; omission is not absence.
+INV-521 — fork lineage is explicit and shared history does not duplicate exclusive authority.
+INV-522 — exclusive capabilities, leases and one-time obligations are not automatically duplicated by fork.
+INV-523 — merge preserves divergent histories and cannot rewrite incompatible external effects into one history.
+INV-524 — model replacement does not automatically transfer authority.
+INV-525 — model replacement cannot self-certify continuity.
+INV-526 — restored epistemic states retain VERIFIED/UNKNOWN/CONFLICTING/STALE/INVALIDATED semantics.
+INV-527 — successor capabilities default to none except explicitly bounded recovery capabilities.
+INV-528 — trust-anchor continuity requires independent validation.
+INV-529 — continuity claims are scoped, versioned and evidence-backed.
+INV-530 — continuity failure reduces autonomy before uncertain inheritance.
+INV-531 — recovery authority is temporary, bounded and non-escalating.
+INV-532 — continuity verification includes state intentionally absent through forgetting/disposition.
+INV-533 — shared predecessor history does not prove equivalent current world state.
+INV-534 — restored historical authority cannot bypass current policy/epoch.
+INV-535 — merge/fork transitions create durable lineage events and explicit conflict state.
+INV-536 — C4 requires reconciliation of required external/world boundaries, not only local state.
+INV-537 — identity, memory, software, model, policy, authority and world relationship remain separately versioned.
+INV-538 — uncertainty in one continuity dimension cannot silently be represented as continuity in another.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next research: succession and human relationship continuity — owner change, device migration, recovery authority, credential loss and emergency trusteeship without privilege escalation.
