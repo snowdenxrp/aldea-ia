@@ -391,3 +391,18 @@ New invariants INV-481..498.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: epistemic memory garbage collection, retention and safe forgetting.
+
+## Latest PG-009 — safe forgetting, retention and epistemic garbage collection
+
+Cross-check with NIST lifecycle/provenance/privacy and evidence-management guidance, plus NASA records lifecycle/data management. NIST treats data processing as a lifecycle including retention and disposal; minimization limits retention to authorized purpose; evidence management distinguishes retention/preservation/disposition. NASA distinguishes active/inactive/disposition phases and preserves enduring-value records while disposing of temporary records under approved schedules. citeturn0search6turn0search9turn0search12turn0search0turn0search1
+
+New Memory Classes M0-M5 and explicit forgetting modes EVICT, ARCHIVE, SUMMARIZE, REDACT, TOMBSTONE, CRYPTO_ERASE, DESTROY.
+
+New Obligation Firewall and dependency-aware garbage collection. Critical deletion is blocked by open missions, unresolved external effects, active revocations, conflicts, critical invariant evidence, checkpoint/recovery dependencies, incidents, retention holds and other preservation obligations.
+
+Deletion is a governed durable event. Tombstones prove disposition, not truth of deleted content. Loss of critical evidence is an assurance downgrade.
+
+New invariants INV-499..516.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: identity/continuity across forgetting, restore, snapshot/branch/fork and model replacement.
