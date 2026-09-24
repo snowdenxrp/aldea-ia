@@ -558,3 +558,13 @@ Remaining gaps are recorded explicitly: component-to-domain mapping, transitive 
 Created machine-readable schema `docs/nexo/schema/SAFETY_CLAIM_DEPENDENCY_CLOSURE.schema.json` and architecture contract `docs/nexo/PG-009_EXECUTABLE_SAFETY_CLAIM_CONTRACT_2026-09-24.md`.
 Schema commit: `7d05723135fe75ace2874a4f2ee37626c547c364`. Contract commit: `812bf58903ac40d1173145b1eb01a1b53b3444e5`.
 The planned evaluator is deterministic and non-authoritative. It resolves dependency closure, failure-domain overlap, correlated pairs and assurance restrictions. It cannot execute effects or grant authority. Schema validity does not imply safety verification.
+
+## PG-009 — deterministic dependency evaluator — 2026-09-24
+Implemented src/nexo/dependency_closure_evaluator.py and test suite tests/nexo/test_dependency_closure_evaluator.py.
+Implementation: 8a9ca450e1e473f4478e1359f0004650ca59853d; tests: 90090693cadcaa1b3e4a34dfc7eed1ca377a3ba8.
+
+The evaluator is deliberately non-authoritative: it resolves transitive dependency closure, identifies missing/cyclic edges, dependency uncertainty/compromise/staleness, and shared failure-domain/trust-root/authority correlations. It cannot grant authority or execute effects.
+
+Test execution was attempted, but outbound DNS/network access was unavailable in the execution environment, so the test suite could not be fetched/executed. No passing test result is claimed.
+
+New invariants INV-691..696. Status: IMPLEMENTED / NOT TEST-PASSED / NOT FORMALLY VERIFIED.
