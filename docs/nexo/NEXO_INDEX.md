@@ -74,3 +74,6 @@ Schema compatibility is not semantic compatibility. Nexo now requires a Semantic
 
 ## Next action
 Continue PG-009 research with formal semantic equivalence, deterministic upcaster chains, migration crash recovery, checkpoint/memory migration, policy/authority compatibility, automated semantic diffing, golden fixtures, differential replay, and migration-specific clean recovery. Save every material advance.
+
+## Latest PG-009 consolidation
+Concurrent-write migration is now modeled explicitly: snapshot/quiesce, catch-up/dual-write, shadow/dual-read, differential verification, protected authority cutover, durable migration journal, idempotent batches, divergence ledger, and governed old-path contraction. New invariants INV-231..240. PG-009 remains OPEN.
