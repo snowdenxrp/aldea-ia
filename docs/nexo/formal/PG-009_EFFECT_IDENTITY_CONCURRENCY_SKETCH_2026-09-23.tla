@@ -428,3 +428,50 @@ InvReceiptNotWorldTruth ==
    dependency list. The acceptance oracle must test known counterexamples, omitted
    edges, topology changes, and adversarially hidden dependencies.
 *)
+
+
+(* INVARIANT / DEPENDENCY / SCHEDULER AUTHORITY SEPARATION
+   Critical safety constraints are not owned by the executor. Define distinct
+   authority domains:
+
+     INVARIANT_AUTHORITY  = may define/amend protected invariants and their scope
+     DEPENDENCY_AUTHORITY = may certify dependency topology/completeness evidence
+     SCHEDULER_AUTHORITY  = may choose ordering/admission among already-authorized ops
+     EXECUTOR_AUTHORITY   = may perform an operation only within granted capability
+     VERIFIER_AUTHORITY   = may assess whether required postconditions/evidence hold
+
+   Separation rules:
+     - Executor cannot weaken, remove, or redefine an invariant used to authorize it.
+     - Scheduler cannot grant authority that the policy/capability layer did not grant.
+     - Dependency metadata cannot silently redefine invariant semantics.
+     - Verifier cannot retroactively authorize execution by declaring an invariant met.
+     - A model/agent proposal is information, not invariant authority.
+
+   Invariant changes are governance events with explicit version, scope, rationale,
+   affected dependency graph, effective epoch/time, compatibility impact, and review.
+   A critical operation prepared under invariant version V is not automatically valid
+   under V+1 if the change is materially restrictive or expansive; re-admission is
+   required according to policy.
+
+   Scheduler admission is therefore:
+      AUTHORIZED(operation, policy, capability, epoch)
+      AND SAFE_UNDER(invariants, dependency_graph, world_boundary)
+      AND CONFLICTS_RESOLVED
+      -> admissible
+
+   not:
+      scheduler_priority -> authority.
+
+   The executor receives an already bounded authority envelope and cannot widen it.
+*)
+
+(* INVARIANT TAMPER / SELF-WEAKENING REFINEMENT
+   If an actor that benefits from an operation can alter the invariant or its scope,
+   the safety proof becomes circular. Critical invariant definitions therefore live
+   in a separately governed authority domain and are referenced by immutable/versioned
+   identifiers. Material changes trigger re-evaluation of affected prepared operations.
+
+   Emergency changes may reduce availability but must not silently widen critical
+   authority. Recovery preserves the previous invariant history and records the
+   change as a new governance event.
+*)
