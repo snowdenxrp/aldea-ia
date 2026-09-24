@@ -304,3 +304,51 @@ InvReceiptNotWorldTruth ==
    The model must also preserve the distinction between target-local version,
    authority epoch, operation identity, and reconciliation epoch.
 *)
+
+
+(* WORLD VERSION / RETRY-REPLAN REFINEMENT
+   A stale-precondition failure does not by itself mean the mission failed.
+   It invalidates the execution assumption. Recovery must classify the next
+   transition while preserving lineage:
+
+     SAME_OPERATION_RETRY:
+       same logical operation/effect identity remains valid; reuse operation_id
+       and re-obtain a valid world-version/fence before dispatch.
+
+     REPLAN_SAME_MISSION:
+       mission root and obligation remain valid, but the world change alters
+       the plan/effect. The old operation remains historical; a new operation_id
+       is created and linked to its predecessor/replan reason.
+
+     NEW_OPERATION:
+       the intended effect itself changed or the prior obligation was discharged,
+       superseded, cancelled, or otherwise no longer valid. New authority and
+       preconditions are required as applicable.
+
+   Forbidden:
+     - converting STALE_PRECONDITION into SUCCESS;
+     - blindly replaying a stale effect with a new operation_id to bypass
+       duplicate/effect controls;
+     - changing semantic intent while retaining an old operation_id;
+     - treating a newer world version as proof that the old operation happened.
+
+   Lineage fields should preserve predecessor_operation_id (when applicable),
+   replan_reason, observed_version, rejected_version/expected_version, and the
+   authority/policy epochs used for the decision.
+*)
+
+(* CONSISTENCY-CAPABILITY REFINEMENT
+   Targets differ in concurrency guarantees. Nexo records a target capability
+   class rather than assuming that a version token has universal meaning:
+
+     C0 = no reliable version/fence semantics
+     C1 = version evidence / optimistic precondition check
+     C2 = atomic conditional write / compare-and-swap
+     C3 = transactional conflict validation / serializable semantics
+     C4 = stronger externally ordered transactional semantics
+
+   The class is target- and operation-specific and is evidence, not authority.
+   Critical execution admission must require a class sufficient for the effect.
+   C0 cannot silently inherit C2+ guarantees. A C1 read/version check without
+   target-side atomic enforcement is not a hard execution fence.
+*)
