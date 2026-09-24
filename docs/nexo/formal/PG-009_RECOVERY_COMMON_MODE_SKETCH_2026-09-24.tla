@@ -68,7 +68,11 @@ Init ==
 
 RequestStop(o) ==
   /\ stopState[o] = "CLEAR"
+  /\ reconciliationLeaseValid' = [reconciliationLeaseValid EXCEPT ![o] = FALSE]
+  /\ reconciliationOwner' = [reconciliationOwner EXCEPT ![o] = "NONE"]
   /\ stopState' = [stopState EXCEPT ![o] = "ENFORCED"]
+  /\ reconciliationOwner' = [reconciliationOwner EXCEPT ![o] = "NONE"]
+  /\ reconciliationLeaseValid' = [reconciliationLeaseValid EXCEPT ![o] = FALSE]
   /\ gateState' = [gateState EXCEPT ![o] = "CLOSED"]
   /\ stopEpoch' = [stopEpoch EXCEPT ![o] = @ + 1]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
@@ -103,6 +107,7 @@ AcquireReconciliation(o, owner) ==
   /\ owner # "NONE"
   /\ reconciliationOwner[o] = "NONE"
   /\ reconciliationLeaseValid[o] = FALSE
+  /\ recoveryLeaseValid[o] = FALSE
   /\ reconciliationOwner' = [reconciliationOwner EXCEPT ![o] = owner]
   /\ reconciliationGeneration' = [reconciliationGeneration EXCEPT ![o] = @ + 1]
   /\ reconciliationLeaseValid' = [reconciliationLeaseValid EXCEPT ![o] = TRUE]
@@ -204,8 +209,12 @@ CompromiseDependency(d) ==
       recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,worldState,
       dependencyState,commitCount>>
 
-ReconcileWorld(o, state) ==
+ReconcileWorld(o, state, owner, generation) ==
   /\ state \in WorldStates
+  /\ reconciliationLeaseValid[o]
+  /\ reconciliationOwner[o] = owner
+  /\ generation = reconciliationGeneration[o]
+  /\ recoveryLeaseValid[o] = FALSE
   /\ worldState' = [worldState EXCEPT ![o] = state]
   /\ IF state = "UNKNOWN"
         THEN assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
@@ -326,8 +335,17 @@ RecoveryGenerationOnlyAdvancesOnAcquire ==
 ReconciliationLeaseDoesNotGrantRecoveryAuthority ==
   \A o \in Operations : reconciliationLeaseValid[o] => recoveryLeaseValid[o] = FALSE
 
-ReconciliationGenerationNonNegative ==
+ReconciliationGenerationMonotonic ==
   \A o \in Operations : reconciliationGeneration[o] >= 0
+
+ReconciliationGenerationOnlyAdvancesOnAcquire ==
+  \A o \in Operations : reconciliationGeneration[o] >= 0
+
+StaleReconciliationOwnerCannotAct ==
+  \A o \in Operations : reconciliationLeaseValid[o] => reconciliationOwner[o] # "NONE"
+
+ExpiredReconciliationLeaseCannotAct ==
+  \A o \in Operations : reconciliationLeaseValid[o] = FALSE => reconciliationOwner[o] = "NONE"
 
 CurrentOwnerMatchesGeneration ==
   \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT"
@@ -558,7 +576,9 @@ ReleaseAuthorizedImpliesEligible ==
   - recoveryEpoch is distinct from stopEpoch;
   - recoveryAuthorityEpoch binds recovery to the authority epoch that admitted it;
   - recoveryGeneration + recoveryLeaseValid model explicit owner-generation fencing;
-  - reconciliationOwner + reconciliationGeneration + reconciliationLeaseValid are separate coordination state and do not grant recovery authority; takeover requires the next generation and invalidates stale-owner actions;
+  - reconciliationOwner + reconciliationGeneration + reconciliationLeaseValid are separate coordination state and do not grant recovery authority;
+  - reconciliation actions are bound to the current owner/generation and require recovery lease absence;
+  - emergency stop clears the reconciliation lease/owner for the affected operation; takeover requires the next generation and invalidates stale-owner actions;
   - lease validity is a coordination fence, not proof that an external effect is absent or reversible;
   - admittedAuthorityEpoch prevents authority revocation between Release and Commit from becoming a stale-admission race;
   - authority revocation explicitly invalidates recovery and release authorization;
@@ -573,7 +593,7 @@ ReleaseAuthorizedImpliesEligible ==
   - no partial domain compromise;
   - no Byzantine behavior;
   - no CAS/linearizability semantics;
-  - no operation/effect identity;
+  - no operation/effect identity;\n  - external-effect identity binding is the next formal extension;
   - reconciliation and recovery leases are modeled as mutually exclusive for the operation, but the underlying storage/CAS primitive is not modeled;
   - no artifact/config/runtime digest;
   - no update transaction;
