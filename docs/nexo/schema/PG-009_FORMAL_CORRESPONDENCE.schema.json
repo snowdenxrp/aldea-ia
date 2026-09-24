@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nexo.invalid/schema/pg009-formal-correspondence-1",
+  "title": "PG-009 Executable-to-Formal Correspondence Contract",
+  "type": "object",
+  "required": ["version", "domain_mapping", "state_mapping", "assurance_mapping", "coverage"],
+  "properties": {
+    "version": {"type": "string"},
+    "domain_mapping": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "state_mapping": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "assurance_mapping": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "coverage": {
+      "type": "object",
+      "required": ["component_to_domain", "transitive_closure", "graph_fingerprint", "finding_taxonomy"],
+      "properties": {
+        "component_to_domain": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]},
+        "transitive_closure": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]},
+        "graph_fingerprint": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]},
+        "finding_taxonomy": {"enum": ["MAPPED", "PARTIAL", "UNMAPPED"]}
+      }
+    }
+  }
+}
