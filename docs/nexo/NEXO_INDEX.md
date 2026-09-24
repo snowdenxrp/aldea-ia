@@ -384,3 +384,6 @@ New formal sketch: `docs/nexo/formal/PG-009_RECOVERY_COMMON_MODE_SKETCH_2026-09-
 
 ## Latest PG-009 — executable safety-claim / dependency-closure contract
 Common-mode analysis has been converted into a machine-readable schema draft: `docs/nexo/schema/SAFETY_CLAIM_DEPENDENCY_CLOSURE.schema.json`, with companion architecture contract `docs/nexo/PG-009_EXECUTABLE_SAFETY_CLAIM_CONTRACT_2026-09-24.md`. The evaluator boundary is non-authoritative and deterministic. Schema validity is not safety verification. Runtime integration/TLC/fault injection remain pending.
+
+## Latest PG-009 — deterministic dependency evaluator
+Implemented src/nexo/dependency_closure_evaluator.py plus tests/nexo/test_dependency_closure_evaluator.py. It resolves transitive closure, detects missing/cyclic dependencies, and reports shared failure-domain/trust-root/authority correlations without granting authority or executing effects. Implementation commit 8a9ca450e1e473f4478e1359f0004650ca59853d; tests commit 90090693cadcaa1b3e4a34dfc7eed1ca377a3ba8. Local execution was attempted but blocked by unavailable outbound DNS/network; tests are not claimed as passed. New invariants INV-691..696.
