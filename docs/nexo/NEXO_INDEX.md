@@ -153,3 +153,6 @@ Invariant, dependency, scheduler, executor, and verifier authority are now expli
 
 ## Latest PG-009: policy/invariant version transition
 A material policy/invariant change is now a governed boundary for in-flight work. New admissions use the new rule; prepared/in-flight effects are classified for revalidation, draining, cancellation where genuinely supported, reconciliation, or quarantine. Irreversible effects are not assumed cancellable or rollback-safe. Transition fencing binds policy/invariant version, authority epoch, operation/effect identity, and world/precondition boundary. Formal commit: b55f40fc9000dfcee979ce9608ce4a4061f83a9b. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: policy change during remote uncertainty
+Formalized the case where an old-policy operation becomes REMOTE_UNKNOWN while policy/authority changes. Historical authorization remains immutable; only current authority governs new recovery actions. No blind retry, old-authority continuation, retroactive authorization, or identity substitution. If the old effect is prohibited now, reconciliation/containment can still be required because policy does not erase world state. Autonomy cannot increase during this uncertainty. Formal commit: 862cf0bebe412bc5318f77fe75c58de99d5f6546. **NOT TLC-VERIFIED.**
