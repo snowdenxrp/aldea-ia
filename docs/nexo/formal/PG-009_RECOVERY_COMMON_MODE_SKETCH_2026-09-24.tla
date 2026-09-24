@@ -73,7 +73,7 @@ Quarantine(o) ==
   /\ stopState[o] = "ENFORCED"
   /\ processState' = [processState EXCEPT ![o] = "QUARANTINED"]
   /\ stopState' = [stopState EXCEPT ![o] = "QUARANTINED"]
-  /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,
+  /\ UNCHANGED <<gateState,authorityEpoch,stopEpoch,recoveryEpoch,
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
       dependencyState,compromisedDomains,assuranceState,commitCount>>
 
