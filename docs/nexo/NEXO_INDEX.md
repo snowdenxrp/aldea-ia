@@ -421,3 +421,21 @@ Formal compromise propagation is now restricted to operations whose transitive d
 ## PG-009 — transition reachability checkpoint
 
 The formal recovery path was corrected so STOP enforcement does not skip the OFFLINE → RESTARTED → QUARANTINED sequence. Compromise propagation now preserves unrelated operation state without relying on invalid TLA+ `@` usage. Correspondence now explicitly covers trust-root and authority-domain relations.
+
+
+## Latest PG-009 — recovery concurrency / owner fencing — 2026-09-23
+
+The recovery/common-mode formal sketch was adversarially audited for concurrent recovery ownership and release/commit races. Recovery acquisition is now exclusive while a current owner exists; revalidation and release authorization are owner-bound and authority-epoch-bound; Release rechecks current eligibility; Commit is fenced by the admitted authority epoch and current world/dependency state; stop interrupts ADMITTED/RUNNING execution; and authority revocation forces active admission back to OFFLINE with stop/gate enforcement.
+
+A concurrency correspondence fixture now covers double recovery acquisition, stale-owner action, double release, double commit, revoke-before-commit, and stop-before-commit.
+
+Status: MODEL HARDENED / NOT TLC-VERIFIED / CAS-LINEARIZABILITY NOT PROVEN / EXTERNAL EFFECT CANCELLATION NOT PROVEN.
+
+Git checkpoints:
+- TLA concurrency hardening: 4f2e8be26d2f5c1ee1d400296fe072aeb1f3ebc1
+- concurrency correspondence fixture: 1d3e741c3d240070667a19594c37174fa63e1d1c
+- continuity checkpoint: de4978681f7c588d6bb76dcab01c55e6de0d1c1f
+
+### Next PG-009 action
+
+Formalize recovery-owner lease/generation fencing and atomic ownership transfer: expiry, takeover, stale-owner commit, double-release, and races between recovery transfer, authority revocation, emergency stop, and external-effect reconciliation. Then cross-check the recovery lease semantics against the existing reconciliation lease model.
