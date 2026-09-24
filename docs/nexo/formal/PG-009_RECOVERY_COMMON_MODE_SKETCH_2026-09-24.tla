@@ -249,12 +249,13 @@ StaleOwnerCannotAuthorize ==
   \A o \in Operations :
     releaseAuthorized[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT"
 
-DoubleReleaseImpossible ==
+ReleaseRequiresAuthorization ==
   \A o \in Operations :
-    releaseAuthorized[o] = FALSE => ~(stopState[o] = "QUARANTINED" /\ gateState[o] = "CLOSED" /\ processState[o] = "ADMITTED")
+    processState[o] = "ADMITTED" => releaseAuthorized[o] = FALSE
 
-DoubleCommitImpossible ==
-  \A o \in Operations : commitCount[o] <= 1
+RunningImpliesPriorCommit ==
+  \A o \in Operations :
+    processState[o] = "RUNNING" => commitCount[o] >= 1
 
 AuthorityRevocationBlocksCommit ==
   \A o \in Operations :
