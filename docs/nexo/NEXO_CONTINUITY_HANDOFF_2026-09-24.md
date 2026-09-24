@@ -36,6 +36,7 @@ Recent research:
 - docs/nexo/NEXO_POST_COMMIT_PRE_OBSERVATION_FAILURE_RESEARCH_V1_2026-09-24.md — fbbb6e65979bb566ee8d448749c543783f787e81
 - docs/nexo/NEXO_DOUBLE_FAILURE_EXTERNAL_ROLLBACK_RECOVERY_RESEARCH_V1_2026-09-24.md — ccd8f7e411a3f711995a3e0cca99f45934f891cb
 - docs/nexo/NEXO_DOUBLE_RECOVERY_SPLIT_OWNERSHIP_RESEARCH_V1_2026-09-24.md — 78d506be4bb367165f2edf4d215638f3be994d5c
+- docs/nexo/NEXO_RECOVERY_STOP_EXTERNAL_EFFECT_RACE_RESEARCH_V1_2026-09-24.md — afbac5cc21233ee9446cc83acae63fe295a3f567
 
 ## 4. Clean architecture baseline
 Zones:
@@ -161,9 +162,11 @@ Two recovery actors start from different checkpoints/contexts; both believe they
 
 Analyze recovery fencing, ownership transfer, lease expiry, stale recovery messages, concurrent reconciliation, release linearization, recovery actor replacement/restart, and conflicting recovery decisions.
 
-Next attack after this round: RECOVERY + STOP + EXTERNAL EFFECT RACE.
+Next attack after this round: EFFECT OUTCOME AMBIGUITY + COMPENSATION SELECTION.
 
 Then continue adversarially through remaining G-A14 gaps.
+
+RSE round preserved: STOP_REQUESTED != STOP_ENFORCED != EXTERNAL_QUIESCENCE != HISTORICAL_NO_EFFECT; compensation is a new protected effect; release must jointly validate current owner/STOP/recovery/resource-fence/effect/evidence context.
 Do not implement.
 Do not construct V21.
 Maintain:
