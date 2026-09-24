@@ -183,3 +183,6 @@ Admissions are now bounded by explicit admission epochs and revalidation deadlin
 
 ## Latest PG-009: admission-to-execution binding
 Critical effects now require an explicit Execution Binding that ties admission to the exact execution context: operation/effect/payload/target/capability/policy/authority/risk/dependency/world precondition plus admission epoch and relevant tool/environment identity. The enforcement gateway recomputes/verifies this binding; material mismatches fail closed. Integrity/signature does not prove semantic truth. TOCTOU revalidation must converge on the exact binding consumed. Invariants INV-351..358. Formal commit: 6fe29c5f30b45e0644e8d7c935e1209752ad41db. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: materiality and canonicalization boundary
+Materiality is now governed externally to the executor. Canonicalization is split into representation normalization, domain semantic normalization, and security-relevant authorization/effect canonicalization. Critical equivalence cannot be broadened by the executor; unknown/ambiguous normalization blocks. Layered identity: raw payload -> representation digest -> semantic payload digest -> effect key, with versioning. New invariants INV-359..366. Architecture commit: 074b1eb9ac7572b6653c075dc08db158ad2778e. **NOT TLC-VERIFIED.**
