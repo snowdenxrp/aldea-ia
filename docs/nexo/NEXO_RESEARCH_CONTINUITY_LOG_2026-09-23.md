@@ -365,3 +365,16 @@ New invariants INV-449..464.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: epistemic closure and decision-theoretic action under uncertainty.
+
+## Latest PG-009 — epistemic closure and decision-making under uncertainty
+
+Cross-check with NIST AI RMF and NASA decision-analysis/risk-informed decision guidance. NIST treats risk tolerance as contextual, requires uncertainty characterization, and calls for safe failure beyond knowledge limits. NASA states that analysis effort should depend on decision clarity and that uncertainty should be reduced when it could change the decision. citeturn0search32turn0search0turn0search11turn0search5
+
+New Decision Sufficiency Contract and epistemic closure model. Nexo does not require certainty everywhere; it requires sufficient knowledge for the specific decision, effect class, risk envelope and world boundary.
+
+New concepts: RequiredKnowledge(D), material knowledge closure, bounded residual uncertainty, robustness across materially plausible states, value-of-information reasoning, governed information-gathering actions, decision classes D0-D4, anti-paralysis budgets and anti-recklessness gates.
+
+New invariants INV-465..480.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: epistemic memory and provenance under compression, summarization, caching and retrieval.
