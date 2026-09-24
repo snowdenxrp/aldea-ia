@@ -375,3 +375,17 @@ This remains **NOT TLC-VERIFIED**. The official TLA+ documentation describes TLC
 
 ### Current formal limitations
 The model still lacks component-to-domain mapping, transitive dependency closure, partial compromise, Byzantine behavior, CAS/linearizability, operation/effect identity, artifact/config/runtime digests, update transactions, explicit enforcement proof, timing/freshness and liveness/fairness. These are deliberately recorded rather than treated as solved.
+
+## Executable safety-claim contract — 2026-09-24
+Common-mode analysis has now been converted into a machine-readable schema draft:
+`docs/nexo/schema/SAFETY_CLAIM_DEPENDENCY_CLOSURE.schema.json`
+
+A companion architecture artifact defines the intended deterministic evaluator boundary:
+`docs/nexo/PG-009_EXECUTABLE_SAFETY_CLAIM_CONTRACT_2026-09-24.md`
+
+Schema commit: `7d05723135fe75ace2874a4f2ee37626c547c364`.
+Contract commit: `812bf58903ac40d1173145b1eb01a1b53b3444e5`.
+
+The evaluator is explicitly non-authoritative: it computes dependency closure, shared failure domains, correlated pairs, uncertainty/compromise findings and a maximum admissible assurance level; it does not execute effects or grant authority.
+
+Schema validity is not safety verification. Runtime integration, dependency resolution, TLC and fault injection remain undone.
