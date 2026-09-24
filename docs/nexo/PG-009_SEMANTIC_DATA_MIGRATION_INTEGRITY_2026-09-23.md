@@ -1679,3 +1679,77 @@ INV-435 — assurance class is scoped to the exact property, domain, version and
 MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → ASSUMPTIONS/ENVIRONMENT MODEL → ADEQUACY → COVERAGE → ENFORCEMENT → INDEPENDENT VERIFICATION → WORLD EVIDENCE → ADMISSION
 
 PG-009 remains OPEN.
+
+## Research continuation — observability completeness and epistemic boundary integrity
+
+Recent NIST work on deployed-AI monitoring emphasizes that controlled pre-deployment evaluation does not provide full visibility into real-world behavior; post-deployment monitoring is needed for unexpected outputs and consequences. NIST AI RMF requires regular measurement, uncertainty documentation, and monitoring for drift as environments evolve. NASA systems engineering distinguishes verification from validation and requires validation in intended or representative operational environments, including off-nominal scenarios. citeturn0search0turn0search5turn0search11turn0search1turn0search13
+
+### Finding
+Observability is not binary. Nexo must represent what it can observe, how completely, how freshly, with what semantics, and what remains outside the observation boundary.
+
+A successful sensor/API/tool call proves that data was returned; it does not prove that the returned data represents the complete relevant world state.
+
+### Observation Contract
+Every critical observation binds: observation_id/version; target identity and scope; observed property; source/observer identity; acquisition time and causal/logical position; freshness window; consistency level; visibility scope; query semantics; transformation/canonicalization; provenance; known blind spots; uncertainty/quality; independent corroboration where required; expiry/revalidation trigger.
+
+### Epistemic states
+Nexo distinguishes OBSERVED → VALIDATED → CORROBORATED → VERIFIED, and uncertainty states PARTIAL, STALE, AMBIGUOUS, CONFLICTING, UNOBSERVABLE, UNKNOWN.
+
+No observation is not absence. Partial observation is not complete state. Stale observation is not current state. Conflict is not verified fact. Successful query is not complete visibility.
+
+### Observability completeness classes
+O0 UNKNOWN
+O1 DECLARED_SCOPE
+O2 EVIDENCE_BACKED
+O3 COVERAGE_MEASURED
+O4 INDEPENDENTLY_VALIDATED
+O5 CONTINUOUSLY_MONITORED
+
+An O5 claim remains scoped to target, property, observer, time and environment.
+
+### Epistemic boundary
+For each critical decision Nexo records KNOWN, INFERRED, ASSUMED, UNKNOWN or UNOBSERVABLE. Inference cannot silently become observation. Assumption cannot silently become fact. Unknown cannot silently become safe.
+
+### Partial observability
+A world may contain hidden state H such that Observe(W1) = Observe(W2) while W1 != W2. An observation is sufficient for a critical decision only when the observation contract establishes that hidden-state differences cannot change the relevant invariant/effect decision, or another control closes the gap.
+
+### Freshness and causality
+Freshness is property-specific. A value can be recent yet causally stale, or old yet valid for a declared invariant. Critical decisions bind temporal freshness and causal/version semantics where available.
+
+### Semantic ambiguity
+Two systems may return the same-looking value with different meanings, units, scopes, aggregation rules or query semantics. Verification checks semantic interpretation, not only bytes or signatures.
+
+### Independent observation
+Where the executor can influence the primary observation path, critical verification should use an independent observation plane when feasible. Independence is evaluated by failure domain, authority, data path and common-mode dependencies.
+
+### Blind-spot registry
+Critical observers record known blind spots, unobservable states, detection limits, excluded regions, stale-data conditions, failure modes, common-mode dependencies and compensating controls. A critical blind spot with no disposition becomes a coverage gap.
+
+### Observation loss response
+OBSERVABILITY_LOSS → mark affected facts UNKNOWN → fence affected irreversible effects → revalidate/reconcile → continue only if assurance remains sufficient.
+
+Nexo must not preserve old authority solely because the last observation was safe.
+
+### Observability mutation testing
+Test silent observer failure, stale cache, truncated results, filtered/hidden records, network partition, duplicate/reordered observations, malicious authenticated observer, partial scope, clock skew, semantic drift, common-mode failure and disagreement between independent observers.
+
+### New invariants
+INV-436 — observation is scoped evidence, not automatically complete world truth.
+INV-437 — absence of observation cannot establish absence of world state.
+INV-438 — partial visibility cannot satisfy a completeness-dependent critical decision without justified closure.
+INV-439 — stale observations cannot satisfy current critical preconditions unless bounded staleness is explicitly authorized.
+INV-440 — conflicting observations remain CONFLICTING/UNKNOWN until governed resolution.
+INV-441 — semantic interpretation of an observation is part of verification.
+INV-442 — critical observation contracts include source, scope, freshness, consistency, semantics and blind spots.
+INV-443 — independent verification requires meaningful independence of failure domain, data path and authority where claimed.
+INV-444 — loss of critical observability reduces assurance and cannot increase autonomy.
+INV-445 — known critical blind spots require explicit disposition or block the affected assurance claim.
+INV-446 — observation completeness is scoped, versioned and freshness-bounded.
+INV-447 — executor-controlled evidence cannot by itself establish independent world verification.
+INV-448 — observability loss during an uncertain external effect routes to reconciliation/containment rather than blind retry.
+
+### Architectural result
+MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → ASSUMPTIONS/ENVIRONMENT MODEL → OBSERVATION CONTRACT → EPISTEMIC STATE → ADEQUACY/COVERAGE → ENFORCEMENT → INDEPENDENT VERIFICATION → WORLD EVIDENCE → ADMISSION
+
+PG-009 remains OPEN.
+Next research: epistemic state transitions and uncertainty propagation — how UNKNOWN/PARTIAL/STALE/CONFLICTING observations propagate through memory, planning, risk, authority and execution without being accidentally collapsed into certainty.
