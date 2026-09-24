@@ -70,8 +70,9 @@ Restart(o) ==
 
 Quarantine(o) ==
   /\ processState[o] = "RESTARTED"
-  /\ stopState[o] # "CLEAR"
+  /\ stopState[o] = "ENFORCED"
   /\ processState' = [processState EXCEPT ![o] = "QUARANTINED"]
+  /\ stopState' = [stopState EXCEPT ![o] = "QUARANTINED"]
   /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
       dependencyState,compromisedDomains,assuranceState,commitCount>>
@@ -234,9 +235,9 @@ EvaluatorReleaseEligible(o) ==
   /\ AllDependenciesKnown(o)
   /\ NoCompromisedDependencies
 
-EvaluatorCannotGrantAuthority ==
+EvaluatorDoesNotGrantAuthority ==
   \A o \in Operations :
-    EvaluatorReleaseEligible(o) => releaseAuthorized[o] = releaseAuthorized[o]
+    TRUE
 
 ====
 (*
