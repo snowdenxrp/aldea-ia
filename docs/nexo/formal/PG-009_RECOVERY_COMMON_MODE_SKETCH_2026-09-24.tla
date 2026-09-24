@@ -144,6 +144,8 @@ AcquireRecovery(o, owner, expectedGeneration) ==
 RevokeAuthority(o) ==
   /\ authorityEpoch' = [authorityEpoch EXCEPT ![o] = @ + 1]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
+  /\ reconciliationOwner' = [reconciliationOwner EXCEPT ![o] = "NONE"]
+  /\ reconciliationLeaseValid' = [reconciliationLeaseValid EXCEPT ![o] = FALSE]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
   /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = FALSE]
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
@@ -296,6 +298,8 @@ Release(o) ==
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
   /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = FALSE]
+  /\ reconciliationOwner' = [reconciliationOwner EXCEPT ![o] = "NONE"]
+  /\ reconciliationLeaseValid' = [reconciliationLeaseValid EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<authorityEpoch,stopEpoch,recoveryEpoch,recoveryGeneration,recoveryAuthorityEpoch,
       worldState,dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
@@ -347,23 +351,11 @@ StaleReconciliationOwnerCannotAct ==
 ExpiredReconciliationLeaseCannotAct ==
   \A o \in Operations : reconciliationLeaseValid[o] = FALSE => reconciliationOwner[o] = "NONE"
 
-CurrentOwnerMatchesGeneration ==
-  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT"
+ReconciliationReleaseSeparation ==
+  \A o \in Operations : releaseAuthorized[o] => reconciliationLeaseValid[o] = FALSE
 
-StaleGenerationCannotAuthorize ==
-  \A o \in Operations : releaseAuthorized[o] => recoveryLeaseValid[o] /\ recoveryGeneration[o] > 0
-
-ExpiredLeaseCannotAct ==
-  \A o \in Operations : ~recoveryLeaseValid[o] => ~releaseAuthorized[o]
-
-TakeoverInvalidatesPriorOwner ==
-  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryGeneration[o] > 0
-
-RecoveryReleaseOwnerCleanup ==
-  \A o \in Operations : processState[o] = "ADMITTED" => ~releaseAuthorized[o]
-
-RecoveryGenerationMonotonic ==
-  \A o \in Operations : recoveryGeneration[o] >= 0
+UnknownExternalEffectBlocksRecoveryRelease ==
+  \A o \in Operations : worldState[o] = "UNKNOWN" => releaseAuthorized[o] = FALSE
 
 CurrentOwnerMatchesGeneration ==
   \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT" /\ recoveryGeneration[o] > 0
