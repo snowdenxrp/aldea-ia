@@ -116,11 +116,12 @@ CompromiseDependency(d) ==
   /\ compromisedDependencies' = compromisedDependencies \cup {d}
   /\ assuranceState' =
       [o \in Operations |->
-        IF dependencyState[o][d] = "KNOWN"
-           THEN "DEGRADED"
-           ELSE "HOLD"]
+        IF d \in OperationDependencies(o)
+           THEN IF dependencyState[o][d] = "KNOWN" THEN "DEGRADED" ELSE "HOLD"
+           ELSE @]
   /\ releaseAuthorized' =
-      [o \in Operations |-> FALSE]
+      [o \in Operations |->
+        IF d \in OperationDependencies(o) THEN FALSE ELSE @]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,worldState,
       dependencyState,commitCount>>
