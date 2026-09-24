@@ -80,3 +80,6 @@ Concurrent-write migration is now modeled explicitly: snapshot/quiesce, catch-up
 
 ## Latest PG-009 research — semantic equivalence
 PG-009 now requires non-vacuous, data-class-specific equivalence relations; independent acceptance criteria; representation/semantic/operational proof levels; explicit concurrent-write interleavings; consistency boundaries; and an acceptance oracle external to the migration transformer. New invariants INV-241..250. PG-009 remains OPEN.
+
+## Latest PG-009 formalization
+First TLA+ concurrency model sketch added at `docs/nexo/formal/PG-009_MIGRATION_CONCURRENCY_SKETCH_2026-09-23.tla`. It models backfill, concurrent writes, divergence, catch-up and authority cutover. It is explicitly NOT YET VERIFIED by TLC. New invariants INV-251..255. Next: make the model complete, add crash/recovery and semantic refinement, then model-check it.
