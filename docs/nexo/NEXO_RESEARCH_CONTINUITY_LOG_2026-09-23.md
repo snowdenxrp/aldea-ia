@@ -1216,3 +1216,16 @@ Decision: reject V11 for formal checking and rebuild the lease kernel with expli
 Artifacts:
 - docs/nexo/formal/NEXO_CANONICAL_CORE_V11_LEASE_MODEL.tla — a0b1ab7943e8315ac6512cf790e9ad2d359aebdf
 - docs/nexo/NEXO_CANONICAL_CORE_V11_LEASE_MODEL_AUDIT.md — 5e7e6287babd59521a9b48b88b69e6236f87f334
+
+
+### 2026-09-23 — V12 explicit lease kernel and rejection
+
+V12 corrected the V11 composition defect by binding acquire/expire/takeover actions directly to the real recovery, reconciliation and execution variables, and added explicit EXPIRED takeover paths plus owner/generation/expiry predicates.
+
+Immediate source audit found a direct contradiction: each Expire action required `LeaseValid(...)` while also requiring `expiresAt <= now`; since LeaseValid requires `expiresAt > now`, expiry was unreachable. Additional findings: release invalidation was expressed as an overly strong state invariant, stale-generation enforcement remained vacuous because no protected transition consumed the predicate, and execution mutual exclusion with recovery/reconciliation remains an explicit policy decision.
+
+Decision: reject V12 for formal checking. V13 should define a separate `Expired(lease)` predicate, distinguish expiry detection from current lease validity, and attach stale-owner fencing to concrete protected transitions.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V12_LEASE_KERNEL.tla — b65882661a9a9a6cec132d75ec43576362f88a6a
+- docs/nexo/NEXO_CANONICAL_CORE_V12_LEASE_KERNEL_AUDIT.md — ad842cb4b94a0dd6e011e9125b188ab6bfbd1efc
