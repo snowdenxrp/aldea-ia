@@ -67,14 +67,14 @@ RequestStop(o) ==
       IF processState[o] = "RUNNING"
         THEN [processState EXCEPT ![o] = "OFFLINE"]
         ELSE processState
-  /\ UNCHANGED <<authorityEpoch,recoveryEpoch,recoveryOwner,
+  /\ UNCHANGED <<authorityEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,
       recoveryToken,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 Restart(o) ==
   /\ processState[o] = "OFFLINE"
   /\ processState' = [processState EXCEPT ![o] = "RESTARTED"]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
-  /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,
+  /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
       recoveryOwner,recoveryToken,worldState,dependencyState,
       compromisedDependencies,assuranceState,commitCount>>
 
@@ -83,7 +83,7 @@ Quarantine(o) ==
   /\ stopState[o] = "ENFORCED"
   /\ processState' = [processState EXCEPT ![o] = "QUARANTINED"]
   /\ stopState' = [stopState EXCEPT ![o] = "QUARANTINED"]
-  /\ UNCHANGED <<gateState,authorityEpoch,stopEpoch,recoveryEpoch,
+  /\ UNCHANGED <<gateState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
       dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
@@ -107,7 +107,7 @@ RevokeAuthority(o) ==
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
-  /\ UNCHANGED <<stopState,gateState,processState,stopEpoch,recoveryEpoch,
+  /\ UNCHANGED <<stopState,gateState,processState,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
       recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
@@ -117,7 +117,7 @@ InvalidateRecovery(o) ==
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 MarkDependencyUnknown(o, d) ==
   /\ d \in Dependencies
@@ -127,7 +127,7 @@ MarkDependencyUnknown(o, d) ==
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "DEGRADED"]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryOwner,recoveryToken,worldState,
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,worldState,
       compromisedDependencies,commitCount>>
 
 CompromiseDependency(d) ==
@@ -142,7 +142,7 @@ CompromiseDependency(d) ==
       [o \in Operations |->
         IF d \in OperationDependencies(o) THEN FALSE ELSE releaseAuthorized[o]]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryOwner,recoveryToken,worldState,
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,worldState,
       dependencyState,commitCount>>
 
 ReconcileWorld(o, state) ==
@@ -155,7 +155,7 @@ ReconcileWorld(o, state) ==
         THEN releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
         ELSE UNCHANGED releaseAuthorized
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryOwner,recoveryToken,
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,
       dependencyState,compromisedDependencies,commitCount>>
 
 RestoreDependency(o, d) ==
@@ -165,7 +165,7 @@ RestoreDependency(o, d) ==
   /\ dependencyState' =
       [dependencyState EXCEPT ![o] = [@ EXCEPT ![d] = "KNOWN"]]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
       worldState,compromisedDependencies,assuranceState,commitCount>>
 
 RevalidateAssurance(o) ==
@@ -180,7 +180,7 @@ RevalidateAssurance(o) ==
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "NORMAL"]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryOwner,recoveryToken,worldState,dependencyState,
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,worldState,dependencyState,
       compromisedDependencies,commitCount>>
 
 AuthorizeRelease(o) ==
@@ -195,7 +195,7 @@ AuthorizeRelease(o) ==
   /\ NoCompromisedOperationDependencies(o)
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = TRUE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryOwner,recoveryToken,worldState,
+      recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,recoveryToken,worldState,
       dependencyState,compromisedDependencies,assuranceState,commitCount>>
 
 Release(o) ==
@@ -209,7 +209,7 @@ Release(o) ==
   /\ processState' = [processState EXCEPT ![o] = "ADMITTED"]
   /\ admittedAuthorityEpoch' = [admittedAuthorityEpoch EXCEPT ![o] = authorityEpoch[o]]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
-  /\ UNCHANGED <<authorityEpoch,stopEpoch,recoveryEpoch,recoveryOwner,
+  /\ UNCHANGED <<authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,recoveryOwner,
       recoveryToken,worldState,dependencyState,compromisedDependencies,
       assuranceState,commitCount>>
 
@@ -221,7 +221,7 @@ Commit(o) ==
   /\ admittedAuthorityEpoch[o] = authorityEpoch[o]
   /\ commitCount' = [commitCount EXCEPT ![o] = @ + 1]
   /\ processState' = [processState EXCEPT ![o] = "RUNNING"]
-  /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,
+  /\ UNCHANGED <<stopState,gateState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,
       recoveryOwner,recoveryToken,releaseAuthorized,worldState,
       dependencyState,compromisedDependencies,assuranceState>>
 
