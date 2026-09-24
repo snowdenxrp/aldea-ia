@@ -132,3 +132,6 @@ Strengthen concurrent uniqueness/fencing and separate the independent acceptance
 
 ## Latest PG-009 refinement
 Atomic reservation + authority epoch was added to PG-009_EFFECT_IDENTITY_CONCURRENCY_SKETCH_2026-09-23.tla (commit 2a24cdfcad3d5ddbe6e13d796bf15cb0d9ec1fe3). The reservation boundary must be atomic; executor-side check-then-set is insufficient. Reservations are epoch-bound and invalidated by revocation/epoch change. External unknown outcomes remain reconciliation state. **NOT TLC-VERIFIED.**
+
+## Latest PG-009 refinement
+Execution Reservation and Reconciliation Lease are now explicitly distinct in the formal sketch (commit 1c8014aff3e10cdcdba65a1d42f839649ceaf46e). Reconciliation ownership is atomic and fenced; expiry transfers coordination only after a fresh reconciliation boundary and does not imply effect absence. **NOT TLC-VERIFIED.**
