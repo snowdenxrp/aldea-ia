@@ -62,7 +62,20 @@ class EvaluatorTests(unittest.TestCase):
         c["components"][0]["dependency_refs"].append("missing")
         r=evaluate_claim(c)
         self.assertFalse(r["admissible"])
+        self.assertEqual(r["maximum_admissible_assurance"],"I0")
         self.assertTrue(any(x["code"]=="MISSING_DEPENDENCY" for x in r["findings"]))
+
+    def test_fingerprint_is_deterministic(self):
+        a=evaluate_claim(base_claim())
+        b=evaluate_claim(base_claim())
+        self.assertEqual(a["graph_fingerprint"],b["graph_fingerprint"])
+
+    def test_schema_missing_field_is_blocking(self):
+        c=base_claim()
+        del c["policy_version"]
+        r=evaluate_claim(c)
+        self.assertEqual(r["maximum_admissible_assurance"],"I0")
+        self.assertTrue(any(x["code"]=="SCHEMA_REQUIRED_FIELD" for x in r["findings"]))
 
 if __name__=="__main__":
     unittest.main()
