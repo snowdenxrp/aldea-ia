@@ -1240,3 +1240,14 @@ Audit: recovery/reconciliation protected transitions are still missing; release 
 Artifacts:
 - docs/nexo/formal/NEXO_CANONICAL_CORE_V13_LEASE_KERNEL.tla — 7cd39d707ea3942dc699eb79677d8ebccb3a09ba
 - docs/nexo/NEXO_CANONICAL_CORE_V13_LEASE_KERNEL_AUDIT.md — 2be64a4ad9fd58a144b68949c2dbb1c3773b30b0
+
+
+### 2026-09-23 — V14 protected lease transitions
+
+V14 binds owner/generation/expiry fencing to concrete RecoveryProtected, ReconciliationProtected and ExecutionProtected transitions. Exact expiry boundary is explicit (`expiresAt <= now` expired; `> now` valid). Lease transitions mutate coordination state only and do not infer external-world truth.
+
+Audit found one deliberate progress-policy question: recovery/reconciliation acquisition currently treats any `HELD` state as blocking, even when its expiry has passed but the explicit expiry transition has not yet been recorded. This is conservative for safety but affects liveness. Canonical integration must choose and document state-based versus validity-based mutual exclusion. Temporal generation monotonicity and concrete linearizability remain unverified.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V14_LEASE_PROTECTED_TRANSITIONS.tla — 51f94c1818a1e02f4a0c801fec2ec34e376ff38d
+- docs/nexo/NEXO_CANONICAL_CORE_V14_LEASE_PROTECTED_TRANSITIONS_AUDIT.md — 9db4bfe926042e9fc5d1296dc010c55e3c0ed2ee
