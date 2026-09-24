@@ -743,3 +743,12 @@ Status:
 - semantic equivalence: NOT PROVEN.
 
 This is a meaningful transition-layer checkpoint: the formal model no longer merely describes desired states; its modeled recovery path is structurally reachable under its own transition preconditions.
+
+
+### State/transition correspondence checkpoint — 2026-09-23
+
+Transition audit completed against the PG-009 formal recovery sketch. Closed stale-release hazards by clearing `releaseAuthorized` when the world becomes UNKNOWN and whenever recovery is acquired; added the state predicate `ReleaseAuthorizationMatchesEligibility` so an authorization cannot persist when current release eligibility is false. Added graph-validity guards to `RevalidateAssurance` and `AuthorizeRelease`. Corrected compromise-state preservation to avoid non-contextual TLA+ `@` usage.
+
+Added `docs/nexo/fixtures/PG-009_STATE_TRANSITION_CORRESPONDENCE_V1.json`, defining executable/formal state mappings, required transitions, and forbidden shortcuts. Python `admissible` is explicitly documented as richer than the formal release-eligibility predicate; no false claim of equivalence is made.
+
+Verification status: code/fixture inspection completed; tests written but not executed in the current environment; SANY/TLC not executed; Python↔TLA+ semantic equivalence remains unproven.
