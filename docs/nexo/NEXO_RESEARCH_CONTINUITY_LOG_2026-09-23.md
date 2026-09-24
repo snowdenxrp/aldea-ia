@@ -336,3 +336,17 @@ New coverage states: COVERED, PARTIALLY_COVERED, MITIGATED_BY_EXTERNAL_CONTROL, 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 
 Next: investigate assumption validity and environment-model completeness — how Nexo verifies that assumptions used to make invariants hold are actually enforced/observable in the real world and cannot silently exclude the failures being protected against.
+
+## Latest PG-009 — assumption validity and environment-model completeness
+
+Cross-check with NIST SP 800-53B and NIST AI RMF. NIST treats assumptions as part of risk framing; invalid assumptions can change control applicability. AI RMF requires context, assumptions/limitations, ongoing measurement and tracking of emergent risks. citeturn0search36turn0search0
+
+New Assumption Contract and Environment Model Contract. Critical assumptions receive scoped assurance classes A0 UNKNOWN through A5 CONTINUOUSLY_MONITORED. Every critical assumption requires an enforcement, observation or independent evidence path, explicit invalidation condition, freshness and response.
+
+New defenses: assumption-to-control binding, boundary completeness, assumption drift detection, circular-assurance detection, environment-model mutation testing, and evidence freshness.
+
+New invariants INV-423..435.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+
+Next: observability completeness and epistemic boundary integrity — whether Nexo can reliably know when the world is unobservable, partially observable, stale or semantically ambiguous, and how uncertainty propagates into verification and authority.
