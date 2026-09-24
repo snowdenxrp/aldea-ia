@@ -1133,3 +1133,16 @@ Artifacts:
 - docs/nexo/NEXO_CANONICAL_CORE_V8_AUDIT.md — af816d1c0c0965b8b767fd388090f8a89fb6c29e
 
 Decision: V8 is the first candidate for actual SANY/TLC execution, but no formal pass is claimed. Next: establish toolchain, execute baseline model, record counterexamples, then extend with takeover and STOP/effect races.
+
+
+### 2026-09-23 — V8 toolchain/preflight and lease/STOP extension specification
+
+Toolchain audit: the currently exposed tool surface does not provide a Java/command-shell path to invoke tla2tools.jar, so SANY/TLC execution could not be performed. No syntax/model-check pass is claimed. Static preflight obligations were recorded, including a distinction between transition guards and state invariants.
+
+Next extension specification records lease lifecycle and STOP/effect race obligations without merging them into the canonical kernel prematurely. Required scenarios S01-S12 cover double acquisition, stale owners, mutual exclusion, STOP/release races, authority revocation, evidence freshness across takeover, and UNKNOWN external effects.
+
+Artifacts:
+- docs/nexo/NEXO_CANONICAL_CORE_V8_TOOLCHAIN_AUDIT.md — b688f9640ecf0eb8b5779c17491c4633d6002725
+- docs/nexo/NEXO_CANONICAL_CORE_V8_LEASE_STOP_EXTENSION_SPEC.md — 7fb2e79cecc77d4acb3c31058b0a1bb8d6d35798
+
+Decision: preserve V8 as bounded candidate; do not claim formal verification; keep lease/STOP extension as a separate specification until baseline execution is possible.
