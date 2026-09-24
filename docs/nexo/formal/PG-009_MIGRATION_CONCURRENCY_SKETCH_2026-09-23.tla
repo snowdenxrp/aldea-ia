@@ -118,8 +118,7 @@ Crash(r) ==
 
 Recover(r) ==
     /\ r \in inflight
-    /\ IF <<r, sourceVersion[r]>> \in
-           {op[1..2] : op \in journal} THEN
+    /\ IF \E op \in journal : Len(op) = 3 /\ op[2] = r THEN
           /\ inflight' = inflight \ {r}
           /\ UNCHANGED <<phase, sourceVersion, targetVersion, migrated,
                           divergence, authority, epoch, journal, appliedOps>>
