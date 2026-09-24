@@ -268,3 +268,56 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
 68. PG-009 dependency-graph integrity/completeness: current NIST SBOM definition and SLSA 1.2 Dependency Provenance confirm that provenance/inventory can represent component relationships and transitive ingestion, but integrity/authenticity and completeness remain distinct claims. Nexo now separates graph integrity from graph completeness and defines CG0 UNKNOWN, CG1 DECLARED, CG2 OBSERVED, CG3 ENFORCED, CG4 PROVEN-BOUNDED. A critical conflict decision requires the minimum completeness class appropriate to its effect/risk profile. Dependency planes include declared, resolved, runtime/build observed, external/system-resource, and authority/invariant graphs. Divergence becomes GRAPH_DIVERGENCE, not silent merge. Material graph changes invalidate affected conflict/risk/admission/binding state. The graph producer cannot be sole critical authority for completeness. New invariants INV-377..386. Architecture commit 03ab3447dadda4f8444a1b4ff47683d81c38f1. NOT TLC-VERIFIED. Sources: NIST SBOM glossary; SLSA Dependency Provenance 1.2; SLSA Provenance 1.2.
 
 69. PG-009 invariant coverage: cross-check with NIST SP 800-53 AC-4 confirms that security enforcement can depend on information characteristics and paths and that critical filtering/inspection mechanisms require trustworthy enforcement; SLSA Dependency Provenance supplies dependency provenance but not proof that all security-relevant invariants have been identified. Nexo adds an Invariant Coverage Contract mapping each critical invariant to protected state, authoritative owner, required dependency closure, dependency-to-invariant edges, assumptions, enforcement/verification points, coverage assurance class, unknown/uncovered dependencies, evidence, freshness, and affected admissions. Coverage classes IC0 UNKNOWN, IC1 DECLARED, IC2 EVIDENCE-BACKED, IC3 ENFORCED, IC4 INDEPENDENTLY VERIFIED. Closure is semantic/governed, not simple graph reachability. Hidden/global state and invariant interaction graph are included. New invariants INV-387..396. Architecture commit ca475c7d24ea989111bafa678f882c09ae1dac52. NOT TLC-VERIFIED.
+
+
+## Latest PG-009 — invariant specification integrity
+
+### New finding
+
+Invariant coverage can still be unsafe if the invariant itself is too weak, incomplete, mis-scoped, or based on unjustified assumptions. Formal proof establishes that the model satisfies the proposition; it does not establish that the proposition faithfully captures the intended safety obligation.
+
+Cross-check:
+- NASA requirements guidance separates requirements management from requirements validation and recommends bidirectional traceability from higher-level needs through implementation and verification.
+- NIST SP 800-53A emphasizes traceability between controls and assessment procedures.
+- NIST AI RMF calls for objective, repeatable TEVV, documentation of limitations, ongoing reassessment, and independent review where appropriate.
+- Lamport's TLA+ material explicitly notes that a specification can be syntactically correct yet fail to capture its author's intention and presents invariant checking as a way to find specification errors.
+
+Sources:
+https://www.nasa.gov/reference/6-2-requirements-management/
+https://swehb.nasa.gov/spaces/7150/pages/16449673/SWE-055%2B-%2BRequirements%2BValidation
+https://csrc.nist.gov/pubs/sp/800/53/a/r5/final
+https://airc.nist.gov/airmf-resources/airmf/5-sec-core/
+https://lamport.azurewebsites.net/tla/xmxx99-07-16.pdf
+
+### Architectural result
+
+Nexo now separates:
+
+`INVARIANT VALIDITY` — the proposition holds under the formal model/assumptions.
+
+from:
+
+`INVARIANT ADEQUACY` — the proposition actually captures the required protection for the intended goal, scope, environment and threat/failure model.
+
+New **Invariant Specification Contract** requires exact proposition, scope/quantifiers/temporal semantics, protected state, assumptions, exclusions, goal/requirement traceability, enforcement/verification points, adequacy evidence, counterexamples and independent review.
+
+New **Goal-to-Invariant Traceability**:
+`MISSION/CONSTITUTION → GOAL → SAFETY OBJECTIVE → INVARIANT → PROTECTED STATE/CLOSURE → ENFORCEMENT → VERIFICATION → EVIDENCE`
+
+New defenses:
+- assumption firewall;
+- vacuity/trivial-proof checks;
+- bad-state fixtures;
+- specification mutation testing;
+- durable counterexample registry;
+- adequacy state machine.
+
+New invariants INV-397..410.
+
+### Formal status
+
+The existing PG-009 operational TLA+ models remain design sketches and **NOT TLC-VERIFIED**. Formal proofs of operational invariants must be reported as model-validity evidence, never as proof that the invariant specification itself is adequate.
+
+### Next research point
+
+Continue with **invariant specification completeness and adequacy under evolving goals/threat models**, including hazard-derived invariant generation, coverage gaps, assumption invalidation, vacuity detection, mutation testing, and independent adequacy review. Save every material advance.
