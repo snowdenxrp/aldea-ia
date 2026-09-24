@@ -352,3 +352,20 @@ Formal sketch was refined to remove the unsafe failed-gate release transition, s
 
 PG-009 remains OPEN. Next: recovery/restart fencing after emergency stop, then safety-plane update/rollback and bootstrap trust, common-mode/correlated-failure analysis, and actual TLC verification.
 
+
+## Latest PG-009 — recovery/restart fencing
+Restart is not release. Emergency STOP now creates a durable recovery fence. Stale processes, capabilities, leases, checkpoints and queued work cannot regain critical authority merely by restarting. Recovery ownership is separately fenced and current authority/epochs/world conditions are revalidated before explicit release. New invariants INV-629..648.
+
+Artifacts: docs/nexo/PG-009_RECOVERY_RESTART_FENCING_2026-09-24.md; docs/nexo/formal/PG-009_RECOVERY_RESTART_FENCING_SKETCH_2026-09-24.tla; docs/nexo/NEXO_CONTINUITY_DELTA_2026-09-24_RECOVERY_FENCING.md.
+Status: DESIGNED; formal sketch NOT TLC-VERIFIED.
+
+## Latest PG-009 — safety-plane update / rollback / bootstrap trust
+Safety-plane update is now treated as a security transition rather than ordinary deployment. UPDATE AUTHENTICITY != UPDATE AUTHORIZATION; PROVENANCE != SAFETY; SIGNATURE VALIDITY != SEMANTIC COMPATIBILITY; ROLLBACK != TIME TRAVEL. Critical updates require digest binding, provenance/attestation verification, dependency closure, semantic/policy compatibility, independent admission, staged activation, control-plane verification, world/reconciliation checks and protected recovery. New invariants INV-649..668.
+
+Research cross-check: NIST SP 800-193, SLSA 1.2, GitHub Artifact Attestations and Sigstore Policy Controller. These support the architectural pattern but do not prove Nexo safety.
+
+Artifacts: docs/nexo/PG-009_SAFETY_PLANE_UPDATE_ROLLBACK_BOOTSTRAP_2026-09-24.md; docs/nexo/NEXO_CONTINUITY_DELTA_2026-09-24_SAFETY_PLANE.md.
+Status: DESIGNED / RESEARCH-CROSS-CHECKED; implementation and TLC verification not claimed.
+
+## Current PG-009 next action
+Common-mode/correlated-failure analysis across safety, recovery, update, identity, storage, network, policy, verifier and executor domains; then correct/expand formal models and run TLC when tooling is available. Reconcile canonical documentation without erasing history.
