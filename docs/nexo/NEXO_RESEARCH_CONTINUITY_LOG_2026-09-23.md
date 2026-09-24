@@ -1097,3 +1097,14 @@ Artifacts:
 - docs/nexo/NEXO_CANONICAL_CORE_V5_AUDIT.md — 819883a94fe4bf9978cea5f9cb003c5fb1d819f6
 
 Decision: V5 is rejected as non-executable and will not be patched incrementally. V6 will reconstruct complete finite records and reachable transitions, then attempt SANY/TLC.
+
+
+### 2026-09-23 — canonical core V6 reconstruction and immediate audit
+
+V6 rebuilt the model with explicit record vocabulary and reachable transitions for admission, effect request/UNKNOWN, reconciliation, evidence observation/verification, release authorization, commit, STOP request/enforcement/verification, context invalidation and logical freshness. Immediate audit found 10 blockers, chiefly invalid record-domain construction, APPLIED asserted without verified exact evidence, combined reconciliation acquire/observe, nondeterministic execution owner, incomplete actuation fencing, incomplete material context invalidation, boolean provenance, and absent implementation linearizability semantics.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V6.tla — e83afa5ca8978adc68c2b94609a5b49883d92e5f
+- docs/nexo/NEXO_CANONICAL_CORE_V6_AUDIT.md — 08d0251d0ae7821309b2c11ad8fb6dc24f8666e7
+
+Decision: V6 is rejected as non-executable and will not be patched incrementally. V7 must define finite record sets/configuration and separate lease/effect/evidence boundaries before SANY/TLC.
