@@ -233,3 +233,14 @@ Nexo now distinguishes invariant validity, adequacy, set completeness, consisten
 Coverage states: COVERED, PARTIALLY_COVERED, MITIGATED_BY_EXTERNAL_CONTROL, ACCEPTED_RESIDUAL_RISK, UNKNOWN, BLOCKED. New assurance classes HC0..HC5. New invariants INV-411..422.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED. Next: assumption validity and environment-model completeness.
+
+## Latest PG-009 — assumption validity and environment-model completeness
+
+Critical assumptions are now governed objects rather than invisible model text. New Assumption Contract binds scope, provenance, evidence, observation/enforcement, freshness, invalidation and response. New Environment Model Contract explicitly represents boundaries, external actors, trust boundaries, failure modes, timing, concurrency, recovery and unobservable state.
+
+Assurance classes A0 UNKNOWN through A5 CONTINUOUSLY_MONITORED. New defenses: assumption-to-control binding, boundary completeness, assumption drift, circular-assurance detection, environment-model mutation testing and evidence freshness.
+
+New invariants INV-423..435.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: observability completeness and epistemic boundary integrity.
