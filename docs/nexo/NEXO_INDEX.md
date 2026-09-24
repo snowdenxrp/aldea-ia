@@ -123,3 +123,9 @@ It models the local/external uncertainty boundary, including crash-before-ledger
 
 ## Next PG-009 refinement
 Extend the model to multiple operations/effects sharing targets or effect keys, legitimate repeated effects, semantic collisions, stale observations, and an explicit forbidden blind-retry transition.
+
+## Latest PG-009 concurrency artifact
+Added `docs/nexo/formal/PG-009_EFFECT_IDENTITY_CONCURRENCY_SKETCH_2026-09-23.tla` (latest syntax-normalization commit `362adec22b85eb7550d32c4eabf639509ad427cd`). It models multiple operations and effect-key collisions. **NOT TLC-VERIFIED.**
+
+## Next refinement
+Strengthen concurrent uniqueness/fencing and separate the independent acceptance relation from executor state. Same effect key across different operation IDs remains a collision candidate requiring classification, not automatic deduplication.
