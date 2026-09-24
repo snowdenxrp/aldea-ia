@@ -391,3 +391,8 @@ A signed or attested artifact is not automatically authorized or semantically sa
 
 ### Current PG-009 next point
 Common-mode/correlated-failure analysis across safety, recovery, update, identity, storage, network, policy, verifier and executor domains; then expand/correct formal modeling and run TLC when tooling is available.
+
+### Common-mode / correlated-failure analysis — 2026-09-24
+Process/service separation does not establish independence. Critical safety claims now require dependency closure, failure-domain analysis, common-mode analysis, diversity/independence evidence and an explicit assurance level. UNKNOWN dependencies cannot silently increase assurance. New invariants INV-669..690. Artifact: docs/nexo/PG-009_COMMON_MODE_CORRELATED_FAILURE_2026-09-24.md. NOT implemented/TLC-verified.
+
+Current PG-009 next point: correct/expand formal recovery modeling, add dependency/failure-domain state, model update/rollback transitions, define executable safety-claim/dependency-closure schema, implement fault injection, run TLC, then perform final semantic reconciliation.
