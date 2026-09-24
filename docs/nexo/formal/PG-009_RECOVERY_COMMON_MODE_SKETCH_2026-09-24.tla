@@ -241,6 +241,17 @@ EvaluatorDoesNotGrantAuthority ==
 
 ====
 (*
+  CORRESPONDENCE STATUS:
+  The evaluator vocabulary is intentionally observational and does not grant
+  authority. Component-to-domain mapping and transitive closure remain outside
+  this sketch and must not be inferred from the vocabulary alone.
+
+  MODEL LIMITATION DISCOVERED AND FIXED:
+  The previous Quarantine precondition required stopState = "QUARANTINED"
+  before Quarantine itself could establish that state. The transition now
+  requires stopState = "ENFORCED" and performs the ENFORCED -> QUARANTINED
+  transition, making the recovery path reachable in the model.
+*)
   DESIGN STATUS:
   This is a formalization aid and is NOT TLC-VERIFIED.
 
