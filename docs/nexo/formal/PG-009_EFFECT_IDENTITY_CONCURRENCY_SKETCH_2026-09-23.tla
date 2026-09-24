@@ -164,3 +164,23 @@ InvReceiptNotWorldTruth ==
    reservation acquired + external result unknown = RECONCILING/UNKNOWN,
    never ABSENT merely because the local completion record is missing.
 *)
+
+
+(* LEASE/CRASH REFINEMENT
+   A reservation lease is coordination state, not evidence that the external effect
+   did or did not occur. Expiry permits a new reconciliation decision, not automatic
+   execution. A successor must first classify the predecessor as NO_ATTEMPT,
+   EFFECT_CONFIRMED, EFFECT_ABSENT, or UNKNOWN.
+
+   If UNKNOWN, a new irreversible execution is forbidden unless the target protocol
+   supplies a safe idempotency/reconciliation guarantee or an explicit authority
+   transition permits a bounded at-most-once strategy. Otherwise remain in
+   RECONCILING/UNKNOWN.
+
+   A lease expiration never erases operation_id, effect_key, attempt history, or
+   authority epoch. Historical identity survives lease turnover.
+
+   Revocation or epoch change blocks the old owner from executing, but does not
+   imply that an already-dispatched external effect was cancelled. Recovery must
+   reconcile the external world independently.
+*)
