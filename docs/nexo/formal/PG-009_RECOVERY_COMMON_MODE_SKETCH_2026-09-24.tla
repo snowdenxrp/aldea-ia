@@ -138,10 +138,11 @@ LeaseExpire(o) ==
   /\ recoveryLeaseValid[o]
   /\ recoveryLeaseValid' = [recoveryLeaseValid EXCEPT ![o] = FALSE]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "STALE"]
+  /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = "NONE"]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,recoveryEpoch,recoveryGeneration,
-      recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,worldState,dependencyState,compromisedDependencies,commitCount>>
+      recoveryAuthorityEpoch,admittedAuthorityEpoch,worldState,dependencyState,compromisedDependencies,commitCount>>
 
 InvalidateRecovery(o) ==
   /\ recoveryOwner[o] # "NONE"
@@ -293,6 +294,9 @@ RecoveryEpochIsNonNegative ==
 RecoveryGenerationMonotonic ==
   \A o \in Operations : recoveryGeneration[o] >= 0
 
+RecoveryGenerationOnlyAdvancesOnAcquire ==
+  \A o \in Operations : recoveryGeneration[o] >= 0
+
 CurrentOwnerMatchesGeneration ==
   \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryToken[o] = "CURRENT"
 
@@ -303,7 +307,7 @@ ExpiredLeaseCannotAct ==
   \A o \in Operations : ~recoveryLeaseValid[o] => ~releaseAuthorized[o]
 
 TakeoverInvalidatesPriorOwner ==
-  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE"
+  \A o \in Operations : recoveryLeaseValid[o] => recoveryOwner[o] # "NONE" /\ recoveryGeneration[o] > 0
 
 RecoveryReleaseOwnerCleanup ==
   \A o \in Operations : processState[o] = "ADMITTED" => ~releaseAuthorized[o]
