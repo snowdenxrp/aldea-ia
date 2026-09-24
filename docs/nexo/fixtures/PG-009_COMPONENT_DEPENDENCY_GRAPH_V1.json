@@ -1,0 +1,93 @@
+{
+  "fixture_id": "pg009-component-dependency-graph-v1",
+  "description": "Canonical small graph used to align executable dependency closure with the formal sketch.",
+  "components": [
+    {
+      "component_id": "safety_gate",
+      "role": "independent enforcement gate",
+      "dependency_refs": ["gate_runtime", "safety_root"],
+      "trust_roots": ["safety_root"]
+    },
+    {
+      "component_id": "recovery_verifier",
+      "role": "recovery admission verifier",
+      "dependency_refs": ["verifier_runtime", "safety_root"],
+      "trust_roots": ["safety_root"]
+    },
+    {
+      "component_id": "executor",
+      "role": "normal effect executor",
+      "dependency_refs": ["executor_runtime", "coordination_store"],
+      "trust_roots": []
+    }
+  ],
+  "dependencies": [
+    {
+      "dependency_id": "gate_runtime",
+      "domain": "runtime",
+      "state": "KNOWN",
+      "failure_domain": "host_a",
+      "depends_on": ["host_a"]
+    },
+    {
+      "dependency_id": "verifier_runtime",
+      "domain": "runtime",
+      "state": "KNOWN",
+      "failure_domain": "host_b",
+      "depends_on": ["host_b"]
+    },
+    {
+      "dependency_id": "executor_runtime",
+      "domain": "runtime",
+      "state": "KNOWN",
+      "failure_domain": "host_c",
+      "depends_on": ["host_c"]
+    },
+    {
+      "dependency_id": "safety_root",
+      "domain": "trust_root",
+      "state": "KNOWN",
+      "failure_domain": "root_domain",
+      "depends_on": []
+    },
+    {
+      "dependency_id": "coordination_store",
+      "domain": "coordination",
+      "state": "KNOWN",
+      "failure_domain": "coordination_domain",
+      "depends_on": ["storage_core"]
+    },
+    {
+      "dependency_id": "host_a",
+      "domain": "host",
+      "state": "KNOWN",
+      "failure_domain": "host_a"
+    },
+    {
+      "dependency_id": "host_b",
+      "domain": "host",
+      "state": "KNOWN",
+      "failure_domain": "host_b"
+    },
+    {
+      "dependency_id": "host_c",
+      "domain": "host",
+      "state": "KNOWN",
+      "failure_domain": "host_c"
+    },
+    {
+      "dependency_id": "storage_core",
+      "domain": "storage",
+      "state": "KNOWN",
+      "failure_domain": "storage_domain"
+    }
+  ],
+  "expected": {
+    "safety_gate_closure": ["gate_runtime", "host_a", "safety_root"],
+    "recovery_verifier_closure": ["host_b", "recovery_verifier_runtime", "safety_root"],
+    "executor_closure": ["coordination_store", "executor_runtime", "host_c", "storage_core"],
+    "shared_trust_root_components": ["recovery_verifier", "safety_gate"],
+    "shared_failure_domain_components": [],
+    "requested_assurance": "I4"
+  }
+}
