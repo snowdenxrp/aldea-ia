@@ -401,3 +401,8 @@ Status: IMPLEMENTED representation; Python fixture test added but execution not 
 The TLA+ recovery/common-mode sketch now models recursive dependency reachability with `ReachDependency` and `ComponentDependencyClosure`, and derives correlation inputs from that closure via explicit dependency failure-domain and trust-root mappings. A concrete TLA+ constant binding was added for the canonical JSON fixture.
 
 Status: IMPLEMENTED representation; cross-model semantic equivalence and TLC verification remain unproven. Correspondence work continues with adversarial shared-domain and UNKNOWN/COMPROMISED scenarios.
+
+
+## PG-009 — correspondence contract hardening
+
+The formal-correspondence schema was corrected so its contract fields are actual JSON Schema properties. Concrete mappings now live in the canonical fixture `PG-009_FORMAL_CORRESPONDENCE_V2.json`. The checker requires explicit component, dependency-relation, failure-domain, trust-root, domain, state, and assurance mappings. Canonical fixture coverage is now structurally checked, while graph fingerprint/finding taxonomy remain UNMAPPED and semantic equivalence remains unproven.
