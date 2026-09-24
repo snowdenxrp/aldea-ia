@@ -3,6 +3,7 @@ EXTENDS Naturals, FiniteSets
 
 CONSTANT Operations, Components, Domains, Dependencies
 CONSTANT ComponentDependencyRefs, DependencyDependsOn, DependencyDomain, DependencyFailureDomain, ComponentFailureDomains, ComponentTrustRoots
+CONSTANT OperationComponents, ExpectedCorrelatedPairs
 
 ASSUME Operations # {} /\ Components # {} /\ Domains # {} /\ Dependencies # {}
 
@@ -184,7 +185,11 @@ Commit(o) ==
 
 NoCommitDuringStop ==
   \A o \in Operations :
-    stopState[o] # "CLEAR" => commitCount[o] = commitCount[o]
+    stopState[o] # "CLEAR" => processState[o] # "RUNNING"
+
+CommitRequiresClearStop ==
+  \A o \in Operations :
+    processState[o] = "RUNNING" => stopState[o] = "CLEAR"
 
 RestartDoesNotRelease ==
   \A o \in Operations :
@@ -228,6 +233,8 @@ GraphReferencesKnown ==
        DependencyDependsOn[d] \subseteq Dependencies
   /\ \A d \in Dependencies :
        DependencyDomain[d] \in Domains
+  /\ \A o \in Operations :
+       OperationComponents[o] \subseteq Components
 
 RECURSIVE ReachDependency(_,_)
 
@@ -267,11 +274,20 @@ SharedTrustRoot(a, b) ==
 CorrelatedComponents(a, b) ==
   SharedFailureDomain(a, b) \/ SharedTrustRoot(a, b)
 
+FormalCorrelatedPairs ==
+  { <<a, b>> :
+      a, b \in Components /\
+      a # b /\
+      CorrelatedComponents(a, b) }
+
+FormalCorrelationMatchesFixture ==
+  FormalCorrelatedPairs = ExpectedCorrelatedPairs
+
 NoFalseIndependence ==
   \A a, b \in Components :
-    a # b /\ CorrelatedComponents(a, b)
-      => ~(ComponentFailureDomains[a] \cap ComponentFailureDomains[b] = {} /\
-           ComponentTrustRoots[a] \cap ComponentTrustRoots[b] = {})
+    a # b /\
+    <<a, b>> \in FormalCorrelatedPairs
+      => CorrelatedComponents(a, b)
 
 (***************************************************************************)
 (* Evaluator correspondence vocabulary. These definitions intentionally     *)
@@ -281,6 +297,16 @@ NoFalseIndependence ==
 DependencyKnown(o, d) == dependencyState[o][d] = "KNOWN"
 DependencyUncertain(o, d) == dependencyState[o][d] \in {"UNKNOWN", "STALE", "INVALIDATED"}
 DependencyCompromised(d) == d \in compromisedDependencies
+OperationDependencies(o) ==
+  UNION { ComponentDependencyClosure(c) :
+    c \in OperationComponents[o] }
+
+AllOperationDependenciesKnown(o) ==
+  \A d \in OperationDependencies(o) : DependencyKnown(o, d)
+
+NoCompromisedOperationDependencies(o) ==
+  \A d \in OperationDependencies(o) : ~DependencyCompromised(d)
+
 AllDependenciesKnown(o) == \A d \in Dependencies : DependencyKnown(o, d)
 NoCompromisedDependencies == \A d \in Dependencies : ~DependencyCompromised(d)
 
@@ -291,8 +317,8 @@ EvaluatorReleaseEligible(o) ==
   /\ recoveryToken[o] = "CURRENT"
   /\ worldState[o] = "KNOWN"
   /\ assuranceState[o] = "NORMAL"
-  /\ AllDependenciesKnown(o)
-  /\ NoCompromisedDependencies
+  /\ AllOperationDependenciesKnown(o)
+  /\ NoCompromisedOperationDependencies(o)
 
 EvaluatorDoesNotGrantAuthority ==
   \A o \in Operations :
@@ -318,13 +344,15 @@ EvaluatorDoesNotGrantAuthority ==
   - explicit dependency domains and dependency UNKNOWN state;
   - explicit compromised-domain set;
   - assurance degradation;
-  - release requires all modeled dependencies known and uncompromised;
+  - release is scoped to dependencies reachable from the operation's declared components;
   - recoveryEpoch is distinct from stopEpoch;
   - recovery invalidation explicitly blocks release.
 
   Remaining limitations:
-  - component-to-domain relation is represented explicitly through ComponentDependencyRefs and ComponentFailureDomains;
-  - recursive dependency closure is now represented by ReachDependency/ComponentDependencyClosure;
+  - component-to-dependency relation is represented explicitly through ComponentDependencyRefs;
+  - recursive dependency closure is represented by ReachDependency/ComponentDependencyClosure;
+  - operation-scoped dependency closure is represented by OperationComponents/OperationDependencies;
+  - canonical correlation can be checked against ExpectedCorrelatedPairs;
   - no partial domain compromise;
   - no Byzantine behavior;
   - no CAS/linearizability semantics;
