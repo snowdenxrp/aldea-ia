@@ -1181,3 +1181,16 @@ Artifacts:
 - docs/nexo/NEXO_CANONICAL_CORE_V9_AUDIT.md — 5ad29544ad4a4f04bb5f39b1b6cc67d374abef67
 
 Status: DESIGN DRAFT / STRUCTURALLY IMPROVED / NOT SANY-CHECKED / NOT TLC-CHECKED.
+
+
+### 2026-09-23 — V10 lease/takeover structural gate
+
+Before implementing another formal patch, defined V10 lease semantics as a structural successor to V9. Lease validity is time-dependent (`HELD` and `expiresAt > now`); expiry changes coordination state only; takeover increments generation; stale owner+generation is fenced. Evidence is explicitly not owned by a lease and may survive takeover if independently still fresh and context-compatible.
+
+A V9→V10 semantic gate was added to prevent inheritance of the contradictory `COMMITTED => authority currently valid` invariant and other unsafe equivalences. V10 promotion requires self-contained syntax/domains, explicit expiry/takeover, stale-owner fencing, STOP/release ordering, and separation of transition obligations from state invariants.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V10_LEASE_TAKEOVER_SPEC.md — 540b1f97834ae09c7ce687d65e3a2f9f1e7cc664
+- docs/nexo/NEXO_V9_TO_V10_SEMANTIC_GATE.md — b4b43962878a537a2727290e22226c75a904c986
+
+Status: V10 SPECIFIED; NOT IMPLEMENTED; NOT SANY/TLC CHECKED.
