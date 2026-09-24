@@ -147,3 +147,9 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    defined data-class-specific equivalence, non-vacuity requirements, three-level proof,
    explicit concurrent-write interleavings, snapshot/consistency boundaries, and independent
    acceptance relation. Added invariants INV-241..250. Next: formal small TLA+ model and policy/authority historical compatibility.
+
+33. PG-009 first formalization:
+   added TLA+ concurrency model sketch for backfill, concurrent source writes,
+   divergence/catch-up and protected authority cutover. Status explicitly MODEL SKETCH,
+   not TLC-verified. Added INV-251..255. Next: complete phase/recovery semantics, add
+   duplicate/retry and cutover races, then run TLC and analyze counterexamples.
