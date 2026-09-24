@@ -16,7 +16,7 @@ class CorrespondenceTests(unittest.TestCase):
         return {
             "version": "1",
             "domain_mapping": {"host": "Domains", "trust_root": "Domains"},
-            "state_mapping": {"KNOWN": "dependencyState", "COMPROMISED": "compromisedDomains"},
+            "state_mapping": {"KNOWN": "dependencyState", "COMPROMISED": "compromisedDependencies"},
             "assurance_mapping": {"I4": "assuranceState"},
             "coverage": {
                 "component_to_domain": "PARTIAL",
@@ -31,6 +31,15 @@ class CorrespondenceTests(unittest.TestCase):
         self.assertTrue(r["consistent"])
         self.assertFalse(r["formally_equivalent"])
         self.assertTrue(any(f["code"] == "FORMAL_COVERAGE_GAP" for f in r["findings"]))
+
+    def test_detects_stale_coverage_even_when_recursive_closure_exists(self):
+        m = self.mapping()
+        m["coverage"]["transitive_closure"] = "MAPPED"
+        r = check_correspondence(self.claim(), m)
+        self.assertTrue(any(
+            f["code"] == "FORMAL_COVERAGE_GAP" and "graph_fingerprint" in f["message"]
+            for f in r["findings"]
+        ))
 
     def test_detects_unmapped_domain(self):
         m = self.mapping()
