@@ -826,3 +826,38 @@ This preserves the actual security property: stale/invalid authorization cannot 
 Status: CORRECTED / NOT TLC-VERIFIED.
 
 Git checkpoint: 836e402be35eb1229c55c5ee4ec025808b7e6bee
+
+
+### 2026-09-24 — recovery-owner lease/generation fencing checkpoint
+
+A focused concurrency attack extended recovery-owner fencing from a boolean CURRENT token to an explicit owner generation plus lease-validity state.
+
+Implemented in the formal recovery/common-mode sketch:
+- recoveryGeneration is advanced on recovery acquisition; acquisition requires the expected next generation and no currently held owner.
+- recoveryLeaseValid is an explicit coordination fence; expiry invalidates the token and any release authorization.
+- RevalidateAssurance and AuthorizeRelease now require owner identity, current generation, valid lease, and current authority epoch.
+- Restart now requires the enforced stop and closed gate, preventing restart from bypassing the current safety fence.
+- successful Release clears recovery ownership/token/lease before entering ADMITTED, separating recovery coordination from normal execution admission.
+- RevokeAuthority invalidates recovery ownership and lease validity.
+- LeaseExpire models owner expiry without granting execution authority to the successor.
+
+Correspondence fixture expanded with lease expiry/takeover, stale-owner revalidation/release/commit, authority revocation, stop interaction, recovery-owner cleanup, and reconciliation-lease interaction scenarios. The reconciliation-lease scenario remains documented as a pending model extension because no separate reconciliation-lease state is yet modeled.
+
+Important distinction: LEASE EXPIRY != EFFECT ABSENCE != CANCELLATION != AUTHORITY. A takeover transfers coordination only after a fresh generation; it does not prove that an external effect is absent or reversible.
+
+Status:
+- owner generation fencing: IMPLEMENTED in formal sketch;
+- lease validity fence: IMPLEMENTED in formal sketch;
+- stale-owner takeover scenarios: IMPLEMENTED in correspondence fixture;
+- release owner cleanup: IMPLEMENTED in formal sketch;
+- reconciliation-lease separation: DOCUMENTED / NOT YET MODELED;
+- executable tests: NOT RUN;
+- SANY/TLC: NOT RUN;
+- Python ↔ TLA semantic equivalence: NOT PROVEN;
+- implementation-level CAS/linearizability: NOT PROVEN.
+
+Git checkpoints:
+- formal lease-generation hardening: 18943e5791b24b6dcea95009a834e397ac019d87 (followed by 54ab167b28db62a836b65a0c38296733adee7426 after verification/priming follow-up)
+- correspondence fixture: bb9e4e1a70bfa13c0f20a1c408e8a4e26748ed71
+
+Next attack: explicitly model the reconciliation lease as a separate authority/coordination domain and test races between reconciliation ownership, recovery ownership, external-effect uncertainty, and authority revocation; then validate monotonic generation semantics and search for stale-owner paths that can survive restart.
