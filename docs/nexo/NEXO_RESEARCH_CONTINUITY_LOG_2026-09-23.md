@@ -899,3 +899,14 @@ Checkpoint: formal `4899130f470cb153fe44c3ac5d18b759f74419fc`. Prior corresponde
 Status: Designed = YES; Formal modelled = YES; Executable implementation = NOT YET; Tests = NOT RUN; SANY/TLC = NOT RUN; semantic equivalence = NOT PROVEN.
 
 Next attack remains external-effect identity binding: reconciliation evidence must be bound to the exact operation/effect and stale/mismatched evidence must not satisfy recovery release.
+
+
+### 2026-09-24 — external-effect identity binding
+
+The next adversarial boundary is now specified: reconciliation evidence must bind to the exact operation/effect, owner generation, authority epoch, target identity, expected-effect/precondition fingerprint, freshness, provenance, and dependency closure. Evidence for effect A cannot satisfy release for effect B. UNKNOWN or mismatched effect identity remains blocking uncertainty; a new operation ID cannot erase an unresolved prior effect.
+
+Architecture artifact updated: `PG-009_RECOVERY_RESTART_FENCING_2026-09-24.md`, commit `9e568cb40e916539ab6ecf70cf43c2eca469d084`.
+
+Status: external-effect identity binding DESIGNED/documented; formal state model extension NOT YET implemented; executable tests NOT RUN; SANY/TLC NOT RUN.
+
+Next: extend the TLA+ model with operation/effect identity and reconciliation evidence binding, then attack cross-operation evidence substitution, stale target binding, replay, and release after effect identity UNKNOWN.
