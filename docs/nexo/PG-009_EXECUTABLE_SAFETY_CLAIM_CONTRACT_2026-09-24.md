@@ -127,3 +127,13 @@ INV-693 — evaluator closure includes transitive dependencies or reports the un
 INV-694 — missing/cyclic dependency references are blocking findings.
 INV-695 — shared relevant failure domains/trust roots/authority are exposed as correlated pairs.
 INV-696 — evaluator output cannot be treated as safety verification merely because schema validation succeeds.
+
+## Evaluator hardening checkpoint — 2026-09-24
+The evaluator was hardened to perform deterministic structural/schema checks and emit a canonical graph fingerprint. It now blocks malformed required fields, invalid assurance/policy combinations, duplicate identifiers, malformed dependency arrays, invalid dependency domains/states, and reports cycles/missing references before calculating the conservative assurance ceiling.
+
+Updated implementation: `3c46d87f5a4fa7d71831e63bf0846ffa5dbf0d5b`
+Updated tests: `bb031d17440e8520178084de967a779659766317`
+
+The graph fingerprint is SHA-256 over canonicalized graph inputs. It identifies the analyzed graph/version input; it does not establish truth, security, or independence.
+
+Status remains: IMPLEMENTED / TESTS NOT EXECUTED IN CURRENT ENVIRONMENT / NOT FORMALLY VERIFIED.
