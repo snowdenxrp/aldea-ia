@@ -668,3 +668,148 @@ PG-009 remains OPEN. The architecture now has an explicit operation-identity/ide
 ## Next research point
 
 Continue with **semantic duplicate-effect detection across different operation IDs**, then connect that result to external-effect reconciliation and the existing exactly-once/idempotency architecture.
+
+
+## Research continuation — semantic duplicate-effect detection across different operation IDs
+
+The operation-ID layer closes only the **same logical operation replay** problem. It does not close the case where two distinct operation IDs encode the same critical semantic effect.
+
+### External cross-check
+
+Current distributed-systems guidance supports this separation. AWS documents idempotency tokens as a way to make repeated requests with the same token safe, while also noting that retries can occur after the original mutation has already happened. citeturn0search0turn0search11 Durable-execution guidance likewise distinguishes retry/replay semantics from true end-to-end exactly-once behavior and recommends stable idempotency keys for side-effecting operations. citeturn0search9 Transactional-outbox guidance shows why downstream consumers still need duplicate handling: a relay can publish the same message more than once after a crash. citeturn0search4
+
+These sources do **not** establish a universal semantic-duplicate detector. They reinforce the narrower conclusion: operation identity is necessary for replay safety, but semantic uniqueness of an effect is a separate contract.
+
+### New distinction
+
+Nexo must distinguish:
+
+- **Operation identity** — which logical request is this?
+- **Effect identity** — which semantic change to the world is intended?
+- **Effect instance** — what concrete externally observable mutation occurred?
+- **Effect equivalence** — when do two effects count as semantically the same?
+- **Effect authorization** — was this effect permitted?
+- **Effect verification** — did the intended effect actually occur?
+
+Two operation IDs may legitimately refer to two independent effects. Therefore Nexo must not globally deduplicate merely because two requests look similar.
+
+### Semantic Effect Key
+
+For data classes where duplicate critical effects are forbidden, define a governed canonical key:
+
+`effect_key = Canonicalize(domain, target, operation_class, semantic_intent, relevant_constraints)`
+
+The canonicalization function itself is governed and versioned. It must not erase distinctions that matter to the effect.
+
+Examples:
+
+- creating the same unique resource twice → potentially duplicate;
+- transferring the same exact amount to the same destination for the same mission obligation → potentially duplicate;
+- setting a resource to an absolute desired state → often naturally idempotent;
+- incrementing a counter → two identical-looking increments may be two legitimate effects and must **not** be collapsed automatically.
+
+Therefore duplicate detection is **operation-class-specific**, not a universal hash comparison.
+
+### Effect ledger
+
+Critical effects should maintain a durable ledger containing at least:
+
+- effect_key;
+- operation_id(s);
+- mission_id;
+- target/resource identity;
+- operation class;
+- semantic payload digest;
+- policy/authority epoch;
+- capability identity/version;
+- execution attempt;
+- world-effect receipt;
+- verification status;
+- reconciliation status;
+- conflict/duplicate classification.
+
+A second operation with the same effect_key is not automatically rejected. It enters a classification step:
+
+`NEW_EFFECT → UNIQUE`
+
+or
+
+`EFFECT_KEY_MATCH → RECONCILE → DUPLICATE / LEGITIMATE_REPEAT / CONFLICT / UNKNOWN`
+
+### Unknown is blocking for critical effects
+
+If the system cannot determine whether the first effect occurred, a second irreversible operation must not be issued blindly. The state is UNKNOWN until the world/effect ledger/reconciliation path resolves it.
+
+This extends the existing Nexo rule:
+
+**UNKNOWN critical effect ≠ permission to retry.**
+
+### Semantic duplicate detector must be independent of the executor
+
+The executor must not be allowed to define its own duplicate criteria after seeing the result. The acceptance relation is part of the governed operation contract.
+
+Preferred chain:
+
+`OPERATION REQUEST → EFFECT CLASSIFICATION → EFFECT KEY → POLICY/AUTHORITY CHECK → EXECUTE → WORLD OBSERVATION → RECONCILE → COMMIT EFFECT FACT`
+
+For critical operations, the classifier and verifier should be independently reviewable and, where practical, failure-domain independent.
+
+### New adversarial cases
+
+The next test set must include:
+
+1. same operation ID, same payload, replay;
+2. same operation ID, changed payload;
+3. different IDs, same canonical effect;
+4. different IDs, semantically equivalent but differently serialized effects;
+5. different IDs, same target but legitimately distinct effects;
+6. effect-key collision caused by over-aggressive normalization;
+7. effect-key mismatch caused by under-normalization;
+8. crash after external mutation but before ledger commit;
+9. ledger commit before world verification;
+10. stale world observation followed by retry;
+11. concurrent operations racing on the same target;
+12. different authority epochs attempting apparently identical effects;
+13. compensation that resembles the original effect but has different semantic intent.
+
+### Architectural result
+
+PG-009 now needs an **Effect Identity / Semantic Deduplication Contract** in addition to the existing Operation Identity Contract.
+
+This contract must specify:
+- which operation classes require semantic duplicate detection;
+- canonicalization rules;
+- fields that are semantically relevant;
+- normalization tolerance;
+- forbidden information loss;
+- legitimate-repeat rules;
+- collision handling;
+- UNKNOWN handling;
+- reconciliation procedure;
+- world-verification requirement;
+- authority/policy epoch binding;
+- retention period for effect identity;
+- rollback/compensation semantics.
+
+### New invariants
+
+INV-281 — operation identity and effect identity are distinct concepts.
+INV-282 — critical operation classes requiring semantic uniqueness must define a governed effect-equivalence relation.
+INV-283 — two different operation IDs cannot be treated as duplicates solely because their serialized payloads match.
+INV-284 — two different operation IDs cannot be assumed independent solely because their IDs differ.
+INV-285 — effect-key canonicalization must preserve every semantic distinction required by the operation class.
+INV-286 — a semantic effect collision enters classification/reconciliation before critical execution is accepted as new.
+INV-287 — UNKNOWN effect occurrence blocks blind retry of irreversible critical effects.
+INV-288 — effect deduplication criteria cannot be silently redefined by the executor.
+INV-289 — effect identity must bind to the relevant mission, target, policy/authority epoch and operation class.
+INV-290 — semantic duplicate detection must distinguish legitimate repeated effects from forbidden duplicate effects.
+INV-291 — effect-ledger integrity does not prove that the external world actually changed; world verification remains separate.
+INV-292 — semantic deduplication is operation-class-specific and cannot be applied as a universal equality rule.
+
+## Updated PG-009 status
+
+PG-009 remains OPEN. We now have two distinct safety boundaries:
+1. **Operation Identity / Retry Safety** — protects against replay ambiguity for the same logical operation.
+2. **Effect Identity / Semantic Deduplication** — addresses different operations that may produce the same critical world effect.
+
+The second boundary is now the next architectural layer connecting migration semantics to Nexo's existing external-effect reconciliation model.
