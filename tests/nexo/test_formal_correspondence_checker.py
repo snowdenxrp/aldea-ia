@@ -23,6 +23,7 @@ class CorrespondenceTests(unittest.TestCase):
             "dependency_relation": {"d1": "DependencyDependsOn", "d2": "DependencyDependsOn"},
             "failure_domain_mapping": {},
             "trust_root_mapping": {},
+            "authority_mapping": {},
             "coverage": {
                 "component_to_domain": "PARTIAL",
                 "transitive_closure": "PARTIAL",
@@ -68,6 +69,14 @@ class CorrespondenceTests(unittest.TestCase):
             }
             for f in result["findings"]
         ))
+
+    def test_detects_missing_trust_root_and_authority_mapping(self):
+        m = self.mapping()
+        m["component_mapping"]["c1"]["trust_roots"] = "ComponentTrustRoots"
+        self.assertFalse(check_correspondence(self.claim(), m)["consistent"])
+        m = self.mapping()
+        m["component_mapping"]["c1"]["authority_domain"] = "ComponentAuthorityDomain"
+        self.assertFalse(check_correspondence(self.claim(), m)["consistent"])
 
     def test_detects_unmapped_domain(self):
         m = self.mapping()
