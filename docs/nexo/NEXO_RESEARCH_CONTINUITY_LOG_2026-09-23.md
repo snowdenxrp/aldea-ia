@@ -80,6 +80,11 @@ INVESTIGATE → ANALYZE → CONTRAST → RESTRUCTURE/BUILD → VERIFY → SAVE
 28. Assurance cases:
    cada critical effect necesita claim→threat→invariant→control→enforcement
    →test→evidence→monitor→recovery.
+29. Semantic/data migration:
+   byte/schema compatibility no garantiza semantic/epistemic/policy/authority
+   compatibility. Se añadió Semantic Migration Contract, explicit mapping,
+   information-loss rules, differential/round-trip/metamorphic tests,
+   migration state machine e invariants INV-195..215.
 
 ## Reestructuraciones principales
 - Se creó System Transition Gate como cross-layer commit point.
@@ -120,5 +125,8 @@ PG-009 Semantic/Data Migration Integrity — abierto.
 - No decir que una anomalía prueba intención maliciosa.
 - No decir que un benchmark demuestra seguridad en producción.
 
+## Resultado PG-009 — 2026-09-23
+PG-009 permanece abierto. La arquitectura ahora trata migración semántica como una capa propia. Un migration tool es un artifact gobernado; mixed-version critical state requiere compatibility contract; UNKNOWN no puede convertirse en VERIFIED por migración; historical policy/authority references permanecen version-bound; checkpoints y memory requieren semantic compatibility; destructive contract queda detrás de verification gates. Evidencia principal revisada: Apache Avro schema compatibility, Microsoft event-sourcing guidance, research on event-sourced schema evolution, OpenStack migration phases y 2026 expand/contract guidance.
+
 ## Siguiente punto
-PG-009 Semantic/Data Migration Integrity.
+PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, upcasters deterministas, crash recovery, checkpoint/memory migration, policy/authority compatibility, semantic diff, golden fixtures, differential replay y clean recovery.
