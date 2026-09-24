@@ -1244,3 +1244,274 @@ INV-395: coverage evidence is scoped and time-bounded; stale evidence cannot sil
 INV-396: no single component may silently redefine an invariant's protected state or closure to make coverage appear complete.
 
 Status: architecture refined; formal model NOT TLC-VERIFIED.
+
+
+## Latest PG-009 research — invariant specification integrity
+
+### Problem discovered
+
+Invariant coverage is not sufficient by itself.
+
+Nexo could have:
+- a complete dependency graph;
+- a declared invariant;
+- a formal proof that the invariant holds;
+- enforcement points;
+- independent verification;
+
+and still be proving the **wrong invariant**.
+
+Example:
+
+`balance >= 0`
+
+may be perfectly proved while the real safety obligation is:
+
+`available_balance + committed_reservations + pending_effects >= 0`
+
+under every permitted interleaving.
+
+Therefore:
+
+**INVARIANT VALIDITY ≠ INVARIANT ADEQUACY.**
+
+A proof establishes that a proposition follows from the model and assumptions. It does not, by itself, establish that the proposition faithfully captures the mission/goal or the real safety obligation.
+
+Lamport's TLA+ material explicitly distinguishes syntactic correctness from whether a specification captures the author's intention and describes invariant checking as a practical way to expose specification errors. NASA requirements guidance independently distinguishes requirements management from requirements validation and recommends bidirectional traceability from higher-level needs through implementation and verification. NIST SP 800-53A likewise emphasizes traceability between controls and assessment procedures, while NIST AI RMF calls for objective, repeatable TEVV, documentation of limitations, and independent review where appropriate.
+
+Sources:
+- https://lamport.azurewebsites.net/tla/xmxx99-07-16.pdf
+- https://www.nasa.gov/reference/6-2-requirements-management/
+- https://swehb.nasa.gov/spaces/7150/pages/16449673/SWE-055%2B-%2BRequirements%2BValidation
+- https://csrc.nist.gov/pubs/sp/800/53/a/r5/final
+- https://airc.nist.gov/airmf-resources/airmf/5-sec-core/
+
+### New distinction: validity vs adequacy
+
+For an invariant `I):
+
+1. **Syntactic integrity** — the invariant is well-formed and versioned.
+2. **Model validity** — the model satisfies `I` under declared assumptions.
+3. **Implementation enforcement** — the running system actually enforces the condition.
+4. **Independent verification** — an independent observation/check confirms enforcement.
+5. **Adequacy** — `I` actually represents the required safety/security obligation.
+6. **Coverage adequacy** — the set of invariants collectively covers the relevant mission goals, hazards, failure modes and protected domains.
+7. **World adequacy** — the model's abstractions and assumptions remain representative of the real operating environment.
+
+Only the first four are properties of the proof/enforcement chain. Adequacy requires a separate validation path.
+
+### Invariant Specification Contract
+
+Every critical invariant must have a governed contract containing at least:
+
+- invariant_id;
+- invariant_version;
+- exact formal proposition;
+- natural-language interpretation;
+- protected goal/objective;
+- source requirement/expectation/constitution/policy;
+- scope;
+- population/domain;
+- quantifiers;
+- temporal scope;
+- state variables and semantic definitions;
+- protected state/resource set;
+- relevant dependency/conflict closure;
+- environment model;
+- assumptions;
+- exclusions/forbidden simplifications;
+- threat/failure classes addressed;
+- enforcement points;
+- verification points;
+- acceptance/verification relation;
+- expected counterexamples;
+- known non-covered cases;
+- owner/authority;
+- independent reviewer/validator;
+- validity evidence;
+- adequacy evidence;
+- version/expiry/review boundary;
+- affected admissions/bindings.
+
+### Goal-to-invariant traceability
+
+Introduce a bidirectional graph:
+
+`MISSION/CONSTITUTION → GOAL → SAFETY OBJECTIVE → INVARIANT → PROTECTED STATE/DEPENDENCY CLOSURE → ENFORCEMENT → VERIFICATION → EVIDENCE`
+
+and the reverse trace:
+
+`EVIDENCE → VERIFICATION → INVARIANT → SAFETY OBJECTIVE → GOAL`
+
+Required properties:
+
+- every critical goal has the necessary safety invariants;
+- every critical invariant traces to a legitimate higher-level obligation or an explicitly approved derived requirement;
+- no critical goal is left without safety coverage;
+- no orphan critical invariant exists without justification;
+- trace links are versioned and reviewable;
+- material changes to goals, policy, threat model or environment trigger adequacy review of affected invariants.
+
+This follows the useful engineering principle of bidirectional requirements traceability, but Nexo extends it to safety invariants and world-state verification.
+
+### Completeness is not proof
+
+An invariant set can be internally consistent yet incomplete.
+
+Therefore distinguish:
+
+- **Invariant-set consistency** — invariants do not contradict each other under the declared model.
+- **Invariant-set validity** — the model satisfies them.
+- **Invariant-set coverage** — relevant goals/hazards/domains are represented.
+- **Invariant-set adequacy** — the set captures the intended protection.
+- **Invariant-set assurance** — coverage/adequacy evidence has independent review.
+
+A formal proof must never be reported as "the system is safe" without specifying which invariant, model, assumptions, scope and evidence were actually established.
+
+### Assumption firewall
+
+Assumptions are part of the proof boundary.
+
+For every assumption, Nexo must record:
+
+- exact proposition;
+- who/what controls it;
+- whether it is enforced, observed, or merely believed;
+- evidence source;
+- freshness;
+- failure mode if false;
+- affected invariants;
+- whether the model remains safe when the assumption is removed.
+
+Critical assumptions cannot be silently supplied by the executor, model, verifier, or migration transformer.
+
+If an assumption cannot be independently justified or enforced, the relevant assurance level is downgraded and critical autonomy may need to be restricted or blocked.
+
+### Vacuity / trivial-proof defense
+
+A proof can pass for an uninteresting reason.
+
+Examples:
+
+- the antecedent needed to reach the dangerous state is impossible only because the model accidentally excluded it;
+- the protected transition is unreachable in the model;
+- an assumption already asserts the invariant in disguised form;
+- a quantifier/domain is empty;
+- an environment action that causes the real failure is absent.
+
+Therefore critical invariant validation must include:
+
+1. reachability analysis for relevant states/transitions;
+2. assumption audit;
+3. negative-property tests;
+4. known-bad-state fixtures;
+5. mutation of the invariant and assumptions;
+6. counterexample expectations;
+7. model/environment completeness review.
+
+A proof that succeeds only because a bad state was excluded by an unjustified assumption is not adequate evidence.
+
+### Specification mutation testing
+
+For each critical invariant `I), generate controlled mutations such as:
+
+- remove a conjunct;
+- weaken a bound;
+- broaden/narrow a quantifier;
+- remove a protected resource;
+- remove a temporal condition;
+- weaken an authority constraint;
+- remove a dependency;
+- replace a precise state with UNKNOWN/ANY;
+- alter an assumption;
+- remove a failure/interleaving from the environment model.
+
+Expected behavior:
+
+- a weakening that admits a known unsafe counterexample should be detected;
+- if no known unsafe behavior becomes reachable, either the removed clause may be redundant or the test/model is incomplete;
+- mutation results become regression evidence for specification adequacy.
+
+This is stronger than merely proving the original invariant because it tests whether the specification is sensitive to the safety distinctions it claims to protect.
+
+### Counterexample obligations
+
+Critical invariant contracts should maintain a counterexample registry:
+
+- `counterexample_id`;
+- invariant/version;
+- scenario;
+- preconditions;
+- expected unsafe state/effect;
+- whether the model can reach it;
+- expected control response;
+- test/formal artifact;
+- regression status.
+
+Known real incidents, discovered attacks and prior model counterexamples become permanent specification regression cases rather than being deleted after the fix.
+
+### Invariant adequacy states
+
+Introduce:
+
+`DRAFT → STRUCTURALLY_VALID → TRACEABLE → SEMANTICALLY_REVIEWED → MODEL_VALIDATED → ENFORCED → INDEPENDENTLY_VERIFIED → ADEQUACY_ASSURED`
+
+Branches:
+
+`BLOCKED, ASSUMPTION_CONFLICT, COVERAGE_GAP, SPECIFICATION_CONFLICT, VACUOUS, UNKNOWN, STALE`
+
+Important: `MODEL_VALIDATED` does not imply `ADEQUACY_ASSURED`.
+
+### New invariants
+
+INV-397 — formal proof of an invariant does not establish that the invariant is adequate for the intended goal.
+
+INV-398 — every critical invariant must have bidirectional traceability to the higher-level goal/requirement and to enforcement/verification evidence.
+
+INV-399 — critical goals cannot be considered adequately covered when required safety invariants are missing or UNKNOWN.
+
+INV-400 — critical invariants cannot become trusted merely because they are syntactically valid or formally provable.
+
+INV-401 — invariant scope, population, quantification and temporal semantics are part of the invariant's security meaning.
+
+INV-402 — assumptions used to prove critical invariants must be explicit, versioned, attributable and independently justified or enforced.
+
+INV-403 — unjustified environment exclusions cannot be used to make a critical invariant trivially provable.
+
+INV-404 — critical invariant validation must include negative/bad-state cases and relevant failure/interleaving scenarios.
+
+INV-405 — critical invariant specifications require adequacy evidence distinct from model-validity evidence.
+
+INV-406 — mutation/weakening of a critical invariant or its assumptions must be treated as a specification regression test.
+
+INV-407 — known counterexamples and real failure modes remain durable regression artifacts.
+
+INV-408 — material goal, threat-model, policy, environment or dependency changes trigger invariant adequacy re-review.
+
+INV-409 — invariant-set coverage is distinct from dependency-graph coverage and must be evaluated against goals/hazards/protected domains.
+
+INV-410 — no critical invariant may be its own sole authority for deciding that its specification is adequate.
+
+### Architectural correction
+
+The critical chain is now:
+
+`MISSION/CONSTITUTION → GOAL → SAFETY OBJECTIVE → INVARIANT SPECIFICATION → INVARIANT ADEQUACY → INVARIANT COVERAGE → ENFORCEMENT → INDEPENDENT VERIFICATION → WORLD EVIDENCE → ADMISSION`
+
+This closes a previously missing semantic layer.
+
+The existing Goal Integrity Firewall remains necessary, but it is not sufficient: a goal can be legitimate while the invariant chosen to protect it is incomplete or mis-specified.
+
+### Formalization impact
+
+The existing TLA+ concurrency model can continue to prove operational invariants, but that proof must now be classified as **model validity evidence**, not adequacy evidence.
+
+The formal program should eventually add a separate specification-validation layer containing:
+- explicit goal/invariant bindings;
+- assumptions;
+- reachable bad-state fixtures;
+- mutation cases;
+- coverage/adequacy metadata;
+- negative tests.
+
+The operational TLA+ artifacts remain **NOT TLC-VERIFIED**. No TLC result is claimed.
