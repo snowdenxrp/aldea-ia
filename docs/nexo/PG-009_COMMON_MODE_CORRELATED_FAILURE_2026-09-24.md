@@ -362,3 +362,16 @@ Still unresolved:
 5. Implement fault-injection scenarios.
 6. Run TLC when tooling is available.
 7. Perform final PG-009 semantic reconciliation before opening the next Property Gap.
+
+## Formalization continuation — 2026-09-24
+A new formal sketch was added:
+`docs/nexo/formal/PG-009_RECOVERY_COMMON_MODE_SKETCH_2026-09-24.tla`
+
+It extends the recovery model with explicit dependency domains, UNKNOWN dependency state, compromised-domain state, assurance degradation, and release blocking when modeled dependencies are unknown or compromised. It keeps recovery_epoch distinct from stop_epoch.
+
+Git commit: b713cbad246da9769f916ac6a107f1f03378f322
+
+This remains **NOT TLC-VERIFIED**. The official TLA+ documentation describes TLC as an explicit-state model checker for executable TLA+ specifications and notes that invariants can be checked across reachable states; therefore the absence of a TLC run here is a real verification gap, not an implicit pass. citeturn0search1turn0search3
+
+### Current formal limitations
+The model still lacks component-to-domain mapping, transitive dependency closure, partial compromise, Byzantine behavior, CAS/linearizability, operation/effect identity, artifact/config/runtime digests, update transactions, explicit enforcement proof, timing/freshness and liveness/fairness. These are deliberately recorded rather than treated as solved.
