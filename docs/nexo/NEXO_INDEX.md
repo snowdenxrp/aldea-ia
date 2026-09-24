@@ -70,7 +70,7 @@ Never erase an old architectural decision merely to make the current document lo
 Loss of conversational context must not imply loss of Nexo's accumulated architecture.
 
 ## Current PG-009 research result
-Schema compatibility is not semantic compatibility. Nexo now requires a Semantic Migration Contract, explicit semantic mappings, preservation of epistemic/provenance/authority/temporal meaning, differential and property testing, explicit information-loss handling, and post-migration verification. PG-009 remains OPEN.
+Schema compatibility is not semantic compatibility. Nexo now requires a Semantic Migration Contract, explicit semantic mappings, preservation of epistemic/provenance/authority/temporal meaning, differential and property testing, explicit information-loss handling, and post-migration verification. PG-009 remains OPEN. It now includes semantic refinement, observable-behavior preservation, migration algebra, mixed-version states, governed upcasters, protected authority switching, and invariants INV-195..230.
 
 ## Next action
 Continue PG-009 research with formal semantic equivalence, deterministic upcaster chains, migration crash recovery, checkpoint/memory migration, policy/authority compatibility, automated semantic diffing, golden fixtures, differential replay, and migration-specific clean recovery. Save every material advance.
