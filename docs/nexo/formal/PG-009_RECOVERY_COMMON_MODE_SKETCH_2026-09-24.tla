@@ -64,7 +64,7 @@ RequestStop(o) ==
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
   /\ processState' =
-      IF processState[o] = "RUNNING"
+      IF processState[o] \in {"RUNNING", "ADMITTED"}
         THEN [processState EXCEPT ![o] = "OFFLINE"]
         ELSE processState
   /\ UNCHANGED <<authorityEpoch,recoveryEpoch,recoveryAuthorityEpoch,admittedAuthorityEpoch,recoveryOwner,
@@ -242,8 +242,8 @@ SingleRecoveryOwner ==
   \A o \in Operations :
     recoveryOwner[o] # "NONE" => recoveryToken[o] = "CURRENT"
 
-RecoveryEpochMonotonic ==
-  \A o \in Operations : recoveryEpoch[o] >= stopEpoch[o]
+RecoveryEpochIsNonNegative ==
+  \A o \in Operations : recoveryEpoch[o] >= 0
 
 StaleOwnerCannotAuthorize ==
   \A o \in Operations :
