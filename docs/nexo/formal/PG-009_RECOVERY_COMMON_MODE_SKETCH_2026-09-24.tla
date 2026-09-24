@@ -145,6 +145,20 @@ RestoreDependency(o, d) ==
       recoveryEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
       worldState,compromisedDependencies,assuranceState,commitCount>>
 
+RevalidateAssurance(o) ==
+  /\ stopState[o] = "QUARANTINED"
+  /\ gateState[o] = "CLOSED"
+  /\ recoveryOwner[o] # "NONE"
+  /\ recoveryToken[o] = "CURRENT"
+  /\ worldState[o] = "KNOWN"
+  /\ AllOperationDependenciesKnown(o)
+  /\ NoCompromisedOperationDependencies(o)
+  /\ assuranceState' = [assuranceState EXCEPT ![o] = "NORMAL"]
+  /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
+  /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
+      recoveryEpoch,recoveryOwner,recoveryToken,worldState,dependencyState,
+      compromisedDependencies,commitCount>>
+
 AuthorizeRelease(o) ==
   /\ stopState[o] = "QUARANTINED"
   /\ gateState[o] = "CLOSED"
