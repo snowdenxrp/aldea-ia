@@ -387,3 +387,10 @@ Common-mode analysis has been converted into a machine-readable schema draft: `d
 
 ## Latest PG-009 — deterministic dependency evaluator
 Implemented src/nexo/dependency_closure_evaluator.py plus tests/nexo/test_dependency_closure_evaluator.py. It resolves transitive closure, detects missing/cyclic dependencies, and reports shared failure-domain/trust-root/authority correlations without granting authority or executing effects. Implementation commit 8a9ca450e1e473f4478e1359f0004650ca59853d; tests commit 90090693cadcaa1b3e4a34dfc7eed1ca377a3ba8. Local execution was attempted but blocked by unavailable outbound DNS/network; tests are not claimed as passed. New invariants INV-691..696.
+
+
+## PG-009 — concrete component/dependency graph correspondence checkpoint
+
+A canonical graph fixture was added at `docs/nexo/fixtures/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.json`, with a TLA+ constant binding at `docs/nexo/formal/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.cfg`. The formal sketch now represents component → dependency, dependency → dependency, dependency → domain, failure-domain and trust-root relations explicitly.
+
+Status: IMPLEMENTED representation; Python fixture test added but execution not claimed; TLA+ semantic equivalence and TLC verification remain unproven. The formal helper is intentionally only one dependency hop beyond direct references until a finite recursive closure relation is added.
