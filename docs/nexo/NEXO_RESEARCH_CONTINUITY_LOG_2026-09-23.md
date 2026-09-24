@@ -159,3 +159,8 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    Added INV-256..260. Explicitly recorded that theorem text is not verification evidence;
    next work is model cleanup, full crash interleavings, duplicate operation IDs, target/journal
    consistency, cutover races, semantic abstraction and actual TLC checking.
+
+35. PG-009 cutover-race finding:
+   formal reasoning showed that preparation-time validation can become stale before authority commit.
+   Added explicit cutover-fence design and invariants INV-261..265. The model is still not TLC-verified.
+   Next: complete fence semantics, define whether late writes are blocked or incorporated, and model-check.
