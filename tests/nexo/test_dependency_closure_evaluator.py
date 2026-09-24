@@ -57,6 +57,37 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(r["maximum_admissible_assurance"],"I0")
         self.assertFalse(r["admissible"])
 
+    def test_shared_failure_domain_is_correlated_through_transitive_closure(self):
+        c=base_claim()
+        c["dependencies"].append({
+            "dependency_id":"shared-host",
+            "domain":"host",
+            "state":"KNOWN",
+            "failure_domain":"shared-fd",
+        })
+        c["dependencies"][0]["depends_on"]=["shared-host"]
+        c["dependencies"][1]["depends_on"]=["shared-host"]
+        r=evaluate_claim(c)
+        self.assertTrue(any(
+            set(x["components"]) == {"gate","verifier"} and "failure_domain" in x["reasons"]
+            for x in r["correlated_component_pairs"]
+        ))
+        self.assertEqual(r["maximum_admissible_assurance"],"I2")
+
+    def test_unknown_transitive_dependency_blocks_high_assurance(self):
+        c=base_claim()
+        c["dependencies"].append({
+            "dependency_id":"shared-runtime",
+            "domain":"runtime",
+            "state":"UNKNOWN",
+            "failure_domain":"fd-runtime",
+        })
+        c["dependencies"][0]["depends_on"]=["shared-runtime"]
+        r=evaluate_claim(c)
+        self.assertIn("shared-runtime",r["unknown_dependencies"])
+        self.assertEqual(r["maximum_admissible_assurance"],"I1")
+        self.assertFalse(r["admissible"])
+
     def test_missing_dependency_is_blocking(self):
         c=base_claim()
         c["components"][0]["dependency_refs"].append("missing")
