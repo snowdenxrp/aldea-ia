@@ -1025,3 +1025,18 @@ docs/nexo/NEXO_CANONICAL_OBJECT_BOUNDARY_AUDIT_2026-09-23.md
 Commit: d87ecd57181318ff66e4b9f1f48ff4f407acd05f
 
 Status: design audit only. SANY/TLC NOT RUN; runtime tests NOT RUN; formal equivalence NOT CLAIMED.
+
+
+### 2026-09-23 — canonical adversarial matrix and semantic contract
+
+Created the adversarial test specification before implementation. It contains 30 races/faults spanning lease takeover, stale owners, evidence freshness, exact effect identity, authority revocation, policy/dependency changes, STOP/release ordering, restart/checkpoint, common-mode independence and external UNKNOWN.
+
+Artifacts:
+- docs/nexo/NEXO_CANONICAL_ADVERSARIAL_MATRIX_V1.md
+  Commit: 2fcbb4be8e9d142870d554ccc98efda0105a4ed7
+- docs/nexo/NEXO_CANONICAL_SEMANTIC_CONTRACT_V1.md
+  Commit: effaa84a94cd7d99570698633125db57246c54cc
+
+Key decision: ReleaseEligible is derived from lifecycle, exact effect binding, current authority/safety context, fresh valid evidence, dependencies, STOP fence and current coordination fence. It is not a durable authority bit.
+
+Status: DESIGNED/SPECIFIED. Implementation pending. Runtime tests NOT RUN. SANY/TLC NOT RUN.
