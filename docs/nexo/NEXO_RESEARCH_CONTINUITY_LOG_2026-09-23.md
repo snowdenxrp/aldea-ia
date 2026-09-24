@@ -584,3 +584,39 @@ Important: this demonstrates why correspondence must be executable/model-checkab
 A second formal-model consistency defect was found while inspecting the Quarantine action: stopState' was assigned while stopState was also declared UNCHANGED. Removed in commit 1a5e325ad03b43271bb7a3c7d0d259e729a86654. The executable evaluator also had an unsupported `authority` dependency-domain branch; aligned with schema enum in commit 1584fea1f3f320c816ab3bad53c31cef61eafde6. Correspondence status documented in 3af8154880abc63ecd366c9cfa646884af6aae64.
 
 Lesson: the correspondence layer is already finding concrete cross-layer defects. TLA+ remains NOT TLC-VERIFIED and semantic equivalence remains unproven.
+
+
+---
+
+## 2026-09-23 — PG-009 concrete graph correspondence
+
+### Investigate / contrast
+The executable evaluator already computed recursive dependency closure, while the formal common-mode sketch represented dependency domains but lacked explicit component/dependency relations. Treating those as equivalent would hide a semantic gap.
+
+### Build
+Added:
+- `docs/nexo/fixtures/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.json` — canonical executable fixture;
+- `docs/nexo/formal/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.cfg` — exact TLA+ constant binding;
+- explicit `ComponentDependencyRefs`, `DependencyDependsOn`, `DependencyDomain`, `ComponentFailureDomains`, and `ComponentTrustRoots` relations in the formal sketch;
+- canonical fixture test in `tests/nexo/test_dependency_closure_evaluator.py`;
+- correspondence documentation/index updates.
+
+### Correction
+During construction, the first fixture accidentally expected a non-existent verifier dependency identifier. It was corrected before the formal binding was finalized. A second modeling issue was found: dependency identifiers are not the same thing as semantic domain values, so the TLA+ model was corrected to introduce a separate `Dependencies` constant and `DependencyDomain` mapping.
+
+### Status
+- Representation: IMPLEMENTED.
+- Canonical fixture: IMPLEMENTED.
+- Python fixture test: IMPLEMENTED, execution not claimed.
+- TLA+ model: NOT TLC-VERIFIED.
+- Cross-model semantic equivalence: NOT PROVEN.
+- One-hop formal helper remains intentionally incomplete for recursive closure.
+
+### Next
+Replace the one-hop formal helper with an explicit finite transitive-closure relation, then compare executable and formal closure/correlation/release predicates on the same fixture. Run TLC when a working TLC execution path is available.
+
+### Git checkpoints
+- fixture creation/correction: `46db8a8d86fa17f74af3131ea4783a8117370bf5`
+- TLA+ graph binding: `ee74381f0083e59107c9d27a67fd43486290a0e8`
+- TLA+ fixture constants: `06043b4dfa9264cbb6699923e1fed7fed6c1e6df`
+- executable fixture test: `d3606fc778ddd16e7ef8c0e00172f9cf41c1303f`
