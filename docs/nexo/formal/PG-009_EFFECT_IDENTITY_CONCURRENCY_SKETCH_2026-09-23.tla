@@ -868,3 +868,79 @@ InvReceiptNotWorldTruth ==
      INV-334 no component lacking risk authority can reduce required guarantees.
      INV-335 risk-profile provenance/version/expiry are bound to the admission decision.
 *)
+
+
+(* COMPOSITIONAL / CUMULATIVE RISK AND GLOBAL-INVARIANT ADMISSION
+
+   Individual effect admission is insufficient: a sequence of individually admissible
+   operations can jointly violate a global invariant or create a larger blast radius.
+   NIST AI RMF emphasizes that AI lifecycle activities are interdependent and that
+   interactions among actors and later conditions can undermine otherwise reasonable
+   decisions. AWS distributed-systems guidance similarly treats dependency failures
+   and retry storms as emergent cross-component effects.
+
+   Introduce a mission-window aggregate risk state over active and recently committed
+   effects, with explicit bounds:
+     aggregate_effect_set
+     aggregate_effect_keys
+     cumulative_exposure
+     shared_resource_exposure
+     shared_authority_exposure
+     dependency_overlap
+     common_mode_domains
+     global_invariants_at_risk
+     retry_load / outstanding_unknowns
+     temporal_window
+
+   Pairwise independence is insufficient. Admission must consider the union of
+   dependency/effect footprints and global invariant deltas. If any relevant
+   dependency, invariant impact, or common-mode relationship is UNKNOWN, the aggregate
+   relation is UNKNOWN rather than independent.
+
+   Define effect interaction classes:
+     INDEPENDENT
+     COMMUTATIVE
+     ORDER_SENSITIVE
+     RESOURCE_CONTENTION
+     EFFECT_COLLISION
+     GLOBAL_INVARIANT_INTERACTION
+     COMMON_MODE
+     UNKNOWN
+
+   Aggregate controls:
+     - cumulative risk/exposure budgets per mission, authority domain, resource and
+       external system;
+     - blast-radius ceilings;
+     - concurrency limits for interacting effect classes;
+     - serialization where commutativity is not proven;
+     - reclassification when a new operation changes aggregate risk materially;
+     - circuit breaker when aggregate unknowns or failures cross policy thresholds.
+
+   A sequence must not bypass controls by decomposing one forbidden effect into many
+   individually low-risk effects. The system therefore tracks semantic effect lineage
+   and parent/child decomposition. A child operation cannot collectively exceed the
+   authority/guarantee envelope of its governed parent mission/effect decomposition.
+
+   Dynamic escalation:
+     if cumulative exposure crosses a threshold, freeze new admissions in the affected
+     domain, re-evaluate active operations, and require stronger governance/verification.
+     Escalation cannot retroactively authorize already-forbidden effects; in-flight
+     operations follow their governed transition rules and may require drain/reconcile.
+
+   Retry traffic is included in exposure accounting because retries consume shared
+   resources and can amplify a localized dependency failure into a system-wide event.
+   Retry storms therefore count toward resource/blast-radius budgets.
+
+   New obligations:
+     INV-336 aggregate mission risk is not the sum of isolated labels only; interaction
+              structure and global invariants must be considered.
+     INV-337 pairwise independence does not prove global safety when common-mode/global
+              dependencies exist.
+     INV-338 UNKNOWN dependency/invariant interaction cannot be treated as independent.
+     INV-339 decomposition cannot bypass a parent effect's authority/guarantee envelope.
+     INV-340 cumulative exposure/blast-radius budgets can freeze new admissions.
+     INV-341 material aggregate-risk change triggers reclassification before additional
+              critical admission.
+     INV-342 retry load contributes to shared-resource/blast-radius exposure.
+     INV-343 aggregate-risk escalation cannot retroactively authorize forbidden effects.
+*)
