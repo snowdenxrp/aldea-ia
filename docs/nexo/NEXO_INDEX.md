@@ -309,3 +309,12 @@ Nexo now separates human identity, operational authority, recovery authority, su
 New Human Relationship Contract and invariants INV-539..556.
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: delegated human intent and consent continuity.
+
+
+## Latest PG-009 — delegated human intent and consent continuity
+
+Nexo now separates direct instruction, preference, standing authorization, temporary delegation, conditional authorization, consent, inferred intent and ambiguity. Authentication does not equal authorization; inferred intent cannot create authority; critical ambiguity blocks; delegations are scoped/expiring/revocable; material context drift triggers revalidation.
+
+New Intent Contract and invariants INV-557..576.
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: human override/interruption/revocation during active execution.
