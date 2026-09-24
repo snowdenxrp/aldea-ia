@@ -48,5 +48,49 @@
     "transitive_closure": "MAPPED",
     "graph_fingerprint": "UNMAPPED",
     "finding_taxonomy": "UNMAPPED"
+  },
+  "component_mapping": {
+    "safety_gate": {
+      "dependency_refs": "ComponentDependencyRefs",
+      "failure_domains": "ComponentFailureDomains",
+      "trust_roots": "ComponentTrustRoots"
+    },
+    "recovery_verifier": {
+      "dependency_refs": "ComponentDependencyRefs",
+      "failure_domains": "ComponentFailureDomains",
+      "trust_roots": "ComponentTrustRoots"
+    },
+    "executor": {
+      "dependency_refs": "ComponentDependencyRefs",
+      "failure_domains": "ComponentFailureDomains",
+      "trust_roots": "ComponentTrustRoots"
+    }
+  },
+  "dependency_relation": {
+    "gate_runtime": "DependencyDependsOn",
+    "verifier_runtime": "DependencyDependsOn",
+    "executor_runtime": "DependencyDependsOn",
+    "safety_root": "DependencyDependsOn",
+    "coordination_store": "DependencyDependsOn",
+    "host_a": "DependencyDependsOn",
+    "host_b": "DependencyDependsOn",
+    "host_c": "DependencyDependsOn",
+    "storage_core": "DependencyDependsOn"
+  },
+  "failure_domain_mapping": {
+    "gate_runtime": "DependencyFailureDomain",
+    "verifier_runtime": "DependencyFailureDomain",
+    "executor_runtime": "DependencyFailureDomain",
+    "safety_root": "DependencyFailureDomain",
+    "coordination_store": "DependencyFailureDomain",
+    "host_a": "DependencyFailureDomain",
+    "host_b": "DependencyFailureDomain",
+    "host_c": "DependencyFailureDomain",
+    "storage_core": "DependencyFailureDomain"
+  },
+  "trust_root_mapping": {
+    "safety_gate": "ComponentTrustRoots",
+    "recovery_verifier": "ComponentTrustRoots",
+    "executor": "ComponentTrustRoots"
   }
 }
