@@ -137,3 +137,12 @@ Updated tests: `bb031d17440e8520178084de967a779659766317`
 The graph fingerprint is SHA-256 over canonicalized graph inputs. It identifies the analyzed graph/version input; it does not establish truth, security, or independence.
 
 Status remains: IMPLEMENTED / TESTS NOT EXECUTED IN CURRENT ENVIRONMENT / NOT FORMALLY VERIFIED.
+
+## Formal correspondence checkpoint — 2026-09-24
+The recovery/common-mode TLA+ sketch now defines vocabulary corresponding to the executable evaluator: DependencyKnown, DependencyUncertain, DependencyCompromised, AllDependenciesKnown, NoCompromisedDependencies, and EvaluatorReleaseEligible.
+
+Formal synchronization commit: `07fdaeac63867f893f7ac7bc1c7f47f090c7f4c8`.
+
+This is a correspondence checkpoint, not an executable equivalence proof. The TLA+ model still simplifies the real dependency graph: it does not yet model component-to-domain edges, transitive closure, graph fingerprints, or the full evaluator finding taxonomy. Therefore the two layers are aligned in vocabulary and intent, but are NOT yet proven equivalent.
+
+Next hardening target: introduce explicit component-to-domain relations and transitive closure into the formal model, then compare representative evaluator fixtures against the formal states.
