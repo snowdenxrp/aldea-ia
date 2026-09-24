@@ -277,3 +277,30 @@ InvReceiptNotWorldTruth ==
    A successful execution receipt does not erase the need to verify the resulting
    world state when the target's receipt is not itself an independent world proof.
 *)
+
+
+(* WORLD VERSION / EXECUTION FENCE REFINEMENT
+   A world observation carries a target-local version or causal position.
+   A critical execution prepared from observation version V may commit only if
+   the target still satisfies the required version/precondition boundary.
+
+   Conceptually:
+      OBSERVE(target) -> (state, version V, freshness F)
+      PREPARE(effect, expectedVersion V, authorityEpoch E)
+      EXECUTE iff current target version/precondition matches V and epoch E
+
+   A conditional write / compare-and-swap is preferred where the target supports
+   it. If the target cannot atomically enforce the expected version, the version
+   is evidence for revalidation but is NOT by itself an execution fence.
+
+   Therefore:
+      observedVersion = currentVersion is required for optimistic concurrency,
+      but only a target-enforced conditional transition creates the hard fence.
+
+   If the target version changed, execution is rejected as STALE_PRECONDITION and
+   must re-observe/replan. Last-writer-wins is not accepted as a safety mechanism
+   for critical state because it can silently overwrite concurrent intent.
+
+   The model must also preserve the distinction between target-local version,
+   authority epoch, operation identity, and reconciliation epoch.
+*)
