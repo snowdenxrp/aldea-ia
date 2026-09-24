@@ -86,8 +86,9 @@ AcquireRecovery(o, owner) ==
   /\ recoveryOwner' = [recoveryOwner EXCEPT ![o] = owner]
   /\ recoveryEpoch' = [recoveryEpoch EXCEPT ![o] = @ + 1]
   /\ recoveryToken' = [recoveryToken EXCEPT ![o] = "CURRENT"]
+  /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      releaseAuthorized,worldState,dependencyState,compromisedDependencies,
+      worldState,dependencyState,compromisedDependencies,
       assuranceState,commitCount>>
 
 InvalidateRecovery(o) ==
@@ -131,8 +132,11 @@ ReconcileWorld(o, state) ==
   /\ IF state = "UNKNOWN"
         THEN assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
         ELSE UNCHANGED assuranceState
+  /\ IF state = "UNKNOWN"
+        THEN releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
+        ELSE UNCHANGED releaseAuthorized
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
-      recoveryEpoch,recoveryOwner,recoveryToken,releaseAuthorized,
+      recoveryEpoch,recoveryOwner,recoveryToken,
       dependencyState,compromisedDependencies,commitCount>>
 
 RestoreDependency(o, d) ==
@@ -146,6 +150,7 @@ RestoreDependency(o, d) ==
       worldState,compromisedDependencies,assuranceState,commitCount>>
 
 RevalidateAssurance(o) ==
+  /\ GraphReferencesKnown
   /\ stopState[o] = "QUARANTINED"
   /\ gateState[o] = "CLOSED"
   /\ recoveryOwner[o] # "NONE"
@@ -160,6 +165,7 @@ RevalidateAssurance(o) ==
       compromisedDependencies,commitCount>>
 
 AuthorizeRelease(o) ==
+  /\ GraphReferencesKnown
   /\ stopState[o] = "QUARANTINED"
   /\ gateState[o] = "CLOSED"
   /\ recoveryOwner[o] # "NONE"
@@ -337,7 +343,18 @@ EvaluatorReleaseEligible(o) ==
 
 EvaluatorDoesNotGrantAuthority ==
   \A o \in Operations :
-    TRUE
+    ~EvaluatorAuthorityGranted(o)
+
+EvaluatorAuthorityGranted(o) == FALSE
+
+EvaluatorEffectsExecuted(o) == FALSE
+
+EvaluatorAdmissible(o) ==
+  EvaluatorReleaseEligible(o)
+
+ReleaseAuthorizedImpliesEligible ==
+  \A o \in Operations :
+    releaseAuthorized[o] => EvaluatorReleaseEligible(o)
 
 ====
 (*
@@ -360,6 +377,9 @@ EvaluatorDoesNotGrantAuthority ==
   - explicit compromised-domain set;
   - assurance degradation;
   - release is scoped to dependencies reachable from the operation's declared components;
+  - release authorization is required to remain a subset of current evaluator release eligibility;
+  - world UNKNOWN and recovery acquisition explicitly clear prior release authorization;
+  - graph validity is required before revalidation/authorization;
   - recoveryEpoch is distinct from stopEpoch;
   - recovery invalidation explicitly blocks release.
 
