@@ -529,3 +529,21 @@ Status: DESIGNED / RESEARCH-CROSS-CHECKED. Implementation, fault injection and T
 
 ## Next PG-009 research point
 Common-mode/correlated-failure analysis across safety, recovery, update, identity, storage, network, policy, verifier and executor domains. Then correct/expand formal models, implement fault injection, and run TLC when tooling is available. Canonical documentation must remain synchronized without erasing historical snapshots.
+
+## Latest PG-009 — common-mode / correlated-failure analysis — 2026-09-24
+
+Research question: can apparently independent Nexo safety layers fail together through a hidden shared dependency, failure domain, authority, artifact, state, operator or semantic assumption?
+
+Cross-check: NIST common-cause failure material identifies shared hardware/software/components, personnel, tools, interfaces, algorithms and processes as possible common causes; IEC 61508 includes common-cause failure analysis in functional-safety methods; IEC 62340 provides a domain-specific example of independent I&C systems used to cope with CCF; NIST SP 800-193 recommends independent protection of recovery mechanisms. These support the pattern but do not certify Nexo.
+
+Finding: process/service separation is not independence. Critical safety claims require dependency closure, failure-domain analysis, common-mode analysis, diversity/independence evidence and an explicit assurance level. UNKNOWN dependency is not NO dependency. Two observations from one shared compromised source are not automatically independent evidence.
+
+New invariants INV-669..690.
+Artifact: docs/nexo/PG-009_COMMON_MODE_CORRELATED_FAILURE_2026-09-24.md
+Continuity checkpoint: docs/nexo/NEXO_CONTINUITY_DELTA_2026-09-24_COMMON_MODE.md
+Git commits: artifact e790b4aa576f64a019e5a098d2493463a77aebd3; continuity 6f16e11f549f93cfbfa7f323279078a0cf1c800c.
+
+Status: DESIGNED / RESEARCH-CROSS-CHECKED. Implementation, quantitative CCF modeling, fault injection and TLC verification are not claimed.
+
+## Next PG-009 research point
+Correct/expand recovery TLA+, add dependency/failure-domain state, model update/rollback transitions, define executable safety-claim/dependency-closure schema, implement fault injection, run TLC, then perform final PG-009 semantic reconciliation before opening the next Property Gap.
