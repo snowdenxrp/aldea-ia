@@ -620,3 +620,17 @@ Replace the one-hop formal helper with an explicit finite transitive-closure rel
 - TLA+ graph binding: `ee74381f0083e59107c9d27a67fd43486290a0e8`
 - TLA+ fixture constants: `06043b4dfa9264cbb6699923e1fed7fed6c1e6df`
 - executable fixture test: `d3606fc778ddd16e7ef8c0e00172f9cf41c1303f`
+
+
+### Follow-up correction — dependency identity vs semantic domain
+
+While extending the formal graph, a deeper representation mismatch was exposed: the executable evaluator's dependency identifiers (for example `safety_root`) are not the same namespace as semantic dependency domains (for example `trust_root`). The formal sketch initially reused `Domains` for both. It was corrected by separating `Dependencies` from `Domains` and introducing `DependencyDomain`; dependency state and compromise are now keyed by dependency identifiers. The correspondence mapping for COMPROMISED was updated from `compromisedDomains` to `compromisedDependencies`.
+
+This is a real cross-layer defect found by correspondence work, not merely a documentation change.
+
+Additional formal hardening:
+- `ReachDependency` / `ComponentDependencyClosure` now model finite recursive dependency closure;
+- the canonical fixture has a matching TLA+ constant binding;
+- no TLC verification is claimed.
+
+Git checkpoint: `3e0ba1bef0bcf48b8100ec0514f1db080de8883f`.
