@@ -46,6 +46,29 @@ class CorrespondenceTests(unittest.TestCase):
             for f in r["findings"]
         ))
 
+    def test_canonical_fixture_has_no_relation_mapping_gaps(self):
+        import json
+        from pathlib import Path
+        fixture = json.loads(Path("docs/nexo/fixtures/PG-009_COMPONENT_DEPENDENCY_GRAPH_V1.json").read_text())
+        mapping = json.loads(Path("docs/nexo/fixtures/PG-009_FORMAL_CORRESPONDENCE_V2.json").read_text())
+        claim = {
+            "claim_id": fixture["fixture_id"],
+            "assurance_level": fixture["expected"]["requested_assurance"],
+            "components": fixture["components"],
+            "dependencies": fixture["dependencies"],
+        }
+        result = check_correspondence(claim, mapping)
+        self.assertTrue(result["consistent"])
+        self.assertFalse(any(
+            f["code"] in {
+                "FORMAL_COMPONENT_UNMAPPED",
+                "FORMAL_COMPONENT_RELATION_UNMAPPED",
+                "FORMAL_DEPENDENCY_RELATION_UNMAPPED",
+                "FORMAL_FAILURE_DOMAIN_UNMAPPED",
+            }
+            for f in result["findings"]
+        ))
+
     def test_detects_unmapped_domain(self):
         m = self.mapping()
         m["domain_mapping"].pop("host")
