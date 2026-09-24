@@ -1753,3 +1753,93 @@ MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → 
 
 PG-009 remains OPEN.
 Next research: epistemic state transitions and uncertainty propagation — how UNKNOWN/PARTIAL/STALE/CONFLICTING observations propagate through memory, planning, risk, authority and execution without being accidentally collapsed into certainty.
+
+## Research continuation — epistemic state transitions and uncertainty propagation
+
+NIST AI RMF calls for uncertainty-aware measurement, regular testing during operation, and independent review. NIST's 2026 monitoring report emphasizes unforeseen outputs and consequences in deployment. NASA separates verification from realistic-environment validation and emphasizes model uncertainty and its propagation. citeturn0search18turn0search0turn0search11turn0search24
+
+### Core finding
+Uncertainty is not merely a property of an observation. It is a state that must propagate through the decision pipeline.
+
+A dangerous failure occurs when UNKNOWN becomes a definite value while passing through memory, planning, risk, authority or execution. Nexo therefore needs explicit epistemic transitions and a monotonicity rule: assurance may increase only through an admissible evidence transition.
+
+### Epistemic State Contract
+Every critical claim/evidence item carries:
+epistemic_state; proposition/scope; source/provenance; observation references; assumptions; freshness; conflict set; transformation lineage; uncertainty/quality; verification method; authority relevance; expiry/revalidation; affected decisions/effects.
+
+States:
+UNKNOWN, ASSUMED, INFERRED, OBSERVED, VALIDATED, CORROBORATED, VERIFIED, CONFLICTING, STALE, PARTIAL, INVALIDATED.
+
+These are not a simple confidence ladder. VERIFIED can later become STALE or INVALIDATED. A highly confident inference remains INFERRED unless its verification condition is met.
+
+### Transition discipline
+UNKNOWN → INFERRED requires an explicit inference rule.
+UNKNOWN → OBSERVED requires a valid observation.
+OBSERVED → VALIDATED requires validation criteria.
+VALIDATED → CORROBORATED requires independent supporting evidence where required.
+CORROBORATED → VERIFIED requires the claim contract's verification relation.
+Any material contradiction can create CONFLICTING.
+Freshness expiry creates STALE.
+Failure of a governing assumption, provenance, semantic interpretation or world precondition can create INVALIDATED.
+
+Forbidden implicit transitions:
+UNKNOWN → TRUE because no contrary evidence exists.
+UNKNOWN → FALSE because no supporting evidence exists.
+ASSUMED → VERIFIED because the model used it successfully.
+INFERRED → OBSERVED without new observation.
+STALE → CURRENT for convenience.
+Executor receipt → VERIFIED without required world observation.
+Model confidence → AUTHORITY.
+
+### Epistemic monotonicity
+The correct invariant is not that confidence only increases. It is:
+No increase in epistemic assurance without an admissible evidence transition.
+
+New contradictory evidence may reduce assurance.
+
+### Uncertainty propagation
+Every derived artifact declares dependencies on upstream claims/evidence. If a critical input is UNKNOWN, CONFLICTING or STALE, the derived state must either remain appropriately uncertain, use a formally justified conservative abstraction that cannot change the protected decision, or be blocked/escalated.
+
+### Memory
+Memory stores value together with proposition, provenance, epistemic_state, freshness, scope, purpose and dependencies. Retrieval must preserve this metadata; caches cannot strip uncertainty markers.
+
+### Planning
+Plans identify required facts, assumptions, unknowns, evidence needed, decisions safe under uncertainty, and decisions requiring resolution. Information-gathering actions do not themselves grant authority.
+
+### Risk
+Risk admission treats uncertainty as a first-class dimension. Unknown critical preconditions, hidden dependencies, stale world state or conflicting evidence can move an effect from ADMIT to RESTRICTED, HUMAN_REQUIRED or BLOCKED according to policy. Uncertainty is not represented only by model confidence.
+
+### Authority
+KNOWLEDGE ≠ AUTHORITY. Certainty cannot create permission; permission cannot make a belief true.
+
+### Recovery and contradiction
+Recovery reconstructs epistemic state from durable evidence and world reconciliation. Missing local history is historical uncertainty, not proof of absence.
+
+Material contradiction creates a durable conflict set with claims, evidence, scope, independence, temporal relation, resolution method and disposition. Affected critical facts remain CONFLICTING/UNKNOWN until governed resolution.
+
+### Uncertainty budgets
+Policy may define maximum tolerated staleness, unknown dependency scope, required observation completeness, required evidence independence, unresolved conflicts, inference depth and escalation thresholds. These are governance parameters, not model preferences.
+
+### New invariants
+INV-449 — epistemic state is explicit and durable for every critical claim/evidence item.
+INV-450 — epistemic assurance cannot increase without an admissible evidence transition.
+INV-451 — absence of evidence cannot silently become evidence of absence.
+INV-452 — UNKNOWN/CONFLICTING/STALE critical inputs cannot silently produce VERIFIED critical outputs.
+INV-453 — inference does not become observation without a new valid observation.
+INV-454 — executor receipt does not become world verification without the required verification relation.
+INV-455 — model confidence cannot create authority.
+INV-456 — epistemic metadata survives memory storage, migration, caching and retrieval.
+INV-457 — derived decisions retain dependency lineage to upstream epistemic states.
+INV-458 — critical uncertainty must propagate conservatively or cause block/escalation.
+INV-459 — contradiction creates durable conflict state until governed resolution.
+INV-460 — stale evidence cannot regain current status without revalidation.
+INV-461 — recovery reconstructs epistemic state from evidence; missing local history does not imply no external effect.
+INV-462 — uncertainty budgets are explicit, versioned and policy-bound.
+INV-463 — epistemic assurance is reversible; new evidence may downgrade prior assurance.
+INV-464 — epistemic state is scoped to proposition, target, time, observer and semantics.
+
+### Architectural result
+MISSION/CONSTITUTION → GOAL → HAZARD → SAFETY OBJECTIVE → INVARIANT → ASSUMPTIONS/ENVIRONMENT → OBSERVATION → EPISTEMIC STATE → UNCERTAINTY PROPAGATION → ADEQUACY/COVERAGE → ENFORCEMENT → INDEPENDENT VERIFICATION → WORLD EVIDENCE → ADMISSION
+
+PG-009 remains OPEN.
+Next research: epistemic closure and decision-theoretic action under uncertainty — when uncertainty may safely be tolerated, when information-gathering is required, and how Nexo avoids reckless action and infinite paralysis.
