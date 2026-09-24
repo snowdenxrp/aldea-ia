@@ -438,3 +438,31 @@ New Intent Contract and classes DIRECT_INSTRUCTION, PREFERENCE, STANDING_AUTHORI
 New invariants INV-557..576.
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: human override, interruption and revocation during active execution.
+
+
+## Latest PG-009 — human override, interruption and revocation during active execution
+
+Research cross-check with NIST SP 800-63B-4 session/invalidation requirements, AWS Step Functions cancellation semantics, and Kubernetes graceful/forced termination behavior. NIST separates session termination from authenticator invalidation; AWS explicitly notes that cancellation of integrated tasks can be best effort; Kubernetes distinguishes graceful termination from forced deletion and warns that force deletion may not prove the process has stopped.
+
+New architectural distinction:
+STOP_REQUESTED ≠ LOCAL_STOPPED ≠ REMOTE_CANCEL_REQUESTED ≠ REMOTE_CANCEL_CONFIRMED ≠ NO_EFFECT ≠ EFFECT_REVERSED ≠ VERIFIED_TERMINATED.
+
+Human override is now modeled as a first-class authority/revocation event. It fences future critical effects, classifies queued/local/in-flight work, preserves operation/effect identity, and requires reconciliation when external outcome is unknown.
+
+New Override/Revocation Contract binds override_id, principal, intent/scope, target/effect/mission scope, requested/effective times, authentication/session context, authority epoch, policy version, affected operation/effect IDs, propagation status, acknowledgement and verification state.
+
+New controls:
+- effective revocation epoch;
+- multi-layer propagation;
+- STOP-vs-COMMIT race classification;
+- local-versus-remote cancellation separation;
+- UNKNOWN-after-STOP handling;
+- compensation as a fresh governed effect;
+- independent emergency-stop path;
+- pre-governed resolution for safety-critical human/automatic conflicts.
+
+New invariants INV-577..592.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+
+Next: independent emergency-stop architecture and fail-safe/fail-operational boundaries, including out-of-band control, control-plane compromise, communication loss, and degraded stop guarantees.
