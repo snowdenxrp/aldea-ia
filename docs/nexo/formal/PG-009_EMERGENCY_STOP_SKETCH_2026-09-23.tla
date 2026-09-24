@@ -142,10 +142,10 @@ Release(o) ==
   /\\ enforcementProof[o] = "ENFORCEMENT_VERIFIED"
   /\\ observerState[o] = "ALIVE"
   /\\ worldState[o] # "UNKNOWN"
-  /\\ stopEpoch[o] = releaseEpoch[o]
+  /\\ stopEpoch[o] > releaseEpoch[o]
   /\\ gateState' = [gateState EXCEPT ![o] = "OPEN"]
   /\\ stopState' = [stopState EXCEPT ![o] = "CLEAR"]
-  /\\ releaseEpoch' = [releaseEpoch EXCEPT ![o] = @ + 1]
+  /\\ releaseEpoch' = [releaseEpoch EXCEPT ![o] = stopEpoch[o]]
   /\\ gateEpoch' = [gateEpoch EXCEPT ![o] = @ + 1]
   /\\ enforcementProof' = [enforcementProof EXCEPT ![o] = "NONE"]
   /\\ UNCHANGED <<opState,authority,emergencyAuthority,worldState,
