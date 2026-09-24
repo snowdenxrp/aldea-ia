@@ -1205,3 +1205,14 @@ Decision: do not patch V10 incrementally. V11 should define a generic finite lea
 Artifacts:
 - docs/nexo/formal/NEXO_CANONICAL_CORE_V10.tla — 07fd0f4d75af8a1d797e53630d8ec8f6c7d511f7
 - docs/nexo/NEXO_CANONICAL_CORE_V10_AUDIT.md — 7f01792955c3bda32738c4890e4983a19d69e4bb
+
+
+### 2026-09-23 — V11 lease kernel attempt and rejection
+
+V11 attempted to isolate generic Acquire/Expire/Takeover semantics. Immediate source audit found the generic table parameter was not bound to the actual module variables in Next, so the apparent lease transitions were not necessarily transitions of system state. Additional issues: stale-owner predicate was not temporal enforcement, generation non-negativity was mislabeled as monotonicity, the world-effect property was vacuous, and release invalidation was incomplete.
+
+Decision: reject V11 for formal checking and rebuild the lease kernel with explicit operation-scoped primed assignments against the real recovery/reconciliation/execution variables before composing it with effect/evidence/release semantics.
+
+Artifacts:
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V11_LEASE_MODEL.tla — a0b1ab7943e8315ac6512cf790e9ad2d359aebdf
+- docs/nexo/NEXO_CANONICAL_CORE_V11_LEASE_MODEL_AUDIT.md — 5e7e6287babd59521a9b48b88b69e6236f87f334
