@@ -405,3 +405,20 @@ Common-mode analysis now has a machine-readable schema draft at `docs/nexo/schem
 
 ### Deterministic dependency evaluator — 2026-09-24
 First non-authoritative evaluator implemented at src/nexo/dependency_closure_evaluator.py, with tests at tests/nexo/test_dependency_closure_evaluator.py. It resolves transitive closure and exposes common-mode findings without granting authority or executing effects. Implementation commit 8a9ca450e1e473f4478e1359f0004650ca59853d; tests commit 90090693cadcaa1b3e4a34dfc7eed1ca377a3ba8. Test execution was attempted but blocked by unavailable outbound DNS/network, so no passing test result is claimed. New invariants INV-691..696.
+
+
+## PG-009 — Recovery concurrency and owner fencing
+
+Recovery is a fenced state transition, not a best-effort lock.
+
+Required properties:
+- At most one current recovery owner may exist for an operation at a time.
+- Recovery ownership is represented by an owner identity plus a generation/epoch boundary; stale owners cannot revalidate or authorize release.
+- Revalidation and release authorization must bind the current recovery owner and the authority epoch that admitted recovery.
+- Release consumes its authorization and must recheck current eligibility at the transition boundary.
+- Admission to execution is bound to the authority epoch captured at release; authority revocation invalidates stale admission.
+- Emergency stop interrupts ADMITTED/RUNNING control-plane execution into a non-running state and closes the gate; this does not imply that an already-completed external effect was physically undone.
+- Double release and double commit are guarded as transition-precondition properties; they must not be generalized into universal exactly-once external-effect guarantees.
+- Authority revocation is an explicit admission/control-plane fence. Physical interruption/cancellation remains governed by the independent emergency-stop and external-effect contracts.
+
+The formal sketch remains a model aid. CAS/linearizability, lease timing, distributed fencing, liveness/fairness, and external-world cancellation remain separate verification obligations.
