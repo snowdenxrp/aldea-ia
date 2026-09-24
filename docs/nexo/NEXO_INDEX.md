@@ -268,3 +268,14 @@ New invariants INV-465..480.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: epistemic memory and provenance under compression, summarization, caching and retrieval.
+
+## Latest PG-009 — epistemic memory and provenance under compression
+
+Memory compression is now treated as a semantic transformation. Critical memory must preserve epistemic state, provenance, scope, freshness and reverse traceability. Authoritative records are separated from derived memory, caches, summaries and embeddings.
+
+New Epistemic Memory Contract, provenance DAG, transformation classes M0-M4, cache safety, conflict preservation and governed deletion.
+
+New invariants INV-481..498.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: epistemic memory garbage collection, retention and safe forgetting.
