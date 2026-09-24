@@ -83,3 +83,6 @@ PG-009 now requires non-vacuous, data-class-specific equivalence relations; inde
 
 ## Latest PG-009 formalization
 First TLA+ concurrency model sketch added at `docs/nexo/formal/PG-009_MIGRATION_CONCURRENCY_SKETCH_2026-09-23.tla`. It models backfill, concurrent writes, divergence, catch-up and authority cutover. It is explicitly NOT YET VERIFIED by TLC. New invariants INV-251..255. Next: make the model complete, add crash/recovery and semantic refinement, then model-check it.
+
+## Latest PG-009 formal recovery work
+The TLA+ sketch now includes durable journal/in-flight distinction and recovery actions. PG-009 adds INV-256..260. The model remains explicitly unverified until TLC/model review is actually run.
