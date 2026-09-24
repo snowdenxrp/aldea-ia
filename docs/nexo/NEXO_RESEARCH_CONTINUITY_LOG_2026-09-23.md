@@ -995,3 +995,13 @@ Commit: 62566f498ec6ec3f19a6377e6eb62912dad27620
 New test obligations: structural-invalid I0, observation-without-verification, stale policy/authority evidence, cross-effect substitution, target mismatch, lease expiry semantics, trust-root invalidation, dependency graph changes, authority revoke during recovery, and STOP with external UNKNOWN.
 
 Status: findings recorded; canonical evaluator redesign NOT IMPLEMENTED; canonical TLA+ unification NOT IMPLEMENTED; new tests NOT RUN; SANY/TLC NOT RUN.
+
+
+### 2026-09-23 — canonical core formal sketch
+
+Created a deliberately non-final canonical core TLA+ sketch to expose the unified vocabulary around Operation, EffectBinding, AuthorityContext, EvidenceRecord and ControlLease, plus dependency/trust context.
+
+Artifact: docs/nexo/formal/NEXO_CANONICAL_CORE_SKETCH_2026_09_23.tla
+Commit: eabcc4beabf68a018ec79a47c4268a97b20f527c
+
+Status: DESIGN/RESEARCH SKETCH only; SANY/TLC NOT RUN; not implementation-equivalent. The sketch intentionally exposes unresolved typing, executable syntax and release-lease semantics issues. These are recorded as open findings rather than concealed.
