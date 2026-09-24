@@ -811,3 +811,18 @@ Git checkpoints:
 - concurrency correspondence fixture: 1d3e741c3d240070667a19594c37174fa63e1d1c
 
 Next attack: model recovery-owner lease/generation fencing explicitly, including concurrent owner acquisition, expiry/transfer, stale-owner commit, and recovery release races; then reconcile those transitions with the existing external-effect/reconciliation lease model.
+
+
+### 2026-09-23 — correspondence invariant correction
+
+During the lease/owner fencing audit, inspection found a logical overconstraint in the formal correspondence predicate: ReleaseAuthorizationMatchesEligibility had been written as a biconditional, which incorrectly required every currently eligible operation to already possess release authorization. That contradicts the explicit two-step design in which RevalidateAssurance can establish eligibility while authorization remains FALSE until a separate AuthorizeRelease transition.
+
+The predicate was corrected to the required safety implication:
+
+releaseAuthorized => EvaluatorReleaseEligible
+
+This preserves the actual security property: stale/invalid authorization cannot survive loss of eligibility, without falsely claiming that eligibility itself grants authorization.
+
+Status: CORRECTED / NOT TLC-VERIFIED.
+
+Git checkpoint: 836e402be35eb1229c55c5ee4ec025808b7e6bee
