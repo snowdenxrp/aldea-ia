@@ -35,6 +35,7 @@ Recent research:
 - docs/nexo/NEXO_CROSS_RESOURCE_ATOMICITY_RESEARCH_V1_2026-09-24.md — c7ce38245762d23abe4565baefef599b0f9ddfa5
 - docs/nexo/NEXO_POST_COMMIT_PRE_OBSERVATION_FAILURE_RESEARCH_V1_2026-09-24.md — fbbb6e65979bb566ee8d448749c543783f787e81
 - docs/nexo/NEXO_DOUBLE_FAILURE_EXTERNAL_ROLLBACK_RECOVERY_RESEARCH_V1_2026-09-24.md — ccd8f7e411a3f711995a3e0cca99f45934f891cb
+- docs/nexo/NEXO_DOUBLE_RECOVERY_SPLIT_OWNERSHIP_RESEARCH_V1_2026-09-24.md — 78d506be4bb367165f2edf4d215638f3be994d5c
 
 ## 4. Clean architecture baseline
 Zones:
@@ -55,7 +56,7 @@ C1/C2 never imply C3.
 
 Canonical objects currently include:
 IdentityContext, AuthorityContext, Operation, EffectBinding, ControlLease/Fence, StopState, RecoveryFence, VersionSet, PolicyBaseline, InvariantBaseline, ExternalEffectIdentity, ExternalEffectState, EvidenceRecord, VerificationClaim, ReconciliationRecord, DecommissionRecord, DurableHistory.
-Candidate objects from current research remain OPEN: PrepareCertificate, TransactionContext, ExternalEffectHistory, ResourceIncarnation, ControlCommit/EffectCommit distinction, EffectClass atomicity model, RetryClass, RecoveryProgress, ContinuityAnchor.
+Candidate objects from current research remain OPEN: PrepareCertificate, TransactionContext, ExternalEffectHistory, ResourceIncarnation, ControlCommit/EffectCommit distinction, EffectClass atomicity model, RetryClass, RecoveryProgress, ContinuityAnchor, RecoveryOwnership.
 
 Protected transition contract:
 TRANSITION_ID, OWNER, AUTHORITY_BASIS, REQUIRED_SCOPE, INPUT_STATE, PRECONDITIONS, READ_SET, WRITE_SET, AFFECTED_OBJECTS, LINEARIZATION_POINT_OR_EQUIVALENT, POSTCONDITIONS, FORBIDDEN_CONCURRENT_TRANSITIONS, DURABILITY_REQUIREMENT, CRASH_SEMANTICS, PARTITION_SEMANTICS, TIMEOUT_SEMANTICS, RETRY/IDEMPOTENCY_SEMANTICS, EVIDENCE_REQUIREMENTS, INVALIDATION_TRIGGERS, RECOVERY_PATH, VERIFICATION_METHOD, TRACEABILITY.
@@ -160,7 +161,7 @@ Two recovery actors start from different checkpoints/contexts; both believe they
 
 Analyze recovery fencing, ownership transfer, lease expiry, stale recovery messages, concurrent reconciliation, release linearization, recovery actor replacement/restart, and conflicting recovery decisions.
 
-Then continue adversarially through remaining G-A14 gaps.
+Next attack after this round: RECOVERY + STOP + EXTERNAL EFFECT RACE.
 
 Then continue adversarially through remaining G-A14 gaps.
 Do not implement.
