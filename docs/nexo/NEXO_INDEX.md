@@ -141,3 +141,6 @@ Added world-version / execution-fence semantics to the formal sketch (commit dd7
 
 ## Latest PG-009: stale-precondition and retry/replan refinement
 A stale world version now invalidates the execution assumption while preserving mission lineage. The architecture distinguishes same-operation retry, same-mission replan, and genuinely new operation. A new operation ID cannot be used to evade effect-deduplication. Target consistency guarantees are recorded as operation-specific capability classes C0-C4; a read/version token is not itself an execution fence. Formal commit: 7144e2b56424ebed3b639e89a0958b05d6be289c. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: global conflict / serialization
+Added global conflict classes and the rule that pairwise-valid concurrent operations do not automatically form a globally valid execution. Critical operations require proven independence/commutativity, target-side transaction guarantees that cover the invariant, atomic reservation of the complete conflict domain, or durable serialization. Database serializability does not automatically prove external-world/application invariants. Formal commit: 10b98bd451678c787d7cf78d46b45c941d589114. **NOT TLC-VERIFIED.**
