@@ -422,3 +422,16 @@ Required properties:
 - Authority revocation is an explicit admission/control-plane fence. Physical interruption/cancellation remains governed by the independent emergency-stop and external-effect contracts.
 
 The formal sketch remains a model aid. CAS/linearizability, lease timing, distributed fencing, liveness/fairness, and external-world cancellation remain separate verification obligations.
+
+
+## Global architecture reconciliation — 2026-09-24
+
+A transversal audit identified that incremental Property-Gap work had produced local coherence but also taxonomy drift, duplicated formal layers, stale correspondence text, over-strong `KNOWN` semantics in the formal sketch, non-proven generation monotonicity, and overly strong use of `CLOSED` status. These are now tracked as restructuring findings rather than hidden assumptions.
+
+Canonical restructuring baseline: `docs/nexo/NEXO_ARCHITECTURE_RESTRUCTURE_AUDIT_2026-09-24.md` (commit `25a8280f93dbde131de92f349da4ec4967f6dafc`).
+
+The canonical architecture is now organized as: Constitution/Trust → Identity/Authority → Mission/Goal → Request/Effect Identity → Policy/Admission → Coordination/Fencing → Execution/Actuation → Observation/Reconciliation → Verification/Assurance → Durable History/Recovery.
+
+Critical distinction: DESIGNED ≠ SPECIFIED ≠ IMPLEMENTED ≠ TESTED ≠ FORMALLY_CHECKED ≠ INTEGRATED ≠ VERIFIED. Historical Property-Gap closure labels must not be interpreted as implementation or formal verification.
+
+Current critical holes: evidence freshness/provenance/version binding; formal model unification; actual SANY/TLC checking; distributed linearizability/CAS; runtime enforcement; fault injection; and the original semantic/data migration problem. External-effect identity is designed and isolated formally but not yet integrated into the canonical recovery model.
