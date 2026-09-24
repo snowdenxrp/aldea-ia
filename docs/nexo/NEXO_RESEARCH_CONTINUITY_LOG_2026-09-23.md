@@ -634,3 +634,19 @@ Additional formal hardening:
 - no TLC verification is claimed.
 
 Git checkpoint: `3e0ba1bef0bcf48b8100ec0514f1db080de8883f`.
+
+
+### 2026-09-23 — recursive closure / correlation alignment
+
+The formal model was advanced from representation-only graph bindings to recursive dependency reachability. `ReachDependency` and `ComponentDependencyClosure` now model the same dependency-to-dependency traversal concept used by the Python evaluator. Correlation inputs are derived from the formal closure using explicit `DependencyFailureDomain` and trust-root mappings rather than relying only on direct component labels.
+
+A key correction was made during this step: dependency identifiers cannot themselves be treated as failure-domain identifiers. The formal model therefore separates dependency identity, semantic domain, and failure-domain mapping.
+
+Status:
+- recursive closure representation: IMPLEMENTED;
+- formal correlation derivation: IMPLEMENTED;
+- Python ↔ TLA semantic equivalence: NOT PROVEN;
+- TLC: NOT RUN;
+- executable tests: written, not claimed as passed.
+
+Next adversarial comparison: shared failure domain, shared trust root, UNKNOWN dependency, COMPROMISED dependency, and release eligibility using the same fixture semantics.
