@@ -808,3 +808,63 @@ InvReceiptNotWorldTruth ==
      INV-327 admission records required guarantees, supplied guarantees, residual uncertainty,
               and rationale/evidence for audit and later re-evaluation.
 *)
+
+
+(* RISK CLASSIFICATION INTEGRITY / TAINT / INDEPENDENT ADMISSION REFINEMENT
+
+   Risk classification is security-relevant input to effect admission and therefore
+   cannot be treated as an ordinary model-produced label. NIST notes that risk metrics
+   can be oversimplified, gamed, or fail to capture context, and recommends independent
+   review as a way to improve measurement and mitigate conflicts of interest.
+
+   RiskProfile is a governed artifact, not a free-form model field. It binds:
+     effect_key / operation_id
+     mission and target scope
+     consequence and likelihood assumptions
+     reversibility and observability
+     target consistency class
+     blast-radius dimensions
+     authority criticality
+     evidence/provenance
+     classifier version and policy version
+     expiry/review time
+
+   Taint rules:
+     UNTRUSTED input -> UNTRUSTED risk classification.
+     Missing/ambiguous dimensions -> UNKNOWN, never silently LOW.
+     Agent/model self-assessment -> proposal only.
+     Material transformation of effect semantics -> risk reclassification required.
+     Scope expansion -> recompute aggregate risk/blast radius.
+     Dependency or policy change -> invalidate prior admission where applicable.
+
+   Monotone downgrade protection:
+     a component without risk-authority cannot lower a risk class or reduce required
+     guarantees. It may only provide evidence for a higher-authority classifier.
+     Admission must be based on a canonical policy-bound risk profile and an
+     independently reviewable acceptance relation.
+
+   Compositional blast radius:
+     aggregate risk must account for all declared/inferred/unknown dependencies,
+     shared resources, common-mode failure domains, authority domains, and external
+     systems. Unknown dependency evidence cannot be treated as independence.
+
+   Independent assessment:
+     for high/critical effects, risk classification should be produced or checked by
+     a component independent from the executor and, where feasible, from the proposing
+     model. The checker verifies the profile against the canonical effect contract;
+     it does not grant authority by itself.
+
+   Fail-safe classification:
+     RISK_UNKNOWN -> minimum applicable safety posture (RESTRICTED/HUMAN_REQUIRED/
+     BLOCKED according to policy), never an automatic LOW-risk admission.
+
+   New obligations:
+     INV-328 risk class is governed security input, not arbitrary model metadata.
+     INV-329 missing/ambiguous risk dimensions cannot silently lower risk.
+     INV-330 untrusted/tainted inputs cannot produce a trusted risk downgrade.
+     INV-331 effect semantic/scope changes invalidate or re-evaluate risk admission.
+     INV-332 unknown dependencies do not count as independence for blast-radius analysis.
+     INV-333 critical risk classification is independently reviewable from execution.
+     INV-334 no component lacking risk authority can reduce required guarantees.
+     INV-335 risk-profile provenance/version/expiry are bound to the admission decision.
+*)
