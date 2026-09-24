@@ -1251,3 +1251,15 @@ Audit found one deliberate progress-policy question: recovery/reconciliation acq
 Artifacts:
 - docs/nexo/formal/NEXO_CANONICAL_CORE_V14_LEASE_PROTECTED_TRANSITIONS.tla — 51f94c1818a1e02f4a0c801fec2ec34e376ff38d
 - docs/nexo/NEXO_CANONICAL_CORE_V14_LEASE_PROTECTED_TRANSITIONS_AUDIT.md — 9db4bfe926042e9fc5d1296dc010c55e3c0ed2ee
+
+
+### 2026-09-23 — V15 lease liveness decision and audit
+
+Architectural decision: canonical recovery/reconciliation mutual exclusion uses time-based lease validity (`HELD` and `expiresAt > now`), rather than requiring an explicit Expire bookkeeping transition before another domain may acquire. Expire remains bookkeeping/cleanup; expiry timestamp is the source of coordination invalidity. This improves liveness while preserving the separation between coordination and external-world truth. Critical implementations require a reliable time source and atomic/linearizable acquisition/takeover.
+
+V15 formal draft models this validity rule, but audit found two blockers before promotion: a tautological expiry property must be removed, and `REVOKED` cannot be admitted merely because it is not currently valid. Explicit reauthorization/reset semantics are required. TLA atomicity is not an implementation linearizability proof.
+
+Artifacts:
+- docs/nexo/NEXO_LEASE_LIVENESS_CONTRACT_V1.md — c7e7fda5295ee9b8e3043bc0abfaebd23f2bd4e3
+- docs/nexo/formal/NEXO_CANONICAL_CORE_V15_LEASE_LIVENESS.tla — c3a797800ad921e01e9253014ef97cfa00d7b46d
+- docs/nexo/NEXO_CANONICAL_CORE_V15_LEASE_LIVENESS_AUDIT.md — 37d99ab65bb97e8d056b84f5e9de1d3d16f95229
