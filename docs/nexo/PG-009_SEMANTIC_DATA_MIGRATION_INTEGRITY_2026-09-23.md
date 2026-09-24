@@ -534,3 +534,23 @@ INV-262 — the final authority transition must revalidate migration completenes
 INV-263 — late writes between preparation and authority commit must be fenced, incorporated, or invalidate cutover.
 INV-264 — cutover authorization must bind a source/target version or equivalent consistency token.
 INV-265 — an earlier successful precondition check cannot substitute for final-state validation before an irreversible authority transition.
+
+
+## Fence-policy analysis — late writes during cutover
+
+Three policies were modeled explicitly:
+1. **BLOCKED:** source writes are refused/frozen while the fence is active.
+2. **INVALIDATE:** a late write changes the source state and invalidates `CUTOVER_FENCED`, returning the migration to a state requiring catch-up/revalidation.
+3. **CATCH-UP:** the late write is admitted into the fenced path and propagated before authority commit.
+
+The important architectural result is that these are not equivalent implementation details. The policy must be explicit and enforceable. A fourth implicit policy — accepting the write but ignoring it — is forbidden because it can make the new authoritative state semantically stale while all integrity checks still appear clean.
+
+The safest generic contract is therefore not “always block writes,” but:
+**every source mutation crossing the fence must be deterministically classified as BLOCKED, CAPTURED/CATCHED-UP, or INVALIDATING; no mutation may disappear from the consistency model.**
+
+### New invariants
+INV-266 — source mutation during a cutover fence must have an explicit disposition.
+INV-267 — a mutation cannot be both accepted by the source and invisible to migration state.
+INV-268 — authority cannot advance while a fence-invalidating mutation remains unresolved.
+INV-269 — a blocked mutation must have an externally visible failure/retry outcome; silent loss is forbidden.
+INV-270 — catch-up during the fence must preserve operation identity, provenance, ordering/causal constraints, and verification evidence.
