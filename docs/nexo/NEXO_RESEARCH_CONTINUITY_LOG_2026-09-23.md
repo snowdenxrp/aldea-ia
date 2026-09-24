@@ -164,3 +164,8 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    formal reasoning showed that preparation-time validation can become stale before authority commit.
    Added explicit cutover-fence design and invariants INV-261..265. The model is still not TLC-verified.
    Next: complete fence semantics, define whether late writes are blocked or incorporated, and model-check.
+
+36. PG-009 fence-policy analysis:
+   modeled BLOCKED, INVALIDATE, and CATCH-UP dispositions for writes during cutover fencing.
+   Established INV-266..270: no mutation may disappear from migration state; unresolved fence-invalidating mutations block authority advancement; blocked writes need visible retry/failure semantics; catch-up preserves identity/provenance/ordering/evidence.
+   Formal model remains a design sketch and is not TLC-verified.
