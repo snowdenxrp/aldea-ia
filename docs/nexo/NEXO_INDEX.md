@@ -159,3 +159,6 @@ Formalized the case where an old-policy operation becomes REMOTE_UNKNOWN while p
 
 ## Latest PG-009: continuous-epoch reconciliation / ABA
 Reconciliation is now treated as critical authorized work that can itself become stale. Recovery commits require current fencing/ownership, authority and policy versions, dependency graph, world/precondition version, and sufficient fresh evidence. Lease expiry transfers coordination, not knowledge. A→B→A state cycles are not treated as no change; versions/epochs/causal positions are required. Repeated transitions may yield RECONCILIATION_UNSTABLE/BLOCKED with bounded retries and escalation. Formal commit: 8296d83cd7e384c588d2329789653f17637107f1. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: atomic reconciliation commit / stale-owner race
+Critical reconciliation commits now require an atomic authoritative conditional transition covering fence/ownership, authority epoch, policy applicability, effect identity, world preconditions, and evidence sufficiency. Lease expiry alone is insufficient; stale owners must fail the conditional commit. Ownership transfer preserves history, and ABA requires generation/fencing tokens. Coordination-store atomicity does not imply external-world atomicity. Invariants INV-303..309. Formal commit: 250e2c643295cfb307dedd829ab0ebea9159e308. **NOT TLC-VERIFIED.**
