@@ -92,5 +92,10 @@
     "safety_gate": "ComponentTrustRoots",
     "recovery_verifier": "ComponentTrustRoots",
     "executor": "ComponentTrustRoots"
+  },
+  "authority_mapping": {
+    "safety_gate": "ComponentAuthorityDomain",
+    "recovery_verifier": "ComponentAuthorityDomain",
+    "executor": "ComponentAuthorityDomain"
   }
 }
