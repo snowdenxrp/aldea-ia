@@ -135,3 +135,10 @@ PG-009 permanece abierto. La arquitectura ahora trata migración semántica como
 
 ## Siguiente punto
 PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, upcasters deterministas, crash recovery, checkpoint/memory migration, policy/authority compatibility, semantic diff, golden fixtures, differential replay y clean recovery.
+
+
+31. PG-009 concurrent-write/cutover research:
+   se añadió moving-source model, synchronization modes, dual-write divergence controls,
+   normalized dual-read comparison, protected authority cutover, durable migration journal,
+   crash-safe batch recovery, old-path retirement and invariants INV-231..240.
+   Cross-check: Fowler Parallel Change/CI/Canary and Debezium schema-history/schema-evolution guidance.
