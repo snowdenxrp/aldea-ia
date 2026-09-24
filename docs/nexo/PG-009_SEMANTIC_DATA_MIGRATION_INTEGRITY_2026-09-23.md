@@ -2174,3 +2174,63 @@ INV-538 — uncertainty in one continuity dimension cannot silently be represent
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next research: succession and human relationship continuity — owner change, device migration, recovery authority, credential loss and emergency trusteeship without privilege escalation.
+
+
+## Research continuation — succession and human relationship continuity
+
+NIST account-recovery guidance warns that replacing lost authenticators can become a weak point: strong authentication is undermined if an attacker can simply claim loss and bind new authenticators. NIST key-management guidance treats recovery as an explicit lifecycle function. NASA configuration/change-control guidance separates change authority, controlled baselines and implementation roles. citeturn0search10turn0search36turn0search0turn0search13
+
+### Core finding
+Human relationship continuity cannot be represented as a single permanent owner flag.
+
+Nexo separates relationship identity, relationship authority, recovery authority, continuity authority, succession authority, emergency authority and technical possession. Possession is not proof of ownership. Relationship history is not unlimited authority.
+
+### Human Relationship Contract
+A governed relationship record binds principal_id, relationship type, enrollment/evidence method, authenticators, authority domains, capability ceilings, recovery methods, succession rules, emergency rules, expiry/review, revocation state, conflict-of-interest constraints and audit lineage.
+
+### Recovery versus succession
+Recovery restores an existing relationship after loss/failure; it must not silently create a new principal. Succession deliberately changes who may exercise specified authority and requires an explicit governed transition. It cannot be inferred from device possession, memory access or a model recommendation.
+
+### Recovery path independence
+The recovery mechanism must not be weaker than the authority it recovers without an explicit bounded exception. Critical recovery should use independently protected factors or separately governed recovery authority. NIST notes key recovery may require protected backup/archive material and human-assisted procedures, and compromised recovered keys should be replaced. citeturn0search36turn0search38
+
+### Threshold recovery
+For high-consequence recovery, Nexo can use a k-of-n recovery-authority model with distinct failure domains. No single recovery participant should silently grant more authority than policy allows. Collusion/common-mode compromise remain explicit threats.
+
+### Emergency trusteeship
+Emergency authority is temporary, narrowly scoped, non-escalating, mission/recovery bound, auditable and automatically expiring. It cannot rewrite historical ownership/identity or grant permanent successor authority.
+
+### Death/loss/incapacity scenarios
+Nexo must not infer legal status or incapacity from inactivity, biometric changes, model inference or missing credentials. A succession event requires the explicit evidence and authority defined by policy. If succession cannot be established, Nexo enters a restricted preservation/continuity state rather than guessing.
+
+### Device migration
+New-device enrollment creates a new authenticator/session binding. It does not automatically transfer all old capabilities. Old authenticators may be revoked, retained or placed in recovery state according to policy.
+
+### Authority ceilings
+inherited_authority is a subset of explicitly_transferable_authority. Recovery cannot mint capabilities that the predecessor could not legitimately transfer and cannot bypass current policy, revocation or authority epoch.
+
+### Conflict resolution
+If succession evidence conflicts: CONFLICT → PRESERVE → RESTRICT → ESCALATE, not autonomous selection of the most plausible successor.
+
+### New invariants
+INV-539 — human relationship continuity is multidimensional and cannot be reduced to device possession.
+INV-540 — recovery of access does not automatically establish succession of authority.
+INV-541 — possession of a device/key/session is not sufficient proof of principal identity or ownership.
+INV-542 — recovery authority cannot be weaker in assurance than the authority it can recover without an explicit bounded exception.
+INV-543 — critical recovery paths require independently governed failure/recovery domains.
+INV-544 — successor authority is bounded by explicitly transferable authority and current policy.
+INV-545 — recovery cannot silently mint capabilities or bypass revocation.
+INV-546 — emergency trusteeship is temporary, bounded, non-escalating and automatically expires.
+INV-547 — emergency/recovery state cannot rewrite historical identity, ownership or execution history.
+INV-548 — succession requires explicit governed evidence; Nexo cannot infer legal succession from inactivity or device possession.
+INV-549 — conflicting succession evidence causes restriction/escalation, not autonomous selection.
+INV-550 — new-device enrollment creates a new authenticator binding and does not automatically inherit all capabilities.
+INV-551 — loss of an authenticator triggers revalidation/recovery policy rather than automatic trust transfer.
+INV-552 — threshold recovery must account for collusion, common-mode compromise and revocation.
+INV-553 — recovery and succession events are durable, versioned and auditable.
+INV-554 — recovery capabilities are purpose-bound and cannot expand ordinary operational authority.
+INV-555 — inability to establish succession does not justify destructive action; preservation/continuity-safe mode remains available.
+INV-556 — human relationship evidence has provenance, freshness and scope and cannot gain assurance solely through repeated use.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next research: delegated human intent and consent continuity — distinguishing direct instruction, preference, standing authorization, temporary delegation and inferred intent when context changes or the user is unavailable.
