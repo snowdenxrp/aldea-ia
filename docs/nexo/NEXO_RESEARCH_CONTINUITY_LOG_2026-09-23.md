@@ -705,3 +705,21 @@ Status:
 - executable ↔ formal semantic equivalence: NOT PROVEN.
 
 Git checkpoints: `49c324b14e015a4507218a4461831c74072c34fc`, `eb95260015289dd08ae7759ca674181a0a0cc8a5`, `06b4d41f2224b5fe553d2a7b05ea61fdac0cf5f7`, `179e4d8c4567aee290544e79423e2d468717e407`, `9ebe2aedc8ffb685b735d4b76e6561747d22b3c9`, `5be567d4a2357b6aa751eac28248939fe4dc4ae3`.
+
+
+### 2026-09-23 — operation-scope adversarial refinement
+
+A second semantic mismatch was found after comparing operation-scoped release logic: the formal `CompromiseDependency` action degraded every operation, even when the compromised dependency was outside that operation's transitive closure. The action is now scoped to `OperationDependencies(o)`; unrelated operations retain their previous assurance/release state.
+
+The canonical formal binding now includes a second operation, `executor-only`, whose component scope is only `executor`. This provides a concrete fixture for proving that unrelated dependency failures do not poison an operation's safety decision.
+
+Python already exhibited the intended closure-scoped behavior; an adversarial test was added to lock that property down.
+
+Important unresolved point: the formal sketch still lacks executable operation/effect identity, authority epoch semantics, artifact/config digests, timing/freshness, and TLC/SANY execution. Therefore this is correspondence hardening, not a safety proof.
+
+Status:
+- operation-scoped compromise propagation: IMPLEMENTED;
+- unrelated-dependency isolation test: WRITTEN, execution not claimed;
+- two-operation formal fixture: IMPLEMENTED;
+- Python/TLA semantic equivalence: NOT PROVEN;
+- TLC/SANY: NOT RUN.
