@@ -752,3 +752,22 @@ Transition audit completed against the PG-009 formal recovery sketch. Closed sta
 Added `docs/nexo/fixtures/PG-009_STATE_TRANSITION_CORRESPONDENCE_V1.json`, defining executable/formal state mappings, required transitions, and forbidden shortcuts. Python `admissible` is explicitly documented as richer than the formal release-eligibility predicate; no false claim of equivalence is made.
 
 Verification status: code/fixture inspection completed; tests written but not executed in the current environment; SANY/TLC not executed; Python↔TLA+ semantic equivalence remains unproven.
+
+
+### Authority-epoch / commit-race checkpoint — 2026-09-23
+
+A second transition audit found two deeper issues.
+
+1. Emergency stop could leave a RUNNING process in RUNNING while setting STOP=ENFORCED, violating the model's own `NoCommitDuringStop` invariant. `RequestStop` now transitions a RUNNING process to OFFLINE, representing interruption before recovery.
+2. Authority could be revoked after Release had moved the process to ADMITTED but before Commit. A plain release-time check was insufficient. Added `recoveryAuthorityEpoch` and `admittedAuthorityEpoch`, plus `RevokeAuthority`. Recovery is bound to the authority epoch that admitted it, and ADMITTED execution is bound to the current authority epoch. Authority revocation therefore invalidates stale recovery/release state and blocks Commit.
+
+A follow-up audit also completed priming of the newly introduced state variables across all TLA+ actions so the specification does not leave primed variables implicitly unconstrained.
+
+Status:
+- stop interruption invariant: FIXED;
+- authority revocation during recovery: MODELED;
+- authority revocation between Release and Commit: BLOCKED by epoch binding;
+- stale recovery after authority change: BLOCKED;
+- TLA state-variable priming: HARDENED;
+- SANY/TLC: NOT RUN;
+- transition semantics: improved but NOT FORMALLY VERIFIED.
