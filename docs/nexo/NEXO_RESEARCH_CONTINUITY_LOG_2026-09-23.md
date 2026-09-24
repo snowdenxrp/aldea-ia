@@ -650,3 +650,29 @@ Status:
 - executable tests: written, not claimed as passed.
 
 Next adversarial comparison: shared failure domain, shared trust root, UNKNOWN dependency, COMPROMISED dependency, and release eligibility using the same fixture semantics.
+
+
+### 2026-09-23 — adversarial correspondence checkpoint
+
+A structural defect was found in the formal-correspondence JSON schema: the concrete mapping tables had been placed outside the schema's `properties` object, so they were not schema properties at all. The schema was corrected to describe the contract only, and the concrete mapping was moved into canonical fixture `PG-009_FORMAL_CORRESPONDENCE_V2.json`.
+
+The correspondence checker was then hardened to require explicit mappings for:
+- component identity and component → dependency relation;
+- dependency → dependency relation;
+- dependency → failure-domain mapping;
+- component trust-root mapping;
+- existing domain/state/assurance mappings.
+
+The canonical graph fixture now has a complete v2 correspondence mapping, and a test was added to detect relation-mapping gaps against that fixture.
+
+This exposed another important distinction: declaring `transitive_closure=MAPPED` is not sufficient to establish equivalence; graph fingerprint and finding taxonomy remain explicitly UNMAPPED.
+
+Status:
+- correspondence contract schema: IMPLEMENTED;
+- canonical mapping fixture v2: IMPLEMENTED;
+- relation-gap checker: IMPLEMENTED;
+- canonical correspondence test: IMPLEMENTED, execution not claimed;
+- semantic equivalence: NOT PROVEN;
+- TLC: NOT RUN.
+
+Git checkpoints: `650c97f8af01b48b54294402a50649a4eb877ec9`, `d1c1a446165bab606477d401059a108da2a32890`, `c12383ff9504c71da1e0cd6bb2154ae3d4592cf2`, `cf3d7ff1b502f22e6dd4d57b5094992bf81fd4f6`.
