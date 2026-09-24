@@ -92,3 +92,6 @@ Formal reasoning exposed a concrete race: after CUTOVER_PREPARED, a late source 
 
 ## PG-009 current subproblem: fence disposition
 Three explicit late-write policies are now modeled: BLOCKED, INVALIDATE, and CATCH-UP. Silent acceptance/ignore is prohibited. Every mutation crossing the fence must be classified and remain visible to the consistency model. PG-009 remains open.
+
+## PG-009 formal verification runbook
+Added `docs/nexo/formal/PG-009_TLC_RUNBOOK.md` with the bounded TLC configuration, commands, evidence rules, and verification matrix. Current status is explicitly NOT RUN: Java 21 is available in the working environment, but tla2tools.jar is absent and outbound download is unavailable. No TLC result is claimed.
