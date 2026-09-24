@@ -84,7 +84,7 @@
   ],
   "expected": {
     "safety_gate_closure": ["gate_runtime", "host_a", "safety_root"],
-    "recovery_verifier_closure": ["host_b", "recovery_verifier_runtime", "safety_root"],
+    "recovery_verifier_closure": ["host_b", "verifier_runtime", "safety_root"],
     "executor_closure": ["coordination_store", "executor_runtime", "host_c", "storage_core"],
     "shared_trust_root_components": ["recovery_verifier", "safety_gate"],
     "shared_failure_domain_components": [],
