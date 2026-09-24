@@ -59,7 +59,6 @@ RequestStop(o) ==
   /\ stopEpoch' = [stopEpoch EXCEPT ![o] = @ + 1]
   /\ releaseAuthorized' = [releaseAuthorized EXCEPT ![o] = FALSE]
   /\ assuranceState' = [assuranceState EXCEPT ![o] = "HOLD"]
-  /\ processState' = [processState EXCEPT ![o] = "QUARANTINED"]
   /\ UNCHANGED <<authorityEpoch,recoveryEpoch,recoveryOwner,
       recoveryToken,worldState,dependencyState,compromisedDependencies,commitCount>>
 
@@ -121,7 +120,7 @@ CompromiseDependency(d) ==
            ELSE @]
   /\ releaseAuthorized' =
       [o \in Operations |->
-        IF d \in OperationDependencies(o) THEN FALSE ELSE @]
+        IF d \in OperationDependencies(o) THEN FALSE ELSE releaseAuthorized[o]]
   /\ UNCHANGED <<stopState,gateState,processState,authorityEpoch,stopEpoch,
       recoveryEpoch,recoveryOwner,recoveryToken,worldState,
       dependencyState,commitCount>>
