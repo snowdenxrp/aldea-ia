@@ -439,3 +439,11 @@ Git checkpoints:
 ### Next PG-009 action
 
 Formalize recovery-owner lease/generation fencing and atomic ownership transfer: expiry, takeover, stale-owner commit, double-release, and races between recovery transfer, authority revocation, emergency stop, and external-effect reconciliation. Then cross-check the recovery lease semantics against the existing reconciliation lease model.
+
+
+## PG-009 — correspondence invariant correction — 2026-09-23
+
+A formal audit found that ReleaseAuthorizationMatchesEligibility had been modeled as a biconditional, incorrectly implying that eligibility automatically grants authorization. It is now a one-way safety implication: releaseAuthorized => EvaluatorReleaseEligible. This preserves the two-step separation between eligibility and explicit authorization.
+
+Git checkpoint: 836e402be35eb1229c55c5ee4ec025808b7e6bee.
+Status: CORRECTED / NOT TLC-VERIFIED.
