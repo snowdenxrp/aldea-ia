@@ -257,3 +257,14 @@ New invariants INV-449..464.
 
 PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
 Next: epistemic closure and decision-theoretic action under uncertainty.
+
+## Latest PG-009 — epistemic closure and decision-making under uncertainty
+
+Nexo now distinguishes certainty from decision sufficiency. A decision need not know everything; it must establish the material knowledge closure required for that specific effect and risk envelope.
+
+New Decision Sufficiency Contract, bounded residual uncertainty, robustness checks, value-of-information reasoning, governed information gathering, D0-D4 decision classes, anti-paralysis and anti-recklessness controls.
+
+New invariants INV-465..480.
+
+PG-009 remains OPEN. TLA+ remains NOT TLC-VERIFIED.
+Next: epistemic memory and provenance under compression, summarization, caching and retrieval.
