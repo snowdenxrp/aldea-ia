@@ -910,3 +910,14 @@ Architecture artifact updated: `PG-009_RECOVERY_RESTART_FENCING_2026-09-24.md`, 
 Status: external-effect identity binding DESIGNED/documented; formal state model extension NOT YET implemented; executable tests NOT RUN; SANY/TLC NOT RUN.
 
 Next: extend the TLA+ model with operation/effect identity and reconciliation evidence binding, then attack cross-operation evidence substitution, stale target binding, replay, and release after effect identity UNKNOWN.
+
+
+### 2026-09-24 — external-effect identity formal sketch
+
+Added isolated formal artifact `docs/nexo/formal/PG-009_EXTERNAL_EFFECT_IDENTITY_SKETCH_2026-09-24.tla` (commit `5f8cca047257f74c3448921c16391d0c543aae6a`). The model binds reconciliation to operation/effect/target and current reconciliation owner/generation. It explicitly blocks cross-operation evidence substitution, stale-owner reconciliation, UNKNOWN effect identity, target mismatch, and effect replay after takeover.
+
+The state-transition correspondence fixture was extended with these adversarial scenarios and formal invariants (commit `cf7d889ed6b883b01eb0bd2f6162c13742d527a1`). This is a formal design sketch only; SANY/TLC and executable tests remain unrun.
+
+Status: external-effect identity binding DESIGNED + FORMALLY MODELLED; implementation NOT YET; TESTED = NO; VERIFIED = NO.
+
+Next attack: add freshness/provenance/version binding to reconciliation evidence and test replay of otherwise-correct evidence after policy, dependency, target, or world-version changes.
