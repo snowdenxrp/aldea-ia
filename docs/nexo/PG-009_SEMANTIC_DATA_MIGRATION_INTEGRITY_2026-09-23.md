@@ -187,3 +187,85 @@ IDENTITY → AUTHORITY → CAPABILITY → GOAL → POLICY → DATA/STATE VERSION
 
 ## Evidence limitation
 The sources establish useful migration patterns and compatibility mechanisms, but they do not prove that a generic semantic-preservation algorithm exists. Semantic equivalence is domain-specific and must be specified per data class. PG-009 remains OPEN.
+
+## Research continuation — semantic equivalence as refinement
+New cross-check: TLA+ treats data refinement as a formal relationship between a lower-level representation and a higher-level specification. A concrete specification can refine an abstract one when its behaviors, under an appropriate refinement mapping, satisfy the higher-level specification. Lamport explicitly distinguishes step refinement from data refinement and describes refinement mappings for implementation proofs. citeturn1search24turn1search25
+
+### New architectural conclusion
+For Nexo, semantic migration should not be defined only as a transformation from old data to new data.
+It should be defined by a Semantic Refinement Relation: R(source_state, target_state, semantic_version).
+The migration is acceptable only if the target state is related to the source state by the declared relation and preserves all required observable properties.
+For critical data: R(S_old, M(S_old)) must hold, and the migration must preserve claim-specific observable behavior.
+
+### Commuting-square principle
+Test whether migrating the result of replaying old history is semantically equivalent to replaying the migrated history. If the two paths disagree, state = SEMANTIC_CONFLICT.
+For immutable event stores, prefer immutable history plus versioned readers/upcasters over rewriting historical events. Event-upcasting material supports transforming old payloads on read while preserving historical records. citeturn0search16
+
+### Migration algebra
+Each migration declares whether it is LOSSLESS, LOSSY_BOUNDED, NON_INVERTIBLE, INFORMATION_ENRICHING, POLICY_REINTERPRETING, AUTHORITY_SENSITIVE or TEMPORALLY_SENSITIVE.
+For sequential migrations M1: V1→V2 and M2: V2→V3, composition M2∘M1 is not automatically safe merely because both components are individually admitted. Composition semantics must be checked.
+
+### Migration commutativity
+If two migrations affect independent semantic domains they may be reorderable. If they overlap, order may matter.
+Automatic reordering requires evidence that A∘B is semantically equivalent to B∘A for the declared relation and fixtures. Otherwise order is fixed by the migration graph.
+
+### Semantic version is not schema version
+schema_version ≠ semantic_version ≠ policy_version ≠ authority_epoch.
+A schema can change without changing meaning; meaning can change without changing bytes; policy can change while representation remains identical. Critical checkpoints and migration contracts must bind these dimensions separately.
+
+### Mixed-version state is first-class
+Expand/contract research reinforces that old and new application versions can coexist and that schema compatibility alone does not guarantee data consistency. citeturn0search3turn0search9
+Add states: MIXED_VERSION_SAFE, MIXED_VERSION_RESTRICTED, MIXED_VERSION_UNSAFE, MIXED_VERSION_UNKNOWN.
+Critical effects are blocked in UNSAFE or UNKNOWN. Compatibility must cover every active reader/writer, including workers, projections, exports and relevant external consumers.
+
+### Backfill is an execution process, not a script
+A backfill can fail halfway, race with writes, or create stale target data.
+Govern each backfill with migration_id, batch_id, source/target ranges, versions, operation_id, idempotency/retry contract, progress checkpoint, error ledger, verification policy, pause/resume and recovery action.
+A completed backfill does not prove semantic completeness. Post-backfill drift must be detected or reconciled before cutover. Compatibility testing literature demonstrates that a completed backfill can become stale again. citeturn0search9
+
+### Authority-switch principle
+Changing which representation is authoritative is itself a protected transition:
+OLD_AUTHORITY → DUAL_COMPATIBILITY → EVIDENCE → NEW_AUTHORITY
+Required evidence includes semantic parity, active-consumer inventory, write-path compatibility, freshness, migration completeness, rollback boundary and an authority epoch transition.
+Migration reaching 100 percent does not by itself authorize the cutover.
+
+### Upcaster trust boundary
+An upcaster is executable transformation logic and therefore belongs to the governed software supply chain.
+It requires artifact identity/provenance, version, tests, capability scope, dependency closure, admission and rollback target.
+A malicious or defective upcaster can transform trusted historical data without changing the original bytes. Therefore an upcaster is a governed transformation component, not a passive parser.
+
+### Formalization candidate
+Define Semantics_v(x) as the abstract meaning of x under semantic version v.
+Migration validity: Semantics_v2(M(x)) ≈ Semantics_v1(x).
+Executable behavior: Observe_v2(M(x), op_v2) ≈ Observe_v1(x, op_v1).
+History: Replay_v2(Migrate(history_v1)) ≈ Migrate(Replay_v1(history_v1)).
+Authority-sensitive data: Authority_v2(M(x)) must not exceed the intended authority represented by x unless an explicit authorized amendment is part of the migration contract.
+For lossy migration, the contract must enumerate unrecoverable information.
+
+### New invariants
+INV-216 — semantic migration must define a source/target semantic relation for each critical data class.
+INV-217 — critical migration must preserve required observable behavior under the declared equivalence relation.
+INV-218 — history migration and state migration must satisfy the declared replay/commutation property where replay is applicable.
+INV-219 — individually valid migrations cannot be composed automatically without checking composition semantics.
+INV-220 — migrations affecting the same semantic domain cannot be reordered unless commutativity is established.
+INV-221 — schema version, semantic version, policy version and authority epoch are distinct trust/version dimensions.
+INV-222 — mixed-version compatibility must cover all active readers and writers, not only the primary application.
+INV-223 — backfill progress does not establish semantic completeness or authority to cut over.
+INV-224 — post-backfill changes must be detected or reconciled before the migrated representation becomes authoritative.
+INV-225 — authority switching between representations requires an explicit protected transition.
+INV-226 — upcasters/migration transformers are governed executable artifacts and require provenance/admission.
+INV-227 — migration cannot silently broaden authority semantics.
+INV-228 — semantic equivalence failure places migration in SEMANTIC_CONFLICT/UNKNOWN and blocks critical admission.
+INV-229 — migration order is part of the semantic contract when transformations do not commute.
+INV-230 — a semantic migration proof/test must identify the equivalence relation used; undefined equivalence cannot be treated as proof.
+
+## PG-009 status after this round
+PG-009 remains OPEN.
+The architecture has advanced from safe schema migration to: semantic refinement + observable-behavior preservation + governed transformation + explicit mixed-version compatibility + protected authority switch.
+Remaining research:
+1. Define non-vacuous equivalence relations for each Nexo data class.
+2. Automate semantic-diff generation without allowing the migration tool to define its own acceptance criteria.
+3. Model concurrent writes during backfill.
+4. Prove crash-safe resume without duplicate or skipped transformations.
+5. Formally model checkpoint/memory migration in TLA+.
+6. Test policy/authority migration against historical decisions.
