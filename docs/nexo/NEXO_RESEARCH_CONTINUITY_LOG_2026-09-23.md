@@ -547,3 +547,9 @@ Status: DESIGNED / RESEARCH-CROSS-CHECKED. Implementation, quantitative CCF mode
 
 ## Next PG-009 research point
 Correct/expand recovery TLA+, add dependency/failure-domain state, model update/rollback transitions, define executable safety-claim/dependency-closure schema, implement fault injection, run TLC, then perform final PG-009 semantic reconciliation before opening the next Property Gap.
+
+## PG-009 formal continuation — recovery + common-mode — 2026-09-24
+New formal artifact: `docs/nexo/formal/PG-009_RECOVERY_COMMON_MODE_SKETCH_2026-09-24.tla`.
+It extends the recovery sketch with explicit dependency domains, UNKNOWN dependency state, compromised-domain state, assurance degradation and release blocking for unknown/compromised modeled dependencies; recovery_epoch remains distinct from stop_epoch.
+Status: NOT TLC-VERIFIED. Git commit: `b713cbad246da9769f916ac6a107f1f03378f322`.
+Remaining gaps are recorded explicitly: component-to-domain mapping, transitive closure, partial/Byzantine compromise, CAS semantics, operation/effect identity, artifact/config/runtime digests, update transactions, enforcement proof, timing/freshness and liveness/fairness.
