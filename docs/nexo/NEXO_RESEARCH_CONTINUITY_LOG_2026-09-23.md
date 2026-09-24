@@ -192,3 +192,10 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    durable effect ledger, UNKNOWN blocking, operation-class-specific duplicate rules and adversarial cases.
    Added invariants INV-281..292. PG-009 remains OPEN; next step is formalizing effect identity/reconciliation
    and connecting it to external-world verification without claiming universal exactly-once semantics.
+
+40. PG-009 external-effect uncertainty research:
+   connected migration/idempotency research to the existing External Effect Contract. Established that
+   absence of a local commit is not evidence of absence of an external effect. Added explicit REMOTE_UNKNOWN,
+   reconciliation matrix, four evidence planes, external reconciliation capability classes R0-R4, bounded
+   exactly-once interpretation, and invariants INV-293..302. Next: formalize external-effect reconciliation
+   and crash interleavings while preserving local certainty vs receipt vs world verification.
