@@ -325,10 +325,10 @@ OBSERVATION/RECONCILIATION PLANE
 
 No plane may claim a stronger guarantee merely because another plane reported success.
 
-## Next research
+## Research progression
 
-1. Independent emergency-stop architecture and fail-safe/fail-operational boundaries — THIS STEP.
-2. Emergency-stop observability and proof of enforcement.
+1. Independent emergency-stop architecture and fail-safe/fail-operational boundaries — completed as the current architecture baseline.
+2. Emergency-stop observability and proof of enforcement — current research artifact: `docs/nexo/PG-009_EMERGENCY_STOP_OBSERVABILITY_2026-09-23.md`.
 3. Recovery/restart fencing after emergency stop.
 4. Safety-plane update/rollback and bootstrap trust.
 5. Common-mode and correlated-failure analysis.
