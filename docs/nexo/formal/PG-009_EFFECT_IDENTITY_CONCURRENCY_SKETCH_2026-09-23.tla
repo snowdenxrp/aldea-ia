@@ -563,3 +563,46 @@ InvReceiptNotWorldTruth ==
    autonomy cannot increase. At minimum it stays equal or decreases until the
    external outcome and current admission conditions are established.
 *)
+
+
+(* RECONCILIATION UNDER CONTINUOUS EPOCH CHANGE / ABA REFINEMENT
+   Reconciliation is itself an authorized critical process and may become stale.
+   A reconciler R started under authority epoch E43 and policy/invariant version V18
+   cannot commit a recovery decision after a material transition to E44/V19 unless
+   the decision is explicitly revalidated under the current boundary.
+
+   Every reconciliation attempt carries:
+     reconciliation_id
+     effect_key / operation_id
+     authority_epoch_at_acquisition
+     policy/invariant_version_at_acquisition
+     world_version_observed
+     dependency_graph_version
+     lease/fencing_token
+     observation freshness/causal metadata
+
+   Before any external side effect or durable recovery commit:
+     1. verify reconciler ownership/fencing token;
+     2. verify authority epoch is current;
+     3. verify policy/invariant version applicability;
+     4. verify dependency graph/conflict assumptions remain valid;
+     5. revalidate world/precondition version or equivalent target fence;
+     6. verify evidence sufficiency/freshness;
+     7. only then commit or dispatch.
+
+   Stale reconciler rule:
+     old token/epoch -> cannot commit after ownership or authority changes.
+     Lease expiry transfers coordination, not knowledge and not proof of absence.
+
+   ABA protection:
+     observing state A, then B, then A does not imply that nothing changed.
+     Reconciliation must bind versions/epochs/causal positions, not only raw state
+     equality. A state that returns to the same value is still a different history.
+
+   If repeated transitions prevent a stable admissible boundary, recovery enters
+   RECONCILIATION_UNSTABLE / BLOCKED rather than oscillating with unbounded retries.
+   Safe progress requires bounded retries, backoff, escalation, or containment.
+
+   Recovery decisions are historical facts tied to their exact boundary; a later
+   policy/epoch cannot rewrite them, but can require a new reconciliation decision.
+*)
