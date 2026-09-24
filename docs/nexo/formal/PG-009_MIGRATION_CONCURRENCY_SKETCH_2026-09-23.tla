@@ -1,15 +1,26 @@
----- MODULE NexoMigrationConcurrent ----
-EXTENDS Naturals, Sequences
+---- MODULE PG009_CutoverFence ----
+EXTENDS Naturals, FiniteSets
 
-CONSTANTS Records, Old, New
+CONSTANT Records, Old, New, FencePolicy
 
 ASSUME Records # {} /\ Old # New
+ASSUME FencePolicy \in {"BLOCK_WRITES", "INVALIDATE", "CATCH_UP"}
 
-VARIABLES phase, sourceVersion, targetVersion, migrated, divergence,
-          appliedOps, authority, epoch, journal, inflight
+VARIABLES
+    phase,
+    sourceVersion,
+    targetVersion,
+    migrated,
+    divergence,
+    authority,
+    epoch,
+    journal,
+    inflight,
+    appliedOps
 
-vars == <<phase, sourceVersion, targetVersion, migrated, divergence,
-          appliedOps, authority, epoch, journal, inflight>>
+vars ==
+    <<phase, sourceVersion, targetVersion, migrated, divergence,
+      authority, epoch, journal, inflight, appliedOps>>
 
 Init ==
     /\ phase = "BACKFILLING"
@@ -17,11 +28,11 @@ Init ==
     /\ targetVersion = [r \in Records |-> -1]
     /\ migrated = {}
     /\ divergence = {}
-    /\ appliedOps = {}
     /\ authority = Old
     /\ epoch = 0
-    /\ journal = [b \in Records |-> FALSE]
+    /\ journal = {}
     /\ inflight = {}
+    /\ appliedOps = {}
 
 Backfill(r) ==
     /\ r \in Records
@@ -29,25 +40,28 @@ Backfill(r) ==
     /\ targetVersion' = [targetVersion EXCEPT ![r] = sourceVersion[r]]
     /\ migrated' = migrated \cup {r}
     /\ appliedOps' = appliedOps \cup {<<"B", r, sourceVersion[r]>>}
-    /\ journal' = [journal EXCEPT ![r] = TRUE]
+    /\ journal' = journal \cup {<<"B", r, sourceVersion[r]>>}
     /\ inflight' = inflight \ {r}
     /\ UNCHANGED <<phase, sourceVersion, divergence, authority, epoch>>
 
 SourceWrite(r) ==
     /\ r \in Records
+    /\ phase \in {"BACKFILLING", "VERIFYING", "CUTOVER_PREPARED"}
     /\ sourceVersion' = [sourceVersion EXCEPT ![r] = @ + 1]
-    /\ IF r \in migrated THEN divergence' = divergence \cup {r}
-       ELSE UNCHANGED divergence
-    /\ UNCHANGED <<phase, targetVersion, migrated, appliedOps, authority, epoch, journal, inflight>>
+    /\ divergence' = IF r \in migrated
+                       THEN divergence \cup {r}
+                       ELSE divergence
+    /\ UNCHANGED <<phase, targetVersion, migrated, authority, epoch,
+                    journal, inflight, appliedOps>>
 
 CatchUp(r) ==
     /\ r \in divergence
     /\ targetVersion' = [targetVersion EXCEPT ![r] = sourceVersion[r]]
     /\ divergence' = divergence \ {r}
     /\ appliedOps' = appliedOps \cup {<<"C", r, sourceVersion[r]>>}
-    /\ journal' = [journal EXCEPT ![r] = TRUE]
-    /\ inflight' = inflight \ {r}
-    /\ UNCHANGED <<phase, sourceVersion, migrated, authority, epoch>>
+    /\ journal' = journal \cup {<<"C", r, sourceVersion[r]>>
+    }
+    /\ UNCHANGED <<phase, sourceVersion, migrated, authority, epoch, inflight>>
 
 PrepareCutover ==
     /\ phase = "VERIFYING"
@@ -55,121 +69,13 @@ PrepareCutover ==
     /\ divergence = {}
     /\ phase' = "CUTOVER_PREPARED"
     /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence,
-                    appliedOps, authority, epoch, journal, inflight>>
+                    authority, epoch, journal, inflight, appliedOps>>
 
-CommitCutover ==
+Fence ==
     /\ phase = "CUTOVER_PREPARED"
-    /\ authority' = New
-    /\ epoch' = epoch + 1
-    /\ phase' = "CUTOVER"
-    /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence, appliedOps, journal, inflight>>
-
-Next ==
-    \/ \E r \in Records : Backfill(r)
-    \/ \E r \in Records : SourceWrite(r)
-    \/ \E r \in divergence : CatchUp(r)
-    \/ \E r \in Records : CrashAfterStart(r)
-    \/ \E r \in Records : Recover(r)
-    \/ PrepareCutover
-    \/ CommitCutover
-
-CrashAfterStart(r) ==
-    /\ r \in Records
-    /\ r \notin migrated
-    /\ r \notin inflight
-    /\ inflight' = inflight \cup {r}
-    /\ phase' = "BACKFILLING"
-    /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence, appliedOps, authority, epoch, journal>>
-
-Recover(r) ==
-    /\ r \in inflight
-    /\ r \in Records
-    /\ IF journal[r] THEN
-          /\ inflight' = inflight \ {r}
-          /\ UNCHANGED <<phase, sourceVersion, targetVersion, migrated, divergence, appliedOps, authority, epoch, journal>>
-       ELSE
-          /\ targetVersion' = [targetVersion EXCEPT ![r] = sourceVersion[r]]
-          /\ migrated' = migrated \cup {r}
-          /\ appliedOps' = appliedOps \cup {<<"RECOVER", r, sourceVersion[r]>>}
-          /\ journal' = [journal EXCEPT ![r] = TRUE]
-          /\ inflight' = inflight \ {r}
-          /\ UNCHANGED <<phase, sourceVersion, divergence, authority, epoch>>
-
-Spec == Init /\ [][Next]_vars
-
-NoUnsafeCutover ==
-    authority = New => migrated = Records /\ divergence = {}
-
-THEOREM Spec => []NoUnsafeCutover
-====
-
-
-\* Research finding: after PrepareCutover, SourceWrite remains enabled.
-\* Therefore CommitCutover can currently observe stale preconditions.
-
-CutoverFence(r) ==
-    /\ phase = "CUTOVER_PREPARED"
-    /\ r \in Records
-    /\ divergence = {}
-    /\ sourceVersion' = sourceVersion
     /\ phase' = "CUTOVER_FENCED"
-    /\ UNCHANGED <<targetVersion, migrated, divergence, appliedOps, authority, epoch, journal, inflight>>
-
-SafeCommitAfterFence ==
-    /\ phase = "CUTOVER_FENCED"
-    /\ migrated = Records
-    /\ divergence = {}
-    /\ authority' = New
-    /\ epoch' = epoch + 1
-    /\ phase' = "CUTOVER"
-    /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence, appliedOps, journal, inflight>>
-
-SafeCutoverInvariant ==
-    authority = New => migrated = Records /\ divergence = {}
-
-
-\* Fence semantics: a late source write must not bypass the consistency boundary.
-FenceWriteBlocked(r) ==
-    /\ phase = "CUTOVER_FENCED"
-    /\ r \in Records
-    /\ UNCHANGED vars
-
-FenceWriteInvalidates(r) ==
-    /\ phase = "CUTOVER_FENCED"
-    /\ r \in Records
-    /\ sourceVersion' = [sourceVersion EXCEPT ![r] = @ + 1]
-    /\ phase' = "CUTOVER_PREPARED"
-    /\ divergence' = divergence \cup {r}
-    /\ UNCHANGED <<targetVersion, migrated, appliedOps, authority, epoch, journal, inflight>>
-
-FenceCatchUp(r) ==
-    /\ phase = "CUTOVER_FENCED"
-    /\ r \in divergence
-    /\ targetVersion' = [targetVersion EXCEPT ![r] = sourceVersion[r]]
-    /\ divergence' = divergence \ {r}
-    /\ appliedOps' = appliedOps \cup {<<"FENCE_CATCHUP", r, sourceVersion[r]>>}
-    /\ journal' = [journal EXCEPT ![r] = TRUE]
-    /\ UNCHANGED <<sourceVersion, migrated, authority, epoch, phase, inflight>>
-
-NextFence ==
-    \/ Next
-    \/ \E r \in Records : FenceWriteBlocked(r)
-    \/ \E r \in Records : FenceWriteInvalidates(r)
-    \/ \E r \in Records : FenceCatchUp(r)
-    \/ SafeCommitAfterFence
-
-CutoverSafety ==
-    authority = New => phase = "CUTOVER" /\ divergence = {} /\ migrated = Records
-
-THEOREM Spec => []CutoverSafety
-
-\* Design rule: implementations must choose one explicit fence policy;
-\* "late write ignored" is forbidden for authoritative source state.
-
-
-\* Explicit policy selection for the cutover fence.
-CONSTANTS FencePolicy
-ASSUME FencePolicy \in {"BLOCK_WRITES", "INVALIDATE", "CATCH_UP"}
+    /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence,
+                    authority, epoch, journal, inflight, appliedOps>>
 
 FenceWrite(r) ==
     /\ phase = "CUTOVER_FENCED"
@@ -180,14 +86,85 @@ FenceWrite(r) ==
           /\ sourceVersion' = [sourceVersion EXCEPT ![r] = @ + 1]
           /\ divergence' = divergence \cup {r}
           /\ phase' = "CUTOVER_PREPARED"
-          /\ UNCHANGED <<targetVersion, migrated, appliedOps, authority, epoch, journal, inflight>>
+          /\ UNCHANGED <<targetVersion, migrated, authority, epoch,
+                          journal, inflight, appliedOps>>
        ELSE
           /\ sourceVersion' = [sourceVersion EXCEPT ![r] = @ + 1]
           /\ targetVersion' = [targetVersion EXCEPT ![r] = @ + 1]
-          /\ appliedOps' = appliedOps \cup {<<"FENCE_CATCHUP", r, sourceVersion'[r]>>}
-          /\ journal' = [journal EXCEPT ![r] = TRUE]
-          /\ UNCHANGED <<migrated, divergence, authority, epoch, phase, inflight>>
+          /\ appliedOps' = appliedOps \cup
+                {<<"FC", r, sourceVersion[r] + 1>>}
+          /\ journal' = journal \cup
+                {<<"FC", r, sourceVersion[r] + 1>>}
+          /\ UNCHANGED <<phase, migrated, divergence, authority, epoch,
+                          inflight>>
 
-FencePolicyInvariant ==
-    phase = "CUTOVER" => authority = New
+CommitCutover ==
+    /\ phase = "CUTOVER_FENCED"
+    /\ migrated = Records
+    /\ divergence = {}
+    /\ authority' = New
+    /\ epoch' = epoch + 1
+    /\ phase' = "CUTOVER"
+    /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence,
+                    journal, inflight, appliedOps>>
 
+Crash(r) ==
+    /\ phase \in {"BACKFILLING", "CUTOVER_PREPARED", "CUTOVER_FENCED"}
+    /\ r \in Records
+    /\ r \notin inflight
+    /\ inflight' = inflight \cup {r}
+    /\ UNCHANGED <<phase, sourceVersion, targetVersion, migrated,
+                    divergence, authority, epoch, journal, appliedOps>>
+
+Recover(r) ==
+    /\ r \in inflight
+    /\ IF <<r, sourceVersion[r]>> \in
+           {op[1..2] : op \in journal} THEN
+          /\ inflight' = inflight \ {r}
+          /\ UNCHANGED <<phase, sourceVersion, targetVersion, migrated,
+                          divergence, authority, epoch, journal, appliedOps>>
+       ELSE
+          /\ targetVersion' =
+                [targetVersion EXCEPT ![r] = sourceVersion[r]]
+          /\ migrated' = migrated \cup {r}
+          /\ journal' = journal \cup
+                {<<"R", r, sourceVersion[r]>>}
+          /\ appliedOps' = appliedOps \cup
+                {<<"R", r, sourceVersion[r]>>}
+          /\ inflight' = inflight \ {r}
+          /\ UNCHANGED <<phase, sourceVersion, divergence, authority,
+                          epoch>>
+
+ToVerifying ==
+    /\ phase = "BACKFILLING"
+    /\ migrated = Records
+    /\ divergence = {}
+    /\ phase' = "VERIFYING"
+    /\ UNCHANGED <<sourceVersion, targetVersion, migrated, divergence,
+                    authority, epoch, journal, inflight, appliedOps>>
+
+Next ==
+    \/ \E r \in Records : Backfill(r)
+    \/ \E r \in Records : SourceWrite(r)
+    \/ \E r \in Records : CatchUp(r)
+    \/ \E r \in Records : Crash(r)
+    \/ \E r \in Records : Recover(r)
+    \/ ToVerifying
+    \/ PrepareCutover
+    \/ Fence
+    \/ \E r \in Records : FenceWrite(r)
+    \/ CommitCutover
+
+Spec == Init /\ [][Next]_vars
+
+InvAuthoritySafety ==
+    authority = New => /\ phase = "CUTOVER"
+                         /\ migrated = Records
+                         /\ divergence = {}
+
+InvEpoch ==
+    epoch = 0 \/ epoch = 1
+
+THEOREM Spec => []InvAuthoritySafety
+THEOREM Spec => []InvEpoch
+====
