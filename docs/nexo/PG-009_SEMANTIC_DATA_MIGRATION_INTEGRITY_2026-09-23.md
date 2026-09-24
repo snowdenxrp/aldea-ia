@@ -457,3 +457,41 @@ INV-252 — a formal migration invariant is not evidence that the implementation
 INV-253 — authority cutover must be represented as an explicit state transition in the formal model.
 INV-254 — concurrent writes and catch-up must be represented as separate actions so their interleavings are model-checkable.
 INV-255 — formal verification scope must state the finite bounds/model assumptions under which results hold.
+
+
+## Research continuation — crash-safe resume and durable migration journal
+
+The formal sketch was extended with an explicit `journal` and `inflight` state. The purpose is to distinguish work that was durably committed from work that was merely started before a crash.
+
+### Recovery rule
+A migration operation can be in three materially different states:
+- NOT_STARTED — no durable evidence of application.
+- IN_FLIGHT/UNKNOWN — execution may have begun, but durable completion is not established.
+- COMMITTED — durable journal proves the migration step was recorded as completed.
+
+Recovery must not equate IN_FLIGHT with either success or failure. It must reconcile target state and journal evidence before deciding whether to resume.
+
+### Idempotency boundary
+The durable operation identity must be established before an irreversible transformation is allowed to become externally observable. A retry with the same operation identity must resolve to the existing result or perform a demonstrably idempotent transformation.
+
+This yields the recovery pattern:
+`LOAD JOURNAL → CLASSIFY OPERATION → RECONCILE TARGET → RESUME / MARK COMMITTED / REPLAN`
+
+### Important formal-model limitation
+The current sketch is still not a verified TLA+ model. It is a design instrument. In particular, the model must still be checked for complete variable priming, action enablement, state coverage, and whether its invariants actually hold under all modeled interleavings. We must not call the invariant proven merely because it appears as a THEOREM statement.
+
+### Next formal work
+1. Remove accidental model shortcuts and make all transitions explicit.
+2. Add a finite crash action that can occur at every migration substep.
+3. Model duplicate/replayed operation IDs explicitly.
+4. Add a target-side version and journal consistency invariant.
+5. Add cutover-race actions: late write, catch-up, authority switch.
+6. Add a semantic abstraction function so the target state can be compared to the source specification rather than to raw fields.
+7. Run TLC and preserve every counterexample as a regression scenario.
+
+### New invariants
+INV-256 — durable completion and in-flight execution are distinct states.
+INV-257 — recovery cannot infer successful migration solely from local execution termination.
+INV-258 — every retry of a critical migration operation must have a stable operation identity.
+INV-259 — an UNKNOWN/in-flight migration effect requires reconciliation before critical continuation.
+INV-260 — formal theorem declarations are not verification evidence until the model is actually checked.
