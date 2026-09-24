@@ -150,3 +150,6 @@ The formal model now treats dependency completeness as an assurance property. De
 
 ## Latest PG-009: invariant/authority separation
 Invariant, dependency, scheduler, executor, and verifier authority are now explicitly separated. Critical invariant definitions are governed/versioned outside the executor; material changes trigger re-admission of affected operations. Scheduler priority never increases authority, and verification cannot retroactively authorize an effect. Formal commit: 46e221e4acb2759801724bc0b14b4d1696e12487. **NOT TLC-VERIFIED.**
+
+## Latest PG-009: policy/invariant version transition
+A material policy/invariant change is now a governed boundary for in-flight work. New admissions use the new rule; prepared/in-flight effects are classified for revalidation, draining, cancellation where genuinely supported, reconciliation, or quarantine. Irreversible effects are not assumed cancellable or rollback-safe. Transition fencing binds policy/invariant version, authority epoch, operation/effect identity, and world/precondition boundary. Formal commit: b55f40fc9000dfcee979ce9608ce4a4061f83a9b. **NOT TLC-VERIFIED.**
