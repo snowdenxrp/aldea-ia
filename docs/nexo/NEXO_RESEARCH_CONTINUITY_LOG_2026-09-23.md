@@ -199,3 +199,14 @@ PG-009 Semantic/Data Migration Integrity — continuar con equivalencia formal, 
    reconciliation matrix, four evidence planes, external reconciliation capability classes R0-R4, bounded
    exactly-once interpretation, and invariants INV-293..302. Next: formalize external-effect reconciliation
    and crash interleavings while preserving local certainty vs receipt vs world verification.
+
+41. PG-009 external-effect reconciliation formal sketch:
+   created docs/nexo/formal/PG-009_EXTERNAL_EFFECT_RECONCILIATION_SKETCH_2026-09-23.tla.
+   The model separates NOT_STARTED/PREPARED/SENT/REMOTE_UNKNOWN/REMOTE_CONFIRMED/
+   VERIFICATION_PENDING/VERIFIED/RECONCILIATION_REQUIRED/BLOCKED, plus operation identity,
+   effect key, receipt, world observation, local ledger, authority and revocation.
+   It explicitly models the crash-before-ledger boundary and requires reconciliation before
+   returning from UNKNOWN toward execution. Important: this is an exploratory TLA+ sketch,
+   NOT TLC-VERIFIED. It also intentionally does not claim that receipt proves world truth.
+   Next refinement: model multiple effects sharing a target/effect key, legitimate repeats,
+   semantic collisions, stale observations, and explicit forbidden blind retry transitions.
