@@ -941,3 +941,36 @@ La revisión transversal se amplió con 20 ataques de consistencia (F-01..F-20) 
 Conclusión nueva: `ReleaseEligible` no debe derivarse de un booleano aislado como `worldState=KNOWN`. Debe derivarse de cinco objetos ligados: Operation, EffectBinding, AuthorityContext, EvidenceRecord y ControlLease. Evidence debe incorporar identidad, target, fingerprint, authority epoch, policy/dependency versions, provenance y freshness. Invalidation posterior debe ser explícita.
 
 No se ejecutó SANY/TLC ni runtime tests en esta pasada; los ataques son obligaciones de prueba, no resultados PASS. Próximo paso obligatorio: construir el modelo formal canónico unificado y derivar de él fixtures, correspondence y tests antes de continuar ampliando propiedades.
+
+
+### 2026-09-23 — deep research cross-check: evidence, concurrency, trust and recovery
+
+A dedicated research pass was completed before canonical consolidation. External cross-checks covered TLA+/PlusCal/TLC, linearizability, distributed-effect retry/idempotency, cryptographic trust-anchor lifecycle, platform protection/detection/recovery, and secure software development/supply-chain practice.
+
+Sources cross-checked:
+- Lamport PlusCal/TLC material: invariance checking is useful for finding counterexamples in a specified concurrent model; model checking does not establish implementation equivalence by itself.
+- Herlihy/Wing: linearizability requires a concurrent operation to have an effective point between invocation and response; runtime CAS/coordination still needs implementation-level justification.
+- RFC 9110: communication failure can leave non-idempotent effects uncertain; retries require idempotency or a way to determine whether the original effect occurred.
+- NIST SP 800-57: trust-anchor/key compromise and recovery are first-class lifecycle concerns.
+- NIST SP 800-193: protection, detection and recovery are distinct resiliency functions.
+- NIST SP 800-218: secure development and supply-chain controls are lifecycle concerns.
+
+New contradictions/gaps recorded:
+1. Observation cannot directly become verified world truth.
+2. Lease expiry revokes ownership but does not automatically invalidate all already-valid evidence.
+3. Generation >= 0 is not temporal monotonicity; acquisition must explicitly advance generation.
+4. A cryptographically valid signature under a compromised/invalidated trust root is not sufficient for admission.
+5. Evidence must be version-bound to policy/invariants/dependency graph and invalidated after material incompatible changes.
+6. Evidence must bind exact operation/effect/target/fingerprint.
+7. Authority revocation must fence stale recovery/reconciliation owners and invalidate release authorization.
+8. STOP enforcement is not equivalent to external-world cancellation.
+9. Process separation does not create independent evidence when dependencies are shared.
+10. A compromised snapshot cannot recreate independent trust/authority domains without qualification.
+11. Release eligibility must be derived from Operation + EffectBinding + AuthorityContext + EvidenceRecord + ControlLease, not an isolated worldState boolean.
+12. Formal correspondence must map guards, affected state and prohibitions, not only names.
+
+Research artifact saved:
+docs/nexo/NEXO_DEEP_RESEARCH_DELTA_2026-09-23.md
+Commit: b08edf54584cd975ec473b5351bc750f75a11416
+
+Status: research cross-check for this delta DONE; canonical consolidation NOT YET; SANY/TLC NOT RUN; runtime tests NOT RUN.
