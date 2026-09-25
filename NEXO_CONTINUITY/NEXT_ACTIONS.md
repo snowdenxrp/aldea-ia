@@ -261,3 +261,7 @@ Code audit found AB61/AB100 LEASE_CONSUME abstraction divergence. Next: audit al
 ## AB104.5 continuation
 
 Code consistency audit persisted. Next: trace all historical edits around AB61 execute/apply and AB100 ReplayState, then inspect AB89's two-admission/shared-lease direction. Maintain separate history-effect and continuation-legality layers; do not rewrite historical artifacts merely to remove drift.
+
+
+## AB104.7 continuation
+Next: audit AB50/AB51 representation candidates field-by-field against AB18's 13 bridge dimensions plus actual admission linkage. Do not mark a field eliminable without reconstruction and future-equivalence evidence.
