@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
-import { updateSettlementState } from "../src/spatial.js";
+import { getRegionKey, updateSettlementState } from "../src/spatial.js";
 import { world as baseWorld } from "../src/world.js";
 const world=structuredClone(baseWorld);
 world.structures={shelters:[{id:"s1",position:{x:0,z:0}}],farms:[]};
 const agents=[{id:"a",alive:true,position:{x:0,z:0}}];
 updateSettlementState(world,agents);
-const key="4:4";
+const key=getRegionKey({x:0,z:0},world);
 const state=world.spatial.regions[key];
 assert.equal(state.population,1);
 assert.equal(state.structures,1);
