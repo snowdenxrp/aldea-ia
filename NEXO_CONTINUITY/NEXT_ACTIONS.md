@@ -265,3 +265,7 @@ Code consistency audit persisted. Next: trace all historical edits around AB61 e
 
 ## AB104.7 continuation
 Next: audit AB50/AB51 representation candidates field-by-field against AB18's 13 bridge dimensions plus actual admission linkage. Do not mark a field eliminable without reconstruction and future-equivalence evidence.
+
+
+## AB104.8 continuation
+Use AB104.8 matrix as the preservation contract. Next executable work: construct a conservative packed-representation adapter that retains provenance for all 13 bridge dimensions plus actual admission linkage; compare reconstructed logical views and future observations. UNKNOWN semantics must remain UNKNOWN.
