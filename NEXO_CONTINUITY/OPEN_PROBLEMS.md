@@ -67,3 +67,12 @@ Still open: executing the AB61 repaired gate, complete post-ADMIT continuation l
 - Need counterexamples showing where collapsing these cases produces unsound conclusions.
 - Need to determine whether an existing formalism (PTS, belief state, symbolic partial model, multi-valued semantics) is necessary or whether a smaller protocol-specific model suffices.
 - Need to avoid architecture selection by analogy: external formalisms inform requirements but do not decide Nexo design.
+
+
+## AB69 — unresolved semantic obligations — 2026-09-25
+
+- Define evidence sufficient to establish successor-relation completeness.
+- Define FutureObs_PAA aggregation for known-empty, known-unique, known-multiple, and unknown successor relation.
+- Test whether same-observation known nondeterminism can be safely distinguished from epistemic UNKNOWN.
+- Find counterexamples for every attempted collapse of these categories.
+- Determine whether provenance/completeness must be part of the canonical quotient state.
