@@ -193,3 +193,16 @@ This remains an abstract test only. No concrete Nexo B-case was established for 
 Standalone AB78 artifact creation was blocked by connector security in this round. No artifact success is claimed. The result is preserved here and in CURRENT_STATE/NEXT_ACTIONS under the AB74.1 additive fallback protocol.
 
 Next: recover AB36/AB38 material if available; use it to constrain M1/M2. If no decisive rule is recovered, retain UNKNOWN and document the missing protocol law.
+
+
+## AB79 — 2026-09-25 — AB36/AB38 recovery + AB52 crosscheck
+
+AB36 and AB38 were searched through the available GitHub commit search routes and were not returned. This does not prove those artifacts never existed; only that this recovery route did not recover them.
+
+AB52 was recovered directly. It independently confirms that exhaustive ternary mathematics is established while the legal protocol transition/read-set layer remains UNKNOWN_DUE_TO_MISSING_SEMANTICS. AB52 explicitly requires exact ATOMIC/LEASE/RECHECK transition semantics before protocol-level ternary classification.
+
+Crosscheck: C2 legality, C3 complete post-state/successor law, and C6 exhaustive successor domain remain unresolved. No concrete Nexo B-case is established. The abstract two-completion test remains a valid adversarial criterion.
+
+Standalone AB79 artifact creation was blocked by connector security; no standalone artifact success is claimed. This result is preserved additively in canonical continuity files.
+
+Next: recover any AB36/AB38 content by another canonical path if available; otherwise proceed from AB52/AB54 with an explicit bounded transition schema and UNKNOWN for every unclosed semantic field.
