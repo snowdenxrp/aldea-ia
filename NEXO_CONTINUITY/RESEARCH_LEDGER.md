@@ -369,3 +369,15 @@ Executed the AB104.17 harness logic in an actual local Python runtime. Results: 
 
 ## AB104.19 — 2026-09-25
 AB65 execution audit continued. The repository-connected workflow definition was inspected: it runs the AB65 V2 runner on push/workflow_dispatch and would persist `NEXO_CONTINUITY/AB65_GATE_OUTPUT_2026-09-25.txt`. The output file is absent from the current default branch, commit-status lookup for the AB104.15 trigger commit returned no statuses, and commit search found no "AB65: persist gate execution output" commit. Therefore there is still **no positive repository evidence of AB65 execution/output**. Local AB104.17 execution from AB104.18 must not be conflated with AB65. Gate remains AB65_EXECUTION=NOT_VERIFIED.
+
+
+## AB104.20 — 2026-09-25 — renewal/consumption evidence-boundary synthesis
+
+Persisted: NEXO_CONTINUITY/AB104_20_RENEW_CONSUME_EVIDENCE_BOUNDARY_2026-09-25.md
+Commit: 51f665deb0f315b636dedfc5658cf8d852445f2c
+
+Synthesis of AB20/AB24/AB25/AB26/AB54 and AB94-AB104 confirms the exact boundary: the evidence establishes the P_AA-relevant dimensions that a complete LEASE_RENEW/LEASE_CONSUME model must represent, but does not establish complete legality, post-state, invalidation/frame, observation mapping, or exhaustive successor domains. Renewal remains unresolved on extension-versus-replacement, expiry eligibility, renewal authority/currentness, policy/delegation/incarnation interaction, bridge retention/rebinding, replay/history effects, and successor enumeration. Consumption remains unresolved on legality, mutation scope, replay protection, retry/reuse behavior, admission linkage, and successor enumeration.
+
+No semantic labels were promoted. LEASE_RENEW=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; AB65_EXECUTION=NOT_VERIFIED. No 286-triple expansion is justified.
+
+Next: continue targeted historical/source recovery for the remaining renewal/consumption laws and keep AB65 repository execution as a separate verification track. Experimental completions may be used only as explicitly labeled hypotheses and must never be promoted to protocol evidence.
