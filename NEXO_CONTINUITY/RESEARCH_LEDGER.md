@@ -329,3 +329,7 @@ AB18's 13 LeaseBridge dimensions plus actual admission linkage were mapped again
 
 ## AB104.9 — 2026-09-25
 Bounded shared-lease/two-admission attack: bridge identity alone cannot reconstruct admission-specific attempt/linkage. This is not itself a P_AA collision because linkage differs by construction. Scalar bridge merge is unsafe; richer packed representation remains possible in principle. Artifact e7614a7400994f92dc33e25cdfa97349149d7d07.
+
+
+## AB104.10 — 2026-09-25
+Packed-representation audit under explicit PolicyChange and ResourceReincarnate. A rich packed record can preserve bridge dimensions, admission-indexed linkage, and ordered invalidation provenance at representation level; scalar bridge-valid cannot. No semantic merge/congruence proof or P_AA collision established. Artifact fd93d16e7bf1d5a948360eea77429320bf372781.
