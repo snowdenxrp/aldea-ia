@@ -170,3 +170,20 @@ Prepared and persisted AB62_GATE_RUNNER_2026-09-25.py. The runner is designed to
 Latest persisted commit before this state update: 24cbd1351fcb684802572031f0df172a6b24d576.
 
 Next exact action: execute AB62 in a real repository-connected Python/GitHub Actions environment and persist its output.
+
+## Research methodology requirement — PERSISTENT
+
+The Nexo/Lúmina research process must continue as active investigation, not merely implementation or checkpoint execution.
+
+Required working cycle:
+- buscar fuentes y evidencia relevante;
+- investigar y estudiar el estado del arte y los sistemas/runtimes reales;
+- modelar y formalizar lo necesario;
+- contrastar hipótesis, amenazas, garantías y límites;
+- buscar contraejemplos y condiciones de fallo;
+- ejecutar experimentos/pruebas cuando corresponda;
+- documentar procedencia y distinguir evidencia, hipótesis, implementación y verificación;
+- conservar UNKNOWN/PENDING cuando la evidencia no cierre una cuestión;
+- construir o modificar código solamente cuando la investigación lo justifique.
+
+Continuity requirement: a future chat must resume both the research state and the active investigation. No se debe reducir el trabajo a «ejecutar el siguiente script» o «crear el siguiente checkpoint» sin continuar buscando, investigando y estudiando evidencia relevante. La regla previa sigue siendo: investigar → modelar → atacar → contrastar → formalizar → documentar → conservar evidencia → decidir disposición → y solamente después construir.
