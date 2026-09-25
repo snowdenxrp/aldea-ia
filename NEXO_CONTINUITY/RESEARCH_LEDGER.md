@@ -15,3 +15,6 @@ Bounded ternary read-set closure search. Covered 286 unordered candidate event-r
 
 ## AB53 — a229d37985e67881f32799938353e1cb339b3a90
 Reconciles two AB52 artifacts. The exhaustive mathematical enumeration remains established, while the stronger protocol-read-closure result is explicitly conditional on transition semantics being complete. Because the exact executable ATOMIC/LEASE/RECHECK read-sets were not yet normalized, the canonical protocol status is restored to UNKNOWN_DUE_TO_MISSING_SEMANTICS; P_AA collision, hyperedge necessity, HistorySupport elimination and bridge merge remain UNKNOWN. Next step is a protocol transition-semantics matrix before further ternary or four-event claims.
+
+## AB54 — ee3704e24e746116e049770944feeb308e2a5737
+Normalized the P_AA transition semantics into an explicit action schema: Pre, ReadSet, Post/Mutation, Frame, Invalidation, HistorySupport, AdmissionLink, Observation, UnknownCondition. Consolidated ATOMIC, LEASE and RECHECK read sets from prior artifacts without inventing missing semantics. The ternary protocol status remains UNKNOWN_DUE_TO_MISSING_SEMANTICS. Next experiment is a finite transition interpreter with explicit UNKNOWN and partial-order histories, starting with eight highest-value ternary attacks.
