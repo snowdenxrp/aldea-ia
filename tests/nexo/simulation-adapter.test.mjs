@@ -64,13 +64,19 @@ const denied=await adapter.execute({
 assert.equal(denied.status,"failed");
 assert.equal(denied.code,"LUMINA_ACTION_NOT_ALLOWED");
 
-const failed=await adapter.execute({
-  missionId:"m1",stepId:"s6",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s7",
-  context:{action:{name:"drink",amount:20}},
-  precondition:({stateVersion})=>stateVersion===4,
+const depletedSimulation={
+  agents:[{id:"bruno",alive:true,position:{x:0,z:0},needs:{thirst:50},inventory:[],skills:[]}],
+  world:{resources:{water:{amount:0}}}
+};
+const depletedAdapter=createLuminaEffectAdapter(depletedSimulation);
+const failed=await depletedAdapter.execute({
+  missionId:"m2",stepId:"s1",action:"execute_lumina_action",target:"bruno",idempotencyKey:"m2:s1",
+  context:{action:{name:"drink",amount:2}},
+  precondition:({stateVersion})=>stateVersion===0,
   postcondition:()=>true
 });
 assert.equal(failed.status,"failed");
 assert.equal(failed.code,"LUMINA_ACTION_FAILED");
+assert.equal(depletedSimulation.nexoEffectRevision,0);
 
 console.log("Nexo: adaptador concreto de Lúmina con consecuencias reales, whitelist y evidencia OK.");
