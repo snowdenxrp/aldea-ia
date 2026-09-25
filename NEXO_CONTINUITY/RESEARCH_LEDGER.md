@@ -310,3 +310,10 @@ The abstract M1/M2 completions demonstrate that the missing LEASE_RENEW law affe
 Direct source audit found a material LEASE_CONSUME representation discrepancy. AB61 models consume as writing lease_valid=False and lower_obs equates replay_consumption_facts with lease_valid. AB100 instead reads/writes explicit ReplayState, marks consume UNKNOWN, and refuses to execute it. These are not equivalent representations. The discrepancy does not establish protocol nondeterminism; it establishes that the research harness layer contains competing abstractions and cannot promote either to canonical protocol law without evidence.
 
 Persisted audit: NEXO_CONTINUITY/AB104_4_CODE_AUDIT_AB61_AB100_REPLAY_CONSUME_2026-09-25.md, commit ac3b519890e5bdefa27315a784e55ce3963ab568.
+
+
+## AB104.5 — 2026-09-25 — AB61/AB100 consistency audit
+
+Found two implementation/documentation boundaries requiring preservation. First, AB100's docstring claims it preserves AB61 semantics, but its LEASE_CONSUME path is intentionally UNKNOWN and does not perform AB61's lease_valid=False effect; this is documentation drift, not protocol evidence. Second, AB61 execute() was repaired to separate history-event application from future continuation legality, so its bounded execution must not be interpreted as legality proof. AB100's ReplayState adds explicit epistemic coverage but still lacks the transition that populates consumed_attempts.
+
+Persisted: NEXO_CONTINUITY/AB104_5_CODE_CONSISTENCY_AUDIT_AB61_AB100_2026-09-25.md, commit b8f700f8ae68766f3a748ecd0f867d66556b2fa7.
