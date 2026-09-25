@@ -6,7 +6,7 @@ const M=(c,r=.82,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metal
 const B=(w,h,d)=>new THREE.BoxGeometry(w,h,d);
 const meshBox=(w,h,d,c,r=.82)=>new THREE.Mesh(B(w,h,d),M(c,r));
 const C=(a,b,h,c,s=10)=>new THREE.Mesh(new THREE.CylinderGeometry(a,b,h,s),M(c));
-function add(g,scene){g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});scene.add(g);return g;}
+function add(g,scene){g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});g.userData.detailLevel??="far";scene.add(g);return g;}
 function path(scene,x,z,w,d,r=0){const m=meshBox(w,.045,d,0xb59a72,1);m.position.set(x,.025,z);m.rotation.y=r;m.receiveShadow=true;scene.add(m);}
 function terrainPatch(scene,x,z,w,d){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),createTerrainMaterial(0x6f9b58));m.rotation.x=-Math.PI/2;m.position.set(x,.006,z);m.receiveShadow=true;scene.add(m);}
 function house(scene,x,z,r=0,s=1){
@@ -83,7 +83,7 @@ export function buildVillage(scene){
  for(const p of layout.paths)path(root,p.x,p.z,p.width,p.length,p.rotation);
  for(const p of (layout.yardPaths??[]))path(root,p.x,p.z,p.width,p.length,p.rotation);
  bank(root,-23.2,-10,2.4,22);bank(root,-23.2,11,2.4,22);bank(root,-12.8,-10,2.4,22);bank(root,-12.8,11,2.4,22);
- for(const b of layout.buildings){if(b.type==="house")house(root,b.x,b.z,b.rotation,b.scale);else if(b.type==="barn")barn(root,b.x,b.z);else if(b.type==="tower")tower(root,b.x,b.z);}
+ for(const b of layout.buildings){let g;if(b.type==="house")g=house(root,b.x,b.z,b.rotation,b.scale);else if(b.type==="barn")g=barn(root,b.x,b.z);else if(b.type==="tower")g=tower(root,b.x,b.z);if(g)g.userData.detailLevel="medium";}
  // Patios y cercas bajas: separan visualmente cada vivienda sin bloquear los caminos.
  for(const b of layout.buildings.filter(v=>v.type==="house")){
    const fenceMat=M(0x69462f,.95);
