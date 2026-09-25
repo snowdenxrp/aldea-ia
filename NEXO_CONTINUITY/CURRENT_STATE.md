@@ -529,3 +529,7 @@ Field-preservation matrix persisted as c3f03af675848797ac51e98f0b1532c24818a1ca.
 
 ## AB104.9 — 2026-09-25
 Shared-lease/two-admission bounded attack persisted. Actual admission linkage remains non-reconstructible from bridge identity alone. No new collision or protocol law established. Artifact e7614a7400994f92dc33e25cdfa97349149d7d07.
+
+
+## AB104.10 — 2026-09-25
+Packed representation survives the tested explicit invalidation cases at representation level when it retains all 13 bridge dimensions, admission-indexed linkage, and invalidation provenance. This is not a proof of semantic merger or future congruence. Gates unchanged: BRIDGE_MERGE=UNKNOWN, QUOTIENT_CONGRUENCE=UNKNOWN, TERNARY_PAA_COLLISION=UNKNOWN, LEASE_RENEW=UNKNOWN, LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW, FORMAL_VERIFICATION=NOT_PERFORMED, AB65_EXECUTION=NOT_VERIFIED.
