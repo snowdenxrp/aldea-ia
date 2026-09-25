@@ -327,3 +327,17 @@ External research now supports a belief/knowledge-set interpretation for partial
 Current semantic status remains unchanged: TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED.
 
 AB73 artifact is persisted. No implementation was changed. Eight-attack closure and 286-triple expansion remain blocked until successor completeness is justified and executable.
+
+
+## AB74 protocol-evidence recovery — 2026-09-25
+
+Persisted artifact: NEXO_CONTINUITY/AB74_PROTOCOL_EVIDENCE_FOUR_CONTINUATIONS_2026-09-25.md
+Artifact commit: aab13b5ebd47b70e25e1d681235ffddc0783b9d9
+
+Recovered exact AB54 protocol vocabulary for the four unresolved continuation events. LEASE_RENEW has an explicit read-set but incomplete renewal authority/history and bridge/validity mutation semantics. RETRY has explicit prior-attempt/policy/protocol/bridge inputs but unresolved inheritance/binding rules. RECHECK requires exact fact-set/order/result linkage that remains incomplete. MUTATION is explicitly UNKNOWN in AB61 and its complete mutation-to-recheck law is not specified.
+
+Concrete A/B/C classification is C/UNKNOWN for all four: current protocol evidence is insufficient to establish either convergent future observation (A) or two concrete compatible divergent successors (B). The abstract AB73 two-completion counterexample remains valid only at the abstract semantic level.
+
+This sharpens the gate: UNKNOWN must not be converted to identity/stutter or KNOWN_EMPTY. No AB61/AB65 implementation semantics were changed. TERNARY_PROTOCOL_RESIDUAL remains UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION remains UNKNOWN; QUOTIENT_CONGRUENCE remains UNKNOWN; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED; EXECUTION remains NOT_VERIFIED.
+
+Exact next action: build the smallest research-only successor relation with KNOWN_NONEMPTY, KNOWN_EMPTY, and UNKNOWN status plus provenance, then test the abstract two-completion construction against actual AB54 protocol constraints before any interpreter modification or 286 expansion.
