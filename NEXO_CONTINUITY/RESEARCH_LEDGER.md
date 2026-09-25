@@ -77,3 +77,16 @@ Candidate research object: TransitionKnowledge(relation_status, known_successors
 Research result: FutureObs can be modeled at the semantic-result level without fabricating UNKNOWN successors. Candidate categories are EMPTY_KNOWN, KNOWN_AGREEMENT, KNOWN_DIVERGENCE, and UNKNOWN. The decisive prerequisite is a protocol-specific completeness criterion for successor enumeration. Five counterexamples show unsafe collapses and reinforce that snapshot equality is insufficient for quotient congruence.
 
 No implementation was changed. Candidate is not verified and not architecture.
+
+
+## AB72 — continuity integrity audit and repair — 2026-09-25
+
+Research/process question: can continuity remain recoverable when one or more legacy canonical-file writes are blocked?
+
+Evidence: AB72 audit identified stale CURRENT_STATE/RESEARCH_LEDGER/OPEN_PROBLEMS/EVIDENCE_INDEX/CONTINUITY_PROTOCOL state, partial AB71 canonical persistence, and missing verified AB65 execution output. A single-file recovery layer was then persisted with an explicit pointer and read-back verification.
+
+Result: continuity is recoverable through an additive emergency recovery layer, but legacy synchronization is not complete until all repaired documents are written, read back, and the resulting ancestry is verified. This is a process result, not a semantic result.
+
+Status: CONTINUITY_INTEGRITY=PARTIAL_UNTIL_REPAIR. No P_AA conclusion changed. UNKNOWN/PENDING remain preserved. Integrated Nexo assembly remains blocked by AB66.
+
+Next action: synchronize legacy canonical documents additively, verify every resulting blob and HEAD, then resume semantic research only after the continuity checkpoint is VERIFIED.
