@@ -33,3 +33,11 @@ The AB72 recovery layer remains immutable provenance. The legacy canonical docum
 
 ## Next
 Update the recovery pointer and CURRENT_STATE to reflect this verified repair, read them back, verify the final ancestry, then resume research from successor-completeness work. Do not start a new semantic AB round before this final status update is verified.
+
+
+## Correction — CLAIM_STATUS.md
+The AB72 repair audit/procedure also references CLAIM_STATUS.md. It existed in the repository but was initially omitted from the first six-file synchronization set because the earlier search did not surface it. It has now been read back, synchronized additively, and verified:
+- CLAIM_STATUS.md = d99569d6dc6f064c4b2984a3a35d749ace91ae1e
+- synchronization commit = 68c3b27784c22d1d16dc827c7f5f16c0acf4db62
+
+This correction does not alter any research conclusion. The active continuity set therefore includes seven canonical documents plus the additive recovery layer/pointer and verification artifact.
