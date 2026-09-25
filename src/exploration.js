@@ -12,23 +12,23 @@ export function normalizeExplorationWorld(world) {
 
 export function discoverArea(simulation, agent) {
   normalizeExplorationWorld(simulation.world);
-  const existing = simulation.world.exploration.discoveredAreas.find(area => distance(area.position, agent.position) < 5);
-  if (existing) {
-    existing.visits = (existing.visits || 0) + 1;
-    existing.lastVisitedDay = simulation.day;
-    return existing;
-  }
-
   const regionKey = getRegionKey(agent.position, simulation.world);
   const spatialRegion = simulation.world.spatial.regions[regionKey] ?? { key: regionKey, visits: 0, discovered: false };
-  spatialRegion.visits = Number(spatialRegion.visits ?? 0) + 1;
-  spatialRegion.discovered = true;
-  spatialRegion.lastVisitDay = simulation.day;
-  simulation.world.spatial.regions[regionKey] = spatialRegion;
   if (!simulation.world.spatial.knownRegions.includes(regionKey)) {
     simulation.world.spatial.knownRegions.push(regionKey);
     simulation.world.spatial.knownRegions = simulation.world.spatial.knownRegions.slice(-2000);
   }
+  const existing = simulation.world.exploration.discoveredAreas.find(area => distance(area.position, agent.position) < 5);
+  if (existing) {
+    existing.visits = (existing.visits || 0) + 1;
+    existing.lastVisitedDay = simulation.day;
+    existing.lastVisitedRegionKey = regionKey;
+    return existing;
+  }
+  spatialRegion.visits = Number(spatialRegion.visits ?? 0) + 1;
+  spatialRegion.discovered = true;
+  spatialRegion.lastVisitDay = simulation.day;
+  simulation.world.spatial.regions[regionKey] = spatialRegion;
   const resources = Object.values(simulation.world.resources || {})
     .filter(resource => resource?.position && distance(resource.position, agent.position) <= (resource.perceptionRadius || 10))
     .map(resource => ({ type: resource.type, quality: resource.quality ?? 1 }));
