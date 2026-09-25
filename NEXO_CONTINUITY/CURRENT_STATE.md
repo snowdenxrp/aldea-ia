@@ -480,3 +480,14 @@ Evidence matrix persisted and read back: NEXO_CONTINUITY/AB104_RENEW_CONSUME_EVI
 AB104.1 persistence sequence: ledger=3c0376776954d582f343c37bc480ca55bb2f8667; next-actions=a07584e4535ffd2f341886281c73c45a6da65914. Current-state finalization follows sequential persistence. External HEAD/read-back verification is required after this write.
 
 Next exact action: bounded adversarial ordering experiments using only explicitly supported transition assumptions; unresolved branches remain UNKNOWN.
+
+
+## AB104.2 — 2026-09-25
+
+Adversarial renewal/consumption order analysis persisted at NEXO_CONTINUITY/AB104_2_ADVERSARIAL_RENEW_CONSUME_ORDER_ANALYSIS_2026-09-25.md, commit 01742783ac2fc2ccceb14a8299502cfe2221dabd. Read-back is pending final checkpoint verification after this sequential state update.
+
+Result: all tested evidence-supported order families remain UNKNOWN due to incomplete C2/C3/C6. No concrete collision and no impossibility result. No protocol law was invented. 286 expansion remains blocked.
+
+Persistence sequence: ledger=c0b850b2eaec469a7b0f7c36b13e4b903e750f95; next-actions=da37f326d4d29b17912c4e7cec05bc79bfc0a3f7; current-state finalization follows.
+
+Next exact action: recover AB36/AB38 and later renewal/replay wording; if the gap persists, construct only an abstract two-completion epistemic counterexample.
