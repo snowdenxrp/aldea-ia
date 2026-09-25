@@ -247,3 +247,31 @@ AB65 execution was checked again for trigger commit 854d88d61cd78bf4d04e2e438516
 Conclusion: this pass narrows the renewal boundary but produces no evidence-backed closure and no concrete P_AA collision. LEASE_RENEW remains UNKNOWN; LEASE_CONSUME remains UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION remains UNKNOWN. No interpreter semantics were modified.
 
 Next: target historical evidence around AB20/AB24 and any artifacts mentioning renewal extension/replacement, bridge retention/rebinding, renewal authority, expiry ordering, and policy-change interaction. If those do not close C2/C3/C6, preserve UNKNOWN and continue the bounded successor analysis.
+
+
+## AB104 — 2026-09-25 — targeted renewal + consumption evidence recovery
+
+This round continued directly from AB103 rather than restarting. Historical recovery covered AB20, AB24, AB25, AB26, AB18, AB49, AB54 and AB94-AB100.
+
+Renewal findings:
+- AB20/AB25/AB26 establish the semantic requirement that lease validity is a joint relation involving authority, policy, delegation, incarnation, boundary, freshness and actual admission linkage; they do not specify a complete LEASE_RENEW transition.
+- AB24/AB25 explicitly separate decision/admission linkage and prohibit using an unrelated valid witness as proof.
+- AB49 makes L3 renewal semantics and L7 renewal authority canonical separator dimensions, and J4 explicitly treats different renewal/replay successors as a potential future separator.
+- AB54 names lease, expiry, renewal authority, current authority/policy/delegation/incarnation and bridge state as LEASE_RENEW inputs, but leaves mutation/post-state and missing authority/history conditions unresolved.
+- AB84 independently states that the recovered evidence does not establish expired-lease renewal eligibility, extension versus replacement, bridge retention/rebinding, policy-change ordering, or exhaustive renewal outcomes.
+
+Consumption/replay findings:
+- AB18 makes ReplayBinding and TemporalValidity part of the candidate complete LeaseBridge.
+- AB49 canonically names L4 replay/consumption.
+- AB94-AB98 preserve replay support provisionally but explicitly report no recovered complete LEASE_CONSUME law and no concrete legal replay separator.
+- AB100's research harness correctly separates ReplayState from lease_valid and makes LEASE_CONSUME read lease+attempt+replay while writing replay, but marks its semantic status UNKNOWN. This is a conservative representation, not protocol evidence.
+
+AB65 recheck: commit 854d88d61cd78bf4d04e2e438516f7acbead9c5 still has zero connector-visible workflow runs. No gate output file was recovered. AB65_EXECUTION remains NOT_VERIFIED.
+
+C2/C3/C4/C5/C6 assessment: no decisive completeness gate closed for LEASE_RENEW or LEASE_CONSUME. In particular, extension/replacement and consume post-state cannot be inferred from field names. No concrete P_AA collision was established.
+
+New research boundary: the accumulated evidence now proves which renewal/replay dimensions must be represented in a complete model, but not the protocol laws governing them. This is a narrower UNKNOWN, not a stronger positive or negative protocol result.
+
+Status unchanged: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED.
+
+Next: derive an evidence matrix for the remaining renewal/consume dimensions, then perform bounded event-order experiments only where every transition assumption is explicit; do not invent successors and do not expand to 286 until the completeness gate changes.
