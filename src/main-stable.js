@@ -312,7 +312,7 @@ function createMesh(a){
   const chest=new THREE.Mesh(new THREE.BoxGeometry(.7,.26,.42),clothMat); chest.scale.set(1.04,1.02,1); chest.position.y=1.42;
   const waist=new THREE.Mesh(new THREE.CylinderGeometry(.29,.31,.18,10),darkMat); waist.scale.set(1.05,1,1.02); waist.position.y=.83;
   const collar=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,6,16),skinMat); collar.scale.set(1.05,1,1.02); collar.rotation.x=Math.PI/2; collar.position.y=1.52;
-  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,.18,10),skinMat); neck.position.y=1.66;
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,.18,10),skinMat); neck.scale.set(1.02,1.08,1.02); neck.position.y=1.66;
   const pelvis=new THREE.Mesh(new THREE.BoxGeometry(.52,.28,.34),darkMat); pelvis.scale.set(1.08,1,1.05); pelvis.position.y=.78;
   const shoulderL=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),clothMat), shoulderR=shoulderL.clone(); shoulderL.position.set(-.38,1.43,0); shoulderR.position.set(.38,1.43,0);
   const head=new THREE.Mesh(new THREE.SphereGeometry(.32,24,18),skinMat); head.scale.set(1.02,1,.98); head.position.y=1.91;
