@@ -61,4 +61,24 @@ assert.equal(mem2.nexo.attempts.length,0);
 const mem3=recordNexoOutcome(mem,{missionId:mission.missionId,stepId:"step-1",action:"repair_visual_mesh",target:"alex",status:"completed",evidence:{verified:true,kind:"runtime-check"}});
 assert.equal(mem3.nexo.attempts.length,1);
 
+
+const boundedAction=buildNexoMission({
+  reports:[{assistant:"BehaviorAgent",findings:[{
+    severity:"info",code:"LUMINA_ACTION",agent:"alex",
+    action:{name:"drink",amount:2},message:"sed detectada"
+  }]}]
+});
+assert.equal(boundedAction.steps[0].action,"execute_lumina_action");
+assert.deepEqual(boundedAction.steps[0].context,{action:{name:"drink",amount:2}});
+assert.equal(planNexoExecution(boundedAction).actions[0].context.action.name,"drink");
+
+const rejectedAction=buildNexoMission({
+  reports:[{findings:[{
+    severity:"info",code:"LUMINA_ACTION",agent:"alex",
+    action:{name:"shell_exec",command:"rm -rf /"}
+  }]}]
+});
+assert.equal(rejectedAction.steps[0].action,"inspect_and_collect_evidence");
+assert.equal(rejectedAction.steps[0].context,undefined);
+
 console.log("Nexo: auditoría profunda de contratos, dependencias, evidencia y memoria OK.");
