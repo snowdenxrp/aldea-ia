@@ -5,7 +5,7 @@ import { createSimulation } from "../src/simulation.js";
 import { tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
-import { createLearningMemory, learnFromReports } from "../src/assistants/memory.js";
+import { createLearningMemory, learnFromReports, recordNexoPlan } from "../src/assistants/memory.js";
 import { runAssistantSquad } from "../src/assistants/squad.js";
 import { buildNexoMission } from "../src/nexo/orchestrator.js";
 
