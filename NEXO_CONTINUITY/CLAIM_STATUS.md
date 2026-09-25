@@ -6,6 +6,7 @@ Status is conservative: finite/bounded results are evidence, not proof.
 
 TERNARY_MATH_GAP: FOUND
 TERNARY_PROTOCOL_RESIDUAL: UNKNOWN_DUE_TO_MISSING_SEMANTICS
+AB54_NOTE: transition semantics normalized, but executable completeness not established
 TERNARY_PAA_COLLISION: UNKNOWN
 HYPEREDGE_SEMANTIC_NECESSITY: UNKNOWN
 HS_ELIMINATION: UNKNOWN
