@@ -87,3 +87,13 @@ A conclusion is not allowed to become canonical merely because it sounds plausib
 A new chat receiving only:
 "CONTINUITY. Recupera el estado canónico desde GitHub, verifica la cadena y continúa desde el último punto persistido. No sobrescribas ni elimines nada."
 must be able to recover from this document plus the continuity directory without asking the user to re-explain the prior continuity problem.
+
+## AB57 live frontier amendment — 2026-09-25
+
+The research frontier has advanced from AB56 to AB57 IN PROGRESS. A conservative executable observational/EventDAG harness is persisted at:
+NEXO_CONTINUITY/AB57_EXECUTABLE_OBSERVATIONAL_EVENTDAG_GATE_V1_2026-09-25.py
+
+Its progress artifact is:
+NEXO_CONTINUITY/AB57_EXECUTABLE_OBSERVATIONAL_EVENTDAG_GATE_V1_2026-09-25.md
+
+This does not close the ternary protocol question. The next chat must resume AB57 semantic completion rather than redesigning continuity or repeating the deep audit.
