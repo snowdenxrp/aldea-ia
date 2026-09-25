@@ -396,3 +396,14 @@ All four remain UNKNOWN because at least one decisive dimension is unresolved fo
 Persisted artifact: NEXO_CONTINUITY/AB76_PROTOCOL_COMPLETENESS_RECORDS_2026-09-25.md at commit 967c8a9c7695827830cfdde299dac9c720d869ce.
 
 Exact next action: inspect AB25/AB26/AB36/AB38/AB49 for evidence-backed recovery of missing completeness dimensions without inventing protocol law.
+
+
+## AB77 checkpoint — 2026-09-25
+
+Prior research AB25/AB26/AB49 was recovered and mapped onto the AB76 completeness dimensions. The result narrows the unresolved semantics but does not close any of the four event gates.
+
+LEASE_RENEW, RETRY, MUTATION, and RECHECK remain UNKNOWN. The remaining decisive gaps are chiefly complete legality, complete post-state/successor law, and exhaustive enumeration domain; observation mapping is also incomplete where successor behavior is unresolved.
+
+Persisted artifact: AB77_EVIDENCE_RECOVERY_AB25_AB26_AB49_2026-09-25.md, commit ab931b583b6d1b6384b1609c50453df1049d7bb4.
+
+Exact next action: recover AB36/AB38 evidence for C2/C3/C6, then perform a bounded adversarial successor test if the gate remains open.
