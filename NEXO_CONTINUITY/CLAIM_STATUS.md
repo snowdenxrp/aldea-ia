@@ -31,3 +31,6 @@ FORMAL_VERIFICATION = NOT_PERFORMED
 IMPLEMENTATION = NOT_PERFORMED
 
 Continuity mechanisms are process controls and must never be interpreted as evidence for these claims.
+## AB57 status — 2026-09-25
+
+The AB57 executable harness is now persisted. IMPLEMENTATION is upgraded only from NOT_PERFORMED to PARTIAL_RESEARCH_HARNESS. TERNARY_PAA_COLLISION remains UNKNOWN; no protocol collision was established. EVENTDAG_CLOSURE remains PARTIAL and RECONSTRUCTION remains BOUNDED_ONLY.
