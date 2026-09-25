@@ -105,3 +105,20 @@ Minimal adversarial case identified: two evidence-compatible semantic completion
 Status: TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; FORMAL_VERIFICATION=NOT_PERFORMED; IMPLEMENTATION=NO_CHANGE.
 
 Next: implement only a research counterexample, derive candidate epistemic successor algebra from canonical protocol evidence, test AB61, and establish quotient congruence before the eight-attack gate or 286 expansion.
+
+
+## AB74 — aab13b5ebd47b70e25e1d681235ffddc0783b9d9 — 2026-09-25
+
+Research question: what does the already-canonical AB54 protocol evidence actually establish about the four unresolved continuation events identified by AB73?
+
+Evidence recovered directly from AB54: LEASE_RENEW has explicit lease/expiry/renewal-authority/current-context/bridge reads but incomplete renewal law; RETRY has explicit prior-attempt/policy/protocol/bridge-inheritance inputs but unresolved inheritance/binding law; RECHECK requires exact fact-set and result linkage with unresolved cases remaining UNKNOWN; MUTATION is explicitly marked UNKNOWN in AB61 and lacks a complete mutation-to-recheck transition law.
+
+Result: the concrete A/B/C classification is C/UNKNOWN for LEASE_RENEW, RETRY, MUTATION, and RECHECK. No concrete B case has been established. The AB73 two-completion counterexample remains an abstract semantic counterexample only.
+
+Research consequence: AB61's unchanged+UNKNOWN branch cannot be interpreted as a complete successor generator. A missing successor is not KNOWN_EMPTY. The next justified representation is a research-only successor relation with explicit status KNOWN_NONEMPTY, KNOWN_EMPTY, or UNKNOWN and provenance.
+
+External evidence remains consistent with this direction: belief-state methods represent compatible hidden states under partial observation, while three-valued runtime verification treats inconclusive knowledge as distinct from true/false. This is supporting evidence for the semantic distinction, not a choice of final Nexo architecture.
+
+Status unchanged: TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; FORMAL_VERIFICATION=NOT_PERFORMED; IMPLEMENTATION=NO_CHANGE; EXECUTION=NOT_VERIFIED.
+
+Next action: formalize and test the minimal successor-status object against AB54 constraints before modifying AB61/AB65 or expanding to 286 triples.
