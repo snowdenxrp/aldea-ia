@@ -1,11 +1,11 @@
 {
   "version": 4,
-  "savedAt": 1790380252393,
+  "savedAt": 1790380286740,
   "day": 672,
-  "hour": 9.914453333559818,
+  "hour": 10.830373333559839,
   "world": {
     "day": 672,
-    "timeOfDay": 9.914453333559818,
+    "timeOfDay": 10.830373333559839,
     "speed": 1,
     "resources": {
       "water": {
@@ -29415,9 +29415,9 @@
         },
         "7:5": {
           "key": "7:5",
-          "visits": 9254,
+          "visits": 9257,
           "discovered": true,
-          "lastVisitDay": 663,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
@@ -29425,7 +29425,7 @@
           "biome": "plains",
           "x": 7,
           "z": 5,
-          "lastDiscoveryDay": 663
+          "lastDiscoveryDay": 672
         },
         "7:2": {
           "key": "7:2",
@@ -29485,7 +29485,7 @@
         },
         "7:4": {
           "key": "7:4",
-          "visits": 7366,
+          "visits": 7428,
           "discovered": true,
           "lastVisitDay": 672,
           "population": 1,
@@ -29597,7 +29597,7 @@
         },
         "6:5": {
           "key": "6:5",
-          "visits": 10057,
+          "visits": 10062,
           "discovered": true,
           "lastVisitDay": 672,
           "population": 1,
@@ -30756,10 +30756,10 @@
       "age": 16.51506849315025,
       "alive": true,
       "needs": {
-        "hunger": 72.2034399999997,
-        "thirst": 57.349973333331484,
-        "energy": 58.41140000000177,
-        "social": 54.70617333332625,
+        "hunger": 70.18841599999968,
+        "thirst": 54.41902933333156,
+        "energy": 56.121600000001656,
+        "social": 90.24821333332618,
         "safety": 100,
         "health": 100
       },
@@ -30767,7 +30767,7 @@
         "x": 23.82218679132407,
         "z": 5.652004455727026
       },
-      "currentActivity": "moving",
+      "currentActivity": "socializing",
       "inventory": [
         {
           "type": "stone",
@@ -61443,10 +61443,10 @@
         {
           "agentId": "bruno",
           "familiarity": 1,
-          "trust": 0.96,
-          "cooperation": 0.98,
+          "trust": 1,
+          "cooperation": 1,
           "tension": 1,
-          "affection": 0.99,
+          "affection": 1,
           "resentment": 1,
           "history": [
             {
@@ -70668,6 +70668,26 @@
               "tension": 0.01,
               "affection": 0,
               "resentment": 0
+            },
+            {
+              "day": 672,
+              "type": "conversation",
+              "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 672,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
             }
           ]
         }
@@ -70705,56 +70725,43 @@
         }
       ],
       "experiences": [],
-      "currentIntent": {
-        "name": "socialize",
-        "baseValue": 0.25,
-        "effects": {
-          "social": 1.4
-        },
-        "distance": 14.314048725434999,
-        "score": 40.775454215245716,
-        "target": {
-          "x": 27.55271283430715,
-          "z": 4.855311076133657
-        }
-      },
-      "lastActionName": "explore_area",
+      "currentIntent": null,
+      "lastActionName": "socialize",
       "lastActionResult": {
         "success": true,
-        "effect": "area_explored",
-        "areaId": "area-33",
-        "regionKey": "6:5"
+        "effect": "social_interaction",
+        "otherAgentId": "bruno"
       },
       "lastPerception": {
         "position": {
-          "x": 22.355852365416755,
-          "z": 5.965155715342961
+          "x": 23.82218679132407,
+          "z": 5.652004455727026
         },
         "visibleAgents": [
           {
             "id": "bruno",
             "name": "Bruno",
-            "distance": 1.7140487254349985
+            "distance": 1.2847512745649956
           }
         ],
         "nearbyResources": [
           {
             "type": "wood",
             "location": "forest",
-            "distance": 3.1129779360671894
+            "distance": 4.485776960984344
           },
           {
             "type": "stone",
             "location": "rocky_zone",
-            "distance": 9.183225614799282
+            "distance": 9.349686531265474
           }
         ],
-        "currentActivity": "moving",
+        "currentActivity": "socializing",
         "needs": {
-          "hunger": 72.2034399999997,
-          "thirst": 57.349973333331484,
-          "energy": 58.41140000000177,
-          "social": 54.70617333332625,
+          "hunger": 70.18841599999968,
+          "thirst": 54.41902933333156,
+          "energy": 56.121600000001656,
+          "social": 90.24821333332618,
           "safety": 100,
           "health": 100
         }
@@ -70841,15 +70848,12 @@
         ]
       },
       "movement": {
-        "target": {
-          "x": 27.55271283430715,
-          "z": 4.855311076133657
-        },
+        "target": null,
         "speed": 1.8,
-        "moving": true,
-        "distanceTravelled": 157118.1063530886
+        "moving": false,
+        "distanceTravelled": 157139.70635308846
       },
-      "decisionCooldownHours": 0,
+      "decisionCooldownHours": 0.027413333333333255,
       "knownResources": {
         "water": {
           "x": -18,
@@ -71035,7 +71039,7 @@
       ],
       "researchExperiments": 514,
       "socialRole": "Recolector",
-      "activityRemainingHours": 0,
+      "activityRemainingHours": 0.22741333333333327,
       "explorationState": {
         "lastDay": 671,
         "regionsVisited": 400,
@@ -71045,12 +71049,16 @@
       },
       "activitySequence": {
         "intentName": "socialize",
-        "phaseIndex": 0,
-        "phase": "approach",
-        "remainingHours": 0.05,
-        "completedPhases": []
+        "phaseIndex": 1,
+        "phase": "talk",
+        "remainingHours": 0,
+        "completedPhases": [
+          "approach",
+          "talk"
+        ],
+        "activityComplete": true
       },
-      "activityPhase": "approach"
+      "activityPhase": "talk"
     },
     {
       "id": "bruno",
@@ -71058,18 +71066,18 @@
       "age": 16.51506849315025,
       "alive": true,
       "needs": {
-        "hunger": 72.14477333333303,
-        "thirst": 57.349973333331484,
-        "energy": 58.41140000000177,
-        "social": 54.70617333332625,
+        "hunger": 70.12974933333301,
+        "thirst": 54.41902933333156,
+        "energy": 56.121600000001656,
+        "social": 90.24821333332618,
         "safety": 100,
         "health": 100
       },
       "position": {
         "x": 22.56576754187565,
-        "z": 5.920326104335274
+        "z": 5.920326104335275
       },
-      "currentActivity": "moving",
+      "currentActivity": "socializing",
       "inventory": [
         {
           "type": "wood",
@@ -103300,10 +103308,10 @@
         {
           "agentId": "alex",
           "familiarity": 1,
-          "trust": 0.96,
-          "cooperation": 0.98,
+          "trust": 1,
+          "cooperation": 1,
           "tension": 1,
-          "affection": 0.99,
+          "affection": 1,
           "resentment": 1,
           "history": [
             {
@@ -112525,6 +112533,26 @@
               "tension": 0.01,
               "affection": 0,
               "resentment": 0
+            },
+            {
+              "day": 672,
+              "type": "conversation",
+              "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+              "trust": 0.01,
+              "cooperation": 0,
+              "tension": 0.01,
+              "affection": 0,
+              "resentment": 0
+            },
+            {
+              "day": 672,
+              "type": "conversation",
+              "description": "Bruno y Alex tuvieron una interacción cordial.",
+              "trust": 0.08,
+              "cooperation": 0.05,
+              "tension": 0,
+              "affection": 0.03,
+              "resentment": 0
             }
           ]
         }
@@ -112577,56 +112605,43 @@
         }
       ],
       "experiences": [],
-      "currentIntent": {
-        "name": "socialize",
-        "baseValue": 0.25,
-        "effects": {
-          "social": 1.4
-        },
-        "distance": 8.914048725434998,
-        "score": 41.163312613112396,
-        "target": {
-          "x": 18.835241498892575,
-          "z": 6.717019483928643
-        }
-      },
-      "lastActionName": "explore_area",
+      "currentIntent": null,
+      "lastActionName": "socialize",
       "lastActionResult": {
         "success": true,
-        "effect": "area_explored",
-        "areaId": "area-23",
-        "regionKey": "7:4"
+        "effect": "social_interaction",
+        "otherAgentId": "alex"
       },
       "lastPerception": {
         "position": {
-          "x": 24.03210196778297,
-          "z": 5.607174844719339
+          "x": 22.56576754187565,
+          "z": 5.920326104335275
         },
         "visibleAgents": [
           {
             "id": "alex",
             "name": "Alex",
-            "distance": 1.7140487254349985
+            "distance": 1.2847512745649956
           }
         ],
         "nearbyResources": [
           {
             "type": "wood",
             "location": "forest",
-            "distance": 4.6886520986679345
+            "distance": 3.30275742240509
           },
           {
             "type": "stone",
             "location": "rocky_zone",
-            "distance": 9.392880012754805
+            "distance": 9.192252215619025
           }
         ],
-        "currentActivity": "moving",
+        "currentActivity": "socializing",
         "needs": {
-          "hunger": 72.14477333333303,
-          "thirst": 57.349973333331484,
-          "energy": 58.41140000000177,
-          "social": 54.70617333332625,
+          "hunger": 70.12974933333301,
+          "thirst": 54.41902933333156,
+          "energy": 56.121600000001656,
+          "social": 90.24821333332618,
           "safety": 100,
           "health": 100
         }
@@ -112726,15 +112741,12 @@
         ]
       },
       "movement": {
-        "target": {
-          "x": 18.835241498892575,
-          "z": 6.717019483928643
-        },
+        "target": null,
         "speed": 1.8,
-        "moving": true,
-        "distanceTravelled": 157542.8382580471
+        "moving": false,
+        "distanceTravelled": 157564.43825804695
       },
-      "decisionCooldownHours": 0,
+      "decisionCooldownHours": 0.027413333333333255,
       "knownResources": {
         "water": {
           "x": -18,
@@ -112947,7 +112959,7 @@
       ],
       "researchExperiments": 514,
       "socialRole": "Recolector",
-      "activityRemainingHours": 0,
+      "activityRemainingHours": 0.22741333333333327,
       "explorationState": {
         "lastDay": 671,
         "regionsVisited": 401,
@@ -112957,35 +112969,19 @@
       },
       "activitySequence": {
         "intentName": "socialize",
-        "phaseIndex": 0,
-        "phase": "approach",
-        "remainingHours": 0.05,
-        "completedPhases": []
+        "phaseIndex": 1,
+        "phase": "talk",
+        "remainingHours": 0,
+        "completedPhases": [
+          "approach",
+          "talk"
+        ],
+        "activityComplete": true
       },
-      "activityPhase": "approach"
+      "activityPhase": "talk"
     }
   ],
   "events": [
-    {
-      "id": "event-513",
-      "day": 671,
-      "hour": 13.794373333559571,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-514",
-      "day": 671,
-      "hour": 13.794373333559571,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
     {
       "id": "event-515",
       "day": 671,
@@ -117964,6 +117960,28 @@
       "description": "Bruno realizó un experimento sobre resource-regeneration.",
       "participants": [
         "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 672,
+      "hour": 10.607786666893167,
+      "type": "social_interaction",
+      "description": "Alex y Bruno se encontraron, pero la interacción fue neutral.",
+      "participants": [
+        "alex",
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 672,
+      "hour": 10.607786666893167,
+      "type": "social_interaction",
+      "description": "Bruno y Alex tuvieron una interacción cordial.",
+      "participants": [
+        "bruno",
+        "alex"
       ]
     }
   ]
