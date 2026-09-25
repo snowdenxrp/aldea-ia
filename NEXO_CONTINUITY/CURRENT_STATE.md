@@ -302,3 +302,12 @@ CONTINUITY_CHECKPOINT=VERIFIED_REPAIR_PENDING_FINAL_POINTER_READBACK
 No research conclusion changed. AB65 execution remains NOT_VERIFIED; TERNARY_PAA_COLLISION remains UNKNOWN; EventDAG closure remains PARTIAL; reconstruction remains bounded-only; semantic freeze and formal verification remain open; integrated Nexo assembly remains blocked by AB66.
 
 Exact next action: update RECOVERY_POINTER.md to the verified repair state, read it back, verify final HEAD ancestry, then resume successor-completeness research.
+
+
+## AB72 final checkpoint closure — 2026-09-25
+
+RECOVERY_POINTER.md was updated and will be read back as part of this final closure. The six legacy canonical documents, recovery layer, repair verification artifact, and pointer now form the active continuity recovery structure.
+
+CONTINUITY_CHECKPOINT=VERIFIED
+
+This VERIFIED label applies to the continuity persistence/repair process only. It does not mean semantic verification, formal verification, protocol closure, or execution of the Nexo research harness.
