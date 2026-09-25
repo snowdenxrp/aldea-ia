@@ -365,3 +365,10 @@ Verified comparison: 1307ef7c6a850cb56ea77111ccd805f9e1602000 → cfba9293dbe379
 Verified recent main sequence: b7c38b620ee0fe29d0d837ecc48446ce691eece5 → 73ad70758b760658781a151d16e5164e4363e8fa → 623ddecb138311af67ef07c2a696df5588993646 → 1307ef7c6a850cb56ea77111ccd805f9e1602000 → cfba9293dbe3793546e8f4cf3bece96fc1e5a8aa.
 
 CONTINUITY_CHECKPOINT=VERIFIED for AB74.1 persistence hardening. This verifies persistence of the hardening state and its read-back/ancestry checks; it does NOT verify AB65 execution, protocol semantic closure, ternary collision, quotient congruence, formal verification, or integrated Nexo architecture.
+
+
+## AB74.1 verification wording correction — 2026-09-25
+
+The previous subsection recorded the latest HEAD before the final CURRENT_STATE finalization write. Because a state file cannot truthfully contain the SHA of its own not-yet-created commit, the canonical rule is: record the verified predecessor chain in CURRENT_STATE, then verify the resulting final HEAD externally and do not perform another state write in the same checkpoint.
+
+Therefore the persistence claim is limited precisely as follows: the AB74.1 artifact and the sequential CURRENT_STATE/NEXT_ACTIONS/RESEARCH_LEDGER updates were read back successfully; the finalization write completed successfully; the resulting main HEAD is to be treated as the externally verified terminal point for this checkpoint. No semantic or execution claim is inferred from persistence.
