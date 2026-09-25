@@ -345,3 +345,7 @@ Static source validation of AB104.11 passed: exact blob read-back; 13 bridge dim
 
 ## AB104.13 — 2026-09-25
 Added conservative semantic-view comparator to AB104.11 harness. TRUE requires all 13 bridge dimensions and selected admission linkage to be known and equal; FALSE requires a known differing component; missing/unresolved information yields UNKNOWN. Added bounded omission and altered-attempt cases. Artifact commit ce5e7b60610ca6eb3bcbf9ea24f7092bc724e5fe; harness commit fa16044336cc543df68140f581864ea88f66e253a, content SHA 46f51709d61c8fe026921b5fe84f9a7781fa3adf.
+
+
+## AB104.14 — 2026-09-25
+Static attack matrix added for packed representation. Known representational differences are separated from unresolved future behavior. Removing ReplayBinding or marking TemporalValidity UNKNOWN yields UNKNOWN; altering a known bridge value or admission attempt identity yields FALSE; changing invalidation history or applying PolicyChange/ResourceReincarnate without a complete successor law yields UNKNOWN. No P_AA collision, quotient congruence, or safe field elimination established. Artifact commit 0fca38e228888d1574739d017d794cfcd2631919.
