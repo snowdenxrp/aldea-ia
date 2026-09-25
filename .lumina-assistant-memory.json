@@ -1,15 +1,6 @@
 {
-  "version": 2,
+  "version": 3,
   "runs": [
-    {
-      "at": "2026-09-21T11:55:55.847Z",
-      "status": "ok",
-      "day": 240,
-      "hour": 0.442266666747342,
-      "agents": 2,
-      "findings": 0,
-      "testFailures": 0
-    },
     {
       "at": "2026-09-21T12:14:51.442Z",
       "status": "ok",
@@ -900,6 +891,15 @@
       "agents": 2,
       "findings": 0,
       "testFailures": 0
+    },
+    {
+      "at": "2026-09-25T23:22:26.521Z",
+      "status": "ok",
+      "day": 670,
+      "hour": 6.901786666892447,
+      "agents": 2,
+      "findings": 0,
+      "testFailures": 0
     }
   ],
   "lessons": [
@@ -962,6 +962,7 @@
     }
   ],
   "nexo": {
+    "missions": [],
     "attempts": [],
     "doNotRepeat": []
   }
