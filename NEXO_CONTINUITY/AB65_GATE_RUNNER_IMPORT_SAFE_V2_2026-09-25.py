@@ -45,3 +45,4 @@ if __name__=="__main__":
         print("HISTORY_RESULT", {k:sum(r["history_result"]==k for r in rows) for k in ("TRUE","FALSE","UNKNOWN")})
 
 # AB101 trigger: repository-connected execution requested; semantics unchanged.
+# AB102 trigger: exact runner preserved; push is intended to invoke AB65 gate workflow.
