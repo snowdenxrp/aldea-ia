@@ -321,3 +321,7 @@ Persisted: NEXO_CONTINUITY/AB104_5_CODE_CONSISTENCY_AUDIT_AB61_AB100_2026-09-25.
 
 ## AB104.7 — 2026-09-25
 AB18↔AB90 audit: AB18's 13-dimensional candidate complete LeaseBridge and CM-AA48..57 reinforce AB90's warning against naive LeaseBridge/AdmissionBindingClass merge. A scalar bridge-valid merge erases AttemptBinding and actual-admission linkage and may erase replay/temporal/boundary relations. Richer representation-level merging remains possible only with total reconstruction and future behavioral congruence. Artifact: AB104_7..., commit c42e1b882f1b114e200745e1fb9f30f00c0fa943.
+
+
+## AB104.8 — 2026-09-25 — bridge field preservation matrix
+AB18's 13 LeaseBridge dimensions plus actual admission linkage were mapped against AB50/AB51 Q_AA. No dimension has a completed safe-elimination proof. Naive scalar bridge-valid compression remains unsafe; richer representation packing is possible in principle but requires reconstruction and future-congruence evidence. Artifact c3f03af675848797ac51e98f0b1532c24818a1ca.
