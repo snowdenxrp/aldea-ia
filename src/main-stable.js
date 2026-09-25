@@ -302,7 +302,7 @@ function createMesh(a){
   const g=new THREE.Group(); g.userData.agentId=a.id; g.scale.setScalar(1.42);
   const blue=a.id==="alex", skin=0xf0bd91, clothes=blue?0x2f7de1:0xe87832, dark=blue?0x1f4f8c:0xb45624;
   const skinMat=material(skin,.9), clothMat=material(clothes,.82), darkMat=material(dark,.88), hairMat=material(0x3b2a22,1), shoeMat=material(0x3b332f,1);
-  const torso=new THREE.Mesh(new THREE.BoxGeometry(.62,.68,.38),clothMat); torso.position.y=1.18;
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(.42,.34,.72,12),clothMat); torso.position.y=1.18;
   const chest=new THREE.Mesh(new THREE.BoxGeometry(.7,.26,.42),clothMat); chest.position.y=1.42;
   const waist=new THREE.Mesh(new THREE.CylinderGeometry(.29,.31,.18,10),darkMat); waist.position.y=.83;
   const collar=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,6,16),skinMat); collar.rotation.x=Math.PI/2; collar.position.y=1.52;
