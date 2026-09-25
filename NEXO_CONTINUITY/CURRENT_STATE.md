@@ -9,7 +9,7 @@ Recovery keyword: CONTINUITY
 Continuity directory: NEXO_CONTINUITY/
 
 ## Verified research chain
-AB49 → AB50 → AB51 → AB52 → AB53
+AB49 → AB50 → AB51 → AB52 → AB53 → AB54
 
 AB50: d9d6ae59574e43af7d75891208189864aeb7798c
 AB51: d9252fca819b47659bebbf4a36b4cb2473963bed
@@ -18,12 +18,14 @@ AB52: b93ec7fb52cc6cbdfaa891bac9fbf53e0ad7e343
 AB52 parent: d9252fca819b47659bebbf4a36b4cb2473963bed
 AB53: a229d37985e67881f32799938353e1cb339b3a90
 AB53 parent: b93ec7fb52cc6cbdfaa891bac9fbf53e0ad7e343
+AB54: ee3704e24e746116e049770944feeb308e2a5737
+AB54 parent: a229d37985e67881f32799938353e1cb339b3a90
 
 ## Continuity layer commits
 Initial continuity files were persisted sequentially; this state file update is the final continuity-layer checkpoint for this round.
 
 ## Current frontier
-AB53: AB52 reconciliation complete; exact protocol transition-semantics matrix is next.
+AB54: protocol transition-semantics matrix normalized; finite interpreter is next.
 
 ## Established
 - AB50 and AB51 are persisted without rewriting earlier artifacts.
@@ -58,7 +60,7 @@ FORMAL_VERIFICATION=NOT_PERFORMED
 IMPLEMENTATION=NOT_PERFORMED
 
 ## Next action
-Build the exact ATOMIC/LEASE/RECHECK transition-semantics matrix, then instantiate the ternary search against it; preserve UNKNOWN for missing semantics; escalate only justified residuals to four events; then attack LeaseBridge/AdmissionBindingClass and quotient congruence.
+Implement the finite research interpreter for AB54, execute the eight highest-value ternary attacks, then broaden to all 286 triples; preserve UNKNOWN for missing semantics; escalate only justified residuals to four events.
 
 ## Persistence rule for every future research round
 Never finish a substantive round with knowledge only in chat. Persist the research artifact, update RESEARCH_LEDGER.md, CLAIM_STATUS.md, OPEN_PROBLEMS.md and NEXT_ACTIONS.md as needed, then update CURRENT_STATE.md with the verified resulting HEAD SHA and parent relationship. Never overwrite prior AB artifacts.
