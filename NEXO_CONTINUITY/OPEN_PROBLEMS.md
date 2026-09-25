@@ -34,3 +34,18 @@ AB57 code audit established that FutureObs_PAA currently emits only the immediat
 - Narrowed: UsedAdmissionContext is captured as an immutable identity-bearing record at ADMIT.
 
 Still open: executing the AB61 repaired gate, complete post-ADMIT continuation legality, LEASE_RENEW/RETRY/MUTATION/RECHECK semantics, complete binding enumeration, canonical quotient congruence, EventDAG closure, HistorySupport elimination, bridge merge, and formal verification.
+6. Broaden to all 286 ternary triples only after the interpreter and ternary gate are fully specified.
+7. Escalate only justified survivors to four-event searches.
+8. Resolve whether HistorySupport can be eliminated from the abstract kernel.
+9. Resolve LeaseBridge versus AdmissionBindingClass merge.
+10. Attack quotient congruence under every legal transition class.
+11. Formulate refinement obligations and exact TLA+ abstract variables.
+12. Only after closure criteria are satisfied begin TLC/TLAPS and implementation work.
+
+## AB65 — execution and semantic composition gaps
+
+- Execution remains unverified: no persisted AB65 gate output exists yet.
+- UNKNOWN history events must not be represented as a single unchanged successor state when evaluating future observations; possible epistemic successor states must remain explicit until a justified merge exists.
+- The current lower_obs includes event order; canonical observability of that order is not yet established.
+- EventDAG legal topological-order closure remains partial.
+- LEASE_RENEW, RETRY, MUTATION/RECHECK and complete binding domains remain unresolved.
