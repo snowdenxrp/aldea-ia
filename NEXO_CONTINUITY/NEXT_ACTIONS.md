@@ -246,3 +246,8 @@ Evidence matrix persisted and read back. Next: enumerate only evidence-supported
 ## AB104.2 continuation
 
 Order analysis persisted. Next: test whether any unresolved order can be narrowed by recovering exact transition wording from AB36/AB38 and the post-AB49 renewal/replay artifacts. If no decisive law exists, construct the smallest explicit two-completion model and use it only as an epistemic counterexample, not as actual protocol behavior.
+
+
+## AB104.3 continuation
+
+AB104.3 confirms the semantic gap by an explicit two-completion epistemic test. Next exact action: recover any remaining post-AB49 artifacts by filename/content searches around lease, bridge, retry, replay and policy ordering; separately re-check AB65 workflow execution. Do not promote either hypothetical completion to protocol semantics.
