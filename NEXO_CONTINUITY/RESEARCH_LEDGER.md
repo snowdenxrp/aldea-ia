@@ -122,3 +122,16 @@ External evidence remains consistent with this direction: belief-state methods r
 Status unchanged: TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; FORMAL_VERIFICATION=NOT_PERFORMED; IMPLEMENTATION=NO_CHANGE; EXECUTION=NOT_VERIFIED.
 
 Next action: formalize and test the minimal successor-status object against AB54 constraints before modifying AB61/AB65 or expanding to 286 triples.
+
+
+## AB74.1 — 2026-09-25 — continuity persistence hardening
+
+Research/process question: how can continuity remain durable when selected contents-file writes are blocked by the current connector route?
+
+Evidence: the additive AB74.1 hardening artifact was successfully created on main at commit 73ad70758b760658781a151d16e5164e4363e8fa. The connector also exposes lower-level Git object operations (create_blob/create_tree/create_commit/update_ref), providing a possible recovery route. No evidence establishes GitHub repository corruption or a need to migrate the canonical repository.
+
+Result: keep GitHub main canonical. Use additive recovery artifacts for blocked writes; use fresh blob SHAs and sequential updates for existing files; read back each write; verify final ancestry before declaring a checkpoint verified. Lower-level Git operations are a controlled fallback, not a default path, and must never force-move main without exact parent verification.
+
+Semantic state: unchanged. TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; EXECUTION=NOT_VERIFIED; integrated Nexo assembly remains blocked by AB66.
+
+Next: formalize and test the minimal successor-status object KNOWN_NONEMPTY | KNOWN_EMPTY | UNKNOWN with provenance against AB54 constraints. Do not broaden to 286 triples or promote UNKNOWN.
