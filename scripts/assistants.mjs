@@ -7,6 +7,7 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
 import { createLearningMemory, learnFromReports } from "../src/assistants/memory.js";
 import { runAssistantSquad } from "../src/assistants/squad.js";
+import { buildNexoMission } from "../src/nexo/orchestrator.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
 const MEMORY_PATH = new URL("../.lumina-assistant-memory.json", import.meta.url);
@@ -69,6 +70,8 @@ const structuralReport = {
 const squadReport = runAssistantSquad({ simulation });
 const report = buildAssistantReport({ debuggerReport, testerReport, analystReport, structuralReport });
 report.assistantSquad = squadReport;
+const nexoMission = buildNexoMission({ simulation, reports: [...squadReport.reports, debuggerReport, testerReport, analystReport], memory });
+report.nexoMission = nexoMission;
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
