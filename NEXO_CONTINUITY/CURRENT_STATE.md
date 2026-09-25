@@ -281,3 +281,24 @@ If any stage fails, checkpoint remains PARTIAL.
 
 ## Current canonical research frontier
 AB71/AB72 continuity repair precedes new semantic research. Successor-completeness, FutureObs_PAA, quotient congruence, EventDAG closure, HistorySupport, bridge merge, semantic freeze, formal verification, and integrated Nexo assembly remain unresolved as recorded in the recovery state.
+
+
+## AB72 final repair verification — 2026-09-25
+
+The six legacy continuity documents have now been synchronized additively and read back successfully. Verification artifact: NEXO_CONTINUITY/AB72_CANONICAL_REPAIR_VERIFICATION_2026-09-25.md, commit 821c69264f4ae8e544d8ccd5ea0448b713b2dc26.
+
+Verified document blobs:
+- CURRENT_STATE.md: 41599ef2e7ab11bcb8177b950f4196f7bebb81d0
+- NEXT_ACTIONS.md: 5a3599a0bf0951ccbf094f1a82a5d1af5708f2d4
+- RESEARCH_LEDGER.md: 3b3040c21a4fae0f3b619bebc5af77850a819220
+- OPEN_PROBLEMS.md: ad697c60bf16de4e69a6137ec796fbeac191ee5c
+- EVIDENCE_INDEX.md: a8052b98bbb3de4d47d0dae34191cf9054728ee1
+- CONTINUITY_PROTOCOL.md: 27ecf0cae0e6d188ff17e7b9b65b88eef6b3ec61
+
+The synchronization sequence was verified as linear: 6d48fa1 -> 1d5ef48 -> 0efeca6 -> f7be32f -> 82d09b1 -> 2f57892 -> 3c9ed0c, with one commit ahead and zero behind at each adjacent comparison, followed by the verification artifact commit.
+
+CONTINUITY_CHECKPOINT=VERIFIED_REPAIR_PENDING_FINAL_POINTER_READBACK
+
+No research conclusion changed. AB65 execution remains NOT_VERIFIED; TERNARY_PAA_COLLISION remains UNKNOWN; EventDAG closure remains PARTIAL; reconstruction remains bounded-only; semantic freeze and formal verification remain open; integrated Nexo assembly remains blocked by AB66.
+
+Exact next action: update RECOVERY_POINTER.md to the verified repair state, read it back, verify final HEAD ancestry, then resume successor-completeness research.
