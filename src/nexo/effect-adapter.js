@@ -28,47 +28,94 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null}={}) 
       return result;
     }
 
+    const preVersion=getStateVersion();
     let pre;
-    try { pre=typeof precondition==="function" ? await precondition({missionId,stepId,action,target,context,stateVersion:getStateVersion()}) : true; }
-    catch(error){ pre=false; }
+    try {
+      pre=typeof precondition==="function"
+        ? await precondition({missionId,stepId,action,target,context,stateVersion:preVersion})
+        : true;
+    } catch(error){ pre=false; }
+
     if(!pre){
       const result={status:"blocked",code:"PRECONDITION_FAILED",verified:false,action,target};
       executed.set(idempotencyKey,result);
       return result;
     }
 
+    // The precondition may await. Re-check the version so a concurrent mission
+    // cannot execute against a state that changed while the precondition ran.
     const beforeVersion=getStateVersion();
+    if(beforeVersion!==preVersion){
+      const result={
+        status:"blocked",code:"STATE_CHANGED_DURING_PRECONDITION",verified:false,
+        action,target,preVersion,beforeVersion
+      };
+      executed.set(idempotencyKey,result);
+      return result;
+    }
+
     let effectResult;
-    try { effectResult=await handler({missionId,stepId,action,target,context,beforeVersion}); }
-    catch(error){
-      const result={status:"failed",code:"EFFECT_EXCEPTION",verified:false,action,target,error:String(error?.message??error)};
+    try {
+      effectResult=await handler({missionId,stepId,action,target,context,beforeVersion});
+    } catch(error){
+      const afterExceptionVersion=getStateVersion();
+      const result={
+        status:"failed",
+        code:afterExceptionVersion!==beforeVersion ? "EFFECT_EXCEPTION_AFTER_STATE_CHANGE" : "EFFECT_EXCEPTION",
+        verified:false,action,target,error:String(error?.message??error)
+      };
       executed.set(idempotencyKey,result);
       return result;
     }
 
     if(!effectResult || !validStatus(effectResult.status)){
-      const result={status:"failed",code:"INVALID_EFFECT_RESULT",verified:false,action,target};
-      executed.set(idempotencyKey,result);
-      return result;
-    }
-    if(effectResult.status!=="completed"){
-      const result={...effectResult,verified:false,action,target};
+      const afterInvalidVersion=getStateVersion();
+      const result={
+        status:"failed",
+        code:afterInvalidVersion!==beforeVersion ? "PARTIAL_EFFECT_DETECTED" : "INVALID_EFFECT_RESULT",
+        verified:false,action,target
+      };
       executed.set(idempotencyKey,result);
       return result;
     }
 
     const afterVersion=getStateVersion();
-    let post=false;
-    try { post=typeof postcondition==="function" ? await postcondition({missionId,stepId,action,target,context,beforeVersion,afterVersion,effectResult}) : false; }
-    catch(error){ post=false; }
-
-    if(!post){
-      const result={status:"failed",code:"POSTCONDITION_FAILED",verified:false,action,target,effectResult};
+    if(effectResult.status!=="completed"){
+      const result={
+        ...effectResult,
+        status:"failed",
+        code:afterVersion!==beforeVersion ? "PARTIAL_EFFECT_DETECTED" : (effectResult.code??"EFFECT_NOT_COMPLETED"),
+        verified:false,action,target,beforeVersion,afterVersion
+      };
       executed.set(idempotencyKey,result);
       return result;
     }
 
-    const evidence={verified:true,kind:"effect-postcondition",action,target,beforeVersion,afterVersion,details:effectResult.details??null};
+    let post=false;
+    try {
+      post=typeof postcondition==="function"
+        ? await postcondition({
+            missionId,stepId,action,target,context,beforeVersion,afterVersion,effectResult
+          })
+        : false;
+    } catch(error){ post=false; }
+
+    if(post!==true){
+      const result={
+        status:"failed",
+        code:"POSTCONDITION_FAILED",
+        verified:false,action,target,effectResult,beforeVersion,afterVersion
+      };
+      executed.set(idempotencyKey,result);
+      return result;
+    }
+
+    const evidence={
+      verified:true,
+      kind:"effect-postcondition",
+      action,target,beforeVersion,afterVersion,
+      details:effectResult.details??null
+    };
     const result={status:"completed",verified:true,action,target,evidence,effectResult};
     executed.set(idempotencyKey,result);
     return result;
