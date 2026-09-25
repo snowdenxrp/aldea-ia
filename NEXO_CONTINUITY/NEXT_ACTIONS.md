@@ -175,3 +175,13 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 5. Keep AB61/AB65 unchanged until the completeness test justifies a semantic modification.
 6. Keep the eight-attack gate, 286-triple expansion, semantic freeze, formal verification, and integrated Nexo assembly blocked.
 7. If standalone artifact creation is blocked again, preserve the result additively in CONTINUITY canonical files and explicitly record the blocked operation; never claim an unverified artifact.
+
+
+## AB76 next actions — 2026-09-25
+
+1. Inspect AB25/AB26/AB36/AB38/AB49 artifacts for evidence that can recover any unresolved C1-C6 completeness dimension.
+2. Do not invent missing protocol law when evidence is absent.
+3. For each recovered dimension, record exact evidence and whether it is explicit or derived.
+4. Re-evaluate LEASE_RENEW, RETRY, MUTATION, and RECHECK only after evidence recovery.
+5. Keep UNKNOWN when any decisive completeness dimension remains unresolved.
+6. Keep AB61/AB65 and the 286-triple expansion blocked until the gate changes by evidence.
