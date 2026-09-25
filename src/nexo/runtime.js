@@ -1,5 +1,6 @@
 import { beginNexoStep, advanceNexoMission } from "./orchestrator.js";
 import { recordNexoOutcome } from "../assistants/memory.js";
+import { createLuminaEffectAdapter } from "./simulation-adapter.js";
 
 export async function executeNexoStep({
   mission,
@@ -37,4 +38,22 @@ export async function executeNexoStep({
     status:outcome,evidence
   });
   return {mission:advanced,memory:nextMemory,adapterResult,status:outcome};
+}
+
+// Bounded concrete bridge: Nexo mission runtime -> real Lúmina simulation state.
+// Only the effects registered by createLuminaEffectAdapter are executable.
+export async function executeLuminaNexoStep({
+  simulation,
+  mission,
+  stepId,
+  memory=null,
+  context={},
+  precondition,
+  postcondition
+}={}) {
+  if(!simulation) return {mission:null,memory,adapterResult:null,status:"invalid"};
+  const adapter=createLuminaEffectAdapter(simulation);
+  return executeNexoStep({
+    mission,stepId,adapter,memory,context,precondition,postcondition
+  });
 }
