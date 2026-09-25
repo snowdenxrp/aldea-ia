@@ -135,3 +135,24 @@ Result: keep GitHub main canonical. Use additive recovery artifacts for blocked 
 Semantic state: unchanged. TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; EXECUTION=NOT_VERIFIED; integrated Nexo assembly remains blocked by AB66.
 
 Next: formalize and test the minimal successor-status object KNOWN_NONEMPTY | KNOWN_EMPTY | UNKNOWN with provenance against AB54 constraints. Do not broaden to 286 triples or promote UNKNOWN.
+
+
+## AB75 — 2026-09-25 — minimal successor-status semantics
+
+Research question: can the smallest successor representation distinguish known non-empty, proven empty, and unresolved successor relations without fabricating successors?
+
+External research reviewed: recent runtime-verification work explicitly evaluates observed executions together with multiple anticipated continuations, and recent partial-observability runtime-verification work treats missing/delayed/unobservable events as semantic uncertainty. These sources support separating observed history from admissible future behavior, but do not select Nexo's final semantics. citeturn0academia12turn0academia13
+
+Research result: the minimal research boundary is SUCCESSOR_STATUS = KNOWN_NONEMPTY | KNOWN_EMPTY | UNKNOWN. KNOWN_EMPTY requires a completeness basis for the scoped successor relation; absence of an enumerated successor is never sufficient. UNKNOWN may preserve evidence-backed candidate successors but never treats them as exhaustive. Specified nondeterminism remains distinct from epistemic UNKNOWN.
+
+Completeness basis must cover the source context, complete legality/admission predicate, complete post-state/update law, relevant frame/invalidation behavior, observation/context mapping, and the claimed enumeration domain. If a decisive component remains unresolved, status stays UNKNOWN.
+
+Applied to AB74/AB54/AB61: LEASE_RENEW=UNKNOWN; RETRY=UNKNOWN; MUTATION=UNKNOWN; RECHECK=UNKNOWN. No concrete divergent B case is established. The abstract AB73 two-completion construction remains abstract only.
+
+AB61 already contains ContinuationSetStatus with NONEMPTY_KNOWN / EMPTY_KNOWN / UNKNOWN, but its bounded candidate-event list does not itself establish the protocol completeness predicate required to make EMPTY_KNOWN semantically meaningful for unresolved events. Therefore this is a research semantic boundary, not a promotion of the AB61 implementation.
+
+Persistence note: creation of a new AB75 standalone artifact was blocked by the connector security layer in this round. No success is claimed for that file. The substantive AB75 result is therefore being preserved additively in the canonical RESEARCH_LEDGER.md, CURRENT_STATE.md, and NEXT_ACTIONS.md instead; this follows the AB74.1 fallback rule and avoids fabricated persistence.
+
+Status remains unchanged: TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; EXECUTION=NOT_VERIFIED.
+
+Next: construct protocol-completeness records for the four unresolved events and test whether any AB54 rule supplies all required completeness components. Do not modify AB61/AB65 or expand to 286 triples until that test is complete.
