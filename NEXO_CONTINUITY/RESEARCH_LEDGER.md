@@ -232,3 +232,18 @@ Replay evidence was rechecked from AB49/AB50/AB97/AB98. L4 replay/consumption is
 External cross-check: TLA+ treats actions as relations between old and new states and Next as the possible-step relation; this supports the rule that an incomplete successor generator cannot be treated as exhaustive. Auxiliary variables can aid refinement mappings but do not establish Nexo semantics.
 
 Next exact action: obtain/read a real AB65 result if exposed; otherwise continue evidence-constrained LEASE_CONSUME recovery, then LEASE_RENEW.
+
+
+## AB103 — 2026-09-25 — renewal evidence recovery pass
+
+Recovered and directly read AB84 (commit 2970b4f336baa9a2e23da8dca5ba0bcc00b52f40). AB84 confirms that LEASE_RENEW has identified source context and read-set vocabulary, but complete legality (C2), post-state law (C3), frame/invalidation (C4), successor-to-observation mapping (C5), and exhaustive successor domain (C6) are not closed. In particular, the evidence does not establish whether renewal extends or replaces a lease, whether it can occur after expiry, how policy change affects renewal eligibility, or whether renewal retains/replaces the bridge.
+
+AB49 (b4dfd5553826073a3099f7e2b8ad11327b6a1781) independently canonicalizes LEASE separators L1-L7, including renewal semantics, replay/consumption, invalidation, bridge-to-admission linkage, and renewal authority. This strengthens the identity of the missing dimensions but does not supply their complete transition law.
+
+AB54 (ee3704e24e746116e049770944feeb308e2a5737) explicitly encodes LEASE_RENEW as a transition whose mutation/post-state is unresolved and states that missing renewal authority/history can force UNKNOWN. Its matrix therefore corroborates AB84 rather than closing the gate.
+
+AB65 execution was checked again for trigger commit 854d88d61cd78bf4d04e2e438516f7acbead9c5: the workflow-run query returned zero runs and no AB65_GATE_OUTPUT file was recovered. Execution remains NOT_VERIFIED.
+
+Conclusion: this pass narrows the renewal boundary but produces no evidence-backed closure and no concrete P_AA collision. LEASE_RENEW remains UNKNOWN; LEASE_CONSUME remains UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION remains UNKNOWN. No interpreter semantics were modified.
+
+Next: target historical evidence around AB20/AB24 and any artifacts mentioning renewal extension/replacement, bridge retention/rebinding, renewal authority, expiry ordering, and policy-change interaction. If those do not close C2/C3/C6, preserve UNKNOWN and continue the bounded successor analysis.
