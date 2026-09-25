@@ -357,3 +357,7 @@ Adjusted `.github/workflows/ab65-gate.yml` so pushes modifying the AB104.11 pack
 
 ## AB104.16 — 2026-09-25
 Audited AB65 trigger chain directly from workflow source. Trigger configuration is VERIFIED: push on main includes the AB104.11 harness path and workflow_dispatch exists. The execution command and intended output persistence are visible in source. Actual execution/output remain NOT_VERIFIED; current workflow-run wrapper is restricted and absence from it is not proof of no run. Artifact commit 16c11a01e57ccbac72475ae4f8570db68a3552b7.
+
+
+## AB104.17 — 2026-09-25
+Added a research-only invalidation-sensitive packed-representation attack harness at NEXO_CONTINUITY/AB104_17_INVALIDATION_PACKED_ATTACKS_2026-09-25.py. The harness constructs PolicyChange and ResourceReincarnate history mutations while preserving the 13 bridge dimensions and admission-indexed linkage, and explicitly tests omission of FreshnessValidity. It is source-level only: no runtime result is claimed. Future LEASE_RENEW and LEASE_CONSUME observations remain UNKNOWN because no complete successor law is declared. Historical AB50/AB51 artifacts and protocol semantics remain untouched. Commits: initial artifact de5552692a8ae682c00f40654f2d6128570f5338; corrected import 79a5a7328813117f7dc9705a8b07d724609b46e7.
