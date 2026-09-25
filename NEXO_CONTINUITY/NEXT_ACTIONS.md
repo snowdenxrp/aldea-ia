@@ -309,3 +309,11 @@ Continue invalidation-sensitive packed representation attacks. For AB65, capture
 3. Recover complete LEASE_RENEW and LEASE_CONSUME transition laws in parallel, prioritizing C2 legality, C3 post-state, C4 invalidation/frame, C5 observation linkage, and C6 exhaustive successor enumeration.
 4. Recheck AB65 only for positive execution/output evidence; trigger configuration alone remains insufficient.
 5. Preserve UNKNOWN for FutureObs_PAA, quotient congruence, bridge merge, renewal, and consumption wherever decisive evidence is missing. Keep 286 expansion and formal verification blocked.
+
+
+## AB104.18 continuation
+1. Treat the local AB104.17 runtime result as representation evidence only; do not upgrade protocol gates.
+2. Attempt positive AB65 execution/output recovery through available GitHub evidence; configuration alone remains insufficient.
+3. Continue targeted recovery of complete LEASE_RENEW and LEASE_CONSUME laws, prioritizing C2-C6 gaps.
+4. If no new law is recovered, construct only bounded epistemic tests and preserve UNKNOWN.
+5. Keep 286 expansion, semantic freeze, formal verification, and integrated Nexo assembly blocked until evidence closes the required gates.
