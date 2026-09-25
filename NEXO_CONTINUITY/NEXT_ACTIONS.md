@@ -225,3 +225,14 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 4. Re-query AB65 workflow output before claiming execution; zero workflow runs remains NOT_VERIFIED.
 5. Preserve UNKNOWN and do not modify AB61/AB65 semantics unless evidence closes a required gate.
 6. Keep eight-attack closure, 286-triple expansion, semantic freeze, formal verification, and integrated Nexo assembly blocked.
+
+
+## AB104 next actions — 2026-09-25
+
+1. Build an evidence matrix for LEASE_RENEW covering: legality at current/non-current/expired lease state; extension vs replacement identity; renewal authority; bridge retention vs rebinding; policy/delegation/incarnation compatibility after renewal; and renewal ordering relative to expiry/admission.
+2. Build the parallel LEASE_CONSUME matrix covering: legality; lease/attempt/operation identity; replay/consumption post-state; frame/invalidation; actual admission linkage; and complete successor enumeration.
+3. For every matrix cell, label VERIFIED_FROM_EVIDENCE / DERIVED / UNKNOWN; never infer a protocol rule from structural field overlap.
+4. Re-run the AB65 workflow-run query before interpreting any runner output. Current result for trigger 854d88d61cd78bf4d04e2e438516f7acbead9c5e is zero runs.
+5. If a complete rule is recovered, instantiate only the smallest affected bounded successor experiment and compare FutureObs_PAA; if not, preserve UNKNOWN.
+6. Keep AB61/AB65 semantics unchanged, 286-triple expansion blocked, semantic freeze blocked, formal verification blocked, and integrated Nexo assembly blocked.
+7. Persist the matrix/research result additively and verify read-back plus ancestry before closing the checkpoint.
