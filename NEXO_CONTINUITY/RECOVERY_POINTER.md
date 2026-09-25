@@ -28,3 +28,10 @@ Final status update commit: 9e1b090d5f2555398e9d6ad1ec51be2757f3525f
 The six legacy continuity documents were synchronized additively and read back with the exact blob SHAs recorded in the verification artifact. Their update sequence was verified linear. The earlier PARTIAL_UNTIL_REPAIR status remains historical in the AB72 recovery snapshot; this pointer now reflects the current repaired state.
 
 Recovery rule remains unchanged: do not infer semantic closure from continuity repair. Resume only from the verified research state and preserve UNKNOWN/PENDING.
+
+
+## AB72 correction — CLAIM_STATUS included — 2026-09-25
+
+The active canonical continuity set includes CLAIM_STATUS.md. Its verified blob is d99569d6dc6f064c4b2984a3a35d749ace91ae1e and its synchronization commit is 68c3b27784c22d1d16dc827c7f5f16c0acf4db62.
+
+CANONICAL_REPAIR_STATUS=VERIFIED
