@@ -1,11 +1,11 @@
 {
   "version": 4,
-  "savedAt": 1790380229560,
+  "savedAt": 1790380252393,
   "day": 672,
-  "hour": 9.305573333559805,
+  "hour": 9.914453333559818,
   "world": {
     "day": 672,
-    "timeOfDay": 9.305573333559805,
+    "timeOfDay": 9.914453333559818,
     "speed": 1,
     "resources": {
       "water": {
@@ -28948,17 +28948,12 @@
       "version": 1,
       "activeRegionPadding": 1,
       "activeRegions": [
-        "5:4",
-        "5:5",
-        "5:6",
+        "6:3",
         "6:4",
         "6:5",
-        "6:6",
+        "7:3",
         "7:4",
         "7:5",
-        "7:6",
-        "6:3",
-        "7:3",
         "8:3",
         "8:4",
         "8:5"
@@ -29490,7 +29485,7 @@
         },
         "7:4": {
           "key": "7:4",
-          "visits": 7334,
+          "visits": 7366,
           "discovered": true,
           "lastVisitDay": 672,
           "population": 1,
@@ -29602,7 +29597,7 @@
         },
         "6:5": {
           "key": "6:5",
-          "visits": 10043,
+          "visits": 10057,
           "discovered": true,
           "lastVisitDay": 672,
           "population": 1,
@@ -30761,16 +30756,16 @@
       "age": 16.51506849315025,
       "alive": true,
       "needs": {
-        "hunger": 73.54297599999971,
-        "thirst": 59.298389333331436,
-        "energy": 59.933600000001846,
-        "social": 55.0106133333263,
+        "hunger": 72.2034399999997,
+        "thirst": 57.349973333331484,
+        "energy": 58.41140000000177,
+        "social": 54.70617333332625,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": 18.835241498892575,
-        "z": 6.717019483928643
+        "x": 23.82218679132407,
+        "z": 5.652004455727026
       },
       "currentActivity": "moving",
       "inventory": [
@@ -70719,8 +70714,8 @@
         "distance": 14.314048725434999,
         "score": 40.775454215245716,
         "target": {
-          "x": 18.835241498892575,
-          "z": 6.717019483928643
+          "x": 27.55271283430715,
+          "z": 4.855311076133657
         }
       },
       "lastActionName": "explore_area",
@@ -70732,34 +70727,34 @@
       },
       "lastPerception": {
         "position": {
-          "x": 20.51149110125879,
-          "z": 6.35903861330502
+          "x": 22.355852365416755,
+          "z": 5.965155715342961
         },
         "visibleAgents": [
           {
             "id": "bruno",
             "name": "Bruno",
-            "distance": 5.485951274565002
+            "distance": 1.7140487254349985
           }
         ],
         "nearbyResources": [
           {
             "type": "wood",
             "location": "forest",
-            "distance": 1.7188302473748949
+            "distance": 3.1129779360671894
           },
           {
             "type": "stone",
             "location": "rocky_zone",
-            "distance": 9.31857864821402
+            "distance": 9.183225614799282
           }
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 73.54297599999971,
-          "thirst": 59.298389333331436,
-          "energy": 59.933600000001846,
-          "social": 55.0106133333263,
+          "hunger": 72.2034399999997,
+          "thirst": 57.349973333331484,
+          "energy": 58.41140000000177,
+          "social": 54.70617333332625,
           "safety": 100,
           "health": 100
         }
@@ -70847,12 +70842,12 @@
       },
       "movement": {
         "target": {
-          "x": 18.835241498892575,
-          "z": 6.717019483928643
+          "x": 27.55271283430715,
+          "z": 4.855311076133657
         },
         "speed": 1.8,
         "moving": true,
-        "distanceTravelled": 157077.35075818707
+        "distanceTravelled": 157118.1063530886
       },
       "decisionCooldownHours": 0,
       "knownResources": {
@@ -71063,16 +71058,16 @@
       "age": 16.51506849315025,
       "alive": true,
       "needs": {
-        "hunger": 73.48430933333304,
-        "thirst": 59.298389333331436,
-        "energy": 59.933600000001846,
-        "social": 55.0106133333263,
+        "hunger": 72.14477333333303,
+        "thirst": 57.349973333331484,
+        "energy": 58.41140000000177,
+        "social": 54.70617333332625,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": 27.55271283430715,
-        "z": 4.855311076133657
+        "x": 22.56576754187565,
+        "z": 5.920326104335274
       },
       "currentActivity": "moving",
       "inventory": [
@@ -112591,8 +112586,8 @@
         "distance": 8.914048725434998,
         "score": 41.163312613112396,
         "target": {
-          "x": 27.55271283430715,
-          "z": 4.855311076133657
+          "x": 18.835241498892575,
+          "z": 6.717019483928643
         }
       },
       "lastActionName": "explore_area",
@@ -112604,34 +112599,34 @@
       },
       "lastPerception": {
         "position": {
-          "x": 25.876463231940935,
-          "z": 5.21329194675728
+          "x": 24.03210196778297,
+          "z": 5.607174844719339
         },
         "visibleAgents": [
           {
             "id": "alex",
             "name": "Alex",
-            "distance": 5.485951274565002
+            "distance": 1.7140487254349985
           }
         ],
         "nearbyResources": [
           {
             "type": "wood",
             "location": "forest",
-            "distance": 6.503734457245431
+            "distance": 4.6886520986679345
           },
           {
             "type": "stone",
             "location": "rocky_zone",
-            "distance": 9.964977108866439
+            "distance": 9.392880012754805
           }
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 73.48430933333304,
-          "thirst": 59.298389333331436,
-          "energy": 59.933600000001846,
-          "social": 55.0106133333263,
+          "hunger": 72.14477333333303,
+          "thirst": 57.349973333331484,
+          "energy": 58.41140000000177,
+          "social": 54.70617333332625,
           "safety": 100,
           "health": 100
         }
@@ -112732,12 +112727,12 @@
       },
       "movement": {
         "target": {
-          "x": 27.55271283430715,
-          "z": 4.855311076133657
+          "x": 18.835241498892575,
+          "z": 6.717019483928643
         },
         "speed": 1.8,
         "moving": true,
-        "distanceTravelled": 157502.08266314556
+        "distanceTravelled": 157542.8382580471
       },
       "decisionCooldownHours": 0,
       "knownResources": {
