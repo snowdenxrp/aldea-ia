@@ -1,12 +1,14 @@
 # OPEN PROBLEMS
 
 1. Complete concrete binding-state enumeration for the ternary closure; AB52 covered role/order/protocol skeletons but not the full Cartesian binding domain. AB55 only exercised a 64-state bounded domain.
-2. Run the eight highest-value ternary attacks against the matrix, then broaden to all 286 triples if the interpreter is sound.
-3. Test future-observation collisions only after the ternary read-set gate is fully specified.
-4. Attempt deterministic reconstruction of any surviving higher-order relation.
-5. Escalate only justified survivors to four-event searches.
-6. Resolve whether HistorySupport can be eliminated from the abstract kernel.
-7. Resolve LeaseBridge versus AdmissionBindingClass merge.
-8. Attack quotient congruence under every legal transition class.
-9. Formulate refinement obligations and exact TLA+ abstract variables.
-10. Only after closure criteria are satisfied begin TLC/TLAPS and implementation work.
+2. Complete executable lower-arity observation and FutureObs_PAA comparison over the concrete binding domain.
+3. Specify protocol-specific continuation legality, especially LEASE_RENEW successor semantics, RETRY inheritance, and MUTATION/RECHECK ordering/result linkage.
+4. Complete EventDAG edge-generation rules and enumerate all legal topological orders without inventing missing concurrency semantics.
+5. Attempt deterministic reconstruction of any surviving higher-order relation under the complete future-observation criterion.
+6. Broaden to all 286 ternary triples only after the interpreter and ternary gate are fully specified.
+7. Escalate only justified survivors to four-event searches.
+8. Resolve whether HistorySupport can be eliminated from the abstract kernel.
+9. Resolve LeaseBridge versus AdmissionBindingClass merge.
+10. Attack quotient congruence under every legal transition class.
+11. Formulate refinement obligations and exact TLA+ abstract variables.
+12. Only after closure criteria are satisfied begin TLC/TLAPS and implementation work.
