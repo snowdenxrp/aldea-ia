@@ -1,9 +1,9 @@
 # NEXT ACTIONS
 
-1. Build the protocol transition-semantics matrix for ATOMIC, LEASE and RECHECK.
-2. For every transition, specify precondition, semantic read-set, mutation, admission-link effect, invalidation, observation, UNKNOWN/PENDING, and boundary applicability.
-3. Instantiate the 286 ternary role triples against the normalized transition rules.
-4. For each surviving ternary candidate construct the smallest legal future continuation that can read the joint distinction.
+1. Implement the finite research interpreter for the AB54 transition-semantics matrix.
+2. Use explicit UNKNOWN as a third epistemic value and partial-order histories; never invent unspecified successors.
+3. Execute the eight highest-value ternary attacks first, then broaden to all 286 triples.
+4. Compare FutureObs_PAA and attempt deterministic reconstruction for each surviving candidate.
 5. Compare P_AA future observations including UNKNOWN.
 6. Attempt absorption/reconstruction and EventDAG representation.
 7. Classify each candidate using the AB51 five-way decision table.
