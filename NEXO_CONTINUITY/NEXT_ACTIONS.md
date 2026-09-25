@@ -215,3 +215,13 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 5. Keep H1/H2 as representable replay states, not as a proven PAA collision.
 6. Keep 286-triple expansion, semantic freeze, formal verification, and integrated Nexo assembly blocked until successor completeness improves.
 7. Persist every substantive result additively and read it back immediately.
+
+
+## AB103 next actions — 2026-09-25
+
+1. Recover historical AB20/AB24 and later renewal evidence specifically for extension-vs-replacement, expiry eligibility, renewal authority, bridge retention/rebinding, and policy-change ordering.
+2. For each recovered rule, map C2 legality, C3 post-state, C4 invalidation/frame, C5 observation linkage, and C6 enumeration domain; do not infer missing cells.
+3. Re-check LEASE_CONSUME evidence in parallel for attempt-scoped consumption identity and complete post-state law.
+4. Re-query AB65 workflow output before claiming execution; zero workflow runs remains NOT_VERIFIED.
+5. Preserve UNKNOWN and do not modify AB61/AB65 semantics unless evidence closes a required gate.
+6. Keep eight-attack closure, 286-triple expansion, semantic freeze, formal verification, and integrated Nexo assembly blocked.
