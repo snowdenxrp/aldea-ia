@@ -5,6 +5,7 @@ import { createSimulation, tick } from "./simulation.js";
 import { setMovementTarget, moveAgent } from "./movement.js";
 import { getRegionForPosition, getBiomeForRegion, normalizeSpatialWorld } from "./spatial.js";
 import { buildVillage } from "./village.js";
+import { getVillageDetailLevel, applyVillageDetailLevel } from "./village-lod.js";
 
 const app=document.querySelector("#app"), worldTime=document.querySelector("#worldTime");
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x9ec9df); scene.fog=new THREE.Fog(0x9ec9df,55,150);
@@ -157,7 +158,12 @@ function createWaterRipples(){
   }
 }
 createWaterRipples();
-buildVillage(scene);
+const villageRoot=buildVillage(scene);
+let villageLodLevel=null;
+function updateVillageLOD(){
+  const level=getVillageDetailLevel(cameraDistance);
+  if(level!==villageLodLevel){applyVillageDetailLevel(villageRoot,level);villageLodLevel=level;}
+}
 const structureMeshes=new Map();
 function material(color,roughness=.8){return new THREE.MeshStandardMaterial({color,roughness});}
 function box(w,h,d,color){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material(color));}
@@ -446,5 +452,5 @@ function ensureVisibleMotion(agent,now,dt){
   }
 }
 
-function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;try{animateLighting(simulation.hour);}catch(e){console.error("Lúmina lighting",e);}try{animateEnvironment(now/1000);}catch(e){console.error("Lúmina environment",e);}try{for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);ensureVisibleMotion(a,now/1000,dt);}}catch(e){console.error("Lúmina simulation",e);}try{syncMeshes();}catch(e){console.error("Lúmina meshes",e);}try{const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}}catch(e){console.error("Lúmina UI",e);}if(now-lastSave>=2000){try{save();}catch(e){console.error("Lúmina save",e);}lastSave=now;}}
+function update(){const now=performance.now(),dt=Math.min((now-last)/1000,.25);last=now;try{animateLighting(simulation.hour);}catch(e){console.error("Lúmina lighting",e);}try{animateEnvironment(now/1000);}catch(e){console.error("Lúmina environment",e);}try{for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);}tick(simulation,dt/37.5);for(const a of agents){if(a.currentIntent?.target)setMovementTarget(a,a.currentIntent.target,world.bounds);moveAgent(a,dt);ensureVisibleMotion(a,now/1000,dt);}}catch(e){console.error("Lúmina simulation",e);}try{syncMeshes();}catch(e){console.error("Lúmina meshes",e);}try{updateVillageLOD();}catch(e){console.error("Lúmina village LOD",e);}try{const panel=document.querySelector("#agentPanel");if(selectedAgentId&&panel?.classList.contains("open"))renderAgentPanel(agents.find(a=>a.id===selectedAgentId));if(worldTime){const h=Math.floor(simulation.hour),m=Math.floor((simulation.hour-h)*60),alive=agents.filter(a=>a.alive!==false).length;worldTime.textContent=`Aldea IA · Día ${simulation.day} · ${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")} · Habitantes ${alive} · Velocidad 1x`;const count=document.querySelector("#agentDebug strong");if(count)count.textContent=`Habitantes: ${alive}`;}}catch(e){console.error("Lúmina UI",e);}if(now-lastSave>=2000){try{save();}catch(e){console.error("Lúmina save",e);}lastSave=now;}}
 loadLocal();normalize();syncMeshes();centerOnAgents();loadRemoteIfNeeded();updateCamera();addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});addEventListener("beforeunload",save);function animate(){requestAnimationFrame(animate);update();updateCamera();renderer.render(scene,camera);}animate();
