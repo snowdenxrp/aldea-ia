@@ -289,3 +289,7 @@ Next: add semantic-view comparator over every preserved bridge dimension and adm
 
 ## AB104.13 continuation
 Next: seek an actual executable runner for the harness, then add invalidation-sensitive reconstruction tests and compare packed records before/after PolicyChange and ResourceReincarnate. Preserve UNKNOWN whenever transition semantics are unresolved. Recheck AB65 workflow execution.
+
+
+## AB104.14 continuation
+Next: obtain actual runtime execution of the harness if the repository runner can be established; otherwise continue source-level attack construction without upgrading claims. Then target complete transition-law recovery for invalidation/renewal/consume and compare future observations.
