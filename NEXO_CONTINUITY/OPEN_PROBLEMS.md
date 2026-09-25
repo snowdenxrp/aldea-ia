@@ -20,3 +20,7 @@ The chat-limit gap itself is now covered by CONTINUITY_V2_HANDOFF_2026-09-25.md.
 ## AB57 — implementation gaps narrowed
 
 The missing executable layer is no longer purely hypothetical: an explicit conservative harness now exists. The remaining open problems are semantic completeness, not absence of an execution scaffold. Do not treat the harness itself as proof or semantic freeze.
+
+## AB58 — harness audit findings
+
+AB57 code audit established that FutureObs_PAA currently emits only the immediate ADMIT observation; continuation legality for UNKNOWN events is suppressed rather than represented; EventDAG currently has no explicit predecessor edges; the context identity check is not discriminating under current known mutations; and lower_obs is not yet established as the canonical observational quotient. These are implementation-boundary findings, not protocol conclusions.
