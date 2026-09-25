@@ -35,3 +35,10 @@ Recovery rule remains unchanged: do not infer semantic closure from continuity r
 The active canonical continuity set includes CLAIM_STATUS.md. Its verified blob is d99569d6dc6f064c4b2984a3a35d749ace91ae1e and its synchronization commit is 68c3b27784c22d1d16dc827c7f5f16c0acf4db62.
 
 CANONICAL_REPAIR_STATUS=VERIFIED
+
+
+## AB72 inventory layer — 2026-09-25
+
+Complete continuity inventory: NEXO_CONTINUITY/AB72_CONTINUITY_INVENTORY_2026-09-25.md, commit 8663296aa3c271f96588471ccd657769c9b27dcc.
+
+The inventory enumerates the seven active canonical continuity documents, recovery layer, and AB72 provenance artifacts, with their verified blob SHAs and explicit repair invariants. It is a snapshot and must be refreshed additively after subsequent canonical changes.
