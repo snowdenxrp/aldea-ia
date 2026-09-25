@@ -180,3 +180,16 @@ The recovery narrows but does not close the unknowns. For all four events, C2 le
 Persisted artifact: NEXO_CONTINUITY/AB77_EVIDENCE_RECOVERY_AB25_AB26_AB49_2026-09-25.md at commit ab931b583b6d1b6384b1609c50453df1049d7bb4.
 
 Next: recover AB36 and AB38 if available, specifically looking for evidence that can supply C2/C3/C6 without inventing protocol law. If those remain incomplete, move to a bounded adversarial successor construction.
+
+
+## AB78 — 2026-09-25 — bounded adversarial successor test
+
+The AB73 two-completion construction was re-tested as an abstract bounded adversarial criterion using AB54 vocabulary only. M1: e -> s1 -> future ADMIT observation O1. M2: e -> s2 -> future ADMIT observation O2, with O1 != O2, while both completions agree on currently observed facts and satisfy known protocol constraints.
+
+Result: if both completions are protocol-admissible, the relation is not KNOWN_EMPTY and cannot be safely collapsed to a unique stutter successor. If the protocol does not decide which completion is admissible, the epistemic result is UNKNOWN. If both are explicitly permitted, that is specified nondeterminism and may be KNOWN_NONEMPTY once the relation is complete. If one is ruled out, completeness must still be checked before claiming a final relation.
+
+This remains an abstract test only. No concrete Nexo B-case was established for LEASE_RENEW, RETRY, MUTATION, or RECHECK. Therefore all four remain UNKNOWN and no implementation change is justified.
+
+Standalone AB78 artifact creation was blocked by connector security in this round. No artifact success is claimed. The result is preserved here and in CURRENT_STATE/NEXT_ACTIONS under the AB74.1 additive fallback protocol.
+
+Next: recover AB36/AB38 material if available; use it to constrain M1/M2. If no decisive rule is recovered, retain UNKNOWN and document the missing protocol law.
