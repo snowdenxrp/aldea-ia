@@ -248,3 +248,13 @@ Commit: f37dcd8cbce9a5378a8b7c681d2d790445beaea9
 Research now distinguishes: KNOWN_PRESENT, KNOWN_ABSENT, UNKNOWN_RELATION, SPECIFIED_NONDETERMINISM, and KNOWN_EMPTY_SUCCESSOR_SET. UNKNOWN is epistemic uncertainty about the relation; nondeterminism is specified multiplicity; known-empty requires evidence of relation completeness. A candidate TransitionKnowledge object preserves relation status, justified known successors, completeness, and provenance, but is NOT architecture.
 
 No AB61/AB65 modification was made. FutureObs_PAA semantics remain OPEN. TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; EXECUTION=NOT_VERIFIED.
+
+
+## AB70 — FutureObs algebra — 2026-09-25
+
+Persisted artifact: NEXO_CONTINUITY/AB70_FUTUREOBS_ALGEBRA_COUNTEREXAMPLES_2026-09-25.md
+Commit: 79562d813536f0cdee827504612109d346c5dbe8
+
+Derived research candidate: FutureObsResult = EMPTY_KNOWN | KNOWN_AGREEMENT(observation) | KNOWN_DIVERGENCE(set of observations) | UNKNOWN. Definitive EMPTY requires complete successor enumeration. Known multiple successors may still yield a definitive future observation when all observations agree. UNKNOWN never receives fabricated concrete successors.
+
+Five counterexamples document why collapsing UNKNOWN, known nondeterminism, and known-empty is unsound, and why CurrentObs/FutureObs equality alone cannot establish quotient congruence. Candidate remains unproven for P_AA; no code modified.
