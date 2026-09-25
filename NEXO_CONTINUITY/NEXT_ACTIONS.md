@@ -101,3 +101,12 @@ This includes searching sources, studying real systems/runtimes and relevant pri
 3. Construct counterexamples where collapsing these categories causes false collision/reconstruction results.
 4. Test candidate TransitionKnowledge only as a research model; do not integrate it into AB61/AB65 yet.
 5. Only after semantic counterexamples pass, determine whether code changes are justified.
+
+
+## AB70 — next research frontier — 2026-09-25
+
+1. Recover P_AA-specific evidence defining when a continuation successor relation is complete.
+2. Map each unresolved AB54 continuation event (LEASE_RENEW, RETRY, MUTATION/RECHECK) to that completeness requirement.
+3. Test the AB70 FutureObs candidate against actual protocol semantics and construct adversarial cases.
+4. Determine whether provenance/completeness affects canonical observation or only epistemic support.
+5. Only after these tests consider a research-only implementation change.
