@@ -24,6 +24,37 @@ const LUMINA_ACTIONS=new Set([
   "contribute_commons","withdraw_commons","trade"
 ]);
 
+function actionEvidenceValid(simulation,target,action,effectResult){
+  if(!effectResult?.success) return false;
+  const agent=simulation.agents.find(a=>a.id===target);
+  if(!agent || agent.alive===false) return false;
+  const numericAmount=effectResult.amount==null || (Number.isFinite(Number(effectResult.amount)) && Number(effectResult.amount)>0);
+  if(!numericAmount) return false;
+
+  switch(action?.name){
+    case "rest": return agent.currentActivity==="resting" && Number(agent.needs?.energy)>=0;
+    case "drink": return effectResult.effect==="thirst_recovered" && agent.currentActivity==="drinking" && Number(agent.needs?.thirst)>=0;
+    case "eat_plant": return effectResult.effect==="plant_experiment" && agent.currentActivity==="eating";
+    case "catch_fish": return effectResult.effect==="fish_caught" && agent.currentActivity==="fishing" && agent.inventory.some(i=>i.type==="fish"&&i.amount>0);
+    case "eat_fish": return effectResult.effect==="fish_eaten" && agent.currentActivity==="eating";
+    case "gather_wood": return effectResult.effect==="wood_gathered" && agent.currentActivity==="gathering" && agent.inventory.some(i=>i.type==="wood"&&i.amount>0);
+    case "gather_stone": return effectResult.effect==="stone_gathered" && agent.currentActivity==="gathering" && agent.inventory.some(i=>i.type==="stone"&&i.amount>0);
+    case "eat_farm_food": return effectResult.effect==="farm_food_eaten" && agent.currentActivity==="eating";
+    case "build_shelter": return effectResult.effect==="shelter_built" || effectResult.success===true;
+    case "craft_tool": return effectResult.success===true;
+    case "farm": return effectResult.success===true;
+    case "harvest": return effectResult.success===true;
+    case "contribute_commons":
+    case "withdraw_commons":
+    case "trade": return effectResult.success===true;
+    default: return false;
+  }
+}
+
+export function createLuminaActionPostcondition(simulation, action, target){
+  return ({effectResult})=>actionEvidenceValid(simulation,target,action,effectResult?.actionResult??effectResult);
+}
+
 export function createLuminaEffectAdapter(simulation){
   if(!simulation?.agents || !simulation?.world)
     throw new TypeError("simulation de Lúmina requerida");
@@ -68,8 +99,6 @@ export function createLuminaEffectAdapter(simulation){
       const beforeVersion=stateVersion(simulation);
       const result=executeAction(simulation,agent,action);
       if(!result?.success){
-        // The underlying action remains the source of truth. A failed action is
-        // still an observed physical outcome and is never promoted to success.
         return {
           status:"failed",
           code:"LUMINA_ACTION_FAILED",
