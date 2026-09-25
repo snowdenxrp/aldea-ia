@@ -6,7 +6,7 @@ const adapter=createEffectAdapter({
   getStateVersion:()=>version,
   handlers:{
     safe_repair: async ({target})=>{ calls++; version++; return {status:"completed",details:"changed "+target}; },
-    partial_repair: async ()=>({status:"failed",code:"PARTIAL_EFFECT"}),
+    partial_repair: async ()=>{ version++; return {status:"failed",code:"PARTIAL_EFFECT"}; },
   }
 });
 
@@ -43,17 +43,41 @@ const mismatch=await adapter.execute({
 });
 assert.equal(mismatch.status,"failed");
 assert.equal(mismatch.code,"POSTCONDITION_FAILED");
+assert.equal(mismatch.verified,false);
+
+const concurrent=await adapter.execute({
+  missionId:"m1",stepId:"s2",action:"safe_repair",target:"alex",idempotencyKey:"m1:s6",
+  precondition:async()=>{ version++; return true; },
+  postcondition:()=>true
+});
+assert.equal(concurrent.status,"blocked");
+assert.equal(concurrent.code,"STATE_CHANGED_DURING_PRECONDITION");
+assert.equal(calls,2);
 
 const partial=await adapter.execute({
   missionId:"m1",stepId:"s3",action:"partial_repair",target:"alex",idempotencyKey:"m1:s4"
 });
 assert.equal(partial.status,"failed");
+assert.equal(partial.code,"PARTIAL_EFFECT_DETECTED");
 assert.equal(partial.verified,false);
 
+const partialRetry=await adapter.execute({
+  missionId:"m1",stepId:"s3",action:"partial_repair",target:"alex",idempotencyKey:"m1:s4"
+});
+assert.equal(partialRetry.code,"PARTIAL_EFFECT_DETECTED");
+
+const evidenceMismatch=await adapter.execute({
+  missionId:"m1",stepId:"s4",action:"safe_repair",target:"alex",idempotencyKey:"m1:s7",
+  precondition:()=>true,postcondition:()=>({verified:true,kind:"fake"})
+});
+assert.equal(evidenceMismatch.status,"failed");
+assert.equal(evidenceMismatch.code,"POSTCONDITION_FAILED");
+assert.equal(evidenceMismatch.verified,false);
+
 const unsupported=await adapter.execute({
-  missionId:"m1",stepId:"s4",action:"unknown_action",idempotencyKey:"m1:s5"
+  missionId:"m1",stepId:"s5",action:"unknown_action",idempotencyKey:"m1:s5"
 });
 assert.equal(unsupported.status,"unsupported");
 assert.equal(unsupported.verified,false);
 
-console.log("Nexo: adaptador de efectos tipado, precondiciones, idempotencia y postcondiciones OK.");
+console.log("Nexo: adaptador tipado con concurrencia, idempotencia, detección de efecto parcial y evidencia estricta OK.");
