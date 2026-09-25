@@ -361,3 +361,7 @@ Audited AB65 trigger chain directly from workflow source. Trigger configuration 
 
 ## AB104.17 — 2026-09-25
 Added a research-only invalidation-sensitive packed-representation attack harness at NEXO_CONTINUITY/AB104_17_INVALIDATION_PACKED_ATTACKS_2026-09-25.py. The harness constructs PolicyChange and ResourceReincarnate history mutations while preserving the 13 bridge dimensions and admission-indexed linkage, and explicitly tests omission of FreshnessValidity. It is source-level only: no runtime result is claimed. Future LEASE_RENEW and LEASE_CONSUME observations remain UNKNOWN because no complete successor law is declared. Historical AB50/AB51 artifacts and protocol semantics remain untouched. Commits: initial artifact de5552692a8ae682c00f40654f2d6128570f5338; corrected import 79a5a7328813117f7dc9705a8b07d724609b46e7.
+
+
+## AB104.18 — 2026-09-25
+Executed the AB104.17 harness logic in an actual local Python runtime. Results: PolicyChange=(TRUE,KNOWN); ResourceReincarnate=(TRUE,KNOWN); missing FreshnessValidity=(FALSE,UNKNOWN); Future LEASE_RENEW=UNKNOWN; Future LEASE_CONSUME=UNKNOWN. This confirms only representation-level preservation behavior of the harness. It is not GitHub Actions/AB65 execution evidence and does not establish protocol semantics, P_AA collision, quotient congruence, or field elimination. Artifact: 8988e689f1ea0cd3d86a3d942efbd571a355edc0.
