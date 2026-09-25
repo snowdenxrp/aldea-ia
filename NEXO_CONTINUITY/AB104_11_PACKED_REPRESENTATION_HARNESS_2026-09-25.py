@@ -132,3 +132,46 @@ if __name__ == "__main__":
     print("ADM1:", compare_views(p, "ADM1")[0])
     print("ADM2:", compare_views(p, "ADM2")[0])
     print("future RENEW:", future_observation(p, "LEASE_RENEW"))
+
+
+def semantic_view_compare(p: PackedRecord, q: PackedRecord, admission_id: str) -> Tuple[str, Tuple[str, ...]]:
+    """Compare preserved semantic views conservatively.
+
+    Returns TRUE only when every bridge field and the selected admission link
+    are known and equal. Returns FALSE only for a known unequal component.
+    Returns UNKNOWN whenever required information is missing or unresolved.
+    """
+    ps, pb = reconstruct_bridge(p)
+    qs, qb = reconstruct_bridge(q)
+    pa_s, pa = reconstruct_admission_class(p, admission_id)
+    qa_s, qa = reconstruct_admission_class(q, admission_id)
+    if ps == UNKNOWN or qs == UNKNOWN or pa_s == UNKNOWN or qa_s == UNKNOWN:
+        return UNKNOWN, ()
+    for k in BRIDGE_FIELDS:
+        if pb[k].status == UNKNOWN or qb[k].status == UNKNOWN:
+            return UNKNOWN, ()
+        if pb[k].value != qb[k].value:
+            return FALSE, (k,)
+    if pa.attempt_id != qa.attempt_id:
+        return FALSE, ("AdmissionLink.attempt_id",)
+    if pa.used_context != qa.used_context:
+        return FALSE, ("AdmissionLink.used_context",)
+    return TRUE, ()
+
+
+def build_omission_example() -> PackedRecord:
+    p = build_minimal_example()
+    return PackedRecord(
+        bridge=tuple((k, v) for k, v in p.bridge if k != "ReplayBinding"),
+        admissions=p.admissions,
+        invalidation_history=p.invalidation_history,
+    )
+
+
+def build_altered_attempt_example() -> PackedRecord:
+    p = build_minimal_example()
+    links = (
+        AdmissionLink("ADM1", "A9", (("attempt", "A9"), ("bridge", "B0")), "AB26-admission-link"),
+        p.admissions[1],
+    )
+    return PackedRecord(p.bridge, links, p.invalidation_history)
