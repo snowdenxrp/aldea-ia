@@ -71,3 +71,14 @@ This includes searching sources, studying real systems/runtimes and relevant pri
 5. Execute the eight ternary attacks through lower-arity equality, FutureObs_PAA, reconstruction and EventDAG only after the semantic gate is justified.
 6. Preserve UNKNOWN and do not broaden to 286 triples until the eight-attack gate is semantically closed.
 \n\n## AB66 — research/architecture separation — 2026-09-25\n\n1. Treat AB50–AB65 as immutable research history, not as an assembly backlog.\n2. Maintain the epistemic classes EVIDENCE/FACT, HYPOTHESIS, UNKNOWN, PENDING, FAILED/REJECTED, EXPERIMENTAL IMPLEMENTATION, and VERIFIED with explicit scope.\n3. Research epistemic successor-set/partial-observation semantics before modifying FutureObs_PAA.\n4. Derive the canonical lower-arity observational equivalence from evidence; remove implementation-only discriminators unless observability is justified.\n5. Continue external research on three-valued/partial-observation runtime verification, provenance, identity/authorization, temporal continuation, and event-order semantics.\n6. Run counterexamples and executable tests only after the semantic model justifies them; never invent UNKNOWN successors.\n7. Complete the eight-attack semantic gate before any 286-triple expansion.\n8. Define model/refinement/formal-verification obligations and architecture candidates before integrated implementation.\n9. Reject the accumulated-patch path as the default architecture method; any reusable experimental component requires explicit later architecture acceptance.\n10. Persist every substantive research round and verify HEAD/parent linkage.\n\n### Hard implementation gate\nIntegrated Nexo assembly remains blocked until the AB66 research-to-architecture gate is satisfied.\n
+
+## AB67 — research delta — 2026-09-25
+
+1. Preserve UNKNOWN as unresolved transition knowledge; do not represent it as identity/unchanged state.
+2. Define the minimal successor semantics: KNOWN successor set, KNOWN empty successor set, UNKNOWN successor relation.
+3. Derive canonical observations from protocol evidence; treat implementation-only fields as non-canonical until justified.
+4. Define candidate transition/context observational equivalence and test congruence over relevant future contexts.
+5. Continue external research before changing the interpreter; use evidence to decide whether a powerset/symbolic epistemic representation is actually warranted.
+6. Only then implement the smallest research harness needed to test the model.
+7. Keep the eight-attack gate blocked until these semantics are justified and executable.
+8. Keep 286-triple expansion and integrated Nexo assembly blocked.
