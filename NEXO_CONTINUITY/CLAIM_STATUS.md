@@ -34,3 +34,7 @@ Continuity mechanisms are process controls and must never be interpreted as evid
 ## AB57 status — 2026-09-25
 
 The AB57 executable harness is now persisted. IMPLEMENTATION is upgraded only from NOT_PERFORMED to PARTIAL_RESEARCH_HARNESS. TERNARY_PAA_COLLISION remains UNKNOWN; no protocol collision was established. EVENTDAG_CLOSURE remains PARTIAL and RECONSTRUCTION remains BOUNDED_ONLY.
+
+## AB58 status — 2026-09-25
+
+AB58 is a semantic audit of the AB57 harness. No research claim changed status. TERNARY_PAA_COLLISION remains UNKNOWN; EVENTDAG_CLOSURE remains PARTIAL; RECONSTRUCTION remains BOUNDED_ONLY; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED. IMPLEMENTATION remains PARTIAL_RESEARCH_HARNESS.
