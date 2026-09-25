@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { world } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 
-const source = await (await fetch("https://raw.githubusercontent.com/snowdenxrp/aldea-ia/feature/visual-structures-humanoids-detail/src/main-stable.js")).text();
-const required = ["createHouse", "createFarm", "createMesh", "Torso", "CapsuleGeometry", "eyeL", "eyeR", "structureMeshes", "syncStructures"];
+const source = await (await import("node:fs/promises")).readFile(new URL("../src/main-stable.js", import.meta.url), "utf8");
+const required = ["createHouse", "createFarm", "createMesh", "const torso", "CapsuleGeometry", "eyeL", "eyeR", "structureMeshes", "syncStructures"];
 for (const token of required) assert.ok(source.includes(token), "faltó componente visual: " + token);
 assert.ok(source.includes("new THREE.ConeGeometry"), "las estructuras necesitan techos visibles");
 assert.ok(source.includes("new THREE.BoxGeometry"), "las estructuras necesitan geometría constructiva");
