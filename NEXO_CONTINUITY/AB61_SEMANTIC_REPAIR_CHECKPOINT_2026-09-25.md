@@ -97,6 +97,6 @@ IMPLEMENTATION = PARTIAL_RESEARCH_HARNESS
 
 ## 6. Exact next action
 
-Run the AB61 harness and the unchanged AB55 interpreter side-by-side; record whether AB55 historical counts reproduce exactly. Then execute the repaired eight-attack observational gate with explicit UNKNOWN continuation branches.
+The AB55 source reproduction is now CLOSED as a reproducibility repair: all eight historical result tuples match. Next, execute the AB61 repaired observational gate itself and persist its output as a new artifact. The gate must keep history-event execution separate from future-continuation legality so that UNKNOWN continuation legality does not contaminate the bounded history replay.
 
 Only after that should the research decide whether a complete bounded ternary gate can be claimed.
