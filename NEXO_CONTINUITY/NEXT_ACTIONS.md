@@ -194,3 +194,13 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 3. Keep each event UNKNOWN if any decisive completeness dimension remains unresolved.
 4. If AB36/AB38 do not close the gate, construct a bounded adversarial two-completion successor test using only AB54-compatible vocabulary.
 5. Do not infer missing protocol rules from structural field overlap or implementation behavior.
+
+
+## AB79 next actions — 2026-09-25
+
+1. AB36/AB38 were not recovered through commit-search routes; do not infer nonexistence.
+2. Use AB52 as the authoritative recovered guide for the next protocol-semantic pass.
+3. Extract ATOMIC/LEASE/RECHECK transition semantics into an explicit bounded schema.
+4. Mark C2/C3/C6 UNKNOWN wherever the accumulated evidence is incomplete.
+5. Do not promote mathematical ternary ambiguity into a protocol/P_AA collision.
+6. Keep the abstract two-completion adversarial test as the successor-completeness guard.
