@@ -93,3 +93,23 @@ e9dd6cc1379e631298cf3c564483fe31978e8bac
 49066ffbabd78b0ad5e9083340d8412a2c2344cc
 
 This state update is intentionally last in the continuity-hardening sequence. After commit, verify the resulting HEAD and parent linkage before treating the checkpoint as persisted.
+## AB57 checkpoint — 2026-09-25
+
+AB57 is IN PROGRESS. The executable observational/EventDAG research harness is persisted in:
+NEXO_CONTINUITY/AB57_EXECUTABLE_OBSERVATIONAL_EVENTDAG_GATE_V1_2026-09-25.py
+Progress report:
+NEXO_CONTINUITY/AB57_EXECUTABLE_OBSERVATIONAL_EVENTDAG_GATE_V1_2026-09-25.md
+
+AB57 implementation status = PARTIAL_RESEARCH_HARNESS.
+No research claim has been promoted to CLOSED. TERNARY_PAA_COLLISION remains UNKNOWN; EVENTDAG_CLOSURE remains PARTIAL; RECONSTRUCTION remains BOUNDED_ONLY; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED.
+
+Commits in this AB57 persistence round:
+7a2feb0f6a367f2c800685b3499df87ea8194364
+d95b59840ae48538556c20b80640f497038237c8
+1a3a2f6fcf3af302638f7ff2ae109ccf54e4fb0b
+cbce9ecaf65dd6b2287eab1be7aec26d05e3d7a6
+e8caa371541ec3d809fec0d1105fe09f72d24035
+9bc68a234858eb1482768daaa5f4f45f8aa5c662
+32b3762a2b472307783260d23bbf0d8ed15f5381
+
+Exact next action: complete the remaining semantic layer using only canonical prior evidence, then execute FutureObs_PAA/lower-arity equivalence/reconstruction and the eight ternary attacks. Do not broaden to 286 triples until the complete gate is closed.
