@@ -402,10 +402,15 @@ function animateHumanoid(m,a,t){
   m.userData.animationActivity=activity;m.userData.animationPhase=phase;m.userData.isLocomoting=moving;const marker=m.children.find(o=>o.geometry?.type==="SphereGeometry"&&o.position?.y>2.4);if(marker){const pulse=phase?1+Math.sin(t*6)*.12:1;marker.scale.setScalar(pulse);}
 }
 function addVisualDetail(g,a){
-  const detail=material(a.id==="alex"?0x345b8c:0x8c4f34,.68);const trim=material(0xc6a36a,.72);
+  const detail=material(a.id==="alex"?0x345b8c:0x8c4f34,.68),trim=material(0xc6a36a,.72);
   const belt=box(.62,.09,.18,trim);belt.position.set(0,.72,.34);g.add(belt);
+  const tunicL=box(.13,.38,.045,detail),tunicR=tunicL.clone();tunicL.position.set(-.23,1.12,.38);tunicR.position.set(.23,1.12,.38);g.add(tunicL,tunicR);
   const chest=box(.34,.16,.05,detail);chest.position.set(0,1.18,.43);g.add(chest);
+  const collarTrim=new THREE.Mesh(new THREE.TorusGeometry(.18,.018,6,18),trim);collarTrim.rotation.x=Math.PI/2;collarTrim.position.set(0,1.53,.01);g.add(collarTrim);
   const badge=new THREE.Mesh(new THREE.CircleGeometry(.055,16),trim);badge.position.set(.13,1.19,.46);badge.rotation.x=-Math.PI/2;g.add(badge);
+  const eyeBrowMat=material(0x2a211c,1);
+  const browL=box(.10,.018,.018,eyeBrowMat),browR=browL.clone();browL.position.set(-.115,2.055,.35);browR.position.set(.115,2.055,.35);browL.rotation.z=-.08;browR.rotation.z=.08;g.add(browL,browR);
+  const bootL=new THREE.Mesh(new THREE.TorusGeometry(.11,.022,6,12),trim),bootR=bootL.clone();bootL.rotation.x=Math.PI/2;bootR.rotation.x=Math.PI/2;bootL.position.set(-.16,.23,.12);bootR.position.set(.16,.23,.12);g.add(bootL,bootR);
 }
 function syncMeshes(){normalize();syncStructures();const t=performance.now()/1000;for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,m.position.y??0,a.position.z);animateHumanoid(m,a,t);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
