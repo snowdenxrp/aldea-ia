@@ -24,3 +24,13 @@ The missing executable layer is no longer purely hypothetical: an explicit conse
 ## AB58 — harness audit findings
 
 AB57 code audit established that FutureObs_PAA currently emits only the immediate ADMIT observation; continuation legality for UNKNOWN events is suppressed rather than represented; EventDAG currently has no explicit predecessor edges; the context identity check is not discriminating under current known mutations; and lower_obs is not yet established as the canonical observational quotient. These are implementation-boundary findings, not protocol conclusions.
+
+
+## AB61 — resolved/narrowed
+
+- Resolved: historical AB55 source recovery and exact reproduction of all eight reported bounded result tuples.
+- Narrowed: continuation UNKNOWN is now represented explicitly rather than as an empty continuation set.
+- Narrowed: EventDAG ordering now distinguishes independent from unresolved interactions.
+- Narrowed: UsedAdmissionContext is captured as an immutable identity-bearing record at ADMIT.
+
+Still open: executing the AB61 repaired gate, complete post-ADMIT continuation legality, LEASE_RENEW/RETRY/MUTATION/RECHECK semantics, complete binding enumeration, canonical quotient congruence, EventDAG closure, HistorySupport elimination, bridge merge, and formal verification.
