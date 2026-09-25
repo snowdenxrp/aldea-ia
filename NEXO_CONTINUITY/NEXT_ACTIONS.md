@@ -241,3 +241,8 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 ## AB104.1 continuation
 
 Evidence matrix persisted and read back. Next: enumerate only evidence-supported adversarial orderings around LEASE_RENEW/LEASE_CONSUME (expiry→renew, policy/delegation/incarnation mutation→renew, renew→admit, consume→retry/reuse, revoke→consume) and classify each as determinate, contradictory, or UNKNOWN based strictly on recovered transition law. Do not convert missing rules into concrete successors.
+
+
+## AB104.2 continuation
+
+Order analysis persisted. Next: test whether any unresolved order can be narrowed by recovering exact transition wording from AB36/AB38 and the post-AB49 renewal/replay artifacts. If no decisive law exists, construct the smallest explicit two-completion model and use it only as an epistemic counterexample, not as actual protocol behavior.
