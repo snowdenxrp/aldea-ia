@@ -518,3 +518,7 @@ AB61/AB100 code consistency audit persisted at b8f700f8ae68766f3a748ecd0f867d665
 Current gates unchanged: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED; 286 expansion=BLOCKED.
 
 Preceding persistence: ledger=71c459688c295542908becc86b68313953fd0930; next-actions=03061b30cc48a79249b3ebc4fb8e821cd291870e.
+
+
+## AB104.7 — 2026-09-25
+Bridge merge audit completed. Naive scalar merge is unsafe due to confirmed field-erasure risk; richer merge remains UNKNOWN pending congruence/reconstruction proof. No protocol semantics changed. Artifact commit c42e1b882f1b114e200745e1fb9f30f00c0fa943.
