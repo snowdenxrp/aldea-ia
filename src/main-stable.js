@@ -411,6 +411,10 @@ function addVisualDetail(g,a){
   const eyeBrowMat=material(0x2a211c,1);
   const browL=box(.10,.018,.018,eyeBrowMat),browR=browL.clone();browL.position.set(-.115,2.055,.35);browR.position.set(.115,2.055,.35);browL.rotation.z=-.08;browR.rotation.z=.08;g.add(browL,browR);
   const bootL=new THREE.Mesh(new THREE.TorusGeometry(.11,.022,6,12),trim),bootR=bootL.clone();bootL.rotation.x=Math.PI/2;bootR.rotation.x=Math.PI/2;bootL.position.set(-.16,.23,.12);bootR.position.set(.16,.23,.12);g.add(bootL,bootR);
+  const seamMat=material(0x8f7654,.58);
+  const seamL=box(.025,.34,.012,seamMat),seamR=seamL.clone();seamL.position.set(-.23,1.13,.405);seamR.position.set(.23,1.13,.405);g.add(seamL,seamR);
+  const shoulderTrimL=new THREE.Mesh(new THREE.TorusGeometry(.145,.014,6,14),trim),shoulderTrimR=shoulderTrimL.clone();shoulderTrimL.rotation.y=Math.PI/2;shoulderTrimR.rotation.y=Math.PI/2;shoulderTrimL.position.set(-.39,1.43,.015);shoulderTrimR.position.set(.39,1.43,.015);g.add(shoulderTrimL,shoulderTrimR);
+  const cheekL=new THREE.Mesh(new THREE.SphereGeometry(.018,6,6),skinMat),cheekR=cheekL.clone();cheekL.position.set(-.17,1.86,.318);cheekR.position.set(.17,1.86,.318);g.add(cheekL,cheekR);
 }
 function syncMeshes(){normalize();syncStructures();const t=performance.now()/1000;for(const a of agents){let m=meshes.get(a.id);if(!m){m=createMesh(a);meshes.set(a.id,m);}m.visible=true;m.position.set(a.position.x,m.position.y??0,a.position.z);animateHumanoid(m,a,t);}}
 function centerOnAgents(){const c=agents.filter(a=>a.id==="alex"||a.id==="bruno");if(c.length)cameraTarget.set(c.reduce((s,a)=>s+a.position.x,0)/c.length,0,c.reduce((s,a)=>s+a.position.z,0)/c.length);}
