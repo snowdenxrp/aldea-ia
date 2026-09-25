@@ -275,3 +275,14 @@ New research boundary: the accumulated evidence now proves which renewal/replay 
 Status unchanged: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED.
 
 Next: derive an evidence matrix for the remaining renewal/consume dimensions, then perform bounded event-order experiments only where every transition assumption is explicit; do not invent successors and do not expand to 286 until the completeness gate changes.
+
+
+## AB104.1 — 2026-09-25 — evidence matrix persisted
+
+Persisted: NEXO_CONTINUITY/AB104_RENEW_CONSUME_EVIDENCE_MATRIX_2026-09-25.md
+Commit: 8888125f1ebb4d9eb1dfc4caeaf9a7a5a6cea7a5
+Read-back blob SHA: 98bb1e5c9abf398180fe6dc890eb764d5568e1ca
+
+The matrix separates evidence-backed source context (C1) from unresolved legality, post-state, frame/invalidation, observation mapping, and successor enumeration. For LEASE_RENEW, C2-C6 remain incomplete; for LEASE_CONSUME, C2-C6 remain incomplete. This prevents structural field names from being mistaken for protocol transition laws.
+
+No semantic labels changed and no interpreter was modified. Next research step: perform only evidence-supported adversarial orderings for renewal/consumption and explicitly record unresolved successor branches.
