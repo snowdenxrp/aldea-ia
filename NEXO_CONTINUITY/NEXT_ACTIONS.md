@@ -297,3 +297,7 @@ Next: obtain actual runtime execution of the harness if the repository runner ca
 
 ## AB104.15 continuation
 Recheck for an AB65 output commit/run after the trigger-plumbing commit. If execution becomes observable, capture its exact output without interpreting it beyond the runner's documented scope. Separately continue invalidation-sensitive packed tests.
+
+
+## AB104.16 continuation
+Continue invalidation-sensitive packed representation attacks. For AB65, capture only positive execution evidence if it becomes observable; do not infer execution from trigger configuration or absence/presence limitations of the current run endpoint.
