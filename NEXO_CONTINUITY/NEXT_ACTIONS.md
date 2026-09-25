@@ -293,3 +293,7 @@ Next: seek an actual executable runner for the harness, then add invalidation-se
 
 ## AB104.14 continuation
 Next: obtain actual runtime execution of the harness if the repository runner can be established; otherwise continue source-level attack construction without upgrading claims. Then target complete transition-law recovery for invalidation/renewal/consume and compare future observations.
+
+
+## AB104.15 continuation
+Recheck for an AB65 output commit/run after the trigger-plumbing commit. If execution becomes observable, capture its exact output without interpreting it beyond the runner's documented scope. Separately continue invalidation-sensitive packed tests.
