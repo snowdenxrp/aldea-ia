@@ -471,3 +471,12 @@ AB104 persistence commits: RESEARCH_LEDGER=1a7040a64a878e025b8679770be3565cc07fd
 Current labels: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED.
 
 Next exact action: construct the evidence matrix for remaining renewal/consume dimensions, then run only bounded experiments whose transition assumptions are explicitly supported. Preserve UNKNOWN otherwise.
+
+
+## AB104.1 — 2026-09-25
+
+Evidence matrix persisted and read back: NEXO_CONTINUITY/AB104_RENEW_CONSUME_EVIDENCE_MATRIX_2026-09-25.md, commit 8888125f1ebb4d9eb1dfc4caeaf9a7a5a6cea7a5, blob 98bb1e5c9abf398180fe6dc890eb764d5568e1ca. C1 is evidence-backed for both renewal and consumption; C2-C6 remain incomplete. No transition law was invented and no semantic status changed.
+
+AB104.1 persistence sequence: ledger=3c0376776954d582f343c37bc480ca55bb2f8667; next-actions=a07584e4535ffd2f341886281c73c45a6da65914. Current-state finalization follows sequential persistence. External HEAD/read-back verification is required after this write.
+
+Next exact action: bounded adversarial ordering experiments using only explicitly supported transition assumptions; unresolved branches remain UNKNOWN.
