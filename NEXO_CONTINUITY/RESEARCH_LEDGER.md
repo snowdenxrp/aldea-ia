@@ -349,3 +349,7 @@ Added conservative semantic-view comparator to AB104.11 harness. TRUE requires a
 
 ## AB104.14 — 2026-09-25
 Static attack matrix added for packed representation. Known representational differences are separated from unresolved future behavior. Removing ReplayBinding or marking TemporalValidity UNKNOWN yields UNKNOWN; altering a known bridge value or admission attempt identity yields FALSE; changing invalidation history or applying PolicyChange/ResourceReincarnate without a complete successor law yields UNKNOWN. No P_AA collision, quotient congruence, or safe field elimination established. Artifact commit 0fca38e228888d1574739d017d794cfcd2631919.
+
+
+## AB104.15 — 2026-09-25
+Adjusted `.github/workflows/ab65-gate.yml` so pushes modifying the AB104.11 packed harness also satisfy the workflow path trigger. Commit 946bab5e91bc90ef759b9dd6a60cd002ebb94533. This is trigger plumbing only; it does not change protocol semantics. No subsequent `AB65: persist gate execution output` commit was visible in commit search at checkpoint time, so execution remains NOT_VERIFIED.
