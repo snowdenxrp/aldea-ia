@@ -169,3 +169,14 @@ AB76 artifact persisted at NEXO_CONTINUITY/AB76_PROTOCOL_COMPLETENESS_RECORDS_20
 Gate: AB75 completeness diagnostic criterion PASSED; protocol closure NOT ESTABLISHED; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; eight-attack closure BLOCKED; 286-triple expansion BLOCKED; AB61/AB65 semantic modification NOT JUSTIFIED; FORMAL_VERIFICATION=NOT_PERFORMED.
 
 Next: inspect existing AB25/AB26/AB36/AB38/AB49 evidence to determine whether any C1-C6 missing dimension can be recovered without inventing protocol law.
+
+
+## AB77 — 2026-09-25 — prior-evidence recovery
+
+AB25/AB26/AB49 were re-read against the AB76 C1-C6 completeness gate. They recover important semantic vocabulary: independent UsedAdmissionContext linkage, Pre/Post/Frame/Invalidation/HistorySupport/AdmissionLink, explicit lease renewal/replay/bridge support, retry/attempt identity constraints, exact recheck fact-set/order/result linkage, and the separation of LeaseBridge from AdmissionBindingClass.
+
+The recovery narrows but does not close the unknowns. For all four events, C2 legality and/or C3 complete post-state law and C6 enumeration domain remain unresolved; C5 is only partial where successor-to-observation mapping is incomplete. Therefore all four remain UNKNOWN. This is evidence-backed incompleteness, not merely absence of an implementation successor.
+
+Persisted artifact: NEXO_CONTINUITY/AB77_EVIDENCE_RECOVERY_AB25_AB26_AB49_2026-09-25.md at commit ab931b583b6d1b6384b1609c50453df1049d7bb4.
+
+Next: recover AB36 and AB38 if available, specifically looking for evidence that can supply C2/C3/C6 without inventing protocol law. If those remain incomplete, move to a bounded adversarial successor construction.
