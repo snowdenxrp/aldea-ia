@@ -73,3 +73,23 @@ Implement the AB56 lower-arity/FutureObs_PAA/EventDAG interpreter, encode actual
 
 ## Persistence rule for every future research round
 Never finish a substantive round with knowledge only in chat. Persist the research artifact, update RESEARCH_LEDGER.md, CLAIM_STATUS.md, OPEN_PROBLEMS.md and NEXT_ACTIONS.md as needed, then update CURRENT_STATE.md with the verified resulting HEAD SHA and parent relationship. Never overwrite prior AB artifacts.
+
+
+## Continuity V2 checkpoint — 2026-09-25
+
+A chat-limit loss-prevention handoff is now persisted at:
+NEXO_CONTINUITY/CONTINUITY_V2_HANDOFF_2026-09-25.md
+
+The handoff explicitly preserves epistemic status, partial work, unresolved semantics, evidence boundaries, contradictions, exact next action, and a DO-NOT-REPEAT rule. It is the first recovery document to read after CONTINUITY.
+
+The continuity hardening did NOT alter any AB research conclusion. AB56 remains the research frontier.
+
+The five continuity amendments immediately preceding this checkpoint are:
+48eaa4717fe5c8053503ce415afbba72771bb92b
+314fe2cc892ca8268306ceac04ec64fc9ed0ab24
+d96827bb8de0c733a9bd00f773df374669e4d26c
+fb5e24dc7a65e9c531f832914db206d9ed63c9fd
+e9dd6cc1379e631298cf3c564483fe31978e8bac
+49066ffbabd78b0ad5e9083340d8412a2c2344cc
+
+This state update is intentionally last in the continuity-hardening sequence. After commit, verify the resulting HEAD and parent linkage before treating the checkpoint as persisted.
