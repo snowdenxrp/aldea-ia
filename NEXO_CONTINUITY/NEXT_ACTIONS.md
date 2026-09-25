@@ -185,3 +185,12 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 4. Re-evaluate LEASE_RENEW, RETRY, MUTATION, and RECHECK only after evidence recovery.
 5. Keep UNKNOWN when any decisive completeness dimension remains unresolved.
 6. Keep AB61/AB65 and the 286-triple expansion blocked until the gate changes by evidence.
+
+
+## AB77 next actions — 2026-09-25
+
+1. Recover AB36 and AB38 evidence, if present, focusing on C2 legality, C3 post-state law, and C6 enumeration domain.
+2. Record exact recovered evidence before upgrading any dimension.
+3. Keep each event UNKNOWN if any decisive completeness dimension remains unresolved.
+4. If AB36/AB38 do not close the gate, construct a bounded adversarial two-completion successor test using only AB54-compatible vocabulary.
+5. Do not infer missing protocol rules from structural field overlap or implementation behavior.
