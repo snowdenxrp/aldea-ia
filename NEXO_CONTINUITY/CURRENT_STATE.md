@@ -561,3 +561,7 @@ AB65 trigger configuration verified from workflow source; execution/output remai
 
 ## AB104.17 — 2026-09-25
 AB104.17 added a source-level invalidation-sensitive packed-representation attack harness. It covers PolicyChange and ResourceReincarnate history mutations while preserving all 13 bridge dimensions and admission-indexed linkage, plus an explicit missing-FreshnessValidity attack. No runtime execution was claimed. No protocol semantics changed. Gates remain: BRIDGE_MERGE=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; TERNARY_PAA_COLLISION=UNKNOWN; LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED. 286 expansion remains BLOCKED.
+
+
+## AB104.18 — 2026-09-25
+AB104.17 harness logic executed in an actual local Python runtime. Observed representation-level results: PolicyChange=(TRUE,KNOWN); ResourceReincarnate=(TRUE,KNOWN); omission of FreshnessValidity=(FALSE,UNKNOWN). Future LEASE_RENEW and LEASE_CONSUME remain UNKNOWN. This local execution is not AB65 GitHub Actions evidence. No protocol semantics changed. Gates remain: BRIDGE_MERGE=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; TERNARY_PAA_COLLISION=UNKNOWN; LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED; 286 expansion=BLOCKED.
