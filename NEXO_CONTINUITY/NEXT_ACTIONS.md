@@ -281,3 +281,7 @@ Next executable target: implement a research-only packed adapter/harness with pe
 
 ## AB104.11 continuation
 Run/validate the harness in an actual executable environment if available; then add bounded reconstruction tests for PolicyChange and ResourceReincarnate and compare future observations. Recheck AB65 workflow execution. Do not promote harness behavior to protocol semantics.
+
+
+## AB104.12 continuation
+Next: add semantic-view comparator over every preserved bridge dimension and admission-linked identity; deliberately omit/alter components and require UNKNOWN rather than false equivalence. Then seek an executable environment for runtime tests and recheck AB65.
