@@ -1,16 +1,16 @@
 {
   "version": 4,
-  "savedAt": 1790378972072,
-  "day": 670,
-  "hour": 23.77256000022613,
+  "savedAt": 1790378991636,
+  "day": 671,
+  "hour": 0.29426666689280107,
   "world": {
-    "day": 670,
-    "timeOfDay": 23.77256000022613,
+    "day": 671,
+    "timeOfDay": 0.29426666689280107,
     "speed": 1,
     "resources": {
       "water": {
         "type": "renewable",
-        "amount": 0,
+        "amount": 1000,
         "quality": 1,
         "location": "river",
         "position": {
@@ -76,7 +76,7 @@
       },
       "wild_plants": {
         "type": "renewable",
-        "amount": 0,
+        "amount": 29.700000000000003,
         "quality": 0.85,
         "location": "meadow",
         "position": {
@@ -154,7 +154,7 @@
           "key": "action",
           "strength": 1,
           "originDay": 120,
-          "lastObservedDay": 670
+          "lastObservedDay": 671
         },
         {
           "key": "failed_action",
@@ -2371,8 +2371,8 @@
       "biodiversity": 0,
       "soilQuality": 1,
       "waterQuality": 0,
-      "humanPressure": 0.6315778401472683,
-      "lastUpdateDay": 670
+      "humanPressure": 0.6326516129354868,
+      "lastUpdateDay": 671
     },
     "institutions": [],
     "commons": {
@@ -2385,7 +2385,7 @@
     },
     "specialization": {
       "roles": {
-        "gatherer": 1024
+        "gatherer": 1026
       },
       "history": [
         {
@@ -2412,41 +2412,6 @@
         "tool": 48
       },
       "priceHistory": [
-        {
-          "day": 271,
-          "type": "fish",
-          "price": 16,
-          "stock": 0,
-          "perCapita": 0
-        },
-        {
-          "day": 271,
-          "type": "farm_food",
-          "price": 12,
-          "stock": 0,
-          "perCapita": 0
-        },
-        {
-          "day": 271,
-          "type": "wood",
-          "price": 8,
-          "stock": 0.7040000000000002,
-          "perCapita": 0.3520000000000001
-        },
-        {
-          "day": 271,
-          "type": "stone",
-          "price": 1.229,
-          "stock": 180.00000000000014,
-          "perCapita": 90.00000000000007
-        },
-        {
-          "day": 271,
-          "type": "tool",
-          "price": 48,
-          "stock": 0,
-          "perCapita": 0
-        },
         {
           "day": 272,
           "type": "fish",
@@ -16411,6 +16376,41 @@
           "price": 48,
           "stock": 0,
           "perCapita": 0
+        },
+        {
+          "day": 671,
+          "type": "fish",
+          "price": 16,
+          "stock": 0,
+          "perCapita": 0
+        },
+        {
+          "day": 671,
+          "type": "farm_food",
+          "price": 12,
+          "stock": 0,
+          "perCapita": 0
+        },
+        {
+          "day": 671,
+          "type": "wood",
+          "price": 8,
+          "stock": 0.7040000000000002,
+          "perCapita": 0.3520000000000001
+        },
+        {
+          "day": 671,
+          "type": "stone",
+          "price": 0.5,
+          "stock": 180.00000000000014,
+          "perCapita": 90.00000000000007
+        },
+        {
+          "day": 671,
+          "type": "tool",
+          "price": 48,
+          "stock": 0,
+          "perCapita": 0
         }
       ]
     },
@@ -16424,48 +16424,20 @@
           "variable": "humanPressure",
           "measure": "regeneration",
           "confidence": 0.86,
-          "experimentCount": 1024,
+          "experimentCount": 1026,
           "contributors": [
             "alex",
             "bruno"
           ],
           "createdDay": 159,
-          "lastExperimentDay": 670,
+          "lastExperimentDay": 671,
           "status": "reproduced",
-          "supportedCount": 1024,
+          "supportedCount": 1026,
           "contradictedCount": 0,
-          "independentReplications": 1023
+          "independentReplications": 1025
         }
       ],
       "experiments": [
-        {
-          "id": "experiment-371-alex-resource-regeneration",
-          "day": 371,
-          "topicId": "resource-regeneration",
-          "question": "¿La presión sobre un recurso afecta su recuperación?",
-          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
-          "agentId": "alex",
-          "variable": "humanPressure",
-          "baseline": 0.358357,
-          "intervention": "comparación controlada",
-          "result": 0.294193,
-          "supported": true,
-          "reproducible": false
-        },
-        {
-          "id": "experiment-371-bruno-resource-regeneration",
-          "day": 371,
-          "topicId": "resource-regeneration",
-          "question": "¿La presión sobre un recurso afecta su recuperación?",
-          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
-          "agentId": "bruno",
-          "variable": "humanPressure",
-          "baseline": 0.358357,
-          "intervention": "comparación controlada",
-          "result": 0.294193,
-          "supported": true,
-          "reproducible": false
-        },
         {
           "id": "experiment-372-alex-resource-regeneration",
           "day": 372,
@@ -24837,37 +24809,37 @@
           "result": 0.305264,
           "supported": true,
           "reproducible": false
+        },
+        {
+          "id": "experiment-671-alex-resource-regeneration",
+          "day": 671,
+          "topicId": "resource-regeneration",
+          "question": "¿La presión sobre un recurso afecta su recuperación?",
+          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
+          "agentId": "alex",
+          "variable": "humanPressure",
+          "baseline": 0.367348,
+          "intervention": "comparación controlada",
+          "result": 0.304083,
+          "supported": true,
+          "reproducible": false
+        },
+        {
+          "id": "experiment-671-bruno-resource-regeneration",
+          "day": 671,
+          "topicId": "resource-regeneration",
+          "question": "¿La presión sobre un recurso afecta su recuperación?",
+          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
+          "agentId": "bruno",
+          "variable": "humanPressure",
+          "baseline": 0.367348,
+          "intervention": "comparación controlada",
+          "result": 0.304083,
+          "supported": true,
+          "reproducible": false
         }
       ],
       "evidence": [
-        {
-          "id": "experiment-611-alex-resource-regeneration-evidence",
-          "experimentId": "experiment-611-alex-resource-regeneration",
-          "day": 611,
-          "topicId": "resource-regeneration",
-          "agentId": "alex",
-          "variable": "humanPressure",
-          "baseline": 0.380616,
-          "intervention": "comparación controlada",
-          "result": 0.318677,
-          "delta": -0.061938,
-          "supported": true,
-          "reliability": 0.65
-        },
-        {
-          "id": "experiment-611-bruno-resource-regeneration-evidence",
-          "experimentId": "experiment-611-bruno-resource-regeneration",
-          "day": 611,
-          "topicId": "resource-regeneration",
-          "agentId": "bruno",
-          "variable": "humanPressure",
-          "baseline": 0.380616,
-          "intervention": "comparación controlada",
-          "result": 0.318677,
-          "delta": -0.061938,
-          "supported": true,
-          "reliability": 0.65
-        },
         {
           "id": "experiment-612-alex-resource-regeneration-evidence",
           "experimentId": "experiment-612-alex-resource-regeneration",
@@ -26519,17 +26491,37 @@
           "delta": -0.063158,
           "supported": true,
           "reliability": 0.65
+        },
+        {
+          "id": "experiment-671-alex-resource-regeneration-evidence",
+          "experimentId": "experiment-671-alex-resource-regeneration",
+          "day": 671,
+          "topicId": "resource-regeneration",
+          "agentId": "alex",
+          "variable": "humanPressure",
+          "baseline": 0.367348,
+          "intervention": "comparación controlada",
+          "result": 0.304083,
+          "delta": -0.063265,
+          "supported": true,
+          "reliability": 0.65
+        },
+        {
+          "id": "experiment-671-bruno-resource-regeneration-evidence",
+          "experimentId": "experiment-671-bruno-resource-regeneration",
+          "day": 671,
+          "topicId": "resource-regeneration",
+          "agentId": "bruno",
+          "variable": "humanPressure",
+          "baseline": 0.367348,
+          "intervention": "comparación controlada",
+          "result": 0.304083,
+          "delta": -0.063265,
+          "supported": true,
+          "reliability": 0.65
         }
       ],
       "history": [
-        {
-          "day": 371,
-          "type": "research_day",
-          "contributors": [
-            "alex",
-            "bruno"
-          ]
-        },
         {
           "day": 372,
           "type": "research_day",
@@ -28921,6 +28913,14 @@
             "alex",
             "bruno"
           ]
+        },
+        {
+          "day": 671,
+          "type": "research_day",
+          "contributors": [
+            "alex",
+            "bruno"
+          ]
         }
       ]
     },
@@ -29539,10 +29539,10 @@
           "visits": 7577,
           "discovered": true,
           "lastVisitDay": 670,
-          "population": 1,
+          "population": 0,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0.12,
+          "activity": 0,
           "biome": "plains",
           "x": 2,
           "z": 6,
@@ -29553,10 +29553,10 @@
           "visits": 7645,
           "discovered": true,
           "lastVisitDay": 670,
-          "population": 1,
+          "population": 0,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0.12,
+          "activity": 0,
           "biome": "plains",
           "x": 7,
           "z": 3,
@@ -29986,15 +29986,15 @@
           "key": "8:3",
           "x": 8,
           "z": 3,
-          "visits": 7670,
+          "visits": 7690,
           "discovered": true,
           "biome": "plains",
-          "lastDiscoveryDay": 670,
-          "lastVisitDay": 670,
-          "population": 0,
+          "lastDiscoveryDay": 671,
+          "lastVisitDay": 671,
+          "population": 1,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0
+          "activity": 0.12
         },
         "8:2": {
           "key": "8:2",
@@ -30070,15 +30070,15 @@
           "key": "5:8",
           "x": 5,
           "z": 8,
-          "visits": 2639,
+          "visits": 2659,
           "discovered": true,
           "biome": "plains",
-          "lastDiscoveryDay": 670,
-          "lastVisitDay": 670,
-          "population": 0,
+          "lastDiscoveryDay": 671,
+          "lastVisitDay": 671,
+          "population": 1,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0
+          "activity": 0.12
         }
       },
       "biomes": {
@@ -30762,13 +30762,13 @@
     {
       "id": "alex",
       "name": "Alex",
-      "age": 16.509589041095456,
+      "age": 16.512328767122852,
       "alive": true,
       "needs": {
-        "hunger": 88.45803733333321,
-        "thirst": 80.99302399999894,
+        "hunger": 87.31028266666652,
+        "thirst": 79.32356266666551,
         "energy": 100,
-        "social": 71.77711999999559,
+        "social": 71.51626666666222,
         "safety": 100,
         "health": 100
       },
@@ -70743,10 +70743,10 @@
         ],
         "currentActivity": "resting",
         "needs": {
-          "hunger": 88.45803733333321,
-          "thirst": 80.99302399999894,
+          "hunger": 87.31028266666652,
+          "thirst": 79.32356266666551,
           "energy": 100,
-          "social": 71.77711999999559,
+          "social": 71.51626666666222,
           "safety": 100,
           "health": 100
         }
@@ -70852,7 +70852,7 @@
         "wood": {
           "x": 20,
           "z": 8,
-          "learnedDay": 670
+          "learnedDay": 671
         },
         "stone": {
           "x": 24,
@@ -70876,7 +70876,7 @@
       "children": [],
       "pregnancy": null,
       "generation": 0,
-      "lifeExperience": 551,
+      "lifeExperience": 552,
       "cultureKnowledge": [
         "action",
         "social_interaction",
@@ -71017,11 +71017,11 @@
           "topicId": "resource-regeneration",
           "belief": "Una presión humana mayor reduce la recuperación de recursos.",
           "confidence": 0.95,
-          "evidenceCount": 512,
-          "lastTestedDay": 670
+          "evidenceCount": 513,
+          "lastTestedDay": 671
         }
       ],
-      "researchExperiments": 512,
+      "researchExperiments": 513,
       "socialRole": "Recolector",
       "activityRemainingHours": 0.35,
       "explorationState": {
@@ -71194,6 +71194,26 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -71203,13 +71223,13 @@
     {
       "id": "bruno",
       "name": "Bruno",
-      "age": 16.509589041095456,
+      "age": 16.512328767122852,
       "alive": true,
       "needs": {
-        "hunger": 88.39937066666654,
-        "thirst": 80.99302399999894,
+        "hunger": 87.25161599999986,
+        "thirst": 79.32356266666551,
         "energy": 100,
-        "social": 71.77711999999559,
+        "social": 71.51626666666222,
         "safety": 100,
         "health": 100
       },
@@ -112748,10 +112768,10 @@
         "nearbyResources": [],
         "currentActivity": "resting",
         "needs": {
-          "hunger": 88.39937066666654,
-          "thirst": 80.99302399999894,
+          "hunger": 87.25161599999986,
+          "thirst": 79.32356266666551,
           "energy": 100,
-          "social": 71.77711999999559,
+          "social": 71.51626666666222,
           "safety": 100,
           "health": 100
         }
@@ -112896,7 +112916,7 @@
       "children": [],
       "pregnancy": null,
       "generation": 0,
-      "lifeExperience": 551,
+      "lifeExperience": 552,
       "cultureKnowledge": [
         "action",
         "social_interaction",
@@ -113047,11 +113067,11 @@
           "topicId": "resource-regeneration",
           "belief": "Una presión humana mayor reduce la recuperación de recursos.",
           "confidence": 0.95,
-          "evidenceCount": 512,
-          "lastTestedDay": 670
+          "evidenceCount": 513,
+          "lastTestedDay": 671
         }
       ],
-      "researchExperiments": 512,
+      "researchExperiments": 513,
       "socialRole": "Recolector",
       "activityRemainingHours": 0.35,
       "explorationState": {
@@ -113221,6 +113241,26 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -113229,426 +113269,6 @@
     }
   ],
   "events": [
-    {
-      "id": "event-656",
-      "day": 670,
-      "hour": 15.752880000225947,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-657",
-      "day": 670,
-      "hour": 15.779546666892614,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-658",
-      "day": 670,
-      "hour": 15.779546666892614,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-659",
-      "day": 670,
-      "hour": 15.806213333559281,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-660",
-      "day": 670,
-      "hour": 15.806213333559281,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-661",
-      "day": 670,
-      "hour": 15.832880000225948,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-662",
-      "day": 670,
-      "hour": 15.832880000225948,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-663",
-      "day": 670,
-      "hour": 15.859546666892616,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-664",
-      "day": 670,
-      "hour": 15.859546666892616,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-665",
-      "day": 670,
-      "hour": 15.886213333559283,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-666",
-      "day": 670,
-      "hour": 15.886213333559283,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-667",
-      "day": 670,
-      "hour": 15.91288000022595,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-668",
-      "day": 670,
-      "hour": 15.91288000022595,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-669",
-      "day": 670,
-      "hour": 15.939546666892618,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-670",
-      "day": 670,
-      "hour": 15.939546666892618,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-671",
-      "day": 670,
-      "hour": 15.966213333559285,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-672",
-      "day": 670,
-      "hour": 15.966213333559285,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-673",
-      "day": 670,
-      "hour": 15.992880000225952,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-674",
-      "day": 670,
-      "hour": 15.992880000225952,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-675",
-      "day": 670,
-      "hour": 16.01954666689262,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-676",
-      "day": 670,
-      "hour": 16.01954666689262,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-677",
-      "day": 670,
-      "hour": 16.046213333559287,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-678",
-      "day": 670,
-      "hour": 16.046213333559287,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-679",
-      "day": 670,
-      "hour": 16.072880000225954,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-680",
-      "day": 670,
-      "hour": 16.072880000225954,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-681",
-      "day": 670,
-      "hour": 16.09954666689262,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-682",
-      "day": 670,
-      "hour": 16.09954666689262,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-683",
-      "day": 670,
-      "hour": 16.12621333355929,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-684",
-      "day": 670,
-      "hour": 16.12621333355929,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-685",
-      "day": 670,
-      "hour": 16.152880000225956,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-686",
-      "day": 670,
-      "hour": 16.152880000225956,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-687",
-      "day": 670,
-      "hour": 16.179546666892623,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-688",
-      "day": 670,
-      "hour": 16.179546666892623,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-689",
-      "day": 670,
-      "hour": 16.20621333355929,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-690",
-      "day": 670,
-      "hour": 16.20621333355929,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-691",
-      "day": 670,
-      "hour": 16.232880000225958,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-692",
-      "day": 670,
-      "hour": 16.232880000225958,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-693",
-      "day": 670,
-      "hour": 16.259546666892625,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-694",
-      "day": 670,
-      "hour": 16.259546666892625,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-695",
-      "day": 670,
-      "hour": 16.286213333559292,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-696",
-      "day": 670,
-      "hour": 16.286213333559292,
-      "type": "action",
-      "description": "Bruno bebió agua (5).",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-697",
-      "day": 670,
-      "hour": 16.31288000022596,
-      "type": "action",
-      "description": "Alex bebió agua (5).",
-      "participants": [
-        "alex"
-      ]
-    },
     {
       "id": "event-698",
       "day": 670,
@@ -118223,6 +117843,426 @@
       "id": "event-664",
       "day": 670,
       "hour": 23.77256000022613,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 670,
+      "hour": 23.799226666892796,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 670,
+      "hour": 23.799226666892796,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-503",
+      "day": 670,
+      "hour": 23.825893333559463,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-504",
+      "day": 670,
+      "hour": 23.825893333559463,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-505",
+      "day": 670,
+      "hour": 23.85256000022613,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-506",
+      "day": 670,
+      "hour": 23.85256000022613,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-507",
+      "day": 670,
+      "hour": 23.879226666892798,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-508",
+      "day": 670,
+      "hour": 23.879226666892798,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-509",
+      "day": 670,
+      "hour": 23.905893333559465,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-510",
+      "day": 670,
+      "hour": 23.905893333559465,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-511",
+      "day": 670,
+      "hour": 23.932560000226133,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-512",
+      "day": 670,
+      "hour": 23.932560000226133,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-513",
+      "day": 670,
+      "hour": 23.9592266668928,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-514",
+      "day": 670,
+      "hour": 23.9592266668928,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-515",
+      "day": 670,
+      "hour": 23.985893333559467,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-516",
+      "day": 670,
+      "hour": 23.985893333559467,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "research-event-516",
+      "day": 671,
+      "hour": 0,
+      "type": "research_experiment",
+      "description": "Alex realizó un experimento sobre resource-regeneration.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "research-event-517",
+      "day": 671,
+      "hour": 0,
+      "type": "research_experiment",
+      "description": "Bruno realizó un experimento sobre resource-regeneration.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-519",
+      "day": 671,
+      "hour": 0.012560000226134349,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-520",
+      "day": 671,
+      "hour": 0.012560000226134349,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-521",
+      "day": 671,
+      "hour": 0.03922666689280102,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-522",
+      "day": 671,
+      "hour": 0.03922666689280102,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-523",
+      "day": 671,
+      "hour": 0.06589333355946769,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-524",
+      "day": 671,
+      "hour": 0.06589333355946769,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-525",
+      "day": 671,
+      "hour": 0.09256000022613436,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-526",
+      "day": 671,
+      "hour": 0.09256000022613436,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-527",
+      "day": 671,
+      "hour": 0.11922666689280104,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-528",
+      "day": 671,
+      "hour": 0.11922666689280104,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-529",
+      "day": 671,
+      "hour": 0.1458933335594677,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-530",
+      "day": 671,
+      "hour": 0.1458933335594677,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-531",
+      "day": 671,
+      "hour": 0.17256000022613438,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-532",
+      "day": 671,
+      "hour": 0.17256000022613438,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-533",
+      "day": 671,
+      "hour": 0.19922666689280105,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-534",
+      "day": 671,
+      "hour": 0.19922666689280105,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-535",
+      "day": 671,
+      "hour": 0.22589333355946772,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-536",
+      "day": 671,
+      "hour": 0.22589333355946772,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-537",
+      "day": 671,
+      "hour": 0.2525600002261344,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-538",
+      "day": 671,
+      "hour": 0.2525600002261344,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-539",
+      "day": 671,
+      "hour": 0.27922666689280107,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-540",
+      "day": 671,
+      "hour": 0.27922666689280107,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-541",
+      "day": 671,
+      "hour": 0.29426666689280107,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-542",
+      "day": 671,
+      "hour": 0.29426666689280107,
       "type": "action",
       "description": "Bruno descansó.",
       "participants": [
