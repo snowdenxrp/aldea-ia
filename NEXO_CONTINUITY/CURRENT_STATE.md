@@ -522,3 +522,7 @@ Preceding persistence: ledger=71c459688c295542908becc86b68313953fd0930; next-act
 
 ## AB104.7 — 2026-09-25
 Bridge merge audit completed. Naive scalar merge is unsafe due to confirmed field-erasure risk; richer merge remains UNKNOWN pending congruence/reconstruction proof. No protocol semantics changed. Artifact commit c42e1b882f1b114e200745e1fb9f30f00c0fa943.
+
+
+## AB104.8 — 2026-09-25
+Field-preservation matrix persisted as c3f03af675848797ac51e98f0b1532c24818a1ca. All 13 AB18 LeaseBridge dimensions plus actual admission linkage remain semantically retained candidates; no safe elimination established. Naive scalar merge is rejected as lossy, while richer representation packing remains possible in principle pending reconstruction/future-congruence testing. Gates otherwise unchanged.
