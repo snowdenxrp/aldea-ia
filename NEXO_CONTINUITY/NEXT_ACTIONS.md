@@ -256,3 +256,8 @@ AB104.3 confirms the semantic gap by an explicit two-completion epistemic test. 
 ## AB104.4 continuation
 
 Code audit found AB61/AB100 LEASE_CONSUME abstraction divergence. Next: audit all code paths where lease_valid, replay, attempt identity, and lower_obs interact; identify any other semantic conflations before constructing a canonical adapter. Then recheck AB65 execution. Preserve historical harnesses unchanged.
+
+
+## AB104.5 continuation
+
+Code consistency audit persisted. Next: trace all historical edits around AB61 execute/apply and AB100 ReplayState, then inspect AB89's two-admission/shared-lease direction. Maintain separate history-effect and continuation-legality layers; do not rewrite historical artifacts merely to remove drift.
