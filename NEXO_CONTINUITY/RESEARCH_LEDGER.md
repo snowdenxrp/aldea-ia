@@ -317,3 +317,7 @@ Persisted audit: NEXO_CONTINUITY/AB104_4_CODE_AUDIT_AB61_AB100_REPLAY_CONSUME_20
 Found two implementation/documentation boundaries requiring preservation. First, AB100's docstring claims it preserves AB61 semantics, but its LEASE_CONSUME path is intentionally UNKNOWN and does not perform AB61's lease_valid=False effect; this is documentation drift, not protocol evidence. Second, AB61 execute() was repaired to separate history-event application from future continuation legality, so its bounded execution must not be interpreted as legality proof. AB100's ReplayState adds explicit epistemic coverage but still lacks the transition that populates consumed_attempts.
 
 Persisted: NEXO_CONTINUITY/AB104_5_CODE_CONSISTENCY_AUDIT_AB61_AB100_2026-09-25.md, commit b8f700f8ae68766f3a748ecd0f867d66556b2fa7.
+
+
+## AB104.7 — 2026-09-25
+AB18↔AB90 audit: AB18's 13-dimensional candidate complete LeaseBridge and CM-AA48..57 reinforce AB90's warning against naive LeaseBridge/AdmissionBindingClass merge. A scalar bridge-valid merge erases AttemptBinding and actual-admission linkage and may erase replay/temporal/boundary relations. Richer representation-level merging remains possible only with total reconstruction and future behavioral congruence. Artifact: AB104_7..., commit c42e1b882f1b114e200745e1fb9f30f00c0fa943.
