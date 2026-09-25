@@ -17,3 +17,6 @@
 ## Continuity integrity problem — resolved as process safeguard
 
 The chat-limit gap itself is now covered by CONTINUITY_V2_HANDOFF_2026-09-25.md. This does not resolve the underlying AB56 research problems; it prevents them from being lost, silently closed, or repeatedly re-proposed when a chat changes.
+## AB57 — implementation gaps narrowed
+
+The missing executable layer is no longer purely hypothetical: an explicit conservative harness now exists. The remaining open problems are semantic completeness, not absence of an execution scaffold. Do not treat the harness itself as proof or semantic freeze.
