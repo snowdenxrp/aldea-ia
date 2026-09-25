@@ -76,3 +76,11 @@ Still open: executing the AB61 repaired gate, complete post-ADMIT continuation l
 - Test whether same-observation known nondeterminism can be safely distinguished from epistemic UNKNOWN.
 - Find counterexamples for every attempted collapse of these categories.
 - Determine whether provenance/completeness must be part of the canonical quotient state.
+
+
+## AB70 — FutureObs completeness — 2026-09-25
+
+- Define protocol-specific successor completeness for each P_AA continuation event.
+- Resolve LEASE_RENEW, RETRY, and MUTATION/RECHECK semantics before declaring definitive FutureObs results.
+- Determine whether provenance/completeness must be observable for quotient purposes.
+- Test AB70 candidate against adversarial protocol contexts without changing production/research harness code prematurely.
