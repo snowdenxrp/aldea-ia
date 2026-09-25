@@ -269,3 +269,7 @@ Next: audit AB50/AB51 representation candidates field-by-field against AB18's 13
 
 ## AB104.8 continuation
 Use AB104.8 matrix as the preservation contract. Next executable work: construct a conservative packed-representation adapter that retains provenance for all 13 bridge dimensions plus actual admission linkage; compare reconstructed logical views and future observations. UNKNOWN semantics must remain UNKNOWN.
+
+
+## AB104.9 continuation
+Next: attack packed representation with an explicit recovered invalidation before two admissions, avoiding unresolved LEASE_RENEW/RETRY/CONSUME semantics. Compare reconstruction of both logical views.
