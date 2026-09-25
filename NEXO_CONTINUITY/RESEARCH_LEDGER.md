@@ -18,3 +18,6 @@ Reconciles two AB52 artifacts. The exhaustive mathematical enumeration remains e
 
 ## AB54 — ee3704e24e746116e049770944feeb308e2a5737
 Normalized the P_AA transition semantics into an explicit action schema: Pre, ReadSet, Post/Mutation, Frame, Invalidation, HistorySupport, AdmissionLink, Observation, UnknownCondition. Consolidated ATOMIC, LEASE and RECHECK read sets from prior artifacts without inventing missing semantics. The ternary protocol status remains UNKNOWN_DUE_TO_MISSING_SEMANTICS. Next experiment is a finite transition interpreter with explicit UNKNOWN and partial-order histories, starting with eight highest-value ternary attacks.
+
+## AB55 — 51496bdd0d5237b540d6093d359df646b2d90cb2
+Finite research interpreter instantiated from AB54's normalized action schema. Eight highest-value ternary attacks executed over 64 bounded initial binding states and 6 event permutations each (384 histories per attack). Results: no P_AA collision established; TRUE/FALSE outcomes were bounded interpreter observations, not proof. UNKNOWN was preserved for unspecified LEASE_RENEW successor semantics, RETRY inheritance semantics, and MUTATION/RECHECK semantics. Ternary protocol residual remains UNKNOWN_DUE_TO_MISSING_SEMANTICS. Next: encode lower-arity observations, FutureObs_PAA, reconstruction and EventDAG before broadening to all 286 triples.
