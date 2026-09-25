@@ -325,3 +325,7 @@ AB18↔AB90 audit: AB18's 13-dimensional candidate complete LeaseBridge and CM-A
 
 ## AB104.8 — 2026-09-25 — bridge field preservation matrix
 AB18's 13 LeaseBridge dimensions plus actual admission linkage were mapped against AB50/AB51 Q_AA. No dimension has a completed safe-elimination proof. Naive scalar bridge-valid compression remains unsafe; richer representation packing is possible in principle but requires reconstruction and future-congruence evidence. Artifact c3f03af675848797ac51e98f0b1532c24818a1ca.
+
+
+## AB104.9 — 2026-09-25
+Bounded shared-lease/two-admission attack: bridge identity alone cannot reconstruct admission-specific attempt/linkage. This is not itself a P_AA collision because linkage differs by construction. Scalar bridge merge is unsafe; richer packed representation remains possible in principle. Artifact e7614a7400994f92dc33e25cdfa97349149d7d07.
