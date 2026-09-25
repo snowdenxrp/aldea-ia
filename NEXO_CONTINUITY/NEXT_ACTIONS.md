@@ -34,3 +34,13 @@ Resume directly at the existing AB56 item 1: implement/execute lower-arity obser
 3. Add only evidence-backed EventDAG predecessor edges and preserve unknown ordering separately.
 4. Reconstruct the canonical lower-arity equivalence relation before using FutureObs_PAA as a collision test.
 5. Re-run the eight ternary attacks through the complete gate; preserve UNKNOWN and do not broaden to 286 triples prematurely.
+
+
+## AB61 resume — 2026-09-25
+
+1. Execute AB61_SEMANTIC_REPAIR_INTERPRETER_2026-09-25.py and persist its complete output.
+2. Verify the repaired gate preserves explicit UNKNOWN continuation branches and does not contaminate bounded history replay.
+3. Use the recovered AB55 source as the immutable reproduction baseline; do not alter its historical report.
+4. Run the eight attacks through lower-arity equality + FutureObs_PAA + reconstruction + EventDAG classification.
+5. Keep TERNARY_PAA_COLLISION=UNKNOWN unless the complete gate produces a justified result.
+6. Only after the gate is semantically executable broaden to the 286 triples.
