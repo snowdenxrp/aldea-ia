@@ -84,3 +84,15 @@ Still open: executing the AB61 repaired gate, complete post-ADMIT continuation l
 - Resolve LEASE_RENEW, RETRY, and MUTATION/RECHECK semantics before declaring definitive FutureObs results.
 - Determine whether provenance/completeness must be observable for quotient purposes.
 - Test AB70 candidate against adversarial protocol contexts without changing production/research harness code prematurely.
+
+
+## AB72 — continuity integrity repair obligations — 2026-09-25
+
+- Synchronize legacy canonical documents with the AB72 recovery state without deleting/replacing historical entries.
+- Verify exact blob SHA for every repaired document by read-back.
+- Verify linear Git ancestry after synchronization.
+- Keep CONTINUITY_CHECKPOINT=PARTIAL until all persistence stages succeed.
+- Preserve the known pre-V2 chat-only completeness UNKNOWN; do not claim historical completeness beyond GitHub evidence.
+- Preserve AB71 as PARTIAL persistence; do not silently promote it to VERIFIED.
+- Preserve AB65 execution as NOT_VERIFIED until actual output exists.
+- After continuity repair, continue protocol successor-completeness and FutureObs/quotient/EventDAG research.
