@@ -491,3 +491,12 @@ Result: all tested evidence-supported order families remain UNKNOWN due to incom
 Persistence sequence: ledger=c0b850b2eaec469a7b0f7c36b13e4b903e750f95; next-actions=da37f326d4d29b17912c4e7cec05bc79bfc0a3f7; current-state finalization follows.
 
 Next exact action: recover AB36/AB38 and later renewal/replay wording; if the gap persists, construct only an abstract two-completion epistemic counterexample.
+
+
+## AB104.3 — 2026-09-25
+
+AB104.3 persisted at commit a1ebfe20e63f086660ab678139b2daa94f64c0fc. Targeted repository searches yielded no additional renewal/replay law. The two-completion test shows why extension/rebinding versus non-repair cannot be selected without evidence: they can produce different future admission observations. This is epistemic under-specification, not established nondeterminism.
+
+Current labels unchanged: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED; 286 expansion=BLOCKED.
+
+Persistence preceding this final state: ledger=9a81da9bc5bd095b4b9b2368ce72c5beddc32a9e; next-actions=6a2a760d82931aa0fda8b269346322bc1bffbb39.
