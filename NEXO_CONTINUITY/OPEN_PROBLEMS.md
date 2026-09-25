@@ -58,3 +58,12 @@ Still open: executing the AB61 repaired gate, complete post-ADMIT continuation l
 - Need a transition/context-sensitive observational equivalence before calling any lower-arity projection a canonical quotient.
 - Need to prove which observations are protocol-visible; internal history bookkeeping is not automatically observable.
 - Need to determine whether a powerset, symbolic set, relation, or another epistemic representation is justified; this remains an architecture question, not an implementation decision.
+
+
+## AB68 — epistemic successor semantics — 2026-09-25
+
+- Need a formal distinction between epistemic unknown, specified nondeterminism, and known absence of successors.
+- Need FutureObs_PAA aggregation semantics for known agreement, known disagreement, known-empty, and unresolved successor relation.
+- Need counterexamples showing where collapsing these cases produces unsound conclusions.
+- Need to determine whether an existing formalism (PTS, belief state, symbolic partial model, multi-valued semantics) is necessary or whether a smaller protocol-specific model suffices.
+- Need to avoid architecture selection by analogy: external formalisms inform requirements but do not decide Nexo design.
