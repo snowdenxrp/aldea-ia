@@ -341,3 +341,7 @@ Added a research-only packed representation harness. It preserves all 13 AB18 br
 
 ## AB104.12 — 2026-09-25
 Static source validation of AB104.11 passed: exact blob read-back; 13 bridge dimensions present; per-field provenance/status present; admission linkage carries identity/provenance/status; missing or UNKNOWN components are conservatively unresolved; future semantics are not invented. Runtime execution was NOT verified. AB65 trigger 854d88d61cd78bf4d04e2e438516f7acbead9c5 still has zero workflow runs in connector evidence. Artifact commit 7b71f6c390bd39960d7008aec7e490d2384aa160.
+
+
+## AB104.13 — 2026-09-25
+Added conservative semantic-view comparator to AB104.11 harness. TRUE requires all 13 bridge dimensions and selected admission linkage to be known and equal; FALSE requires a known differing component; missing/unresolved information yields UNKNOWN. Added bounded omission and altered-attempt cases. Artifact commit ce5e7b60610ca6eb3bcbf9ea24f7092bc724e5fe; harness commit fa16044336cc543df68140f581864ea88f66e253a, content SHA 46f51709d61c8fe026921b5fe84f9a7781fa3adf.
