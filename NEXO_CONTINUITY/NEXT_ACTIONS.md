@@ -44,3 +44,10 @@ Resume directly at the existing AB56 item 1: implement/execute lower-arity obser
 4. Run the eight attacks through lower-arity equality + FutureObs_PAA + reconstruction + EventDAG classification.
 5. Keep TERNARY_PAA_COLLISION=UNKNOWN unless the complete gate produces a justified result.
 6. Only after the gate is semantically executable broaden to the 286 triples.
+
+
+## AB62 — gate execution prepared — 2026-09-25
+
+AB62_GATE_RUNNER_2026-09-25.py is persisted. It separates candidate-history replay from future continuation evaluation and requests FutureObs_PAA over all distinct events in each eight-event attack, preserving UNKNOWN continuation status. The runner is intentionally not treated as a completed execution result until an actual execution environment produces and persists its output; no synthetic counts are being recorded.
+
+Immediate next action remains: execute AB62 in a real Python/GitHub Actions environment, persist the machine-readable output, then perform lower-arity equivalence and deterministic reconstruction only over candidates that survive the complete gate.
