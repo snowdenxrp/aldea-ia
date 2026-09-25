@@ -1,11 +1,11 @@
 {
   "version": 4,
-  "savedAt": 1790380286740,
+  "savedAt": 1790380367253,
   "day": 672,
-  "hour": 10.830373333559839,
+  "hour": 12.977386666893223,
   "world": {
     "day": 672,
-    "timeOfDay": 10.830373333559839,
+    "timeOfDay": 12.977386666893223,
     "speed": 1,
     "resources": {
       "water": {
@@ -76,7 +76,7 @@
       },
       "wild_plants": {
         "type": "renewable",
-        "amount": 29.700000000000003,
+        "amount": 5.700000000000003,
         "quality": 0.85,
         "location": "meadow",
         "position": {
@@ -2356,9 +2356,29 @@
             }
           ],
           "regionKey": "1:3"
+        },
+        {
+          "id": "area-98",
+          "position": {
+            "x": 24.23791571069866,
+            "z": 32.86849710908999
+          },
+          "discoveredOnDay": 672,
+          "lastVisitedDay": 672,
+          "discoveredBy": [
+            "bruno"
+          ],
+          "visits": 1,
+          "resources": [
+            {
+              "type": "finite",
+              "quality": 1
+            }
+          ],
+          "regionKey": "7:8"
         }
       ],
-      "nextAreaId": 98
+      "nextAreaId": 99
     },
     "population": 2,
     "climate": {
@@ -28956,7 +28976,16 @@
         "7:5",
         "8:3",
         "8:4",
-        "8:5"
+        "8:5",
+        "3:2",
+        "3:3",
+        "3:4",
+        "4:2",
+        "4:3",
+        "4:4",
+        "5:2",
+        "5:3",
+        "5:4"
       ],
       "knownRegions": [
         "0:7",
@@ -29032,22 +29061,23 @@
         "8:5",
         "3:8",
         "2:8",
-        "5:8"
+        "5:8",
+        "7:8"
       ],
       "regions": {
         "4:3": {
           "key": "4:3",
           "x": 4,
           "z": 3,
-          "visits": 12455,
+          "visits": 12482,
           "discovered": true,
           "biome": "plains",
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
           "activity": 0,
-          "lastDiscoveryDay": 671,
-          "lastVisitDay": 671
+          "lastDiscoveryDay": 672,
+          "lastVisitDay": 672
         },
         "2:5": {
           "key": "2:5",
@@ -29205,23 +29235,23 @@
         },
         "7:7": {
           "key": "7:7",
-          "visits": 830,
+          "visits": 836,
           "discovered": true,
-          "lastVisitDay": 413,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
           "activity": 0,
           "x": 7,
           "z": 7,
-          "lastDiscoveryDay": 413,
+          "lastDiscoveryDay": 672,
           "biome": "plains"
         },
         "7:6": {
           "key": "7:6",
-          "visits": 3327,
+          "visits": 3331,
           "discovered": true,
-          "lastVisitDay": 602,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
@@ -29229,21 +29259,21 @@
           "biome": "plains",
           "x": 7,
           "z": 6,
-          "lastDiscoveryDay": 602
+          "lastDiscoveryDay": 672
         },
         "4:4": {
           "key": "4:4",
           "x": 4,
           "z": 4,
-          "visits": 4884,
+          "visits": 4889,
           "discovered": true,
           "biome": "plains",
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
           "activity": 0,
-          "lastDiscoveryDay": 670,
-          "lastVisitDay": 670
+          "lastDiscoveryDay": 672,
+          "lastVisitDay": 672
         },
         "2:7": {
           "key": "2:7",
@@ -29289,9 +29319,9 @@
         },
         "6:7": {
           "key": "6:7",
-          "visits": 5845,
+          "visits": 5850,
           "discovered": true,
-          "lastVisitDay": 618,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
@@ -29299,13 +29329,13 @@
           "biome": "plains",
           "x": 6,
           "z": 7,
-          "lastDiscoveryDay": 618
+          "lastDiscoveryDay": 672
         },
         "6:6": {
           "key": "6:6",
-          "visits": 5117,
+          "visits": 5120,
           "discovered": true,
-          "lastVisitDay": 618,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
@@ -29313,7 +29343,7 @@
           "biome": "plains",
           "x": 6,
           "z": 6,
-          "lastDiscoveryDay": 618
+          "lastDiscoveryDay": 672
         },
         "0:6": {
           "key": "0:6",
@@ -29415,7 +29445,7 @@
         },
         "7:5": {
           "key": "7:5",
-          "visits": 9257,
+          "visits": 9261,
           "discovered": true,
           "lastVisitDay": 672,
           "population": 0,
@@ -29485,7 +29515,7 @@
         },
         "7:4": {
           "key": "7:4",
-          "visits": 7428,
+          "visits": 7511,
           "discovered": true,
           "lastVisitDay": 672,
           "population": 1,
@@ -29513,9 +29543,9 @@
         },
         "5:6": {
           "key": "5:6",
-          "visits": 12483,
+          "visits": 12485,
           "discovered": true,
-          "lastVisitDay": 659,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
@@ -29523,7 +29553,7 @@
           "biome": "plains",
           "x": 5,
           "z": 6,
-          "lastDiscoveryDay": 659
+          "lastDiscoveryDay": 672
         },
         "2:6": {
           "key": "2:6",
@@ -29709,9 +29739,9 @@
         },
         "5:5": {
           "key": "5:5",
-          "visits": 5258,
+          "visits": 5263,
           "discovered": true,
-          "lastVisitDay": 671,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
@@ -29719,7 +29749,7 @@
           "biome": "plains",
           "x": 5,
           "z": 5,
-          "lastDiscoveryDay": 671
+          "lastDiscoveryDay": 672
         },
         "6:3": {
           "key": "6:3",
@@ -29863,9 +29893,9 @@
         },
         "5:4": {
           "key": "5:4",
-          "visits": 8834,
+          "visits": 8835,
           "discovered": true,
-          "lastVisitDay": 671,
+          "lastVisitDay": 672,
           "population": 0,
           "structures": 0,
           "settlementLevel": 0,
@@ -29873,7 +29903,7 @@
           "biome": "plains",
           "x": 5,
           "z": 4,
-          "lastDiscoveryDay": 671
+          "lastDiscoveryDay": 672
         },
         "5:2": {
           "key": "5:2",
@@ -30070,6 +30100,16 @@
           "structures": 0,
           "settlementLevel": 0,
           "activity": 0
+        },
+        "7:8": {
+          "key": "7:8",
+          "x": 7,
+          "z": 8,
+          "visits": 18,
+          "discovered": true,
+          "biome": "forest",
+          "lastDiscoveryDay": 672,
+          "lastVisitDay": 672
         }
       },
       "biomes": {
@@ -30738,6 +30778,15 @@
           "stone": 0.9,
           "water": 1,
           "movement": 1.05
+        },
+        "7:8": {
+          "key": "7:8",
+          "type": "forest",
+          "food": 1.15,
+          "wood": 1.35,
+          "stone": 0.9,
+          "water": 1,
+          "movement": 0.95
         }
       },
       "regionVersion": 1,
@@ -30756,10 +30805,10 @@
       "age": 16.51506849315025,
       "alive": true,
       "needs": {
-        "hunger": 70.18841599999968,
-        "thirst": 54.41902933333156,
-        "energy": 56.121600000001656,
-        "social": 90.24821333332618,
+        "hunger": 65.46498666666629,
+        "thirst": 47.548586666665074,
+        "energy": 100,
+        "social": 89.17470666665935,
         "safety": 100,
         "health": 100
       },
@@ -30767,7 +30816,7 @@
         "x": 23.82218679132407,
         "z": 5.652004455727026
       },
-      "currentActivity": "socializing",
+      "currentActivity": "resting",
       "inventory": [
         {
           "type": "stone",
@@ -70725,25 +70774,26 @@
         }
       ],
       "experiences": [],
-      "currentIntent": null,
-      "lastActionName": "socialize",
+      "currentIntent": {
+        "name": "rest",
+        "baseValue": 0,
+        "effects": {
+          "energy": 1.2
+        },
+        "distance": 0,
+        "score": 44.370024052050795
+      },
+      "lastActionName": "rest",
       "lastActionResult": {
         "success": true,
-        "effect": "social_interaction",
-        "otherAgentId": "bruno"
+        "effect": "energy_recovered"
       },
       "lastPerception": {
         "position": {
           "x": 23.82218679132407,
           "z": 5.652004455727026
         },
-        "visibleAgents": [
-          {
-            "id": "bruno",
-            "name": "Bruno",
-            "distance": 1.2847512745649956
-          }
-        ],
+        "visibleAgents": [],
         "nearbyResources": [
           {
             "type": "wood",
@@ -70756,12 +70806,12 @@
             "distance": 9.349686531265474
           }
         ],
-        "currentActivity": "socializing",
+        "currentActivity": "resting",
         "needs": {
-          "hunger": 70.18841599999968,
-          "thirst": 54.41902933333156,
-          "energy": 56.121600000001656,
-          "social": 90.24821333332618,
+          "hunger": 65.46498666666629,
+          "thirst": 47.548586666665074,
+          "energy": 100,
+          "social": 89.17470666665935,
           "safety": 100,
           "health": 100
         }
@@ -70781,7 +70831,7 @@
           "effects": {
             "social": 1.4
           },
-          "distance": 14.314048725434999
+          "distance": 1.2847512745649956
         },
         {
           "name": "share_knowledge",
@@ -70789,7 +70839,16 @@
           "effects": {
             "social": 0.6
           },
-          "distance": 14.314048725434999
+          "distance": 1.2847512745649956
+        },
+        {
+          "name": "eat_plant",
+          "baseValue": 0.95,
+          "distance": 25,
+          "effects": {
+            "hunger": 2.2
+          },
+          "amount": 1
         },
         {
           "name": "catch_fish",
@@ -70813,37 +70872,45 @@
         {
           "name": "gather_wood",
           "baseValue": 0.15,
-          "distance": 6.447542631161127
+          "distance": 4.485776960984344
+        },
+        {
+          "name": "discover_trade",
+          "baseValue": 0.22,
+          "explorationValue": 0.5,
+          "novelty": 1,
+          "knowledgeTopic": "action:trade",
+          "distance": 1.2847512745649956
         },
         {
           "name": "explore_area",
           "baseValue": 0.38,
           "explorationValue": 0.9,
           "novelty": 0.35,
-          "distance": 27.663117358253064,
+          "distance": 28.299937198269486,
           "target": {
-            "x": 34,
-            "z": 26.47872089788105
+            "x": 15.20145360853029,
+            "z": -21.30294694131829
           }
         }
       ],
       "decisionSnapshot": {
         "chosen": {
-          "name": "socialize",
-          "score": 40.775454215245716
+          "name": "rest",
+          "score": 44.370024052050795
         },
         "considered": [
           {
-            "name": "socialize",
-            "score": 40.775454215245716
-          },
-          {
-            "name": "share_knowledge",
-            "score": 17.165212993090393
-          },
-          {
             "name": "rest",
-            "score": 7.954371870719436
+            "score": 44.370024052050795
+          },
+          {
+            "name": "eat_plant",
+            "score": 35.99261518889614
+          },
+          {
+            "name": "catch_fish",
+            "score": 31.5132435239285
           }
         ]
       },
@@ -70853,7 +70920,7 @@
         "moving": false,
         "distanceTravelled": 157139.70635308846
       },
-      "decisionCooldownHours": 0.027413333333333255,
+      "decisionCooldownHours": 0,
       "knownResources": {
         "water": {
           "x": -18,
@@ -70891,7 +70958,7 @@
           "learnedDay": 672
         }
       },
-      "lastAttemptedAction": "eat_plant",
+      "lastAttemptedAction": "rest",
       "actionFailures": {
         "catch_fish": 1,
         "drink": 1,
@@ -71039,7 +71106,7 @@
       ],
       "researchExperiments": 514,
       "socialRole": "Recolector",
-      "activityRemainingHours": 0.22741333333333327,
+      "activityRemainingHours": 0.35,
       "explorationState": {
         "lastDay": 671,
         "regionsVisited": 400,
@@ -71054,6 +71121,86 @@
         "remainingHours": 0,
         "completedPhases": [
           "approach",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
+          "talk",
           "talk"
         ],
         "activityComplete": true
@@ -71066,18 +71213,18 @@
       "age": 16.51506849315025,
       "alive": true,
       "needs": {
-        "hunger": 70.12974933333301,
-        "thirst": 54.41902933333156,
-        "energy": 56.121600000001656,
-        "social": 90.24821333332618,
+        "hunger": 100,
+        "thirst": 47.548586666665074,
+        "energy": 50.75406666666806,
+        "social": 89.17470666665935,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": 22.56576754187565,
-        "z": 5.920326104335275
+        "x": -2,
+        "z": -8
       },
-      "currentActivity": "socializing",
+      "currentActivity": "eating",
       "inventory": [
         {
           "type": "wood",
@@ -77183,150 +77330,6 @@
           "confidence": 0.95,
           "evidence": [
             {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 644,
-              "description": "Bruno comió una planta (0.9500000000000028).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
-              "day": 645,
-              "description": "Bruno comió una planta (1).",
-              "outcome": 1,
-              "reliability": 0.5
-            },
-            {
               "day": 645,
               "description": "Bruno comió una planta (1).",
               "outcome": 1,
@@ -80178,6 +80181,150 @@
             },
             {
               "day": 671,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
+              "description": "Bruno comió una planta (1).",
+              "outcome": 1,
+              "reliability": 0.5
+            },
+            {
+              "day": 672,
               "description": "Bruno comió una planta (1).",
               "outcome": 1,
               "reliability": 0.5
@@ -87635,256 +87782,6 @@
         },
         {
           "id": "event-70983",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70985",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70987",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70989",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70991",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70993",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70995",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70997",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-70999",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71001",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71003",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71005",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71007",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71009",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71011",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71013",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71015",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71017",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71019",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71021",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71023",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71025",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71027",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71029",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71031",
-          "day": 657,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-71033",
           "day": 657,
           "type": "experience",
           "topic": "action:drink",
@@ -103302,6 +103199,256 @@
           "participants": [],
           "emotionalWeight": 0.04,
           "importance": 0.6
+        },
+        {
+          "id": "event-530",
+          "day": 672,
+          "type": "exploration",
+          "topic": null,
+          "description": "Bruno exploró una zona nueva de su entorno.",
+          "participants": [],
+          "emotionalWeight": 0.04,
+          "importance": 0.6
+        },
+        {
+          "id": "event-559",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-561",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-563",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-565",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-567",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-569",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-571",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-573",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-575",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-577",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-579",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-581",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-583",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-585",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-587",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-589",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-591",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-593",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-595",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-597",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-599",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-601",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-603",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-605",
+          "day": 672,
+          "type": "experience",
+          "topic": "action:eat_plant",
+          "description": "Bruno comió una planta (1).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -112605,43 +112752,55 @@
         }
       ],
       "experiences": [],
-      "currentIntent": null,
-      "lastActionName": "socialize",
+      "currentIntent": {
+        "name": "eat_plant",
+        "amount": 1,
+        "baseValue": 999,
+        "effects": {
+          "hunger": 8.67
+        },
+        "distance": 48.566060956159745,
+        "target": null
+      },
+      "lastActionName": "eat_plant",
       "lastActionResult": {
         "success": true,
-        "effect": "social_interaction",
-        "otherAgentId": "alex"
+        "effect": "plant_experiment",
+        "amount": 1,
+        "outcome": "beneficial",
+        "hungerGain": 8.67,
+        "healthChange": 0,
+        "belief": "Esta planta parece ser un alimento útil."
       },
       "lastPerception": {
         "position": {
-          "x": 22.56576754187565,
-          "z": 5.920326104335275
+          "x": -2,
+          "z": -8
         },
-        "visibleAgents": [
-          {
-            "id": "alex",
-            "name": "Alex",
-            "distance": 1.2847512745649956
-          }
-        ],
+        "visibleAgents": [],
         "nearbyResources": [
           {
-            "type": "wood",
-            "location": "forest",
-            "distance": 3.30275742240509
+            "type": "water",
+            "location": "river",
+            "distance": 17.88854381999832
           },
           {
-            "type": "stone",
-            "location": "rocky_zone",
-            "distance": 9.192252215619025
+            "type": "fertile_land",
+            "location": "fertile_zone",
+            "distance": 14.560219778561036
+          },
+          {
+            "type": "wild_plants",
+            "location": "meadow",
+            "distance": 0
           }
         ],
-        "currentActivity": "socializing",
+        "currentActivity": "eating",
         "needs": {
-          "hunger": 70.12974933333301,
-          "thirst": 54.41902933333156,
-          "energy": 56.121600000001656,
-          "social": 90.24821333332618,
+          "hunger": 99.969904,
+          "thirst": 47.548586666665074,
+          "energy": 50.75406666666806,
+          "social": 89.17470666665935,
           "safety": 100,
           "health": 100
         }
@@ -112722,21 +112881,13 @@
       ],
       "decisionSnapshot": {
         "chosen": {
-          "name": "socialize",
-          "score": 41.163312613112396
+          "name": "eat_plant",
+          "score": 999
         },
         "considered": [
           {
-            "name": "socialize",
-            "score": 41.163312613112396
-          },
-          {
-            "name": "share_knowledge",
-            "score": 17.546580877890403
-          },
-          {
-            "name": "rest",
-            "score": 8.111339550719425
+            "name": "eat_plant",
+            "score": 999
           }
         ]
       },
@@ -112744,14 +112895,14 @@
         "target": null,
         "speed": 1.8,
         "moving": false,
-        "distanceTravelled": 157564.43825804695
+        "distanceTravelled": 157640.00431900265
       },
-      "decisionCooldownHours": 0.027413333333333255,
+      "decisionCooldownHours": 0,
       "knownResources": {
         "water": {
           "x": -18,
           "z": 0,
-          "learnedDay": 671
+          "learnedDay": 672
         },
         "fish": {
           "x": -18,
@@ -112761,12 +112912,12 @@
         "wild_plants": {
           "x": -2,
           "z": -8,
-          "learnedDay": 671
+          "learnedDay": 672
         },
         "fertile_land": {
           "x": 2,
           "z": -22,
-          "learnedDay": 671
+          "learnedDay": 672
         },
         "clay": {
           "x": -12,
@@ -112790,7 +112941,7 @@
         "catch_fish": 1,
         "eat_fish": 1,
         "rest": 0,
-        "eat_plant": 1,
+        "eat_plant": 0,
         "gather_wood": 0,
         "discover_trade": 2,
         "farm": 19,
@@ -112929,7 +113080,8 @@
         "area-95",
         "area-84",
         "area-96",
-        "area-88"
+        "area-88",
+        "area-98"
       ],
       "farm": "farm-1",
       "specialization": {
@@ -112959,1079 +113111,54 @@
       ],
       "researchExperiments": 514,
       "socialRole": "Recolector",
-      "activityRemainingHours": 0.22741333333333327,
+      "activityRemainingHours": 0.35,
       "explorationState": {
-        "lastDay": 671,
-        "regionsVisited": 401,
-        "nextExploreAt": 16134.43297062915,
-        "excursions": 401,
+        "lastDay": 672,
+        "regionsVisited": 402,
+        "nextExploreAt": 16154.24033977893,
+        "excursions": 402,
         "target": null
       },
       "activitySequence": {
-        "intentName": "socialize",
-        "phaseIndex": 1,
-        "phase": "talk",
+        "intentName": "explore_area",
+        "phaseIndex": 2,
+        "phase": "discover",
         "remainingHours": 0,
         "completedPhases": [
           "approach",
-          "talk"
+          "inspect",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover",
+          "discover"
         ],
         "activityComplete": true
       },
-      "activityPhase": "talk"
+      "activityPhase": "discover"
     }
   ],
   "events": [
-    {
-      "id": "event-515",
-      "day": 671,
-      "hour": 13.821040000226239,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-516",
-      "day": 671,
-      "hour": 13.821040000226239,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-517",
-      "day": 671,
-      "hour": 13.847706666892906,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-518",
-      "day": 671,
-      "hour": 13.847706666892906,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-519",
-      "day": 671,
-      "hour": 13.874373333559573,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-520",
-      "day": 671,
-      "hour": 13.874373333559573,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-521",
-      "day": 671,
-      "hour": 13.90104000022624,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-522",
-      "day": 671,
-      "hour": 13.90104000022624,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-523",
-      "day": 671,
-      "hour": 13.927706666892908,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-524",
-      "day": 671,
-      "hour": 13.927706666892908,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-525",
-      "day": 671,
-      "hour": 13.954373333559575,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-526",
-      "day": 671,
-      "hour": 13.954373333559575,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-527",
-      "day": 671,
-      "hour": 13.981040000226242,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-528",
-      "day": 671,
-      "hour": 13.981040000226242,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-529",
-      "day": 671,
-      "hour": 14.00770666689291,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-530",
-      "day": 671,
-      "hour": 14.00770666689291,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-531",
-      "day": 671,
-      "hour": 14.034373333559577,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-532",
-      "day": 671,
-      "hour": 14.034373333559577,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-533",
-      "day": 671,
-      "hour": 14.061040000226244,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-534",
-      "day": 671,
-      "hour": 14.061040000226244,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-535",
-      "day": 671,
-      "hour": 14.087706666892911,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-536",
-      "day": 671,
-      "hour": 14.087706666892911,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-537",
-      "day": 671,
-      "hour": 14.114373333559579,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-538",
-      "day": 671,
-      "hour": 14.114373333559579,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-539",
-      "day": 671,
-      "hour": 14.141040000226246,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-540",
-      "day": 671,
-      "hour": 14.141040000226246,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-541",
-      "day": 671,
-      "hour": 14.167706666892913,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-542",
-      "day": 671,
-      "hour": 14.167706666892913,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-543",
-      "day": 671,
-      "hour": 14.19437333355958,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-544",
-      "day": 671,
-      "hour": 14.19437333355958,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-545",
-      "day": 671,
-      "hour": 14.221040000226248,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-546",
-      "day": 671,
-      "hour": 14.221040000226248,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-547",
-      "day": 671,
-      "hour": 14.247706666892915,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-548",
-      "day": 671,
-      "hour": 14.247706666892915,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-549",
-      "day": 671,
-      "hour": 14.274373333559582,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-550",
-      "day": 671,
-      "hour": 14.274373333559582,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-551",
-      "day": 671,
-      "hour": 14.30104000022625,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-552",
-      "day": 671,
-      "hour": 14.30104000022625,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-553",
-      "day": 671,
-      "hour": 14.327706666892917,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-554",
-      "day": 671,
-      "hour": 14.327706666892917,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-555",
-      "day": 671,
-      "hour": 14.34568000022625,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-556",
-      "day": 671,
-      "hour": 14.34568000022625,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 671,
-      "hour": 14.372346666892918,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 671,
-      "hour": 14.372346666892918,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-503",
-      "day": 671,
-      "hour": 14.399013333559585,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-504",
-      "day": 671,
-      "hour": 14.399013333559585,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-505",
-      "day": 671,
-      "hour": 14.425680000226253,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-506",
-      "day": 671,
-      "hour": 14.425680000226253,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-507",
-      "day": 671,
-      "hour": 14.45234666689292,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-508",
-      "day": 671,
-      "hour": 14.45234666689292,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-509",
-      "day": 671,
-      "hour": 14.479013333559587,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-510",
-      "day": 671,
-      "hour": 14.479013333559587,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-511",
-      "day": 671,
-      "hour": 14.505680000226254,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-512",
-      "day": 671,
-      "hour": 14.505680000226254,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-513",
-      "day": 671,
-      "hour": 14.532346666892922,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-514",
-      "day": 671,
-      "hour": 14.532346666892922,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-515",
-      "day": 671,
-      "hour": 14.559013333559589,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-516",
-      "day": 671,
-      "hour": 14.559013333559589,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-517",
-      "day": 671,
-      "hour": 14.585680000226256,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-518",
-      "day": 671,
-      "hour": 14.585680000226256,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-519",
-      "day": 671,
-      "hour": 14.612346666892924,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-520",
-      "day": 671,
-      "hour": 14.612346666892924,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-521",
-      "day": 671,
-      "hour": 14.639013333559591,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-522",
-      "day": 671,
-      "hour": 14.639013333559591,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-523",
-      "day": 671,
-      "hour": 14.665680000226258,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-524",
-      "day": 671,
-      "hour": 14.665680000226258,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-525",
-      "day": 671,
-      "hour": 14.692346666892925,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-526",
-      "day": 671,
-      "hour": 14.692346666892925,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-527",
-      "day": 671,
-      "hour": 14.719013333559593,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-528",
-      "day": 671,
-      "hour": 14.719013333559593,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-529",
-      "day": 671,
-      "hour": 14.74568000022626,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-530",
-      "day": 671,
-      "hour": 14.74568000022626,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-531",
-      "day": 671,
-      "hour": 14.772346666892927,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-532",
-      "day": 671,
-      "hour": 14.772346666892927,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-533",
-      "day": 671,
-      "hour": 14.799013333559595,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-534",
-      "day": 671,
-      "hour": 14.799013333559595,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-535",
-      "day": 671,
-      "hour": 14.825680000226262,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-536",
-      "day": 671,
-      "hour": 14.825680000226262,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-537",
-      "day": 671,
-      "hour": 14.85234666689293,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-538",
-      "day": 671,
-      "hour": 14.85234666689293,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-539",
-      "day": 671,
-      "hour": 14.879013333559596,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-540",
-      "day": 671,
-      "hour": 14.879013333559596,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-541",
-      "day": 671,
-      "hour": 14.905680000226264,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-542",
-      "day": 671,
-      "hour": 14.905680000226264,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-543",
-      "day": 671,
-      "hour": 14.932346666892931,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-544",
-      "day": 671,
-      "hour": 14.932346666892931,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-545",
-      "day": 671,
-      "hour": 14.959013333559598,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-546",
-      "day": 671,
-      "hour": 14.959013333559598,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-547",
-      "day": 671,
-      "hour": 14.985680000226266,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-548",
-      "day": 671,
-      "hour": 14.985680000226266,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-549",
-      "day": 671,
-      "hour": 15.012346666892933,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-550",
-      "day": 671,
-      "hour": 15.012346666892933,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-551",
-      "day": 671,
-      "hour": 15.0390133335596,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-552",
-      "day": 671,
-      "hour": 15.0390133335596,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-553",
-      "day": 671,
-      "hour": 15.065680000226267,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-554",
-      "day": 671,
-      "hour": 15.065680000226267,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-555",
-      "day": 671,
-      "hour": 15.092346666892935,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-556",
-      "day": 671,
-      "hour": 15.092346666892935,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-557",
-      "day": 671,
-      "hour": 15.119013333559602,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-558",
-      "day": 671,
-      "hour": 15.119013333559602,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-559",
-      "day": 671,
-      "hour": 15.14568000022627,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-560",
-      "day": 671,
-      "hour": 15.14568000022627,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-561",
-      "day": 671,
-      "hour": 15.172346666892937,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-562",
-      "day": 671,
-      "hour": 15.172346666892937,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-563",
-      "day": 671,
-      "hour": 15.199013333559604,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
     {
       "id": "event-564",
       "day": 671,
@@ -117982,6 +117109,1056 @@
       "participants": [
         "bruno",
         "alex"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 672,
+      "hour": 10.883706666893174,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 672,
+      "hour": 10.910373333559841,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-503",
+      "day": 672,
+      "hour": 10.937040000226508,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-504",
+      "day": 672,
+      "hour": 10.963706666893176,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-505",
+      "day": 672,
+      "hour": 10.990373333559843,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-506",
+      "day": 672,
+      "hour": 11.01704000022651,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-507",
+      "day": 672,
+      "hour": 11.043706666893177,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-508",
+      "day": 672,
+      "hour": 11.070373333559845,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-509",
+      "day": 672,
+      "hour": 11.097040000226512,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-510",
+      "day": 672,
+      "hour": 11.12370666689318,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-511",
+      "day": 672,
+      "hour": 11.150373333559847,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-512",
+      "day": 672,
+      "hour": 11.177040000226514,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-513",
+      "day": 672,
+      "hour": 11.203706666893181,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-514",
+      "day": 672,
+      "hour": 11.230373333559848,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-515",
+      "day": 672,
+      "hour": 11.257040000226516,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-516",
+      "day": 672,
+      "hour": 11.283706666893183,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-517",
+      "day": 672,
+      "hour": 11.31037333355985,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-518",
+      "day": 672,
+      "hour": 11.337040000226517,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-519",
+      "day": 672,
+      "hour": 11.363706666893185,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-520",
+      "day": 672,
+      "hour": 11.390373333559852,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-521",
+      "day": 672,
+      "hour": 11.41704000022652,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-522",
+      "day": 672,
+      "hour": 11.443706666893187,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-523",
+      "day": 672,
+      "hour": 11.470373333559854,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-524",
+      "day": 672,
+      "hour": 11.497040000226521,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-525",
+      "day": 672,
+      "hour": 11.523706666893188,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-526",
+      "day": 672,
+      "hour": 11.550373333559856,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-527",
+      "day": 672,
+      "hour": 11.577040000226523,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-528",
+      "day": 672,
+      "hour": 11.60370666689319,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-529",
+      "day": 672,
+      "hour": 11.630373333559858,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-530",
+      "day": 672,
+      "hour": 11.630373333559858,
+      "type": "exploration",
+      "description": "Bruno exploró una zona nueva de su entorno.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-531",
+      "day": 672,
+      "hour": 11.657040000226525,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-532",
+      "day": 672,
+      "hour": 11.683706666893192,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-533",
+      "day": 672,
+      "hour": 11.71037333355986,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-534",
+      "day": 672,
+      "hour": 11.737040000226527,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-535",
+      "day": 672,
+      "hour": 11.763706666893194,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-536",
+      "day": 672,
+      "hour": 11.790373333559861,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-537",
+      "day": 672,
+      "hour": 11.817040000226529,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-538",
+      "day": 672,
+      "hour": 11.843706666893196,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-539",
+      "day": 672,
+      "hour": 11.870373333559863,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-540",
+      "day": 672,
+      "hour": 11.89704000022653,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-541",
+      "day": 672,
+      "hour": 11.923706666893198,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-542",
+      "day": 672,
+      "hour": 11.950373333559865,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-543",
+      "day": 672,
+      "hour": 11.977040000226532,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-544",
+      "day": 672,
+      "hour": 12.0037066668932,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-545",
+      "day": 672,
+      "hour": 12.030373333559867,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-546",
+      "day": 672,
+      "hour": 12.057040000226534,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-547",
+      "day": 672,
+      "hour": 12.083706666893201,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-548",
+      "day": 672,
+      "hour": 12.110373333559869,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-549",
+      "day": 672,
+      "hour": 12.137040000226536,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-550",
+      "day": 672,
+      "hour": 12.163706666893203,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-551",
+      "day": 672,
+      "hour": 12.19037333355987,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-552",
+      "day": 672,
+      "hour": 12.217040000226538,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-553",
+      "day": 672,
+      "hour": 12.243706666893205,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-554",
+      "day": 672,
+      "hour": 12.270373333559872,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-555",
+      "day": 672,
+      "hour": 12.29704000022654,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-556",
+      "day": 672,
+      "hour": 12.323706666893207,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-557",
+      "day": 672,
+      "hour": 12.350373333559874,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-558",
+      "day": 672,
+      "hour": 12.377040000226541,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-559",
+      "day": 672,
+      "hour": 12.377040000226541,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-560",
+      "day": 672,
+      "hour": 12.403706666893209,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-561",
+      "day": 672,
+      "hour": 12.403706666893209,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-562",
+      "day": 672,
+      "hour": 12.430373333559876,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-563",
+      "day": 672,
+      "hour": 12.430373333559876,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-564",
+      "day": 672,
+      "hour": 12.457040000226543,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-565",
+      "day": 672,
+      "hour": 12.457040000226543,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-566",
+      "day": 672,
+      "hour": 12.48370666689321,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-567",
+      "day": 672,
+      "hour": 12.48370666689321,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-568",
+      "day": 672,
+      "hour": 12.510373333559878,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-569",
+      "day": 672,
+      "hour": 12.510373333559878,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-570",
+      "day": 672,
+      "hour": 12.537040000226545,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-571",
+      "day": 672,
+      "hour": 12.537040000226545,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-572",
+      "day": 672,
+      "hour": 12.563706666893212,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-573",
+      "day": 672,
+      "hour": 12.563706666893212,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-574",
+      "day": 672,
+      "hour": 12.59037333355988,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-575",
+      "day": 672,
+      "hour": 12.59037333355988,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-576",
+      "day": 672,
+      "hour": 12.617040000226547,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-577",
+      "day": 672,
+      "hour": 12.617040000226547,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-578",
+      "day": 672,
+      "hour": 12.643706666893214,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-579",
+      "day": 672,
+      "hour": 12.643706666893214,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-580",
+      "day": 672,
+      "hour": 12.670373333559882,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-581",
+      "day": 672,
+      "hour": 12.670373333559882,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-582",
+      "day": 672,
+      "hour": 12.697040000226549,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-583",
+      "day": 672,
+      "hour": 12.697040000226549,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-584",
+      "day": 672,
+      "hour": 12.723706666893216,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-585",
+      "day": 672,
+      "hour": 12.723706666893216,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-586",
+      "day": 672,
+      "hour": 12.750373333559883,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-587",
+      "day": 672,
+      "hour": 12.750373333559883,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-588",
+      "day": 672,
+      "hour": 12.77704000022655,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-589",
+      "day": 672,
+      "hour": 12.77704000022655,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-590",
+      "day": 672,
+      "hour": 12.803706666893218,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-591",
+      "day": 672,
+      "hour": 12.803706666893218,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-592",
+      "day": 672,
+      "hour": 12.830373333559885,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-593",
+      "day": 672,
+      "hour": 12.830373333559885,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-594",
+      "day": 672,
+      "hour": 12.857040000226553,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-595",
+      "day": 672,
+      "hour": 12.857040000226553,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-596",
+      "day": 672,
+      "hour": 12.88370666689322,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-597",
+      "day": 672,
+      "hour": 12.88370666689322,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-598",
+      "day": 672,
+      "hour": 12.910373333559887,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-599",
+      "day": 672,
+      "hour": 12.910373333559887,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-600",
+      "day": 672,
+      "hour": 12.937040000226554,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-601",
+      "day": 672,
+      "hour": 12.937040000226554,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-602",
+      "day": 672,
+      "hour": 12.963706666893222,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-603",
+      "day": 672,
+      "hour": 12.963706666893222,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-604",
+      "day": 672,
+      "hour": 12.977386666893223,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-605",
+      "day": 672,
+      "hour": 12.977386666893223,
+      "type": "action",
+      "description": "Bruno comió una planta (1).",
+      "participants": [
+        "bruno"
       ]
     }
   ]
