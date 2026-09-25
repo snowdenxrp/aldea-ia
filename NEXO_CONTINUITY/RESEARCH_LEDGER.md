@@ -71,3 +71,9 @@ Status: research-only. No integrated implementation. TERNARY_PAA_COLLISION remai
 Research result: one generic UNKNOWN is insufficient as a semantic description unless its meaning is explicitly defined. External partial-transition and epistemic-planning literature supports separating epistemic uncertainty from specified nondeterminism. Known-empty additionally requires proof that the relevant successor relation is complete; absence of a found successor is not enough.
 
 Candidate research object: TransitionKnowledge(relation_status, known_successors, completeness, provenance). Candidate only. FutureObs categories proposed for testing: KNOWN_EMPTY, KNOWN_UNIQUE, KNOWN_MULTIPLE, UNKNOWN. No architecture or implementation decision made.
+
+
+## AB70 — 79562d813536f0cdee827504612109d346c5dbe8 — 2026-09-25
+Research result: FutureObs can be modeled at the semantic-result level without fabricating UNKNOWN successors. Candidate categories are EMPTY_KNOWN, KNOWN_AGREEMENT, KNOWN_DIVERGENCE, and UNKNOWN. The decisive prerequisite is a protocol-specific completeness criterion for successor enumeration. Five counterexamples show unsafe collapses and reinforce that snapshot equality is insufficient for quotient congruence.
+
+No implementation was changed. Candidate is not verified and not architecture.
