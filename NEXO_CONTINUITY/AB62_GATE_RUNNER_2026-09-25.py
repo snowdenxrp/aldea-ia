@@ -2,7 +2,13 @@
 
 Research-only. No protocol semantics are invented here.
 """
-from AB61_SEMANTIC_REPAIR_INTERPRETER_2026_09_25 import (
+import importlib.util
+
+_spec=importlib.util.spec_from_file_location("ab61", "AB61_SEMANTIC_REPAIR_INTERPRETER_2026-09-25.py")
+ab61=importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(ab61)
+
+from ab61 import (
     ATTACKS, Tri, State, Binding, bounded_states, continuation_legality,
     future_obs_set, lower_obs, dag_order_status, execute
 )
