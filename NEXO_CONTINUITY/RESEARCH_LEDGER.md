@@ -286,3 +286,13 @@ Read-back blob SHA: 98bb1e5c9abf398180fe6dc890eb764d5568e1ca
 The matrix separates evidence-backed source context (C1) from unresolved legality, post-state, frame/invalidation, observation mapping, and successor enumeration. For LEASE_RENEW, C2-C6 remain incomplete; for LEASE_CONSUME, C2-C6 remain incomplete. This prevents structural field names from being mistaken for protocol transition laws.
 
 No semantic labels changed and no interpreter was modified. Next research step: perform only evidence-supported adversarial orderings for renewal/consumption and explicitly record unresolved successor branches.
+
+
+## AB104.2 — 2026-09-25 — adversarial order analysis
+
+Persisted: NEXO_CONTINUITY/AB104_2_ADVERSARIAL_RENEW_CONSUME_ORDER_ANALYSIS_2026-09-25.md
+Commit: 01742783ac2fc2ccceb14a8299502cfe2221dabd
+
+The evidence-supported ordering audit covers expiry→renew, policy/delegation/incarnation mutation→renew→admit, renew→admit, consume→retry/reuse, revoke→consume→admit, and consume→admit. Every unresolved ordering remains UNKNOWN because complete legality/post-state/enumeration is absent. No concrete P_AA collision was found or ruled out. In particular, extension, replacement, bridge retention/rebinding and retry inheritance cannot be selected from the recovered read-sets.
+
+The analysis also confirms AB20's unresolved admission-linearization alternatives remain semantically relevant; LEASE_RENEW cannot be treated as choosing one merely because of its field vocabulary.
