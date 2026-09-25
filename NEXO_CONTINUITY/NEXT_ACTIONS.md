@@ -164,3 +164,14 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 6. Resume semantic research only from the persisted AB74 frontier: formalize KNOWN_NONEMPTY | KNOWN_EMPTY | UNKNOWN successor status with provenance.
 7. Do not modify AB61/AB65 or broaden to 286 triples until the successor semantics are justified and tested.
 8. Preserve all existing UNKNOWN/PENDING states and all prior AB artifacts.
+
+
+## AB75 next actions — 2026-09-25
+
+1. Treat SUCCESSOR_STATUS = KNOWN_NONEMPTY | KNOWN_EMPTY | UNKNOWN as the current research boundary, not final architecture.
+2. For LEASE_RENEW, RETRY, MUTATION, and RECHECK, build protocol-completeness records covering source context, legality, post-state law, frame/invalidation, observation mapping, and enumeration domain.
+3. Only emit KNOWN_NONEMPTY or KNOWN_EMPTY when the completeness evidence supports it; otherwise preserve UNKNOWN.
+4. Test the AB73 two-completion construction against actual AB54 vocabulary without promoting it to a concrete counterexample.
+5. Keep AB61/AB65 unchanged until the completeness test justifies a semantic modification.
+6. Keep the eight-attack gate, 286-triple expansion, semantic freeze, formal verification, and integrated Nexo assembly blocked.
+7. If standalone artifact creation is blocked again, preserve the result additively in CONTINUITY canonical files and explicitly record the blocked operation; never claim an unverified artifact.
