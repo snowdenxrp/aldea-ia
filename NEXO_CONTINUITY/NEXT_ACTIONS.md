@@ -61,3 +61,12 @@ The working method remains:
 investigar → modelar → atacar → contrastar → formalizar → documentar → conservar evidencia → decidir disposición → y solamente después construir.
 
 This includes searching sources, studying real systems/runtimes and relevant prior work, testing assumptions and counterexamples, distinguishing evidence/hypothesis/implementation/verification, and preserving UNKNOWN/PENDING rather than filling gaps by invention. A future chat must continue the investigation itself, not merely execute the next saved script.
+
+## AB65 resume — 2026-09-25
+
+1. Obtain a real repository-connected execution of the AB65 gate and persist the complete output; do not infer execution from the workflow file alone.
+2. Audit UNKNOWN-history composition: represent epistemically possible successor states explicitly rather than treating UNKNOWN as identity.
+3. Derive and document the canonical lower-arity observational quotient; remove implementation-only discriminators unless evidence establishes them as observable.
+4. Continue external research on three-valued runtime verification, partial observations, provenance, identity/authorization and temporal continuation semantics.
+5. Execute the eight ternary attacks through lower-arity equality, FutureObs_PAA, reconstruction and EventDAG only after the semantic gate is justified.
+6. Preserve UNKNOWN and do not broaden to 286 triples until the eight-attack gate is semantically closed.
