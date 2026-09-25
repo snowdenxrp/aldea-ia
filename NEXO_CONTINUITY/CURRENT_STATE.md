@@ -238,3 +238,13 @@ Commit: bf3e24d32637af30c0b8fdbcb2fb424d5d1637ff
 External research identifies established alternatives for incomplete transition knowledge: partial transition systems with possible/necessary behavior, belief/uncertainty sets, symbolic partial models, and multi-valued semantics. This does not select a Nexo representation. A critical distinction is now explicit: epistemic UNKNOWN about a real transition is not equivalent to genuine nondeterminism in the real protocol, and neither is equivalent to a known empty successor set.
 
 Decision: do not implement a generic powerset/PTS layer yet. First formalize the protocol distinction among unknown-about-transition, specified-nondeterministic-transition, and known-no-transition, then derive FutureObs_PAA aggregation semantics and counterexamples. No research label is promoted and integrated Nexo assembly remains blocked.
+
+
+## AB69 — semantic distinction — 2026-09-25
+
+Persisted: NEXO_CONTINUITY/AB69_SEMANTIC_UNKNOWN_NONDETERMINISM_2026-09-25.md
+Commit: f37dcd8cbce9a5378a8b7c681d2d790445beaea9
+
+Research now distinguishes: KNOWN_PRESENT, KNOWN_ABSENT, UNKNOWN_RELATION, SPECIFIED_NONDETERMINISM, and KNOWN_EMPTY_SUCCESSOR_SET. UNKNOWN is epistemic uncertainty about the relation; nondeterminism is specified multiplicity; known-empty requires evidence of relation completeness. A candidate TransitionKnowledge object preserves relation status, justified known successors, completeness, and provenance, but is NOT architecture.
+
+No AB61/AB65 modification was made. FutureObs_PAA semantics remain OPEN. TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; EXECUTION=NOT_VERIFIED.
