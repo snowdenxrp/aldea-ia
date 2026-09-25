@@ -19,3 +19,10 @@ The cross-chat loss-prevention handoff has been persisted. Future sessions must 
 ## Research resume point
 
 Resume directly at the existing AB56 item 1: implement/execute lower-arity observations + FutureObs_PAA as executable code, then EventDAG ordering, actual UsedAdmissionContext identity/binding equality, and continuation legality. Preserve UNKNOWN. Do not broaden to 286 triples until the complete ternary gate is executed.
+## AB57 resume — 2026-09-25
+
+1. Replace harness placeholders only with canonical concrete binding domains and protocol rules already evidenced by prior artifacts.
+2. Implement complete FutureObs_PAA continuation enumeration with UNKNOWN for unresolved legality.
+3. Construct lower-arity equivalence classes and candidate ternary worlds.
+4. Execute deterministic reconstruction and the eight attacks through the complete gate.
+5. Broaden to 286 triples only after the gate is actually closed.
