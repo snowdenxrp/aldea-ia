@@ -12,7 +12,7 @@ assert.equal(mission.status,"planned");
 assert.equal(mission.steps[0].action,"repair_visual_mesh");
 assert.equal(mission.steps[0].priority,3);
 assert.deepEqual(mission.steps[0].dependsOn,[mission.steps[1].id]);
-assert.equal(mission.objective,"awaiting_dependencies");
+assert.equal(mission.objective,"repair_agent_state");
 
 const blockedByDependency=beginNexoStep(mission,mission.steps[0].id);
 assert.equal(blockedByDependency.status,"blocked");
