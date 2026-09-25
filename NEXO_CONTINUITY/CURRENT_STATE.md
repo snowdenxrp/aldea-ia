@@ -549,3 +549,7 @@ Semantic comparator added and persisted. Representation-level distinction is now
 
 ## AB104.14 — 2026-09-25
 Packed-representation attack matrix persisted. The research boundary remains conservative: representation-level differences are distinguishable, but future behavioral congruence remains UNKNOWN. AB65_EXECUTION remains NOT_VERIFIED; FORMAL_VERIFICATION remains NOT_PERFORMED; LEASE_RENEW and LEASE_CONSUME remain unresolved.
+
+
+## AB104.15 — 2026-09-25
+AB65 workflow trigger now includes the AB104.11 harness path. Execution is still NOT_VERIFIED because no output commit is currently observable. No protocol semantics changed. Continue with runtime evidence and invalidation-sensitive representation attacks.
