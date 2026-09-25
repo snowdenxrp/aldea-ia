@@ -50,3 +50,11 @@ Still open: executing the AB61 repaired gate, complete post-ADMIT continuation l
 - EventDAG legal topological-order closure remains partial.
 - LEASE_RENEW, RETRY, MUTATION/RECHECK and complete binding domains remain unresolved.
 \n\n## AB66 — research/architecture separation — 2026-09-25\n\n- Open: formalize the boundary between durable research history and candidate architecture so historical experiments cannot silently become requirements.\n- Open: define epistemic successor-set semantics for UNKNOWN history events before using FutureObs_PAA from an UNKNOWN history.\n- Open: derive canonical lower-arity observational equivalence; current implementation fields such as history order cannot be assumed observable.\n- Open: complete external state-of-the-art/runtime research relevant to partial observation, three-valued monitoring, provenance/identity/authorization, temporal continuation, and event-order semantics.\n- Open: define explicit architecture acceptance criteria and rejected-alternative records before integrated implementation.\n\n### Hard constraint added by AB66\nDo not assemble Nexo from the accumulated AB50–AB65 experimental artifacts. Integrated implementation is blocked until the research-to-architecture gate in AB66 is explicitly satisfied. This constraint does not delete or invalidate any prior research artifact.\n
+
+## AB67 — external research findings — 2026-09-25
+
+- Need a formal representation of unresolved successor relations that does not fabricate concrete states.
+- Need to distinguish epistemic uncertainty about a successor from a genuinely known empty successor set.
+- Need a transition/context-sensitive observational equivalence before calling any lower-arity projection a canonical quotient.
+- Need to prove which observations are protocol-visible; internal history bookkeeping is not automatically observable.
+- Need to determine whether a powerset, symbolic set, relation, or another epistemic representation is justified; this remains an architecture question, not an implementation decision.
