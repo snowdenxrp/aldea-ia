@@ -315,10 +315,10 @@ function createMesh(a){
   const neck=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,.18,10),skinMat); neck.position.y=1.66;
   const pelvis=new THREE.Mesh(new THREE.BoxGeometry(.52,.28,.34),darkMat); pelvis.scale.set(1.08,1,1.05); pelvis.position.y=.78;
   const shoulderL=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),clothMat), shoulderR=shoulderL.clone(); shoulderL.position.set(-.38,1.43,0); shoulderR.position.set(.38,1.43,0);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.32,24,18),skinMat); head.scale.set(1,.98,.96); head.position.y=1.91;
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.32,24,18),skinMat); head.scale.set(1.02,1,.98); head.position.y=1.91;
   const earL=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),skinMat), earR=earL.clone(); earL.position.set(-.305,1.91,0); earR.position.set(.305,1.91,0);
-  const hair=new THREE.Mesh(new THREE.SphereGeometry(.335,24,14,0,Math.PI*2,0,Math.PI*.58),hairMat); hair.position.y=2.04;
-  const nose=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),skinMat); nose.position.set(0,1.91,.335);
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(.335,24,14,0,Math.PI*2,0,Math.PI*.58),hairMat); hair.scale.set(1.04,1.05,1.02); hair.position.y=2.04;
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),skinMat); nose.scale.set(.8,.8,1.2); nose.position.set(0,1.91,.335);
   const eyeWhiteMat=new THREE.MeshBasicMaterial({color:0xf5f2e8,depthTest:false});
   const eyeMat=new THREE.MeshBasicMaterial({color:0x18222b,depthTest:false});
   const eyeWL=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),eyeWhiteMat), eyeWR=eyeWL.clone(); eyeWL.position.set(-.115,1.98,.315); eyeWR.position.set(.115,1.98,.315);
