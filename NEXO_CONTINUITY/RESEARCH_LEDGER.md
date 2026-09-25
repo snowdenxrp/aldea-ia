@@ -296,3 +296,10 @@ Commit: 01742783ac2fc2ccceb14a8299502cfe2221dabd
 The evidence-supported ordering audit covers expiry→renew, policy/delegation/incarnation mutation→renew→admit, renew→admit, consume→retry/reuse, revoke→consume→admit, and consume→admit. Every unresolved ordering remains UNKNOWN because complete legality/post-state/enumeration is absent. No concrete P_AA collision was found or ruled out. In particular, extension, replacement, bridge retention/rebinding and retry inheritance cannot be selected from the recovered read-sets.
 
 The analysis also confirms AB20's unresolved admission-linearization alternatives remain semantically relevant; LEASE_RENEW cannot be treated as choosing one merely because of its field vocabulary.
+
+
+## AB104.3 — 2026-09-25 — two-completion epistemic test
+
+Targeted repository searches for renewal extension/replacement, renewal authority/expiry, bridge retention/rebinding and consume/replay/retry produced no additional matching files. AB36/AB38 remain unrecovered through the available route. Persisted AB104.3: NEXO_CONTINUITY/AB104_3_TWO_COMPLETION_RENEWAL_EPISTEMIC_TEST_2026-09-25.md (commit a1ebfe20e63f086660ab678139b2daa94f64c0fc).
+
+The abstract M1/M2 completions demonstrate that the missing LEASE_RENEW law affects post-state, bridge linkage and future ADMIT observation. They are not asserted protocol behavior and do not establish nondeterminism. UNKNOWN is therefore retained.
