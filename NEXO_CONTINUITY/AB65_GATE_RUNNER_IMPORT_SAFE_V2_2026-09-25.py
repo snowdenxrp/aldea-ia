@@ -43,3 +43,5 @@ if __name__=="__main__":
         for k in ("NONEMPTY_KNOWN","EMPTY_KNOWN","UNKNOWN"):
             print("FUTURE_STATUS",k,sum(r["future_set_status"]==k for r in rows))
         print("HISTORY_RESULT", {k:sum(r["history_result"]==k for r in rows) for k in ("TRUE","FALSE","UNKNOWN")})
+
+# AB101 trigger: repository-connected execution requested; semantics unchanged.
