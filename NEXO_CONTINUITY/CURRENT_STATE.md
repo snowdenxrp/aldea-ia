@@ -557,3 +557,7 @@ AB65 workflow trigger now includes the AB104.11 harness path. Execution is still
 
 ## AB104.16 — 2026-09-25
 AB65 trigger configuration verified from workflow source; execution/output remain NOT_VERIFIED. Packed-representation research remains at representation-level only. No protocol semantics or quotient-congruence claim added.
+
+
+## AB104.17 — 2026-09-25
+AB104.17 added a source-level invalidation-sensitive packed-representation attack harness. It covers PolicyChange and ResourceReincarnate history mutations while preserving all 13 bridge dimensions and admission-indexed linkage, plus an explicit missing-FreshnessValidity attack. No runtime execution was claimed. No protocol semantics changed. Gates remain: BRIDGE_MERGE=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; TERNARY_PAA_COLLISION=UNKNOWN; LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED. 286 expansion remains BLOCKED.
