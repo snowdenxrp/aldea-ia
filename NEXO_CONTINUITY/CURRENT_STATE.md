@@ -311,3 +311,10 @@ RECOVERY_POINTER.md was updated and will be read back as part of this final clos
 CONTINUITY_CHECKPOINT=VERIFIED
 
 This VERIFIED label applies to the continuity persistence/repair process only. It does not mean semantic verification, formal verification, protocol closure, or execution of the Nexo research harness.
+
+
+## AB72 correction — canonical set includes CLAIM_STATUS — 2026-09-25
+
+Correction to earlier wording: the continuity set includes seven canonical documents, including CLAIM_STATUS.md. CLAIM_STATUS.md was read back and synchronized at blob d99569d6dc6f064c4b2984a3a35d749ace91ae1e in commit 68c3b27784c22d1d16dc827c7f5f16c0acf4db62. The earlier six-file verification remains valid for those six files; this additive correction closes the omitted status-index synchronization.
+
+CONTINUITY_CHECKPOINT=VERIFIED
