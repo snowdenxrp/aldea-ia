@@ -277,3 +277,7 @@ Next: attack packed representation with an explicit recovered invalidation befor
 
 ## AB104.10 continuation
 Next executable target: implement a research-only packed adapter/harness with per-field provenance/status, deterministic reconstruction of LeaseBridge and AdmissionBindingClass, and UNKNOWN on absent future laws. Historical AB50/AB51 artifacts remain immutable. Then run bounded reconstruction/future-observation tests and recheck AB65.
+
+
+## AB104.11 continuation
+Run/validate the harness in an actual executable environment if available; then add bounded reconstruction tests for PolicyChange and ResourceReincarnate and compare future observations. Recheck AB65 workflow execution. Do not promote harness behavior to protocol semantics.
