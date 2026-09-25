@@ -301,3 +301,11 @@ Recheck for an AB65 output commit/run after the trigger-plumbing commit. If exec
 
 ## AB104.16 continuation
 Continue invalidation-sensitive packed representation attacks. For AB65, capture only positive execution evidence if it becomes observable; do not infer execution from trigger configuration or absence/presence limitations of the current run endpoint.
+
+
+## AB104.17 continuation
+1. Execute the AB104.17 invalidation-sensitive harness in a real Python environment if an available runner can be used; capture exact output only.
+2. If runtime execution is unavailable, continue source-level attacks without upgrading semantic claims.
+3. Recover complete LEASE_RENEW and LEASE_CONSUME transition laws in parallel, prioritizing C2 legality, C3 post-state, C4 invalidation/frame, C5 observation linkage, and C6 exhaustive successor enumeration.
+4. Recheck AB65 only for positive execution/output evidence; trigger configuration alone remains insufficient.
+5. Preserve UNKNOWN for FutureObs_PAA, quotient congruence, bridge merge, renewal, and consumption wherever decisive evidence is missing. Keep 286 expansion and formal verification blocked.
