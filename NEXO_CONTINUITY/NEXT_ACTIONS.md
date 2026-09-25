@@ -110,3 +110,8 @@ This includes searching sources, studying real systems/runtimes and relevant pri
 3. Test the AB70 FutureObs candidate against actual protocol semantics and construct adversarial cases.
 4. Determine whether provenance/completeness affects canonical observation or only epistemic support.
 5. Only after these tests consider a research-only implementation change.
+
+
+## AB71 — next action — 2026-09-25
+
+Recover protocol evidence event-by-event and test successor completeness before changing AB61/AB65. Do not treat finite harness enumeration as protocol closure.
