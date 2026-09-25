@@ -131,3 +131,9 @@ AB58 persistence commits before this checkpoint:
 d046805caf17a63059c8ffe1386bf3eacfaf8711
 
 Exact next action: recover canonical AB54/AB56 observation/action semantics, implement explicit three-valued continuation legality without inventing semantics, add only evidence-backed EventDAG edges, then rerun the eight ternary attacks through the complete gate. Do not broaden to 286 triples before closure.
+
+## AB58 final continuity verification — 2026-09-25
+
+Verified resulting main HEAD: cf9de14c00d4ae0e76ba5f3a10c07eea87327775
+Immediate parent: aa105e2bfc20692d119f2a3f564e2cc8c0e5fb78
+The AB58 checkpoint and handoff are therefore persisted in the verified chain. No prior AB artifact was overwritten or deleted.
