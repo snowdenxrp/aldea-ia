@@ -333,3 +333,7 @@ Bounded shared-lease/two-admission attack: bridge identity alone cannot reconstr
 
 ## AB104.10 — 2026-09-25
 Packed-representation audit under explicit PolicyChange and ResourceReincarnate. A rich packed record can preserve bridge dimensions, admission-indexed linkage, and ordered invalidation provenance at representation level; scalar bridge-valid cannot. No semantic merge/congruence proof or P_AA collision established. Artifact fd93d16e7bf1d5a948360eea77429320bf372781.
+
+
+## AB104.11 — 2026-09-25
+Added a research-only packed representation harness. It preserves all 13 AB18 bridge dimensions with value/provenance/status, keeps admission linkage indexed separately, reconstructs LeaseBridge and AdmissionBindingClass as separate logical views, validates field preservation, and returns UNKNOWN for undeclared future semantics. Read-back verified artifact blob 093f1ba1021ebee7f70a6d9309fcf245076d871c from commit fa2f063aa8efc53bce9f6911a3e0c17d009b4623. Repository execution was not claimed; this is source/read-back verification only.
