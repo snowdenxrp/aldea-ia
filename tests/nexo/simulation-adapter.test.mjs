@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
 
 const simulation={
-  agents:[{id:"alex",alive:true,position:{x:NaN,z:4},needs:{hunger:120,thirst:-4}}],
-  world:{resources:{wood:{amount:-5}}}
+  agents:[{id:"alex",alive:true,position:{x:NaN,z:4},needs:{hunger:120,thirst:-4},inventory:[],skills:[]}],
+  world:{resources:{wood:{amount:-5},water:{amount:10}}}
 };
 const adapter=createLuminaEffectAdapter(simulation);
 
@@ -41,4 +41,36 @@ const resource=await adapter.execute({
 assert.equal(resource.status,"completed");
 assert.equal(resource.verified,true);
 
-console.log("Nexo: adaptador concreto de Lúmina con efectos reales y pre/postcondiciones OK.");
+const action=await adapter.execute({
+  missionId:"m1",stepId:"s4",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s5",
+  context:{action:{name:"drink",amount:2}},
+  precondition:({stateVersion})=>stateVersion===3,
+  postcondition:({effectResult})=>
+    effectResult.action==="drink" &&
+    simulation.world.resources.water.amount===8 &&
+    simulation.agents[0].needs.thirst===8
+});
+assert.equal(action.status,"completed");
+assert.equal(action.verified,true);
+assert.equal(action.evidence.verified,true);
+assert.equal(simulation.nexoEffectRevision,4);
+
+const denied=await adapter.execute({
+  missionId:"m1",stepId:"s5",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s6",
+  context:{action:{name:"unknown_action"}},
+  precondition:({stateVersion})=>stateVersion===4,
+  postcondition:()=>true
+});
+assert.equal(denied.status,"failed");
+assert.equal(denied.code,"LUMINA_ACTION_NOT_ALLOWED");
+
+const failed=await adapter.execute({
+  missionId:"m1",stepId:"s6",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s7",
+  context:{action:{name:"drink",amount:20}},
+  precondition:({stateVersion})=>stateVersion===4,
+  postcondition:()=>true
+});
+assert.equal(failed.status,"failed");
+assert.equal(failed.code,"LUMINA_ACTION_FAILED");
+
+console.log("Nexo: adaptador concreto de Lúmina con consecuencias reales, whitelist y evidencia OK.");
