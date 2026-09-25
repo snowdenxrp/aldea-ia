@@ -350,7 +350,7 @@ function createMesh(a){
   activityToolGroup.position.set(.48,1.02,.18); g.add(activityToolGroup);
   g.userData.activityTools={group:activityToolGroup,parts};
   const shadow=new THREE.Mesh(new THREE.CircleGeometry(.34,20),material(0x2b241f,.95)); shadow.scale.set(1,.55,1); shadow.rotation.x=-Math.PI/2; shadow.position.y=.012; g.add(shadow); g.userData.shadow=shadow;
-  g.add(torso,chest,waist,collar,neck,pelvis,shoulderL,shoulderR,head,earL,earR,hair,nose,eyeWL,eyeWR,eyeL,eyeR,mouth,armL,armR,handL,handR,cuffL,cuffR,legL,legR,kneeL,kneeR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR,head};addVisualDetail(g,a);
+  g.add(torso,collar,neck,pelvis,shoulderL,shoulderR); g.add(chest,waist,head,earL,earR,hair,nose,eyeWL,eyeWR,eyeL,eyeR,mouth,armL,armR,handL,handR,cuffL,cuffR,legL,legR,kneeL,kneeR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR,head};addVisualDetail(g,a);
   g.traverse(o=>{if(o.isMesh)o.renderOrder=1000;}); return (scene.add(g),g);
 }
 function animateHumanoid(m,a,t){
