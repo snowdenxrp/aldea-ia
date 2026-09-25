@@ -310,7 +310,7 @@ function createMesh(a){
   const skinMat=material(skin,.9), clothMat=material(clothes,.82), darkMat=material(dark,.88), hairMat=material(0x3b2a22,1), shoeMat=material(0x3b332f,1);
   const torso=new THREE.Mesh(new THREE.CylinderGeometry(.42,.34,.72,12),clothMat); torso.scale.set(1.08,1,.92); torso.position.y=1.18;
   const chest=new THREE.Mesh(new THREE.BoxGeometry(.7,.26,.42),clothMat); chest.position.y=1.42;
-  const waist=new THREE.Mesh(new THREE.CylinderGeometry(.29,.31,.18,10),darkMat); waist.position.y=.83;
+  const waist=new THREE.Mesh(new THREE.CylinderGeometry(.29,.31,.18,10),darkMat); waist.scale.set(1.05,1,1.02); waist.position.y=.83;
   const collar=new THREE.Mesh(new THREE.TorusGeometry(.16,.035,6,16),skinMat); collar.rotation.x=Math.PI/2; collar.position.y=1.52;
   const neck=new THREE.Mesh(new THREE.CylinderGeometry(.11,.13,.18,10),skinMat); neck.position.y=1.66;
   const pelvis=new THREE.Mesh(new THREE.BoxGeometry(.52,.28,.34),darkMat); pelvis.scale.set(1.08,1,1.05); pelvis.position.y=.78;
@@ -329,7 +329,7 @@ function createMesh(a){
   const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.56,7,10),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
   const kneeMat=material(blue?0x255fae:0xc75f2d,.86);
   const kneeL=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),kneeMat), kneeR=kneeL.clone(); kneeL.scale.set(1,.72,.8); kneeR.scale.set(1,.72,.8); kneeL.position.set(-.16,.49,.105); kneeR.position.set(.16,.49,.105);
-  const cuffL=new THREE.Mesh(new THREE.TorusGeometry(.105,.018,6,12),darkMat), cuffR=cuffL.clone(); cuffL.rotation.x=Math.PI/2; cuffR.rotation.x=Math.PI/2; cuffL.position.set(-.39,.91,.02); cuffR.position.set(.39,.91,.02);
+  const cuffL=new THREE.Mesh(new THREE.TorusGeometry(.105,.02,6,12),darkMat), cuffR=cuffL.clone(); cuffL.rotation.x=Math.PI/2; cuffR.rotation.x=Math.PI/2; cuffL.position.set(-.39,.91,.02); cuffR.position.set(.39,.91,.02);
   const footL=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),shoeMat), footR=footL.clone(); footL.scale.set(1.02,.58,1.5); footR.scale.copy(footL.scale); footL.position.set(-.16,.13,.08); footR.position.set(.16,.13,.08);
   const marker=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),new THREE.MeshBasicMaterial({color:blue?0x59b7ff:0xffb15c,depthTest:false})); marker.position.y=2.47;
   const role=a.specialization?.role??a.socialRole;
