@@ -28,14 +28,16 @@ jobs:
         with:
           node-version: 22
 
+      - name: Sincronizar antes de validar
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
       - name: Validar asistentes de Lúmina
         run: npm test
 
       - name: Ejecutar diagnóstico de asistentes
         run: npm run assistants
-
-      - name: Sincronizar antes de simular
-        run: git pull --ff-only origin main
 
       - name: Avanzar simulación
         run: npm run simulate
