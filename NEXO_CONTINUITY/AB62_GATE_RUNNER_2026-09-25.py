@@ -2,7 +2,7 @@
 
 Research-only. No protocol semantics are invented here.
 """
-from AB61_SEMANTIC_REPAIR_INTERPRETER_2026-09-25 import (
+from AB61_SEMANTIC_REPAIR_INTERPRETER_2026_09_25 import (
     ATTACKS, Tri, State, Binding, bounded_states, continuation_legality,
     future_obs_set, lower_obs, dag_order_status, execute
 )
