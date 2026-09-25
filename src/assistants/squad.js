@@ -7,9 +7,14 @@ function bounded(v,min=0,max=1){return Math.max(min,Math.min(max,Number(v)||0));
 export function runVisualAssistant({simulation,renderProbe=null}={}){
   const agents=safeAgents(simulation); const moving=agents.filter(a=>a?.movement?.moving).length;
   const findings=[];
-  if(renderProbe){for(const [id,p] of Object.entries(renderProbe.agents??{})){if(!p?.mesh) findings.push({severity:"error",code:"VISUAL_MESH_MISSING",agent:id});}}
+  if(renderProbe){for(const [id,p] of Object.entries(renderProbe.agents??{})){
+    if(p?.mesh===false||p?.exists===false) findings.push({severity:"error",code:"MESH_MISSING",agent:id,message:"La representación visual no existe."});
+    else if(p?.inScene===false) findings.push({severity:"error",code:"NOT_IN_SCENE",agent:id,message:"La representación existe pero no está enlazada a la escena."});
+    else if(p?.visible===false) findings.push({severity:"error",code:"HIDDEN",agent:id,message:"La representación está oculta."});
+    else if(p?.onScreen===false) findings.push({severity:"warning",code:"OFFSCREEN",agent:id,message:"La representación está fuera del encuadre."});
+  }}
   if(agents.length&&moving===0) findings.push({severity:"info",code:"VISUAL_NO_LOCOMOTION_SAMPLE",message:"La muestra no contiene locomoción; puede requerir una ventana mayor."});
-  return {assistant:"VisualAgent",status:findings.some(f=>f.severity==="error")?"error":"ok",observations:{agents:agents.length,moving},findings};
+  return {assistant:"VisualAgent",status:findings.some(f=>f.severity==="error")?"error":findings.some(f=>f.severity==="warning")?"warning":"ok",observations:{agents:agents.length,moving},findings};
 }
 
 export function runExplorerAssistant({simulation}={}){
@@ -41,7 +46,12 @@ export function runSocietyAssistant({simulation}={}){
   return {assistant:"SocietyAgent",status:findings.length?"warning":"ok",observations:{averageSocial:bounded(avg/100)*100},findings};
 }
 
-export function runRoutineAssistant({simulation}={}){ const agents=safeAgents(simulation); const routines=agents.map(a=>({id:a.id,phase:a.activityPhase??null,sequence:a.activitySequence?.intentName??null,remaining:Number(a.activitySequence?.remainingHours??0)})); const active=routines.filter(r=>r.sequence); const findings=[]; for(const r of active) if(!r.phase) findings.push({severity:"error",code:"ROUTINE_PHASE_MISSING",agent:r.id,message:"Existe una rutina activa sin fase observable."}); return {assistant:"RoutineAgent",status:findings.length?"error":"ok",observations:{activeRoutines:active.length,routines},findings}; }
+export function runRoutineAssistant({simulation}={}){
+  const agents=safeAgents(simulation); const routines=agents.map(a=>({id:a.id,phase:a.activityPhase??null,sequence:a.activitySequence?.intentName??null,remaining:Number(a.activitySequence?.remainingHours??0)}));
+  const active=routines.filter(r=>r.sequence); const findings=[];
+  for(const r of active) if(!r.phase) findings.push({severity:"error",code:"ROUTINE_PHASE_MISSING",agent:r.id,message:"Existe una rutina activa sin fase observable."});
+  return {assistant:"RoutineAgent",status:findings.length?"error":"ok",observations:{activeRoutines:active.length,routines},findings};
+}
 
 export function runAuditAgent({simulation,reports=[]}={}){
   const errors=reports.flatMap(r=>r?.findings??[]).filter(f=>f.severity==="error").length;
