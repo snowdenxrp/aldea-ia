@@ -54,3 +54,17 @@ RECONSTRUCTION = BOUNDED_ONLY
 SEMANTIC_FREEZE = NOT_DECLARED
 FORMAL_VERIFICATION = NOT_PERFORMED
 IMPLEMENTATION = PARTIAL_RESEARCH_HARNESS
+
+
+## AB72 continuity repair status — 2026-09-25
+
+Continuity repair is VERIFIED as a persistence/process result. It does not promote any semantic or execution claim.
+
+CONTINUITY_CHECKPOINT = VERIFIED
+CANONICAL_REPAIR_STATUS = VERIFIED
+AB71_PERSISTENCE = PARTIAL
+AB65_EXECUTION = NOT_VERIFIED
+QUOTIENT_CONGRUENCE = UNKNOWN / UNRESOLVED
+NO_INTEGRATED_NEXO_ASSEMBLY_BEFORE_RESEARCH_ARCHITECTURE_GATE = TRUE
+
+The active research frontier is successor-completeness and epistemic successor semantics. UNKNOWN must remain distinct from known-empty and specified nondeterminism. FutureObs_PAA and quotient congruence remain open.
