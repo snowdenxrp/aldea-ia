@@ -318,3 +318,12 @@ This VERIFIED label applies to the continuity persistence/repair process only. I
 Correction to earlier wording: the continuity set includes seven canonical documents, including CLAIM_STATUS.md. CLAIM_STATUS.md was read back and synchronized at blob d99569d6dc6f064c4b2984a3a35d749ace91ae1e in commit 68c3b27784c22d1d16dc827c7f5f16c0acf4db62. The earlier six-file verification remains valid for those six files; this additive correction closes the omitted status-index synchronization.
 
 CONTINUITY_CHECKPOINT=VERIFIED
+
+
+## AB73 research checkpoint — 2026-09-25
+
+External research now supports a belief/knowledge-set interpretation for partial observability: unresolved evidence may correspond to multiple compatible concrete states/models. This is a research-supported candidate semantics, not yet the canonical Nexo protocol semantics.
+
+Current semantic status remains unchanged: TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED.
+
+AB73 artifact is persisted. No implementation was changed. Eight-attack closure and 286-triple expansion remain blocked until successor completeness is justified and executable.
