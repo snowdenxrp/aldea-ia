@@ -341,3 +341,15 @@ Concrete A/B/C classification is C/UNKNOWN for all four: current protocol eviden
 This sharpens the gate: UNKNOWN must not be converted to identity/stutter or KNOWN_EMPTY. No AB61/AB65 implementation semantics were changed. TERNARY_PROTOCOL_RESIDUAL remains UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION remains UNKNOWN; QUOTIENT_CONGRUENCE remains UNKNOWN; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED; EXECUTION remains NOT_VERIFIED.
 
 Exact next action: build the smallest research-only successor relation with KNOWN_NONEMPTY, KNOWN_EMPTY, and UNKNOWN status plus provenance, then test the abstract two-completion construction against actual AB54 protocol constraints before any interpreter modification or 286 expansion.
+
+
+## AB74.1 — continuity persistence hardening — 2026-09-25
+
+Additive hardening artifact persisted at NEXO_CONTINUITY/AB74_1_CONTINUITY_PERSISTENCE_HARDENING_2026-09-25.md
+Commit: 73ad70758b760658781a151d16e5164e4363e8fa
+
+The persistence problem is now treated as a connector-route reliability issue, not evidence that GitHub should be abandoned. The repository remains canonical. The hardened protocol requires additive recovery artifacts, fresh blob-SHA reads before existing-file updates, sequential same-path writes, immediate read-back, and ancestry verification. Lower-level Git object operations are documented as a possible recovery route, not automatically invoked.
+
+No AB research conclusion changed. All unresolved labels remain unchanged, including TERNARY_PAA_COLLISION=UNKNOWN and EXECUTION=NOT_VERIFIED. The next semantic task remains the minimal KNOWN_NONEMPTY/KNOWN_EMPTY/UNKNOWN successor-status object with provenance, followed by evidence-constrained testing.
+
+Persistence status: AB74.1 artifact write VERIFIED by returned commit SHA. Full continuity checkpoint is NOT yet declared VERIFIED until the canonical state/next-actions/ledger updates and resulting ancestry are read back.
