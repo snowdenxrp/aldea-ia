@@ -407,3 +407,22 @@ LEASE_RENEW, RETRY, MUTATION, and RECHECK remain UNKNOWN. The remaining decisive
 Persisted artifact: AB77_EVIDENCE_RECOVERY_AB25_AB26_AB49_2026-09-25.md, commit ab931b583b6d1b6384b1609c50453df1049d7bb4.
 
 Exact next action: recover AB36/AB38 evidence for C2/C3/C6, then perform a bounded adversarial successor test if the gate remains open.
+
+
+## AB102 checkpoint — 2026-09-25
+
+AB99/AB100 recovery re-verified from canonical Git history. AB100 remains the conservative replay repair: ReplayState is separate from lease_valid; attempt-scoped consumption identity is retained; incomplete LEASE_CONSUME semantics remain UNKNOWN; ADMIT remains UNKNOWN while replay completeness is unresolved.
+
+AB101 reconfigured .github/workflows/ab65-gate.yml for workflow_dispatch and push-triggered execution of the import-safe AB65 runner, with intended persistence to NEXO_CONTINUITY/AB65_GATE_OUTPUT_2026-09-25.txt. That output file is not present on main. The available commit-associated workflow-run connector returned no run for the subsequent AB102 trigger commit, so AB65_EXECUTION remains NOT_VERIFIED. No execution result is claimed.
+
+AB102 commit: 854d88d61cd78bf4d04e2e438516f7acbead9c5e. The change is comment-only in AB65_GATE_RUNNER_IMPORT_SAFE_V2_2026-09-25.py and preserves runner semantics; it was made solely to trigger the configured push path.
+
+Source recovery: AB49 explicitly defines LEASE separator L4 as replay/consumption and J4 as Lease-vs-Lease with different renewal/replay successors. AB50 includes LEASE_CONSUME in its event alphabet and requires legal concrete histories plus future P_AA divergence for a collision. AB97/AB98 recovered no complete consume law or legal replay separator. Therefore LEASE_CONSUME remains UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW.
+
+External methodological cross-check: TLA+ defines actions as old-state/new-state relations and Next as the relation of possible successive states; an incomplete successor generator must therefore not be treated as exhaustive. Auxiliary variables can support refinement mappings but do not establish Nexo protocol semantics.
+
+Current labels: LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; LEASE_RENEW=UNKNOWN; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED.
+
+Exact next action: obtain a real AB65 workflow result if the connector exposes one; otherwise continue evidence recovery for LEASE_CONSUME and then LEASE_RENEW without inventing missing successor law. Do not broaden to 286 triples until the four unresolved continuation events have evidence-backed completeness records.
+
+DO-NOT-REPEAT: absence from indexed search is not proof of absence; lease_valid=false is not equivalent to consumed; candidate_events is not an exhaustive continuation universe; persistence is not execution verification; AB61 historical semantics must not be overwritten.
