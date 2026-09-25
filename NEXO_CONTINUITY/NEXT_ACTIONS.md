@@ -273,3 +273,7 @@ Use AB104.8 matrix as the preservation contract. Next executable work: construct
 
 ## AB104.9 continuation
 Next: attack packed representation with an explicit recovered invalidation before two admissions, avoiding unresolved LEASE_RENEW/RETRY/CONSUME semantics. Compare reconstruction of both logical views.
+
+
+## AB104.10 continuation
+Next executable target: implement a research-only packed adapter/harness with per-field provenance/status, deterministic reconstruction of LeaseBridge and AdmissionBindingClass, and UNKNOWN on absent future laws. Historical AB50/AB51 artifacts remain immutable. Then run bounded reconstruction/future-observation tests and recheck AB65.
