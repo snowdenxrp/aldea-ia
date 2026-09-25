@@ -303,3 +303,10 @@ The analysis also confirms AB20's unresolved admission-linearization alternative
 Targeted repository searches for renewal extension/replacement, renewal authority/expiry, bridge retention/rebinding and consume/replay/retry produced no additional matching files. AB36/AB38 remain unrecovered through the available route. Persisted AB104.3: NEXO_CONTINUITY/AB104_3_TWO_COMPLETION_RENEWAL_EPISTEMIC_TEST_2026-09-25.md (commit a1ebfe20e63f086660ab678139b2daa94f64c0fc).
 
 The abstract M1/M2 completions demonstrate that the missing LEASE_RENEW law affects post-state, bridge linkage and future ADMIT observation. They are not asserted protocol behavior and do not establish nondeterminism. UNKNOWN is therefore retained.
+
+
+## AB104.4 — 2026-09-25 — code audit AB61/AB100
+
+Direct source audit found a material LEASE_CONSUME representation discrepancy. AB61 models consume as writing lease_valid=False and lower_obs equates replay_consumption_facts with lease_valid. AB100 instead reads/writes explicit ReplayState, marks consume UNKNOWN, and refuses to execute it. These are not equivalent representations. The discrepancy does not establish protocol nondeterminism; it establishes that the research harness layer contains competing abstractions and cannot promote either to canonical protocol law without evidence.
+
+Persisted audit: NEXO_CONTINUITY/AB104_4_CODE_AUDIT_AB61_AB100_REPLAY_CONSUME_2026-09-25.md, commit ac3b519890e5bdefa27315a784e55ce3963ab568.
