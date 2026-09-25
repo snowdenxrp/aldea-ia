@@ -316,14 +316,14 @@ function createMesh(a){
   const pelvis=new THREE.Mesh(new THREE.BoxGeometry(.52,.28,.34),darkMat); pelvis.scale.set(1.08,1,1.05); pelvis.position.y=.78;
   const shoulderL=new THREE.Mesh(new THREE.SphereGeometry(.19,12,10),clothMat), shoulderR=shoulderL.clone(); shoulderL.position.set(-.38,1.43,0); shoulderR.position.set(.38,1.43,0);
   const head=new THREE.Mesh(new THREE.SphereGeometry(.32,24,18),skinMat); head.scale.set(1.02,1,.98); head.position.y=1.91;
-  const earL=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),skinMat), earR=earL.clone(); earL.position.set(-.305,1.91,0); earR.position.set(.305,1.91,0);
+  const earL=new THREE.Mesh(new THREE.SphereGeometry(.075,10,8),skinMat), earR=earL.clone(); earL.scale.set(.72,1,1.08); earR.scale.copy(earL.scale); earL.position.set(-.305,1.91,0); earR.position.set(.305,1.91,0);
   const hair=new THREE.Mesh(new THREE.SphereGeometry(.335,24,14,0,Math.PI*2,0,Math.PI*.58),hairMat); hair.scale.set(1.04,1.05,1.02); hair.position.y=2.04;
   const nose=new THREE.Mesh(new THREE.SphereGeometry(.055,8,6),skinMat); nose.scale.set(.8,.8,1.2); nose.position.set(0,1.91,.335);
   const eyeWhiteMat=new THREE.MeshBasicMaterial({color:0xf5f2e8,depthTest:false});
   const eyeMat=new THREE.MeshBasicMaterial({color:0x18222b,depthTest:false});
   const eyeWL=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),eyeWhiteMat), eyeWR=eyeWL.clone(); eyeWL.position.set(-.115,1.98,.315); eyeWR.position.set(.115,1.98,.315);
   const eyeL=new THREE.Mesh(new THREE.SphereGeometry(.026,8,6),eyeMat), eyeR=eyeL.clone(); eyeL.position.set(-.115,1.98,.365); eyeR.position.set(.115,1.98,.365);
-  const mouth=box(.11,.018,.018,0x713f3a); mouth.position.set(0,1.81,.315);
+  const mouth=box(.11,.018,.018,0x713f3a); mouth.scale.set(1.05,1,1); mouth.position.set(0,1.81,.315);
   const armL=new THREE.Mesh(new THREE.CapsuleGeometry(.095,.44,7,10),clothMat), armR=armL.clone(); armL.position.set(-.39,1.2,0); armR.position.set(.39,1.2,0); armL.rotation.z=-.08; armR.rotation.z=.08;
   const handL=new THREE.Mesh(new THREE.SphereGeometry(.11,10,8),skinMat), handR=handL.clone(); handL.scale.set(.92,1.05,.92); handR.scale.copy(handL.scale); handL.position.set(-.39,.89,0); handR.position.set(.39,.89,0);
   const legL=new THREE.Mesh(new THREE.CapsuleGeometry(.115,.56,7,10),darkMat), legR=legL.clone(); legL.position.set(-.16,.47,0); legR.position.set(.16,.47,0);
