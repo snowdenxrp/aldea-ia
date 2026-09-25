@@ -236,3 +236,8 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 5. If a complete rule is recovered, instantiate only the smallest affected bounded successor experiment and compare FutureObs_PAA; if not, preserve UNKNOWN.
 6. Keep AB61/AB65 semantics unchanged, 286-triple expansion blocked, semantic freeze blocked, formal verification blocked, and integrated Nexo assembly blocked.
 7. Persist the matrix/research result additively and verify read-back plus ancestry before closing the checkpoint.
+
+
+## AB104.1 continuation
+
+Evidence matrix persisted and read back. Next: enumerate only evidence-supported adversarial orderings around LEASE_RENEW/LEASE_CONSUME (expiry→renew, policy/delegation/incarnation mutation→renew, renew→admit, consume→retry/reuse, revoke→consume) and classify each as determinate, contradictory, or UNKNOWN based strictly on recovered transition law. Do not convert missing rules into concrete successors.
