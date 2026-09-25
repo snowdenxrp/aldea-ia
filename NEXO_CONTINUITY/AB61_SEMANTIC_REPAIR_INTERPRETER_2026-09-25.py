@@ -142,7 +142,7 @@ def paa(state: State) -> Tri:
     )
     return Tri.TRUE if all(required) else Tri.FALSE
 
-def apply_known(event: str, state: State) -> tuple[State, Tri | None]:
+def apply_history_event(event: str, state: State) -> tuple[State, Tri | None]:
     if EVENTS[event].semantic_status == "UNKNOWN":
         return state, Tri.UNKNOWN
     if event == "POLICY_CHANGE":
@@ -191,15 +191,8 @@ def execute(order: tuple[str,...], initial: State):
     state = initial
     trace = []
     for event in order:
-        legal = continuation_legality(event, state)
-        if legal is Tri.FALSE:
-            trace.append((event, legal.value, "known-illegal"))
-            return state, Tri.FALSE, tuple(trace)
-        if legal is Tri.UNKNOWN:
-            trace.append((event, legal.value, "missing-protocol-legality"))
-            return state, Tri.UNKNOWN, tuple(trace)
-        state, obs = apply_known(event, state)
-        trace.append((event, legal.value, None if obs is None else obs.value))
+        state, obs = apply_history_event(event, state)
+        trace.append((event, "HISTORY_EVENT", None if obs is None else obs.value))
         if obs is not None:
             return state, obs, tuple(trace)
     return state, Tri.UNKNOWN, tuple(trace)
