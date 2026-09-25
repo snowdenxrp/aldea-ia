@@ -426,3 +426,29 @@ Current labels: LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; LEASE_RENEW=U
 Exact next action: obtain a real AB65 workflow result if the connector exposes one; otherwise continue evidence recovery for LEASE_CONSUME and then LEASE_RENEW without inventing missing successor law. Do not broaden to 286 triples until the four unresolved continuation events have evidence-backed completeness records.
 
 DO-NOT-REPEAT: absence from indexed search is not proof of absence; lease_valid=false is not equivalent to consumed; candidate_events is not an exhaustive continuation universe; persistence is not execution verification; AB61 historical semantics must not be overwritten.
+
+
+## AB103 — 2026-09-25 — renewal evidence recovery checkpoint
+
+AB103 directly recovered AB84, AB49 and AB54 renewal semantics. The three artifacts agree on the boundary: LEASE_RENEW is semantically relevant, but its complete legality, post-state/replacement law, invalidation/frame behavior, observation linkage and exhaustive successor domain remain unresolved. No complete renewal law was recovered in this pass.
+
+AB65 execution was rechecked for trigger commit 854d88d61cd78bf4d04e2e438516f7acbead9c5; workflow-runs query returned zero runs. No execution output was claimed. AB65_EXECUTION remains NOT_VERIFIED.
+
+No experimental interpreter semantics were changed. No P_AA collision was established.
+
+Current labels:
+LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW
+LEASE_RENEW=UNKNOWN
+TERNARY_PAA_COLLISION=UNKNOWN
+QUOTIENT_CONGRUENCE=UNKNOWN
+EVENTDAG_CLOSURE=PARTIAL
+RECONSTRUCTION=BOUNDED_ONLY
+SEMANTIC_FREEZE=NOT_DECLARED
+FORMAL_VERIFICATION=NOT_PERFORMED
+AB65_EXECUTION=NOT_VERIFIED
+
+Persistence chain for this AB103 round:
+RESEARCH_LEDGER update: 1b0c8637ec88128997742ee6d6f831cdbe845c31
+NEXT_ACTIONS update: 291d1c4f1130ea6784a4fbf5fee4c7ce0c9d9946
+
+Next exact action: targeted recovery around AB20/AB24 and later renewal artifacts, while separately checking complete LEASE_CONSUME law. Preserve UNKNOWN whenever C2/C3/C6 or another decisive dimension remains unsupported.
