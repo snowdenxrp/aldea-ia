@@ -1,9 +1,9 @@
 # OPEN PROBLEMS
 
-1. Complete bounded ternary protocol enumeration under AB50/AB51 semantics.
-2. Find or rule out legal P_AA ternary residuals within the tested bounds.
-3. Test future-observation collisions, not merely current observation equality.
-4. Attempt deterministic reconstruction of surviving higher-order relations.
+1. Complete concrete binding-state enumeration for the ternary closure; AB52 covered role/order/protocol skeletons but not the full Cartesian binding domain.
+2. Recheck legal P_AA ternary residuals if additional concrete binding semantics are introduced; none were found in AB52's stated closures.
+3. Continue future-observation collision testing for independent four-event H6/H7 attacks.
+4. Attempt deterministic reconstruction of any surviving four-event relations.
 5. Escalate only justified survivors to four-event searches.
 6. Resolve whether HistorySupport can be eliminated from the abstract kernel.
 7. Resolve LeaseBridge versus AdmissionBindingClass merge.
