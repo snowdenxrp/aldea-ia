@@ -23,24 +23,24 @@ export function getVillageLayout(){
 
   const buildings=[
     // Barrio oeste: casas escalonadas, no una cuadrícula rígida.
-    {type:"house",x:-36,z:15,rotation:Math.PI/2,scale:1.04},
-    {type:"house",x:-27,z:15,rotation:Math.PI/2,scale:1.00},
-    {type:"house",x:-36,z:-15,rotation:-Math.PI/2,scale:1.02},
-    {type:"house",x:-27,z:-15,rotation:-Math.PI/2,scale:1.06},
+    {type:"house-west",x:-36,z:15,rotation:Math.PI/2,scale:1.04},
+    {type:"house-west",x:-27,z:15,rotation:Math.PI/2,scale:1.00},
+    {type:"house-west",x:-36,z:-15,rotation:-Math.PI/2,scale:1.02},
+    {type:"house-west",x:-27,z:-15,rotation:-Math.PI/2,scale:1.06},
     {type:"tower",x:-31,z:7},
 
     // Ribera este: dos calles residenciales con patios.
-    {type:"house",x:-4,z:16.5,rotation:Math.PI,scale:1.04},
-    {type:"house",x:5,z:16.5,rotation:Math.PI,scale:1.02},
-    {type:"house",x:14,z:16.5,rotation:Math.PI,scale:1.06},
-    {type:"house",x:23,z:16.5,rotation:Math.PI,scale:1.03},
-    {type:"house",x:32,z:16.5,rotation:Math.PI,scale:1.00},
+    {type:"house",x:-4,z:16.3,rotation:Math.PI,scale:1.04},
+    {type:"house",x:5,z:16.3,rotation:Math.PI,scale:1.02},
+    {type:"house",x:14,z:16.3,rotation:Math.PI,scale:1.06},
+    {type:"house",x:23,z:16.3,rotation:Math.PI,scale:1.03},
+    {type:"house",x:32,z:16.3,rotation:Math.PI,scale:1.00},
 
-    {type:"house",x:-4,z:-16.5,rotation:0,scale:1.04},
-    {type:"house",x:5,z:-16.5,rotation:0,scale:1.00},
-    {type:"house",x:14,z:-16.5,rotation:0,scale:1.05},
-    {type:"house",x:23,z:-16.5,rotation:0,scale:1.02},
-    {type:"house",x:32,z:-16.5,rotation:0,scale:1.00},
+    {type:"house",x:-4,z:-16.3,rotation:0,scale:1.04},
+    {type:"house",x:5,z:-16.3,rotation:0,scale:1.00},
+    {type:"house",x:14,z:-16.3,rotation:0,scale:1.05},
+    {type:"house",x:23,z:-16.3,rotation:0,scale:1.02},
+    {type:"house",x:32,z:-16.3,rotation:0,scale:1.00},
 
     {type:"barn",x:30,z:-5},
   ];
