@@ -285,3 +285,7 @@ Run/validate the harness in an actual executable environment if available; then 
 
 ## AB104.12 continuation
 Next: add semantic-view comparator over every preserved bridge dimension and admission-linked identity; deliberately omit/alter components and require UNKNOWN rather than false equivalence. Then seek an executable environment for runtime tests and recheck AB65.
+
+
+## AB104.13 continuation
+Next: seek an actual executable runner for the harness, then add invalidation-sensitive reconstruction tests and compare packed records before/after PolicyChange and ResourceReincarnate. Preserve UNKNOWN whenever transition semantics are unresolved. Recheck AB65 workflow execution.
