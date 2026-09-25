@@ -541,3 +541,7 @@ Research harness persisted and read back. It explicitly carries per-field proven
 
 ## AB104.12 — 2026-09-25
 AB104.11 source structurally validated and AB104.12 persisted. No protocol semantics added. Runtime execution remains NOT_VERIFIED; AB65_EXECUTION remains NOT_VERIFIED. Gates unchanged: BRIDGE_MERGE=UNKNOWN, QUOTIENT_CONGRUENCE=UNKNOWN, TERNARY_PAA_COLLISION=UNKNOWN, LEASE_RENEW=UNKNOWN, LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW, FORMAL_VERIFICATION=NOT_PERFORMED.
+
+
+## AB104.13 — 2026-09-25
+Semantic comparator added and persisted. Representation-level distinction is now testable in source, but runtime execution and future behavioral congruence remain unverified. Gates unchanged: BRIDGE_MERGE=UNKNOWN, QUOTIENT_CONGRUENCE=UNKNOWN, TERNARY_PAA_COLLISION=UNKNOWN, LEASE_RENEW=UNKNOWN, LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW, FORMAL_VERIFICATION=NOT_PERFORMED, AB65_EXECUTION=NOT_VERIFIED.
