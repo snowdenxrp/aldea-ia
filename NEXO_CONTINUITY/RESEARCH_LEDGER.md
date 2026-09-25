@@ -65,3 +65,9 @@ Evidence reviewed: partial transition systems and 3-valued model checking; obser
 Result: multiple established formalisms can represent incomplete knowledge, but none should be adopted by analogy alone. The key semantic distinction is between an unknown transition relation, a specified nondeterministic relation, and a known empty successor set. This distinction must precede implementation. A powerset/PTS construction is therefore a candidate, not a decision.
 
 Status: research-only. No integrated implementation. TERNARY_PAA_COLLISION remains UNKNOWN; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED; EXECUTION remains NOT_VERIFIED.
+
+
+## AB69 — f37dcd8cbce9a5378a8b7c681d2d790445beaea9 — 2026-09-25
+Research result: one generic UNKNOWN is insufficient as a semantic description unless its meaning is explicitly defined. External partial-transition and epistemic-planning literature supports separating epistemic uncertainty from specified nondeterminism. Known-empty additionally requires proof that the relevant successor relation is complete; absence of a found successor is not enough.
+
+Candidate research object: TransitionKnowledge(relation_status, known_successors, completeness, provenance). Candidate only. FutureObs categories proposed for testing: KNOWN_EMPTY, KNOWN_UNIQUE, KNOWN_MULTIPLE, UNKNOWN. No architecture or implementation decision made.
