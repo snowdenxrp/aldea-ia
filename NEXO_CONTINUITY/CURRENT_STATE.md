@@ -228,3 +228,13 @@ Research consequence: UNKNOWN must be represented as unresolved transition knowl
 No labels are promoted. TERNARY_PAA_COLLISION=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; EXECUTION=NOT_VERIFIED. Integrated Nexo assembly remains blocked by AB66.
 
 Next exact action: define a minimal semantic object for KNOWN successor set / KNOWN empty successor set / UNKNOWN successor relation, derive canonical observations from protocol evidence, then design the smallest justified experiment before modifying the interpreter.
+
+
+## AB68 — partial transition systems and epistemic successor semantics — 2026-09-25
+
+Persisted artifact: NEXO_CONTINUITY/AB68_RESEARCH_PTS_EPISTEMIC_SUCCESSORS_2026-09-25.md
+Commit: bf3e24d32637af30c0b8fdbcb2fb424d5d1637ff
+
+External research identifies established alternatives for incomplete transition knowledge: partial transition systems with possible/necessary behavior, belief/uncertainty sets, symbolic partial models, and multi-valued semantics. This does not select a Nexo representation. A critical distinction is now explicit: epistemic UNKNOWN about a real transition is not equivalent to genuine nondeterminism in the real protocol, and neither is equivalent to a known empty successor set.
+
+Decision: do not implement a generic powerset/PTS layer yet. First formalize the protocol distinction among unknown-about-transition, specified-nondeterministic-transition, and known-no-transition, then derive FutureObs_PAA aggregation semantics and counterexamples. No research label is promoted and integrated Nexo assembly remains blocked.
