@@ -113,3 +113,21 @@ e8caa371541ec3d809fec0d1105fe09f72d24035
 32b3762a2b472307783260d23bbf0d8ed15f5381
 
 Exact next action: complete the remaining semantic layer using only canonical prior evidence, then execute FutureObs_PAA/lower-arity equivalence/reconstruction and the eight ternary attacks. Do not broaden to 286 triples until the complete gate is closed.
+
+## AB58 checkpoint — 2026-09-25
+
+AB58 is IN PROGRESS. A code-level semantic audit of the AB57 harness is persisted at:
+NEXO_CONTINUITY/AB58_AB57_HARNESS_SEMANTIC_AUDIT_2026-09-25.md
+
+Audit result: FutureObs_PAA is currently degenerate to the immediate ADMIT observation; UNKNOWN continuation legality is suppressed rather than represented; EventDAG has no evidence-backed predecessor edges yet; the current UsedAdmissionContext identity check is non-discriminating under known mutations; and lower_obs is not yet established as the canonical observational quotient.
+
+No research claim changed status. TERNARY_PAA_COLLISION remains UNKNOWN; EVENTDAG_CLOSURE remains PARTIAL; RECONSTRUCTION remains BOUNDED_ONLY; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED; IMPLEMENTATION remains PARTIAL_RESEARCH_HARNESS.
+
+AB58 persistence commits before this checkpoint:
+64ae4867777c73ac75289f6e85fc84ee25cc5f09
+7bb04dcb5b0b4df2d39f417d11828c6639cb42b9
+9ff2025dad7f14f614238cb28285b6404fef07ae
+69d20a94dc97bfdea4ef48dbb2282f19ce0e8a5a
+d046805caf17a63059c8ffe1386bf3eacfaf8711
+
+Exact next action: recover canonical AB54/AB56 observation/action semantics, implement explicit three-valued continuation legality without inventing semantics, add only evidence-backed EventDAG edges, then rerun the eight ternary attacks through the complete gate. Do not broaden to 286 triples before closure.
