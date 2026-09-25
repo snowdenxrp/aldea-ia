@@ -132,16 +132,13 @@ def lower_obs(state: State) -> Tuple:
     return unary, tuple((x,vals[x],y,vals[y]) for x,y in ordered_pairs)
 
 def dag_edges(names: Tuple[str,...]) -> FrozenSet[Tuple[str,str]]:
-    # Conservative derived edge: a later event that reads a fact written by an
-    # earlier event is ordered after it. No edge is invented for unknown rules.
+    # Only protocol-declared predecessor edges are authoritative.
+    # Read/write overlap alone does not create a fixed order.
     edges=set()
-    for a in names:
-        for b in names:
-            if a==b: continue
-            wa=EVENTS[a].writes
-            rb=EVENTS[b].reads
-            if wa & rb:
-                edges.add((a,b))
+    for name in names:
+        for pred in EVENTS[name].explicit_predecessors:
+            if pred in names:
+                edges.add((pred,name))
     return frozenset(edges)
 
 def topological_orders(names: Tuple[str,...], edges: FrozenSet[Tuple[str,str]]) -> Tuple[Tuple[str,...],...]:
@@ -154,34 +151,43 @@ def topological_orders(names: Tuple[str,...], edges: FrozenSet[Tuple[str,str]]) 
 
 def execute_order(order: Tuple[str,...], initial: State):
     state=initial
-    unknown=False
     trace=[]
     for e in order:
+        if e=="ADMIT":
+            # CurrentObs is sampled at the ADMIT linearization point.
+            obs=paa(state)
+            return state, obs, tuple(trace + [(e, obs)])
         state,status=apply(e,state)
         trace.append((e,status))
         if status==UNKNOWN:
-            unknown=True
-            break
-    return state, (UNKNOWN if unknown else paa(state)), tuple(trace)
+            return state, UNKNOWN, tuple(trace)
+    return state, UNKNOWN, tuple(trace)
 
-def future_obs(order: Tuple[str,...], state: State) -> Tuple[str,...]:
-    # Only fully specified continuations are generated. An underspecified
-    # continuation is represented by UNKNOWN rather than completed by guess.
-    obs={paa(state)}
-    if any(EVENTS[e].semantic_status=="UNKNOWN" for e in order):
-        obs.add(UNKNOWN)
-    return tuple(sorted(obs))
+def legal_continuation_orders(state: State) -> Tuple[Tuple[str,...], ...]:
+    # Only fully specified continuations are emitted; unspecified protocol
+    # successors are represented by UNKNOWN rather than fabricated.
+    return (("ADMIT",),)
+
+def future_obs_set(state: State) -> Tuple[str,...]:
+    observations=set()
+    for cont in legal_continuation_orders(state):
+        _, obs, _ = execute_order(cont, state)
+        observations.add(obs)
+    return tuple(sorted(observations))
 
 def run_attack(events: Tuple[str,str,str], states: Iterable[State]):
     results={"TRUE":0,"FALSE":0,"UNKNOWN":0}
     order_count=0
+    context_identity_checks=0
     for st in states:
         edges=dag_edges(events)
         for order in topological_orders(events,edges):
             order_count += 1
-            _,obs,_=execute_order(order,st)
+            final_state,obs,_=execute_order(order,st)
             results[obs]+=1
-    return results,order_count
+            if context(final_state)==context(st):
+                context_identity_checks += 1
+    return results,order_count,context_identity_checks
 
 def bounded_states() -> Tuple[State,...]:
     # Preserve AB55's 2^6 bounded predicate domain while adding identity-bearing
@@ -210,5 +216,5 @@ ATTACKS=(
 if __name__ == "__main__":
     states=bounded_states()
     for attack in ATTACKS:
-        result,n=run_attack(attack,states)
-        print("+".join(attack), n, result)
+        result,n,ctx=run_attack(attack,states)
+        print("+".join(attack), n, result, "context_identity_checks=",ctx)
