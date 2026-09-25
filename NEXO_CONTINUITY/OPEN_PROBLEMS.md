@@ -12,3 +12,8 @@
 10. Attack quotient congruence under every legal transition class.
 11. Formulate refinement obligations and exact TLA+ abstract variables.
 12. Only after closure criteria are satisfied begin TLC/TLAPS and implementation work.
+
+
+## Continuity integrity problem — resolved as process safeguard
+
+The chat-limit gap itself is now covered by CONTINUITY_V2_HANDOFF_2026-09-25.md. This does not resolve the underlying AB56 research problems; it prevents them from being lost, silently closed, or repeatedly re-proposed when a chat changes.
