@@ -92,3 +92,12 @@ This includes searching sources, studying real systems/runtimes and relevant pri
 4. Build counterexamples for agreement/disagreement among admissible successors and for UNKNOWN versus KNOWN-empty.
 5. Only after the semantic algebra is justified decide whether AB61/AB65 code needs modification.
 6. Keep quotient congruence, eight-attack closure, 286 expansion, and integrated Nexo assembly blocked until their prerequisites are met.
+
+
+## AB69 — exact next research actions — 2026-09-25
+
+1. Recover actual P_AA evidence/semantics needed to establish successor completeness.
+2. Derive the smallest FutureObs_PAA algebra distinguishing known-empty, known-unique, known-multiple, and unknown relation.
+3. Construct counterexamples where collapsing these categories causes false collision/reconstruction results.
+4. Test candidate TransitionKnowledge only as a research model; do not integrate it into AB61/AB65 yet.
+5. Only after semantic counterexamples pass, determine whether code changes are justified.
