@@ -353,3 +353,7 @@ Static attack matrix added for packed representation. Known representational dif
 
 ## AB104.15 — 2026-09-25
 Adjusted `.github/workflows/ab65-gate.yml` so pushes modifying the AB104.11 packed harness also satisfy the workflow path trigger. Commit 946bab5e91bc90ef759b9dd6a60cd002ebb94533. This is trigger plumbing only; it does not change protocol semantics. No subsequent `AB65: persist gate execution output` commit was visible in commit search at checkpoint time, so execution remains NOT_VERIFIED.
+
+
+## AB104.16 — 2026-09-25
+Audited AB65 trigger chain directly from workflow source. Trigger configuration is VERIFIED: push on main includes the AB104.11 harness path and workflow_dispatch exists. The execution command and intended output persistence are visible in source. Actual execution/output remain NOT_VERIFIED; current workflow-run wrapper is restricted and absence from it is not proof of no run. Artifact commit 16c11a01e57ccbac72475ae4f8570db68a3552b7.
