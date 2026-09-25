@@ -3,6 +3,11 @@
 // La ejecución real debe pasar por un adaptador de efectos y volver con evidencia verificable.
 const severityRank=Object.freeze({error:3,warning:2,info:1});
 const TERMINAL_STEP=new Set(["completed","failed","blocked"]);
+const LUMINA_ACTIONS=Object.freeze(new Set([
+  "rest","drink","eat_plant","catch_fish","eat_fish","gather_wood","gather_stone",
+  "build_shelter","craft_tool","farm","harvest","eat_farm_food",
+  "contribute_commons","withdraw_commons","trade"
+]));
 const ACTION_META=Object.freeze({
   restore_core_agents:{reversible:false,requiresVerification:true},
   repair_agent_state:{reversible:true,requiresVerification:true},
@@ -17,7 +22,8 @@ const ACTION_META=Object.freeze({
   repair_resource_state:{reversible:true,requiresVerification:true},
   collect_social_window:{reversible:true,requiresVerification:true},
   inspect_and_collect_evidence:{reversible:true,requiresVerification:true},
-  run_longitudinal_probe:{reversible:true,requiresVerification:true}
+  run_longitudinal_probe:{reversible:true,requiresVerification:true},
+  execute_lumina_action:{reversible:false,requiresVerification:true}
 });
 let missionSequence=0;
 
@@ -27,6 +33,8 @@ function collectFindings(reports=[]){
 }
 
 function actionFor(f){
+  if(f?.code==="LUMINA_ACTION" && LUMINA_ACTIONS.has(f?.action?.name))
+    return "execute_lumina_action";
   const map={
     NO_AGENTS:"restore_core_agents",AGENT_POSITION:"repair_agent_state",INVALID_NEED:"repair_agent_needs",
     MESH_MISSING:"repair_visual_mesh",NOT_IN_SCENE:"repair_scene_link",HIDDEN:"repair_visual_visibility",
@@ -76,7 +84,7 @@ export function buildNexoMission({simulation=null,reports=[],memory=null}={}){
   for(const finding of findings){
     const action=actionFor(finding);
     const target=finding.agent??finding.resource??null;
-    const key=action+"|"+(target??"global");
+    const key=action+"|"+(target??"global")+"|"+(finding.action?.name??"");
     if(seen.has(key)) continue;
     seen.add(key);
     const meta=ACTION_META[action]??ACTION_META.inspect_and_collect_evidence;
@@ -84,7 +92,8 @@ export function buildNexoMission({simulation=null,reports=[],memory=null}={}){
       id:"step-"+(steps.length+1), action, priority:severityRank[finding.severity]??0,
       reason:finding.message??finding.code??"observación sin descripción", source:finding.source,
       target, reversible:meta.reversible, requiresEvidence:true,
-      requiresVerification:meta.requiresVerification, dependsOn:[], status:"planned"
+      requiresVerification:meta.requiresVerification, dependsOn:[], status:"planned",
+      ...(action==="execute_lumina_action" ? {context:{action:{...finding.action}}} : {})
     });
   }
   if(!steps.length){
@@ -181,6 +190,6 @@ export function verifyNexoMission(mission,verification){
 export function planNexoExecution(mission){
   if(!mission||!Array.isArray(mission.steps)) return {status:"invalid",actions:[]};
   const actions=mission.steps.filter(s=>s.status==="planned"&&(s.dependsOn??[]).every(id=>mission.steps.find(d=>d.id===id)?.status==="completed"))
-    .map(s=>({stepId:s.id,action:s.action,target:s.target,dependsOn:s.dependsOn??[],reversible:s.reversible,requiresVerification:s.requiresVerification}));
+    .map(s=>({stepId:s.id,action:s.action,target:s.target,dependsOn:s.dependsOn??[],reversible:s.reversible,requiresVerification:s.requiresVerification,context:s.context??null}));
   return {status:actions.length?"ready":"waiting",actions};
 }
