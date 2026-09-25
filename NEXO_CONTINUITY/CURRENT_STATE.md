@@ -509,3 +509,12 @@ AB104.4 code audit persisted at ac3b519890e5bdefa27315a784e55ce3963ab568. Direct
 Current semantic gates unchanged: LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; LEASE_RENEW=UNKNOWN; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED; 286 expansion=BLOCKED.
 
 Persistence preceding this final state: ledger=79b95fb091e673800a48eeb189c0a3b7b27e44cb; next-actions=6be346c5b28874c534d9996403cb07cead7f4f16.
+
+
+## AB104.5 — 2026-09-25
+
+AB61/AB100 code consistency audit persisted at b8f700f8ae68766f3a748ecd0f867d66556b2fa7. Key finding: AB100's “Preserves AB61 semantics” documentation conflicts with its intentionally UNKNOWN LEASE_CONSUME implementation; AB61 separately contains a historical/scaffold consume effect and a repaired distinction between history application and future legality. These layers must remain distinct. No protocol law was changed.
+
+Current gates unchanged: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED; 286 expansion=BLOCKED.
+
+Preceding persistence: ledger=71c459688c295542908becc86b68313953fd0930; next-actions=03061b30cc48a79249b3ebc4fb8e821cd291870e.
