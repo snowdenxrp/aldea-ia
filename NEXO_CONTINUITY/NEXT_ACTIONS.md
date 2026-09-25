@@ -152,3 +152,15 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 7. Do not modify AB61/AB65 semantics until the successor representation is justified.
 8. Keep eight-attack closure, 286-triple expansion, semantic freeze, and integrated Nexo assembly blocked.
 9. Continue external research on partial observability, epistemic transition systems, and runtime verification while the protocol-specific successor relation is being formalized.
+
+
+## AB74.1 continuity-hardening actions — 2026-09-25
+
+1. Keep GitHub main as canonical; do not migrate because of isolated connector write blocks.
+2. Use additive recovery artifacts when an existing-file update is blocked.
+3. For normal existing-file writes, fetch the current blob SHA immediately before each sequential update and read back after the write.
+4. If contents writes are blocked again, use the documented lower-level Git object path only after exact base-tree/parent verification; never force-move main.
+5. Verify the final HEAD and parent chain after each persistence round before declaring CONTINUITY_CHECKPOINT=VERIFIED.
+6. Resume semantic research only from the persisted AB74 frontier: formalize KNOWN_NONEMPTY | KNOWN_EMPTY | UNKNOWN successor status with provenance.
+7. Do not modify AB61/AB65 or broaden to 286 triples until the successor semantics are justified and tested.
+8. Preserve all existing UNKNOWN/PENDING states and all prior AB artifacts.
