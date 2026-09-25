@@ -115,3 +115,15 @@ This includes searching sources, studying real systems/runtimes and relevant pri
 ## AB71 — next action — 2026-09-25
 
 Recover protocol evidence event-by-event and test successor completeness before changing AB61/AB65. Do not treat finite harness enumeration as protocol closure.
+
+
+## AB72 continuity repair — 2026-09-25
+
+0. Finish synchronization of all legacy canonical continuity documents from the AB72 recovery state; preserve all earlier entries and UNKNOWN/PENDING labels.
+1. Read back every synchronized document and record its exact blob SHA.
+2. Verify the resulting Git HEAD and linear parent chain.
+3. Set CONTINUITY_CHECKPOINT=VERIFIED only if all required documents are synchronized and read-back verified; otherwise retain PARTIAL and use RECOVERY_POINTER.md.
+4. After continuity closure, resume successor-completeness research: protocol evidence event-by-event, then FutureObs_PAA aggregation, quotient congruence, EventDAG legality, and only then bounded execution/expansion.
+5. Do not begin AB73 semantic research until continuity repair reaches a verified checkpoint.
+
+Recovery-first rule: on any future write failure, persist an additive recovery snapshot/pointer before ending the round; a blocked legacy-file write must never become a single point of failure.
