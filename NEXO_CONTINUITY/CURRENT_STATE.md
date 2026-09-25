@@ -526,3 +526,6 @@ Bridge merge audit completed. Naive scalar merge is unsafe due to confirmed fiel
 
 ## AB104.8 — 2026-09-25
 Field-preservation matrix persisted as c3f03af675848797ac51e98f0b1532c24818a1ca. All 13 AB18 LeaseBridge dimensions plus actual admission linkage remain semantically retained candidates; no safe elimination established. Naive scalar merge is rejected as lossy, while richer representation packing remains possible in principle pending reconstruction/future-congruence testing. Gates otherwise unchanged.
+
+## AB104.9 — 2026-09-25
+Shared-lease/two-admission bounded attack persisted. Actual admission linkage remains non-reconstructible from bridge identity alone. No new collision or protocol law established. Artifact e7614a7400994f92dc33e25cdfa97349149d7d07.
