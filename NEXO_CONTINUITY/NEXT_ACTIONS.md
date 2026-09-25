@@ -139,3 +139,16 @@ Recovery-first rule: on any future write failure, persist an additive recovery s
 6. Establish successor congruence obligations before accepting lower-arity quotienting.
 7. Keep the eight-attack gate, 286-triple expansion, and integrated Nexo assembly blocked until successor completeness is justified and executable.
 8. Persist and verify each substantive research round before proceeding.
+
+
+## AB74 — protocol evidence recovered — 2026-09-25
+
+1. Use AB54 as the canonical recovered protocol vocabulary for LEASE_RENEW, RETRY, RECHECK and the AB61 UNKNOWN classification for MUTATION.
+2. Classify all four concrete events as C/UNKNOWN until protocol evidence establishes either convergent future observation or multiple compatible divergent successors.
+3. Keep the abstract AB73 two-completion counterexample separate from the concrete Nexo protocol claim.
+4. Define the smallest research-only successor relation with KNOWN_NONEMPTY, KNOWN_EMPTY, UNKNOWN, and provenance.
+5. Test the two-completion construction against actual AB54 read-sets and obligations.
+6. Do not treat absent enumeration as KNOWN_EMPTY, UNKNOWN as identity/stutter, or bounded execution as protocol closure.
+7. Do not modify AB61/AB65 semantics until the successor representation is justified.
+8. Keep eight-attack closure, 286-triple expansion, semantic freeze, and integrated Nexo assembly blocked.
+9. Continue external research on partial observability, epistemic transition systems, and runtime verification while the protocol-specific successor relation is being formalized.
