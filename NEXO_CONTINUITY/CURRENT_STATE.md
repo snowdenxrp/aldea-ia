@@ -353,3 +353,15 @@ The persistence problem is now treated as a connector-route reliability issue, n
 No AB research conclusion changed. All unresolved labels remain unchanged, including TERNARY_PAA_COLLISION=UNKNOWN and EXECUTION=NOT_VERIFIED. The next semantic task remains the minimal KNOWN_NONEMPTY/KNOWN_EMPTY/UNKNOWN successor-status object with provenance, followed by evidence-constrained testing.
 
 Persistence status: AB74.1 artifact write VERIFIED by returned commit SHA. Full continuity checkpoint is NOT yet declared VERIFIED until the canonical state/next-actions/ledger updates and resulting ancestry are read back.
+
+
+## AB74.1 final persistence verification — 2026-09-25
+
+Read-back verification completed for CURRENT_STATE.md, NEXT_ACTIONS.md, and RESEARCH_LEDGER.md after their sequential updates.
+
+Verified latest main commit: cfba9293dbe3793546e8f4cf3bece96fc1e5a8aa
+Verified immediate predecessor: 1307ef7c6a850cb56ea77111ccd805f9e1602000
+Verified comparison: 1307ef7c6a850cb56ea77111ccd805f9e1602000 → cfba9293dbe3793546e8f4cf3bece96fc1e5a8aa = ahead_by 1, behind_by 0.
+Verified recent main sequence: b7c38b620ee0fe29d0d837ecc48446ce691eece5 → 73ad70758b760658781a151d16e5164e4363e8fa → 623ddecb138311af67ef07c2a696df5588993646 → 1307ef7c6a850cb56ea77111ccd805f9e1602000 → cfba9293dbe3793546e8f4cf3bece96fc1e5a8aa.
+
+CONTINUITY_CHECKPOINT=VERIFIED for AB74.1 persistence hardening. This verifies persistence of the hardening state and its read-back/ancestry checks; it does NOT verify AB65 execution, protocol semantic closure, ternary collision, quotient congruence, formal verification, or integrated Nexo architecture.
