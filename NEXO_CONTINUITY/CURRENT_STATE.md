@@ -258,3 +258,26 @@ Commit: 79562d813536f0cdee827504612109d346c5dbe8
 Derived research candidate: FutureObsResult = EMPTY_KNOWN | KNOWN_AGREEMENT(observation) | KNOWN_DIVERGENCE(set of observations) | UNKNOWN. Definitive EMPTY requires complete successor enumeration. Known multiple successors may still yield a definitive future observation when all observations agree. UNKNOWN never receives fabricated concrete successors.
 
 Five counterexamples document why collapsing UNKNOWN, known nondeterminism, and known-empty is unsound, and why CurrentObs/FutureObs equality alone cannot establish quotient congruence. Candidate remains unproven for P_AA; no code modified.
+
+
+## AB72 continuity repair — 2026-09-25
+
+Repair status: IN_PROGRESS. The AB72 audit identified stale canonical documents and a partial AB71 persistence event. An additive recovery layer is persisted at NEXO_CONTINUITY/AB72_CANONICAL_RECOVERY_STATE_2026-09-25.md and pointed to by NEXO_CONTINUITY/RECOVERY_POINTER.md. These files are immutable provenance and do not replace historical AB artifacts.
+
+Canonical recovery references:
+- Recovery state blob: 5a1dc168903ff7ffdcde480fbacefb2cc2a6c8e1
+- Recovery pointer blob: 4b5c0a4c83732c1d83bcf6dc47b3e8ea12201329
+- AB72 audit commit: 3ec031a730b2f738a12047a484653d9fbdfec6b8
+- AB72 repair manifest commit: cc97da628aa246daaeb3b09a981369aabc1e02da
+
+The legacy document is being synchronized additively with the recovery state. No semantic conclusion is changed. CONTINUITY_CHECKPOINT remains PARTIAL until every repaired document is read back and the resulting HEAD/parent chain is verified.
+
+## AB71 persistence correction
+AB71 is explicitly recorded as PARTIAL persistence: its artifact and NEXT_ACTIONS update exist, while the other canonical updates were blocked. This must not be represented as a completed canonical checkpoint.
+
+## Required continuity invariant
+ARTIFACT_CREATED -> CANONICAL_STATE_UPDATED -> NEXT_ACTIONS_UPDATED -> RESEARCH_LEDGER_UPDATED -> OPEN_PROBLEMS_UPDATED -> READ_BACK_VERIFICATION -> CONTINUITY_CHECKPOINT=VERIFIED
+If any stage fails, checkpoint remains PARTIAL.
+
+## Current canonical research frontier
+AB71/AB72 continuity repair precedes new semantic research. Successor-completeness, FutureObs_PAA, quotient congruence, EventDAG closure, HistorySupport, bridge merge, semantic freeze, formal verification, and integrated Nexo assembly remain unresolved as recorded in the recovery state.
