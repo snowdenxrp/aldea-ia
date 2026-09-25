@@ -127,3 +127,15 @@ Recover protocol evidence event-by-event and test successor completeness before 
 5. Do not begin AB73 semantic research until continuity repair reaches a verified checkpoint.
 
 Recovery-first rule: on any future write failure, persist an additive recovery snapshot/pointer before ending the round; a blocked legacy-file write must never become a single point of failure.
+
+
+## AB73 — partial observability / belief-state semantics — 2026-09-25
+
+1. Treat the belief/knowledge set of concrete states or models compatible with evidence as a candidate semantic layer, not yet as canonical Nexo semantics.
+2. Distinguish known nondeterminism, known-empty continuation, and epistemic UNKNOWN; never collapse UNKNOWN into identity or empty.
+3. Construct the minimal two-compatible-completions counterexample: one unresolved event with two evidence-compatible successors producing different observations.
+4. Derive MaySucc and a separately justified MustSucc notion from the actual Nexo protocol vocabulary; do not assume union/intersection is automatically sound.
+5. Test whether AB61's unchanged+UNKNOWN branch loses compatible successor observations.
+6. Establish successor congruence obligations before accepting lower-arity quotienting.
+7. Keep the eight-attack gate, 286-triple expansion, and integrated Nexo assembly blocked until successor completeness is justified and executable.
+8. Persist and verify each substantive research round before proceeding.
