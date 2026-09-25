@@ -38,3 +38,19 @@ The AB57 executable harness is now persisted. IMPLEMENTATION is upgraded only fr
 ## AB58 status — 2026-09-25
 
 AB58 is a semantic audit of the AB57 harness. No research claim changed status. TERNARY_PAA_COLLISION remains UNKNOWN; EVENTDAG_CLOSURE remains PARTIAL; RECONSTRUCTION remains BOUNDED_ONLY; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED. IMPLEMENTATION remains PARTIAL_RESEARCH_HARNESS.
+
+
+## AB61 status — 2026-09-25
+
+AB55 reproducibility repair is CLOSED: the recovered original source reproduced all eight historical result tuples exactly. This closes provenance/reproduction of the bounded AB55 counts, not the protocol question.
+
+AB61 adds a semantic-repair interpreter with explicit TRUE/FALSE/UNKNOWN continuation legality, UNKNOWN EventDAG ordering, actual immutable UsedAdmissionContext capture, and an explicit AB50/AB51 observation vocabulary. These repairs narrow the implementation gap but do not establish semantic closure.
+
+Current research claims remain:
+TERNARY_PAA_COLLISION = UNKNOWN
+TERNARY_PROTOCOL_RESIDUAL = UNKNOWN_DUE_TO_MISSING_SEMANTICS
+EVENTDAG_CLOSURE = PARTIAL
+RECONSTRUCTION = BOUNDED_ONLY
+SEMANTIC_FREEZE = NOT_DECLARED
+FORMAL_VERIFICATION = NOT_PERFORMED
+IMPLEMENTATION = PARTIAL_RESEARCH_HARNESS
