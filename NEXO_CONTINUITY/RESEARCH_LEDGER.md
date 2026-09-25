@@ -90,3 +90,18 @@ Result: continuity is recoverable through an additive emergency recovery layer, 
 Status: CONTINUITY_INTEGRITY=PARTIAL_UNTIL_REPAIR. No P_AA conclusion changed. UNKNOWN/PENDING remain preserved. Integrated Nexo assembly remains blocked by AB66.
 
 Next action: synchronize legacy canonical documents additively, verify every resulting blob and HEAD, then resume semantic research only after the continuity checkpoint is VERIFIED.
+
+
+## AB73 — partial observability and belief-state successor semantics — 2026-09-25
+
+Research question: whether unresolved continuation semantics require an explicit epistemic/belief successor domain rather than a single unchanged-state UNKNOWN branch.
+
+External evidence reviewed: 2026 work on belief construction for partial observability (Kori/Watanabe), belief-state programming and verification (Atkinson/Carbin), and epistemic planning under nondeterminism and partial observability (Burigana et al.), combined with the previously collected three-valued runtime-verification literature.
+
+Research result: external literature supports representing knowledge as a set of concrete states/models compatible with observations. This supports a candidate Nexo abstraction K(O,H), with possible successors aggregated over compatible completions. It does not yet establish the exact Nexo semantics or prove that union/intersection are the final MAY/MUST definitions.
+
+Minimal adversarial case identified: two evidence-compatible semantic completions for the same unresolved event can produce different future observations. In that case, an unchanged-state UNKNOWN verdict may preserve epistemic uncertainty while still omitting compatible successor observations if it is also used as the successor generator.
+
+Status: TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; FORMAL_VERIFICATION=NOT_PERFORMED; IMPLEMENTATION=NO_CHANGE.
+
+Next: implement only a research counterexample, derive candidate epistemic successor algebra from canonical protocol evidence, test AB61, and establish quotient congruence before the eight-attack gate or 286 expansion.
