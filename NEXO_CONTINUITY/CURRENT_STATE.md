@@ -372,3 +372,16 @@ CONTINUITY_CHECKPOINT=VERIFIED for AB74.1 persistence hardening. This verifies p
 The previous subsection recorded the latest HEAD before the final CURRENT_STATE finalization write. Because a state file cannot truthfully contain the SHA of its own not-yet-created commit, the canonical rule is: record the verified predecessor chain in CURRENT_STATE, then verify the resulting final HEAD externally and do not perform another state write in the same checkpoint.
 
 Therefore the persistence claim is limited precisely as follows: the AB74.1 artifact and the sequential CURRENT_STATE/NEXT_ACTIONS/RESEARCH_LEDGER updates were read back successfully; the finalization write completed successfully; the resulting main HEAD is to be treated as the externally verified terminal point for this checkpoint. No semantic or execution claim is inferred from persistence.
+
+
+## AB75 checkpoint — 2026-09-25
+
+Research frontier advanced from AB74 to a minimal successor-status semantic boundary. The research distinction is now explicit: KNOWN_NONEMPTY | KNOWN_EMPTY | UNKNOWN. KNOWN_EMPTY requires a demonstrated completeness basis; missing enumeration is not emptiness; UNKNOWN is not identity/stutter and is not specified nondeterminism.
+
+AB74 unresolved events remain LEASE_RENEW=UNKNOWN, RETRY=UNKNOWN, MUTATION=UNKNOWN, RECHECK=UNKNOWN. No concrete divergent successor pair has been established. The AB73 two-completion construction remains abstract.
+
+The standalone AB75 artifact creation attempt was blocked by connector security. No file success is claimed. The AB75 result is preserved additively in this state file, RESEARCH_LEDGER.md, and NEXT_ACTIONS.md under the AB74.1 fallback protocol.
+
+Current labels remain: TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; EXECUTION=NOT_VERIFIED; NO_INTEGRATED_NEXO_ASSEMBLY_BEFORE_RESEARCH_ARCHITECTURE_GATE=TRUE.
+
+Exact next action: construct and test protocol-completeness records for the four unresolved continuation events against AB54 evidence before modifying AB61/AB65 or broadening to 286 triples.
