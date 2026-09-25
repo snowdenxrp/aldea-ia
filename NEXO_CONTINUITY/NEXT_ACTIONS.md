@@ -317,3 +317,8 @@ Continue invalidation-sensitive packed representation attacks. For AB65, capture
 3. Continue targeted recovery of complete LEASE_RENEW and LEASE_CONSUME laws, prioritizing C2-C6 gaps.
 4. If no new law is recovered, construct only bounded epistemic tests and preserve UNKNOWN.
 5. Keep 286 expansion, semantic freeze, formal verification, and integrated Nexo assembly blocked until evidence closes the required gates.
+
+
+## AB104.19 continuation
+- AB65: only accept a committed gate-output artifact or other positive execution evidence; absence of the expected output remains negative evidence, not proof that every possible execution path is impossible.
+- Continue recovery of LEASE_RENEW / LEASE_CONSUME C2-C6 from source artifacts and commits; do not infer laws from field names alone.
