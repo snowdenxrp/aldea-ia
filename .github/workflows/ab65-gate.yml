@@ -9,6 +9,7 @@ on:
       - "NEXO_CONTINUITY/AB63_GATE_RUNNER_IMPORT_SAFE_2026-09-25.py"
       - "NEXO_CONTINUITY/AB65_GATE_RUNNER_IMPORT_SAFE_V2_2026-09-25.py"
       - ".github/workflows/ab65-gate.yml"
+      - "NEXO_CONTINUITY/AB104_11_PACKED_REPRESENTATION_HARNESS_2026-09-25.py"
   workflow_dispatch:
 
 permissions:
