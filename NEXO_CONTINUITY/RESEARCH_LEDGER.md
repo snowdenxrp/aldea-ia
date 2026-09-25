@@ -337,3 +337,7 @@ Packed-representation audit under explicit PolicyChange and ResourceReincarnate.
 
 ## AB104.11 — 2026-09-25
 Added a research-only packed representation harness. It preserves all 13 AB18 bridge dimensions with value/provenance/status, keeps admission linkage indexed separately, reconstructs LeaseBridge and AdmissionBindingClass as separate logical views, validates field preservation, and returns UNKNOWN for undeclared future semantics. Read-back verified artifact blob 093f1ba1021ebee7f70a6d9309fcf245076d871c from commit fa2f063aa8efc53bce9f6911a3e0c17d009b4623. Repository execution was not claimed; this is source/read-back verification only.
+
+
+## AB104.12 — 2026-09-25
+Static source validation of AB104.11 passed: exact blob read-back; 13 bridge dimensions present; per-field provenance/status present; admission linkage carries identity/provenance/status; missing or UNKNOWN components are conservatively unresolved; future semantics are not invented. Runtime execution was NOT verified. AB65 trigger 854d88d61cd78bf4d04e2e438516f7acbead9c5 still has zero workflow runs in connector evidence. Artifact commit 7b71f6c390bd39960d7008aec7e490d2384aa160.
