@@ -10,3 +10,12 @@
 8. Classify each candidate using the AB51 five-way decision table.
 9. Escalate only justified residuals to four events; then attack LeaseBridge/AdmissionBindingClass and quotient congruence.
 10. Persist the complete round before moving to the next frontier.
+
+
+## Continuity V2 prerequisite — COMPLETE
+
+The cross-chat loss-prevention handoff has been persisted. Future sessions must not spend a research round redesigning continuity unless a concrete defect is found.
+
+## Research resume point
+
+Resume directly at the existing AB56 item 1: implement/execute lower-arity observations + FutureObs_PAA as executable code, then EventDAG ordering, actual UsedAdmissionContext identity/binding equality, and continuation legality. Preserve UNKNOWN. Do not broaden to 286 triples until the complete ternary gate is executed.
