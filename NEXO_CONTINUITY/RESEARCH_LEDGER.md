@@ -8,3 +8,7 @@ Ternary joint-separator/hyperedge closure research. Establishes the mathematical
 
 ## Preservation rule
 Never delete an earlier ledger entry. Append new entries for AB52+ with the commit SHA, research question, evidence, results, unresolved items, and next action.
+
+
+## AB52 — b93ec7fb52cc6cbdfaa891bac9fbf53e0ad7e343
+Bounded ternary read-set closure search. Covered 286 unordered candidate event-role triples, 19 strict partial orders for three labeled events, and 3 protocol variants, for 16,302 role/order/protocol skeletons. The canonical parity witness remains a mathematical ternary non-reconstructibility result, but under the explicitly instantiated ATOMIC/LEASE/RECHECK read closures no irreducible ternary P_AA residual or future-observation collision was found. This is bounded structural evidence, not proof and not full concrete binding-state enumeration. HistorySupport elimination is supported only for the tested ternary closure; LeaseBridge/AdmissionBindingClass merge remains UNKNOWN. Four-event escalation from ternary is not triggered, but independent H6/H7 four-event attacks remain open.
