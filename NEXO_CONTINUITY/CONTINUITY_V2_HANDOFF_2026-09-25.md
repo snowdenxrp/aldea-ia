@@ -97,3 +97,7 @@ Its progress artifact is:
 NEXO_CONTINUITY/AB57_EXECUTABLE_OBSERVATIONAL_EVENTDAG_GATE_V1_2026-09-25.md
 
 This does not close the ternary protocol question. The next chat must resume AB57 semantic completion rather than redesigning continuity or repeating the deep audit.
+
+## AB58 live frontier amendment — 2026-09-25
+
+AB58 audited the AB57 executable boundary without importing undocumented protocol semantics. The audit is persisted at NEXO_CONTINUITY/AB58_AB57_HARNESS_SEMANTIC_AUDIT_2026-09-25.md. FutureObs_PAA remains non-executable as a full future-observation criterion until continuation legality is represented explicitly; EventDAG closure remains partial. The next chat must resume the AB58 exact next action rather than repeating continuity hardening or treating the harness as semantic closure.
