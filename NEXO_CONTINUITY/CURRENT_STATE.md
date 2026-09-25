@@ -452,3 +452,22 @@ RESEARCH_LEDGER update: 1b0c8637ec88128997742ee6d6f831cdbe845c31
 NEXT_ACTIONS update: 291d1c4f1130ea6784a4fbf5fee4c7ce0c9d9946
 
 Next exact action: targeted recovery around AB20/AB24 and later renewal artifacts, while separately checking complete LEASE_CONSUME law. Preserve UNKNOWN whenever C2/C3/C6 or another decisive dimension remains unsupported.
+
+
+## AB104 checkpoint — 2026-09-25
+
+Continuation from AB103 completed with targeted historical recovery rather than a restart. AB20/AB24/AB25/AB26/AB18/AB49/AB54 and AB94-AB100 were cross-checked for renewal and consumption semantics.
+
+Renewal: the recovered chain establishes the required semantic dimensions (expiry/interval, renewal authority, bridge/admission linkage, policy/delegation/incarnation compatibility, replay/history), but no complete law for extension-vs-replacement, expired-lease eligibility, bridge retention/rebinding, policy-change ordering, or exhaustive successor enumeration was found. LEASE_RENEW remains UNKNOWN.
+
+Consumption: replay/consumption is canonical support (AB18/AB49), and AB100 conservatively models attempt-scoped ReplayState separately from lease_valid. No complete LEASE_CONSUME legality/post-state/frame/observation/enumeration law was recovered. LEASE_CONSUME remains UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW.
+
+AB65 execution rechecked for trigger 854d88d61cd78bf4d04e2e438516f7acbead9c5e: zero workflow runs returned; no output artifact recovered. AB65_EXECUTION remains NOT_VERIFIED.
+
+No concrete P_AA collision established. No AB61/AB65 semantics modified. No 286 expansion, semantic freeze, formal verification, or integrated Nexo assembly authorized by evidence.
+
+AB104 persistence commits: RESEARCH_LEDGER=1a7040a64a878e025b8679770be3565cc07fd2f1; NEXT_ACTIONS=a7c3c97933d1fcafa820e44349bf8aba6f672f9c. Final CURRENT_STATE write follows the canonical sequential-update rule; external HEAD verification is required after this write.
+
+Current labels: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; EVENTDAG_CLOSURE=PARTIAL; RECONSTRUCTION=BOUNDED_ONLY; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED.
+
+Next exact action: construct the evidence matrix for remaining renewal/consume dimensions, then run only bounded experiments whose transition assumptions are explicitly supported. Preserve UNKNOWN otherwise.
