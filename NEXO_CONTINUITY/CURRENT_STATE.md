@@ -161,3 +161,12 @@ ad55c2bb4e2aebd8424a1fce980feba3355ab64a
 Immediate parent before this CURRENT_STATE update: 70a9dc11253877a07a424eb66edf231a50f04ad7.
 
 Exact next action: execute the repaired AB61 gate and persist its complete output; then classify the eight attacks through lower-arity equality, FutureObs_PAA, reconstruction, and EventDAG. Do not broaden to 286 triples until the gate is actually executable and complete under the retained semantics.
+
+
+## AB62 gate frontier — 2026-09-25
+
+Prepared and persisted AB62_GATE_RUNNER_2026-09-25.py. The runner is designed to execute the repaired eight-attack gate with separate history replay and future-continuation legality, including explicit UNKNOWN branches. No execution output is claimed yet because the available execution environment cannot fetch the repository contents directly; recording fabricated output would violate the epistemic protocol.
+
+Latest persisted commit before this state update: 24cbd1351fcb684802572031f0df172a6b24d576.
+
+Next exact action: execute AB62 in a real repository-connected Python/GitHub Actions environment and persist its output.
