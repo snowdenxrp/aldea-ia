@@ -137,3 +137,27 @@ Exact next action: recover canonical AB54/AB56 observation/action semantics, imp
 Verified resulting main HEAD: cf9de14c00d4ae0e76ba5f3a10c07eea87327775
 Immediate parent: aa105e2bfc20692d119f2a3f564e2cc8c0e5fb78
 The AB58 checkpoint and handoff are therefore persisted in the verified chain. No prior AB artifact was overwritten or deleted.
+
+
+## AB61 semantic-repair checkpoint — 2026-09-25
+
+AB55 reproducibility repair: CLOSED. The original source at NEXO_CONTINUITY/AB55_FINITE_RESEARCH_INTERPRETER.py was recovered and independently executed; all eight historical count tuples reproduced exactly. Reproduction output is persisted at NEXO_CONTINUITY/AB61_AB55_REPRODUCTION_OUTPUT_2026-09-25.md.
+
+AB61 repair interpreter is persisted at NEXO_CONTINUITY/AB61_SEMANTIC_REPAIR_INTERPRETER_2026-09-25.py. It separates candidate-history execution from future-continuation legality, represents continuation legality as TRUE/FALSE/UNKNOWN, preserves UNKNOWN ordering in EventDAG rather than inferring edges from overlap, captures immutable UsedAdmissionContext at ADMIT, and exposes unsupported observation/support dimensions as UNKNOWN.
+
+AB61 does not close protocol semantics. TERNARY_PAA_COLLISION remains UNKNOWN; TERNARY_PROTOCOL_RESIDUAL remains UNKNOWN_DUE_TO_MISSING_SEMANTICS; EVENTDAG_CLOSURE remains PARTIAL; RECONSTRUCTION remains BOUNDED_ONLY; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED; IMPLEMENTATION remains PARTIAL_RESEARCH_HARNESS.
+
+AB61 commits in this repair round before this state update:
+a348f1e67461c26074075d39fdca189fd9cac5f9
+7b84e6fa3b552a29abe592630330d11e7a1d88f7
+6bcb9def0871e78b1bb7f16b2925a53c1cc41f5e
+adce29c18e9a5c262556e8bc4ccf8fe1a0fd287c
+efd892b878ff3d3156961c9a6e096c1c010f4532
+08edd1252ce2f801b9d72980e7e9769a01e3a126
+8e5d33477d084c0fc87cc34f6c1c2dc691852eee
+ad55c2bb4e2aebd8424a1fce980feba3355ab64a
+70a9dc11253877a07a424eb66edf231a50f04ad7
+
+Immediate parent before this CURRENT_STATE update: 70a9dc11253877a07a424eb66edf231a50f04ad7.
+
+Exact next action: execute the repaired AB61 gate and persist its complete output; then classify the eight attacks through lower-arity equality, FutureObs_PAA, reconstruction, and EventDAG. Do not broaden to 286 triples until the gate is actually executable and complete under the retained semantics.
