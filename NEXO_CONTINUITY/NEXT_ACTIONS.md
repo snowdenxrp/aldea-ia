@@ -26,3 +26,11 @@ Resume directly at the existing AB56 item 1: implement/execute lower-arity obser
 3. Construct lower-arity equivalence classes and candidate ternary worlds.
 4. Execute deterministic reconstruction and the eight attacks through the complete gate.
 5. Broaden to 286 triples only after the gate is actually closed.
+
+## AB58 resume
+
+1. Recover canonical observation vocabulary and action semantics from persisted AB54/AB56 artifacts.
+2. Represent continuation legality with explicit TRUE/FALSE/UNKNOWN rather than treating unknown legality as an empty continuation set.
+3. Add only evidence-backed EventDAG predecessor edges and preserve unknown ordering separately.
+4. Reconstruct the canonical lower-arity equivalence relation before using FutureObs_PAA as a collision test.
+5. Re-run the eight ternary attacks through the complete gate; preserve UNKNOWN and do not broaden to 286 triples prematurely.
