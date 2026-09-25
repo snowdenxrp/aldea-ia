@@ -11,25 +11,36 @@ assert.equal(mission.status,"planned");
 assert.equal(mission.steps[0].action,"repair_visual_mesh");
 assert.equal(mission.steps[0].priority,3);
 assert.equal(mission.steps[0].requiresEvidence,true);
+assert.deepEqual(mission.steps[0].dependsOn,[mission.steps[1].id]);
 assert.deepEqual(mission.memorySignals,{patterns:1,attempts:0,doNotRepeat:0});
 
-const executing=beginNexoStep(mission,mission.steps[0].id);
-assert.equal(executing.status,"executing");
-assert.equal(executing.steps[0].status,"executing");
+const blockedByDependency=beginNexoStep(mission,mission.steps[0].id);
+assert.equal(blockedByDependency.status,"blocked");
+assert.equal(blockedByDependency.steps[0].status,"blocked");
+assert.equal(blockedByDependency.steps[0].blockReason,"DEPENDENCY_UNMET");
 
-const missing=advanceNexoMission(executing,{stepId:mission.steps[0].id,outcome:"completed"});
+const executing=beginNexoStep(mission,mission.steps[1].id);
+assert.equal(executing.status,"executing");
+assert.equal(executing.steps[1].status,"executing");
+
+const missing=advanceNexoMission(executing,{stepId:mission.steps[1].id,outcome:"completed"});
 assert.equal(missing.status,"blocked");
 assert.equal(missing.blockReason,"MISSING_VERIFIED_EVIDENCE");
-assert.equal(missing.steps[0].status,"executing");
+assert.equal(missing.steps[1].status,"executing");
 
-const completed=advanceNexoMission(executing,{stepId:mission.steps[0].id,outcome:"completed",evidence:{verified:true,kind:"runtime-check",details:"mesh visible"}});
+const repaired=advanceNexoMission(executing,{stepId:mission.steps[1].id,outcome:"completed",evidence:{verified:true,kind:"runtime-check",details:"state repaired"}});
+assert.equal(repaired.steps[1].status,"completed");
+assert.equal(repaired.objective,"repair_visual_mesh");
+
+const ready=beginNexoStep(repaired,repaired.steps[0].id);
+assert.equal(ready.status,"executing");
+const completed=advanceNexoMission(ready,{stepId:ready.steps[0].id,outcome:"completed",evidence:{verified:true,kind:"runtime-check",details:"mesh visible"}});
 assert.equal(completed.steps[0].status,"completed");
-assert.equal(completed.objective,"repair_agent_state");
 
-const failed=advanceNexoMission(executing,{stepId:mission.steps[0].id,outcome:"failed",evidence:{verified:true,kind:"runtime-check",details:"repair did not hold"}});
+const failed=advanceNexoMission(ready,{stepId:ready.steps[0].id,outcome:"failed",evidence:{verified:true,kind:"runtime-check",details:"repair did not hold"}});
 assert.equal(failed.steps[0].status,"failed");
 
-const final=verifyNexoMission({...completed,steps:completed.steps.map(s=>({...s,status:"completed"}))},{verified:true,kind:"mission-check",details:"all steps rechecked"});
+const final=verifyNexoMission(completed,{verified:true,kind:"mission-check",details:"all steps rechecked"});
 assert.equal(final.verified,true);
 assert.equal(final.status,"completed");
 
