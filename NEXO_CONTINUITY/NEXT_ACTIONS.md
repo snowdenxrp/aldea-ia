@@ -82,3 +82,13 @@ This includes searching sources, studying real systems/runtimes and relevant pri
 6. Only then implement the smallest research harness needed to test the model.
 7. Keep the eight-attack gate blocked until these semantics are justified and executable.
 8. Keep 286-triple expansion and integrated Nexo assembly blocked.
+
+
+## AB68 — epistemic successor semantics — 2026-09-25
+
+1. Distinguish epistemic UNKNOWN, specified nondeterminism, and known-empty successor relation.
+2. Study whether the protocol needs belief sets, partial transition systems, symbolic relations, or a smaller bespoke representation.
+3. Define FutureObs_PAA aggregation cases without inventing successors.
+4. Build counterexamples for agreement/disagreement among admissible successors and for UNKNOWN versus KNOWN-empty.
+5. Only after the semantic algebra is justified decide whether AB61/AB65 code needs modification.
+6. Keep quotient congruence, eight-attack closure, 286 expansion, and integrated Nexo assembly blocked until their prerequisites are met.
