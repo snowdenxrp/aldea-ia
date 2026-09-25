@@ -55,3 +55,13 @@ External evidence reviewed: 2026 runtime-verification work on knowledge/uncertai
 Result: evidence supports explicit uncertainty and transition-aware equivalence. It does not select a final Nexo representation and does not prove the ternary hypothesis. The next model should distinguish KNOWN successor set, KNOWN empty successor set, and UNKNOWN successor relation. Snapshot equality alone is insufficient for canonical quotient claims. Implementation-only order_facts must not be used as canonical observation without protocol evidence.
 
 Status: research-only. No semantic freeze, formal verification, or integrated implementation. TERNARY_PAA_COLLISION remains UNKNOWN and execution remains NOT_VERIFIED.
+
+
+## AB68 — bf3e24d32637af30c0b8fdbcb2fb424d5d1637ff — 2026-09-25
+Research question: which formal representation can preserve incomplete transition knowledge without confusing epistemic uncertainty with real nondeterminism?
+
+Evidence reviewed: partial transition systems and 3-valued model checking; observer/state-estimation constructions under partial observation; belief-state semantics in epistemic planning; partially observable verification and belief-space abstraction; multi-valued LTL3 semantics; partial-information epistemic model checking.
+
+Result: multiple established formalisms can represent incomplete knowledge, but none should be adopted by analogy alone. The key semantic distinction is between an unknown transition relation, a specified nondeterministic relation, and a known empty successor set. This distinction must precede implementation. A powerset/PTS construction is therefore a candidate, not a decision.
+
+Status: research-only. No integrated implementation. TERNARY_PAA_COLLISION remains UNKNOWN; SEMANTIC_FREEZE remains NOT_DECLARED; FORMAL_VERIFICATION remains NOT_PERFORMED; EXECUTION remains NOT_VERIFIED.
