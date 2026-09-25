@@ -18,3 +18,16 @@ RECONSTRUCTION: BOUNDED_ONLY
 SEMANTIC_FREEZE: NOT DECLARED
 FORMAL_VERIFICATION: NOT PERFORMED
 IMPLEMENTATION: NOT PERFORMED
+
+
+## Continuity V2 status safeguard — 2026-09-25
+
+No research claim changed status as a result of the continuity work. In particular:
+TERNARY_PAA_COLLISION = UNKNOWN
+TERNARY_PROTOCOL_RESIDUAL = UNKNOWN_DUE_TO_MISSING_SEMANTICS
+EVENTDAG_CLOSURE = PARTIAL
+RECONSTRUCTION = BOUNDED_ONLY
+FORMAL_VERIFICATION = NOT_PERFORMED
+IMPLEMENTATION = NOT_PERFORMED
+
+Continuity mechanisms are process controls and must never be interpreted as evidence for these claims.
