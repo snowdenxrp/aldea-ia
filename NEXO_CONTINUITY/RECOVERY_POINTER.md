@@ -16,3 +16,15 @@ RECOVERY STATUS:
 CONTINUITY_INTEGRITY=PARTIAL_UNTIL_REPAIR
 
 Rule: recover the AB72 canonical recovery state first. Treat legacy canonical documents as historical/secondary until they are synchronized and read-back verified. Do not infer missing state from chat. Do not delete or rewrite historical artifacts.
+
+
+## Final repair status — 2026-09-25
+
+CANONICAL_REPAIR_STATUS=VERIFIED
+Verification artifact: NEXO_CONTINUITY/AB72_CANONICAL_REPAIR_VERIFICATION_2026-09-25.md
+Verification commit: 821c69264f4ae8e544d8ccd5ea0448b713b2dc26
+Final status update commit: 9e1b090d5f2555398e9d6ad1ec51be2757f3525f
+
+The six legacy continuity documents were synchronized additively and read back with the exact blob SHAs recorded in the verification artifact. Their update sequence was verified linear. The earlier PARTIAL_UNTIL_REPAIR status remains historical in the AB72 recovery snapshot; this pointer now reflects the current repaired state.
+
+Recovery rule remains unchanged: do not infer semantic closure from continuity repair. Resume only from the verified research state and preserve UNKNOWN/PENDING.
