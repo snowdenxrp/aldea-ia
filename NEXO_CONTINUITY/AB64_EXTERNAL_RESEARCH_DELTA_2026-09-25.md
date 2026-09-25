@@ -8,17 +8,17 @@ Continue the Nexo research as active investigation rather than treating executio
 
 ### 1. Three-valued UNKNOWN is a legitimate epistemic representation
 
-The Stanford Encyclopedia of Philosophy documents three-valued semantics in which a third value can represent an undefined/not-yet-defined condition, and notes that different three-valued logics have different treatment of that value. Therefore the project must not silently assume that UNKNOWN has ordinary Boolean behavior; its propagation rules are part of the semantics that must be specified. cite-source:turn1search0turn1search1
+The Stanford Encyclopedia of Philosophy documents three-valued semantics in which a third value can represent an undefined/not-yet-defined condition, and notes that different three-valued logics have different treatment of that value. Therefore the project must not silently assume that UNKNOWN has ordinary Boolean behavior; its propagation rules are part of the semantics that must be specified. [SEP: Many-Valued Logic; Self-Reference and Paradox]
 
 ### 2. Agent identity/authorization is an active real-world standards problem
 
-NIST's February 2026 concept paper explicitly identifies open questions around agent identity metadata, authentication, authorization, least privilege, delegation, binding agent identity to human identity, auditing, and non-repudiation. This independently supports keeping identity, authority, delegation, context binding, and audit/provenance as first-class research dimensions rather than collapsing them into a single Boolean authorization flag. cite-source:turn1search24turn1search6
+NIST's February 2026 concept paper explicitly identifies open questions around agent identity metadata, authentication, authorization, least privilege, delegation, binding agent identity to human identity, auditing, and non-repudiation. This independently supports keeping identity, authority, delegation, context binding, and audit/provenance as first-class research dimensions rather than collapsing them into a single Boolean authorization flag. [NIST NCCoE, 2026 concept paper]
 
-NIST's 2025 AI cybersecurity profile draft likewise treats AI systems as requiring their own permissions and authorization policies and highlights least privilege and privilege management over time. cite-source:turn1search25
+NIST's 2025 AI cybersecurity profile draft likewise treats AI systems as requiring their own permissions and authorization policies and highlights least privilege and privilege management over time. [NIST AI Cybersecurity Framework Profile draft]
 
 ### 3. Provenance/completeness is independently important
 
-SLSA 1.2 defines provenance as verifiable information tracking an artifact through the moving parts involved in its production, and distinguishes inputs, resolved dependencies, builder identity, and execution metadata. It also emphasizes that provenance completeness and trustworthiness affect what can actually be verified. This is directly relevant to the project's distinction between evidence, retained support, implementation output, and verification. cite-source:turn0search1turn0search5
+SLSA 1.2 defines provenance as verifiable information tracking an artifact through the moving parts involved in its production, and distinguishes inputs, resolved dependencies, builder identity, and execution metadata. It also emphasizes that provenance completeness and trustworthiness affect what can actually be verified. This is directly relevant to the project's distinction between evidence, retained support, implementation output, and verification. [SLSA 1.2 specification]
 
 ## Research implications
 
