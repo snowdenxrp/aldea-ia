@@ -1,7 +1,8 @@
 import { createEffectAdapter } from "./effect-adapter.js";
 
-function finitePosition(agent){
-  return agent && Number.isFinite(Number(agent.position?.x)) && Number.isFinite(Number(agent.position?.z));
+function normalizeCoordinate(value){
+  const n=Number(value);
+  return Number.isFinite(n)?n:0;
 }
 function clamp(value,min=0,max=100){
   const n=Number(value);
@@ -24,11 +25,12 @@ export function createLuminaEffectAdapter(simulation){
     repair_agent_state: async ({target})=>{
       const agent=simulation.agents.find(a=>a.id===target);
       if(!agent) return {status:"failed",code:"TARGET_AGENT_NOT_FOUND"};
-      if(!finitePosition(agent)){
-        agent.position={x:0,z:0};
-      }
-      agent.position.x=Number(agent.position.x);
-      agent.position.z=Number(agent.position.z);
+      if(!agent.position || typeof agent.position!=="object")
+        agent.position={};
+      // Normalize each coordinate independently so a valid coordinate is never
+      // destroyed merely because the other coordinate is malformed.
+      agent.position.x=normalizeCoordinate(agent.position.x);
+      agent.position.z=normalizeCoordinate(agent.position.z);
       agent.alive=agent.alive!==false;
       bump(simulation);
       return {status:"completed",details:"agent_state_normalized",agentId:agent.id};
@@ -55,10 +57,8 @@ export function createLuminaEffectAdapter(simulation){
     }
   };
 
-  const adapter=createEffectAdapter({
+  return createEffectAdapter({
     getStateVersion:()=>stateVersion(simulation),
     handlers
   });
-
-  return adapter;
 }
