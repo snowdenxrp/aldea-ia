@@ -53,3 +53,20 @@ A chat may terminate before the user can send another message. Therefore every s
 A handoff is complete only when it records the exact stopping point, partial work, unresolved semantics, evidence boundaries, and a DO-NOT-REPEAT list. A summary may not promote epistemic status.
 
 On recovery, if continuity files disagree, verify Git ancestry and the newest explicit artifact before proceeding; never silently choose a conflicting value.
+
+## AB72 continuity repair amendment — 2026-09-25
+
+The stale historical header above is superseded for recovery by RECOVERY_POINTER.md and AB72_CANONICAL_RECOVERY_STATE_2026-09-25.md. The legacy protocol text remains immutable history; this amendment establishes the recovery precedence rule.
+
+Recovery precedence:
+1. Read RECOVERY_POINTER.md.
+2. Read the pointed AB72 recovery state and verify its blob SHA.
+3. Read AB72 audit and repair manifest.
+4. Read legacy canonical documents and compare them against the recovery state.
+5. Continue only from the newest verified checkpoint.
+
+Persistence failure rule: if any legacy canonical write is blocked, do not infer completion. Persist an additive recovery snapshot/pointer, mark CONTINUITY_CHECKPOINT=PARTIAL, and retry synchronization later.
+
+The canonical research methodology remains active: investigate evidence and real systems, model/formalize, seek counterexamples, execute tests when justified, preserve UNKNOWN/PENDING, and only then modify experimental code or consider architecture.
+
+Current semantic frontier remains unresolved; continuity repair does not promote any P_AA, EventDAG, quotient, or formal-verification claim.
