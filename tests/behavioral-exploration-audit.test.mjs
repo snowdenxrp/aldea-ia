@@ -17,5 +17,6 @@ for(const agent of sim.agents){
   assert.ok(Number(agent.movement?.distanceTravelled??0)>10,agent.id+" debe recorrer distancia visible");
   assert.ok(Array.isArray(agent.exploredAreas),agent.id+" debe conservar memoria de exploración");
 }
+console.log(JSON.stringify({explorationDiagnostic:{knownRegions:sim.world.spatial?.knownRegions??[],positions:sim.agents.map(a=>({id:a.id,position:a.position,intent:a.currentIntent,activity:a.currentActivity,excursions:a.explorationState?.excursions,areas:a.exploredAreas}) )}},null,2));
 assert.ok((sim.world.spatial?.knownRegions?.length??0)>=2,"la exploración debe ampliar el territorio conocido");
 console.log(JSON.stringify({audit:"behavioral-exploration",agents:sim.agents.map(a=>({id:a.id,excursions:a.explorationState.excursions,distance:Number(a.movement.distanceTravelled.toFixed(1)),areas:a.exploredAreas.length})),knownRegions:sim.world.spatial.knownRegions.length,verdict:"PASS"},null,2));
