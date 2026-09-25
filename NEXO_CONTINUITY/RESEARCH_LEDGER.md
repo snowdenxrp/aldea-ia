@@ -24,3 +24,8 @@ Finite research interpreter instantiated from AB54's normalized action schema. E
 
 ## AB56 — 4a6af7089a5f8c0de47768c639959105639fc374
 Extended the bounded research frontier conceptually from terminal ternary results to lower-arity observations, FutureObs_PAA, reconstruction, and EventDAG semantics. The new artifact defines a reconstruction criterion requiring equality of current and future P_AA observations over all retained lower-arity facts, and distinguishes forced, independent, and unknown event ordering. Under the currently explicit bounded semantics, no fully specified ternary P_AA collision is established. Explicit-invalidating cases reconstruct from retained predicates; LEASE_RENEW, RETRY, MUTATION/RECHECK remain UNKNOWN where successor/order semantics are incomplete. EventDAG closure is partial and reconstruction is bounded-only. No four-event escalation is justified.
+
+
+## Continuity V2 — 48eaa4717fe5c8053503ce415afbba72771bb92b + subsequent checkpoint commits
+
+The continuity architecture was strengthened after observing chat-limit failure modes. This is a process safeguard, not a research conclusion. It adds a canonical handoff entry point, explicit epistemic-status preservation, partial-step persistence, contradiction handling, and a DO-NOT-REPEAT boundary. It does not close any AB56 research gap.
