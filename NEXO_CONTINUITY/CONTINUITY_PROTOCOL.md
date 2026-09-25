@@ -42,3 +42,14 @@ Never promote bounded evidence to proof. Preserve UNKNOWN as UNKNOWN. Never eras
 ## Required completion state
 
 A round is not considered safely complete until its research is persisted and the continuity files point to the new verified HEAD.
+
+
+## Continuity V2 loss-prevention amendment — 2026-09-25
+
+The current research frontier is AB56; the old AB51 header above is historical/stale documentation and must not be used for recovery. See CONTINUITY_V2_HANDOFF_2026-09-25.md as the entry point.
+
+A chat may terminate before the user can send another message. Therefore every substantive round must be persisted before its final response whenever technically possible; the next chat must recover from GitHub alone.
+
+A handoff is complete only when it records the exact stopping point, partial work, unresolved semantics, evidence boundaries, and a DO-NOT-REPEAT list. A summary may not promote epistemic status.
+
+On recovery, if continuity files disagree, verify Git ancestry and the newest explicit artifact before proceeding; never silently choose a conflicting value.
