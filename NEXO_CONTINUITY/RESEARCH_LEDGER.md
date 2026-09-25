@@ -206,3 +206,16 @@ Crosscheck: C2 legality, C3 complete post-state/successor law, and C6 exhaustive
 Standalone AB79 artifact creation was blocked by connector security; no standalone artifact success is claimed. This result is preserved additively in canonical continuity files.
 
 Next: recover any AB36/AB38 content by another canonical path if available; otherwise proceed from AB52/AB54 with an explicit bounded transition schema and UNKNOWN for every unclosed semantic field.
+
+
+## AB80 — 2026-09-25 — bounded ATOMIC/LEASE/RECHECK transition schema
+
+AB80 extracted only semantics explicitly recoverable from AB20, AB24 and AB52 into the required fields: precondition, semantic read-set, state mutation, admission linkage, invalidation, P_AA observation, and UNKNOWN/PENDING condition.
+
+The schema makes the protocol read sets more explicit but does not close the successor relation. ATOMIC remains incomplete on exact atomicity/post-state/invalidation/enumeration; LEASE remains incomplete on renewal legality, renewal post-state, bridge replacement/retention, replay and enumeration; RECHECK remains incomplete on exact legality, result mutation, invalidation closure and enumeration.
+
+Therefore no protocol crosses the AB75/AB76 completeness gate. TERNARY_PROTOCOL_RESIDUAL remains UNKNOWN_DUE_TO_MISSING_SEMANTICS and TERNARY_PAA_COLLISION remains UNKNOWN.
+
+Persisted artifact: NEXO_CONTINUITY/AB80_BOUNDED_ATOMIC_LEASE_RECHECK_TRANSITION_SCHEMA_2026-09-25.md, commit c1258c9a7402dbcc0338c2822039d3c54042b45f.
+
+Next: instantiate the smallest AB51 event triples against this schema; require complete C2/C3/C6 evidence before any concrete successor classification. Do not expand to 286 triples yet.
