@@ -9,19 +9,21 @@ Recovery keyword: CONTINUITY
 Continuity directory: NEXO_CONTINUITY/
 
 ## Verified research chain
-AB49 → AB50 → AB51 → AB52
+AB49 → AB50 → AB51 → AB52 → AB53
 
 AB50: d9d6ae59574e43af7d75891208189864aeb7798c
 AB51: d9252fca819b47659bebbf4a36b4cb2473963bed
 AB51 parent: d9d6ae59574e43af7d75891208189864aeb7798c
 AB52: b93ec7fb52cc6cbdfaa891bac9fbf53e0ad7e343
 AB52 parent: d9252fca819b47659bebbf4a36b4cb2473963bed
+AB53: a229d37985e67881f32799938353e1cb339b3a90
+AB53 parent: b93ec7fb52cc6cbdfaa891bac9fbf53e0ad7e343
 
 ## Continuity layer commits
 Initial continuity files were persisted sequentially; this state file update is the final continuity-layer checkpoint for this round.
 
 ## Current frontier
-AB52: bounded ternary read-set closure completed; four-event H6/H7 attacks are next.
+AB53: AB52 reconciliation complete; exact protocol transition-semantics matrix is next.
 
 ## Established
 - AB50 and AB51 are persisted without rewriting earlier artifacts.
@@ -46,17 +48,17 @@ AB52: bounded ternary read-set closure completed; four-event H6/H7 attacks are n
 
 ## Current labels
 TERNARY_MATH_GAP=FOUND
-TERNARY_PROTOCOL_RESIDUAL=NOT_FOUND_BOUNDED
-TERNARY_PAA_COLLISION=NOT_FOUND_BOUNDED
-HYPEREDGE_SEMANTIC_NECESSITY=NOT_FOUND_BOUNDED
-HS_ELIMINATION=SUPPORTED_BOUNDED_FOR_TESTED_TERNARY_CLOSURE
+TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS
+TERNARY_PAA_COLLISION=UNKNOWN
+HYPEREDGE_SEMANTIC_NECESSITY=UNKNOWN
+HS_ELIMINATION=UNKNOWN
 BRIDGE_MERGE=UNKNOWN
 SEMANTIC_FREEZE=NOT_DECLARED
 FORMAL_VERIFICATION=NOT_PERFORMED
 IMPLEMENTATION=NOT_PERFORMED
 
 ## Next action
-Complete the concrete finite binding-state representation, then attack independent four-event H6/H7 cases where ternary projections are absorbed; compare future P_AA observations; attempt reconstruction; preserve UNKNOWN for missing semantics; then attack LeaseBridge/AdmissionBindingClass and quotient congruence.
+Build the exact ATOMIC/LEASE/RECHECK transition-semantics matrix, then instantiate the ternary search against it; preserve UNKNOWN for missing semantics; escalate only justified residuals to four events; then attack LeaseBridge/AdmissionBindingClass and quotient congruence.
 
 ## Persistence rule for every future research round
 Never finish a substantive round with knowledge only in chat. Persist the research artifact, update RESEARCH_LEDGER.md, CLAIM_STATUS.md, OPEN_PROBLEMS.md and NEXT_ACTIONS.md as needed, then update CURRENT_STATE.md with the verified resulting HEAD SHA and parent relationship. Never overwrite prior AB artifacts.
