@@ -51,3 +51,13 @@ Resume directly at the existing AB56 item 1: implement/execute lower-arity obser
 AB62_GATE_RUNNER_2026-09-25.py is persisted. It separates candidate-history replay from future continuation evaluation and requests FutureObs_PAA over all distinct events in each eight-event attack, preserving UNKNOWN continuation status. The runner is intentionally not treated as a completed execution result until an actual execution environment produces and persists its output; no synthetic counts are being recorded.
 
 Immediate next action remains: execute AB62 in a real Python/GitHub Actions environment, persist the machine-readable output, then perform lower-arity equivalence and deterministic reconstruction only over candidates that survive the complete gate.
+
+
+## Persistent research-method requirement — 2026-09-25
+
+Every future Nexo/Lúmina continuity round must actively buscar, investigar y estudiar evidencia relevante, como se venía haciendo. Execution and persistence are necessary but are not substitutes for research.
+
+The working method remains:
+investigar → modelar → atacar → contrastar → formalizar → documentar → conservar evidencia → decidir disposición → y solamente después construir.
+
+This includes searching sources, studying real systems/runtimes and relevant prior work, testing assumptions and counterexamples, distinguishing evidence/hypothesis/implementation/verification, and preserving UNKNOWN/PENDING rather than filling gaps by invention. A future chat must continue the investigation itself, not merely execute the next saved script.
