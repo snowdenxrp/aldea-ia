@@ -500,3 +500,12 @@ AB104.3 persisted at commit a1ebfe20e63f086660ab678139b2daa94f64c0fc. Targeted r
 Current labels unchanged: LEASE_RENEW=UNKNOWN; LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; TERNARY_PAA_COLLISION=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED; 286 expansion=BLOCKED.
 
 Persistence preceding this final state: ledger=9a81da9bc5bd095b4b9b2368ce72c5beddc32a9e; next-actions=6a2a760d82931aa0fda8b269346322bc1bffbb39.
+
+
+## AB104.4 — 2026-09-25
+
+AB104.4 code audit persisted at ac3b519890e5bdefa27315a784e55ce3963ab568. Direct inspection identified a non-equivalent LEASE_CONSUME abstraction between AB61 and AB100: AB61 invalidates lease_valid; AB100 mutates explicit ReplayState but leaves consume UNKNOWN. AB61 also conflates replay_consumption_facts with lease_valid in lower_obs. No historical source evidence currently licenses choosing one as protocol truth.
+
+Current semantic gates unchanged: LEASE_CONSUME=UNKNOWN_DUE_TO_MISSING_COMPLETE_LAW; LEASE_RENEW=UNKNOWN; TERNARY_PAA_COLLISION=UNKNOWN; QUOTIENT_CONGRUENCE=UNKNOWN; SEMANTIC_FREEZE=NOT_DECLARED; FORMAL_VERIFICATION=NOT_PERFORMED; AB65_EXECUTION=NOT_VERIFIED; 286 expansion=BLOCKED.
+
+Persistence preceding this final state: ledger=79b95fb091e673800a48eeb189c0a3b7b27e44cb; next-actions=6be346c5b28874c534d9996403cb07cead7f4f16.
