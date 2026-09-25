@@ -187,3 +187,30 @@ Required working cycle:
 - construir o modificar código solamente cuando la investigación lo justifique.
 
 Continuity requirement: a future chat must resume both the research state and the active investigation. No se debe reducir el trabajo a «ejecutar el siguiente script» o «crear el siguiente checkpoint» sin continuar buscando, investigando y estudiando evidencia relevante. La regla previa sigue siendo: investigar → modelar → atacar → contrastar → formalizar → documentar → conservar evidencia → decidir disposición → y solamente después construir.
+
+## AB65 checkpoint — 2026-09-25
+
+AB65 preserved AB63 and created an import-safe V2 runner plus a repository-root GitHub Actions workflow. The V2 runner registers the AB61 module in sys.modules before executing it. The workflow is correctly located under `.github/workflows/`, matching GitHub's workflow discovery rules. No AB65 gate output is persisted, so execution is NOT VERIFIED and no execution result is claimed.
+
+AB65 also surfaced a semantic composition issue requiring repair before interpreting future-observation results: an UNKNOWN history event cannot safely collapse to one unchanged concrete successor state when later FutureObs_PAA is evaluated. Possible epistemic successor states must remain distinct until semantics justify merging them. The current lower_obs includes history order, which must be justified as genuinely observable before serving as the canonical lower-arity quotient.
+
+AB65 artifact: NEXO_CONTINUITY/AB65_GATE_AUDIT_2026-09-25.md
+AB65 runner commit: 9f4fee53396042196fad26a96c27800e25079408
+AB65 workflow commit: e2577044fb33b27db6c1e587e2d03df0d49d6c9f
+AB65 audit commit: 11827ab7701506f56fe81c5ce00a1964624926d5
+
+Current labels remain:
+TERNARY_MATH_GAP=FOUND
+TERNARY_PROTOCOL_RESIDUAL=UNKNOWN_DUE_TO_MISSING_SEMANTICS
+TERNARY_PAA_COLLISION=UNKNOWN
+HYPEREDGE_SEMANTIC_NECESSITY=UNKNOWN
+EVENTDAG_CLOSURE=PARTIAL
+RECONSTRUCTION=BOUNDED_ONLY
+HS_ELIMINATION=UNKNOWN
+BRIDGE_MERGE=UNKNOWN
+SEMANTIC_FREEZE=NOT_DECLARED
+FORMAL_VERIFICATION=NOT_PERFORMED
+IMPLEMENTATION=PARTIAL_RESEARCH_HARNESS
+EXECUTION=NOT_VERIFIED
+
+Exact next action: obtain a real execution result, then repair UNKNOWN successor composition and canonical lower-arity quotient semantics before interpreting the eight-attack gate.
