@@ -11,7 +11,8 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
   const outcome=adapterResult.status==="completed"?"completed":adapterResult.status==="blocked"||adapterResult.status==="unsupported"?"blocked":"failed";
   const evidence=adapterResult.evidence??{verified:false,kind:"effect-result",code:adapterResult.code??null};
   const advanced=advanceNexoMission(started,{stepId,outcome,evidence});
-  let nextMemory=recordNexoPlan(memory,started);\n  nextMemory=recordNexoExecution(nextMemory,{idempotencyKey,missionId:started.missionId,stepId,action:step.action,target:step.target,result:adapterResult});
+  let nextMemory=recordNexoPlan(memory,started);
+  nextMemory=recordNexoExecution(nextMemory,{idempotencyKey,missionId:started.missionId,stepId,action:step.action,target:step.target,result:adapterResult});
   nextMemory=recordNexoOutcome(nextMemory,{missionId:started.missionId,stepId,action:step.action,target:step.target,status:outcome,evidence,parentMissionId:started.parentMissionId??null,replanReason:started.replanReason??null});
   return{mission:advanced,memory:nextMemory,adapterResult,status:outcome};
 }
