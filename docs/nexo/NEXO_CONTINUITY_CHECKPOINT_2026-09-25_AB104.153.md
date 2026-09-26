@@ -254,3 +254,33 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Refine the lifecycle state machine around ATTEMPTED: distinguish dispatch-not-started, dispatch-accepted, and dispatch-unknown; attack crashes between each transition and determine the minimum durable evidence required to safely reconcile without allowing a duplicate effect.
+
+
+## AB104.166 carryover
+Refined ATTEMPTED lifecycle attack persisted:
+docs/nexo/NEXO_ATTEMPT_DISPATCH_STATE_MACHINE_ATTACK_V1_2026-09-25.md
+commit: 38f3781c9ae69cccfc5031c58cb60908925152a0
+
+Result:
+- ATTEMPTED was too coarse; lifecycle now distinguishes DISPATCH_NOT_STARTED, DISPATCH_CLAIMED, DISPATCH_ACCEPTED, and DISPATCH_UNKNOWN/EFFECT_ATTEMPTED.
+- A dispatch claim must be a protected conditional transition over the exact effect identity/retry generation.
+- The safe ordering rule is: durable dispatch claim before any possible provider-side effect attempt. If that ordering cannot be enforced, recovery must classify the attempt as DISPATCH_UNKNOWN rather than infer NOT_STARTED.
+- Provider acceptance is not execution completion. Lost acknowledgement after possible dispatch preserves UNKNOWN unless authoritative provider evidence resolves it.
+- STOP, owner_generation, recovery_incarnation, authority_epoch and resource_incarnation must remain bound to the dispatch claim/final fence, not merely admission.
+- Reconciliation and retry must converge on the same effect identity; neither may create a second effect while the prior identity is unresolved.
+- Provider-side idempotency/fencing is still required for external duplicate prevention. RFC 9110, AWS EC2 client-token semantics and Stripe idempotency provide external reference evidence; these are provider contracts, not Nexo proof.
+- Current Lúmina implementation has no protected durable dispatch claim, so this is design/research only.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Attack the refined state machine against provider classes R0-R3 with the full race matrix: claim-before-send crash; send-before-claim-durable crash; acceptance-before-record crash; response-loss after execution; STOP/owner/recovery/resource changes at each interval; reconciliation/retry races; idempotency-key expiry; parameter mismatch; intermediary duplicate forwarding; and multi-resource confirmed/unknown outcomes. Determine the exact evidence boundary for CONFIRMED/REJECTED versus UNKNOWN/HOLD and what provider capabilities can legitimately promote UNKNOWN without creating a duplicate effect.
+
+## AB50–AB58 residual carryover — MUST PRESERVE
+TERNARY_MATH_GAP FOUND
+TERNARY_PROTOCOL_RESIDUAL UNKNOWN_DUE_TO_MISSING_SEMANTICS
+TERNARY_PAA_COLLISION UNKNOWN
+EVENTDAG_CLOSURE PARTIAL
+RECONSTRUCTION BOUNDED_ONLY
+SEMANTIC_FREEZE NOT DECLARED
+FORMAL_VERIFICATION/IMPLEMENTATION_NOT_PERFORMED
