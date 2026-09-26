@@ -52,7 +52,7 @@ export async function executeLuminaNexoStep({simulation,mission,stepId,memory=nu
   if(!simulation)return{mission:null,memory,adapterResult:null,status:"invalid"};
   const runtimeMemory=memory ?? simulation.nexoMemory ?? null;
   if(!simulation.nexoMemory && runtimeMemory) simulation.nexoMemory=runtimeMemory;
-  const executionJournal=Array.isArray(runtimeMemory?.nexo?.executions)?runtimeMemory.nexo.executions:[];
+  const executionJournal=Array.isArray(runtimeMemory?.nexo?.effectJournal)?runtimeMemory.nexo.effectJournal:[];
   const adapter=createLuminaEffectAdapter(simulation,{executionJournal});
   const step=mission?.steps?.find(s=>s.id===stepId); const actionIntent=step?.context?.action??context?.action??null;
   const effectivePostcondition=postcondition??(step?.action==="execute_lumina_action"&&actionIntent?createLuminaActionPostcondition(simulation,actionIntent,step.target):["repair_agent_state","repair_agent_needs","repair_resource_state"].includes(step?.action)?createLuminaEffectPostcondition(simulation,step.action,step.target):undefined);
