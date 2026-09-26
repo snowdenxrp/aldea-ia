@@ -34,8 +34,13 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     executed.set(key,result);
     if(Array.isArray(executionJournal)) {
       const existing=executionJournal.find(x=>x?.idempotencyKey===key);
-      if(existing) { existing.result=structuredClone(result); existing.status=result.status; existing.completedAt=new Date().toISOString(); }
-      else executionJournal.push({idempotencyKey:key,result:structuredClone(result),at:new Date().toISOString()});
+      if(existing) {
+        existing.result=structuredClone(result);
+        existing.status=result.status;
+        existing.completedAt=new Date().toISOString();
+      } else {
+        executionJournal.push({idempotencyKey:key,result:structuredClone(result),status:result.status,at:new Date().toISOString()});
+      }
       if(executionJournal.length>200) executionJournal.splice(0,executionJournal.length-200);
     }
   }
