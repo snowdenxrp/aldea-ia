@@ -107,4 +107,33 @@ assert.deepEqual(overlapResultA,overlapResultB);
 assert.equal(overlapCalls,1);
 assert.equal(sharedJournal.filter(x=>x.idempotencyKey==="m2:s1").length,1);
 
+const stateJournal=[];
+let stateVersion=0;
+let stateCalls=0;
+let releaseState;
+const stateGate=new Promise(resolve=>{ releaseState=resolve; });
+const stateAdapterA=createEffectAdapter({
+  getStateVersion:()=>stateVersion,
+  executionJournal:stateJournal,
+  handlers:{stateful_effect:async()=>{ stateCalls++; await stateGate; stateVersion++; return {status:"completed",details:"state-change"}; }}
+});
+const stateAdapterB=createEffectAdapter({
+  getStateVersion:()=>stateVersion,
+  executionJournal:stateJournal,
+  handlers:{stateful_effect:async()=>{ stateCalls++; stateVersion++; return {status:"completed",details:"second-state-change"}; }}
+});
+const firstState=stateAdapterA.execute({missionId:"m3",stepId:"s1",action:"stateful_effect",target:"alex",idempotencyKey:"m3:s1",precondition:({stateVersion})=>stateVersion===0,postcondition:()=>true});
+await Promise.resolve();
+const secondState=stateAdapterB.execute({missionId:"m3",stepId:"s2",action:"stateful_effect",target:"bruno",idempotencyKey:"m3:s2",precondition:({stateVersion})=>stateVersion===1,postcondition:()=>true});
+await Promise.resolve();
+assert.equal(stateCalls,1);
+releaseState();
+const [stateResultA,stateResultB]=await Promise.all([firstState,secondState]);
+assert.equal(stateResultA.status,"completed");
+assert.equal(stateResultB.status,"completed");
+assert.equal(stateCalls,2);
+assert.equal(stateVersion,2);
+assert.equal(stateJournal.filter(x=>x.idempotencyKey==="m3:s1").length,1);
+assert.equal(stateJournal.filter(x=>x.idempotencyKey==="m3:s2").length,1);
+
 console.log("Nexo: adaptador tipado con concurrencia, idempotencia, detección de efecto parcial y evidencia estricta OK.");
