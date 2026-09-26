@@ -99,3 +99,18 @@ No implementation/V21. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Research and formalize the minimum protected local Lúmina transition boundary: owner/fence record, effect binding, resource incarnation, STOP epoch, prepared-intent durability, and final admission point. Compare it against the current stateRevision/file-lock topology before implementation.
+
+
+## AB104.157 carryover
+Minimum protected Lúmina transition boundary researched and persisted:
+docs/nexo/NEXO_MINIMUM_PROTECTED_LUMINA_TRANSITION_BOUNDARY_V1_2026-09-25.md
+commit: 60988614c1aa555caf1f0282b8db9f204de7795e
+
+Result: the minimum boundary is a protected final admission that atomically validates current owner_generation, recovery_incarnation, authority_epoch, STOP context, resource_incarnation, capability/fence scope, effect identity and policy/invariant versions against the prepared intent. stateRevision/filesystem lock remain persistence/concurrency mechanisms, not universal external fences. nexoEffectRevision remains in-memory only and cannot be authority across restart.
+
+Crash/race cuts P0-P8 were defined, including local durable-commit ambiguity and the distinction CONTROL_ADMITTED vs EFFECT_FENCED vs EFFECT_ATTEMPTED vs outcome states.
+
+No implementation/V21. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Attack the minimum boundary with exhaustive crash/race cases and determine whether one local persistence linearization can cover OwnerFence + PreparedIntent + local effect commit, or whether control admission and effect commit must remain separate even for Lúmina.
