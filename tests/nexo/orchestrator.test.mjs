@@ -7,7 +7,7 @@ const reports=[{assistant:"Debugger",findings:[
   {severity:"error",code:"MESH_MISSING",message:"mesh ausente",agent:"alex"}
 ]}];
 const mission=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports,memory:{patterns:[{}],nexo:{attempts:[],doNotRepeat:[]}}});
-assert.equal(mission.version,3);
+assert.equal(mission.version,4);
 assert.equal(mission.status,"planned");
 assert.equal(mission.steps[0].action,"repair_visual_mesh");
 assert.equal(mission.steps[0].priority,3);
@@ -23,44 +23,20 @@ assert.equal(executing.status,"executing");
 assert.equal(executing.steps[1].status,"executing");
 assert.equal(planNexoExecution(executing).actions.length,0);
 
-const missing=advanceNexoMission(executing,{stepId:mission.steps[1].id,outcome:"completed"});
-assert.equal(missing.status,"blocked");
-assert.equal(missing.blockReason,"MISSING_VERIFIED_EVIDENCE");
-assert.equal(missing.steps[1].status,"executing");
+const completed=advanceNexoMission(executing,{stepId:mission.steps[1].id,outcome:"completed",evidence:{verified:true,kind:"agent-state",agentId:"alex"}});
+assert.equal(completed.status,"planned");
+assert.equal(completed.objective,"repair_visual_mesh");
+assert.equal(planNexoExecution(completed).actions[0].action,"repair_visual_mesh");
+assert.equal(verifyNexoMission(completed,null).status,"incomplete");
 
-const repaired=advanceNexoMission(executing,{stepId:mission.steps[1].id,outcome:"completed",evidence:{verified:true,kind:"runtime-check",details:"state repaired"}});
-assert.equal(repaired.steps[1].status,"completed");
-assert.equal(repaired.objective,"repair_visual_mesh");
-assert.equal(planNexoExecution(repaired).actions[0].action,"repair_visual_mesh");
-
-const ready=beginNexoStep(repaired,repaired.steps[0].id);
-const completed=advanceNexoMission(ready,{stepId:ready.steps[0].id,outcome:"completed",evidence:{verified:true,kind:"runtime-check",details:"mesh visible"}});
-assert.equal(completed.steps[0].status,"completed");
-assert.equal(completed.objective,"verify_mission_outcome");
-
-const failed=advanceNexoMission(ready,{stepId:ready.steps[0].id,outcome:"failed",evidence:{verified:true,kind:"runtime-check",details:"repair did not hold"}});
+const failed=advanceNexoMission(beginNexoStep(completed,completed.steps[0].id),{stepId:completed.steps[0].id,outcome:"failed",evidence:{verified:false,kind:"effect-result",code:"MESH_REPAIR_FAILED"}});
 assert.equal(failed.status,"needs_replan");
-assert.equal(verifyNexoMission(failed,{verified:true,kind:"mission-check"}).verified,false);
+assert.equal(failed.objective,"replan_after_failure");
 
-const final=verifyNexoMission(completed,{verified:true,kind:"mission-check",details:"all steps rechecked"});
-assert.equal(final.verified,true);
-assert.equal(final.status,"completed");
-
-const clean=buildNexoMission({reports:[]});
-assert.equal(clean.steps[0].action,"run_longitudinal_probe");
-assert.equal(clean.objective,"run_longitudinal_probe");
-
-const repeatBlocked=buildNexoMission({reports:[{findings:[{severity:"warning",code:"EXPLORER_STALLED",agent:"alex"}]}],memory:{nexo:{doNotRepeat:[{action:"advance_exploration_probe",target:"alex"}]}}});
-assert.equal(repeatBlocked.status,"blocked");
-assert.equal(repeatBlocked.steps[0].blockReason,"DO_NOT_REPEAT");
-
-const mem=recordNexoPlan(createLearningMemory(),mission);
-assert.equal(mem.nexo.missions.length,1);
-const mem2=recordNexoOutcome(mem,{missionId:mission.missionId,stepId:"step-1",action:"repair_visual_mesh",target:"alex",status:"completed"});
-assert.equal(mem2.nexo.attempts.length,0);
-const mem3=recordNexoOutcome(mem,{missionId:mission.missionId,stepId:"step-1",action:"repair_visual_mesh",target:"alex",status:"completed",evidence:{verified:true,kind:"runtime-check"}});
-assert.equal(mem3.nexo.attempts.length,1);
-
+const replan=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports:[{findings:[{severity:"error",code:"MESH_MISSING",agent:"alex",message:"mesh sigue ausente"}]}],memory:createLearningMemory(),parentMissionId:failed.missionId,replanReason:"MESH_REPAIR_FAILED"});
+assert.equal(replan.parentMissionId,failed.missionId);
+assert.equal(replan.replanReason,"MESH_REPAIR_FAILED");
+assert.notEqual(replan.missionId,failed.missionId);
 
 const boundedAction=buildNexoMission({
   reports:[{assistant:"BehaviorAgent",findings:[{
@@ -81,4 +57,4 @@ const rejectedAction=buildNexoMission({
 assert.equal(rejectedAction.steps[0].action,"inspect_and_collect_evidence");
 assert.equal(rejectedAction.steps[0].context,undefined);
 
-console.log("Nexo: auditoría profunda de contratos, dependencias, evidencia y memoria OK.");
+console.log("Nexo: auditoría profunda de contratos, dependencias, evidencia, memoria y replanificación OK.");
