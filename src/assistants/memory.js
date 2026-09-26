@@ -76,7 +76,11 @@ export function reconstructNexoMission(memory, missionId) {
   };
   const attempts=source.nexo.attempts.filter(item=>item?.missionId===missionId);
   for(const step of mission.steps){
-    const latest=[...attempts].reverse().find(item=>item?.stepId===step.id);
+    const stepAttempts=attempts.filter(item=>item?.stepId===step.id);
+    // A verified completion is an authoritative terminal outcome for this mission step.
+    // Late/replayed failed or blocked results must not regress it during reconstruction.
+    const latest=stepAttempts.find(item=>item?.status==="completed"&&item?.evidence?.verified===true&&typeof item?.evidence?.kind==="string"&&item.evidence.kind.trim())
+      ?? [...stepAttempts].reverse().find(Boolean);
     if(!latest) continue;
     step.status=latest.status;
     if(latest.evidence!=null) step.result=latest.evidence;
