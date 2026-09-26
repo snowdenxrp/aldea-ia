@@ -1,7 +1,8 @@
 // Adaptador tipado de efectos de Nexo.
 // Separa decisión de mutación real y exige precondición, resultado y postcondición.
 // Por defecto no ejecuta nada: cada efecto debe registrarse explícitamente.
-const TERMINAL = new Set(["completed","failed","blocked","unsupported"]);\nconst sharedInFlight = new WeakMap();
+const TERMINAL = new Set(["completed","failed","blocked","unsupported"]);
+const sharedInFlight = new WeakMap();
 function validStatus(status){ return TERMINAL.has(status); }
 
 export function createEffectAdapter({handlers={}, getStateVersion=()=>null, executionJournal=null}={}) {
@@ -26,7 +27,11 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
   async function executeFresh(request={}) {
     const {missionId,stepId,action,target=null,idempotencyKey,precondition,postcondition,context={}}=request;
     if(!missionId || !stepId || !action || !idempotencyKey) return {status:"failed",code:"INVALID_EFFECT_REQUEST",verified:false};
-    if(executed.has(idempotencyKey)) return structuredClone(executed.get(idempotencyKey));\n    if(Array.isArray(executionJournal)) {\n      const persisted=executionJournal.find(x=>x?.idempotencyKey===idempotencyKey&&x?.result);\n      if(persisted) { executed.set(idempotencyKey,persisted.result); return structuredClone(persisted.result); }\n    }
+    if(executed.has(idempotencyKey)) return structuredClone(executed.get(idempotencyKey));
+    if(Array.isArray(executionJournal)) {
+      const persisted=executionJournal.find(x=>x?.idempotencyKey===idempotencyKey&&x?.result);
+      if(persisted) { executed.set(idempotencyKey,persisted.result); return structuredClone(persisted.result); }
+    }
     const handler=registry.get(action);
     if(typeof handler!=="function"){
       const result={status:"unsupported",code:"EFFECT_NOT_REGISTERED",verified:false,action,target};
