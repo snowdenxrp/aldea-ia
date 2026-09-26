@@ -284,3 +284,27 @@ EVENTDAG_CLOSURE PARTIAL
 RECONSTRUCTION BOUNDED_ONLY
 SEMANTIC_FREEZE NOT DECLARED
 FORMAL_VERIFICATION/IMPLEMENTATION_NOT_PERFORMED
+
+
+## AB104.167 carryover
+Persisted provider R0-R3 dispatch race matrix:
+docs/nexo/NEXO_AB104_167_R0_R3_DISPATCH_MATRIX.md
+commit: 7ca6eebf4bf8d1859101f6fe06c9ae1625a9ffba
+
+Key result: NOT_STARTED is provable only when durable dispatch claim is ordered before every possible provider send. Otherwise recovery must preserve UNKNOWN. Provider idempotency can make same-identity retry safe but does not prove non-execution. Expired idempotency is not absence evidence. Parameter mismatch is an identity-contract violation. STOP/owner/recovery changes invalidate future authority but do not retroactively cancel external effects. Resource replacement requires a new incarnation absent continuity proof. Retry and reconciliation must converge on one effect identity. A=CONFIRMED+B=UNKNOWN remains partial/UNKNOWN unless a shared authoritative transaction covers all required participants.
+
+R0 protects local lifecycle only; R1 adds idempotency/reconciliation without stale-owner fencing; R2 adds conditional provider/resource fencing across all protected paths; R3 permits stronger atomic claims only within exact transaction scope.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Research provider/intermediary identity lifetime and fencing semantics: effect_identity retention, idempotency-key expiry, parameter immutability, resource-incarnation binding and stale-owner rejection; then attack reconciliation after key expiry/resource replacement and define minimum evidence for R1 versus R2.
+
+## AB50–AB58 residual carryover — MUST PRESERVE
+TERNARY_MATH_GAP FOUND
+TERNARY_PROTOCOL_RESIDUAL UNKNOWN_DUE_TO_MISSING_SEMANTICS
+TERNARY_PAA_COLLISION UNKNOWN
+EVENTDAG_CLOSURE PARTIAL
+RECONSTRUCTION BOUNDED_ONLY
+SEMANTIC_FREEZE NOT DECLARED
+FORMAL_VERIFICATION/IMPLEMENTATION_NOT_PERFORMED
