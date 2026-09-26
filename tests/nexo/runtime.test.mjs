@@ -25,16 +25,9 @@ const autoVerified=await executeLuminaNexoStep({simulation:actionSimulation,miss
 assert.equal(autoVerified.status,"completed"); assert.equal(autoVerified.adapterResult.verified,true); assert.equal(actionSimulation.world.resources.water.amount,8); assert.equal(actionSimulation.agents[0].needs.thirst,8);
 assert.equal(autoVerified.memory.nexo.executions.length,1); assert.equal(autoVerified.memory.nexo.executions[0].idempotencyKey,`${actionMission.missionId}:step-1`);
 
-// Simulate adapter/runtime recreation after a restart: the same persisted journal
-// must return the prior result without mutating Lúmina a second time.
-const waterAfterFirst=actionSimulation.world.resources.water.amount;
-const thirstAfterFirst=actionSimulation.agents[0].needs.thirst;
+const waterAfterFirst=actionSimulation.world.resources.water.amount; const thirstAfterFirst=actionSimulation.agents[0].needs.thirst;
 const restarted=await executeLuminaNexoStep({simulation:actionSimulation,mission:actionMission,stepId:"step-1",memory:autoVerified.memory,precondition:()=>{throw new Error("precondition must not run for persisted duplicate");}});
-assert.equal(restarted.status,"completed");
-assert.equal(restarted.adapterResult.verified,true);
-assert.equal(actionSimulation.world.resources.water.amount,waterAfterFirst);
-assert.equal(actionSimulation.agents[0].needs.thirst,thirstAfterFirst);
-assert.equal(restarted.memory.nexo.executions.length,1);
+assert.equal(restarted.status,"completed"); assert.equal(restarted.adapterResult.verified,true); assert.equal(actionSimulation.world.resources.water.amount,waterAfterFirst); assert.equal(actionSimulation.agents[0].needs.thirst,thirstAfterFirst); assert.equal(restarted.memory.nexo.executions.length,1);
 
 const failureSimulation={agents:[{id:"alex",alive:true,position:{x:0,z:0},needs:{thirst:50},inventory:[]}],world:{resources:{water:0}}};
 const failureMission=buildNexoMission({reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"sed detectada"}]}]});
@@ -42,12 +35,12 @@ const failure=await executeLuminaNexoStep({simulation:failureSimulation,mission:
 assert.equal(failure.status,"failed"); assert.equal(failure.adapterResult.code,"LUMINA_ACTION_FAILED"); assert.equal(failure.mission.status,"needs_replan"); assert.equal(failure.mission.objective,"replan_after_failure"); assert.equal(failure.memory.nexo.attempts[0].status,"failed"); assert.equal(failureSimulation.nexoEffectRevision,0);
 
 failureSimulation.world.resources.water.amount=10;
-const replanned=buildNexoMission({simulation:failureSimulation,reports:[{assistant:"EnvironmentProbe",findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua disponible tras cambio ambiental"}]}],memory:failure.memory});
-assert.notEqual(replanned.missionId,failure.mission.missionId); assert.equal(replanned.steps[0].action,"execute_lumina_action"); assert.equal(replanned.steps[0].context.action.name,"drink"); assert.equal(replanned.status,"planned");
+const replanned=buildNexoMission({simulation:failureSimulation,reports:[{assistant:"EnvironmentProbe",findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua disponible tras cambio ambiental"}]}],memory:failure.memory,parentMissionId:failure.mission.missionId,replanReason:"environment_changed"});
+assert.notEqual(replanned.missionId,failure.mission.missionId); assert.equal(replanned.parentMissionId,failure.mission.missionId); assert.equal(replanned.replanReason,"environment_changed"); assert.equal(replanned.steps[0].action,"execute_lumina_action"); assert.equal(replanned.steps[0].context.action.name,"drink"); assert.equal(replanned.status,"planned");
 
 const invalidatedSimulation={agents:[{id:"alex",alive:true,position:{x:1,z:1}}],world:{resources:{wood:{amount:1}}}};
 const invalidatedMission=buildNexoMission({reports:[{findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"posición inválida"}]}]});
 const invalidated=await executeLuminaNexoStep({simulation:invalidatedSimulation,mission:invalidatedMission,stepId:"step-1",memory:createLearningMemory(),precondition:async()=>{invalidatedSimulation.nexoEffectRevision=7;return true;},postcondition:()=>true});
 assert.equal(invalidated.status,"blocked"); assert.equal(invalidated.adapterResult.code,"STATE_CHANGED_DURING_PRECONDITION"); assert.equal(invalidated.mission.status,"blocked"); assert.equal(invalidated.memory.nexo.attempts[0].status,"blocked"); assert.equal(invalidatedSimulation.agents[0].position.x,1);
 
-console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency OK.");
+console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
