@@ -3,6 +3,7 @@ import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { createSimulation } from "../src/simulation.js";
 import { tick } from "../src/simulation.js";
+import { persistState } from "./simulate.mjs";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
 import { createLearningMemory, learnFromReports, recordNexoPlan } from "../src/assistants/memory.js";
@@ -48,6 +49,7 @@ for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "s
 }
 
 const memory = createLearningMemory(await readJson(MEMORY_PATH, null));
+const nexoMemory = simulation.nexoMemory;
 const debuggerReport = runDebugger({ files: codeFiles, simulation });
 const testerReport = runTester({ simulation, tick, moveAgent, setMovementTarget });
 const analystReport = analyzeLumina({
@@ -70,8 +72,9 @@ const structuralReport = {
 const squadReport = runAssistantSquad({ simulation });
 const report = buildAssistantReport({ debuggerReport, testerReport, analystReport, structuralReport });
 report.assistantSquad = squadReport;
-const nexoMission = buildNexoMission({ simulation, reports: [...squadReport.reports, debuggerReport, testerReport, analystReport], memory });
+const nexoMission = buildNexoMission({ simulation, reports: [...squadReport.reports, debuggerReport, testerReport, analystReport], memory: nexoMemory });
 report.nexoMission = nexoMission;
+simulation.nexoMemory = recordNexoPlan(nexoMemory, nexoMission);
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
