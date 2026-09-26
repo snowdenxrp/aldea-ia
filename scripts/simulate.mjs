@@ -130,7 +130,7 @@ function advance(simulation, seconds) {
   recoverCoreAgents(simulation.agents);
 }
 
-export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null, loadCurrentState = loadState } = {}) {
+export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null, loadCurrentState = loadState, fsModule = fs } = {}) {
   const releaseLock = await acquireStateLock(statePath);
   try {
   if (expectedRevision !== null) {
@@ -156,8 +156,8 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     nexoMemory: simulation.nexoMemory
   };
   const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
-  await fs.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
-  await fs.rename(tempPath, statePath);
+  await fsModule.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+  await fsModule.rename(tempPath, statePath);
   return payload;
   } finally {
     await releaseLock();
