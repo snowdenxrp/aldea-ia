@@ -436,3 +436,37 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Attack the promotion test against each current Lúmina effect path (`repair_agent_state`, `repair_agent_needs`, `repair_resource_state`, `execute_lumina_action`) and determine whether any path can even conceptually satisfy the R2 contract, identifying the first missing evidence for each.
+
+
+## AB104.178 effect-capable mutation graph inventory
+Inspected current `simulation-adapter.js`, `effect-adapter.js`, `runtime.js`, and `src/actions.js`. The mutation graph is broader than the four adapter labels.
+
+Repair paths:
+- `repair_agent_state` → direct writes to `agent.position.x/z` and `agent.alive` → `bump(simulation)`.
+- `repair_agent_needs` → direct writes to six `agent.needs` fields → `bump(simulation)`.
+- `repair_resource_state` → direct write to `world.resources[target].amount` → `bump(simulation)`.
+
+Action path:
+- `execute_lumina_action` → `executeAction(simulation, agent, action)` → action-specific mutations across agent and world/resource state → adapter bump only after successful return.
+- `drink` mutates water resource + agent thirst/activity.
+- `eat_plant` mutates plant resource + agent hunger/health/activity.
+- `catch_fish` mutates fish resource + inventory + energy/activity.
+- `eat_fish` mutates inventory + hunger/activity.
+- `gather_wood` mutates wood resource + inventory + energy/activity + tool durability through `useTool`.
+- `gather_stone` mutates stone resource + inventory + energy/activity + tool durability.
+- `rest` mutates energy/activity.
+- `eat_farm_food` mutates inventory + hunger/activity.
+- `build_shelter`, `craft_tool`, `farm`, `harvest`, `contribute_commons`, `withdraw_commons`, and `trade` delegate further into development/production/institutions/economy modules and therefore expand the protected write set beyond `actions.js` itself.
+
+Critical ordering finding: the adapter calls the action first and only then increments `nexoEffectRevision`. Therefore the revision is observational bookkeeping, not a mutation-boundary guard. The postcondition also runs after the mutation. Neither establishes a pre-commit authorization point.
+
+Transaction-boundary conclusion: a single future local protected transaction could conceptually cover the local write graph only if every reachable mutation path is routed through the same transaction context and the authoritative store atomically binds owner fence, STOP/recovery context, resource incarnation, effect identity, prepared intent, all affected writes, and durable effect history. Current JSON object mutation + later `persistState` does not provide that boundary. SQLite demonstrates that a real transaction can make a set of local writes atomic and recoverable across crashes, but this is evidence about the mechanism, not a selection or proof for Nexo. citeturn0search0turn0search1turn0search7
+
+Important external-boundary rule remains: even a local transaction/outbox would not make an external provider R2 by itself; downstream delivery can duplicate and requires stable identity/idempotency at the next boundary. citeturn0search8turn0search6
+
+AB104.178 conclusion: the current write graph is not a single protected boundary. The next architecture research must first define the authoritative local mutation scope and enumerate every reachable write, including delegated modules, before any implementation choice.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Trace the delegated mutation modules (`development.js`, `production.js`, `economy.js`, `institutions.js`) to complete the write-set inventory, then test whether any hidden/global mutation or callback can escape a proposed protected local transaction boundary.
