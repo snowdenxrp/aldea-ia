@@ -43,7 +43,11 @@ async function acquireStateLock(statePath) {
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
       const current = await readLockOwner(lockPath);
-      const stale = current && (Date.now() - Number(current.createdAt) > STATE_LOCK_STALE_MS) && !processIsAlive(Number(current.pid));
+      let lockAge = 0;
+      try { lockAge = Date.now() - (await fs.stat(lockPath)).mtimeMs; } catch {}
+      const stale = current
+        ? (lockAge > STATE_LOCK_STALE_MS && !processIsAlive(Number(current.pid)))
+        : lockAge > STATE_LOCK_STALE_MS;
       if (stale) {
         await fs.rm(lockPath, { recursive: true, force: true }).catch(() => {});
         continue;
