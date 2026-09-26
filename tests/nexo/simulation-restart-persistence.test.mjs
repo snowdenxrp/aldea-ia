@@ -143,7 +143,7 @@ const afterRenameFailure = await loadState(failurePath);
 assert.equal(afterRenameFailure.stateRevision, originalFailureState.stateRevision);
 assert.equal(afterRenameFailure.savedAt, originalFailureState.savedAt);
 const tempFiles = (await fs.readdir(failureDir)).filter(name => name.includes(".tmp-"));
-assert.equal(tempFiles.length, 1);
+assert.equal(tempFiles.length, 0);
 await fs.rm(failureDir, { recursive: true, force: true });
 
 const crashDir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-lock-crash-"));
