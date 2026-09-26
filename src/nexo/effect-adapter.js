@@ -149,7 +149,7 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
       const result={status:"blocked",code:"EFFECT_OUTCOME_UNKNOWN",verified:false,action,target,
         error:String(error?.message??error),beforeVersion,afterVersion:afterExceptionVersion,
         stateChanged:afterExceptionVersion!==beforeVersion,uncertainty:"effect_may_or_may_not_have_occurred"};
-      persist(idempotencyKey,result); return result;
+      return result;
     }
     if(!effectResult || !validStatus(effectResult.status)){
       const afterInvalidVersion=getStateVersion();
