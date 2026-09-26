@@ -83,9 +83,9 @@ function advance(simulation, seconds) {
   recoverCoreAgents(simulation.agents);
 }
 
-export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null } = {}) {
+export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null, loadCurrentState = loadState } = {}) {
   if (expectedRevision !== null) {
-    const current = await loadState(statePath);
+    const current = await loadCurrentState(statePath);
     const currentRevision = Number.isInteger(Number(current.stateRevision)) ? Number(current.stateRevision) : 0;
     if (currentRevision !== Number(expectedRevision)) {
       const error = new Error(`STATE_REVISION_CONFLICT: expected ${expectedRevision}, found ${currentRevision}`);
