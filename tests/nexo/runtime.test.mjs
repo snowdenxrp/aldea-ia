@@ -75,7 +75,8 @@ assert.equal(multiSimulation.agents[0].position.x,0);
 assert.equal(multiSimulation.agents[0].position.z,7);
 assert.equal(multiSimulation.agents[0].needs.hunger,100);
 assert.equal(multiSimulation.agents[0].needs.thirst,0);
-\n
+
+
 const restartMemory=structuredClone(autoVerified.memory);
 const restartedAfterSerialization=await executeLuminaNexoStep({
   simulation:actionSimulation,
@@ -122,7 +123,8 @@ const chainedReplan=buildNexoMission({
 });
 assert.equal(chainedReplan.parentMissionId,chainedSecond.mission.missionId);
 assert.equal(chainedReplan.replanReason,"environment_changed_after_step_2_failure");
-\n
+
+
 const recovered=await executeLuminaNexoStep({
   simulation:chainedFailureSimulation,
   mission:chainedReplan,
@@ -136,4 +138,5 @@ assert.equal(chainedFailureSimulation.world.resources.water.amount,8);
 assert.equal(recovered.memory.nexo.attempts.at(-1).status,"completed");
 assert.equal(recovered.memory.nexo.at(-1).parentMissionId,chainedReplan.parentMissionId);
 assert.equal(recovered.memory.nexo.at(-1).replanReason,chainedReplan.replanReason);
-\nconsole.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
+
+console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
