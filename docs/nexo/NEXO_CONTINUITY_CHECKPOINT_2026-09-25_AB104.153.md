@@ -393,3 +393,18 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Convert this boundary into a compact R1/R2/UNKNOWN decision matrix with observable evidence and attack traces, then test it against Nexo/Lumina current JSON persistence + effect-adapter topology without implementing the future architecture.
+
+
+## AB104.175 topology classification
+Current Lúmina is NOT R2. `effect-adapter` records prepared intent and uses idempotency/reconciliation, but `persistPreparedIntent` is a hook rather than an authoritative transaction. Handlers mutate in-memory simulation and bump `nexoEffectRevision`; `persistState` serializes world/agents/events/memory but does not serialize the execution journal or `nexoEffectRevision`. The filesystem lock protects state persistence, not already-running effect execution.
+
+Five decisive gaps: (1) prepared intent can be separated from durable world mutation across a crash; (2) no owner-generation/fencing token reaches the mutation boundary; (3) no durable resource incarnation is bound to the effect identity; (4) journal retention is capped at 200, so eviction cannot prove non-execution; (5) alternate/direct mutation paths remain outside one proven protected transaction.
+
+Attack traces: prepared→crash→restart leaves outcome UNKNOWN unless the journal was independently persisted; handler mutation→crash before `persistState` creates a durability split; owner transfer permits no proven stale-worker rejection; resource replacement has no durable incarnation binding; journal eviction removes historical duplicate evidence.
+
+Conclusion: current mechanisms provide useful R0/local and some R1-style identity/reconciliation properties, but not an R2 claim. This is a research classification, not an implementation verdict.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Attack these five paths with concrete crash/restart/retry traces and derive the minimum evidence contract needed for R2, without implementing the future architecture.
