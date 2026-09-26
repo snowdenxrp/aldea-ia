@@ -83,7 +83,7 @@ function advance(simulation, seconds) {
   recoverCoreAgents(simulation.agents);
 }
 
-export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null, loadCurrentState = loadState } = {}) {
+export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null, loadCurrentState = loadState, beforeWrite = null } = {}) {
   if (expectedRevision !== null) {
     const current = await loadCurrentState(statePath);
     const currentRevision = Number.isInteger(Number(current.stateRevision)) ? Number(current.stateRevision) : 0;
@@ -106,6 +106,7 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     events: simulation.events.slice(-500),
     nexoMemory: simulation.nexoMemory
   };
+  if (typeof beforeWrite === "function") await beforeWrite();
   const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}`;
   await fs.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
   await fs.rename(tempPath, statePath);
