@@ -8,7 +8,7 @@ const sharedInFlight = new WeakMap();
 const sharedQueue = new WeakMap();
 function validStatus(status){ return TERMINAL.has(status); }
 
-export function createEffectAdapter({handlers={}, getStateVersion=()=>null, executionJournal=null}={}) {
+export function createEffectAdapter({handlers={}, getStateVersion=()=>null, executionJournal=null, persistPreparedIntent=null}={}) {
   const registry = new Map(Object.entries(handlers));
   const executed = new Map(Array.isArray(executionJournal)
     ? executionJournal.filter(x=>x?.idempotencyKey&&x?.result).map(x=>[x.idempotencyKey,x.result]) : []);
@@ -127,6 +127,14 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     }
 
     recordIntent(request);
+    if(typeof persistPreparedIntent==="function") {
+      try {
+        await persistPreparedIntent({idempotencyKey, journalEntry:structuredClone(journalEntry(idempotencyKey)), request:structuredClone(request)});
+      } catch(error) {
+        const result={status:"blocked",code:"EFFECT_INTENT_PERSISTENCE_FAILED",verified:false,action,target,idempotencyKey,error:String(error?.message??error)};
+        return result;
+      }
+    }
     const handler=registry.get(action);
     if(typeof handler!=="function"){
       const result={status:"unsupported",code:"EFFECT_NOT_REGISTERED",verified:false,action,target};
