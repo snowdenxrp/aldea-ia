@@ -129,3 +129,15 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Refine the bounded local transaction contract: define its atomicity/isolation/durability/recovery boundary and exhaustive crash-cut state machine, then map every current Lúmina protected mutation entry point against it before any implementation.
+
+## AB104.159 carryover
+Bounded local Lúmina transaction contract persisted:
+docs/nexo/NEXO_BOUNDED_LUMINA_LOCAL_TRANSACTION_CONTRACT_V1_2026-09-25.md
+commit: eb3d06fe5d32331cf2084d42e1aad5855b1cf2c4
+
+Current-code mapping confirms protected mutation occurs in createLuminaEffectAdapter handlers before later persistState serialization. Identified mutation entry points: repair_agent_state, repair_agent_needs, repair_resource_state, execute_lumina_action -> executeAction. nexoEffectRevision remains non-durable. The contract therefore requires a future protected commit unit covering OwnerFence, STOP/recovery/resource context, PreparedIntent, deterministic local transition, and durable history/state. stateRevision remains concurrency/version control, not OwnerFence.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Refine the crash-cut state machine into explicit pre/post durable states and attack concurrent writers, stale in-memory simulations, STOP/owner transfer during commit, resource replacement, and multi-resource local transitions. Then identify the minimum evidence required to prove recovery chooses pre-state or post-state without fabricating outcome.
