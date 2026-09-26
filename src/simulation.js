@@ -25,6 +25,7 @@ import { canCooperate, contributeToProject, findOrCreateProject, getNearbyCooper
 import { getInstitutionOptions, normalizeInstitutionWorld } from "./institutions.js";
 import { normalizeSpatialWorld, getActiveRegionKeys, getRegionKey, recordRegionVisit } from "./spatial.js";
 import { getTerritorialContext } from "./territorial.js";
+import { createLearningMemory } from "./assistants/memory.js";
 
 export function createSimulation(world, agents, options = {}) {
   normalizeDevelopmentWorld(world);
@@ -36,7 +37,7 @@ export function createSimulation(world, agents, options = {}) {
   normalizeInstitutionWorld(world);
   normalizeSpatialWorld(world);
   for (const agent of agents) normalizeAgentLife(agent);
-  return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false, random: options.random ?? null };
+  return { world, agents, hour: Number(world.timeOfDay) || 8, day: Number(world.day) || 1, events: [], running: false, random: options.random ?? null, nexoMemory: createLearningMemory(options.nexoMemory ?? null) };
 }
 export function recordEvent(simulation, event) { const stored = { id: event.id ?? `event-${simulation.events.length + 1}`, day: simulation.day, hour: simulation.hour, type: event.type, description: event.description, participants: event.participants ?? [] }; simulation.events.push(stored); return stored; }
 
