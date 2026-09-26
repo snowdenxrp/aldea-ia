@@ -10,7 +10,7 @@ function actionEvidenceValid(simulation,target,action,effectResult){
   const agent=simulation.agents.find(a=>a.id===target); if(!agent||agent.alive===false)return false;
   const numericAmount=effectResult.amount==null||(Number.isFinite(Number(effectResult.amount))&&Number(effectResult.amount)>0); if(!numericAmount)return false;
   switch(action?.name){
-    case "rest":return agent.currentActivity==="resting"&&Number(agent.needs?.energy)>=0;
+    case "rest":return effectResult.effect==="energy_recovered"&&Number(agent.needs?.energy)>=0;
     case "drink":return effectResult.effect==="thirst_recovered"&&agent.currentActivity==="drinking"&&Number(agent.needs?.thirst)>=0;
     case "eat_plant":return effectResult.effect==="plant_experiment"&&agent.currentActivity==="eating";
     case "catch_fish":return effectResult.effect==="fish_caught"&&agent.currentActivity==="fishing"&&agent.inventory.some(i=>i.type==="fish"&&i.amount>0);
