@@ -138,4 +138,24 @@ assert.equal(stateVersion,2);
 assert.equal(stateJournal.filter(x=>x.idempotencyKey==="m3:s1").length,1);
 assert.equal(stateJournal.filter(x=>x.idempotencyKey==="m3:s2").length,1);
 
+const preparedJournal=[];
+let preparedCalls=0;
+const preparedAdapter=createEffectAdapter({
+  executionJournal:preparedJournal,
+  handlers:{prepared_effect:async()=>{preparedCalls++; return {status:"completed",details:"prepared-ok"};}}
+});
+const preparedResult=await preparedAdapter.execute({missionId:"m4",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m4:s1",precondition:()=>true,postcondition:()=>true});
+assert.equal(preparedResult.status,"completed");
+assert.equal(preparedCalls,1);
+assert.equal(preparedJournal[0].status,"completed");
+assert.ok(preparedJournal[0].result);
+
+const preparedOnlyJournal=[{idempotencyKey:"m5:s1",missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",status:"prepared"}];
+let recoveryCalls=0;
+const recoveryAdapter=createEffectAdapter({executionJournal:preparedOnlyJournal,handlers:{prepared_effect:async()=>{recoveryCalls++; return {status:"completed",details:"recovered"};}}});
+const recoveryResult=await recoveryAdapter.execute({missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m5:s1",precondition:()=>true,postcondition:()=>true});
+assert.equal(recoveryResult.status,"completed");
+assert.equal(recoveryCalls,1);
+assert.equal(preparedOnlyJournal[0].status,"completed");
+
 console.log("Nexo: adaptador tipado con concurrencia, idempotencia, detección de efecto parcial y evidencia estricta OK.");
