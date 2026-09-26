@@ -308,3 +308,27 @@ EVENTDAG_CLOSURE PARTIAL
 RECONSTRUCTION BOUNDED_ONLY
 SEMANTIC_FREEZE NOT DECLARED
 FORMAL_VERIFICATION/IMPLEMENTATION_NOT_PERFORMED
+
+
+## AB104.168 carryover
+Provider identity lifetime and R1-R2 boundary research persisted:
+docs/nexo/NEXO_PROVIDER_IDENTITY_LIFETIME_R1_R2_BOUNDARY_ATTACK_V1_2026-09-25.md
+commit: fb5eb6bf59773c44d3a72ed28fd2afc0ec43dbe4
+
+Key result: effect_identity must bind identity domain, immutable parameters, resource/resource_incarnation and provider scope; a bare idempotency key is insufficient. Idempotency retention expiry removes duplicate-prevention guarantees but does not prove historical non-execution. Historical authoritative evidence can remain valid after cache expiry when it remains bound to the exact effect and resource incarnation.
+
+R1 = effect identity/idempotency/reconciliation safety without provider-enforced stale-owner rejection. R2 = R1 plus conditional provider/resource enforcement of current authority at the actual mutation boundary across every effect-capable path. Local preflight generation checks are not R2 fencing. Intermediaries and alternate mutation APIs are part of the protected-path inventory.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Attack R1/R2 contracts through alternate mutation APIs, intermediary replay after fence rotation, resource replacement with reused provider token, identity-cache eviction followed by late completion, and concurrent reconciliation versus new admission. Define minimum evidence for R1→R2 without relying on provider marketing terminology.
+
+## AB50–AB58 residual carryover — MUST PRESERVE
+TERNARY_MATH_GAP FOUND
+TERNARY_PROTOCOL_RESIDUAL UNKNOWN_DUE_TO_MISSING_SEMANTICS
+TERNARY_PAA_COLLISION UNKNOWN
+EVENTDAG_CLOSURE PARTIAL
+RECONSTRUCTION BOUNDED_ONLY
+SEMANTIC_FREEZE NOT DECLARED
+FORMAL_VERIFICATION/IMPLEMENTATION_NOT_PERFORMED
