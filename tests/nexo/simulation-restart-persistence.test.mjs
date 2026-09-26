@@ -92,26 +92,14 @@ await persistState(racePath, baseSimulation, 1000, { stateRevision: 0 });
 
 const writerA = applyState(await loadState(racePath));
 const writerB = applyState(await loadState(racePath));
-let checks = 0;
+let writersReady = 0;
 let release;
 const barrier = new Promise(resolve => { release = resolve; });
-async function coordinatedLoad(statePathArg) {
-  const state = await loadState(statePathArg);
-  if (statePathArg.toString() === racePath.toString()) {
-    checks += 1;
-  }
-  return state;
-}
+const coordinatedLoad = async statePathArg => loadState(statePathArg);
 const beforeWrite = async () => {
-  checks += 100;
-  if (checks === 101) {
-    await new Promise(resolve => {
-      const previous = release;
-      release = () => { previous(); resolve(); };
-    });
-  } else if (checks === 102) {
-    release();
-  }
+  writersReady += 1;
+  if (writersReady === 1) await barrier;
+  else if (writersReady === 2) release();
 };
 const [resultA, resultB] = await Promise.allSettled([
   persistState(racePath, writerA, 1001, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad, beforeWrite }),
