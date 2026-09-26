@@ -43,4 +43,36 @@ const invalidatedMission=buildNexoMission({reports:[{findings:[{severity:"error"
 const invalidated=await executeLuminaNexoStep({simulation:invalidatedSimulation,mission:invalidatedMission,stepId:"step-1",memory:createLearningMemory(),precondition:async()=>{invalidatedSimulation.nexoEffectRevision=7;return true;},postcondition:()=>true});
 assert.equal(invalidated.status,"blocked"); assert.equal(invalidated.adapterResult.code,"STATE_CHANGED_DURING_PRECONDITION"); assert.equal(invalidated.mission.status,"blocked"); assert.equal(invalidated.memory.nexo.attempts[0].status,"blocked"); assert.equal(invalidatedSimulation.agents[0].position.x,1);
 
-console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
+
+const multiSimulation={
+  agents:[{id:"bruno",alive:true,position:{x:NaN,z:7},needs:{hunger:140,thirst:-2}}],
+  world:{resources:{wood:{amount:1},water:{amount:5}}}
+};
+const multiMission=buildNexoMission({
+  simulation:multiSimulation,
+  reports:[{findings:[
+    {severity:"error",code:"AGENT_POSITION",agent:"bruno",message:"posición inválida"},
+    {severity:"warning",code:"INVALID_NEED",agent:"bruno",message:"necesidades fuera de rango"}
+  ]}]
+});
+const multiMemory=createLearningMemory();
+const firstMulti=await executeLuminaNexoStep({
+  simulation:multiSimulation,mission:multiMission,stepId:"step-1",memory:multiMemory,
+  precondition:({stateVersion})=>stateVersion===0
+});
+assert.equal(firstMulti.status,"completed");
+assert.equal(firstMulti.mission.steps[0].status,"completed");
+assert.equal(firstMulti.mission.objective,"repair_agent_needs");
+const secondMulti=await executeLuminaNexoStep({
+  simulation:multiSimulation,mission:firstMulti.mission,stepId:"step-2",memory:firstMulti.memory,
+  precondition:({stateVersion})=>stateVersion===1
+});
+assert.equal(secondMulti.status,"completed");
+assert.equal(secondMulti.mission.steps[1].status,"completed");
+assert.equal(secondMulti.mission.status,"awaiting_verification");
+assert.equal(secondMulti.memory.nexo.attempts.length,2);
+assert.equal(multiSimulation.agents[0].position.x,0);
+assert.equal(multiSimulation.agents[0].position.z,7);
+assert.equal(multiSimulation.agents[0].needs.hunger,100);
+assert.equal(multiSimulation.agents[0].needs.thirst,0);
+\nconsole.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
