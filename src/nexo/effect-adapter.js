@@ -11,6 +11,23 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
   const executed = new Map(Array.isArray(executionJournal)
     ? executionJournal.filter(x=>x?.idempotencyKey&&x?.result).map(x=>[x.idempotencyKey,x.result]) : []);
 
+  function journalEntry(key) {
+    if(!Array.isArray(executionJournal)) return null;
+    return executionJournal.find(x=>x?.idempotencyKey===key) ?? null;
+  }
+
+  function recordIntent(request) {
+    if(!Array.isArray(executionJournal)) return;
+    const {missionId,stepId,action,target=null,idempotencyKey}=request;
+    if(!journalEntry(idempotencyKey)) {
+      executionJournal.push({
+        idempotencyKey, missionId, stepId, action, target,
+        status:"prepared", at:new Date().toISOString()
+      });
+      if(executionJournal.length>200) executionJournal.splice(0,executionJournal.length-200);
+    }
+  }
+
   function persist(key,result){
     executed.set(key,result);
     if(Array.isArray(executionJournal)) {
@@ -33,7 +50,7 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
       const persisted=executionJournal.find(x=>x?.idempotencyKey===idempotencyKey&&x?.result);
       if(persisted) { executed.set(idempotencyKey,persisted.result); return structuredClone(persisted.result); }
     }
-    const handler=registry.get(action);
+    recordIntent(request);\n    const handler=registry.get(action);
     if(typeof handler!=="function"){
       const result={status:"unsupported",code:"EFFECT_NOT_REGISTERED",verified:false,action,target};
       persist(idempotencyKey,result); return result;
