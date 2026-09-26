@@ -99,14 +99,23 @@ async function coordinatedLoad(statePathArg) {
   const state = await loadState(statePathArg);
   if (statePathArg.toString() === racePath.toString()) {
     checks += 1;
-    if (checks === 2) release();
-    await barrier;
   }
   return state;
 }
+const beforeWrite = async () => {
+  checks += 100;
+  if (checks === 101) {
+    await new Promise(resolve => {
+      const previous = release;
+      release = () => { previous(); resolve(); };
+    });
+  } else if (checks === 102) {
+    release();
+  }
+};
 const [resultA, resultB] = await Promise.allSettled([
-  persistState(racePath, writerA, 1001, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad }),
-  persistState(racePath, writerB, 1002, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad })
+  persistState(racePath, writerA, 1001, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad, beforeWrite }),
+  persistState(racePath, writerB, 1002, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad, beforeWrite })
 ]);
 assert.equal(resultA.status, "fulfilled");
 assert.equal(resultB.status, "fulfilled");
