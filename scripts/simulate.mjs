@@ -1,4 +1,6 @@
 import fs from "node:fs/promises";
+import { pathToFileURL } from "node:url";
+import path from "node:path";
 import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { createSimulation, tick } from "../src/simulation.js";
@@ -27,7 +29,7 @@ function recoverCoreAgents(agents) {
   }
 }
 
-async function loadState() {
+export async function loadState() {
   try {
     const raw = await fs.readFile(STATE_PATH, "utf8");
     const state = JSON.parse(raw);
@@ -48,14 +50,14 @@ async function loadState() {
       return state;
     }
   } catch {}
-  return { version: 4, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [] };
+  return { version: 5, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null };
 }
 
 function applyState(state) {
   const world = clone(state.world);
   const agents = clone(state.agents);
   recoverCoreAgents(agents);
-  const simulation = createSimulation(world, agents);
+  const simulation = createSimulation(world, agents, { nexoMemory: state.nexoMemory ?? null });
   simulation.day = Number(state.day) || world.day || 1;
   simulation.hour = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (world.timeOfDay || 8);
   simulation.events = Array.isArray(state.events) ? state.events.slice(-500) : [];
@@ -80,14 +82,55 @@ function advance(simulation, seconds) {
   recoverCoreAgents(simulation.agents);
 }
 
-const state = await loadState();
-const now = Date.now();
-const previousSavedAt = Number(state.savedAt) || now;
-const elapsedSeconds = Math.max(0, Math.min((now - previousSavedAt) / 1000, MAX_CATCHUP_SECONDS));
-const simulation = applyState(state);
-advance(simulation, elapsedSeconds);
-const persistedSavedAt = previousSavedAt + elapsedSeconds * 1000;
+export async function persistState(statePath, simulation, savedAt) {
+  const payload = {
+    version: 5,
+    savedAt,
+    day: simulation.day,
+    hour: simulation.hour,
+    world: simulation.world,
+    agents: simulation.agents,
+    events: simulation.events.slice(-500),
+    nexoMemory: simulation.nexoMemory
+  };
+  const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+  await fs.rename(tempPath, statePath);
+  return payload;
+}
 
-await fs.writeFile(STATE_PATH, JSON.stringify({ version: 4, savedAt: persistedSavedAt, day: simulation.day, hour: simulation.hour, world: simulation.world, agents: simulation.agents, events: simulation.events.slice(-500) }, null, 2) + "\n", "utf8");
+async function main() {
+  export async function persistState(statePath, simulation, savedAt) {
+  const payload = {
+    version: 5,
+    savedAt,
+    day: simulation.day,
+    hour: simulation.hour,
+    world: simulation.world,
+    agents: simulation.agents,
+    events: simulation.events.slice(-500),
+    nexoMemory: simulation.nexoMemory
+  };
+  const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+  await fs.rename(tempPath, statePath);
+  return payload;
+}
 
-console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive) }));
+async function main() {
+  const state = await loadState();
+  const now = Date.now();
+  const previousSavedAt = Number(state.savedAt) || now;
+  const elapsedSeconds = Math.max(0, Math.min((now - previousSavedAt) / 1000, MAX_CATCHUP_SECONDS));
+  const simulation = applyState(state);
+  advance(simulation, elapsedSeconds);
+  const persistedSavedAt = previousSavedAt + elapsedSeconds * 1000;
+
+  await persistState(STATE_PATH, simulation, persistedSavedAt);
+
+  console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive), nexoMemory: Boolean(simulation.nexoMemory) }));
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  await main();
+}
