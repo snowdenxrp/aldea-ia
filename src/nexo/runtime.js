@@ -11,6 +11,16 @@ async function commitRuntimeOutcome(memory, mission, stepId, adapterResult, outc
     if (currentStep && ["completed","failed","blocked"].includes(currentStep.status)) {
       return {mission:currentMission,memory,adapterResult,status:currentStep.status};
     }
+    // The durable plan stores steps as planned until their outcome is recorded. A
+    // successful effect can therefore reach this commit after reconstruction with
+    // the same step back in "planned". Re-enter only this already-executed step so
+    // advanceNexoMission can apply the authoritative outcome without weakening
+    // dependency checks performed before the effect ran.
+    if (currentStep && currentStep.status === "planned") {
+      currentStep.status = "executing";
+      currentMission.status = "executing";
+      currentMission.objective = currentStep.action;
+    }
     const advanced=advanceNexoMission(currentMission,{stepId,outcome,evidence});
     let nextMemory=recordNexoPlan(memory,currentMission);
     const action=currentStep?.action??started.steps.find(s=>s.id===stepId)?.action;
