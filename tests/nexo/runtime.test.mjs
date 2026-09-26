@@ -122,4 +122,18 @@ const chainedReplan=buildNexoMission({
 });
 assert.equal(chainedReplan.parentMissionId,chainedSecond.mission.missionId);
 assert.equal(chainedReplan.replanReason,"environment_changed_after_step_2_failure");
+\n
+const recovered=await executeLuminaNexoStep({
+  simulation:chainedFailureSimulation,
+  mission:chainedReplan,
+  stepId:"step-1",
+  memory:chainedSecond.memory,
+  precondition:({stateVersion})=>stateVersion===1
+});
+assert.equal(recovered.status,"completed");
+assert.equal(recovered.adapterResult.verified,true);
+assert.equal(chainedFailureSimulation.world.resources.water.amount,8);
+assert.equal(recovered.memory.nexo.attempts.at(-1).status,"completed");
+assert.equal(recovered.memory.nexo.at(-1).parentMissionId,chainedReplan.parentMissionId);
+assert.equal(recovered.memory.nexo.at(-1).replanReason,chainedReplan.replanReason);
 \nconsole.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
