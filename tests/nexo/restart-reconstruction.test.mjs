@@ -12,6 +12,12 @@ let memory=recordNexoPlan(createLearningMemory(),mission);
 memory=recordNexoOutcome(memory,{missionId:mission.missionId,stepId:"step-1",action:"repair_agent_state",target:"alex",status:"completed",evidence:{verified:true,kind:"agent-state",agentId:"alex"}});
 const reconstructed=reconstructNexoMission(memory,mission.missionId);
 assert.equal(reconstructed.steps[0].status,"completed");
+// Late/stale results for the same mission step must not regress a verified completion.
+const staleAfterCompletion=structuredClone(memory);
+staleAfterCompletion.nexo.attempts.push({missionId:mission.missionId,stepId:"step-1",action:"repair_agent_state",target:"alex",status:"failed",evidence:{verified:false,kind:"effect-result",code:"STALE_RETRY"}});
+const staleReconstruction=reconstructNexoMission(staleAfterCompletion,mission.missionId);
+assert.equal(staleReconstruction.steps[0].status,"completed");
+assert.equal(staleReconstruction.steps[0].result.kind,"agent-state");
 assert.equal(reconstructed.steps[1].status,"planned");
 assert.equal(reconstructed.status,"planned");
 assert.equal(reconstructed.objective,"repair_visual_mesh");
