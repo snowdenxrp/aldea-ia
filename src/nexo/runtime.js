@@ -12,7 +12,7 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
   const evidence=adapterResult.evidence??{verified:false,kind:"effect-result",code:adapterResult.code??null};
   const advanced=advanceNexoMission(started,{stepId,outcome,evidence});
   let nextMemory=recordNexoExecution(memory,{idempotencyKey,missionId:started.missionId,stepId,action:step.action,target:step.target,result:adapterResult});
-  nextMemory=recordNexoOutcome(nextMemory,{missionId:started.missionId,stepId,action:step.action,target:step.target,status:outcome,evidence});
+  nextMemory=recordNexoOutcome(nextMemory,{missionId:started.missionId,stepId,action:step.action,target:step.target,status:outcome,evidence,parentMissionId:started.parentMissionId??null,replanReason:started.replanReason??null});
   return{mission:advanced,memory:nextMemory,adapterResult,status:outcome};
 }
 
