@@ -100,23 +100,6 @@ export async function persistState(statePath, simulation, savedAt) {
 }
 
 async function main() {
-  export async function persistState(statePath, simulation, savedAt) {
-  const payload = {
-    version: 5,
-    savedAt,
-    day: simulation.day,
-    hour: simulation.hour,
-    world: simulation.world,
-    agents: simulation.agents,
-    events: simulation.events.slice(-500),
-    nexoMemory: simulation.nexoMemory
-  };
-  const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}`;
-  await fs.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
-  await fs.rename(tempPath, statePath);
-  return payload;
-}
-
 async function main() {
   const state = await loadState();
   const now = Date.now();
