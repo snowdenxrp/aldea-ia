@@ -154,3 +154,33 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Study candidate local persistence mechanisms against the contract: SQLite-style transaction/journal semantics versus the current JSON/temp-rename design. Compare atomicity, isolation, durability, crash recovery, stale-writer handling, multi-resource scope, migration and verification cost. Do not select or implement yet; record evidence and remaining UNKNOWNs.
+
+
+## AB104.161 carryover
+Persistence mechanism comparison research completed at contract level (no selection/implementation).
+
+### Current JSON + lock + temp/rename
+- Can provide local writer serialization and stale stateRevision rejection at persistence time.
+- Does not by itself provide a durable transaction journal that lets recovery distinguish pre-state from post-state after an interrupted multi-file/multi-record transition.
+- In-memory Lúmina mutation still occurs before persistState; therefore current topology cannot claim atomic effect commit.
+- temp-file rename is a file replacement primitive, not a complete transaction/recovery protocol for all protected state, authority context and effect history.
+
+### SQLite-style transactional boundary
+- SQLite documents atomic commit/rollback using rollback journals and recovery; WAL instead records committed changes in a WAL and uses checkpoints. SQLite serializes writes to provide serializable isolation. 
+- Durability is configuration/filesystem dependent: SQLite documents synchronous settings and their crash/power-loss implications. Therefore selecting SQLite would still require an explicit durability profile and fault-injection evidence.
+- A single database transaction could potentially cover OwnerFence, PreparedIntent, local state and effect history if all protected mutation paths are inside the same database transaction.
+- Multi-resource atomicity is possible only when all relevant participants are inside the same transactional boundary; otherwise preserve participant-level outcomes.
+
+### Decision status
+SQLite is a candidate mechanism, NOT selected. JSON is NOT yet rejected for every use: it may remain suitable for non-protected/reconstructable state. The unresolved question is whether the protected Nexo/Lúmina state should use a transactional store and which exact durability profile is required.
+
+### DO-NOT-REPEAT
+- Do not equate rename with transaction commit.
+- Do not equate stateRevision with OwnerFence.
+- Do not assume SQLite automatically proves Nexo's authority/effect contract; the schema, transaction scope and recovery protocol must still be designed and verified.
+- Do not claim durability across power loss without a specified synchronous/filesystem profile and fault testing.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Study the protected transaction schema itself: define which Nexo records must be co-transactional, which may remain outside, and attack transaction boundaries for stale owner, STOP, recovery restart, resource replacement, concurrent writers and multi-resource local transitions. Then derive the smallest transaction scope that preserves the contract without over-claiming atomicity.
