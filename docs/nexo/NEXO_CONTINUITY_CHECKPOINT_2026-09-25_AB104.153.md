@@ -343,3 +343,14 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Define the smallest auditable R2 EvidenceBundle: required claims, artifacts, test traces, path inventory, fence semantics, failure/replay cases, and explicit exclusions. Then attack whether that bundle is sufficient against failover and provider-side retries.
+
+
+## AB104.171 carryover
+Minimum R2 EvidenceBundle defined. Required evidence: immutable effect identity and parameter/resource binding; owner/epoch/fence/STOP/recovery context; mutation-boundary conditional enforcement; complete effect-path inventory including queues, provider jobs, failover and administrative paths; identity/fence propagation; retry/replay traces; failover traces; reconciliation traces; evidence integrity; explicit claim scope and exclusions. Missing evidence is UNKNOWN, not implicit pass.
+
+Failover attack sequence preserved: old owner F1 -> async queue -> connectivity loss -> new owner F2 -> provider retry -> late old request -> resource replacement -> ambiguous reconciliation. R2 must reject stale mutation, preserve old effect identity, avoid silently transferring it to replacement resource, and retain UNKNOWN until authoritative evidence resolves it.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Adversarially attack the EvidenceBundle against provider retries, replica/failover races, asynchronous redelivery, administrative bypass, and resource reincarnation; identify missing evidence or contradictions before architecture selection.
