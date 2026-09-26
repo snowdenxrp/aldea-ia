@@ -502,3 +502,34 @@ Trace `advanceWorldDay` and `advanceSocietyDay` transitively, including all impo
 
 ## AB104.180 checkpoint citation correction
 The AB104.180 research text above contains a literal citation marker inserted into the persisted note. It is not evidence and must not be interpreted as a repository citation. The supporting web evidence is SQLite's isolation documentation consulted during this round. Historical text is preserved; this correction only clarifies provenance.
+
+
+## AB104.181 transitive day-transition write-set audit
+`advanceWorldDay()` mutates climate, ecosystem state, water/wood/fertile-land/wild-plants/fish/clay resources, farm food, and weather damage/consumption. It therefore overlaps effect write-sets for at least resource and farm actions.
+
+`advanceSocietyDay()` is a composite mutation boundary: it advances ages, pregnancies/conception, culture/social learning, technology, institutions, governance, specialization, research, economy, technology-day state, and settlement state. It directly mutates agents and world state and calls `advanceInstitutionDay()` and `advanceEconomyDay()`.
+
+`advanceProductionDay()` exists as an additional production mutation path over farms and fertile-land quality, but the inspected `advanceSocietyDay()` does not call it. `advanceWorldDay()` independently advances farm food, so production-related state has at least two potential mutation mechanisms. `advanceEconomyDay()` mutates world economy price memory/history. `advanceInstitutionDay()` can create institutions, mutate member agent institution/role state, and append events; its later logic also mutates commons/institution state.
+
+Important overlap map:
+- `drink` / resource repair ↔ world water regeneration/drought.
+- `gather_wood` / resource repair ↔ world wood regeneration/storm damage.
+- `eat_plant` ↔ world wild-plant regeneration.
+- `catch_fish` ↔ world fish regeneration.
+- `farm` / `harvest` ↔ world farm food and fertile-land quality.
+- `trade` ↔ daily economy price-memory/history and institution formation thresholds.
+- `contribute_commons` / `withdraw_commons` ↔ institution-day commons processing.
+- any agent-state repair/action ↔ `advanceSocietyDay` mutations of agent fields.
+
+Therefore the minimum safe serialization domain cannot be defined as only `executeAction()` or only one resource object. It must include the transitive day-transition functions whenever they can run against the same authoritative simulation state. A narrower per-effect domain is possible only if day transitions are excluded from that state version/epoch and a conditional commit rejects stale snapshots.
+
+New architectural distinction: **tick serialization** and **effect serialization** are separate questions. The current code has neither a shared authoritative scheduler nor a durable transaction spanning both. `nexoEffectRevision` is in-memory and is not enough to establish a durable fence.
+
+Research evidence: SQLite serializes writes for serializable isolation when the relevant writes participate in its database transaction, and atomicity covers changes inside that transaction even across process/OS crash; this is mechanism evidence, not a recommendation to adopt SQLite. citeturn0search0turn0search1
+
+AB104.181 conclusion: the write-set is demonstrably overlapping across effect actions and day transitions. A future protected boundary must either serialize these mutation classes together or use a snapshot/conditional-commit design with explicit stale-state rejection. No architecture is selected yet.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Build a concrete overlap matrix for each effect class versus tick/day-transition writers and inspect the remaining transitive writers (`governance`, `technology`, `specialization`, `research`, `settlement`, `ecosystem`) to determine whether any effect write-set has hidden overlap that would invalidate a narrower transaction scope.
