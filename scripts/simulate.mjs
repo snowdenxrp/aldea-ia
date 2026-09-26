@@ -29,9 +29,9 @@ function recoverCoreAgents(agents) {
   }
 }
 
-export async function loadState() {
+export async function loadState(statePath = STATE_PATH) {
   try {
-    const raw = await fs.readFile(STATE_PATH, "utf8");
+    const raw = await fs.readFile(statePath, "utf8");
     const state = JSON.parse(raw);
     if (state?.version >= 3 && Array.isArray(state.agents) && state.world) {
       state.world.day = Number(state.day) || state.world.day || 1;
@@ -53,7 +53,7 @@ export async function loadState() {
   return { version: 5, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null };
 }
 
-function applyState(state) {
+export function applyState(state) {
   const world = clone(state.world);
   const agents = clone(state.agents);
   recoverCoreAgents(agents);
