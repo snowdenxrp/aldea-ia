@@ -8,6 +8,27 @@ import { createInitialAgents } from "../../src/agents.js";
 import { createLearningMemory, recordNexoPlan, recordNexoOutcome, reconstructNexoMission } from "../../src/assistants/memory.js";
 import { persistState, loadState, applyState } from "../../scripts/simulate.mjs";
 
+async function persistStateWithLoader(statePathArg, simulationArg, savedAtArg, loader) {
+  const current = await loader(statePathArg);
+  if (current.stateRevision !== 0) throw new Error("race fixture expected revision 0");
+  const nextRevision = current.stateRevision + 1;
+  const payload = {
+    version: 5,
+    stateRevision: nextRevision,
+    savedAt: savedAtArg,
+    day: simulationArg.day,
+    hour: simulationArg.hour,
+    world: simulationArg.world,
+    agents: simulationArg.agents,
+    events: simulationArg.events.slice(-500),
+    nexoMemory: simulationArg.nexoMemory
+  };
+  const tempPath = `${statePathArg.pathname}.race-${savedAtArg}`;
+  await fs.writeFile(tempPath, JSON.stringify(payload) + "\n", "utf8");
+  await fs.rename(tempPath, statePathArg);
+  return payload;
+}
+
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
 const statePath = pathToFileURL(path.join(dir, "world-state.json"));
 const mission = {
@@ -74,6 +95,49 @@ await assert.rejects(
 const finalState = await loadState(statePath);
 assert.equal(finalState.stateRevision, 2);
 assert.equal(finalState.hour, 14);
+
+const raceDir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-race-"));
+const racePath = pathToFileURL(path.join(raceDir, "world-state.json"));
+const baseSimulation = applyState({
+  version: 5,
+  stateRevision: 0,
+  savedAt: Date.now(),
+  day: 1,
+  hour: 8,
+  world: structuredClone(defaultWorld),
+  agents: createInitialAgents(),
+  events: [],
+  nexoMemory: null
+});
+await persistState(racePath, baseSimulation, 1000, { stateRevision: 0 });
+
+const gateFile = path.join(raceDir, "gate");
+const writerA = applyState(await loadState(racePath));
+const writerB = applyState(await loadState(racePath));
+const originalRead = loadState;
+let release;
+const barrier = new Promise(resolve => { release = resolve; });
+let checks = 0;
+async function coordinatedLoad(statePathArg) {
+  const state = await originalRead(statePathArg);
+  if (statePathArg.toString() === racePath.toString()) {
+    checks += 1;
+    if (checks === 2) release();
+    await barrier;
+  }
+  return state;
+}
+void gateFile;
+assert.equal((await originalRead(racePath)).stateRevision, 0);
+await Promise.all([
+  persistStateWithLoader(racePath, writerA, 1001, coordinatedLoad),
+  persistStateWithLoader(racePath, writerB, 1002, coordinatedLoad)
+]);
+const raceFinal = await originalRead(racePath);
+assert.equal(raceFinal.stateRevision, 1);
+assert.ok([1001, 1002].includes(raceFinal.savedAt));
+
+await fs.rm(raceDir, { recursive: true, force: true });
 
 await fs.rm(dir, { recursive: true, force: true });
 console.log("Nexo: real file save -> restart -> reconstruct preserves mission memory and simulation state.");
