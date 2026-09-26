@@ -8,27 +8,6 @@ import { createInitialAgents } from "../../src/agents.js";
 import { createLearningMemory, recordNexoPlan, recordNexoOutcome, reconstructNexoMission } from "../../src/assistants/memory.js";
 import { persistState, loadState, applyState } from "../../scripts/simulate.mjs";
 
-async function persistStateWithLoader(statePathArg, simulationArg, savedAtArg, loader) {
-  const current = await loader(statePathArg);
-  if (current.stateRevision !== 0) throw new Error("race fixture expected revision 0");
-  const nextRevision = current.stateRevision + 1;
-  const payload = {
-    version: 5,
-    stateRevision: nextRevision,
-    savedAt: savedAtArg,
-    day: simulationArg.day,
-    hour: simulationArg.hour,
-    world: simulationArg.world,
-    agents: simulationArg.agents,
-    events: simulationArg.events.slice(-500),
-    nexoMemory: simulationArg.nexoMemory
-  };
-  const tempPath = `${statePathArg.pathname}.race-${savedAtArg}`;
-  await fs.writeFile(tempPath, JSON.stringify(payload) + "\n", "utf8");
-  await fs.rename(tempPath, statePathArg);
-  return payload;
-}
-
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
 const statePath = pathToFileURL(path.join(dir, "world-state.json"));
 const mission = {
@@ -111,15 +90,13 @@ const baseSimulation = applyState({
 });
 await persistState(racePath, baseSimulation, 1000, { stateRevision: 0 });
 
-const gateFile = path.join(raceDir, "gate");
 const writerA = applyState(await loadState(racePath));
 const writerB = applyState(await loadState(racePath));
-const originalRead = loadState;
+let checks = 0;
 let release;
 const barrier = new Promise(resolve => { release = resolve; });
-let checks = 0;
 async function coordinatedLoad(statePathArg) {
-  const state = await originalRead(statePathArg);
+  const state = await loadState(statePathArg);
   if (statePathArg.toString() === racePath.toString()) {
     checks += 1;
     if (checks === 2) release();
@@ -127,16 +104,15 @@ async function coordinatedLoad(statePathArg) {
   }
   return state;
 }
-void gateFile;
-assert.equal((await originalRead(racePath)).stateRevision, 0);
-await Promise.all([
-  persistStateWithLoader(racePath, writerA, 1001, coordinatedLoad),
-  persistStateWithLoader(racePath, writerB, 1002, coordinatedLoad)
+const [resultA, resultB] = await Promise.allSettled([
+  persistState(racePath, writerA, 1001, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad }),
+  persistState(racePath, writerB, 1002, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad })
 ]);
-const raceFinal = await originalRead(racePath);
+assert.equal(resultA.status, "fulfilled");
+assert.equal(resultB.status, "fulfilled");
+const raceFinal = await loadState(racePath);
 assert.equal(raceFinal.stateRevision, 1);
 assert.ok([1001, 1002].includes(raceFinal.savedAt));
-
 await fs.rm(raceDir, { recursive: true, force: true });
 
 await fs.rm(dir, { recursive: true, force: true });
