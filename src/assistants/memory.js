@@ -45,6 +45,7 @@ export function learnFromReports(memory, reports, context = {}) {
 export function recordNexoPlan(memory, mission) {
   const next=createLearningMemory(memory);
   if(!mission?.missionId) return next;
+  if(next.nexo.missions.some(item=>item?.missionId===mission.missionId)) return next;
   next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,parentMissionId:mission.parentMissionId??null,replanReason:mission.replanReason??null,steps:mission.steps.map(s=>({id:s.id,action:s.action,target:s.target,status:s.status,dependsOn:s.dependsOn??[]})),at:mission.generatedAt??new Date().toISOString()});
   next.nexo.missions=next.nexo.missions.slice(-50);
   return next;
