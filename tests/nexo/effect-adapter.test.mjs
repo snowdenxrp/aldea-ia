@@ -84,10 +84,12 @@ const sharedJournal=[];
 let overlapCalls=0;
 let releaseOverlap;
 const overlapGate=new Promise(resolve=>{ releaseOverlap=resolve; });
+let overlapStartedResolve;
+const overlapStarted=new Promise(resolve=>{ overlapStartedResolve=resolve; });
 const adapterA=createEffectAdapter({
   getStateVersion:()=>1,
   executionJournal:sharedJournal,
-  handlers:{overlap_repair:async()=>{ overlapCalls++; await overlapGate; return {status:"completed",details:"overlap"}; }}
+  handlers:{overlap_repair:async()=>{ overlapCalls++; overlapStartedResolve(); await overlapGate; return {status:"completed",details:"overlap"}; }}
 });
 const adapterB=createEffectAdapter({
   getStateVersion:()=>1,
@@ -96,7 +98,7 @@ const adapterB=createEffectAdapter({
 });
 const overlapRequest={missionId:"m2",stepId:"s1",action:"overlap_repair",target:"alex",idempotencyKey:"m2:s1",precondition:()=>true,postcondition:()=>true};
 const firstOverlap=adapterA.execute(overlapRequest);
-await Promise.resolve();
+await overlapStarted;
 const secondOverlap=adapterB.execute({...overlapRequest,precondition:()=>{throw new Error("overlap loser must not run precondition");}});
 assert.equal(overlapCalls,1);
 releaseOverlap();
