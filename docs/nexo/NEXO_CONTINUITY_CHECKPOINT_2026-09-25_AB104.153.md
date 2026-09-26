@@ -211,3 +211,26 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Research the exact split between admission transaction and long-running effect lifecycle: identify which fields must be frozen before leaving the transaction, which outcomes can be recorded afterward, and how operation identity/reconciliation prevents a second effect. Then attack timeout, crash, retry, STOP and resource replacement across that split.
+
+
+## AB104.164 carryover
+Admission/effect lifecycle split research persisted:
+docs/nexo/NEXO_ADMISSION_EFFECT_LIFECYCLE_SPLIT_RESEARCH_V1_2026-09-25.md
+commit: c2889bcbb5b215a46dd787ee8a7eb6f50dfccb3b
+
+Result:
+- Protected admission must freeze operation_id/effect_identity, owner_generation, recovery_incarnation, authority_epoch, STOP context, resource_id/resource_incarnation, capability class/fence scope, policy/invariant versions, participant footprint, relevant preconditions/read-set, intended write-set/effect class, retry_generation and durable admission evidence.
+- Long-running/network/provider work must occur outside the protected transaction. Admission is not execution proof and does not prove external-world change.
+- operation_id is logical lifecycle identity; effect_identity is the concrete effect identity; retry_generation is a new protected attempt. UNKNOWN must reconcile the prior effect_identity before any new effect is created.
+- Timeout after possible dispatch, crash after dispatch, STOP after admission, owner transfer, recovery restart, resource replacement and intermediary crash all preserve uncertainty unless authoritative evidence resolves it.
+- Provider fencing/idempotency capability remains necessary for external duplicate prevention; local identity alone is insufficient.
+- Post-admission observations may be appended but cannot rewrite the original admission context.
+- For bounded local Lúmina, a future transaction may include OwnerFence + STOP + ResourceBinding + EffectBinding + PreparedIntent + deterministic local mutation + durable outcome/history, but only if every protected mutation path shares the same proven atomic boundary.
+- Current code still does not satisfy this: simulation handlers mutate before persistState; persistPreparedIntent is only a hook; runtime mission-memory commit is separate.
+- SQLite/etcd semantics remain reference models, not Nexo proof or technology selection.
+- Remaining OPEN: exact schema/mechanism, external provider contracts, durability profile, formal no-duplicate proof, cross-store multi-resource atomicity, migration, trusted time, fault-injection verification.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Attack the split itself under adversarial races: specifically prove/refute the transition rules for ADMITTED→ATTEMPTED, concurrent retry workers, STOP/owner/recovery changes between admission and dispatch, resource incarnation changes, and reconciliation that arrives concurrently with a new retry. Then identify the minimum conditional-write/fence semantics required so a retry cannot become a second effect.
