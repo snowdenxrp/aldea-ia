@@ -371,3 +371,12 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Build the NEGATIVE-PATH matrix and attack the remaining weakest assumption: whether evidence collected after a provider-side retry/failover can be cryptographically or transactionally bound strongly enough to distinguish the original effect from a new effect on the same logical resource.
+
+
+## AB104.173 carryover
+Negative-path attack: R2 requires binding fence, effect identity, resource incarnation, and protected parameters at the authoritative mutation boundary. Client preflight is insufficient; the accepted fence must survive restart. Negative-path rows must cover alternate/admin APIs, queue redelivery, provider retry, delayed old packet, worker restart, provider failover, resource restart/replacement, idempotency expiry, and fresh retry identity. Same logical resource ID is insufficient for historical binding; fresh identity after ambiguity is a new effect attempt, not proof of non-execution. If an external provider cannot expose an authoritative fence boundary, an intermediary can only support R2 if the claimed effect is actually mediated there; otherwise the external claim remains below R2/UNKNOWN. Documentation is contract evidence, not runtime proof.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Attack the mediated-boundary escape hatch: determine whether a locally fenced outbox/worker can support an R2 claim for an external provider that cannot consume fencing tokens, and identify the exact downgrade point to R1 or UNKNOWN.
