@@ -28,6 +28,8 @@ assert.equal(autoVerified.memory.nexo.executions.length,1); assert.equal(autoVer
 const waterAfterFirst=actionSimulation.world.resources.water.amount; const thirstAfterFirst=actionSimulation.agents[0].needs.thirst;
 const restarted=await executeLuminaNexoStep({simulation:actionSimulation,mission:actionMission,stepId:"step-1",memory:autoVerified.memory,precondition:()=>{throw new Error("precondition must not run for persisted duplicate");}});
 assert.equal(restarted.status,"completed"); assert.equal(restarted.adapterResult.verified,true); assert.equal(actionSimulation.world.resources.water.amount,waterAfterFirst); assert.equal(actionSimulation.agents[0].needs.thirst,thirstAfterFirst); assert.equal(restarted.memory.nexo.executions.length,1);
+assert.equal(restarted.memory.nexo.attempts.length,1);
+assert.equal(restarted.memory.nexo.attempts[0].status,"completed");
 
 const crashWindowMemory=structuredClone(autoVerified.memory);
 crashWindowMemory.nexo.attempts=[];
