@@ -47,6 +47,7 @@ await persistState(statePath, simulation, 1234567890);
 
 const raw = JSON.parse(await fs.readFile(statePath, "utf8"));
 assert.equal(raw.version, 5);
+assert.equal(raw.stateRevision, 0);
 assert.ok(raw.nexoMemory);
 assert.equal(raw.nexoMemory.nexo.missions[0].missionId, mission.missionId);
 assert.equal(raw.nexoMemory.nexo.attempts[0].status, "completed");
@@ -59,6 +60,20 @@ assert.equal(restarted.hour, 12);
 assert.equal(restarted.events[0].id, "restart-event");
 assert.equal(reconstructed.steps[0].status, "completed");
 assert.equal(reconstructed.status, "awaiting_verification");
+
+const staleSimulation = applyState(restartedState);
+staleSimulation.hour = 13;
+await persistState(statePath, staleSimulation, 1234567891, { expectedRevision: 0, stateRevision: 1 });
+const freshSimulation = applyState(await loadState(statePath));
+freshSimulation.hour = 14;
+await persistState(statePath, freshSimulation, 1234567892, { expectedRevision: 1, stateRevision: 2 });
+await assert.rejects(
+  () => persistState(statePath, staleSimulation, 1234567893, { expectedRevision: 1, stateRevision: 2 }),
+  error => error?.code === "STATE_REVISION_CONFLICT"
+);
+const finalState = await loadState(statePath);
+assert.equal(finalState.stateRevision, 2);
+assert.equal(finalState.hour, 14);
 
 await fs.rm(dir, { recursive: true, force: true });
 console.log("Nexo: real file save -> restart -> reconstruct preserves mission memory and simulation state.");
