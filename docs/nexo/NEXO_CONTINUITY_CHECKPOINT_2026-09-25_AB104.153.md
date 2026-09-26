@@ -575,3 +575,36 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Research and inspect the existing `stateRevision`/persistence conflict mechanism and compare it against the required versioned transition contract: what it protects, what it misses, whether it can reject stale in-memory mutations, and what additional durable fence/effect identity is required.
+
+
+## AB104.183 stateRevision / stale-commit boundary audit
+Inspected `scripts/simulate.mjs`, `src/nexo/simulation-adapter.js`, and `src/nexo/effect-adapter.js`.
+
+Findings:
+- `stateRevision` is durable in `world-state.json` and `persistState` compares the caller's expected revision with the freshly loaded current revision while holding the filesystem persistence lock. If they differ, persistence is rejected with `STATE_REVISION_CONFLICT` before writing the new file.
+- This is a **durable persistence-level optimistic conflict check**, not a mutation-boundary guard. The simulation object is mutated before `persistState` is called; therefore a stale worker can perform in-memory mutations and only discover the conflict at persistence time. The rejected mutation is not automatically rolled back in that worker's memory.
+- `nexoEffectRevision` is distinct: it is incremented by the effect adapter after local mutation and is not serialized by `persistState`. It therefore cannot serve as a durable stale-owner fence across restart or competing processes.
+- The effect adapter's `getStateVersion` is observational. It does not compare-and-swap the protected state at the mutation point, and `bump()` happens after `executeAction()` has already mutated the simulation.
+- `persistPreparedIntent` is also separate from the actual state mutation. A successful prepared-intent persistence does not atomically bind the later mutation to the same durable revision/fence/effect identity.
+
+Conflict classes currently covered:
+1. Two persistence attempts starting from different durable revisions: **detected/rejected at persistence**.
+2. Two in-memory writers mutating the same loaded state before persistence: **not prevented**; the later stale persistence attempt is rejected, but its local state has already changed.
+3. Tick/effect overlap against the same in-memory simulation before persistence: **not prevented** by stateRevision.
+4. Crash after in-memory mutation but before `persistState`: **not durably represented as committed or rolled back by this mechanism**; recovery depends on the last durable state and separate effect journal semantics.
+5. Stale worker after owner/control transfer: **not rejected at mutation boundary** because no durable owner-generation fence is checked there.
+6. Resource replacement/incarnation followed by late retry: **not represented by stateRevision alone**; a monotonic revision identifies a world snapshot, not the semantic identity/incarnation of the protected resource/effect.
+
+Important distinction:
+- `stateRevision` can be a useful **commit-time optimistic concurrency token**.
+- It is not by itself an **authority fence**, **effect identity**, **resource incarnation**, **STOP guard**, or **linearization point**.
+- To become part of a future protected transition, the transition must capture the revision at admission, validate all required read/dependency versions, and perform conditional commit so stale work cannot be considered successful. If the transition also requires authority/effect guarantees, those must be bound at the authoritative mutation/commit boundary rather than inferred from revision equality.
+
+SQLite comparison: SQLite documents serializable isolation by serializing writes; in WAL mode a writer attempting to promote an obsolete read snapshot can fail with `SQLITE_BUSY_SNAPSHOT` rather than fork history. citeturn0search1 Its atomic commit model also binds all changes inside one transaction to an all-or-nothing durable commit and has crash-recovery machinery. citeturn0search0turn0search2 This illustrates the missing property in the current JSON design: conflict detection exists at the persistence edge, but there is no equivalent transaction enclosing admission, protected mutation, and durable outcome.
+
+AB104.183 conclusion: `stateRevision` should be retained conceptually as a **version/conflict token**, but it must not be promoted to the role of the Nexo authority fence. The unresolved architectural question is now the exact conditional-commit contract: which version set must be validated, when validation occurs, what object owns the compare-and-swap, and how rejected/stale in-memory work is discarded or reconciled.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+AB104.184 → inspect every current `stateRevision` producer/consumer and persistence caller, then build a concrete version-set lifecycle: capture → mutate/read → validate → conditional commit → conflict handling/reconciliation. Identify whether any path can bypass the proposed conditional commit.
