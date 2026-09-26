@@ -114,9 +114,10 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     }
     if(existingEntry?.status==="prepared") {
       const reconciled=await reconcilePrepared(existingEntry,request);
-      if(reconciled.status!=="blocked" || reconciled.code!=="EFFECT_RECONCILIATION_REQUIRED") {
-        persist(idempotencyKey,reconciled);
-      }
+      // A blocked reconciliation is not a terminal fact about the external effect.
+      // Keep the journal in `prepared` so a later, stronger reconciliation attempt
+      // can resolve the ambiguity instead of turning uncertainty into a cached block.
+      if(reconciled.status!=="blocked") persist(idempotencyKey,reconciled);
       return reconciled;
     }
 
