@@ -155,9 +155,19 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     events: simulation.events.slice(-500),
     nexoMemory: simulation.nexoMemory
   };
+  const tempPrefix = `${statePath.pathname}.tmp-`;
+  try {
+    const siblings = await fs.readdir(path.dirname(statePath.pathname));
+    await Promise.all(siblings.filter(name => name.startsWith(path.basename(tempPrefix))).map(name => fs.rm(path.join(path.dirname(statePath.pathname), name), { force: true })));
+  } catch {}
   const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
-  await fsModule.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
-  await fsModule.rename(tempPath, statePath);
+  try {
+    await fsModule.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+    await fsModule.rename(tempPath, statePath);
+  } catch (error) {
+    await fs.rm(tempPath, { force: true }).catch(() => {});
+    throw error;
+  }
   return payload;
   } finally {
     await releaseLock();
