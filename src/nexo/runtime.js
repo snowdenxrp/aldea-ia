@@ -1,6 +1,31 @@
 import { beginNexoStep, advanceNexoMission } from "./orchestrator.js";
-import { recordNexoOutcome, recordNexoExecution, recordNexoPlan } from "../assistants/memory.js";
+import { recordNexoOutcome, recordNexoExecution, recordNexoPlan, reconstructNexoMission } from "../assistants/memory.js";
 import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLuminaEffectPostcondition } from "./simulation-adapter.js";
+
+const runtimeCommitLocks = new WeakMap();
+
+async function commitRuntimeOutcome(memory, mission, stepId, adapterResult, outcome, evidence, started) {
+  const commit = async () => {
+    const currentMission = memory ? (reconstructNexoMission(memory, mission.missionId) ?? started) : started;
+    const currentStep = currentMission?.steps?.find(s => s.id === stepId);
+    if (currentStep && ["completed","failed","blocked"].includes(currentStep.status)) {
+      return {mission:currentMission,memory,adapterResult,status:currentStep.status};
+    }
+    const advanced=advanceNexoMission(currentMission,{stepId,outcome,evidence});
+    let nextMemory=recordNexoPlan(memory,currentMission);
+    const action=currentStep?.action??started.steps.find(s=>s.id===stepId)?.action;
+    const target=currentStep?.target??started.steps.find(s=>s.id===stepId)?.target;
+    nextMemory=recordNexoExecution(nextMemory,{idempotencyKey:`${currentMission.missionId}:${stepId}`,missionId:currentMission.missionId,stepId,action,target,result:adapterResult});
+    nextMemory=recordNexoOutcome(nextMemory,{missionId:currentMission.missionId,stepId,action,target,status:outcome,evidence,parentMissionId:currentMission.parentMissionId??null,replanReason:currentMission.replanReason??null});
+    if(memory) Object.assign(memory,nextMemory);
+    return {mission:advanced,memory:memory??nextMemory,adapterResult,status:outcome};
+  };
+  if(!memory)return commit();
+  const previous=runtimeCommitLocks.get(memory)??Promise.resolve();
+  const current=previous.then(commit,commit);
+  runtimeCommitLocks.set(memory,current);
+  try{return await current;}finally{if(runtimeCommitLocks.get(memory)===current)runtimeCommitLocks.delete(memory);}
+}
 
 export async function executeNexoStep({mission,stepId,adapter,memory=null,context={},precondition,postcondition}={}) {
   if(!mission?.missionId||!adapter?.execute)return{mission:null,memory,adapterResult:null,status:"invalid"};
@@ -10,11 +35,7 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
   const adapterResult=await adapter.execute({missionId:started.missionId,stepId,action:step.action,target:step.target,idempotencyKey,context:step.context??context,precondition,postcondition});
   const outcome=adapterResult.status==="completed"?"completed":adapterResult.status==="blocked"||adapterResult.status==="unsupported"?"blocked":"failed";
   const evidence=adapterResult.evidence??{verified:false,kind:"effect-result",code:adapterResult.code??null};
-  const advanced=advanceNexoMission(started,{stepId,outcome,evidence});
-  let nextMemory=recordNexoPlan(memory,started);
-  nextMemory=recordNexoExecution(nextMemory,{idempotencyKey,missionId:started.missionId,stepId,action:step.action,target:step.target,result:adapterResult});
-  nextMemory=recordNexoOutcome(nextMemory,{missionId:started.missionId,stepId,action:step.action,target:step.target,status:outcome,evidence,parentMissionId:started.parentMissionId??null,replanReason:started.replanReason??null});
-  return{mission:advanced,memory:nextMemory,adapterResult,status:outcome};
+  return commitRuntimeOutcome(memory,mission,stepId,adapterResult,outcome,evidence,started);
 }
 
 export async function executeLuminaNexoStep({simulation,mission,stepId,memory=null,context={},precondition,postcondition}={}) {
