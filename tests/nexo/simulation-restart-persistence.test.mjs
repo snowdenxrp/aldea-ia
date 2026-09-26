@@ -91,24 +91,23 @@ const baseSimulation = applyState({
 });
 await persistState(racePath, baseSimulation, 1000, { stateRevision: 0 });
 
-const writerA = applyState(await loadState(racePath));
-const writerB = applyState(await loadState(racePath));
-let writersReady = 0;
-let release;
-const barrier = new Promise(resolve => { release = resolve; });
-const coordinatedLoad = async statePathArg => loadState(statePathArg);
-const beforeWrite = async () => {
-  writersReady += 1;
-  if (writersReady === 1) await barrier;
-  else if (writersReady === 2) release();
-};
-const [resultA, resultB] = await Promise.allSettled([
-  persistState(racePath, writerA, 1001, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad, beforeWrite }),
-  persistState(racePath, writerB, 1002, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad, beforeWrite })
+const workerScript = path.join(path.dirname(new URL(import.meta.url).pathname), "persistence-lock-worker.mjs");
+const [workerA, workerB] = await Promise.all([
+  new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [workerScript, racePath.pathname, "1001"], { stdio: "pipe" });
+    let stderr = ""; child.stderr.on("data", chunk => { stderr += chunk; });
+    child.once("exit", code => code === 0 ? resolve({ code, stderr }) : reject(new Error(stderr || `worker A exited ${code}`)));
+    child.once("error", reject);
+  }),
+  new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [workerScript, racePath.pathname, "1002"], { stdio: "pipe" });
+    let stderr = ""; child.stderr.on("data", chunk => { stderr += chunk; });
+    child.once("exit", code => code === 0 ? resolve({ code, stderr }) : reject(new Error(stderr || `worker B exited ${code}`)));
+    child.once("error", reject);
+  })
 ]);
-assert.equal(resultA.status, "fulfilled");
-assert.equal(resultB.status, "rejected");
-assert.equal(resultB.reason?.code, "STATE_REVISION_CONFLICT");
+assert.equal(workerA.code, 0);
+assert.equal(workerB.code, 0);
 const raceFinal = await loadState(racePath);
 assert.equal(raceFinal.stateRevision, 1);
 assert.ok([1001, 1002].includes(raceFinal.savedAt));
