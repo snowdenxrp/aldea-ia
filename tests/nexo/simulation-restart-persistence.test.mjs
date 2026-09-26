@@ -110,6 +110,42 @@ assert.equal(raceFinal.stateRevision, 1);
 assert.ok([1001, 1002].includes(raceFinal.savedAt));
 await fs.rm(raceDir, { recursive: true, force: true });
 
+const failureDir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-write-failure-"));
+const failurePath = pathToFileURL(path.join(failureDir, "world-state.json"));
+const failureBase = applyState({
+  version: 5, stateRevision: 0, savedAt: 1000, day: 1, hour: 8,
+  world: structuredClone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null
+});
+await persistState(failurePath, failureBase, 1000, { stateRevision: 0 });
+const originalFailureState = await loadState(failurePath);
+
+const writeFailureFs = {
+  writeFile: async () => { const error = new Error("INJECTED_WRITE_FAILURE"); error.code = "INJECTED_WRITE_FAILURE"; throw error; },
+  rename: fs.rename
+};
+await assert.rejects(
+  () => persistState(failurePath, failureBase, 2000, { expectedRevision: 0, stateRevision: 1, fsModule: writeFailureFs }),
+  error => error?.code === "INJECTED_WRITE_FAILURE"
+);
+const afterWriteFailure = await loadState(failurePath);
+assert.equal(afterWriteFailure.stateRevision, originalFailureState.stateRevision);
+assert.equal(afterWriteFailure.savedAt, originalFailureState.savedAt);
+
+const renameFailureFs = {
+  writeFile: fs.writeFile,
+  rename: async () => { const error = new Error("INJECTED_RENAME_FAILURE"); error.code = "INJECTED_RENAME_FAILURE"; throw error; }
+};
+await assert.rejects(
+  () => persistState(failurePath, failureBase, 3000, { expectedRevision: 0, stateRevision: 1, fsModule: renameFailureFs }),
+  error => error?.code === "INJECTED_RENAME_FAILURE"
+);
+const afterRenameFailure = await loadState(failurePath);
+assert.equal(afterRenameFailure.stateRevision, originalFailureState.stateRevision);
+assert.equal(afterRenameFailure.savedAt, originalFailureState.savedAt);
+const tempFiles = (await fs.readdir(failureDir)).filter(name => name.includes(".tmp-"));
+assert.equal(tempFiles.length, 1);
+await fs.rm(failureDir, { recursive: true, force: true });
+
 const crashDir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-lock-crash-"));
 const crashStatePath = path.join(crashDir, "world-state.json");
 await fs.writeFile(crashStatePath, JSON.stringify({
