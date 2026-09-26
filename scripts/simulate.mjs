@@ -100,7 +100,6 @@ export async function persistState(statePath, simulation, savedAt) {
 }
 
 async function main() {
-async function main() {
   const state = await loadState();
   const now = Date.now();
   const previousSavedAt = Number(state.savedAt) || now;
