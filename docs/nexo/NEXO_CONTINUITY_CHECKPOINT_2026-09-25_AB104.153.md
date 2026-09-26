@@ -354,3 +354,20 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Adversarially attack the EvidenceBundle against provider retries, replica/failover races, asynchronous redelivery, administrative bypass, and resource reincarnation; identify missing evidence or contradictions before architecture selection.
+
+
+## AB104.172 adversarial attack result
+Fresh documentation confirms the EvidenceBundle cannot treat queue deduplication or visibility as authority fencing. SQS documents a five-minute FIFO deduplication interval and possible duplicate processing after visibility expiry; retries after the interval can create duplicates. etcd demonstrates atomic compare-and-apply transactions as a reference for mutation-boundary fencing, but that primitive alone does not prove the surrounding path is fenced.
+
+Four minimum attack findings:
+1. Provider-internal retry: R2 evidence must bind the provider retry to the original effect identity and current resource incarnation; timeout is not rejection.
+2. Failover/replica race: evidence must show stale fence rejection at the authoritative mutation point, not only client-side generation checks.
+3. Async redelivery: every queue/worker hop must preserve or revalidate identity, fence, resource incarnation and retry generation; visibility/dedup expiry cannot prove non-execution.
+4. Administrative bypass/resource reincarnation: every effect-capable administrative path must be inventoried; replacement requires a new resource incarnation and old effect context cannot silently authorize the new resource.
+
+New minimum requirement: R2 EvidenceBundle needs a NEGATIVE-PATH matrix proving each excluded/bypass path is either fenced equivalently or explicitly outside the claim. A missing path is UNKNOWN, not safe by assumption.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Build the NEGATIVE-PATH matrix and attack the remaining weakest assumption: whether evidence collected after a provider-side retry/failover can be cryptographically or transactionally bound strongly enough to distinguish the original effect from a new effect on the same logical resource.
