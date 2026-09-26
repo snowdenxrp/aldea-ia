@@ -29,7 +29,7 @@ const waterAfterFirst=actionSimulation.world.resources.water.amount; const thirs
 const restarted=await executeLuminaNexoStep({simulation:actionSimulation,mission:actionMission,stepId:"step-1",memory:autoVerified.memory,precondition:()=>{throw new Error("precondition must not run for persisted duplicate");}});
 assert.equal(restarted.status,"completed"); assert.equal(restarted.adapterResult.verified,true); assert.equal(actionSimulation.world.resources.water.amount,waterAfterFirst); assert.equal(actionSimulation.agents[0].needs.thirst,thirstAfterFirst); assert.equal(restarted.memory.nexo.executions.length,1);
 
-const failureSimulation={agents:[{id:"alex",alive:true,position:{x:0,z:0},needs:{thirst:50},inventory:[]}],world:{resources:{water:0}}};
+const failureSimulation={agents:[{id:"alex",alive:true,position:{x:0,z:0},needs:{thirst:50},inventory:[]}],world:{resources:{water:{amount:0}}}};
 const failureMission=buildNexoMission({reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"sed detectada"}]}]});
 const failure=await executeLuminaNexoStep({simulation:failureSimulation,mission:failureMission,stepId:"step-1",memory:createLearningMemory(),precondition:({stateVersion})=>stateVersion===0});
 assert.equal(failure.status,"failed"); assert.equal(failure.adapterResult.code,"LUMINA_ACTION_FAILED"); assert.equal(failure.mission.status,"needs_replan"); assert.equal(failure.mission.objective,"replan_after_failure"); assert.equal(failure.memory.nexo.attempts[0].status,"failed"); assert.equal(failureSimulation.nexoEffectRevision,0);
