@@ -533,3 +533,45 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Build a concrete overlap matrix for each effect class versus tick/day-transition writers and inspect the remaining transitive writers (`governance`, `technology`, `specialization`, `research`, `settlement`, `ecosystem`) to determine whether any effect write-set has hidden overlap that would invalidate a narrower transaction scope.
+
+
+## AB104.182 effect × tick-writer overlap matrix
+Transitive inspection covered ecosystem, technology, governance, specialization, research, and settlement writers.
+
+Overlap matrix (W=direct write overlap; I=indirect/semantic coupling; .=no observed direct overlap in inspected code):
+- `drink`: ecosystem W (water quality/pressure), world W (water amount); economy/institution/governance .
+- `eat_plant`: ecosystem W (human pressure/biodiversity inputs), world W (plant amount); technology/specialization/research/settlement . direct.
+- `catch_fish`: ecosystem W, world W (fish); research I through resource/ecosystem observations.
+- `gather_wood`: world W (wood); ecosystem I via resource pressure; settlement . direct.
+- `gather_stone`: ecosystem W (stone ratio), world W (stone only indirectly through ecosystem calculation; no direct stone regeneration in advanceWorldDay observed).
+- `farm`: world W (farm state/land through farm creation path), ecosystem W/I (farm count/soil pressure), technology I (skill thresholds), settlement I (structures).
+- `harvest`: farm/inventory W; technology/specialization may read resulting skills/state, settlement may observe structures but no direct harvest write observed.
+- `trade`: economy W; institutions/governance I/W because recent trades influence institution formation and governance proposals.
+- `contribute_commons` / `withdraw_commons`: institutions W; governance I because institution history/proposals depend on commons activity.
+- `repair_agent_state` / `repair_agent_needs`: broad agent W; society/day-transition functions can mutate overlapping agent fields (age, pregnancy, specialization, social roles, research knowledge, etc.).
+
+Additional tick writers:
+- ecosystem mutates ecosystem metrics, indirectly changing resource-regeneration semantics.
+- technology mutates technology levels/discoveries/research logs and simulation events.
+- governance mutates proposals/votes/norm-related state and events.
+- specialization mutates each agent's specialization/confidence/socialRole and world role counts/history.
+- research mutates world research topics/experiments/evidence/history and agent research knowledge/counters/events.
+- settlement mutates spatial region population/structure/activity state.
+
+Critical hidden coupling: research reads/measures ecosystem/economy/agent skill state and writes evidence; technology reads agent skills and writes technology state; governance reads institution history and writes proposals/votes. Therefore even when an action does not directly share a field with a day writer, its result can alter the inputs used by subsequent day writers. This is semantic dependency, not necessarily a same-transaction write conflict.
+
+Minimum-domain result:
+1. Resource-local transaction is unsafe as a general Nexo boundary because day transitions can write the same resources.
+2. Agent-local transaction is unsafe as a general boundary because society/technology/specialization/research can mutate agent state.
+3. World-subsystem transaction is unsafe when actions cross agents/resources/economy/institutions (trade, commons, farming).
+4. The smallest defensible generic local boundary therefore tends toward **one authoritative simulation-state transition** for any operation whose read/write set intersects concurrent tick writers, unless a versioned snapshot + conditional commit protocol explicitly rejects conflicts.
+5. This does not prove that every future Nexo operation requires whole-world locking; it proves that a narrower scope needs an explicit conflict/ownership model and a complete dependency graph.
+
+SQLite provides a useful reference point: serializable isolation is achieved by serializing writes, and WAL can provide snapshot-style readers, but a write based on an old snapshot can fail rather than silently fork history. citeturn0search0 This is evidence for the shape of a possible conditional-commit mechanism, not a technology selection.
+
+AB104.182 conclusion: no current effect class has enough evidence for a standalone protected transaction boundary. The next architectural research target is therefore a **versioned transition/conflict contract**: define exact state version, read-set, write-set, dependency-set, fence, and stale-commit rejection semantics before selecting storage or implementation.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Research and inspect the existing `stateRevision`/persistence conflict mechanism and compare it against the required versioned transition contract: what it protects, what it misses, whether it can reject stale in-memory mutations, and what additional durable fence/effect identity is required.
