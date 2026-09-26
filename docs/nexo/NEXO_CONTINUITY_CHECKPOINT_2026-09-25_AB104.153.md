@@ -77,3 +77,25 @@ No V21 implementation. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Inventory concrete current Nexo/Lúmina effect paths and map each to RC1-RC12, identifying every bypass path and the minimum contract needed before any execution-owner implementation.
+
+
+## AB104.156 carryover
+Current Nexo/Lúmina effect-path audit persisted:
+docs/nexo/NEXO_CURRENT_EFFECT_PATH_CAPABILITY_MAP_V1_2026-09-25.md
+commit: 2cdfd96c412d117b04669a7ec2a85b7351d8ebf6
+
+Concrete findings:
+- Current effect requests have no explicit capability class, owner_generation, resource_incarnation or final STOP fence.
+- createLuminaEffectAdapter directly mutates simulation state; current nexoEffectRevision is only an in-memory local revision, not an external fence.
+- persistState stateRevision/file lock protects state persistence, not already-running effect execution.
+- nexoEffectRevision is not serialized in world-state.json, so it cannot currently act as a durable cross-restart fence/incarnation.
+- executionJournal retention is bounded to 200 entries; long-lived reconciliation cannot assume indefinite local identity retention.
+- prepared-intent persistence remains optional and no current production caller supplies the hook.
+- local postcondition evidence cannot prove external-world truth outside the simulation boundary.
+
+RC mapping is now explicit: RC1/RC2/RC3/RC4/RC5 OPEN/FAIL; RC6 locally preserved; RC7/RC8 respected; RC9 unclaimed; RC10 bypasses found; RC11 partial; RC12 preserved by prior research.
+
+No implementation/V21. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Research and formalize the minimum protected local Lúmina transition boundary: owner/fence record, effect binding, resource incarnation, STOP epoch, prepared-intent durability, and final admission point. Compare it against the current stateRevision/file-lock topology before implementation.
