@@ -75,4 +75,51 @@ assert.equal(multiSimulation.agents[0].position.x,0);
 assert.equal(multiSimulation.agents[0].position.z,7);
 assert.equal(multiSimulation.agents[0].needs.hunger,100);
 assert.equal(multiSimulation.agents[0].needs.thirst,0);
+\n
+const restartMemory=structuredClone(autoVerified.memory);
+const restartedAfterSerialization=await executeLuminaNexoStep({
+  simulation:actionSimulation,
+  mission:actionMission,
+  stepId:"step-1",
+  memory:restartMemory,
+  precondition:()=>{throw new Error("serialized execution must be replayed from the ledger");}
+});
+assert.equal(restartedAfterSerialization.status,"completed");
+assert.equal(restartedAfterSerialization.adapterResult.verified,true);
+assert.equal(actionSimulation.world.resources.water.amount,waterAfterFirst);
+assert.equal(restartedAfterSerialization.memory.nexo.executions.length,1);
+
+const chainedFailureSimulation={
+  agents:[{id:"alex",alive:true,position:{x:0,z:0},needs:{thirst:50},inventory:[]}],
+  world:{resources:{water:{amount:0}}}
+};
+const chainedFailureMission=buildNexoMission({
+  reports:[{findings:[
+    {severity:"error",code:"LUMINA_ACTION",agent:"alex",action:{name:"rest",duration:1},message:"recuperación"},
+    {severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"sed"}
+  ]}]
+});
+const chainedFirst=await executeLuminaNexoStep({
+  simulation:chainedFailureSimulation,mission:chainedFailureMission,stepId:"step-1",
+  memory:createLearningMemory(),precondition:({stateVersion})=>stateVersion===0
+});
+assert.equal(chainedFirst.status,"completed");
+const chainedSecond=await executeLuminaNexoStep({
+  simulation:chainedFailureSimulation,mission:chainedFirst.mission,stepId:"step-2",
+  memory:chainedFirst.memory,precondition:({stateVersion})=>stateVersion===1
+});
+assert.equal(chainedSecond.status,"failed");
+assert.equal(chainedSecond.mission.status,"needs_replan");
+assert.equal(chainedSecond.mission.parentMissionId,null);
+assert.equal(chainedSecond.memory.nexo.attempts.length,2);
+chainedFailureSimulation.world.resources.water.amount=10;
+const chainedReplan=buildNexoMission({
+  simulation:chainedFailureSimulation,
+  reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua restaurada"}]}],
+  memory:chainedSecond.memory,
+  parentMissionId:chainedSecond.mission.missionId,
+  replanReason:"environment_changed_after_step_2_failure"
+});
+assert.equal(chainedReplan.parentMissionId,chainedSecond.mission.missionId);
+assert.equal(chainedReplan.replanReason,"environment_changed_after_step_2_failure");
 \nconsole.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
