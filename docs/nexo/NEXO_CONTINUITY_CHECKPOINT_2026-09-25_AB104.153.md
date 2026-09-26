@@ -481,3 +481,20 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Trace callers of advanceProductionDay, advanceEconomyDay, advanceInstitutionDay, executeAction, and the repair handlers to map the actual entry-point graph and concurrent bypasses; derive the minimum serialization/fencing scope needed to prevent a tick or direct caller from bypassing an admitted effect.
+
+
+## AB104.180 entry-point/concurrency boundary finding
+Fresh call-graph inspection shows `src/simulation.js` is the principal simulation loop: `tick()` advances day/world state, calls `advanceWorldDay` and `advanceSocietyDay`, then processes each agent and eventually calls `executeAction(simulation, agent, intent)` directly. Thus the same simulation object has a broad synchronous mutation loop around action execution.
+
+The imported daily advancement functions are not directly called by their own exported names in `simulation.js`; they are reached through `advanceWorldDay`/`advanceSocietyDay` and therefore must be traced through those modules rather than assuming isolated callers. `executeAction` is reached from `performDecision` inside `tick()`, while the Nexo runtime separately invokes the effect adapter against the same simulation object. This creates a potential cross-entry authority problem: JavaScript's synchronous execution avoids interleaving during one synchronous call stack, but Nexo effect execution is asynchronous at the adapter/runtime layer, and the simulation object is not protected by a shared durable transaction/fence across these entry points.
+
+Critical consequence: a per-effect local transaction cannot be declared safe merely because `tick()` is synchronous. The required boundary must either (1) serialize/coordinate the simulation tick and Nexo protected effects under one authoritative mutation scheduler, or (2) make the protected effect operate on an isolated snapshot/state transaction with a conditional commit/fence that rejects stale state. A filesystem persistence lock alone is insufficient because mutation already occurs in memory before persistence.
+
+SQLite research corroborates the distinction: serializable isolation is obtained when all relevant writes participate in the same transactional database boundary; separate operations outside that transaction are not covered. cite-source:turn0search2
+
+AB104.180 conclusion: the minimum serialization scope must include every entry point capable of mutating any object in an admitted effect's write-set, not merely the adapter callback. The next trace must follow `advanceWorldDay` and `advanceSocietyDay` to enumerate their transitive mutation sets and determine whether the effect write-set overlaps them.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Trace `advanceWorldDay` and `advanceSocietyDay` transitively, including all imported mutation functions, then compare their write sets against each protected Lúmina effect class and identify the smallest safe serialization/fencing domain.
