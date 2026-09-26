@@ -47,10 +47,11 @@ export async function loadState(statePath = STATE_PATH) {
         }
       }
       state.version = Math.max(4, Number(state.version) || 4);
+      state.stateRevision = Number.isInteger(Number(state.stateRevision)) && Number(state.stateRevision) >= 0 ? Number(state.stateRevision) : 0;
       return state;
     }
   } catch {}
-  return { version: 5, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null };
+  return { version: 5, stateRevision: 0, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null };
 }
 
 export function applyState(state) {
@@ -82,9 +83,21 @@ function advance(simulation, seconds) {
   recoverCoreAgents(simulation.agents);
 }
 
-export async function persistState(statePath, simulation, savedAt) {
+export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null } = {}) {
+  if (expectedRevision !== null) {
+    const current = await loadState(statePath);
+    const currentRevision = Number.isInteger(Number(current.stateRevision)) ? Number(current.stateRevision) : 0;
+    if (currentRevision !== Number(expectedRevision)) {
+      const error = new Error(`STATE_REVISION_CONFLICT: expected ${expectedRevision}, found ${currentRevision}`);
+      error.code = "STATE_REVISION_CONFLICT";
+      throw error;
+    }
+  }
+  const nextRevision = stateRevision === null ? 0 : Number(stateRevision);
+  if (!Number.isInteger(nextRevision) || nextRevision < 0) throw new TypeError("stateRevision must be a non-negative integer");
   const payload = {
     version: 5,
+    stateRevision: nextRevision,
     savedAt,
     day: simulation.day,
     hour: simulation.hour,
@@ -108,7 +121,7 @@ async function main() {
   advance(simulation, elapsedSeconds);
   const persistedSavedAt = previousSavedAt + elapsedSeconds * 1000;
 
-  await persistState(STATE_PATH, simulation, persistedSavedAt);
+  await persistState(STATE_PATH, simulation, persistedSavedAt, { expectedRevision: state.stateRevision, stateRevision: state.stateRevision + 1 });
 
   console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive), nexoMemory: Boolean(simulation.nexoMemory) }));
 }
