@@ -92,22 +92,19 @@ const baseSimulation = applyState({
 await persistState(racePath, baseSimulation, 1000, { stateRevision: 0 });
 
 const workerScript = path.join(path.dirname(new URL(import.meta.url).pathname), "persistence-lock-worker.mjs");
-const [workerA, workerB] = await Promise.all([
-  new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [workerScript, racePath.pathname, "1001"], { stdio: "pipe" });
-    let stderr = ""; child.stderr.on("data", chunk => { stderr += chunk; });
-    child.once("exit", code => code === 0 ? resolve({ code, stderr }) : reject(new Error(stderr || `worker A exited ${code}`)));
+function runWorker(savedAt) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [workerScript, racePath.pathname, String(savedAt)], { stdio: ["ignore", "pipe", "pipe"] });
+    let stdout = ""; let stderr = "";
+    child.stdout.on("data", chunk => { stdout += chunk; });
+    child.stderr.on("data", chunk => { stderr += chunk; });
+    child.once("exit", code => code === 0 ? resolve(JSON.parse(stdout)) : reject(new Error(stderr || `worker exited ${code}`)));
     child.once("error", reject);
-  }),
-  new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [workerScript, racePath.pathname, "1002"], { stdio: "pipe" });
-    let stderr = ""; child.stderr.on("data", chunk => { stderr += chunk; });
-    child.once("exit", code => code === 0 ? resolve({ code, stderr }) : reject(new Error(stderr || `worker B exited ${code}`)));
-    child.once("error", reject);
-  })
-]);
-assert.equal(workerA.code, 0);
-assert.equal(workerB.code, 0);
+  });
+}
+const [workerA, workerB] = await Promise.all([runWorker(1001), runWorker(1002)]);
+assert.equal([workerA.status, workerB.status].filter(status => status === "committed").length, 1);
+assert.equal([workerA.status, workerB.status].filter(status => status === "conflict").length, 1);
 const raceFinal = await loadState(racePath);
 assert.equal(raceFinal.stateRevision, 1);
 assert.ok([1001, 1002].includes(raceFinal.savedAt));
