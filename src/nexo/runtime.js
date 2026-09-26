@@ -1,6 +1,6 @@
 import { beginNexoStep, advanceNexoMission } from "./orchestrator.js";
 import { recordNexoOutcome, recordNexoExecution } from "../assistants/memory.js";
-import { createLuminaEffectAdapter, createLuminaActionPostcondition } from "./simulation-adapter.js";
+import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLuminaEffectPostcondition } from "./simulation-adapter.js";
 
 export async function executeNexoStep({mission,stepId,adapter,memory=null,context={},precondition,postcondition}={}) {
   if(!mission?.missionId||!adapter?.execute)return{mission:null,memory,adapterResult:null,status:"invalid"};
@@ -21,6 +21,6 @@ export async function executeLuminaNexoStep({simulation,mission,stepId,memory=nu
   const executionJournal=Array.isArray(memory?.nexo?.executions)?memory.nexo.executions:[];
   const adapter=createLuminaEffectAdapter(simulation,{executionJournal});
   const step=mission?.steps?.find(s=>s.id===stepId); const actionIntent=step?.context?.action??context?.action??null;
-  const effectivePostcondition=postcondition??(step?.action==="execute_lumina_action"&&actionIntent?createLuminaActionPostcondition(simulation,actionIntent,step.target):undefined);
+  const effectivePostcondition=postcondition??(step?.action==="execute_lumina_action"&&actionIntent?createLuminaActionPostcondition(simulation,actionIntent,step.target):["repair_agent_state","repair_agent_needs","repair_resource_state"].includes(step?.action)?createLuminaEffectPostcondition(simulation,step.action,step.target):undefined);
   return executeNexoStep({mission,stepId,adapter,memory,context,precondition,postcondition:effectivePostcondition});
 }
