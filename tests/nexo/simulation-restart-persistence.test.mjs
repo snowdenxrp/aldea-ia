@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -106,11 +107,39 @@ const [resultA, resultB] = await Promise.allSettled([
   persistState(racePath, writerB, 1002, { expectedRevision: 0, stateRevision: 1, loadCurrentState: coordinatedLoad, beforeWrite })
 ]);
 assert.equal(resultA.status, "fulfilled");
-assert.equal(resultB.status, "fulfilled");
+assert.equal(resultB.status, "rejected");
+assert.equal(resultB.reason?.code, "STATE_REVISION_CONFLICT");
 const raceFinal = await loadState(racePath);
 assert.equal(raceFinal.stateRevision, 1);
 assert.ok([1001, 1002].includes(raceFinal.savedAt));
 await fs.rm(raceDir, { recursive: true, force: true });
+
+const crashDir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-lock-crash-"));
+const crashStatePath = path.join(crashDir, "world-state.json");
+await fs.writeFile(crashStatePath, JSON.stringify({
+  version: 5, stateRevision: 0, savedAt: 1000, day: 1, hour: 8,
+  world: structuredClone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null
+}));
+const lockPath = `${crashStatePath}.lock`;
+const childScript = `
+  import fs from "node:fs/promises";
+  import path from "node:path";
+  const lock = process.argv[1];
+  await fs.mkdir(lock);
+  await fs.writeFile(path.join(lock, "owner.json"), JSON.stringify({pid:process.pid,token:"crash-test",createdAt:Date.now()}));
+  process.kill(process.pid, "SIGKILL");
+`;
+await new Promise((resolve, reject) => {
+  const child = spawn(process.execPath, ["--input-type=module", "-e", childScript, lockPath], { stdio: "ignore" });
+  child.once("exit", () => resolve());
+  child.once("error", reject);
+});
+const lockStat = await fs.stat(lockPath);
+await fs.utimes(lockPath, new Date(lockStat.mtimeMs - 61_000), new Date(lockStat.mtimeMs - 61_000));
+const recovered = applyState(await loadState(pathToFileURL(crashStatePath)));
+await persistState(pathToFileURL(crashStatePath), recovered, 2000, { expectedRevision: 0, stateRevision: 1 });
+assert.equal((await loadState(pathToFileURL(crashStatePath))).stateRevision, 1);
+await fs.rm(crashDir, { recursive: true, force: true });
 
 await fs.rm(dir, { recursive: true, force: true });
 console.log("Nexo: real file save -> restart -> reconstruct preserves mission memory and simulation state.");
