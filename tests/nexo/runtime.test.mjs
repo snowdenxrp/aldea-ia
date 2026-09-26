@@ -137,7 +137,7 @@ assert.equal(recovered.status,"completed");
 assert.equal(recovered.adapterResult.verified,true);
 assert.equal(chainedFailureSimulation.world.resources.water.amount,8);
 assert.equal(recovered.memory.nexo.attempts.at(-1).status,"completed");
-assert.equal(recovered.memory.nexo.at(-1).parentMissionId,chainedReplan.parentMissionId);
-assert.equal(recovered.memory.nexo.at(-1).replanReason,chainedReplan.replanReason);
+assert.equal(recovered.memory.nexo.attempts.at(-1).parentMissionId,chainedReplan.parentMissionId);
+assert.equal(recovered.memory.nexo.attempts.at(-1).replanReason,chainedReplan.replanReason);
 
 console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
