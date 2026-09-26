@@ -234,3 +234,23 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Attack the split itself under adversarial races: specifically prove/refute the transition rules for ADMITTED→ATTEMPTED, concurrent retry workers, STOP/owner/recovery changes between admission and dispatch, resource incarnation changes, and reconciliation that arrives concurrently with a new retry. Then identify the minimum conditional-write/fence semantics required so a retry cannot become a second effect.
+
+
+## AB104.165 carryover
+Admission→attempt race attack persisted:
+docs/nexo/NEXO_ADMISSION_ATTEMPT_RACE_ATTACK_V1_2026-09-25.md
+commit: f0c370b18569e82e8576db250694fcd8ec77cb82
+
+Result:
+- ADMITTED→ATTEMPTED must itself be a protected conditional transition; admission alone does not serialize post-transaction workers.
+- Two workers reading CONTROL_ADMITTED must not both dispatch. Exactly one conditional claim may consume the eligible effect identity/retry generation; the loser reconciles.
+- STOP, owner_generation, recovery_incarnation, authority_epoch and resource_incarnation must be validated at the attempt-claim linearization point, not merely at admission/read time.
+- Reconciliation and retry must converge through the same lifecycle state. If reconciliation wins, retry sees terminal state; if retry claims first, reconciliation resolves the same effect identity.
+- Timeout/crash after ATTEMPTED does not revert to NOT_ATTEMPTED. The effect identity remains the reconciliation anchor.
+- Local conditional claim prevents duplicate local ownership of an attempt but cannot prove external duplicate prevention; provider-side idempotency/fencing is still required.
+- SQLite crash/transaction semantics are useful reference evidence for atomic conditional transitions, but durability configuration and external-effect guarantees remain separate design problems.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Refine the lifecycle state machine around ATTEMPTED: distinguish dispatch-not-started, dispatch-accepted, and dispatch-unknown; attack crashes between each transition and determine the minimum durable evidence required to safely reconcile without allowing a duplicate effect.
