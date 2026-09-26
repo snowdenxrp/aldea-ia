@@ -608,3 +608,46 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 AB104.184 → inspect every current `stateRevision` producer/consumer and persistence caller, then build a concrete version-set lifecycle: capture → mutate/read → validate → conditional commit → conflict handling/reconciliation. Identify whether any path can bypass the proposed conditional commit.
+
+
+## AB104.184 version-set lifecycle and bypass audit
+Inspected all current repository references to stateRevision by enumerating the JS/MJS tree, then tracing the concrete persistence producer/consumer path and its restart/concurrency tests.
+
+Current lifecycle:
+1. Capture: main() loads durable state and captures state.stateRevision.
+2. Execution: applyState() clones durable world/agents into a mutable simulation; simulation work proceeds without carrying a durable version token into each mutation boundary.
+3. Commit validation: persistState(... expectedRevision) acquires the filesystem lock, reloads current durable state, and compares current stateRevision to the caller's expected revision.
+4. Commit: if equal, it writes the requested next revision to a temporary file and atomically renames it into place; the persistence lock is released afterward.
+5. Conflict: mismatch raises STATE_REVISION_CONFLICT; the caller's in-memory simulation is not rolled back or automatically reconciled.
+
+Repository-wide result: the only durable stateRevision producer/consumer is the persistence path in scripts/simulate.mjs plus its restart/race tests. No Nexo runtime/effect path directly consumes the durable revision. The Nexo adapter instead maintains non-durable nexoEffectRevision.
+
+Important bypasses / gaps:
+- Any caller that mutates a simulation and does not reach persistState has no durable conflict check.
+- tick() and direct executeAction() mutate the simulation before persistence and are not wrapped by a conditional-commit context.
+- Nexo effect handlers mutate the same in-memory object before nexoEffectRevision is bumped.
+- persistPreparedIntent can durably record preparation independently of the later state commit; it is not a compare-and-swap boundary.
+- A stale in-memory mutation can therefore exist transiently even when final persistence correctly rejects it.
+- The existing tests demonstrate two-process persistence conflict detection and crash-lock recovery, but they do not establish that mutation itself is prevented, rolled back, fenced by authority, or atomically bound to effect lifecycle/history.
+
+Research comparison: optimistic concurrency systems normally validate the versions/read set at commit and abort/retry when a concurrent change conflicts. Firestore describes tracking documents read by the transaction and retrying/failing if one changed; Spanner describes commit-time validation of the transaction's read/write conflict set. citeturn0search0turn0search6 SQL Server's documented application-managed OCC likewise uses the originally observed version/value as a conditional update predicate, with a failed match indicating a conflict. citeturn0search1turn0search5
+
+Derived Nexo contract candidate (research only, not implementation):
+- VersionSet.capture: durable state version plus versions/incarnations for every protected dependency.
+- ReadSet: exact authoritative objects/fields whose observed values influenced the transition.
+- WriteSet: exact objects/fields the transition is allowed to change.
+- DependencySet: semantic inputs that may not be directly written but can invalidate the transition (e.g. governance/institution/resource relationships).
+- AuthorityFence: owner/generation/recovery/STOP state required at commit.
+- EffectBinding: stable operation/effect identity, parameter digest, resource incarnation, retry generation.
+- ConditionalCommit: validate VersionSet + AuthorityFence + EffectBinding and apply durable state/effect-history changes as one authoritative transition.
+- ConflictOutcome: reject as stale/conflict; never treat rejected stale work as committed.
+- Reconciliation: reload current state and decide whether the operation may be safely re-planned under a new identity or must remain UNKNOWN/QUARANTINED.
+
+Key distinction: validating only one global integer stateRevision would detect broad durable races but would be over-conservative for independent transitions and still would not establish authority/effect semantics. Conversely, field-level/version-set validation without a complete dependency graph could permit semantic conflicts. Therefore the version set must be derived from the protected transition's declared read/write/dependency scope, not invented after the fact.
+
+AB104.184 conclusion: the current system has a useful persistence CAS-like check, but not a complete versioned transition protocol. The clean architectural target is a conditional authoritative commit whose validation scope is explicit and whose rejection occurs before the transition can be considered committed; in-memory speculative work must be disposable/reloadable rather than silently merged.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+AB104.185 → research the minimal version-set granularity: compare global state revision vs object/subsystem versions vs read/write/dependency-set validation, using the actual Lúmina overlap graph, and determine the smallest scope that can reject semantic conflicts without falsely claiming whole-world serialization.
