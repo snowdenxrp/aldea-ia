@@ -59,11 +59,11 @@ export function recordNexoExecution(memory,{idempotencyKey,missionId,stepId,acti
   return next;
 }
 
-export function recordNexoOutcome(memory,{missionId,stepId,action,target=null,status,evidence=null,doNotRepeat=false}={}){
+export function recordNexoOutcome(memory,{missionId,stepId,action,target=null,status,evidence=null,doNotRepeat=false,parentMissionId=null,replanReason=null}={}){
   const next=createLearningMemory(memory);
   if(!missionId||!stepId||!action||!["completed","failed","blocked"].includes(status)) return next;
   if(status==="completed" && !(evidence?.verified===true && typeof evidence?.kind==="string" && evidence.kind.trim())) return next;
-  const entry={missionId,stepId,action,target,status,evidence:evidence??null,parentMissionId:arguments[1]?.parentMissionId??null,replanReason:arguments[1]?.replanReason??null,at:new Date().toISOString()};
+  const entry={missionId,stepId,action,target,status,evidence:evidence??null,parentMissionId:parentMissionId??null,replanReason:replanReason??null,at:new Date().toISOString()};
   next.nexo.attempts.push(entry);
   if(doNotRepeat) next.nexo.doNotRepeat.push({action,target,reason:evidence??"previous attempt marked non-repeatable",at:entry.at});
   next.nexo.attempts=next.nexo.attempts.slice(-100); next.nexo.doNotRepeat=next.nexo.doNotRepeat.slice(-100);
