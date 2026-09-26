@@ -40,9 +40,11 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
 
 export async function executeLuminaNexoStep({simulation,mission,stepId,memory=null,context={},precondition,postcondition}={}) {
   if(!simulation)return{mission:null,memory,adapterResult:null,status:"invalid"};
-  const executionJournal=Array.isArray(memory?.nexo?.executions)?memory.nexo.executions:[];
+  const runtimeMemory=memory ?? simulation.nexoMemory ?? null;
+  if(!simulation.nexoMemory && runtimeMemory) simulation.nexoMemory=runtimeMemory;
+  const executionJournal=Array.isArray(runtimeMemory?.nexo?.executions)?runtimeMemory.nexo.executions:[];
   const adapter=createLuminaEffectAdapter(simulation,{executionJournal});
   const step=mission?.steps?.find(s=>s.id===stepId); const actionIntent=step?.context?.action??context?.action??null;
   const effectivePostcondition=postcondition??(step?.action==="execute_lumina_action"&&actionIntent?createLuminaActionPostcondition(simulation,actionIntent,step.target):["repair_agent_state","repair_agent_needs","repair_resource_state"].includes(step?.action)?createLuminaEffectPostcondition(simulation,step.action,step.target):undefined);
-  return executeNexoStep({mission,stepId,adapter,memory,context,precondition,postcondition:effectivePostcondition});
+  return executeNexoStep({mission,stepId,adapter,memory:runtimeMemory,context,precondition,postcondition:effectivePostcondition});
 }
