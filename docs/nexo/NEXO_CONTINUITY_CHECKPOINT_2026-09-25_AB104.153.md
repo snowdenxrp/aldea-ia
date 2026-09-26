@@ -196,3 +196,18 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Audit every current Lúmina mutation entry point against this minimum boundary and identify any mutation that would remain outside the transaction. Then study long-running effects and transaction-size/resource-limit constraints before selecting a persistence mechanism.
+
+
+## AB104.163 carryover
+Current mutation-path audit completed against the minimum protected transaction boundary.
+
+Audited paths in src/nexo/simulation-adapter.js: repair_agent_state, repair_agent_needs, repair_resource_state, and execute_lumina_action. All four mutate simulation.agents/world directly inside effect handlers and increment nexoEffectRevision. runtime.js wraps adapter execution and later commits mission memory, but that runtime commit is separate from the simulation mutation. Therefore none of these paths currently sits inside one proven durable transaction containing authority guards + prepared intent + local mutation + durable effect history.
+
+Additional finding: createLuminaEffectAdapter accepts persistPreparedIntent, but executeLuminaNexoStep merely passes the optional hook through; there is still no authoritative transaction boundary connecting that hook to the actual handler mutation and later world-state persistence.
+
+Long-running effect constraint: a protected local transaction should not remain open while waiting on external/network/model work. The transaction should validate/admit and commit a deterministic local transition, while long-running/external work remains a separate effect lifecycle with explicit UNKNOWN/reconciliation semantics. SQLite permits only one simultaneous write transaction per database; large/long write transactions can increase contention and WAL growth/checkpoint pressure. SQLite documentation recommends keeping write transactions short in normal use and notes that long readers can delay checkpoints in WAL mode. This is a design constraint, not a selection.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Research the exact split between admission transaction and long-running effect lifecycle: identify which fields must be frozen before leaving the transaction, which outcomes can be recorded afterward, and how operation identity/reconciliation prevents a second effect. Then attack timeout, crash, retry, STOP and resource replacement across that split.
