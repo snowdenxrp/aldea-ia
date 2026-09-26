@@ -65,6 +65,16 @@ const partialRetry=await adapter.execute({
   missionId:"m1",stepId:"s3",action:"partial_repair",target:"alex",idempotencyKey:"m1:s4"
 });
 assert.equal(partialRetry.code,"PARTIAL_EFFECT_DETECTED");
+let exceptionCalls=0;
+const exceptionJournal=[];
+const exceptionAdapter=createEffectAdapter({executionJournal:exceptionJournal,handlers:{ambiguous_effect:async()=>{exceptionCalls++;throw new Error("provider timeout after send");}}});
+const ambiguous=await exceptionAdapter.execute({missionId:"m8",stepId:"s1",action:"ambiguous_effect",target:"alex",idempotencyKey:"m8:s1",precondition:()=>true});
+assert.equal(ambiguous.status,"blocked");
+assert.equal(ambiguous.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(ambiguous.uncertainty,"effect_may_or_may_not_have_occurred");
+assert.equal(exceptionCalls,1);
+assert.equal(exceptionJournal[0].status,"blocked");
+assert.equal(exceptionJournal[0].result.code,"EFFECT_OUTCOME_UNKNOWN");
 
 const evidenceMismatch=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"safe_repair",target:"alex",idempotencyKey:"m1:s7",
