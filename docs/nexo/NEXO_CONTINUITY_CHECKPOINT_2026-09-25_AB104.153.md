@@ -64,3 +64,16 @@ No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Formalize the resource/intermediary capability contract and attack R0-R3 against stale ownership, STOP races, replacement, retries, intermediary crash, and partial multi-resource outcomes before implementation.
+
+
+## AB104.155 carryover
+Resource/intermediary capability attack persisted:
+docs/nexo/NEXO_RESOURCE_INTERMEDIARY_CAPABILITY_CONTRACT_ATTACK_V1_2026-09-25.md
+commit: 131a8cbb0b049dab1796f861b9f1153b16d28fa5
+
+Repair: capability class is now part of effect binding, not just documentation. R0/R1 cannot claim stale-owner exclusion; R2 requires resource/intermediary fence enforcement on every protected mutation path; R3 claims are limited to the provider transaction scope. STOP binding, resource incarnation, effect identity, timeout/retry semantics and bypass paths are mandatory contract fields. UNKNOWN remains unresolved unless authoritative evidence promotes it.
+
+No V21 implementation. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Inventory concrete current Nexo/Lúmina effect paths and map each to RC1-RC12, identifying every bypass path and the minimum contract needed before any execution-owner implementation.
