@@ -45,7 +45,7 @@ export function learnFromReports(memory, reports, context = {}) {
 export function recordNexoPlan(memory, mission) {
   const next=createLearningMemory(memory);
   if(!mission?.missionId) return next;
-  next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,steps:mission.steps.map(s=>({id:s.id,action:s.action,target:s.target,status:s.status,dependsOn:s.dependsOn??[]})),at:mission.generatedAt??new Date().toISOString()});
+  next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,parentMissionId:mission.parentMissionId??null,replanReason:mission.replanReason??null,steps:mission.steps.map(s=>({id:s.id,action:s.action,target:s.target,status:s.status,dependsOn:s.dependsOn??[]})),at:mission.generatedAt??new Date().toISOString()});
   next.nexo.missions=next.nexo.missions.slice(-50);
   return next;
 }
@@ -63,7 +63,7 @@ export function recordNexoOutcome(memory,{missionId,stepId,action,target=null,st
   const next=createLearningMemory(memory);
   if(!missionId||!stepId||!action||!["completed","failed","blocked"].includes(status)) return next;
   if(status==="completed" && !(evidence?.verified===true && typeof evidence?.kind==="string" && evidence.kind.trim())) return next;
-  const entry={missionId,stepId,action,target,status,evidence:evidence??null,at:new Date().toISOString()};
+  const entry={missionId,stepId,action,target,status,evidence:evidence??null,parentMissionId:arguments[1]?.parentMissionId??null,replanReason:arguments[1]?.replanReason??null,at:new Date().toISOString()};
   next.nexo.attempts.push(entry);
   if(doNotRepeat) next.nexo.doNotRepeat.push({action,target,reason:evidence??"previous attempt marked non-repeatable",at:entry.at});
   next.nexo.attempts=next.nexo.attempts.slice(-100); next.nexo.doNotRepeat=next.nexo.doNotRepeat.slice(-100);
