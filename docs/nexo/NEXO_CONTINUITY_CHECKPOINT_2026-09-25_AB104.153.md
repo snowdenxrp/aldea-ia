@@ -380,3 +380,16 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Attack the mediated-boundary escape hatch: determine whether a locally fenced outbox/worker can support an R2 claim for an external provider that cannot consume fencing tokens, and identify the exact downgrade point to R1 or UNKNOWN.
+
+
+## AB104.174 carryover
+Fresh research confirms transactional outbox closes a local dual-write boundary but does not by itself make an external effect exactly-once; downstream duplicates still require idempotency. Fencing safety belongs at the protected mutation boundary: stale tokens must be rejected there, not merely by the worker.
+
+Decision boundary: R2 only when the intermediary is the authoritative effect boundary, the claimed effect cannot bypass it, and durable state binds effect identity, parameters/resource incarnation and current fence with stale-owner rejection and reconciliation evidence. R1 when the intermediary durably controls admission/identity/reconciliation but the external provider can execute outside that fence or lacks mutation-boundary evidence. UNKNOWN when it is unclear whether the effect escaped the mediated boundary or historical provider evidence cannot bind to the exact effect identity/incarnation.
+
+Outbox durability proves intent/delivery properties, not external non-execution. A fresh identity after ambiguity can create a second effect and cannot resolve the first outcome.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Convert this boundary into a compact R1/R2/UNKNOWN decision matrix with observable evidence and attack traces, then test it against Nexo/Lumina current JSON persistence + effect-adapter topology without implementing the future architecture.
