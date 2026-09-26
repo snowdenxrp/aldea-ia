@@ -152,10 +152,30 @@ assert.ok(preparedJournal[0].result);
 
 const preparedOnlyJournal=[{idempotencyKey:"m5:s1",missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",status:"prepared"}];
 let recoveryCalls=0;
-const recoveryAdapter=createEffectAdapter({executionJournal:preparedOnlyJournal,handlers:{prepared_effect:async()=>{recoveryCalls++; return {status:"completed",details:"recovered"};}}});
-const recoveryResult=await recoveryAdapter.execute({missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m5:s1",precondition:()=>true,postcondition:()=>true});
-assert.equal(recoveryResult.status,"completed");
-assert.equal(recoveryCalls,1);
+const recoveryAdapter=createEffectAdapter({executionJournal:preparedOnlyJournal,handlers:{prepared_effect:async()=>{recoveryCalls++; return {status:"completed",details:"unsafe-retry"};}}});
+const unresolved=await recoveryAdapter.execute({missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m5:s1",precondition:()=>true,postcondition:()=>true});
+assert.equal(unresolved.status,"blocked");
+assert.equal(unresolved.code,"EFFECT_RECONCILIATION_REQUIRED");
+assert.equal(recoveryCalls,0);
+assert.equal(preparedOnlyJournal[0].status,"prepared");
+
+const reconcileResult=await recoveryAdapter.execute({
+  missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m5:s1",
+  reconcile:async({journalEntry})=>({status:"completed",verified:true,evidence:{verified:true,kind:"external-effect-reconciled",details:"already observed"},source:journalEntry.status})
+});
+assert.equal(reconcileResult.status,"completed");
+assert.equal(reconcileResult.verified,true);
 assert.equal(preparedOnlyJournal[0].status,"completed");
+assert.equal(recoveryCalls,0);
+
+const invalidReconcileJournal=[{idempotencyKey:"m6:s1",missionId:"m6",stepId:"s1",action:"prepared_effect",target:"alex",status:"prepared"}];
+const invalidReconcileAdapter=createEffectAdapter({executionJournal:invalidReconcileJournal,handlers:{prepared_effect:async()=>{throw new Error("must not execute");}}});
+const invalidReconcile=await invalidReconcileAdapter.execute({
+  missionId:"m6",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m6:s1",
+  reconcile:()=>({status:"completed",verified:false})
+});
+assert.equal(invalidReconcile.status,"blocked");
+assert.equal(invalidReconcile.code,"UNVERIFIED_RECONCILIATION");
+assert.equal(invalidReconcileJournal[0].status,"prepared");
 
 console.log("Nexo: adaptador tipado con concurrencia, idempotencia, detección de efecto parcial y evidencia estricta OK.");
