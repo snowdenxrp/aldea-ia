@@ -3,6 +3,7 @@
 // Por defecto no ejecuta nada: cada efecto debe registrarse explícitamente.
 const TERMINAL = new Set(["completed","failed","blocked","unsupported"]);
 const sharedInFlight = new WeakMap();
+const sharedQueue = new WeakMap();
 function validStatus(status){ return TERMINAL.has(status); }
 
 export function createEffectAdapter({handlers={}, getStateVersion=()=>null, executionJournal=null}={}) {
@@ -77,10 +78,14 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     let inFlight=sharedInFlight.get(executionJournal);
     if(!inFlight){ inFlight=new Map(); sharedInFlight.set(executionJournal,inFlight); }
     if(inFlight.has(key)) return structuredClone(await inFlight.get(key));
-    const promise=executeFresh(request);
-    inFlight.set(key,promise);
-    try { return structuredClone(await promise); }
-    finally { if(inFlight.get(key)===promise) inFlight.delete(key); }
+    let queue=sharedQueue.get(executionJournal);
+    if(!queue){ queue=Promise.resolve(); sharedQueue.set(executionJournal,queue); }
+    const previous=queue;
+    const current=previous.then(()=>executeFresh(request),()=>executeFresh(request));
+    sharedQueue.set(executionJournal,current.catch(()=>{}));
+    inFlight.set(key,current);
+    try { return structuredClone(await current); }
+    finally { if(inFlight.get(key)===current) inFlight.delete(key); if(sharedQueue.get(executionJournal)===current) sharedQueue.delete(executionJournal); }
   }
   return {register,execute,hasExecuted:key=>executed.has(key)};
 }
