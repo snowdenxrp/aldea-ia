@@ -5,8 +5,8 @@ import { buildNexoMission } from "../../src/nexo/orchestrator.js";
 import { createLearningMemory } from "../../src/assistants/memory.js";
 
 const mission=buildNexoMission({reports:[{findings:[
-  {severity:"error",code:"REPAIR_A",message:"primer paso"},
-  {severity:"warning",code:"REPAIR_B",message:"segundo paso"}
+  {severity:"error",code:"AGENT_POSITION",agent:"alex",message:"primer paso"},
+  {severity:"warning",code:"INVALID_NEED",agent:"bruno",message:"segundo paso"}
 ]}]});
 mission.steps[0].action="repair_a";
 mission.steps[1].action="repair_b";
