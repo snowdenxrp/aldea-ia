@@ -112,6 +112,9 @@ export function recordNexoOutcome(memory,{missionId,stepId,action,target=null,st
   const next=createLearningMemory(memory);
   if(!missionId||!stepId||!action||!["completed","failed","blocked"].includes(status)) return next;
   if(status==="completed" && !(evidence?.verified===true && typeof evidence?.kind==="string" && evidence.kind.trim())) return next;
+  // A mission step is a single authoritative attempt. Replays and late results for the same
+  // mission/step must never overwrite its durable outcome; retries belong to a new missionId.
+  if(next.nexo.attempts.some(item=>item?.missionId===missionId&&item?.stepId===stepId)) return next;
   const entry={missionId,stepId,action,target,status,evidence:evidence??null,parentMissionId:parentMissionId??null,replanReason:replanReason??null,at:new Date().toISOString()};
   next.nexo.attempts.push(entry);
   if(doNotRepeat) next.nexo.doNotRepeat.push({action,target,reason:evidence??"previous attempt marked non-repeatable",at:entry.at});
