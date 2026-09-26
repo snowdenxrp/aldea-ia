@@ -62,6 +62,7 @@ const firstMulti=await executeLuminaNexoStep({
 });
 assert.equal(firstMulti.status,"completed");
 assert.equal(firstMulti.mission.steps[0].status,"completed");
+assert.equal(firstMulti.adapterResult.verified,true);
 assert.equal(firstMulti.mission.objective,"repair_agent_needs");
 const secondMulti=await executeLuminaNexoStep({
   simulation:multiSimulation,mission:firstMulti.mission,stepId:"step-2",memory:firstMulti.memory,
