@@ -72,6 +72,8 @@ assert.equal(secondMulti.status,"completed");
 assert.equal(secondMulti.mission.steps[1].status,"completed");
 assert.equal(secondMulti.mission.status,"awaiting_verification");
 assert.equal(secondMulti.memory.nexo.attempts.length,2);
+assert.equal(secondMulti.memory.nexo.missions.length,1);
+assert.equal(secondMulti.memory.nexo.missions[0].missionId,multiMission.missionId);
 assert.equal(multiSimulation.agents[0].position.x,0);
 assert.equal(multiSimulation.agents[0].position.z,7);
 assert.equal(multiSimulation.agents[0].needs.hunger,100);
