@@ -80,4 +80,31 @@ const unsupported=await adapter.execute({
 assert.equal(unsupported.status,"unsupported");
 assert.equal(unsupported.verified,false);
 
+const sharedJournal=[];
+let overlapCalls=0;
+let releaseOverlap;
+const overlapGate=new Promise(resolve=>{ releaseOverlap=resolve; });
+const adapterA=createEffectAdapter({
+  getStateVersion:()=>1,
+  executionJournal:sharedJournal,
+  handlers:{overlap_repair:async()=>{ overlapCalls++; await overlapGate; return {status:"completed",details:"overlap"}; }}
+});
+const adapterB=createEffectAdapter({
+  getStateVersion:()=>1,
+  executionJournal:sharedJournal,
+  handlers:{overlap_repair:async()=>{ overlapCalls++; return {status:"completed",details:"duplicate-side-effect"}; }}
+});
+const overlapRequest={missionId:"m2",stepId:"s1",action:"overlap_repair",target:"alex",idempotencyKey:"m2:s1",precondition:()=>true,postcondition:()=>true};
+const firstOverlap=adapterA.execute(overlapRequest);
+await Promise.resolve();
+const secondOverlap=adapterB.execute({...overlapRequest,precondition:()=>{throw new Error("overlap loser must not run precondition");}});
+assert.equal(overlapCalls,1);
+releaseOverlap();
+const [overlapResultA,overlapResultB]=await Promise.all([firstOverlap,secondOverlap]);
+assert.equal(overlapResultA.status,"completed");
+assert.equal(overlapResultB.status,"completed");
+assert.deepEqual(overlapResultA,overlapResultB);
+assert.equal(overlapCalls,1);
+assert.equal(sharedJournal.filter(x=>x.idempotencyKey==="m2:s1").length,1);
+
 console.log("Nexo: adaptador tipado con concurrencia, idempotencia, detección de efecto parcial y evidencia estricta OK.");
