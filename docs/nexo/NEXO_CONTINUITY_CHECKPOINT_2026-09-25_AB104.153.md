@@ -332,3 +332,14 @@ EVENTDAG_CLOSURE PARTIAL
 RECONSTRUCTION BOUNDED_ONLY
 SEMANTIC_FREEZE NOT DECLARED
 FORMAL_VERIFICATION/IMPLEMENTATION_NOT_PERFORMED
+
+
+## AB104.170 research carryover
+Research found the R2 boundary must include asynchronous queues and delayed jobs, not only the final API. AWS SQS documents a five-minute FIFO deduplication window and warns that retries after expiry can create duplicates; visibility timeout expiry can also allow another consumer to process the same message. Therefore queue deduplication/visibility is not equivalent to durable authority fencing. Stripe similarly documents finite idempotency retention and new requests after pruning. Kubernetes resourceVersion is a server-side conditional mutation mechanism; etcd transactions atomically evaluate comparisons with writes. These are reference primitives, not complete R2 proof by themselves.
+
+Derived rule: an R2 EvidenceBundle must cover every effect-capable hop and show identity preservation, authority/fence propagation, stale rejection at the actual mutation boundary, resource-incarnation binding, retry/replay semantics, failover semantics, administrative bypass coverage, and reconciliation after expiry or ambiguity.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Define the smallest auditable R2 EvidenceBundle: required claims, artifacts, test traces, path inventory, fence semantics, failure/replay cases, and explicit exclusions. Then attack whether that bundle is sufficient against failover and provider-side retries.
