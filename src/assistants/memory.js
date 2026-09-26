@@ -51,6 +51,54 @@ export function recordNexoPlan(memory, mission) {
   return next;
 }
 
+export function reconstructNexoMission(memory, missionId) {
+  const source=createLearningMemory(memory);
+  const plan=source.nexo.missions.find(item=>item?.missionId===missionId);
+  if(!plan) return null;
+  const mission={
+    version:plan.version??4,
+    missionId:plan.missionId,
+    parentMissionId:plan.parentMissionId??null,
+    replanReason:plan.replanReason??null,
+    objective:plan.objective??"awaiting_verification",
+    status:plan.status??"planned",
+    uncertainty:plan.uncertainty??null,
+    evidenceCount:plan.evidenceCount??null,
+    observedAgentCount:plan.observedAgentCount??null,
+    steps:Array.isArray(plan.steps)?structuredClone(plan.steps):[],
+    memorySignals:{
+      patterns:source.patterns.length,
+      attempts:source.nexo.attempts.length,
+      doNotRepeat:source.nexo.doNotRepeat.length,
+      executions:source.nexo.executions.length
+    },
+    generatedAt:plan.at
+  };
+  const attempts=source.nexo.attempts.filter(item=>item?.missionId===missionId);
+  for(const step of mission.steps){
+    const latest=[...attempts].reverse().find(item=>item?.stepId===step.id);
+    if(!latest) continue;
+    step.status=latest.status;
+    if(latest.evidence!=null) step.result=latest.evidence;
+    if(latest.status==="failed") step.failure=latest.evidence??null;
+    if(latest.status==="blocked") step.blockReason=latest.evidence??"blocked";
+  }
+  const failed=mission.steps.some(step=>step.status==="failed");
+  const blocked=mission.steps.some(step=>step.status==="blocked");
+  const unresolved=mission.steps.some(step=>!["completed","failed","blocked"].includes(step.status));
+  if(failed){mission.status="needs_replan";mission.objective="replan_after_failure";}
+  else if(blocked){mission.status="blocked";mission.objective="replan_from_constraints";}
+  else if(unresolved){
+    const executable=mission.steps.find(step=>step.status==="planned"&&(step.dependsOn??[]).every(id=>mission.steps.find(dep=>dep.id===id)?.status==="completed"));
+    mission.status=executable?"planned":"awaiting_dependencies";
+    mission.objective=executable?.action??"awaiting_dependencies";
+  } else {
+    mission.status="awaiting_verification";
+    mission.objective="verify_mission_outcome";
+  }
+  return mission;
+}
+
 export function recordNexoExecution(memory,{idempotencyKey,missionId,stepId,action,target=null,result}={}) {
   const next=createLearningMemory(memory);
   if(!idempotencyKey||!missionId||!stepId||!action||!result) return next;
