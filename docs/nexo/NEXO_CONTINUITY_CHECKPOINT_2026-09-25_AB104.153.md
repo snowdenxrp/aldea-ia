@@ -498,3 +498,7 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Trace `advanceWorldDay` and `advanceSocietyDay` transitively, including all imported mutation functions, then compare their write sets against each protected Lúmina effect class and identify the smallest safe serialization/fencing domain.
+
+
+## AB104.180 checkpoint citation correction
+The AB104.180 research text above contains a literal citation marker inserted into the persisted note. It is not evidence and must not be interpreted as a repository citation. The supporting web evidence is SQLite's isolation documentation consulted during this round. Historical text is preserved; this correction only clarifies provenance.
