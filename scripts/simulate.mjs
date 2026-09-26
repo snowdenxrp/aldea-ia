@@ -12,6 +12,48 @@ let tempSequence = 0;
 
 function clone(value) { return structuredClone(value); }
 
+const STATE_LOCK_RETRY_MS = 10;
+const STATE_LOCK_STALE_MS = 60_000;
+
+function lockPathFor(statePath) {
+  return `${statePath.pathname}.lock`;
+}
+
+function processIsAlive(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try { process.kill(pid, 0); return true; } catch (error) { return error?.code === "EPERM"; }
+}
+
+async function readLockOwner(lockPath) {
+  try { return JSON.parse(await fs.readFile(path.join(lockPath, "owner.json"), "utf8")); } catch { return null; }
+}
+
+async function acquireStateLock(statePath) {
+  const lockPath = lockPathFor(statePath);
+  const token = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const owner = { pid: process.pid, token, createdAt: Date.now() };
+  while (true) {
+    try {
+      await fs.mkdir(lockPath);
+      await fs.writeFile(path.join(lockPath, "owner.json"), JSON.stringify(owner), "utf8");
+      return async () => {
+        const current = await readLockOwner(lockPath);
+        if (current?.token === token) await fs.rm(lockPath, { recursive: true, force: true });
+      };
+    } catch (error) {
+      if (error?.code !== "EEXIST") throw error;
+      const current = await readLockOwner(lockPath);
+      const stale = current && (Date.now() - Number(current.createdAt) > STATE_LOCK_STALE_MS) && !processIsAlive(Number(current.pid));
+      if (stale) {
+        await fs.rm(lockPath, { recursive: true, force: true }).catch(() => {});
+        continue;
+      }
+      await new Promise(resolve => setTimeout(resolve, STATE_LOCK_RETRY_MS));
+    }
+  }
+}
+
+
 function recoverCoreAgents(agents) {
   const initial = createInitialAgents();
   for (const fallback of initial) {
@@ -85,6 +127,8 @@ function advance(simulation, seconds) {
 }
 
 export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null, loadCurrentState = loadState, beforeWrite = null } = {}) {
+  const releaseLock = await acquireStateLock(statePath);
+  try {
   if (expectedRevision !== null) {
     const current = await loadCurrentState(statePath);
     const currentRevision = Number.isInteger(Number(current.stateRevision)) ? Number(current.stateRevision) : 0;
@@ -112,6 +156,9 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
   await fs.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
   await fs.rename(tempPath, statePath);
   return payload;
+  } finally {
+    await releaseLock();
+  }
 }
 
 async function main() {
