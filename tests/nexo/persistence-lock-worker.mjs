@@ -1,6 +1,6 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { applyState, loadState, persistState } from "../scripts/simulate.mjs";
+import { applyState, loadState, persistState } from "../../scripts/simulate.mjs";
 
 const statePath = pathToFileURL(path.resolve(process.argv[2]));
 const savedAt = Number(process.argv[3]);
