@@ -9,7 +9,8 @@ export function createLearningMemory(raw = null) {
       missions: Array.isArray(source.nexo?.missions) ? source.nexo.missions.slice(-50) : [],
       attempts: Array.isArray(source.nexo?.attempts) ? source.nexo.attempts.slice(-100) : [],
       doNotRepeat: Array.isArray(source.nexo?.doNotRepeat) ? source.nexo.doNotRepeat.slice(-100) : [],
-      executions: Array.isArray(source.nexo?.executions) ? source.nexo.executions.slice(-200) : []
+      executions: Array.isArray(source.nexo?.executions) ? source.nexo.executions.slice(-200) : [],
+      effectJournal: Array.isArray(source.nexo?.effectJournal) ? source.nexo.effectJournal.slice(-200) : []
     }
   };
 }
