@@ -141,3 +141,16 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Refine the crash-cut state machine into explicit pre/post durable states and attack concurrent writers, stale in-memory simulations, STOP/owner transfer during commit, resource replacement, and multi-resource local transitions. Then identify the minimum evidence required to prove recovery chooses pre-state or post-state without fabricating outcome.
+
+
+## AB104.160 carryover
+Crash-cut/recovery evidence attack persisted:
+docs/nexo/NEXO_LUMINA_CRASH_CUT_RECOVERY_EVIDENCE_V1_2026-09-25.md
+commit: fffb322646ee8ec5f61c8fe7c3f6e08b13dbd0cf
+
+Result: current Lúmina must keep CONTROL_ADMITTED and LOCAL_EFFECT_COMMITTED separate. The critical crash cut is during durable commit: recovery needs an explicit transaction/journal protocol capable of distinguishing pre-state from post-state. Without that evidence the result remains UNKNOWN/HOLD. StateRevision, filesystem locking and temp-file rename are not sufficient proofs by themselves. SQLite's documented crash-recovery transaction model and etcd's atomic guarded transactions provide reference semantics, not proof for Nexo.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Study candidate local persistence mechanisms against the contract: SQLite-style transaction/journal semantics versus the current JSON/temp-rename design. Compare atomicity, isolation, durability, crash recovery, stale-writer handling, multi-resource scope, migration and verification cost. Do not select or implement yet; record evidence and remaining UNKNOWNs.
