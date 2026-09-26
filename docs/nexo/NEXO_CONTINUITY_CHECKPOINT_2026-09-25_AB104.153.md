@@ -114,3 +114,18 @@ No implementation/V21. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Attack the minimum boundary with exhaustive crash/race cases and determine whether one local persistence linearization can cover OwnerFence + PreparedIntent + local effect commit, or whether control admission and effect commit must remain separate even for Lúmina.
+
+
+## AB104.158 carryover
+Crash/race attack persisted:
+docs/nexo/NEXO_LUMINA_BOUNDARY_CRASH_RACE_ATTACK_V1_2026-09-25.md
+commit: d6a8e7ecb2bad5c8b13a8d16cfda21b53a568997
+
+Result: current Lúmina cannot provide one linearization point for OwnerFence + PreparedIntent + handler mutation because handlers mutate in memory and persistState commits later. A future bounded local transactional store MAY combine protected admission with durable local state, but only with an explicit atomic transaction/recovery boundary covering all protected mutation paths. External effects remain separate.
+
+Crash/race conclusions: admission is not execution proof; mutation before durable commit has crash-divergence risk; lost response after durable commit requires reconciliation; STOP/owner transfer/recovery restart invalidate stale retries; resource replacement requires incarnation continuity proof; stateRevision is not OwnerFence; bypass paths invalidate atomicity claims; UNKNOWN survives restart; multi-resource atomicity needs an explicit shared transaction.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Refine the bounded local transaction contract: define its atomicity/isolation/durability/recovery boundary and exhaustive crash-cut state machine, then map every current Lúmina protected mutation entry point against it before any implementation.
