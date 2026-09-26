@@ -8,6 +8,7 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
 const MAX_CATCHUP_SECONDS = 12 * 60 * 60;
+let tempSequence = 0;
 
 function clone(value) { return structuredClone(value); }
 
@@ -107,7 +108,7 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     nexoMemory: simulation.nexoMemory
   };
   if (typeof beforeWrite === "function") await beforeWrite();
-  const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}`;
+  const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
   await fs.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
   await fs.rename(tempPath, statePath);
   return payload;
