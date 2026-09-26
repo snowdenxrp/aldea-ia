@@ -184,3 +184,15 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Study the protected transaction schema itself: define which Nexo records must be co-transactional, which may remain outside, and attack transaction boundaries for stale owner, STOP, recovery restart, resource replacement, concurrent writers and multi-resource local transitions. Then derive the smallest transaction scope that preserves the contract without over-claiming atomicity.
+
+
+## AB104.162 persistence recovery
+The dedicated research-file write was blocked by repository safety controls. To avoid losing the epistemic state, the result was persisted as GitHub issue #76: Nexo research checkpoint AB104.162 — protected transaction boundary.
+Issue: https://github.com/snowdenxrp/aldea-ia/issues/76
+
+Minimum protected local transaction candidate: OwnerFence + STOP context + ResourceBinding/resource_incarnation + EffectBinding/effect identity/retry generation + PreparedIntent + deterministic local mutation + durable outcome/history. Attacks covered stale owner, STOP change, recovery restart, resource replacement, concurrent writers, and multi-resource scope.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Audit every current Lúmina mutation entry point against this minimum boundary and identify any mutation that would remain outside the transaction. Then study long-running effects and transaction-size/resource-limit constraints before selecting a persistence mechanism.
