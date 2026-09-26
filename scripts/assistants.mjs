@@ -3,7 +3,7 @@ import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { createSimulation } from "../src/simulation.js";
 import { tick } from "../src/simulation.js";
-import { persistState } from "./simulate.mjs";
+import { loadState, applyState, persistState } from "./simulate.mjs";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
 import { createLearningMemory, learnFromReports, recordNexoPlan } from "../src/assistants/memory.js";
@@ -33,14 +33,8 @@ function normalizeCoreAgents(agents) {
   }
 }
 
-const persisted = await readJson(STATE_PATH, null);
-const simulation = createSimulation(
-  structuredClone(persisted?.world ?? defaultWorld),
-  structuredClone(Array.isArray(persisted?.agents) && persisted.agents.length ? persisted.agents : createInitialAgents())
-);
-simulation.day = Number(persisted?.day) || simulation.world.day || 1;
-simulation.hour = Number.isFinite(Number(persisted?.hour)) ? Number(persisted.hour) : (simulation.world.timeOfDay || 8);
-simulation.events = Array.isArray(persisted?.events) ? persisted.events.slice(-500) : [];
+const persisted = await loadState(STATE_PATH);
+const simulation = applyState(persisted);
 normalizeCoreAgents(simulation.agents);
 
 const codeFiles = {};
@@ -82,6 +76,8 @@ const learned = learnFromReports(
 );
 
 await fs.writeFile(MEMORY_PATH, JSON.stringify(learned, null, 2) + "\n", "utf8");
-console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length } }, null, 2));
+const nextRevision = Number(persisted.stateRevision ?? 0) + 1;
+await persistState(STATE_PATH, simulation, Date.now(), { expectedRevision: Number(persisted.stateRevision ?? 0), stateRevision: nextRevision });
+console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length }, nexoMemoryPersisted: true, stateRevision: nextRevision }, null, 2));
 
 if (report.status === "error") process.exitCode = 1;
