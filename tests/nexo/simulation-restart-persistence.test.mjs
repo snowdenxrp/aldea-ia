@@ -25,7 +25,7 @@ const mission = {
 const effectJournal = [{ idempotencyKey: "prepared-restart:s1", missionId: "prepared-restart", stepId: "s1", action: "external_effect", target: "remote", status: "prepared", at: "2026-09-26T00:00:00.000Z" }];
 
 const memory = recordNexoOutcome(
-  recordNexoPlan(createLearningMemory(), mission),
+  recordNexoPlan(createLearningMemory({nexo:{effectJournal}}), mission),
   {
     missionId: mission.missionId,
     stepId: "step-1",
