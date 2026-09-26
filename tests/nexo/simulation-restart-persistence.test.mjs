@@ -22,6 +22,8 @@ const mission = {
   generatedAt: "2026-09-26T00:00:00.000Z"
 };
 
+const effectJournal = [{ idempotencyKey: "prepared-restart:s1", missionId: "prepared-restart", stepId: "s1", action: "external_effect", target: "remote", status: "prepared", at: "2026-09-26T00:00:00.000Z" }];
+
 const memory = recordNexoOutcome(
   recordNexoPlan(createLearningMemory(), mission),
   {
@@ -52,6 +54,8 @@ assert.equal(raw.stateRevision, 0);
 assert.ok(raw.nexoMemory);
 assert.equal(raw.nexoMemory.nexo.missions[0].missionId, mission.missionId);
 assert.equal(raw.nexoMemory.nexo.attempts[0].status, "completed");
+assert.equal(raw.nexoMemory.nexo.effectJournal[0].status, "prepared");
+assert.equal(raw.nexoMemory.nexo.effectJournal[0].idempotencyKey, "prepared-restart:s1");
 
 const restartedState = await loadState(statePath);
 const restarted = applyState(restartedState);
@@ -61,6 +65,7 @@ assert.equal(restarted.hour, 12);
 assert.equal(restarted.events[0].id, "restart-event");
 assert.equal(reconstructed.steps[0].status, "completed");
 assert.equal(reconstructed.status, "awaiting_verification");
+assert.equal(restarted.nexoMemory.nexo.effectJournal[0].status, "prepared");
 
 const staleSimulation = applyState(restartedState);
 staleSimulation.hour = 13;
