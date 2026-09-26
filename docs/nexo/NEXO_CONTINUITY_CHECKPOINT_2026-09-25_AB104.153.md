@@ -470,3 +470,14 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Trace the delegated mutation modules (`development.js`, `production.js`, `economy.js`, `institutions.js`) to complete the write-set inventory, then test whether any hidden/global mutation or callback can escape a proposed protected local transaction boundary.
+
+
+## AB104.179 delegated write-set completion
+Traced development.js, production.js, economy.js, and institutions.js. Delegated writes include: shelter construction (inventory, structures, home, safety); tool crafting (inventory, skills, tools); farming (inventory, fertile land, farms, safety); harvesting (farm food, inventory); tool durability; trade (two agents, money, inventories, relationships, economy); commons actions (agent inventory/hunger/activity plus commons and histories); and institution-day logic (institutions, multiple agents, events, norms/history). Daily advancement functions can also mutate overlapping state outside execute_lumina_action.
+
+Boundary finding: an adapter-level transaction cannot automatically protect the whole simulation because direct/daily callers can mutate the same state outside the adapter. A per-effect transaction could still be meaningful if its reachable write set is closed and every effect-capable caller is routed through the same authority. Whole-simulation atomicity is not justified by current evidence. Split control/admission from bounded local mutation plus reconciliation remains the principal candidate to investigate.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Trace callers of advanceProductionDay, advanceEconomyDay, advanceInstitutionDay, executeAction, and the repair handlers to map the actual entry-point graph and concurrent bypasses; derive the minimum serialization/fencing scope needed to prevent a tick or direct caller from bypassing an admitted effect.
