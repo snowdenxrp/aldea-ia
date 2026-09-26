@@ -408,3 +408,31 @@ No implementation/V21. No formal verification. No current CI PASS claimed.
 
 ## EXACT NEXT ACTION
 Attack these five paths with concrete crash/restart/retry traces and derive the minimum evidence contract needed for R2, without implementing the future architecture.
+
+
+## AB104.176 crash/restart/retry attack
+Fresh external evidence reinforces three points: transactional outbox makes the local state+outbox write atomic but downstream delivery can duplicate; retry safety depends on stable idempotency identity; fencing requires the protected resource to reject stale tokens. citeturn0search0turn0search1turn0search6
+
+Five attack cuts and minimum R2 evidence:
+1. PREPARED→CRASH: required evidence = one durable atomic boundary proving effect identity/admission and recovery state survive together. Current hook + JSON persistence are separate, so UNKNOWN remains.
+2. HANDLER_MUTATION→CRASH_BEFORE_STATE_COMMIT: required evidence = mutation and effect lifecycle/history commit in the same authoritative transaction, or an authoritative recovery record that proves exactly which mutation committed. Current in-memory handler + later persistState fails this requirement.
+3. OWNER_TRANSFER→STALE_WORKER: required evidence = monotonic fence persisted at the mutation authority and checked on every effect-capable path. Current code has no such check. A local lock is insufficient because fencing requires the resource server to reject lower tokens. citeturn0search6
+4. RESOURCE_REPLACEMENT→LATE_RETRY: required evidence = resource incarnation bound into effect identity and checked at mutation/reconciliation. Without it, a valid old operation identity can be misapplied to a new resource.
+5. JOURNAL_EVICTION→RETRY: required evidence = durable retention/reconciliation semantics covering the full ambiguity window. Eviction must never be interpreted as proof of non-execution. Stable idempotency keys are required across retries when the provider supports them. citeturn0search1turn0search9
+
+Minimum R2 contract distilled:
+- authoritative monotonic fence + stale rejection at the actual mutation boundary;
+- immutable effect identity including operation/effect key, parameter digest, resource_id and resource_incarnation;
+- durable lifecycle/history that survives the entire reconciliation/ambiguity window;
+- atomic binding of admission/fence/identity to the protected mutation or an equivalently authoritative recovery mechanism;
+- complete inventory of every effect-capable alternate path;
+- retry/reconciliation using the same identity, never a fresh identity to resolve an ambiguous prior attempt;
+- evidence traces for crash, restart, timeout, stale owner, resource replacement and replay;
+- explicit downgrade to R1 or UNKNOWN whenever any external mutation boundary is outside the protected claim.
+
+AB104.176 conclusion: the five attacks do not justify changing the current classification. Lúmina remains NOT R2. The research now has a concrete promotion test rather than a vague requirement for “more fencing”.
+
+No implementation/V21. No formal verification. No current CI PASS claimed.
+
+## EXACT NEXT ACTION
+Attack the promotion test against each current Lúmina effect path (`repair_agent_state`, `repair_agent_needs`, `repair_resource_state`, `execute_lumina_action`) and determine whether any path can even conceptually satisfy the R2 contract, identifying the first missing evidence for each.
