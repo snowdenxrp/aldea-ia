@@ -313,3 +313,15 @@ Kafka Connect documents periodic source-offset commits and possible reprocessing
 Added F614-1..F614-6 to the fault harness. Core boundary: ConnectorOffsetCommitted = source/transport progress evidence only; never LocalEffectCommitted or ExternalEffectCommitted.
 
 EXACT NEXT ACTION: AB104.615 — exact Kafka Connect EOS source guarantee/transaction boundary and what it can/cannot establish for Nexo.
+
+
+## 28. AB104.615 — exact Kafka EOS source boundary
+Commit: 841b556a06ae7b95382b3e9956fbde6136f73f59
+
+KIP-618 defines source EOS as atomic commit of source records + source offsets inside Kafka transactions plus fencing of older source-task generations. The guarantee requires meaningful source offsets and exact resume capability; Kafka Connect guide confirms EOS source support from 3.3.0. citeturn0search0turn0search1
+
+Nexo boundary: EOS_SOURCE_KAFKA is strong evidence only inside Kafka's authority/transaction domain. It does not prove source-system side effects, downstream business effects, external provider exactly-once, current-world truth after reincarnation, or cross-system atomicity. Zombie fencing is Kafka-domain evidence, not universal Nexo authority fencing.
+
+Added T615-1..T615-6. Conclusion: model EOS as typed/scoped mechanism evidence; Claim Contract must name authority domain + transaction boundary.
+
+EXACT NEXT ACTION: AB104.616 — Kafka transactional fencing/generation semantics and comparison with Nexo AuthorityEpoch/FenceRevision.
