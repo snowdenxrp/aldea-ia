@@ -235,3 +235,13 @@ Fault matrix FI-607-A..J now distinguishes local CAS commit/response ambiguity, 
 Key boundary: etcd succeeded=true proves the transaction branch succeeded inside the etcd consistency domain; it does not prove downstream/provider/world-state mutation or cross-provider atomicity.
 
 EXACT NEXT ACTION: AB104.608 — research etcd response/timeout ambiguity plus restore/incarnation behavior; design executable crash tests separating local CAS COMMITTED/NOT_COMMITTED/UNKNOWN from external-effect UNKNOWN.
+
+
+## 21. AB104.608 — etcd timeout/restore/incarnation + crash tests
+Commit: 39d56769c1542442c1307d790260712edb5e0725
+
+Research confirms snapshot restore creates a new logical etcd cluster and overwrites member/cluster identity; restored keyspace is therefore not automatically the same authority incarnation. etcd recommends revision bumps when watch consumers/local caches exist because restored revisions can confuse observers. citeturn0search7turn0search8 AWS confirms transactional outbox can duplicate downstream delivery and requires idempotent consumers. citeturn0search0turn0search2
+
+Separated UNKNOWN domains: LOCAL_CAS_UNKNOWN versus EXTERNAL_EFFECT_UNKNOWN. Added T608-1..T608-10 executable fault-test designs covering commit-response loss, client crash, stale reads, snapshot restore, revision/watch cache confusion, outbox duplicate, consumer crash, local-CAS/external timeout, new-ID retry, and resource reincarnation. No test is marked verified until executed.
+
+EXACT NEXT ACTION: AB104.609 — inspect exact etcd revision semantics and restore revision-bump behavior; convert T608-1..10 into a minimal runnable fault-injection harness specification, still research/design only.
