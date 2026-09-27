@@ -411,3 +411,15 @@ Current Kafka ProducerConfig/KafkaProducer source confirms transactional.id span
 Nexo finding: there are separate execution/recovery and metadata/history clocks. Timeout != evidence deletion; evidence deletion != NOT_COMMITTED. Defined candidate EvidenceRetentionDeadline as the earliest deployment-specific loss-of-reconstructability deadline minus safety margin. It must cover every Kafka history needed for the claim. Added T623-1..T623-6.
 
 EXACT NEXT: AB104.624 — transaction timeout/recovery interaction + source-connector EOS offset retention; determine whether the deadline must cover both transaction-state and source-offset histories.
+
+
+## 37. AB104.624 — Kafka EOS source-offset retention
+Commit: e470ceb6d446cd720b3ea2d89f2872c5954f50ab
+
+KIP-618 couples source records + primary source offsets in one Kafka transaction. EOS additionally requires meaningful source offsets and exact external-source resume semantics. Transaction boundaries remain tied to offset commits; batches exceeding transaction timeout require configuration/throughput adjustment. citeturn0search1turn0search2turn0search10
+
+Critical: source progress has three histories: external source position; Kafka transactional source-record+primary-offset history; optional global/mirrored Connect offsets. EOS couples only the Kafka transaction boundary. A mirror can be non-transactional and retried separately. citeturn0search1
+
+Nexo: EvidenceRetentionDeadline must cover the complete claim chain, not only __transaction_state: source lineage + primary offsets + transaction state. Missing/expired source-offset history => UNKNOWN, never NOT_PROCESSED. Added T624-1..T624-6.
+
+EXACT NEXT: AB104.625 — source-offset reset/fencing implementation and alterOffsets crash windows; map administrative offset changes to AuthorityEpoch/AdmissionGeneration.
