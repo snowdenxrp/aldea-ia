@@ -173,3 +173,18 @@ Open: executable nested-cache/derivation tests, speculative-branch merge tests, 
 
 ## EXACT NEXT ACTION
 AB104.603: research executable/code-level mechanisms for provenance propagation and cache-generation/version fencing, then design the smallest adversarial test matrix covering nested derivation, cache invalidation races, speculative reads, provider observations, and crash/retry. Preserve all open gaps; do not implement Nexo/V21.
+
+
+## 16. AB104.603 — Provenance propagation mechanisms + adversarial matrix
+Commit: 819bcf67f4cc1776c9269392f1b6e2f77f0cec24
+
+Research confirms ordinary distributed-context propagation is not authority provenance. W3C Baggage permits mutation and dropping under limits; OpenTelemetry context is designed for causal/telemetry propagation; neither proves DependencySet completeness. Redis provides concrete cache invalidation/generation race defenses but remains a cache mechanism, not Nexo authority fencing. citeturn0search1turn0search2turn0search0
+
+Minimum candidate protected ProvenanceEnvelope: AdmissionID, Generation, ReadID, SourceIdentity, SourceIncarnation, SourceVersion/Revision, DerivationID/Version, ParentDigest, CacheGeneration, Freshness, ConsistencyMode, Completeness, TrustBoundary. Transport may carry a digest/reference; authoritative FINAL_GATE must bind and validate it.
+
+15-test adversarial matrix saved: nested derivation, nested cache, refresh/invalidation race, invalidation-channel loss, speculative discarded/merged branches, stale external observation, incarnation change, crash after capture, partial-provenance retry, helper bypass, cache-of-cache, final-gate mutation, carrier truncation, generation rollback.
+
+Open: these are test designs, not executed tests. TLC remains PENDING; SANY remains parser/semantic evidence only.
+
+## EXACT NEXT ACTION
+AB104.604: map the matrix to real code mechanisms: transactional outbox, versioned cache keys, CAS/etcd revisions, and OpenTelemetry propagation boundaries; classify each as evidence mechanism vs Nexo-specific protected semantic.
