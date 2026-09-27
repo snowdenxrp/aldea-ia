@@ -106,3 +106,31 @@ AB104.186 is research only. No implementation/V21/formal verification/CI PASS cl
 
 ## EXACT NEXT ACTION
 AB104.187: adversarially test these VersionSets for write-skew and hidden semantic dependencies, especially trade↔institution, farm↔ecosystem, repair↔society, and research/technology/governance feedback loops. Determine whether DependencySet can be static or must be dynamically recorded from authoritative reads.
+
+## 13. AB104.600 — SANY gate + VersionSet adversarial dependency audit
+
+SANY evidence gate completed remotely on 2026-09-27 for the byte-correct AB104.596 TLA+ artifact.
+- GitHub Actions run: 36348601604
+- job: 108702709826 (sany)
+- conclusion: SUCCESS
+- exact pinned tla2tools.jar SHA-256: ab323b79802aedc3203b3f9af37c6aca3ed43f4e0225b36f2aa77b26de46c05f
+- Java: Temurin 21.0.12+1
+- SANY output: parsing, semantic processing, linting completed with no error reported.
+- artifact: nexo-ab104-598-sany-evidence, artifact ID 10941820379, zip SHA-256 a5c03c078434fffbbada646c4e0c59a882c81c683f353a36a7de12042903e437
+- This is SYNTAX/SEMANTIC PARSE evidence only. It is NOT TLC model checking and NOT formal correctness.
+
+AB104.600 research commit: 3a1e7c87d35a2647b4d20c9b0d43bae860346938
+Research result:
+- Direct WriteSet is insufficient for semantic invariants.
+- Static DependencySet is safe only if its closure is proven conservative and complete.
+- Where static closure is incomplete, authority-relevant reads must be dynamically captured from the authoritative path.
+- Predicate/range/aggregate dependencies must be representable or conservatively widened.
+- The executed access path/instrumentation is part of the proof surface; real PostgreSQL SSI scan-path issues demonstrate that missing conflict registration can defeat an intended serializability mechanism.
+- Dynamic capture must be provenance/version/incarnation bound and validated at the final gate; uninstrumented or non-authoritative reads cannot silently enlarge authority.
+- Nexo adversarial targets: trade↔institution, farm↔ecosystem, repair↔society, research/technology/governance.
+
+Important status correction:
+SANY PASS closes only the parser/semantic-analysis gate for the exact artifact. TLC/model-checking remains PENDING. AB104.596's bounded-model limitation remains: it does not model provider-side acceptance followed by resource reincarnation.
+
+## EXACT NEXT ACTION
+AB104.601: adversarially audit derived-value/cache/helper-function dependency leakage and define the minimum provenance record required to prove every authority-relevant read entered the final DependencySet. Then run TLC only after the model/CFG/toolchain evidence gate is satisfied.
