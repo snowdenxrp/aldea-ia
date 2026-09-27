@@ -433,3 +433,13 @@ KIP-875: EOS source offset alter/reset first fences prior tasks, then invokes co
 Nexo finding: offset reset is an administrative authority transition, not mere metadata editing. Map it to AuthorityEpoch/FenceEpoch/Reconciliation, while external source offset changes remain a separate claim. Added C625-1..C625-6.
 
 EXACT NEXT: AB104.626 — inspect Kafka Connect task-generation/config-topic fencing source code around stop/reset and crash windows; determine whether external alteration can occur without a durable equivalent operation identity.
+
+
+## 39. AB104.626 — Kafka task-generation/config-topic fencing
+Commit: c759cfc30bee65adf62b2ebfc1bd7331ff34e6b9
+
+KIP-875: offset alter/reset is restricted to STOPPED connectors; EOS source reset fences prior tasks before invoking alterOffsets and changing/resetting primary offsets transactionally. KIP-618 scopes source-task transactional identity to group/connector/task. citeturn0search0turn0search1
+
+Finding: config-topic task generation/fencing is participant-local coordination, not universal operation identity. A reset may span Connect config/task generation, Kafka primary offsets, and an external offset authority. Added C626-1..C626-6 and separated ConnectorIncarnation, TaskGeneration, ConfigEpoch, OffsetAuthorityIncarnation, OffsetResetOperationID, KafkaTransactionIdentity, ExternalOffsetAuthorityIdentity, FenceEpoch, ReconciliationState.
+
+EXACT NEXT: AB104.627 — inspect implementation paths for task fencing/rebalance completion and source-offset reset ordering; build source-level crash-window matrix and identify missing durable operation identity.
