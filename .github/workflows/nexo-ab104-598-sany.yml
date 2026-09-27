@@ -1,0 +1,41 @@
+name: Nexo AB104.598 TLA SANY Gate
+
+on:
+  push:
+    paths:
+      - 'docs/nexo/formal/NEXO_AB104_596_EFFECT_LIFECYCLE.tla'
+      - 'docs/nexo/formal/NEXO_AB104_596_EFFECT_LIFECYCLE.cfg'
+      - '.github/workflows/nexo-ab104-598-sany.yml'
+  workflow_dispatch:
+
+jobs:
+  sany:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Download pinned TLA+ tools
+        run: |
+          curl -fL --retry 3 --retry-delay 2             'https://github.com/zactionsz/tla-tools/releases/download/tla2tools-2026.08.11.125311/tla2tools.jar'             -o tla2tools.jar
+          echo 'ab323b79802aedc3203b3f9af37c6aca3ed43f4e0225b36f2aa77b26de46c05f  tla2tools.jar' | sha256sum -c -
+
+      - name: Run SANY
+        run: |
+          set -o pipefail
+          java -cp tla2tools.jar tla2sany.SANY             docs/nexo/formal/NEXO_AB104_596_EFFECT_LIFECYCLE.tla             2>&1 | tee sany.log
+
+      - name: Upload SANY evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab104-598-sany-evidence
+          path: sany.log
