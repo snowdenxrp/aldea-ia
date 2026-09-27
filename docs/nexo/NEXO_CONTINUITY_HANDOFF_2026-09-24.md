@@ -673,3 +673,13 @@ Evidence labels remain: EXACT_TEST_BODY_VERIFIED=NO; TEST_EXECUTED=NO; BROKER_DU
 E642-1..E642-8 remain execution-pending. ClientCallbackState MUST NOT mint ExternalEffectOutcome.
 
 EXACT NEXT ACTION: AB104.646 — navigate the official Apache Gitiles commit/tree route to locate the exact current ProducerFailureHandlingTest and MockClient paths by tree navigation or known commit, retrieve source line-by-line, and preserve any path-move/history finding. Do not infer coverage or execution.
+
+
+## 59. AB104.646 — Gitiles test-path discovery
+Commit: 6788f859d098b7fa6b82bd31862bcc996eb45c37
+
+Official Apache Kafka Gitiles confirms the current targeted ProducerFailureHandlingTest route under clients:clients-integration-tests and exposes current repository history. Older history places a same-named test under core, so the path moved over time. Exact current source body was still not retrieved; no method-level coverage or execution is claimed.
+
+Status: EXACT_TEST_BODY_VERIFIED=NO; TEST_EXECUTED=NO; BROKER_DURABILITY_VERIFIED=NO; NEXO_CORRECTNESS_VERIFIED=NO.
+
+EXACT NEXT ACTION: AB104.647 — follow the current Gitiles clients/clients-integration-tests tree and commit history to retrieve the exact ProducerFailureHandlingTest source, then locate current MockClient and inspect response/error queue primitives line-by-line.
