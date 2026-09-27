@@ -535,3 +535,11 @@ Commit: 2d1add63e50aea459080fe72ac6f505a7b3cbb60
 Current Worker source confirms regular source connectors use SourceTaskOffsetCommitter, while exactly-once source support disables that separate periodic committer and uses a connector-specific OffsetBackingStore path. citeturn0search3 The durable Nexo claim begins at the backing store's authoritative persistence boundary, not merely a callback. Regular flush can replay; EOS proves Kafka-domain source-record+offset atomicity only.
 
 EXACT NEXT: AB104.636 — inspect exact OffsetStorageWriter/OffsetBackingStore implementation and callback completion semantics; determine whether read-back is required for durable EvidenceRecord anchoring.
+
+
+## 49. AB104.636 — offset commit callback durable anchor
+Commit: 1583a03597df863b8eb8f67e341b4309ed3a9fbd
+
+KIP-618 confirms EOS source offset commits are anchored by the Kafka transaction; SourceTask.commit/commitRecord callbacks occur after successful offset commit and can be skipped if the process dies afterward. Therefore callback presence/absence cannot be the durable anchor. citeturn0search5 Regular source flush remains a replay boundary. Nexo must anchor EvidenceRecord to the strongest actual storage-domain event, not connector callbacks.
+
+EXACT NEXT: AB104.637 — inspect KafkaOffsetBackingStore/OffsetStorageWriter source for batching, serialization, flush ordering and failure callbacks; map exact crash windows.
