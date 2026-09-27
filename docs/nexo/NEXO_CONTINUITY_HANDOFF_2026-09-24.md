@@ -377,3 +377,15 @@ Nexo finding: Kafka's current transaction state is authoritative only within its
 Added candidate KafkaEvidenceAnchor = cluster incarnation + transaction-state partition + transactionalId + producerId/epoch + state + log position/observation revision + evidence digest + time + recovery generation. Added T620-1..T620-6.
 
 EXACT NEXT: AB104.621 — inspect transaction-state topic source/configuration and exact cleanup/retention behavior to define minimum evidence-retention contract for Kafka-backed Nexo mechanisms.
+
+
+## 34. AB104.621 — exact __transaction_state cleanup boundary
+Commit: 8c6062063b8dbe4732ba443cd6c7ad72932d82ad
+
+Apache Kafka source confirms TransactionStateManager replays transaction state from logStartOffset to logEndOffset and writes tombstones when transactional IDs expire; cached metadata is removed only after successful tombstone append. TransactionCoordinator explicitly configures transaction topic partitions, replication factor, segment bytes and minimum ISR. citeturn0search1turn0search4
+
+Critical distinction: log retention/segment lifecycle bounds historical replay, while transactional-id expiration/tombstoning removes IDs from reconstructed current state. Therefore current API/cache absence is NOT evidence that a transaction never existed or never committed.
+
+Nexo rule: historical claims require independent EvidenceRecord captured before evidence disappears; otherwise missing history => UNKNOWN/QUARANTINE, never NOT_COMMITTED. T621-1..T621-6 added.
+
+EXACT NEXT: AB104.622 — inspect current Kafka transaction.state.log.* configuration/defaults and distinguish evidence-lifetime controls from operational-recovery controls.
