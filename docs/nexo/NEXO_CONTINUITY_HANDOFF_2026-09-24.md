@@ -648,3 +648,16 @@ New invariant: `ClientCallbackState MUST NOT mint ExternalEffectOutcome.` Eviden
 Status: RESEARCH ONLY. No tests executed, no implementation, no verification claim. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.644 — inspect actual ProducerFailureHandlingTest and MockClient source bodies around response injection, retry, timeout and callback assertions; classify direct existing coverage vs required new tests.
+
+
+## 57. AB104.644 — producer failure-test body evidence boundary
+Commit: 2747925127c37c7023b51a7e93dc22a1883d1d5f
+Research file: docs/nexo/NEXO_AB104_644_TEST_BODY_EVIDENCE_BOUNDARY_2026-09-27.md
+
+AB104.644 did NOT obtain a directly inspectable current Apache Kafka `ProducerFailureHandlingTest`/`MockClient` body through the available source route. The attempted direct source retrieval/search did not yield the exact current test bodies, so no method-level coverage is claimed and no test is marked executed. This is intentionally preserved as UNKNOWN/PENDING rather than inferred from repository structure or secondary descriptions.
+
+E642-1..8 remain execution-pending. Unit/mock fault injection remains distinct from integration evidence for broker durability, response loss after acceptance, leader failure and log visibility. The evidence labels are explicit: EXACT_TEST_BODY_VERIFIED=NO; TEST_EXECUTED=NO; BROKER_DURABILITY_VERIFIED=NO; NEXO_CORRECTNESS_VERIFIED=NO.
+
+Status: RESEARCH ONLY. No implementation, no verification claim. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.645 — retrieve the canonical Apache Kafka source snapshot or another direct source route exposing the exact current test bodies; inspect MockClient response/error queue APIs and ProducerFailureHandling assertions line-by-line. Preserve this retrieval gap until direct evidence exists.
