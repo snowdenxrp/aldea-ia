@@ -199,3 +199,16 @@ Critical result: no surveyed mechanism closes the whole provenance claim. Each s
 
 ## EXACT NEXT ACTION
 AB104.605: inspect real implementation/code paths for transactional outbox, etcd CAS/revisions, Redis tracking and OTel propagation; extract concrete failure modes that clean Nexo must forbid/quarantine.
+
+
+## 18. AB104.605 — Real implementation failure modes
+Commit: f6081bb19a06a7265b244c3a8d45a5cec4d4193f
+
+Code/documentation inspection confirms concrete failure classes: transactional outbox gives local DB+outbox atomicity but downstream delivery can duplicate and requires idempotent consumers; Redis documents GET/invalidation races and cache flush on invalidation-channel loss; OTel Baggage has no built-in integrity checks; bounded CAS/revision semantics cannot be promoted into external-world fencing. citeturn0search1turn0search0turn0search5
+
+Failure classes preserved: F1 duplicate delivery, F2 stale cache resurrection, F3 invalidation-channel loss, F4 mutable/untrusted propagation metadata, F5 local atomicity mistaken for global/external atomicity, F6 observation mistaken for current world truth.
+
+Architecture consequence: mechanism evidence must flow through EvidenceRecord → claim-specific validation → protected admission. A successful mechanism call must never directly mint AuthorityContext.
+
+## EXACT NEXT ACTION
+AB104.606: research concrete CAS/revision semantics and crash behavior in etcd plus transactional-outbox duplicate/idempotency implementations; formulate executable fault-injection scenarios for F1/F5 and recovery UNKNOWN.
