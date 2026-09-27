@@ -147,3 +147,29 @@ Key result:
 - PostgreSQL evidence: SERIALIZABLE predicate tracking depends on data actually accessed and query plan; predicate coverage includes ranges, not only returned tuples.
 
 EXACT NEXT ACTION: AB104.602 — adversarially test provenance loss across multi-stage derivation, cache refresh races, speculative reads, external provider observations, and crash/retry between capture and final gate.
+
+
+## 15. AB104.602 — Adversarial provenance-loss audit
+Commit: d7bc056b66e4bec1dbe1df11169e9078258dd204
+Research file: docs/nexo/NEXO_AB104_602_PROVENANCE_LOSS_AUDIT_V1_2026-09-27.md
+
+External evidence confirms four important failure classes:
+- PostgreSQL SERIALIZABLE tracks dependencies from data actually accessed and access plans; predicate/range coverage matters, and aborted transaction results are not valid evidence. citeturn0search1turn0search0
+- Redis documents a concrete invalidation/GET race where a stale response can repopulate cache, plus cache flush requirements after invalidation-channel loss. citeturn1search0
+- etcd distinguishes linearizable reads from serializable member-local reads that may be stale. citeturn2search12
+- AWS EC2 documents eventual consistency where successful mutations may not yet be visible and NotFound does not prove non-existence. citeturn2search0
+
+Key findings:
+1. Multi-stage derivation can erase dependency identity; provenance must survive every authority-relevant derivation/helper edge.
+2. Authority-relevant cache entries need source version/incarnation, derivation identity, freshness/expiry and invalidation/reconciliation generation. CACHE_HIT != CURRENT.
+3. Lost invalidation delivery forces cache flush/quarantine/revalidation before authority-relevant use.
+4. Speculative reads must not silently enlarge DependencySet; if their result influences the decision, dependencies are explicitly promoted.
+5. External observations require provider/endpoint identity, resource incarnation, revision/consistency mode, observation time/freshness and operation identity; observation is not automatically world truth.
+6. Crash/retry between capture and FINAL_GATE requires durable provenance/generation/version/incarnation/completeness state; missing provenance => fresh admission or HOLD.
+7. Final gate must validate provenance/version/incarnation freshness; RECORDED != COMPLETE.
+8. Dependency completeness is a claim-specific TCB spanning authoritative access capture, derivation provenance, cache coherence, external observation validation and crash-safe replay.
+
+Open: executable nested-cache/derivation tests, speculative-branch merge tests, provider freshness/incarnation contracts, crash injection across capture→FINAL_GATE. TLC remains PENDING; SANY PASS is only parse/semantic evidence.
+
+## EXACT NEXT ACTION
+AB104.603: research executable/code-level mechanisms for provenance propagation and cache-generation/version fencing, then design the smallest adversarial test matrix covering nested derivation, cache invalidation races, speculative reads, provider observations, and crash/retry. Preserve all open gaps; do not implement Nexo/V21.
