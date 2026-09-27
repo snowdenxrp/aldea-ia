@@ -212,3 +212,14 @@ Architecture consequence: mechanism evidence must flow through EvidenceRecord �
 
 ## EXACT NEXT ACTION
 AB104.606: research concrete CAS/revision semantics and crash behavior in etcd plus transactional-outbox duplicate/idempotency implementations; formulate executable fault-injection scenarios for F1/F5 and recovery UNKNOWN.
+
+
+## 19. AB104.606 — CAS/revision + crash semantics
+Commit: 842760b531ef02028ae84a1524117dd983129cf4
+
+Research established ten fault-injection scenarios FI-1..FI-10 covering outbox relay crashes/duplicates, consumer ack loss, split dedup/effect transactions, etcd CAS timeout, stale serializable reads, watch-as-authority misuse, revision-only identity, local-CAS/external-effect separation, and retry-with-new-ID after UNKNOWN. etcd provides durable/strictly-serializable KV operations and revision ordering, but serializable reads may be stale and watch is not itself linearizable. Transactional outbox still requires idempotent consumers; an inbox-style atomic dedup marker + side effect closes the check-then-act crash window. citeturn0search3turn0search0turn0search10
+
+Key gates: local commit != delivery != external effect; CAS/revision is scope-bound evidence; retry preserves logical identity until reconciliation; lost acknowledgement => UNKNOWN; stale reads/watch absence cannot authorize; dedup and side effect should share an atomicity boundary where possible.
+
+## EXACT NEXT ACTION
+AB104.607: inspect actual etcd transaction APIs/code and outbox/inbox implementations; map compare predicates, revisions, duplicate markers and retry identity into Nexo EvidenceRecords without treating implementation fields as universal semantics.
