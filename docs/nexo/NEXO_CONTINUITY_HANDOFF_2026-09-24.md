@@ -389,3 +389,15 @@ Critical distinction: log retention/segment lifecycle bounds historical replay, 
 Nexo rule: historical claims require independent EvidenceRecord captured before evidence disappears; otherwise missing history => UNKNOWN/QUARANTINE, never NOT_COMMITTED. T621-1..T621-6 added.
 
 EXACT NEXT: AB104.622 — inspect current Kafka transaction.state.log.* configuration/defaults and distinguish evidence-lifetime controls from operational-recovery controls.
+
+
+## 35. AB104.622 — Kafka transaction.state.log.* evidence lifetime
+Commit: a933fed47d3577bff7d880142d35b282d8f81d93
+
+Current Kafka configuration references: transaction.state.log.min.isr controls acknowledgements for transaction-topic writes; transaction.state.log.replication.factor controls replication; transaction.state.log.segment.bytes affects segment/compaction/cache behavior; transactional.id.expiration.ms controls inactivity expiration, and producer IDs may expire earlier when historical writes disappear through retention. citeturn0search1turn0search2turn0search4
+
+Classification: replication/minISR = durability/availability; segment/load/partitions = operational; retention/transactional-ID expiration = evidence lifetime/reconstructability. No single transaction.state.log.* setting provides permanent historical proof.
+
+Nexo contract: claims needing longer retention require independent durable EvidenceRecord plus Kafka configuration fingerprint + authority incarnation. Expired/unreconstructable history => UNKNOWN/QUARANTINE, never NOT_COMMITTED. T622-1..T622-6 added.
+
+EXACT NEXT: AB104.623 — source-level cleanup + producer-ID expiration interaction, then derive minimum EvidenceRetentionDeadline for Nexo.
