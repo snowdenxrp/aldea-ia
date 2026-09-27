@@ -279,3 +279,15 @@ Adversarial A611-1..10 added: concurrent duplicate, post-commit redelivery, mark
 Minimum contract: DedupKey = ConsumerDomainID + ConsumerIncarnation + LogicalEffectID + ContractDigest. CLAIMED != COMPLETED. External completion still requires authoritative provider evidence. Historical dedup state does not silently survive authority reincarnation.
 
 EXACT NEXT ACTION: AB104.612 — CDC ordering/replay + stale snapshot recovery; causal ordering evidence must remain separate from dedup identity.
+
+
+## 25. AB104.612 — CDC ordering/replay + stale restore
+Commit: b7055d011c96b3d1e41fed560d169103cf2925e2
+
+Debezium documents unique event IDs for dedup and aggregate ID as Kafka key for partition ordering; event ID alone is not causal-order evidence. citeturn0search0turn0search9 etcd restore creates a new logical cluster; revision bump + mark-compacted protect old watch/cache consumers, and a watch starting at compacted revision is explicitly canceled. citeturn0search4turn0search3turn0search10
+
+Separated identities: DedupIdentity = ConsumerDomain + ConsumerIncarnation + EffectID + ContractDigest; CausalPosition = SourceDomain + SourceIncarnation + AggregateID + Sequence/Revision + DependencyDigest. Replay safety != causal ordering. Restore invalidates continuity assumptions unless explicit transfer exists.
+
+T612-1..T612-10 added for replay, contract collision, reordered events, CDC restart, source/consumer snapshot restore, compacted watch, revision bump, incarnation mismatch and missing sequence.
+
+EXACT NEXT ACTION: AB104.613 — CDC connector offset/checkpoint durability and crash/replay semantics; determine whether offsets are authoritative progress or only transport-consumer evidence.
