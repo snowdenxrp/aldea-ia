@@ -633,3 +633,18 @@ MockClient/unit tests can prove client state-machine behavior but not broker per
 Status: RESEARCH ONLY. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.643 — inspect concrete MockClient APIs and ProducerFailureHandling tests/source to identify exact injectable response/error primitives and build one-to-one E642 fault-point mapping.
+
+
+## 56. AB104.643 — MockClient / ProducerFailureHandling exact fault-point map
+Commit: 6d8761db92234e3bd102e99741db1bf67713ad90
+Research file: docs/nexo/NEXO_AB104_643_MOCKCLIENT_EXACT_FAULT_POINTS_2026-09-27.md
+
+Current Apache Kafka repo supports targeted ProducerFailureHandling tests and distinguishes unit from integration/system tests. KafkaProducer exposes testing-visible constructors accepting injected KafkaClient/Sender/RecordAccumulator/TransactionManager, making deterministic client-fault injection possible without claiming broker durability. citeturn0search0turn0search8
+
+E642-1..8 mapped: response injection after ProduceRequest; retriable ProduceResponse; multi-in-flight failure/reorder; broker/leader failure requiring integration; transactional send vs commit response loss; delivery timeout; producer ACK vs consumer/read-to-end lag; close/force-close unresolved sends.
+
+New invariant: `ClientCallbackState MUST NOT mint ExternalEffectOutcome.` Evidence layers remain separate: MockClient/unit → client protocol; integration → Kafka-domain behavior; Kafka reconciliation → authoritative current observation; durable Nexo EvidenceRecord → historical claim.
+
+Status: RESEARCH ONLY. No tests executed, no implementation, no verification claim. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.644 — inspect actual ProducerFailureHandlingTest and MockClient source bodies around response injection, retry, timeout and callback assertions; classify direct existing coverage vs required new tests.
