@@ -661,3 +661,15 @@ E642-1..8 remain execution-pending. Unit/mock fault injection remains distinct f
 Status: RESEARCH ONLY. No implementation, no verification claim. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.645 — retrieve the canonical Apache Kafka source snapshot or another direct source route exposing the exact current test bodies; inspect MockClient response/error queue APIs and ProducerFailureHandling assertions line-by-line. Preserve this retrieval gap until direct evidence exists.
+
+
+## 58. AB104.645 — Kafka test-body retrieval boundary
+Commit: aee97bcc6b84c036486f9f60ac3b069f32ddb62a
+
+AB104.645 narrowed but did not close the Kafka producer test-body retrieval gap. Official Apache Kafka Gitiles confirms the repository/current test-running route, including targeted ProducerFailureHandlingTest execution guidance, but direct GitHub connector retrieval of the current ProducerFailureHandlingTest.java path returned 404. No exact current test body, method-level coverage, or execution is claimed.
+
+Evidence labels remain: EXACT_TEST_BODY_VERIFIED=NO; TEST_EXECUTED=NO; BROKER_DURABILITY_VERIFIED=NO; NEXO_CORRECTNESS_VERIFIED=NO.
+
+E642-1..E642-8 remain execution-pending. ClientCallbackState MUST NOT mint ExternalEffectOutcome.
+
+EXACT NEXT ACTION: AB104.646 — navigate the official Apache Gitiles commit/tree route to locate the exact current ProducerFailureHandlingTest and MockClient paths by tree navigation or known commit, retrieve source line-by-line, and preserve any path-move/history finding. Do not infer coverage or execution.
