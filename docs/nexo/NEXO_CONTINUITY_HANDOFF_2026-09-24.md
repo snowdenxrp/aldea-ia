@@ -527,3 +527,11 @@ Commit: 5f9157405e98e103bc74a4829dca1b67fd1ef812
 Concrete Connect evidence confirms separate offset-storage paths for regular vs EOS source connectors. Regular periodic flush can leave replay windows; an offset-store callback is not automatically proof of external processing. Distributed Kafka offset topics provide durable bounded recovery, while file storage depends on filesystem survival/provenance. citeturn0search0turn0search1
 
 EXACT NEXT: AB104.635 — inspect exact OffsetBackingStore implementations/callback semantics and derive the minimal durable boundary for Nexo EvidenceRecord.
+
+
+## 48. AB104.635 — exact OffsetBackingStore boundary
+Commit: 2d1add63e50aea459080fe72ac6f505a7b3cbb60
+
+Current Worker source confirms regular source connectors use SourceTaskOffsetCommitter, while exactly-once source support disables that separate periodic committer and uses a connector-specific OffsetBackingStore path. citeturn0search3 The durable Nexo claim begins at the backing store's authoritative persistence boundary, not merely a callback. Regular flush can replay; EOS proves Kafka-domain source-record+offset atomicity only.
+
+EXACT NEXT: AB104.636 — inspect exact OffsetStorageWriter/OffsetBackingStore implementation and callback completion semantics; determine whether read-back is required for durable EvidenceRecord anchoring.
