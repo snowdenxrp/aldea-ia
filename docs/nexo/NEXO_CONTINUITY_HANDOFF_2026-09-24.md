@@ -501,3 +501,11 @@ EvidenceRetentionDeadline now spans three histories: external source position/re
 Universal numeric deadline remains UNKNOWN because it is deployment/connector-specific. Remaining gap: concrete offset-storage implementations and restore/reset behavior.
 
 EXACT NEXT: AB104.632 — research Kafka Connect offset storage (Kafka topic, file, memory, JDBC) plus reset/restore behavior and build the retention/restore claim matrix.
+
+
+## 45. AB104.632 — Connect offset-storage restore matrix
+Commit: 42407aadfe9d78a10524290aef57fffb640b1017
+
+Research mapped Kafka topic, file, memory and backend-specific offset stores. Distributed Connect uses Kafka topics; standalone uses a local file. EOS can use per-connector offsets topics. Storage survival is not automatically historical authority: OffsetExists != SourceEffectCommitted; OffsetMissing != SourceEffectNotProcessed; OffsetRestored != CurrentAuthority. citeturn0search0turn0search2
+
+EXACT NEXT: AB104.633 — research concrete offset-topic compaction/retention plus crash semantics of file/JDBC/custom stores; identify which can provide authoritative historical anchors and which force UNKNOWN.
