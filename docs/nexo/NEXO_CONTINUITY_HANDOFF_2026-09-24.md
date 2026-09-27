@@ -453,3 +453,13 @@ KIP-618 uses ordered config-topic checkpoints for zombie fencing: task-count gen
 Finding: reset is a multi-domain ordered protocol, not one final CAS. Sequence: STOPPED/config-empty → fence-generation → config-topic end observed → alterOffsets → primary offset transaction → offsets-topic end observed. Each checkpoint has independent crash ambiguity. A later checkpoint cannot erase an earlier UNKNOWN. Added C627-1..C627-7.
 
 EXACT NEXT: AB104.628 — inspect exact source code/tests for zombie fencing and reset ordering; determine whether KIP-875 has a durable operation identity or derives only participant-local transactional identity.
+
+
+## 41. AB104.628 — Kafka fencing implementation identity
+Commit: 486d19d8206fcf10dc3a1b3b56571d5066cc2afe
+
+Actual Kafka Connect Worker.java uses Admin.fenceProducers over task transactional IDs (groupId+connector+taskId); task EOS producers use the same task-scoped transactional identity. KIP-875's offset-reset transaction instead uses groupId+connector. citeturn0search1turn0search0
+
+Finding: Kafka exposes participant-local identities, but no durable Nexo-wide ResetOperationID. Successful completion of the fencing future does not itself persist a cross-domain reset operation. Crash after fencing therefore leaves a participant-local fact plus unresolved overall reset outcome. Added C628-1..C628-6.
+
+EXACT NEXT: AB104.629 — research Admin.fenceProducers timeout/failure semantics and producer-epoch evidence; define reconciliation evidence for COMMITTED / NOT_COMMITTED / UNKNOWN fencing.
