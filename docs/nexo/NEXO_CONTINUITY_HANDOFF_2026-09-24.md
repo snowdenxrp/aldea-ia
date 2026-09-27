@@ -575,3 +575,18 @@ F638-1..F638-6 preserved: send/response-loss ambiguity; callback error; callback
 Status: RESEARCH ONLY. No implementation or runtime verification. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.639 — inspect KafkaProducer send/RecordMetadata/acks and relevant producer tests plus transaction/read-committed semantics to pin exact producer-callback success, timeout, retry and broker-failover meaning.
+
+
+## 52. AB104.639 — KafkaProducer ACK/timeout/retry semantics
+Commit: b93c76b0363b4fe767d348598709a2f1a279e827
+Research file: docs/nexo/NEXO_AB104_639_KAFKAPRODUCER_ACK_TIMEOUT_RETRY_2026-09-27.md
+
+Current KafkaProducer source/docs establish that send is asynchronous; the producer buffers records and a background I/O thread transmits them. `acks=all` is the strongest normal acknowledgement condition, and producer retries are bounded by delivery.timeout.ms. A successful callback supplies RecordMetadata including topic/partition/offset, providing strong Kafka-domain evidence scoped to the producer/cluster lineage. citeturn0search0turn0search2
+
+Critical epistemic boundary: timeout/transport failure does not prove NOT_COMMITTED because the request may have reached Kafka before the client learned the result. Producer idempotence protects retries within one producer session, but application-level re-sends are not automatically deduplicated. Therefore UNKNOWN must preserve logical operation identity until authoritative reconciliation; a new application identity is not a safe substitute. citeturn0search2
+
+F639-1..F639-7 preserved: buffered-before-send crash; response loss after transmission; successful RecordMetadata; retriable retry; delivery timeout; broker/leader failover; transactional timeout.
+
+Status: RESEARCH ONLY. No implementation or runtime verification. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.640 — inspect producer tests and sender/record-accumulator paths for timeout, retriable errors, duplicate suppression, leader failover and callback ordering; convert F639 into executable adversarial test specifications.
