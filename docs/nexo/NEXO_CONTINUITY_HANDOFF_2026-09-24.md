@@ -519,3 +519,11 @@ Current Connect guidance requires distributed offset topics to be replicated and
 Storage classification: Kafka topic = bounded durable anchor; file = bounded anchor if provenance/incarnation survives; memory = no post-crash anchor; JDBC/custom = contract-dependent and UNKNOWN until concrete guarantees are evidenced.
 
 EXACT NEXT: AB104.634 — inspect concrete Kafka Connect FileOffsetBackingStore/KafkaOffsetBackingStore source and exact flush/error crash windows.
+
+
+## 47. AB104.634 — Connect offset flush crash windows
+Commit: 5f9157405e98e103bc74a4829dca1b67fd1ef812
+
+Concrete Connect evidence confirms separate offset-storage paths for regular vs EOS source connectors. Regular periodic flush can leave replay windows; an offset-store callback is not automatically proof of external processing. Distributed Kafka offset topics provide durable bounded recovery, while file storage depends on filesystem survival/provenance. citeturn0search0turn0search1
+
+EXACT NEXT: AB104.635 — inspect exact OffsetBackingStore implementations/callback semantics and derive the minimal durable boundary for Nexo EvidenceRecord.
