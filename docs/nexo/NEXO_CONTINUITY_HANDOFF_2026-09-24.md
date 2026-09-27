@@ -223,3 +223,15 @@ Key gates: local commit != delivery != external effect; CAS/revision is scope-bo
 
 ## EXACT NEXT ACTION
 AB104.607: inspect actual etcd transaction APIs/code and outbox/inbox implementations; map compare predicates, revisions, duplicate markers and retry identity into Nexo EvidenceRecords without treating implementation fields as universal semantics.
+
+
+## 20. AB104.607 — concrete etcd/outbox mapping
+Commit: ebd47408e4aad6ff090e76f18027146d825c5db4
+
+Mapped real etcd Txn comparisons (version/create_revision/mod_revision/value) and transaction revision to scoped local evidence, not universal authority. Mapped transactional outbox row -> durable delivery intent, relay -> delivery attempt, consumer dedup -> processed-effect record. AWS reference confirms outbox relay can duplicate and consumers must be idempotent. citeturn0search6turn0search3turn0search0
+
+Fault matrix FI-607-A..J now distinguishes local CAS commit/response ambiguity, outbox crashes, consumer effect/ack crashes, stale reads/watch gaps, local-CAS vs external-effect UNKNOWN, identity-changing retries, and key reincarnation.
+
+Key boundary: etcd succeeded=true proves the transaction branch succeeded inside the etcd consistency domain; it does not prove downstream/provider/world-state mutation or cross-provider atomicity.
+
+EXACT NEXT ACTION: AB104.608 — research etcd response/timeout ambiguity plus restore/incarnation behavior; design executable crash tests separating local CAS COMMITTED/NOT_COMMITTED/UNKNOWN from external-effect UNKNOWN.
