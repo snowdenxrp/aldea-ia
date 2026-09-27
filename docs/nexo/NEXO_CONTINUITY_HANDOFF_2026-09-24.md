@@ -491,3 +491,13 @@ Commit: 45da1cbdb0960f7b0a06fb7e1190c1aadced2192 (note file)
 AB104.630 confirms that producer epoch is scoped fencing evidence only while Kafka cluster/coordinator lineage remains reconstructable. After transaction-state cleanup, producer-ID expiration, restore, or incarnation change, absence cannot prove NOT_COMMITTED. Timeout can still coincide with a broker-side epoch bump. EvidenceRetentionDeadline must precede loss of the Kafka history needed to distinguish COMMITTED from UNKNOWN; independent Nexo EvidenceRecord is required for claims that outlive Kafka metadata.
 
 EXACT NEXT: AB104.631 — reconcile this retention boundary with Kafka Connect EOS source-offset history/reset semantics and explicitly close or preserve remaining UNKNOWN gaps.
+
+
+## 44. AB104.631 — Kafka Connect EOS retention closure
+Commit: 77b55b61d30601147df416ccfaeb221c2e991abe
+
+EvidenceRetentionDeadline now spans three histories: external source position/resume evidence; Kafka source-record+primary-offset transaction history; Kafka transaction/coordinator/fencing lineage. If any required history expires before reconciliation, the claim becomes UNKNOWN, not NOT_COMMITTED/NOT_PROCESSED. KIP-618 also requires meaningful source offsets and exact upstream resume semantics; Kafka EOS is not external-source atomicity. citeturn0search0
+
+Universal numeric deadline remains UNKNOWN because it is deployment/connector-specific. Remaining gap: concrete offset-storage implementations and restore/reset behavior.
+
+EXACT NEXT: AB104.632 — research Kafka Connect offset storage (Kafka topic, file, memory, JDBC) plus reset/restore behavior and build the retention/restore claim matrix.
