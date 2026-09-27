@@ -188,3 +188,14 @@ Open: these are test designs, not executed tests. TLC remains PENDING; SANY rema
 
 ## EXACT NEXT ACTION
 AB104.604: map the matrix to real code mechanisms: transactional outbox, versioned cache keys, CAS/etcd revisions, and OpenTelemetry propagation boundaries; classify each as evidence mechanism vs Nexo-specific protected semantic.
+
+
+## 17. AB104.604 — Mechanism mapping: evidence vs protected semantics
+Commit: 63a1b059b78cf5afd7d922c3ed34f13f0ba11fe9
+
+Mapped real mechanisms. Transactional outbox can atomically persist local state+intent, but downstream delivery may be at-least-once and does not prove external completion. etcd revision/CAS can provide bounded authoritative version evidence inside its consistency domain, but not external fencing. Redis tracking can detect/invalidate stale cache but its invalidation is asynchronous and race-prone; it is not an authority fence. OpenTelemetry Context/Baggage provides propagation/correlation, not authoritative provenance or authorization; Baggage has no built-in integrity guarantee. citeturn0search8turn0search1turn0search0turn0search2
+
+Critical result: no surveyed mechanism closes the whole provenance claim. Each supplies bounded evidence inside its own semantics. Nexo must prevent evidence from being silently upgraded into authority.
+
+## EXACT NEXT ACTION
+AB104.605: inspect real implementation/code paths for transactional outbox, etcd CAS/revisions, Redis tracking and OTel propagation; extract concrete failure modes that clean Nexo must forbid/quarantine.
