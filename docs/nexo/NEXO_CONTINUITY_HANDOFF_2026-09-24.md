@@ -483,3 +483,11 @@ Kafka exposes producerId/epoch evidence per transactional ID; coordinator persis
 Finding: higher epoch + valid lineage can prove participant-local fencing; missing/expired history cannot prove NOT_COMMITTED. Fencing becomes UNKNOWN when reconciliation evidence is lost. EvidenceRetentionDeadline must precede the earliest loss of required Kafka lineage, with independent Nexo EvidenceRecord for longer-lived claims. Added C630-1..C630-6.
 
 EXACT NEXT: AB104.631 — reconcile transaction-state retention/expiration with Kafka Connect EOS source-offset retention and close or explicitly preserve remaining EvidenceRetentionDeadline gaps.
+
+
+## 43. AB104.630 — Kafka fence retention reconciliation
+Commit: 45da1cbdb0960f7b0a06fb7e1190c1aadced2192 (note file)
+
+AB104.630 confirms that producer epoch is scoped fencing evidence only while Kafka cluster/coordinator lineage remains reconstructable. After transaction-state cleanup, producer-ID expiration, restore, or incarnation change, absence cannot prove NOT_COMMITTED. Timeout can still coincide with a broker-side epoch bump. EvidenceRetentionDeadline must precede loss of the Kafka history needed to distinguish COMMITTED from UNKNOWN; independent Nexo EvidenceRecord is required for claims that outlive Kafka metadata.
+
+EXACT NEXT: AB104.631 — reconcile this retention boundary with Kafka Connect EOS source-offset history/reset semantics and explicitly close or preserve remaining UNKNOWN gaps.
