@@ -603,3 +603,18 @@ E640-1..E640-8 added: response-loss/UNKNOWN, retry-induced reorder, idempotent r
 Status: RESEARCH ONLY. No implementation or runtime verification. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.641 — inspect concrete KafkaProducer/ProducerFailureHandling/MockClient tests for E640-1..8, classify exact existing coverage vs uncovered fault windows, without claiming execution unless actually run.
+
+
+## 54. AB104.641 — Kafka producer test coverage audit
+Commit: 65260bfd97706825325c8ca422fb778ce8c65bc2
+Research file: docs/nexo/NEXO_AB104_641_KAFKA_PRODUCER_TEST_COVERAGE_2026-09-27.md
+
+Current Apache Kafka sources document delivery.timeout.ms as the total bound for success/failure reporting, retry behavior, idempotence constraints, and max.in.flight ordering semantics. Kafka's integration test framework separately validates producer acknowledgements and consumer-observed offsets. citeturn0search0turn0search1turn0search4
+
+Coverage audit: E640-1..8 are mostly mechanism/design covered but require targeted fault execution for Nexo claims. No tests were executed in this step. New E641-1..8 maps response-loss, reorder, idempotent failover, transactional ambiguity, timeout/late acceptance, ACK-vs-read convergence and close-timeout windows.
+
+Important Connect finding: current Worker source configures its regular internal producer with `enable.idempotence=false`, `acks=all`, `max.in.flight.requests.per.connection=1`, and effectively unbounded delivery timeout. Thus regular Connect offset storage cannot inherit modern KafkaProducer default idempotence. citeturn0search5
+
+Status: RESEARCH ONLY. No implementation/runtime verification. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.642 — inspect concrete Kafka producer failure-test implementations and MockClient fault-injection APIs, then map E641 cases to exact injected failure points and expected states.
