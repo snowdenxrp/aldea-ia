@@ -303,3 +303,13 @@ Conclusion: CDC offset/checkpoint is transport/connector progress evidence, not 
 Added C613-1..C613-8 for checkpoint-loss replay, downstream crash, stale offset restore, connector reincarnation, snapshot-to-stream handoff, source restore, partition reordering, and event-ID collision.
 
 EXACT NEXT ACTION: AB104.614 — concrete Kafka Connect offset commit/recovery semantics and Debezium crash windows between record processing, publication and checkpoint persistence.
+
+
+## 27. AB104.614 — Kafka Connect/Debezium offset crash windows
+Commit: 38ac45df4349b0d35edc5bbc0218ddfcd155857f
+
+Kafka Connect documents periodic source-offset commits and possible reprocessing/duplication after failure. citeturn0search3 Debezium Engine explicitly says crash before offset flush can replay already-processed records, bounded by flush interval and batch size. citeturn0search5 KIP-618 can atomically commit source records + offsets to Kafka within its Kafka transaction boundary, but this does not prove downstream external effects. citeturn0search11 Persistent offset stores differ in durability; memory loses offsets on crash. citeturn0search0turn0search2 PostgreSQL CDC also documents stored-offset/replication-slot LSN mismatches, including slot recreation/reset, requiring reconciliation. citeturn0search10
+
+Added F614-1..F614-6 to the fault harness. Core boundary: ConnectorOffsetCommitted = source/transport progress evidence only; never LocalEffectCommitted or ExternalEffectCommitted.
+
+EXACT NEXT ACTION: AB104.615 — exact Kafka Connect EOS source guarantee/transaction boundary and what it can/cannot establish for Nexo.
