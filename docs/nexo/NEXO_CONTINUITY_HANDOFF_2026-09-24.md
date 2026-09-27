@@ -267,3 +267,15 @@ Minimum EvidenceRecord now binds logical operation/effect, authority + consumer 
 Three claims remain separate: DELIVERY, LOCAL PROCESSING, EXTERNAL EFFECT. Only LOCAL PROCESSING is strengthened by transactional inbox atomicity; EXTERNAL EFFECT still needs provider-specific identity/fencing/reconciliation.
 
 EXACT NEXT ACTION: AB104.611 — concrete inbox uniqueness/concurrency + CDC relay failure semantics; adversarial concurrent duplicate delivery and stale inbox restore.
+
+
+## 24. AB104.611 — inbox concurrency + CDC replay
+Commit: 861e2cb663da894d50238f92e39e9d6c271b9348
+
+Current Microsoft guidance confirms concurrent duplicate delivery cannot be safely handled by read-then-process; a database uniqueness constraint must arbitrate the claim. Dedup marker + business effect should be atomic when possible; external effects need IN_PROGRESS/reconciliation semantics. citeturn0search0 Debezium emits unique outbox event IDs for consumer deduplication. citeturn0search2turn0search12 etcd Txn comparisons are atomic within its authority domain. citeturn0search1
+
+Adversarial A611-1..10 added: concurrent duplicate, post-commit redelivery, marker/external split crash, identity collision, CDC replay/restart, reordering, stale inbox restore, cross-incarnation replay, snapshot rollback, and dedup-store unavailable.
+
+Minimum contract: DedupKey = ConsumerDomainID + ConsumerIncarnation + LogicalEffectID + ContractDigest. CLAIMED != COMPLETED. External completion still requires authoritative provider evidence. Historical dedup state does not silently survive authority reincarnation.
+
+EXACT NEXT ACTION: AB104.612 — CDC ordering/replay + stale snapshot recovery; causal ordering evidence must remain separate from dedup identity.
