@@ -134,3 +134,16 @@ SANY PASS closes only the parser/semantic-analysis gate for the exact artifact. 
 
 ## EXACT NEXT ACTION
 AB104.601: adversarially audit derived-value/cache/helper-function dependency leakage and define the minimum provenance record required to prove every authority-relevant read entered the final DependencySet. Then run TLC only after the model/CFG/toolchain evidence gate is satisfied.
+
+## 14. AB104.601 — Dependency provenance boundary
+Commit: df283fce0078dede83a8022cc468c2096cbda7c3
+
+Key result:
+- Dynamic DependencySet capture is necessary where static closure is incomplete, but it does NOT prove completeness by itself.
+- Derived values must preserve source dependency provenance; authority-relevant cache hits must bind source version/incarnation, dependency digest and freshness; helpers that read protected state belong inside the trusted capture boundary.
+- Aggregates/predicates need predicate/range/aggregate dependency tokens or conservative enclosing versions.
+- Uninstrumented authoritative access paths force INCOMPLETE_CAPTURE -> STALE_ADMISSION/HOLD/REVALIDATE.
+- The dependency recorder + authoritative access boundary become claim-specific TCB for the dependency-completeness claim.
+- PostgreSQL evidence: SERIALIZABLE predicate tracking depends on data actually accessed and query plan; predicate coverage includes ranges, not only returned tuples.
+
+EXACT NEXT ACTION: AB104.602 — adversarially test provenance loss across multi-stage derivation, cache refresh races, speculative reads, external provider observations, and crash/retry between capture and final gate.
