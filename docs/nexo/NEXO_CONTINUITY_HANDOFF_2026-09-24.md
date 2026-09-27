@@ -325,3 +325,13 @@ Nexo boundary: EOS_SOURCE_KAFKA is strong evidence only inside Kafka's authority
 Added T615-1..T615-6. Conclusion: model EOS as typed/scoped mechanism evidence; Claim Contract must name authority domain + transaction boundary.
 
 EXACT NEXT ACTION: AB104.616 — Kafka transactional fencing/generation semantics and comparison with Nexo AuthorityEpoch/FenceRevision.
+
+
+## 29. AB104.616 — Kafka fencing/generation vs Nexo authority
+Commit: 58addc25ba6ba581dc85c5315fef8d3e4a4323fa
+
+KIP-618: Kafka fencing uses transactional ID + producer epoch; new producer initialization bumps the epoch and fences older producer generations. Connect source EOS additionally uses task generations/config lineage. citeturn0search0turn0search2
+
+Classification: 🟢 Kafka generation fencing as participant-local mechanism evidence; 🔵 producer epoch as possible scoped FenceEpoch; 🔴 treating Kafka epoch as universal Nexo AuthorityEpoch. Kafka fencing does not classify external effects or override Nexo authority revocation.
+
+T616-1..T616-6 added. Exact next action: AB104.617 — Kafka transactional producer recovery/failure semantics and mapping UNKNOWN states to Nexo reconciliation.
