@@ -245,3 +245,13 @@ Research confirms snapshot restore creates a new logical etcd cluster and overwr
 Separated UNKNOWN domains: LOCAL_CAS_UNKNOWN versus EXTERNAL_EFFECT_UNKNOWN. Added T608-1..T608-10 executable fault-test designs covering commit-response loss, client crash, stale reads, snapshot restore, revision/watch cache confusion, outbox duplicate, consumer crash, local-CAS/external timeout, new-ID retry, and resource reincarnation. No test is marked verified until executed.
 
 EXACT NEXT ACTION: AB104.609 — inspect exact etcd revision semantics and restore revision-bump behavior; convert T608-1..10 into a minimal runnable fault-injection harness specification, still research/design only.
+
+
+## 22. AB104.609 — exact etcd revisions + runnable harness design
+Commit: bb92fc9c22a05f2aea0984833956b579d68fb328
+
+Verified: Txn comparisons are atomic conjunctions; VERSION/CREATE/MOD/VALUE/lease can be compared; successful modifying Txn increments store revision once and top-level TxnResponse header carries the response revision. etcd STM source uses ModRevision guards. citeturn0search6turn0search2 Snapshot restore creates a new logical cluster/identity; revision bump and mark-compacted are documented defenses for watch/cache consumers. citeturn0search0turn0search3
+
+Conclusion: revision is scoped ordering/version evidence, not global authority identity. Harness H1-H8 now specifies CAS response loss, compare failure, stale read, snapshot restore, outbox duplicate, consumer crash, local-CAS/external-UNKNOWN, and resource reincarnation. No execution claimed.
+
+EXACT NEXT ACTION: AB104.610 — research outbox/inbox atomicity boundaries and concrete idempotent-consumer implementations; derive minimum crash-safe EvidenceRecord without claiming exactly-once.
