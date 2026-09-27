@@ -1,6 +1,7 @@
 name: Nexo AB104.598 TLA SANY Gate
 
 on:
+  pull_request:
   push:
     paths:
       - 'docs/nexo/formal/NEXO_AB104_596_EFFECT_LIFECYCLE.tla'
