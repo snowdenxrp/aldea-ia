@@ -423,3 +423,13 @@ Critical: source progress has three histories: external source position; Kafka t
 Nexo: EvidenceRetentionDeadline must cover the complete claim chain, not only __transaction_state: source lineage + primary offsets + transaction state. Missing/expired source-offset history => UNKNOWN, never NOT_PROCESSED. Added T624-1..T624-6.
 
 EXACT NEXT: AB104.625 — source-offset reset/fencing implementation and alterOffsets crash windows; map administrative offset changes to AuthorityEpoch/AdmissionGeneration.
+
+
+## 38. AB104.625 — Kafka offset reset/fencing
+Commit: ce1f56cd6fbb5dc45ad5992227cbda2a77fff34d
+
+KIP-875: EOS source offset alter/reset first fences prior tasks, then invokes connector alterOffsets and changes primary offsets transactionally. It distinguishes definite Kafka-side success from possible success when offsets are also externally managed. SourceConnector.alterOffsets is explicitly expected to be idempotent because retries can occur after offset-store failures. citeturn0search0turn0search1
+
+Nexo finding: offset reset is an administrative authority transition, not mere metadata editing. Map it to AuthorityEpoch/FenceEpoch/Reconciliation, while external source offset changes remain a separate claim. Added C625-1..C625-6.
+
+EXACT NEXT: AB104.626 — inspect Kafka Connect task-generation/config-topic fencing source code around stop/reset and crash windows; determine whether external alteration can occur without a durable equivalent operation identity.
