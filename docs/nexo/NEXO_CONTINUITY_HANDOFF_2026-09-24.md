@@ -543,3 +543,20 @@ Commit: 1583a03597df863b8eb8f67e341b4309ed3a9fbd
 KIP-618 confirms EOS source offset commits are anchored by the Kafka transaction; SourceTask.commit/commitRecord callbacks occur after successful offset commit and can be skipped if the process dies afterward. Therefore callback presence/absence cannot be the durable anchor. citeturn0search5 Regular source flush remains a replay boundary. Nexo must anchor EvidenceRecord to the strongest actual storage-domain event, not connector callbacks.
 
 EXACT NEXT: AB104.637 — inspect KafkaOffsetBackingStore/OffsetStorageWriter source for batching, serialization, flush ordering and failure callbacks; map exact crash windows.
+
+
+## 50. AB104.637 — KafkaOffsetBackingStore + OffsetStorageWriter exact flush semantics
+Commit: 0bf0bddc1d8b6a0c911080f3f3dbc4e1d56cbc41
+Research file: docs/nexo/NEXO_AB104_637_KAFKA_OFFSET_FLUSH_SEMANTICS_2026-09-27.md
+
+Current Apache Kafka Connect source confirms OffsetStorageWriter is a buffered asynchronous snapshot writer: beginFlush moves the current in-memory map into a flush snapshot and permits newer offsets to accumulate separately; doFlush serializes the snapshot and submits it asynchronously to OffsetBackingStore; currentFlushId suppresses late callbacks from an older/cancelled flush; write errors requeue the snapshot. KafkaOffsetBackingStore.set submits serialized entries through KafkaBasedLog.send and reports completion only after all producer callbacks succeed. KafkaOffsetBackingStore.get explicitly reads to the end before serving values to avoid stale local state. citeturn0search0
+
+Critical Nexo boundary: local callback SUCCESS, timeout, cancellation, or error is not by itself historical Kafka truth. A late backend success can occur after the writer has locally cancelled/requeued the snapshot; therefore timeout/cancel can leave the backend outcome UNKNOWN. Callback completion must not be promoted directly to a durable Nexo EvidenceRecord.
+
+F637-1..F637-8 preserved: pre-flush loss; crash after snapshot; serialization failure; send-before-callback ambiguity; producer callback error; timeout/cancel followed by late success; newer offsets arriving during old flush; compaction/restore erasing historical evidence.
+
+Classification: 🟢 snapshot/async flush + stale-callback suppression; 🔵 explicit Nexo EvidenceRecord binding to Kafka position/incarnation/generation; 🔴 callback/local flush treated as universal durable or external-effect proof.
+
+Status: RESEARCH ONLY. No implementation, no runtime fault injection, no verification claim. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.638 — inspect KafkaBasedLog.send()/producer callback and relevant tests/source to map send → broker ack → log visibility → readToEnd, and determine minimum authoritative reconciliation evidence after response loss.
