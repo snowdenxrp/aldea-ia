@@ -473,3 +473,13 @@ Kafka Admin.fenceProducers bumps producer epoch and recovers incomplete transact
 Finding: transport success/failure alone cannot classify fencing. A newer authoritative producer epoch can establish participant-local fencing, but not global Nexo reset completion. Added C629-1..C629-6 and minimum fence evidence fields: cluster incarnation, transactional ID, prior/observed producer ID+epoch, coordinator lineage, FenceOperationID, observation position, recovery generation, evidence digest.
 
 EXACT NEXT: AB104.630 — combine producerId/epoch evidence with transaction-state durability/retention and define minimum reconciliation evidence surviving coordinator migration and cleanup.
+
+
+## 43. AB104.630 — fence evidence retention/reconciliation
+Commit: a7393c92cf9dfd8e4053a47a4735f5ddc2331b91
+
+Kafka exposes producerId/epoch evidence per transactional ID; coordinator persists transaction metadata, but producer IDs/transaction metadata can expire or become unreconstructable. Timeout can itself cause an epoch bump, so ProducerFencedException does not imply a competing writer. citeturn0search0turn0search1turn0search2turn0search3
+
+Finding: higher epoch + valid lineage can prove participant-local fencing; missing/expired history cannot prove NOT_COMMITTED. Fencing becomes UNKNOWN when reconciliation evidence is lost. EvidenceRetentionDeadline must precede the earliest loss of required Kafka lineage, with independent Nexo EvidenceRecord for longer-lived claims. Added C630-1..C630-6.
+
+EXACT NEXT: AB104.631 — reconcile transaction-state retention/expiration with Kafka Connect EOS source-offset retention and close or explicitly preserve remaining EvidenceRetentionDeadline gaps.
