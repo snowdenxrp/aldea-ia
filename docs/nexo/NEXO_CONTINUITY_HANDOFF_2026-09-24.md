@@ -355,3 +355,13 @@ Kafka transaction metadata is persisted through the transaction-state log; curre
 Nexo: recovered Kafka COMMIT/ABORT is strong participant-local EvidenceRecord only after validating domain, transaction-state partition, transactionalId, producerId/epoch, coordinator lineage, observation point, freshness and recovery context. It cannot prove downstream/external effects or erase external UNKNOWN.
 
 T618-1..T618-6 added. EXACT NEXT: AB104.619 — transaction-state replication/configuration and durability failure boundaries (ISR/minISR, unclean election, log loss/recovery), mapped to Nexo confidence + UNKNOWN/QUARANTINE.
+
+
+## 32. AB104.619 — Kafka replication durability boundaries
+Commit: 94db471e56a8e70573aeecde2b015e58adfc7cc1
+
+Kafka: acks=all + min.insync.replicas constrains successful writes to sufficient ISR; Kafka documents RF=3/minISR=2 as a typical majority durability setup. Unclean leader election can select a non-ISR replica and may cause data loss. Kafka 4.x ELR changes leader-selection semantics and must be recorded as part of provenance. citeturn1search0turn1search1turn1search11
+
+Nexo: durability evidence is conditional on replication/election regime. Unclean-election possibility can invalidate automatic trust in historical state; restore/rebuild is a new authority incarnation absent explicit continuity evidence. Added D619-1..D619-6 and T619-1..T619-6.
+
+EXACT NEXT: AB104.620 — transaction-state topic replication/configuration + retention/compaction, and whether transaction outcome evidence can disappear/non-reconstruct; define durable anchoring requirements.
