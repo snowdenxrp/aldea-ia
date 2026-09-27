@@ -401,3 +401,13 @@ Classification: replication/minISR = durability/availability; segment/load/parti
 Nexo contract: claims needing longer retention require independent durable EvidenceRecord plus Kafka configuration fingerprint + authority incarnation. Expired/unreconstructable history => UNKNOWN/QUARANTINE, never NOT_COMMITTED. T622-1..T622-6 added.
 
 EXACT NEXT: AB104.623 — source-level cleanup + producer-ID expiration interaction, then derive minimum EvidenceRetentionDeadline for Nexo.
+
+
+## 36. AB104.623 — Kafka EvidenceRetentionDeadline
+Commit: 9ca29e341f99ec54c3cf9da9b3720fc7030721cf
+
+Current Kafka ProducerConfig/KafkaProducer source confirms transactional.id spans producer sessions and that commit/abort TimeoutException does NOT prove the broker did not receive the request. citeturn0search0turn0search1
+
+Nexo finding: there are separate execution/recovery and metadata/history clocks. Timeout != evidence deletion; evidence deletion != NOT_COMMITTED. Defined candidate EvidenceRetentionDeadline as the earliest deployment-specific loss-of-reconstructability deadline minus safety margin. It must cover every Kafka history needed for the claim. Added T623-1..T623-6.
+
+EXACT NEXT: AB104.624 — transaction timeout/recovery interaction + source-connector EOS offset retention; determine whether the deadline must cover both transaction-state and source-offset histories.
