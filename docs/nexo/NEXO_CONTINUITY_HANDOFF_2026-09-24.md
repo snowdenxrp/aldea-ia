@@ -509,3 +509,13 @@ Commit: 42407aadfe9d78a10524290aef57fffb640b1017
 Research mapped Kafka topic, file, memory and backend-specific offset stores. Distributed Connect uses Kafka topics; standalone uses a local file. EOS can use per-connector offsets topics. Storage survival is not automatically historical authority: OffsetExists != SourceEffectCommitted; OffsetMissing != SourceEffectNotProcessed; OffsetRestored != CurrentAuthority. citeturn0search0turn0search2
 
 EXACT NEXT: AB104.633 — research concrete offset-topic compaction/retention plus crash semantics of file/JDBC/custom stores; identify which can provide authoritative historical anchors and which force UNKNOWN.
+
+
+## 46. AB104.633 — offset storage compaction/crash evidence
+Commit: 05619d94fdb5e6ccf2f57a20ff33025a12dae3b7
+
+Current Connect guidance requires distributed offset topics to be replicated and compacted; standalone uses a local offset file. Compaction is not archival proof: current offset != historical commit proof, and absence after compaction cannot establish NOT_COMMITTED. citeturn0search2
+
+Storage classification: Kafka topic = bounded durable anchor; file = bounded anchor if provenance/incarnation survives; memory = no post-crash anchor; JDBC/custom = contract-dependent and UNKNOWN until concrete guarantees are evidenced.
+
+EXACT NEXT: AB104.634 — inspect concrete Kafka Connect FileOffsetBackingStore/KafkaOffsetBackingStore source and exact flush/error crash windows.
