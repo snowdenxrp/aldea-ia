@@ -463,3 +463,13 @@ Actual Kafka Connect Worker.java uses Admin.fenceProducers over task transaction
 Finding: Kafka exposes participant-local identities, but no durable Nexo-wide ResetOperationID. Successful completion of the fencing future does not itself persist a cross-domain reset operation. Crash after fencing therefore leaves a participant-local fact plus unresolved overall reset outcome. Added C628-1..C628-6.
 
 EXACT NEXT: AB104.629 — research Admin.fenceProducers timeout/failure semantics and producer-epoch evidence; define reconciliation evidence for COMMITTED / NOT_COMMITTED / UNKNOWN fencing.
+
+
+## 42. AB104.629 — Kafka fence epoch reconciliation
+Commit: 8896c5b332db5fb5623597eab879f52ed0010c76
+
+Kafka Admin.fenceProducers bumps producer epoch and recovers incomplete transaction state; the API can expose producer ID/epoch per transactional ID. Current coordinator logic also recognizes retry cases where an epoch bump may have succeeded before its response was lost. citeturn0search0turn0search4
+
+Finding: transport success/failure alone cannot classify fencing. A newer authoritative producer epoch can establish participant-local fencing, but not global Nexo reset completion. Added C629-1..C629-6 and minimum fence evidence fields: cluster incarnation, transactional ID, prior/observed producer ID+epoch, coordinator lineage, FenceOperationID, observation position, recovery generation, evidence digest.
+
+EXACT NEXT: AB104.630 — combine producerId/epoch evidence with transaction-state durability/retention and define minimum reconciliation evidence surviving coordinator migration and cleanup.
