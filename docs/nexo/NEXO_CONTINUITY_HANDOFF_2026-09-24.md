@@ -345,3 +345,13 @@ KIP-98: stable TransactionalId + producer epoch fencing + durable transaction re
 Nexo consequence: response/error is not durable outcome. Kafka-domain transaction state must be reconciled from authoritative transaction state; external EffectOutcome remains separate. Stable identity + generation fence + durable state + recovery-before-resume is reusable 🟢, but only scoped to Kafka. T617-1..T617-6 added.
 
 EXACT NEXT ACTION: AB104.618 — Kafka transaction coordinator failover/replication durability and lineage evidence required before trusting recovered Kafka state as Nexo EvidenceRecord input.
+
+
+## 31. AB104.618 — Kafka coordinator durability/lineage
+Commit: f05b2917f045dd426196337202268670f3bcfd2b
+
+Kafka transaction metadata is persisted through the transaction-state log; current source requires successful log write/replication before completing metadata transitions and preserves producer identity/epoch lineage. initTransactions recovers incomplete transactions before reuse. citeturn0search0turn0search1turn0search2
+
+Nexo: recovered Kafka COMMIT/ABORT is strong participant-local EvidenceRecord only after validating domain, transaction-state partition, transactionalId, producerId/epoch, coordinator lineage, observation point, freshness and recovery context. It cannot prove downstream/external effects or erase external UNKNOWN.
+
+T618-1..T618-6 added. EXACT NEXT: AB104.619 — transaction-state replication/configuration and durability failure boundaries (ISR/minISR, unclean election, log loss/recovery), mapped to Nexo confidence + UNKNOWN/QUARANTINE.
