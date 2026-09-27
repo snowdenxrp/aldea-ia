@@ -443,3 +443,13 @@ KIP-875: offset alter/reset is restricted to STOPPED connectors; EOS source rese
 Finding: config-topic task generation/fencing is participant-local coordination, not universal operation identity. A reset may span Connect config/task generation, Kafka primary offsets, and an external offset authority. Added C626-1..C626-6 and separated ConnectorIncarnation, TaskGeneration, ConfigEpoch, OffsetAuthorityIncarnation, OffsetResetOperationID, KafkaTransactionIdentity, ExternalOffsetAuthorityIdentity, FenceEpoch, ReconciliationState.
 
 EXACT NEXT: AB104.627 — inspect implementation paths for task fencing/rebalance completion and source-offset reset ordering; build source-level crash-window matrix and identify missing durable operation identity.
+
+
+## 40. AB104.627 — Kafka fencing/reset ordered checkpoints
+Commit: 45eb3cb91cba014a6325a880bdd1ed815fd1bb5f
+
+KIP-618 uses ordered config-topic checkpoints for zombie fencing: task-count generation, config-topic end observation, producer creation, and another config-topic end check. KIP-875 adds STOPPED/config-empty preconditions, fencing before alterOffsets, transactional primary-offset mutation, and end-of-offset-topic observation. citeturn0search1turn0search0
+
+Finding: reset is a multi-domain ordered protocol, not one final CAS. Sequence: STOPPED/config-empty → fence-generation → config-topic end observed → alterOffsets → primary offset transaction → offsets-topic end observed. Each checkpoint has independent crash ambiguity. A later checkpoint cannot erase an earlier UNKNOWN. Added C627-1..C627-7.
+
+EXACT NEXT: AB104.628 — inspect exact source code/tests for zombie fencing and reset ordering; determine whether KIP-875 has a durable operation identity or derives only participant-local transactional identity.
