@@ -590,3 +590,16 @@ F639-1..F639-7 preserved: buffered-before-send crash; response loss after transm
 Status: RESEARCH ONLY. No implementation or runtime verification. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.640 — inspect producer tests and sender/record-accumulator paths for timeout, retriable errors, duplicate suppression, leader failover and callback ordering; convert F639 into executable adversarial test specifications.
+
+
+## 53. AB104.640 — Producer Sender/RecordAccumulator adversarial matrix
+Commit: 39d227bf1cc190fa9bd7a56d764694fa123fb3b5
+Research file: docs/nexo/NEXO_AB104_640_PRODUCER_ADVERSARIAL_TEST_MATRIX_2026-09-27.md
+
+RecordAccumulator source makes deliveryTimeoutMs the upper bound for reporting delivery success/failure and re-enqueues retry batches. For idempotent/transactional batches, producer ID/epoch/sequence lineage is retained specifically because a previous attempt may already have been accepted; changing sequence/identity on retry could create duplicates. Kafka producer config also documents that automatic retries resend the same record and that retries with idempotence disabled plus max.in.flight > 1 can reorder batches. citeturn0search0turn0search2
+
+E640-1..E640-8 added: response-loss/UNKNOWN, retry-induced reorder, idempotent retry lineage, delivery timeout, failover retry, callback ordering, transactional callback vs transaction UNKNOWN, finite close with unresolved requests. Current Kafka issues confirm timeout and shutdown/retry paths are active correctness surfaces, but no Nexo/runtime test has been executed or claimed. citeturn0search3turn0search4
+
+Status: RESEARCH ONLY. No implementation or runtime verification. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.641 — inspect concrete KafkaProducer/ProducerFailureHandling/MockClient tests for E640-1..8, classify exact existing coverage vs uncovered fault windows, without claiming execution unless actually run.
