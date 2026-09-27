@@ -335,3 +335,13 @@ KIP-618: Kafka fencing uses transactional ID + producer epoch; new producer init
 Classification: 🟢 Kafka generation fencing as participant-local mechanism evidence; 🔵 producer epoch as possible scoped FenceEpoch; 🔴 treating Kafka epoch as universal Nexo AuthorityEpoch. Kafka fencing does not classify external effects or override Nexo authority revocation.
 
 T616-1..T616-6 added. Exact next action: AB104.617 — Kafka transactional producer recovery/failure semantics and mapping UNKNOWN states to Nexo reconciliation.
+
+
+## 30. AB104.617 — Kafka transaction recovery / UNKNOWN
+Commit: 6c398bdef7376ee747a1cc0a5562761c9c393100
+
+KIP-98: stable TransactionalId + producer epoch fencing + durable transaction recovery lets Kafka resolve incomplete transactions before a recovered producer resumes. Current TransactionCoordinator code also shows coordinator-epoch changes can occur after a transaction marker is appended, producing NOT_COORDINATOR despite durable progress. citeturn0search2turn0search0
+
+Nexo consequence: response/error is not durable outcome. Kafka-domain transaction state must be reconciled from authoritative transaction state; external EffectOutcome remains separate. Stable identity + generation fence + durable state + recovery-before-resume is reusable 🟢, but only scoped to Kafka. T617-1..T617-6 added.
+
+EXACT NEXT ACTION: AB104.618 — Kafka transaction coordinator failover/replication durability and lineage evidence required before trusting recovered Kafka state as Nexo EvidenceRecord input.
