@@ -291,3 +291,15 @@ Separated identities: DedupIdentity = ConsumerDomain + ConsumerIncarnation + Eff
 T612-1..T612-10 added for replay, contract collision, reordered events, CDC restart, source/consumer snapshot restore, compacted watch, revision bump, incarnation mismatch and missing sequence.
 
 EXACT NEXT ACTION: AB104.613 — CDC connector offset/checkpoint durability and crash/replay semantics; determine whether offsets are authoritative progress or only transport-consumer evidence.
+
+
+## 26. AB104.613 — CDC offset/checkpoint boundary
+Commit: fb14fed79df2685729718e2a1327e2a4f7a7ce85
+
+Debezium exposes unique event ID for deduplication, aggregate ID as Kafka key for partition ordering, and connector/source lineage such as transaction/LSN in supported envelopes. citeturn0search0turn0search6
+
+Conclusion: CDC offset/checkpoint is transport/connector progress evidence, not authority proof. OffsetCommitted != EventDelivered != LocalEffectCommitted != ExternalEffectCommitted. Source incarnation must bind position/LSN because restore/reincarnation changes the meaning of a position.
+
+Added C613-1..C613-8 for checkpoint-loss replay, downstream crash, stale offset restore, connector reincarnation, snapshot-to-stream handoff, source restore, partition reordering, and event-ID collision.
+
+EXACT NEXT ACTION: AB104.614 — concrete Kafka Connect offset commit/recovery semantics and Debezium crash windows between record processing, publication and checkpoint persistence.
