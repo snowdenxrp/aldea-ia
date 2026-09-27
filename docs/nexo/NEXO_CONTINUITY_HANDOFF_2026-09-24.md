@@ -560,3 +560,18 @@ Classification: 🟢 snapshot/async flush + stale-callback suppression; 🔵 exp
 Status: RESEARCH ONLY. No implementation, no runtime fault injection, no verification claim. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.638 — inspect KafkaBasedLog.send()/producer callback and relevant tests/source to map send → broker ack → log visibility → readToEnd, and determine minimum authoritative reconciliation evidence after response loss.
+
+
+## 51. AB104.638 — KafkaBasedLog send/ack/read-to-end reconciliation boundary
+Commit: 3993fc108889449f04c957933ffa8a447d58f59b
+Research file: docs/nexo/NEXO_AB104_638_KAFKA_BASED_LOG_RECONCILIATION_2026-09-27.md
+
+Current Apache Kafka Connect source confirms KafkaBasedLog delegates writes to KafkaProducer.send(callback), configures its internal producer with acks=all and max.in.flight.requests.per.connection=1, and implements readToEnd as producer.flush() followed by reading through captured partition end offsets. READ_COMMITTED paths use Admin end-offset evidence conservatively because open transactions may not be visible through ordinary consumer end-offset semantics. citeturn0search0
+
+Key distinction: ProducerCallbackSuccess != ReadToEndObserved != PermanentHistoricalProof. A producer callback establishes a Kafka producer completion boundary; readToEnd establishes current consumer convergence to captured log-end positions; compaction, restore and cluster incarnation still bound historical reconstructability. KAFKA-8586 is preserved as historical evidence that dispatch/success boundaries can be mishandled and must not be conflated. citeturn0search1
+
+F638-1..F638-6 preserved: send/response-loss ambiguity; callback error; callback before local convergence; flush/read-to-end timeout; compaction loss of historical evidence; authority-incarnation change.
+
+Status: RESEARCH ONLY. No implementation or runtime verification. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.639 — inspect KafkaProducer send/RecordMetadata/acks and relevant producer tests plus transaction/read-committed semantics to pin exact producer-callback success, timeout, retry and broker-failover meaning.
