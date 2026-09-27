@@ -255,3 +255,15 @@ Verified: Txn comparisons are atomic conjunctions; VERSION/CREATE/MOD/VALUE/leas
 Conclusion: revision is scoped ordering/version evidence, not global authority identity. Harness H1-H8 now specifies CAS response loss, compare failure, stale read, snapshot restore, outbox duplicate, consumer crash, local-CAS/external-UNKNOWN, and resource reincarnation. No execution claimed.
 
 EXACT NEXT ACTION: AB104.610 — research outbox/inbox atomicity boundaries and concrete idempotent-consumer implementations; derive minimum crash-safe EvidenceRecord without claiming exactly-once.
+
+
+## 23. AB104.610 — outbox/inbox atomicity + minimum EvidenceRecord
+Commit: bcc2a567984aa1ad7f060c30e3bdfde096e50f36
+
+Research: outbox makes source state + publish intent atomic, but relay remains at-least-once and may duplicate; idempotent consumers track processed IDs. A transactional processed-ID/inbox record plus business mutation can establish a strong LOCAL PROCESSING claim within one consumer authority domain. citeturn0search1turn0search0turn0search4 Debezium's outbox router exposes a unique event ID usable for deduplication. citeturn0search3
+
+Minimum EvidenceRecord now binds logical operation/effect, authority + consumer incarnations, admission/generation, contract digest, source event/revision, delivery attempt, processing/dedup state, local commit revision, external provider/resource identity, reconciliation, fault point and provenance digest.
+
+Three claims remain separate: DELIVERY, LOCAL PROCESSING, EXTERNAL EFFECT. Only LOCAL PROCESSING is strengthened by transactional inbox atomicity; EXTERNAL EFFECT still needs provider-specific identity/fencing/reconciliation.
+
+EXACT NEXT ACTION: AB104.611 — concrete inbox uniqueness/concurrency + CDC relay failure semantics; adversarial concurrent duplicate delivery and stale inbox restore.
