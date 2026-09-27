@@ -618,3 +618,18 @@ Important Connect finding: current Worker source configures its regular internal
 Status: RESEARCH ONLY. No implementation/runtime verification. TLC remains PENDING.
 
 EXACT NEXT ACTION: AB104.642 — inspect concrete Kafka producer failure-test implementations and MockClient fault-injection APIs, then map E641 cases to exact injected failure points and expected states.
+
+
+## 55. AB104.642 — concrete Kafka producer fault-test mapping
+Commit: df8a09dc75ee6473e0d5af05eb3c08763d77490f
+Research file: docs/nexo/NEXO_AB104_642_MOCKCLIENT_FAILURE_MAPPING_2026-09-27.md
+
+Concrete Apache Kafka evidence confirms targeted producer failure tests can be run with Gradle; KafkaProducer remains asynchronous and transactional commit timeout explicitly does not prove failure. A transactional commit timeout can mean the broker-side completion is still progressing, and retrying the same operation is the safe documented path. citeturn0search0turn0search3
+
+E641-1..8 were mapped to exact fault classes: response suppression, first-batch failure before response, max.in.flight reorder, idempotent failover, transactional commit response loss, delivery-timeout/late acceptance, producer-ACK vs consumer lag, and unresolved producer close. No tests were executed.
+
+MockClient/unit tests can prove client state-machine behavior but not broker persistence or cross-process durability; integration/system tests are required for broker/leader failure, response loss and log-visibility claims. Therefore `UNIT_TEST_PASS` and `INTEGRATION_TEST_PASS` remain distinct evidence classes and neither proves Nexo external-effect atomicity or permanent reconstructability.
+
+Status: RESEARCH ONLY. TLC remains PENDING.
+
+EXACT NEXT ACTION: AB104.643 — inspect concrete MockClient APIs and ProducerFailureHandling tests/source to identify exact injectable response/error primitives and build one-to-one E642 fault-point mapping.
