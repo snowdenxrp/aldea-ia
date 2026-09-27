@@ -365,3 +365,15 @@ Kafka: acks=all + min.insync.replicas constrains successful writes to sufficient
 Nexo: durability evidence is conditional on replication/election regime. Unclean-election possibility can invalidate automatic trust in historical state; restore/rebuild is a new authority incarnation absent explicit continuity evidence. Added D619-1..D619-6 and T619-1..T619-6.
 
 EXACT NEXT: AB104.620 — transaction-state topic replication/configuration + retention/compaction, and whether transaction outcome evidence can disappear/non-reconstruct; define durable anchoring requirements.
+
+
+## 33. AB104.620 — Kafka transaction-state retention/reconstructability
+Commit: 7a38f41341187bf3055f4991bcf2ecb0d3235381
+
+Kafka transaction metadata is log-backed in the internal transaction-state topic; current APIs expose derived transaction state. citeturn0search3turn0search8
+
+Nexo finding: Kafka's current transaction state is authoritative only within its current trustworthy lineage and is not a permanent historical ledger. Retention/compaction becomes an evidence-lifetime boundary. Missing historical state after retention/restore MUST NOT be interpreted as NOT_COMMITTED; if no independent durable evidence resolves it, outcome stays UNKNOWN.
+
+Added candidate KafkaEvidenceAnchor = cluster incarnation + transaction-state partition + transactionalId + producerId/epoch + state + log position/observation revision + evidence digest + time + recovery generation. Added T620-1..T620-6.
+
+EXACT NEXT: AB104.621 — inspect transaction-state topic source/configuration and exact cleanup/retention behavior to define minimum evidence-retention contract for Kafka-backed Nexo mechanisms.
