@@ -1218,3 +1218,14 @@ Therefore: GENERIC_CORRELATION_MISMATCH_EXECUTED=YES; OFLE_CORRELATION_MISMATCH_
 
 ## EXACT CURRENT RESUME POINT — AB104.749
 Inspect MockClient/KafkaClient test infrastructure plus existing Selector/NetworkClient tests for the smallest current lower-level path that can inject RequestTestUtils.serializeResponseWithHeader(OFLE, version, wrongCorrelationId) and observe actual correlation-mismatch behavior. If unavailable, record exact blocker. No production changes/V21.
+
+
+## 81. AB104.749 — OFLE lower-level correlation injection path
+Commit: 8c314ea5b5f140f53c163efa836178109ec2de68
+
+Current NetworkClientTest provides the needed lower-level mechanism: real NetworkClient + MockSelector, a real ClientRequest/in-flight correlation, and raw NetworkReceive injection using RequestTestUtils.serializeResponseWithHeader(...), whose correlation ID is independently supplied. NetworkClient.handleCompletedReceives() passes the raw payload to NetworkClient.parseResponse(...), which delegates to AbstractResponse parsing and propagates CorrelationIdMismatchException for ordinary request correlations.
+
+But current evidence does NOT establish an OFLE-specific mismatch execution. Existing raw receive examples use Produce/telemetry and matching correlation IDs. Repository search did not establish a dedicated CorrelationIdMismatchException assertion through selector.completeReceive. Therefore: NETWORKCLIENT_RAW_RESPONSE_INJECTION=YES; ARBITRARY_RESPONSE_CORRELATION_CONSTRUCTION=YES; GENERIC_RAW_RESPONSE_PATH_EXECUTED=YES; OFLE_RAW_RESPONSE_PATH_EXECUTED=NO; OFLE_CORRELATION_MISMATCH_EXECUTED=NO; OFLE_CORRELATION_MISMATCH_EXCEPTION_ASSERTED=NO; PRODUCTION_CHANGE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.750
+Inspect relevant NetworkClientTest setup/request-version helpers and determine whether a minimal OFLE mismatch test can be specified entirely from existing test infrastructure; separately inspect MockSelector completion semantics and NetworkClient.poll to establish whether the exception surfaces directly or through disconnect/error handling. Research only; do not implement test or production code.
