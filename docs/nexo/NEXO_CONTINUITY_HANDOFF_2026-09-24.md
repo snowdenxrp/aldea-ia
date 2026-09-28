@@ -1430,3 +1430,28 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.759
 Inspect RequestTestUtils.serializeResponseWithHeader and underlying serialization to prove the chosen response correlation ID is encoded into the wire header with the selected OFLE version/body. Preserve NOT EXECUTED.
+
+
+## 91. AB104.759 — OFLE wire header serialization audit
+Commit: 912f334ce715143f6625aced0392939e8356f6b4
+Research file: docs/nexo/NEXO_AB104_759_OFLE_WIRE_HEADER_SERIALIZATION_AUDIT_2026-09-28.md
+
+Exact source chain: RequestTestUtils.serializeResponseWithHeader(response, version, correlationId) -> new ResponseHeader(correlationId, response.apiKey().responseHeaderVersion(version)) -> AbstractResponse.serializeWithHeader -> RequestUtils.serialize. RequestUtils writes the header first, then the API message using the selected API version. Thus the deliberately chosen correlation ID is actually serialized into the wire header, not merely retained as test metadata.
+
+The complete mismatch construction is now source-specifiable: valid minimal OFLE response + actual request API version + different non-reserved correlation ID -> serializeResponseWithHeader -> NetworkReceive injection. This is still construction evidence, not execution evidence.
+
+Status:
+RESPONSE_CORRELATION_ID_WIRE_ENCODED=SOURCE_VERIFIED
+RESPONSE_HEADER_VERSION_DERIVED_FROM_OFLE_VERSION=SOURCE_VERIFIED
+OFLE_BODY_SERIALIZED_AFTER_HEADER=SOURCE_VERIFIED
+NON_RESERVED_MISMATCH_CONSTRUCTION=SPECIFIABLE
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.760
+Inspect NetworkReceive construction and MockSelector.completeReceive/poll path once more at exact source level, then freeze the complete no-production-change OFLE mismatch test recipe. Do not execute yet unless the mission explicitly transitions to execution; preserve NOT EXECUTED.
