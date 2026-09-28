@@ -924,3 +924,33 @@ No Kafka source was modified and no Nexo implementation was performed.
 
 ## EXACT CURRENT RESUME POINT — AB104.735
 Continue direct search for parameterized/current tests of every `OffsetsForLeaderEpochUtils.handleResponse` branch, including errors not represented by the five direct client tests. Separately locate the exact NetworkClient response-correlation validation test if one exists elsewhere in the current Kafka test tree. Preserve the distinction between implementation evidence and test evidence.
+
+
+## 68. AB104.735 — OffsetForLeaderEpoch error-matrix + correlation audit
+Commit: b494f831f66b95f682eb5358680f6a7e20bcf75a
+Research file: docs/nexo/NEXO_AB104_735_OFFSET_FOR_LEADER_EPOCH_ERROR_MATRIX_CORRELATION_AUDIT_2026-09-27.md
+
+Direct current Kafka source/test-tree inspection continued from AB104.734.
+
+Findings:
+- Current OffsetsForLeaderEpochUtils.handleResponse() has explicit NONE success, seven named retry errors, UNKNOWN_TOPIC_OR_PARTITION retry, TOPIC_AUTHORIZATION_FAILED terminal authorization behavior, and a default retry branch.
+- No dedicated OffsetsForLeaderEpochUtilsTest or parameterized current test matrix covering every reducer branch was found in the accessible current tree.
+- The current OffsetForLeaderEpochClientTest remains a five-test focused suite: empty response, unexpected empty response, success, authorization failure, and one retriable error (LEADER_NOT_AVAILABLE).
+- Direct searches for the other named reducer errors did not establish additional direct tests tied to this reducer path.
+- Therefore ALL_ERROR_BRANCHES_TESTED=NO and DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO. MIXED_RAW_REDUCER_COVERAGE remains UNKNOWN; absence of search hits is not proof of global absence.
+- Current AbstractResponse.parseResponse explicitly compares request and response correlation IDs and throws CorrelationIdMismatchException on mismatch. This is implementation evidence of a correlation-validation boundary.
+- No dedicated current test deliberately injecting a mismatched response correlation was established by the search. Existing timeout/disconnect/normal-correlation tests remain distinct and must not be treated as mismatch-injection evidence.
+- Raw retry error identity remains unrecoverable after reducer collapse; Nexo provenance capture must occur before reduction.
+- Candidate provenance remains OperationID + API/header/version/client/correlation/destination/timing + per-partition raw errorCode/leaderEpoch/endOffset + protocol/schema + transport outcome + independently authoritative generation/version/incarnation.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; ALL_ERROR_BRANCHES_TESTED=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; CORRELATION_VALIDATION_IMPLEMENTED=YES; EXPLICIT_CORRELATION_MISMATCH_TEST_FOUND=NO/NOT_ESTABLISHED; TIMEOUT_TEST=YES; DISCONNECT_TEST=YES; STALE_INFLIGHT_TEST=YES; UNSUPPORTED_CAPABILITY_TEST=YES; TOPIC_INCARNATION=UNKNOWN; BROKER_INCARNATION=UNKNOWN; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+No Kafka source was modified. No Nexo implementation or runtime verification was performed.
+
+## EXACT CURRENT RESUME POINT — AB104.736
+1. Inspect current Kafka test fixtures/helpers capable of constructing raw OffsetForLeaderEpoch responses and determine whether any shared helper establishes direct reducer coverage indirectly.
+2. Inspect NetworkClient.parseResponse and surrounding tests for post-correlation-mismatch behavior, distinguishing parser rejection from transport disconnect.
+3. Inspect current fault-proxy/integration tests for deliberate response mutation; infrastructure capability is not test execution.
+4. Preserve raw error provenance, request identity, correlation, transport outcome, and incarnation as separate evidence fields.
+Do not implement Nexo. Do not create V21.
