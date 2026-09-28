@@ -1163,3 +1163,21 @@ Nexo consequence: distinguish generic fault-injection capability and execution f
 2. Determine supported OFLE version set and whether generic protocol serialization tests indirectly cover every version.
 3. Inspect whether a small research-only execution can route a deliberately mismatched OFLE response through NetworkClient without production changes.
 4. Freeze remaining gaps explicitly; no implementation/V21.
+
+
+## 77. AB104.745 — OFLE version + client-test inventory audit
+Commit: ba4089ccbdc6324b476c2248a85d69b22603214d
+Research file: docs/nexo/NEXO_AB104_745_OFLE_VERSION_CLIENT_TEST_AUDIT_2026-09-28.md
+
+New evidence: MessageTest.testOffsetForLeaderEpochVersions() exercises OFLE request message round-trips across the supported version range and explicitly checks version 2 currentLeaderEpoch and version 3 replicaId transitions. This is request serialization/version evidence, not reducer semantic closure. No dedicated OFLE response-version test with analogous naming was found.
+
+Current OffsetForLeaderEpochClientTest directly executes: empty response; unexpected empty response (requested partition absent -> remains retryable); successful NONE response; authorization failure; retriable error. Therefore AB104.743/744 gap is refined: missing requested partition IS executed/covered. Unrequested response partition remains NOT ESTABLISHED. Duplicate partition remains NOT ESTABLISHED. Mixed duplicate/error ordering remains NOT ESTABLISHED. OFLE-specific correlation mismatch remains NOT ESTABLISHED. Generic Kafka mismatch execution remains YES.
+
+Status:
+OFLE_REQUEST_MESSAGE_ROUNDTRIP_VERSION_COVERAGE=YES; OFLE_REQUEST_VERSION_TRANSITIONS_EXPLICITLY_TESTED=YES; OFLE_RESPONSE_VERSION_ROUNDTRIP_DEDICATED=NOT_ESTABLISHED; OFLE_CLIENT_EMPTY_RESPONSE=EXECUTED; OFLE_CLIENT_MISSING_REQUESTED_PARTITION=EXECUTED; OFLE_CLIENT_UNREQUESTED_PARTITION=NOT_ESTABLISHED; OFLE_CLIENT_DUPLICATE_PARTITION=NOT_ESTABLISHED; OFLE_CLIENT_MIXED_DUPLICATE_ORDER=NOT_ESTABLISHED; OFLE_CLIENT_CORRELATION_MISMATCH=NOT_ESTABLISHED; OFLE_DIRECT_REDUCER_EXHAUSTIVE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.746
+1. Search all current OFLE client/helper tests for indirect unrequested or duplicate response entries.
+2. Inspect OFLE response schema/version handling specifically.
+3. If no additional coverage, freeze the minimal remaining response-shape matrix and evidence boundary.
+4. No production modification; no Nexo implementation; no V21.
