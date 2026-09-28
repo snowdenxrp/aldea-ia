@@ -1739,3 +1739,17 @@ DEDICATED_POLL_MISMATCH_TEST=NO
 POST_EXCEPTION_QUEUE_STATE=NOT_EXECUTED
 
 Next exact mission: AB104.753R — inspect selector completed-receive list lifecycle/clearing and whether an exception can cause the same receive to be replayed or discarded on the next poll. Also inspect disconnect/error handling around the affected connection. Keep source-derived and executed evidence separate.
+
+
+## 105. AB104.753R — completed-receive retention/replay re-audit
+Commit: 486558ef34462865602c3a5228b487b9c7033d1d
+Direct test-harness source: `MockSelector.completeReceive()` appends directly to `completedReceives`; `MockSelector.poll()` does not clear that list; `NetworkClient.handleCompletedReceives()` does not clear it. Thus an exception can leave the mock receive in the list until explicit clearing. This is NOT production-selector replay evidence and must not be generalized. NetworkClient disconnect/timeout paths do clear in-flight requests, but those phases occur after `handleCompletedReceives()` and therefore are not reached in the same poll if parsing throws.
+
+Status:
+MOCK_RECEIVE_RETENTION=SOURCE_CONFIRMED
+REPLAY_AFTER_MISMATCH_EXECUTED=NO
+PRODUCTION_SELECTOR_REPLAY=NOT_ESTABLISHED
+DISCONNECT_CLEARS_INFLIGHT=SOURCE_CONFIRMED
+DISCONNECT_PHASE_AFTER_PARSE_EXCEPTION=NOT_REACHED_BY_SOURCE_ORDER
+
+Next exact mission: AB104.754R — inspect the production selector's `completedReceives()` lifecycle and clear semantics, plus relevant selector/network tests, to avoid overgeneralizing the MockSelector result. Determine whether production completed receives are drained before/after NetworkClient processing and what happens if processing throws.
