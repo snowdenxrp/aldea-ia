@@ -1566,3 +1566,13 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.763
 Inspect current NetworkClientTest correlation-mismatch tests and helper naming to determine whether the final OFLE test should reuse an existing assertion/helper or add a dedicated test method. Preserve NOT EXECUTED.
+
+
+## 95. AB104.743R — evidence re-audit
+Commit: 3d2a3de6174e034a5f27c9d1d07a9f8ea8f431b8
+AB104.743 was re-investigated directly against Kafka source/test code rather than accepted from prior notes. Confirmed: OFLE reducer semantics, correlation validation order, NetworkClientTest response injection helpers, and arbitrary correlation serialization. Not confirmed: direct NetworkClient mismatch assertion, OFLE-specific mismatch execution, duplicate/unrequested/missing OFLE test execution, or exhaustive reducer coverage.
+
+Important correction: server ForwardingManagerTest.testResponseCorrelationIdMismatch deliberately constructs requestCorrelationId + 1, but asserts UNKNOWN_SERVER_ERROR after an Envelope/ForwardingManager path; this must NOT be promoted to direct NetworkClient/OFLE CorrelationIdMismatchException execution evidence.
+
+### Exact next re-audit
+AB104.744R: directly inspect the response-header/version serialization tests and OFLE RequestResponseTest cases, then compare their actual assertions with the claims made in AB104.744. Preserve all gaps and do not execute unless explicitly required.
