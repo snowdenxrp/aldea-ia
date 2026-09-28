@@ -853,3 +853,37 @@ Direct code/test audit of the current OffsetForLeaderEpoch client path and prove
 5. preserve topic-incarnation and broker-incarnation UNKNOWN unless direct evidence closes them.
 
 Do not implement Nexo. Do not create V21. AB104.732 must have its own evidence record and canonical commit before AB104.733 is assigned.
+
+
+## 65. AB104.732 — OffsetForLeaderEpoch client-path / provenance-loss audit
+Commit: fe8f7d4b6fadbfa0ec879b4b535a813b842f105f
+Research file: docs/nexo/NEXO_AB104_732_OFFSET_FOR_LEADER_EPOCH_CLIENT_PATH_PROVENANCE_LOSS_AUDIT_2026-09-27.md
+
+Confirmed from current Apache Kafka source evidence:
+- Parsed OffsetForLeaderEpoch response reaches OffsetsForLeaderEpochUtils.handleResponse(...) directly, creating a clear parsed-response → reducer boundary.
+- NetworkClient retains request header, destination, in-flight request context and transport timing before reduction.
+- RequestHeader contains API key, API version, header version, client ID and correlation ID.
+- Response correlation is checked against the originating request correlation; mismatch is rejected.
+- Disconnect/timeout states do not contain a successful parsed response and must remain distinct from a successful broker response.
+- Unsupported-version rejection is distinct from broker protocol error and from timeout/disconnect.
+- Reducer collapse is a real provenance-loss boundary: multiple raw retry-classified error codes can become the same partitionsToRetry membership.
+- Multi-partition provenance must remain partition-specific; aggregate retry membership is insufficient evidence.
+
+Explicit UNKNOWN:
+- exact current generated OffsetsForLeaderEpochClient.java body was not directly retrieved through the available GitHub connector;
+- exhaustive direct reducer test coverage;
+- topic incarnation;
+- broker incarnation;
+- Nexo implementation/runtime correctness;
+- TLC/formal correctness.
+
+No Kafka source modified. No Nexo implementation. No runtime test. No correctness/security/deployment guarantee.
+
+## EXACT CURRENT RESUME POINT — AB104.733
+Inspect the strongest available direct Kafka tests around:
+1. reducer/client behavior;
+2. NetworkClient correlation mismatch;
+3. stale/disconnected responses;
+4. unsupported versions;
+5. mixed-partition responses.
+Determine which cases are directly asserted versus merely implied by source. Preserve all UNKNOWNs. Do not implement Nexo or create V21.
