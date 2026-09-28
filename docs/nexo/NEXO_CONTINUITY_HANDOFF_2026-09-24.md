@@ -1328,3 +1328,29 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.755
 Inspect the current OFLE builder's required request-data types/constructors and the exact version selected by the client path; determine whether the minimal OFLE mismatch test can be specified byte-for-byte from existing public/test-visible constructors. Preserve NOT EXECUTED until an actual test run is observed. No implementation/V21.
+
+
+## 87. AB104.755 — OFLE minimal request construction audit
+Commit: 5515c852926cb859cfe7f7ae697b1d978c417ac9
+Research file: docs/nexo/NEXO_AB104_755_OFLE_MINIMAL_REQUEST_CONSTRUCTION_AUDIT_2026-09-28.md
+
+Exact current source confirms the minimal consumer OFLE request is directly constructible from existing message types. Builder.forConsumer receives OffsetForLeaderTopicCollection, creates OffsetForLeaderEpochRequestData, sets replicaId=-1 and permits versions 3..latest. The production helper OffsetsForLeaderEpochUtils.prepareRequest constructs each topic with OffsetForLeaderTopic, each partition with OffsetForLeaderPartition, then sets partition, leaderEpoch and currentLeaderEpoch before calling Builder.forConsumer.
+
+Therefore a one-topic/one-partition request is fully specifiable without hidden factories. Version 3 is the clean minimum consumer target. This is construction evidence, not execution evidence.
+
+Status:
+MINIMAL_OFLE_REQUEST_CONSTRUCTION=BYTE/CONSTRUCTOR_SPECIFIABLE
+CONSUMER_MIN_VERSION=3
+CONSUMER_BUILDER_RANGE=3..latest
+SINGLE_TOPIC_SINGLE_PARTITION=SPECIFIABLE
+RESPONSE_SINGLE_TOPIC_SINGLE_PARTITION=SPECIFIABLE
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.756
+Inspect NetworkClient.parseResponse / handleCompletedReceives at exact source level and verify the mismatch is surfaced before OFLE response body/reducer processing. Do not count source-level proof as executed behavior.
