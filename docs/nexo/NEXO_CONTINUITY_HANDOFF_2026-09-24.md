@@ -1084,3 +1084,30 @@ SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; DIRECT_REDUCER_TEST_CLASS_FO
 3. Finish duplicate/missing/unrequested response-shape audit.
 4. Then freeze the research gap and update continuity.
 Do not implement Nexo. Do not create V21.
+
+
+## 74. AB104.741 — exact correlation parser + duplicate/shape audit
+Commit: 99aede50e28c256d39377597133b44bdd6579173
+Findings:
+- `AbstractResponse.parseResponse(ByteBuffer, RequestHeader)` derives response-header version from API key/version, parses the ResponseHeader, checks correlation ID, and only then parses the API response body.
+- Correlation mismatch therefore fails before API-specific response parsing.
+- `ResponseHeader` has a concrete serialization path with controlled correlation ID; RequestResponseTest has positive round-trip/matching correlation evidence.
+- No deliberate mismatch test was established.
+- OFLE reducer duplicate entries are not explicitly rejected. Source inspection shows order-dependent behavior:
+  * retry -> NONE removes partition and stores end offset;
+  * NONE -> retry leaves partition removed from retry;
+  * NONE -> NONE overwrites stored end offset;
+  * authorization removes from retry and ultimately throws.
+- Missing requested partitions remain retryable because retry set begins with all requestData keys.
+- Unrequested response partitions are explicitly ignored.
+- No dedicated current tests were established for duplicate/missing/unrequested OFLE response-shape cases.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; CONTROLLED_CORRELATION_SERIALIZATION_PATH=YES; POSITIVE_CORRELATION_TEST=YES; DELIBERATE_MISMATCH_TEST_EXECUTED=NO/NOT_ESTABLISHED; DUPLICATE_RESPONSE_EXPLICIT_TEST=NO/NOT_ESTABLISHED; MISSING_RESPONSE_EXPLICIT_TEST=NO/NOT_ESTABLISHED; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.742
+1. Search Kafka tests specifically for duplicate OFLE response entries, missing requested partitions, and unrequested partitions.
+2. Search for direct correlation-mismatch construction using ResponseHeader/ByteBuffer/RequestHeader.
+3. Inspect OFLE response serialization/version tests and response-header versions exercised.
+4. Determine which remaining gaps require execution versus source evidence.
+No Nexo implementation. No V21.
