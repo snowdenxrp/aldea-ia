@@ -1354,3 +1354,28 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.756
 Inspect NetworkClient.parseResponse / handleCompletedReceives at exact source level and verify the mismatch is surfaced before OFLE response body/reducer processing. Do not count source-level proof as executed behavior.
+
+
+## 88. AB104.756 — OFLE correlation exception boundary audit
+Commit: 5eede126aaee1de7a458e73726c613b8f31a1bf4
+Research file: docs/nexo/NEXO_AB104_756_OFLE_CORRELATION_EXCEPTION_BOUNDARY_AUDIT_2026-09-28.md
+
+Source-level result: NetworkClient.handleCompletedReceives obtains the in-flight request and immediately calls NetworkClient.parseResponse(receive.payload(), req.header). parseResponse delegates to AbstractResponse.parseResponse and rethrows CorrelationIdMismatchException for normal non-reserved correlations. This occurs before throttle handling, response dispatch, completion callback, or OFLE reducer processing. Therefore the planned mismatch reaches the header-validation boundary before the OFLE body is processed.
+
+Important caveat preserved: inFlightRequests.completeNext(source) occurs before parseResponse, so the request is removed from the in-flight collection before the mismatch is surfaced. Higher-level retry/recovery semantics remain unverified.
+
+Status:
+NETWORKCLIENT_PARSE_RESPONSE_BOUNDARY=SOURCE_VERIFIED
+CORRELATION_CHECK_PRECEDES_OFLE_BODY_PROCESSING=SOURCE_VERIFIED
+NORMAL_NON_RESERVED_MISMATCH_RETHROWN=SOURCE_VERIFIED
+SASL_RESERVED_EXCEPTION_SPECIAL_CASE=SOURCE_VERIFIED
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.757
+Inspect AbstractResponse.parseResponse and ResponseHeader parsing at exact source level, including where correlation IDs are compared and whether the API body is parsed only after that comparison. Preserve NOT EXECUTED until a real OFLE test run is observed.
