@@ -1111,3 +1111,27 @@ SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; CONTROLLED_CORRELATION_SERIA
 3. Inspect OFLE response serialization/version tests and response-header versions exercised.
 4. Determine which remaining gaps require execution versus source evidence.
 No Nexo implementation. No V21.
+
+
+## 75. AB104.743 — OFLE response-shape + correlation follow-up audit
+Commit: dfb7cdcacb06d5aa06ed700448f2e09e4b207a7c
+Research file: docs/nexo/NEXO_AB104_743_OFLE_RESPONSE_SHAPE_CORRELATION_AUDIT_2026-09-28.md
+
+Current Kafka source evidence at commit abf522e1ca5d7f4375baddc4da004da9fcb6e9ca was inspected.
+- OffsetsForLeaderEpochUtils.handleResponse initializes retry from all requested partitions; unrequested response partitions are ignored; missing requested partitions therefore remain retryable.
+- Duplicate response entries are not explicitly rejected. Reducer behavior is order-dependent for stored endOffset and effectively monotonic for retry-removal after a successful/authorization entry.
+- AbstractResponse.parseResponse parses the versioned ResponseHeader, compares correlation IDs, and throws CorrelationIdMismatchException before API-body parsing on mismatch. This is implementation evidence only.
+- Search did not establish a dedicated duplicate, missing, unrequested OFLE response-shape test or a deliberate correlation-mismatch execution test.
+- RequestResponseTest provides controlled response-header/serialization infrastructure and OFLE response construction, but inspected evidence does not establish exhaustive OFLE response-shape coverage across API versions or deliberate mismatch execution.
+
+Nexo consequence: preserve RequestHeader + ResponseHeader + API/version + correlation + raw response entries + transport outcome + authoritative generation/incarnation before semantic reduction. Keep separate claims for parse success, correlation match, requested-set completeness, absence of extras/duplicates, raw error preservation, reducer correctness, and incarnation validity. Tolerated/ignored malformed or extra input is not proof of semantic completeness.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; CORRELATION_VALIDATION_IMPLEMENTED=YES; CONTROLLED_CORRELATION_SERIALIZATION_PATH=YES; DELIBERATE_CORRELATION_MISMATCH_EXECUTED=NO/NOT_ESTABLISHED; DUPLICATE_OFLE_TEST_EXECUTED=NO/NOT_ESTABLISHED; MISSING_OFLE_TEST_EXECUTED=NO/NOT_ESTABLISHED; UNREQUESTED_OFLE_TEST_EXECUTED=NO/NOT_ESTABLISHED; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; API-VERSION_EXHAUSTIVE_RESPONSE-SHAPE-COVERAGE=UNKNOWN; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.744
+1. Inspect current Kafka response-header/version tests and exact OFLE Request/Response serialization tests.
+2. Determine whether controlled ByteBuffer construction can establish a research-only deliberate correlation mismatch path without production changes.
+3. Search parameterized response-shape tests by API key/version for indirect duplicate/missing/unrequested coverage.
+4. If execution evidence remains absent, freeze gaps rather than infer coverage.
+Do not implement Nexo. Do not create V21.
