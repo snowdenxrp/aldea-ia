@@ -1512,3 +1512,30 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.762
 Inspect exact OFLE test-only imports and concrete one-topic/one-partition builder syntax against current Kafka test sources, then produce final compile-level test skeleton. Preserve NOT EXECUTED unless execution is explicitly authorized.
+
+
+## 94. AB104.762 — OFLE compile-level test skeleton audit
+Commit: afe0a7b1f23535714c469deb1bf1433d4f342a23
+Research file: docs/nexo/NEXO_AB104_762_OFLE_COMPILE_SKELETON_AUDIT_2026-09-28.md
+
+Source verification established exact test-only generated message imports and concrete one-topic/one-partition construction for both OFLE request and response. Consumer Builder.forConsumer supports version 3+. Existing production helper confirms OffsetForLeaderTopic/OffsetForLeaderPartition construction. Response uses OffsetForLeaderTopicResult + EpochEndOffset with partition/errorCode/leaderEpoch/endOffset.
+
+The compile-level skeleton is fully specified and requires no production change. It remains uncompiled/unexecuted. The planned assertion is CorrelationIdMismatchException from NetworkClient.poll after injecting a valid OFLE response serialized with a different non-reserved correlation ID.
+
+Status:
+OFLE_REQUEST_IMPORTS_SOURCE_VERIFIED=YES
+OFLE_REQUEST_ONE_TOPIC_ONE_PARTITION=SOURCE_VERIFIED
+OFLE_RESPONSE_ONE_TOPIC_ONE_PARTITION=SOURCE_VERIFIED
+REQUEST_VERSION_3_SUPPORTED=YES
+TEST_SKELETON_COMPILE_LEVEL=SPECIFIED
+TEST_COMPILED=NO
+TEST_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.763
+Inspect current NetworkClientTest correlation-mismatch tests and helper naming to determine whether the final OFLE test should reuse an existing assertion/helper or add a dedicated test method. Preserve NOT EXECUTED.
