@@ -1593,3 +1593,18 @@ Not established:
 - exhaustive reducer matrix.
 
 Exact next mission: AB104.745R — re-audit the claimed OFLE client-test coverage directly, including empty/missing response, NONE, authorization, retriable errors, and whether duplicate/unrequested/correlation mismatch are actually executed.
+
+
+## 97. AB104.745R — evidence re-audit
+Commit: ebc44a47c64e6bec5391106c48b2140a105a405d
+Direct inspection of OffsetForLeaderEpochClientTest.java confirms five tests: empty response, unexpected empty response, OK/NONE response, unauthorized topic, and retriable error.
+
+Important precision correction:
+- requested partition absent from an otherwise empty response = EXECUTED/ASSERTED;
+- response containing an unrequested partition = NOT EXECUTED;
+- duplicate response partition = NOT EXECUTED;
+- conflicting duplicate/order = NOT EXECUTED;
+- OFLE correlation mismatch = NOT EXECUTED;
+- exhaustive reducer error matrix = NOT EXECUTED.
+
+Exact next mission: AB104.746R — re-audit repository-wide indirect OFLE coverage for unrequested response partitions and duplicate/conflicting response shapes, distinguishing production semantics from tests that actually execute those cases.
