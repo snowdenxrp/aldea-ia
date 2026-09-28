@@ -1229,3 +1229,16 @@ But current evidence does NOT establish an OFLE-specific mismatch execution. Exi
 
 ## EXACT CURRENT RESUME POINT — AB104.750
 Inspect relevant NetworkClientTest setup/request-version helpers and determine whether a minimal OFLE mismatch test can be specified entirely from existing test infrastructure; separately inspect MockSelector completion semantics and NetworkClient.poll to establish whether the exception surfaces directly or through disconnect/error handling. Research only; do not implement test or production code.
+
+
+## 82. AB104.750 — MockSelector/NetworkClient exception surface
+Commit: aab35df8b2757f1563885d89ecfd4ceacba706a9
+
+MockSelector.completeReceive(NetworkReceive) directly appends to completedReceives; it performs no parsing/validation/disconnect. NetworkClient.poll() invokes selector.poll(), then handleCompletedReceives(), which calls NetworkClient.parseResponse(receive.payload(), req.header). For ordinary request correlations, NetworkClient.parseResponse propagates CorrelationIdMismatchException. There is no catch around parseResponse in handleCompletedReceives, so a deliberately mismatched raw response should surface from NetworkClient.poll() when a matching in-flight request exists.
+
+Minimal OFLE mismatch test is therefore specifiable entirely with existing infrastructure, without production changes: real OFLE request builder/version → send → real correlation ID → OffsetsForLeaderEpochResponse → serializeResponseWithHeader with same OFLE version and non-matching correlation → MockSelector.completeReceive(NetworkReceive) → assert poll throws CorrelationIdMismatchException. This remains TEST DESIGN ONLY; not executed.
+
+Status: MOCKSELECTOR_RAW_RECEIVE_INJECTION=YES; POLL_TO_HANDLE_COMPLETED_RECEIVE=YES; MISMATCH_EXCEPTION_PROPAGATION_PATH=SOURCE_ESTABLISHED; MINIMAL_OFLE_TEST_SPECIFIABLE=YES; MINIMAL_OFLE_TEST_EXECUTED=NO; OFLE_CORRELATION_MISMATCH_ASSERTED=NO; OFLE_REDUCER_EXHAUSTIVE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.751
+Inspect current OFLE request builder/version setup in NetworkClientTest or adjacent consumer tests, determine exact supported OFLE version and required request data for the minimal test specification, and verify whether correlationId+1 is safe relative to reserved SASL ranges. Do not implement.
