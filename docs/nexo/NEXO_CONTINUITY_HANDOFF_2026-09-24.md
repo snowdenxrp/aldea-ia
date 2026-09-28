@@ -764,3 +764,46 @@ No Kafka source was modified. No Nexo implementation or runtime execution was pe
 AB104.731 — inspect exact Kafka response/request version negotiation and topic-ID/incarnation handling around OffsetForLeaderEpoch, then determine whether Nexo provenance needs broker/node identity and response/request correlation in addition to topic/partition, protocol version, errorCode, leaderEpoch, endOffset, and operation identity.
 
 CONTINUITY MUST resume from AB104.730 / 3fa035f0418e8c85708fb8dd17b05927c390e847 or any newer canonical AB commit, never silently from AB104.729 or older.
+
+
+## 63. CONTINUITY RESPONSE AUDIT / EPISTEMIC CORRECTION — 2026-09-27
+Audit record: docs/nexo/NEXO_CONTINUITY_RESPONSE_AUDIT_2026-09-27.md
+Audit commit: 2ac94e8bd74790753e6e5a36d7bf330c93dcce98
+
+A retrospective continuity audit was performed after detecting that chat responses had advanced beyond the canonical GitHub checkpoint without corresponding commits.
+
+Critical correction:
+- The canonical GitHub handoff inspected before this correction ended at AB104.730 / commit 3fa035f0418e8c85708fb8dd17b05927c390e847.
+- No canonical repository commits for AB104.731, AB104.732 or AB104.733 were found by repository commit search.
+- Therefore the prior chat presentations of AB104.731–733 are downgraded to CHAT-ONLY / UNVERIFIED and must not be treated as completed research.
+- Those claims must be re-researched from direct source before entering the canonical AB chain.
+
+AB104.730 correction:
+- Its text contains a statement that later OffsetForLeaderEpoch protocol versions add topic identifiers.
+- Because the later correction was never canonically saved, that specific statement is now marked NEEDS DIRECT RECHECK rather than accepted as established fact.
+- No TopicID claim for OffsetForLeaderEpoch is canonical until the exact current request/response schema is directly inspected and recorded.
+
+Restored epistemic rules:
+DESIGNED != IMPLEMENTED != FORMALLY VERIFIED != RUNTIME VERIFIED != DEPLOYED VERIFIED.
+TEST DESIGN != TEST EXECUTION.
+SOURCE INSPECTION != NEXO CORRECTNESS.
+ACKNOWLEDGEMENT != EXTERNAL-WORLD TRUTH.
+TIMEOUT/DISCONNECT != NOT_COMMITTED.
+REDUCED RETRY STATE != RAW ERROR PROVENANCE.
+CURRENT CAPABILITY STATE != HISTORICAL REQUEST CAPABILITY EVIDENCE.
+CHAT-ONLY REASONING != CANONICAL CONTINUITY.
+
+The audit does not delete or overwrite historical Git history. It adds an explicit correction layer and preserves the earlier records as historical evidence.
+
+## EXACT CURRENT RESUME POINT — CORRECTED
+AB104.731 RE-RUN.
+This is NOT a continuation of the earlier chat-only AB104.731 claim. It must be freshly researched from direct current Kafka source, covering:
+1. exact OffsetForLeaderEpoch request/response schema versions;
+2. effective version selection/negotiation;
+3. NodeApiVersions capability state;
+4. request header apiVersion/correlationId/clientId;
+5. broker/node identity at request and response boundaries;
+6. topic identity/incarnation handling;
+7. exact provenance retained before reducer loss.
+
+No AB104.732 or AB104.733 may be assigned until this rerun has its own evidence record and canonical commit.
