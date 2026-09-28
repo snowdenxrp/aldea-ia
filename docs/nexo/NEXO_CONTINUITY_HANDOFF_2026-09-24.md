@@ -1299,3 +1299,32 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.754
 Inspect exact current NetworkClientTest/OFLE test imports and assertion idioms needed to route a real OFLE request through MockSelector.completeReceive, and determine whether an existing test can execute the minimal mismatch path without production changes. If execution is still not performed, freeze the executable recipe and continue remaining response-shape evidence. No implementation/V21.
+
+
+## 86. AB104.754 — OFLE mismatch execution-path audit
+Commit: b53695a8552cb57cdc7f22acb3d946629b9e7a05
+Research file: docs/nexo/NEXO_AB104_754_OFLE_MISMATCH_EXECUTION_PATH_AUDIT_2026-09-28.md
+
+Current Kafka NetworkClientTest already contains the required lower-level pattern: awaitReady → real ClientRequest → send → poll until in-flight → RequestTestUtils.serializeResponseWithHeader(...) → MockSelector.completeReceive(NetworkReceive) → NetworkClient.poll(). It already imports JUnit assertThrows, NetworkReceive, RequestTestUtils and MockSelector. Therefore no new infrastructure or production modification is required in principle.
+
+ClientRequest exposes requestBuilder(), apiKey(), and correlationId(); AbstractRequest.Builder exposes latestAllowedVersion(). The dedicated OffsetForLeaderEpochClientTest remains unsuitable for a wire-level mismatch because ConsumerNetworkClient + MockClient constructs the response using the request's own header path. The lower-level NetworkClientTest boundary is the correct execution surface.
+
+Minimal OFLE mismatch recipe is fully specifiable: consumer OFLE builder → supported version → real ClientRequest → observe correlation → choose different non-reserved response correlation → one-topic/one-partition OffsetsForLeaderEpochResponse → serialize with OFLE response header → inject raw NetworkReceive → assert NetworkClient.poll() throws CorrelationIdMismatchException.
+
+This is still NOT EXECUTED. Source evidence establishes the path, but execution must not be inferred.
+
+Status:
+NETWORKCLIENT_RAW_RECEIVE_INJECTION=YES
+OFLE_REQUEST_BUILDER_PATH=SPECIFIABLE
+OFLE_RESPONSE_HEADER_SERIALIZATION=YES
+DELIBERATE_NONMATCHING_CORRELATION_CONSTRUCTION=YES
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.755
+Inspect the current OFLE builder's required request-data types/constructors and the exact version selected by the client path; determine whether the minimal OFLE mismatch test can be specified byte-for-byte from existing public/test-visible constructors. Preserve NOT EXECUTED until an actual test run is observed. No implementation/V21.
