@@ -1662,3 +1662,17 @@ OFLE_MISMATCH_EXECUTION=NO
 DIRECT_OFLE_NETWORKCLIENT_MISMATCH_ASSERTION=NO
 
 Exact next mission: AB104.749R — re-audit the lower-level NetworkClient/MockSelector path and determine whether the existing raw injection infrastructure is actually sufficient to execute an OFLE mismatch, while keeping “constructable recipe” separate from “executed evidence.”
+
+
+## 100. AB104.748R — OFLE correlation mismatch re-audit
+Commit: 33cb809648a51b9b71f4a83d843397820df356ac
+Direct recheck confirms: OffsetForLeaderEpochClientTest only uses normal MockClient responses; no independently selected response correlation ID and no mismatch assertion. NetworkClientTest has real NetworkClient + ClientRequest + MockSelector + raw NetworkReceive injection, but its inspected matching-response path uses the request correlation ID. RequestTestUtils permits arbitrary correlation IDs. Repository search found no dedicated NetworkClientTest CorrelationIdMismatchException assertion.
+
+Status:
+OFLE_MISMATCH_EXECUTED=NO
+DIRECT_NETWORKCLIENT_MISMATCH_ASSERTION=NO
+RAW_INJECTION_MECHANISM=YES
+ARBITRARY_CORRELATION_CONSTRUCTION=YES
+MATCHING_NETWORKCLIENT_EXECUTION=YES
+
+Exact next mission: AB104.749R — re-audit the lower-level NetworkClient/MockSelector path and determine precisely whether any existing test executes an independently correlated response through `completeReceive`, including exception surface and request lifecycle, without treating the available recipe as executed evidence.
