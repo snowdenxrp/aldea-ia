@@ -1181,3 +1181,16 @@ OFLE_REQUEST_MESSAGE_ROUNDTRIP_VERSION_COVERAGE=YES; OFLE_REQUEST_VERSION_TRANSI
 2. Inspect OFLE response schema/version handling specifically.
 3. If no additional coverage, freeze the minimal remaining response-shape matrix and evidence boundary.
 4. No production modification; no Nexo implementation; no V21.
+
+
+## 78. AB104.746 — OFLE indirect response coverage audit
+Commit: 01bf42a6fa81a85f1bd91e6f5c25819c788ec27c
+
+Repository-wide search confirms production reducer behavior for unrequested OFLE response partitions: OffsetsForLeaderEpochUtils.handleResponse explicitly logs and ignores them. No dedicated consumer reducer test executing this branch was found. A separate core AbstractFetcherThreadTest has an OFLE-related unrequested-partition scenario, but it exercises a different server/fetcher layer and cannot count as consumer reducer coverage.
+
+RequestResponseTest.createLeaderEpochResponse() constructs a multi-topic/multi-partition OFLE response and participates in generic response error-count testing, but does not feed the response into OffsetsForLeaderEpochUtils.handleResponse. It therefore establishes response object construction, not reducer semantics. It does not establish duplicate/unrequested consumer behavior.
+
+Refined matrix: OFLE_REQUEST_MESSAGE_ROUNDTRIP_VERSION_COVERAGE=YES; OFLE_RESPONSE_OBJECT_GENERIC_CONSTRUCTION=YES; OFLE_RESPONSE_REDUCER_UNREQUESTED_EXECUTED=NO; OFLE_RESPONSE_REDUCER_MISSING_REQUESTED_EXECUTED=YES; OFLE_RESPONSE_REDUCER_DUPLICATE_EXECUTED=NO; OFLE_RESPONSE_REDUCER_DUPLICATE_ORDER_EXECUTED=NO; OFLE_RESPONSE_REDUCER_MIXED_DUPLICATE_ERROR_EXECUTED=NO; OFLE_RESPONSE_REDUCER_CORRELATION_MISMATCH_EXECUTED=NO; OFLE_SERVER/FETCHER_UNREQUESTED_SCENARIO=YES_BUT_DIFFERENT_LAYER; DIRECT_REDUCER_EXHAUSTIVE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.747
+Inspect RequestResponseTest all-version loops plus OFLE response header/version path; establish precisely what generic response serialization tests establish and do not establish for OFLE, then freeze protocol-vs-reducer boundary. No production changes.
