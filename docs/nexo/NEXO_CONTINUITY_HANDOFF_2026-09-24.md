@@ -1194,3 +1194,16 @@ Refined matrix: OFLE_REQUEST_MESSAGE_ROUNDTRIP_VERSION_COVERAGE=YES; OFLE_RESPON
 
 ## EXACT CURRENT RESUME POINT — AB104.747
 Inspect RequestResponseTest all-version loops plus OFLE response header/version path; establish precisely what generic response serialization tests establish and do not establish for OFLE, then freeze protocol-vs-reducer boundary. No production changes.
+
+
+## 79. AB104.747 — OFLE protocol-version serialization boundary
+Commit: c133bdb1a0a541bac6a46e2e9917975a2dd63850
+
+Correction/refinement: RequestResponseTest.testSerialization() iterates every ApiKeys value and every apiKey.allVersions(). For OFFSET_FOR_LEADER_EPOCH, getResponse() returns createLeaderEpochResponse(), and checkResponse() serializes, parses with AbstractResponse.parseResponse(apiKey, readable, version), reserializes, and compares bytes. Therefore generic OFLE RESPONSE wire round-trip across all supported API versions is YES. Earlier wording saying response-version coverage was "not established" must be refined to mean dedicated semantic/shape coverage was not established. History is preserved; this is a correction.
+
+The OFLE response fixture is version-independent and contains three unique partition records across two topics. It does not exercise unrequested entries, duplicates, conflicting duplicate order, or deliberate OFLE correlation mismatch. Generic response-header/framing machinery is covered, but OFLE-specific correlation mismatch remains NOT EXECUTED.
+
+Final protocol/reducer boundary: PROTOCOL_REQUEST_ROUNDTRIP_ALL_OFLE_VERSIONS=YES; PROTOCOL_RESPONSE_ROUNDTRIP_ALL_OFLE_VERSIONS=YES; PROTOCOL_HEADER_GENERIC_COVERAGE=YES; OFLE_SPECIFIC_CORRELATION_MISMATCH_EXECUTED=NO; CONSUMER_REDUCER_MISSING_REQUESTED_EXECUTED=YES; CONSUMER_REDUCER_UNREQUESTED_EXECUTED=NO; CONSUMER_REDUCER_DUPLICATE_EXECUTED=NO; CONSUMER_REDUCER_MIXED_DUPLICATE_ERROR_EXECUTED=NO; CONSUMER_REDUCER_EXHAUSTIVE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.748
+Inspect whether existing test utilities can construct a deliberately mismatched OFLE response header and route it through current NetworkClient/ConsumerNetworkClient without production changes. If only generic mismatch coverage exists, preserve distinction. No implementation/V21.
