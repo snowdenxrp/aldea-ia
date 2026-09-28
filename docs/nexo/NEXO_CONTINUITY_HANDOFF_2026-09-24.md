@@ -683,3 +683,44 @@ Official Apache Kafka Gitiles confirms the current targeted ProducerFailureHandl
 Status: EXACT_TEST_BODY_VERIFIED=NO; TEST_EXECUTED=NO; BROKER_DURABILITY_VERIFIED=NO; NEXO_CORRECTNESS_VERIFIED=NO.
 
 EXACT NEXT ACTION: AB104.647 — follow the current Gitiles clients/clients-integration-tests tree and commit history to retrieve the exact ProducerFailureHandlingTest source, then locate current MockClient and inspect response/error queue primitives line-by-line.
+
+
+## 60. AB104.728 — Continuity synchronization / latest research checkpoint
+Commit: 6aeb13897cd387d271f05e5cf7194ce1b47201e5
+
+This section intentionally synchronizes the persistent CONTINUITY handoff with the latest research checkpoint so a future `CONTINUITY` does not resume from the older AB104.646 endpoint.
+
+AB104.728 status:
+- `SOURCE_CODE_VERIFIED=YES`
+- `TEST_SOURCE_VERIFIED=YES`
+- `EXHAUSTIVE_TEST_COVERAGE=UNKNOWN`
+- `IMPLEMENTED=NO`
+- `EXECUTED_BY_NEXO=NO`
+- `BROKER_DURABILITY_VERIFIED=NO`
+- `NEXO_CORRECTNESS_VERIFIED=NO`
+
+Finding:
+Current Kafka `OffsetFetcherTest` directly covers downstream validation behavior including undefined epoch/end offset, concrete truncation, stale in-flight responses after seek, leader-epoch fencing, and skipping validation for old responses. However, this does NOT establish exhaustive direct coverage of the raw `OffsetsForLeaderEpochUtils.handleResponse()` reducer.
+
+Several protocol errors collapse into the same `partitionsToRetry` state, while authorization produces a terminal `TopicAuthorizationException`. Downstream state tests therefore cannot prove preservation of the original raw error identity after reduction.
+
+Nexo epistemic consequence:
+- Do not infer exhaustive reducer coverage from downstream retry/validation tests.
+- Raw per-partition `EpochEndOffset.errorCode` provenance must be captured before reduction if Nexo relies on that distinction.
+- UNKNOWN remains UNKNOWN until direct evidence closes it.
+- No Kafka modification, Nexo implementation, runtime execution, broker-durability claim, or correctness claim is implied.
+
+## EXACT CURRENT RESUME POINT
+AB104.729 — inspect the actual Kafka `OffsetsForLeaderEpochUtils` test/source history and protocol-response tests to determine whether direct reducer coverage exists elsewhere. If no direct coverage exists, define the minimum Nexo adversarial test matrix without modifying Kafka.
+
+## CONTINUITY RULE — DO NOT FALL BEHIND
+Future CONTINUITY checkpoints MUST update this handoff after each material AB research checkpoint, not merely rely on an older static handoff date. The handoff must record at minimum:
+1. latest AB number;
+2. latest commit SHA;
+3. research-file path when applicable;
+4. exact verified findings;
+5. explicit UNKNOWN/PENDING items;
+6. implementation/verification status;
+7. exact next action.
+
+A future CONTINUITY response must treat the latest synchronized checkpoint in this file and the repository's newer AB commits as the resume source. It must never silently resume from AB104.646 or another stale endpoint when newer canonical AB records exist.
