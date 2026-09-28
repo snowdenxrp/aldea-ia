@@ -1621,3 +1621,16 @@ CONFLICTING_DUPLICATE_OFLE_RESPONSE_EXECUTED=NO
 VALID_EXPECTED_PARTITION_INTEGRATION=YES
 
 Exact next mission: AB104.747R — re-audit OFLE protocol-version boundary evidence, especially whether the all-version RequestResponseTest actually gives OFLE response round-trip assertions versus only generic API coverage, and inspect MessageTest/version-specific OFLE cases.
+
+
+## 99. AB104.747R — OFLE protocol-version boundary re-audit
+Commit: 6d5c8243086e9cc550495106890086932a99941a
+Direct inspection shows MessageTest has OFLE-specific request version coverage, but no analogous dedicated response-version test. More importantly, RequestResponseTest.testSerialization() iterates versions generically, while its OFLE request factory ignores the loop version and builds the follower request with the version-4-only builder; its OFLE response factory also does not receive the loop version. Therefore generic all-API serialization must not be counted as a dedicated OFLE response-version matrix.
+
+Status:
+OFLE_REQUEST_VERSION_TEST=YES
+OFLE_RESPONSE_VERSION_TEST=NO
+GENERIC_ALL_API_SERIALIZATION=YES_BUT_NOT_DEDICATED_OFLE_VERSION_EVIDENCE
+OFLE_RESPONSE_VERSION_TRANSITIONS=NOT_ESTABLISHED
+
+Exact next mission: AB104.748R — re-audit the OFLE correlation-mismatch injection path, including MockClient/ConsumerNetworkClient limitations and lower-level NetworkClient/MockSelector construction, without treating a recipe as executed evidence.
