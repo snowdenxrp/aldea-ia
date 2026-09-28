@@ -1060,3 +1060,27 @@ SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; ARBITRARY_OFLE_ERROR_FIXTURE
 3. Continue correlation mismatch audit through `AbstractResponse.parseResponse` and nearby protocol tests, including raw buffer/request-header construction.
 4. Preserve source-presence vs execution distinction.
 Do not implement Nexo. Do not create V21.
+
+
+## 73. AB104.740 — direct reducer matrix + correlation parser audit
+Commit: b982137a5b2e07a6415d0c013805c376c9cffa30
+Research file: docs/nexo/NEXO_AB104_740_DIRECT_REDUCER_MATRIX_CORRELATION_PARSER_AUDIT_2026-09-27.md
+
+Findings:
+- No current dedicated `OffsetsForLeaderEpochUtilsTest` was found.
+- `OffsetsForLeaderEpochUtils.handleResponse` is `public static`, so a direct test seam exists without production visibility changes.
+- A minimum direct research matrix was frozen: all 11 reducer semantic branches, empty response, unrequested partition, duplicate response characterization, multi-partition, mixed error classes, authorization mixed response, and raw-error-to-result mapping.
+- Matrix is a DESIGN/RESEARCH SPECIFICATION only; it was NOT executed.
+- Current RequestContextTest demonstrates matching response correlation parsing, but no deliberate mismatch injection was established.
+- AbstractResponse implementation remains evidence that mismatched correlation IDs raise `CorrelationIdMismatchException`; implementation evidence is not test-execution evidence.
+- Existing KafkaProtocolFaultProxy reconstructs response headers with the originating correlation ID, so it is not currently a mismatch injector.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; DIRECT_REDUCER_TEST_CLASS_FOUND=NO; DIRECT_REDUCER_SEAM=YES; MINIMUM_MATRIX_DESIGNED=YES; MINIMUM_MATRIX_EXECUTED=NO; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; MATCHED_CORRELATION_TEST_EVIDENCE=YES; DELIBERATE_MISMATCH_TEST_EVIDENCE=NO/NOT_ESTABLISHED; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.741
+1. Inspect exact `AbstractResponse.parseResponse` implementation and response-header version handling for OffsetForLeaderEpoch-relevant versions.
+2. Inspect test fixtures capable of serializing responses with controlled response-header correlation IDs.
+3. Finish duplicate/missing/unrequested response-shape audit.
+4. Then freeze the research gap and update continuity.
+Do not implement Nexo. Do not create V21.
