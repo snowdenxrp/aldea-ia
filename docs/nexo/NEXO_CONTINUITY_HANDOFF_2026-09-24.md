@@ -1576,3 +1576,20 @@ Important correction: server ForwardingManagerTest.testResponseCorrelationIdMism
 
 ### Exact next re-audit
 AB104.744R: directly inspect the response-header/version serialization tests and OFLE RequestResponseTest cases, then compare their actual assertions with the claims made in AB104.744. Preserve all gaps and do not execute unless explicitly required.
+
+
+## 96. AB104.744R — evidence re-audit
+Commit: 26024bfb66d2bcf28786a4b8dd4771eb16f04a0c
+Direct source/test inspection confirms:
+- RequestResponseTest.testSerialization() includes OFFSET_FOR_LEADER_EPOCH in the generic all-ApiKey/all-supported-version serialization matrix.
+- RequestResponseTest explicitly maps OFLE to createLeaderEpochRequestForReplica(1).
+- Generic response-header serialization/parsing checks correlation ID round-trip.
+- OffsetFetcherTest has real valid OFLE response construction and consumer-layer request matching/validation, plus a reusable response helper.
+
+Not established:
+- dedicated OFLE response-version assertions independent of generic matrix;
+- OFLE correlation mismatch execution;
+- duplicate/unrequested/conflicting duplicate OFLE response tests;
+- exhaustive reducer matrix.
+
+Exact next mission: AB104.745R — re-audit the claimed OFLE client-test coverage directly, including empty/missing response, NONE, authorization, retriable errors, and whether duplicate/unrequested/correlation mismatch are actually executed.
