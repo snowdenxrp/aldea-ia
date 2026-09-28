@@ -1010,3 +1010,28 @@ No Kafka source was modified. No Nexo implementation/runtime verification was pe
 3. Continue correlation-mismatch audit around protocol/request tests, distinguishing implementation-only exception paths from executed tests.
 4. If no direct matrix exists, preserve it explicitly as a research gap rather than implementing it in Nexo.
 Do not implement Nexo. Do not create V21.
+
+
+## 71. AB104.738 — broader Kafka EpochEndOffset/error-fixture search
+Commit: 82cca68ea934da8406ece80c5870891fffd0eb50
+Research file: docs/nexo/NEXO_AB104_738_ALL_KAFKA_EPOCH_END_OFFSET_ERROR_FIXTURE_SEARCH_2026-09-27.md
+
+Important correction to AB104.737:
+- Current Kafka does contain reusable arbitrary-error OffsetForLeaderEpoch response construction.
+- `OffsetsRequestManagerTest.buildOffsetsForLeaderEpochResponseWithErrors(...)` sets each `EpochEndOffset.errorCode` from a supplied `Errors` value.
+- Its inspected OffsetForLeaderEpoch use is `TOPIC_AUTHORIZATION_FAILED`.
+- The same file has a parameterized `retriableErrors()` matrix, but `testRequestFailsWithRetriableError_RetrySucceeds` exercises ListOffsets, NOT the OffsetForLeaderEpoch reducer. It must not be counted as reducer coverage.
+- `OffsetForLeaderEpochClientTest` still has focused direct cases: empty, unexpected empty, success, authorization failure, one retriable error.
+- `FetcherTest` and core server epoch tests contain additional EpochEndOffset/error constructions, but these are not proof of exhaustive consumer-side reducer coverage.
+- No direct current parameterized test was established that drives all 11 known `OffsetsForLeaderEpochUtils.handleResponse` semantic branches.
+- Deliberate correlation-mismatch injection test remains NOT ESTABLISHED.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; ARBITRARY_OFLE_ERROR_FIXTURE_EXISTS=YES; ARBITRARY_OFLE_ERROR_FIXTURE_USED_FOR_EXHAUSTIVE_REDUCER_MATRIX=NO; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; ALL_ERROR_BRANCHES_TESTED=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; LISTOFFSETS_RETRIABLE_MATRIX_EXISTS=YES; LISTOFFSETS_MATRIX_IS_OFLE_REDUCER_EVIDENCE=NO; EXPLICIT_CORRELATION_MISMATCH_TEST_FOUND=NO/NOT_ESTABLISHED; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.739
+1. Inspect every current call site of `buildOffsetsForLeaderEpochResponseWithErrors` and every OffsetForLeaderEpoch response helper in client tests.
+2. Determine whether any existing test drives mixed partitions through the consumer-side reducer with multiple raw error classes in one response.
+3. Inspect current `OffsetsForLeaderEpochUtils` visibility and whether a direct unit-test seam exists without production changes; research only.
+4. Continue narrow correlation mismatch test search.
+Do not implement Nexo. Do not create V21.
