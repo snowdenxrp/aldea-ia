@@ -94,3 +94,7 @@ TLC=PENDING
 ## Exact next mission
 
 AB104.763: inspect the current NetworkClientTest correlation-mismatch tests and helper naming to determine whether the final OFLE test should reuse an existing assertion/helper or add a dedicated test method. Preserve NOT EXECUTED.
+
+
+## AB104.762 persistence correction
+This file existed on main before the current persistence attempt; its current blob was re-read and preserved. No execution is implied by its presence.
