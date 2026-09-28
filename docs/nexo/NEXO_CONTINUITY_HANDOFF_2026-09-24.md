@@ -1268,3 +1268,34 @@ Status: NETWORKCLIENT_TEST_REAL_CLIENT=YES; SELECTOR_RESET_PER_TEST=YES; BOOTSTR
 
 ## EXACT CURRENT RESUME POINT — AB104.753
 Inspect ClientRequest/RequestHeader correlation allocator itself (where NetworkClient obtains the next correlation ID) and determine whether a test-local deterministic method exists to force or observe a safe non-reserved mismatch without production changes. Then inspect exact OFLE response data constructors for a one-topic/one-partition response. Research only; do not implement.
+
+
+## 85. AB104.753 — OFLE correlation allocator + minimal response audit
+Commit: c2337e0c329bf9bf1399129494c7d379997852db
+Research file: docs/nexo/NEXO_AB104_753_OFLE_CORRELATION_ALLOCATOR_MINIMAL_RESPONSE_AUDIT_2026-09-28.md
+
+Current Kafka NetworkClient source establishes that the correlation allocator is owned by NetworkClient: the `correlation` field starts at 0, `nextCorrelationId()` is package-visible for testing, skips the reserved SASL range, and `newClientRequest(...)` passes the allocated value into ClientRequest. RequestHeader only stores/serializes the supplied correlation ID and does not allocate it.
+
+Therefore a fresh NetworkClient has deterministic allocator initialization at 0, but the proposed OFLE test must observe the actual ClientRequest.correlationId() rather than assume the OFLE request is 0 or 1, because bootstrap/internal requests may consume earlier IDs. The test-visible allocator helper exists but consuming an ID through it changes allocator state, so observation is preferable.
+
+Safe mismatch design: after observing the actual request ID, inject any response correlation ID that is both different and outside the reserved SASL range. Blind +1 is unnecessary and should not be treated as an invariant.
+
+Current OffsetsForLeaderEpochResponse accepts OffsetForLeaderEpochResponseData directly. Existing test construction demonstrates one topic result containing EpochEndOffset records with topic, partition, error code, leader epoch and end offset. A one-topic/one-partition structurally valid response is sufficient in principle because correlation validation precedes OFLE reducer processing.
+
+Status remains:
+OFLE_CORRELATION_ALLOCATOR_SOURCE_VERIFIED=YES
+NETWORKCLIENT_INITIAL_CORRELATION=0
+TEST_VISIBLE_NEXT_CORRELATION_HELPER=YES
+ACTUAL_CLIENTREQUEST_CORRELATION_OBSERVABLE=YES
+REQUESTHEADER_ALLOCATION=NO
+MINIMAL_ONE_TOPIC_ONE_PARTITION_RESPONSE=SPECIFIABLE
+MINIMAL_OFLE_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.754
+Inspect exact current NetworkClientTest/OFLE test imports and assertion idioms needed to route a real OFLE request through MockSelector.completeReceive, and determine whether an existing test can execute the minimal mismatch path without production changes. If execution is still not performed, freeze the executable recipe and continue remaining response-shape evidence. No implementation/V21.
