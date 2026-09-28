@@ -744,3 +744,23 @@ No Kafka modification, Nexo implementation, runtime execution, broker-durability
 AB104.730 — inspect Kafka protocol response construction/tests and commit history around `OffsetsForLeaderEpochUtils.handleResponse()` for additional response-shape/error-code cases that could bypass the matrix, then determine whether Nexo provenance must preserve fields beyond raw `errorCode` (leader epoch/end offset/request identity) before reduction.
 
 CONTINUITY MUST now resume from AB104.729 / de06000031d36fab2e97a9bd00ac33fa46d770f5 or any newer canonical AB commit, never silently from AB104.728 or older.
+
+
+## 62. AB104.730 — OffsetForLeaderEpoch protocol-shape and provenance audit
+Commit: 3fa035f0418e8c85708fb8dd17b05927c390e847
+Research file: docs/nexo/NEXO_AB104_730_OFFSET_FOR_LEADER_EPOCH_PROTOCOL_PROVENANCE_AUDIT_2026-09-28.md
+
+AB104.730 verified the protocol response shape and additional Kafka tests. OffsetForLeaderEpoch response carries error_code + partition + end_offset; v1+ also carries leader_epoch; later versions add throttle_time_ms and v4 uses compact/tagged encoding and topic identifiers. Server-side tests cover UNKNOWN_TOPIC_OR_PARTITION, NOT_LEADER_OR_FOLLOWER, and current-leader-epoch fencing outcomes. These establish raw protocol/error production, but do not close direct reducer coverage.
+
+New provenance conclusion: raw errorCode is necessary but not sufficient when Nexo depends on the semantic meaning of the returned epoch boundary. Minimum semantic tuple for capture: topic/partition, request/operation identity, response error code, leader epoch when supplied by the protocol version, end offset, and protocol version/schema identity. Preserve sentinel/undefined leaderEpoch/endOffset values as received rather than normalizing them away. Throttle time is operational metadata unless a specific claim depends on it. Modern topic identifiers/incarnation may also need binding; topic string alone may be insufficient for an incarnation-sensitive claim.
+
+Capture must occur at the parsed-response boundary before OffsetsForLeaderEpochUtils reduces retry-classified errors, with request/operation identity and protocol version bound.
+
+Status: SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; PROTOCOL_SHAPE_VERIFIED=YES; DIRECT_REDUCER_COVERAGE=NO; EXHAUSTIVE_REDUCER_COVERAGE=UNKNOWN; IMPLEMENTED=NO; EXECUTED_BY_NEXO=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+No Kafka source was modified. No Nexo implementation or runtime execution was performed. No broker durability or end-to-end correctness claim was made.
+
+## EXACT CURRENT RESUME POINT
+AB104.731 — inspect exact Kafka response/request version negotiation and topic-ID/incarnation handling around OffsetForLeaderEpoch, then determine whether Nexo provenance needs broker/node identity and response/request correlation in addition to topic/partition, protocol version, errorCode, leaderEpoch, endOffset, and operation identity.
+
+CONTINUITY MUST resume from AB104.730 / 3fa035f0418e8c85708fb8dd17b05927c390e847 or any newer canonical AB commit, never silently from AB104.729 or older.
