@@ -1455,3 +1455,31 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.760
 Inspect NetworkReceive construction and MockSelector.completeReceive/poll path once more at exact source level, then freeze the complete no-production-change OFLE mismatch test recipe. Do not execute yet unless the mission explicitly transitions to execution; preserve NOT EXECUTED.
+
+
+## 92. AB104.760 — OFLE NetworkReceive injection audit
+Commit: be0e5bec8f990a17c35015212e71e85c63f8b7ad
+Research file: docs/nexo/NEXO_AB104_760_OFLE_NETWORKRECEIVE_INJECTION_AUDIT_2026-09-28.md
+
+Exact source confirms NetworkReceive(String, ByteBuffer) directly carries the serialized payload; MockSelector.completeReceive only queues it; NetworkClient.poll processes completed receives through handleCompletedReceives and parseResponse. Existing repository tests already use this same injection structure with real NetworkReceive + poll.
+
+The complete no-production-change OFLE mismatch recipe is now frozen: real NetworkClient/MockSelector -> real consumer OFLE ClientRequest -> observe actual correlation/version -> choose different non-reserved response correlation -> valid minimal OFLE response -> serializeResponseWithHeader -> NetworkReceive injection -> poll -> assert CorrelationIdMismatchException.
+
+This remains test-design/source evidence only. No OFLE-specific mismatch test has been executed.
+
+Status:
+NETWORKRECEIVE_DIRECT_PAYLOAD_CONSTRUCTION=SOURCE_VERIFIED
+MOCKSELECTOR_COMPLETE_RECEIVE=SOURCE_VERIFIED
+NETWORKCLIENT_POLL_TO_COMPLETED_RECEIVES=SOURCE_VERIFIED
+EXACT_INJECTION_PATTERN_EXISTING_IN_REPO=YES
+OFLE_SPECIFIC_MISMATCH_RECIPE=FROZEN
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.761
+Inspect existing NetworkClientTest setup/fixture helpers needed to instantiate the real OFLE ClientRequest without production changes, and determine the smallest concrete test location/fixture reuse. Preserve the frozen recipe and NOT EXECUTED.
