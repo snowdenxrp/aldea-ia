@@ -1255,3 +1255,16 @@ Status: OFLE_CONSUMER_BUILDER_MIN_VERSION=3; OFLE_CONSUMER_BUILDER_RANGE=3..late
 
 ## EXACT CURRENT RESUME POINT — AB104.752
 Inspect NetworkClientTest construction/correlation allocator to determine whether a fresh NetworkClient test deterministically begins at a low non-reserved correlation ID. Then inspect existing OffsetsForLeaderEpochResponse construction helpers to specify the smallest valid response object for the wire mismatch test. Research only; do not implement.
+
+
+## 84. AB104.752 — NetworkClient correlation allocator and minimal OFLE response
+Commit: b6f9a0ad4caa355e2cbedf1a0dc4fcaf8a641176
+
+NetworkClientTest resets MockSelector per test and uses a real NetworkClient. Its awaitReady() comment establishes ApiVersions bootstrap response correlation 0, but this does not establish that a subsequently created OFLE ClientRequest has correlation 0 or 1. The actual ClientRequest exposes request.correlationId(), so the safest design is to observe the actual ID and inject a deliberately non-reserved, non-equal response ID; no blind +1 invariant is needed.
+
+RequestResponseTest contains a generic createLeaderEpochResponse() fixture with multiple partitions. For mismatch testing, the semantic response is rejected at header correlation validation before OFLE reducer processing, so a structurally valid one-topic/one-partition response is sufficient in principle.
+
+Status: NETWORKCLIENT_TEST_REAL_CLIENT=YES; SELECTOR_RESET_PER_TEST=YES; BOOTSTRAP_APIVERSIONS_CORRELATION_0=SOURCE_ESTABLISHED; FIXED_OFLE_REQUEST_CORRELATION_0_OR_1=NOT_ESTABLISHED; ACTUAL_REQUEST_CORRELATION_AVAILABLE=YES; EXPLICIT_NON_RESERVED_MISMATCH=REQUIRED; GENERIC_OFLE_RESPONSE_FIXTURE=YES; MINIMAL_ONE_TOPIC_ONE_PARTITION_RESPONSE=SPECIFIABLE; MINIMAL_OFLE_MISMATCH_EXECUTED=NO; OFLE_CORRELATION_MISMATCH_ASSERTED=NO; OFLE_REDUCER_EXHAUSTIVE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.753
+Inspect ClientRequest/RequestHeader correlation allocator itself (where NetworkClient obtains the next correlation ID) and determine whether a test-local deterministic method exists to force or observe a safe non-reserved mismatch without production changes. Then inspect exact OFLE response data constructors for a one-topic/one-partition response. Research only; do not implement.
