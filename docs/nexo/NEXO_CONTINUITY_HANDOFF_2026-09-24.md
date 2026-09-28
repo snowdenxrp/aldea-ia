@@ -724,3 +724,23 @@ Future CONTINUITY checkpoints MUST update this handoff after each material AB re
 7. exact next action.
 
 A future CONTINUITY response must treat the latest synchronized checkpoint in this file and the repository's newer AB commits as the resume source. It must never silently resume from AB104.646 or another stale endpoint when newer canonical AB records exist.
+
+
+## 61. AB104.729 — OffsetForLeaderEpoch reducer direct-coverage audit
+Commit: de06000031d36fab2e97a9bd00ac33fa46d770f5
+Research file: docs/nexo/NEXO_AB104_729_OFFSET_FOR_LEADER_EPOCH_REDUCER_COVERAGE_AUDIT_2026-09-28.md
+
+AB104.729 directly inspected the current Apache Kafka `OffsetsForLeaderEpochUtils.handleResponse()` source and `OffsetForLeaderEpochClientTest`. No dedicated `OffsetsForLeaderEpochUtilsTest` or direct `handleResponse()` test was found in the searched current repository. The client test covers empty response, successful NONE, authorization failure, and one representative retry error (`LEADER_NOT_AVAILABLE`), but this is not exhaustive reducer coverage.
+
+Current reducer branch set: NONE success; seven explicitly named retry errors (`NOT_LEADER_OR_FOLLOWER`, `REPLICA_NOT_AVAILABLE`, `KAFKA_STORAGE_ERROR`, `OFFSET_NOT_AVAILABLE`, `LEADER_NOT_AVAILABLE`, `FENCED_LEADER_EPOCH`, `UNKNOWN_LEADER_EPOCH`); UNKNOWN_TOPIC_OR_PARTITION retry; TOPIC_AUTHORIZATION_FAILED terminal exception; default retry. Distinct retry errors collapse to the same `partitionsToRetry` state, so raw error provenance is not recoverable from the reduced result alone.
+
+Minimum Nexo adversarial matrix now fixed: NONE; each explicit retry branch individually; UNKNOWN_TOPIC_OR_PARTITION; authorization terminal exception; default/unrecognized error; empty requested response; unrequested partition; mixed success/retry/authorization response; duplicate/contradictory partition entries where transport can expose them; and preservation of raw error provenance before reduction, bound to request/operation identity.
+
+Status remains: SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; DIRECT_REDUCER_TEST_FOUND=NO; EXHAUSTIVE_REDUCER_COVERAGE=UNKNOWN; IMPLEMENTED=NO; EXECUTED_BY_NEXO=NO; BROKER_DURABILITY_VERIFIED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+No Kafka modification, Nexo implementation, runtime execution, broker-durability claim, or correctness claim was made.
+
+## EXACT CURRENT RESUME POINT
+AB104.730 — inspect Kafka protocol response construction/tests and commit history around `OffsetsForLeaderEpochUtils.handleResponse()` for additional response-shape/error-code cases that could bypass the matrix, then determine whether Nexo provenance must preserve fields beyond raw `errorCode` (leader epoch/end offset/request identity) before reduction.
+
+CONTINUITY MUST now resume from AB104.729 / de06000031d36fab2e97a9bd00ac33fa46d770f5 or any newer canonical AB commit, never silently from AB104.728 or older.
