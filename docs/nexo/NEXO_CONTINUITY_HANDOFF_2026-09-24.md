@@ -954,3 +954,34 @@ No Kafka source was modified. No Nexo implementation or runtime verification was
 3. Inspect current fault-proxy/integration tests for deliberate response mutation; infrastructure capability is not test execution.
 4. Preserve raw error provenance, request identity, correlation, transport outcome, and incarnation as separate evidence fields.
 Do not implement Nexo. Do not create V21.
+
+
+## 69. AB104.736 — OffsetForLeaderEpoch fixtures/fault-proxy/correlation audit
+Commit: d73b9e089ddeb361558c7f430eff906d1dbfc0ed
+Research file: docs/nexo/NEXO_AB104_736_OFFSET_FOR_LEADER_EPOCH_FIXTURES_FAULT_PROXY_CORRELATION_AUDIT_2026-09-27.md
+
+Direct current Kafka inspection found:
+- `OffsetsForLeaderEpochClient.handleResponse` is a thin adapter directly delegating to `OffsetsForLeaderEpochUtils.handleResponse(requestData, response)`.
+- `OffsetsRequestManager` also directly passes parsed `OffsetsForLeaderEpochResponse` into the same reducer.
+- No dedicated current `OffsetForLeaderEpochResponseTest` or reducer fixture matrix was found.
+- `OffsetFetcherTest` contains helpers capable of preparing OffsetForLeaderEpoch responses and covers multi-partition/stale/fencing behavior, but helper existence does not establish exhaustive raw reducer assertions.
+- Kafka's current `KafkaProtocolFaultProxy` can parse and mutate selected wire responses, disconnect, delay, blackhole requests, and track request headers by correlation ID. Its current error-injection setters do NOT include OffsetForLeaderEpoch.
+- `KafkaProtocolFaultProxyTest` directly tests only single/multi-broker bootstrap behavior; it does not execute OffsetForLeaderEpoch mutation or correlation-mismatch scenarios.
+- The proxy's response transformation explicitly reconstructs the response header with the originating request correlation ID, so it is not a ready-made mismatch injector.
+- Current `AbstractResponse.parseResponse` remains the implementation boundary that rejects mismatched request/response correlation IDs via `CorrelationIdMismatchException`; deliberate mismatch test execution remains NOT ESTABLISHED.
+
+Nexo consequence:
+The strongest evidence capture point remains the parsed response together with the originating RequestHeader immediately before semantic reduction. Preserve operation identity, API/version/header/client/correlation/destination, timing, topic/partition, raw errorCode, leaderEpoch/endOffset, protocol/schema, transport outcome, and independently authoritative generation/version/incarnation as separate fields.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; ALL_ERROR_BRANCHES_TESTED=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; FAULT_PROXY_SUPPORTS_RESPONSE_MUTATION=YES; OFFSET_FOR_LEADER_EPOCH_FAULT_PROXY_SUPPORT=NO; EXPLICIT_CORRELATION_MISMATCH_TEST_FOUND=NO/NOT_ESTABLISHED; TIMEOUT_TEST=YES; DISCONNECT_TEST=YES; STALE_INFLIGHT_TEST=YES; UNSUPPORTED_CAPABILITY_TEST=YES; TOPIC_INCARNATION=UNKNOWN; BROKER_INCARNATION=UNKNOWN; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+No Kafka source was modified. No Nexo implementation/runtime verification was performed.
+
+## EXACT CURRENT RESUME POINT — AB104.737
+1. Inspect OffsetFetcherTest response-building helpers and every current OffsetForLeaderEpoch-related test around them.
+2. Determine whether any helper path actually asserts raw error identity before reducer loss.
+3. Inspect AbstractResponse.parseResponse tests and nearby request/response tests for direct correlation-mismatch assertions.
+4. Preserve the separation between infrastructure capability, source behavior, test-source presence, and executed-test evidence.
+5. Only after direct evidence is exhausted, refine the minimal Nexo provenance/fault matrix.
+Do not implement Nexo. Do not create V21.
