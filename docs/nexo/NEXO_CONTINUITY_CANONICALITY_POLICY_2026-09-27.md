@@ -65,3 +65,29 @@ For the current Nexo phase, research/audit comes before clean architecture and i
 
 ## Current known anomaly baseline
 As of 2026-09-27, repository search found duplicate-number candidates for AB104.706 and AB104.711. These remain historical evidence and require reconciliation; no deletion or silent merge is permitted.
+
+
+## New CONTINUITY evidence-chain rules (2026-09-27)
+When a conflict is resolved by later evidence, CONTINUITY must preserve the full resolution chain, not only the final verdict.
+
+For every reconciled conflict/duplicate:
+1. Record the original conflicting states.
+2. Record exact later evidence that bears on the conflict.
+3. Record the dependency chain (for example AB104.679 -> AB104.680 -> ... -> AB104.691).
+4. State the resolution and why the later evidence supports or rejects each alternative.
+5. Preserve the historical artifacts; never delete the losing/older state.
+6. Distinguish REFINEMENT, CONFLICT RESOLUTION, COMPLEMENTARY STATES, and UNRESOLVED.
+7. Record ancestry/order of duplicate commits.
+8. If the evidence is insufficient, keep UNKNOWN/PENDING.
+9. A chat explanation is not a reconciliation record until it is persisted in GitHub.
+10. Downstream evidence may resolve an earlier conflict only when the dependency is explicit and technically supported.
+
+## CONTINUITY response discipline
+For continuation turns, prefer:
+- exact repository inspection;
+- exact source/code evidence;
+- explicit status labels;
+- one concrete saved continuity artifact;
+- one next verified action.
+
+Do not spend the response budget repeating architecture background when the repository research is the requested work.
