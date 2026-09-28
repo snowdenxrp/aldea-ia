@@ -1634,3 +1634,17 @@ GENERIC_ALL_API_SERIALIZATION=YES_BUT_NOT_DEDICATED_OFLE_VERSION_EVIDENCE
 OFLE_RESPONSE_VERSION_TRANSITIONS=NOT_ESTABLISHED
 
 Exact next mission: AB104.748R — re-audit the OFLE correlation-mismatch injection path, including MockClient/ConsumerNetworkClient limitations and lower-level NetworkClient/MockSelector construction, without treating a recipe as executed evidence.
+
+
+## 100. AB104.748R — OFLE correlation-mismatch path re-audit
+Commit: 7d86a91f264f005fe34e5d65ea8639371f28737b
+Direct inspection confirms OffsetForLeaderEpochClientTest uses ConsumerNetworkClient + MockClient normal prepared responses only; no independent response correlation ID or mismatch assertion exists. NetworkClientTest does provide a real NetworkClient + real ClientRequest + actual correlationId + serializeResponseWithHeader with caller-selected correlation + MockSelector.completeReceive injection, but its demonstrated execution uses matching IDs and non-OFLE responses. Therefore the raw mechanism is evidenced, but OFLE-specific mismatch execution remains NO.
+
+Status:
+ARBITRARY_RESPONSE_CORRELATION_CONSTRUCTION=YES
+RAW_NETWORKCLIENT_INJECTION=YES
+NORMAL_MATCHING_EXECUTION=YES
+OFLE_SPECIFIC_MISMATCH_EXECUTION=NO
+DIRECT_OFLE_MISMATCH_ASSERTION=NO
+
+Exact next mission: AB104.749R — re-audit the lower-level NetworkClient correlation path and exception surface, verifying completeNext/parseResponse behavior and whether any existing test actually asserts CorrelationIdMismatchException rather than merely constructing mismatched data.
