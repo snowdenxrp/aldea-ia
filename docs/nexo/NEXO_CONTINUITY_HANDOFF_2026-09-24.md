@@ -1207,3 +1207,14 @@ Final protocol/reducer boundary: PROTOCOL_REQUEST_ROUNDTRIP_ALL_OFLE_VERSIONS=YE
 
 ## EXACT CURRENT RESUME POINT — AB104.748
 Inspect whether existing test utilities can construct a deliberately mismatched OFLE response header and route it through current NetworkClient/ConsumerNetworkClient without production changes. If only generic mismatch coverage exists, preserve distinction. No implementation/V21.
+
+
+## 80. AB104.748 — OFLE correlation-mismatch injection boundary
+Commit: 8827c7a9273cee0d8695946f9ed9604abd14bc2a
+
+OffsetForLeaderEpochClientTest uses ConsumerNetworkClient + MockClient. MockClient.prepareResponse(AbstractResponse) stores a response body and later creates ClientResponse using request.makeHeader(version), so this normal mock path does not provide an independently serialized response header/correlation ID. Generic RequestTestUtils.serializeResponseWithHeader supports arbitrary correlation IDs, and a generic ForwardingManagerTest deliberately executes requestCorrelationId+1, but that path is not OFLE-specific and is not routed through OffsetForLeaderEpochClientTest.
+
+Therefore: GENERIC_CORRELATION_MISMATCH_EXECUTED=YES; OFLE_CORRELATION_MISMATCH_WIRE_CONSTRUCTION=YES via generic utility; OFLE_CORRELATION_MISMATCH_THROUGH_CONSUMER_CLIENT=NO/NOT_ESTABLISHED; OFLE_CORRELATION_MISMATCH_DEDICATED_TEST=NO. Response-body mocking must not be conflated with wire-level response-header mismatch.
+
+## EXACT CURRENT RESUME POINT — AB104.749
+Inspect MockClient/KafkaClient test infrastructure plus existing Selector/NetworkClient tests for the smallest current lower-level path that can inject RequestTestUtils.serializeResponseWithHeader(OFLE, version, wrongCorrelationId) and observe actual correlation-mismatch behavior. If unavailable, record exact blocker. No production changes/V21.
