@@ -1379,3 +1379,28 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.757
 Inspect AbstractResponse.parseResponse and ResponseHeader parsing at exact source level, including where correlation IDs are compared and whether the API body is parsed only after that comparison. Preserve NOT EXECUTED until a real OFLE test run is observed.
+
+
+## 89. AB104.757 — AbstractResponse correlation parse-order audit
+Commit: 0278d04085a9f6234796bf1a8d42803191d43302
+Research file: docs/nexo/NEXO_AB104_757_ABSTRACT_RESPONSE_CORRELATION_PARSE_ORDER_AUDIT_2026-09-28.md
+
+Exact source result: AbstractResponse.parseResponse first parses the versioned ResponseHeader, then compares requestHeader.correlationId() with responseHeader.correlationId(). Only if they match does it instantiate ByteBufferAccessor over the post-header buffer and dispatch the API body parser. For OFFSET_FOR_LEADER_EPOCH, the dispatch target is OffsetsForLeaderEpochResponse.parse(readable, version). Therefore a correlation mismatch prevents OFLE body parsing.
+
+Precision preserved: header parsing itself occurs before comparison and advances the buffer. The proven boundary is correlation validation BEFORE API body parsing, not “zero parsing occurred.”
+
+Status:
+RESPONSE_HEADER_PARSE_SOURCE_VERIFIED=YES
+CORRELATION_COMPARE_SOURCE_VERIFIED=YES
+CORRELATION_COMPARE_PRECEDES_API_BODY_PARSE=YES
+OFLE_BODY_PARSE_DISPATCH_SOURCE_VERIFIED=YES
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.758
+Inspect exact OFLE response parser entry point and generated response-data constructor/schema path to determine whether a structurally valid minimal body is sufficient for the mismatch test and whether any version-specific response-header/body coupling remains relevant. Preserve NOT EXECUTED.
