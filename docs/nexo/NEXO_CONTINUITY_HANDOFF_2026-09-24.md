@@ -1762,3 +1762,12 @@ Direct Kafka source inspection established that production `Selector.poll()` cal
 Status: PRODUCTION_SELECTOR_CLEAR_AT_POLL_START=SOURCE_CONFIRMED; REPLAY_AFTER_MISMATCH_EXECUTED=NO; NEXT-POLL_NONREPLAY=SOURCE_DERIVED_NOT_EXECUTED.
 
 Next exact mission: AB104.755R — inspect the SocketServer processing/exception path and relevant tests to determine whether completed receives are cleared even when request processing throws, and whether disconnect/close state can leave a buffered receive or cause a second processing attempt.
+
+
+## AB104.759R — RequestChannel stale-work boundary
+Audit commit: f2299f81808e3d8d3beb30d2fd0d2a87a4b0eaa5
+Direct source: RequestChannel.sendRequest() places the already-created Request in a shared ArrayBlockingQueue, decoupling it from the socket receive lifecycle. No source path in RequestChannel automatically removes an already-queued Request merely because its client socket closes. Response routing later depends on request.processor; if the Processor has been removed/shut down, the response is dropped. clear()/shutdown() can clear queues, but this is lifecycle/shutdown behavior, not per-socket revocation.
+
+Status: TRANSPORT_DISCONNECT != OPERATION_REVOKED; QUEUE_ENTRY != CURRENT_AUTHORITY; CHANNEL_CLOSE != EFFECT_CANCELLATION. Exact runtime sequence socket close -> queued request executes -> external effect was NOT_EXECUTED.
+
+Next exact mission: AB104.760R — inspect Kafka request-handler/RequestChannel integration and tests around queued requests after disconnect, including whether handlers revalidate connection/session state before processing and whether any API-specific cancellation exists. Do not assume generic transport closure cancels application work.
