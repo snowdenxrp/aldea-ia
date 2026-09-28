@@ -1539,3 +1539,30 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.763
 Inspect current NetworkClientTest correlation-mismatch tests and helper naming to determine whether the final OFLE test should reuse an existing assertion/helper or add a dedicated test method. Preserve NOT EXECUTED.
+
+
+## 94. AB104.762 — OFLE compile-level test skeleton audit
+Commit: 7cf73582fb95e6aa63209c8f05c571a4c4b5e152
+Research file: docs/nexo/NEXO_AB104_762_OFLE_COMPILE_SKELETON_AUDIT_2026-09-28.md
+
+Exact generated nested message types and construction syntax are source-confirmed. Minimal request: OffsetForLeaderTopicCollection -> OffsetForLeaderTopic("test") -> OffsetForLeaderPartition(partition=0, leaderEpoch=1, currentLeaderEpoch=1) -> Builder.forConsumer(topics), with supported minimum version 3. Minimal response: OffsetForLeaderEpochResponseData -> OffsetForLeaderTopicResult("test") -> EpochEndOffset(partition=0, Errors.NONE, leaderEpoch=1, endOffset=0) -> OffsetsForLeaderEpochResponse.
+
+The compile-level skeleton is now specified with exact test-only imports. It has NOT been compiled or executed. Existing NetworkClientTest already provides Errors and assertThrows imports; the remaining additions are OFLE message/request/response classes plus CorrelationIdMismatchException.
+
+Status:
+OFLE_REQUEST_IMPORTS_SOURCE_VERIFIED=YES
+OFLE_REQUEST_ONE_TOPIC_ONE_PARTITION=SOURCE_VERIFIED
+OFLE_RESPONSE_ONE_TOPIC_ONE_PARTITION=SOURCE_VERIFIED
+REQUEST_VERSION_3_SUPPORTED=YES
+TEST_SKELETON_COMPILE_LEVEL=SPECIFIED
+TEST_COMPILED=NO
+TEST_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.763
+Inspect current NetworkClientTest correlation-mismatch tests and helper naming to determine whether the final OFLE test should reuse an existing assertion/helper or add a dedicated test method. Preserve NOT EXECUTED.
