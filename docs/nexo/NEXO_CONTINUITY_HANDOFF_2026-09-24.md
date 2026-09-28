@@ -1691,3 +1691,19 @@ DIRECT_MISMATCH_ASSERTION=NO
 POST_MISMATCH_INFLIGHT_BEHAVIOR=SOURCE_DERIVED_ONLY
 
 Exact next mission: AB104.750R — re-audit the MockSelector/NetworkClient exception surface: how `completeReceive` queues the receive, how `poll()` reaches `handleCompletedReceives`, whether the mismatch escapes/can be asserted at the test boundary, and whether any existing test already exercises that exact surface.
+
+
+## 102. AB104.750R — MockSelector → NetworkClient.poll() re-audit
+Commit: 0a192dcfabe104209fcdfcaec12525d4c1c2c410
+Direct inspection confirms `MockSelector.completeReceive()` appends the `NetworkReceive` directly to `completedReceives`; `NetworkClient.poll()` reaches `handleCompletedReceives()`. Existing `NetworkClientTest.checkSimpleRequestResponse()` executes this completeReceive→poll path with a matching correlation ID. No dedicated execution was found where an independently correlated response traverses the full path and asserts the mismatch exception.
+
+Status:
+MOCKSELECTOR_DIRECT_RECEIVE_INJECTION=YES
+MOCKSELECTOR_POLL_PATH=YES
+MATCHING_COMPLETE_RECEIVE_TO_POLL=YES
+INDEPENDENT_CORRELATION_CONSTRUCTION=YES
+INDEPENDENT_CORRELATION_FULL_PATH=NO
+DIRECT_EXCEPTION_ASSERTION=NO
+POST_MISMATCH_INFLIGHT_BEHAVIOR=SOURCE_DERIVED_ONLY
+
+Next exact mission: AB104.751R — inspect `InFlightRequests.completeNext`, connection/request ordering, and tests around multiple in-flight requests to determine whether a correlation mismatch can consume the wrong queued request and what evidence exists for FIFO assumptions. Do not infer correctness from the data structure alone; distinguish source semantics from executed tests.
