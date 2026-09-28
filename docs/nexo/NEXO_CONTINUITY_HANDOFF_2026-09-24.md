@@ -1782,3 +1782,17 @@ Evidence boundary: exact runtime interleaving enqueue -> socket close -> handler
 Status: HANDLER_TRANSPORT_REVALIDATION=NOT_PRESENT_GENERICALLY; QUEUED_WORK_AFTER_CLOSE_RUNTIME=NOT_EXECUTED; API_SPECIFIC_AUTHORIZATION=OPEN.
 
 Next exact mission: AB104.761R — select concrete Kafka APIs with externally meaningful effects and audit whether their handler-level checks bind execution to current connection/session/authority, or whether authorization is entirely request-local. Do not generalize from one API.
+
+
+## 107. AB104.760R2 — correction of unverified continuity entry
+
+Correction audit commit: 0dfefee25802225aea25b38faa9048ea8d2927ef
+Research artifact: docs/nexo/NEXO_AB104_760R2_CONTINUITY_CORRECTION_2026-09-28.md
+
+The handoff contains an earlier AB104.760R entry citing commit d854ef3b59358cd7a5da8571dd7558dac8407a71b. Fresh GitHub verification found that SHA does not exist in the canonical repository and the corresponding artifact could not be resolved. It is therefore preserved as historical text but MUST NOT be treated as persisted evidence.
+
+Fresh direct re-audit at Kafka commit abf522e1ca5d7f4375baddc4da004da9fcb6e9ca confirms the substantive source claim independently: KafkaRequestHandler dequeues a Request and directly invokes apis.handle() without a generic transport-open/session-currentness revalidation; RequestChannel decouples queued Request objects from socket lifecycle. KafkaRequestHandlerTest was inspected, but the exact disconnect-after-enqueue interleaving was NOT executed/found as a dedicated assertion.
+
+Status: SOURCE_CONFIRMED for generic handler behavior; exact disconnect-after-enqueue runtime interleaving NOT_EXECUTED; API-specific authorization/effect cancellation OPEN. No Nexo implementation, V21, formal verification, or runtime Nexo execution.
+
+EXACT NEXT ACTION: AB104.761R — select concrete Kafka APIs with externally meaningful effects and audit whether handler-level checks bind execution to current connection/session/authority, or whether authorization is entirely request-local. Do not generalize from one API.
