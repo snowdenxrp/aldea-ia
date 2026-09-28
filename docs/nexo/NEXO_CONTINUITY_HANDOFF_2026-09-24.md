@@ -907,3 +907,20 @@ No Kafka source was modified. No Nexo implementation or runtime verification was
 
 ## EXACT CURRENT RESUME POINT — AB104.734
 Directly search/inspect any additional current Kafka tests that may exercise the OffsetForLeaderEpoch reducer through parameterized/error matrices, and continue the exact NetworkClient correlation-mismatch rejection audit. Only direct assertions count as test evidence. Preserve UNKNOWN for absent or inaccessible tests; do not infer coverage from implementation. Do not implement Nexo or create V21.
+
+
+## 67. AB104.734 — deeper direct-test audit
+Date: 2026-09-27
+
+Current Kafka source inspection added two important refinements:
+- `OffsetForLeaderEpochClientTest` is a small direct suite with five focused tests: empty response, unexpected empty response, success, authorization failure, and one retriable error (`LEADER_NOT_AVAILABLE`). It does NOT enumerate every reducer error branch.
+- `NetworkClientTest.testRequestTimeout` directly distinguishes successful response from timeout: success has neither disconnected nor timed-out flags; simulated timeout yields both `wasDisconnected=true` and `wasTimedOut=true`. This strengthens the transport-provenance boundary but does not establish external-world non-commitment.
+- The inspected current NetworkClientTest still does not establish a deliberate mismatched-correlation response rejection test. Correlation correctness remains source/implementation evidence, not direct test evidence in the inspected file.
+- OffsetFetcherTest directly covers multi-partition request grouping and several stale/fencing cases, but this is not equivalent to exhaustive raw reducer mixed-error coverage.
+
+Epistemic status: SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; ALL_ERROR_BRANCHES_TESTED=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; EXPLICIT_CORRELATION_MISMATCH_TEST=NOT_ESTABLISHED; TIMEOUT_TEST=YES; DISCONNECT_TEST=YES; STALE_INFLIGHT_TEST=YES; UNSUPPORTED_CAPABILITY_TEST=YES; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+No Kafka source was modified and no Nexo implementation was performed.
+
+## EXACT CURRENT RESUME POINT — AB104.735
+Continue direct search for parameterized/current tests of every `OffsetsForLeaderEpochUtils.handleResponse` branch, including errors not represented by the five direct client tests. Separately locate the exact NetworkClient response-correlation validation test if one exists elsewhere in the current Kafka test tree. Preserve the distinction between implementation evidence and test evidence.
