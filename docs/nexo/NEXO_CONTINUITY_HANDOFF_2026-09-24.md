@@ -1724,3 +1724,18 @@ POST_MISMATCH_QUEUE_STATE=SOURCE_DERIVED_ONLY
 DIRECT_MISMATCH_ASSERTION=NO
 
 Next exact mission: AB104.752R — inspect `NetworkClient.handleCompletedReceives` exception handling and outer `poll()` lifecycle, including whether a parse exception aborts processing of remaining completed receives, and whether any cleanup/failure path is triggered automatically. Distinguish source behavior from tests.
+
+
+## 104. AB104.752R — NetworkClient.poll() mismatch exception lifecycle
+Commit: 3edc50432912d8652027f7ab48c2bf5ca8cda050
+Direct source confirms `poll()` invokes `handleCompletedReceives()` before disconnection/timeout/rebootstrap processing and before `completeResponses()`. `handleCompletedReceives()` has no local catch around `parseResponse()`, and `poll()` has no catch around the completed-action block. Therefore an ordinary `CorrelationIdMismatchException` escapes `poll()`, preventing the remaining processing in that invocation. Since `completeNext(source)` occurs before parsing, the associated in-flight entry has already been removed. `completeResponses()` catches callback exceptions only and cannot catch a parse mismatch that occurs earlier.
+
+Status:
+POLL_EXCEPTION_ESCAPES=SOURCE_CONFIRMED
+REQUEST_REMOVED_BEFORE_PARSE=SOURCE_CONFIRMED
+REMAINING_POLL_PROCESSING_AFTER_MISMATCH=SOURCE_DERIVED_NOT_EXECUTED
+COMPLETE_RESPONSES_CATCH_PARSE=NO
+DEDICATED_POLL_MISMATCH_TEST=NO
+POST_EXCEPTION_QUEUE_STATE=NOT_EXECUTED
+
+Next exact mission: AB104.753R — inspect selector completed-receive list lifecycle/clearing and whether an exception can cause the same receive to be replayed or discarded on the next poll. Also inspect disconnect/error handling around the affected connection. Keep source-derived and executed evidence separate.
