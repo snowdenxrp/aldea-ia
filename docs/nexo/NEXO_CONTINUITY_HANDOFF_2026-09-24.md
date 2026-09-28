@@ -1753,3 +1753,12 @@ DISCONNECT_CLEARS_INFLIGHT=SOURCE_CONFIRMED
 DISCONNECT_PHASE_AFTER_PARSE_EXCEPTION=NOT_REACHED_BY_SOURCE_ORDER
 
 Next exact mission: AB104.754R — inspect the production selector's `completedReceives()` lifecycle and clear semantics, plus relevant selector/network tests, to avoid overgeneralizing the MockSelector result. Determine whether production completed receives are drained before/after NetworkClient processing and what happens if processing throws.
+
+
+## 106. AB104.754R — production Selector completed-receive lifecycle
+Commit: 5758cf17944267bb56ecaafb5bed48b5562e1b80
+Direct Kafka source inspection established that production `Selector.poll()` calls `clear()` at the start, and `clear()` clears `completedReceives`. This differs materially from MockSelector. `NetworkClient` does not explicitly clear completed receives. Therefore a receive is retained for processing during the current selector-poll interval, but a subsequent production selector poll clears the prior receive before new I/O processing. Replay after a NetworkClient parse exception is NOT EXECUTED; non-replay on a subsequent production selector poll is source-derived, not experimentally verified. SocketServer has a distinct explicit `clearCompletedReceives()` path after processing.
+
+Status: PRODUCTION_SELECTOR_CLEAR_AT_POLL_START=SOURCE_CONFIRMED; REPLAY_AFTER_MISMATCH_EXECUTED=NO; NEXT-POLL_NONREPLAY=SOURCE_DERIVED_NOT_EXECUTED.
+
+Next exact mission: AB104.755R — inspect the SocketServer processing/exception path and relevant tests to determine whether completed receives are cleared even when request processing throws, and whether disconnect/close state can leave a buffered receive or cause a second processing attempt.
