@@ -1242,3 +1242,16 @@ Status: MOCKSELECTOR_RAW_RECEIVE_INJECTION=YES; POLL_TO_HANDLE_COMPLETED_RECEIVE
 
 ## EXACT CURRENT RESUME POINT — AB104.751
 Inspect current OFLE request builder/version setup in NetworkClientTest or adjacent consumer tests, determine exact supported OFLE version and required request data for the minimal test specification, and verify whether correlationId+1 is safe relative to reserved SASL ranges. Do not implement.
+
+
+## 83. AB104.751 — OFLE builder/version and correlation-range audit
+Commit: 52c4ba39d175c7da4ba830ec7249dbef4b84c2a1
+
+Current OffsetsForLeaderEpochRequest.Builder.forConsumer accepts versions 3 through ApiKeys.OFFSET_FOR_LEADER_EPOCH.latestVersion() and sets replicaId=-1. Follower builder is version 4 only. Version 3 is therefore the simplest stable consumer target for the proposed wire mismatch experiment. A minimal request can contain one topic/partition/epoch.
+
+SaslClientAuthenticator reserves only the top 8 signed-int correlation IDs: MAX_RESERVED_CORRELATION_ID=Integer.MAX_VALUE and MIN_RESERVED_CORRELATION_ID=MAX-7. Therefore blind request.correlationId()+1 is not unconditionally safe; a deterministic non-reserved mismatch must be selected/checked.
+
+Status: OFLE_CONSUMER_BUILDER_MIN_VERSION=3; OFLE_CONSUMER_BUILDER_RANGE=3..latestVersion; OFLE_FOLLOWER_BUILDER_VERSION=4; OFLE_MINIMAL_REQUEST_SPECIFIABLE=YES; BLIND_CORRELATION_PLUS_ONE_UNCONDITIONALLY_SAFE=NO; NON_RESERVED_MISMATCH_CONSTRUCTIBLE=YES; MINIMAL_OFLE_MISMATCH_TEST_SPECIFIABLE=YES; MINIMAL_OFLE_MISMATCH_EXECUTED=NO; OFLE_CORRELATION_MISMATCH_ASSERTED=NO; OFLE_REDUCER_EXHAUSTIVE=NO; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.752
+Inspect NetworkClientTest construction/correlation allocator to determine whether a fresh NetworkClient test deterministically begins at a low non-reserved correlation ID. Then inspect existing OffsetsForLeaderEpochResponse construction helpers to specify the smallest valid response object for the wire mismatch test. Research only; do not implement.
