@@ -1707,3 +1707,20 @@ DIRECT_EXCEPTION_ASSERTION=NO
 POST_MISMATCH_INFLIGHT_BEHAVIOR=SOURCE_DERIVED_ONLY
 
 Next exact mission: AB104.751R — inspect `InFlightRequests.completeNext`, connection/request ordering, and tests around multiple in-flight requests to determine whether a correlation mismatch can consume the wrong queued request and what evidence exists for FIFO assumptions. Do not infer correctness from the data structure alone; distinguish source semantics from executed tests.
+
+
+## 103. AB104.751R — InFlightRequests ordering/mismatch re-audit
+Commit: 7042ea4f167845866a0fd8031f8b388220bedfa3
+Direct source: `InFlightRequests.add()` uses `addFirst`; `completeNext()` uses `pollLast`, so completion is FIFO/oldest-first. `NetworkClient.handleCompletedReceives()` calls `completeNext(source)` before correlation validation. Therefore a response is associated with the oldest in-flight request before its correlation ID is checked; this is source-derived, not executed mismatch evidence.
+
+Existing `NetworkClientTest.testDisconnectWithMultipleInFlights()` proves two in-flight requests and disconnect completion order, but does not inject a mismatching response.
+
+Status:
+FIFO_QUEUE_SEMANTICS=SOURCE_CONFIRMED
+MULTIPLE_INFLIGHT_DISCONNECT_ORDER=EXECUTED_TEST_EXISTS
+CORRELATION_LOOKUP_BEFORE_COMPLETE_NEXT=NO
+MULTIPLE_INFLIGHT_MISMATCH_EXECUTION=NO
+POST_MISMATCH_QUEUE_STATE=SOURCE_DERIVED_ONLY
+DIRECT_MISMATCH_ASSERTION=NO
+
+Next exact mission: AB104.752R — inspect `NetworkClient.handleCompletedReceives` exception handling and outer `poll()` lifecycle, including whether a parse exception aborts processing of remaining completed receives, and whether any cleanup/failure path is triggered automatically. Distinguish source behavior from tests.
