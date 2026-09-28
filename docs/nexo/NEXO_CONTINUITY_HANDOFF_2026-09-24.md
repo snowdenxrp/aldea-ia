@@ -887,3 +887,23 @@ Inspect the strongest available direct Kafka tests around:
 4. unsupported versions;
 5. mixed-partition responses.
 Determine which cases are directly asserted versus merely implied by source. Preserve all UNKNOWNs. Do not implement Nexo or create V21.
+
+
+## 66. AB104.733 — OffsetForLeaderEpoch direct-test audit
+Commit: 8d382a6062385d159220d8c1af73e10fcdc86d96
+Research file: docs/nexo/NEXO_AB104_733_OFFSET_FOR_LEADER_EPOCH_DIRECT_TEST_AUDIT_2026-09-27.md
+
+Direct current Kafka test inspection confirmed:
+- OffsetForLeaderEpochClientTest directly covers empty/unexpected-empty response, success preserving errorCode/leaderEpoch/endOffset, authorization terminal failure, and one retriable error.
+- OffsetFetcherTest directly covers request grouping, waiting for NodeApiVersions, skipping validation for insufficient broker capability, old response handling, undefined epoch/offset cases, stale in-flight validation after a seek, and leader-epoch fencing/revalidation.
+- NetworkClientTest directly covers normal correlation to the originating request, disconnected in-flight responses retaining original correlation IDs, timeout timing, and API-version discovery/unsupported-version behavior.
+- No explicit mismatched-correlation injection test was established in the inspected current NetworkClientTest. Do not infer such test coverage from source implementation.
+- Multi-partition grouping exists, but exhaustive mixed success/retry/authorization combinations at the raw OffsetForLeaderEpoch reducer boundary remain UNKNOWN.
+- Direct exhaustive coverage of OffsetsForLeaderEpochUtils.handleResponse remains NOT ESTABLISHED; downstream/client tests cannot reconstruct raw retry error provenance after reducer collapse.
+
+Status remains: SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; MIXED_RAW_REDUCER_COMBINATION_COVERAGE=UNKNOWN; EXPLICIT_CORRELATION_MISMATCH_TEST=NOT_ESTABLISHED; STALE_INFLIGHT_TEST=YES; DISCONNECT_TEST=YES; UNSUPPORTED_CAPABILITY_TEST=YES; TOPIC_INCARNATION=UNKNOWN; BROKER_INCARNATION=UNKNOWN; IMPLEMENTED=NO; EXECUTED_BY_NEXO=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+No Kafka source was modified. No Nexo implementation or runtime verification was performed.
+
+## EXACT CURRENT RESUME POINT — AB104.734
+Directly search/inspect any additional current Kafka tests that may exercise the OffsetForLeaderEpoch reducer through parameterized/error matrices, and continue the exact NetworkClient correlation-mismatch rejection audit. Only direct assertions count as test evidence. Preserve UNKNOWN for absent or inaccessible tests; do not infer coverage from implementation. Do not implement Nexo or create V21.
