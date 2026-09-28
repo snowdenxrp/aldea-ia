@@ -1135,3 +1135,31 @@ SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; CORRELATION_VALIDATION_IMPLE
 3. Search parameterized response-shape tests by API key/version for indirect duplicate/missing/unrequested coverage.
 4. If execution evidence remains absent, freeze gaps rather than infer coverage.
 Do not implement Nexo. Do not create V21.
+
+
+## 76. AB104.744 — OFLE serialization/version + correlation-mismatch evidence audit
+Commit: 17d163ebfffd6805b981d3a2f9fa0f83db24d468
+Research file: docs/nexo/NEXO_AB104_744_OFLE_SERIALIZATION_VERSION_CORRELATION_AUDIT_2026-09-28.md
+
+Correction/refinement to AB104.743: current Kafka test fixture RequestTestUtils.serializeResponseWithHeader accepts an arbitrary correlationId and constructs the versioned ResponseHeader. Current server test ForwardingManagerTest.testResponseCorrelationIdMismatch uses requestCorrelationId + 1, establishing executed generic response-correlation mismatch evidence. This is NOT OFLE-specific.
+
+Current status:
+- GENERIC_CORRELATION_MISMATCH_EXECUTED=YES
+- OFLE_CORRELATION_MISMATCH_EXECUTED=NO/NOT_ESTABLISHED
+- CONTROLLED_OFLE_MISMATCH_CONSTRUCTION=YES
+- DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO
+- DUPLICATE_OFLE_TEST=NO/NOT_ESTABLISHED
+- MISSING_OFLE_TEST=NO/NOT_ESTABLISHED
+- UNREQUESTED_OFLE_TEST=NO/NOT_ESTABLISHED
+- API-VERSION_EXHAUSTIVE_OFLE_SHAPE_COVERAGE=UNKNOWN
+- NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+RequestTestUtils serializes the response using response.apiKey().responseHeaderVersion(version); AbstractResponse.parseResponse independently derives the response-header version from the request API key/version before correlation validation and API-body parsing. This provides a concrete research path for OFLE-specific mismatch/version testing without production changes.
+
+Nexo consequence: distinguish generic fault-injection capability and execution from OFLE-specific execution, reducer coverage, and version-complete coverage. Do not promote generic evidence into OFLE evidence.
+
+## EXACT CURRENT RESUME POINT — AB104.745
+1. Inspect exact OFLE Request/Response schema versions and current RequestResponseTest loops/parameterization.
+2. Determine supported OFLE version set and whether generic protocol serialization tests indirectly cover every version.
+3. Inspect whether a small research-only execution can route a deliberately mismatched OFLE response through NetworkClient without production changes.
+4. Freeze remaining gaps explicitly; no implementation/V21.
