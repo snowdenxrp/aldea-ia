@@ -1483,3 +1483,32 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.761
 Inspect existing NetworkClientTest setup/fixture helpers needed to instantiate the real OFLE ClientRequest without production changes, and determine the smallest concrete test location/fixture reuse. Preserve the frozen recipe and NOT EXECUTED.
+
+
+## 93. AB104.761 — OFLE NetworkClientTest fixture audit
+Commit: 3ccb897bd7bb2b4bc97a5c2b8d1ef8d0e57b0995
+Research file: docs/nexo/NEXO_AB104_761_OFLE_NETWORKCLIENT_TEST_FIXTURE_AUDIT_2026-09-28.md
+
+Current NetworkClientTest already supplies the smallest reusable real-client harness: MockTime, MockSelector, singleton Node, TestMetadataUpdater, real NetworkClient, awaitReady(), newClientRequest(), send(), poll(), actual ClientRequest.correlationId(), raw NetworkReceive injection, and assertThrows. awaitReady must precede OFLE request construction because bootstrap/API-version traffic can consume correlation IDs.
+
+The OFLE mismatch test can live directly in clients/src/test/java/org/apache/kafka/clients/NetworkClientTest.java and requires only test-source imports/message construction. No production source change is required.
+
+Status:
+NETWORKCLIENTTEST_REUSABLE_REAL_CLIENT=YES
+MOCKSELECTOR_REUSABLE=YES
+AWAITREADY_REUSABLE=YES
+REAL_CLIENTREQUEST_CONSTRUCTION=SOURCE_VERIFIED
+ACTUAL_CORRELATION_OBSERVABLE=YES
+OFLE_BUILDER_TEST_ONLY_ADDITION=REQUIRED
+PRODUCTION_CHANGE_REQUIRED=NO
+SMALLEST_TEST_LOCATION=NetworkClientTest.java
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.762
+Inspect exact OFLE test-only imports and concrete one-topic/one-partition builder syntax against current Kafka test sources, then produce final compile-level test skeleton. Preserve NOT EXECUTED unless execution is explicitly authorized.
