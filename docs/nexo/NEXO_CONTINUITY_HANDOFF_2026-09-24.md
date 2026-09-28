@@ -1404,3 +1404,29 @@ TLC=PENDING
 
 ## EXACT CURRENT RESUME POINT — AB104.758
 Inspect exact OFLE response parser entry point and generated response-data constructor/schema path to determine whether a structurally valid minimal body is sufficient for the mismatch test and whether any version-specific response-header/body coupling remains relevant. Preserve NOT EXECUTED.
+
+
+## 90. AB104.758 — OFLE response parser/schema audit
+Commit: 00979765c2a59328f77a1971c87cf26f017a383c
+Research file: docs/nexo/NEXO_AB104_758_OFLE_RESPONSE_PARSER_SCHEMA_AUDIT_2026-09-28.md
+
+Exact source confirms OffsetsForLeaderEpochResponse.parse(readable, version) constructs OffsetForLeaderEpochResponseData(readable, version). AbstractResponse dispatches to this parser only after correlation validation. Existing Kafka tests construct OffsetForLeaderEpochResponseData with OffsetForLeaderTopicResult and EpochEndOffset, confirming the planned one-topic/one-partition response shape.
+
+The body uses the same API version supplied by the request header; no separate response-version selector is required for the mismatch test. A structurally valid minimal body is preferred so the test isolates correlation validation rather than malformed-body behavior.
+
+Status:
+OFLE_RESPONSE_PARSER_SOURCE_VERIFIED=YES
+OFLE_RESPONSE_DATA_CONSTRUCTOR_PATTERN=SOURCE_VERIFIED
+ONE_TOPIC_ONE_PARTITION_RESPONSE=SPECIFIABLE
+BODY_VERSION_COMES_FROM_REQUEST_API_VERSION=SOURCE_VERIFIED
+SEPARATE_RESPONSE_VERSION_SELECTOR_REQUIRED=NO
+OFLE_SPECIFIC_MISMATCH_EXECUTED=NO
+OFLE_CORRELATION_MISMATCH_ASSERTED=NO
+OFLE_REDUCER_EXHAUSTIVE=NO
+NEXO_IMPLEMENTED=NO
+NEXO_RUNTIME_EXECUTED=NO
+NEXO_CORRECTNESS_VERIFIED=NO
+TLC=PENDING
+
+## EXACT CURRENT RESUME POINT — AB104.759
+Inspect RequestTestUtils.serializeResponseWithHeader and underlying serialization to prove the chosen response correlation ID is encoded into the wire header with the selected OFLE version/body. Preserve NOT EXECUTED.
