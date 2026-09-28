@@ -807,3 +807,49 @@ This is NOT a continuation of the earlier chat-only AB104.731 claim. It must be 
 7. exact provenance retained before reducer loss.
 
 No AB104.732 or AB104.733 may be assigned until this rerun has its own evidence record and canonical commit.
+
+
+## 64. AB104.731 — OffsetForLeaderEpoch version/correlation/topic-identity re-run
+Commit: 443b8a1a3dc3b6ea12219e3b04f401b1f24baddb
+Research file: docs/nexo/NEXO_AB104_731_OFFSET_FOR_LEADER_EPOCH_VERSION_NEGOTIATION_PROVENANCE_RERUN_2026-09-27.md
+
+This is the canonical fresh re-run. It does not inherit the prior chat-only AB104.731 claim.
+
+Confirmed:
+- Current Apache Kafka 4.1 protocol documentation shows OffsetForLeaderEpoch v4 remains topic-name based; v4 uses flexible encoding but does not show a topic UUID field. v0 lacks leader_epoch; v1+ carries leader_epoch; v2 adds throttle_time_ms; v3 adds replica_id; v4 is flexible/tagged.
+- The previous AB104.730 statement that v4 itself adds topic identifiers is CORRECTED/REJECTED as a current-protocol claim.
+- Current NetworkClient selects an effective request version from NodeApiVersions plus the request builder's oldest/latest allowed range. NodeApiVersions intersects broker-advertised min/max with the client range and selects the highest usable version.
+- Current Fetcher/OffsetFetcher obtains NodeApiVersions for the target leader and explicitly skips OffsetForLeaderEpoch validation when no usable version is available.
+- Current RequestHeader binds apiKey, apiVersion, clientId and correlationId; ClientResponse retains the original RequestHeader and destination. Network response processing binds the response to the in-flight request and validates correlation.
+- Therefore provenance should bind OperationID + apiVersion + header version + correlationId + clientId + destination/node identity + per-partition raw response fields before reducer collapse.
+
+Topic identity correction:
+- KIP-516 proposed topic IDs for OffsetForLeaderEpoch.
+- KAFKA-10549 later pursued topic-ID support; the relevant 2025/2026 PR discussion proposed a v5 topic-ID path while retaining v4 name-based behavior.
+- The relevant PR #21126 was closed for inactivity on 2026-05-03. This is not evidence of current deployed support.
+- Current protocol evidence therefore does NOT establish topic UUID/incarnation support in OffsetForLeaderEpoch. Keep TOPIC_INCARNATION and BROKER_INCARNATION explicit UNKNOWN unless independently proven.
+
+Status:
+SOURCE_CODE_VERIFIED=PARTIAL/YES;
+PROTOCOL_SHAPE_VERIFIED=YES;
+VERSION_SELECTION_VERIFIED=YES;
+REQUEST_HEADER_CORRELATION_VERIFIED=YES;
+BROKER_DESTINATION_BINDING_VERIFIED=YES;
+TOPIC_ID_IN_CURRENT_PROTOCOL=NOT_ESTABLISHED;
+DIRECT_OFFSETS_FOR_LEADER_EPOCH_CLIENT_BODY=NOT_RETRIEVED;
+IMPLEMENTED=NO;
+EXECUTED_BY_NEXO=NO;
+NEXO_CORRECTNESS_VERIFIED=NO;
+TLC=PENDING.
+
+No Kafka source modified. No Nexo implementation. No runtime test. No correctness/security/deployment guarantee.
+
+## EXACT CURRENT RESUME POINT — AB104.732
+Direct code/test audit of the current OffsetForLeaderEpoch client path and provenance-loss boundary:
+1. retrieve exact current OffsetsForLeaderEpochClient/OffsetFetcherUtils/NetworkClient test bodies where available;
+2. verify how the parsed response reaches the reducer;
+3. identify every field discarded before the Nexo capture boundary;
+4. inspect direct tests for correlation mismatch, stale responses, unsupported versions and mixed-partition responses;
+5. preserve topic-incarnation and broker-incarnation UNKNOWN unless direct evidence closes them.
+
+Do not implement Nexo. Do not create V21. AB104.732 must have its own evidence record and canonical commit before AB104.733 is assigned.
