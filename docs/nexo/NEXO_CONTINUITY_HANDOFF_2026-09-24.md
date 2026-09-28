@@ -1796,3 +1796,15 @@ Fresh direct re-audit at Kafka commit abf522e1ca5d7f4375baddc4da004da9fcb6e9ca c
 Status: SOURCE_CONFIRMED for generic handler behavior; exact disconnect-after-enqueue runtime interleaving NOT_EXECUTED; API-specific authorization/effect cancellation OPEN. No Nexo implementation, V21, formal verification, or runtime Nexo execution.
 
 EXACT NEXT ACTION: AB104.761R — select concrete Kafka APIs with externally meaningful effects and audit whether handler-level checks bind execution to current connection/session/authority, or whether authorization is entirely request-local. Do not generalize from one API.
+
+
+## 108. AB104.761R — Kafka Produce authorization boundary
+
+Artifact commit: a90246e9b687c171242e6c4bb3a738f4b3a3ab50
+Artifact: docs/nexo/NEXO_AB104_761R_PRODUCE_AUTHORIZATION_AUDIT_2026-09-28.md
+
+Fresh direct audit at Kafka commit abf522e1ca5d7f4375baddc4da004da9fcb6e9ca: Produce authorization is evaluated with authHelper.filterByAuthorized(request.context, WRITE, TOPIC, ...) before replicaManager.handleProduceAppend(...). This is a real authorization gate, but the audited path does not show a second generic current-authority/session revalidation immediately before the append. The request context belongs to the already-created queued Request. For acks=0, closeConnection on processing error is transport/error handling, not proof of append cancellation or rollback.
+
+Exact adversarial interleaving authorize -> revoke/disconnect -> append was NOT executed and was not found as a dedicated test assertion. Therefore current authorization after revocation remains OPEN/UNKNOWN at this boundary. Preserve distinctions: REQUEST_CONTEXT_AUTHORIZATION != CURRENT_AUTHORITY; AUTHORIZATION_CHECK != REVOCATION_RECHECK; TRANSPORT_CLOSE != APPEND_CANCELLATION.
+
+EXACT NEXT ACTION: AB104.762R — audit authHelper.filterByAuthorized implementation, including caching/memoization and identity/session inputs, for stale authorization after revocation or credential changes.
