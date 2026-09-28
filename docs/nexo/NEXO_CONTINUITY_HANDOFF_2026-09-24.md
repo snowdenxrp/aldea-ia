@@ -1035,3 +1035,28 @@ SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; ARBITRARY_OFLE_ERROR_FIXTURE
 3. Inspect current `OffsetsForLeaderEpochUtils` visibility and whether a direct unit-test seam exists without production changes; research only.
 4. Continue narrow correlation mismatch test search.
 Do not implement Nexo. Do not create V21.
+
+
+## 72. AB104.739 — OFLE helper call-sites, mixed errors, reducer visibility, correlation
+Commit: 874b58e102d9d9a81625b1d366d34c8ab4bad768
+Research file: docs/nexo/NEXO_AB104_739_OFLE_CALLS_MIXED_ERRORS_VISIBILITY_CORRELATION_AUDIT_2026-09-27.md
+
+Findings:
+- Current search found exactly one call site for `buildOffsetsForLeaderEpochResponseWithErrors`: `OffsetsRequestManagerTest.testValidatePositionsFailureWithUnrecoverableAuthException`.
+- That call supplies one partition with `TOPIC_AUTHORIZATION_FAILED`.
+- The helper can construct arbitrary raw error codes, but its only discovered OFLE call-site is authorization-only.
+- `OffsetsRequestManager` directly passes parsed `OffsetsForLeaderEpochResponse` into `OffsetsForLeaderEpochUtils.handleResponse`.
+- `OffsetsForLeaderEpochUtils.handleResponse` is currently `public static`, so a direct unit-test seam exists without production visibility changes.
+- Reducer semantics: NONE removes from retry and records end offset; seven explicit retriable errors remain in retry; UNKNOWN_TOPIC_OR_PARTITION remains in retry; TOPIC_AUTHORIZATION_FAILED removes partition and throws terminal TopicAuthorizationException; default errors remain retryable.
+- No current direct mixed-error reducer test was established.
+- No dedicated deliberate correlation-mismatch test was established; implementation evidence remains separate from executed-test evidence.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; ARBITRARY_OFLE_ERROR_FIXTURE_EXISTS=YES; ARBITRARY_OFLE_ERROR_FIXTURE_CALLSITE_COVERAGE=AUTHORIZATION_ONLY; MIXED_OFLE_RAW_ERROR_CALLSITE=NOT_ESTABLISHED; DIRECT_REDUCER_SEAM=YES; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; ALL_ERROR_BRANCHES_TESTED=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; CORRELATION_VALIDATION_IMPLEMENTED=YES; EXPLICIT_CORRELATION_MISMATCH_TEST_FOUND=NO/NOT_ESTABLISHED; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+## EXACT CURRENT RESUME POINT — AB104.740
+1. Inspect all direct tests around `OffsetsForLeaderEpochUtils` by class/package and method names, beyond textual symbol matches.
+2. Specify the minimal direct branch/mixed test matrix as research only.
+3. Continue correlation mismatch audit through `AbstractResponse.parseResponse` and nearby protocol tests, including raw buffer/request-header construction.
+4. Preserve source-presence vs execution distinction.
+Do not implement Nexo. Do not create V21.
