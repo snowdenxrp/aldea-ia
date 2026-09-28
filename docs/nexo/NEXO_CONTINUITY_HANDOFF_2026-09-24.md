@@ -1771,3 +1771,14 @@ Direct source: RequestChannel.sendRequest() places the already-created Request i
 Status: TRANSPORT_DISCONNECT != OPERATION_REVOKED; QUEUE_ENTRY != CURRENT_AUTHORITY; CHANNEL_CLOSE != EFFECT_CANCELLATION. Exact runtime sequence socket close -> queued request executes -> external effect was NOT_EXECUTED.
 
 Next exact mission: AB104.760R — inspect Kafka request-handler/RequestChannel integration and tests around queued requests after disconnect, including whether handlers revalidate connection/session state before processing and whether any API-specific cancellation exists. Do not assume generic transport closure cancels application work.
+
+
+## AB104.760R — RequestHandler revalidation boundary
+Audit commit: d854ef3b59358cd7a5da8571dd7558dac8407a71
+KafkaRequestHandler receives a queued Request and directly invokes `apis.handle(request, requestLocal)` after dequeue. The generic handler does not revalidate that the originating transport/channel is still open before invoking the API handler. Ordinary exceptions are caught/logged and the request buffer is released in finally. Callback work can also be rescheduled onto a request thread through RequestChannel without a generic transport-authority revalidation.
+
+Evidence boundary: exact runtime interleaving enqueue -> socket close -> handler executes -> external effect was NOT_EXECUTED. API-specific authorization may exist inside individual handlers, but that is separate evidence and cannot be generalized.
+
+Status: HANDLER_TRANSPORT_REVALIDATION=NOT_PRESENT_GENERICALLY; QUEUED_WORK_AFTER_CLOSE_RUNTIME=NOT_EXECUTED; API_SPECIFIC_AUTHORIZATION=OPEN.
+
+Next exact mission: AB104.761R — select concrete Kafka APIs with externally meaningful effects and audit whether their handler-level checks bind execution to current connection/session/authority, or whether authorization is entirely request-local. Do not generalize from one API.
