@@ -985,3 +985,28 @@ No Kafka source was modified. No Nexo implementation/runtime verification was pe
 4. Preserve the separation between infrastructure capability, source behavior, test-source presence, and executed-test evidence.
 5. Only after direct evidence is exhausted, refine the minimal Nexo provenance/fault matrix.
 Do not implement Nexo. Do not create V21.
+
+
+## 70. AB104.737 — OffsetFetcher fixtures/raw-error/correlation audit
+Commit: 8d90f97c9d5d0d1345d7e436e569c127aa3224c4
+Research file: docs/nexo/NEXO_AB104_737_OFFSET_FETCHER_FIXTURES_RAW_ERROR_AND_CORRELATION_TEST_AUDIT_2026-09-27.md
+
+Direct current OffsetFetcherTest inspection:
+- `prepareOffsetsForLeaderEpochResponse` constructs a raw `OffsetForLeaderEpochResponseData` and explicitly sets topic, partition, errorCode, leaderEpoch and endOffset.
+- However the helper is hard-coded to `Errors.NONE`; it is therefore not an arbitrary-error fixture/matrix.
+- The tests use this helper through `client.prepareResponse(...)` and assert behavioral validation outcomes, including stale in-flight validation and successful validation.
+- Multi-partition/request-grouping infrastructure exists, but no exhaustive mixed raw error matrix at the reducer boundary was established.
+- Repository search for a dedicated current correlation-mismatch test did not establish one. Implementation still explicitly checks correlation IDs and throws `CorrelationIdMismatchException`; normal correlation, timeout, disconnect, stale-inflight and version-negotiation tests remain distinct evidence classes.
+- The provenance boundary remains before `OffsetsForLeaderEpochUtils.handleResponse`: downstream retry state cannot reconstruct which raw error code was collapsed into retry.
+
+Status:
+SOURCE_CODE_VERIFIED=YES; TEST_SOURCE_VERIFIED=YES; RAW_ERROR_MATRIX_VIA_OFFSETFETCHER_HELPER=NOT_ESTABLISHED; DIRECT_REDUCER_EXHAUSTIVE_COVERAGE=NO; ALL_ERROR_BRANCHES_TESTED=NO; MIXED_RAW_REDUCER_COVERAGE=UNKNOWN; CORRELATION_VALIDATION_IMPLEMENTED=YES; EXPLICIT_CORRELATION_MISMATCH_TEST_FOUND=NO/NOT_ESTABLISHED; TIMEOUT_TEST=YES; DISCONNECT_TEST=YES; STALE_INFLIGHT_TEST=YES; UNSUPPORTED_CAPABILITY_TEST=YES; TOPIC_INCARNATION=UNKNOWN; BROKER_INCARNATION=UNKNOWN; NEXO_IMPLEMENTED=NO; NEXO_RUNTIME_EXECUTED=NO; NEXO_CORRECTNESS_VERIFIED=NO; TLC=PENDING.
+
+No Kafka source was modified. No Nexo implementation/runtime verification was performed.
+
+## EXACT CURRENT RESUME POINT — AB104.738
+1. Search all current Kafka tests for construction of `EpochEndOffset` and arbitrary `Errors` values, not just OffsetFetcherTest.
+2. Determine whether any test directly calls `OffsetsForLeaderEpochUtils.handleResponse` or reaches every reducer branch with constructed responses.
+3. Continue correlation-mismatch audit around protocol/request tests, distinguishing implementation-only exception paths from executed tests.
+4. If no direct matrix exists, preserve it explicitly as a research gap rather than implementing it in Nexo.
+Do not implement Nexo. Do not create V21.
