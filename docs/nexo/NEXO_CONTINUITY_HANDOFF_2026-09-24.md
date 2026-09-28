@@ -1676,3 +1676,18 @@ ARBITRARY_CORRELATION_CONSTRUCTION=YES
 MATCHING_NETWORKCLIENT_EXECUTION=YES
 
 Exact next mission: AB104.749R — re-audit the lower-level NetworkClient/MockSelector path and determine precisely whether any existing test executes an independently correlated response through `completeReceive`, including exception surface and request lifecycle, without treating the available recipe as executed evidence.
+
+
+## 101. AB104.749R — lower-level NetworkClient mismatch re-audit
+Commit: 930a354aa7e0aa1032657c07d67f8a354eefa135
+Direct NetworkClient source inspection confirms `handleCompletedReceives` calls `inFlightRequests.completeNext(source)` before `parseResponse(receive.payload(), req.header)`. `parseResponse` rethrows ordinary non-reserved CorrelationIdMismatchException; SASL-reserved mismatch has a special SchemaException branch. Thus a mismatch reaches parsing after the corresponding in-flight request has already been removed. This is source-derived lifecycle evidence, not executed-test evidence.
+
+Status:
+RAW_RECEIVE_INJECTION=YES
+MATCHING_RESPONSE_EXECUTION=YES
+MISMATCH_CONSTRUCTION=YES
+NETWORKCLIENT_MISMATCH_EXECUTION=NO
+DIRECT_MISMATCH_ASSERTION=NO
+POST_MISMATCH_INFLIGHT_BEHAVIOR=SOURCE_DERIVED_ONLY
+
+Exact next mission: AB104.750R — re-audit the MockSelector/NetworkClient exception surface: how `completeReceive` queues the receive, how `poll()` reaches `handleCompletedReceives`, whether the mismatch escapes/can be asserted at the test boundary, and whether any existing test already exercises that exact surface.
