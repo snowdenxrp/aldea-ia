@@ -5,13 +5,13 @@ Canonical repository: snowdenxrp/aldea-ia
 Status: RESEARCH ONLY. Implementation remains blocked. No V21.
 
 ## Latest chain
-AB104.728 → AB104.729 → … → AB104.742 → **AB104.743**
+AB104.728 → AB104.729 → … → AB104.743 → **AB104.744**
 
-Latest research commit: `307505959459090afd2c270ab456d5c4cc7226a7`
-Research file: `docs/nexo/NEXO_AB104_743_CORRELATION_PATH_AND_OFLE_SHAPE_VERSION_AUDIT_2026-09-27.md`
+Latest research commit: `38edf9965cd8ce268b622a8efd0ada48ed3c80a6`
+Research file: `docs/nexo/NEXO_AB104_744_OFLE_CALLERS_MIXED_AUTH_MALFORMED_AUDIT_2026-09-27.md`
 
-## Critical correlation correction — now source-traced end to end
-`ForwardingManagerTest.testResponseCorrelationIdMismatch` deliberately serializes a response with `requestCorrelationId + 1`. The test sends that buffer through an `EnvelopeResponse` with no envelope error. `ForwardingManagerImpl` then enters its normal response path and calls its private `parseResponse(...)`, which directly calls `AbstractResponse.parseResponse(buffer, header)`. The latter parses the ResponseHeader, detects the mismatch and throws `CorrelationIdMismatchException` before API-specific body parsing. `ForwardingManagerImpl` catches that exception and returns the request's `UNKNOWN_SERVER_ERROR`, which the test asserts.
+## Critical correlation correction — source-traced end to end
+`ForwardingManagerTest.testResponseCorrelationIdMismatch` deliberately serializes a response with `requestCorrelationId + 1`; the response enters the normal forwarding path; `ForwardingManagerImpl` calls `AbstractResponse.parseResponse`; the parser rejects the mismatched correlation ID with `CorrelationIdMismatchException` before API-specific body parsing; the forwarding layer translates it to `UNKNOWN_SERVER_ERROR`, which the test asserts.
 
 Therefore:
 - deliberate correlation mismatch test exists = YES;
@@ -21,34 +21,45 @@ Therefore:
 - runtime execution by this research session = NOT PERFORMED;
 - source-level implementation/test-path proof = YES.
 
-## OFLE protocol vs reducer boundary
-`AbstractResponse.parseResponse` selects `apiKey.responseHeaderVersion(apiVersion)` and only after correlation validation dispatches `OFFSET_FOR_LEADER_EPOCH` to `OffsetsForLeaderEpochResponse.parse`.
-`RequestResponseTest.testSerialization` iterates all API keys and supported versions for generic request/error-response/response serialization; its special cases explicitly include LeaderForEpoch request/error-response construction. This is protocol/serialization evidence, not exhaustive reducer evidence.
+## OFLE caller/reducer state
+Two production callers of `OffsetsForLeaderEpochUtils.handleResponse` are established:
+1. `OffsetsForLeaderEpochClient.handleResponse(...)` delegates directly to the utility.
+2. `OffsetsRequestManager` directly calls the utility when an OFLE response completes.
 
-Do not invent hard-coded per-version response-header numbers unless directly verified from generated protocol metadata.
+`OffsetsRequestManagerTest` has `buildOffsetsForLeaderEpochResponseWithErrors(...)`; its discovered OFLE use is a single-partition `TOPIC_AUTHORIZATION_FAILED` response. `OffsetForLeaderEpochClientTest` has an arbitrary-`Errors` response helper and a focused authorization case. Neither establishes a mixed multi-partition reducer matrix.
 
-## OFLE reducer state still OPEN
+The `retriableErrors()` parameterized matrix in `OffsetsRequestManagerTest` must NOT be counted as OFLE reducer coverage because its inspected test is the ListOffsets path.
+
+## Authorization mixed-response semantics
+The reducer initializes retry state from all requested partitions, collects successful end offsets, and accumulates unauthorized topics while continuing iteration. It throws `TopicAuthorizationException` after processing the response if authorization failures were found, so no `OffsetForEpochResult` is returned in that case. Partial local mutations therefore are not externally returned, but mixed authorization behavior is still worth explicit characterization.
+
+Dedicated mixed authorization across multiple requested partitions = NOT ESTABLISHED.
+
+## Shape/malformed state
+Broad searches found OFLE response construction in server epoch tests, Fetcher/OffsetFetcher tests, `OffsetForLeaderEpochClientTest`, and `OffsetsRequestManagerTest`, but no dedicated consumer-side reducer tests for duplicate requested entries, missing requested entries, or unrequested entries.
+
+Server-side OFLE tests and generic serialization tests are not reducer evidence.
+
+## Current evidence state
 - Direct `OffsetsForLeaderEpochUtils.handleResponse` exhaustive coverage = NO.
-- Mixed raw error reducer coverage = UNKNOWN.
+- Mixed raw-error reducer coverage = UNKNOWN.
 - Direct duplicate raw-response-entry test = NOT ESTABLISHED.
 - Direct missing requested partition test = NOT ESTABLISHED.
 - Dedicated unrequested OFLE response-shape test = NOT ESTABLISHED.
-- Arbitrary OFLE error fixture exists, but discovered direct call-site use remains authorization-only.
-- Direct reducer seam exists because `handleResponse` is `public static`.
-
-## Duplicate-test correction
-`OffsetFetcherTest.testEndOffsetsDuplicateTopicPartition` exists, but it is duplicate handling for the EndOffsets operation, not proof of duplicate raw `OffsetForLeaderEpochResponse` entries reaching the reducer. Do not count it as OFLE reducer duplicate coverage.
-
-## Research-only matrix
-The frozen minimum reducer matrix remains: all 11 semantic branches; empty/missing/unrequested/duplicate/mixed responses; authorization mixed response; and raw-error-to-result mapping. It is a design specification, not execution evidence.
+- Arbitrary OFLE error fixture exists = YES.
+- Direct reducer seam = YES (`public static`).
+- Correlation mismatch generic test reaches parser = YES.
+- OFLE-specific correlation mismatch test = NOT ESTABLISHED.
+- Runtime execution by this research session = NO.
+- Formal proof = NO.
 
 ## Non-negotiable constraints
 INVESTIGAR → ANALIZAR → GUARDAR.
 No Nexo implementation. No V21. No silent gap closure. Never convert source presence into runtime verification. Keep SOURCE_CODE, TEST_SOURCE, EXECUTED_TEST, FORMAL_PROOF and RUNTIME_VERIFICATION separate.
 
-## EXACT RESUME — AB104.744
-1. Inspect every current `OffsetsForLeaderEpochUtils.handleResponse` caller/test using method/data-type references, not filenames only.
-2. Determine whether any consumer test exercises mixed OFLE raw errors through `OffsetsRequestManager` without naming the reducer.
-3. Audit authorization mixed-response exception/partial-result behavior.
-4. Search malformed OFLE response-collection tests while separating protocol parsing from reducer semantics.
+## EXACT RESUME — AB104.745
+1. Trace `OffsetsForLeaderEpochClient.handleResponse` test coverage separately from `OffsetsRequestManager`.
+2. Search all OFLE response-helper call sites for multi-partition construction and classify whether they actually reach the reducer.
+3. Determine whether any test verifies unauthorized topic sets for multiple unauthorized topics.
+4. Continue source audit of response-collection iteration/duplicate semantics without implementing tests.
 5. Preserve the correlation correction above in every future checkpoint.
