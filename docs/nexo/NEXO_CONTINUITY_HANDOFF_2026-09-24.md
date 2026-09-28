@@ -1648,3 +1648,17 @@ OFLE_SPECIFIC_MISMATCH_EXECUTION=NO
 DIRECT_OFLE_MISMATCH_ASSERTION=NO
 
 Exact next mission: AB104.749R — re-audit the lower-level NetworkClient correlation path and exception surface, verifying completeNext/parseResponse behavior and whether any existing test actually asserts CorrelationIdMismatchException rather than merely constructing mismatched data.
+
+
+## 100. AB104.748R2 — correlation injection correction/confirmation
+Commit: c8b1527a27466f2dce120127c7cdd4259e32dbb2
+Fresh source inspection confirms the 748R boundary. MockClient response helpers derive ClientResponse headers from the pending request, so they do not provide independent response-correlation injection. NetworkClientTest does provide independent wire construction through serializeResponseWithHeader(response, version, correlationId) plus NetworkReceive/MockSelector injection and NetworkClient.poll; inspected tests exercise matching IDs. No OFLE-specific mismatch execution or direct NetworkClient mismatch assertion was found.
+
+Status:
+MOCKCLIENT_INDEPENDENT_CORRELATION=NO
+LOW_LEVEL_ARBITRARY_CORRELATION=YES
+LOW_LEVEL_MATCHING_EXECUTION=YES
+OFLE_MISMATCH_EXECUTION=NO
+DIRECT_OFLE_NETWORKCLIENT_MISMATCH_ASSERTION=NO
+
+Exact next mission: AB104.749R — re-audit the lower-level NetworkClient/MockSelector path and determine whether the existing raw injection infrastructure is actually sufficient to execute an OFLE mismatch, while keeping “constructable recipe” separate from “executed evidence.”
