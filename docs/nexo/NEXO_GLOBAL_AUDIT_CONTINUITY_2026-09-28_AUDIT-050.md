@@ -6,40 +6,63 @@ Branch: main
 
 ## Verified endpoint
 
-GLOBAL-AUDIT-049 completed as a research/audit artifact.
+GLOBAL-AUDIT-050 completed as a research/audit artifact only.
 
 Audit commit:
-528a958c399fa06aeaf16aabf8ac676ea70d9613
+f07faa2f343cdb63972fa32f98ed1f5045b15d78
 
 Artifact:
-docs/nexo/NEXO_GLOBAL_AUDIT-049_LATE_EVIDENCE_RETRACTION_2026-09-28.md
+docs/nexo/NEXO_GLOBAL_AUDIT-050_TEMPORAL_CLAIM_CLOSURE_FUTUREOBS_PAA_2026-09-28.md
 
 Previous continuity:
 docs/nexo/NEXO_GLOBAL_AUDIT_CONTINUITY_2026-09-28_AUDIT-049.md
 commit:
 117da40424fc6aa8397533503f8e3228a63069c4
 
-## 049 result
+## 050 result
 
-Claim state is not necessarily monotonic even when the underlying event history is append-only.
+The direct FutureObs_PAA attack narrowed the semantic boundary but did NOT close FutureObs_PAA.
 
-A late valid invalidation/revocation can invalidate a previously concrete claim. Conversely, new evidence can close a previously UNKNOWN boundary.
+Key findings:
+- finite elapsed time is not itself temporal closure;
+- an unbounded observation domain cannot be closed by waiting alone;
+- delayed observations require distinct occurrence-time and observation/ingestion-time semantics;
+- retention can destroy the ability to reconstruct why a closure certificate was sound;
+- the horizon declaration itself is evidence-bearing and requires provenance/authority;
+- closure must be claim-relative to an explicit observation domain;
+- a valid late event whose event-time lies inside a declared horizon can invalidate closure unless an authoritative finality/completeness contract legitimately excludes it;
+- closure semantics must include retention/reconstruction and authority dependencies.
 
-Critical distinctions:
-EVENT HISTORY MONOTONICITY != CLAIM MONOTONICITY
-NOT OBSERVED != NOT OCCURRED
-CURRENTLY SUPPORTED != CLOSED AGAINST FUTURE OBSERVATIONS
-HISTORICAL DECISION IMMUTABILITY != CURRENT CLAIM IMMUTABILITY
+Key distinctions:
+TIME HORIZON != OBSERVATION COMPLETENESS
+OBSERVED-BEFORE-CLOSURE != OCCURRED-BEFORE-HORIZON
+ELAPSED-TIME != EXTERNAL FINALITY
+HISTORICAL CLOSURE RECORD != RECONSTRUCTIBLY PROVEN CLOSURE
+CLAIM EVIDENCE != HORIZON EVIDENCE
+GLOBAL HORIZON != CLAIM-RELATIVE HORIZON
+EVENT HISTORY APPEND-ONLY != FUTURE-OBSERVATION CLOSURE
 
-A negative/absence claim requires an explicit completeness contract for the observation domain and interval.
+## Candidate closure boundary
 
-Retraction/recomputation must preserve the historical decision while allowing the current claim projection to change.
+A claim-relative CLOSED(C,H) would require, at minimum:
+- fixed claim scope;
+- explicit observation domain;
+- enumerated relevant event classes;
+- defined event-time/observation-time semantics;
+- authoritative completeness/finality through H;
+- closed provenance/dependency closure;
+- valid authority epoch/source incarnation bindings;
+- retention/reconstruction guarantees;
+- no unresolved conflict/revocation/late-event condition;
+- provenance-bound closure certificate.
 
-FutureObs_PAA remains UNKNOWN. No temporal closure was claimed.
+This is a research candidate, NOT a proven Nexo algebra.
 
 ## External evidence
 
-W3C PROV explicitly models generation, usage, derivation and invalidation as temporally ordered provenance events and provides validity constraints over those histories. This supports treating late invalidation as a semantic event, not merely an appended metadata record. It does not prove Nexo's claim-reduction semantics.
+W3C PROV explicitly models generation, usage, derivation and invalidation as events and imposes event-ordering/validity constraints, while minimizing dependence on synchronized physical clocks. It does not provide a universal finality guarantee for arbitrary future observations.
+
+Apache Iceberg provides an engineering example where snapshots support historical/time-travel queries but retention can expire snapshots and remove their availability for time travel. This supports treating retention as a semantic reconstruction boundary, not merely storage housekeeping.
 
 ## Global epistemic state — preserve exactly
 
@@ -62,17 +85,16 @@ AB55/AB56 carryover remains unchanged:
 AB55 did not execute the full UsedAdmissionContext/EventDAG/FutureObs_PAA space.
 AB56 specified the missing interpreter but did not close FutureObs_PAA.
 
-## Next exact mission — GLOBAL-AUDIT-050
+## Next exact mission — GLOBAL-AUDIT-051
 
-Attack temporal claim closure and FutureObs_PAA directly:
-1. finite versus unbounded observation horizons;
-2. delayed observations and late invalidations;
-3. claim closure under explicit horizon;
-4. evidence required to declare a horizon closed;
-5. interaction with retention/reconstruction;
-6. provenance and authority of horizon closure;
-7. adversarial late event arriving inside a declared horizon.
+Attack the closure certificate itself:
+1. composability of multiple source finality/completeness certificates;
+2. conflicting horizons from different authorities;
+3. partial-domain closure and hidden dependencies;
+4. revocation of a previously issued finality certificate;
+5. whether certificate composition can safely produce a closed claim;
+6. common-mode failure between source finality and the evidence used to prove finality.
 
 No implementation.
 No V21.
-Do not close FutureObs_PAA without evidence.
+Preserve UNKNOWN unless closed by evidence.
