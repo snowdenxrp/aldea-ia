@@ -1030,3 +1030,108 @@ Implementation: **NOT STARTED**.
 **AB104.849R:** attack the typed-event model against simultaneous same-resource transitions and determine whether CONFLICTING can always be reduced to a reconciliation outcome. Then perform a broader real-incident/code cross-check for event-order conflicts, duplicate/out-of-order webhooks, and stale projections, without treating documentation examples as proof of production incidents.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.849R — SIMULTANEOUS SAME-RESOURCE TRANSITIONS + CONFLICTING REDUCTION
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### External/code cross-check
+
+Microsoft's event-sourcing guidance gives a concrete same-entity race: two handlers can read the same prior state and both attempt a reservation; optimistic concurrency rejects one append when the event stream has changed, after which the losing handler reloads and reevaluates. It also states that eventual-consistency projections can lag the event store and that conflicting changes spanning multiple entities still require reconciliation. citeturn0search0turn0search1 Orleans provides an executable analogue: a conditional event checks that the local version still matches storage and refuses the append when another event has won the race. citeturn0search2 EF Core similarly uses a version predicate so a concurrent update affects zero rows and raises a concurrency exception rather than silently overwriting the newer value. citeturn0search4
+
+### Simultaneous-transition model
+
+Two authenticated events E1 and E2 for the same resource can be:
+
+A. **compatible** — both may legally exist;
+B. **ordered** — contract establishes E1 before E2 or E2 before E1;
+C. **duplicate** — same semantic transition already incorporated;
+D. **incomparable but potentially compatible** — ordering unavailable and compatibility unresolved;
+E. **conflicting** — contract establishes that both cannot be current simultaneously, while precedence remains unresolved.
+
+This produces a finite decision relation without inventing a total order.
+
+### Attack: can CONFLICTING always become reconciliation?
+
+Reduction test:
+
+If the resource contract supports an authoritative read/reconciliation operation that can determine the current state, CONFLICTING can terminate as a **reconciliation outcome** without a unique witness.
+
+If no authoritative reconciliation exists, the protected boundary may have to enter a durable HOLD/UNKNOWN state and prevent either event from producing an irreversible semantic effect until external evidence resolves the conflict.
+
+Therefore CONFLICTING is best modeled provisionally as a **typed decision outcome**, not a top-level failure class.
+
+### Important distinction: local optimistic concurrency vs external conflict
+
+A database/event-store version check can prevent two local writes from committing simultaneously. It does **not** prove that an external provider accepted neither, one, or both corresponding effects. The external-effect ambiguity remains a separate evidence problem.
+
+This preserves the previously established boundary:
+
+`local commit/concurrency result ≠ external effect result`.
+
+### Cross-check against I19/I21
+
+**I19** requires confirmed effect → correction/reversal → local reconstruction. A simultaneous conflict does not require correction/reversal or projection loss. KEEP DISTINCT.
+
+**I21** requires a stale pre-correction event after correction/reversal. Simultaneous conflict does not require that history. KEEP DISTINCT.
+
+However, a concrete incident could instantiate both: e.g. two conflicting transitions race, one becomes authoritative, then a stale event arrives after a correction. That is a higher-order composition, not evidence that the base interactions are duplicates.
+
+### Conflict decision matrix
+
+| Condition | Relation | Protected disposition |
+|---|---|---|
+| Same event identity | EQUAL/DUPLICATE | idempotent no-op / preserve history |
+| Proven higher version | NEWER | apply if transition legal |
+| Proven lower version | OLDER | preserve history; do not regress |
+| No order, compatibility unresolved | INCOMPARABLE | hold/reconcile as contract requires |
+| Same scope, contract-proven incompatibility, no order | CONFLICTING | hold/reject/reconcile; do not choose by arrival |
+| Different namespace/incarnation | OUT-OF-SCOPE | reject/reconcile; no freshness comparison |
+
+### New candidate interaction
+
+A candidate **I27 — concurrent same-resource incompatible transitions with no authoritative precedence** was considered.
+
+Reduction against existing concurrency classes shows that generic concurrent-operation races do not necessarily include the stronger predicates:
+- same resource;
+- mutually incompatible transitions;
+- both authenticated/scoped;
+- no authoritative precedence;
+- protected boundary must avoid selecting a winner by arrival order.
+
+Therefore **I27 is admissible and provisionally independent**, but no witness is frozen yet. We require a concrete causal scenario and decision difference before creating W19+.
+
+### Candidate invariants
+
+**INV-EH-13 — Same-resource conflict cannot be resolved by arrival order.**
+
+**INV-EH-14 — Local concurrency success/failure does not prove external-effect success/failure.**
+
+**INV-EH-15 — Conflict resolution must preserve both evidence records even when only one transition becomes current.**
+
+Candidates only; no formal verification.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+I27: admissible / provisionally independent / untested.
+INCOMPARABLE: epistemic relation / no witness frozen.
+CONFLICTING: provisional semantic/reconciliation relation.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.850R:** attack I27 against the existing concurrency, transaction-isolation, authority, duplicate-delivery, correction and reconciliation witnesses. Search executable/code-level cases where two valid same-resource transitions race without an authoritative total order, and determine the minimum witness needed to distinguish I27 from ordinary optimistic-concurrency rejection.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
