@@ -1059,3 +1059,117 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.794R: investigate real stale-response/out-of-order test suites and implementation paths that protect terminal reconciliation state, including whether systems use CAS/resourceVersion/sequence guards against late responses and whether those guards survive restart, failover, compaction, and namespace changes.
+
+## AB104.794R research — stale/out-of-order response tests and terminal-state protection
+
+### Concrete etcd failure/test evidence
+
+A current etcd issue (#22086) documents a concrete ordering failure in the client wrapper: a mutable transaction can successfully execute and return a response whose revision is older than a previously observed revision. The wrapper must not automatically resubmit the mutable transaction merely because the response revision violates the wrapper's expected ordering. The issue includes a deterministic unit-test shape asserting that the mutable transaction is executed only once. citeturn0search9
+
+This separates two facts that are often incorrectly conflated:
+
+response ordering anomaly != proof that mutation did not execute
+
+and:
+
+detecting stale/older evidence != permission to replay a mutation
+
+The reported test specifically guards against duplicate execution after an ordering violation.
+
+### Kubernetes: stale-read and freshness tests are explicit
+
+Current Kubernetes API documentation states that resourceVersion can establish watch/read position, and that weak Any semantics may return a version older than one previously observed. Clients that cannot tolerate rewinding must choose stronger semantics. NotOlderThan and Exact provide explicit version constraints, while unavailable historical versions can produce 410 Gone. citeturn0search0turn0search1
+
+The Kubernetes watch-cache implementation contains an explicit waitUntilFreshLocked path that waits until its cache resourceVersion reaches the requested version before serving a consistency-sensitive read. The source also documents serialized resource-version updates through the cache update path. citeturn0search5
+
+Kubernetes validation tests explicitly reject invalid combinations of watch/resourceVersionMatch/sendInitialEvents parameters, demonstrating that the consistency contract is treated as a protocol property rather than merely caller convention. citeturn0search6
+
+### Important restart/failover limitation
+
+The evidence above protects ordering while the relevant version domain remains valid. It does not automatically guarantee that a version remains meaningful after restart, snapshot restore, compaction, namespace migration, or identity replacement.
+
+Kubernetes explicitly requires clients to handle 410 Gone when the requested historical version is no longer available and to relist/resynchronize. citeturn0search1
+
+Therefore a reconciler must distinguish:
+
+OLD_EVIDENCE_REJECTED
+
+from:
+
+HISTORY_UNAVAILABLE
+
+The second is not evidence that the old operation failed; it is evidence that the system can no longer use that historical observation under the requested consistency contract.
+
+### New race: terminal state versus late evidence
+
+Consider durable state:
+
+O = CONFIRMED@v120
+
+A late worker returns:
+
+FAILED@v119
+
+A simple last-writer-wins database update is unsafe.
+
+The durable state transition therefore needs a guard equivalent to:
+
+UPDATE operation SET state=... WHERE operation_id=O AND accepted_evidence_version < incoming_version
+
+but this is only a skeleton. The system must also define whether two evidence versions are comparable and whether the incoming state is semantically allowed to dominate the current state.
+
+For example, FAILED@v121 cannot automatically overwrite CONFIRMED@v120 if v121 merely represents a newer observation that the operation record was later pruned. The evidence type must prove what happened to the actual effect.
+
+### New race: restart with stale worker response
+
+Before restart:
+
+durable_state = CONFIRMED@v120
+
+After restart, a worker holding an old response:
+
+FAILED@v119
+
+returns.
+
+If recovery reconstructs state only from the worker response and lacks durable monotonic evidence state, the old worker can regress the terminal result.
+
+Therefore the monotonicity guard itself must be durable or reconstructible from authoritative state. A process-local last_seen_version is insufficient.
+
+### Namespace/failover interaction
+
+A version can remain numerically monotonic while its authority meaning changes. A restored/new cluster, new resource identity, or new authority epoch can invalidate prior interpretation even when numbers continue increasing.
+
+Thus recovery needs both:
+
+version continuity
+
+and
+
+identity/namespace continuity
+
+or an explicit new epoch that invalidates old evidence/credentials.
+
+This matches the earlier AB104.779R recovery finding: preserving a number is not equivalent to preserving authority continuity.
+
+### Evidence ledger
+
+ETCD_MUTABLE_TXN_STALE_RESPONSE_DUPLICATE_RETRY REAL REPORTED FAILURE/TEST EVIDENCE
+SUCCESSFUL_MUTATION_WITH_ORDERING_ANOMALY != NOT_EXECUTED
+STALE_RESPONSE_DETECTION != SAFE_RETRY
+K8S_STALE_READ_SEMANTICS SOURCE CONFIRMED
+K8S_FRESHNESS_WAIT SOURCE CONFIRMED
+K8S_VERSIONED_WATCH/READ_VALIDATION_TESTS SOURCE CONFIRMED
+K8S_410_GONE_HISTORY_UNAVAILABLE SOURCE CONFIRMED
+HISTORY_UNAVAILABLE != OPERATION_FAILED
+TERMINAL_STATE_REQUIRES_DURABLE_MONOTONIC_GUARD SOURCE-SUPPORTED
+PROCESS_LOCAL_LAST_SEEN_VERSION INSUFFICIENT_AFTER_RESTART
+VERSION_CONTINUITY != AUTHORITY_CONTINUITY
+NAMESPACE/IDENTITY CONTINUITY REQUIRED
+EXECUTED NEXO STALE-RESPONSE RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.795R: investigate durable terminal-state CAS/compare-and-set patterns in real workflow, database, and messaging implementations, including crash recovery and duplicate/out-of-order completion handling; determine whether a terminal state can ever be reopened and under what explicit correction protocol.
