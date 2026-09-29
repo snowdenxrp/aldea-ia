@@ -591,3 +591,125 @@ Implementation: **NOT STARTED**.
 **AB104.844R:** perform a targeted search for concrete provider contracts covering reserve/authorize/capture/cancel/expire and asynchronous completion; then attack whether I25/I26 are actually provider-specific refinements of the same cross-domain atomicity class. Also test whether any legal transition from EXPIRED/CANCELLED or FAILED back to COMMITTED is a correction/reversal case rather than a genuine resurrection.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.845R — TYPED-EVENT REDUCTION + FRESHNESS BOUNDARY
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+NIST's ordered-combination work confirms that stateful failure analysis must preserve event ordering and the state established by prior events; this is directly applicable to payment/resource lifecycle races. citeturn0search0turn0search1 Adyen documents that manual capture is asynchronous and produces later CAPTURE/CAPTURE_FAILED outcomes, while cancellation is also asynchronous and its outcome arrives through a CANCELLATION webhook. citeturn0search7 A reversal is likewise resolved asynchronously and has different semantics depending on whether capture already occurred: cancel if uncaptured, refund if captured. citeturn0search10
+
+### Typed-event model
+
+The previous universal labels were too coarse. Each observed event is now provisionally interpreted across four independent dimensions:
+
+1. **Attempt state** — what happened to this request/attempt.
+2. **Resource lifecycle state** — what state the underlying resource/payment is in.
+3. **Effect knowledge** — what is established about the intended business effect.
+4. **Correction/reversal relation** — whether this event modifies or compensates an earlier effect.
+
+An event must not be allowed to change all four dimensions merely because its textual status looks terminal.
+
+Example: `CAPTURE_FAILED` can describe a failed capture attempt without proving that the underlying authorization/payment is permanently failed. Adyen explicitly documents capture failure as an outcome of the capture request and separately documents subsequent lifecycle handling. citeturn0search7
+
+### I25 typed reduction
+
+Sequence:
+`ACCEPTED/RESERVED(G1) → G2 authoritative → delayed completion(G1)`.
+
+Typed interpretation shows two independent predicates:
+- authority validity of G1;
+- resource transition validity at the completion boundary.
+
+If the resource contract checks generation/version at the protected transition, stale G1 can be rejected without implying that the original acceptance never happened. If it does not, the delayed completion may still be accepted according to the provider's lifecycle contract. Therefore I25 is not reducible to generic duplicate delivery or generic stale evidence.
+
+**Disposition: I25 remains independent / untested.**
+
+### I26 typed reduction
+
+Sequence:
+`ACCEPTED/RESERVED → CANCEL/EXPIRE → delayed completion`.
+
+Typed interpretation separates:
+- cancellation/expiry as a resource lifecycle transition;
+- delayed completion as an attempt/result event;
+- effect knowledge as a separate dimension.
+
+A delayed completion after cancellation cannot be classified solely from arrival order. It may represent a valid earlier commit, an invalid late attempt, or a provider-specific transition requiring reconciliation. Adyen's asynchronous cancel/capture model demonstrates why local webhook order is insufficient. citeturn0search7turn0search11
+
+**Disposition: I26 remains independent / untested.**
+
+### Freshness relation
+
+A universal wall-clock timestamp is insufficient as the sole semantic ordering mechanism. The audit therefore defines a provider-neutral relation over an incoming event E relative to current authoritative state S:
+
+- **NEWER** — contract establishes E follows S for the same resource stream.
+- **EQUAL/DUPLICATE** — E represents the same semantic transition already incorporated.
+- **OLDER** — contract establishes E precedes S.
+- **INCOMPARABLE** — available evidence cannot establish ordering.
+
+Potential evidence mechanisms include provider sequence/version, resource revision, stream position, causal reference, or another explicitly documented monotonic relation. These are evidence mechanisms, not universal Nexo implementation choices.
+
+**INCOMPARABLE must not be silently interpreted as OLDER or NEWER.** It requires the provider's reconciliation/transition contract.
+
+### Resurrection reclassification
+
+The prior blanket question `EXPIRED/CANCELLED → COMMITTED?` was too coarse. The correct question is:
+
+`Does a later event represent a legal transition of the same resource, a retry of a failed attempt, a correction/reversal, or an actual resurrection?`
+
+Likewise:
+
+`FAILED → COMMITTED`
+
+must first determine whether FAILED refers to an attempt or the underlying resource lifecycle.
+
+Thus apparent resurrection is not itself a universal interaction class. It becomes a safety violation only when a transition crosses a typed state boundary that the authoritative resource contract forbids.
+
+### Reduction result
+
+I25 and I26 cannot currently be collapsed into one interaction without losing whether the boundary-changing event is **authority** or **resource lifecycle**.
+
+However, both can share a common typed-event analysis substrate:
+
+`identity → typed event → semantic freshness → guarded transition → effect knowledge → reconciliation disposition`.
+
+This is a research abstraction only, **not architecture design**.
+
+### Candidate invariants
+
+**INV-TE-01 — Typed-event non-escalation:** an event may modify only the semantic dimensions for which its contract provides authoritative evidence.
+
+**INV-TE-02 — Incomparable-order safety:** an event with incomparable semantic order must not regress current state solely by arrival.
+
+**INV-TE-03 — Attempt/resource separation:** failure of an operation attempt must not automatically become terminal failure of the underlying resource.
+
+**INV-TE-04 — Resurrection requires authoritative legality:** a transition that appears to resurrect a prior state requires explicit resource-contract evidence; local arrival order is insufficient.
+
+All four are candidates only; none formally verified.
+
+### Current disposition
+
+I17: absorbed by W17 parameterization.
+I18: absorbed by W18 parameterization.
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I23: absorbed by operation-identity parameterization.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.846R:** attack the NEWER/EQUAL/OLDER/INCOMPARABLE relation against concrete provider sequence/version mechanisms, same-resource retries, duplicate webhooks, correction/reversal, recovery/incarnation changes, and namespace changes. Determine the minimum evidence required to establish semantic order and whether `INCOMPARABLE` itself needs a separate interaction witness or is covered by existing UNKNOWN/reconciliation cases.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
