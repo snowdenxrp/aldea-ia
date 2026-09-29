@@ -1974,3 +1974,35 @@ Implementation: NOT STARTED.
 AB104.858R: attack the newly exposed intermediate-state distinction against the existing typed effect-state graph and search additional provider/workflow contracts for states equivalent to SUBMITTED_TO_EXTERNAL_PROCESSOR, ACCEPTED, RESERVED, or IN_PROGRESS. Determine whether one universal semantic category is justified or whether these states must remain provider-scoped evidence categories.
 
 No deletion/overwrite. No silent witness mutation. No architecture implementation.
+
+
+---
+## AB104.857R — CAPTURE ACCEPTED/SUBMITTED -> LATER CAPTURE_FAILED: TYPED EFFECT-STATE REDUCTION
+
+Status: RESEARCHED / PROVIDER-CONCRETE / NO IMPLEMENTATION.
+
+Adyen states that manual capture is asynchronous. A CAPTURE webhook with success=true means the request was valid and submitted to the bank/card scheme; it does not mean downstream acceptance is irrevocably complete. CAPTURE_FAILED can arrive later, even days later, if the scheme rejects the capture. citeturn0search0turn0search1 The capture and later failure are tied to the authorization/capture references and the failure is represented in webhook/accounting evidence. citeturn0search0turn0search5
+
+Exact semantic sequence:
+REQUESTED -> ACCEPTED_OR_RESERVED/SUBMITTED -> DOWNSTREAM_OUTCOME_PENDING -> FAILED.
+The success path may instead continue toward settlement/transfer. ACCEPTED_OR_RESERVED/SUBMITTED is therefore not COMMITTED.
+
+Reduction against I24: I24 captures positive pending evidence, but this sequence additionally has an authoritative typed failure after prior acceptance/submission. I24 alone is insufficient for the complete transition.
+
+Reduction against I20: I20 begins UNKNOWN and later reaches authoritative CONFIRMED. This provider sequence begins with positive acceptance/submission evidence and later reaches FAILED, so the epistemic starting state differs.
+
+Reduction against I19: I19 is CONFIRMED -> CORRECTED/REVERSED -> reconstruction. CAPTURE success=true is not provider-defined as terminal external confirmation, so modeling it as CONFIRMED -> FAILED would be a semantic escalation and is incorrect. citeturn0search0turn0search1
+
+Reduction against the existing external-effect ambiguity class: the broader rule already states that local acceptance/submission is not proof of a terminal external effect. The typed effect-state graph can represent ACCEPTED_OR_RESERVED/IN_PROGRESS -> FAILED without inventing CONFIRMED in the middle.
+
+Important correction: the earlier shorthand CAPTURE success=true -> CAPTURE_FAILED must NOT be modeled as CONFIRMED -> FAILED. The correct interpretation is ACCEPTED_OR_RESERVED/SUBMITTED -> DOWNSTREAM_PENDING -> FAILED.
+
+Candidate invariant INV-TE-05: admission/submission success cannot be promoted to external terminal-effect confirmation unless the provider contract explicitly equates them. Not formally verified.
+
+Witness decision: NO NEW WITNESS. The provider evidence validates the typed-state model and the separation of acceptance, lifecycle, effect knowledge, and reconciliation, but does not establish a distinct top-level failure witness.
+
+Current: I19 independent/untested; I20 independent/untested; I21 distinct ordered/untested; I22 parameterized; I24 independent/untested; I25 parameterized; I26 empirically supported semantic interaction/witness not frozen; I27 model-level residual/witness not established; W19 NOT FROZEN; 20 classes UNFROZEN; denominator NOT FROZEN; formal verification NOT PERFORMED; implementation NOT STARTED.
+
+Exact next action: AB104.858R — attack the corrected transition model against reversal/correction paths and stale webhook delivery: ACCEPTED/SUBMITTED -> FAILED, ACCEPTED/SUBMITTED -> COMMITTED, later CORRECTED/REVERSED, and duplicate/out-of-order delivery. Determine whether one typed state-transition relation plus freshness is sufficient, or whether a new interaction remains when a terminal-looking local projection is contradicted by later provider evidence.
+
+No deletion/overwrite. No silent witness mutation. No architecture implementation.
