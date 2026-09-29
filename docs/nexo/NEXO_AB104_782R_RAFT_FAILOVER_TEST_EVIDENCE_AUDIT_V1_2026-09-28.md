@@ -1405,3 +1405,124 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.797R: investigate atomic coupling boundaries in real event-sourced/workflow systems: history append + current-state update + outbox/task creation, and identify exactly where external effects remain outside the atomic boundary. Include crash/failure tests and determine whether any system actually closes all four layers without relying on an external idempotent/fenced receiver.
+
+## AB104.797R research — atomic boundaries: history + state + outbox + external effect
+
+### Finding 1 — transactional outbox closes the local intent boundary, not the arbitrary external-effect boundary
+
+The transactional outbox pattern commits business state and an outbox record in one local transaction. A relay later reads the durable outbox and delivers the message. AWS explicitly describes duplicate delivery as possible and requires downstream consumers to be idempotent. Debezium's Outbox Event Router similarly captures committed outbox records and publishes them asynchronously; it does not make the downstream side effect part of the original database transaction. citeturn0search0turn0search2
+
+Therefore the atomic boundary is:
+
+local state + durable intent
+
+not:
+
+local state + arbitrary external effect.
+
+### Finding 2 — CDC/relay introduces a durable handoff, not exactly-once external execution
+
+Debezium documents at-least-once delivery behavior and replay after failures/restarts. A sink can therefore receive the same logical event more than once. Idempotent sink writes can make the resulting state converge, but that is a receiver property, not proof that the physical external action happened exactly once. citeturn0search3turn0search4
+
+The distinction is:
+
+delivery-once
+!=
+effect-once
+
+and:
+
+duplicate message suppression
+!=
+external-effect atomicity.
+
+### Finding 3 — the four-boundary model
+
+The audit can now represent a typical durable external operation as:
+
+T0 = local transaction commits state + operation intent
+T1 = relay/worker obtains intent
+T2 = receiver validates identity + authority generation
+T3 = receiver accepts operation identity
+T4 = external effect becomes durable
+T5 = durable outcome becomes queryable
+T6 = coordinator records/reconciles outcome
+
+Outbox closes T0.
+
+Idempotency closes repeated logical submission at T3.
+
+Fencing closes stale-authority submission at T2.
+
+Reconciliation closes uncertainty between T4 and T5/T6.
+
+If T3 and T4 are not one atomic receiver boundary, an additional dual-write window remains.
+
+### Finding 4 — concrete database receiver can close more than a generic API
+
+When the protected effect is itself a database mutation, a receiver can combine identity/authority checks with the mutation in one database transaction. The same atomic commit can update the business row and a deduplication/operation record.
+
+That can eliminate a check-then-write race inside that database.
+
+It still does not automatically cover an external action performed after the database commit, such as sending a physical command to another system.
+
+### Finding 5 — Kafka's exactly-once boundary is explicitly scoped
+
+Kafka documents exactly-once semantics for Kafka-to-Kafka processing and states that external systems require cooperation to obtain equivalent guarantees. Kafka Connect's exactly-once support likewise depends on the source/sink connector and destination semantics rather than making arbitrary external systems transactional. citeturn0search5turn0search6
+
+This independently reinforces the boundary discovered with Temporal and outbox systems.
+
+### Finding 6 — a stronger receiver contract
+
+For a receiver capable of participating atomically in the protected effect:
+
+ACCEPT(operation) iff:
+1. namespace/resource identity matches;
+2. operation identity is valid and not conflicting;
+3. request/payload binding matches;
+4. authority generation is current enough;
+5. acceptance record and protected mutation commit atomically.
+
+Then:
+
+DUPLICATE(operation_id, same binding) -> return prior durable result.
+
+CONFLICT(operation_id, different binding) -> reject.
+
+STALE_AUTHORITY -> reject.
+
+UNKNOWN -> query/reconcile; do not silently create a new logical operation.
+
+This is stronger than an outbox-only design.
+
+### Finding 7 — arbitrary external side effects remain outside the local atomic boundary
+
+For a third-party API, physical actuator, email/SMS provider, device, or other system that cannot join the same transaction, the coordinator cannot atomically commit both its own history and that external effect.
+
+The safe contract therefore becomes:
+
+durable intent + fenced/idempotent submission + queryable outcome + reconciliation
+
+rather than an unsupported universal exactly-once claim.
+
+### Evidence ledger
+
+TRANSACTIONAL_OUTBOX_LOCAL_STATE_PLUS_INTENT_ATOMIC SOURCE CONFIRMED
+OUTBOX_RELAY_ASYNC SOURCE CONFIRMED
+OUTBOX_DUPLICATE_DELIVERY_POSSIBLE SOURCE CONFIRMED
+DEBEZIUM_OUTBOX_CDC SOURCE CONFIRMED
+DEBEZIUM_AT_LEAST_ONCE_REPLAY SOURCE CONFIRMED
+DELIVERY_ONCE != EFFECT_ONCE
+DEDUPLICATION != EXTERNAL_EFFECT_ATOMICITY
+RECEIVER_DB_ATOMIC_MUTATION_CAN_CLOSE_LOCAL_DUAL_WRITE SOURCE-SUPPORTED
+KAFKA_EOS_EXTERNAL_SYSTEM_REQUIRES_COOPERATION SOURCE CONFIRMED
+FENCING_AT_RECEIVER_REQUIRED FOR STALE-AUTHORITY SAFETY
+RECONCILIATION_REQUIRED AFTER AMBIGUOUS EXTERNAL EFFECT
+UNIVERSAL_EXTERNAL_EXACTLY_ONCE NOT ESTABLISHED
+EXECUTED NEXO EXTERNAL EFFECT RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.798R: investigate concrete receiver-side atomic/idempotent APIs and failure tests: Stripe-style idempotency, database unique/CAS constraints, Kafka transactional sinks, and cloud APIs with client-token semantics. Determine exactly what their guarantees cover, retention limits, stale-authority behavior, and ambiguous-response recovery.
