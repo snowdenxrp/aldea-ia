@@ -805,3 +805,116 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.792R: investigate versioned status evidence and monotonic reconciliation: whether a returned revision/sequence can prove that an operation was absent/present at a required point, how tombstones/deletions are represented, and how to prevent an old status response from overwriting a newer terminal state.
+
+
+## AB104.792R research — versioned status evidence and monotonic reconciliation
+
+### Real implementation evidence
+
+etcd exposes a monotonic store revision on every response and uses revision comparisons inside transactions. A client can therefore bind a decision to a specific revision rather than treating an unversioned read as timeless truth. Its watch mechanism delivers ordered events with revisions, while compaction explicitly invalidates history older than the compacted revision. SOURCE: etcd API/watch/compaction documentation. citeturn0search0turn0search3
+
+Kubernetes resourceVersion provides a similar optimistic-concurrency and freshness boundary. A write can specify the version it was based on; if the object changed first, the API rejects the stale update instead of silently overwriting the newer state. The API also exposes resourceVersionMatch/resourceVersion semantics for reads and watches, and a compacted historical version can no longer be used as if it were current history. citeturn0search1turn0search4
+
+These systems demonstrate an important property: versioned evidence can prevent an old observation from overwriting newer state, but only when the consumer actually compares/guards the version. Merely returning a revision field is not sufficient.
+
+### Reconciliation monotonicity
+
+Suppose the durable reconciliation record has:
+
+state = CONFIRMED, evidence_version = 120
+
+A late response says:
+
+state = UNKNOWN, evidence_version = 117
+
+The late response must not regress the durable state.
+
+Likewise:
+
+FAILED@120 must not be overwritten by IN_PROGRESS@119.
+
+A safe consumer needs an ordering rule for evidence, such as:
+
+accept(new_evidence) only if it is compatible with or dominates current evidence
+
+The exact dominance relation cannot be assumed to be numeric alone. A revision from one resource/namespace cannot dominate a revision from another namespace, and an operation-status version may not be comparable to an authority-generation version.
+
+### Tombstones and absence
+
+A deletion/tombstone event is stronger than an ordinary NOT_FOUND cache response because it can carry an ordering/version position. However, a tombstone only proves absence relative to its defined namespace and version history; after compaction/retention expiry, historical reconstruction may no longer be possible.
+
+Therefore:
+
+TOMBSTONE@v >= required_v can be meaningful evidence of absence at a defined point.
+
+GET -> 404 without a freshness/version contract remains weak evidence.
+
+### Out-of-order status responses
+
+Even with versioned evidence, the coordinator must protect against:
+
+R1 query returns version 121
+R2 older query returns version 119
+R3 older response arrives after R1
+
+If state transitions are accepted blindly, R3 can regress the durable state.
+
+The receiver/orchestrator therefore needs a monotonic state/evidence rule, not just versioned messages.
+
+### Critical distinction: evidence version vs authority generation
+
+The audit now has at least three independent version domains:
+
+1. authority_generation: authorization/fencing epoch.
+2. operation/effect_version: ordering of the operation's state at the receiver.
+3. observation_version: freshness/order of the evidence returned to the reconciler.
+
+They may coincide in a particular implementation, but they must not be assumed equivalent.
+
+Example:
+
+authority_generation = 7
+effect_version = 1042
+observation_version = 1045
+
+The number 1045 does not mean authority generation 1045.
+
+### Candidate monotonic reconciliation rule
+
+For protected operation O and resource namespace R:
+
+accept(evidence E) only if:
+- E is bound to O and R;
+- E's request/payload binding is compatible with O;
+- E is from a valid evidence source;
+- E's version/consistency is sufficient for the transition;
+- E cannot be older/inferior to already accepted evidence in a way that regresses terminal truth.
+
+A terminal state should be monotonic unless an explicitly defined correction protocol exists.
+
+### Failure case
+
+If CONFIRMED@v120 is durable and a later reconciliation call receives NOT_FOUND@v121, the protocol cannot automatically declare FAILED merely because v121 is newer numerically. The meaning of v121 must establish that the operation was removed/expired and that such removal is authoritative for effect truth.
+
+This is why numeric monotonicity alone is insufficient; the semantic type and namespace of the version matter.
+
+### Evidence ledger
+
+ETCD_MONOTONIC_STORE_REVISION SOURCE CONFIRMED
+ETCD_VERSIONED_WATCH_EVENTS SOURCE CONFIRMED
+ETCD_COMPACTION_INVALIDATES_OLD_HISTORY SOURCE CONFIRMED
+K8S_RESOURCE_VERSION_STALE_WRITE_REJECTION SOURCE CONFIRMED
+K8S_VERSIONED_READ/WATCH_SEMANTICS SOURCE CONFIRMED
+VERSIONED_EVIDENCE_CAN_BLOCK_STALE_OVERWRITE SOURCE-SUPPORTED
+TOMBSTONE_STRONGER_THAN_UNVERSIONED_NOT_FOUND SOURCE-SUPPORTED
+OUT_OF_ORDER_RESPONSE REGRESSION HAZARD SOURCE-SUPPORTED
+AUTHORITY_GENERATION != EFFECT_VERSION != OBSERVATION_VERSION
+NUMERIC_VERSION_ALONE_INSUFFICIENT
+TERMINAL_RECONCILIATION SHOULD BE MONOTONIC UNLESS CORRECTION PROTOCOL EXISTS
+EXECUTED NEXO RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.793R: investigate semantic version domains and cross-domain fencing: resource version vs operation version vs authority generation, including whether a single monotonic counter is ever sufficient, how namespace binding prevents cross-resource token reuse, and real failure tests involving delayed/out-of-order evidence.
