@@ -230,3 +230,107 @@ These are candidate invariants only; no formal verification has been performed.
 **AB104.841R:** reduce I24 against I19/I20/I21 and existing reconciliation witnesses; then attack whether F3 can be decomposed into already-known lifecycle cases or requires a distinct interaction. Next, study concrete provider contracts for reservation/commit/cancel semantics and test the normalized evidence model against them. Do not choose Nexo technologies yet.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.841R — I24/F3 REDUCTION + ACCEPTED_OR_RESERVED SEMANTIC ATTACK
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh external cross-check
+
+Microsoft's current Idempotent Consumer guidance explicitly distinguishes an in-progress record from a completed effect: an in-progress record can mean an external call partially completed or another consumer is still working, and therefore requires reconciliation rather than being treated as completion. It also requires the deduplication marker and local business effect to share one transaction where they can. citeturn0search0 AWS similarly documents idempotency tokens as a mechanism for safe retries, but the guarantee depends on the service contract and does not make arbitrary external effects exactly-once. citeturn0search1
+
+### I24 reduction
+
+I24 = provider reports IN-PROGRESS while the coordinator is considering retry.
+
+Against I20: I20 starts from UNKNOWN and requires later authoritative CONFIRMED evidence. I24 contains positive provider evidence that an execution remains active/pending; collapsing it into UNKNOWN would lose a meaningful provider fact.
+
+Against I21: I21 is a stale-event regression after correction/reversal. I24 has no required correction or stale historical event.
+
+Against W17: W17 covers acknowledgement uncertainty plus retry, but does not require an authoritative provider state that explicitly says the original execution remains in progress.
+
+Against W13/W14: retention/incarnation and ownership-transfer interactions are orthogonal to provider in-progress semantics.
+
+**Result: I24 remains an independent interaction.**
+
+### ACCEPTED_OR_RESERVED attack
+
+We tested three interpretations:
+
+1. **Alias to UNKNOWN:** unsafe as a universal normalization because it discards positive evidence that the resource accepted/reserved the operation.
+2. **Alias to CONFIRMED:** unsafe unless the provider contract defines acceptance/reservation as the semantic effect.
+3. **Explicit semantic state:** preserves the provider fact while allowing a separate epistemic interpretation.
+
+**Disposition:** retain ACCEPTED_OR_RESERVED as a semantic category, but do not make it a universal provider enum. Provider contracts must map their concrete states into this category with evidence and transition rules.
+
+### F3 race decomposition
+
+F3 = old epoch accepted/reserved → new epoch becomes authoritative → coordinator must determine whether the old operation may still commit.
+
+Required questions:
+
+- Can the reservation be cancelled by the new authority?
+- Does acceptance itself create the protected semantic effect?
+- Can the resource reject a later commit from the old epoch?
+- Is the operation status query authoritative and linearizable/strong enough for the required decision?
+- Can the provider emit a later correction/reversal?
+
+No single generic answer exists. Therefore F3 cannot be safely reduced to fencing alone.
+
+### Minimum boundary properties derived
+
+For a resource-side effect boundary, the following must be independently specified:
+
+1. **Admission predicate:** which authority/generation is allowed to create the operation?
+2. **Identity predicate:** which operation identity binds retries to the original semantic operation?
+3. **Transition predicate:** which state transitions are legal from ACCEPTED/RESERVED?
+4. **Observation predicate:** what evidence establishes each resulting state?
+5. **Reconciliation predicate:** what happens when observation is incomplete or delayed?
+6. **Correction predicate:** how later corrections/reversals modify current state without erasing history?
+
+These are audit predicates, not an architecture design.
+
+### New interaction candidates
+
+**I25 — ACCEPTED_OR_RESERVED → authority change → delayed commit/retry.**
+The resource has accepted the original operation, authority changes, and a retry or delayed completion arrives. This is distinct from I24 because it requires an actual authority transition between acceptance and completion.
+
+**I26 — ACCEPTED_OR_RESERVED → cancellation/expiry → delayed completion.**
+A resource reports an accepted/reserved operation that is later cancelled or expires, followed by a delayed completion/result. This attacks whether a late result can resurrect a cancelled state.
+
+Both are **UNTESTED** and not frozen as witnesses.
+
+### Candidate invariants
+
+**INV-F-05 — Accepted-but-not-confirmed is not completion:** acceptance/reservation must not be normalized to CONFIRMED unless the resource contract defines it as the semantic effect.
+
+**INV-F-06 — Authority change does not erase historical acceptance:** a later authority generation cannot retroactively claim that a prior accepted operation never existed.
+
+**INV-F-07 — Cancellation/expiry does not erase evidence:** a later cancellation/expiry may change current state but must preserve the accepted/reserved history.
+
+Candidate only; not formally verified.
+
+### Current disposition
+
+I17: absorbed by W17 parameterization.
+I18: absorbed by W18 parameterization.
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I23: absorbed by operation-identity parameterization.
+I24: independent / untested.
+I25: candidate / untested.
+I26: candidate / untested.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.842R:** attack I25/I26 against I19-I24 and the existing correction, fencing, recovery, retention, and stale-event interactions. Determine whether ACCEPTED_OR_RESERVED + authority change and ACCEPTED_OR_RESERVED + cancellation are genuinely new ordered interactions or parameterizations. Then define the minimum legal transition graph around acceptance/reservation without selecting a concrete provider implementation.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
