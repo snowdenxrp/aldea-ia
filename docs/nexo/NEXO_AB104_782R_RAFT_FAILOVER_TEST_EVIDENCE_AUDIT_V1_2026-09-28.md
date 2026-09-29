@@ -3022,3 +3022,148 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.811R: cross-check the 71-case model against Kafka transactional producer/consumer semantics and workflow execution boundaries, then identify whether partition ownership, offset commits, transactional read-process-write, and external sink cooperation introduce additional classes or merely map to existing ones. Freeze only after deduplicating the model.
+
+## AB104.811R — Kafka transactional boundaries, rebalance, offsets, and workflow mapping
+
+Kafka 4.1 documents a precise exactly-once boundary: for Kafka-to-Kafka processing, partition assignment isolates current processing ownership, and producer transactions atomically commit produced records together with consumer offsets. Kafka explicitly states that exactly-once for other destination systems generally requires cooperation from those systems. citeturn1search1turn1search12
+
+Kafka 4.1 also documents that consumer offset commits are used after rebalance/startup, and that a commit can time out without establishing a universal business-effect result. The current API documents CommitFailedException when the consumer no longer owns a partition, including after group changes. citeturn1search14
+
+### Deduplication of the 71-case model
+
+Several broker cases map to previously existing classes rather than being unique safety properties.
+
+Merged classes:
+
+- producer confirm loss + message retry -> existing ambiguous acknowledgement/retry class;
+- consumer ACK loss + redelivery -> existing effect-before-ack crash class;
+- duplicate delivery + concurrent handlers -> existing duplicate-operation concurrency class;
+- rebalance + stale worker -> existing stale-worker/authority-generation class;
+- delayed duplicate after terminal state -> existing stale-observation/nonregression class;
+- poison-message retry -> distinct liveness/resource-exhaustion class and remains separate;
+- partition ownership loss -> distinct ownership/fencing class and remains separate;
+- transactional Kafka read-process-write -> distinct owned-atomic-domain class and remains separate;
+- external sink after Kafka transaction -> existing external-effect/cooperation class.
+
+Therefore 71 is an upper candidate count, not 71 independent invariants.
+
+### Kafka-specific boundary
+
+Kafka can atomically couple:
+
+input offset
++
+Kafka-produced output
++
+Kafka state/transaction
+
+within the Kafka transactional domain. This is materially stronger than ordinary at-least-once processing. But that atomicity stops at the external destination boundary unless the destination participates/cooperates. citeturn1search1turn1search4
+
+Thus:
+
+Kafka transaction
+!= arbitrary external effect transaction.
+
+### Rebalance/ownership finding
+
+Kafka's consumer group model uses partition assignment as an ownership mechanism. A consumer that loses ownership cannot safely assume it may commit offsets for the lost partition; the current API documents commit failure when group ownership has changed. citeturn1search14
+
+This is an important ownership fence, but it protects Kafka's offset/partition domain. It does not automatically fence a worker that has already sent an external request.
+
+Nexo therefore needs to preserve:
+
+transport/partition ownership
+!= authority generation
+!= external effect fence.
+
+### Workflow comparison
+
+Temporal records Workflow state in durable Event History and replays that history after Worker failure. Activity Task executions can have multiple attempts, while the Workflow records their resulting completion/failure events. Temporal explicitly describes Activities as operations on the external world and says handlers for Nexus operations should be idempotent because the service may issue multiple task attempts. citeturn0search0turn0search1turn0search4
+
+This maps closely to the Nexo separation:
+
+Workflow/Event History
+= durable orchestration evidence
+
+Activity attempt
+= execution attempt
+
+external receiver
+= effect owner
+
+receiver idempotency/fencing
+= external safety boundary
+
+reconciliation
+= ambiguity resolver.
+
+Temporal's replay durability does not itself make an external Activity effect atomic with Workflow history; the external receiver still needs the appropriate idempotency semantics. citeturn0search0turn0search3
+
+### New minimum invariants
+
+INV-31: A transactional boundary is only as strong as the state/effect domains participating in that transaction.
+
+INV-32: Kafka exactly-once guarantees must not be generalized to arbitrary external sinks.
+
+INV-33: Partition ownership loss is a transport/work-ownership signal, not by itself an external-effect fence.
+
+INV-34: A commit failure caused by lost partition ownership must not be interpreted as proof that earlier external work did not happen.
+
+INV-35: Workflow replay may reconstruct orchestration state without re-executing already-recorded workflow decisions, but external Activity effects require their own receiver contract.
+
+INV-36: Multiple execution attempts of one logical operation must retain operation identity when they are retries of the same operation.
+
+INV-37: A new workflow run/retry must not silently become a new external operation when the prior operation's outcome is UNKNOWN.
+
+INV-38: Exactly-once claims must name their domain: Kafka, local DB, workflow history, receiver, or external settlement.
+
+### Model normalization
+
+The candidate model should no longer be described simply as 71 independent scenarios.
+
+Current normalized classes:
+
+1. operation identity collision
+2. payload-binding conflict
+3. duplicate delivery/retry
+4. acknowledgement ambiguity
+5. transaction isolation anomaly
+6. commit/apply separation
+7. stale observation/order
+8. state-machine transition race
+9. authority-generation/fencing race
+10. worker ownership/rebalance race
+11. external-effect ambiguity
+12. reconciliation consistency/retention
+13. ledger conservation/multi-account invariant
+14. correction/reversal
+15. idempotency retention/reuse
+16. broker/workflow liveness and poison-message behavior
+17. recovery/restart continuity
+18. namespace/incarnation confusion
+19. authentication/source-validity failure
+20. cross-domain atomicity boundary
+
+These 20 classes are not yet a frozen final taxonomy; they are the current normalized model.
+
+### Evidence ledger
+
+KAFKA_EOS_TRANSACTIONAL_OFFSET_PLUS_OUTPUT SOURCE CONFIRMED
+KAFKA_EXTERNAL_DESTINATION_REQUIRES_COOPERATION SOURCE CONFIRMED
+KAFKA_PARTITION_OWNERSHIP_COMMIT_FENCE SOURCE CONFIRMED
+KAFKA_COMMIT_FAILURE_AFTER_OWNERSHIP_CHANGE SOURCE CONFIRMED
+TEMPORAL_DURABLE_WORKFLOW_HISTORY SOURCE CONFIRMED
+TEMPORAL_MULTIPLE_ACTIVITY_ATTEMPTS SOURCE CONFIRMED
+TEMPORAL_EXTERNAL_ACTIVITY_REQUIRES_RECEIVER_SEMANTICS SOURCE SUPPORTED
+71_SCENARIOS_NORMALIZED_INTO_20_FAILURE_CLASSES
+TRANSACTION_DOMAIN_MUST_BE_EXPLICIT
+PARTITION_OWNERSHIP != AUTHORITY_GENERATION
+AUTHORITY_GENERATION != EXTERNAL_EFFECT_FENCE
+WORKFLOW_REPLAY != EXTERNAL_EFFECT_ATOMICITY
+MODEL NOT EXECUTED
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.812R: attack the normalized 20 classes for missing cross-products, especially combinations that are individually safe but unsafe together: fencing + retry, serialization failure + external effect, rebalance + delayed response, correction + stale evidence, retention expiry + redelivery, and recovery + namespace/incarnation reuse. Determine the minimum independent test set before freezing the adversarial model.
