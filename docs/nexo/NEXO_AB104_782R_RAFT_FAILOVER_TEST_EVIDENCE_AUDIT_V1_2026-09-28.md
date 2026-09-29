@@ -1173,3 +1173,96 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.795R: investigate durable terminal-state CAS/compare-and-set patterns in real workflow, database, and messaging implementations, including crash recovery and duplicate/out-of-order completion handling; determine whether a terminal state can ever be reopened and under what explicit correction protocol.
+
+## AB104.795R research — durable terminal-state CAS and correction semantics
+
+### Kubernetes: real stale-write race test
+
+Kubernetes has a concrete test, TestPatchResourceWithRacingVersionConflict, where a patch is prepared against resourceVersion 2 but another write advances the persisted object to version 3 before the patch is committed. The expected result is a version conflict rather than silent overwrite. This is direct test evidence for a compare-at-commit boundary. citeturn0search13
+
+The broader API contract likewise states that a stale resourceVersion produces HTTP 409 Conflict. citeturn0search1
+
+This is stronger evidence than merely exposing a version field: the receiver uses the version to reject a stale mutation at the mutation boundary.
+
+### Temporal: terminal execution identity and duplicate handling
+
+Temporal current documentation separates scheduling-layer deduplication from receiver-side idempotency. Activity execution is at-least-once; stable idempotency keys are required for external effects. Activity-ID conflict policy handles duplicates while an execution is in flight, while reuse policy governs later reuse. citeturn0search5turn0search4
+
+Temporal also exposes completed workflow identity/result semantics: a completed workflow with a reused identity can be observed rather than treated as an entirely new logical execution when the relevant reuse policy is configured. The architectural point is that terminal state is tied to durable workflow identity, not to a worker's last local observation. citeturn0search3
+
+### Correction versus reopening
+
+The audit found no basis for treating a terminal state as freely mutable by any later worker response.
+
+A safer model is:
+
+TERMINAL_STATE
+  -> remains terminal for the original operation identity
+  -> correction requires an explicit correction event/protocol
+  -> correction must itself be authorized, versioned, and auditable
+
+For example:
+
+CONFIRMED(O,v120)
+late FAILED(O,v119)
+=> reject as stale
+
+CONFIRMED(O,v120)
+new evidence says external system issued a documented compensating/reversal event
+=> this is not late worker changing CONFIRMED to FAILED; it is a new correction operation with its own identity/evidence.
+
+This preserves the distinction between:
+- correcting an authoritative record;
+- discovering that a previous conclusion was wrong;
+- executing a compensating external action.
+
+They must not be collapsed into an ordinary last-writer-wins update.
+
+### Durable guard requirement
+
+A process-local sequence such as last_seen_version is insufficient after restart. The compare condition protecting terminal state must be durable or reconstructible from an authoritative durable source.
+
+The Kubernetes racing-version test demonstrates the desired shape:
+
+read version N
+another actor commits N+1
+attempted mutation conditioned on N
+=> conflict; no stale overwrite. citeturn0search13
+
+For Nexo, the analogous future primitive would be conceptually:
+
+CAS(operation_id, expected_state/evidence_version, new_state)
+
+but this remains a research-derived candidate, not an implemented Nexo primitive.
+
+### Failure matrix
+
+1. CONFIRMED@120 + FAILED@119 -> reject stale evidence.
+2. CONFIRMED@120 + FAILED@121 -> do NOT automatically overwrite; determine what version 121 semantically represents.
+3. UNKNOWN@120 + CONFIRMED@121 with exact durable receiver evidence -> potentially close UNKNOWN.
+4. UNKNOWN@120 + NOT_FOUND@121 from weak/stale cache -> remain UNKNOWN.
+5. CONFIRMED@120 + worker crash/restart -> terminal state remains durable.
+6. CONFIRMED@120 + legitimate correction -> new correction event/operation, not arbitrary state regression.
+7. history compacted -> mark evidence unavailable; do not reinterpret absence as failure.
+
+### Evidence ledger
+
+K8S_RACING_RESOURCE_VERSION_CONFLICT_REAL_TEST SOURCE CONFIRMED
+K8S_STALE_VERSION_REJECTED_AT_MUTATION_BOUNDARY SOURCE CONFIRMED
+TEMPORAL_ACTIVITY_AT_LEAST_ONCE SOURCE CONFIRMED
+TEMPORAL_IDEMPOTENCY_KEY_FOR_EXTERNAL_EFFECT SOURCE CONFIRMED
+TEMPORAL_ID_CONFLICT_AND_ID_REUSE_ARE_DISTINCT SOURCE CONFIRMED
+TERMINAL_STATE_BOUND_TO_DURABLE_IDENTITY SOURCE-SUPPORTED
+PROCESS_LOCAL_TERMINAL_GUARD_INSUFFICIENT_AFTER_RESTART
+TERMINAL_LAST_WRITER_WINS UNSAFE SOURCE-SUPPORTED
+CORRECTION != ORDINARY_REOPEN
+CORRECTION_REQUIRES_EXPLICIT_IDENTITY/AUTHORITY/EVIDENCE CANDIDATE
+UNKNOWN != FAILED
+COMPACTION/HISTORY_LOSS != FAILURE
+EXECUTED NEXO TERMINAL-CAS RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.796R: investigate whether durable CAS alone is sufficient for terminal truth, or whether terminal reconciliation additionally requires immutable event history, fencing against obsolete workers, and atomic coupling of state transition with operation identity/evidence. Search real event-sourcing/workflow implementations and failure tests.
