@@ -4890,3 +4890,85 @@ A finite universe should not be defined as every Boolean combination of predicat
 **AB104.832R:** attack W18 and I17 against existing witnesses using the reachable-state/causal-transition criterion. Then inspect whether correction/reversal can transform confirmed EffectKnowledge into a later contradictory/corrected state, without conflating correction with ordinary uncertainty.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+---
+## AB104.832R — W18/I17 REDUCTION + CORRECTION-STATE ANALYSIS
+
+**Date:** 2026-09-28
+**Status:** RESEARCHED / W18 RETAINED PROVISIONALLY / I17 RETAINED / NO IMPLEMENTATION.
+
+### External cross-check
+
+NIST's ordered-combination work supports treating state-changing sequences as first-class test objects: failures can depend on the order that establishes state, not merely on the set of values present. citeturn0search0turn0search7
+
+Microsoft's current idempotent-consumer guidance also separates atomic deduplication from external effects that cannot join the local transaction; an in-progress record is explicitly treated as evidence that an external call may have partially completed and therefore requires reconciliation rather than an assumption of absence. citeturn0search11turn0search13
+
+### W18 reduction attack
+
+W18 = confirmed external effect → local terminal-state loss → recovery → reconstruction without second semantic effect.
+
+W18 cannot be reduced to W2 because W2 begins with transaction abort/serialization uncertainty and does not require confirmed external completion.
+
+W18 cannot be reduced to W12 because W12 concerns downstream publication uncertainty after local completion, while W18 requires the opposite direction: external completion is known and the durable local terminal state is missing.
+
+W18 cannot be reduced to W16 because W16 requires correction/recovery/delayed result interaction; W18 does not require a correction event.
+
+W18 therefore remains **ADMISSIBLE / INDEPENDENT / UNTESTED**.
+
+### I17 reduction attack
+
+I17 = deduplication unavailable + ACK unknown + retry.
+
+W17 can represent ACK uncertainty and retry, but only by changing its protected-boundary premise from authoritative deduplication OR status/reconciliation to status/reconciliation only when provider-side deduplication is unavailable. This is a meaningful causal decision boundary, not merely a parameter value.
+
+I17 therefore remains **ADMISSIBLE / INDEPENDENT / UNTESTED**. A separate W19 is still **not** created until the causal-equivalence test proves that parameterization is insufficient.
+
+### Correction/reversal state model
+
+The audit now explicitly distinguishes these epistemic/semantic states:
+
+- **UNKNOWN:** available evidence cannot establish whether the external effect occurred or what its terminal outcome is.
+- **CONFIRMED:** authoritative evidence establishes an effect/outcome at a point in the history.
+- **CORRECTED:** later authoritative evidence changes the interpretation or records a compensating/corrective event; the original evidence remains historical.
+- **REVERSED:** a later authoritative operation/event negates or counteracts a previously confirmed effect according to the external system's semantics.
+- **FAILED:** authoritative evidence establishes that the operation did not produce the relevant effect, or that the provider terminally rejected it.
+
+These are not interchangeable. In particular: UNKNOWN ≠ FAILED; CORRECTED/REVERSED ≠ evidence that the original effect never happened.
+
+A correction event must therefore be appended to history rather than overwrite the original observation. This preserves the distinction between historical evidence and current interpretation.
+
+### New interaction candidates from correction analysis
+
+**I19 — confirmed effect × correction/reversal × local reconstruction**
+
+Sequence: external effect confirmed → local terminal state lost → later correction/reversal arrives → recovery must reconstruct the current state without erasing the original effect evidence or creating a duplicate effect.
+
+**I20 — UNKNOWN effect × later authoritative confirmation × retry**
+
+Sequence: effect outcome UNKNOWN → retry/reconciliation occurs → authoritative evidence later confirms the original effect → system must not create a second semantic effect merely because the earlier state was UNKNOWN.
+
+Both are **UNTESTED** and require reduction before any new witnesses are admitted.
+
+### Methodological consequence
+
+The interaction universe now needs explicit state-transition labels, not only predicate combinations. At minimum: UNKNOWN→CONFIRMED; CONFIRMED→CORRECTED; CONFIRMED→REVERSED; UNKNOWN→FAILED. Other transitions must be admitted only when the underlying provider/domain semantics permit them. This prevents a raw Boolean model from falsely treating epistemic states as freely interchangeable.
+
+### Current disposition
+
+**I16:** ADMISSIBLE / INDEPENDENT.
+**I17:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+**I18:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+**I19:** ADMISSIBLE candidate / UNTESTED.
+**I20:** ADMISSIBLE candidate / UNTESTED.
+**W17:** provisional.
+**W18:** provisional / retained.
+**W19:** not created.
+**20 classes:** UNFROZEN.
+**Coverage denominator:** NOT FROZEN.
+**Formal verification/implementation:** NOT PERFORMED.
+
+### Exact next action
+
+**AB104.833R:** attack I19 and I20 against W2/W4/W12/W16/W17/W18; then define the minimum legal effect-state transition graph and test whether correction/reversal and late confirmation introduce genuinely new interactions or are projections of existing classes.
+
+**No deletion/overwrite. No silent witness mutation.**
