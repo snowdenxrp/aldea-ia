@@ -703,3 +703,105 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.791R: investigate linearizability/staleness of status queries themselves: strong vs eventual reads, operation-status visibility after commit, deletion/retention races, and whether a stale status response can cause unsafe UNKNOWN -> FAILED or UNKNOWN -> CONFIRMED transitions. Seek real APIs and tests.
+
+
+## AB104.791R research — status-query consistency, staleness, and reconciliation safety
+
+### Real consistency evidence
+
+etcd explicitly distinguishes linearizable reads from serializable reads. Linearizable reads reflect the current consensus state; serializable reads may be stale because they are served locally. Therefore a status query used to close an UNKNOWN operation cannot be assumed authoritative merely because the query succeeded. SOURCE: etcd API guarantees. citeturn0search2turn0search6
+
+Kubernetes exposes the same distinction through resourceVersion semantics. Its API documents that some reads may return arbitrarily stale data, while "most recent" reads provide a consistency guarantee; clients can also request data not older than a supplied resourceVersion. Historical versions may be compacted, producing 410 Gone, and clients must recover by establishing a newer state. citeturn0search0turn0search1
+
+Kubernetes watch-cache source explicitly waits until its cache is at least as fresh as a requested resourceVersion when consistent-read support is available. This is direct implementation evidence that querying the API and querying sufficiently fresh state are separate properties. citeturn0search9
+
+etcd also states that watch streams are ordered/reliable within the retained history window but do not themselves provide linearizable reads. Consumers must use revisions to reason about ordering relative to other operations. A compacted revision is no longer available for replay. citeturn0search2turn0search6
+
+### Reconciliation hazard
+
+Suppose:
+
+R0 operation O is UNKNOWN.
+R1 O actually commits at receiver.
+R2 status query reaches a stale replica/cache and returns NOT_FOUND.
+R3 coordinator records FAILED.
+
+The protocol has now converted a successful effect into a false terminal failure.
+
+The reverse hazard also exists:
+
+R0 O never commits.
+R1 stale/corrupted status data reports an old matching operation.
+R2 coordinator records CONFIRMED.
+
+Therefore reconciliation needs a defined consistency level, not merely a successful HTTP response.
+
+### Stronger reconciliation evidence
+
+A status observation is suitable for UNKNOWN -> CONFIRMED only when the receiver contract establishes all relevant properties:
+
+- exact operation identity;
+- exact resource namespace;
+- request/payload binding;
+- terminal state;
+- freshness/linearizability or an equivalent monotonic version proof;
+- status retention sufficient to interpret absence/presence.
+
+A versioned status response can be useful even when the read itself is not globally linearizable, provided the protocol defines how the returned version relates to the required authority/effect boundary. This is a protocol condition, not a generic property of caches.
+
+### UNKNOWN -> FAILED
+
+The audit now distinguishes two cases:
+
+1. Strong absence proof: the receiver guarantees that a read at a specified consistency/version point proves the operation was absent and cannot later appear under the same operation identity.
+2. Weak absence observation: a cache/replica currently has no record.
+
+Only (1) can justify a terminal FAILED conclusion for an operation whose external effect could have happened.
+
+If only (2) is available, remain UNKNOWN or perform stronger reconciliation.
+
+### Retention/compaction interaction
+
+Finite history creates another trap. A query after idempotency/status retention expires may return NOT_FOUND even though the operation was previously executed. Kubernetes resourceVersion history and etcd compaction show the general form: once historical state is outside the retained window, the system can require a new synchronization point rather than reconstructing arbitrary old history. citeturn0search0turn0search2
+
+Therefore not found after retention is not equivalent to never executed.
+
+### New candidate rule
+
+Reconciliation may close UNKNOWN only from evidence whose consistency, namespace, identity binding, freshness/version, and retention semantics are sufficient to exclude the opposite terminal outcome.
+
+If those conditions are unavailable:
+
+UNKNOWN remains UNKNOWN.
+
+### Important safety distinction
+
+A fresh status query does not itself fence a new effect.
+
+Even a linearizable CONFIRMED(O,g1) says that old operation O completed; it does not authorize a new operation under g1 after authority has advanced to g2.
+
+Conversely, a current authority fence does not prove whether an old UNKNOWN operation succeeded. The two questions remain orthogonal:
+
+effect truth versus current authority.
+
+### Evidence ledger
+
+ETCD_LINEARIZABLE_READS_SOURCE_CONFIRMED
+ETCD_SERIALIZABLE_READS_CAN_BE_STALE_SOURCE_CONFIRMED
+K8S_STALE_READ_SEMANTICS_SOURCE_CONFIRMED
+K8S_MOST_RECENT/RESOURCE_VERSION_CONSISTENCY_SOURCE_CONFIRMED
+WATCH_CACHE_FRESHNESS_WAIT_SOURCE_CONFIRMED
+WATCH != LINEARIZABLE_STATUS_READ_SOURCE_CONFIRMED
+COMPACTION_LIMITS_HISTORICAL_EVIDENCE_SOURCE_CONFIRMED
+STALE_NOT_FOUND_CAN_BE_UNSAFE SOURCE-SUPPORTED
+STATUS_QUERY != AUTHORITY_FENCE
+UNKNOWN -> CONFIRMED REQUIRES SUFFICIENT RECEIVER EVIDENCE
+UNKNOWN -> FAILED REQUIRES STRONG ABSENCE/TERMINAL FAILURE EVIDENCE
+RETENTION_BOUNDARY PART OF RECONCILIATION CONTRACT
+EXECUTED NEXO RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.792R: investigate versioned status evidence and monotonic reconciliation: whether a returned revision/sequence can prove that an operation was absent/present at a required point, how tombstones/deletions are represented, and how to prevent an old status response from overwriting a newer terminal state.
