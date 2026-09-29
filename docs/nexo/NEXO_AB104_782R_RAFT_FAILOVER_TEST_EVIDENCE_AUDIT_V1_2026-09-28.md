@@ -1945,3 +1945,108 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.802R: investigate payment/inventory/job systems where the effect owner is a database: inspect concrete schemas, unique constraints, transaction boundaries, crash tests, and recovery logic. Determine whether authority generation can be safely included in the same commit without confusing it with operation identity or observation version.
+
+## AB104.802R — database-owned payment/inventory/job effects and authority-generation binding
+
+### Job execution: durable claim is not durable effect completion
+
+A current PostgreSQL-backed job-queue implementation demonstrates the exact worker-crash ambiguity. A worker claims a job transactionally, commits the claim before calling a remote dependency, and a crash can occur after the dependency has executed but before the job is marked successful. The replacement worker then cannot distinguish "remote effect happened" from "remote effect did not happen" without receiver-side idempotency/reconciliation. citeturn0search0
+
+A separate current PostgreSQL workflow implementation reproduces a worker that completes the work and then loses its completion update: the job is reclaimed, runs twice, but a unique effect key leaves one durable result row. It explicitly distinguishes at-least-once execution from effectively-once effect recording. citeturn0search12
+
+Evidence:
+JOB_CLAIM_TRANSACTIONAL SOURCE CONFIRMED
+WORKER_CRASH_AFTER_EXTERNAL_EFFECT_AMBIGUITY SOURCE CONFIRMED
+UNIQUE_EFFECT_KEY_SUPPRESSES_DUPLICATE_LOCAL_RESULT SOURCE CONFIRMED
+AT_LEAST_ONCE_EXECUTION != EXACTLY_ONCE_EXECUTION
+EFFECTIVELY_ONCE_LOCAL_RESULT != ARBITRARY_EXTERNAL_EFFECT
+
+### Atomic inbox/effect transaction: the database can close the local race
+
+A concrete PostgreSQL pattern inserts a message receipt with a unique key and performs the business effect in the same database transaction. The unique index is the concurrency arbiter; a preliminary SELECT is explicitly not sufficient because two concurrent consumers can both observe absence. The source also warns not to commit the receipt in one transaction and the business effect in another. citeturn0search15
+
+This gives a precise local receiver boundary:
+
+unique operation identity + payload fingerprint + domain mutation + terminal outcome
+
+all committed together.
+
+This is stronger than a coordinator-level dedup cache because the database constraint remains the final authority under concurrent writers.
+
+### Inventory/order systems: multiple effect owners expose the distributed boundary
+
+A current failure-injection study of an order system reproduces inconsistencies when order creation, inventory reservation, payment authorization, and fulfillment are owned by different databases/services. It then adds outbox, inbox deduplication, optimistic versions, bounded retries, compensation, replay controls, and failure injection. citeturn0search11
+
+The significance is not that this implementation is a universal proof. It is experimental evidence that once a business operation crosses effect-owner boundaries, each boundary needs its own correctness mechanism.
+
+### Can authority_generation be included in the same local transaction?
+
+Yes, conditionally, when the effect owner stores the authoritative generation/incarnation.
+
+Conceptually:
+
+UPDATE protected_state
+ SET ..., accepted_generation = :g
+ WHERE resource_id = :r
+   AND accepted_generation <= :g
+   AND incarnation = :i
+
+and the operation record is uniquely bound to:
+
+(namespace, operation_id, incarnation, payload_hash)
+
+within the same transaction.
+
+But the exact predicate depends on semantics:
+
+- If g is a monotonic authority generation, stale lower generations must be rejected.
+- If i is an object incarnation, equality to the current incarnation is usually required.
+- Neither should be replaced by operation_id.
+- An observation/version number from another subsystem must not be treated as an authority generation merely because it is numerically increasing.
+
+This is a protocol design inference supported by the observed CAS/fencing systems, not a claim that the cited job systems already implement this complete contract.
+
+### Critical retention finding
+
+Current PostgreSQL queue examples use partial unique indexes that release a dedupe key after a job reaches terminal state. That is valid for a bounded queue lifecycle, but it proves that idempotency identity is a policy with explicit retention semantics. Reusing the same business key later is only safe if the protocol defines a new operation/incarnation or otherwise guarantees that the old operation can no longer be confused with the new one. citeturn0search1turn0search18
+
+Therefore:
+
+unique forever is not required,
+
+but:
+
+identity lifecycle must be explicit is required.
+
+### Failure matrix
+
+| Boundary | Local DB effect | External effect |
+|---|---|---|
+| claim transaction aborts | no claim | no effect implied |
+| claim commits, worker dies before effect | recoverable intent | no effect implied |
+| effect commits, worker dies before completion | terminal local result can be recovered if same transaction owns effect | external outcome UNKNOWN unless receiver supports identity/query |
+| stale generation reaches DB before mutation | conditional update can reject | receiver must enforce equivalent fence |
+| same operation retried | unique identity returns existing result | downstream must recognize same identity |
+| old identity reused after retention | safe only under explicit new incarnation/namespace semantics | otherwise possible identity collision |
+| authority changes after submission | local receiver can reject stale generation if encoded in commit predicate | external receiver must independently reject/fence |
+
+### Evidence ledger
+
+JOB_WORKER_CRASH_AMBIGUITY SOURCE CONFIRMED
+LOCAL_UNIQUE_EFFECT_RECORDING SOURCE CONFIRMED
+ATOMIC_RECEIPT_PLUS_DOMAIN_MUTATION SOURCE CONFIRMED
+SELECT_THEN_INSERT_RACE SOURCE CONFIRMED
+MULTI_EFFECT_OWNER_FAILURE_INJECTION SOURCE CONFIRMED
+AUTHORITY_GENERATION_CAN_BE_ENCODED_AS_COMMIT_PREDICATE SOURCE-SUPPORTED
+OBJECT_INCARNATION SHOULD REMAIN DISTINCT FROM OPERATION_ID
+OBSERVATION_VERSION SHOULD REMAIN DISTINCT FROM AUTHORITY_GENERATION
+DEDUPE_RETENTION_IS_EXPLICIT_PROTOCOL SEMANTICS SOURCE CONFIRMED
+LOCAL_ATOMIC_EFFECT_OWNER != ARBITRARY_EXTERNAL_EFFECT_OWNER
+UNIVERSAL EXACTLY-ONCE EXTERNAL EFFECT NOT ESTABLISHED
+EXECUTED NEXO AUTHORITY-GENERATION RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.803R: investigate payment-specific state machines and database ledger invariants, including double-entry/ledger idempotency, concurrent authorization/capture/refund races, and crash recovery. Determine whether monetary state can be made atomic with operation identity and authority generation while external card-network settlement remains outside the transaction.
