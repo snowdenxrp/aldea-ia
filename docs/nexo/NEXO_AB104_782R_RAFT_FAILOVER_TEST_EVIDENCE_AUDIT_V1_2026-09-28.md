@@ -3627,3 +3627,74 @@ The 20-class taxonomy survives this higher-order challenge without a demonstrate
 ### Exact next action
 
 **AB104.814R:** perform a structured reduction of the 12 provisional witnesses: for each witness, attempt to remove it and determine whether its required failure predicates remain represented by other witnesses. Preserve any witness whose removal creates a unique uncovered predicate or unique higher-order interaction. Then audit whether any of the 20 classes currently marked COVERED has only a witness that is itself redundant.
+
+
+---
+
+## AB104.814R — STRUCTURED WITNESS REDUCTION
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / PROVISIONAL IRREDUCIBILITY / UNFROZEN / NO IMPLEMENTATION.
+
+### Method
+
+Each provisional witness W1-W12 was challenged by removal. A witness is retained when removing it leaves at least one predicate, boundary, or higher-order interaction that is not represented with the same semantics by the remaining witnesses.
+
+This is a **coverage-reduction test**, not a mathematical minimum-set proof.
+
+### Removal results
+
+| Witness | Removal result | Reason for retention |
+|---|---|---|
+| W1 stale-authority retry | RETAIN | Unique direct authority-generation × retry × protected-effect interaction. |
+| W2 serialization abort + external effect | RETAIN | Unique DB-abort/serialization × external-effect ambiguity boundary. |
+| W3 ownership transfer + delayed completion | RETAIN | Exercises ownership transition independently of generic timeout and retention. |
+| W4 correction + stale event | RETAIN | Unique correction/reversal × stale evidence × reconciliation ordering. |
+| W5 retention expiry + delayed duplicate | RETAIN | Unique expiry of dedup/history evidence while delayed work remains live. |
+| W6 recovery + old incarnation | RETAIN | Unique post-recovery incarnation boundary; not equivalent to ordinary retention expiry. |
+| W7 timeout/cancel + external effect | RETAIN | Control-plane cancellation/timeout distinct from ownership transfer and DB failure. |
+| W8 poison exhaustion + UNKNOWN | RETAIN | Unique liveness termination coupled to unresolved external outcome. |
+| W9 concurrent conflicting submissions | RETAIN | Direct identity/payload binding race under concurrency; not reducible to delayed redelivery. |
+| W10 authenticated old-source/incarnation | RETAIN | Authentication/source validity combined with historical incarnation; a validly authenticated but obsolete source must still be rejected where required. |
+| W11 ledger correction/refund race | RETAIN | Multi-account monetary conservation invariant is semantically distinct from generic state transitions. |
+| W12 local completion + downstream uncertainty | RETAIN | Explicit cross-domain atomicity boundary after local durable completion. |
+
+### Why apparent pairs were not merged
+
+**W5 vs W6:** retention expiry concerns loss/expiry of historical deduplication or evidence; recovery creates a new logical incarnation/epoch. They can coincide but neither predicate implies the other.
+
+**W3 vs W7:** ownership transfer is a change in who may act; timeout/cancellation is a control-plane signal about execution. Neither is proof that the other occurred.
+
+**W1 vs W10:** stale authority and source/authentication validity are distinct. A source can be authentic but obsolete, or an actor can possess valid credentials while lacking the current authority generation.
+
+**W2 vs W12:** local transaction abort/retry versus local completion followed by downstream uncertainty exercise opposite sides of the local/external boundary.
+
+### Coverage stress test
+
+All 20 normalized classes retain at least one witness after the attempted reductions. The most weakly isolated classes remain those around recovery, retention, authority, and cross-domain effect ambiguity because several witnesses touch them simultaneously.
+
+No witness removal produced a demonstrated uncovered class or removed one of the four required higher-order interactions from AB104.813R.
+
+### Important limitation
+
+The result is **12 retained provisional witnesses**, not “12 is the minimum possible.” A smaller encoding could exist if one witness were redesigned to cover two unique predicates without losing semantic separation. Establishing mathematical minimality would require a formal set-cover/independence model with explicitly defined predicates and equivalence criteria; that has not been performed.
+
+### New distinction preserved
+
+The reduction confirms three different axes must not collapse:
+
+1. **authority validity** — may this actor act now?
+2. **evidence validity** — is this observation authentic and semantically usable as historical evidence?
+3. **effect knowledge** — do we know whether the external effect happened?
+
+These axes can be correlated but are not interchangeable.
+
+### AB104.814R disposition
+
+The 12-witness set is **provisionally irreducible under the current semantic predicates**. The 20-class taxonomy remains unfrozen because the next step is to test whether the classes themselves can be safely merged, and whether any uncovered interaction appears when the three axes above are composed.
+
+**No implementation. No formal proof. No universal security/correctness claim.**
+
+### Exact next action
+
+**AB104.815R:** attack the 20-class taxonomy itself using equivalence tests. For each candidate class pair, ask whether one can be removed without losing a distinct safety, liveness, provenance, authority, recovery, or external-effect predicate. Pay special attention to possible merges among identity/incarnation, authority/ownership, stale observation/reconciliation, and retention/history. Do not merge merely because two classes frequently co-occur.
