@@ -833,3 +833,108 @@ Implementation: **NOT STARTED**.
 **AB104.847R:** attack freshness scoping against cross-namespace, cross-incarnation, duplicate, correction/reversal, and concurrent-operation cases. Build a finite freshness relation matrix and determine whether `EQUAL/DUPLICATE`, `OLDER`, and `INCOMPARABLE` are sufficient, or whether a separate `CONFLICTING` relation is needed when two authenticated events cannot both be true under the same resource contract.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.847R — FRESHNESS SCOPE MATRIX + CONFLICTING REDUCTION
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### External cross-check
+
+NIST's ordered t-way method supports treating event order as part of the stateful test condition rather than assuming unordered combinations are sufficient. citeturn0search0turn0search3 Microsoft event-sourcing guidance describes each entity as having an ordered event stream, stresses event ordering for current-state correctness, and notes that duplicate delivery requires idempotent handling. citeturn0search5 Adyen explicitly documents duplicate webhook delivery and provides `eventCode`/`pspReference` identity plus event timestamps and, for some webhooks, sequence numbers; it also warns that duplicate events can have differing eventDate/other fields. citeturn0search7turn0search13 Microsoft Fabric likewise documents at-least-once delivery and no guaranteed arrival order, reinforcing that transport order is not semantic order. citeturn0search11
+
+### Finite freshness matrix
+
+The working relation is evaluated only after identity/resource scope is established:
+
+| Evidence relationship | Same identity/resource | Different namespace | Different incarnation | Same semantic event | Disposition |
+|---|---|---|---|---|---|
+| explicit higher sequence/version | NEWER | INCOMPARABLE | normally INCOMPARABLE/reject by contract | EQUAL if same version+identity | strong only in declared domain |
+| explicit lower sequence/version | OLDER | INCOMPARABLE | normally INCOMPARABLE/reject by contract | EQUAL if same event identity | no cross-domain comparison |
+| exact event identity | EQUAL/DUPLICATE | not comparable | not comparable | EQUAL/DUPLICATE | identity first |
+| causal parent/reference | ordered only where relation is explicit | INCOMPARABLE | INCOMPARABLE unless contract binds incarnations | may establish same transition | partial relation |
+| timestamp only | weak evidence; not authoritative by itself | INCOMPARABLE | INCOMPARABLE | not enough by itself | do not manufacture order |
+| no ordering evidence | INCOMPARABLE | INCOMPARABLE | INCOMPARABLE | UNKNOWN until identity proves duplicate | reconcile if decision-sensitive |
+
+### `CONFLICTING` attack
+
+Candidate definition:
+
+`CONFLICTING(E,S)` = E and S are both authenticated and scoped to the same semantic resource domain, but the available authoritative contract says they cannot both represent the valid current state, while no ordering relation establishes which one supersedes the other.
+
+Reduction attempts:
+
+**CONFLICTING → INCOMPARABLE:**
+Not always sufficient. INCOMPARABLE says ordering is unknown; CONFLICTING adds a stronger fact: the candidate states are mutually incompatible under the resource contract. That can change the protected decision from "wait/reconcile" to "reject/hold/escalate" even though ordering remains unknown.
+
+**CONFLICTING → DUPLICATE:**
+Invalid when event payload/state transition differs materially. Same authentication and same resource are not enough to establish duplicate identity.
+
+**CONFLICTING → OLDER/NEWER:**
+Invalid when the contract supplies no precedence evidence.
+
+**CONFLICTING → CORRECTION:**
+Invalid unless the later event is explicitly defined as a correction/reversal of the earlier event.
+
+**Disposition:** `CONFLICTING` remains a **provisional epistemic/semantic relation**, not a new top-level failure class and not yet a frozen witness.
+
+### Cross-namespace attack
+
+An authenticated event from namespace N1 cannot be compared with an event in N2 merely because both use sequence `42`. Namespace binding is part of the identity/freshness domain. A cross-namespace event should therefore be rejected or reconciled according to the source/namespace contract, rather than classified as OLDER or NEWER.
+
+### Cross-incarnation attack
+
+An event from incarnation I1 can be authentic and correctly signed while still being obsolete for incarnation I2. Therefore authentication does not establish incarnation validity. If the contract binds event identity to an incarnation, I1→I2 crossing is a scope violation; if it does not, the event may become INCOMPARABLE and require reconciliation.
+
+### Duplicate + correction attack
+
+A duplicate is defined by semantic event identity, not by payload equality alone. A later correction may legitimately have the same resource reference but a different event identity and transition. Therefore:
+
+`CONFIRMED(v2) → CORRECTED(v3) → duplicate CONFIRMED(v2)`
+
+must retain `CORRECTED` as current state while preserving the old event in history. Microsoft event-sourcing guidance explicitly treats the event stream as ordered history and recommends idempotent duplicate handling. citeturn0search5
+
+### Concurrent authenticated events
+
+Two authenticated events for the same resource can both be valid observations but represent incompatible transitions. If the provider gives no sequence, causal relation, or authoritative status query that resolves them, the correct classification is not an invented total order. It is **CONFLICTING + reconciliation required**.
+
+This is the first condition found where `CONFLICTING` carries information not fully represented by `INCOMPARABLE`.
+
+### Candidate invariants
+
+**INV-EH-06 — Scope before freshness:** no freshness comparison occurs until identity, namespace, resource and incarnation scope are established.
+
+**INV-EH-07 — Conflict is not duplicate:** authenticated events with incompatible semantic transitions must not be deduplicated merely because they reference the same resource.
+
+**INV-EH-08 — No invented total order:** when authoritative precedence is absent, preserve INCOMPARABLE/CONFLICTING rather than selecting a winner from arrival order.
+
+**INV-EH-09 — Correction preserves history:** a correction/reversal supersedes current interpretation only according to its contract and never requires deletion of the historical event it corrects.
+
+Candidates only; no formal verification.
+
+### Coverage consequence
+
+`CONFLICTING` does **not** yet justify a new witness. It is a semantic relation that may be exercised by existing correction, reconciliation, authentication, and concurrent-event interactions. Before adding a witness, we must show that the protected decision boundary differs from all existing witnesses.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+INCOMPARABLE: epistemic relation / no witness frozen.
+CONFLICTING: provisional semantic relation / no witness frozen.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.848R:** attack `CONFLICTING` against I3/I4/I6/I10/I19/I21 and concurrent-operation cases. Define the minimum protected decision difference between `INCOMPARABLE` and `CONFLICTING`; determine whether conflict can be represented as a typed reconciliation outcome without adding a witness; then perform a targeted search for real distributed/payment incidents where two authentic, same-resource events were mutually incompatible and ordering could not be established.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
