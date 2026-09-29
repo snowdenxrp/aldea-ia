@@ -2629,3 +2629,142 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.808R: turn the observed payment failures into adversarial test cases and compare the strongest receiver-side patterns: unique-event CAS, operation-id idempotency, payload binding, payment-state transition guards, authority-generation predicates, and reconciliation after timeout. Do not implement Nexo; derive the minimum testable invariants first.
+
+## AB104.808R — adversarial payment invariants derived from executable evidence
+
+### 1. Duplicate-event identity must be an atomic receiver boundary
+
+Current executable payment projects demonstrate PostgreSQL unique constraints as the correctness boundary for idempotency under high concurrency. One project reports tests at 100/1,000/10,000 concurrent requests sharing an idempotency key; another reports 20 simultaneous requests with one key producing one charge, and same-key/different-payload producing conflict rather than silent replay. citeturn0search1turn0search6
+
+Minimum invariant:
+
+For receiver namespace N and logical operation O, at most one incompatible payload may be accepted for O.
+
+A cache or distributed lock can accelerate/reduce contention, but correctness must survive its loss.
+
+### 2. Payment lifecycle transition must be guarded at commit time
+
+Executable payment systems model transitions such as AUTHORIZED -> CAPTURED, AUTHORIZED -> VOID, and CAPTURED -> REFUNDED, and reject illegal transitions. Some use pessimistic row locks; others use optimistic version checks. citeturn0search3turn0search4
+
+Minimum invariant:
+
+A state transition is accepted only if the durable payment state still satisfies the transition precondition at the commit or linearization point.
+
+A worker reading AUTHORIZED and later writing CAPTURED without a guarded commit is not sufficient.
+
+### 3. Monetary invariants require the ledger, not a mutable balance cache
+
+A payment-ledger implementation explicitly treats immutable double-entry postings as the financial source of truth and enforces debit/credit balance. Derived balances can be rebuilt from ledger history. citeturn0search1
+
+Minimum invariant:
+
+Every accepted monetary posting preserves the ledger accounting conservation rule.
+
+A cached balance is an observation/projection, not the authoritative financial history.
+
+### 4. Timeout must remain epistemically ambiguous
+
+Adyen explicitly supports retrying the same idempotency key after timeout and returning the result of the first processed request. It also recommends asynchronous webhooks for missing responses. citeturn0search0
+
+Minimum invariant:
+
+Transport timeout alone cannot transition a payment to terminal FAILED when the external operation may already have been accepted.
+
+The state should remain UNKNOWN/PENDING until provider evidence or a contractually strong failure result closes the uncertainty.
+
+### 5. Webhook authenticity and ordering are independent predicates
+
+Adyen requires webhook signature verification and separately recommends timestamps/sequence numbers for chronological processing; duplicate events can share eventCode and pspReference while other fields differ. citeturn0search8
+
+Minimum invariant:
+
+AcceptWebhook(e) requires both authentic source evidence and valid event/state ordering semantics.
+
+Authenticity does not make an old event current. New arrival does not make an unauthenticated event valid.
+
+### 6. Stale observations must not regress durable state
+
+Executable payment engines include stale aggregate-version rejection and webhook ordering tests. One implementation explicitly rejects a lower aggregate version even when the event is genuine and correctly signed. citeturn0search1
+
+Minimum invariant:
+
+A valid but older observation cannot replace a newer durable projection unless the state machine defines an explicit correction transition.
+
+### 7. Operation identity, authority generation, and payment version remain distinct
+
+The evidence supports three separate domains:
+
+operation_id = which logical attempt is this?
+authority_generation = which authorization epoch may perform it?
+payment_version = which lifecycle state/version is current?
+
+No audited payment implementation justifies collapsing these into one integer.
+
+### 8. Authority generation must be checked at the protected effect boundary
+
+The audited payment implementations provide strong evidence for operation idempotency and payment-state concurrency, but none establishes a universal authority-generation fence across arbitrary payment-provider settlement.
+
+Therefore the Nexo invariant remains:
+
+If generation g2 supersedes g1 for protected resource R, an effect carrying g1 must be rejected at R after g2's acceptance boundary, unless the effect already linearized before that boundary.
+
+This is an architectural requirement derived from the earlier fencing research, not a claim that current payment APIs universally implement it.
+
+### 9. Reconciliation is a separate safety mechanism
+
+Executable systems combine provider idempotency, webhook processing, refund/reversal workers, and reconciliation. Some explicitly model a mock external bank and classify provider-vs-ledger inconsistencies rather than assuming local state is authoritative for the external world. citeturn0search1turn0search12
+
+Minimum invariant:
+
+UNKNOWN may be closed only by evidence strong enough to exclude the opposite terminal outcome.
+
+### 10. Exact test matrix for the future Nexo prototype
+
+The following cases are candidates for the first formal adversarial suite, but are NOT yet executed by Nexo:
+
+A. same operation, 2 concurrent submissions
+B. same operation, same payload, 100+ concurrent retries
+C. same operation, different payload
+D. duplicate webhook, same event identity
+E. duplicate webhook, concurrent handlers
+F. newer webhook arrives before older webhook
+G. authenticated old webhook after newer terminal state
+H. timeout after provider accepted operation
+I. retry after timeout
+J. worker crash after provider effect but before local acknowledgement
+K. worker crash after local ledger commit but before webhook enqueue
+L. refund racing with capture
+M. capture racing with void
+N. two refunds racing against one captured amount
+O. stale worker using old payment version
+P. stale worker using old authority generation
+Q. authority generation changes during in-flight operation
+R. provider later emits reversal/correction
+S. reconciliation observes provider state older than local state
+T. reconciliation observes provider correction newer than local state
+U. idempotency key retention expires
+V. process restart with durable terminal state
+W. lost response followed by duplicate response
+X. forged/invalid webhook signature
+Y. webhook valid but wrong namespace/merchant
+Z. external settlement remains UNKNOWN after local CAPTURED
+
+### Evidence ledger
+
+POSTGRES_UNIQUE_CONSTRAINT_AS_IDEMPOTENCY_ARBITER SOURCE CONFIRMED
+PAYMENT_STATE_COMMIT_GUARD SOURCE CONFIRMED
+DOUBLE_ENTRY_LEDGER_AS_FINANCIAL_TRUTH SOURCE CONFIRMED
+TIMEOUT_AMBIGUITY SOURCE CONFIRMED
+WEBHOOK_AUTHENTICITY_AND_ORDERING_SEPARATE SOURCE CONFIRMED
+STALE_EVENT_NONREGRESSION SOURCE CONFIRMED
+OPERATION_ID != AUTHORITY_GENERATION != PAYMENT_VERSION
+EFFECT_TIME_AUTHORITY_FENCE STILL REQUIRED
+RECONCILIATION_SEPARATE_FROM_IDEMPOTENCY SOURCE CONFIRMED
+ADVERSARIAL_TEST_MATRIX DERIVED
+TEST MATRIX NOT YET EXECUTED BY NEXO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.809R: investigate whether these 26 adversarial cases are complete or missing important classes. Cross-check against payment processor state machines, database isolation anomalies, message-delivery semantics, and previously audited fencing/reconciliation failures. Do not build; close the test-model gap first.
