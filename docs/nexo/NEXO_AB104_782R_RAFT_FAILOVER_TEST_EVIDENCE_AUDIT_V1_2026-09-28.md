@@ -4415,3 +4415,138 @@ Their semantic predicates overlap, but their decision-point emphasis differs. Th
 **AB104.823R:** instantiate U3 temporal variants against U1/U2, explicitly enumerate only orderings that change state/authority/evidence/effect knowledge, then deduplicate and produce the first numeric finite denominator. Separately determine whether I12 and I13 require W15/W16 or can be represented by existing witnesses without loss of causal predicates.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+---
+## AB104.823R — U3 TEMPORAL INSTANTIATION + I12/I13 REDUCTION
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / TEMPORAL UNIVERSE PARTIALLY ENUMERATED / I12-I13 STILL UNFROZEN / NO IMPLEMENTATION.
+
+### Research basis
+
+NIST explicitly notes that fault detection in state-based systems can depend on the specific order of inputs, and provides ordered t-way and sequence-covering methods for measuring relevant ordered combinations. This supports treating temporal ordering as part of the interaction definition rather than multiplying every possible permutation. citeturn0search0turn0search14
+
+### U3 admissibility rule
+
+For each U1/U2 interaction, temporal variants are retained only if changing the order can change at least one of:
+
+1. reachable state;
+2. authority/ownership validity;
+3. evidence freshness/authenticity/availability;
+4. knowledge of an external effect;
+5. terminal/reconciliation state.
+
+A mere lexical permutation is not a new interaction.
+
+### Temporal relation normalization
+
+The raw grammar relations were reduced to the following causal forms:
+
+- **PRE:** A must occur before B to create the vulnerable state.
+- **POST:** B must occur after A to expose stale/obsolete state.
+- **OVERLAP:** A remains in flight while B changes ownership/authority/state.
+- **RETRY:** same operation is reintroduced after an uncertain outcome.
+- **RECOVERY:** a new incarnation/epoch exists between two related events.
+- **CORRECTION:** a later authoritative event changes the interpretation of an earlier state.
+
+This is a semantic normalization, not a claim that all distributed systems expose these relations identically.
+
+### Instantiated mandatory temporal variants
+
+The currently admissible ordered interactions are:
+
+- I1: authority → retry → identity
+- I2: operation identity → retention expiry → incarnation/authority transition → delayed old operation
+- I3: correction → stale observation → reconciliation
+- I4: transaction abort → external effect acceptance → retry
+- I5: ownership transfer → delayed response → duplicate delivery
+- I6: authentication → obsolete incarnation → authority decision
+- I7: poison retry exhaustion → UNKNOWN external effect
+- I8: ledger correction/refund/capture concurrency
+- I9: retention expiry → incarnation transition → authority decision
+- I10: ownership transfer → duplicate delivery → acknowledgement ambiguity
+- I11: recovery → delayed external effect → retry/reconciliation
+- I12: authentication → incarnation transition → acknowledgement ambiguity
+- I13: correction → recovery → delayed external effect
+
+### Important result: U3 is finite only after semantic projection
+
+If every raw temporal permutation were retained, the universe would expand combinatorially without a defensible causal stopping rule. After projection onto PRE/POST/OVERLAP/RETRY/RECOVERY/CORRECTION, the mandatory ordered families are finite at the current model boundary.
+
+However, this does **not** yet prove that every possible real-world temporal relation has been represented.
+
+### I12 reduction attack
+
+I12 requires all three dimensions simultaneously:
+
+**authentication validity + obsolete incarnation + acknowledgement ambiguity.**
+
+Existing W10 covers authentication + obsolete incarnation + authority, but does not contain the ACK ambiguity state. W14 contains duplicate delivery + ownership transfer + delayed acknowledgement, but does not establish authentication/incarnation validity.
+
+**Result: W10 + W14 cannot be merged into a single witness without losing a required predicate.**
+
+Therefore I12 remains **UNTESTED** and requires a new witness candidate **W15** unless a later witness is explicitly shown to preserve all three predicates.
+
+### I13 reduction attack
+
+I13 requires:
+
+**correction + recovery/incarnation transition + delayed external effect.**
+
+W4 covers correction + stale observation + reconciliation, but not recovery plus an in-flight external effect.
+
+W2 covers transaction failure + external acceptance + retry, but not correction/recovery.
+
+W13 covers retention + recovery/incarnation + delayed old operation, but not a correction event affecting interpretation of the external effect.
+
+No existing witness preserves all required predicates.
+
+**Result: I13 remains UNTESTED and requires new witness candidate W16.**
+
+### Candidate W15
+
+**W15 — AUTHENTICATED OBSOLETE INCARNATION + ACK AMBIGUITY**
+
+R0 operation/event is authenticated under source S1.
+R1 S1/incarnation I1 becomes obsolete.
+R2 a new incarnation I2 is active.
+R3 a valid message from I1 arrives or is redelivered.
+R4 its ACK/confirmation is lost, delayed, or ambiguous.
+R5 protected boundary must distinguish source authenticity from current authority/incarnation and must not infer effect absence from ACK uncertainty.
+
+### Candidate W16
+
+**W16 — CORRECTION + RECOVERY + DELAYED EXTERNAL EFFECT**
+
+R0 operation O begins under incarnation I1.
+R1 external provider may accept O.
+R2 local recovery creates I2 before definitive external outcome is durable.
+R3 a correction/reversal/authoritative provider event changes the interpretation of O.
+R4 delayed result from I1 arrives after recovery/correction.
+R5 boundary must preserve history and reconcile without treating local uncertainty as proof of external absence or silently creating a second semantic operation.
+
+### Current coverage disposition
+
+I1-I9: FULL under current witness mapping.
+
+I10: PARTIAL — W14 lacks explicit ACK ambiguity as a separately represented predicate.
+
+I11: PARTIAL — W2 lacks explicit recovery/incarnation boundary.
+
+I12: UNTESTED — W15 candidate.
+
+I13: UNTESTED — W16 candidate.
+
+### Important methodological boundary
+
+W15/W16 are **candidate witnesses**, not yet accepted as required additions. They must undergo the same redundancy/equivalence attack used for W1-W14.
+
+### Finite denominator status
+
+Still **NOT FROZEN**. The semantic temporal projection gives a finite candidate family, but the complete U3 instantiation and equivalence/exclusion audit are not yet independently enumerated.
+
+### Exact next action
+
+**AB104.824R:** attack W15 and W16 for redundancy; then audit every I1-I13 witness mapping against the normalized temporal predicates and determine whether any mapped interaction is actually only PARTIAL. Do not freeze the denominator until this audit is complete.
+
+**No deletion/overwrite. No silent witness mutation.**
