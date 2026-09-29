@@ -3859,3 +3859,64 @@ The 20-class taxonomy survives the predicate-matrix attack **without demonstrate
 **AB104.817R:** construct the interaction matrix over the eight mandatory higher-order interactions above. For each interaction, identify: constituent classes, required temporal ordering, authority/evidence/effect predicates, observable failure condition, minimum witness, and whether an existing W1-W12 witness actually exercises the full interaction. This will test whether the current 12-witness set truly spans the cross-products rather than merely touching each constituent class separately.
 
 **No implementation. No formal verification. No universal completeness/security claim.**
+
+---
+## AB104.817R — HIGHER-ORDER INTERACTION MATRIX / W1-W12 SPAN ATTACK
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / CROSS-PRODUCT COVERAGE PARTIAL / UNFROZEN / NO IMPLEMENTATION.
+
+### Fresh evidence cross-check
+
+Kafka's producer semantics provide a concrete reference for why identity, retry, session/epoch and fencing remain distinguishable: a transactional.id spans producer sessions, producer fencing can reject an older producer/epoch, and application-level re-sends are not automatically deduplicated merely because Kafka producer idempotence is enabled. These are implementation witnesses, not proof that Nexo should copy Kafka's model. citeturn0search3turn0search11
+
+### Interaction matrix
+
+| Interaction | Constituent classes | Full temporal predicate | Existing witness | Span status |
+|---|---|---|---|---|
+| I1 authority × retry × identity | C1,C3,C9,C15 | old authority retries same operation after generation changes; protected boundary rejects obsolete attempt without accepting a new semantic operation | W1 | **FULL** |
+| I2 authority × incarnation × retention | C9,C15,C17,C18 | identity evidence expires/recovery occurs; old incarnation/authority attempt arrives after retention boundary | W5,W6 | **PARTIAL — no single witness currently spans all three** |
+| I3 correction × stale observation × reconciliation | C5,C12,C14 | correction is durably appended; stale observation arrives; reconciliation must not regress/collapse history | W4 | **FULL** |
+| I4 transaction abort × external effect × retry | C7,C8,C11,C20 | local transaction failure occurs after external acceptance; retry must not infer absence from rollback | W2 | **FULL** |
+| I5 ownership transfer × delayed response × duplicate delivery | C3,C10,C11,C16 | owner changes; old worker response/delivery arrives later and may be duplicated; resource/effect boundary must reject or reconcile safely | W3 | **PARTIAL — W3 lacks explicit duplicate-delivery dimension** |
+| I6 authentication × obsolete incarnation × authority | C9,C18,C19 | authentic source from obsolete incarnation presents otherwise valid operation; current authority boundary rejects it | W10 | **FULL** |
+| I7 poison termination × UNKNOWN external effect | C11,C16 | retry/dead-letter exhaustion occurs while external effect outcome remains unresolved | W8 | **FULL** |
+| I8 ledger correction × concurrent refund/capture | C6,C13,C14 | concurrent monetary transitions and correction must preserve conservation and legal lifecycle state | W11 | **FULL** |
+
+### Critical result
+
+The 12-witness set **does not yet span every required higher-order interaction as a single executable witness**.
+
+Two concrete gaps remain:
+
+- **I2:** W5 and W6 together cover retention and recovery/incarnation, but no current witness proves the complete composition of retention expiry, recovery/incarnation change, and delayed old operation.
+- **I5:** W3 covers ownership transfer plus delayed completion, but does not explicitly add duplicate delivery/redelivery to that same temporal sequence.
+
+Therefore the previous statement that the 12 witnesses provisionally span the cross-products would be too strong and is hereby narrowed: **12 witnesses cover all individual classes and most interaction predicates, but two mandatory higher-order interactions remain only partially witnessed.**
+
+### New witness requirements
+
+Rather than immediately increasing the set, the correct next question is whether two existing witnesses can be **refined** without changing their semantic identity:
+
+- **W5/W6 refinement candidate:** combine retention expiry and recovery/incarnation transition into one temporal witness while preserving the distinction between retention and recovery.
+- **W3 refinement candidate:** add duplicate delivery to the ownership-transfer/delayed-response sequence.
+
+This is test-model refinement, not implementation.
+
+### Negative result preserved
+
+No evidence currently justifies claiming that W1-W12 is a minimal independent test basis for the 20 classes plus higher-order interactions.
+
+### Disposition
+
+**20-class taxonomy:** UNFROZEN.
+
+**W1-W12:** historical set retained; two interaction gaps explicitly recorded.
+
+**No deletion/overwrite:** this section narrows prior claims without rewriting historical results.
+
+### Exact next action
+
+**AB104.818R:** attempt semantic refinement of W5/W6 and W3 to cover I2 and I5 without adding new top-level witness identities. If refinement changes witness semantics materially, create new witness IDs instead of silently mutating the old definition. Then rerun the eight-interaction matrix and attack whether any resulting witness becomes redundant.
+
+**No implementation. No formal verification. No universal completeness/security claim.**
