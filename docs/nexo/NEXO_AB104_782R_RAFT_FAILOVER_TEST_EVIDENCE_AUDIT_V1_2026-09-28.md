@@ -1718,3 +1718,122 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.800R: investigate whether any production system provides a single durable receiver-side record that combines operation identity, authority generation/incarnation, payload binding, terminal effect state, and recovery/reconciliation evidence; compare this against Kafka transactional state, Kubernetes resourceVersion, EtcFS generation, and payment/API idempotency records.
+
+## AB104.800R — can one production receiver combine identity, authority, payload binding, terminal outcome, and recovery?
+
+### Result: no universal closure found; several systems close subsets inside their own atomic domain
+
+The research was expanded specifically to find a production protocol whose single durable receiver record simultaneously binds:
+
+1. operation identity;
+2. authority generation/incarnation;
+3. immutable request/payload binding;
+4. terminal effect state;
+5. recovery/reconciliation evidence;
+
+at the same linearization point as the protected effect.
+
+No such generic, arbitrary-external-effect system was established.
+
+This is a research result, not a proof of impossibility.
+
+### Kafka: complete closure inside Kafka's own domain
+
+Kafka Streams can atomically couple consumed offsets, state-store updates, and produced Kafka records. Kafka explicitly attributes this to integrating all of those operations with Kafka storage rather than treating Kafka as an external system. Exactly-once for another destination requires cooperation from that destination. citeturn0search1turn0search3
+
+Therefore Kafka supplies a strong example of a closed effect domain, but not a universal external-effect receiver.
+
+Its producer/transactional epochs also provide fencing within Kafka's protocol domain, but that does not automatically become a fencing token accepted by a third-party resource.
+
+### etcd: atomic identity/state predicates, but no arbitrary external effect
+
+etcd transactions atomically evaluate comparisons and apply the success branch. Comparisons can use value, key presence, revision, and version. This is enough to construct a durable operation record whose acceptance is conditional on the currently stored state. citeturn0search6turn0search13
+
+However, the atomic transaction ends at etcd's KV state. It cannot atomically include a physical actuator, remote HTTP server, payment network, or other independently committed system.
+
+Thus etcd can be the authoritative receiver for an etcd-owned effect, but it is not automatically the owner of a subsequent external effect.
+
+### Kubernetes: strong state-version conflict control, not a universal effect record
+
+Kubernetes resource-version mechanisms provide optimistic concurrency/freshness semantics for API objects. This is useful for rejecting stale mutations to Kubernetes-owned state, but resourceVersion is not itself a universal authority epoch for arbitrary external resources.
+
+Therefore Kubernetes demonstrates durable stale-state rejection, not universal external-effect closure.
+
+### Temporal: durable execution and Activity lifecycle, but external effects remain Activity responsibility
+
+Temporal explicitly defines Activities as work that touches the outside world, including API calls, databases, email, and payments. Activities can execute more than once, including after a Worker succeeds externally but crashes before reporting completion. Temporal therefore recommends idempotency and identifies receiver-side idempotency keys as the mechanism that prevents duplicate external effects. citeturn0search2turn0search5turn0search16
+
+This is particularly strong negative evidence for the desired universal closure: a mature durable-execution platform still treats external-effect idempotency as a responsibility of the external service, rather than claiming that the workflow engine itself atomically fences arbitrary outside effects.
+
+### AWS Durable Execution: same boundary appears independently
+
+AWS's current Durable Execution guidance states that at-least-once retry can execute a step more than once, and recommends idempotency keys for external services. It explicitly distinguishes retry semantics from exactly-once execution across the entire workflow. citeturn0search0
+
+Again, durable orchestration does not remove the external receiver's responsibility.
+
+### Composite conclusion
+
+The strongest currently evidenced composition is:
+
+durable intent/history
++
+receiver-side atomic identity + payload binding
++
+receiver-side authority/incarnation check
++
+receiver-side durable outcome
++
+reconciliation
+
+But these pieces must be owned by the same effect domain to become one atomic guarantee.
+
+For an arbitrary external effect, the architecture remains distributed:
+
+Coordinator -> external receiver -> physical/system effect
+
+and therefore retains a boundary requiring receiver cooperation.
+
+### New architectural distinction
+
+There are now two classes of protected effects:
+
+**Class A — owned atomic domain**
+
+The effect owner can atomically validate identity/authority and commit the effect.
+
+Potentially closed by one transactional protocol.
+
+**Class B — independent external effect**
+
+The coordinator and effect owner commit separately.
+
+Requires:
+- durable intent;
+- operation identity;
+- authority/incarnation fencing;
+- receiver idempotency or conditional acceptance;
+- queryable outcome;
+- reconciliation;
+- explicit UNKNOWN state.
+
+Nexo must not silently treat Class B as Class A.
+
+### Evidence ledger
+
+KAFKA_STREAMS_INTERNAL_STATE_OFFSETS_OUTPUT_ATOMIC SOURCE CONFIRMED
+KAFKA_EXTERNAL_DESTINATION_REQUIRES_COOPERATION SOURCE CONFIRMED
+ETCD_ATOMIC_COMPARE_AND_MUTATE SOURCE CONFIRMED
+ETCD_EXTERNAL_EFFECT_ATOMICITY NOT PROVIDED
+KUBERNETES_STALE_STATE_REJECTION SOURCE CONFIRMED
+KUBERNETES_RESOURCE_VERSION != UNIVERSAL_AUTHORITY_EPOCH
+TEMPORAL_EXTERNAL_EFFECTS_REQUIRE_ACTIVITY_IDEMPOTENCY SOURCE CONFIRMED
+AWS_DURABLE_EXECUTION_EXTERNAL_IDEMPOTENCY_REQUIRED SOURCE CONFIRMED
+SINGLE_GENERIC_RECEIVER_RECORD_CLOSING_ALL_LAYERS NOT ESTABLISHED
+NOT_ESTABLISHED != IMPOSSIBLE
+EXECUTED NEXO CROSS-SYSTEM EFFECT RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.801R: investigate whether a single effect-owner database transaction can formally/empirically close identity + payload binding + authority generation + terminal state, and what remains when the physical effect is emitted after that commit. Search concrete payment, inventory, and job-execution implementations and their failure tests; do not infer closure from documentation alone.
