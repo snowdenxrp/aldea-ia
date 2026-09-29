@@ -464,3 +464,130 @@ Implementation: **NOT STARTED**.
 **AB104.843R:** attack I25/I26 with provider-specific lifecycle witnesses and attempt parameter reduction: (1) accepted/reserved + authority change + delayed completion, (2) accepted/reserved + cancellation/expiry + delayed completion, (3) correction/reversal after completion. Determine whether the distinction is fundamentally authority-based versus lifecycle-based, and whether the minimum graph requires an explicit IN_PROGRESS node or can represent it as provider evidence attached to ACCEPTED_OR_RESERVED.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.843R — I25/I26 PROVIDER-LIFECYCLE REDUCTION + IN_PROGRESS NODE ATTACK
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### External evidence cross-check
+
+NIST's ordered-combination work supports treating these as ordered state transitions: faults can depend on the order in which inputs establish state, and sequence coverage is intended for such event-driven systems. citeturn0search0turn0search6 Microsoft documents that an in-progress external operation may be partially completed or still active, and stale in-progress records require reconciliation before redelivery is acknowledged. citeturn0search7turn0search9 AWS documents that retry safety depends on the receiving service's idempotency contract; exact-once is not implied for arbitrary external side effects. citeturn0search10turn0search12
+
+### I25 reduction
+
+I25 = ACCEPTED_OR_RESERVED → authority generation changes → delayed completion/retry.
+
+It cannot be reduced to I24 because IN_PROGRESS alone does not require an authority-generation transition. It cannot be reduced to I20 because I20 begins UNKNOWN and resolves through later authoritative confirmation. It cannot be reduced to I21 because no correction/reversal or stale historical event is required.
+
+**Result: I25 remains an independent ordered interaction candidate.**
+
+Minimum causal sequence:
+1. O accepted/reserved under G1;
+2. G2 becomes authoritative;
+3. G1 completion/retry arrives;
+4. resource evaluates G1 against the current lifecycle/version contract;
+5. outcome is explicit: reject, complete, reconcile, or UNKNOWN according to provider semantics.
+
+### I26 reduction
+
+I26 = ACCEPTED_OR_RESERVED → cancellation/expiry → delayed completion/result.
+
+It is independent of I25 because cancellation/expiry can occur without any authority-generation transition. It is independent of I21 because the delayed result is not merely a stale historical correction event; it is a lifecycle completion crossing a cancellation boundary.
+
+**Result: I26 remains an independent ordered interaction candidate.**
+
+Minimum causal sequence:
+1. O accepted/reserved;
+2. cancellation/expiry becomes authoritative;
+3. delayed completion/result arrives;
+4. resource evaluates whether that completion is legal under its transition/version contract;
+5. current state must not resurrect merely because the completion arrived later.
+
+### Provider-lifecycle witnesses examined
+
+The audit distinguishes three broad provider patterns:
+
+**Pattern A — reservation is the semantic effect.** In this contract, ACCEPTED_OR_RESERVED may legitimately map to the business effect, but only because the provider explicitly defines it that way. A later completion is observation rather than a new business mutation.
+
+**Pattern B — reservation is preparatory.** ACCEPTED_OR_RESERVED means durable intent/reservation, while COMMITTED is a later semantic transition. Retry and fencing must therefore protect the transition boundary, not just the initial reservation.
+
+**Pattern C — asynchronous processing.** ACCEPTED_OR_RESERVED/IN_PROGRESS means the provider has accepted work whose terminal outcome is not yet known. A later status/event is needed for confirmation, failure, cancellation, or correction.
+
+These patterns are semantically different. A universal normalization must preserve which pattern the provider contract establishes.
+
+### IN_PROGRESS node attack
+
+Question: can IN_PROGRESS safely be represented only as provider evidence attached to ACCEPTED_OR_RESERVED?
+
+**Reduction attempt:** If the provider contract guarantees that IN_PROGRESS never changes the legal retry/cancel/reconciliation decision compared with ACCEPTED_OR_RESERVED, then a separate semantic state is unnecessary for that provider. But if IN_PROGRESS changes what operations are legal — e.g. retry must be suppressed, cancellation has different semantics, or reconciliation has a distinct authoritative query — collapsing it loses a decision-relevant state.
+
+Therefore:
+
+**IN_PROGRESS is not required as a universal top-level state, but it is required as a distinguishable provider-semantic condition whenever it changes legal transitions or evidence interpretation.**
+
+This preserves provider neutrality without erasing decision-relevant semantics.
+
+### Minimum transition graph refinement
+
+Provider-neutral semantic categories:
+
+`NOT_ACCEPTED`
+`ACCEPTED_OR_RESERVED`
+`IN_PROGRESS*`
+`COMMITTED`
+`FAILED`
+`EXPIRED_OR_CANCELLED`
+`CORRECTED`
+`REVERSED`
+`UNKNOWN`
+
+`*` IN_PROGRESS is conditional: retain it distinctly only when the provider contract gives it transition/evidence significance.
+
+Required guarded transitions include:
+
+`NOT_ACCEPTED → ACCEPTED_OR_RESERVED`
+`ACCEPTED_OR_RESERVED → COMMITTED | FAILED | IN_PROGRESS | EXPIRED_OR_CANCELLED`
+`IN_PROGRESS → COMMITTED | FAILED | EXPIRED_OR_CANCELLED | UNKNOWN`
+`COMMITTED → CORRECTED | REVERSED`
+
+No universal rule permits:
+
+`EXPIRED_OR_CANCELLED → COMMITTED`
+`FAILED → COMMITTED`
+`REVERSED → COMMITTED`
+
+without provider-specific transition evidence.
+
+### New reduction insight
+
+I25 and I26 share the same **accepted-but-not-final** starting state but differ in the transition that invalidates or changes the pending operation:
+
+- I25: **authority dimension changes**.
+- I26: **lifecycle dimension changes**.
+
+They therefore should not be merged merely because both end in a delayed completion race.
+
+### Current disposition
+
+I17: absorbed by W17 parameterization.
+I18: absorbed by W18 parameterization.
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I23: absorbed by operation-identity parameterization.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.844R:** perform a targeted search for concrete provider contracts covering reserve/authorize/capture/cancel/expire and asynchronous completion; then attack whether I25/I26 are actually provider-specific refinements of the same cross-domain atomicity class. Also test whether any legal transition from EXPIRED/CANCELLED or FAILED back to COMMITTED is a correction/reversal case rather than a genuine resurrection.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
