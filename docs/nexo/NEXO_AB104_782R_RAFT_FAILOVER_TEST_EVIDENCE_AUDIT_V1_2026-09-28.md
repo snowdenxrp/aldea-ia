@@ -3920,3 +3920,107 @@ No evidence currently justifies claiming that W1-W12 is a minimal independent te
 **AB104.818R:** attempt semantic refinement of W5/W6 and W3 to cover I2 and I5 without adding new top-level witness identities. If refinement changes witness semantics materially, create new witness IDs instead of silently mutating the old definition. Then rerun the eight-interaction matrix and attack whether any resulting witness becomes redundant.
 
 **No implementation. No formal verification. No universal completeness/security claim.**
+
+---
+## AB104.818R — SEMANTIC REFINEMENT OF I2/I5
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / REFINEMENT ACCEPTED WITH NEW TEMPORAL VARIANTS / UNFROZEN / NO IMPLEMENTATION.
+
+### Evidence cross-check
+
+RabbitMQ documents two facts directly relevant to I5: cancelling a consumer does not erase already in-flight deliveries, and unacknowledged deliveries may later be requeued/redelivered. Its reliability guidance also states that publisher-confirm loss can cause retransmission and duplication, so consumers need idempotent handling or deduplication. citeturn0search0turn0search1turn0search2
+
+This is concrete evidence that ownership/control-plane transition and duplicate delivery are separable temporal events that can overlap.
+
+### I2 refinement: retention × recovery/incarnation × old operation
+
+W5 and W6 cannot be silently merged because their original predicates remain distinct:
+
+- W5 = retention/deduplication evidence has expired while delayed work remains possible.
+- W6 = recovery establishes a new incarnation/continuity boundary and old-incarnation work arrives.
+
+To exercise the complete interaction, a new temporal variant is required:
+
+**W13 — Retention-expiry + recovery/incarnation + delayed-old-operation**
+
+Sequence:
+1. operation O is accepted under incarnation I1;
+2. the deduplication/evidence retention boundary for O expires;
+3. system recovers into distinguishable incarnation I2;
+4. delayed O from I1 arrives;
+5. protected boundary evaluates both identity retention state and incarnation/authority state;
+6. result is explicitly classified as reject / reconcile / UNKNOWN according to the model, never inferred solely from absence of retained evidence.
+
+**Why W13 is new:** the combined sequence is not semantically equivalent to W5 or W6 individually. Creating W13 preserves historical witness meanings instead of mutating them.
+
+### I5 refinement: ownership × delayed response × duplicate delivery
+
+W3 remains:
+- ownership transfer;
+- old worker delayed completion.
+
+RabbitMQ evidence demonstrates that in-flight deliveries can survive cancellation and unacked deliveries can be redelivered, so duplicate delivery must be explicitly represented in the composite sequence. citeturn0search2turn0search1
+
+A new temporal variant is therefore required:
+
+**W14 — Ownership-transfer + delayed-response + duplicate-delivery**
+
+Sequence:
+1. worker A owns operation O;
+2. ownership transfers to worker B;
+3. A's in-flight work continues;
+4. B receives/starts O or an equivalent redelivery;
+5. A's delayed response arrives, potentially duplicated;
+6. protected effect boundary accepts at most the semantically current operation and rejects/reconciles obsolete ownership;
+7. final state distinguishes confirmed effect from UNKNOWN where confirmation is incomplete.
+
+**Why W14 is new:** adding duplicate delivery changes the failure interaction, not merely the description of W3.
+
+### Re-run of interaction matrix
+
+| Interaction | Result after refinement |
+|---|---|
+| I1 authority × retry × identity | FULL — W1 |
+| I2 authority × incarnation × retention | **FULL — W13** |
+| I3 correction × stale observation × reconciliation | FULL — W4 |
+| I4 transaction abort × external effect × retry | FULL — W2 |
+| I5 ownership × delayed response × duplicate delivery | **FULL — W14** |
+| I6 authentication × obsolete incarnation × authority | FULL — W10 |
+| I7 poison termination × UNKNOWN external effect | FULL — W8 |
+| I8 ledger correction × concurrent refund/capture | FULL — W11 |
+
+### Consequence for witness count
+
+The working witness set is now **W1-W14**.
+
+This is **not** evidence that 14 is minimal. In fact, W13 and W14 may later be decomposed into smaller tests or shown to be derivable from a stronger formal interaction model. They are retained because the current goal is to avoid claiming coverage that has not actually been exercised.
+
+### New distinction
+
+The reduction work exposes a useful separation:
+
+- **class coverage** = every failure family has a witness;
+- **predicate coverage** = each declared invariant/predicate has evidence;
+- **interaction coverage** = required combinations have a witness with explicit temporal ordering;
+- **implementation coverage** = the actual system demonstrates the expected behavior.
+
+Only the first three are being modeled here, and the third is now provisionally complete for the eight mandatory interactions. **Implementation coverage remains zero because implementation has not started.**
+
+### Disposition
+
+**20 classes:** UNFROZEN.
+
+**W1-W14:** working witness set, not minimal.
+
+**Eight mandatory higher-order interactions:** provisionally FULL under the current semantic model.
+
+**Formal verification:** NOT PERFORMED.
+
+**Universal completeness/security:** NOT CLAIMED.
+
+### Exact next action
+
+**AB104.819R:** attack W13/W14 for redundancy and decomposition. Determine whether either can be reduced to existing witnesses plus a formally specified temporal composition without losing an observable predicate. Then search for additional higher-order interactions generated by the newly explicit dimensions: retention × incarnation × authority, ownership × duplicate × acknowledgement ambiguity, and recovery × delayed external effect.
+
+**No implementation. No silent mutation. No deletion/overwrite.**
