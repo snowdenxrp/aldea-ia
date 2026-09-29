@@ -2407,3 +2407,100 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.806R: investigate whether provider reports/history are authoritative enough to correct or supersede webhook observations, including report generation delay, event ordering, duplicate reports, and retention. Then test whether reconciliation evidence can itself become stale after a later reversal/correction.
+
+## AB104.806R — provider reports/history as reconciliation authority and later corrections
+
+Current Adyen documentation says the Payment accounting report contains payment lifecycle status changes, events, and modifications for transactions and is used for invoice reconciliation. The report carries a globally unique PSP reference and a booking date describing when the event entered Adyen's accounting system. citeturn0search1
+
+Adyen recommends combining reports to track a transaction across its lifecycle and explicitly recommends automated ingestion for full reconciliation. citeturn0search2turn0search7
+
+The Settlement Details Report contains transactions included in a payout batch and their costs and is part of full financial reconciliation. citeturn0search9turn0search4
+
+Critically, Adyen distinguishes an External settlement detail report from proof that the external acquirer actually paid the funds: a transaction appearing in that report does not itself confirm that the external acquirer has paid the merchant. citeturn0search10
+
+Adyen also documents SETTLED_REVERSED: captured funds were not received from the card scheme or payment method within 30 days after capture, with a corresponding debit in the Settlement Details Report. citeturn0search0
+
+This is a counterexample to the simplistic rule that CAPTURED or SETTLED is forever terminal. The correct model is that terminal state cannot be overwritten by an arbitrary stale observation; legitimate lifecycle corrections require their own typed, ordered, authenticated evidence.
+
+### Evidence precedence
+
+For one payment namespace, distinguish at least:
+
+1. webhook observation;
+2. provider payment-accounting event;
+3. settlement report entry;
+4. external-settlement report entry;
+5. bank/acquirer evidence, when available.
+
+These are not automatically ordered by one integer. Each source has a different claim scope.
+
+A later report can legitimately correct an earlier webhook, but an unrelated report must not overwrite an exact payment lifecycle state merely because its booking timestamp is newer.
+
+### Reconciliation state machine
+
+LOCAL_PENDING
+-> PROVIDER_ACCEPTED
+-> PROVIDER_TERMINAL
+-> SETTLEMENT_RECONCILED
+-> BANK_EXTERNAL_CONFIRMED
+
+Correction edges can exist, for example:
+
+SETTLED
+-> SETTLED_REVERSED
+
+and:
+
+REFUNDED
+-> REFUNDED_REVERSED
+
+Each correction is a new evidence event, not a stale worker rewriting history.
+
+### Failure matrix
+
+| Evidence/event | What it can establish | What it cannot automatically establish |
+|---|---|---|
+| webhook | provider event occurred | final bank settlement |
+| payment accounting report | lifecycle/accounting event recorded by provider | external bank receipt |
+| settlement details report | payment included in provider settlement batch | external acquirer actually paid, where provider explicitly disclaims that implication |
+| external settlement report | provider has recorded external-acquirer settlement information | universal bank-side finality |
+| later SETTLED_REVERSED | provider recorded later settlement reversal | that the original event was never true |
+| missing report/webhook | absence of observed evidence | proof operation never occurred |
+
+### New rule: evidence cannot erase history
+
+If an earlier evidence event was authentic and valid, a later correction should append a new event explaining the correction. It should not mutate historical evidence as though the earlier observation never existed.
+
+This connects payment reconciliation directly with the Nexo event-sourcing work:
+
+immutable evidence history
++
+typed correction event
++
+current-state projection
++
+reconciliation state.
+
+### Evidence ledger
+
+ADYEN_PAYMENT_ACCOUNTING_REPORT_LIFECYCLE_HISTORY SOURCE CONFIRMED
+ADYEN_PSP_REFERENCE_GLOBAL_UNIQUE_IN_REPORT SOURCE CONFIRMED
+ADYEN_AUTOMATED_MULTI_REPORT_RECONCILIATION SOURCE CONFIRMED
+ADYEN_SETTLEMENT_DETAILS_REPORT SOURCE CONFIRMED
+ADYEN_EXTERNAL_SETTLEMENT_REPORT_NOT_PROOF_EXTERNAL_ACQUIRER_PAID SOURCE CONFIRMED
+ADYEN_SETTLED_REVERSED_LATE_CORRECTION SOURCE CONFIRMED
+TERMINAL_STATE != IMMUTABLE_REAL_WORLD_FACT
+AUTHENTIC_EVIDENCE_SHOULD_REMAIN_IN_HISTORY SOURCE-SUPPORTED
+CORRECTION_EVENT != STALE_OVERWRITE
+REPORT_SCOPE != WEBHOOK_SCOPE != BANK_SCOPE
+NUMERIC_TIMESTAMP_ALONE != EVIDENCE_PRECEDENCE
+MISSING_REPORT/WEBHOOK != PROOF_OF_NONEXECUTION
+UNKNOWN_CAN_REQUIRE_MULTI-SOURCE_RECONCILIATION
+UNIVERSAL_EXTERNAL_SETTLEMENT_PROOF NOT ESTABLISHED
+EXECUTED NEXO PAYMENT RECONCILIATION RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.807R: investigate concrete reconciliation failure tests/incident reports involving webhook duplication, delayed reports, late reversals, duplicate refunds/captures, and provider-vs-ledger divergence. Prefer executable tests and production incident evidence over documentation-only claims.
