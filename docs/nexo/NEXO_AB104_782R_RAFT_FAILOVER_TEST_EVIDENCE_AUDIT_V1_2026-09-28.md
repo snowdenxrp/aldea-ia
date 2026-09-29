@@ -510,3 +510,92 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.789R: investigate the receiver-side protocol when an old worker races a new authority generation: conditional writes, fencing-token validation, operation-id reuse, status-query semantics, and real tests for stale submission after lease/epoch change. Focus on resource-side acceptance as the actual safety boundary.
+
+
+## AB104.789R research — receiver-side acceptance under stale-worker / new-generation races
+
+### Real receiver-side evidence
+
+etcd's current transaction model provides a concrete receiver-side acceptance boundary: comparisons and mutations are evaluated atomically. Comparisons can inspect key presence, value, version, or revision; if the comparison fails, the success mutation is not applied. This is stronger than a prior read followed by a later write. SOURCE: etcd API documentation. citeturn0search11turn0search2
+
+The resulting pattern is directly applicable to a protected resource that stores its current incarnation/generation: the operation carries the expected generation, the receiver compares it at the mutation boundary, and only a matching generation permits the mutation. This is source-supported as an etcd capability; it is not proof that an arbitrary external resource has such a capability.
+
+Temporal's current 2026 standalone-Activity tutorial gives concrete receiver-side idempotency evidence: Activity execution is at-least-once, a POST can succeed before the worker reports completion, and retries can therefore duplicate delivery. A stable idempotency key derived from the logical event is required; a fresh random key per retry defeats deduplication. Temporal also separates scheduling-layer Activity-ID conflict handling from receiver-side idempotency. citeturn0search0
+
+Temporal's same tutorial demonstrates an additional identity boundary: USE_EXISTING only suppresses duplicate Activity starts while the original execution is in flight; after completion, a separate ID-reuse policy controls whether a new execution may use the same ID. Therefore operation identity has a lifecycle/retention contract and cannot be assumed globally unique forever. citeturn0search0
+
+Stripe's documented idempotency design provides another receiver-side pattern: the server associates the idempotency key with the request state/result and can return the prior result after a response failure. Its documented contract also requires the retry to use the same logical key rather than a newly generated key. citeturn0search1
+
+### Stale-worker race
+
+Consider:
+
+g1 = accepted authority generation
+g2 = newer generation
+O1 carries g1
+
+Race:
+
+T0 O1 begins
+T1 authority advances g1 -> g2
+T2 O1 reaches receiver
+T3 receiver compares O1.generation with current generation
+T4 receiver rejects O1
+
+This is the safety boundary.
+
+If T2/T3 occurs before the authority transition is linearized, O1 may legitimately linearize under g1. Therefore "new generation exists somewhere" is not enough; the protected resource needs a defined acceptance linearization point.
+
+### Operation identity vs generation
+
+The receiver must not collapse these fields:
+
+- operation_id: which logical operation is this?
+- authority_generation: under which authority was it admitted?
+- resource_namespace: which protected resource/domain is being mutated?
+- payload_hash or immutable request binding: what exact operation does this identity represent?
+- incarnation (where applicable): which lifetime of the resource/lock/object is being targeted?
+
+An operation ID can prevent duplicate execution while still being authorized under an obsolete generation. A generation can reject stale authority while still allowing the same logical operation to be submitted twice. Both dimensions are therefore necessary for different safety properties.
+
+### Operation-ID reuse / retention
+
+Temporal's current Activity-ID model proves a practical lifecycle distinction: duplicate-start policy applies while an execution is in flight, while ID-reuse policy applies after completion. Thus a system must define how long an operation identity remains reserved and what happens after that interval. citeturn0search0
+
+This reinforces the AB104.785R finding: finite idempotency retention is part of the safety contract. If an old identity can be reused after the deduplication record disappears, a late retry can become a new logical operation unless the protocol binds the identity to a durable namespace/epoch or otherwise prevents semantic reuse.
+
+### Strong candidate receiver contract
+
+For protected resource R:
+
+ACCEPT(operation) iff
+1. operation.resource_namespace == R
+2. operation identity is valid for the operation's retention/epoch rules
+3. request binding/payload identity matches any existing operation record
+4. operation.authority_generation is not stale relative to R's current accepted authority state
+5. the acceptance decision and protected mutation share an atomic/linearizable commit boundary where required
+
+If any condition fails, the receiver must reject or return an explicitly reconcilable status rather than silently treating the request as a new operation.
+
+### Evidence ledger
+
+ETCD_ATOMIC_COMPARE_AND_MUTATE SOURCE CONFIRMED
+ETCD_REVISION/VERSION_COMPARE SOURCE CONFIRMED
+RECEIVER_SIDE_ACCEPTANCE_BOUNDARY SOURCE CONFIRMED FOR ETCD
+TEMPORAL_AT_LEAST_ONCE_EXTERNAL_POST SOURCE CONFIRMED
+TEMPORAL_STABLE_IDEMPOTENCY_KEY SOURCE CONFIRMED
+SCHEDULER_ID_CONFLICT != RECEIVER_IDEMPOTENCY SOURCE CONFIRMED
+OPERATION_ID_RETENTION/REUSE_POLICY SOURCE CONFIRMED
+OPERATION_ID != AUTHORITY_GENERATION
+OPERATION_ID != RESOURCE_NAMESPACE
+OPERATION_ID != PAYLOAD_BINDING
+OPERATION_ID != INCARNATION
+STALE_WORKER_SAFETY REQUIRES RECEIVER ENFORCEMENT SOURCE-SUPPORTED
+GENERIC_EXTERNAL_RESOURCE_FENCING NOT ESTABLISHED
+EXECUTED NEXO RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.790R: investigate receiver-side status-query/reconciliation semantics and the "already applied / not found / in progress / rejected as stale" ambiguity. Focus on whether status APIs themselves can be stale, whether a status query can be bound to operation identity and payload, and what evidence is sufficient to transition UNKNOWN to CONFIRMED or FAILED.
