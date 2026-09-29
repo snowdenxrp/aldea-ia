@@ -2398,3 +2398,103 @@ CORRECTED/REVERSED must remain explicit historical transitions rather than mutat
 **AB104.861R:** attack the boundary between SUBMITTED/IN_PROGRESS and COMMITTED/FAILED, specifically whether any provider or executable implementation can produce a legally reachable transition where local admission/submission succeeds, downstream terminal outcome is later corrected/reversed, and a stale terminal observation races reconciliation. The objective is to determine whether this is already fully represented by I19/I20/I24/I26 or exposes a genuinely missing interaction.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.861R — SUBMITTED/IN_PROGRESS → TERMINAL → CORRECTION/RECONCILIATION
+
+**Status:** RESEARCHED / CONCRETE PROVIDER WITNESS FOUND / NO IMPLEMENTATION / NO FORMAL VERIFICATION.
+
+### Fresh evidence
+
+Adyen's current capture documentation gives a concrete asynchronous lifecycle: a valid CAPTURE webhook with success=true means the capture request was valid and submitted to the bank/card scheme, but the scheme can still reject it later and emit CAPTURE_FAILED, even days after submission. Adyen also exposes separate CANCELLATION and EXPIRE lifecycle vocabulary. citeturn0search0turn0search2
+
+Stripe's PaymentIntent model independently documents a multi-status payment lifecycle and one successful charge per PaymentIntent, reinforcing that an attempt/status is not equivalent to an arbitrary local terminal projection. citeturn0search8
+
+### Concrete reachable sequence
+
+The Adyen evidence establishes:
+
+capture request → CAPTURE success=true → request submitted downstream → later CAPTURE_FAILED
+
+The critical point is that the first positive event is not terminal external confirmation. Adyen explicitly states that a capture can fail after the successful CAPTURE webhook and that the failure can occur days later. citeturn0search0
+
+Therefore the audit graph must preserve:
+
+SUBMITTED / downstream pending → FAILED
+
+without treating this as an illegal COMMITTED → FAILED transition.
+
+### Attack against I19/I20/I24/I26
+
+**I24 (IN_PROGRESS + retry):** insufficient. The Adyen sequence contains positive submission knowledge, not merely provider-reported pending status.
+
+**I26 (lifecycle cancellation/expiry + delayed completion):** insufficient. This witness is not primarily cancellation/expiry; the decisive transition is downstream rejection after accepted submission.
+
+**I20 (UNKNOWN + later authoritative confirmation):** insufficient. The initial state is not UNKNOWN; the system has authoritative evidence that the request was accepted/submitted.
+
+**I19 (confirmed effect + correction/reversal):** insufficient for the exact first transition. Adyen's CAPTURE success=true does not establish committed external effect, so the later CAPTURE_FAILED is not a correction of a confirmed effect. It is a downstream terminal outcome following accepted/submitted work.
+
+### Resulting refinement
+
+The previously broad category SUBMITTED → FAILED is now empirically anchored.
+
+But the deeper interaction is:
+
+ACCEPTED/SUBMITTED + positive admission/submission evidence + later downstream terminal rejection + possible local stale projection/reconciliation race
+
+This is a distinct semantic interaction candidate, but it does not yet justify a new top-level failure class because the existing classes already cover commit/apply separation, external-effect ambiguity, stale observation/order, reconciliation consistency, and correction/reversal when correction actually occurs.
+
+### Important correction to earlier shorthand
+
+Do not model COMMITTED → FAILED for this Adyen case.
+
+The accurate provider path is:
+
+ACCEPTED/SUBMITTED → downstream pending → FAILED
+
+Adyen explicitly distinguishes the successful submission from later scheme rejection. citeturn0search0
+
+### Reconciliation race
+
+A local coordinator could receive the positive CAPTURE event, project a business state, then receive CAPTURE_FAILED later. The provider evidence proves the temporal possibility, but it does not by itself prove a particular buggy implementation that incorrectly retains the earlier state.
+
+Therefore:
+- semantic witness: YES
+- concrete provider evidence: YES
+- concrete vulnerable implementation: NOT ESTABLISHED
+- new top-level class: NO
+- new frozen witness W20: NO
+
+### New invariant candidates
+
+**INV-TE-06:** Positive admission/submission evidence must not be promoted to terminal external-effect confirmation unless the provider contract explicitly equates the two.
+
+**INV-TE-07:** A later authoritative downstream rejection must be representable as a terminal transition from the accepted/submitted/pending lifecycle without rewriting the original admission evidence.
+
+Candidates only; no formal verification.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct / untested.
+I22: parameterized.
+I23: absorbed.
+I24: independent / untested.
+I25: parameterized coverage.
+I26: empirically supported semantic interaction / witness not frozen.
+I27: model-level residual / empirical witness not established.
+SUBMITTED→FAILED: empirically supported legal transition.
+W20: NOT FROZEN.
+20 top-level classes: UNFROZEN.
+Coverage denominator: NOT FROZEN.
+Formal verification: NOT PERFORMED.
+Implementation: NOT STARTED.
+Architecture freeze: NOT DECLARED.
+
+### Exact next action
+
+**AB104.862R:** attack the complementary path SUBMITTED/IN_PROGRESS → COMMITTED → later correction/reversal, using concrete provider lifecycle evidence. Determine whether the positive terminal state plus later correction is fully captured by I19, or whether asynchronous submission, terminal confirmation, correction, and stale pre-correction evidence create a distinct interaction.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
