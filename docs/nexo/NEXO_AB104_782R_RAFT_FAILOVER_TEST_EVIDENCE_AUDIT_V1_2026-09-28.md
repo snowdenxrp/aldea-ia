@@ -1266,3 +1266,142 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.796R: investigate whether durable CAS alone is sufficient for terminal truth, or whether terminal reconciliation additionally requires immutable event history, fencing against obsolete workers, and atomic coupling of state transition with operation identity/evidence. Search real event-sourcing/workflow implementations and failure tests.
+
+## AB104.796R research — durable CAS versus immutable history, fencing, and atomic identity/evidence
+
+### Finding 1 — CAS protects the current state transition, not the complete causal history
+
+Real event stores use expected-version concurrency. Rails Event Store documents that publishing with an expected stream version fails when another process has appended first; concurrent writers using the same expected version cannot both succeed. This is a concrete optimistic-concurrency boundary. citeturn0search7
+
+That mechanism answers:
+
+May this new event be appended after the state I observed?
+
+It does not by itself answer:
+
+What external effect actually happened before this event?
+
+Therefore:
+
+CAS(current_state) != proof_of_external_effect.
+
+### Finding 2 — immutable event history adds recoverable causality
+
+Temporal persists an append-only Event History for a Workflow Execution. Its history is used after worker crashes to replay and reconstruct workflow state, and the service records Activity completion/failure/timeout events durably. Temporal's server architecture also describes transactional persistence of mutable state together with history events and recovery from persistence when a write fails. citeturn0search0turn0search1turn0search3
+
+This provides evidence for a stronger pattern:
+
+durable history
++
+derived current state
++
+replay/reconstruction
+
+rather than relying solely on the latest mutable status row.
+
+However, Temporal itself still distinguishes durable workflow history from external Activity effects; Activity execution is at-least-once and external side effects need idempotency. citeturn0search9
+
+### Finding 3 — immutable history does not replace fencing
+
+An obsolete worker can still return a result after a newer authority generation exists. Durable history can record that late report, but recording it is not the same as accepting it as authoritative.
+
+Therefore the acceptance boundary still needs identity/version/authority checks.
+
+History answers:
+
+what events were accepted into the authoritative record?
+
+Fencing answers:
+
+may this actor/effect still be accepted now?
+
+These are complementary.
+
+### Finding 4 — operation identity must be bound to accepted history
+
+Temporal's history events identify the Workflow Execution and the event sequence; replay uses durable history to reconstruct which prior Activity result was recorded. citeturn0search1turn0search3
+
+This supports a candidate Nexo rule:
+
+A completion report must be bound to the exact logical operation/attempt it claims to complete. A late report for another attempt must not mutate the current attempt's terminal state merely because the payload says success or failure.
+
+This is stronger than a global sequence number.
+
+### Finding 5 — CAS + identity + fencing still do not make arbitrary external effects atomic
+
+Temporal explicitly teaches that Activity execution is at-least-once and recommends a stable idempotency key at the receiver for external POSTs. If a request reaches the receiver and the worker fails before recording completion, the Activity may retry. citeturn0search9
+
+Thus even if Nexo eventually had:
+
+CAS + immutable history + operation_id + authority_generation
+
+there remains a boundary:
+
+external effect
+      ||
+durable Nexo history
+
+If those are not one atomic transaction, an ambiguous window remains.
+
+### Combined failure matrix
+
+A. stale completion:
+CONFIRMED(O,v120)
+late FAILED(O,v119)
+-> CAS/history guard rejects stale transition.
+
+B. wrong operation identity:
+CONFIRMED(O1)
+completion report for O2
+-> reject identity mismatch even if report version is newer.
+
+C. stale authority:
+O1 carries generation g1; current generation is g2
+-> effect receiver must reject g1 if it reaches the protected boundary after g2 acceptance.
+
+D. worker crash after external effect:
+effect may exist, durable completion may not.
+-> UNKNOWN/reconciliation; CAS cannot infer the external result.
+
+E. durable history lost/compacted:
+old evidence unavailable.
+-> UNKNOWN or explicit history-unavailable state; not automatic FAILED.
+
+F. legitimate correction:
+terminal O remains immutable as historical fact; a separate correction/compensation event references O.
+-> correction is auditable and does not rewrite the causal past.
+
+### Important architectural deduction
+
+The audit now has evidence for four distinct layers:
+
+1. Event history — immutable accepted causal record.
+2. Current-state CAS — prevents stale concurrent transitions.
+3. Authority fencing — prevents obsolete actors/effects.
+4. Reconciliation — resolves ambiguous external outcomes.
+
+Removing any one can leave a different failure class uncovered.
+
+This is still a research-derived model, not a finalized Nexo architecture.
+
+### Evidence ledger
+
+EXPECTED_VERSION_EVENT_APPEND SOURCE CONFIRMED
+CONCURRENT_EXPECTED_VERSION_CONFLICT SOURCE CONFIRMED
+TEMPORAL_DURABLE_APPEND_ONLY_HISTORY SOURCE CONFIRMED
+TEMPORAL_REPLAY_AFTER_WORKER_CRASH SOURCE CONFIRMED
+TEMPORAL_HISTORY/MUTABLE_STATE CONSISTENCY SOURCE CONFIRMED
+IMMUTABLE_HISTORY != EXTERNAL_EFFECT_PROOF
+IMMUTABLE_HISTORY != FENCING
+CAS_CURRENT_STATE != EXTERNAL_EFFECT_ATOMICITY
+OPERATION_IDENTITY MUST BIND COMPLETION TO LOGICAL OPERATION CANDIDATE
+AUTHORITY_GENERATION MUST REMAIN DISTINCT FROM OPERATION_ID
+UNKNOWN REMAINS VALID AFTER AMBIGUOUS EXTERNAL EFFECT
+CORRECTION SHOULD BE EXPLICIT EVENT/OPERATION CANDIDATE
+EXECUTED NEXO COMBINED RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.797R: investigate atomic coupling boundaries in real event-sourced/workflow systems: history append + current-state update + outbox/task creation, and identify exactly where external effects remain outside the atomic boundary. Include crash/failure tests and determine whether any system actually closes all four layers without relying on an external idempotent/fenced receiver.
