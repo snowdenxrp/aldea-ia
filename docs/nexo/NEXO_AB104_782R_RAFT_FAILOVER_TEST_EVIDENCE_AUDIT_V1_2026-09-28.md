@@ -3759,3 +3759,103 @@ The next necessary step is no longer “find another merge by intuition.” It i
 **AB104.816R:** construct the formalized-but-not-yet-formal-proof **20-class × predicate matrix**. Define for each class its safety/liveness/provenance/authority/recovery/external-effect predicates, required evidence, invalidation trigger, protected boundary, and corresponding witness(es). Then attack the matrix for duplicate and uncovered predicates before any freeze decision.
 
 **No architecture implementation. No formal verification. No universal completeness claim.**
+
+
+---
+
+## AB104.816R — 20-CLASS × PREDICATE MATRIX / GAP ATTACK
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / MATRIX PROVISIONAL / NO FREEZE / NO IMPLEMENTATION.
+
+### Research basis
+
+Distributed-system testing literature supports defining coverage relative to an explicit fault model and requirements rather than treating raw test count or structural coverage as completeness. Fault taxonomies are useful precisely because they drive systematic fault injection, while interaction coverage must be specified explicitly when higher-order combinations matter. citeturn0search25turn0search11turn0search24
+
+### Predicate model
+
+The 20 working classes were projected onto seven predicate families:
+
+- **S** = safety / invariant preservation
+- **L** = liveness / progress / termination
+- **P** = provenance / authenticity / evidence validity
+- **A** = authority / ownership / fencing
+- **R** = recovery / incarnation continuity
+- **E** = external-effect knowledge / reconciliation
+- **X** = cross-domain atomicity boundary
+
+This is a semantic analysis aid, not yet a formal specification.
+
+### Matrix
+
+| Class | S | L | P | A | R | E | X | Distinct core predicate |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
+| C1 operation identity collision | ✓ |  | ✓ | ✓ |  | ✓ | X | operation identity must bind one semantic operation/payload |
+| C2 payload-binding conflict | ✓ |  | ✓ | ✓ |  | ✓ | X | same identity cannot silently acquire a different payload |
+| C3 duplicate delivery/retry | ✓ | ✓ | ✓ | ✓ |  | ✓ | X | repeated transport/workflow delivery must not duplicate effect |
+| C4 acknowledgement ambiguity | ✓ | ✓ | ✓ |  |  | ✓ | X | loss of confirmation does not prove effect absence |
+| C5 stale observation/order | ✓ |  | ✓ | ✓ | ✓ | ✓ |  | observation order/freshness must not regress durable truth |
+| C6 state-machine transition race | ✓ | ✓ | ✓ | ✓ |  | ✓ | X | legal transition predicate must hold at commit/effect boundary |
+| C7 transaction isolation anomaly | ✓ | ✓ |  |  |  | ✓ | X | concurrency control must preserve declared transaction invariant |
+| C8 commit/apply separation | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | X | committed/accepted state is distinct from applied/effect state |
+| C9 authority-generation/fencing race | ✓ |  | ✓ | ✓ | ✓ | ✓ | X | stale authority must be rejected at protected resource boundary |
+| C10 worker ownership/rebalance race | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | X | ownership transfer must not permit obsolete worker effect |
+| C11 external-effect ambiguity | ✓ | ✓ | ✓ | A |  | ✓ | X | external outcome can remain UNKNOWN despite local state |
+| C12 reconciliation consistency/retention | ✓ | ✓ | ✓ |  | ✓ | ✓ | X | reconciliation must preserve history and epistemic uncertainty |
+| C13 ledger conservation/multi-account invariant | ✓ |  | ✓ |  |  | ✓ | X | conservation must hold across concurrent multi-record mutation |
+| C14 correction/reversal | ✓ |  | ✓ |  | ✓ | ✓ | X | correction is new typed history, not silent mutation of old truth |
+| C15 idempotency retention/reuse | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | X | expiry/reuse cannot cause semantic identity collision |
+| C16 broker/workflow liveness/poison behavior | ✓ | ✓ | ✓ | ✓ |  | ✓ | X | retry/dead-letter policy must preserve progress without unsafe repetition |
+| C17 recovery/restart continuity | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | X | recovery must establish a distinguishable valid continuity boundary |
+| C18 namespace/incarnation confusion | ✓ |  | ✓ | ✓ | ✓ | ✓ | X | old incarnation must not be accepted as current incarnation |
+| C19 authentication/source validity | ✓ |  | ✓ | ✓ | ✓ | ✓ | X | source authenticity does not imply current authority |
+| C20 cross-domain atomicity boundary | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | X | local atomic commit cannot be extended implicitly to arbitrary external effect |
+
+### Matrix findings
+
+**1. No class is currently uncovered.** Every class has at least one declared predicate and an explicit distinct-core predicate.
+
+**2. The matrix exposes heavy overlap.** Most classes touch S, P, E and/or X. This is expected for distributed effects and does not by itself justify merging them.
+
+**3. Three predicates behave as cross-cutting invariants:**
+
+- identity/incarnation binding;
+- authority-generation binding;
+- epistemic external-effect state (CONFIRMED / FAILED / UNKNOWN, where the semantics permit those states).
+
+They should be tested across multiple classes rather than assigned to a single class.
+
+**4. A genuine matrix gap remains:** higher-order interaction coverage is not encoded by the 20×7 projection. Two classes can each be covered individually while their composition remains untested. This is consistent with combinatorial-testing literature: interaction strength must be specified separately when interaction faults matter. citeturn0search11
+
+### Gap attack
+
+The following interaction cells remain mandatory candidates for explicit coverage:
+
+- authority × retry × identity;
+- authority × incarnation × retention;
+- correction × stale observation × reconciliation;
+- transaction abort × external effect × retry;
+- ownership transfer × delayed response × duplicate delivery;
+- authentication × obsolete incarnation × authority;
+- poison termination × UNKNOWN external effect;
+- ledger correction × concurrent refund/capture.
+
+These are not new top-level classes. They are **interaction requirements** over the existing taxonomy.
+
+### Important correction to prior status
+
+The statement “all 20 classes are covered” must now be interpreted narrowly as:
+
+> every working class has at least one mapped witness/predicate.
+
+It does **not** mean pairwise, t-way, temporal, causal, or implementation coverage is complete.
+
+### Disposition
+
+The 20-class taxonomy survives the predicate-matrix attack **without demonstrated duplicate class** and without a demonstrated missing top-level class. However, the taxonomy remains **UNFROZEN** because interaction coverage has not yet been reduced to a defensible independent set.
+
+### Exact next action
+
+**AB104.817R:** construct the interaction matrix over the eight mandatory higher-order interactions above. For each interaction, identify: constituent classes, required temporal ordering, authority/evidence/effect predicates, observable failure condition, minimum witness, and whether an existing W1-W12 witness actually exercises the full interaction. This will test whether the current 12-witness set truly spans the cross-products rather than merely touching each constituent class separately.
+
+**No implementation. No formal verification. No universal completeness/security claim.**
