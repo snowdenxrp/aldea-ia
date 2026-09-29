@@ -599,3 +599,107 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.790R: investigate receiver-side status-query/reconciliation semantics and the "already applied / not found / in progress / rejected as stale" ambiguity. Focus on whether status APIs themselves can be stale, whether a status query can be bound to operation identity and payload, and what evidence is sufficient to transition UNKNOWN to CONFIRMED or FAILED.
+
+
+## AB104.790R research — status-query/reconciliation semantics
+
+### Current external API evidence
+
+AWS EC2 provides unusually explicit idempotency semantics for asynchronous mutation: the original request may return before the operation is complete, and a later retry using the same client token and same parameters returns without performing the action again; the returned result can instead expose the current creation status. If parameters differ, the service can return IdempotentParameterMismatch. Regional idempotency also scopes the same token to a region. SOURCE: AWS EC2 documentation. citeturn0search2
+
+AWS Proton documents the same pattern with a finite retention boundary: client tokens expire after eight hours; reuse after expiry can create a new resource. Its asynchronous delete APIs expose DELETE_IN_PROGRESS and then a completed/empty result on later idempotent retry. This is direct evidence that status and idempotency retention are part of the externally visible contract. citeturn0search5
+
+AWS Well-Architected guidance describes the intended idempotent-service response model: repeat requests with the same idempotency token should return the response associated with the original completed request rather than create another side effect. citeturn0search1
+
+Temporal's current documentation similarly separates task execution attempts from the durable workflow result. An Activity can have multiple task executions, while the workflow records the eventual completion/failure state; therefore the worker's local result is not itself the durable truth. citeturn0search0
+
+### Status interpretation
+
+The audit therefore distinguishes these receiver responses:
+
+ALREADY_APPLIED / COMPLETED:
+Strong evidence only when the receiver binds the response to the exact operation identity and request semantics.
+
+IN_PROGRESS:
+Evidence that the receiver knows about the operation, but not that the effect is durable yet.
+
+NOT_FOUND:
+Not sufficient by itself to prove "never executed". It is safe evidence of absence only under a documented linearizable/status contract and a namespace/retention model that rules out an already-expired or pruned record.
+
+REJECTED_STALE:
+Strong evidence that the receiver's authority fence rejected the submitted generation/epoch. This is different from transport failure.
+
+PARAMETER_MISMATCH:
+Strong evidence that the operation identity exists but the supplied request differs from the recorded request; this must not be silently treated as a new operation.
+
+TIMEOUT / CONNECTION_LOST:
+UNKNOWN about external effect unless the receiver contract explicitly makes the timeout outcome definitive.
+
+### The critical NOT_FOUND problem
+
+A query such as GET(operation_id) -> 404 is not universally equivalent to "operation never happened".
+
+It can mean:
+- operation never existed;
+- operation record expired/pruned;
+- operation exists in another namespace/region;
+- record is not yet visible through a stale/non-linearizable read;
+- operation was applied but durable status retention has ended.
+
+AWS examples make the namespace and retention boundaries explicit: the same client token may be scoped regionally, and some idempotency records expire. citeturn0search2turn0search5
+
+Therefore UNKNOWN -> FAILED cannot be justified from NOT_FOUND alone unless the receiver proves a sufficiently strong absence contract.
+
+### Evidence threshold for UNKNOWN -> CONFIRMED
+
+Minimum evidence should be receiver-authenticated evidence that:
+1. the exact operation identity was accepted;
+2. the request binding matches;
+3. the operation reached the effect's durable success state;
+4. the returned state is from the relevant resource/namespace;
+5. the status observation has sufficient freshness/consistency for the claimed conclusion.
+
+A transport-level 200 from a coordinator is not automatically equivalent to item 3.
+
+### Evidence threshold for UNKNOWN -> FAILED
+
+Minimum evidence should be:
+1. exact operation identity or a resource state that proves the intended effect cannot have occurred;
+2. receiver-defined terminal failure semantics;
+3. sufficient retention/consistency to exclude a late-arriving successful operation;
+4. no possibility that the observed failure applies to a different attempt or namespace.
+
+If those conditions cannot be established, remain UNKNOWN.
+
+### New distinction: query evidence vs fence evidence
+
+A status query answers "what does the resource currently report about this operation?"
+
+A fencing check answers "is this operation currently allowed to create the protected effect?"
+
+They are not interchangeable.
+
+A fresh CONFIRMED result can establish effect truth for an old operation without re-authorizing it. A stale worker still needs a current fence before attempting a new mutation.
+
+### Evidence ledger
+
+ASYNC_REQUEST_CAN_RETURN_BEFORE_OPERATION_COMPLETES SOURCE CONFIRMED
+IDEMPOTENT_RETRY_CAN_RETURN_CURRENT_CREATION_STATUS SOURCE CONFIRMED
+PARAMETER_MISMATCH_DETECTED SOURCE CONFIRMED
+REGIONAL/RESOURCE NAMESPACE BINDING SOURCE CONFIRMED
+FINITE IDEMPOTENCY RETENTION SOURCE CONFIRMED
+ASYNC_DELETE_STATUS_TRANSITIONS SOURCE CONFIRMED
+ALREADY_APPLIED REQUIRES EXACT OPERATION BINDING
+IN_PROGRESS != CONFIRMED
+NOT_FOUND != UNIVERSAL PROOF OF NEVER_EXECUTED
+TIMEOUT/CONNECTION_LOST => UNKNOWN UNLESS CONTRACT SAYS OTHERWISE
+QUERY_EVIDENCE != AUTHORITY_FENCE
+UNKNOWN -> CONFIRMED REQUIRES DURABLE RECEIVER EVIDENCE
+UNKNOWN -> FAILED REQUIRES STRONG ABSENCE/TERMINAL FAILURE EVIDENCE
+EXECUTED NEXO RECONCILIATION RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.791R: investigate linearizability/staleness of status queries themselves: strong vs eventual reads, operation-status visibility after commit, deletion/retention races, and whether a stale status response can cause unsafe UNKNOWN -> FAILED or UNKNOWN -> CONFIRMED transitions. Seek real APIs and tests.
