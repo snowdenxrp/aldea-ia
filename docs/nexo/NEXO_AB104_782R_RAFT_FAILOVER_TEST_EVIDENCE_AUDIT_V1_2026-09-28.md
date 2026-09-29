@@ -4651,3 +4651,86 @@ The I1-I13 audit establishes coverage for the currently declared interactions, b
 **AB104.825R:** refine W13, W14, and W2 with the missing causal predicates for I9-I11, then perform a second-order gap search: derive new admissible interactions from the seven predicate axes + six normalized temporal relations and compare them against I1-I13. Only after this can the finite universe approach a defensible closure boundary.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+---
+## AB104.829R — I16 REDUNDANCY ATTACK / EFFECT-JOURNAL BOUNDARY
+
+**Date:** 2026-09-28
+**Status:** RESEARCHED / I16 RETAINED PROVISIONALLY / W17 NOT YET FROZEN / NO IMPLEMENTATION.
+
+### External evidence
+
+AWS Durable Execution documents that retries/replay can execute an operation more than once; external side effects therefore require idempotency or an at-most-once/retry strategy. It also states that at-most-once per retry does not by itself establish exactly-once across the workflow. citeturn0search1
+
+AWS EC2 documents the concrete ambiguity: a mutating request can time out or encounter a server issue after the operation may already have progressed, making retries capable of creating multiple resources unless idempotency is used. citeturn0search12
+
+Transactional Outbox provides durable intent but its relay may publish the same message more than once after a crash; the consumer therefore still needs idempotency. citeturn0search3
+
+### I16 reduction attack
+
+I16 = durable intent × external effect × acknowledgement loss × same-operation retry.
+
+It was compared against:
+
+- I10: ownership × duplicate × acknowledgement ambiguity — **not equivalent**; I10 does not require durable intent nor an already-possible external effect.
+- I11: recovery × delayed external effect — **not equivalent**; I16 does not require a new incarnation.
+- I13: correction × recovery × delayed external effect — **not equivalent**; I16 has neither correction nor mandatory recovery.
+- I15: correction × retention expiry × reconciliation — **not equivalent**.
+- I4: transaction abort × external effect × retry — **not equivalent**; a local transaction abort is not required by I16, and durable intent may already have committed.
+
+**Disposition: I16 remains ADMISSIBLE and INDEPENDENT under the current grammar.**
+
+### W17 refinement
+
+W17 is now defined as:
+
+1. durable local intent for operation O commits;
+2. O may produce an external side effect;
+3. acknowledgement/result is lost or delayed;
+4. retry of the same semantic operation O occurs;
+5. protected boundary must prevent an unintended second semantic effect when the external resource supports idempotency;
+6. if duplicate prevention or authoritative status cannot establish the outcome, the state remains UNKNOWN/RECONCILE rather than being inferred absent.
+
+This deliberately distinguishes:
+- **deduplication capability** from
+- **knowledge of whether the first external effect occurred**.
+
+A deduplication key can make retry safe when the external service honors it, but it does not by itself prove what happened when the external service lacks such a mechanism. AWS explicitly recommends stable idempotency tokens for retry-safe mutating APIs. citeturn0search1turn0search12
+
+### Effect-journal distinction
+
+An internal effect journal can durably record operation identity, intended payload, attempt state, and known provider identifiers. It does **not** make an arbitrary external effect atomic with the local database.
+
+Therefore:
+- local journal evidence ≠ proof external effect occurred;
+- missing journal confirmation ≠ proof external effect did not occur;
+- same operation identity ≠ proof provider deduplicated it;
+- provider idempotency confirmation ≠ universal exactly-once guarantee across unrelated downstream systems.
+
+The Idempotent Consumer pattern independently confirms that duplicate delivery must be handled at the consumer/effect boundary, not merely assumed away by broker semantics. citeturn0search0turn0search2
+
+### New methodological correction
+
+W17 should **not** be accepted merely because I16 is independent.
+
+Before adding W17 to the retained witness set, we must test whether its required predicates can be represented by an existing witness plus an explicit **effect-journal observation** without changing the causal interaction. If so, I16 may be a derived observation rather than a new witness.
+
+### Disposition
+
+**I16:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+
+**W17:** CANDIDATE / NOT FROZEN.
+
+**W1-W16:** retained provisionally.
+
+**20 classes:** UNFROZEN.
+
+**Coverage denominator:** NOT FROZEN.
+
+**Implementation/formal verification:** NOT PERFORMED.
+
+### Exact next action
+
+**AB104.830R:** perform the effect-journal equivalence test for I16/W17, explicitly separating local intent durability, provider-effect knowledge, deduplication capability, and acknowledgement knowledge. Then attack the four resulting combinations against the current 20-class taxonomy to determine whether I16 is a new interaction requirement or a projection of existing classes.
+
+**No deletion/overwrite. No silent witness mutation.**
