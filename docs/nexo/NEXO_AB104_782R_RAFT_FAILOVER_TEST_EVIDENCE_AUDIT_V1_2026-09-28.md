@@ -1792,3 +1792,93 @@ Implementation: NOT STARTED.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
 
+
+
+---
+## AB104.856R — I26 REDUCTION: LIFECYCLE INVALIDATION VS DELAYED COMPLETION
+
+**Status:** RESEARCHED / CODE + PROVIDER CROSS-CHECK / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+Adyen documents that cancellation applies only before capture; once captured, cancellation is no longer permitted. It also exposes separate CANCELLATION, CAPTURE, CAPTURE_FAILED and EXPIRE webhook events, so lifecycle transitions are represented explicitly rather than inferred from delivery order. citeturn0search0turn0search1turn0search2 Stripe likewise makes cancellation dependent on the authoritative PaymentIntent state and states that after cancellation additional charges fail; a cancellation request fails if the resource is already non-cancelable. citeturn0search5
+
+Open-source payment implementations show the same local pattern. PayFlow enforces an explicit payment state machine and transactional outbox, while its webhook path uses HMAC validation and inbox deduplication. citeturn0search7 The idempotent-payment-engine uses a unique webhook identity and row locking so concurrent webhook processing cannot independently mutate the same payment state. citeturn0search8 A separate chargeback implementation explicitly records authenticated but illegal state transitions and leaves the current state unchanged rather than allowing an event to force an invalid transition. citeturn0search9
+
+### I26 reduction
+
+I26 sequence:
+
+accepted/reserved
+→ lifecycle becomes CANCELLED/EXPIRED
+→ delayed completion arrives
+→ boundary evaluates whether completion remains legal.
+
+The examined provider/resource contracts generally make lifecycle validity an authoritative state predicate at the mutation boundary.
+
+Therefore, when completion checks the current resource state:
+
+EXPIRED/CANCELLED
+→ delayed completion
+→ INVALID_TRANSITION / REJECT
+
+I26 is absorbed by ordinary guarded lifecycle transition handling.
+
+### Important residual
+
+I26 is **not universally eliminated**. A provider could expose an asynchronous reservation whose cancellation/expiry is not atomically coupled to completion and whose status cannot be reconciled authoritatively. That would create a distinct effect-knowledge/reconciliation interaction.
+
+However, no concrete executable implementation reviewed in this round established that exact residual.
+
+Thus:
+
+**I26 = PARAMETERIZED COVERAGE / EMPIRICAL WITNESS NOT ESTABLISHED.**
+
+### Reduction against I24/I25
+
+- I24 = positive IN_PROGRESS evidence; no required lifecycle invalidation.
+- I25 = authority generation change; no required lifecycle change.
+- I26 = resource lifecycle invalidation.
+- When the resource's own state machine is authoritative, I26 becomes a normal invalid-transition branch rather than a new failure witness.
+
+### Important semantic distinction retained
+
+Even though I26 reduces operationally in many systems, the model must not collapse:
+
+CANCEL REQUEST ACCEPTED
+≠ CANCELLATION COMPLETED
+
+and
+
+EXPIRED
+≠ EXTERNAL EFFECT NEVER OCCURRED
+
+The provider's event/evidence contract determines the interpretation.
+
+### Candidate invariant refinement
+
+**INV-F-10 — Delayed completion cannot resurrect a terminal lifecycle state without authoritative legal-transition evidence.**
+
+This is now supported as a cross-provider design invariant candidate, but remains unverified formally.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: **parameterized coverage / empirical witness NOT established**.
+I26: **parameterized coverage / empirical witness NOT established**.
+I27: model-level residual / empirical witness NOT established.
+W19: not frozen.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.857R:** attack I24 itself. Search executable workflow/provider implementations where the provider explicitly reports IN_PROGRESS while a coordinator retries, cancels, times out, or reconciles. Determine whether positive IN_PROGRESS evidence is genuinely decision-distinct from UNKNOWN/effect ambiguity or whether it can be represented as a typed provider observation under existing reconciliation witnesses. Freeze no new witness unless a distinct protected decision survives reduction.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.
