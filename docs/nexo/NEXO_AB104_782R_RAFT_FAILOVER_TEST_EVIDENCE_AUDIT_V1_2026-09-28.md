@@ -2899,3 +2899,126 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.810R: cross-check the 51-case model against message brokers and workflow engines, specifically duplicate/ack-loss/retry, partition rebalancing, redelivery, poison messages, exactly-once boundaries, and transaction-to-message atomicity. Then check whether additional classes are missing before freezing the adversarial model.
+
+## AB104.810R — message-broker/workflow cross-check of the 51-case adversarial model
+
+RabbitMQ current reliability documentation confirms several failure classes that were only implicit in the previous matrix. Manual consumer acknowledgements provide at-least-once delivery; if a consumer connection/channel fails before acknowledgement, unacknowledged messages are automatically requeued and can be redelivered. RabbitMQ explicitly says consumers must be prepared for redeliveries and should be idempotent. Publisher confirms also create a duplicate window: after a connection failure, a producer may retransmit a message for which the broker had already processed the publish but the confirmation did not reach the producer. citeturn0search0turn0search1
+
+### Additional broker/workflow failure classes
+
+BA. consumer performs local effect, crashes before ACK, broker redelivers;
+BB. consumer ACK reaches broker after local effect but client loses confirmation;
+BC. producer publish succeeds, publisher confirm is lost, producer retries;
+BD. producer retransmission creates duplicate logical messages;
+BE. message is requeued repeatedly and enters a redelivery loop;
+BF. poison message repeatedly fails and blocks useful progress;
+BG. multiple unacknowledged deliveries are in flight and complete/ACK out of original order;
+BH. worker is cancelled/rebalanced while effect is in progress;
+BI. message is delivered to consumer A, then redelivered to consumer B;
+BJ. duplicate message has same logical operation but different transport delivery identity;
+BK. broker reports redelivery but receiver's original delivery was never actually processed;
+BL. delayed duplicate arrives after the local operation has already reached a terminal state;
+BM. publisher confirms and consumer acknowledgements create separate durability boundaries;
+BN. queue/broker restart changes which delivery attempt is visible to the worker;
+BO. retry/dead-letter/requeue policy changes operation ordering;
+BP. message is valid but belongs to a previous authority generation;
+BQ. partition/rebalance moves ownership while old worker continues executing;
+BR. workflow retry happens after the message was durably accepted but before local completion was recorded;
+BS. workflow completion is durable but downstream publication is delayed;
+BT. downstream publication occurs, but workflow acknowledgement is lost.
+
+### New distinction: delivery identity is not operation identity
+
+A broker delivery tag, message ID, event ID, workflow attempt ID, and Nexo operation_id are different domains.
+
+RabbitMQ explicitly scopes delivery tags to a channel. The same logical operation may therefore have multiple delivery attempts while retaining one application-level operation identity. citeturn0search0
+
+Nexo must not infer:
+
+new delivery => new operation
+
+nor:
+
+redelivery => definitely previously processed.
+
+The broker's redelivered flag is explicitly only a hint that the message may have been delivered before; RabbitMQ notes that a redelivery flag does not prove the previous consumer actually processed it. citeturn0search1
+
+### New distinction: acknowledgement is not effect proof
+
+The receiver can safely acknowledge only after the work required by its contract has been completed, but the acknowledgement itself remains a separate protocol boundary. RabbitMQ's reliability guide says applications should acknowledge after recording, forwarding, or performing the required operation; once acknowledged, the broker may remove the delivery. citeturn0search1
+
+Therefore:
+
+ACK(message) != universal proof of external effect
+
+The meaning of ACK must be explicitly bound to the receiver's durable completion boundary.
+
+### New distinction: publisher confirm is not receiver effect proof
+
+A publisher confirm indicates broker responsibility for the message, but it does not by itself prove that a downstream consumer performed the business effect. Conversely, losing a confirm does not prove the publish failed, creating a retry/duplicate window. citeturn0search0turn0search1
+
+### Updated invariant set
+
+INV-21: Transport delivery identity must remain distinct from logical operation identity.
+
+INV-22: Redelivery must be safe even when the receiver cannot know whether the previous delivery executed.
+
+INV-23: Lost ACK/confirm must produce an explicit UNKNOWN/reconciliation path rather than an assumed failure.
+
+INV-24: Broker-level at-least-once guarantees do not become exactly-once business effects without receiver-side idempotency/atomicity.
+
+INV-25: A redelivery flag is evidence of possible prior delivery, not proof of prior execution.
+
+INV-26: Poison-message retry must not create unbounded duplicate external effects or starvation; retry/dead-letter policy is part of the safety/liveness contract.
+
+INV-27: Rebalance/cancellation of a worker must not be treated as an external-effect fence.
+
+INV-28: ACK/confirm semantics must specify exactly which durable boundary they acknowledge.
+
+INV-29: Broker message ordering must not be confused with business-event ordering.
+
+INV-30: A message from an obsolete authority generation must be rejected at the protected effect boundary even if transport delivery is valid.
+
+### Test-model expansion
+
+Previous candidate scenarios: 51.
+
+New broker/workflow classes: BA-BT = 20.
+
+Updated candidate count: 71.
+
+This is still a candidate adversarial model, not an executed Nexo suite.
+
+### Important negative result
+
+The broker layer can provide durable delivery semantics and retry/redelivery behavior, but it does not automatically solve:
+
+- business operation identity;
+- payment-state transition correctness;
+- external authority fencing;
+- external effect atomicity;
+- reconciliation after ambiguous effect;
+- monetary ledger invariants.
+
+Therefore adding a broker does not collapse the previously separated layers into one guarantee.
+
+### Evidence ledger
+
+RABBITMQ_AT_LEAST_ONCE_ACK_REDELIVERY SOURCE CONFIRMED
+RABBITMQ_PUBLISH_CONFIRM_DUPLICATE_WINDOW SOURCE CONFIRMED
+RABBITMQ_REDELIVERY_FLAG_NOT_PROOF_OF_PRIOR_EXECUTION SOURCE CONFIRMED
+ACK_BOUNDARY != EXTERNAL_EFFECT_PROOF
+PUBLISH_CONFIRM != DOWNSTREAM_EFFECT_PROOF
+DELIVERY_ID != OPERATION_ID
+BROKER_REDELIVERY != BUSINESS_RETRY_SEMANTICS
+BROKER_GUARANTEE != PAYMENT_LEDGER_GUARANTEE
+POISON_RETRY/DEAD_LETTER IS SAFETY/LIVENESS CONCERN
+WORKER_REBALANCE/CANCELLATION != EFFECT_FENCE
+71 CANDIDATE ADVERSARIAL SCENARIOS
+MODEL NOT EXECUTED
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.811R: cross-check the 71-case model against Kafka transactional producer/consumer semantics and workflow execution boundaries, then identify whether partition ownership, offset commits, transactional read-process-write, and external sink cooperation introduce additional classes or merely map to existing ones. Freeze only after deduplicating the model.
