@@ -5,144 +5,96 @@ Status: RESEARCH ONLY. No Nexo implementation.
 ## Continuation note
 The document contains the full prior audit chain. The following section is appended without deleting or overwriting prior findings.
 
-## AB104.838R — RESOURCE-SIDE IDEMPOTENCY / RECONCILIATION / PARTIAL-COMPLETION AUDIT
+## AB104.839R — FENCING BOUNDARY + RESOURCE-SIDE IDEMPOTENCY ATTACK
 
 **Status:** RESEARCHED / NO IMPLEMENTATION / NO ARCHITECTURE FREEZE.
 
-### Fresh external evidence
+### External evidence cross-check
 
-Stripe's current API documentation makes an important boundary explicit: an idempotency key can cause subsequent retries to return the original result, but keys may be automatically removed after at least 24 hours; reusing a pruned key can create a new request. Stripe also compares parameters on key reuse and rejects mismatched parameters. citeturn0search1turn0search2
+A fencing token only protects against a stale authority when the protected resource itself checks the token and rejects lower generations. Kleppmann's analysis makes the boundary explicit: issuing a token from a lock service is insufficient if the resource does not enforce monotonic fencing. citeturn0search0
 
-Check's current API documentation provides an independent example of the same limitation: after its 24-hour key-expiry window, a reused key is treated as a new request, and its documentation recommends checking the resource before a late retry. This confirms that idempotency retention is a semantic part of the guarantee, not an implementation footnote. citeturn0search7
+Stripe's idempotency contract provides a separate resource-side mechanism: the same key can return the original result, but keys may be pruned after at least 24 hours and reuse after pruning can create a new request; parameter mismatch is rejected. citeturn0search1
 
-AWS transactional-outbox guidance confirms that outbox provides atomicity between the local database update and publication, while duplicate downstream delivery remains possible and consumers must be idempotent. It does not make an arbitrary external side effect atomic with the local transaction. citeturn0search0turn0search3
+AWS likewise documents that transactional outbox addresses local dual-write consistency but downstream delivery may duplicate, requiring idempotent consumers. citeturn0search3
 
-### Resource-side idempotency attack
+### Fencing phase attack
 
-A resource-side idempotency contract must answer at least four independent questions:
+The external-effect boundary can be divided into four phases:
 
-1. **Identity:** what exactly identifies the same semantic operation?
-2. **Retention:** for how long is that identity remembered?
-3. **Parameter binding:** what happens if the same identity is reused with different parameters?
-4. **Execution state:** how are NEW, IN-PROGRESS, COMPLETED, FAILED, and expired identities exposed?
+1. **PRE-ACCEPTANCE:** resource has not accepted the operation.
+2. **ACCEPTED/RESERVED:** resource has durably accepted an operation intent but has not necessarily produced the semantic effect.
+3. **COMMITTED EFFECT:** the semantic external effect has occurred.
+4. **POST-COMMIT OBSERVATION:** later reads/events expose the committed outcome, correction, or reversal.
 
-Stripe demonstrates all four dimensions in concrete form: result retention, parameter comparison, retry behavior, and a defined pruning window. citeturn0search1
+The key result is that fencing can prevent a stale actor only at a boundary where the resource evaluates the generation before permitting the protected mutation/reservation. If the resource has already committed the effect, a later fence cannot undo that effect; the outcome becomes a reconciliation/compensation problem.
 
-### Critical expiry result
+### Derived cases
 
-Idempotency is therefore **time-bounded unless the provider explicitly guarantees durable retention**.
+**F1 — stale epoch before acceptance:** resource rejects old epoch; no external effect. This is a genuine fencing success.
 
-This creates a new failure window:
+**F2 — stale epoch races with new epoch before acceptance:** resource's atomic comparison determines the winner; the rejected operation must not be interpreted as a failed semantic effect unless the resource's contract says so.
 
-`operation O → provider accepts O → idempotency record expires → coordinator retries same logical O → provider treats request as NEW`
+**F3 — old epoch accepted/reserved, then new epoch arrives:** fencing alone does not establish whether the reservation is cancellable, committed, or still pending. The resource contract must expose state/reconciliation semantics.
 
-The original idempotency key is no longer sufficient evidence of sameness.
+**F4 — old epoch commits effect before new epoch is established:** fencing cannot retroactively prevent the already committed effect. The correct result is historical evidence + reconciliation/compensation, not a false claim that fencing prevented execution.
 
-Therefore:
+**F5 — old epoch arrives after new epoch has been established:** resource-side monotonic fencing should reject the old mutation if the protected resource participates in the fence.
 
-**INV-EF-05 candidate:** an idempotency key only provides the deduplication guarantee within the provider's documented retention/semantic scope; outside that scope, reuse cannot be assumed safe.
+### Important boundary
 
-### Parameter-conflict result
+**Fencing is a prevention mechanism, not an outcome oracle.**
 
-Same-key/different-parameters is not a normal retry. It is a semantic identity conflict.
+It can establish `REJECTED_BEFORE_EFFECT` under a suitable resource contract. It cannot, by itself, establish `FAILED` for an operation whose request was accepted but whose downstream execution state is unknown. Likewise, it cannot establish `CONFIRMED` merely because the resource accepted a request unless the resource defines acceptance as the semantic effect.
 
-A safe resource contract must not silently interpret:
+### I22 reduction
 
-`same key + different semantic request`
+I22 = idempotency expiry → retry → possible second effect.
 
-as a valid continuation of the original operation.
+This is not automatically a new failure class. If provider idempotency retention expires, the same logical operation may cross from an idempotent retry regime into a new-operation regime. Existing retry/external-effect ambiguity classes cover the causal failure, but the retention boundary is a distinct interaction parameter that must be tested.
 
-Stripe explicitly rejects this class of mismatch. citeturn0search1
+**Disposition: I22 = parameterized interaction / UNTESTED; no new top-level class.**
 
-Therefore:
+### I23 reduction
 
-**INV-EF-06 candidate:** operation identity must bind to the intended semantic parameters strongly enough that key reuse with conflicting parameters is rejected or otherwise made explicitly non-equivalent.
+I23 = same idempotency key + different parameters.
 
-### Partial-completion attack
+A provider that rejects this combination is enforcing an identity/intent consistency contract. The conflict is not equivalent to ordinary duplicate delivery because the duplicate is semantically different. However, it can be represented by parameter-binding on the existing operation-identity witness.
 
-The dangerous state remains:
+**Disposition: I23 = COVERABLE by operation-identity parameterization; no new witness.**
 
-`reserve/accept O → execute external effect → crash before durable result`
+### I24 reduction
 
-A later retry can observe:
+I24 = provider reports IN-PROGRESS while coordinator considers retry.
 
-- key absent;
-- key IN-PROGRESS;
-- key COMPLETED;
-- key FAILED;
-- key EXPIRED;
-- or provider-specific UNKNOWN.
+This is a specific reconciliation state, not `UNKNOWN` and not `CONFIRMED`. A safe coordinator cannot infer that the effect occurred merely from IN-PROGRESS. Nor can it safely launch a new semantic operation if the provider's contract says the original may still commit.
 
-These are materially different evidence states. A local coordinator must not collapse them into one Boolean retryable/not-retryable value.
+**Disposition: I24 = independent interaction / UNTESTED.**
 
-AWS's outbox guidance reinforces the broader boundary: local durability and publication reliability do not remove duplicate or external-effect uncertainty. citeturn0search0
+### New invariant candidates
 
-### Reconciliation consequence
+**INV-F-01 — Fence enforcement locality:** a fencing token has safety meaning only if the protected resource (or an authoritative intermediary at the effect boundary) validates it before the protected mutation.
 
-The strongest safe external evidence hierarchy found in this round is:
+**INV-F-02 — Acceptance is not universally effect:** provider acceptance/reservation must not be mapped to CONFIRMED unless provider semantics explicitly define acceptance as the effect.
 
-**A. Authoritative resource lookup** — strongest when the resource has a stable operation/resource identity and the lookup semantics are authoritative.
+**INV-F-03 — Post-commit fencing is non-retroactive:** once an external effect is committed, a later epoch cannot honestly claim that fencing prevented the historical effect.
 
-**B. Provider-side idempotency record** — strong while retained and when the provider guarantees what the record means.
+**INV-F-04 — IN-PROGRESS is epistemic:** an in-progress provider state means execution remains unresolved; it must not be silently converted to CONFIRMED or FAILED.
 
-**C. Provider event/webhook history** — strong when authenticated, scoped, and semantically ordered; still requires freshness/reconciliation handling.
+These remain candidate invariants, not formally verified properties.
 
-**D. Local ACK/timeout alone** — insufficient to establish external effect.
+### Evidence-state refinement
 
-This is not a universal ranking across every provider; it is an evidence-contract pattern. The provider's own semantics determine which evidence is authoritative.
+The external boundary now needs to distinguish at least:
 
-### State classification attack
+`NOT_ACCEPTED`
+`ACCEPTED_OR_RESERVED`
+`COMMITTED`
+`UNKNOWN`
+`FAILED`
+`CORRECTED`
+`REVERSED`
 
-Can resource-side evidence distinguish the five states?
-
-| State | Resource-side evidence needed | Local timeout sufficient? |
-|---|---|---|
-| UNKNOWN | no authoritative terminal evidence | **No** |
-| CONFIRMED | authoritative resource/event evidence of effect | **No** |
-| FAILED | authoritative terminal rejection/failure | **No** |
-| CORRECTED | authoritative later correction referencing prior state | **No** |
-| REVERSED | authoritative later reversal/counter-effect | **No** |
-
-Therefore the coordinator cannot manufacture these terminal meanings from absence of a response.
-
-### New interaction candidates
-
-**I22 — idempotency expiry × late retry × prior external effect**
-
-`O executes → provider forgets idempotency identity → retry after retention window → second execution possible.`
-
-This is distinct from I20 because I20 assumes the operation identity remains usable for reconciliation; I22 explicitly crosses the provider's deduplication-retention boundary.
-
-**I23 — same idempotency key × conflicting parameters × retry**
-
-`O(payload A) → uncertain outcome → retry with same key but payload B.`
-
-This is not a normal duplicate; it is an identity/intent conflict and must not silently converge as though A and B were the same operation.
-
-**I24 — partial completion × provider IN-PROGRESS evidence × retry/reconciliation**
-
-`O may have executed → provider exposes IN-PROGRESS → coordinator must not issue an uncontrolled second effect.`
-
-These remain **candidate interactions**, not frozen witnesses. They must pass reduction against I17/I20 and existing retry/idempotency classes first.
-
-### Strong methodological result
-
-The external resource's **idempotency contract has a lifecycle**. Therefore the previous abstraction `operation_id → idempotent` was incomplete.
-
-The correct research-level abstraction is closer to:
-
-`operation identity + parameter binding + retention scope + execution-state semantics + reconciliation authority`
-
-This is still a semantic model, **not a Nexo architecture or data schema**.
-
-### Evidence ledger additions
-
-IDEMPOTENCY_RETENTION — SEMANTIC GUARANTEE IS PROVIDER-SCOPED AND TIME-BOUNDED IN SOME REAL APIs
-SAME_KEY_DIFFERENT_PARAMETERS — EXPLICIT CONFLICT CLASS CONFIRMED
-LATE_RETRY_AFTER_EXPIRY — CAN BECOME A NEW OPERATION
-RESOURCE_IN_PROGRESS — DISTINCT FROM UNKNOWN/COMPLETED/FAILED
-AUTHORITATIVE_RESOURCE_LOOKUP — POTENTIAL RECONCILIATION AUTHORITY, PROVIDER-DEPENDENT
-TIMEOUT_AS_TERMINAL_EFFECT — INSUFFICIENT
+These are not a single universal provider enum. They are semantic categories whose exact mapping depends on the provider contract. In particular, ACCEPTED_OR_RESERVED may transition to COMMITTED, FAILED, EXPIRED/CANCELLED, or remain UNKNOWN depending on the resource.
 
 ### Current disposition
 
@@ -151,14 +103,13 @@ I18: absorbed by W18 parameterization.
 I19: independent / untested.
 I20: independent / untested.
 I21: distinct ordered interaction / untested.
-I22: candidate / untested.
-I23: candidate / untested.
-I24: candidate / untested.
+I22: parameterized interaction / untested.
+I23: absorbed by operation-identity parameterization.
+I24: independent / untested.
 INV-EH-01: candidate.
 INV-EH-02: candidate.
 INV-EF-01..04: candidate.
-INV-EF-05: candidate.
-INV-EF-06: candidate.
+INV-F-01..04: candidate.
 20 top-level classes: **UNFROZEN**.
 Coverage denominator: **NOT FROZEN**.
 Formal verification: **NOT PERFORMED**.
@@ -166,6 +117,6 @@ Implementation: **NOT STARTED**.
 
 ### Exact next action
 
-**AB104.839R:** reduce I22/I23/I24 against all existing retry, idempotency, stale-event, and UNKNOWN interactions. Then attack provider-side fencing/epoch semantics and determine whether stale authority can be rejected before effect execution, after reservation, or only after execution. Explicitly distinguish provider guarantees from coordinator assumptions.
+**AB104.840R:** attack I24 and the ACCEPTED_OR_RESERVED state against retry, fencing, timeout, recovery, correction, and provider reconciliation. Determine whether ACCEPTED_OR_RESERVED needs to remain an explicit semantic state or can safely be represented as UNKNOWN + provider-specific evidence. Then attack F2/F3 race orderings to determine the minimum atomicity required at the resource boundary.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
