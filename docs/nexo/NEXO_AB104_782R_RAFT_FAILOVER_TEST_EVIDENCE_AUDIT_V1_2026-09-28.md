@@ -1906,3 +1906,71 @@ Current: I19 independent/untested; I20 independent/untested; I21 distinct ordere
 Exact next action: AB104.857R — attack CAPTURE success=true -> later CAPTURE_FAILED against I19/I20/I24 and the existing external-effect ambiguity class; determine whether the typed effect-state graph fully covers this later correction or a distinct interaction remains.
 
 No deletion/overwrite. No silent witness mutation. No architecture implementation.
+
+
+---
+## AB104.857R — ASYNCHRONOUS CAPTURE SUCCESS → LATER CAPTURE_FAILED REDUCTION
+
+**Status:** RESEARCHED / PROVIDER-CONTRACT CROSS-CHECK / NO IMPLEMENTATION.
+
+Adyen's current capture contract is unusually useful as a semantic witness. A CAPTURE webhook with success=true means the capture request was valid and submitted to the bank/third-party processor; Adyen explicitly states that the scheme can still reject it later, producing CAPTURE_FAILED, potentially days later. citeturn0search0turn0search2
+
+### Reduction
+
+Sequence: CAPTURE(success=true) → external processor still has authority over final capture → later CAPTURE_FAILED → durable local state must interpret the later terminal evidence without erasing the earlier submission evidence.
+
+Against I19: there is a later state change, but this is not merely a local correction/reversal of a previously confirmed effect. The first event explicitly means submitted, not terminal settlement/capture. Therefore treating it as CONFIRMED → CORRECTED would overstate the first evidence.
+
+Against I20: this does not begin at UNKNOWN. The provider gives positive evidence that the request was valid and submitted, followed by a later failure. Therefore UNKNOWN → CONFIRMED does not model it correctly.
+
+Against I24: IN_PROGRESS is insufficient because the later CAPTURE_FAILED is a typed terminal outcome from the provider. I24 is a pending-state interaction, while this sequence contains an explicit terminal transition.
+
+Against the existing external-effect ambiguity class: the ambiguity is narrower. The provider supplies a typed intermediate state (submitted) and later terminal evidence. The key requirement is to preserve the epistemic meaning of the intermediate state rather than promote it to terminal success.
+
+### Result
+
+No new top-level class is justified.
+
+The existing effect-state graph needs a refinement:
+
+ACCEPTED_OR_RESERVED → SUBMITTED_TO_EXTERNAL_PROCESSOR → CONFIRMED / FAILED / CORRECTED / REVERSED
+
+with provider-specific legality.
+
+SUBMITTED_TO_EXTERNAL_PROCESSOR must not be aliased to CONFIRMED, COMMITTED, or UNKNOWN.
+
+The Adyen contract also demonstrates that FAILED can be a later authoritative transition after a positive submission event; therefore our prior generic prohibition on CONFIRMED → FAILED must be read carefully: it applies to a genuinely terminal CONFIRMED state, not to a nonterminal submitted/accepted state.
+
+### New candidate invariant
+
+INV-EF-05 — Intermediate external-submission evidence must not be promoted to terminal effect knowledge.
+
+This is a refinement of the existing epistemic-state model, not yet a verified invariant.
+
+### Witness decision
+
+No W19/W20/W21 is frozen.
+
+This round provides strong provider evidence for a required typed transition, but the causal failure is already representable by the existing external-effect ambiguity/reconciliation family once the intermediate state is modeled correctly.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized.
+I24: independent / untested.
+I25: parameterized coverage.
+I26: empirically supported semantic interaction / witness not frozen.
+I27: model-level residual / empirical witness not established.
+W19: not frozen.
+20 top-level classes: UNFROZEN.
+Coverage denominator: NOT FROZEN.
+Formal verification: NOT PERFORMED.
+Implementation: NOT STARTED.
+
+### Exact next action
+
+AB104.858R: attack the newly exposed intermediate-state distinction against the existing typed effect-state graph and search additional provider/workflow contracts for states equivalent to SUBMITTED_TO_EXTERNAL_PROCESSOR, ACCEPTED, RESERVED, or IN_PROGRESS. Determine whether one universal semantic category is justified or whether these states must remain provider-scoped evidence categories.
+
+No deletion/overwrite. No silent witness mutation. No architecture implementation.
