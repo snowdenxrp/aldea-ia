@@ -261,3 +261,96 @@ NEXO_IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.785R: investigate transactional outbox/inbox, idempotency keys, and durable effect journals in real systems. Focus on the exact atomic boundary and on the remaining failure window between committing the journal and performing the external effect.
+
+
+## AB104.785R research — transactional outbox/inbox and the residual dual-write window
+
+### Evidence from real systems
+
+AWS Prescriptive Guidance describes transactional outbox as the remedy for a database-write + message-publish dual write: business state and an outbox row are committed in the same local transaction, after which a relay publishes asynchronously. It explicitly warns that relay delivery can be duplicated and therefore consumers should be idempotent. This establishes a durable intent boundary, not atomic execution of an arbitrary downstream effect. citeturn0search0
+
+Debezium's Outbox Event Router captures only changes to the outbox table and routes them to the broker. This gives a concrete CDC implementation of the relay boundary, but the external consumer still owns its own effect semantics. citeturn0search9turn0search15
+
+Kafka's own documentation states that exactly-once processing for Kafka-managed destinations is supported, while exactly-once delivery to other destination systems generally requires cooperation from those systems. The consumer position must be coordinated with the destination state; otherwise the default is at-least-once. citeturn0search19turn0search7
+
+Stripe provides a concrete API-side idempotency implementation: an idempotency key identifies a retry-equivalent request, the first result is retained, and later requests with the same key return that result. Stripe also compares parameters for a reused key and errors on mismatch. The key can eventually be pruned, after which the same key may represent a new request. Therefore idempotency scope/retention is itself part of the safety contract. citeturn0search1turn0search17
+
+### Residual window
+
+Transactional outbox changes:
+
+business transaction -> durable intent -> relay
+
+but does not collapse:
+
+relay -> external effect -> acknowledgement
+
+into one atomic boundary.
+
+If the relay publishes to an external destination and crashes before recording delivery, it can retry. That is safe only if the destination recognizes the same logical operation or the relay can reconcile the outcome. AWS explicitly calls out duplicate downstream delivery and recommends idempotent processing. citeturn0search0
+
+### Nexo boundary model
+
+For a protected external effect R:
+
+T0 local durable commit:
+  state change + effect intent(operation_id, authority_generation)
+
+T1 relay obtains intent
+
+T2 resource validates authority_generation
+
+T3 resource atomically accepts/rejects operation_id
+
+T4 external effect becomes durable
+
+T5 outcome becomes queryable/reconcilable
+
+The crucial question is whether T3 and T4 share an atomic boundary. If not, the protocol still has a dual-write window and cannot claim universal exactly-once semantics merely from the outbox.
+
+### New distinction
+
+OUTBOX_DURABLE_INTENT != EFFECT_EXECUTED
+
+IDEMPOTENCY_KEY != AUTHORITY_FENCE
+
+CDC_REDELIVERY != DUPLICATE_EFFECT when the sink is properly idempotent
+
+ACK != PROOF_OF_EFFECT unless the acknowledgement semantics explicitly bind to the durable effect
+
+IDEMPOTENCY_SCOPE_AND_RETENTION are part of the contract
+
+A finite idempotency-key retention period means an old operation identifier can eventually become reusable; Nexo cannot assume an operation identifier is globally unique forever unless its namespace/retention/recovery rules guarantee that property.
+
+### Failure matrix
+
+| Window | Safe interpretation |
+|---|---|
+| DB commit fails | no durable intent |
+| DB commit succeeds, relay dead | intent remains recoverable |
+| relay sends, crashes before durable delivery mark | retry required; duplicate possible |
+| sink accepts, ACK lost | outcome UNKNOWN; reconcile by operation identity |
+| sink rejects stale generation | safe stale-operation rejection |
+| sink accepts current generation then process dies | effect may exist; retry must dedupe/reconcile |
+| idempotency record expires before late retry | old operation may be interpreted as new unless protocol prevents reuse |
+
+### Evidence ledger
+
+TRANSACTIONAL_OUTBOX_ATOMIC_LOCAL_INTENT SOURCE CONFIRMED
+OUTBOX_RELAY_AT_LEAST_ONCE/DUPLICATE POSSIBILITY SOURCE CONFIRMED
+DEBEZIUM_OUTBOX_CDC SOURCE CONFIRMED
+KAFKA_EXTERNAL_EOS_REQUIRES_DESTINATION_COOPERATION SOURCE CONFIRMED
+IDEMPOTENCY_KEY_RETRY_SUPPRESSION SOURCE CONFIRMED
+IDEMPOTENCY_PARAMETER_BINDING SOURCE CONFIRMED
+IDEMPOTENCY_RETENTION/PRUNING SOURCE CONFIRMED
+OUTBOX_DURABLE_INTENT != EXTERNAL_EFFECT
+OUTBOX_DOES_NOT_ATOMICALLY_COMMIT_ARBITRARY_EXTERNAL_EFFECT
+IDEMPOTENCY_KEY != AUTHORITY_FENCE
+ACK_SEMANTICS_MUST_BE_EXPLICIT
+EXECUTED_EXTERNAL_EFFECT_RACE BY THIS AUDIT NO
+FORMAL_UNIVERSAL_EXACTLY_ONCE_PROOF NOT ESTABLISHED
+NEXO_IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.786R: inspect real inbox/idempotent-consumer implementations and failure tests, especially concurrent duplicate delivery, parameter mismatch, retention expiry, crash after sink commit, and reconciliation. Determine whether operation identity must be bound to payload hash, authority generation, resource namespace, and a durable epoch to prevent semantic key reuse.
