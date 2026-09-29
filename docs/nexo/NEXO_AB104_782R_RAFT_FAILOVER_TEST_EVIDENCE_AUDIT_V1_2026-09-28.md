@@ -1135,3 +1135,110 @@ Implementation: **NOT STARTED**.
 **AB104.850R:** attack I27 against the existing concurrency, transaction-isolation, authority, duplicate-delivery, correction and reconciliation witnesses. Search executable/code-level cases where two valid same-resource transitions race without an authoritative total order, and determine the minimum witness needed to distinguish I27 from ordinary optimistic-concurrency rejection.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.850R — I27 ATTACK: CONCURRENT SAME-RESOURCE CONFLICT WITHOUT AUTHORITATIVE PRECEDENCE
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Code/evidence cross-check
+
+PostgreSQL's current documentation shows that Serializable isolation permits concurrent transactions to commit only when their result is consistent with some serial ordering; otherwise one transaction is aborted with a serialization failure and must retry the whole transaction. citeturn0search0turn0search4 PostgreSQL's SSI implementation explicitly detects dependency cycles that would make concurrent results inconsistent with any serial execution. citeturn0search7 Kafka provides a contrasting concrete fencing mechanism: producer epochs can fence an older producer instance, producing ProducerFencedException/InvalidProducerEpochException when an old epoch attempts to act. citeturn0search6turn0search9
+
+### I27 reduction target
+
+I27 = two authenticated/scoped transitions for the same resource, mutually incompatible under the resource contract, with no authoritative precedence, where the protected boundary must not choose a winner by arrival order.
+
+### Attack 1 — ordinary database serialization conflict
+
+A PostgreSQL SERIALIZABLE conflict is not sufficient to establish I27. The database supplies an authoritative local serialization decision: one transaction commits and the other aborts. The protected decision therefore has a total local outcome, even if the application did not know the winner before commit.
+
+**Result:** I27 is NOT equivalent to ordinary local serialization failure.
+
+### Attack 2 — optimistic version conflict
+
+A version predicate similarly supplies a local precedence boundary: one update wins and the stale update fails. This is a local authority decision, not an unresolved CONFLICTING state.
+
+**Result:** I27 survives this reduction.
+
+### Attack 3 — fencing/epoch conflict
+
+Kafka's producer epoch provides a concrete external-resource analogue where the resource itself rejects an older epoch. This again supplies authoritative precedence. The stale actor may be rejected without requiring the system to invent an ordering from arrival time. citeturn0search6
+
+**Result:** epoch fencing is not I27; it is one mechanism that prevents the unresolved condition.
+
+### Attack 4 — two valid external events, no total-order evidence
+
+The unresolved case remains possible in the abstract/provider-neutral model:
+
+E1 authenticated + scoped
+E2 authenticated + scoped
+E1 and E2 incompatible
+no sequence/version/causal authority
+no authoritative status/reconciliation result
+
+At this boundary the system cannot safely select E1 or E2 merely because one arrived first.
+
+**Result:** I27 remains admissible and provisionally independent.
+
+### Minimum witness candidate W19
+
+No W19 is frozen yet. The minimum candidate sequence is:
+
+1. Resource R has state S.
+2. Two independently valid operations O1 and O2 target R.
+3. Both produce authenticated/scoped events E1 and E2.
+4. E1 and E2 imply mutually incompatible transitions under the resource contract.
+5. Neither event carries authoritative precedence over the other.
+6. No authoritative reconciliation query can resolve the conflict at decision time.
+7. Protected boundary must hold/reject/reconcile rather than choose by arrival order.
+8. Both events remain durable evidence.
+
+This is intentionally not called a bug until a concrete system contract demonstrates that such a state is reachable and requires this decision.
+
+### Important distinction
+
+**Serializable failure / optimistic conflict / fencing rejection** are *resolution mechanisms*.
+
+**I27** is the unresolved semantic condition where those mechanisms do not provide authoritative precedence.
+
+Therefore the existence of strong concurrency mechanisms does not eliminate the need to model the unresolved external case; it only shows how a particular system may prevent it.
+
+### Higher-order interaction check
+
+I27 composes with I21, I24, I25, I26, and I19. These combinations are higher-order interactions, not evidence that I27 is a duplicate of those classes.
+
+### Candidate invariants
+
+**INV-EH-16 — No arrival-order winner:** when no authoritative precedence exists, arrival order cannot choose current state.
+
+**INV-EH-17 — Local conflict resolution is evidence:** serialization/version/fencing outcomes are authoritative only within their declared domain; they do not prove arbitrary external effects.
+
+**INV-EH-18 — Unresolved conflict preserves evidence:** holding/rejecting/reconciling must preserve both observations and their provenance.
+
+Candidates only; not formally verified.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+I27: **admissible / provisionally independent / untested**.
+W19: **candidate only / not frozen**.
+INCOMPARABLE: epistemic relation / no witness frozen.
+CONFLICTING: provisional semantic/reconciliation relation.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.851R:** attack W19/I27 against the real external-effect boundary: payment capture/refund, webhook ordering, provider idempotency/reconciliation, and resource-side fencing. Determine whether a real provider can expose two authenticated incompatible events without an authoritative precedence query, or whether I27 is only a theoretical residue that should be represented as a reconciliation outcome rather than a witness.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
