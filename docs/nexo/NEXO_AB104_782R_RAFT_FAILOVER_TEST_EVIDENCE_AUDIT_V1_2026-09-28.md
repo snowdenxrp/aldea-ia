@@ -2006,3 +2006,74 @@ Current: I19 independent/untested; I20 independent/untested; I21 distinct ordere
 Exact next action: AB104.858R — attack the corrected transition model against reversal/correction paths and stale webhook delivery: ACCEPTED/SUBMITTED -> FAILED, ACCEPTED/SUBMITTED -> COMMITTED, later CORRECTED/REVERSED, and duplicate/out-of-order delivery. Determine whether one typed state-transition relation plus freshness is sufficient, or whether a new interaction remains when a terminal-looking local projection is contradicted by later provider evidence.
 
 No deletion/overwrite. No silent witness mutation. No architecture implementation.
+
+
+---
+## AB104.858R — TYPED TRANSITIONS + FRESHNESS AGAINST LATE/OUT-OF-ORDER PROVIDER EVIDENCE
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Evidence
+Adyen documents CAPTURE and CAPTURE_FAILED as distinct webhook events. A CAPTURE success=true means submission to the downstream scheme, while CAPTURE_FAILED may arrive later if the scheme rejects it. Adyen also identifies each request with a PSP reference and exposes event dates and failure reasons. citeturn0search1turn0search9 Microsoft event-sourcing guidance treats the event stream as ordered history, recommends immutable append-only history, sequence identifiers, idempotent consumers, and reconciliation when events affecting the same entity interact. Microsoft Fabric likewise states that at-least-once delivery can duplicate events and does not guarantee arrival order. citeturn0search0turn0search2
+
+### Transition attack
+The relevant legal transitions remain:
+
+ACCEPTED/SUBMITTED -> FAILED
+ACCEPTED/SUBMITTED -> COMMITTED
+COMMITTED -> CORRECTED/REVERSED
+
+The incoming event must additionally be classified by semantic freshness:
+NEWER / EQUAL-DUPLICATE / OLDER / INCOMPARABLE.
+
+A late CAPTURE_FAILED after an older ACCEPTED/SUBMITTED projection must not be treated as a generic duplicate. Conversely, a late older CAPTURE/SUBMITTED event must not resurrect a later terminal state. The event history remains immutable; the current projection follows the contract's semantic ordering/freshness relation. citeturn0search0
+
+### Reduction results
+
+**ACCEPTED/SUBMITTED -> FAILED:** already representable in the typed state graph. No new witness.
+
+**ACCEPTED/SUBMITTED -> COMMITTED:** also representable as a provider-specific legal transition; no new witness.
+
+**COMMITTED -> CORRECTED/REVERSED:** already represented by I19's correction/reversal family, subject to provider-specific evidence.
+
+**Late duplicate/out-of-order delivery:** covered by freshness + idempotent-consumer semantics when the provider/resource supplies enough ordering or identity evidence. Microsoft explicitly recommends sequence tracking/idempotency because delivery order is not guaranteed. citeturn0search0turn0search2
+
+### Important boundary
+Freshness alone is not enough when the provider gives no authoritative ordering relation. If two authenticated events are INCOMPARABLE, the system must not invent a total order. It preserves evidence and enters the existing reconciliation/UNKNOWN path unless the provider contract supplies a stronger state predicate.
+
+### New attack: terminal-looking local projection
+Consider:
+local projection = COMMITTED
+then a later authoritative provider event says FAILED or REVERSED.
+
+The correct question is not whether local state may simply be overwritten. The event history must preserve the earlier observation, and the provider contract determines whether the later event is a correction/reversal, a distinct lifecycle transition, or evidence that the earlier local projection was overconfident. Microsoft event sourcing explicitly warns that rewriting historical events breaks the audit trail. citeturn0search0
+
+### Decision
+No new witness is frozen. The combined mechanism needed is:
+1. typed transition legality;
+2. semantic freshness relation scoped to resource/namespace/incarnation;
+3. immutable evidence history;
+4. idempotent duplicate handling;
+5. reconciliation when ordering/effect knowledge is insufficient.
+
+This is a **model sufficiency result**, not a formal proof. It also does not prove that every provider exposes sufficient freshness evidence.
+
+### Current disposition
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction.
+I24: independent / untested.
+I25: parameterized coverage.
+I26: empirically supported semantic interaction / witness not frozen.
+I27: model-level residual / empirical witness NOT established.
+W19: NOT FROZEN.
+20 top-level classes: UNFROZEN.
+Coverage denominator: NOT FROZEN.
+Formal verification: NOT PERFORMED.
+Implementation: NOT STARTED.
+
+### Exact next action
+**AB104.859R:** attack the unresolved case: two authenticated same-resource terminal events that are both semantically valid but lack a provider ordering relation. Determine whether this is genuinely a new CONFLICTING interaction or reducible to INCOMPARABLE + reconciliation, using concrete event schemas/implementations rather than hypothetical Boolean combinations.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
