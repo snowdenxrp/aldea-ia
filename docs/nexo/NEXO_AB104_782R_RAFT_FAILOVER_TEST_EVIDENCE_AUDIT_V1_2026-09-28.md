@@ -3278,3 +3278,70 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.812R: final cross-check against workflow cancellation/timeout, poison-message liveness, retention/compaction, and fencing recovery. Determine whether any failure class is still absent; then produce a deduplicated coverage ledger before declaring the adversarial model frozen.
+
+
+---
+
+## AB104.811R-CORRECTION — CONTINUITY RECONCILIATION
+
+**Date:** 2026-09-28
+
+### Reason for correction
+
+A continuity audit found that AB104.811R was written twice in this file. Both historical blocks are preserved intentionally; no prior text is deleted or overwritten.
+
+The two blocks are not equivalent. The earlier AB104.811R block contains the more complete normalization into **20 failure classes** and explicitly defines the next cross-product audit. A later appended AB104.811R block compressed that model into **14 canonical classes** after adding Kafka-specific witnesses. That later 14-class list is therefore treated as an **intermediate compression**, not as the canonical taxonomy for the next audit.
+
+### Canonical state restored
+
+For the continuation of AB104, the working taxonomy is the earlier **20 normalized classes**:
+
+1. operation identity collision
+2. payload-binding conflict
+3. duplicate delivery/retry
+4. acknowledgement ambiguity
+5. transaction isolation anomaly
+6. commit/apply separation
+7. stale observation/order
+8. state-machine transition race
+9. authority-generation/fencing race
+10. worker ownership/rebalance race
+11. external-effect ambiguity
+12. reconciliation consistency/retention
+13. ledger conservation/multi-account invariant
+14. correction/reversal
+15. idempotency retention/reuse
+16. broker/workflow liveness and poison-message behavior
+17. recovery/restart continuity
+18. namespace/incarnation confusion
+19. authentication/source-validity failure
+20. cross-domain atomicity boundary
+
+The 81 concrete witnesses remain evidence witnesses; they are **not** 81 independent invariants. The 14-class compression remains historical evidence and may be used as a mapping aid, but it must not replace the 20-class coverage model.
+
+### Research checkpoint
+
+Fresh source review for the pending AB104.812R dimensions confirms the gaps are real and materially distinct:
+
+- RabbitMQ documents at-least-once delivery, redelivery after unacknowledged processing, and explicitly warns that requeue/redelivery can form loops; quorum queues expose delivery counts and can drop or dead-letter messages after a delivery limit. citeturn0search0turn0search1turn0search2
+- Temporal documents automatic task retry and separate workflow execution retry histories; Nexus operations can be attempted multiple times and handlers are expected to be idempotent. citeturn0search3
+- etcd documents that compaction makes older revisions inaccessible and that snapshot restore may require revision bumps/invalidating watcher caches, demonstrating that recovery/history continuity is distinct from simply restoring data. citeturn0search4turn0search8
+
+These sources do not constitute a universal proof of the Nexo model. They provide concrete implementation evidence for the pending adversarial dimensions.
+
+### Exact continuation point
+
+**AB104.812R is NOT yet declared complete.** Its required work is now:
+
+1. cross-product fencing + retry;
+2. serialization/isolation failure + external effect;
+3. rebalance/ownership change + delayed response;
+4. correction/reversal + stale evidence;
+5. retention/compaction expiry + redelivery/retry;
+6. recovery/restart + namespace/incarnation reuse;
+7. workflow cancellation/timeout + external effect;
+8. poison-message liveness + terminal/UNKNOWN state;
+9. construct the minimum independent witness set covering the 20 classes;
+10. only then assess whether the adversarial taxonomy can be frozen.
+
+**Status:** RECONCILED_CONTINUITY / RESEARCH_IN_PROGRESS / MODEL_UNFROZEN / NO_IMPLEMENTATION.
