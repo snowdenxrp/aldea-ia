@@ -1526,3 +1526,93 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.798R: investigate concrete receiver-side atomic/idempotent APIs and failure tests: Stripe-style idempotency, database unique/CAS constraints, Kafka transactional sinks, and cloud APIs with client-token semantics. Determine exactly what their guarantees cover, retention limits, stale-authority behavior, and ambiguous-response recovery.
+
+## AB104.798R — receiver-side idempotency, atomic conflict handling, and guarantee scope
+
+### Stripe: strong retry identity, but bounded retention and no authority fencing
+
+Stripe's current idempotency contract stores the first result associated with an idempotency key and returns that result on later retries. It also compares later parameters with the original request and rejects mismatches. However, keys may be automatically removed after at least 24 hours; after pruning, reuse of the same key creates a new request. Stripe's mechanism therefore protects retry duplication only within its documented retention/identity scope. It is not an authority-generation fence. citeturn1search0
+
+Evidence:
+STRIPE_IDEMPOTENCY_RETURNS_PRIOR_RESULT SOURCE CONFIRMED
+STRIPE_PARAMETER_BINDING SOURCE CONFIRMED
+STRIPE_IDEMPOTENCY_RETENTION_FINITE SOURCE CONFIRMED
+STRIPE_REUSE_AFTER_PRUNING_CAN_CREATE_NEW_REQUEST SOURCE CONFIRMED
+STRIPE_IDEMPOTENCY != AUTHORITY_FENCE
+
+### AWS EC2: client-token idempotency is explicitly scoped
+
+EC2 documents client-token idempotency with regional or zonal scope. A retry with the same token and same parameters does not perform the action again; parameter mismatch can produce IdempotentParameterMismatch. The same token can represent an independent request in another Region, demonstrating that operation identity is namespace-scoped rather than globally meaningful. citeturn0search1turn1search13
+
+Evidence:
+AWS_CLIENT_TOKEN_IDEMPOTENCY SOURCE CONFIRMED
+AWS_PARAMETER_BINDING SOURCE CONFIRMED
+AWS_IDEMPOTENCY_SCOPE_REGIONAL_OR_ZONAL SOURCE CONFIRMED
+AWS_SAME_TOKEN_DIFFERENT_NAMESPACE_CAN_BE_DISTINCT_OPERATION SOURCE CONFIRMED
+CLIENT_TOKEN != UNIVERSAL_OPERATION_ID
+
+### PostgreSQL: atomic conflict arbitration inside one database
+
+Current PostgreSQL documents ON CONFLICT DO UPDATE as an atomic INSERT-or-UPDATE outcome under concurrency. A unique index/constraint acts as the conflict arbiter. This can provide a concrete receiver-side atomic boundary for a local database effect: identity reservation/deduplication and the protected row mutation can participate in one transaction. citeturn0search2
+
+But this boundary ends at the PostgreSQL transaction. A subsequent network call, device command, payment request, or other external side effect is not automatically included.
+
+Evidence:
+POSTGRES_ON_CONFLICT_ATOMIC_CONFLICT_ARBITRATION SOURCE CONFIRMED
+UNIQUE_CONSTRAINT_AS_CONCURRENCY_ARBITER SOURCE CONFIRMED
+LOCAL_DB_DEDUP_PLUS_MUTATION_CAN_SHARE_TRANSACTION SOURCE-SUPPORTED
+POSTGRES_TRANSACTION != ARBITRARY_EXTERNAL_EFFECT_ATOMICITY
+
+### Kafka: exactly-once is strongest when the destination participates in Kafka's transaction boundary
+
+Kafka's current design explicitly states that exactly-once processing is achieved for Kafka-managed input/output/state, while external destination systems generally require cooperation. Kafka describes the core limitation as coordinating the consumer position with the actual stored output; where the destination can participate in the necessary coordination, stronger semantics are possible. citeturn1search3turn1search5
+
+This is a useful architectural boundary: exactly-once is not a property of the worker alone. It is a property of the complete commit/effect protocol.
+
+Evidence:
+KAFKA_EOS_KAFKA_MANAGED_STATE_AND_OUTPUT SOURCE CONFIRMED
+KAFKA_EXTERNAL_DESTINATION_REQUIRES_DESTINATION_COOPERATION SOURCE CONFIRMED
+KAFKA_EOS_IS_PROTOCOL_BOUNDARY_PROPERTY NOT WORKER_ONLY
+
+### Cross-system comparison
+
+| System | Duplicate protection | Request binding | Scope/retention | Authority fencing | Arbitrary external effect atomicity |
+|---|---|---|---|---|---|
+| Stripe | idempotency key | yes | finite/keys pruned | not established | no |
+| AWS EC2 | client token | yes | regional/zonal | not established | no |
+| PostgreSQL | unique/CAS/transaction | schema-defined | DB transaction/state | can be encoded as condition, not automatic | no |
+| Kafka Streams | transactional IDs/offsets/state | protocol-defined | Kafka transaction/state | producer epochs/fencing in Kafka paths | external destination requires cooperation |
+
+### Important refinement
+
+A receiver can satisfy all of the following for a local protected resource:
+
+identity + payload binding + authority condition + mutation
+
+inside one atomic transaction.
+
+That is stronger than a coordinator doing:
+
+check -> send -> record.
+
+However, the receiver must actually own the protected effect. If the final effect occurs outside that atomic resource, the dual-write/ambiguous-outcome boundary returns.
+
+### Evidence ledger
+
+RECEIVER_SIDE_IDEMPOTENCY_IS_STRONGER_THAN_COORDINATOR_RETRY_LOGIC
+OPERATION_IDENTITY_IS_NAMESPACE_SCOPED
+PAYLOAD_BINDING_PREVENTS_SILENT_IDENTITY_REUSE
+FINITE_RETENTION_IS_PART_OF_IDEMPOTENCY_CONTRACT
+LOCAL_DB_ATOMIC_DEDUP_PLUS_MUTATION SOURCE-SUPPORTED
+KAFKA_EOS_REQUIRES DESTINATION COOPERATION FOR EXTERNAL SYSTEMS
+IDEMPOTENCY != AUTHORITY_FENCING
+AUTHORITY_FENCING != RECONCILIATION
+LOCAL_ATOMICITY != ARBITRARY_EXTERNAL_EFFECT_ATOMICITY
+UNIVERSAL_EXTERNAL_EXACTLY_ONCE NOT ESTABLISHED
+EXECUTED NEXO EXTERNAL-EFFECT RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.799R: research concrete failure tests and bug reports for idempotency receivers and transactional sinks: lost-response-after-commit, stale retry after retention, concurrent same-key submissions, sink offset/effect divergence, and whether receiver-side authority fencing is independently tested under crash/restart.
