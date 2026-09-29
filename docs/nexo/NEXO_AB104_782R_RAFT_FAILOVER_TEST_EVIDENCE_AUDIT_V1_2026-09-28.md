@@ -4822,3 +4822,71 @@ I14-I16: I14/I15 remain pending from prior audit; I16 independent/UNTESTED with 
 **AB104.831R:** attack I17 and I18 against the current witnesses and taxonomy, then perform a bounded interaction search over the four predicates {IntentDurable, EffectKnowledge, DedupCapability, AckKnowledge}. Determine which combinations are admissible, duplicates, impossible, or require a new witness.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+---
+## AB104.831R — BOUNDED EFFECT-STATE COMBINATION SEARCH
+
+**Date:** 2026-09-28
+**Status:** RESEARCHED / I17-I18 REDUCED / W17 RETAINED PROVISIONALLY / NO IMPLEMENTATION.
+
+### External evidence
+
+NIST distinguishes ordinary t-way coverage from ordered state-based coverage: the relevant interaction can depend on both values and their order. NIST also describes sequence covering for finite operation sequences. citeturn0search0turn0search7
+
+A current Microsoft architecture reference gives a concrete idempotent-consumer implementation boundary: atomic uniqueness for deduplication, and a separate in-progress/completed state when the external side effect cannot participate in the database transaction. It explicitly treats an in-progress external call as potentially partially completed and requiring reconciliation rather than assuming absence. citeturn0search11
+
+### Bounded four-predicate search
+
+Predicates: ID = IntentDurable; EK = EffectKnowledge; DC = DedupCapability; AK = AckKnowledge.
+
+The search is restricted to semantically meaningful states at the retry/effect boundary.
+
+**I17 — DC absent × AK unknown × retry:** ADMISSIBLE / INDEPENDENT / UNTESTED. It is not a duplicate of I16 because I16 permits provider-side deduplication, while I17 specifically removes that capability and therefore requires status/reconciliation or UNKNOWN rather than trusting a repeated key.
+
+**I18 — ID durable × EK confirmed × local terminal-state loss:** ADMISSIBLE / INDEPENDENT / UNTESTED. It begins from confirmed external effect, unlike I16, and tests reconstruction without producing a second semantic effect.
+
+### Important reduction result
+
+The four predicates do not form a simple 2^4 truth-table universe. Some combinations are not semantically admissible at the same boundary. DedupCapability is a capability, not proof that deduplication occurred; AckKnowledge does not imply external-effect confirmation for asynchronous providers; IntentDurable=false does not prove the operation was never attempted.
+
+Therefore the finite universe must be defined as **reachable epistemic states + causal transitions**, not a raw Cartesian product.
+
+### Candidate W18
+
+**W18 — CONFIRMED EXTERNAL EFFECT + LOST LOCAL TERMINAL STATE**
+
+R0 provider confirms O.
+R1 local terminal-state persistence/acknowledgement is lost or unavailable.
+R2 recovery reconstructs O using durable identity/provider reference.
+R3 retry/reconciliation must not create a second semantic effect.
+R4 local state is rebuilt from authoritative evidence or remains explicitly inconsistent/UNKNOWN where evidence is insufficient.
+
+### I17 witness status
+
+No W19 is accepted yet. Existing W17 can be parameterized with DC=absent, but that changes the protected-boundary decision and remains subject to causal-equivalence testing.
+
+### Taxonomy result
+
+I17 and I18 do not justify new top-level failure classes. They remain higher-order interactions across existing classes: external-effect ambiguity, acknowledgement ambiguity, operation identity, recovery/restart continuity, cross-domain atomicity, and reconciliation.
+
+### Methodological correction
+
+A finite universe should not be defined as every Boolean combination of predicates. It should be generated from reachable state, admissible causal transition, protected boundary, and observable epistemic consequence. This is consistent with NIST's state-based ordered-combination approach. citeturn0search0turn0search7
+
+### Current disposition
+
+**I16:** ADMISSIBLE / INDEPENDENT.
+**I17:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+**I18:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+**W17:** RETAINED PROVISIONALLY.
+**W18:** CANDIDATE.
+**W19:** NOT CREATED.
+**20 classes:** UNFROZEN.
+**Coverage denominator:** NOT FROZEN.
+**Formal verification/implementation:** NOT PERFORMED.
+
+### Exact next action
+
+**AB104.832R:** attack W18 and I17 against existing witnesses using the reachable-state/causal-transition criterion. Then inspect whether correction/reversal can transform confirmed EffectKnowledge into a later contradictory/corrected state, without conflating correction with ordinary uncertainty.
+
+**No deletion/overwrite. No silent witness mutation.**
