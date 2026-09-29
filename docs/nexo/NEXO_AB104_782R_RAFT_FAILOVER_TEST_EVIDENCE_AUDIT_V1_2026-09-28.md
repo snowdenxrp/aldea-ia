@@ -918,3 +918,144 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.793R: investigate semantic version domains and cross-domain fencing: resource version vs operation version vs authority generation, including whether a single monotonic counter is ever sufficient, how namespace binding prevents cross-resource token reuse, and real failure tests involving delayed/out-of-order evidence.
+
+
+## AB104.793R research — semantic version domains and cross-domain fencing
+
+### Finding 1 — a single monotonic counter is not automatically a universal fence
+
+etcd provides a single cluster revision that orders modifications within its key-value history, and transactions can compare key-specific create/modification revisions atomically with mutations. This is sufficient for etcd's own KV namespace, but the API defines those revisions in relation to that store/key history. It does not make the number a universal authority token for arbitrary external resources. SOURCE: etcd API. citeturn0search2turn0search13
+
+The important distinction is:
+
+monotonic(value) != universally meaningful(authority)
+
+A counter becomes a fencing token only when the protected resource interprets it as such and enforces an ordering rule at its own acceptance boundary.
+
+### Finding 2 — namespace binding is structural, not cosmetic
+
+A token such as 42 is ambiguous without its authority/resource domain.
+
+Unsafe conceptual comparison:
+
+token=42 from namespace A versus token=41 from namespace B.
+
+There is no basis to conclude that A's 42 supersedes B's 41.
+
+A safe token identity is closer to:
+
+(fence_namespace, authority_generation)
+
+and the protected mutation must bind the namespace to the resource being protected.
+
+Current independent fencing implementations make this explicit: disco stamps requests with a fencing token and its server-side Guard rejects stale tokens; another current implementation uses a separate fence namespace/key and requires the presented token to match that lease domain. citeturn0search5turn0search10
+
+### Finding 3 — numeric monotonicity must be enforced at the receiver
+
+A client-side check such as:
+
+if token >= cached_high_water then write
+
+is not a sufficient fence because the high-water value can change between the check and the write.
+
+The safer pattern observed in implementations is:
+
+compare current fence state + protected mutation -> one atomic acceptance boundary
+
+etcd provides this primitive for its own KV state through atomic Compare/Txn operations. citeturn0search2
+
+The independent disco implementation similarly places token checking/advancement in the resource guard rather than trusting an advisory IsLeader result. citeturn0search5
+
+### Finding 4 — resourceVersion is an ordering/freshness mechanism, not automatically an authority epoch
+
+Kubernetes documents resourceVersion as the version of an object/state in its persistence layer. Reads can have different consistency semantics, watches can start from a supplied resourceVersion, and clients that cannot tolerate rewinding must choose stronger semantics. citeturn0search4
+
+Therefore:
+
+resourceVersion = evidence/order
+
+does not imply:
+
+resourceVersion = permission/authority
+
+It can participate in optimistic concurrency, but an authorization epoch should remain semantically distinct unless the system explicitly defines the same value as both.
+
+### Finding 5 — version domains can be composed, but should not be collapsed
+
+For Nexo the current evidence supports keeping at least:
+
+AuthorityDomain = (namespace, authority_generation)
+
+OperationIdentity = (namespace, operation_id, incarnation/retention context)
+
+Evidence = (source, namespace, observation_version, consistency semantics, observed_state)
+
+EffectState = (operation_id, effect_version, terminal_state, payload_binding)
+
+A concrete implementation may optimize these into fewer fields, but semantic separation must survive. A single integer should only be reused across domains if the protocol explicitly proves equivalence, binding, persistence, and receiver enforcement.
+
+### Cross-domain token reuse failure
+
+Consider:
+
+R1 has authority generation 51.
+R2 has authority generation 3.
+
+An operation carrying bare token 51 is later routed to R2. If R2 treats the number globally, it may accept a token that was never issued by R2's authority domain.
+
+Conversely, a token 3 issued by R2 cannot be safely compared with token 50 from R1.
+
+This establishes a concrete requirement:
+
+token validity = namespace binding + generation validity
+
+not numeric comparison alone.
+
+### Delayed/out-of-order evidence
+
+Kubernetes explicitly documents that weak read semantics may return data from an older resource version than one previously observed, particularly in HA configurations; clients that cannot tolerate this must not use those semantics. citeturn0search4
+
+etcd's linearizable reads and ordered watch revisions provide stronger ordering guarantees, while serializable reads may be stale. citeturn0search12
+
+Therefore a reconciler receiving:
+
+E1 = CONFIRMED@R=120
+E2 = NOT_FOUND@R=119
+
+must not allow E2 to regress E1 merely because both are syntactically valid responses.
+
+Even stronger:
+
+E3 = NOT_FOUND@R=121
+
+still does not automatically mean failure if the semantic meaning of R=121 is merely latest observation rather than an authoritative deletion/tombstone of this exact operation.
+
+### Real failure evidence found
+
+The disco implementation explicitly treats fencing at the protected-resource boundary and exposes stale-token rejection rather than trusting leadership observation. citeturn0search5
+
+The etcd API gives a concrete atomic primitive for comparing a key's revision/version and mutating state in one transaction, which is the required shape for avoiding check-then-write races inside that resource. citeturn0search2
+
+The audit did not find a universal test demonstrating that an arbitrary external resource can safely consume a bare etcd/Kubernetes revision as an authority fence. That remains NOT ESTABLISHED.
+
+### Evidence ledger
+
+ETCD_REVISION_SCOPE_IS_STORE_HISTORY SOURCE CONFIRMED
+SINGLE_MONOTONIC_COUNTER_IS_NOT_AUTOMATIC_UNIVERSAL_FENCE SOURCE-SUPPORTED
+TOKEN_NAMESPACE_BINDING REQUIRED
+NUMERIC_TOKEN_CROSS_NAMESPACE_REUSE UNSAFE
+RECEIVER_SIDE_FENCE REQUIRED FOR EFFECT SAFETY
+ETCD_ATOMIC_COMPARE_AND_MUTATE SOURCE CONFIRMED
+K8S_RESOURCE_VERSION_IS_STATE/FRESHNESS VERSION SOURCE CONFIRMED
+RESOURCE_VERSION != AUTHORITY_GENERATION BY DEFAULT
+AUTHORITY_DOMAIN SHOULD BE EXPLICIT
+OPERATION_ID/INCARNATION SHOULD REMAIN DISTINCT
+OBSERVATION_VERSION SHOULD REMAIN DISTINCT
+OUT_OF_ORDER/STALE READS REAL DOCUMENTED BEHAVIOR
+EXECUTED NEXO CROSS-DOMAIN RACE NO
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.794R: investigate real stale-response/out-of-order test suites and implementation paths that protect terminal reconciliation state, including whether systems use CAS/resourceVersion/sequence guards against late responses and whether those guards survive restart, failover, compaction, and namespace changes.
