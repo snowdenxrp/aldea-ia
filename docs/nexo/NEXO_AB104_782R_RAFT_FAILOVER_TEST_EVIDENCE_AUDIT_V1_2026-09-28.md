@@ -5083,3 +5083,98 @@ However, they do **not** create new top-level failure classes. They project onto
 **AB104.834R:** perform a systematic reduction of I17-I20 against the typed effect-state graph and the existing witness set. Determine whether any candidate can be covered by parameterizing W17/W18/W2/W4/W16 without changing its causal sequence. If any candidate survives, create the smallest necessary witness only after the equivalence test. Then attack the graph for missing legal transitions and forbidden/inadmissible transitions.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.834R — I17–I20 EQUIVALENCE REDUCTION + EFFECT-STATE GRAPH ATTACK
+
+**Date:** 2026-09-28  
+**Status:** RESEARCHED / REDUCTION PERFORMED / INTERACTION UNIVERSE STILL UNFROZEN / NO IMPLEMENTATION.
+
+### External cross-check
+
+NIST's ordered-combination method supports evaluating stateful failures by the order of transitions, rather than treating a state machine as a bag of independent Boolean values. This is directly applicable to UNKNOWN/CONFIRMED/CORRECTED/REVERSED transitions. citeturn0search0turn0search1
+
+Adyen provides concrete payment semantics in which a reversal may cancel an uncaptured payment or refund a captured one, and the outcome is delivered asynchronously; it also documents later reversal events. Thus a later event can legitimately alter current business state while preserving the historical fact that the earlier payment existed. citeturn0search5turn0search9turn0search10
+
+Microsoft's idempotent-consumer guidance reinforces the boundary: a completed local deduplication record can suppress a duplicate, but an in-progress record means an external call may have partially completed and requires reconciliation. citeturn0search14
+
+### I17 — reduction result
+
+I17 = dedup capability absent × acknowledgement unknown × retry.
+
+The reduction against W17 shows that the causal sequence is the same as W17. The only changed predicate is whether provider-side deduplication is available. That changes the decision rule, but does not add a new causal event or state transition.
+
+**I17 = COVERABLE BY W17 PARAMETERIZATION.** No W19 is created.
+
+### I18 — reduction result
+
+I18 = durable intent × confirmed effect × local terminal-state loss.
+
+Compared with W18, the causal sequence is equivalent once W18 is parameterized so that provider confirmation is authoritative and local terminal-state loss occurs after the external effect.
+
+**I18 = COVERABLE BY W18 PARAMETERIZATION.** No new witness is created.
+
+### I19 — reduction result
+
+I19 = confirmed effect × correction/reversal × local reconstruction.
+
+W16 cannot represent this without changing its starting epistemic condition. W4 lacks the mandatory local terminal-state loss followed by reconstruction. W18 lacks the later correction/reversal transition.
+
+**I19 SURVIVES as an independent interaction requirement.** A new witness is not yet frozen; it must explicitly contain the typed transition CONFIRMED → CORRECTED/REVERSED and local reconstruction.
+
+### I20 — reduction result
+
+I20 = UNKNOWN effect × later authoritative confirmation × retry.
+
+W17 has uncertainty + retry but not the later authoritative transition to CONFIRMED. W2 has transaction failure + possible external acceptance but does not require later authoritative confirmation after retry entry. W18 starts from confirmed effect and cannot represent the initial UNKNOWN condition.
+
+**I20 SURVIVES as an independent interaction requirement.** No witness is frozen until the minimum causal witness is written explicitly.
+
+### Effect-state graph attack
+
+The graph is now treated as typed history, not a single mutable status:
+
+UNKNOWN → CONFIRMED  (authoritative confirmation)
+UNKNOWN → FAILED     (authoritative terminal failure)
+CONFIRMED → CORRECTED (domain correction)
+CONFIRMED → REVERSED  (domain reversal)
+
+The following are not legal generic transitions:
+- CONFIRMED → UNKNOWN merely because a local projection was lost.
+- CONFIRMED → FAILED without authoritative failure/cancellation evidence.
+- CORRECTED/REVERSED → UNKNOWN merely because the latest event was not received locally.
+- UNKNOWN → FAILED based only on timeout, lost ACK, worker crash, or missing local record.
+
+This is minimum semantic structure, not a universal provider state machine. Provider-specific transitions require their own evidence contract.
+
+### New gap from graph attack
+
+**I21 — correction/reversal × stale duplicate of the pre-correction event × reconciliation.**
+
+Sequence: effect reaches CONFIRMED → later correction/reversal establishes current state → old CONFIRMED event arrives late/redelivered → reconciliation must preserve both historical events while refusing to regress current state.
+
+I21 is not identical to I3 because I21 requires a post-correction stale duplicate of the original positive event. It is not identical to I19 because I19 does not require the old pre-correction event to arrive after the correction.
+
+**I21 = ADMISSIBLE / UNTESTED.**
+
+### Current disposition
+
+- I17: COVERABLE BY W17 PARAMETERIZATION; no new witness.
+- I18: COVERABLE BY W18 PARAMETERIZATION; no new witness.
+- I19: INDEPENDENT / UNTESTED.
+- I20: INDEPENDENT / UNTESTED.
+- I21: ADMISSIBLE / UNTESTED.
+- W17: provisional.
+- W18: provisional.
+- No W19/W20/W21 frozen.
+- 20 top-level classes: UNFROZEN.
+- Coverage denominator: NOT FROZEN.
+- Formal verification: NOT PERFORMED.
+- Implementation: NOT STARTED.
+
+### Exact next action
+
+**AB104.835R:** attack I19, I20, and I21 against the current witness set; construct minimum witnesses only where causal equivalence fails; then perform a targeted search for stale-event regressions across every typed state transition. Determine whether I21 is genuinely new or a projection of existing correction/stale-observation classes.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
