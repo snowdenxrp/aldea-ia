@@ -1837,3 +1837,111 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.801R: investigate whether a single effect-owner database transaction can formally/empirically close identity + payload binding + authority generation + terminal state, and what remains when the physical effect is emitted after that commit. Search concrete payment, inventory, and job-execution implementations and their failure tests; do not infer closure from documentation alone.
+
+## AB104.801R — effect-owner transaction: how far can one atomic database boundary close the protocol?
+
+### PostgreSQL/local database effect: strong closure inside the database
+
+A database transaction can atomically reserve an operation identity and mutate the protected database state. PostgreSQL's conflict-handling semantics provide a concrete commit-time concurrency arbiter, so a receiver can encode a uniqueness/identity condition together with the business mutation.
+
+This creates a substantially stronger boundary than:
+
+check identity -> perform mutation -> record result.
+
+The mutation and its identity decision can share one commit.
+
+However, the physical effect must actually be the database state being protected. A later email, HTTP call, device command, payment-provider call, or other external effect is outside that transaction.
+
+### Transactional outbox: concrete failure test confirms the remaining seam
+
+A current PostgreSQL outbox implementation publishes an especially useful executable demonstration. Its demo_atomicity verifies that business state and the outbox event either both roll back or both commit. Its demo_relay then deliberately models the failure where the sink accepts an event, the relay process dies before marking it published, and recovery delivers the same event again. The demonstrated result is explicitly at-least-once delivery and requires the downstream consumer to deduplicate. citeturn0search7
+
+This is exactly the failure window predicted by the earlier model:
+
+DB commit
+-> relay
+-> sink accepts
+-> worker crash before acknowledgement
+-> redelivery
+
+The outbox closes the local intent boundary but intentionally leaves the sink boundary to the receiver.
+
+### Stripe: response-loss recovery is receiver-side, not coordinator-side
+
+Stripe documents that its idempotency layer stores the first result and returns the same result for subsequent requests with the same key. Its engineering explanation explicitly describes the response-failure case: the operation may have executed successfully while the client cannot obtain the result; the retry is answered from the cached result. citeturn0search0turn0search6
+
+This is a concrete example of a receiver making an ambiguous response recoverable.
+
+But Stripe's documented idempotency mechanism is still not an authority-generation fence. Its retention is finite, and it is designed around retry identity rather than stale-authority rejection.
+
+### Temporal: production failure guidance independently confirms the external boundary
+
+Temporal's current tutorial states that Activities are at-least-once: if the POST reaches the receiver and the worker then fails, Temporal retries the Activity and the receiver sees the delivery twice. The documented fix is a stable receiver-side idempotency key. Temporal also explicitly separates scheduling-layer Activity-ID deduplication from receiver-side effect idempotency. citeturn0search12turn0search8
+
+This is direct evidence from a durable-execution system that its own retry/history machinery does not atomically encompass arbitrary external effects.
+
+### A stronger single-receiver transaction
+
+For a database-owned effect, the strongest currently evidenced receiver operation is conceptually:
+
+BEGIN
+  validate namespace
+  validate operation_id
+  validate payload_hash
+  validate authority_generation/incarnation
+  atomically reserve/recognize operation
+  mutate protected state
+  write terminal outcome
+COMMIT
+
+If all of these predicates and mutations are within the same serializable/appropriate transactional boundary, the receiver can close identity + payload binding + authority condition + local effect + terminal state together.
+
+But this does not prove universal closure. The moment the physical effect is:
+
+COMMIT -> send command externally
+
+the ambiguity window returns.
+
+### Failure matrix
+
+| Failure point | Local DB-owned effect | External effect |
+|---|---|---|
+| before commit | no durable mutation | no external effect |
+| commit succeeds, response lost | effect durable; query/retry can recover | receiver may need idempotency/reconciliation |
+| after commit, process crashes | durable state survives | external effect may be unknown |
+| stale authority reaches receiver before commit | conditional mutation can reject | receiver must enforce fence |
+| effect occurs after DB commit | not applicable | dual-write ambiguity |
+| operation record expires | identity reuse hazard | receiver contract must define retention |
+| restart | durable transaction state survives | receiver must preserve its own identity/fence state |
+
+### Important conclusion
+
+The strongest evidence now supports:
+
+single effect-owner transaction can close the protocol for effects that are themselves represented by that transaction.
+
+It cannot transform a subsequent arbitrary external effect into an atomic part of the same transaction.
+
+Therefore Nexo should reason from the effect owner outward, rather than from the coordinator inward.
+
+### Evidence ledger
+
+DB_TRANSACTION_CAN_ATOMICALLY_BIND_IDENTITY_AND_LOCAL_MUTATION SOURCE-SUPPORTED
+POSTGRES_CONFLICT_ARBITRATION SOURCE CONFIRMED
+OUTBOX_ATOMICITY_DEMO SOURCE CONFIRMED
+OUTBOX_SINK_CRASH_REDELIVERY_REAL_EXECUTABLE_DEMO SOURCE CONFIRMED
+STRIPE_RESPONSE_LOSS_RECOVERABLE_BY_RECEIVER_IDEMPOTENCY SOURCE CONFIRMED
+TEMPORAL_EXTERNAL_POST_CRASH_DUPLICATION SOURCE CONFIRMED
+TEMPORAL_SCHEDULER_DEDUP != RECEIVER_IDEMPOTENCY SOURCE CONFIRMED
+SINGLE_EFFECT_OWNER_TRANSACTION_CAN_CLOSE_LOCAL_LAYERS SOURCE-SUPPORTED
+EXTERNAL_EFFECT_AFTER_COMMIT_REMAINS_DUAL_WRITE
+AUTHORITY_FENCE_MUST_BE_EFFECT_OWNER_ENFORCED
+RETENTION_IS_PART_OF_IDENTITY_SAFETY
+UNIVERSAL_ARBITRARY_EXTERNAL_EFFECT_ATOMICITY NOT ESTABLISHED
+EXECUTED NEXO EFFECT RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.802R: investigate payment/inventory/job systems where the effect owner is a database: inspect concrete schemas, unique constraints, transaction boundaries, crash tests, and recovery logic. Determine whether authority generation can be safely included in the same commit without confusing it with operation identity or observation version.
