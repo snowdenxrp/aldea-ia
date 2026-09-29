@@ -1882,3 +1882,27 @@ Implementation: **NOT STARTED**.
 **AB104.857R:** attack I24 itself. Search executable workflow/provider implementations where the provider explicitly reports IN_PROGRESS while a coordinator retries, cancels, times out, or reconciles. Determine whether positive IN_PROGRESS evidence is genuinely decision-distinct from UNKNOWN/effect ambiguity or whether it can be represented as a typed provider observation under existing reconciliation witnesses. Freeze no new witness unless a distinct protected decision survives reduction.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.
+
+
+---
+## AB104.856R — I26 LIFECYCLE INVALIDATION REDUCTION
+
+Status: RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+Adyen documents delayed/manual capture as asynchronous and cancellation as asynchronous. A cancel request can be acknowledged before the later CANCELLATION webhook; capture can receive CAPTURE and later CAPTURE_FAILED, including cases where the request was already submitted onward. EXPIRE is a distinct final lifecycle state and an expired payment cannot be captured. citeturn0search0turn0search2turn0search6turn0search11
+
+I26 sequence: authorization remains capturable -> delayed/manual capture -> cancellation or expiry -> delayed capture-related evidence -> boundary evaluates the later evidence against authoritative lifecycle state.
+
+Reduction: I26 is distinct from I25 because no authority-generation transition is required; distinct from I24 because IN_PROGRESS alone does not encode a lifecycle transition; distinct from I19/I21 because no correction/reversal or stale pre-correction event is required; distinct from I22 because no idempotency-retention expiry is required.
+
+Critical result: authoritative EXPIRED can resolve later capture legality, so this is parameterized lifecycle fencing rather than automatically a new witness. However, Adyen's CAPTURE success=true is not universally terminal: CAPTURE_FAILED can arrive later. Therefore acceptance/submission evidence must remain distinct from terminal COMMITTED/effect knowledge. citeturn0search0
+
+Disposition: I26 = EMPIRICALLY SUPPORTED SEMANTIC INTERACTION / WITNESS NOT FROZEN. No W19/W20 created. Keep lifecycle validity separate from authority validity and effect knowledge.
+
+Candidate invariants: INV-F-11 terminal lifecycle constrains later completion independently of actor authority; INV-F-12 prior acceptance/submission evidence is not erased when lifecycle becomes terminal. Not formally verified.
+
+Current: I19 independent/untested; I20 independent/untested; I21 distinct ordered/untested; I22 parameterized; I24 independent/untested; I25 parameterized; I26 empirically supported semantic interaction/witness not frozen; I27 model-level residual/witness not established; 20 classes UNFROZEN; denominator NOT FROZEN; formal verification NOT PERFORMED; implementation NOT STARTED.
+
+Exact next action: AB104.857R — attack CAPTURE success=true -> later CAPTURE_FAILED against I19/I20/I24 and the existing external-effect ambiguity class; determine whether the typed effect-state graph fully covers this later correction or a distinct interaction remains.
+
+No deletion/overwrite. No silent witness mutation. No architecture implementation.
