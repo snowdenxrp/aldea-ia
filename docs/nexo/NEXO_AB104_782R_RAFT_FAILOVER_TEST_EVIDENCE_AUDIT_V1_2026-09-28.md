@@ -1341,3 +1341,89 @@ Implementation: **NOT STARTED**.
 **AB104.852R:** perform the same I27 reduction against executable open-source payment/webhook handlers and distributed workflow implementations, not only provider documentation. Look for code paths where two valid same-resource transitions can reach the protected boundary without version/epoch/status authority. If the code always supplies a local or provider-side winner, record the reduction. If a real reachable unresolved state exists, freeze the smallest witness with exact causal steps.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.852R — EXECUTABLE OPEN-SOURCE CROSS-CHECK OF I27
+
+**Status:** RESEARCHED / CODE-LEVEL CROSS-CHECK / NO IMPLEMENTATION.
+
+### Evidence reviewed
+
+Temporal's current Activity documentation states that Activities may execute multiple times under retries, including after a worker crashes after the external operation succeeds but before completion is recorded; it recommends stable idempotency keys enforced by the downstream service. citeturn0search0 Temporal's own retry documentation likewise distinguishes workflow-observed completion from the possibility of multiple underlying Activity executions. citeturn0search5
+
+Open-source webhook implementations examined show the same pattern at code level. A Stripe-style FastAPI example persists webhook event IDs and rejects/replays duplicates; its transaction boundary and unique event identity prevent duplicate business processing. citeturn0search4 Another open-source payment gateway example uses an event table, row locking, order locking, and a unique ledger reference; concurrent deliveries of the same event are serialized and different events for an already-paid order are guarded by state checks. citeturn0search7 A Resonate example uses the webhook event ID as a durable promise identity so repeated deliveries resolve to the existing workflow rather than execute the payment path again. citeturn0search1turn0search2
+
+### I27 code-level reduction
+
+These implementations provide an important negative result: when the application reaches the protected local boundary, it normally has at least one of the following authorities:
+
+- unique event identity / deduplication;
+- row/version locking;
+- explicit resource state machine;
+- unique ledger constraint;
+- durable workflow identity;
+- downstream idempotency key.
+
+Therefore the ordinary duplicate/concurrent webhook paths do **not** establish I27. They are covered by existing identity, concurrency, state-transition, or idempotency classes.
+
+### External non-idempotent boundary remains different
+
+Temporal explicitly documents the unresolved case for an external API that is not idempotent and cannot expose authoritative result lookup: exactly-once invocation cannot be guaranteed in the presence of timeouts. citeturn0search10 This is not I27 because the ambiguity is about whether an external effect occurred, not two authenticated incompatible same-resource transitions with unresolved precedence.
+
+This reinforces the existing separation:
+
+`CONFLICTING transition relation != UNKNOWN external-effect knowledge`.
+
+### Attack result
+
+No executable implementation reviewed produced a concrete reachable I27 witness where all of these hold simultaneously:
+
+1. same resource;
+2. two authenticated/scoped incompatible transitions;
+3. no authoritative sequence/version/epoch or local serialization winner;
+4. no authoritative reconciliation/status;
+5. protected boundary nevertheless must choose a current state.
+
+Instead, implementations either resolve locally, delegate authority to the resource/provider, or leave the unresolved condition as an error/unknown/reconciliation path.
+
+**Disposition:** I27 remains **MODEL-LEVEL RESIDUAL / EMPIRICAL WITNESS NOT ESTABLISHED**. W19 remains unfrozen.
+
+### Important methodological consequence
+
+We should not manufacture a witness merely because a system can experience ambiguity. A witness requires a reachable causal path plus a distinct protected decision. The current code evidence supports keeping I27 as a guard condition in the model, but not adding it to the empirical witness denominator.
+
+### New reduction rule
+
+For future interaction candidates:
+
+**Candidate → Witness only if:**
+
+`reachable causal sequence`
+`AND distinct semantic/protected decision`
+`AND not reducible to an existing identity/authority/lifecycle/effect-knowledge witness`
+`AND concrete evidence or executable reproduction exists.`
+
+A purely provider-neutral logical possibility remains a **model residual**, not an empirical witness.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+I27: **model-level residual / empirical witness NOT established**.
+W19: **not frozen**.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.853R:** use executable evidence to attack the remaining acceptance/lifecycle candidates I24–I26 together: provider `IN_PROGRESS` + authority change + cancellation/expiry + delayed completion. Search code/state machines for whether these can collapse into the existing effect-knowledge/recovery/fencing interactions or require a genuinely new ordered witness. Do not add witnesses unless the reduction fails.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
