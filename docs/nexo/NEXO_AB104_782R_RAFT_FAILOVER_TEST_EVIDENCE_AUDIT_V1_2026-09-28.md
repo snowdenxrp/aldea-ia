@@ -2504,3 +2504,128 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.807R: investigate concrete reconciliation failure tests/incident reports involving webhook duplication, delayed reports, late reversals, duplicate refunds/captures, and provider-vs-ledger divergence. Prefer executable tests and production incident evidence over documentation-only claims.
+
+## AB104.807R — executable/reported payment reconciliation failures
+
+### Real failure pattern: webhook replay can create duplicate business effects
+
+A current 2026 incident report describes a production webhook replay race in which a payment provider retried a payment-captured webhook four times during a network problem and the receiver created four duplicate orders. The reported root cause was absence of event-id idempotency. This is third-party incident evidence, not independent proof of a universal payment vulnerability. citeturn0search4
+
+The architectural lesson is reproducible even without trusting the incident's exact environment:
+
+provider retry -> duplicate delivery -> handler side effect
+
+is safe only if the receiver makes event identity an atomic concurrency boundary.
+
+### Executable payment-resilience implementation
+
+A public payment-resilience implementation explicitly models duplicate webhook handling with PostgreSQL row locks, unique identifiers, a refund worker, and a reconciliation cron that queries the simulated provider after dropped webhooks. Its README describes live end-to-end tests against a real database for idempotency collisions and duplicate webhook handling. citeturn0search1
+
+This is executable design evidence, but not a formal proof or production-scale validation.
+
+### Concurrent duplicate webhook test surface
+
+Another public payment engine uses a unique webhook identity, row locking, and automated tests for duplicate webhook delivery. It documents that the unique constraint, not a Redis lock, is the final source of truth for concurrent duplicate insertion. citeturn0search7
+
+This confirms a recurring pattern:
+
+SELECT then INSERT is not enough under concurrency.
+
+The database uniqueness constraint or equivalent atomic receiver operation must arbitrate the race.
+
+### Multi-gateway timeout divergence
+
+A current payment-orchestration implementation documents a concrete failure scenario:
+
+T0 gateway request starts
+T1 client/gateway HTTP response times out
+T2 local service records timeout/failure
+T3 retry path starts
+T4 original gateway operation was actually successful
+T5 delayed success webhook arrives
+
+Its mitigation combines external gateway idempotency, webhook reconciliation, a pre-retry status check, and a reconciliation job. citeturn0search6
+
+This is relevant to Nexo because a local FAILED produced by transport timeout can be epistemically weaker than later provider evidence.
+
+### Webhook ordering and authenticity remain separate properties
+
+Adyen's current webhook guidance requires signature verification and warns that duplicate deliveries can occur. It also recommends timestamps and, where available, sequence numbers for chronological processing. citeturn0search8
+
+Therefore:
+
+authentic != newest
+
+and:
+
+newest arrival != newest event.
+
+An authenticated old event is still old. An unauthenticated new event is not admissible merely because it arrived later.
+
+### Stripe idempotency has a concrete retention boundary
+
+Stripe documents that the first result for an idempotency key is retained and reused for subsequent matching requests, but keys can be automatically removed after at least 24 hours. Reuse after pruning creates a new request, and mismatched parameters are rejected. Stripe also states that concurrent requests can conflict before an idempotent result is saved. citeturn0search0
+
+This gives another concrete example that operation identity is a lifecycle contract, not an eternal property.
+
+### Failure matrix
+
+| Failure | Weak response | Stronger response |
+|---|---|---|
+| duplicate webhook | process twice | atomic event identity + no-op duplicate |
+| concurrent duplicate webhook | SELECT then process | unique constraint/atomic insert |
+| gateway timeout | mark FAILED immediately | UNKNOWN + provider query/reconciliation |
+| retry after ambiguous timeout | create new operation | same provider idempotency identity |
+| delayed old webhook | overwrite current state | validate event ordering/state transition |
+| forged webhook | trust payload | authenticate signature first |
+| idempotency key expired | assume eternal identity | explicit retention/operation lifecycle |
+| Redis lock lost | assume no duplicate | durable DB/receiver arbitration |
+
+### Strong negative result
+
+The researched implementations repeatedly solve different pieces:
+
+- event deduplication;
+- operation idempotency;
+- state-machine monotonicity;
+- provider reconciliation;
+- refund/reversal recovery.
+
+No audited implementation establishes all of the following as one universal proof boundary for arbitrary external payment settlement:
+
+authority generation fence
++
+operation identity
++
+payload binding
++
+external effect atomicity
++
+durable terminal evidence
++
+post-failure reconciliation.
+
+Therefore the evidence supports a layered protocol, not a claim of universal exactly-once external payment effects.
+
+### Evidence ledger
+
+REAL_2026_WEBHOOK_REPLAY_DUPLICATE_ORDER_INCIDENT_REPORTED
+EXECUTABLE_PAYMENT_RECONCILIATION_IMPLEMENTATION_SOURCE_CONFIRMED
+REAL_DATABASE_DUPLICATE_WEBHOOK_TEST_SURFACE_SOURCE_CONFIRMED
+SELECT_THEN_INSERT_CONCURRENCY_RACE SOURCE CONFIRMED
+GATEWAY_TIMEOUT_CAN_PRECEDE_REAL_SUCCESS SOURCE CONFIRMED
+PROVIDER_IDEMPOTENCY_RETRY SOURCE CONFIRMED
+WEBHOOK_SIGNATURE_AUTHENTICITY_SEPARATE_FROM_ORDERING SOURCE CONFIRMED
+ARRIVAL_ORDER != EVENT_ORDER
+STRIPE_IDEMPOTENCY_RETENTION_BOUNDARY SOURCE CONFIRMED
+REDIS_LOCK != DURABLE_RECEIVER_ARBITRATION
+LOCAL_TIMEOUT_FAILURE != EXTERNAL_EFFECT_FAILURE
+LAYERED_RECONCILIATION_REQUIRED SOURCE-SUPPORTED
+UNIVERSAL_EXTERNAL_PAYMENT_EXACTLY_ONCE NOT ESTABLISHED
+EXECUTED NEXO PAYMENT RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.808R: turn the observed payment failures into adversarial test cases and compare the strongest receiver-side patterns: unique-event CAS, operation-id idempotency, payload binding, payment-state transition guards, authority-generation predicates, and reconciliation after timeout. Do not implement Nexo; derive the minimum testable invariants first.
