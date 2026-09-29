@@ -2077,3 +2077,73 @@ Implementation: NOT STARTED.
 **AB104.859R:** attack the unresolved case: two authenticated same-resource terminal events that are both semantically valid but lack a provider ordering relation. Determine whether this is genuinely a new CONFLICTING interaction or reducible to INCOMPARABLE + reconciliation, using concrete event schemas/implementations rather than hypothetical Boolean combinations.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.859R — CONFLICTING VS INCOMPARABLE: CONCRETE EVENT-ORDER ATTACK
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+Adyen's webhook guidance says events can arrive as duplicates and recommends chronological processing using event timestamps; some webhook families additionally expose sequenceNumber. For transfer webhooks, sequenceNumber increases per transfer and is specifically intended to restore order when events arrive out of order. citeturn0search0turn0search1 Microsoft event-sourcing guidance similarly treats the event stream as the source of truth, uses optimistic concurrency to reject conflicting appends, and says conflicts spanning multiple entities require reconciliation. citeturn0search2 Microsoft Fabric explicitly states at-least-once delivery and no guaranteed arrival order. citeturn0search3
+
+### Attack target
+
+Candidate relation:
+CONFLICTING = two authenticated, correctly scoped observations for the same resource that the domain contract says cannot both be the current state, while no precedence relation is available.
+
+The question is whether this is more than:
+INCOMPARABLE + reconciliation.
+
+### Concrete reduction
+
+1. **Same event identity / duplicate:** not CONFLICTING. Adyen duplicates can share eventCode + pspReference; they are one semantic event delivered more than once. citeturn0search0
+2. **Different events with provider sequence:** not unresolved CONFLICTING. SequenceNumber provides an ordering relation within the declared transfer domain. citeturn0search1
+3. **Concurrent writes in an event store:** optimistic concurrency can reject one append and force reload/retry. This is a concrete conflict, but the store has an authority mechanism that resolves it before an unresolved current-state decision. citeturn0search2
+4. **Cross-entity conflict:** Microsoft explicitly identifies cases where event streams for different entities interact and require reconciliation. This is a real conflict family, but it is not necessarily same-resource CONFLICTING because there may be no single resource state whose events are mutually exclusive. citeturn0search2
+5. **Two authenticated same-resource terminal events with no ordering:** the reviewed concrete provider/event-store evidence did not establish such an unresolved production witness. Where ordering exists, it resolves the conflict; where concurrency exists, the store commonly rejects/serializes the competing append.
+
+### Decision
+
+The relation **CONFLICTING remains a valid model-level predicate**, but the empirical attack did not establish a distinct witness requiring a new top-level failure class.
+
+For the current bounded audit, treat:
+`CONFLICTING + no precedence`
+→ `INCOMPARABLE + reconciliation`
+unless a provider/resource contract explicitly defines an incompatibility that changes the protected decision independently of reconciliation.
+
+This is a conservative reduction: it avoids inventing a new witness from a logically possible but empirically unestablished state.
+
+### Important distinction preserved
+
+CONFLICTING is not deleted from the model vocabulary. It is retained as a **derived semantic predicate** that can annotate an INCOMPARABLE situation when the domain contract proves mutual incompatibility. It does not currently justify a new witness or top-level class.
+
+### Invariant candidate
+
+**INV-EH-10R — An unresolved conflict without authoritative precedence must not be converted into an invented total order; preserve both observations and route through reconciliation/hold semantics.**
+
+Candidate only; no formal verification.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction.
+I24: independent / untested.
+I25: parameterized coverage.
+I26: empirically supported semantic interaction / witness not frozen.
+I27: model-level residual / empirical witness NOT established.
+CONFLICTING: **derived semantic predicate; no independent witness**.
+W19: NOT FROZEN.
+20 top-level classes: UNFROZEN.
+Coverage denominator: NOT FROZEN.
+Formal verification: NOT PERFORMED.
+Implementation: NOT STARTED.
+
+### Exact next action
+
+**AB104.860R:** perform a closure audit of the entire typed effect-state graph and freshness relation. Enumerate every currently admitted transition and every forbidden generic transition, then cross-check each against I19-I27 and the 20-class taxonomy. The goal is to detect any missing legal transition or unsafe implicit transition before adding further interaction candidates.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
