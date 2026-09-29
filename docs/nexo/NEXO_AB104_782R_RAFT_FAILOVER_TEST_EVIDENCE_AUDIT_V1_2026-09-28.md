@@ -198,3 +198,66 @@ NEXO_IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.784R: study concrete idempotency/deduplication and reconciliation patterns in etcd/Kafka transactional systems and external-effect coordinators. Determine what survives retries, crashes, leader changes, and ambiguous acknowledgements, and which guarantees require the external resource itself to participate.
+
+
+## AB104.784R research — idempotency, deduplication, reconciliation
+
+### Kafka evidence
+
+Kafka's documented idempotent producer semantics use a producer ID plus monotonically increasing sequence numbers per topic-partition. Brokers reject duplicate/lower sequence numbers and out-of-sequence higher numbers. This makes producer retries idempotent within the producer identity/session; the transactional producer extends recovery across application sessions through a stable transactional.id and producer epoch fencing. KIP-98 explicitly describes old producer generations being fenced and incomplete transactions being recovered/aborted before a new session proceeds. [SOURCE: Apache Kafka KIP-98 / FAQ]. citeturn0search5turn0search2
+
+Kafka Streams' exactly-once guarantee is deliberately scoped to Kafka-managed state: input offsets, state stores, and output topics are committed atomically. Kafka documentation explicitly distinguishes this from arbitrary external systems; exactly-once with another destination requires cooperation from that destination. citeturn0search1turn0search10
+
+KIP-618 applies the same lesson to source connectors: exactly-once requires atomically tracking source offsets and produced records and fencing zombie tasks. Its definition of fencing is disabling older generations from producing or committing further work. citeturn0search7
+
+### Important distinction
+
+Three mechanisms now have direct evidence:
+
+1. Deduplication — identity/sequence prevents the same logical write from being accepted twice.
+2. Fencing — generation/epoch prevents an obsolete actor from continuing to perform writes.
+3. Reconciliation — after ambiguous failure, query durable state to determine whether the intended effect already happened and continue from the observed state.
+
+Kafka's internal transactions can combine the first two inside Kafka, but the evidence does not extend that atomicity to arbitrary external effects. citeturn0search5turn0search9
+
+### Failure matrix
+
+| Failure point | Required property |
+|---|---|
+| before commit | safe retry / reproposal |
+| after commit, before apply | durable replay from committed log |
+| after apply, before external effect | replay must not create unsafe duplicate |
+| after external effect, before ACK | operation identity or reconciliation |
+| after authority generation changes | effect-time fencing |
+| after crash/restart | durable identity + durable authority state |
+| external resource unavailable | UNKNOWN/reconciliation, not blind retry |
+
+### New conclusion
+
+operation_id is necessary but not sufficient.
+
+A robust external-effect protocol needs at least:
+
+operation_id + authority_generation + resource-side acceptance state + reconciliation
+
+If the external resource cannot atomically validate the generation and record/perform the operation, the coordinator cannot honestly claim Kafka/etcd-style exactly-once semantics for that external effect.
+
+### Evidence ledger
+
+KAFKA_IDEMPOTENT_PRODUCER_PID_SEQUENCE_SOURCE_CONFIRMED
+KAFKA_TRANSACTIONAL_ID_CROSS_SESSION_RECOVERY_SOURCE_CONFIRMED
+KAFKA_OLD_GENERATION_FENCING_SOURCE_CONFIRMED
+KAFKA_EOS_SCOPED_TO_KAFKA_MANAGED_STATE_SOURCE_CONFIRMED
+KAFKA_EXTERNAL_DESTINATION_REQUIRES_COOPERATION_SOURCE_CONFIRMED
+CONNECTOR_ZOMBIE_FENCING_SOURCE_CONFIRMED
+DEDUPLICATION != FENCING
+FENCING != RECONCILIATION
+OPERATION_ID_ALONE_INSUFFICIENT_FOR_AUTHORITY_SAFETY
+EXTERNAL_EFFECT_EXACTLY_ONCE_WITHOUT_RESOURCE_COOPERATION_NOT_ESTABLISHED
+EXECUTED_EXTERNAL_RESOURCE_RACE BY THIS AUDIT NO
+FORMAL_UNIVERSAL_EXACTLY_ONCE_PROOF NOT ESTABLISHED
+NEXO_IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.785R: investigate transactional outbox/inbox, idempotency keys, and durable effect journals in real systems. Focus on the exact atomic boundary and on the remaining failure window between committing the journal and performing the external effect.
