@@ -427,3 +427,86 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.787R: investigate the external-effect reconciliation state machine itself: PENDING/SUBMITTED/CONFIRMED/UNKNOWN/FAILED, concurrent workers, lease expiry, stale workers, authority-generation changes, and whether reconciliation can safely distinguish a lost ACK from a failed effect. Seek real implementations and failure tests rather than designing Nexo yet.
+
+
+## AB104.788R research — stale workers, cancellation, and authority changes during UNKNOWN/SUBMITTED
+
+### Real systems evidence
+
+Temporal's current Activity documentation states that cancellation is delivered to Activities through heartbeats; an Activity may accept or ignore cancellation. A worker can therefore continue executing after orchestration-level cancellation unless the Activity cooperates, and cancellation is not itself an external-effect fence. SOURCE: Temporal documentation. citeturn0search2turn0search3
+
+Temporal's current long-running Activity pattern uses heartbeat state to resume after worker failure and explicitly warns that cancellation can be delayed until the next heartbeat. This demonstrates a distinction between worker-liveness detection and effect authorization. citeturn0search4
+
+Temporal's current learning material gives a concrete failure case: an Activity performs an HTTP POST, the POST succeeds, and then the worker/network fails before the Activity reports completion; the Activity is retried and the receiver sees the request again. The documented protection is a stable receiver-side idempotency key. citeturn0search14
+
+AWS Step Functions provides a different callback model. A task can wait for an external process through a task token; if the callback task times out, AWS generates a new random token. Heartbeats can detect a stuck callback task. This establishes explicit callback-attempt identity and timeout state, but it does not make the external action itself atomic or retroactively cancel a request already accepted by the external service. citeturn0search0turn0search13
+
+AWS's callback integration example persists a mapping from an external/business identifier to the workflow task token, then uses the identifier on callback to locate the waiting task. This is concrete reconciliation plumbing: external completion is correlated with durable workflow state rather than inferred from the transport response alone. citeturn0search5
+
+### Stale-worker conclusion
+
+The evidence supports a two-layer stale-worker defense:
+
+1. Orchestration/liveness layer: lease/heartbeat/cancellation detects workers that should no longer continue.
+2. Effect-resource layer: idempotency and/or authority-generation validation rejects unsafe stale effects that still reach the receiver.
+
+Layer 1 alone is insufficient because cancellation may be delayed or ignored by the worker. Layer 2 alone does not stop wasted work, so both solve different problems. citeturn0search2turn0search14
+
+### Authority change while SUBMITTED/UNKNOWN
+
+If an operation was submitted under authority generation g1 and the authority changes to g2 before its outcome is known, the old operation retains g1 as historical authorization context.
+
+A reconciliation query may legitimately discover that g1's effect succeeded after the transition. That does not mean the old operation was re-authorized under g2; it means an already-submitted operation was later observed.
+
+Conversely, an UNKNOWN result cannot be converted to a new submission under g2 merely because the old operation is unresolved. A new submission must have a new logical operation identity and pass current authorization.
+
+Candidate separation:
+
+reconcile(old_operation, g1) != authorize_and_submit(new_operation, g2)
+
+### Callback/token evidence
+
+AWS Step Functions' callback token model shows another useful boundary: workflow continuation is keyed by a durable callback token, while the external system performs its own work independently. A token timeout causes a new token for a subsequent attempt rather than retroactively proving the previous external attempt did not happen. citeturn0search0turn0search36
+
+Therefore callback token, operation identity, authority generation, and worker lease are distinct state dimensions.
+
+### Candidate transition constraints
+
+After authority changes from g1 to g2:
+
+- SUBMITTED(g1) -> CONFIRMED(g1) is valid if external evidence confirms the old operation.
+- SUBMITTED(g1) -> FAILED(g1) is valid if the external resource durably reports failure.
+- SUBMITTED(g1) -> UNKNOWN(g1) is valid when outcome cannot be established.
+- UNKNOWN(g1) -> CONFIRMED(g1) is valid through reconciliation evidence.
+- UNKNOWN(g1) -> FAILED(g1) is valid through reconciliation evidence.
+- UNKNOWN(g1) -> SUBMITTED(g2) is NOT a retry of the same operation; it would constitute a new operation and must receive a new operation identity and fresh authorization.
+- CANCELLED(g1) -> external effect cannot be assumed impossible unless the effect receiver enforces cancellation/epoch/idempotency semantics.
+
+### Strong negative finding
+
+No audited orchestration system establishes the universal proposition:
+
+cancel/timeout/lease-expiry => previously submitted arbitrary external effect cannot later become durable
+
+That proposition requires cooperation from the effect receiver or a shared atomic commit boundary.
+
+### Evidence ledger
+
+TEMPORAL_CANCELLATION_DELIVERED_VIA_HEARTBEAT SOURCE CONFIRMED
+ACTIVITY_MAY_IGNORE_CANCELLATION SOURCE CONFIRMED
+HEARTBEAT_LIVENESS != EFFECT_FENCE
+TEMPORAL_POST_AFTER_SUCCESS_BEFORE_ACK_CAN_RETRY SOURCE/TEST MATERIAL CONFIRMED
+RECEIVER_IDEMPOTENCY_REQUIRED SOURCE CONFIRMED
+AWS_CALLBACK_TOKEN_DURABLE_CORRELATION SOURCE CONFIRMED
+CALLBACK_TIMEOUT_GENERATES_NEW_TOKEN SOURCE CONFIRMED
+CALLBACK_TIMEOUT != PROOF_OLD_EXTERNAL_EFFECT_ABSENT
+WORKER_LEASE/HEARTBEAT != AUTHORITY_GENERATION
+OLD_OPERATION_RECONCILIATION != NEW_AUTHORIZED_SUBMISSION
+UNIVERSAL_CANCEL_RETROACTIVE_EXTERNAL_EFFECT_FENCE NOT ESTABLISHED
+EXECUTED NEXO RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.789R: investigate the receiver-side protocol when an old worker races a new authority generation: conditional writes, fencing-token validation, operation-id reuse, status-query semantics, and real tests for stale submission after lease/epoch change. Focus on resource-side acceptance as the actual safety boundary.
