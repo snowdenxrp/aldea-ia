@@ -4114,3 +4114,117 @@ Therefore the prior statement that the interaction set was complete is narrowed:
 **AB104.820R:** specify I9-I11 with temporal predicates and determine whether each is independent or derivable from existing interactions. Then search systematically for additional interaction candidates using the seven predicate axes and the 20-class matrix, rather than adding interactions by intuition alone.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+---
+## AB104.820R — I9-I11 FORMAL INTERACTION SPECIFICATION / BOUNDED CLOSURE ATTACK
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / BOUNDED INTERACTION MODEL EXPANDED / UNFROZEN / NO IMPLEMENTATION.
+
+### Research basis
+
+NIST distinguishes ordinary combinatorial coverage from ordered combinations for stateful systems: when behavior depends on system state, the order of inputs can be decisive and interaction strength/order must be specified explicitly. FaultFuzz likewise reports that special timing combinations can expose distributed recovery bugs that random or brute-force exploration may miss. citeturn0search11turn0search3
+
+### I9 — retention × incarnation × authority
+
+Required ordered predicate:
+
+R0: operation O has identity evidence under incarnation I1.
+R1: retention for the relevant dedup/evidence record expires.
+R2: recovery or authority transition establishes I2/G2, distinguishable from I1/G1.
+R3: delayed O from I1/G1 arrives.
+R4: protected boundary evaluates incarnation and authority independently of whether old identity evidence is still retained.
+R5: outcome is explicit: reject, reconcile, or UNKNOWN according to the declared state machine; absence of retained evidence is not treated as proof that O never existed.
+
+**Result:** I9 is a genuine interaction requirement. It is not equivalent to I2 because I2 did not require the authority-generation change as a distinct predicate.
+
+**Witness:** W13 is retained.
+
+### I10 — ownership × duplicate × acknowledgement ambiguity
+
+Required ordered predicate:
+
+R0: worker A owns O.
+R1: ownership transfers to B.
+R2: an in-flight delivery/response from A remains possible.
+R3: O is delivered again to B or another eligible consumer.
+R4: one confirmation/acknowledgement is lost or delayed.
+R5: the system must prevent an additional semantic effect while preserving UNKNOWN when effect knowledge is insufficient.
+
+**Result:** I10 is genuine. It combines ownership transition, duplicate delivery and confirmation ambiguity in one causal window.
+
+**Witness status:** no existing W1-W14 currently proves all five predicates in one sequence. W14 covers R0-R3, but not explicit lost acknowledgement at R4.
+
+Therefore **I10 = PARTIAL**, not FULL.
+
+### I11 — recovery × delayed external effect
+
+Required ordered predicate:
+
+R0: operation O is initiated before recovery.
+R1: external provider may accept O.
+R2: local worker/process recovers before definitive confirmation is durable.
+R3: post-recovery state establishes a distinguishable incarnation.
+R4: retry/reconciliation encounters the old operation.
+R5: system must not infer external absence from local pre-recovery uncertainty or create a second semantic operation merely because the local record is incomplete.
+
+**Result:** I11 is genuine and distinct from W2. W2 covers transaction failure after external acceptance, but not the recovery/incarnation boundary.
+
+**Witness status:** no existing W1-W14 currently proves all six predicates in one sequence. **I11 = PARTIAL.**
+
+### Interaction-generation boundary
+
+A systematic search over the seven predicate axes does not justify enumerating every possible Cartesian product. Many combinations are semantically invalid, redundant, or subsumed by stronger ordered interactions. NIST's ordered-combination work supports explicitly specifying which ordered interactions are relevant rather than assuming all combinations are required. citeturn0search11
+
+For the current model, the newly explicit dimensions generate at least two additional mandatory interaction candidates:
+
+- **I12 — authentication × incarnation × acknowledgement ambiguity:** authentic obsolete source, incarnation transition, lost confirmation.
+- **I13 — correction × recovery × delayed external effect:** correction/reversal becomes durable around a recovery boundary while an older external operation remains unresolved.
+
+These are currently **UNTESTED**.
+
+### Closure status
+
+Current interaction ledger:
+
+- I1-I8: provisionally FULL
+- I9: FULL — W13
+- I10: PARTIAL
+- I11: PARTIAL
+- I12: UNTESTED
+- I13: UNTESTED
+
+Therefore there is **no defensible interaction closure yet**.
+
+### Important methodological result
+
+We now have evidence that a fixed list of hand-picked interactions can keep growing when new dimensions are introduced. The correct next phase is therefore not indefinite manual enumeration.
+
+The next phase must define a **bounded interaction grammar**:
+
+1. allowed predicate axes;
+2. allowed temporal relations;
+3. admissible class combinations;
+4. semantic invalid/duplicate combination rules;
+5. explicit stopping criterion;
+6. coverage metric over the resulting finite interaction universe.
+
+Until that grammar exists, “complete interaction coverage” is not a well-defined claim.
+
+### Disposition
+
+**20 classes:** UNFROZEN.
+
+**W1-W14:** retained.
+
+**Interaction closure:** NOT ACHIEVED.
+
+**Formal proof:** NOT PERFORMED.
+
+**Implementation:** NOT STARTED.
+
+### Exact next action
+
+**AB104.821R:** define the bounded interaction grammar and finite interaction universe before adding more witnesses. Use ordered predicates, admissible combinations and explicit invalid-combination rules. Then calculate which interactions are mandatory, redundant, or impossible under the model. This is the prerequisite for a defensible coverage percentage and eventual freeze.
+
+**No implementation. No deletion/overwrite. No universal completeness/security claim.**
