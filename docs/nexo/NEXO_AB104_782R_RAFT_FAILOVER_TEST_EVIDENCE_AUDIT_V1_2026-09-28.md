@@ -1242,3 +1242,102 @@ Implementation: **NOT STARTED**.
 **AB104.851R:** attack W19/I27 against the real external-effect boundary: payment capture/refund, webhook ordering, provider idempotency/reconciliation, and resource-side fencing. Determine whether a real provider can expose two authenticated incompatible events without an authoritative precedence query, or whether I27 is only a theoretical residue that should be represented as a reconciliation outcome rather than a witness.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.851R — I27 ATTACK AGAINST REAL EXTERNAL PAYMENT/EFFECT BOUNDARIES
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh external evidence
+
+Adyen documents that capture and refund processing are asynchronous and that a successful validation/submission is not identical to final settlement: a later CAPTURE_FAILED or REFUND_FAILED event can occur, and a refund can later be reversed. citeturn0search3turn0search4 Adyen also requires webhook verification, supports event timestamps and, for some webhooks, sequence numbers, and explicitly warns that duplicate webhook deliveries can occur. citeturn0search0turn0search2 Stripe exposes event retrieval by event ID and retains events for a bounded period; its idempotency contract also binds repeated requests to the original result while the key remains retained, and reusing a pruned key can create a new request. citeturn0search1turn0search7turn0search8
+
+### Attack against payment lifecycle
+
+A payment provider therefore supplies more than raw arrival order: event identity, resource references, typed lifecycle events, and in some cases ordering metadata or authoritative status. This makes many apparent conflicts reducible to a provider-specific transition/reconciliation contract.
+
+Example: Adyen distinguishes CAPTURE, CAPTURE_FAILED, REFUND, REFUND_FAILED, and REFUNDED_REVERSED. A later failure/reversal is not treated as proof that the earlier request never existed; it is a later lifecycle/correction event. citeturn0search3turn0search4
+
+**Result:** ordinary payment webhook conflict does not establish I27 by itself.
+
+### Attack against duplicate/out-of-order delivery
+
+Adyen explicitly documents duplicate webhook deliveries and provides timestamp/sequence information for ordering where available. citeturn0search0 Therefore:
+
+`duplicate + delayed + out-of-order` ≠ automatically `CONFLICTING`.
+
+It can be classified as EQUAL/DUPLICATE, OLDER, NEWER, or INCOMPARABLE depending on the provider's evidence contract.
+
+**Result:** no new I27 witness.
+
+### Attack against idempotency
+
+Stripe's idempotency layer demonstrates a stronger resource-side mechanism: the same retained key maps to the original result, while parameter mismatch is rejected; after key pruning, reuse can become a new request. citeturn0search8 This gives authoritative behavior inside the provider's idempotency scope.
+
+**Result:** retained-key duplicate does not establish I27. Retention expiry creates a different interaction already represented by I22.
+
+### Critical finding
+
+The research did **not** find a documented production case proving the exact I27 condition:
+
+`two authenticated same-resource incompatible events`
+`+ no authoritative precedence`
+`+ no authoritative reconciliation/status`
+`+ protected boundary must decide.
+
+The provider documentation instead repeatedly exposes mechanisms that reduce the ambiguity: event identity, timestamps/sequence numbers, typed lifecycle semantics, resource lookup, idempotency, and reconciliation/reporting.
+
+Therefore **I27 is not yet promoted to a frozen witness**.
+
+### Theoretical residue versus implementation witness
+
+I27 remains useful as a **model-level residual condition** because a provider-neutral system cannot assume that every external resource supplies a total order or authoritative status API.
+
+But it should not inflate the empirical witness set without evidence that a concrete resource contract actually permits the condition to become reachable.
+
+Provisional disposition:
+
+**I27 = MODEL-LEVEL RESIDUAL / EMPIRICAL WITNESS NOT ESTABLISHED.**
+
+This is a stronger and more conservative status than calling it a new failure class.
+
+### Effect-boundary conclusion
+
+The real external boundary is now better expressed as:
+
+`authenticate → scope/identity → semantic freshness → provider/resource transition legality → effect knowledge → reconciliation`
+
+A webhook's arrival order is never itself sufficient authority.
+
+### Candidate invariant refinement
+
+Previous INV-EH-16 is narrowed to:
+
+**INV-EH-16 — No arrival-order winner without contract authority.**
+
+If the resource/provider contract supplies authoritative precedence, the system may use that contract. If it does not, arrival order cannot manufacture precedence.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+I27: **model-level residual / empirical witness NOT established**.
+W19: **not frozen**.
+INCOMPARABLE: epistemic relation / no witness frozen.
+CONFLICTING: provisional semantic relation / reconciliation outcome unless a contract proves otherwise.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.852R:** perform the same I27 reduction against executable open-source payment/webhook handlers and distributed workflow implementations, not only provider documentation. Look for code paths where two valid same-resource transitions can reach the protected boundary without version/epoch/status authority. If the code always supplies a local or provider-side winner, record the reduction. If a real reachable unresolved state exists, freeze the smallest witness with exact causal steps.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
