@@ -2050,3 +2050,120 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.803R: investigate payment-specific state machines and database ledger invariants, including double-entry/ledger idempotency, concurrent authorization/capture/refund races, and crash recovery. Determine whether monetary state can be made atomic with operation identity and authority generation while external card-network settlement remains outside the transaction.
+
+## AB104.803R — payment ledger invariants, authorization/capture races, and settlement boundary
+
+### Payment API idempotency: receiver-side identity is concrete and bounded
+
+Adyen documents a production payment API idempotency contract: the same idempotency key can be retried after a timeout and the first processed response is returned without charging twice. The key is scoped to the company account and valid for 7–14 days. Concurrent submissions with the same key can produce an explicit in-progress/conflict response rather than two successful operations. Adyen also documents accounting rules preventing captures from exceeding authorization and refunds from exceeding captured value. citeturn0search0
+
+This is strong evidence for three distinct protections:
+
+1. request identity / duplicate suppression;
+2. monetary state invariants;
+3. explicit lifecycle conflicts.
+
+It is not evidence that an old authority generation can continue making payment mutations after revocation.
+
+### Double-entry ledger: database can close monetary state atomically
+
+A current PostgreSQL ledger implementation uses append-only entries, database-enforced balance invariants, an idempotency-key table, and row-level locking. Its test suite runs against real PostgreSQL and includes concurrent transfers and idempotent replay. citeturn0search1
+
+Another current ledger implementation reports real PostgreSQL integration tests for idempotent replay, conflicting-key reuse, reversals, and a concurrent withdrawal race in which exactly one request succeeds. citeturn0search8
+
+A separate implementation provides a larger executable suite: concurrent same-key retries, balance conservation, property-based fuzzing, multi-leg atomic postings, and transactional outbox integration. It explicitly keeps idempotency keys for a retention period while preserving ledger history indefinitely; active holds are not pruned. citeturn0search4
+
+These examples are useful because they demonstrate that the money state itself can have a much stronger correctness boundary than a generic distributed workflow.
+
+### Authorization/capture/refund lifecycle
+
+The payment ledger examples model authorization holds and later capture/void/expire as distinct state transitions rather than treating the entire payment as one instantaneous operation. Concurrent attempts to consume the same funds are serialized/guarded by database constraints or row locks.
+
+This reinforces an important Nexo distinction:
+
+authority_generation answers "is this actor/version still authorized?"
+
+while:
+
+payment_state answers "what monetary lifecycle transition is currently valid?"
+
+A payment state such as AUTHORIZED, CAPTURED, VOIDED, or REFUNDED must not be overloaded to represent authority freshness.
+
+### Payment ledger vs external settlement
+
+A local ledger can atomically record:
+
+operation identity
++
+authorized amount
++
+debit/credit entries
++
+current lifecycle state
++
+idempotency result
+
+inside one database transaction.
+
+But card-network settlement, bank transfer settlement, or another PSP remains an external effect unless that network participates in the same atomic protocol.
+
+Adyen's own idempotency documentation is instructive here: it recommends asynchronous server-to-server webhooks to track missing responses, while retaining idempotency for safe retries. citeturn0search0
+
+Therefore the local ledger's CAPTURED state cannot, by itself, be interpreted as universal proof that an external settlement rail has durably completed.
+
+### Failure matrix
+
+| Event | Local ledger interpretation | External settlement interpretation |
+|---|---|---|
+| idempotent request accepted | operation identity reserved/processed | external effect may still be pending |
+| duplicate same key | return prior result/conflict | do not create new logical payment |
+| concurrent capture | one valid transition according to lifecycle/amount invariants | receiver must independently enforce equivalent semantics |
+| local DB commit succeeds | monetary state durable | settlement may still be UNKNOWN |
+| webhook missing | reconciliation required | not proof settlement failed |
+| timeout after submission | UNKNOWN until receiver evidence | never blindly create a new payment |
+| authority changes | stale local mutation can be rejected if generation is part of commit predicate | external rail needs its own fence/idempotency contract |
+| idempotency key expires | same key may become a new operation under provider contract | operation identity lifecycle must be explicit |
+
+### New finding: authority generation can coexist with payment state without replacing it
+
+For a database-owned ledger, a transaction can carry both:
+
+operation_id
+authority_generation
+payment_state transition
+
+and enforce them separately.
+
+Example conceptual acceptance:
+
+operation_id must be new or match the exact prior request;
+authority_generation must satisfy the current authorization predicate;
+payment_state must allow the requested lifecycle transition.
+
+This is stronger than using one "version" field for everything.
+
+However, the external settlement rail still requires its own receiver-side identity/fencing semantics.
+
+### Evidence ledger
+
+ADYEN_PAYMENT_IDEMPOTENCY_SOURCE_CONFIRMED
+ADYEN_IDEMPOTENCY_RETENTION_7_TO_14_DAYS_SOURCE_CONFIRMED
+ADYEN_CONCURRENT_SAME_KEY_CONFLICT_SOURCE_CONFIRMED
+ADYEN_CAPTURE/REFUND_ACCOUNTING_LIMITS_SOURCE_CONFIRMED
+DOUBLE_ENTRY_DB_INVARIANTS_SOURCE_CONFIRMED
+REAL_POSTGRES_CONCURRENCY_TESTS_SOURCE_CONFIRMED
+PROPERTY_BASED_LEDGER_FUZZING_SOURCE_CONFIRMED
+AUTHORIZATION_HOLD_LIFECYCLE_DISTINCT_FROM_IDEMPOTENCY_SOURCE_CONFIRMED
+LOCAL_LEDGER_CAN_ATOMICALLY_BIND_PAYMENT_STATE_AND_OPERATION_ID SOURCE-SUPPORTED
+PAYMENT_STATE != AUTHORITY_GENERATION
+LOCAL_LEDGER_COMMIT != EXTERNAL_SETTLEMENT_COMPLETION
+WEBHOOK/RECONCILIATION_REQUIRED_FOR_MISSING_EXTERNAL_RESPONSES SOURCE CONFIRMED
+AUTHORITY_GENERATION_CAN_BE_A_SEPARATE_COMMIT_PREDICATE SOURCE-SUPPORTED
+UNIVERSAL_EXTERNAL_SETTLEMENT_ATOMICITY NOT ESTABLISHED
+EXECUTED NEXO PAYMENT AUTHORITY RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.804R: investigate settlement/reconciliation failures in payment systems: webhook duplication/out-of-order delivery, authorization reversal/capture races, provider timeout after accepted charge, and ledger-vs-provider reconciliation. Determine whether external payment rails expose a durable operation identity/version strong enough to close UNKNOWN without blind retry.
