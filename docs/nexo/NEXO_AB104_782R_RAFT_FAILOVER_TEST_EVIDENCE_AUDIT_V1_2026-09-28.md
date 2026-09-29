@@ -4550,3 +4550,104 @@ Still **NOT FROZEN**. The semantic temporal projection gives a finite candidate 
 **AB104.824R:** attack W15 and W16 for redundancy; then audit every I1-I13 witness mapping against the normalized temporal predicates and determine whether any mapped interaction is actually only PARTIAL. Do not freeze the denominator until this audit is complete.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+---
+## AB104.824R — REDUNDANCY ATTACK W15/W16 + I1-I13 COVERAGE AUDIT
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / W15-W16 RETAINED PROVISIONALLY / COVERAGE RECLASSIFIED / DENOMINATOR STILL UNFROZEN / NO IMPLEMENTATION.
+
+### Research cross-check
+
+NIST's ordered t-way work confirms that state-based fault detection depends on both combinations and their ordering; NIST also defines coverage as a property of an explicitly specified interaction space rather than a raw count of tests. citeturn0search0turn0search2
+
+### W15 redundancy attack
+
+Required predicates:
+1. authenticated source;
+2. obsolete incarnation;
+3. new active incarnation;
+4. ACK/confirmation ambiguity;
+5. protected boundary distinguishes authenticity from current authority/incarnation and effect knowledge.
+
+**W10** lacks ACK ambiguity.
+
+**W14** lacks the authentication + obsolete-incarnation predicate.
+
+No single existing witness preserves all five without semantic mutation.
+
+**Disposition: W15 RETAINED provisionally.**
+
+### W16 redundancy attack
+
+Required predicates:
+1. operation initiated under I1;
+2. possible external acceptance;
+3. recovery to I2 before definitive local knowledge;
+4. correction/reversal changes interpretation;
+5. delayed old-incarnation result arrives after correction/recovery;
+6. history and reconciliation preserve uncertainty without creating a second semantic operation.
+
+**W2** lacks correction/recovery.
+**W4** lacks recovery + delayed external effect.
+**W13** lacks correction/reversal semantics.
+
+No existing witness preserves all six predicates.
+
+**Disposition: W16 RETAINED provisionally.**
+
+### I1-I13 audit
+
+The prior FULL labels were stress-tested against the normalized predicate requirement.
+
+- **I1 → W1: FULL** — authority + retry + identity explicitly present.
+- **I2 → W13: FULL** — retention expiry + incarnation transition + delayed old operation are explicit; authority decision is part of the protected boundary.
+- **I3 → W4: FULL** — correction + stale observation + reconciliation explicit.
+- **I4 → W2: FULL** — transaction abort/failure + external acceptance + retry/uncertainty explicit.
+- **I5 → W14: FULL** — ownership transfer + delayed response + duplicate delivery explicit.
+- **I6 → W10: FULL** — authentication + obsolete incarnation + authority decision explicit.
+- **I7 → W8: FULL** — poison termination + unresolved external effect explicit.
+- **I8 → W11: FULL** — ledger correction + concurrent refund/capture invariant explicit.
+- **I9 → W13: PARTIAL** — retention + incarnation + authority are present, but the current W13 formulation does not independently instantiate an authority-generation transition as a distinct causal event from the incarnation transition.
+- **I10 → W14: PARTIAL** — ownership transfer + duplicate delivery are explicit, but ACK/confirmation ambiguity is not independently instantiated as a required causal event.
+- **I11 → W2: PARTIAL** — external-effect ambiguity + retry are present, but recovery/incarnation transition is not explicit.
+- **I12 → W15: FULL provisional** — authentication + obsolete/new incarnation + ACK ambiguity are explicit.
+- **I13 → W16: FULL provisional** — correction + recovery + delayed external-effect result are explicit.
+
+### Critical correction
+
+This means the earlier claim “I1-I9 FULL” was too strong.
+
+Current defensible state:
+
+**FULL:** I1-I8, I12, I13 (I12/I13 provisional pending witness formalization)
+
+**PARTIAL:** I9, I10, I11
+
+**UNTESTED:** none among I1-I13, assuming W15/W16 are accepted as provisional witnesses.
+
+However, this does **not** mean the interaction universe is complete. It only closes the current explicitly named I1-I13 list.
+
+### Why I9 remains distinct
+
+I9 is not reducible to I2 merely because both contain retention + incarnation + authority. I9 requires the authority-generation transition itself to be a distinct causal predicate at the protected boundary. W13 must therefore be refined before I9 can become FULL.
+
+### Why I10 remains distinct
+
+I10 is not equivalent to I5. Delayed response and acknowledgement ambiguity can have different epistemic consequences. I10 requires an explicit lost/delayed confirmation condition.
+
+### Why I11 remains distinct
+
+I11 requires recovery to create a new incarnation/epoch between the original operation and the delayed external result. A generic transaction failure is insufficient.
+
+### Denominator status
+
+Still **NOT FROZEN**.
+
+The I1-I13 audit establishes coverage for the currently declared interactions, but U3 may contain additional admissible temporal variants. No percentage is reported.
+
+### Exact next action
+
+**AB104.825R:** refine W13, W14, and W2 with the missing causal predicates for I9-I11, then perform a second-order gap search: derive new admissible interactions from the seven predicate axes + six normalized temporal relations and compare them against I1-I13. Only after this can the finite universe approach a defensible closure boundary.
+
+**No deletion/overwrite. No silent witness mutation.**
