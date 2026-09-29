@@ -713,3 +713,123 @@ Implementation: **NOT STARTED**.
 **AB104.846R:** attack the NEWER/EQUAL/OLDER/INCOMPARABLE relation against concrete provider sequence/version mechanisms, same-resource retries, duplicate webhooks, correction/reversal, recovery/incarnation changes, and namespace changes. Determine the minimum evidence required to establish semantic order and whether `INCOMPARABLE` itself needs a separate interaction witness or is covered by existing UNKNOWN/reconciliation cases.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.846R — FRESHNESS RELATION ATTACK: NEWER/EQUAL/OLDER/INCOMPARABLE
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Evidence cross-check
+
+NIST explicitly treats ordered event sequences as necessary for state-based systems because the same inputs can produce different outcomes depending on prior state and event order. citeturn0search0turn0search5 Adyen payment webhooks expose event type, success, eventDate, and references to the original payment, while capture/cancellation/reversal outcomes are represented as distinct events. citeturn0search9turn0search11 Adyen's reversal API also demonstrates why an event can require resource-state interpretation rather than simple timestamp ordering: the same reversal request can cancel an uncaptured payment or refund a captured one. citeturn0search8
+
+### Freshness mechanisms attacked
+
+**1. Provider sequence/version**
+
+If the provider guarantees a monotonic sequence/version for one resource stream, it can establish NEWER/EQUAL/OLDER for that stream. It does not automatically establish ordering across different resources, merchants, namespaces, or provider systems.
+
+**2. Resource revision**
+
+A revision tied to the resource can establish that one state supersedes another if the provider contract defines revision semantics. A locally generated revision cannot prove external ordering.
+
+**3. Stream/event position**
+
+A position is strong within its stream. It becomes INCOMPARABLE when events originate from different streams or the contract does not define cross-stream ordering.
+
+**4. Causal reference**
+
+An explicit `originalReference`/parent/event-cause relation can establish semantic linkage. It does not necessarily provide a total order among sibling events.
+
+**5. Timestamp/eventDate**
+
+A timestamp can be useful evidence, but it is not sufficient by itself to establish semantic precedence. Adyen exposes `eventDate`, but the contract still identifies events by type/reference and the lifecycle semantics determine their meaning. citeturn0search11
+
+### Resulting relation
+
+For an incoming event E against current authoritative state S:
+
+`NEWER` = contract establishes E semantically follows S.
+
+`EQUAL/DUPLICATE` = E is the same semantic transition already incorporated.
+
+`OLDER` = contract establishes E semantically precedes S.
+
+`INCOMPARABLE` = available evidence cannot establish either ordering.
+
+The relation is **partial**, not necessarily total.
+
+### INCOMPARABLE attack
+
+Candidate reduction to existing UNKNOWN/reconciliation cases was attempted.
+
+Result: **INCOMPARABLE is not automatically a new interaction witness.** It is primarily an epistemic relation produced when freshness evidence is insufficient.
+
+It becomes a distinct interaction only when the inability to order events changes the protected decision compared with an existing UNKNOWN/reconciliation scenario — for example, when one possible ordering permits a commit while another forbids it and no authoritative reconciliation can distinguish them.
+
+Therefore no new witness is frozen in AB104.846R.
+
+### Identity/namespace/incarnation attack
+
+A freshness relation must be scoped to an identity domain. The same sequence number cannot be assumed comparable across:
+
+- different operation identities;
+- different resource identities;
+- different namespaces/tenants;
+- different provider accounts;
+- different resource incarnations.
+
+An authenticated event from an old incarnation can still be authentic yet obsolete for the current incarnation. This preserves the previously established distinction:
+
+**authentication validity ≠ incarnation validity ≠ authority validity ≠ semantic freshness.**
+
+### Recovery attack
+
+After recovery, a locally reconstructed state may have a higher local observation version without possessing newer external evidence. Therefore local observation version must not be treated as provider semantic freshness.
+
+Recovery can establish a new local incarnation/epoch, but it does not retroactively order external events.
+
+### Candidate invariant refinement
+
+**INV-EH-03 — Freshness is scoped:** a freshness relation is valid only within the identity/resource/version domain whose contract defines it.
+
+**INV-EH-04 — Partial-order preservation:** absence of a defined ordering relation must remain INCOMPARABLE; the system must not manufacture a total order merely to simplify processing.
+
+**INV-EH-05 — Local observation ≠ external freshness:** a newer local observation/recovery version does not prove that the underlying external event is newer.
+
+Candidates only; not formally verified.
+
+### Coverage consequence
+
+No new top-level class and no mandatory witness was added solely because INCOMPARABLE exists. Existing UNKNOWN/reconciliation witnesses remain candidates for representing its effect when the decision boundary is the same.
+
+However, a future coverage matrix must distinguish:
+
+`known older` vs `unknown ordering`.
+
+They are not semantically equivalent even if both ultimately lead to reconciliation.
+
+### Current disposition
+
+I17: absorbed by W17 parameterization.
+I18: absorbed by W18 parameterization.
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I23: absorbed by operation-identity parameterization.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+INCOMPARABLE: epistemic relation / no new witness frozen.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.847R:** attack freshness scoping against cross-namespace, cross-incarnation, duplicate, correction/reversal, and concurrent-operation cases. Build a finite freshness relation matrix and determine whether `EQUAL/DUPLICATE`, `OLDER`, and `INCOMPARABLE` are sufficient, or whether a separate `CONFLICTING` relation is needed when two authenticated events cannot both be true under the same resource contract.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
