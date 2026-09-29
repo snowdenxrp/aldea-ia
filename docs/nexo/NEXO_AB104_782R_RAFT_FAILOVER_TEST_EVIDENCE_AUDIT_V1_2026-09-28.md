@@ -354,3 +354,76 @@ NEXO_IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.786R: inspect real inbox/idempotent-consumer implementations and failure tests, especially concurrent duplicate delivery, parameter mismatch, retention expiry, crash after sink commit, and reconciliation. Determine whether operation identity must be bound to payload hash, authority generation, resource namespace, and a durable epoch to prevent semantic key reuse.
+
+
+## AB104.786R research — inbox/idempotent-consumer concurrency and external-effect limits
+
+### Real implementation/documentation evidence
+
+Microsoft's current Idempotent Consumer guidance explicitly identifies the dangerous check-then-process race: concurrent consumers can both observe that a key is absent. It recommends a database uniqueness constraint/atomic conditional write as the conflict arbiter. It also requires the deduplication marker and local business side effects to commit in the same transaction. SOURCE: Microsoft Architecture Center. citeturn1search0
+
+The same guidance makes a critical boundary explicit for effects that cannot join that transaction (for example third-party APIs): persist an in-progress state, execute the external action, then persist completed/outcome state; redelivery of an in-progress record requires reconciliation rather than blind replay. citeturn1search0
+
+A current Debezium JDBC connector documents the same practical rule: at-least-once delivery can repeat events after restart/rebalance, and upsert makes writes to the target database idempotent. citeturn0search7
+
+A current Debezium Server document explicitly says its delivery is at-least-once and that a later batch failure can cause an earlier acknowledged group to replay; downstream deduplication is therefore required. citeturn0search3
+
+### Real failure evidence
+
+Wolverine issue #4202 reports a production-reproducible inbox partitioning bug where the same logical message identity could exist simultaneously in Incoming and Scheduled partitions, defeating the intended uniqueness boundary and causing a retry/polling stall. The issue includes a test sequence reproducing the duplicate state. This is strong evidence that an inbox's uniqueness scope must remain invariant across lifecycle states/partitions; merely having a UNIQUE constraint is not sufficient if the physical schema partitions the identity domain incorrectly. citeturn1search8
+
+Wolverine issue #2639 reports duplicate Kafka delivery interacting with a uniqueness violation such that the offset was not committed and the partition stalled. This demonstrates a second lesson: duplicate detection itself must have an explicit recovery/acknowledgement path; a raw uniqueness exception is not a complete duplicate protocol. citeturn1search10
+
+A current production-oriented PayFlow implementation documents the chosen guarantee as at-least-once plus idempotent consumers rather than claiming exactly-once across PostgreSQL and RabbitMQ; its inbox uses (consumer_name, message_id) as a unique key and places the domain operation and inbox record in one transaction. This is implementation evidence, not a universal proof. citeturn1search1
+
+### Identity scope findings
+
+The deduplication key must identify the logical operation across redelivery, but it must also be scoped to the consumer/resource namespace. A message identity alone can be too broad when multiple independent consumers must each process the same event. The current guidance recommends a composite such as (consumer identity, message identity). citeturn1search0
+
+Payload binding is also important: current guidance describes comparing immutable fields/request hashes on an existing identity and treating a mismatch as an identifier reuse/corruption condition rather than overwriting the original receipt. citeturn1search0turn1search4
+
+### External-effect limit
+
+The inbox transaction can safely deduplicate a local database effect. It cannot make a third-party API/payment/email/device operation atomic with that database transaction.
+
+The unsafe alternatives are symmetric:
+
+- commit inbox first -> crash before external effect -> retry may be suppressed although effect never happened;
+- external effect first -> crash before inbox commit -> retry may repeat the external effect.
+
+Therefore an external effect requires either:
+1. a downstream idempotency/conditional-acceptance contract;
+2. an outbox/worker plus durable reconciliation;
+3. a protocol that places the effect and the deduplication state inside one common atomic boundary.
+
+### New candidate invariant
+
+For a consumer namespace N and logical operation O:
+
+Dedup(N,O) must be atomically coupled to the local effect it protects, and its identity scope must remain stable across all retry/lifecycle states.
+
+For an external resource X:
+
+Dedup(N,O) alone does not prove Effect(X,O).
+
+### Evidence ledger
+
+INBOX_UNIQUE_CONSTRAINT_AS_CONCURRENCY_ARBITER SOURCE CONFIRMED
+CHECK_THEN_ACT_RACE SOURCE CONFIRMED
+INBOX_MARKER_PLUS_LOCAL_EFFECT_ATOMIC SOURCE CONFIRMED
+IN_PROGRESS_EXTERNAL_EFFECT_REQUIRES_RECONCILIATION SOURCE CONFIRMED
+DEBEZIUM_AT_LEAST_ONCE_REPLAY SOURCE CONFIRMED
+DEBEZIUM_JDBC_UPSERT_IDEMPOTENCE SOURCE CONFIRMED
+INBOX_IDENTITY_SCOPE_MUST_INCLUDE_CONSUMER_NAMESPACE SOURCE CONFIRMED
+PAYLOAD/REQUEST_BINDING_ON_REUSED_ID SOURCE CONFIRMED
+PARTITIONED_INBOX_IDENTITY_COLLISION REAL REPORTED TEST EVIDENCE
+DUPLICATE_UNIQUE_VIOLATION_CAN_STALL_ACK/PROGRESS REAL REPORTED ISSUE
+LOCAL_INBOX_ATOMICITY != EXTERNAL_EFFECT_ATOMICITY
+IDEMPOTENCY_KEY != AUTHORITY_GENERATION
+EXECUTED BY THIS AUDIT NO
+FORMAL UNIVERSAL EXACTLY_ONCE PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.787R: investigate the external-effect reconciliation state machine itself: PENDING/SUBMITTED/CONFIRMED/UNKNOWN/FAILED, concurrent workers, lease expiry, stale workers, authority-generation changes, and whether reconciliation can safely distinguish a lost ACK from a failed effect. Seek real implementations and failure tests rather than designing Nexo yet.
