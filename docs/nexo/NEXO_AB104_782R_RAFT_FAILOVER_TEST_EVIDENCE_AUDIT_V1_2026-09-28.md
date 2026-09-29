@@ -1641,3 +1641,89 @@ Implementation: **NOT STARTED**.
 **AB104.855R:** attack the remaining distinction inside I25: accepted/reserved-before-fencing versus completion-time fencing. Search concrete implementations for a resource that accepts/reserves an operation under G1, changes authority to G2, and then receives delayed G1 completion. Determine whether completion is atomically fenced, reconciled, or left epistemically ambiguous. Do not freeze a witness if the provider contract already resolves the boundary.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.
+
+
+---
+## AB104.855R — I25 ATTACK: ACCEPTED/RESERVED BEFORE FENCING VS COMPLETION-TIME FENCING
+
+**Status:** RESEARCHED / CODE-LEVEL REDUCTION / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+Kafka's current EOS design explicitly fences zombie producers by producer epoch and states that an old producer attempting to make progress is rejected. KIP-447 also describes pending transactions during producer restart/reassignment and uses fencing plus transaction completion/abort rules to prevent stale transactional progress. citeturn0search0 The Kafka protocol exposes INVALID_PRODUCER_EPOCH when a producer attempts an operation with an old epoch, and the producer API documents that an old epoch can be rejected by the partition leader. citeturn0search2turn0search9
+
+EtcFS provides a second executable example: its generation guard is included in the same etcd transaction as the metadata mutation, and the current implementation verifies on real AWS chaos testing that a write after a generation bump is rejected. The generation is intentionally cached from process start so a stale process cannot reread the newly bumped generation and bless itself. citeturn0search1
+
+### I25 attack result
+
+The decisive question was whether a resource can have:
+accepted/reserved under G1
+→ G2 becomes authoritative
+→ delayed G1 completion
+while leaving completion legality unresolved.
+
+The concrete systems examined instead place the generation/epoch check at the protected mutation boundary:
+
+stale G1 completion
+→ generation/epoch comparison
+→ REJECT
+
+That is a direct resolution of the stale-completion decision.
+
+### Important residual
+
+This does **not** prove that every external resource behaves this way. It proves that when a resource participates in generation fencing at its mutation boundary, I25 reduces to an existing fencing mechanism rather than requiring a new witness.
+
+Therefore:
+
+**I25 = PARAMETERIZED COVERAGE under resource-side fencing; empirical witness NOT established.**
+
+### Why acceptance/reservation still matters
+
+Kafka's pending-transaction behavior demonstrates that an accepted/pending state can persist across failure/restart, but the protocol gives the coordinator explicit rules for abort/completion before the next generation proceeds. citeturn0search0 Thus the existence of an accepted/pending state alone does not create I25.
+
+The witness would require a resource contract where acceptance/reservation creates a semantic commitment but completion-time authority is not checked or cannot be reconciled authoritatively.
+
+No such executable case was established in this round.
+
+### Reduction against prior interactions
+
+- I24: pending/in-progress evidence without authority transition. I25 adds authority invalidation; however resource-side fencing absorbs that difference when enforced at the effect boundary.
+- I22: retention expiry is different; no retention transition required.
+- I26: lifecycle invalidation is different; no cancellation/expiry required.
+- I19/I21: correction/reversal and stale historical event are absent.
+- W1: generic stale authority retry is broader; I25's accepted/reserved-before-completion phase is an additional temporal condition, but becomes parameterized when the resource's completion boundary enforces fencing.
+
+### Refined disposition
+
+**I25: PARAMETERIZED / NOT A FROZEN EMPIRICAL WITNESS.**
+
+This is a meaningful reduction and should prevent the audit from counting a normal fenced stale-completion path twice.
+
+### Candidate invariant refinement
+
+**INV-F-09 — Authority validity must be evaluated at the protected mutation/effect boundary, not only at admission.**
+
+This remains a candidate until formally verified across the intended resource classes.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: **parameterized coverage / empirical witness NOT established**.
+I26: admissible / independent semantic interaction / empirical witness NOT established.
+I27: model-level residual / empirical witness NOT established.
+W19: not frozen.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.856R:** perform the equivalent reduction for I26: accepted/reserved → lifecycle cancellation/expiry → delayed completion. Search executable provider/resource implementations for whether lifecycle validity is checked atomically at completion, whether cancellation/expiry can race with completion, and whether any remaining ambiguity is genuinely distinct from existing lifecycle/reconciliation witnesses.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.
