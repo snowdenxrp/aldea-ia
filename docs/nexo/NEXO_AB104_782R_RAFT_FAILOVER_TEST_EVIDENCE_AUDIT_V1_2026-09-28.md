@@ -1727,3 +1727,68 @@ Implementation: **NOT STARTED**.
 **AB104.856R:** perform the equivalent reduction for I26: accepted/reserved → lifecycle cancellation/expiry → delayed completion. Search executable provider/resource implementations for whether lifecycle validity is checked atomically at completion, whether cancellation/expiry can race with completion, and whether any remaining ambiguity is genuinely distinct from existing lifecycle/reconciliation witnesses.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.
+
+## AB104.856R — I26 ATTACK: LIFECYCLE INVALIDATION VS DELAYED COMPLETION
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+Adyen documents a concrete delayed-capture lifecycle: authorization can remain uncaptured for a configured delay, during which cancellation is possible; manual capture is asynchronous and its final result arrives via CAPTURE/CAPTURE_FAILED webhook. citeturn0search0turn0search2 Adyen's cancellation flow is likewise asynchronous: the cancel request returns a received status and the definitive outcome arrives later through CANCELLATION. If capture status is uncertain, Adyen directs the integration to use reversal/status-aware handling rather than assuming cancellation. citeturn0search3turn0search4 The lifecycle documentation also treats EXPIRE and CANCELLED as distinct resource states. citeturn0search5turn0search12
+
+### Concrete race shape
+
+A real lifecycle window exists: AUTHORIZED/UNCAPTURED -> capture or cancel request -> asynchronous processing -> competing lifecycle transition -> delayed webhook/result.
+
+This proves lifecycle races are reachable, but does not by itself prove a missing protected boundary. The provider exposes typed outcomes and resource references that allow the integration to distinguish capture, capture failure, cancellation, and expiration. citeturn0search2turn0search5
+
+### Reduction
+
+If the resource atomically checks lifecycle before committing capture, EXPIRED/CANCELLED plus delayed capture becomes a lifecycle-predicate rejection. That is parameterized coverage, not a new witness.
+
+Cancellation is also not immediately equivalent to CANCELLED: Adyen returns received and waits for the CANCELLATION webhook. citeturn0search3 Therefore cancel-request accepted is distinct from cancellation completed, but that uncertainty is already represented by effect-knowledge/reconciliation interactions.
+
+Adyen distinguishes CAPTURE_FAILED, CANCELLATION, and EXPIRE; a delayed event can therefore be interpreted against resource lifecycle rather than arrival order. citeturn0search5 No executable provider case was established where all of the following coexist: accepted/reserved state; lifecycle invalidation; delayed completion reaching the effect boundary; no atomic lifecycle check; and no authoritative status/reconciliation.
+
+### Disposition
+
+**I26 = PARAMETERIZED LIFECYCLE COVERAGE / EMPIRICAL WITNESS NOT ESTABLISHED.**
+
+The semantic distinction remains important: I25 changes authority validity, while I26 changes resource lifecycle validity. But neither currently warrants a separate empirical witness.
+
+### Refined invariant
+
+**INV-F-10 — Delayed completion cannot resurrect a terminal lifecycle state without authoritative transition evidence.**
+
+Candidate only; formal verification not performed.
+
+### Combined reduction
+
+I25 and I26 now reduce to the same higher-level protected requirement:
+
+accepted/pending -> boundary-changing predicate -> delayed completion -> completion must re-evaluate authoritative legality.
+
+The predicate differs: I25 = authority generation; I26 = resource lifecycle.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: parameterized coverage / empirical witness NOT established.
+I26: parameterized lifecycle coverage / empirical witness NOT established.
+I27: model-level residual / empirical witness NOT established.
+W19: not frozen.
+20 top-level classes: UNFROZEN.
+Coverage denominator: NOT FROZEN.
+Formal verification: NOT PERFORMED.
+Implementation: NOT STARTED.
+
+### Exact next action
+
+**AB104.857R:** attack the remaining independent I24 against provider IN_PROGRESS semantics. Determine whether positive in-progress evidence creates a distinct protected decision beyond UNKNOWN + reconciliation, or whether it too reduces to typed effect-knowledge state plus existing retry/reconciliation witnesses. Search concrete executable/provider semantics; do not add a witness without a distinct protected decision.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
