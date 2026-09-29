@@ -3529,3 +3529,101 @@ The required eight cross-products have been researched and mapped. The provision
 ### Exact next action
 
 **AB104.813R:** adversarially challenge the provisional 12-witness set for redundancy and missing higher-order interactions. Specifically test triples involving **authority generation × retention × incarnation**, **correction × stale evidence × reconciliation**, **serialization failure × retry × external effect**, and **ownership change × delayed response × duplicate delivery**. Then produce a dependency/coverage matrix and identify genuinely independent witnesses before any taxonomy freeze.
+
+
+---
+
+## AB104.813R — HIGHER-ORDER CROSS-PRODUCT CHALLENGE
+
+**Date:** 2026-09-28
+**Status:** RESEARCHED / ANALYZED / UNFROZEN / NO IMPLEMENTATION.
+
+### Evidence cross-check
+
+The new source pass strengthens four important conclusions.
+
+**A. Authority generation × retry × fencing**
+
+Kafka provides a concrete implementation witness for persistent producer epochs: a new transactional initialization can advance the producer epoch and fence an older producer, and Kafka's transaction coordinator contains explicit handling for retries around epoch changes. This demonstrates that retry/fencing interactions are not hypothetical. It also remains bounded to Kafka-managed effects; it does not establish arbitrary external-effect fencing. citeturn1search3turn1search8turn1search13
+
+**B. Serialization failure × retry × external effect**
+
+PostgreSQL explicitly requires applications to retry the *complete transaction* after a serialization failure and does not provide an automatic retry facility because correctness depends on application logic. Therefore a transaction retry is a new execution of the database logic; it cannot by itself serve as evidence about an external request that may already have escaped the failed transaction. citeturn1search0 Temporal independently documents the same practical boundary: Activities are at-least-once and can be retried after a worker crash, so external Activities need stable idempotency keys. citeturn0search3turn0search10
+
+**C. Ownership change × delayed response × duplicate delivery**
+
+RabbitMQ explicitly permits deliveries to remain in flight after consumer cancellation, and unacknowledged deliveries can later be requeued/redelivered after connection or channel failure. Its redelivered flag is only a hint that the message may have been seen before; it is not proof that the previous delivery reached a consumer. citeturn1search1turn1search4turn1search6
+
+This produces a three-way witness in which ownership/cancellation, delayed completion and duplicate delivery cannot be collapsed into one boolean state such as DONE/FAILED.
+
+**D. Recovery × retention/compaction × incarnation**
+
+etcd's recovery procedure explicitly creates a new logical cluster identity and recommends revision bumping/marking revisions compacted so consumers and caches do not continue operating from stale revision history. This provides concrete evidence that restored bytes, historical revision continuity, and active consumer validity are separate concerns. citeturn0search1turn0search0
+
+### Higher-order challenge results
+
+#### H1 — authority × retention × incarnation
+
+A delayed operation O1 from incarnation I1 can outlive the deduplication/observation retention horizon and arrive after recovery under I2. If the identity is reused without an incarnation boundary, the receiver can either falsely accept O1 as new or falsely conclude that O1 never occurred.
+
+**Result:** genuine higher-order interaction. Covered jointly by C1, C9, C15, C17 and C18. Not a new top-level class.
+
+#### H2 — correction × stale evidence × reconciliation
+
+A terminal-looking state S1 can be followed by valid correction C2, while delayed S1 evidence arrives later. Treating arrival order as semantic order can regress current state; treating history as mutable destroys auditability.
+
+**Result:** genuine interaction. Covered jointly by C5, C12, C14 and C17. Not a new top-level class.
+
+#### H3 — serialization × retry × external effect
+
+T1 sends or may send external effect E, then aborts locally due to serialization failure. Retry T2 repeats the logical transaction. The database's guarantee concerns its own state; E can remain uncertain outside it.
+
+**Result:** genuine interaction. Covered jointly by C7, C8, C11, C12 and C20. Not a new top-level class.
+
+#### H4 — ownership × delayed response × duplicate delivery
+
+W1 loses ownership while a response or effect from its old delivery remains in flight. W2 or a redelivery path may process the same logical operation. Without a protected effect boundary, both paths can appear locally valid.
+
+**Result:** genuine interaction. Covered jointly by C3, C4, C10, C11 and C20. Not a new top-level class.
+
+### Provisional dependency matrix
+
+| Witness | Identity | Payload | Duplicate | ACK | Isolation | Stale | Lifecycle | Authority | Ownership | External | Retention | Correction | Recovery | Incarnation | Auth | Atomicity |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| W1 stale-authority retry | X | X | X | X |  | X | X | X | X | X |  |  |  |  |  | X |
+| W2 serialization abort + effect |  | X | X | X | X | X | X | X |  | X |  |  | X |  |  | X |
+| W3 ownership transfer + delayed completion | X | X | X | X |  | X | X | X | X | X |  |  | X | X |  | X |
+| W4 correction + stale event | X | X | X |  |  | X | X |  |  | X | X | X | X |  | X | X |
+| W5 retention expiry + delayed duplicate | X | X | X | X |  | X | X | X |  | X | X |  | X | X |  | X |
+| W6 recovery + old incarnation | X | X | X | X |  | X | X | X | X | X | X |  | X | X | X | X |
+| W7 timeout/cancel + external effect | X | X | X | X |  | X | X | X | X | X |  |  | X | X |  | X |
+| W8 poison exhaustion + UNKNOWN | X | X | X | X |  | X | X | X | X | X | X | X | X | X |  | X |
+| W9 concurrent conflicting submissions | X | X | X | X | X | X | X | X |  | X | X |  |  |  | X | X |
+| W10 old authenticated source/incarnation | X | X | X | X |  | X | X | X | X | X | X | X | X | X | X | X |
+| W11 ledger correction/refund race | X | X | X |  | X | X | X | X |  | X | X | X | X | X | X | X |
+| W12 local completion + downstream uncertainty | X | X | X | X |  | X | X | X | X | X | X | X | X | X | X | X |
+
+**Important:** this matrix is a research coverage map, not a formal independence proof. Several rows are deliberately broad because the underlying witness can instantiate multiple concrete races.
+
+### Redundancy findings
+
+The challenge did **not** justify deleting any of the 12 provisional witnesses yet. Some are strongly overlapping, especially W5/W6 and W3/W7, but their epistemic triggers differ: retention/recovery concerns history validity, while cancellation/ownership concerns current authority and effect execution. They should remain separate until a formal dependency reduction demonstrates substitutability.
+
+### New finding: two different meanings of “stale”
+
+The audit identifies a distinction that must remain explicit:
+
+1. **stale authority/ownership** — the actor is no longer authorized to act;
+2. **stale evidence/observation** — the information may no longer describe the current state.
+
+They can coexist in one incident but are not the same predicate. Conflating them risks accepting an operation because its evidence is fresh while its authority is stale, or rejecting valid reconciliation because the observation is old even though it is authenticated historical evidence.
+
+### Current disposition
+
+The 20-class taxonomy survives this higher-order challenge without a demonstrated missing top-level family. However, this is still **not a completeness proof**. The dependency matrix shows that the 12-witness provisional set is highly cross-coupled, so the next step must be an explicit reduction test rather than declaring minimality by inspection.
+
+**No architecture implementation. No formal verification. No universal security/correctness claim.**
+
+### Exact next action
+
+**AB104.814R:** perform a structured reduction of the 12 provisional witnesses: for each witness, attempt to remove it and determine whether its required failure predicates remain represented by other witnesses. Preserve any witness whose removal creates a unique uncovered predicate or unique higher-order interaction. Then audit whether any of the 20 classes currently marked COVERED has only a witness that is itself redundant.
