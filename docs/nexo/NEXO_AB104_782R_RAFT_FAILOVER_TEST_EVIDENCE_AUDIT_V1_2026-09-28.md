@@ -334,3 +334,133 @@ Implementation: **NOT STARTED**.
 **AB104.842R:** attack I25/I26 against I19-I24 and the existing correction, fencing, recovery, retention, and stale-event interactions. Determine whether ACCEPTED_OR_RESERVED + authority change and ACCEPTED_OR_RESERVED + cancellation are genuinely new ordered interactions or parameterizations. Then define the minimum legal transition graph around acceptance/reservation without selecting a concrete provider implementation.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.842R — I25/I26 REDUCTION + MINIMUM ACCEPTED/RESERVED TRANSITION GRAPH
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### External cross-check
+
+Microsoft's current Idempotent Consumer guidance distinguishes an in-progress external operation from completion and states that stale in-progress records require reconciliation before a redelivery is considered safe. AWS likewise documents that idempotency tokens make retries safe only when the receiving service honors the token contract; exact-once behavior across arbitrary external effects is not implied. citeturn0search0turn0search1 Fencing remains resource-side: the protected resource must actively reject stale tokens for the token to provide a safety property. citeturn0search8
+
+### I25 reduction
+
+I25 = ACCEPTED_OR_RESERVED → authority change → delayed commit/retry.
+
+Against I24: I24 requires provider IN-PROGRESS evidence but does not require an authority-generation transition between acceptance and completion.
+
+Against I19: I19 is CONFIRMED → correction/reversal → reconstruction; it does not begin from an accepted-but-not-confirmed state.
+
+Against I20: I20 begins UNKNOWN and later receives authoritative confirmation; I25 begins with positive acceptance/reservation evidence and introduces a stale-authority transition before possible completion.
+
+Against I21: I21 is stale historical evidence after correction/reversal, not a live accepted operation crossing an authority transition.
+
+**Result: I25 remains an independent ordered interaction candidate.** It is not yet a frozen witness.
+
+### I26 reduction
+
+I26 = ACCEPTED_OR_RESERVED → cancellation/expiry → delayed completion/result.
+
+Against I21: I21 requires a later correction/reversal followed by an old historical event; I26 requires cancellation/expiry before a delayed completion/result.
+
+Against I24: I24 has unresolved provider execution but no required cancellation/expiry transition.
+
+Against I25: I25's critical transition is authority change; I26's critical transition is lifecycle cancellation/expiry and can occur without an authority change.
+
+**Result: I26 remains an independent ordered interaction candidate.**
+
+### Minimum legal semantic graph
+
+The smallest provider-neutral graph supported by the evidence is not a universal enum; it is a set of semantic states and guarded transitions:
+
+`NOT_ACCEPTED → ACCEPTED_OR_RESERVED`
+
+`ACCEPTED_OR_RESERVED → COMMITTED`
+
+`ACCEPTED_OR_RESERVED → FAILED`
+
+`ACCEPTED_OR_RESERVED → EXPIRED/CANCELLED`
+
+`ACCEPTED_OR_RESERVED → IN_PROGRESS`
+
+`IN_PROGRESS → COMMITTED`
+
+`IN_PROGRESS → FAILED`
+
+`IN_PROGRESS → EXPIRED/CANCELLED`
+
+`COMMITTED → CORRECTED`
+
+`COMMITTED → REVERSED`
+
+The following transitions are **not universally admissible** and require provider-specific evidence/contracts:
+
+`EXPIRED/CANCELLED → COMMITTED`
+`FAILED → COMMITTED`
+`REVERSED → COMMITTED`
+
+These are not declared globally impossible; they require an explicit provider contract or a correction model that explains what the later event means.
+
+### Critical semantic distinction
+
+`ACCEPTED_OR_RESERVED` is evidence that the resource accepted/reserved an operation, not proof that the intended business effect has committed.
+
+`IN_PROGRESS` is evidence of unresolved execution, not proof of absence and not proof of completion.
+
+`EXPIRED/CANCELLED` changes the current state but does not erase prior acceptance evidence.
+
+`COMMITTED` can later be corrected/reversed without deleting the original committed history.
+
+### Authority-change attack
+
+Sequence:
+
+`G1 accepts O → G2 becomes current → delayed completion from G1`
+
+The correct decision cannot be derived from G2 alone. It depends on whether the resource checks generation again at the commit boundary and whether G1's reservation remains valid. Therefore authority change and lifecycle transition remain separate predicates.
+
+### Cancellation attack
+
+Sequence:
+
+`O accepted/reserved → cancelled/expired → delayed completion result`
+
+The delayed result must not automatically resurrect COMMITTED. The resource's version/transition contract must establish whether the delayed result is valid, stale, compensating, or evidence of a commit that happened before cancellation became effective.
+
+### New invariant candidates
+
+**INV-F-08 — Acceptance-history preservation:** later authority or lifecycle changes must not erase evidence that an operation was accepted/reserved.
+
+**INV-F-09 — Guarded completion:** a completion transition after authority/lifecycle change must satisfy the resource's current transition/version contract; arrival order alone is insufficient.
+
+**INV-F-10 — No resurrection from delayed result:** a delayed completion cannot resurrect a cancelled/expired/reversed current state without authoritative evidence that the transition is legal.
+
+Candidate only; not formally verified.
+
+### Current disposition
+
+I17: absorbed by W17 parameterization.
+I18: absorbed by W18 parameterization.
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I23: absorbed by operation-identity parameterization.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+INV-EH-01/02: candidate.
+INV-EF-01..04: candidate.
+INV-F-01..10: candidate.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.843R:** attack I25/I26 with provider-specific lifecycle witnesses and attempt parameter reduction: (1) accepted/reserved + authority change + delayed completion, (2) accepted/reserved + cancellation/expiry + delayed completion, (3) correction/reversal after completion. Determine whether the distinction is fundamentally authority-based versus lifecycle-based, and whether the minimum graph requires an explicit IN_PROGRESS node or can represent it as provider evidence attached to ACCEPTED_OR_RESERVED.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
