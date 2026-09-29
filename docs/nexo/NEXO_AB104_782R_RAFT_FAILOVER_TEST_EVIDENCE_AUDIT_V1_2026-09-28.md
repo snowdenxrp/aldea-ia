@@ -4972,3 +4972,114 @@ The interaction universe now needs explicit state-transition labels, not only pr
 **AB104.833R:** attack I19 and I20 against W2/W4/W12/W16/W17/W18; then define the minimum legal effect-state transition graph and test whether correction/reversal and late confirmation introduce genuinely new interactions or are projections of existing classes.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+
+---
+## AB104.833R — I19/I20 REDUCTION + MINIMUM EFFECT-STATE TRANSITION GRAPH
+
+**Date:** 2026-09-28  
+**Status:** RESEARCHED / I19-I20 REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh external evidence
+
+Adyen documents that a reversal can cancel an uncaptured payment or refund an already captured payment, and that the outcome is delivered asynchronously. Its documentation also exposes later reversal/correction-style events such as `SETTLED_REVERSED`. This is concrete evidence that an externally confirmed financial state can later acquire a new authoritative state without implying that the earlier event never existed. citeturn0search1turn0search6
+
+Microsoft's current Idempotent Consumer guidance likewise treats an in-progress external operation as potentially partially completed and requiring reconciliation; it does not treat missing local completion evidence as proof that the external effect was absent. citeturn0search0
+
+### I19 reduction attack
+
+**I19 = confirmed effect × correction/reversal × local reconstruction.**
+
+Compared with **W18**, W18 begins with confirmed external effect plus loss of local terminal state, but does not require a later correction/reversal. Therefore W18 alone cannot cover the state transition:
+
+**CONFIRMED → CORRECTED/REVERSED → recovery/reconstruction.**
+
+Compared with **W16**, W16 requires correction + recovery + delayed external result, but its starting knowledge is not necessarily a confirmed effect followed by loss of local terminal state. Substituting CONFIRMED for delayed/uncertain evidence changes the epistemic precondition.
+
+Compared with **W4**, W4 covers correction/reversal interacting with stale evidence and reconciliation, but does not require local terminal-state loss followed by reconstruction from a previously confirmed effect.
+
+**Disposition: I19 remains ADMISSIBLE / INDEPENDENT / UNTESTED.** No new witness is frozen yet.
+
+### I20 reduction attack
+
+**I20 = UNKNOWN effect × later authoritative confirmation × retry.**
+
+This is not equivalent to W17 merely because both contain retry and uncertain acknowledgement. I20 has a specific temporal reversal of knowledge:
+
+UNKNOWN → later authoritative CONFIRMED.
+
+The important safety property is that the retry must remain bound to the original semantic operation and must not become a second semantic operation merely because the earlier local state was UNKNOWN. If authoritative confirmation identifies the original effect, reconciliation must converge on that historical operation.
+
+W2 covers transaction failure plus possible external acceptance, but does not require the later authoritative confirmation to arrive after the retry path has already been entered.
+
+W17 covers lost acknowledgement + same-operation retry, but does not require the later authoritative confirmation transition.
+
+**Disposition: I20 remains ADMISSIBLE / INDEPENDENT / UNTESTED.** No new witness is frozen yet.
+
+### Minimum legal effect-state transition graph
+
+The audit now uses a typed state-transition model rather than a Boolean EffectKnowledge flag:
+
+- **UNKNOWN** — evidence insufficient to establish outcome.
+- **CONFIRMED** — authoritative evidence establishes the effect/outcome for a specific operation identity.
+- **FAILED** — authoritative evidence establishes the relevant effect did not occur / was terminally rejected.
+- **CORRECTED** — later authoritative evidence records a correction while preserving the prior historical observation.
+- **REVERSED** — later authoritative evidence records a reversal/counter-effect according to domain semantics.
+
+Required ordering constraints:
+
+1. UNKNOWN → CONFIRMED is admissible.
+2. UNKNOWN → FAILED is admissible when authoritative failure evidence exists.
+3. CONFIRMED → CORRECTED is admissible where the provider/domain exposes correction semantics.
+4. CONFIRMED → REVERSED is admissible where the provider/domain exposes reversal semantics.
+5. CONFIRMED must not be silently rewritten as UNKNOWN merely because local evidence was lost.
+6. CORRECTED/REVERSED must not erase the original CONFIRMED event; they are later history.
+7. A retry from UNKNOWN must not create a new semantic operation when authoritative reconciliation identifies the original effect.
+8. A provider-specific state transition is not universal; the graph is a semantic contract, not a claim that every external system supports every edge.
+
+### Important methodological result
+
+**Effect knowledge is temporal and typed, not monotonic Boolean knowledge.**
+
+A system may know at time t1 that an effect occurred and at t2 receive authoritative evidence that the effect was later reversed. The correct model is not:
+
+CONFIRMED → ¬CONFIRMED
+
+but:
+
+CONFIRMED(event e1) → REVERSED(event e2, references e1).
+
+The original evidence remains true as historical evidence even though the current business state changes.
+
+This preserves three previously separated dimensions:
+
+- **authority validity** — was the actor authorized?
+- **evidence validity** — is the observation authentic and appropriately scoped?
+- **effect knowledge** — what does the authoritative history establish about the external effect over time?
+
+### Coverage impact
+
+I19 and I20 expose two higher-order interaction requirements that were not represented by a single prior witness without adding a new temporal/evidence predicate. They therefore remain in the finite interaction universe as **UNTESTED** candidates.
+
+However, they do **not** create new top-level failure classes. They project onto existing classes for correction/reversal, stale evidence, external-effect ambiguity, recovery, operation identity, reconciliation, and cross-domain atomicity.
+
+### Current disposition
+
+- **20 top-level classes:** UNFROZEN.
+- **I1-I16:** retained with prior FULL/PARTIAL qualifications; no reclassification performed here.
+- **I17:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+- **I18:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+- **I19:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+- **I20:** ADMISSIBLE / INDEPENDENT / UNTESTED.
+- **W17:** provisional.
+- **W18:** provisional / retained.
+- **W19+:** none created.
+- **Coverage denominator:** NOT FROZEN.
+- **Formal verification:** NOT PERFORMED.
+- **Implementation:** NOT STARTED.
+
+### Exact next action
+
+**AB104.834R:** perform a systematic reduction of I17-I20 against the typed effect-state graph and the existing witness set. Determine whether any candidate can be covered by parameterizing W17/W18/W2/W4/W16 without changing its causal sequence. If any candidate survives, create the smallest necessary witness only after the equivalence test. Then attack the graph for missing legal transitions and forbidden/inadmissible transitions.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
