@@ -2203,3 +2203,198 @@ I19 independent/untested; I20 independent/untested; I21 distinct ordered/unteste
 AB104.860R: search concrete executable systems/tests for an actual same-resource CONFLICTING condition with authenticated inputs and absent/insufficient ordering, then attack the minimum decision difference between CONFLICTING and ordinary INCOMPARABLE+reconciliation. Do not freeze a witness from documentation alone.
 
 No deletion/overwrite. No silent witness mutation. No architecture implementation.
+
+---
+## AB104.860R — CIERRE DEL TYPED EFFECT-STATE GRAPH Y FRESHNESS
+
+**Status:** RESEARCHED / GRAPH CLOSURE AUDIT / NO IMPLEMENTATION / NO FORMAL VERIFICATION.
+
+### Fresh evidence cross-check
+
+Microsoft's current Event Sourcing guidance treats each entity's event stream as an ordered history, keeps events immutable, uses compensating events for correction, and states that optimistic concurrency can reject conflicting appends. It also warns that consumer delivery is typically at-least-once, requiring idempotent handlers, and that eventual consistency/reconciliation remains necessary. citeturn0search0 Adyen's current webhook guidance distinguishes duplicate delivery from chronological processing and documents sequenceNumber for webhook families where ordering can be reconstructed. citeturn0search3turn0search4
+
+### 1. Current typed effect-state graph
+
+The audit normalizes the effect/attempt lifecycle into these semantic states:
+
+- NOT_ACCEPTED
+- ACCEPTED_OR_RESERVED
+- SUBMITTED
+- IN_PROGRESS
+- COMMITTED
+- FAILED
+- EXPIRED
+- CANCELLED
+- CORRECTED
+- REVERSED
+- UNKNOWN
+
+These are **not asserted to be a universal provider enum**. They are audit vocabulary used to separate admission, downstream processing, terminal knowledge, lifecycle invalidation, and correction.
+
+### 2. Admitted transitions
+
+The following transitions are currently admitted when the relevant resource/provider contract permits them:
+
+NOT_ACCEPTED → ACCEPTED_OR_RESERVED
+
+ACCEPTED_OR_RESERVED → SUBMITTED
+
+ACCEPTED_OR_RESERVED → IN_PROGRESS
+
+ACCEPTED_OR_RESERVED → FAILED
+
+ACCEPTED_OR_RESERVED → EXPIRED
+
+ACCEPTED_OR_RESERVED → CANCELLED
+
+SUBMITTED → IN_PROGRESS
+
+SUBMITTED → COMMITTED
+
+SUBMITTED → FAILED
+
+SUBMITTED → EXPIRED/CANCELLED when the provider/resource contract permits that lifecycle.
+
+IN_PROGRESS → COMMITTED
+
+IN_PROGRESS → FAILED
+
+IN_PROGRESS → EXPIRED/CANCELLED when contractually permitted.
+
+COMMITTED → CORRECTED
+
+COMMITTED → REVERSED
+
+UNKNOWN → CONFIRMED is represented by resolving the epistemic uncertainty to an authoritative effect state; in the normalized graph this means UNKNOWN → COMMITTED only when the external contract establishes committed effect.
+
+UNKNOWN → FAILED is likewise allowed only when authoritative evidence establishes failure.
+
+The graph therefore does **not** treat UNKNOWN as an ordinary business lifecycle state. It represents missing/ambiguous knowledge.
+
+### 3. Generic transitions that remain forbidden
+
+The following are not admitted generically:
+
+- FAILED → COMMITTED
+- EXPIRED → COMMITTED
+- CANCELLED → COMMITTED
+- REVERSED → COMMITTED
+- CORRECTED → COMMITTED without a new typed transition establishing a later effect
+- UNKNOWN → retry as an automatic inference that the previous attempt had no effect
+- ACCEPTED_OR_RESERVED → COMMITTED as proof that an external terminal effect already occurred
+- SUBMITTED → COMMITTED when the provider only defines submission acceptance and later terminal confirmation
+- an OLDER event overwriting a newer authoritative state
+- INCOMPARABLE observations being arbitrarily converted into a total order
+- a duplicate event being interpreted as a second business effect merely because it was delivered twice.
+
+These prohibitions are semantic guards, not implementation claims.
+
+### 4. Freshness relation closure
+
+The current freshness domain is:
+
+NEWER
+EQUAL/DUPLICATE
+OLDER
+INCOMPARABLE
+
+with CONFLICTING retained as a derived predicate when a contract proves that two observations are mutually incompatible but supplies no precedence.
+
+Reduction rules:
+
+- same semantic identity → EQUAL/DUPLICATE
+- scoped sequence/version establishes precedence → NEWER/OLDER
+- no valid ordering relation → INCOMPARABLE
+- INCOMPARABLE + proven mutual incompatibility → annotate CONFLICTING
+- CONFLICTING does not authorize an invented winner.
+
+Adyen's transfer webhook sequenceNumber is explicitly scoped to a specific transfer and can restore event order; this confirms that freshness metadata is domain-scoped rather than a universal ordering oracle. citeturn0search4
+
+### 5. Cross-check against I19–I27
+
+**I19 — confirmed effect + correction/reversal + reconstruction:** still independent candidate. It is not reproduced by ordinary COMMITTED → CORRECTED/REVERSED alone; the interaction requires the reconstruction/evidence dimension.
+
+**I20 — UNKNOWN + later authoritative confirmation + retry:** still independent candidate. The essential distinction is epistemic uncertainty followed by authoritative resolution; it cannot be replaced with an ordinary lifecycle transition.
+
+**I21 — correction/reversal + stale duplicate pre-correction evidence + reconciliation:** remains distinct because freshness and correction interact. No witness frozen.
+
+**I22 — idempotency expiry + retry + possible second effect:** parameterized coverage, not a new universal state transition.
+
+**I23 — same key + different parameters:** remains absorbed by identity/payload binding; no separate witness frozen.
+
+**I24 — provider IN_PROGRESS + coordinator retry:** independent from UNKNOWN; positive pending knowledge is not epistemic absence of knowledge.
+
+**I25 — accepted/reserved + authority generation change + delayed completion:** parameterized by resource-side fencing. Kafka producer epochs and EtcFS generation guards are evidence that resource-side fencing can reject stale generations at protected mutation boundaries; this does not constitute a universal external-effect proof.
+
+**I26 — accepted/reserved + lifecycle cancellation/expiry + delayed completion:** empirically supported semantic interaction, but still no new witness frozen. Provider lifecycle rules can independently constrain later completion.
+
+**I27 — same-resource authenticated incompatible observations without authoritative order:** remains model-level residual. The closure audit finds no missing transition that forces I27 to become a distinct witness; ordinary safe handling can remain preservation + reconciliation/hold.
+
+### 6. 20-class taxonomy cross-check
+
+The closure audit does **not** justify adding a new top-level class.
+
+The existing 20 working classes still cover the semantic dimensions encountered here:
+
+1. operation identity collision
+2. payload-binding conflict
+3. duplicate delivery/retry
+4. acknowledgement ambiguity
+5. transaction isolation anomaly
+6. commit/apply separation
+7. stale observation/order
+8. state-machine transition race
+9. authority-generation/fencing race
+10. worker ownership/rebalance race
+11. external-effect ambiguity
+12. reconciliation consistency/retention
+13. ledger conservation/multi-account invariant
+14. correction/reversal
+15. idempotency retention/reuse
+16. broker/workflow liveness and poison-message behavior
+17. recovery/restart continuity
+18. namespace/incarnation confusion
+19. authentication/source-validity failure
+20. cross-domain atomicity boundary
+
+**Important:** this is a semantic coverage statement, not a proof of completeness. Pairwise/higher-order completeness and denominator remain unfrozen.
+
+### 7. Closure findings
+
+No missing **generic legal transition** was identified that requires a new state family.
+
+The more important result is negative:
+
+UNKNOWN must remain epistemic.
+
+INCOMPARABLE must remain non-ordering.
+
+CONFLICTING must not become an implicit winner-selection mechanism.
+
+ACCEPTED/SUBMITTED must not silently become COMMITTED.
+
+CORRECTED/REVERSED must remain explicit historical transitions rather than mutation of the original evidence. Microsoft's event-sourcing guidance independently supports immutable event history plus compensating events for corrections. citeturn0search0
+
+### Current disposition
+
+- I19: independent / untested
+- I20: independent / untested
+- I21: distinct / untested
+- I22: parameterized
+- I23: absorbed / no independent witness
+- I24: independent / untested
+- I25: parameterized coverage
+- I26: empirically supported semantic interaction / witness not frozen
+- I27: model-level residual / empirical witness not established
+- CONFLICTING: derived predicate / no independent witness
+- 20 top-level classes: **UNFROZEN**
+- Coverage denominator: **NOT FROZEN**
+- Formal verification: **NOT PERFORMED**
+- Implementation: **NOT STARTED**
+- Architecture freeze: **NOT DECLARED**
+
+### Exact next action
+
+**AB104.861R:** attack the boundary between SUBMITTED/IN_PROGRESS and COMMITTED/FAILED, specifically whether any provider or executable implementation can produce a legally reachable transition where local admission/submission succeeds, downstream terminal outcome is later corrected/reversed, and a stale terminal observation races reconciliation. The objective is to determine whether this is already fully represented by I19/I20/I24/I26 or exposes a genuinely missing interaction.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
