@@ -4734,3 +4734,91 @@ Before adding W17 to the retained witness set, we must test whether its required
 **AB104.830R:** perform the effect-journal equivalence test for I16/W17, explicitly separating local intent durability, provider-effect knowledge, deduplication capability, and acknowledgement knowledge. Then attack the four resulting combinations against the current 20-class taxonomy to determine whether I16 is a new interaction requirement or a projection of existing classes.
 
 **No deletion/overwrite. No silent witness mutation.**
+
+---
+## AB104.830R — EFFECT-JOURNAL EQUIVALENCE TEST
+
+**Date:** 2026-09-28
+**Status:** RESEARCHED / I16 RETAINED / W17 PROVISIONAL / NO IMPLEMENTATION.
+
+### External cross-check
+
+The Idempotent Consumer pattern requires duplicate handling at the consumer/effect boundary; recording a processed message ID in the same database transaction as the business change can make the local consumer operation idempotent. This does not make an arbitrary external side effect atomic with that database transaction. citeturn0search0turn0search1
+
+Transactional Outbox similarly makes local state + publication intent durable, while the relay remains at-least-once and can publish duplicates after a crash. citeturn0search2
+
+### Four-state separation
+
+The I16 reduction was evaluated using four independent facts:
+
+1. **IntentDurable** — local operation intent is durably committed.
+2. **EffectKnowledge** — evidence that the external effect occurred is known/unknown.
+3. **DedupCapability** — the external boundary can recognize the same semantic operation.
+4. **AckKnowledge** — the response/acknowledgement is known/unknown.
+
+These must not be collapsed.
+
+### Equivalence result
+
+Existing witnesses can represent individual pairs of these predicates, but no current witness preserves the complete causal sequence:
+
+**IntentDurable → possible ExternalEffect → AckLost/Unknown → same-operation Retry**
+
+without introducing a different mandatory condition such as recovery, correction, ownership transfer, retention expiry, or transaction abort.
+
+Therefore **I16 remains independent under the current interaction grammar**.
+
+### W17 disposition
+
+W17 is retained as a **provisional witness**, but its exact protected-boundary requirement is now narrowed:
+
+> At the retry/effect boundary, the system must bind the retry to the original semantic operation identity and use either authoritative deduplication or authoritative status/reconciliation. If neither can establish the result, the outcome remains UNKNOWN rather than being treated as “not executed”.
+
+This prevents a common invalid inference:
+
+**ACK missing ⇒ effect absent**
+
+and a second invalid inference:
+
+**same operation_id ⇒ external system necessarily deduplicated it.**
+
+The second inference is false unless the external resource actually enforces the identity.
+
+### Taxonomy impact
+
+I16 does **not** justify a new top-level failure class. It is a higher-order interaction spanning existing classes:
+
+- operation identity;
+- acknowledgement ambiguity;
+- external-effect ambiguity;
+- cross-domain atomicity boundary.
+
+Thus the 20-class taxonomy survives this challenge.
+
+### New interaction candidates generated
+
+Two candidates emerged but are not yet admitted:
+
+**I17 — dedup-capability absent × acknowledgement ambiguity × retry**
+
+Question: what evidence is sufficient to reconcile a retry when the external resource cannot enforce idempotency?
+
+**I18 — intent durable × effect confirmed × local terminal-state loss**
+
+Question: after the external effect is confirmed but local terminal state is lost, can recovery reconstruct the operation without producing a second effect?
+
+Both require reduction against W2/W7/W12/W17 before any new witness is created.
+
+### Coverage status
+
+I1-I13: current mappings retained, with prior PARTIAL/FULL qualifications.
+
+I14-I16: I14/I15 remain pending from prior audit; I16 independent/UNTESTED with W17 provisional.
+
+**No coverage percentage. No frozen denominator. No implementation.**
+
+### Exact next action
+
+**AB104.831R:** attack I17 and I18 against the current witnesses and taxonomy, then perform a bounded interaction search over the four predicates {IntentDurable, EffectKnowledge, DedupCapability, AckKnowledge}. Determine which combinations are admissible, duplicates, impossible, or require a new witness.
+
+**No deletion/overwrite. No silent witness mutation.**
