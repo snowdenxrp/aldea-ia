@@ -3345,3 +3345,187 @@ These sources do not constitute a universal proof of the Nexo model. They provid
 10. only then assess whether the adversarial taxonomy can be frozen.
 
 **Status:** RECONCILED_CONTINUITY / RESEARCH_IN_PROGRESS / MODEL_UNFROZEN / NO_IMPLEMENTATION.
+
+
+---
+
+## AB104.812R — CROSS-PRODUCT ADVERSARIAL AUDIT
+
+**Date:** 2026-09-28
+**Scope:** cross-products required by the reconciled 20-class taxonomy.
+**Status:** RESEARCHED / ANALYZED / UNFROZEN / NO IMPLEMENTATION.
+
+### 1. Fencing + retry
+
+A retry cannot be treated as a new authorization merely because the transport attempt is new. The adversarial witness is:
+
+- O1 acquires authority generation G1;
+- O1 begins an external-capable operation;
+- authority advances to G2 or ownership moves;
+- O1 times out/crashes;
+- retry R1 arrives under G1 or under a newly minted operation identity;
+- the system must distinguish stale G1 work from a legitimately new G2 operation.
+
+This crosses classes 3, 9, 10, 11, 17 and 20. Kafka's rebalance protocol makes ownership transitions explicit, while transactional producer fencing demonstrates that some systems actively prevent an old transactional instance from continuing a fenced transaction. That is evidence for a real fencing mechanism, not evidence that arbitrary external effects are fenced. citeturn0search1turn0search2
+
+**Required invariant:** retry identity and authority generation must be independently checked at the protected effect boundary.
+
+### 2. Isolation/serialization failure + external effect
+
+Witness:
+
+- transaction T1 reads state and sends external request E;
+- T1 later loses a serialization/locking race and aborts or retries;
+- external E may already have been accepted;
+- automatic DB retry must not imply automatic external retry.
+
+This crosses classes 5, 7, 8, 11, 13 and 20. Temporal's Activity model provides an independent real-world analogue: an Activity may execute successfully and the worker can crash before the service learns of completion, after which the Activity can be retried; Temporal therefore recommends idempotent Activities. citeturn0search3turn0search5
+
+**Required invariant:** database rollback/serialization failure is not evidence that an external effect was absent.
+
+### 3. Rebalance/ownership change + delayed response
+
+Witness:
+
+- worker W1 owns work;
+- ownership changes to W2;
+- W1's already-running request receives a delayed response after ownership changed;
+- W1 attempts completion or an external effect using stale ownership state.
+
+RabbitMQ explicitly notes that cancelling a consumer does not erase deliveries already in flight; previously unconfirmed deliveries remain unaffected unless the channel is closed. Kafka similarly exposes partition ownership/rebalance as a distinct boundary. citeturn0search10turn0search1
+
+**Required invariant:** cancellation/rebalance is not itself an effect fence; the protected resource must reject stale ownership/authority.
+
+### 4. Correction/reversal + stale evidence
+
+Witness:
+
+- local state reaches terminal-looking S1;
+- provider/source later emits a valid correction or reversal C2;
+- stale S1 evidence arrives after C2;
+- reconciliation must append/interpret the correction without regressing to stale state.
+
+This crosses classes 7, 12, 14, 17 and 20.
+
+**Required invariant:** historical evidence remains immutable; current state is derived with explicit precedence/correction semantics rather than stale overwrites.
+
+### 5. Retention/compaction expiry + redelivery/retry
+
+Witness:
+
+- original operation/message is delayed beyond the normal deduplication or history-retention horizon;
+- its old identity returns through redelivery/retry;
+- the receiver no longer has the historical dedup record;
+- the same identifier may collide with a reused identity or be treated as a new operation.
+
+RabbitMQ quorum queues explicitly track failed delivery attempts and can enforce a delivery limit for poison messages. etcd documents that compaction makes older revisions unavailable and that snapshot restore can require revision bumping plus marking revisions compacted to invalidate stale watchers/caches. citeturn0search0turn0search7
+
+**Required invariant:** retention expiry must never silently convert UNKNOWN historical identity into proof of non-execution or authorize identifier reuse without an explicit incarnation/namespace boundary.
+
+### 6. Recovery/restart + namespace/incarnation reuse
+
+Witness:
+
+- incarnation I1 executes or partially executes O1;
+- system restores/restarts from durable state;
+- namespace/incarnation I2 reuses identifiers or restores an older observation point;
+- delayed I1 message arrives;
+- I2 must not accept it as fresh work.
+
+etcd's recovery documentation explicitly describes restore as starting a new logical cluster and supports revision bumping so revisions do not decrease after restore. This is direct evidence that recovery continuity requires more than restoring bytes. citeturn0search7turn0search4
+
+**Required invariant:** recovery must establish a distinguishable incarnation/epoch boundary before accepting delayed work.
+
+### 7. Workflow cancellation/timeout + external effect
+
+Temporal documents that an Activity can time out after being lost or after a worker failure and may subsequently be retried; cancellation is delivered through heartbeats and an Activity may accept or ignore cancellation. The consequence for the adversarial model is important: a control-plane cancellation/timeout does not itself prove that application work stopped at the external boundary. citeturn0search5turn0search9
+
+**Required invariant:** cancellation/timeout creates an epistemic state transition; it is not, by itself, evidence of external-effect absence.
+
+### 8. Poison-message liveness + terminal/UNKNOWN state
+
+RabbitMQ's quorum-queue delivery-limit mechanism is concrete evidence that repeated redelivery can become a liveness problem and therefore needs an explicit terminal/dead-letter policy. citeturn0search0
+
+For Nexo, the safety problem is coupled to epistemics: after repeated failures, the system cannot simply mark the operation FAILED if an external effect may have happened. The correct model therefore needs a distinction such as FAILED-with-evidence versus UNKNOWN-with-reconciliation, while separately bounding endless retry.
+
+**Required invariant:** liveness controls must not collapse uncertainty into a false terminal claim.
+
+### Cross-product result
+
+The eight required cross-products do **not** reveal a missing top-level failure family. Instead, they expose important intersections among the existing 20 classes. The strongest repeated dependency is:
+
+**authority/ownership state + operation identity + incarnation + external-effect uncertainty + durable reconciliation.**
+
+This is a structural observation, not a proof that the 20 classes are complete.
+
+### Minimum independent witness set — provisional
+
+A provisional reduced set can cover the major cross-products without treating every concrete scenario as a separate invariant:
+
+- W1 stale authority retry after generation change;
+- W2 serialization abort after external acceptance;
+- W3 ownership transfer with old worker delayed completion;
+- W4 correction after terminal-looking state plus stale event;
+- W5 retention expiry followed by delayed duplicate;
+- W6 recovery with old incarnation message arriving in new incarnation;
+- W7 timeout/cancellation after external acceptance;
+- W8 poison retry exhaustion while external outcome remains UNKNOWN;
+- W9 same operation concurrent submissions with conflicting payloads;
+- W10 authenticated old-source event from a previous namespace/incarnation;
+- W11 multi-account/ledger conservation race under concurrent correction/refund;
+- W12 durable local completion followed by downstream publication uncertainty.
+
+This is **provisional coverage**, not a minimality proof. No claim is made that 12 is mathematically minimal.
+
+### New derived invariants
+
+**INV-31 — Retry does not refresh authority:** a new attempt must not inherit permission merely from retry lineage.
+
+**INV-32 — Transaction failure does not negate external effect:** local abort/rollback cannot prove external non-execution.
+
+**INV-33 — Ownership loss is not effect cancellation:** rebalance/cancel requires resource-side rejection of stale work.
+
+**INV-34 — Correction dominates stale observation without deleting history:** current state must explicitly account for later valid corrections.
+
+**INV-35 — Retention expiry is epistemic, not semantic:** absence of old evidence is not proof that old work never occurred.
+
+**INV-36 — Recovery creates an incarnation boundary:** restored state must prevent delayed prior-incarnation work from becoming fresh work.
+
+**INV-37 — Timeout/cancellation preserves uncertainty:** control-plane timeout does not prove external-effect absence.
+
+**INV-38 — Liveness termination must preserve epistemic uncertainty:** dead-letter/retry exhaustion cannot manufacture a FALSE terminal fact.
+
+### Coverage ledger — current
+
+C1 Identity collision/reuse: COVERED
+C2 Payload/request binding: COVERED
+C3 Duplicate delivery/submission: COVERED
+C4 Lost acknowledgement/confirmation: COVERED
+C5 Reordering/stale observation: COVERED
+C6 Invalid lifecycle/state transition: COVERED
+C7 Isolation/concurrency anomaly: COVERED
+C8 Transaction abort/retry after partial work: COVERED
+C9 Crash/restart/recovery: COVERED
+C10 Ownership/rebalance/authority transition: COVERED
+C11 Stale authority/fencing: COVERED
+C12 External-effect ambiguity/reconciliation: COVERED
+C13 Ledger conservation/multi-account invariant: COVERED
+C14 Correction/reversal: COVERED
+C15 Idempotency retention/reuse: COVERED
+C16 Broker/workflow liveness/poison behavior: COVERED
+C17 Recovery/restart continuity: COVERED
+C18 Namespace/incarnation confusion: COVERED
+C19 Authentication/source validity: COVERED
+C20 Cross-domain atomicity boundary: COVERED
+
+**Coverage meaning:** each class has at least one adversarial witness in the accumulated research. This does **not** prove pairwise or higher-order completeness, implementation correctness, or formal sufficiency.
+
+### AB104.812R disposition
+
+The required eight cross-products have been researched and mapped. The provisional witness reduction is recorded, but the taxonomy remains **UNFROZEN** because minimum-set independence has not been demonstrated and the cross-product space is not exhaustively enumerated.
+
+**No Nexo architecture implementation. No formal verification claim. No universal security/correctness claim.**
+
+### Exact next action
+
+**AB104.813R:** adversarially challenge the provisional 12-witness set for redundancy and missing higher-order interactions. Specifically test triples involving **authority generation × retention × incarnation**, **correction × stale evidence × reconciliation**, **serialization failure × retry × external effect**, and **ownership change × delayed response × duplicate delivery**. Then produce a dependency/coverage matrix and identify genuinely independent witnesses before any taxonomy freeze.
