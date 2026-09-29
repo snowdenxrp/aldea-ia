@@ -938,3 +938,95 @@ Implementation: **NOT STARTED**.
 **AB104.848R:** attack `CONFLICTING` against I3/I4/I6/I10/I19/I21 and concurrent-operation cases. Define the minimum protected decision difference between `INCOMPARABLE` and `CONFLICTING`; determine whether conflict can be represented as a typed reconciliation outcome without adding a witness; then perform a targeted search for real distributed/payment incidents where two authentic, same-resource events were mutually incompatible and ordering could not be established.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.848R — CONFLICTING REDUCTION + PROTECTED-DECISION TEST
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### External cross-check
+
+Adyen documents that duplicate webhook events can share event identity while other fields differ, and recommends using event identity plus event timing/sequence information to process events correctly. Its webhook model also contains distinct lifecycle events such as CAPTURE, CANCELLATION, EXPIRE and reversal-related events. citeturn0search0turn0search1 Microsoft event-sourcing guidance states that at-least-once delivery requires idempotent consumers and reconciliation when concurrent event-derived state can conflict. citeturn0search12
+
+### Minimum distinction: INCOMPARABLE vs CONFLICTING
+
+The reduction test used the protected decision boundary, not merely different labels.
+
+**INCOMPARABLE:** ordering evidence is insufficient. The candidate events may or may not be compatible; the system cannot establish precedence.
+
+**CONFLICTING:** the resource contract establishes that the two authenticated/scoped observations cannot both represent the valid current state, while precedence remains unresolved.
+
+Therefore CONFLICTING contains one additional predicate: **mutual incompatibility under the authoritative state contract**.
+
+### Attack against existing interactions
+
+**I3 — correction + stale observation + reconciliation:** overlaps strongly, but I3 assumes a correction relationship or known stale relation. CONFLICTING does not require that either event be defined as a correction of the other. KEEP DISTINCT provisionally.
+
+**I4 — transaction abort + external effect + retry:** different causal trigger; no requirement that two authenticated observations be mutually incompatible. KEEP DISTINCT.
+
+**I6 — authentication + obsolete incarnation + authority:** authentication/incarnation validity is orthogonal to same-resource state conflict. KEEP DISTINCT.
+
+**I10 — authentication/source + old incarnation:** same result; source validity does not establish semantic compatibility. KEEP DISTINCT.
+
+**I19 — confirmed + correction/reversal + reconstruction:** I19 contains an explicit correction/reversal transition. CONFLICTING does not. KEEP DISTINCT.
+
+**I21 — correction/reversal + stale duplicate:** I21 requires a stale pre-correction event. CONFLICTING does not. KEEP DISTINCT.
+
+**Concurrent-operation cases:** these can produce CONFLICTING observations, but only become a distinct interaction if the protected decision differs from existing concurrent/race witnesses. This remains unproven.
+
+### Protected decision test
+
+Three outcomes were compared:
+
+1. **INCOMPARABLE + compatible possibility:** preserve evidence, avoid regression, reconcile/hold if necessary.
+2. **INCOMPARABLE + incompatible possibility:** same epistemic uncertainty but the resource contract may already prohibit one state combination.
+3. **CONFLICTING:** contract proves mutual incompatibility; the protected boundary can therefore reject/hold/escalate without selecting an ordering winner.
+
+This demonstrates that CONFLICTING can carry decision-relevant information beyond pure ordering uncertainty.
+
+However, that does **not** automatically create a new top-level failure class or witness. It can be represented as a typed reconciliation outcome unless a concrete race shows a unique causal trigger and protected decision absent from existing witnesses.
+
+### Real provider witness
+
+Adyen's webhook model provides a concrete source of same-resource, distinct lifecycle observations: a payment can have CAPTURE, CAPTURE_FAILED, CANCELLATION, EXPIRE and later reversal-related events, all tied to the payment through PSP/original references. citeturn0search1turn0search5 This demonstrates that same-resource event incompatibility is realistic, but the provider's event contract normally supplies enough semantic information to classify the transition; it is not evidence that an unresolved CONFLICTING state necessarily occurs in production.
+
+Therefore we do **not** claim a real incident establishing an unresolvable CONFLICTING state from this documentation alone.
+
+### Disposition
+
+**CONFLICTING remains a provisional semantic/reconciliation relation, not a new witness.**
+
+No W19/W20/etc. witness is created by AB104.848R.
+
+### Candidate invariants
+
+**INV-EH-10 — Conflict requires contract-level incompatibility:** do not label two observations CONFLICTING merely because their textual statuses differ.
+
+**INV-EH-11 — Conflict does not select a winner:** CONFLICTING permits rejection/hold/reconciliation but does not authorize choosing one event by arrival order.
+
+**INV-EH-12 — Conflict preserves evidence:** both authenticated observations remain historical evidence even when one cannot become current state.
+
+Candidates only; not formally verified.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: independent candidate / untested.
+I26: independent candidate / untested.
+INCOMPARABLE: epistemic relation / no witness frozen.
+CONFLICTING: provisional semantic/reconciliation relation / no witness frozen.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.849R:** attack the typed-event model against simultaneous same-resource transitions and determine whether CONFLICTING can always be reduced to a reconciliation outcome. Then perform a broader real-incident/code cross-check for event-order conflicts, duplicate/out-of-order webhooks, and stale projections, without treating documentation examples as proof of production incidents.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
