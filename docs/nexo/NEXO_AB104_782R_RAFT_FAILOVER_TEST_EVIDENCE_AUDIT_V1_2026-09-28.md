@@ -11,11 +11,11 @@ The document contains the full prior audit chain. The following section is appen
 
 ### External evidence cross-check
 
-A fencing token only protects against a stale authority when the protected resource itself checks the token and rejects lower generations. Kleppmann's analysis makes the boundary explicit: issuing a token from a lock service is insufficient if the resource does not enforce monotonic fencing. citeturn0search0
+A fencing token only protects against a stale authority when the protected resource itself checks the token and rejects lower generations. Kleppmann's analysis makes the boundary explicit: issuing a token from a lock service is insufficient if the resource does not enforce monotonic fencing. 
 
-Stripe's idempotency contract provides a separate resource-side mechanism: the same key can return the original result, but keys may be pruned after at least 24 hours and reuse after pruning can create a new request; parameter mismatch is rejected. citeturn0search1
+Stripe's idempotency contract provides a separate resource-side mechanism: the same key can return the original result, but keys may be pruned after at least 24 hours and reuse after pruning can create a new request; parameter mismatch is rejected.
 
-AWS likewise documents that transactional outbox addresses local dual-write consistency but downstream delivery may duplicate, requiring idempotent consumers. citeturn0search3
+AWS likewise documents that transactional outbox addresses local dual-write consistency but downstream delivery may duplicate, requiring idempotent consumers.
 
 ### Fencing phase attack
 
@@ -118,5 +118,115 @@ Implementation: **NOT STARTED**.
 ### Exact next action
 
 **AB104.840R:** attack I24 and the ACCEPTED_OR_RESERVED state against retry, fencing, timeout, recovery, correction, and provider reconciliation. Determine whether ACCEPTED_OR_RESERVED needs to remain an explicit semantic state or can safely be represented as UNKNOWN + provider-specific evidence. Then attack F2/F3 race orderings to determine the minimum atomicity required at the resource boundary.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+---
+## AB104.840R — I24 + ACCEPTED/RESERVED + F2/F3 ATOMICITY ATTACK
+
+**Date:** 2026-09-29
+**Status:** RESEARCHED / EVIDENCE CROSS-CHECKED / NO IMPLEMENTATION / NO ARCHITECTURE FREEZE.
+
+### Fresh research
+
+A current 2026 study of agent tool side effects tested late commits, redelivery, partial batches, missing read paths, and optional idempotency keys. Its result is directly relevant: when an external action is still in flight or cannot be read back, even strong model instructions do not guarantee exactly-once behavior; the external contract becomes the dominant control surface. The study reports substantially lower duplication when an idempotency key exists, but does not establish universal exactly-once semantics. citeturn0academia11
+
+A separate 2026 study on governed agentic systems describes commit-time authority checks, idempotent reservation/outbox dispatch, and canonical reconciliation, while explicitly limiting its claims about prevention, reversal, journal completeness, and semantic completeness. This is useful corroborating evidence, not proof for Nexo. citeturn0academia9
+
+### I24 attack
+
+I24 = provider state `IN-PROGRESS` + coordinator retry decision.
+
+The reduction was tested against four interpretations:
+
+1. **UNKNOWN alias:** insufficient. `IN-PROGRESS` carries positive provider evidence that an execution is still active or unresolved; erasing that evidence loses information needed to prevent unsafe retry.
+2. **CONFIRMED alias:** invalid unless the provider contract explicitly defines `IN-PROGRESS` as the committed effect. Normally it does not.
+3. **FAILED alias:** invalid; absence of completion is not authoritative failure.
+4. **Explicit provider-state evidence:** sufficient semantic representation, with retry behavior governed by the provider's reconciliation/idempotency contract.
+
+**Result: I24 remains independent / UNTESTED.**
+
+### ACCEPTED_OR_RESERVED attack
+
+`ACCEPTED_OR_RESERVED` cannot safely be collapsed into generic `UNKNOWN` at the semantic boundary when the provider exposes a durable acceptance/reservation fact. The distinction matters because a reservation can constrain whether a retry is legal, whether cancellation is possible, and whether a later commit can occur.
+
+However, it also cannot be promoted to `CONFIRMED` generically. The provider contract must define whether acceptance/reservation itself is the semantic effect or merely a precursor.
+
+Therefore the minimum portable representation is:
+
+**provider-specific state evidence + normalized epistemic interpretation**.
+
+The normalized interpretation may remain unresolved while retaining the provider state verbatim/provenance-bound.
+
+**Result: ACCEPTED_OR_RESERVED should remain a semantic category in the audit model, but it is not a universal provider enum.**
+
+### F2 race attack
+
+**F2:** stale epoch E1 and current epoch E2 race before acceptance.
+
+A safe outcome requires one authoritative atomic admission point capable of comparing the presented generation against the resource's current generation before the protected mutation/reservation. If comparison and mutation are separable, the following unsafe interleaving exists:
+
+`E1 reads current generation → E2 advances generation → E1 mutates resource`.
+
+Therefore a local lock around the coordinator is insufficient when independent actors can reach the resource. The resource or authoritative intermediary must enforce the generation at the effect boundary.
+
+**Result:** F2 requires an atomic admission/compare-and-accept boundary. The exact mechanism is provider-specific.
+
+### F3 race attack
+
+**F3:** E1 is accepted/reserved; E2 subsequently becomes current.
+
+Fencing alone cannot answer whether E1:
+
+- can still commit;
+- can be cancelled;
+- is automatically invalidated;
+- has already committed;
+- remains pending.
+
+Those outcomes require explicit provider semantics. Therefore the resource must expose either an authoritative status/reconciliation operation or a contract that makes the reservation lifecycle deterministic.
+
+**Result:** F3 is a reconciliation/lifecycle problem, not merely a fencing problem.
+
+### Minimum boundary semantics derived
+
+The external effect boundary requires, at minimum:
+
+1. **Admission authority** — who may cause the effect.
+2. **Generation/identity check** — whether this operation is current and belongs to the intended semantic operation.
+3. **Durable provider state** — whether the resource has accepted/reserved/committed/rejected the operation.
+4. **Reconciliation path** — how an unresolved accepted operation is queried or resolved.
+5. **Historical evidence** — prior accepted/committed/corrected/reversed events remain distinguishable.
+
+This is a research-derived contract boundary, **not yet a Nexo architecture proposal**.
+
+### New invariant candidates
+
+**INV-F-05 — In-flight state preservation:** provider evidence that an operation remains in progress must not be erased merely to fit a binary local state model.
+
+**INV-F-06 — Atomic admission:** generation validation and the protected admission decision must share one authoritative atomic boundary when stale actors can race.
+
+**INV-F-07 — Reservation ≠ commitment:** accepted/reserved status must not be promoted to committed effect without provider semantics establishing that equivalence.
+
+**INV-F-08 — Post-admission resolution:** once an operation is accepted/reserved, fencing of later actors does not resolve the earlier operation; an authoritative lifecycle/reconciliation mechanism is required.
+
+These are candidate invariants only; no formal verification has been performed.
+
+### Current disposition
+
+- I24: **INDEPENDENT / UNTESTED**.
+- ACCEPTED_OR_RESERVED: **RETAINED as semantic audit category**, not universal enum.
+- F2: **requires atomic admission/compare-and-accept boundary**.
+- F3: **requires explicit lifecycle/reconciliation semantics**.
+- I19/I20/I21/I22 remain as previously classified.
+- I23 remains absorbed by operation-identity parameterization.
+- 20 top-level classes: **UNFROZEN**.
+- Coverage denominator: **NOT FROZEN**.
+- Formal verification: **NOT PERFORMED**.
+- Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.841R:** reduce I24 against I19/I20/I21 and existing reconciliation witnesses; then attack whether F3 can be decomposed into already-known lifecycle cases or requires a distinct interaction. Next, study concrete provider contracts for reservation/commit/cancel semantics and test the normalized evidence model against them. Do not choose Nexo technologies yet.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
