@@ -2167,3 +2167,127 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.804R: investigate settlement/reconciliation failures in payment systems: webhook duplication/out-of-order delivery, authorization reversal/capture races, provider timeout after accepted charge, and ledger-vs-provider reconciliation. Determine whether external payment rails expose a durable operation identity/version strong enough to close UNKNOWN without blind retry.
+
+## AB104.804R — payment settlement reconciliation, webhook duplication/order, and UNKNOWN closure
+
+### Adyen: missing API response is intentionally reconciled through idempotency + webhook
+
+Adyen explicitly recommends combining API idempotency with asynchronous server-to-server webhooks to handle missing responses. The API contract says that retrying the same idempotency key after a timeout returns the result of the already-processed request rather than charging twice. The idempotency key is scoped to the company account and valid for 7–14 days. citeturn0search1
+
+This gives a concrete recovery chain:
+
+API timeout
+-> retry same identity
+-> receiver returns prior result
+
+and, independently:
+
+asynchronous webhook
+-> synchronize local state.
+
+Neither mechanism is an authority-generation fence.
+
+### Webhook duplicates are expected, not exceptional
+
+Adyen explicitly states that the same webhook may be delivered twice. Duplicate identification uses eventCode + pspReference, while eventDate/other fields may differ; their guidance says to use the latest webhook event. citeturn0search0turn0search7
+
+This means webhook identity and payment operation identity must not be conflated automatically:
+
+payment request idempotency key
+!=
+webhook delivery identity
+!=
+local observation version.
+
+A receiver must define how a webhook event maps to the underlying payment resource and how duplicate/out-of-order observations are prevented from regressing state.
+
+### Ordering is an explicit protocol concern
+
+Adyen's webhook guidance says to inspect timestamps for chronological processing and notes that some webhook types expose sequenceNumber. Webhooks can also be delayed by seconds to minutes. citeturn0search0turn0search7
+
+Therefore a webhook saying an older lifecycle state cannot safely overwrite a newer local state merely because it arrived later.
+
+The reconciliation rule derived from the evidence remains:
+
+accept observation only if its identity, resource namespace, event/version semantics, and state-transition rules permit it to advance or correct durable state.
+
+A raw arrival timestamp is not an authority generation.
+
+### Important settlement boundary: Adyen says there is no payment-settled webhook
+
+Current Adyen webhook documentation states that a webhook event is not sent when a payment is settled. citeturn0search2
+
+This is strong evidence that a local integration may observe payment lifecycle events without receiving a direct webhook that means "external settlement is durably complete."
+
+Therefore:
+
+local CAPTURED
+does not automatically imply
+external settlement CONFIRMED.
+
+The settlement state may require separate reconciliation/reporting semantics.
+
+### Reversals and lifecycle correction are distinct from ordinary retries
+
+Adyen exposes lifecycle events including CAPTURE_FAILED, REFUND_FAILED, REFUNDED_REVERSED, EXPIRE, and technical cancellation. citeturn0search2
+
+These are not merely duplicate versions of the same successful operation. They represent later lifecycle facts or corrections.
+
+Nexo must therefore distinguish:
+
+late duplicate observation
+vs.
+legitimate state transition/correction.
+
+A monotonic numeric version alone cannot decide this; the state machine semantics matter.
+
+### Failure matrix
+
+| Situation | Safe interpretation |
+|---|---|
+| API timeout + same idempotency key retry | receiver can return original result |
+| duplicate webhook | deduplicate by documented event identity |
+| delayed webhook | process according to event/version semantics, not arrival order |
+| old webhook arrives after newer state | reject/ignore if it would regress state |
+| CAPTURED observed locally | not universal proof of settlement |
+| missing settlement webhook | cannot infer failure solely from absence |
+| REFUND_FAILED / CAPTURE_FAILED | explicit lifecycle failure event |
+| REFUNDED_REVERSED | later correction/reversal event |
+| idempotency key expired | old key no longer provides indefinite duplicate protection |
+
+### New reconciliation rule
+
+For a payment operation O, a terminal local state should be accepted only when:
+
+1. the evidence identifies the exact payment/resource;
+2. the evidence is authentic;
+3. the evidence has sufficient ordering/version semantics;
+4. the event is valid under the payment state machine;
+5. retention/history is sufficient to interpret absence/presence;
+6. the transition cannot silently regress a stronger terminal fact.
+
+If any of these are missing, retain UNKNOWN or a non-terminal state rather than inventing success/failure.
+
+### Evidence ledger
+
+ADYEN_TIMEOUT_RETRY_SAME_KEY_RETURNS_PRIOR_RESULT SOURCE CONFIRMED
+ADYEN_IDEMPOTENCY_SCOPE_AND_RETENTION SOURCE CONFIRMED
+ADYEN_DUPLICATE_WEBHOOKS SOURCE CONFIRMED
+ADYEN_WEBHOOK_IDENTITY_EVENTCODE_PLUS_PSPREFERENCE SOURCE CONFIRMED
+ADYEN_WEBHOOK_TIMESTAMP/SEQUENCE_ORDERING SOURCE CONFIRMED
+ADYEN_WEBHOOK_DELAY SOURCE CONFIRMED
+ADYEN_NO_PAYMENT_SETTLED_WEBHOOK SOURCE CONFIRMED
+ADYEN_LIFECYCLE_CORRECTION_EVENTS SOURCE CONFIRMED
+WEBHOOK_IDENTITY != PAYMENT_OPERATION_IDENTITY
+OBSERVATION_VERSION != AUTHORITY_GENERATION
+LOCAL_CAPTURED != UNIVERSAL_SETTLEMENT_CONFIRMED
+ABSENCE_OF_WEBHOOK != PROOF_OF_FAILURE
+UNKNOWN_REQUIRES_SUFFICIENT_RECONCILIATION_EVIDENCE
+UNIVERSAL_EXTERNAL_SETTLEMENT_ATOMICITY NOT ESTABLISHED
+EXECUTED NEXO PAYMENT SETTLEMENT RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.805R: research provider-side event history/query APIs and reconciliation reports after ambiguous payment requests. Determine whether a missing webhook or stale API response can be converted into strong terminal evidence by querying the provider, and identify the consistency/retention limits of that evidence.
