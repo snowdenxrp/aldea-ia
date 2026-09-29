@@ -5178,3 +5178,66 @@ I21 is not identical to I3 because I21 requires a post-correction stale duplicat
 **AB104.835R:** attack I19, I20, and I21 against the current witness set; construct minimum witnesses only where causal equivalence fails; then perform a targeted search for stale-event regressions across every typed state transition. Determine whether I21 is genuinely new or a projection of existing correction/stale-observation classes.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.835R — I19/I20/I21 REDUCTION + STALE-REGRESSION ATTACK
+
+**Date:** 2026-09-28  
+**Status:** RESEARCHED / REDUCTION PERFORMED / I19-I20 RETAINED / I21 RETAINED PROVISIONALLY / NO IMPLEMENTATION.
+
+### External cross-check
+
+NIST's ordered t-way work confirms that stateful fault detection depends on input ordering and the state established by prior inputs, supporting explicit testing of post-correction stale events rather than collapsing them into an unordered duplicate case. citeturn0search1turn0search3
+
+Adyen provides concrete evidence for the relevant semantics: reversal outcomes are asynchronous and linked to the original payment reference, and later webhook types can describe later state changes. citeturn0search0turn0search8turn0search11
+
+Microsoft's event-sourcing guidance states that duplicate delivery is expected under at-least-once delivery and that duplicate event processing must not alter the resulting state. citeturn0search4turn0search15
+
+### Reduction results
+
+**I19 = confirmed effect → correction/reversal → local reconstruction.** W18 lacks the correction transition; W16 starts from uncertain/delayed evidence; W4 lacks the required local terminal-state loss and reconstruction. **I19 remains independent.**
+
+Minimum witness: authoritative confirmation; loss of local terminal projection; later correction/reversal referencing the operation; recovery of current state; preservation of the original historical event; no second semantic effect.
+
+**I20 = UNKNOWN → retry/reconciliation → later authoritative CONFIRMED.** W17 lacks the mandatory late confirmation transition; W2 does not require that evidence to arrive after retry begins; W18 starts from confirmed state. **I20 remains independent.**
+
+Minimum witness: operation enters UNKNOWN; retry/reconciliation begins; later authoritative evidence identifies the original operation as CONFIRMED; convergence occurs on that original operation rather than creating a new semantic operation.
+
+**I21 = CONFIRMED → CORRECTED/REVERSED → stale pre-correction event → reconciliation.** I19 does not require the stale event after correction; I3 does not require this strict ordering and semantic identity; generic duplicate delivery does not capture the older semantic version. **I21 remains provisionally independent.**
+
+### Stale-regression matrix
+
+| Sequence | Required behavior |
+|---|---|
+| CONFIRMED → duplicate CONFIRMED | remain CONFIRMED; no second effect |
+| CONFIRMED → CORRECTED → old CONFIRMED | retain CORRECTED current state; preserve old event as history |
+| CONFIRMED → REVERSED → old CONFIRMED | retain REVERSED current state; no resurrection |
+| UNKNOWN → CONFIRMED → old UNKNOWN observation | retain CONFIRMED |
+| FAILED → old CONFIRMED | apply provider/version rules; no silent resurrection |
+| CORRECTED → old CORRECTED | idempotent duplicate correction |
+| REVERSED → old REVERSED | idempotent duplicate reversal |
+
+The strongest new regression cases are CORRECTED/REVERSED followed by an older CONFIRMED event. This shows that event identity alone is insufficient; semantic freshness/order is also required.
+
+### Candidate invariant
+
+**INV-EH-01 — No semantic regression from stale historical evidence:** once a later authoritative event establishes the current state for operation O, an older event for O must not regress that current semantic state merely because it arrives later. The older event remains historical evidence where provenance permits.
+
+Authentication, provenance, event identity, and semantic freshness remain separate predicates.
+
+### Current disposition
+
+I17: absorbed by W17 parameterization.  
+I18: absorbed by W18 parameterization.  
+I19: independent / untested.  
+I20: independent / untested.  
+I21: provisionally independent / untested.  
+INV-EH-01: candidate, not formally verified.  
+20 classes: UNFROZEN. Coverage denominator: NOT FROZEN. Formal verification: NOT PERFORMED. Implementation: NOT STARTED.
+
+### Exact next action
+
+**AB104.836R:** attack I21 against stale-observation, correction, authentication, incarnation, and duplicate-delivery witnesses; derive the minimum semantic freshness relation needed to prevent regression without requiring globally synchronized clocks. Then test whether I19 and I20 can share the same typed event-history mechanism.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
