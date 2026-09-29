@@ -1616,3 +1616,105 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.799R: research concrete failure tests and bug reports for idempotency receivers and transactional sinks: lost-response-after-commit, stale retry after retention, concurrent same-key submissions, sink offset/effect divergence, and whether receiver-side authority fencing is independently tested under crash/restart.
+
+## AB104.799R — failure evidence for idempotency, retries, and sink/effect divergence
+
+### EC2 documents the ambiguous-response problem directly
+
+AWS EC2 states that a mutating request can return before asynchronous work completes, and that a timeout or server issue can occur even though the request has already been accepted. Retrying without idempotency can therefore create multiple resources. With a client token, a successful retry with identical parameters performs no further action; parameter changes produce an idempotency mismatch. This is concrete protocol evidence that the receiver, not the client retry loop, owns duplicate suppression. citeturn0search0
+
+Important boundary:
+\`same token + same parameters\` is safe only inside the documented idempotency namespace and lifecycle. It does not prove that an old authority generation is rejected.
+
+### etcd provides concrete negative failure evidence
+
+Current etcd issue #22086 reports a mutable transaction whose successful response can have an older observed revision. The wrapper may reissue the transaction even though the first transaction may already have mutated state; the issue explicitly warns that this can duplicate effects or execute a different branch after intervening state changes. citeturn0search6
+
+This is direct evidence for:
+
+\`ordering anomaly != execution failure\`
+
+and:
+
+\`stale response != safe retry\`.
+
+A separate current etcd issue #22082 reports a stale \`Mutex.Unlock\` retry deleting a newer same-session lock because the unlock deletion is keyed by the mutex key rather than the old ownership incarnation. citeturn0search11
+
+Together these are stronger than a purely hypothetical race: real distributed clients can have a durable operation occur, lose or misinterpret the response, retry, and mutate newer state unless the receiver binds the mutation to the correct identity/incarnation.
+
+### Kafka sink boundary: offset commit is not automatically the external effect
+
+Kafka's sink API documentation explicitly notes that a sink can request offset commits after flushing data to the destination, but the commit request is only a hint and no timing guarantee should be assumed. It also describes connectors that manage offsets in the external system when stronger delivery semantics are required. citeturn0search7turn0search9
+
+Kafka's design documentation states that exactly-once requires cooperation with the destination storage system. Kafka Streams achieves a stronger guarantee specifically because input offsets, state-store updates, and Kafka output writes are completed atomically inside Kafka's integrated storage boundary. citeturn0search3turn0search14
+
+Therefore:
+
+\`Kafka transaction != arbitrary sink effect\`
+
+but:
+
+\`Kafka-integrated state/output transaction = a real atomic boundary\`.
+
+This is important for Nexo: the architecture must identify the actual effect owner and cannot infer effect atomicity from the coordinator alone.
+
+### Concurrent same-key submissions
+
+AWS's idempotency contract defines the receiver behavior for repeated identical requests and rejects parameter mismatches. The important architectural property is that the receiver arbitrates the identity conflict; two clients do not safely implement this by independently reading "key absent" and then both writing. citeturn0search0
+
+The audit therefore retains the stronger receiver rule:
+
+\`identity reservation + payload binding + protected mutation\`
+must share an atomic conflict boundary when duplicate suppression is part of the safety claim.
+
+### Receiver-side authority fencing under restart
+
+The researched systems provide concrete fencing for their own protocol domains (Kafka producer/leader epochs, etcd conditional transactions, Kubernetes resource-version conflicts, EtcFS generations), but the audit has not found a generic external receiver that simultaneously proves:
+
+1. durable authority-generation continuity across receiver restart;
+2. stale-generation rejection at the same linearization point as the protected external effect;
+3. operation identity deduplication at that same point;
+4. durable/queryable outcome after ambiguous response;
+5. universal applicability to arbitrary external effects.
+
+This remains **NOT ESTABLISHED**, not "impossible".
+
+### Refined failure model
+
+\`O1(g1)\` accepted/submitted
+→ receiver commits effect
+→ response lost
+→ authority changes to \`g2\`
+→ worker retries \`O1(g1)\`
+
+Safe receiver:
+\`reject duplicate OR return prior result\`
+and/or
+\`reject stale g1\`.
+
+Unsafe receiver:
+\`treat retry as a new mutation\`.
+
+A system can solve the first problem with idempotency and the second with fencing. Solving only one does not imply the other.
+
+### Evidence ledger
+
+EC2_AMBIGUOUS_ASYNC_RESPONSE_SOURCE_CONFIRMED
+EC2_CLIENT_TOKEN_DUPLICATE_SUPPRESSION_SOURCE_CONFIRMED
+EC2_PARAMETER_BINDING_SOURCE_CONFIRMED
+ETCD_MUTABLE_TXN_STALE_RESPONSE_DUPLICATION_REAL_REPORTED_SOURCE_CONFIRMED
+ETCD_STALE_MUTEX_UNLOCK_NEWER_INCARNATION_REAL_REPORTED_SOURCE_CONFIRMED
+KAFKA_SINK_OFFSET_COMMIT_IS_NOT_TIMING_GUARANTEE_SOURCE_CONFIRMED
+KAFKA_EXTERNAL_EXACTLY_ONCE_REQUIRES_DESTINATION_COOPERATION_SOURCE_CONFIRMED
+KAFKA_INTEGRATED_STATE_OFFSETS_OUTPUT_ATOMIC_BOUNDARY_SOURCE_CONFIRMED
+CONCURRENT_SAME_KEY_ARBITRATION_MUST_BE_RECEIVER_SIDE
+RECEIVER_IDEMPOTENCY != AUTHORITY_FENCING
+RECEIVER_FENCING != RECONCILIATION
+UNIVERSAL_RECEIVER CLOSURE OF ALL FOUR LAYERS NOT ESTABLISHED
+EXECUTED NEXO RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.800R: investigate whether any production system provides a single durable receiver-side record that combines operation identity, authority generation/incarnation, payload binding, terminal effect state, and recovery/reconciliation evidence; compare this against Kafka transactional state, Kubernetes resourceVersion, EtcFS generation, and payment/API idempotency records.
