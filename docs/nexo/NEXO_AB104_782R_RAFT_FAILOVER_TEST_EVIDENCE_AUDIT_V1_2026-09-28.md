@@ -3167,3 +3167,114 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.812R: attack the normalized 20 classes for missing cross-products, especially combinations that are individually safe but unsafe together: fencing + retry, serialization failure + external effect, rebalance + delayed response, correction + stale evidence, retention expiry + redelivery, and recovery + namespace/incarnation reuse. Determine the minimum independent test set before freezing the adversarial model.
+
+## AB104.811R — Kafka transactional/rebalance cross-check and model deduplication
+
+Current Kafka design confirms the key boundary: exactly-once processing is achievable when consuming from Kafka and producing back to Kafka because offsets and produced records can participate in the same Kafka transaction. For external destinations, Kafka explicitly says stronger semantics require cooperation from the destination system. citeturn0search0turn0search4
+
+Kafka also documents the consumer-failure window: a consumer can process records and crash before saving its position, causing the next consumer to receive already-processed records. This is the canonical at-least-once duplicate window. citeturn0search0
+
+### Rebalance and ownership findings
+
+Kafka's transactional pattern depends on partition assignment: the consumer group ensures one active consumer processes each assigned partition, while transactions atomically bind produced records and committed offsets. Restarted transactional producers can fence/abort an in-flight transaction through the transactional.id mechanism. citeturn0search4
+
+The consumer API also makes the rebalance boundary explicit: committed offsets are used after rebalance/startup, and commit timeout/failure is observable. Leader epoch metadata can accompany committed offsets. citeturn0search1
+
+This yields four distinct boundaries:
+
+1. partition ownership;
+2. offset durability;
+3. Kafka transaction commit;
+4. external effect completion.
+
+Only the first three can be made part of Kafka's native transaction. The fourth remains outside unless the sink participates.
+
+### Deduplication of the 71-case model
+
+Several RabbitMQ cases map directly onto the Kafka consumer failure model and should not remain separate invariants:
+
+- BA/BI/BL -> generic redelivery after processing/terminal state;
+- BB/BT -> acknowledgement loss / completion uncertainty;
+- BC/BD -> producer confirmation loss and retry;
+- BQ -> ownership/rebalance race;
+- BR -> accepted input but completion record not yet durable;
+- BS -> durable completion but downstream publication lag.
+
+They remain useful concrete scenarios, but they should map to common failure classes rather than inflate the formal invariant count.
+
+### Canonical failure classes after deduplication
+
+The model now has 14 canonical classes:
+
+C1 Identity collision/reuse
+C2 Payload/request binding violation
+C3 Duplicate delivery/submission
+C4 Lost acknowledgement/confirmation
+C5 Reordering/stale observation
+C6 Invalid lifecycle/state transition
+C7 Isolation/concurrency anomaly
+C8 Transaction abort/retry after partial work
+C9 Crash/restart/recovery
+C10 Ownership/rebalance/authority transition
+C11 Stale authority/fencing failure
+C12 External-effect ambiguity and reconciliation
+C13 Retention/compaction/history loss
+C14 Cross-domain atomicity boundary
+
+### New Kafka-specific adversarial witnesses
+
+BZ. consumer processes record, external effect succeeds, offset transaction fails;
+CA. offset commits, external effect does not happen;
+CB. rebalance occurs after effect but before offset commit;
+CC. old consumer continues work after partition ownership changes;
+CD. transactional producer restart fences old instance while old work is still in progress;
+CE. Kafka transaction commits output and offset, but an external sink remains uncertain;
+CF. external sink accepts effect, Kafka transaction aborts, then message is redelivered;
+CG. offset commit timeout leaves commit status uncertain;
+CH. external sink retries after Kafka transaction retry;
+CI. sink accepts first request, response lost, second attempt arrives;
+CJ. read_committed consumer sees only committed Kafka output while external effect remains separately ambiguous.
+
+These are concrete witnesses, not new universal guarantees.
+
+### Important distinction
+
+Kafka's exactly-once transaction proves an atomic relationship among Kafka-managed records and offsets. It does not prove:
+
+Kafka transaction committed => arbitrary external effect committed.
+
+Likewise:
+
+offset commit failed => external effect did not happen
+
+is invalid.
+
+### Updated model status
+
+Concrete scenarios accumulated: 81 (71 + 10 Kafka-specific witnesses).
+
+Canonical failure classes: 14.
+
+The 81 scenarios should NOT be treated as 81 independent invariants. They are adversarial witnesses mapped to 14 failure classes.
+
+The model remains UNFROZEN because coverage of workflow cancellation, poison-message liveness, retention boundaries, and cross-domain fencing still needs one final cross-check.
+
+### Evidence ledger
+
+KAFKA_EXACTLY_ONCE_KAFKA_TO_KAFKA_SOURCE_CONFIRMED
+KAFKA_EXTERNAL_DESTINATION_REQUIRES_COOPERATION SOURCE CONFIRMED
+KAFKA_CONSUMER_CRASH_BEFORE_OFFSET_COMMIT_CAN_DUPLICATE SOURCE CONFIRMED
+KAFKA_PARTITION_ASSIGNMENT_OWNERSHIP SOURCE CONFIRMED
+KAFKA_TRANSACTIONAL_ID_RESTART_FENCES_OLD_TRANSACTION SOURCE CONFIRMED
+KAFKA_OFFSET_COMMIT_TIMEOUT_IS_NOT_EXECUTION_PROOF SOURCE CONFIRMED
+KAFKA_OFFSET_COMMIT != EXTERNAL_EFFECT_PROOF
+KAFKA_TRANSACTION_COMMIT != ARBITRARY_EXTERNAL_EFFECT_PROOF
+81 CONCRETE ADVERSARIAL WITNESSES
+14 CANONICAL FAILURE CLASSES
+MODEL NOT EXECUTED
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.812R: final cross-check against workflow cancellation/timeout, poison-message liveness, retention/compaction, and fencing recovery. Determine whether any failure class is still absent; then produce a deduplicated coverage ledger before declaring the adversarial model frozen.
