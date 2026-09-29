@@ -2291,3 +2291,119 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.805R: research provider-side event history/query APIs and reconciliation reports after ambiguous payment requests. Determine whether a missing webhook or stale API response can be converted into strong terminal evidence by querying the provider, and identify the consistency/retention limits of that evidence.
+
+## AB104.805R — provider-side status/query evidence after ambiguous payment requests
+
+### Provider query can strengthen UNKNOWN, but only within the provider's own semantic boundary
+
+Current Adyen documentation provides a concrete status-query path for point-of-sale transactions: even when the original Terminal API response is not received, a transaction status request can retrieve transaction details. Adyen also exposes PSP references as stable payment identifiers and uses them for reconciliation. citeturn0search5turn0search9
+
+This is materially stronger than treating a missing response as failure:
+
+timeout -> query exact PSP/payment identity -> obtain provider state
+
+However, the query result proves only what the provider's status API contract says it proves. It does not automatically prove downstream bank/card-network settlement.
+
+### Asynchronous operations have a deliberate two-step contract
+
+Adyen's manual capture flow is explicit: the capture request returns status: received, processing continues asynchronously, and the eventual result arrives through a CAPTURE webhook. The webhook says whether the request was valid and submitted to the bank/third-party processor; a successful capture webhook therefore has a defined semantic boundary that is narrower than universal settlement completion. citeturn0search3
+
+Likewise, reversal returns a unique PSP reference and status: received, while the final outcome arrives asynchronously through CANCEL_OR_REFUND; later REFUND_FAILED or REFUNDED_REVERSED events can still alter the lifecycle. citeturn0search1turn0search9
+
+Therefore a provider response has to be classified by semantic strength:
+
+- received = request accepted for asynchronous processing;
+- CAPTURE success = provider validation/submission boundary reached;
+- later lifecycle event = additional state transition/correction;
+- external settlement = separate claim unless provider contract explicitly binds it.
+
+### Idempotency status is not historical omniscience
+
+Adyen retains idempotency keys for 7–14 days and scopes them to the company account; the same key can be used to recover a processed request within that contract. After the retention boundary, the old key no longer provides an indefinite identity guarantee. citeturn0search0
+
+Thus:
+
+provider knows operation O
+
+does not imply:
+
+provider can prove O forever.
+
+Reconciliation evidence has a retention boundary just like operation deduplication.
+
+### Report/reconciliation channel
+
+Adyen also exposes report-available webhook events carrying merchant reference, original reference, PSP reference, event date and a report download location. This provides a separate reconciliation channel from ordinary payment webhooks. citeturn0search11
+
+That distinction matters because reconciliation may need to compare:
+
+local ledger
+vs.
+provider transaction state
+vs.
+provider report
+
+rather than trusting one asynchronous notification as the complete history.
+
+### UNKNOWN closure rule refined
+
+For operation O in provider namespace P:
+
+UNKNOWN -> CONFIRMED
+
+is justified only when the provider evidence:
+
+1. identifies the exact operation/payment;
+2. is authenticated/authorized as provider evidence;
+3. has semantics that actually mean the claimed terminal state;
+4. is sufficiently current/ordered for the question being answered;
+5. remains within the provider's retention/history guarantees;
+6. is not contradicted by a later lifecycle event.
+
+UNKNOWN -> FAILED requires equivalent evidence for a terminal failure or a documented guarantee that the requested effect cannot have occurred.
+
+A successful API query returning request received does not satisfy terminal confirmation.
+
+A missing webhook does not satisfy terminal failure.
+
+### Strong new distinction: evidence depth
+
+Provider evidence should be classified by depth:
+
+E0 = transport observation
+request/response/timeout only.
+
+E1 = request accepted
+provider says operation was received/queued.
+
+E2 = provider lifecycle terminal
+provider says the operation reached a documented terminal state.
+
+E3 = downstream settlement evidence
+provider explicitly proves the external settlement rail reached the claimed state.
+
+The system must not promote E1 to E2 or E2 to E3 merely because the values look monotonic.
+
+### Evidence ledger
+
+PROVIDER_STATUS_QUERY_AFTER_LOST_RESPONSE SOURCE CONFIRMED
+PSP_REFERENCE_AS_RECONCILIATION_ID SOURCE CONFIRMED
+ASYNC_CAPTURE_RECEIVED != CAPTURE_TERMINAL SOURCE CONFIRMED
+CAPTURE_SUCCESS_HAS_DOCUMENTED_PROVIDER_BOUNDARY SOURCE CONFIRMED
+REVERSAL_RECEIVED != REVERSAL_FINAL_OUTCOME SOURCE CONFIRMED
+LATER_REFUND/REVERSAL_CORRECTION EVENTS SOURCE CONFIRMED
+IDEMPOTENCY_RETENTION_LIMIT SOURCE CONFIRMED
+PROVIDER_REPORT_RECONCILIATION_CHANNEL SOURCE CONFIRMED
+QUERY_RESULT_SEMANTICS_MUST_BE_CLASSIFIED SOURCE-SUPPORTED
+E0_TRANSPORT != E1_ACCEPTED != E2_PROVIDER_TERMINAL != E3_EXTERNAL_SETTLEMENT
+MISSING_WEBHOOK != FAILED
+RECEIVED != CONFIRMED
+PROVIDER_TERMINAL != AUTOMATICALLY_EXTERNAL_SETTLEMENT
+UNIVERSAL_EXTERNAL_SETTLEMENT_PROOF NOT ESTABLISHED
+EXECUTED NEXO PAYMENT RECONCILIATION RACE NO
+FORMAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.806R: investigate whether provider reports/history are authoritative enough to correct or supersede webhook observations, including report generation delay, event ordering, duplicate reports, and retention. Then test whether reconciliation evidence can itself become stale after a later reversal/correction.
