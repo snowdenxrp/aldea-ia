@@ -2498,3 +2498,100 @@ Architecture freeze: NOT DECLARED.
 **AB104.862R:** attack the complementary path SUBMITTED/IN_PROGRESS → COMMITTED → later correction/reversal, using concrete provider lifecycle evidence. Determine whether the positive terminal state plus later correction is fully captured by I19, or whether asynchronous submission, terminal confirmation, correction, and stale pre-correction evidence create a distinct interaction.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+---
+## AB104.862R — SUBMITTED/IN_PROGRESS → COMMITTED → CORRECTION/REVERSAL
+
+**Status:** RESEARCHED / CONCRETE PROVIDER EVIDENCE / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+Adyen documents CAPTURE as an asynchronous process: CAPTURE success=true means the request was valid and submitted downstream, while later CAPTURE_FAILED can occur. Adyen also documents distinct refund/reversal lifecycle events, including REFUNDED_REVERSED, and its September 2026 update introduced SETTLED_REVERSED notifications for settlement reversals. citeturn0search4turn0search6turn0search8 Microsoft Event Sourcing guidance states that historical events remain immutable and that corrections/reversals should be represented by compensating events rather than rewriting the original event. citeturn0search0
+
+### Concrete complementary path
+
+At the provider level, the reachable semantic sequence is:
+
+SUBMITTED → terminal/settlement state → later correction or reversal
+
+Examples include refund reversal and settlement reversal. Adyen explicitly exposes REFUNDED_REVERSED and, as of September 2026, SETTLED_REVERSED webhook events. citeturn0search6turn0search8
+
+### Attack against I19
+
+I19 is the correct interaction family for the correction/reversal dimension, but the audit must distinguish three facts:
+
+1. **Terminal knowledge:** a local/provider observation may indicate a committed or settled state.
+2. **Correction/reversal:** a later authoritative event changes the economic/resource interpretation.
+3. **Historical evidence:** the original terminal observation remains evidence and must not be overwritten.
+
+Microsoft's event-sourcing guidance directly supports the third property: the original event remains in the immutable stream and the compensating event records that its effect was reversed or corrected. citeturn0search0
+
+### Does this create a new interaction?
+
+No new top-level interaction is justified by the evidence reviewed.
+
+The asynchronous submission dimension does not make I19 independent of the existing model because:
+- submission is already separated from terminal confirmation by the typed lifecycle;
+- correction/reversal is already an explicit later transition;
+- stale pre-correction observations are already represented by the freshness relation and I21;
+- reconstruction/history preservation is already part of I19's definition;
+- reconciliation is required when projections and authoritative events arrive at different times.
+
+The combined sequence therefore remains representable as:
+
+SUBMITTED → COMMITTED/SETTLED → CORRECTED/REVERSED
+
+plus:
+
+OLDER/EQUAL/INCOMPARABLE observation handling
+
+and:
+
+immutable evidence + reconciliation.
+
+### Important boundary
+
+Adyen states that it does not send a webhook when a payment is successfully settled, while it can send SETTLED_REVERSED when a settlement is later reversed. Therefore the presence of a correction webhook is not proof that every preceding local state had an independently observable settlement event. citeturn0search6
+
+This reinforces the existing distinction between **provider evidence**, **local projection**, and **external-effect knowledge**.
+
+### Result
+
+- Concrete provider correction/reversal evidence: **YES**
+- Historical-preservation requirement: **YES**
+- I19 remains the appropriate interaction family: **YES**
+- New independent interaction: **NO**
+- New top-level class: **NO**
+- New frozen witness: **NO**
+
+### Candidate invariants
+
+**INV-TE-08:** A correction/reversal must append or otherwise preserve explicit historical evidence of the correction; it must not erase the original terminal observation.
+
+**INV-TE-09:** A correction event must be interpreted according to the provider/resource contract and must not be generalized into a universal proof that the original effect never occurred.
+
+Candidates only; no formal verification.
+
+### Current disposition
+
+I19: empirically supported semantic family / witness still not frozen.
+I20: independent / untested.
+I21: distinct / untested.
+I22: parameterized.
+I23: absorbed.
+I24: independent / untested.
+I25: parameterized coverage.
+I26: empirically supported semantic interaction / witness not frozen.
+I27: model-level residual / empirical witness not established.
+W20: NOT FROZEN.
+20 top-level classes: UNFROZEN.
+Coverage denominator: NOT FROZEN.
+Formal verification: NOT PERFORMED.
+Implementation: NOT STARTED.
+Architecture freeze: NOT DECLARED.
+
+### Exact next action
+
+**AB104.863R:** attack the ordering boundary between the original terminal observation and the later correction/reversal. Search executable/provider implementations for delayed, duplicated, or out-of-order correction events and determine whether I21 fully covers the race or whether correction freshness plus reconciliation creates an independent witness.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
