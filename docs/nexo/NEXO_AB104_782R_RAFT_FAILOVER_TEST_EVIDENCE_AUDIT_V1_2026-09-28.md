@@ -2147,3 +2147,59 @@ Implementation: NOT STARTED.
 **AB104.860R:** perform a closure audit of the entire typed effect-state graph and freshness relation. Enumerate every currently admitted transition and every forbidden generic transition, then cross-check each against I19-I27 and the 20-class taxonomy. The goal is to detect any missing legal transition or unsafe implicit transition before adding further interaction candidates.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.859R — CONFLICTING VS INCOMPARABLE: CONCRETE SAME-RESOURCE EVENTS
+
+Status: RESEARCHED / MODEL REDUCTION / NO IMPLEMENTATION.
+
+Fresh evidence: Adyen webhook events are scoped to payment references and event types; CAPTURE, CAPTURE_FAILED, CANCELLATION, EXPIRE, REFUND and reversal-related events are distinct semantic transitions. Adyen also documents duplicate delivery, timestamps, and sequenceNumber where available; duplicate events can share eventCode+pspReference. citeturn0search0turn0search4 Microsoft event sourcing defines an entity event stream as an ordered history and uses optimistic concurrency to reject conflicting appends; it also states that conflicts spanning entities require explicit reconciliation. citeturn0search2 Lamport's ordering result is the fundamental constraint: distributed events have a causal partial order, not an invariant total order. citeturn0search1
+
+### Attack
+
+Candidate case:
+A and B are both authenticated and scoped to the same resource. Both are individually legal event types, but the provider gives no sequence/causal relation between them and the resulting states cannot both be current under the resource contract.
+
+Reduction test:
+- If no incompatibility is established, the state is simply INCOMPARABLE: preserve both evidence items and reconcile/hold.
+- If the contract establishes mutual incompatibility but gives no precedence, the relation is genuinely CONFLICTING: the system knows that both cannot represent the current state, but it must not invent which one happened last.
+- If a provider sequence, causal reference, or authoritative resource read establishes precedence, the relation reduces to NEWER/OLDER and is no longer CONFLICTING.
+- If the two events have identical semantic identity, they reduce to EQUAL/DUPLICATE.
+
+### Concrete provider check
+
+Adyen's webhook model provides enough event typing to make incompatibility realistic, but its current documentation also supplies timestamps/sequence information for ordering where available. The documentation therefore demonstrates the existence of distinct same-resource transitions, but does NOT establish a production incident where two authenticated incompatible terminal events remained permanently unordered. We must not promote that documentation example into an empirical failure witness. citeturn0search0turn0search4
+
+### Decision
+
+CONFLICTING remains a **valid semantic relation**, but its empirical witness remains unestablished. It cannot be collapsed universally into INCOMPARABLE because conflict adds the independent predicate “cannot both be current.” It also cannot be promoted to a witness merely because such a state is logically possible.
+
+Therefore:
+- CONFLICTING = model relation / untested.
+- I27 = model-level residual / empirical witness not established.
+- W19 = not frozen.
+
+### Important refinement
+
+The protected decision does not have to be “choose A or B.” A safe system may preserve both events and enter reconciliation/hold. Thus CONFLICTING is only a distinct interaction when the system's contract must make a decision that differs from ordinary INCOMPARABLE handling—e.g., reject one transition, halt projection, or require authoritative external resolution because mutual incompatibility is known.
+
+This prevents another class of overcounting: a semantic relation is not automatically a failure witness.
+
+### Candidate invariants
+
+INV-EH-10 — conflict requires contract-level incompatibility.
+INV-EH-11 — conflict does not justify invented precedence.
+INV-EH-12 — conflict preserves all authenticated evidence.
+
+Not formally verified.
+
+### Current disposition
+
+I19 independent/untested; I20 independent/untested; I21 distinct ordered/untested; I22 parameterized; I24 independent/untested; I25 parameterized; I26 empirically supported semantic interaction/witness not frozen; I27 model-level residual/witness not established; W19 NOT FROZEN; 20 classes UNFROZEN; denominator NOT FROZEN; formal verification NOT PERFORMED; implementation NOT STARTED.
+
+### Exact next action
+
+AB104.860R: search concrete executable systems/tests for an actual same-resource CONFLICTING condition with authenticated inputs and absent/insufficient ordering, then attack the minimum decision difference between CONFLICTING and ordinary INCOMPARABLE+reconciliation. Do not freeze a witness from documentation alone.
+
+No deletion/overwrite. No silent witness mutation. No architecture implementation.
