@@ -5241,3 +5241,83 @@ INV-EH-01: candidate, not formally verified.
 **AB104.836R:** attack I21 against stale-observation, correction, authentication, incarnation, and duplicate-delivery witnesses; derive the minimum semantic freshness relation needed to prevent regression without requiring globally synchronized clocks. Then test whether I19 and I20 can share the same typed event-history mechanism.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.836R — I21 FRESHNESS RELATION + I19/I20 HISTORY-MECHANISM CROSS-CHECK
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### External cross-check
+
+NIST's ordered-combination work confirms that stateful failures can depend on input ordering and on the state produced by earlier inputs; sequence coverage is therefore relevant to stale-after-correction cases rather than treating events as an unordered set. citeturn0search0turn0search8
+
+Microsoft's current event-sourcing guidance treats the event store as permanent history, recommends compensating events rather than rewriting prior events, and notes that event ordering for a specific entity is important. It also states that at-least-once delivery requires idempotent consumers. citeturn0search9
+
+### I21 attack
+
+I21 = CONFIRMED → CORRECTED/REVERSED → delayed pre-correction event → reconciliation.
+
+Reduction against existing families:
+- Duplicate delivery: insufficient; repetition alone does not identify semantic age.
+- Stale observation/order: related but insufficient; I21 requires a previously authoritative positive event becoming obsolete after correction/reversal.
+- Correction/reversal: related but insufficient; correction without a late old event does not exercise regression protection.
+- Authentication/provenance: orthogonal; an old event may be authentic yet invalid as the current transition.
+- Incarnation/namespace: orthogonal unless the event crosses an incarnation boundary.
+
+**Result: I21 remains a distinct ordered interaction, but it does not justify a new top-level failure class.**
+
+### Minimum semantic freshness relation
+
+A global wall-clock timestamp is not sufficient as the sole ordering rule: clock skew and asynchronous delivery can make arrival time differ from semantic order. The protected boundary instead needs a relation capable of classifying an incoming event relative to the current authoritative state as NEWER, EQUAL/DUPLICATE, OLDER, or INCOMPARABLE.
+
+Candidate evidence sources are: provider/entity sequence or version; monotonic aggregate revision; causal/event-stream position; or a provider-specific authoritative transition contract.
+
+**INCOMPARABLE must not be silently treated as OLDER or NEWER.** If safe ordering cannot be established, the boundary should preserve current state and route to explicit reconciliation/UNKNOWN according to the effect contract.
+
+This is a semantic relation, not yet a Nexo data structure.
+
+### I19 / I20 shared-mechanism test
+
+I19 and I20 can share a common conceptual event-history substrate but remain different interactions:
+- I19 starts with authoritative CONFIRMED, then correction/reversal, then local reconstruction.
+- I20 starts UNKNOWN, then retry/reconciliation, then later authoritative CONFIRMED.
+
+Shared conceptual requirements: operation identity + immutable evidence + typed state transition + semantic order/version + reconciliation disposition.
+
+The transition requirements remain distinct, so combining them into one witness would hide different epistemic starting conditions.
+
+### New invariant candidate
+
+**INV-EH-02 — Unknown ordering is not permission to regress:** if an incoming event cannot be established as newer than the current authoritative state, it must not overwrite or semantically regress that state merely because it arrived later. The event may remain preserved as evidence and require reconciliation.
+
+Candidate invariant only; not formally proven.
+
+### Targeted regression set
+
+R1 CONFIRMED(v2) → old CONFIRMED(v1): retain v2.
+R2 CORRECTED(v3) → old CONFIRMED(v2): retain CORRECTED(v3).
+R3 REVERSED(v3) → old CONFIRMED(v2): retain REVERSED(v3).
+R4 CONFIRMED(v2) → duplicate CONFIRMED(v2): idempotent, no new effect.
+R5 CONFIRMED(v2) → INCOMPARABLE event: no regression; reconcile/UNKNOWN as contract requires.
+R6 INCARNATION-2 current → authenticated event from incarnation-1: reject/reconcile according to incarnation contract, not merely event authenticity.
+
+### Current disposition
+
+- I17: absorbed by W17 parameterization.
+- I18: absorbed by W18 parameterization.
+- I19: independent / untested.
+- I20: independent / untested.
+- I21: distinct ordered interaction / untested.
+- INV-EH-01: candidate.
+- INV-EH-02: candidate.
+- 20 top-level classes: UNFROZEN.
+- Coverage denominator: NOT FROZEN.
+- Formal verification: NOT PERFORMED.
+- Implementation: NOT STARTED.
+
+### Exact next action
+
+**AB104.837R:** attack the freshness relation itself: test provider sequence, aggregate revision, causal position, and incomparable states against stale correction, retry, recovery, and duplicate-delivery cases. Determine which semantics are universally portable versus provider-specific, without selecting technology or designing the Nexo architecture yet.
+
+**No deletion/overwrite. No silent migration. No architecture implementation.**
