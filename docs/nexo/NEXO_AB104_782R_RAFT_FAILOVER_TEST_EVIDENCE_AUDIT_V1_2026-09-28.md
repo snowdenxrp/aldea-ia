@@ -5,137 +5,144 @@ Status: RESEARCH ONLY. No Nexo implementation.
 ## Continuation note
 The document contains the full prior audit chain. The following section is appended without deleting or overwriting prior findings.
 
-## AB104.837R — FRESHNESS SEMANTICS + OUTBOX/EFFECT-JOURNAL BOUNDARY RESEARCH
+## AB104.838R — RESOURCE-SIDE IDEMPOTENCY / RECONCILIATION / PARTIAL-COMPLETION AUDIT
 
 **Status:** RESEARCHED / NO IMPLEMENTATION / NO ARCHITECTURE FREEZE.
 
-### External evidence cross-check
+### Fresh external evidence
 
-NIST explicitly models stateful testing around ordered input combinations because failures can depend on the order in which states are established. Its sequence-covering work likewise treats event order as a first-class testing dimension. citeturn0search0turn0search5turn0search24
+Stripe's current API documentation makes an important boundary explicit: an idempotency key can cause subsequent retries to return the original result, but keys may be automatically removed after at least 24 hours; reusing a pruned key can create a new request. Stripe also compares parameters on key reuse and rejects mismatched parameters. citeturn0search1turn0search2
 
-AWS documents transactional outbox as a way to make a database update and event publication atomic within one transaction boundary, while warning that downstream delivery may still duplicate and therefore consumers should be idempotent. It also stresses preserving notification order. citeturn1search2turn1search36
+Check's current API documentation provides an independent example of the same limitation: after its 24-hour key-expiry window, a reused key is treated as a new request, and its documentation recommends checking the resource before a late retry. This confirms that idempotency retention is a semantic part of the guarantee, not an implementation footnote. citeturn0search7
 
-Stripe's current idempotency documentation provides concrete external-resource evidence: a server can persist the result associated with an idempotency key and return the same result for later retries. It also rejects reuse of the same key with different parameters. This is resource-side cooperation, not a property supplied by the coordinator alone. citeturn1search0
+AWS transactional-outbox guidance confirms that outbox provides atomicity between the local database update and publication, while duplicate downstream delivery remains possible and consumers must be idempotent. It does not make an arbitrary external side effect atomic with the local transaction. citeturn0search0turn0search3
 
-Kafka's current design documentation explicitly scopes exactly-once guarantees to Kafka-managed processing and states that exactly-once behavior for other destination systems generally requires cooperation from those systems. citeturn1search5
+### Resource-side idempotency attack
 
-### Freshness relation attack
+A resource-side idempotency contract must answer at least four independent questions:
 
-The candidate relation remains:
+1. **Identity:** what exactly identifies the same semantic operation?
+2. **Retention:** for how long is that identity remembered?
+3. **Parameter binding:** what happens if the same identity is reused with different parameters?
+4. **Execution state:** how are NEW, IN-PROGRESS, COMPLETED, FAILED, and expired identities exposed?
 
-`compare(incoming, current) -> NEWER | EQUAL/DUPLICATE | OLDER | INCOMPARABLE`
+Stripe demonstrates all four dimensions in concrete form: result retention, parameter comparison, retry behavior, and a defined pruning window. citeturn0search1
 
-#### Provider/entity sequence
+### Critical expiry result
 
-Strongest case when the provider supplies a monotonic sequence/version scoped to the same entity or operation stream. It directly supports R1-R4 and I21. It is **not universal** because an external provider may not expose such a sequence, and scope/epoch semantics must be understood.
+Idempotency is therefore **time-bounded unless the provider explicitly guarantees durable retention**.
 
-**Disposition:** portable as a semantic capability, not portable as a guaranteed field.
+This creates a new failure window:
 
-#### Aggregate revision
+`operation O → provider accepts O → idempotency record expires → coordinator retries same logical O → provider treats request as NEW`
 
-A monotonic local revision is useful for ordering local state transitions, but cannot by itself prove that an external event is newer than an external provider's authoritative state. It orders the coordinator's history, not necessarily the provider's history.
+The original idempotency key is no longer sufficient evidence of sameness.
 
-**Disposition:** useful local ordering primitive; insufficient alone for external-effect freshness.
+Therefore:
 
-#### Causal/event-stream position
+**INV-EF-05 candidate:** an idempotency key only provides the deduplication guarantee within the provider's documented retention/semantic scope; outside that scope, reuse cannot be assumed safe.
 
-A causal position or stream offset can establish order when all relevant events participate in the same authoritative stream. It becomes insufficient when an event arrives from an independent authority/domain with no shared causal position.
+### Parameter-conflict result
 
-**Disposition:** strong within a common stream; not a universal cross-domain comparator.
+Same-key/different-parameters is not a normal retry. It is a semantic identity conflict.
 
-#### Wall-clock timestamp
+A safe resource contract must not silently interpret:
 
-A timestamp is evidence about event time but is not a safe universal semantic-order relation under clock skew, delayed delivery, retries, or independent producers.
+`same key + different semantic request`
 
-**Disposition:** auxiliary metadata, not a sole freshness fence.
+as a valid continuation of the original operation.
 
-#### INCOMPARABLE
+Stripe explicitly rejects this class of mismatch. citeturn0search1
 
-This remains essential. If the system cannot establish that an incoming event is newer/equal/older under the applicable authority contract, it must not infer freshness from arrival order. The safe disposition is preserve current authoritative state and invoke explicit reconciliation/UNKNOWN according to the contract.
+Therefore:
 
-### AB104.837R result
+**INV-EF-06 candidate:** operation identity must bind to the intended semantic parameters strongly enough that key reuse with conflicting parameters is rejected or otherwise made explicitly non-equivalent.
 
-No single freshness mechanism is universal.
+### Partial-completion attack
 
-The portable abstraction is therefore **not a timestamp, sequence field, or revision number**. The portable abstraction is a semantic **freshness/authority relation** whose evidence source is provider/domain-specific.
+The dangerous state remains:
 
-This is an important boundary result: technology selection must not silently define semantics.
+`reserve/accept O → execute external effect → crash before durable result`
 
-### Outbox/effect-journal attack
+A later retry can observe:
 
-Transactional outbox solves a specific dual-write boundary:
+- key absent;
+- key IN-PROGRESS;
+- key COMPLETED;
+- key FAILED;
+- key EXPIRED;
+- or provider-specific UNKNOWN.
 
-`local state transaction + durable outgoing event`
+These are materially different evidence states. A local coordinator must not collapse them into one Boolean retryable/not-retryable value.
 
-It does **not** make:
+AWS's outbox guidance reinforces the broader boundary: local durability and publication reliability do not remove duplicate or external-effect uncertainty. citeturn0search0
 
-`durable outbox + arbitrary external side effect`
+### Reconciliation consequence
 
-atomic.
+The strongest safe external evidence hierarchy found in this round is:
 
-The publisher can still crash after the external effect and before recording/acknowledging completion. Therefore an outbox alone does not eliminate the UNKNOWN effect window.
+**A. Authoritative resource lookup** — strongest when the resource has a stable operation/resource identity and the lookup semantics are authoritative.
 
-A durable effect journal can improve recovery by recording operation identity and observed outcomes, but if the external resource does not participate atomically, the coordinator still needs idempotency or reconciliation at the resource boundary.
+**B. Provider-side idempotency record** — strong while retained and when the provider guarantees what the record means.
 
-### Derived failure windows
+**C. Provider event/webhook history** — strong when authenticated, scoped, and semantically ordered; still requires freshness/reconciliation handling.
 
-O1: local transaction + outbox commits → publisher never sends → recoverable from durable outbox.
+**D. Local ACK/timeout alone** — insufficient to establish external effect.
 
-O2: publisher sends → external effect occurs → publisher crashes before local outcome record → **UNKNOWN** unless resource-side query/idempotency resolves it.
+This is not a universal ranking across every provider; it is an evidence-contract pattern. The provider's own semantics determine which evidence is authoritative.
 
-O3: publisher retries after O2 → resource accepts same operation idempotently → safe convergence.
+### State classification attack
 
-O4: publisher retries after O2 → resource has no idempotency and no reconciliation API → duplicate-vs-loss ambiguity cannot be eliminated by the coordinator alone.
+Can resource-side evidence distinguish the five states?
 
-O5: old authority sends effect after generation change → outbox correctness does not itself fence the external resource → authority-generation validation must exist at the protected effect boundary.
+| State | Resource-side evidence needed | Local timeout sufficient? |
+|---|---|---|
+| UNKNOWN | no authoritative terminal evidence | **No** |
+| CONFIRMED | authoritative resource/event evidence of effect | **No** |
+| FAILED | authoritative terminal rejection/failure | **No** |
+| CORRECTED | authoritative later correction referencing prior state | **No** |
+| REVERSED | authoritative later reversal/counter-effect | **No** |
 
-### Strong result
+Therefore the coordinator cannot manufacture these terminal meanings from absence of a response.
 
-**Outbox, idempotency, fencing, and reconciliation solve different failure windows.**
+### New interaction candidates
 
-- Outbox: closes local dual-write loss between durable local state and publication.
-- Idempotency: prevents repeated logical operations from producing repeated semantic effects when the resource supports it.
-- Fencing: prevents obsolete authority generations from continuing to act.
-- Reconciliation: resolves ambiguous outcome when execution and observation are separated.
+**I22 — idempotency expiry × late retry × prior external effect**
 
-None of the four is a universal substitute for the others.
+`O executes → provider forgets idempotency identity → retry after retention window → second execution possible.`
 
-### Candidate invariant refinement
+This is distinct from I20 because I20 assumes the operation identity remains usable for reconciliation; I22 explicitly crosses the provider's deduplication-retention boundary.
 
-**INV-EF-01:** A durable intent/outbox record is evidence that an operation was durably requested; it is not evidence that the external effect occurred.
+**I23 — same idempotency key × conflicting parameters × retry**
 
-**INV-EF-02:** An idempotency key is not an authority credential. It can prevent duplicate logical effects while an obsolete actor may still be attempting the operation.
+`O(payload A) → uncertain outcome → retry with same key but payload B.`
 
-**INV-EF-03:** A fencing generation is not an execution result. It can reject stale authority while leaving the operation outcome unknown.
+This is not a normal duplicate; it is an identity/intent conflict and must not silently converge as though A and B were the same operation.
 
-**INV-EF-04:** If an external resource provides neither atomic idempotency nor authoritative reconciliation, a coordinator cannot honestly transform an execution timeout into CONFIRMED or FAILED solely from its own local state.
+**I24 — partial completion × provider IN-PROGRESS evidence × retry/reconciliation**
 
-These are candidate invariants, not formally verified properties.
+`O may have executed → provider exposes IN-PROGRESS → coordinator must not issue an uncontrolled second effect.`
 
-### I19/I20/I21 impact
+These remain **candidate interactions**, not frozen witnesses. They must pass reduction against I17/I20 and existing retry/idempotency classes first.
 
-The freshness research strengthens the prior conclusion:
+### Strong methodological result
 
-- **I19:** requires history reconstruction plus authoritative later correction/reversal and therefore remains independent.
-- **I20:** requires late authoritative confirmation after UNKNOWN/retry and therefore remains independent.
-- **I21:** requires semantic freshness against a late pre-correction event and remains a distinct ordered interaction.
+The external resource's **idempotency contract has a lifecycle**. Therefore the previous abstraction `operation_id → idempotent` was incomplete.
 
-However, all three can conceptually use the same evidence/history substrate without becoming the same test interaction.
+The correct research-level abstraction is closer to:
+
+`operation identity + parameter binding + retention scope + execution-state semantics + reconciliation authority`
+
+This is still a semantic model, **not a Nexo architecture or data schema**.
 
 ### Evidence ledger additions
 
-FRESHNESS_RELATION_PROVIDER_SEQUENCE — CAPABILITY CONFIRMED, UNIVERSALITY NOT ESTABLISHED
-AGGREGATE_REVISION_EXTERNAL_FRESHNESS — INSUFFICIENT ALONE
-CAUSAL_STREAM_POSITION — VALID WITHIN COMMON AUTHORITATIVE STREAM
-WALL_CLOCK_AS_SOLE_FRESHNESS — INSUFFICIENT
-INCOMPARABLE_FRESHNESS — MUST NOT IMPLY NEWER/OLDER
-TRANSACTIONAL_OUTBOX_DUAL_WRITE_BOUNDARY — SOURCE CONFIRMED
-OUTBOX_ALONE_ATOMIC_WITH_EXTERNAL_EFFECT — FALSE / NOT ESTABLISHED
-RESOURCE_SIDE_IDEMPOTENCY — SOURCE CONFIRMED BY STRIPE EXAMPLE
-EXACTLY_ONCE_EXTERNAL_DESTINATION_WITHOUT_RESOURCE_COOPERATION — NOT ESTABLISHED
-OUTBOX != IDEMPOTENCY != FENCING != RECONCILIATION
-FORMAL_VERIFICATION — NOT PERFORMED
-NEXO_IMPLEMENTATION — NOT PERFORMED
+IDEMPOTENCY_RETENTION — SEMANTIC GUARANTEE IS PROVIDER-SCOPED AND TIME-BOUNDED IN SOME REAL APIs
+SAME_KEY_DIFFERENT_PARAMETERS — EXPLICIT CONFLICT CLASS CONFIRMED
+LATE_RETRY_AFTER_EXPIRY — CAN BECOME A NEW OPERATION
+RESOURCE_IN_PROGRESS — DISTINCT FROM UNKNOWN/COMPLETED/FAILED
+AUTHORITATIVE_RESOURCE_LOOKUP — POTENTIAL RECONCILIATION AUTHORITY, PROVIDER-DEPENDENT
+TIMEOUT_AS_TERMINAL_EFFECT — INSUFFICIENT
 
 ### Current disposition
 
@@ -144,9 +151,14 @@ I18: absorbed by W18 parameterization.
 I19: independent / untested.
 I20: independent / untested.
 I21: distinct ordered interaction / untested.
+I22: candidate / untested.
+I23: candidate / untested.
+I24: candidate / untested.
 INV-EH-01: candidate.
 INV-EH-02: candidate.
 INV-EF-01..04: candidate.
+INV-EF-05: candidate.
+INV-EF-06: candidate.
 20 top-level classes: **UNFROZEN**.
 Coverage denominator: **NOT FROZEN**.
 Formal verification: **NOT PERFORMED**.
@@ -154,6 +166,6 @@ Implementation: **NOT STARTED**.
 
 ### Exact next action
 
-**AB104.838R:** study concrete resource-side fencing/idempotency protocols and reconciliation APIs, including epoch fencing, idempotency-key retention/expiry, conflicting parameter reuse, and recovery after provider-side partial completion. Attack whether an external resource can expose enough evidence to distinguish `UNKNOWN`, `CONFIRMED`, `FAILED`, `CORRECTED`, and `REVERSED` without coordinator-side assumptions.
+**AB104.839R:** reduce I22/I23/I24 against all existing retry, idempotency, stale-event, and UNKNOWN interactions. Then attack provider-side fencing/epoch semantics and determine whether stale authority can be rejected before effect execution, after reservation, or only after execution. Explicitly distinguish provider guarantees from coordinator assumptions.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
