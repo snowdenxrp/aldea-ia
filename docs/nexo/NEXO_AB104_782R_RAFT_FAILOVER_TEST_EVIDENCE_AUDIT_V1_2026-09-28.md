@@ -2768,3 +2768,134 @@ NEXO IMPLEMENTATION NOT PERFORMED
 ## Exact next action
 
 AB104.809R: investigate whether these 26 adversarial cases are complete or missing important classes. Cross-check against payment processor state machines, database isolation anomalies, message-delivery semantics, and previously audited fencing/reconciliation failures. Do not build; close the test-model gap first.
+
+## AB104.809R — completeness audit of the adversarial payment test model
+
+The 26-case matrix from AB104.808R is not yet complete. Cross-checking against PostgreSQL isolation semantics and an executable payment/ledger system exposes additional failure classes that must be represented explicitly.
+
+### A. Database isolation is a separate failure dimension
+
+PostgreSQL documents that Read Committed can permit serialization anomalies, while Serializable detects executions inconsistent with any serial ordering and aborts a transaction with serialization failure. The documentation also gives write-skew examples and requires applications to retry a serialization failure from the beginning. PostgreSQL's executable payment-ledger evidence reports a real lost update under Read Committed and a real write-skew overdraw that Repeatable Read misses but Serializable catches; it then compares Serializable retry against explicit locking. citeturn0search1turn0search0turn0search4
+
+Therefore the matrix needs explicit isolation/admission cases, not only application-level races.
+
+### B. New adversarial classes
+
+AA. two transactions read the same available monetary amount and both authorize/capture;
+AB. write-skew overdraw across different rows/accounts;
+AC. lost update under Read Committed;
+AD. serialization failure after external side-effect attempt;
+AE. transaction retry after serialization failure with an external request already sent;
+AF. unique-constraint conflict after two concurrent idempotency checks;
+AG. deadlock/lock-timeout during payment transition;
+AH. crash between database commit and acknowledgement;
+AI. crash between external request and database commit;
+AJ. recovery retry after serialization failure with same operation_id;
+AK. replay after database rollback but provider accepted the operation;
+AL. replica/read-path stale payment state followed by a write;
+AM. failover/restart where local fencing/version state is stale;
+AN. duplicate message plus transaction retry producing a second logical attempt;
+AO. outbox row committed but ledger projection delayed;
+AP. ledger committed but webhook/outbox publication unavailable;
+AQ. correction event arrives while a stale transition transaction is open;
+AR. provider event is valid but refers to a previous payment incarnation;
+AS. refund amount race after a partial refund;
+AT. currency/precision/rounding invariant race;
+AU. multi-account transfer where one side commits and the other does not;
+AV. reconciliation query observes one ledger projection before another;
+AW. compensation/correction races with original operation;
+AX. idempotency record retention expires while a delayed message remains in flight;
+AY. authority-generation transition races with a transaction that has already passed its initial authorization check.
+
+These are additions to the prior A-Z matrix, not replacements.
+
+### C. Important newly discovered boundary: serialization retry is not an external-effect retry
+
+PostgreSQL's Serializable contract says an aborted transaction must be retried from the beginning. That is safe for database-only work. It is NOT automatically safe when the transaction performed an external effect before the serialization failure or before its database commit.
+
+Example:
+
+T0 transaction reads payment state
+T1 sends external capture
+T2 concurrent DB transaction commits
+T3 local transaction receives serialization failure
+T4 generic retry sends capture again
+
+Database serializability does not roll back T1.
+
+Therefore:
+
+DB transaction retry != external operation retry
+
+and:
+
+serialization failure != proof external effect did not occur.
+
+This directly extends the earlier UNKNOWN/reconciliation findings.
+
+### D. Multi-row monetary invariants must be explicit
+
+A single-row version check is insufficient for rules spanning multiple accounts, balances, or ledger entries. PostgreSQL's documented write-skew example demonstrates why a transaction can make locally valid writes that are jointly inconsistent under weaker isolation. citeturn0search0turn0search1
+
+For Nexo, the future test model must distinguish:
+
+- row-local CAS;
+- multi-row invariant;
+- cross-account invariant;
+- ledger conservation invariant;
+- external-provider invariant.
+
+A system passing row-local CAS tests has not therefore proved multi-row monetary correctness.
+
+### E. New minimum invariants
+
+INV-11: A serialization failure invalidates the transaction's database observations; retry must start from a new valid transaction snapshot.
+
+INV-12: Retrying a database transaction must not blindly repeat an external operation whose execution status is UNKNOWN.
+
+INV-13: Multi-row monetary invariants must be protected by an isolation/locking/constraint mechanism sufficient for the stated invariant.
+
+INV-14: A durable ledger conservation rule must hold after every accepted committed monetary transition.
+
+INV-15: A local database rollback does not imply rollback of an external provider effect.
+
+INV-16: A provider operation accepted before a local serialization failure retains its original operation identity and requires reconciliation/idempotent retry, not a fresh unbound attempt.
+
+INV-17: Projection/outbox lag must not be interpreted as loss of the committed ledger event.
+
+INV-18: A stale read used to authorize a state transition must be rejected or revalidated at the protected commit boundary.
+
+INV-19: A payment incarnation must remain distinct from a reused payment identifier.
+
+INV-20: Authority-generation changes must be tested against transactions that have already passed admission authorization.
+
+### F. Updated test-model status
+
+The original 26 cases remain.
+
+Added classes: AA through AY = 25 additional adversarial scenarios.
+
+Total candidate adversarial scenarios: 51.
+
+This is still a MODEL, not an executed Nexo suite.
+
+### Evidence ledger
+
+POSTGRES_READ_COMMITTED_CAN_PERMIT_SERIALIZATION_ANOMALIES SOURCE CONFIRMED
+POSTGRES_SERIALIZABLE_DETECTS_AND_ABORTS_DANGEROUS_CONCURRENCY SOURCE CONFIRMED
+POSTGRES_SERIALIZATION_FAILURE_REQUIRES_FULL_TRANSACTION_RETRY SOURCE CONFIRMED
+EXECUTABLE_PAYMENT_PROJECT_REPORTS_LOST_UPDATE_AND_WRITE_SKEW SOURCE CONFIRMED
+DB_SERIALIZATION_RETRY != EXTERNAL_EFFECT_RETRY
+DB_ROLLBACK != EXTERNAL_ROLLBACK
+MULTI_ROW_INVARIANT != ROW_LOCAL_CAS
+STALE_READ_AUTHORIZATION_REQUIRES_COMMIT_BOUNDARY_GUARD
+PAYMENT_INCARNATION != PAYMENT_IDENTIFIER
+OUTBOX/PROJECTION_LAG != LOST_LEDGER_EVENT
+51 CANDIDATE ADVERSARIAL SCENARIOS
+MODEL NOT EXECUTED
+FORMAL UNIVERSAL PROOF NOT ESTABLISHED
+NEXO IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.810R: cross-check the 51-case model against message brokers and workflow engines, specifically duplicate/ack-loss/retry, partition rebalancing, redelivery, poison messages, exactly-once boundaries, and transaction-to-message atomicity. Then check whether additional classes are missing before freezing the adversarial model.
