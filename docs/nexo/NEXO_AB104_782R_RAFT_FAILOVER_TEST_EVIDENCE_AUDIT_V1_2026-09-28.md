@@ -1555,3 +1555,89 @@ Implementation: **NOT STARTED**.
 **AB104.854R:** attack I25/I26 against concrete provider state machines and executable handlers, focusing on the decisive distinction between **authority invalidation** and **resource lifecycle invalidation**. Determine whether either candidate reduces to existing fencing/lifecycle/reconciliation witnesses once exact state predicates are bound, and freeze a witness only if the protected decision remains genuinely new.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.854R — I25/I26 CONCRETE STATE-MACHINE REDUCTION
+
+**Status:** RESEARCHED / REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+Adyen's current capture documentation makes the acceptance/effect distinction explicit: a manual capture request returns status "received", is processed asynchronously, and the final outcome is delivered by CAPTURE/CAPTURE_FAILED webhook. Its cancellation flow likewise returns "received" and later reports the result through CANCELLATION; if capture status is uncertain, Adyen directs the integration toward a reversal/status-aware path. citeturn0search1turn0search3 Adyen also documents EXPIRE as a distinct terminal payment event, and expired authorizations cannot be recaptured. citeturn0search5turn0search9 Stripe's PaymentIntent API similarly makes cancelability a resource-state predicate: cancellation is rejected once the resource is no longer in a cancelable state. citeturn0search0turn0search4
+
+### I25 — authority invalidation
+
+I25 requires:
+1. operation accepted/reserved under generation G1;
+2. authority changes to G2;
+3. delayed G1 completion arrives;
+4. the protected boundary must evaluate whether G1 may still commit.
+
+Reduction:
+- This is not ordinary IN_PROGRESS: the decisive predicate is authority generation.
+- It is not I22: no retention expiry is required.
+- It is not ordinary fencing failure: in I25 the old operation may already have been accepted/reserved, so pre-admission fencing alone cannot answer whether the accepted operation may later commit.
+- It is not I26: resource lifecycle need not have changed.
+
+**Result: I25 remains semantically independent.**
+
+However, concrete systems frequently turn the situation into a resource-side fencing decision. If the external resource checks G1/G2 atomically at the completion boundary, the stale completion is simply rejected. That means the interaction is real, but a witness is only needed if the accepted/reserved phase leaves a distinct uncertainty that fencing cannot resolve.
+
+**I25 disposition: ADMISSIBLE / INDEPENDENT / UNTESTED.**
+
+### I26 — lifecycle invalidation
+
+I26 requires:
+1. operation accepted/reserved;
+2. resource enters EXPIRED/CANCELLED;
+3. delayed completion arrives;
+4. protected boundary evaluates whether completion remains legal.
+
+Adyen provides a concrete lifecycle predicate: after capture, cancellation is unavailable; expired authorization is final and cannot be recaptured. citeturn0search3turn0search9 Stripe similarly rejects cancellation outside the allowed resource states. citeturn0search0
+
+This means lifecycle invalidation can be evaluated directly from authoritative resource state. It is therefore not automatically a new failure witness; it can be a normal guarded state transition.
+
+**I26 disposition: ADMISSIBLE / INDEPENDENT SEMANTIC INTERACTION / EMPIRICAL WITNESS NOT YET ESTABLISHED.**
+
+### Key distinction
+
+G1 invalid = authority predicate
+
+RESOURCE expired/cancelled = lifecycle predicate
+
+external effect unknown = epistemic predicate.
+
+They can coincide, but none implies the others.
+
+### Witness threshold refinement
+
+I25/I26 should become empirical witnesses only if a concrete system demonstrates a reachable window where:
+- the old operation has crossed acceptance/reservation;
+- the later authority/lifecycle transition does not itself resolve legality;
+- a delayed completion remains possible;
+- and the system needs a distinct protected decision beyond existing fencing/lifecycle/reconciliation.
+
+If the resource itself atomically rejects the stale completion, record the case as **parameterized coverage**, not a new witness.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: independent / untested.
+I25: **admissible / independent / untested**.
+I26: **admissible / independent semantic interaction / empirical witness NOT established**.
+I27: model-level residual / empirical witness NOT established.
+W19: not frozen.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.855R:** attack the remaining distinction inside I25: accepted/reserved-before-fencing versus completion-time fencing. Search concrete implementations for a resource that accepts/reserves an operation under G1, changes authority to G2, and then receives delayed G1 completion. Determine whether completion is atomically fenced, reconciled, or left epistemically ambiguous. Do not freeze a witness if the provider contract already resolves the boundary.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.
