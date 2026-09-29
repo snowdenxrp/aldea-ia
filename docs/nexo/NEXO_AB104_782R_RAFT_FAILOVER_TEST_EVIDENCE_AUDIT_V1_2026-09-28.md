@@ -3698,3 +3698,64 @@ The 12-witness set is **provisionally irreducible under the current semantic pre
 ### Exact next action
 
 **AB104.815R:** attack the 20-class taxonomy itself using equivalence tests. For each candidate class pair, ask whether one can be removed without losing a distinct safety, liveness, provenance, authority, recovery, or external-effect predicate. Pay special attention to possible merges among identity/incarnation, authority/ownership, stale observation/reconciliation, and retention/history. Do not merge merely because two classes frequently co-occur.
+
+
+---
+
+## AB104.815R — TAXONOMY EQUIVALENCE / MERGE ATTACK
+
+**Date:** 2026-09-28
+**Status:** ANALYZED / NO MERGE ACCEPTED / UNFROZEN / NO IMPLEMENTATION.
+
+### Method
+
+Each plausible class merge was challenged against the current semantics. A merge is accepted only if the two classes have the same relevant predicates, same failure boundary, same remediation/fence semantics, and no witness loses discriminating information. This follows the general lesson from specification-based testing: coverage must be defined against explicit fault models, and test-suite reduction is only meaningful relative to those requirements; structural co-occurrence alone is insufficient. citeturn0search0turn0search8
+
+### Candidate merge results
+
+| Candidate | Result | Reason |
+|---|---|---|
+| C1 Identity collision/reuse + C18 Namespace/incarnation confusion | **KEEP SEPARATE** | Identity uniqueness is operation-level; incarnation is lifecycle/namespace validity. Reuse can occur without recovery, and incarnation change can occur without identifier reuse. |
+| C9 Crash/restart/recovery + C17 Recovery/restart continuity | **KEEP SEPARATE** | Crash/restart describes execution interruption; continuity describes whether durable authority/history/incarnation remains semantically valid across recovery. Same trigger, different predicate. |
+| C10 Ownership/rebalance/authority transition + C11 Stale authority/fencing | **KEEP SEPARATE** | Ownership/authority transition is the change event; fencing is the resource-side rejection property. Transition can happen without stale work reaching the resource; fencing can fail despite a correct transition. |
+| C5 Reordering/stale observation + C12 External-effect ambiguity/reconciliation | **KEEP SEPARATE** | Stale observation concerns information order/freshness; reconciliation concerns unresolved real-world effect state. One can exist without the other. |
+| C12 External-effect ambiguity + C20 Cross-domain atomicity boundary | **KEEP SEPARATE** | Ambiguity is epistemic outcome; atomicity boundary is structural cause/limit. A system can have an atomic boundary without current ambiguity, and ambiguity can arise from ACK loss even where no transaction boundary exists. |
+| C15 Idempotency retention/reuse + C18 Namespace/incarnation | **KEEP SEPARATE** | Retention governs how long identity evidence is remembered; incarnation governs which logical world/epoch an identity belongs to. |
+| C4 Lost acknowledgement/confirmation + C12 External-effect ambiguity | **KEEP SEPARATE** | Lost ACK is one cause of uncertainty, but external uncertainty also arises from provider async state, timeout, crash windows and reconciliation divergence. |
+| C16 Broker/workflow liveness/poison behavior + C8 Transaction abort/retry | **KEEP SEPARATE** | Liveness exhaustion concerns progress/termination; transaction abort concerns atomic local state and retry semantics. |
+| C13 Ledger conservation/multi-account invariant + C6 Invalid lifecycle/state transition | **KEEP SEPARATE** | A lifecycle transition may be valid while violating monetary conservation, and a ledger can remain conserved while a lifecycle transition is semantically invalid. |
+| C19 Authentication/source validity + C11 Stale authority/fencing | **KEEP SEPARATE** | Authentication establishes source validity; fencing establishes current authorization/epoch validity. An authenticated obsolete source is a valid adversarial witness. |
+
+### Missing-class attack
+
+We also attacked the opposite direction: could a class be absent because another class accidentally absorbed it?
+
+No new top-level class was demonstrated. However, three predicates remain cross-cutting rather than class-local:
+
+1. **incarnation/namespace binding**;
+2. **authority-generation binding**;
+3. **external-effect epistemic state**.
+
+They recur across multiple classes and therefore should not be represented as single isolated “failure classes.” They behave more like invariants/fields that must be preserved across transitions.
+
+### Important research finding: coverage is not minimality
+
+The literature supports a stricter distinction: a complete test suite is complete only relative to an explicit specification/fault model and its observation assumptions. Test-suite minimization is a set-cover/hitting-set problem only after requirements and equivalence are defined. citeturn0search0turn0search8
+
+Therefore the present claim is intentionally bounded:
+
+**20 classes have survived the current semantic merge attack.**
+
+This does **not** mean 20 is mathematically minimal or universally complete.
+
+### Taxonomy disposition
+
+**No class merge accepted.** The 20-class taxonomy remains the working taxonomy because every tested merge currently loses a distinct predicate, boundary, or semantic interpretation.
+
+The next necessary step is no longer “find another merge by intuition.” It is to construct an explicit **class × predicate matrix**, identify each class's unique predicates, and test the matrix for uncovered cells and accidental duplicate predicates.
+
+### Exact next action
+
+**AB104.816R:** construct the formalized-but-not-yet-formal-proof **20-class × predicate matrix**. Define for each class its safety/liveness/provenance/authority/recovery/external-effect predicates, required evidence, invalidation trigger, protected boundary, and corresponding witness(es). Then attack the matrix for duplicate and uncovered predicates before any freeze decision.
+
+**No architecture implementation. No formal verification. No universal completeness claim.**
