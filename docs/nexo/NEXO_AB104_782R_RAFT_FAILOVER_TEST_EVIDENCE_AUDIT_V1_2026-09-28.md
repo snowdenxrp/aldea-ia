@@ -117,3 +117,84 @@ UNCOMMITTED_STALE_LOG_TAIL_CAN_BE_OVERWRITTEN SOURCE CONFIRMED BY TEST
 SCENARIO_FAILURE_TEST_CATALOGUE EXISTS SOURCE CONFIRMED
 SCENARIO_PR_MERGED_STATUS UNKNOWN
 RAFT_COMMIT_APPLY_EXTERNAL_EFFECT_ATOMICITY NOT ESTABLISHED
+
+
+## AB104.783R research — commit/apply/effect/acknowledgement boundary
+
+### Source findings
+
+Current etcd/raft explicitly separates committed entries from application: Ready exposes CommittedEntries, the application processes them, then calls Node.Advance. The raft README also states that a proposal may not be committed and may need reproposal after timeout. Therefore proposal submission, consensus commit, state-machine application, and client acknowledgement are distinct lifecycle points. [SOURCE: etcd/raft README and doc.go]. citeturn0search0turn0search1
+
+The etcd server exposes separate CommittedIndex() and AppliedIndex(), confirming that commit and apply are observable as different states. citeturn0search2
+
+etcd's API guarantee says completed KV operations are durable and linearizable, but this guarantee is for the etcd KV operation itself. It does not make an arbitrary side effect performed by an application after apply atomic with the KV commit. citeturn0search3
+
+### Timeout/retry counterexample
+
+A current etcd issue documents a concrete class of failure where the server may have successfully processed a request even though the client received an error/timeout, followed by client retry. The issue specifically notes that client retries can produce an additional successful mutation and that a failure response does not prove the previous operation did not succeed. This is issue/reproduction evidence, not a claim that etcd's core linearizability is broken. citeturn0search4
+
+### Boundary model
+
+For an external effect E:
+
+P = proposal accepted
+C = consensus commit
+A = state-machine apply
+E = external effect
+K = client acknowledgement
+
+The source supports that:
+
+P -> C is not guaranteed immediately;
+C -> A is a separate processing stage;
+A -> E is application-defined;
+E -> K is application-defined.
+
+Therefore no generic exactly-once conclusion may be inferred from Raft commit alone.
+
+### Failure windows
+
+1. C before process crash, A never observed: committed command may still be recoverable from the replicated log and applied later.
+2. A before E, then process crash: command may be replayed; external effect must be idempotent or deduplicated.
+3. E before K, then process crash/network failure: client may retry despite the effect already occurring.
+4. E after authority transition: if E is outside the consensus/fence boundary, Raft alone does not establish that the old authority is rejected.
+5. E is idempotent but not fenced: duplicate safety may hold while stale-authority safety still fails.
+6. E is fenced but not idempotent: stale operations are rejected, but legitimate retry semantics still require operation identity/reconciliation.
+
+### Strong boundary finding
+
+operation_id and authority_generation solve different problems.
+
+- authority_generation answers: is this actor/operation still authorized for namespace R?
+- operation_id answers: have I already accepted/executed this logical operation?
+
+Neither substitutes for the other.
+
+A timeout therefore yields an epistemic state of UNKNOWN about whether the effect occurred unless the protected resource exposes a query/reconciliation protocol.
+
+### Candidate invariant
+
+For external effect namespace R, a command is not considered safely completed merely because its Raft command committed. Completion requires an effect protocol that defines:
+1. stale-authority rejection;
+2. operation identity/idempotency or reconciliation;
+3. durable observation of effect outcome;
+4. explicit handling for ambiguous timeout.
+
+### Evidence ledger
+
+RAFT_COMMIT_AND_APPLY_ARE_DISTINCT SOURCE CONFIRMED
+PROPOSAL_MAY_REQUIRE_REPROPOSAL_AFTER_TIMEOUT SOURCE CONFIRMED
+ETCD_COMMITTED_INDEX_AND_APPLIED_INDEX_DISTINCT SOURCE CONFIRMED
+KV_COMPLETION_DURABILITY SOURCE CONFIRMED
+ARBITRARY_EXTERNAL_EFFECT_ATOMIC_WITH_RAFT_COMMIT NOT ESTABLISHED
+CLIENT_ERROR_DOES_NOT_PROVE_SERVER_DID_NOT_EXECUTE SOURCE/ISSUE EVIDENCE CONFIRMED
+RETRY_CAN_DUPLICATE_LOGICAL_MUTATION SOURCE/ISSUE EVIDENCE CONFIRMED
+OPERATION_ID != AUTHORITY_GENERATION
+TIMEOUT_EFFECT_STATUS_CAN_BE_UNKNOWN SOURCE-DERIVED
+EXECUTED_EXTERNAL_EFFECT_RACE BY THIS AUDIT NO
+FORMAL_EXACTLY_ONCE_PROOF NOT ESTABLISHED
+NEXO_IMPLEMENTATION NOT PERFORMED
+
+## Exact next action
+
+AB104.784R: study concrete idempotency/deduplication and reconciliation patterns in etcd/Kafka transactional systems and external-effect coordinators. Determine what survives retries, crashes, leader changes, and ambiguous acknowledgements, and which guarantees require the external resource itself to participate.
