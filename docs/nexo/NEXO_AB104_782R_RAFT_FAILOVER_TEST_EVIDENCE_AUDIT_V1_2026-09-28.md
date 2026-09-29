@@ -1427,3 +1427,131 @@ Implementation: **NOT STARTED**.
 **AB104.853R:** use executable evidence to attack the remaining acceptance/lifecycle candidates I24–I26 together: provider `IN_PROGRESS` + authority change + cancellation/expiry + delayed completion. Search code/state machines for whether these can collapse into the existing effect-knowledge/recovery/fencing interactions or require a genuinely new ordered witness. Do not add witnesses unless the reduction fails.
 
 **No deletion/overwrite. No silent witness mutation. No architecture implementation.**
+
+
+---
+## AB104.853R — I24/I25/I26 JOINT REDUCTION: IN_PROGRESS × AUTHORITY CHANGE × CANCELLATION/EXPIRY × DELAYED COMPLETION
+
+**Status:** RESEARCHED / JOINT REDUCTION PERFORMED / NO IMPLEMENTATION.
+
+### Fresh evidence
+
+Temporal documents that Activity cancellation is delivered asynchronously through heartbeats and that an Activity may accept or ignore cancellation. It also supports external systems whose final result arrives later through asynchronous completion, Signals, or polling. A retry can therefore coexist with an external process whose final state is not yet known. citeturn0search2turn0search5 Temporal also explicitly warns that non-idempotent Activities can produce duplicate external side effects when a retry occurs after a timeout or worker failure. citeturn0search3turn0search7
+
+Adyen provides a concrete payment analogue: capture is asynchronous; cancellation is asynchronous; a cancel request can return "received" before the later CANCELLATION webhook establishes success/failure; and if capture status is uncertain, Adyen directs the integration toward a reversal/status-aware flow rather than assuming a local result. citeturn0search0turn0search4 Stripe similarly exposes explicit cancelability states and rejects cancellation once the PaymentIntent is no longer in a cancelable state; processing can be cancelable only in rare cases. citeturn0search1turn0search8
+
+### Joint state machine under attack
+
+The combined candidate sequence is:
+
+ACCEPTED_OR_RESERVED / IN_PROGRESS
+→ authority changes or cancellation/expiry occurs
+→ old operation remains capable of producing a delayed completion
+→ retry/reconciliation begins
+→ boundary must distinguish stale completion from authoritative current state.
+
+The reduction must keep two dimensions separate:
+
+1. **Authority validity** — is the actor/generation still permitted?
+2. **Lifecycle validity** — is the resource still legally completable/capturable?
+
+They can change independently.
+
+### I24 reduction — IN_PROGRESS × retry
+
+I24 remains distinct from I20 because I24 starts with positive provider evidence that processing remains active/pending; I20 starts from epistemic UNKNOWN and waits for later authoritative confirmation.
+
+**Result: KEEP I24.**
+
+### I25 reduction — accepted/reserved × authority change × delayed completion
+
+Compare with I24: I24 has no required authority-generation transition. Compare with I19/I21: neither requires an accepted-but-not-final state followed by an authority transition. Compare with I22: retention expiry is not authority change.
+
+A concrete authority-generation transition can invalidate an old actor while the resource itself still holds an accepted/reserved operation. That creates a protected decision distinct from generic IN_PROGRESS.
+
+**Result: I25 remains an independent ordered interaction candidate.**
+
+### I26 reduction — accepted/reserved × cancellation/expiry × delayed completion
+
+This is not equivalent to I25 because cancellation/expiry can occur without any authority-generation change. The resource lifecycle itself changes the legality of later completion.
+
+Adyen's asynchronous cancellation and Stripe's explicit cancelability state machine show that a request's local acceptance does not itself establish that a later completion remains legal. citeturn0search0turn0search1
+
+**Result: I26 remains an independent ordered interaction candidate.**
+
+### Key reduction result
+
+The three candidates do not collapse into one Boolean IN_PROGRESS state.
+
+They differ by the event that changes the protected decision:
+
+- **I24:** provider says operation is still in progress.
+- **I25:** authority validity changes.
+- **I26:** resource lifecycle validity changes.
+
+Therefore a single generic UNKNOWN state would lose decision-relevant semantics.
+
+### Minimum legal transition graph — provisional
+
+NOT_ACCEPTED
+→ ACCEPTED_OR_RESERVED
+→ IN_PROGRESS
+→ COMMITTED
+
+From ACCEPTED_OR_RESERVED or IN_PROGRESS, provider-specific transitions may include:
+
+FAILED
+EXPIRED/CANCELLED
+
+From COMMITTED:
+
+CORRECTED
+REVERSED
+
+A delayed completion after EXPIRED/CANCELLED or after an authority transition must not automatically resurrect COMMITTED; legality depends on the resource/provider contract and freshness evidence.
+
+### Important epistemic rule
+
+A cancellation request being accepted is not the same thing as cancellation having completed. Likewise, an IN_PROGRESS provider status is not equivalent to either CONFIRMED or FAILED.
+
+This preserves:
+
+request outcome ≠ resource lifecycle ≠ effect knowledge ≠ correction state.
+
+### Candidate invariant refinement
+
+**INV-F-08 — Accepted/in-progress evidence must survive later uncertainty.**
+
+**INV-F-09 — Completion after authority/lifecycle transition requires a fresh legality decision.**
+
+**INV-F-10 — Delayed completion cannot resurrect a terminal state without authoritative transition evidence.**
+
+These remain candidates only.
+
+### Witness decision
+
+No new W19/W20/W21 is frozen here. I24–I26 remain interaction candidates requiring concrete causal witnesses or executable reproductions.
+
+This is deliberate: the joint reduction established semantic independence, but **independence alone is not sufficient to inflate the empirical witness denominator**.
+
+### Current disposition
+
+I19: independent / untested.
+I20: independent / untested.
+I21: distinct ordered interaction / untested.
+I22: parameterized interaction / untested.
+I24: **independent / untested**.
+I25: **independent candidate / untested**.
+I26: **independent candidate / untested**.
+I27: model-level residual / empirical witness NOT established.
+W19: not frozen.
+20 top-level classes: **UNFROZEN**.
+Coverage denominator: **NOT FROZEN**.
+Formal verification: **NOT PERFORMED**.
+Implementation: **NOT STARTED**.
+
+### Exact next action
+
+**AB104.854R:** attack I25/I26 against concrete provider state machines and executable handlers, focusing on the decisive distinction between **authority invalidation** and **resource lifecycle invalidation**. Determine whether either candidate reduces to existing fencing/lifecycle/reconciliation witnesses once exact state predicates are bound, and freeze a witness only if the protected decision remains genuinely new.
+
+**No deletion/overwrite. No silent witness mutation. No architecture implementation.**
