@@ -1,4 +1,5 @@
 name: Nexo AB105.116R TLA SANY Gate
+# Canonical semantic-freeze model gate
 
 on:
   push:
