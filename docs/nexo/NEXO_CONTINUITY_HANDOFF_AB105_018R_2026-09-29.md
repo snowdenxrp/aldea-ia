@@ -1,106 +1,104 @@
 # NEXO CONTINUITY HANDOFF — AB105.018R / NEXT AB105.019R
 Date: 2026-09-29
-Purpose: exact resume point for the next chat. Continuity checkpoint only; no architecture freeze.
+Purpose: exact resume point. This checkpoint preserves history; it does NOT declare a unique audit ID where GitHub shows multiple commits carrying the same AB label.
 
-## CANONICAL PROJECT
-- Repository: snowdenxrp/aldea-ia
-- Branch: main
-- Workflow: INVESTIGAR -> ANALIZAR -> CONTRASTAR -> GUARDAR
-- Current phase: research/audit only.
-- No V21.
-- No implementation.
-- No silent migration.
-- Never overwrite/delete historical findings.
-- Never claim verification/correctness/completeness/security/executed testing without evidence.
+## CANONICAL POSITION
+Repository: snowdenxrp/aldea-ia
+Branch: main
+Latest completed research node: AB105.018R
+Next exact node: AB105.019R
+Latest AB105.018R commit: c12304d49e973e0d6ccda0176e56215dd6d9336a
+Continuity handoff correction commit: c064d5263aaecdc9a09d8f73bde5cef1cf8893fb
 
-## EXACT POSITION
-Latest completed audit: AB105.018R.
-Next exact audit: AB105.019R.
+## CRITICAL CONTINUITY CORRECTION
+The previous handoff still treated AB labels as if each label had exactly one commit. That is false.
 
-AB105.018R:
-docs/nexo/AB105_018R_acquisition_boundary_pre_management_evidence_gap_audit_2026-09-29.md
-Commit: c12304d49e973e0d6ccda0176e56215dd6d9336a
+GitHub history currently shows MULTIPLE commits carrying the same AB audit label:
+- AB105.012R:
+  1) b897fe2a59d2745635687b1c1e74b760c051c3f1 — historical lineage contract audit
+  2) 11f89f2ebfe26ee486bfbb0361277b04565984d8 — provider lineage historical proof audit
+  These are distinct historical artifacts and MUST NOT be deleted or silently collapsed.
+- AB105.013R:
+  1) f93dc5616841247ef48b96abe9e12992c00d6b73 — provider timestamp identifier audit
+  This is the actual commit SHA. The blob SHA of the current file is ff79d63b4de5bd22455e13f6c1c83abd19f7f402.
+- AB105.014R:
+  1) b7d64df19070ed839d0abab1f8a1f0d428a63f35 — detection identity incarnation audit
+  The file was later verified as already existing; do not recreate/overwrite it.
+- AB105.016R:
+  1) 0a520be1ffa4d769b212287a7aefd2380834fa43 — import reattachment lineage audit
+  2) 5235b98dcef4183c3b7014b4a540ba8aaf9f284a — import historical event identity audit
+  3) 627f423ea6a38a9abba6a0b585273a2eca00af07 — imported resource history audit
+  These are distinct research artifacts under the same AB label and MUST remain preserved.
+This duplicate-label state is itself continuity metadata. Do not pretend there is one unique AB105.012R or AB105.016R commit.
 
-Immediately preceding:
-- AB105.017R — eef7a807a162369b0a9e0046997ca11599a5480c
-- AB105.016R — 627f423ea6a38a9abba6a0b585273a2eca00af07
+Other verified recent unique commits:
 - AB105.015R — ea665e87f45ff06e27d309fd6890c8a5431989f6
-- AB105.014R — existing canonical file verified; blob SHA f496dbe7f2f9e26e4e4fd12021c8c64b38a670e7
-- AB105.013R — blob SHA ff79d63b4de5bd22455e13f6c1c83abd19f7f402; file verified in main
-- AB105.012R — commit 11f89f2ebfe26ee486bfbb0361277b04565984d8
-- AB105.011R — commit 743d62b595e544c329d82f5769c2d969755ea0dd
-- AB105.010R — commit 2029fbdf81a470217435587508ca91ae325dea35
-- AB105.009R — commit b7f055008cedc481fb218b37fd6a883a6a4be8f4
-- AB105.008R — commit 788b9bb7ca3492940669a8fb3461204795e0e171
+- AB105.017R — eef7a807a162369b0a9e0046997ca11599a5480c
+- AB105.018R — c12304d49e973e0d6ccda0176e56215dd6d9336a
 
-CORRECTION:
-The earlier handoff draft incorrectly repeated AB105.012R's commit for AB105.013R. This is corrected here. AB105.013R is verified by file/blob SHA ff79d63b4de5bd22455e13f6c1c83abd19f7f402. Do not invent a commit SHA for it.
-AB105.014R was already present; the create attempt failed and the file was fetched/verified, not overwritten.
+## AB105.008R–018R DISTILLATION
+008R: drift resolution/current expectation != historical conformance.
+009R: evidence must bind to expectation/template version.
+010R: reconciliation record != complete prior evidence.
+011R: later authoritative observation != automatic historical reconstruction.
+012R: current provider authority != automatic historical lineage; explicit lineage contract required.
+013R: IDs/timestamps are provenance metadata, not universal historical bridges.
+014R: detection identity != resource identity/incarnation.
+015R: reused logical identity/import does not inherit historical claims automatically.
+016R: import/reattachment establishes a new management relationship; physical continuity != management/history continuity.
+017R: first post-import observation is current-state evidence, not pre-import history.
+018R: acquisition/management boundary does not prove prior lifecycle state; prior history requires retained/provider evidence or remains UNKNOWN.
 
-## DISTILLED FINDINGS AB105.008R–AB105.018R
-- 008R: resolving drift can redefine expected configuration; DRIFT_RESOLVED != HISTORICAL_NEVER_DRIFTED.
-- 009R: evidence must bind to expectation/template version; E2 IN_SYNC does not prove E1 history.
-- 010R: reconciliation record != complete pre-reconciliation evidence.
-- 011R: later authoritative observation does not automatically reconstruct expired/missing historical evidence.
-- 012R: current provider authority != automatic historical lineage; historical bridge requires explicit contract.
-- 013R: detection IDs/timestamps are provenance metadata, not universal historical bridges; timestamp order != causal order.
-- 014R: detection identity != resource identity/incarnation.
-- 015R: reused logical identity/imported resource does not automatically inherit prior historical claims.
-- 016R: import establishes current management relationship, not complete resource history.
-- 017R: first post-import observation is a current authoritative boundary, not pre-import history.
-- 018R: acquisition/management authority boundary does not prove prior lifecycle state; pre-acquisition history needs retained/provider evidence or remains UNKNOWN.
-
-## CURRENT CONCEPTUAL MODEL
-Keep separate:
+## CURRENT EVIDENCE MODEL
+Separate:
 1. source-side historical evidence
 2. independently retained evidence
 3. later authoritative observations
-4. claims reconstructed from evidence
+4. reconstructed claims
 
-Evidence conceptually carries:
-evidence_id + source + observation_time + scope + authority + expectation_version + target/resource identity + incarnation/lineage context + retention/provenance status + observed values/result.
+Conceptual evidence tuple:
+evidence_id + source + observation_time + scope + authority + expectation_version + target/resource identity + incarnation/lineage + retention/provenance status + observed values/result.
 
-Core inference:
+Rule:
 current_observation(t2) -> historical_claim(t1)
-ONLY when an explicit source/lineage contract establishes that bridge.
-Otherwise create a new current fact; do not overwrite the historical claim.
+ONLY if an explicit source/lineage contract establishes the bridge.
+Otherwise create a new current fact and preserve the historical claim as UNKNOWN/unsupported rather than overwriting it.
 
-Acquisition/import boundary:
+Acquisition boundary:
 pre_acquisition_history -> retained_provider_evidence | UNKNOWN
 acquisition_event -> management_relationship_start
 post_acquisition_observation -> current_authoritative_fact
 
-## GLOBAL EPISTEMIC STATE — MUST PRESERVE
+## AB50–AB58 UNRESOLVED STATE — DO NOT LOSE
+TERNARY_MATH_GAP FOUND
+TERNARY_PROTOCOL_RESIDUAL UNKNOWN_DUE_TO_MISSING_SEMANTICS
+TERNARY_PAA_COLLISION UNKNOWN
+EVENTDAG_CLOSURE PARTIAL
+RECONSTRUCTION BOUNDED_ONLY
+SEMANTIC_FREEZE NOT DECLARED
+FORMAL_VERIFICATION/IMPLEMENTATION NOT_PERFORMED
+
+AB55 limitation: minimal Boolean model only, 64 states x 6 total orders = 384 per attack x 8 attacks; not full UsedAdmissionContext/EventDAG/FutureObs_PAA.
+
 W19/W20: NOT FROZEN.
 Coverage denominator: NOT FROZEN.
 Formal verification: NOT PERFORMED.
 Implementation: NOT STARTED.
 Architecture/semantic freeze: NOT DECLARED.
 
-AB50–AB58 unresolved:
-- TERNARY_MATH_GAP FOUND
-- TERNARY_PROTOCOL_RESIDUAL UNKNOWN_DUE_TO_MISSING_SEMANTICS
-- TERNARY_PAA_COLLISION UNKNOWN
-- EVENTDAG_CLOSURE PARTIAL
-- RECONSTRUCTION BOUNDED_ONLY
-- SEMANTIC_FREEZE NOT DECLARED
-- FORMAL_VERIFICATION/IMPLEMENTATION NOT_PERFORMED
-
-AB55 limitation remains: minimal Boolean model only, 64 states x 6 total orders = 384 per attack x 8 attacks; not full UsedAdmissionContext/EventDAG/FutureObs_PAA.
-
 ## NON-NEGOTIABLE CONTINUITY RULES
-- Start next chat at AB105.019R.
-- Do not restart AB104 or repeat AB105.008R–018R unless auditing a contradiction.
-- Investigate fresh external evidence before declaring the next finding.
-- Prefer primary/authoritative sources and real code/docs.
-- Save each completed audit as a new file/commit; never fabricate a SHA.
-- If a path already exists, fetch/verify it; never overwrite historical work merely to continue.
-- Preserve UNKNOWN, PENDING, contradictions and partial coverage.
-- No architecture construction yet.
+- On CONTINUITY, first inspect this handoff AND current GitHub commit history.
+- Treat AB labels as research node labels, NOT unique commit identifiers.
+- Preserve every duplicate-label artifact; never delete or collapse them.
+- Resume at AB105.019R, not AB105.012R/013R/014R/016R.
+- Investigate fresh evidence before declaring AB105.019R.
+- Prefer primary/authoritative docs and real code.
+- Save each new research artifact with a real commit SHA.
+- If a target path already exists, fetch and verify before any write.
+- Preserve UNKNOWN/PENDING/contradictions/partial coverage.
+- No V21, no implementation, no architecture construction, no semantic freeze.
 - Repeated reinforcement is not automatically a new top-level class.
-- Do not infer historical absence from current NOT_FOUND/IN_SYNC/success/reconciliation/import.
-- Chat context is disposable; this handoff is the resume checkpoint.
 
 ## NEXT EXACT ACTION
 AB105.019R:
-Investigate provider-side event logs/audit trails as a possible bridge across the acquisition/management boundary. Determine the minimum lineage fields required before historical reconstruction is justified. Compare event identity, target identity/incarnation, expectation version, event/observation time, scope, authority, retention and causal relation. Preserve UNKNOWN if the source contract cannot bridge the acquisition boundary.
+Investigate provider-side event logs/audit trails as a possible bridge across the acquisition/management boundary. Determine the minimum lineage fields required before historical reconstruction is justified: event identity, target identity/incarnation, expectation version, event/observation time, scope, authority, retention, and causal relation. Preserve UNKNOWN if the source contract cannot bridge the acquisition boundary.
