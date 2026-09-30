@@ -27,13 +27,13 @@ Init == s = [authority|->"UNKNOWN", authorityEpoch|->"NONE", authorityAtAdmissio
 EstablishAuthority == /\ s.authority # "VALID" /\ s' = [s EXCEPT !.authority = "VALID", !.authorityEpoch = "CURRENT"]
 RevokeAuthority == /\ s.authority = "VALID" /\ s' = [s EXCEPT !.authority = "REVOKED"]
 
-AdmitCurrent(i) == /\ i \in Inputs /\ s' = [s EXCEPT !.input = i, !.admission = "ACCEPTED", !.freshness = "FRESH", !.coverage = "SUFFICIENT", !.authorityAtAdmission = s.authority]
-AdmitStale(i) == /\ i \in Inputs /\ s' = [s EXCEPT !.input = i, !.admission = "STALE", !.freshness = "STALE"]
-AdmitConflict(i) == /\ i \in Inputs /\ s' = [s EXCEPT !.input = i, !.admission = "CONFLICTING"]
+AdmitCurrent(i) == /\ i \in Inputs /\ (s.operationState = "NONE" \/ s.operationState = "TERMINAL") /\ s' = [s EXCEPT !.input = i, !.admission = "ACCEPTED", !.freshness = "FRESH", !.coverage = "SUFFICIENT", !.authorityAtAdmission = s.authority]
+AdmitStale(i) == /\ i \in Inputs /\ (s.operationState = "NONE" \/ s.operationState = "TERMINAL") /\ s' = [s EXCEPT !.input = i, !.admission = "STALE", !.freshness = "STALE"]
+AdmitConflict(i) == /\ i \in Inputs /\ (s.operationState = "NONE" \/ s.operationState = "TERMINAL") /\ s' = [s EXCEPT !.input = i, !.admission = "CONFLICTING"]
 
 SetContext(sub, inc) == /\ sub \in Subjects /\ inc \in Incarnations /\ (s.operationState = "NONE" \/ s.operationState = "TERMINAL") /\ s' = [s EXCEPT !.subject = sub, !.incarnation = inc, !.admission = "NONE"]
 
-StartOperation(o,f) == /\ o \in Ops /\ f \in Fingerprints /\ s.authority = "VALID" /\ s.authorityEpoch = "CURRENT" /\ s.admission = "ACCEPTED" /\ s.freshness = "FRESH" /\ s.coverage = "SUFFICIENT" /\ s.stop = "NONE" /\ s.fence # "ISSUED" /\ s.operationState = "NONE" /\ s.subject # "NONE" /\ s.incarnation # "NONE" /\ s' = [s EXCEPT !.operationId = o, !.fingerprint = f, !.operationSubject = s.subject, !.operationIncarnation = s.incarnation, !.operationState = "IN_FLIGHT", !.authorityAtExecution = s.authority]
+StartOperation(o,f) == /\ o \in Ops /\ f \in Fingerprints /\ s.authority = "VALID" /\ s.authorityEpoch = "CURRENT" /\ s.admission = "ACCEPTED" /\ s.freshness = "FRESH" /\ s.coverage = "SUFFICIENT" /\ s.stop = "NONE" /\ s.fence # "ISSUED" /\ s.operationState = "NONE" /\ (s.operationId = "NONE" \/ o # s.operationId \/ s.incarnation # s.operationIncarnation) /\ s.subject # "NONE" /\ s.incarnation # "NONE" /\ s' = [s EXCEPT !.operationId = o, !.fingerprint = f, !.operationSubject = s.subject, !.operationIncarnation = s.incarnation, !.operationState = "IN_FLIGHT", !.authorityAtExecution = s.authority]
 ReplayDuplicate(o,f) == /\ o \in Ops /\ f \in Fingerprints /\ s.operationId = o /\ s.fingerprint = f /\ s.operationId # "NONE" /\ s.subject = s.operationSubject /\ s.incarnation = s.operationIncarnation /\ s' = [s EXCEPT !.admission = "DUPLICATE"]
 ReplayConflict(o,f) == /\ o \in Ops /\ f \in Fingerprints /\ s.operationId = o /\ s.fingerprint # f /\ s.operationId # "NONE" /\ s.subject = s.operationSubject /\ s.incarnation = s.operationIncarnation /\ s' = [s EXCEPT !.admission = "CONFLICTING"]
 
