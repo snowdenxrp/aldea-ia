@@ -24,7 +24,7 @@ jobs:
       - name: Run TLC finite model
         run: |
           set -o pipefail
-          java -cp tla2tools.jar tlc2.TLC -workers auto docs/nexo/formal/AB105_116R_NexoFinite116.cfg 2>&1 | tee tlc.log
+          java -cp tla2tools.jar tlc2.TLC -workers auto docs/nexo/formal/AB105_116R_NexoFinite116 2>&1 | tee tlc.log
       - name: Upload TLC evidence
         if: always()
         uses: actions/upload-artifact@v4
