@@ -1042,3 +1042,70 @@ AB104.419 — dynamic hypergraph cut analysis under dependency changes, includin
 
 ### Continuity
 Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 51 — dynamic cut-analysis invalidation — 2026-10-01
+
+### Historical artifact recovered
+AB104.419 (commit 361685e1d029a47483ccb546e91ce02cd778288e) audits dynamic hypergraph cut analysis when witness membership, dependencies, trust generations, verifier/policy generations, or failure-domain assignments change.
+
+### Findings
+1. CUT_ANALYSIS_CURRENTNESS != CUT_ANALYSIS_EXISTENCE. A previously valid analysis remains historical evidence but is not automatically current.
+2. Safety-relevant changes that can alter cut results include witness-set changes, dependency closure changes, trust-root generations, verifier/policy generations, and failure-domain reassignment.
+3. Incremental recomputation is a possible optimization, not a semantic authority. If the reverse dependency index or impact cone is incomplete/uncertain, the safe state is FULL_RECOMPUTE / HOLD rather than assumed no-change.
+4. Invalidation should be monotonic: CURRENT -> STALE -> REVALIDATION_REQUIRED. A lack of newly observed failure does not make stale analysis current again.
+5. In-flight finalization creates a generation race. Analysis must bind to graph, policy, trust, witness-set, quorum-policy and relevant dependency generations at a protected final gate/fencing boundary.
+6. Recentness is insufficient: RECENT_CUT_ANALYSIS != CURRENT_CUT_ANALYSIS.
+7. Discovering a previously unknown security-relevant dependency invalidates the prior completeness claim; simply appending the dependency to the old result is not sufficient.
+8. Domain merges can reduce effective independence without changing witness count; domain splits require a new analysis rather than assumed improvement.
+9. Conflicting graph views are security-critical uncertainty: GRAPH_CONFLICT => UNKNOWN/QUARANTINED. Newer timestamp, larger graph, or majority view cannot substitute for a protected current-authority rule.
+10. A new analysis must be a new evidence object/generation; historical analysis must not be overwritten.
+
+### External algorithm corroboration
+Dynamic minimum-cut research demonstrates that incremental and fully dynamic maintenance is algorithmically feasible in important graph settings, and 2026 work reports exact hypergraph minimum-cut computation at large scale. This supports treating incremental computation as a legitimate research direction, but does **not** establish correctness of Nexo's future algorithm, dependency graph completeness, or authority semantics. citeturn0search0turn0search1turn0search2
+
+### S9 consequence
+The chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+AB104.419 strengthens the appraisal invalidation/freshness boundary but does not define the authority decision or protected activation. S9 remains UNKNOWN/PENDING.
+
+### New semantic requirements
+Before any model revision:
+- exact graph/dependency generation semantics;
+- protected invalidation event and ordering semantics;
+- completeness contract for reverse dependency/impact indexes;
+- differential or independent recomputation requirements;
+- exact handling of graph disagreement and recovery;
+- binding of analysis generation to the final protected authority decision.
+
+No TLA+ change authorized.
+
+### Status
+- CUT_ANALYSIS_CURRENTNESS != CUT_ANALYSIS_EXISTENCE.
+- SAFETY_RELEVANT_GRAPH_CHANGE => STALE/REVALIDATE.
+- REVERSE_INDEX_INCOMPLETE != SAFE_NO_CHANGE.
+- NEW_SECURITY_RELEVANT_DEPENDENCY => CUT_COMPLETENESS_UNKNOWN.
+- RECENT_CUT_ANALYSIS != CURRENT_CUT_ANALYSIS.
+- DOMAIN_MERGE => REVALIDATION.
+- DOMAIN_SPLIT => NEW_ANALYSIS_REQUIRED.
+- GRAPH_CONFLICT => UNKNOWN/QUARANTINED.
+- HISTORICAL_ANALYSIS != CURRENT_AUTHORITY.
+- NEW_ANALYSIS_MUST_NOT_OVERWRITE_HISTORICAL_ANALYSIS.
+- DYNAMIC_CUT_ALGORITHM_CORRECTNESS = UNKNOWN/PENDING.
+- DEPENDENCY_CHANGE_DETECTION_COMPLETENESS = UNKNOWN/PENDING.
+- GRAPH_CURRENT_AUTHORITY = UNKNOWN/PENDING.
+- AUTHORITY_PROMOTION/PROTECTED_ACTIVATION = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.420 — cut-analysis algorithm correctness and oracle problem: adversarial graph mutations, algorithm bugs, approximation, completeness, and independent/differential recomputation.
+
+### Continuity
+Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
