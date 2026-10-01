@@ -899,56 +899,38 @@ Freeze the exact verification status of each safety boundary before any model ch
 The matrix is deliberately stricter than a simple "guard exists" classification:
 - a guard is not automatically an invariant;
 
+## AB105.116R audit pass 22 — S9 reauthorization provenance against frozen history — 2026-09-30
 
-## AB105.116R audit pass 21 — minimum semantic delta matrix — 2026-09-30
+### Historical cross-check
+AB105.111R freezes T9 as: recovery from a checkpoint with unknown prior effect -> reauthorization plus reconciliation required.
+AB105.112R freezes S9 as: recovery never silently transfers current authority.
+These statements establish that recovery, reconciliation, and reauthorization are distinct semantic stages. They do NOT explicitly define what evidence is sufficient to authorize the transition back to VALID.
 
-### Objective
-Derive the smallest *semantic* additions required to close each unresolved boundary. This is a design-delta analysis only; 116R remains unchanged.
+### Current 116R
+Reauthorize requires reconciliation=COMPLETE and authorityEpoch=CURRENT, then sets authority=VALID.
+Therefore the model currently makes COMPLETE reconciliation + CURRENT epoch sufficient for reauthorization.
 
-| Gap | What is missing | Minimum semantic object needed | Guard/invariant not yet justified | Decision |
-|---|---|---|---|---|
-| D1a / admission epoch | admission does not retain authority epoch | admissionEpoch for authority-scoped admission | stale/revalidate policy | **REQUIRED FOR EPOCH-BOUND ADMISSION; POLICY OPEN** |
-| Reauthorize | VALID can follow COMPLETE reconciliation with no new authority evidence | explicit authority-evidence/revalidation event or explicit declaration that reconciliation is authoritative | exact reauthorization rule | **SEMANTIC CONFLICT CANDIDATE; POLICY OPEN** |
-| S11 | no expected-effect relation | expected effect identity/predicate + relation to observed state | material-mismatch predicate | **REPRESENTATION REQUIRED** |
-| S12 | effectId meaning/correlation undefined | first define effectId; if evidence-scoped, observation/event identity and correlation binding | operation/subject/incarnation binding | **SEMANTIC DEFINITION REQUIRED** |
-| S2/S3 | transition ordering exists; historical provenance absent | provenance state only if contract requires persistent history | non-tautological invariant | **NO CHANGE YET** |
-| AdmitCurrent | ACCEPTED can be created under UNKNOWN/REVOKED authority and NONE epoch | admission context contract (at minimum epoch when authority-scoped) | VALID/CURRENT guard vs later revalidation | **SEMANTIC DECISION REQUIRED** |
-| Recover | can begin IN_FLIGHT and can regress reconstruction | recovery-phase contract | STOPPING/TERMINAL guard if required | **SEMANTIC DECISION REQUIRED** |
-| ObserveAbsent | absence can be asserted without operation/effect correlation | scope/provenance of absence evidence | correlation guard | **SEMANTIC DECISION REQUIRED** |
-| ReleaseSuccessor | release not bound to operation/effect context | release scope definition | op/effect identity guard if consequential | **SEMANTIC DECISION REQUIRED** |
-| Replay after start | ReplayDuplicate/Conflict can alter admission while active | replay phase semantics | phase guard | **SEMANTIC DECISION REQUIRED** |
+### Minimal witness significance
+After authority is revoked, the current epoch remains CURRENT. Because Reauthorize does not consume a distinct authority-bearing input, the path can return to VALID without an explicit new authority establishment event.
+This does not yet prove the transition is forbidden by the historical contract. It proves that the current model has chosen one unstated semantic interpretation: reconciliation completion itself is sufficient reauthorization evidence.
 
-### Key methodological result
-The minimum delta is NOT "add one invariant per missing S-number."
+### Candidate semantic interpretations
+A. Reconciliation-authoritative: COMPLETE reconciliation is explicitly defined to include authoritative reauthorization evidence. Current transition could be valid, but the contract must say so.
+B. Separate authority evidence: reconciliation establishes effect/recovery consistency, while a distinct fresh authority evidence/event establishes VALID authority. This preserves stronger separation of concerns and would require a separate semantic input/state.
+C. Explicit authority establishment only: after revocation, reauthorization cannot directly restore VALID; a normal authority-establishment transition must occur under the current/new epoch.
+No choice is authorized yet.
 
-Some gaps are:
-1. **verification-only** — an existing transition relation may already encode the rule, as with S2/S3 ordering;
-2. **representation gaps** — the state cannot express the required semantic distinction, as with S11;
-3. **semantic-definition gaps** — adding state before deciding meaning would hard-code an assumption, as with S12/effectId and Reauthorize;
-4. **dependency/guard candidates** — the state can express the distinction, but the current action permits too much freedom, as with AdmitCurrent, Recover, ObserveAbsent, ReleaseSuccessor.
-
-### Minimum-change principle
-No new variable should be introduced until its semantic object is frozen.
-No new guard should be introduced merely because a transition looks unusual.
-No invariant should be added if it is tautological or simply restates an action precondition without adding trace/state coverage.
-No existing UNKNOWN/PARTIAL/ABSENT distinction may be collapsed to simplify verification.
-
-### Proposed order of resolution
-1. Freeze reauthorization semantics.
-2. Freeze expected-effect/S11 semantics.
-3. Freeze effectId vs observation/event identity for S12.
-4. Freeze epoch advancement semantics and admission policy P1/P2.
-5. Re-evaluate AdmitCurrent, Recover, ObserveAbsent, ReleaseSuccessor, replay-phase semantics using those frozen contracts.
-6. Only then design the smallest model revision and new CFG invariants.
-7. Run semantic preflight before TLC.
+### Strong conclusion
+The confirmed issue is not simply that Reauthorize lacks a guard. The confirmed issue is missing provenance semantics for the authority transition.
+Adding a guard against REVOKED alone would be insufficient: it would not explain what evidence creates VALID authority after revocation.
+Likewise, changing the epoch guard alone would not solve it because 116R does not yet model epoch advancement.
 
 ### Result
-MINIMUM_SEMANTIC_DELTA = DERIVED
-MODEL_116R_CHANGED = NO
-NEW_VARIABLES_AUTHORIZED = NO
-NEW_GUARDS_AUTHORIZED = NO
-FULL_S1_S12_VERIFICATION = NOT_ESTABLISHED
-TLC = IN_PROGRESS
+S9 = REPRESENTED AS A RECOVERY SEQUENCE, BUT REAUTHORIZATION PROVENANCE = UNDEFINED.
+RECONCILIATION_AS_AUTHORITY_EVIDENCE = NOT_FROZEN.
+POLICIES A/B/C = OPEN.
+MODEL_CHANGE = NOT_AUTHORIZED.
+TLC = STILL IN_PROGRESS.
 
-### Live TLC
-Run 36781846063 / job 110113752493 remains in_progress; step 5 is still executing and evidence upload is pending. No PASS/FAIL conclusion is available.
+### Next
+Audit S11 from the frozen T1–T10 semantics and determine the minimum expected-effect object without conflating UNKNOWN, ABSENT_UNPROVEN, or OBSERVED with mismatch.
