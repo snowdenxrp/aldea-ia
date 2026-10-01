@@ -3297,3 +3297,43 @@ Status: A1=NOT_OBSERVED; D0=NOT_OBSERVED; D1=NOT_OBSERVED; EFFECT=NOT_OBSERVED; 
 ## AB104.980R — Next continuation contract
 The next meaningful continuation must either execute the external G0 harness if an executable environment becomes available, or record the concrete blocker preventing execution. Do not manufacture additional source-only results to simulate progress.
 Status: NEXT=EXTERNAL_G0_OR_CONCRETE_BLOCKER; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
+
+## AB104.981R — Runtime capability recheck
+No executable Apache Kafka checkout/workspace is exposed by the current connected environment. Kafka source confirms the external Gradle/JDK path, but source access is not execution capability.
+Status: EXTERNAL_RUNTIME=UNAVAILABLE; EXACT_RACE=UNKNOWN.
+
+## AB104.982R — No false execution
+No G0 test, compilation, broker startup, A1 barrier, D0 deletion, D1 denial, or effect witness has been performed in this environment.
+Status: EXECUTION=NOT_PERFORMED; RUNTIME_WITNESSES=NOT_OBSERVED.
+
+## AB104.983R — Blocker classification
+The present blocker is environmental execution capability, not a Kafka test failure.
+Status: BLOCKER=ENVIRONMENTAL; RACE_RESULT=NOT_INFERRED.
+
+## AB104.984R — Source/runtime separation
+Kafka documentation confirms Java 17+ and Gradle wrapper execution for individual tests. This remains feasibility evidence only.
+Status: FEASIBILITY=CONFIRMED; RUNTIME=NOT_EXECUTED.
+
+## AB104.985R — No workflow substitution
+Existing Nexo workflows are not equivalent to an Apache Kafka integration-test workspace and must not be presented as G0 execution.
+Status: NEXO_WORKFLOW!=KAFKA_RUNTIME; SIMULATED_EVIDENCE=PROHIBITED.
+
+## AB104.986R — Canonical persistence only
+The execution blocker does not justify another handoff, backup, or model branch.
+Status: CANONICAL_HANDOFF=SOLE_SOURCE; PARALLEL_HANDOFF=PROHIBITED.
+
+## AB104.987R — Model anchor preserved
+AB105.116R remains canonical and untouched.
+Status: MODEL_ANCHOR=AB105.116R; MIGRATION=PROHIBITED.
+
+## AB104.988R — Epistemic state
+Source-level hypothesis remains testable; exact race occurrence and exploitability remain unknown. Impossibility is not established.
+Status: EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## AB104.989R — Required runtime evidence
+The next external run must capture A0 ALLOW, A1 target ALLOW barrier, D0 committed/published deletion, D1 fresh target-broker DENY, release after D1, and independent append/effect evidence.
+Status: REQUIRED_EVIDENCE=LOCKED.
+
+## AB104.990R — Execution boundary
+The next valid advance is an actual external Kafka runtime or a concrete executable tooling path. Further source-only blocks are not evidence progress.
+Status: PHASE=BLOCKED_PENDING_EXECUTION; NEXT=EXTERNAL_RUNTIME_OR_TOOLING_PATH; MODEL_ANCHOR=AB105.116R_UNCHANGED.
