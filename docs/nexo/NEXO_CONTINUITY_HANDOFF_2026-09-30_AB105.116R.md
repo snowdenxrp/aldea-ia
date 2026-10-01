@@ -617,3 +617,25 @@ No source/config/workflow change made.
 This is important because TLC explores reachable states of the specified finite transition system; if E1 and E2 are not distinct states in that system, a property about cross-epoch admission cannot actually be checked. citeturn0search4turn0search5
 
 Next: inspect AB105.111R/112R for the minimum epoch transition semantics before choosing cardinality or modifying 116R.
+
+## AB105.116R audit pass 13 — historical artifact recovery blocked, no semantic invention
+
+Attempted to recover the exact AB105.111R/112R source artifacts from the canonical repository using the known filenames. GitHub returned 404 for those paths on main. Therefore the exact historical epoch wording is not currently re-verified from source.
+
+Verified from the existing continuity record:
+- AB105.111R treats AUTHORITY_EPOCH as an authority-scoped correlation field.
+- AB105.112R requires preservation of CURRENT vs stale authority distinctions and warns that recovery must not silently transfer current authority.
+- The exact rule for when an epoch advances remains NOT_REVERIFIED in this pass.
+
+### Consequence
+The minimum epoch abstraction remains:
+NONE + at least two distinct epoch identities.
+But the transition that creates E2 is still UNKNOWN/PENDING.
+
+No source/config/workflow/model change is authorized from this evidence alone.
+
+### Methodological checkpoint
+TLC checks invariants over the reachable graph produced by Init/Next and the configured finite model. If the model does not contain distinct E1/E2 states, cross-epoch properties cannot be meaningfully checked. citeturn0search12turn0search16
+
+### Next
+Recover the historical artifact by its exact persisted commit/path rather than guessing filenames. Once recovered, extract the epoch transition semantics verbatim/paraphrased into the audit record, then derive the smallest executable epoch model.
