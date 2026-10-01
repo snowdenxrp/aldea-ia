@@ -207,3 +207,102 @@ These require comparison against the frozen S1–S12 semantics before any guard/
 
 ### Important non-conclusion
 A reachable state can still be semantically invalid. Reachability answers 'can this model produce it?'; semantic audit answers 'should the model produce it?'. We therefore must not convert these witnesses into fixes until their intended meaning is established.
+
+
+## S1–S12 semantic coverage audit — pass 3 — 2026-09-30
+
+Cross-checked AB105.116R against the frozen S1–S12 obligations recorded in AB105.111R/AB105.112R. This is a semantic coverage audit, not a claim that the missing properties are bugs. No model/config/workflow modification was made.
+
+### S1 — current authority for consequential NEXO effect
+- Present executable coverage: S1_ExecutionAuthority and S1_EffectAuthority are configured.
+- StartOperation requires current VALID authority and CURRENT epoch; ObserveNexo additionally requires authorityAtExecution=VALID and current authority=VALID.
+- Status: CHECKED in the current TLC configuration, subject to the finite model and actual TLC result still pending.
+- Important: authorityAtAdmission is intentionally distinct and may be REVOKED/UNKNOWN; this does not by itself authorize execution.
+
+### S2 — STOP requested versus STOP enforced
+- Model explicitly separates REQUESTED and ENFORCED and has distinct RequestStop / EnforceStop actions.
+- However, no S2 invariant is configured. The current model does not explicitly assert the intended monotonic/semantic relationship beyond the action guards.
+- Status: NOT VERIFIED by TLC. Representation exists; property coverage missing.
+
+### S3 — fence ISSUED versus ENFORCED
+- Model explicitly separates ISSUED and ENFORCED with IssueFence / EnforceFence.
+- No S3 invariant is configured.
+- More importantly, StartOperation blocks fence=ISSUED but permits fence=ENFORCED. Thus ENFORCED-fence + IN_FLIGHT is reachable and requires semantic interpretation.
+- Status: NOT VERIFIED.
+
+### S4 — successor release requires exclusivity
+- ReleaseSuccessor requires fence=ENFORCED and exclusivity=PROVEN; release snapshots are checked by S4_ReleaseRequirements.
+- Status: CHECKED in current TLC configuration.
+- Caveat from AB105.112R: the broader intended condition 'no consequential exclusive release while exclusivity is unknown' is represented only insofar as ReleaseSuccessor requires PROVEN; there is no separate invariant expressing the entire semantic contract.
+
+### S5 — observed effect does not prove authorization
+- EXTERNAL_OBSERVED and NEXO_EXECUTED are distinct origins and mutually guarded.
+- But there is no configured invariant asserting that EXTERNAL_OBSERVED implies no authorization conclusion.
+- ObserveExternal is reachable from Init without an operation.
+- Status: NOT VERIFIED. The state distinction exists; the epistemic non-implication property is not explicitly checked.
+
+### S6 — UNKNOWN effect cannot become ABSENT_UNPROVEN without evidence
+- ObserveAbsent requires effectState=UNKNOWN and coverage=SUFFICIENT.
+- This structurally blocks direct UNKNOWN→ABSENT_UNPROVEN without the coverage condition.
+- No S6 invariant is configured.
+- Status: REPRESENTED/BLOCKED BY ACTION GUARD, but NOT VERIFIED by a dedicated invariant.
+
+### S7 — partial reconstruction cannot become COMPLETE merely from terminal record
+- CompleteReconstruction requires PARTIAL reconstruction, SUFFICIENT coverage, and effectState != UNKNOWN.
+- Current invariant S7 checks COMPLETE => SUFFICIENT coverage.
+- The model does not encode a terminal-record-specific shortcut, but it also does not explicitly model a 'terminal record' as a reconstruction input.
+- Recover is permitted in IN_FLIGHT, STOPPING, or TERMINAL states.
+- Status: PARTIALLY REPRESENTED; NOT FULLY VERIFIED against the AB105.112R wording.
+
+### S8 — replay/duplicate cannot create a new effect
+- ReplayDuplicate sets admission=DUPLICATE; StartOperation requires ACCEPTED and thus cannot start from DUPLICATE.
+- ObserveNexo explicitly blocks DUPLICATE and CONFLICTING admissions.
+- However, there is no invariant relating an already-observed effect to operation identity/fingerprint, and external observation remains independent.
+- Status: PARTIALLY REPRESENTED; NOT VERIFIED as a complete replay/effect property.
+
+### S9 — recovery cannot silently transfer current authority
+- Recovery path is explicit: Recover may require reconciliation, Reconcile completes it, Reauthorize restores VALID authority, ContinueAfterRecovery requires VALID authority + CURRENT epoch + reconciliation COMPLETE + non-UNKNOWN effect.
+- No S9 invariant is configured.
+- Status: REPRESENTED as a guarded transition sequence, NOT VERIFIED.
+
+### S10 — weaker atomicity cannot satisfy ATOMIC
+- AtomicitySatisfied requires requiredAtomicity != ATOMIC OR availableAtomicity=ATOMIC.
+- S10_AtomicRequirement checks released + required ATOMIC => releaseAtomicity ATOMIC.
+- Status: CHECKED in current TLC configuration.
+- Note: SetAtomicity permits all 16 req/avail combinations; this is deliberate abstraction freedom until semantic review says otherwise.
+
+### S11 — reconciliation required when expected/observed effects differ materially
+- Current model has only one explicit trigger: Recover sets reconciliation=REQUIRED when effectState=UNKNOWN.
+- Reconcile requires SUFFICIENT coverage and non-UNKNOWN effect.
+- There is no explicit representation of a general expected-effect versus observed-effect mismatch predicate.
+- Therefore the AB105.112R S11 wording is broader than the current executable abstraction.
+- Status: NOT VERIFIED / semantic coverage gap.
+
+### S12 — identity/incarnation distinctions preserved
+- operationId, fingerprint, operationSubject, operationIncarnation are separate fields.
+- StartOperation records subject/incarnation; replay actions compare current context with recorded context.
+- No dedicated S12 invariant is configured.
+- No effectId linkage to operationId exists; effectId is independent.
+- Status: PARTIALLY REPRESENTED; NOT VERIFIED as a full identity/incarnation preservation property.
+
+### Coverage conclusion
+The current AB105.116R TLC configuration verifies only 5 named properties plus TypeOK: S1 execution authority, S1 effect authority, S4, S7 coverage implication, and S10 atomic requirement. This is materially less than the 12-property coverage defined in AB105.112R. A future PASS on the current run must therefore be reported only as a finite PASS for this configured subset, not as S1–S12 verification.
+
+### Semantic questions now explicitly preserved before any edit
+1. Is an ENFORCED fence a prerequisite state that permits a new operation, or should it block StartOperation?
+2. Is successor creation/release allowed without a predecessor operation/effect, or must release be operation/effect-scoped?
+3. Is PARTIAL coverage allowed as an independently injected epistemic state, or must it arise only from incomplete evidence/reconstruction?
+4. May Recover begin while an operation is IN_FLIGHT, or only after STOPPING/TERMINAL?
+5. Is EXTERNAL_OBSERVED intentionally operation-independent?
+6. Does S11 require a new expected-vs-observed mismatch variable/predicate, or is UNKNOWN-effect recovery intended as the finite abstraction of mismatch?
+7. Does S12 require effect/release linkage to operation identity/incarnation, beyond replay checks?
+
+These remain UNKNOWN/OPEN semantic questions, not declared defects. No source change is authorized until the intended semantics are resolved from the frozen requirements/evidence.
+
+## TLC live-status recheck — 2026-09-30
+- Run 36781846063 / job 110113752493 remains IN_PROGRESS.
+- Steps 1–4 completed successfully.
+- Step 5 'Run TLC finite model' remains IN_PROGRESS.
+- Step 6 evidence upload remains pending.
+- Therefore there is still no valid TLC PASS/FAIL/counterexample result.
+- A 404/non-available log while step 5 is still running must not be interpreted as a model failure.
