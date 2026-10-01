@@ -683,3 +683,72 @@ IMPLEMENTATION_VERIFICATION = NOT_PERFORMED
 
 ### Next exact action
 Continue the semantic audit on the remaining high-risk gaps without changing 116R: Reauthorize evidence, S11 expected-vs-observed effect representation, S12 observation/effect identity binding, and S2/S3 non-tautological invariant design. Keep the live TLC run untouched.
+
+## AB105.116R audit pass 16 — Reauthorize evidence provenance — 2026-09-30
+
+### Objective
+Audit the highest-risk unresolved transition without changing the model: whether Reauthorize can create CURRENT/VALID authority from reconciliation alone.
+
+### Exact current transition
+Reauthorize requires only:
+- reconciliation = COMPLETE
+- authorityEpoch = CURRENT
+and then sets authority = VALID.
+
+It does not require:
+- new authority evidence;
+- a fresh authority observation;
+- a changed epoch;
+- an explicit revalidation/admission event;
+- proof that the current authority is not a previously revoked authority.
+
+### Minimal witness
+A reachable witness can be constructed without inventing any transition:
+1. EstablishAuthority.
+2. SetContext.
+3. AdmitCurrent.
+4. StartOperation.
+5. MarkUnknown.
+6. EndOperation.
+7. Recover -> reconstruction PARTIAL + reconciliation REQUIRED.
+8. Reconcile -> reconciliation COMPLETE.
+9. RevokeAuthority -> authority REVOKED, while authorityEpoch remains CURRENT.
+10. Reauthorize -> authority becomes VALID.
+
+The critical observation is step 10: no new authority-bearing evidence is consumed between REVOKED and VALID. The only enabling facts are reconciliation COMPLETE and the unchanged CURRENT epoch.
+
+### Semantic classification
+This is stronger than a generic guard-review finding.
+
+REAUTHORIZATION_PROVENANCE = GAP / SEMANTIC CONFLICT CANDIDATE
+
+If reconciliation COMPLETE is intentionally defined as sufficient authority evidence, then the transition may be legitimate. But that meaning is not established by the recovered AB105.111R/112R contract. If reauthorization means renewed authority after revocation/recovery, the current action can manufacture VALID from state rather than from fresh authority evidence.
+
+This must not be fixed by simply adding an authority-state guard, because that would only block the witness and would still leave the provenance question unresolved.
+
+### Relation to epoch gap
+The problem is compounded by the confirmed epoch representation gap:
+- RevokeAuthority leaves authorityEpoch = CURRENT.
+- EstablishAuthority also writes CURRENT.
+- There is no executable E1->E2 transition.
+
+Therefore authorityEpoch = CURRENT cannot currently serve as evidence that a new authority epoch has been established.
+
+### Required semantic decision before code
+One of these meanings must be explicitly frozen:
+A. Reconcile COMPLETE itself is authoritative reauthorization evidence; or
+B. Reauthorization requires a distinct fresh authority evidence/event; or
+C. Reauthorization is not permitted directly after revocation without an explicit authority-establishment transition.
+
+No choice is made in this pass.
+
+### Result
+REAUTHORIZE_WITNESS = REACHABLE
+REAUTHORIZE_FRESH_EVIDENCE = ABSENT
+REAUTHORIZE_SEMANTICS = OPEN
+EPOCH_SUPPORT_FOR_REAUTHORIZATION = INSUFFICIENT
+MODEL_CHANGE = NOT_AUTHORIZED
+TLC_LIVE_RUN = UNTOUCHED
+
+### Next
+Audit S11 using the same discipline: determine whether the current variables can express an expected-vs-observed material mismatch without overloading UNKNOWN, then audit S12 identity binding.
