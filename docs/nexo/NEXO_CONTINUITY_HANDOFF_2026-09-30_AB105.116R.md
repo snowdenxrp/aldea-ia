@@ -148,3 +148,34 @@ Run 36781846063 / job 110113752493 is still IN_PROGRESS. Step 5 Run TLC finite m
 
 ### Next
 Freeze the semantic dependency between S11 and S12, then audit epoch-bound admission (D1a) and the exact P1/P2 policy boundary before any model revision.
+
+## AB105.116R audit pass 25 — D1a admission epoch and P1/P2 boundary — 2026-09-30
+
+### Historical evidence
+AB105.111R makes AUTHORITY_EPOCH mandatory whenever an input is authority-scoped. It defines STALE as valid identity that is outside the current freshness/epoch boundary, and T1 explicitly expects OLD authority arriving after CURRENT epoch to be STALE/rejected.
+This is stronger than merely recording current authority: the admission decision must retain enough epoch information to determine whether the admitted input belongs to the current authority boundary.
+
+### Current 116R mismatch
+116R records authorityAtAdmission, but not admissionEpoch. AdmitCurrent copies the current authority value without preserving the epoch that made that input admissible.
+Because EstablishAuthority only writes CURRENT and RevokeAuthority leaves the epoch CURRENT, the current model cannot represent distinct authority epochs E1 and E2. Therefore it cannot execute the historical T1 cross-epoch distinction.
+
+### P1 vs P2
+P1 = an old authority-scoped admission becomes STALE after an epoch transition.
+P2 = the old input remains identifiable but must be explicitly revalidated/re-admitted under the new epoch before consequential execution.
+Both preserve the common frozen rule: an epoch change must never silently convert an old admission into current authorization.
+The historical artifacts establish the need for epoch-bound admission, but they do not define an executable epoch-advancement transition or select P1 versus P2.
+
+### What is actually required before model revision
+1. Define what event advances E1 -> E2 and makes E1 OLD.
+2. Define whether an admitted input carries an immutable admissionEpoch.
+3. Define the exact stale/revalidation rule (P1, P2, or an explicitly scoped alternative for epoch-independent inputs).
+4. Define whether authorityAtAdmission remains necessary once admissionEpoch exists; do not remove it merely because it appears redundant.
+
+### Strong conclusion
+D1a = SEMANTIC OBSERVABILITY REQUIREMENT CONFIRMED.
+EPOCH_ADVANCEMENT = UNDEFINED.
+P1/P2 = OPEN.
+NO_MODEL_CHANGE_AUTHORIZED.
+
+### Next
+Perform a dependency audit across D1a, S9, S11 and S12 to ensure the eventual model revision does not solve one boundary by collapsing another. TLC remains live until independently observed as completed.
