@@ -187,3 +187,60 @@ Implementation has now been created on a separate research branch/PR; the frozen
 Important: this implementation deliberately waits for target-local ACL revocation before D1. Therefore an ALLOWED result after that wait would be materially stronger evidence than the original G0, while a DENIED result would show the tested local revocation state behaved consistently. It still would not, by itself, establish exploitability.
 
 No TLC rerun.
+
+
+## Multi-broker discriminator execution result — 2026-10-01
+
+The corrected PR #82 harness executed successfully on the pinned Kafka revision.
+
+- PR: #82 — OPEN / DRAFT / UNMERGED.
+- Workflow run: 36942363431 — SUCCESS.
+- Job: 110636586589 — SUCCESS.
+- Tested merge commit: beb5593b92a947f4df70f8fa4e6a6847b40fe114.
+- Kafka revision: 99b940733a9f6bc409457dba7108f08421d81e42.
+- Java: 21.0.12.1 LTS.
+- Artifact: nexo-ab105-g0-bootstrap-evidence, ID 11200284372.
+- Artifact ZIP SHA-256: b315df46a5c2f3080434e336d5fd10611c4c2d47288383d9cd8b6582387f917f.
+
+### Recoverable witness
+
+`G0_MULTI_WITNESS TARGET_BROKER=1 LEADER_TARGET=1 LEADER_OTHER_VIEW=1 D0=OBSERVED TARGET_LOCAL_ACL_COUNT_AFTER_D0=0 D1=DENIED D2=SUCCESS E_BASELINE=0 E_AFTER=1`
+
+### What this establishes
+
+- The two-broker/one-controller cluster started successfully.
+- The target partition's effective leader was broker 1, and both broker views observed leader 1.
+- D0 was a real Admin DeleteAcls operation.
+- The target broker's local instrumented authorizer reached ACL count 0 before D1.
+- D1 was a NEW independent producer request and was denied.
+- D2 was the earlier authorization path and succeeded after release.
+- The target broker's UnifiedLog advanced exactly from 0 to 1.
+
+### Critical semantic boundary
+
+This execution does NOT demonstrate a stale authorization result surviving completed local ACL revocation.
+
+In fact, D1 was deliberately issued only after `TARGET_LOCAL_ACL_COUNT_AFTER_D0=0`, and it was denied. Therefore the tested condition is consistent with current local authorization state after revocation.
+
+The result therefore:
+- SUPPORTS: the controlled in-flight authorization window remains reproducible in a two-broker KRaft test when the target broker is the effective leader.
+- DOES NOT ESTABLISH: a post-D0 stale-cache authorization path.
+- DOES NOT ESTABLISH: a metadata-propagation authorization window, because D1 was intentionally delayed until target-local ACL revocation was observed.
+- EXPLOITABILITY remains UNKNOWN.
+
+### Updated epistemic state
+
+- MULTI_BROKER_IMPLEMENTATION = EXECUTED_SUCCESS
+- MULTI_BROKER_RESULT = D1_DENIED_AFTER_TARGET_LOCAL_REVOCATION
+- IN_FLIGHT_AUTHORIZATION_WINDOW = SUPPORTED
+- POST_D0_STALE_AUTHORIZATION = NOT_OBSERVED
+- METADATA_PROPAGATION_WINDOW = UNKNOWN_NOT_TESTED_BY_THIS_RUN
+- EXPLOITABILITY = UNKNOWN
+- AB105.116R = INTACT
+- NO AB105.117R
+
+### Next discriminator
+
+If mechanism analysis continues, the next distinct experiment is a tightly controlled NEW-request timing test where D1 is issued after controller-side D0 completion but BEFORE target broker local ACL revocation is observed. That experiment must independently record target-local ACL state at the authorization decision, rather than inferring it from controller completion.
+
+No TLC rerun. The original G0 witness remains unchanged.
