@@ -907,3 +907,68 @@ AB104.417 — witness quorum composition and failure-domain algebra: formally mo
 
 ### Continuity
 This pass is additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 49 — witness quorum failure-domain algebra — 2026-10-01
+
+### Historical artifact recovered
+AB104.417 (commit 4cbe910f7e0d59b84728bf3c82c3a499d341133c) formalizes witness quorum composition as a claim-specific dependency/failure-domain problem rather than a witness-count problem.
+
+### Findings
+1. WITNESS_COUNT != INDEPENDENT_FAILURE_DOMAINS and LOGICAL_PARTICIPANTS != EFFECTIVE_FAILURE_PARTICIPANTS.
+2. Witness assurance is claim-specific: the same witness set may be independent for one property and correlated for another because dependency relevance changes by claim/effect class.
+3. A dependency closure must include only dependencies relevant to the protected claim, but it must be complete enough that UNKNOWN dependencies cannot support a stronger independence claim.
+4. Common-mode domains can arise from trust roots, verifiers, policy sources, deployment pipelines, providers, operators/control planes, recovery backends, or time sources. Operational separation alone is insufficient.
+5. Independence should remain an evidence graph, not an opaque scalar score. Dependency IDs, domain IDs, generations, claim relevance, impact and confidence/status must remain inspectable.
+6. Failure-domain membership itself is mutable. Provider/verifier/deployment/recovery changes require protected domain-set versioning and revalidation.
+7. Correlation discovered after admission must invalidate the current independence appraisal as appropriate, without rewriting historical decisions.
+8. Recovery has its own failure-domain closure. Normal-operation independence cannot automatically be reused during recovery.
+9. Witness declarations of dependencies are evidence, not authority. Dependency closure and failure-domain projection require independent appraisal before quorum eligibility.
+10. No universal Byzantine threshold can be imported until its assumptions about independent faulty participants are explicitly mapped to the actual failure-domain composition.
+
+### S9 consequence
+AB104.417 narrows the authority chain further but does not close it:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+The unresolved question is not merely “how many witnesses?” but which protected claim can be supported after correlated dependencies are projected into effective failure domains. The authority decision and activation protocol remain UNKNOWN/PENDING.
+
+### New semantic requirements
+Before model revision, Nexo needs:
+- an explicit claim/effect-class dependency projection;
+- a protected representation of failure-domain graph and domain generations;
+- rules for UNKNOWN dependency closure;
+- rules for correlation discovered after admission;
+- separate normal/recovery dependency closure;
+- explicit mapping from effective failure-domain assumptions to any Byzantine threshold used later.
+
+These are semantic requirements only; no TLA+ fields or model revision authorized.
+
+### Status
+- WITNESS_COUNT != INDEPENDENT_FAILURE_DOMAINS.
+- QUORUM_COUNT != QUORUM_STRENGTH.
+- LOGICAL_PARTICIPANTS != EFFECTIVE_FAILURE_PARTICIPANTS.
+- INDEPENDENCE_IS_CLAIM_SPECIFIC.
+- INDEPENDENCE_REQUIRES_DEPENDENCY_CLOSURE.
+- UNKNOWN_DEPENDENCY_CANNOT_SUPPORT_HIGHER_INDEPENDENCE_CLAIM.
+- COMMON_MODE_FROM_SHARED_TRUST/VERIFIER/POLICY/RECOVERY/PROVIDER/OPERATOR/TIME remains required analysis.
+- DOMAIN_SET_CHANGE => REVALIDATION.
+- NORMAL_FAILURE_DOMAINS != AUTOMATICALLY_RECOVERY_FAILURE_DOMAINS.
+- WITNESS_DECLARATION != AUTHORITY.
+- COMMON_MODE_COMPROMISE_COLLAPSES_AFFECTED_INDEPENDENCE.
+- NO_UNIVERSAL_INDEPENDENCE_SCORE_REPLACES_DEPENDENCY_GRAPH.
+- BYZANTINE_FAILURE_MODEL = UNKNOWN/PENDING.
+- FORMAL_CORRELATED_FAILURE ALGEBRA = UNKNOWN/PENDING.
+- DEPENDENCY_GRAPH_COMPLETENESS = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.418 — minimum-cut / correlated-failure analysis for witness quorums: determine how the smallest set of shared failure domains capable of invalidating a required quorum can be represented without collapsing the evidence into a misleading scalar security score.
+
+### Continuity
+Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
