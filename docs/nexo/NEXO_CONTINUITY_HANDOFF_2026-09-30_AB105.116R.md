@@ -179,3 +179,46 @@ NO_MODEL_CHANGE_AUTHORIZED.
 
 ### Next
 Perform a dependency audit across D1a, S9, S11 and S12 to ensure the eventual model revision does not solve one boundary by collapsing another. TLC remains live until independently observed as completed.
+
+## AB105.116R audit pass 26 — dependency closure D1a ↔ S9 ↔ S11 ↔ S12 — 2026-09-30
+
+### Dependency graph
+D1a (admission epoch) constrains which authority-scoped input may support a decision.
+S9 (reauthorization provenance) constrains what evidence may restore VALID authority after recovery.
+S11 (expected-vs-observed) constrains whether the recovered/observed consequence matches what was expected and whether reconciliation is required.
+S12 (identity/provenance) constrains which effect and which evidence event are actually being correlated.
+
+These are not four independent variables. They form a provenance chain:
+ADMISSION CONTEXT → AUTHORITY/DECISION → EXPECTED EFFECT → OBSERVATION/EVIDENCE → RECONCILIATION → REAUTHORIZATION.
+
+### Cross-dependency findings
+1. D1a → S9: reauthorization cannot safely rely on reconciliation if the evidence used for reconciliation was admitted under an obsolete authority epoch. Reconciliation evidence must itself have a defined authority/freshness scope.
+2. S12 → S11: an expected-vs-observed comparison requires enough identity/correlation to establish that the observation concerns the expected effect. Otherwise MATERIAL_DIFFERENCE can be computed against the wrong consequence.
+3. S11 → S9: if reconciliation is permitted to serve as authority evidence (policy A), the reconciliation result must identify the expected effect, observed result, evidence provenance, and authority scope that justify the reauthorization. Otherwise A silently collapses effect consistency into authority authorization.
+4. S12 → S9: if fresh authority evidence is required (policy B/C), that evidence needs its own evidence identity/provenance and must not be confused with an effect observation.
+5. D1a → S11: an observed effect can be fresh yet still be inadmissible for a current authority-scoped decision if its authority epoch is obsolete. Freshness alone is not epoch validity.
+
+### Critical architectural boundary
+Do NOT solve D1a by simply adding admissionEpoch and then allow all later observations/reconciliation to inherit that epoch automatically. That would create false provenance inheritance.
+Do NOT solve S12 by binding every effect to operationId universally. Historical semantics permit evidence-scoped observations that may not be operation-scoped.
+Do NOT solve S9 by declaring reconciliation COMPLETE = authority VALID without specifying what authority-bearing evidence makes that implication valid.
+Do NOT solve S11 by treating any observed effect as the expected effect merely because effectId is present.
+
+### Minimum combined contract before model revision
+The next model revision needs, at semantic level (not yet TLA+ fields):
+- authority/admission epoch identity for authority-scoped decisions;
+- explicit authority-evidence provenance for any transition to VALID after recovery;
+- expected-effect semantics and materiality relation;
+- separate effect identity vs observation/event identity where evidence requires both;
+- conditional correlation to operation/subject/incarnation according to scope;
+- explicit freshness, coverage, and provenance boundaries for evidence used in reconciliation.
+
+### Closure status
+D1a = CONFIRMED OBSERVABILITY GAP.
+S9 = CONFIRMED PROVENANCE SEMANTICS GAP.
+S11 = CONFIRMED REPRESENTATION GAP.
+S12 = CONFIRMED IDENTITY/PROVENANCE SEMANTICS GAP.
+These findings are mutually consistent; none authorizes a model change yet.
+
+### Next
+Perform the final pre-revision guard audit: determine which current guards can remain unchanged, which are merely candidates, and which would become invalid/insufficient after the semantic contract is frozen. TLC live run remains separate from this semantic work.
