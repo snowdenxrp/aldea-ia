@@ -3417,3 +3417,43 @@ Status: EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
 ## AB105.020R — Next valid action
 The next meaningful step is an actual external G0 implementation/execution attempt or a concrete executable tooling path. No further source-only continuation is warranted.
 Status: NEXT=EXTERNAL_G0_OR_TOOLING_PATH; PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME.
+
+## AB105.021R — Runtime boundary recheck
+No executable Apache Kafka workspace is exposed through the current connected environment. Public source access does not provide an executable runner here.
+Status: RUNTIME=NOT_EXECUTED; BLOCKER=EXTERNAL_RUNTIME_ACCESS.
+
+## AB105.022R — No witness substitution
+The G0 witness cannot be replaced by source inspection, documentation, a stock broker, or an existing Nexo workflow.
+Status: WITNESS_CONTRACT=LOCKED; SUBSTITUTE=INSUFFICIENT.
+
+## AB105.023R — No empirical change
+No A1 ALLOW, D0 publication, D1 DENY, release, or append/effect evidence has been observed.
+Status: EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## AB105.024R — Implementation blocker classification
+Until an executable Kafka checkout is available, there is no compile/startup/test failure to classify. The current condition is simply unavailable execution capability.
+Status: BLOCKER=ENVIRONMENTAL; KAFKA_FAILURE=NOT_OBSERVED.
+
+## AB105.025R — Canonical persistence
+This state belongs only in the canonical continuity handoff; no parallel backup or branch is created.
+Status: CANONICAL_HANDOFF=SOLE_SOURCE.
+
+## AB105.026R — Model anchor preserved
+AB105.116R remains untouched and canonical.
+Status: MODEL_ANCHOR=AB105.116R; UNCHANGED.
+
+## AB105.027R — Source review gate
+Source review remains paused and may reopen only if the actual harness implementation exposes a concrete unresolved dependency or API mismatch.
+Status: SOURCE_REVIEW=PAUSED; REOPEN=CONDITIONAL.
+
+## AB105.028R — Runtime evidence gate
+Only a real external execution can change the epistemic status of the exact-race question.
+Status: RUNTIME_GATE=LOCKED; EXACT_RACE=UNKNOWN.
+
+## AB105.029R — First-run protocol preserved
+When execution becomes possible, run one controlled G0 attempt and preserve raw artifacts before interpretation.
+Status: FIRST_RUN=CONTROLLED_G0; RAW_EVIDENCE_FIRST=REQUIRED.
+
+## AB105.030R — Continuation endpoint
+Further source-only continuation is now explicitly non-productive. The next valid step is external G0 execution or a concrete executable tooling path.
+Status: PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME; NEXT=EXTERNAL_G0_OR_TOOLING_PATH.
