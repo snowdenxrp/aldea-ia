@@ -562,3 +562,14 @@ Stale/replayed lineage must be rejected or held when safety cannot be establishe
 This closes no S9 transition. AUTHENTICATED_LINEAGE != AUTOMATIC_AUTHORITY remains explicit. The issuer/lifecycle and activation/linearization of CURRENT_AUTHORITY_DECISION remain UNKNOWN/PENDING. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 40 is audit-only until persisted.
 
 Next exact mission: AB104.408, cryptographic lineage binding/key lifecycle/rotation/revocation/domain handoff, while independently tracing CURRENT_AUTHORITY_DECISION issuer and protected activation.
+
+## AB105.116R audit pass 41 — cryptographic lineage / key lifecycle — 2026-10-01
+AB104.408 establishes SIGNATURE_VALID != LINEAGE_CURRENT and KEY_POSSESSION != CURRENT_AUTHORITY. Cryptographic lineage has separate layers: message integrity, signer authentication, audience/path binding, operation/effect binding, freshness/replay binding, state-generation binding, and semantic authorization. No lower layer proves the higher layer.
+
+Replay protection requires more than signatures: candidate combination is signed binding + unique ID/nonce + durable replay state + state-generation checks. Timestamp or nonce alone is insufficient for high-consequence protection. Key rotation introduces distinct signing-key, lineage/evidence, and authority/policy generations. Historical validity of an old signature must not be confused with current admission validity. Key compromise requires invalidating new use according to policy while preserving historical records and reconciling effects that may already have crossed the external boundary.
+
+Cross-domain handoff requires local validation; Domain B must not inherit Domain A authority wholesale. Re-signing, lineage transformation, authorization delegation, and opaque routing create claim-specific TCB obligations. Cryptographic authenticity remains distinct from semantic authorization.
+
+No S9 closure found. The cryptographic layer supplies authenticated evidence/binding, but still does not define the issuer/action that promotes CURRENT_AUTHORITY_DECISION to authority=VALID after revocation. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 41 is audit-only until persisted.
+
+Next exact mission: AB104.409, replay-state durability under partition/replication lag/failover/rollback/multi-region concurrency, while continuing the independent authority-decision issuer/activation trace.
