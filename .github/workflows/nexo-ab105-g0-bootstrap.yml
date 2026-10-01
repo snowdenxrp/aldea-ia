@@ -220,9 +220,15 @@ jobs:
                                   ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.ACKS_CONFIG, "all"
                               )) {{ putAll(userClient()); }})) {
-                                  TopicAuthorizationException d1Exception = Assertions.assertThrows(
-                                      TopicAuthorizationException.class,
+                                  java.util.concurrent.ExecutionException d1ExecutionException = Assertions.assertThrows(
+                                      java.util.concurrent.ExecutionException.class,
                                       () -> d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get());
+                                  Assertions.assertInstanceOf(
+                                      TopicAuthorizationException.class,
+                                      d1ExecutionException.getCause(),
+                                      "D1 must fail with TopicAuthorizationException");
+                                  TopicAuthorizationException d1Exception =
+                                      (TopicAuthorizationException) d1ExecutionException.getCause();
                                   Assertions.assertTrue(
                                       d1Exception.unauthorizedTopics().contains(TOPIC_NAME),
                                       "D1 must deny the target topic");
