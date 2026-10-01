@@ -871,3 +871,57 @@ TLC_LIVE_RUN = UNTOUCHED
 
 ### Next
 Audit the remaining configured/unconfigured S1–S12 coverage as a matrix: identify exactly which properties are structurally enforced, which are represented but not verified, and which lack state representation. Then check the live TLC run again before deciding whether any model change is warranted.
+
+
+## AB105.116R audit pass 20 — S1–S12 verification-coverage matrix — 2026-09-30
+
+### Objective
+Freeze the exact verification status of each safety boundary before any model change.
+
+| Property | Current representation | Structural guard/path | Dedicated TLC invariant | Status |
+|---|---|---|---|---|
+| S1 current authority | authority + authorityAtExecution + authorityAtEffect | StartOperation/ObserveNexo require current VALID; release also requires VALID | Yes (2 invariants) | **PARTIALLY VERIFIED** |
+| S2 STOP request→enforced | NONE/REQUESTED/ENFORCED | EnforceStop requires REQUESTED | No | **STRUCTURALLY ENFORCED; NOT INVARIANT-CHECKED** |
+| S3 fence issued→enforced | NONE/ISSUED/ENFORCED | EnforceFence requires ISSUED | No | **STRUCTURALLY ENFORCED; NOT INVARIANT-CHECKED** |
+| S4 successor release/exclusivity | successor/fence/exclusivity/release snapshots | ReleaseSuccessor has required gates | Yes | **CONFIGURED / CHECKED** |
+| S5 observed effect ≠ authorization | effectOrigin separates external/Nexo | ObserveExternal independent; ObserveNexo has authority gates | No | **REPRESENTED; NOT VERIFIED** |
+| S6 UNKNOWN ≠ absence | UNKNOWN + ABSENT_UNPROVEN | ObserveAbsent requires UNKNOWN + SUFFICIENT | No | **REPRESENTED; NOT VERIFIED** |
+| S7 partial→complete | reconstruction + coverage | CompleteReconstruction requires PARTIAL + SUFFICIENT + non-UNKNOWN effect | Yes | **PARTIALLY VERIFIED** |
+| S8 replay safety | opId/fingerprint/subject/incarnation + DUPLICATE/CONFLICT | Start/ObserveNexo block conflict/duplicate paths | No | **PARTIALLY REPRESENTED; NOT VERIFIED** |
+| S9 recovery authority transfer | reconstruction/reconciliation/reauthorize/continue | explicit Recover→Reconcile→Reauthorize→Continue guards | No | **REPRESENTED; NOT VERIFIED** |
+| S10 atomicity | required/available atomicity + release snapshots | ReleaseSuccessor gate + invariant | Yes | **CONFIGURED / CHECKED** |
+| S11 expected-vs-observed mismatch | effectState/effectId only | no expected-effect relation | No | **REPRESENTATION GAP** |
+| S12 identity/incarnation preservation | operation identity/context + effectId | replay/context guards; no effect binding | No | **PARTIAL REPRESENTATION** |
+
+### Important qualification
+"PARTIALLY VERIFIED" means the configured invariant checks only the encoded finite property; it does not establish the full historical S1/S7 contract.
+
+The matrix is deliberately stricter than a simple "guard exists" classification:
+- a guard is not automatically an invariant;
+- a represented distinction is not automatically verified;
+- an unrepresented semantic relation cannot be verified by TLC;
+- structural ordering is not the same as historical provenance.
+
+### Configuration consequence
+The current CFG contains only:
+TypeOK, S1_ExecutionAuthority, S1_EffectAuthority, S4_ReleaseRequirements, S7_CompleteNeedsCoverage, S10_AtomicRequirement.
+
+Therefore the live TLC run, even if it finishes PASS, can only report these configured invariants plus TypeOK. It cannot claim S2/S3/S5/S6/S8/S9/S11/S12 verification.
+
+### High-priority unresolved set
+1. Reauthorize provenance (pass 16).
+2. S11 expected-effect semantics (pass 17).
+3. S12 effect/observation identity semantics (pass 18).
+4. S2/S3 provenance semantics (pass 19).
+5. D1a epoch identity/advancement (passes 11–15).
+6. Additional semantic guards previously identified: AdmitCurrent authority/epoch binding, Recover timing, release scope, ObserveAbsent scope, replay after operation start.
+
+### Result
+S1_S12_COVERAGE_MATRIX = FROZEN
+FULL_S1_S12_VERIFICATION = NOT_ESTABLISHED
+MODEL_CHANGE = NOT_AUTHORIZED
+TLC_LIVE_RUN = STILL_IN_PROGRESS
+NO_NEW_BACKUP_ARTIFACT = CONFIRMED
+
+### Next
+Do not modify 116R merely to increase the number of configured invariants. First derive the minimum semantic changes from the unresolved contracts. Then, after the live TLC result is known, perform a clean semantic preflight on any proposed revision before a new model-checking run.
