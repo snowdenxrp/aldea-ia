@@ -1841,3 +1841,14 @@ Status: DELETE_ACLS_PERSISTENCE=SOURCE_CONFIRMED; GLOBAL_BROKER_APPLICATION_BEFO
 EXACT NEXT ACTION: AB104.766R — audit broker MetadataLoader/AclPublisher delivery semantics and metadata offset/freshness APIs. Determine whether a broker can prove that its local authorizer has applied at least metadata offset D before an effect, and whether normal Produce uses such proof. Preserve distinction between broker caught-up-to-D and request re-authorized-after-D.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.766R; preserve all UNKNOWN/NOT_EXECUTED states; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+## 113. AB104.766R — Broker metadata publication and ACL freshness boundary
+Artifact commit: 25a49d1d32bdb0b69b5fc65e9b44980e279427fb
+
+Current BrokerMetadataPublisher records newImage.highestOffsetAndEpoch(); ACL delta is handed to AclPublisher during committed metadata publication. AclPublisher applies ordered ACL changes to ClusterMetadataAuthorizer/StandardAuthorizer local state, giving a meaningful broker-local applied-version point D1 once publication completes. However normal Produce authorizes first, constructs authorizedRequestInfo, and passes records onward; no generic second ACL authorization or effect-time metadata-offset fence was found. Therefore D0=ACL committed, D1=target broker applied ACL, D2=effect attempt remain distinct: D0 != D1 and D1 != D2. KIP-801/metadata readiness provide a consistency/readiness model, not instantaneous cluster-wide revocation.
+
+Status: BROKER_METADATA_HAS_OFFSET=SOURCE_CONFIRMED; ACL_PUBLISHER_RECEIVES_COMMITTED_METADATA=SOURCE_CONFIRMED; ACL_ORDER_PRESERVED=SOURCE_CONFIRMED; BROKER_LOCAL_APPLIED_STATE=SOURCE_CONFIRMED; GENERIC_PRODUCE_EFFECT_TIME_REAUTHORIZATION=NOT_FOUND; CONTINUOUS_REVOCATION_FENCE=NOT_FOUND; EXECUTED_RACE=NO; CUSTOM_AUTHORIZER_GENERALIZATION=OPEN.
+
+EXACT NEXT ACTION: AB104.767R — search Kafka tests and metadata-loader APIs for explicit offset-observation/barrier primitives (wait-for-metadata/high-watermark mechanisms), determine whether any can force broker observation of ACL version D1 before an operation, and compare with real effect-time revocation/fencing systems.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.767R; preserve all UNKNOWN/NOT_FOUND/NOT_EXECUTED states; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
