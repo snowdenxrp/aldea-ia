@@ -3137,3 +3137,43 @@ Status: NEGATIVE_RUNTIME=BOUNDED_ONLY; UNIVERSAL_DISPROOF=PROHIBITED; EXPLOITABI
 ## AB104.940R — G0 execution gate
 All required design gates are now explicit. The next action is implementation/execution of the external G0 harness; further source-only repetition should stop unless runtime implementation exposes a concrete unresolved dependency.
 Status: SOURCE_AUDIT=SUFFICIENT_FOR_G0; G0=READY_TO_IMPLEMENT; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=EXTERNAL_G0_RUNTIME.
+
+## AB104.941R — External runtime dependency recheck
+Current Apache Kafka trunk documents StandardAuthorizer as the KRaft authorizer and exposes authorizer configuration through authorizer.class.name. This supports the planned test-only injection boundary; it does not constitute runtime evidence.
+Status: KAFKA_RUNTIME_SOURCE=CONFIRMED; RUNTIME_RESULT=NOT_EXECUTED.
+
+## AB104.942R — Per-node authorizer isolation recheck
+Kafka test infrastructure exposes per-node server-property overrides, including authorizer configuration. This supports isolating the wrapper to the target broker while leaving controller/other-node authorizers unchanged.
+Status: TARGET_NODE_ISOLATION=SUPPORTED_BY_TEST_INFRA; PRODUCTION_PATCH=PROHIBITED; RUNTIME=NOT_EXECUTED.
+
+## AB104.943R — Controller ACL publication dependency
+The KRaft controller installs an ACL metadata publisher for the configured authorizer. Therefore D0 must be treated as a control-plane commit/publication event, not merely an AdminClient delete call.
+Status: ACL_PUBLICATION_PATH=CONFIRMED; D0_PUBLICATION=REQUIRED; RUNTIME=NOT_EXECUTED.
+
+## AB104.944R — G0 implementation is not yet execution
+Source confirmation strengthens feasibility but does not convert the harness into an executed test. No claim of A1, D0, D1, append, exact race, or exploitability may be made until the external harness actually runs.
+Status: G0=READY_FOR_EXTERNAL_IMPLEMENTATION; RUNTIME=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.945R — Stop source repetition unless blocker appears
+The source-level gates needed for the current G0 boundary are sufficiently constrained. Further source review is only justified if implementation exposes a concrete unresolved API/dependency; otherwise the next evidence-producing step is external harness implementation.
+Status: SOURCE_REVIEW=PAUSED; NEXT=IMPLEMENT_EXTERNAL_G0.
+
+## AB104.946R — External runtime capability boundary
+The connected Nexo/GitHub environment does not itself provide an Apache Kafka checkout plus a writable/executable Kafka integration-test workspace. Therefore no runtime result is being fabricated here. A genuine G0 requires an external/temporary Kafka checkout with build/runtime access.
+Status: CURRENT_RUNTIME_CAPABILITY=NOT_AVAILABLE_IN_CONNECTED_ENV; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.947R — Evidence capture contract
+The external run must preserve enough raw evidence to reconstruct ordering: target broker identity/leadership, A1 ALLOW, D0 commit/publication, D1 DENY, release event, append/effect evidence, and any timeout/failure. Summary text alone is insufficient.
+Status: RAW_EVIDENCE=REQUIRED; SUMMARY_ONLY=INSUFFICIENT.
+
+## AB104.948R — G0 exit criteria
+G0 exits only with one of two bounded outcomes: (1) complete witness tuple captured, which advances exact-race analysis; or (2) a documented execution failure/non-witness with preserved evidence, which advances the blocker analysis. Neither outcome permits universal conclusions beyond tested conditions.
+Status: G0_EXIT=LOCKED; EXACT_RACE=UNKNOWN_UNTIL_RUNTIME.
+
+## AB104.949R — Current epistemic state
+The source audit establishes a technically coherent and testable race hypothesis plus a constrained witness protocol. It does not establish that the race occurs, is exploitable, or is impossible.
+Status: HYPOTHESIS=SUPPORTED_FOR_TESTING; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; UNIVERSAL_CLAIM=PROHIBITED.
+
+## AB104.950R — Next irreversible evidence step
+The audit should now stop expanding the same source-level chain and move to the first external G0 harness implementation/execution when an executable Kafka environment is available.
+Status: NEXT=EXTERNAL_G0_HARNESS; MODEL_ANCHOR=AB105.116R_UNCHANGED.
