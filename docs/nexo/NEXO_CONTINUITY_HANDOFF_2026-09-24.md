@@ -3028,3 +3028,8 @@ Status: SOURCE_HYPOTHESIS=STRONG; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOW
 ## AB104.915R — Scope narrowed again
 Continue only into UnifiedLog.appendAsLeader and its immediate append validation. If no ACL lookup exists there, source archaeology closes and runtime becomes the sole unresolved evidence.
 Status: SOURCE_AUDIT_SCOPE=NARROW; REDUNDANT_RESEARCH=DISALLOWED.
+
+
+## AB104.916R — UnifiedLog boundary rechecked
+The append path reaches UnifiedLog after authorization and partition checks; the inspected append layer contains log/producer/transaction validation, not an ACL reauthorization. Source audit is therefore closed for this race. Runtime G0 remains the only unresolved evidence.
+Status: SOURCE_AUDIT=CLOSED_FOR_CURRENT_PATH; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=RUNTIME_G0.
