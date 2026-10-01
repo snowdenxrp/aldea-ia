@@ -1808,3 +1808,36 @@ Fresh direct audit at Kafka commit abf522e1ca5d7f4375baddc4da004da9fcb6e9ca: Pro
 Exact adversarial interleaving authorize -> revoke/disconnect -> append was NOT executed and was not found as a dedicated test assertion. Therefore current authorization after revocation remains OPEN/UNKNOWN at this boundary. Preserve distinctions: REQUEST_CONTEXT_AUTHORIZATION != CURRENT_AUTHORITY; AUTHORIZATION_CHECK != REVOCATION_RECHECK; TRANSPORT_CLOSE != APPEND_CANCELLATION.
 
 EXACT NEXT ACTION: AB104.762R — audit authHelper.filterByAuthorized implementation, including caching/memoization and identity/session inputs, for stale authorization after revocation or credential changes.
+
+
+## 109. AB104.762R — AuthHelper authorization freshness / revocation audit
+Artifact commit: 419f1beb93f9fd78ad8c4503e8518bb48666b48d
+
+Fresh source audit: AuthHelper contains no result cache/memoization; StandardAuthorizer evaluates against its current local ACL data on each authorize call. Kafka Authorizer is synchronous over locally cached ACL state, while ACL mutation/publication is asynchronous across the metadata path. Therefore AUTHHELPER_RESULT_CACHE was not found, but LOCAL_AUTHORIZER_STATE freshness remains material. REQUEST_CONTEXT != LIVE_AUTHORITY_EPOCH; ACL revocation does not itself establish cancellation of an already admitted/queued request. Custom authorizer cache semantics remain open.
+
+Status: SOURCE_AUDITED_NO_CACHE_FOUND; STANDARD_AUTHORIZER_CURRENT_STATE_LOOKUP=SOURCE_CONFIRMED; ACL_UPDATE_ASYNC_INTERFACE=SOURCE_CONFIRMED; IN_FLIGHT_REVOCATION=OPEN. No Nexo implementation, V21, formal verification, or executed race.
+
+## 110. AB104.763R — Produce authorization-to-append boundary audit
+Artifact commit: 4f294faffb3a938b85c1806b80650c4c9d9d2793
+
+KafkaApis performs topic WRITE authorization once, stores authorizedRequestInfo, then hands the already-authorized records to ReplicaManager append. The source contains request-local reuse of authorization results, not a cross-request cache. No generic second ACL authorization call was found between authorization and append. Transactional checks are separate. The revocation interleaving ALLOW -> revoke -> append remains source-permitted but NOT executed.
+
+Status: PRODUCE_AUTHORIZATION_BEFORE_APPEND=SOURCE_CONFIRMED; REQUEST_LOCAL_REUSE=SOURCE_CONFIRMED; GENERIC_SECOND_ACL_CHECK=NOT_FOUND_IN_AUDITED_PATH; REVOCATION_RACE=NOT_EXECUTED; EFFECT-TIME_REVOCATION_FENCE=NOT_ESTABLISHED.
+
+## 111. AB104.764R — ACL mutation → metadata publication → broker authorizer freshness
+Artifact commit: cb5dfd944c32c4054c1a9e1a21cfafee8487c3fa
+
+ACL state is persisted in the KRaft metadata log. AclPublisher applies ACL deltas to broker-local StandardAuthorizerData in order; snapshot loading replaces ACL state coherently. Metadata readiness is an initialization barrier, not a per-request revocation barrier. Source permits I(authorize ALLOW) < R(revocation committed) < P(local publication) < A(append), and also I < R < A < P; these are source-derived orderings, not executed races. No dedicated upstream test for ALLOW -> revoke -> in-flight Produce -> append was established.
+
+Status: ACL_METADATA_ORDER=SOURCE_CONFIRMED; BROKER_LOCAL_PUBLICATION=SOURCE_CONFIRMED; PER_REQUEST_REVOCATION_FENCE=NOT_FOUND; IN_FLIGHT_CANCEL=NOT_ESTABLISHED; EXECUTED_RACE=NO.
+
+## 112. AB104.765R — DeleteAcls completion versus broker authorization freshness
+Artifact commit: 4a84b71e556ded453f6ae730608756b5102ef6dd
+
+DeleteAcls response waits for the configured mutation future; the KRaft controller path persists the ACL deletion in the metadata log before completing that control-plane operation. This is stronger than an in-memory controller mutation but does not establish that every broker has applied removeAcl to local StandardAuthorizerData. Therefore DELETE_ACLS_RESPONSE = CONTROL_PLANE_COMMIT/PERSISTENCE EVIDENCE, not GLOBAL_BROKER_AUTHORIZER_FRESHNESS and not proof that an in-flight Produce was revoked.
+
+Status: DELETE_ACLS_PERSISTENCE=SOURCE_CONFIRMED; GLOBAL_BROKER_APPLICATION_BEFORE_RESPONSE=NOT_ESTABLISHED; IN_FLIGHT_REVOCATION=NOT_ESTABLISHED; EXECUTED_RACE=NO.
+
+EXACT NEXT ACTION: AB104.766R — audit broker MetadataLoader/AclPublisher delivery semantics and metadata offset/freshness APIs. Determine whether a broker can prove that its local authorizer has applied at least metadata offset D before an effect, and whether normal Produce uses such proof. Preserve distinction between broker caught-up-to-D and request re-authorized-after-D.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.766R; preserve all UNKNOWN/NOT_EXECUTED states; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
