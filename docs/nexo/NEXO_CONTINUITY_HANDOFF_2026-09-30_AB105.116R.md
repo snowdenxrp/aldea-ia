@@ -121,3 +121,45 @@
 - Semantic warning: the existence of a producer-independent dimension does not by itself prove it is an abstraction artifact. It must be classified as (a) semantically intentional, (b) reserved/future, or (c) missing dependency/guard. No dimension/value is to be removed yet.
 - TLC methodology cross-check: TLC model checking explores reachable states of Init ∧ □[Next]vars for the finite model; the raw Cartesian product of declared domains is therefore not the reachable-state count. Lamport's documentation explicitly distinguishes the finite model from the reachable state set. Keep 4.46×10^18 classified only as a raw product upper bound. citeturn0search12turn0search16
 - Next exact audit: finish action-by-action predecessor/producer proof for every suspicious value; then construct the variable→actions→producible values→guards→dependencies→semantic-independence matrix. Cross SetAtomicity + SetContext + SetCorrelated + SetSuccessor + Fence + Effect + Recovery before any model change.
+
+
+## Producer / predecessor audit — pass 1 — 2026-09-30
+Direct source review of Init + every action in Next. No model changes.
+
+### Producer graph conclusions
+- authority: Init = UNKNOWN. EstablishAuthority is the only producer of VALID and requires authority != VALID. RevokeAuthority is the only producer of REVOKED and requires current VALID. Therefore STALE has no producer; UNKNOWN→VALID→REVOKED is the complete producer chain.
+- authorityEpoch: Init = NONE. EstablishAuthority is the only writer and always sets CURRENT together with VALID. OLD/FUTURE have no producer; NONE→CURRENT only.
+- authorityAtAdmission: Init = UNKNOWN. AdmitCurrent copies the current authority without constraining it to VALID; therefore UNKNOWN, VALID and REVOKED are reachable. This explicitly corrects the earlier overclaim. STALE has no producer.
+- authorityAtExecution: Init = UNKNOWN. StartOperation is the only writer and is guarded by current authority VALID; therefore only UNKNOWN or VALID are reachable.
+- authorityAtEffect: Init = UNKNOWN. ObserveNexo is the only writer and requires current authority VALID; therefore only UNKNOWN or VALID are reachable.
+- admission: Init = NONE. AdmitCurrent→ACCEPTED; AdmitStale→STALE; AdmitConflict/ReplayConflict→CONFLICTING; ReplayDuplicate→DUPLICATE. UNKNOWN has no producer. SetContext resets admission to NONE.
+- freshness: Init = UNKNOWN; AdmitCurrent→FRESH; AdmitStale→STALE. No action produces UNKNOWN after initialization and no action changes FRESH/STALE except the admission actions.
+- coverage: Init = UNKNOWN; AdmitCurrent→SUFFICIENT; SetPartialCoverage→PARTIAL. No action returns PARTIAL→SUFFICIENT except a later AdmitCurrent, and SetContext itself does not clear coverage.
+- dependency: Init = UNKNOWN; SetCorrelated→CORRELATED. INDEPENDENT has no producer. There is no action that establishes independent provenance.
+- operationState: Init = NONE; StartOperation→IN_FLIGHT; RequestStop→STOPPING; EndOperation→TERMINAL. UNKNOWN has no producer. ContinueAfterRecovery can move STOPPING→IN_FLIGHT, but only after reconciliation COMPLETE, current valid authority, and non-UNKNOWN effect.
+- stop: Init = NONE; RequestStop→REQUESTED; EnforceStop→ENFORCED. UNKNOWN has no producer; no reset action exists.
+- fence: Init = NONE; IssueFence→ISSUED; EnforceFence→ENFORCED. UNKNOWN has no producer; no reset action exists.
+- successor: Init = NONE; SetSuccessor→PRESENT; ReleaseSuccessor→RELEASED. RELEASED is terminal for this variable because SetSuccessor requires NONE.
+- exclusivity: Init = NOT_ESTABLISHED; ProveExclusivity→PROVEN only when fence=ENFORCED. BOUNDED/CONFLICT/UNKNOWN have no producer; no action establishes them.
+- effectOrigin: Init = NONE. ObserveExternal→EXTERNAL_OBSERVED, guarded against existing NEXO_EXECUTED. ObserveNexo→NEXO_EXECUTED, guarded against existing EXTERNAL_OBSERVED and additionally requiring IN_FLIGHT/current VALID/non-conflicting admission. Origin is monotonic from NONE into one of two mutually exclusive origins; no reset.
+- effectState: Init = NONE. ObserveExternal/ObserveNexo→OBSERVED. MarkUnknown→UNKNOWN unless already OBSERVED. ObserveAbsent→ABSENT_UNPROVEN only from UNKNOWN with SUFFICIENT coverage. PARTIAL has no producer. MarkUnknown can be reached from the initial state and many unrelated states; UNKNOWN is therefore not evidence that a real execution/effect was previously attempted.
+- reconstruction: Init = EMPTY; Recover→PARTIAL; CompleteReconstruction→COMPLETE. CONFLICT/UNKNOWN have no producer. Recover is enabled for any operationState != NONE, including IN_FLIGHT, STOPPING, and TERMINAL.
+- reconciliation: Init = NONE. Recover changes it to REQUIRED iff effectState=UNKNOWN; otherwise leaves it unchanged. Reconcile→COMPLETE only from REQUIRED with SUFFICIENT coverage and non-UNKNOWN effect. CONFLICT/UNKNOWN have no producer.
+- requiredAtomicity / availableAtomicity: Init = UNSUPPORTED. SetAtomicity is the only writer and has no state guard; all 4×4 pairs are reachable directly from any state. This is a genuine orthogonal dimension in the current abstraction, not merely a declared-domain artifact.
+
+### New semantic flags discovered during the predecessor audit
+1. fence=ENFORCED does NOT block StartOperation. StartOperation blocks only fence=ISSUED. Therefore a state can have an enforced fence and subsequently enter IN_FLIGHT. This may be intentional (fence as already-enforced prerequisite) or may indicate a missing semantic dependency; it must be resolved from the intended fence meaning before any change.
+2. successor=PRESENT can be created independently of operation, authority, effect, fence, or recovery. ReleaseSuccessor later requires authority/current epoch, ENFORCED fence, PROVEN exclusivity, non-enforced stop, no REQUIRED reconciliation, non-UNKNOWN effect, and satisfied atomicity. The model separates successor creation from release gating by design; whether PRESENT-before-operation is legitimate remains an explicit semantic question.
+3. IssueFence can create a fence from the initial state without an operation. ProveExclusivity can then operate on that fence without an operation. This is another candidate for intentional precondition state vs abstraction freedom.
+4. SetPartialCoverage can run from the initial EMPTY reconstruction and does not require an active operation or evidence. Thus PARTIAL coverage is currently an independently injectable state, not necessarily an evidence-derived state.
+5. Recover can run while an operation is IN_FLIGHT. The current model therefore allows reconstruction to begin before the operation reaches STOPPING/TERMINAL. This is potentially important because the semantic freeze describes recovery as a controlled sequence; do not label it a bug until the intended semantics are checked.
+6. ObserveExternal can produce an OBSERVED effect from the initial state without any operation. This may be legitimate if the model represents externally observed effects independent of Nexo execution; otherwise it is a missing contextual dependency.
+7. MarkUnknown can produce UNKNOWN from the initial state. Consequently UNKNOWN is a classification state, not proof of a prior effect/operation. Any interpretation that treats effect UNKNOWN as evidence of an attempted Nexo execution would be unsound for this model.
+8. SetContext can be used in NONE/TERMINAL states and clears admission, but it does not clear freshness/coverage/authority snapshots. The model therefore permits a context reset followed by a fresh admission while retaining historical freshness/coverage values until overwritten. This needs semantic review, not immediate modification.
+9. SetCorrelated is irreversible within this model: there is no action producing INDEPENDENT. If INDEPENDENT is intended as a meaningful state in this abstraction, a missing transition exists; if it is merely a reserved value, its presence inflates the declared domain but not the reachable graph.
+
+### Status
+- These are producer/predecessor findings, not final design judgments.
+- No suspicious value has been deleted or reduced.
+- No AB105.116R source/config/workflow modification was made.
+- Next: construct the full variable/action/guard/dependency matrix and trace minimal witness paths for the candidate orthogonal states above. Then compare each against the semantic freeze and S1–S12 requirements before deciding whether any freedom is legitimate or a missing guard.
