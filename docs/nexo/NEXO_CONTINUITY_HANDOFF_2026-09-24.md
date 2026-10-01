@@ -2644,3 +2644,37 @@ Status: G0=NOT_PERFORMED; EXECUTION_ENVIRONMENT=PENDING; EXACT_RACE=NOT_EXECUTED
 ### EXACT NEXT ACTION
 
 AB104.844R — continue auditing the exact Kafka test build/module placement for the minimal harness so that, when executed in a real Kafka checkout, G0 can be run without broad or duplicate artifacts.
+
+## 191. AB104.844R — Kafka already has a supported single-test execution path
+
+`AGENTS.md` documents `./gradlew clients:clients-integration-tests:test --tests <fully-qualified-test-method>` for an individual integration test. Therefore the minimal future execution should be one dedicated test method, not the full Kafka test suite.
+
+Status: SINGLE_TEST_EXECUTION_PATH=SOURCE_CONFIRMED.
+
+## 192. AB104.845R — Existing ACL integration tests live in a client integration-test module
+
+`clients/clients-integration-tests/src/test/java/org/apache/kafka/clients/security/GroupAuthorizerIntegrationTest.java` already uses `ClusterInstance`, `@ClusterTest`, `StandardAuthorizer`, ACL creation/deletion and real Producer/Admin clients. This is the closest existing integration-test surface for the proposed harness.
+
+Status: TEST_MODULE_PLACEMENT=SOURCE_SUPPORTED.
+
+## 193. AB104.846R — Do not copy Kafka internals into the Nexo repository
+
+The intended experiment can be represented as one Kafka integration test plus one test-only Authorizer wrapper in the Kafka checkout. Copying Kafka source into `snowdenxrp/aldea-ia` would create a second source of truth and could invalidate evidence provenance. Nexo continuity should retain only the research state and exact execution contract.
+
+Status: NO_KAFKA_SOURCE_COPY=LOCKED.
+
+## 194. AB104.847R — Existing module is sufficient for the client-side harness, but wrapper package/module placement still needs compile verification
+
+The existing integration test demonstrates the required ClusterTest/Admin/Producer surface. The wrapper extends `StandardAuthorizer`, which is in the metadata module; the exact test-source dependency visibility for a wrapper placed in the client integration module must be confirmed by a real Kafka build rather than assumed.
+
+Status: WRAPPER_DEPENDENCY_VISIBILITY=PENDING_BUILD_VERIFICATION.
+
+## 195. AB104.848R — Runtime execution remains external and unperformed
+
+No Kafka checkout was built or test executed during this pass. The single-test command is source-confirmed, but G0 remains a pending runtime experiment. No ACL revoke, blocked Produce, D1, release, append or effect witness has been observed.
+
+Status: G0=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.849R — close wrapper dependency visibility and the smallest test source placement, then stop source research unless a concrete compile/runtime environment becomes available.
