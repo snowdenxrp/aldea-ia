@@ -3217,3 +3217,43 @@ Status: EXTERNAL_EXECUTOR=REQUIRED; CURRENT_EXECUTION=NOT_AVAILABLE; RUNTIME=NOT
 ## AB104.960R — Audit transition
 The source-level audit is now formally transitioned from investigation to execution readiness. No further AB blocks should be added merely by restating the same source facts; the next meaningful continuation should be an actual external G0 implementation attempt or a concrete implementation blocker.
 Status: PHASE=EXECUTION_READY; G0=READY; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
+
+## AB104.961R — Runtime source alignment
+Fresh source check confirms the planned runtime remains aligned with Kafka trunk: KRaft uses StandardAuthorizer, Produce authorization uses WRITE on TOPIC, and Kafka documents targeted Gradle test execution. This is feasibility evidence only; no runtime execution occurred.
+Status: RUNTIME_DESIGN=ALIGNED; RUNTIME=NOT_EXECUTED.
+
+## AB104.962R — Test-module execution path
+Kafka's current developer instructions support running a single integration test by fully-qualified test name. This is the intended narrow execution path once the temporary checkout and harness exist.
+Status: SINGLE_TEST_PATH=CONFIRMED; BROAD_SUITE=NOT_REQUIRED; RUNTIME=NOT_EXECUTED.
+
+## AB104.963R — Java/runtime prerequisite
+Kafka trunk's current build guidance requires Java 17 for modules outside the Java-11-compatible subset. The external runner must verify the JDK before compilation; a missing/incompatible JDK is an execution blocker, not a race result.
+Status: JDK17=REQUIRED_FOR_TARGET_MODULES; PRECHECK=MANDATORY.
+
+## AB104.964R — External harness artifact boundary
+The harness should remain a temporary test artifact in the Kafka checkout. It must not be committed into Nexo's canonical repository merely to make the runtime executable.
+Status: TEMP_KAFKA_ARTIFACT=REQUIRED; NEXO_HARNESS_COPY=PROHIBITED.
+
+## AB104.965R — Runtime preflight
+Before G0, the external runner must record: Kafka commit/version, JDK version, Gradle/toolchain status, test source compilation status, target-node authorizer configuration, topic/partition leader, and ACL baseline.
+Status: PREFLIGHT=MANDATORY; RUNTIME=NOT_EXECUTED.
+
+## AB104.966R — Compilation failure classification
+If the wrapper/test does not compile, that is an implementation blocker. It must be recorded with the exact compiler error and must not be interpreted as evidence for or against the race.
+Status: COMPILE_FAILURE=BLOCKER_ONLY; EXACT_RACE=UNKNOWN.
+
+## AB104.967R — Startup failure classification
+If Kafka fails to start with the wrapper, the result is a harness/configuration blocker unless the failure itself directly exercises a defined witness condition. No race conclusion follows from startup failure.
+Status: STARTUP_FAILURE=BLOCKER_ONLY; EXACT_RACE=UNKNOWN.
+
+## AB104.968R — First-run discipline
+The first execution should be one controlled G0 attempt, not a broad stress campaign. Preserve all artifacts, then decide whether a second run is warranted from the observed blocker/non-witness/witness.
+Status: FIRST_RUN=SINGLE_CONTROLLED_ATTEMPT; STRESS=DEFERRED.
+
+## AB104.969R — Runtime evidence immutability
+Raw runtime evidence must be retained as produced. The continuity summary may reference it, but must not rewrite timestamps/order into a cleaner narrative that changes the evidence.
+Status: RAW_EVIDENCE=IMMUTABLE; SUMMARY=DERIVED_ONLY.
+
+## AB104.970R — Execution transition locked
+The audit is now at the external execution boundary. No additional source-only AB blocks are needed unless the implementation attempt reveals a concrete blocker.
+Status: PHASE=EXTERNAL_EXECUTION; G0=READY; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
