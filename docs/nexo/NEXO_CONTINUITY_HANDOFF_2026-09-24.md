@@ -42,3 +42,31 @@ Status: WORKFLOW_DECLARATION=CONFIRMED; EXISTING_WORKFLOW_EXECUTION=CONFIRMED; K
 ## AB105.049R — Next implementation question narrowed
 The next useful investigation is no longer whether GitHub Actions can execute at all. It is whether a dedicated temporary CI job can safely obtain/build the required Kafka revision and run the frozen G0 harness without modifying the canonical Nexo model or fabricating evidence.
 Status: NEXT=KAFKA_G0_CI_FEASIBILITY; MODEL_ANCHOR=AB105.116R_UNCHANGED; EXACT_RACE=UNKNOWN.
+
+
+## AB105.050R — G0 contract recovered from historical canonical audit
+
+The exact G0 contract was not missing from the historical audit; it was hidden behind the current handoff's compact placeholder. Historical commits AB104.807R, AB104.820R, AB104.827R and AB104.828R recover the frozen pre-race and witness protocol without inventing any new semantics.
+
+Recovered contract:
+1. Isolated non-combined KafkaClusterTestKit; target broker receives the test-only Authorizer wrapper; controller Authorizers remain unwrapped.
+2. Topic is created and the target WRITE ACL is installed; normal ACL propagation/visibility is witnessed.
+3. Baseline target authorization is ALLOWED and target partition/leader readiness is established; baseline target log-end offset is captured.
+4. A1 = the real target Produce authorization call returns ALLOW and is then held at the wrapper barrier, after the delegated decision. The wrapper must not block initialization or metadata publication.
+5. D0 = Admin DeleteAcls operation completes at the controller/metadata-log control-plane boundary. D0 is not D1.
+6. D1 = an independent fresh authorization call against the target broker returns DENIED after the deletion has been published/observed. D1 must not be inferred from Admin completion or describeAcls absence.
+7. Only after D1 is observed is A1 released.
+8. D2 = the original Produce continues through Kafka's real authorization-to-ReplicaManager/append path; no production append-path interception is required.
+9. E = capture both the Produce result and an independent target-broker UnifiedLog/logEndOffset witness, with the topic/partition isolated from unrelated writers.
+
+Interpretation is frozen: only the complete A1→D0→D1→D2→E tuple is a race witness. Missing/contradictory/partial steps remain UNKNOWN/non-witness. The source audit does not establish an executed race.
+
+Status: G0_CONTRACT=RECOVERED; G0_CHECKLIST=FROZEN; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; AB105.116R=INTACT.
+
+## AB105.051R — Historical contract recovery closes the previous blocker
+
+The prior blocker “G0 contract not located” is now resolved as a retrieval problem, not a semantic gap. No new Kafka behavior was inferred. The recovered contract is directly traceable to the historical audit chain and is consistent with the later frozen checklist in AB104.957R-960R.
+
+The next evidence-producing step is therefore no longer contract recovery: it is the smallest real Kafka harness implementation/build attempt in the observed GitHub Actions execution path, preserving the frozen contract and without changing AB105.116R.
+
+Status: CONTRACT_RECOVERY=RESOLVED; HARNESS_IMPLEMENTATION=NEXT; RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN.
