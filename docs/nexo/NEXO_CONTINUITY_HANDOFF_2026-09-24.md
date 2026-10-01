@@ -1902,3 +1902,37 @@ No Nexo implementation, V21, formal verification, or runtime Nexo execution.
 EXACT NEXT ACTION: AB104.770R — inspect UnifiedLog/ProducerStateManager validation and upstream tests specifically for producer-epoch/transaction guards that may look like generic effect fencing; then audit KafkaApis tests around ACL mutation and Produce scheduling for any synchronization point between authorization and append. Keep ACL authority freshness separate from producer/transaction epochs.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.770R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+## 117. AB104.770R–772R — Large-tranche audit: producer/transaction fencing, KafkaApis tests, ACL boundary
+
+### AB104.770R — ProducerStateManager fencing separation
+Direct source audit of ProducerStateManager, UnifiedLog and ProducerStateManagerTest.
+- ProducerStateManager explicitly uses producer epoch to fence zombie writers and tracks producer id, epoch, sequence and last offsets.
+- UnifiedLog rejects stale producer epochs for transactional client/coordinator appends when an active producer entry has a newer epoch; duplicate batches are separately detected.
+- Transaction VerificationGuard prevents stale/ABA transaction verification from authorizing an invalid transactional append.
+- These guards are tied to producer/transaction identity and partition-local producer state. No ACL principal, ACL metadata revision, authorizer generation, or topic WRITE authorization snapshot participates in these checks.
+- Producer-state tests confirm epoch fencing and sequence behavior, but they do not test ACL revocation during an already-authorized Produce.
+Status: PRODUCER_EPOCH_FENCE=SOURCE_CONFIRMED; SEQUENCE_FENCE=SOURCE_CONFIRMED; TRANSACTION_VERIFICATION_GUARD=SOURCE_CONFIRMED; ACL_AUTHORITY_BINDING=NOT_FOUND; ACL_REVOCATION_DURING_PRODUCER_FENCE=NOT_TESTED.
+
+### AB104.771R — KafkaApis Produce test boundary
+Direct audit of current core/src/test/scala/unit/kafka/server/KafkaApisTest.scala.
+- The audited Produce tests exercise request construction, ReplicaManager callback behavior, response mapping and producer-epoch error translation.
+- The test shouldReplaceProducerFencedWithInvalidProducerEpochInProduceResponse confirms that an INVALID_PRODUCER_EPOCH returned by ReplicaManager is surfaced correctly; it does not represent an ACL freshness test.
+- Search of the test file found no dedicated test method implementing ACL ALLOW -> revoke -> in-flight Produce -> append, nor a test asserting a second ACL authorization at append/effect time.
+- Therefore absence of such a test in this file is source/test evidence only; it is not proof that no test exists elsewhere in the repository.
+Status: PRODUCE_RESPONSE_TESTS=SOURCE_CONFIRMED; PRODUCER_EPOCH_RESPONSE_MAPPING=SOURCE_CONFIRMED; INFLIGHT_ACL_REVOKE_TEST_IN_KAFKAAPISTEST=NOT_FOUND; EFFECT_TIME_ACL_REAUTH_TEST_IN_KAFKAAPISTEST=NOT_FOUND; REPOSITORY_WIDE_TEST_ABSENCE=UNKNOWN.
+
+### AB104.772R — Consolidated authority-boundary result
+The large-tranche evidence now establishes a clean separation:
+ACL AUTHORIZATION -> request-local authorized records -> PARTITION LEADERSHIP/PRODUCER/TRANSACTION VALIDATION -> append.
+The downstream mechanisms can reject stale producer/transaction state without re-establishing current ACL authority. Current Kafka documentation defines PRODUCE topic WRITE authorization as the normal produce authorization, while ACLs are managed through the authorization subsystem. This is consistent with the source path audited above. [Web sources: Apache Kafka authorization documentation; current KafkaApis source.]
+No audited source introduced an ACL generation/fence at the append boundary.
+Therefore: EFFECT_TIME_ACL_REAUTHORIZATION=NOT_FOUND_IN_AUDITED_PATH; ACL_AUTHORITY_GENERATION_PASSED_TO_APPEND=NOT_FOUND; PRODUCER_EPOCH_AS_ACL_FENCE=FALSE; PARTITION_LEADER_EPOCH_AS_ACL_FENCE=FALSE; TRANSACTION_VERIFICATION_AS_ACL_FENCE=FALSE; EXACT_INFLIGHT_REVOKE_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+Important: this does NOT mean Kafka has been proven vulnerable to the exact race. It means the audited downstream mechanisms do not close that race by acting as an ACL freshness fence, while deterministic race execution remains outstanding.
+
+No Nexo implementation, V21, formal verification, or runtime Nexo execution.
+
+EXACT NEXT ACTION: AB104.773R — repository-wide search for ACL mutation + Produce concurrency/integration tests, including security/integration test suites and authorizer publication tests; determine whether any existing test actually controls the interleaving or merely verifies eventual authorization changes. If none exists, preserve UNKNOWN and design (but do not yet execute) the smallest deterministic race experiment.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.773R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
