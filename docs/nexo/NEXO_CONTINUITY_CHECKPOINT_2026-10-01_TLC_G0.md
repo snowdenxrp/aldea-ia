@@ -59,3 +59,29 @@ Do NOT automatically translate this into exploitability, impact, or a broader re
 
 ## Next action
 Preserve the raw artifact and perform a separate witness-integrity / semantic audit before any exploitability or architectural conclusion. Do not rerun TLC unnecessarily and do not modify AB105.116R.
+
+## Witness-integrity / semantic audit — 2026-10-01
+
+### Verified against the executed harness
+- A1 is not synthetic: TargetAuthorizer observes the real broker authorization call only after StandardAuthorizer returns ALLOWED for the original producer request, then blocks that in-flight path on A1_RELEASE.
+- D0 is a real Admin DeleteAcls operation and the test waits on .all().get(), so the admin operation has completed before D1 begins.
+- D1 is a fresh independent KafkaProducer using the same user credentials; it reaches the real broker path and fails with ExecutionException whose cause is TopicAuthorizationException naming the target topic.
+- D1 completes before A1_RELEASE is called; therefore the denied observation is temporally between D0 completion and release of the earlier authorized request.
+- D2 is the original producer request that was already authorized at A1 and was blocked before completion; it is released only after D1 denial and then completes successfully.
+- E is read from the broker's actual UnifiedLog for partition 0 after D2; baseline is asserted 0 and after is asserted 1.
+
+### Semantic boundary
+The witness establishes the frozen G0 execution sequence A1 -> D0 -> D1 -> D2 -> E on the pinned Kafka revision and one-broker isolated harness.
+It does NOT by itself prove that Kafka authorization caching is the mechanism: the harness deliberately blocks an already-authorized in-flight request. Therefore the precise demonstrated phenomenon is revocation occurring after authorization but before the authorized operation's effect, with a later independent request denied.
+It also does not establish multi-broker behavior, persistence/restart behavior, production deployment conditions, attacker reachability, or exploitability in a Nexo deployment.
+
+### Audit status
+- WITNESS_INTEGRITY=SUPPORTED
+- G0_SEQUENCE_SEMANTICS=SUPPORTED
+- CACHE_MECHANISM=UNKNOWN_NOT_TESTED
+- MULTI_BROKER_GENERALIZATION=UNKNOWN
+- EXPLOITABILITY=UNKNOWN_PENDING_SEPARATE_ANALYSIS
+- AB105.116R=INTACT
+- NO_AB105.117R
+
+Next: separate mechanism/exploitability analysis only; do not rerun TLC or alter AB105.116R unless new evidence requires it.
