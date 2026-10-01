@@ -898,30 +898,57 @@ Freeze the exact verification status of each safety boundary before any model ch
 
 The matrix is deliberately stricter than a simple "guard exists" classification:
 - a guard is not automatically an invariant;
-- a represented distinction is not automatically verified;
-- an unrepresented semantic relation cannot be verified by TLC;
-- structural ordering is not the same as historical provenance.
 
-### Configuration consequence
-The current CFG contains only:
-TypeOK, S1_ExecutionAuthority, S1_EffectAuthority, S4_ReleaseRequirements, S7_CompleteNeedsCoverage, S10_AtomicRequirement.
 
-Therefore the live TLC run, even if it finishes PASS, can only report these configured invariants plus TypeOK. It cannot claim S2/S3/S5/S6/S8/S9/S11/S12 verification.
+## AB105.116R audit pass 21 — minimum semantic delta matrix — 2026-09-30
 
-### High-priority unresolved set
-1. Reauthorize provenance (pass 16).
-2. S11 expected-effect semantics (pass 17).
-3. S12 effect/observation identity semantics (pass 18).
-4. S2/S3 provenance semantics (pass 19).
-5. D1a epoch identity/advancement (passes 11–15).
-6. Additional semantic guards previously identified: AdmitCurrent authority/epoch binding, Recover timing, release scope, ObserveAbsent scope, replay after operation start.
+### Objective
+Derive the smallest *semantic* additions required to close each unresolved boundary. This is a design-delta analysis only; 116R remains unchanged.
+
+| Gap | What is missing | Minimum semantic object needed | Guard/invariant not yet justified | Decision |
+|---|---|---|---|---|
+| D1a / admission epoch | admission does not retain authority epoch | admissionEpoch for authority-scoped admission | stale/revalidate policy | **REQUIRED FOR EPOCH-BOUND ADMISSION; POLICY OPEN** |
+| Reauthorize | VALID can follow COMPLETE reconciliation with no new authority evidence | explicit authority-evidence/revalidation event or explicit declaration that reconciliation is authoritative | exact reauthorization rule | **SEMANTIC CONFLICT CANDIDATE; POLICY OPEN** |
+| S11 | no expected-effect relation | expected effect identity/predicate + relation to observed state | material-mismatch predicate | **REPRESENTATION REQUIRED** |
+| S12 | effectId meaning/correlation undefined | first define effectId; if evidence-scoped, observation/event identity and correlation binding | operation/subject/incarnation binding | **SEMANTIC DEFINITION REQUIRED** |
+| S2/S3 | transition ordering exists; historical provenance absent | provenance state only if contract requires persistent history | non-tautological invariant | **NO CHANGE YET** |
+| AdmitCurrent | ACCEPTED can be created under UNKNOWN/REVOKED authority and NONE epoch | admission context contract (at minimum epoch when authority-scoped) | VALID/CURRENT guard vs later revalidation | **SEMANTIC DECISION REQUIRED** |
+| Recover | can begin IN_FLIGHT and can regress reconstruction | recovery-phase contract | STOPPING/TERMINAL guard if required | **SEMANTIC DECISION REQUIRED** |
+| ObserveAbsent | absence can be asserted without operation/effect correlation | scope/provenance of absence evidence | correlation guard | **SEMANTIC DECISION REQUIRED** |
+| ReleaseSuccessor | release not bound to operation/effect context | release scope definition | op/effect identity guard if consequential | **SEMANTIC DECISION REQUIRED** |
+| Replay after start | ReplayDuplicate/Conflict can alter admission while active | replay phase semantics | phase guard | **SEMANTIC DECISION REQUIRED** |
+
+### Key methodological result
+The minimum delta is NOT "add one invariant per missing S-number."
+
+Some gaps are:
+1. **verification-only** — an existing transition relation may already encode the rule, as with S2/S3 ordering;
+2. **representation gaps** — the state cannot express the required semantic distinction, as with S11;
+3. **semantic-definition gaps** — adding state before deciding meaning would hard-code an assumption, as with S12/effectId and Reauthorize;
+4. **dependency/guard candidates** — the state can express the distinction, but the current action permits too much freedom, as with AdmitCurrent, Recover, ObserveAbsent, ReleaseSuccessor.
+
+### Minimum-change principle
+No new variable should be introduced until its semantic object is frozen.
+No new guard should be introduced merely because a transition looks unusual.
+No invariant should be added if it is tautological or simply restates an action precondition without adding trace/state coverage.
+No existing UNKNOWN/PARTIAL/ABSENT distinction may be collapsed to simplify verification.
+
+### Proposed order of resolution
+1. Freeze reauthorization semantics.
+2. Freeze expected-effect/S11 semantics.
+3. Freeze effectId vs observation/event identity for S12.
+4. Freeze epoch advancement semantics and admission policy P1/P2.
+5. Re-evaluate AdmitCurrent, Recover, ObserveAbsent, ReleaseSuccessor, replay-phase semantics using those frozen contracts.
+6. Only then design the smallest model revision and new CFG invariants.
+7. Run semantic preflight before TLC.
 
 ### Result
-S1_S12_COVERAGE_MATRIX = FROZEN
+MINIMUM_SEMANTIC_DELTA = DERIVED
+MODEL_116R_CHANGED = NO
+NEW_VARIABLES_AUTHORIZED = NO
+NEW_GUARDS_AUTHORIZED = NO
 FULL_S1_S12_VERIFICATION = NOT_ESTABLISHED
-MODEL_CHANGE = NOT_AUTHORIZED
-TLC_LIVE_RUN = STILL_IN_PROGRESS
-NO_NEW_BACKUP_ARTIFACT = CONFIRMED
+TLC = IN_PROGRESS
 
-### Next
-Do not modify 116R merely to increase the number of configured invariants. First derive the minimum semantic changes from the unresolved contracts. Then, after the live TLC result is known, perform a clean semantic preflight on any proposed revision before a new model-checking run.
+### Live TLC
+Run 36781846063 / job 110113752493 remains in_progress; step 5 is still executing and evidence upload is pending. No PASS/FAIL conclusion is available.
