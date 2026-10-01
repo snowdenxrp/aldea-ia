@@ -639,3 +639,47 @@ TLC checks invariants over the reachable graph produced by Init/Next and the con
 
 ### Next
 Recover the historical artifact by its exact persisted commit/path rather than guessing filenames. Once recovered, extract the epoch transition semantics verbatim/paraphrased into the audit record, then derive the smallest executable epoch model.
+
+## AB105.116R audit pass 15 — construction-history closure — 2026-09-30
+
+### Objective
+Close the remaining historical question: whether AB105.113R → AB105.114R → AB105.115R introduced or preserved an executable authority-epoch advancement rule.
+
+### Verified history
+- AB105.114R commit e139a6ea6b9adf94adae6721d1874ae94d56b0b9 is directly based on AB105.112R commit 62f0e9922072891bc0f7bc1336828844c0ea7c45.
+- AB105.114R is explicitly a semantic correction after the first AB105.113R artifact. Its recorded corrections concern effect observation/execution, authority-at-execution, deadlock semantics and symmetry; it does not define an epoch-advancement transition.
+- AB105.115R commit 0dfa82299d0105082de6a9e59588742952a5ce1e is directly based on AB105.114R. Its documented corrections add/clarify effect origin, authority-at-execution, replay identity, freshness, STOP/fence separation, and required adversarial states. It does not define an epoch-advancement transition.
+- Therefore the verified 113R→114R→115R construction history does not contain a later executable E1→E2 rule.
+
+### Important correction
+This is stronger than the earlier "historical rule not recovered" status.
+
+Historical artifact recovery is COMPLETE.
+Historical epoch-advancement rule in the recovered 111R/112R/114R/115R construction record = NOT_DEFINED.
+
+The current 116R model's NONE→CURRENT-only epoch behavior is therefore not a hidden implementation of an older frozen rule that we failed to find. It is an explicit limitation of the current finite abstraction.
+
+### Consequence
+D1a remains a valid semantic-observability candidate for authority-scoped admission, but the model cannot honestly test cross-epoch P1/P2 until an epoch identity/advancement contract is first defined.
+
+No arbitrary E2 transition, automatic stale transition, or revalidation action is authorized by this evidence.
+
+### TLC status
+Run 36781846063 / job 110113752493 remains IN_PROGRESS. Step 5 "Run TLC finite model" is still running; evidence upload remains pending. No PASS/FAIL result is available.
+
+### Methodological basis
+TLC systematically explores the reachable state graph of the configured finite model and checks enabled invariants there. Thus a semantic behavior absent from Init/Next cannot be verified by TLC merely because the domain names OLD/CURRENT/FUTURE. citeturn0search12turn0search13
+
+### Result
+HISTORICAL_CONSTRUCTION_AUDIT = COMPLETE
+EPOCH_ADVANCEMENT_RULE = NOT_DEFINED
+D1a = JUSTIFIED_AS_OBSERVABILITY_REQUIREMENT
+P1 = OPEN
+P2 = OPEN
+MODEL_CHANGE = NOT_AUTHORIZED
+TLC = IN_PROGRESS
+FORMAL_PROOF = NOT_PERFORMED
+IMPLEMENTATION_VERIFICATION = NOT_PERFORMED
+
+### Next exact action
+Continue the semantic audit on the remaining high-risk gaps without changing 116R: Reauthorize evidence, S11 expected-vs-observed effect representation, S12 observation/effect identity binding, and S2/S3 non-tautological invariant design. Keep the live TLC run untouched.
