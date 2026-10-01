@@ -125,3 +125,56 @@ Status: BOOTSTRAP_WORKFLOW=CREATED_ON_ISOLATED_BRANCH; KAFKA_REV_PINNED=YES; JAV
 
 ### DO-NOT-PROMOTE
 Do not treat the workflow file, Kafka checkout, Java setup, compilation command, or missing workflow-run record as evidence that Kafka G0 executed. The next observation must come from an actual workflow run and its raw logs/artifact.
+
+
+## CONTINUITY SAFEGUARD — AB105.053R onward
+
+For the next chat, recover from this handoff before doing any Nexo/Kafka work. Do not rely on conversational memory.
+
+Canonical anchor remains `AB105.116R` and MUST NOT be modified or silently superseded.
+
+Current Kafka G0 state:
+- G0 completeness review: PASSED_WITH_D0_CLARIFICATION.
+- Frozen G0 tuple: `A1 → D0 → D1 → D2 → E`.
+- `D0` means controller/metadata-log DeleteAcls completion; it is NOT broker-global freshness.
+- `D1` is an independent fresh authorization call on the target broker that returns DENIED after deletion is observed locally.
+- Only the complete tuple is a race witness.
+- Partial/contradictory/missing evidence remains UNKNOWN/non-witness.
+- `EXACT_RACE=UNKNOWN`.
+- `EXPLOITABILITY=UNKNOWN`.
+- `G0_RUNTIME=NOT_EXECUTED`.
+
+AB105.053R bootstrap:
+- Dedicated branch: `nexo-ab105-g0-bootstrap`.
+- Workflow: `.github/workflows/nexo-ab105-g0-bootstrap.yml`.
+- Bootstrap commit: `9ee816706e9a12a9540ee7441e9db7dcc8d0e6ef`.
+- Kafka source pinned to `99b940733a9f6bc409457dba7108f08421d81e42`.
+- Workflow declares ubuntu-latest + Temurin Java 21, records JVM/Gradle, compiles Kafka test infrastructure, and uploads raw bootstrap evidence.
+- This workflow is intentionally NOT the G0 race harness.
+- GitHub API currently showed `workflow_runs=[]` for that bootstrap commit. Therefore execution is NOT OBSERVED; do not infer success/failure.
+- Continuity persistence commit on main: `bd6b812b602b8dcb5969da998f76654b29b4fb5b`.
+
+Evidence boundary:
+- Workflow existence, source checkout, Java setup declaration, compilation commands, or absence of a workflow run are NOT runtime evidence.
+- Do not claim bootstrap success until an actual Actions run and raw logs/artifact are observed.
+- Do not implement/interpret A1/D0/D1 until bootstrap prerequisites are observed.
+- If bootstrap fails, preserve the exact failure as evidence and diagnose before changing anything.
+- If bootstrap succeeds, capture the raw artifact/logs and only then proceed to the smallest temporary G0 harness.
+
+Kafka source anchors reviewed:
+- KafkaClusterTestKit provides real in-process BrokerServer/ControllerServer instances.
+- Kafka settings include test-common:test-common-runtime and metadata modules.
+- StandardAuthorizer behavior/source was reviewed, but source inspection does not establish the runtime race.
+- No source fact has been promoted to runtime execution evidence.
+
+Next exact action:
+1. Query the actual GitHub Actions run for the bootstrap workflow/branch.
+2. If a run exists, inspect job status and raw logs/artifact.
+3. Record exact result in continuity.
+4. Only after a successful bootstrap gate, implement the minimal isolated G0 harness against the frozen checklist.
+5. Preserve UNKNOWN/PENDING and do not modify AB105.116R.
+
+DO-NOT-REPEAT:
+- Do not redo the AB104.951R–AB104.960R completeness audit unless new contradictory evidence appears.
+- Do not treat D0 as equivalent to D1.
+- Do not infer race/exploitability from compilation, startup, baseline ALLOW, ACL deletion completion, or source inspection.
