@@ -718,37 +718,71 @@ A reachable witness can be constructed without inventing any transition:
 The critical observation is step 10: no new authority-bearing evidence is consumed between REVOKED and VALID. The only enabling facts are reconciliation COMPLETE and the unchanged CURRENT epoch.
 
 ### Semantic classification
-This is stronger than a generic guard-review finding.
 
-REAUTHORIZATION_PROVENANCE = GAP / SEMANTIC CONFLICT CANDIDATE
+## AB105.116R audit pass 17 — S11 expected-vs-observed effect semantics — 2026-09-30
 
-If reconciliation COMPLETE is intentionally defined as sufficient authority evidence, then the transition may be legitimate. But that meaning is not established by the recovered AB105.111R/112R contract. If reauthorization means renewed authority after revocation/recovery, the current action can manufacture VALID from state rather than from fresh authority evidence.
+### Objective
+Determine whether the current finite state can express S11 from AB105.112R without overloading UNKNOWN.
 
-This must not be fixed by simply adding an authority-state guard, because that would only block the witness and would still leave the provenance question unresolved.
+### Frozen S11 requirement
+AB105.112R states: reconciliation is required where expected and observed effects differ materially.
 
-### Relation to epoch gap
-The problem is compounded by the confirmed epoch representation gap:
-- RevokeAuthority leaves authorityEpoch = CURRENT.
-- EstablishAuthority also writes CURRENT.
-- There is no executable E1->E2 transition.
+AB105.111R separately requires EFFECT_OBSERVED, EFFECT_ABSENT_UNPROVEN, EFFECT_UNKNOWN, and PARTIAL to remain distinct. UNKNOWN is epistemic uncertainty, not a synonym for mismatch.
 
-Therefore authorityEpoch = CURRENT cannot currently serve as evidence that a new authority epoch has been established.
+### Current 116R representation
+Current effect fields are:
+- effectOrigin
+- effectState
+- effectId
 
-### Required semantic decision before code
-One of these meanings must be explicitly frozen:
-A. Reconcile COMPLETE itself is authoritative reauthorization evidence; or
-B. Reauthorization requires a distinct fresh authority evidence/event; or
-C. Reauthorization is not permitted directly after revocation without an explicit authority-establishment transition.
+effectState contains NONE, OBSERVED, UNKNOWN, PARTIAL, ABSENT_UNPROVEN.
 
-No choice is made in this pass.
+There is no explicit expected-effect identity, expected-effect state, expected-vs-observed relation, or material-mismatch predicate.
+
+### Minimal witness analysis
+A state with:
+- an expected effect X,
+- an observed effect Y,
+- and X != Y materially
+cannot be represented as a distinct state because no expected-effect dimension exists.
+
+Likewise:
+- expected X + no observation yet
+- expected X + UNKNOWN observation
+- expected X + proven absence
+cannot be distinguished by current effectState alone.
+
+Using UNKNOWN as the mismatch state would be semantically incorrect because UNKNOWN also has a reachable path from Init via MarkUnknown and therefore does not imply that an expected effect existed.
+
+Using ABSENT_UNPROVEN as mismatch would also be incorrect: that state specifically represents insufficiently proven absence after UNKNOWN + SUFFICIENT coverage, not contradiction between expected and observed effects.
+
+### Classification
+S11 = REPRESENTATION GAP, CONFIRMED.
+
+This is not yet a bug in implementation because the exact expected-effect contract was never frozen. It is a verified limitation: the current model cannot honestly formulate the literal S11 property from its available state.
+
+### Minimal candidate
+Before adding state, define the semantic object S11 talks about:
+- what creates the expected effect;
+- whether expectation is an effect identity, operation consequence, or predicate;
+- what counts as materially different;
+- whether partial/unknown observations can satisfy or defer reconciliation.
+
+Only after that freeze should the smallest expected-effect/mismatch dimension be derived.
+
+### Anti-overload rule
+Do not map:
+UNKNOWN -> mismatch
+ABSENT_UNPROVEN -> mismatch
+OBSERVED -> match
+without a frozen contract. Those mappings would erase distinctions already required by AB105.111R.
 
 ### Result
-REAUTHORIZE_WITNESS = REACHABLE
-REAUTHORIZE_FRESH_EVIDENCE = ABSENT
-REAUTHORIZE_SEMANTICS = OPEN
-EPOCH_SUPPORT_FOR_REAUTHORIZATION = INSUFFICIENT
+S11_REPRESENTATION = INSUFFICIENT
+S11_MISMATCH_PREDICATE = NOT_DEFINED
+UNKNOWN_OVERLOAD = PROHIBITED
 MODEL_CHANGE = NOT_AUTHORIZED
 TLC_LIVE_RUN = UNTOUCHED
 
 ### Next
-Audit S11 using the same discipline: determine whether the current variables can express an expected-vs-observed material mismatch without overloading UNKNOWN, then audit S12 identity binding.
+Audit S12: determine whether effectId can legitimately serve as OBSERVATION_ID/EVENT_ID and how it must bind to operationId, subject, and incarnation without inventing a second identity dimension prematurely.
