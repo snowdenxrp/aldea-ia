@@ -3502,3 +3502,8 @@ Status: PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME; NEXT=EXTERNAL_G0_OR_TOOLING_PATH
 ## AB105.041R — Local runner capability check
 A fresh local capability check found Java 21 available, but no Apache Kafka checkout, no Kafka Gradle wrapper in the working directories, and no nearby Git repository containing Kafka. This is new environment evidence: the JVM prerequisite exists, while the Kafka execution workspace itself is absent.
 Status: JAVA=AVAILABLE_21; KAFKA_CHECKOUT=ABSENT; GRADLE_WRAPPER=ABSENT; EXECUTION_WORKSPACE=UNAVAILABLE; EXACT_RACE=UNKNOWN.
+
+
+## AB105.042R — External build requirements revalidated
+A fresh Apache Kafka trunk check confirms the project supports targeted integration-test execution through its Gradle wrapper and currently documents Java 17/25 for build/test compatibility. This is feasibility evidence only; it does not create an executable Kafka workspace in the current environment.
+Status: EXTERNAL_BUILD_PATH=CONFIRMED; TARGETED_TEST=SUPPORTED; CURRENT_WORKSPACE=UNAVAILABLE; RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN.
