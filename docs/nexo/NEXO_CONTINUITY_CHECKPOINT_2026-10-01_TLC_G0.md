@@ -274,3 +274,38 @@ Interpretation:
 - If target-local ACL count is already 0 before D1, the run is not sufficient to demonstrate the propagation window; the exact state remains recorded.
 
 No claim of exploitability is permitted from this discriminator alone. Original G0 and PR #82 witnesses remain unchanged. No TLC rerun. AB105.116R remains intact. AB105.117R is not created.
+
+
+## Next mechanism discriminator implementation — 2026-10-01
+
+A distinct timing experiment was prepared without changing the frozen anchor or rerunning TLC.
+
+- Research branch: `nexo-ab105-g0-propagation-window-discriminator`
+- PR: #84 — OPEN / DRAFT / UNMERGED.
+- Head: `c4ebe094282d7315a0d57c2ae83c256dbe08588e`
+- Base: main.
+- Kafka remains pinned to `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+### Experimental distinction
+Unlike PR #82, D1 is now a NEW independent producer request issued immediately after controller-side D0 completion, without waiting for target-local ACL revocation.
+
+The target authorizer records:
+- D1 authorization result;
+- target-local ACL count at the authorization decision;
+- D1 append outcome;
+- D2 completion and final UnifiedLog offset.
+
+Interpretation is intentionally bounded:
+- D1 ALLOWED while target-local ACL count is still pre-revocation/nonzero would support a metadata-propagation authorization window.
+- D1 DENIED before local revocation is observed would weaken that specific propagation-window hypothesis for the execution.
+- D1 ALLOWED after local ACL count is already zero would require deeper mechanism analysis and would be materially stronger evidence.
+- No result is yet claimed until the workflow produces a recoverable witness.
+
+### Epistemic state
+- PROPAGATION_WINDOW = PENDING_EXECUTION
+- POST_D0_NEW_REQUEST = PENDING_EXECUTION
+- STALE_AUTHORIZATION_MECHANISM = UNKNOWN
+- EXPLOITABILITY = UNKNOWN
+- AB105.116R = INTACT
+- NO AB105.117R
+- NO TLC RERUN
