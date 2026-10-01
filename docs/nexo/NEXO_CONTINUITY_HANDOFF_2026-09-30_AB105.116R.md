@@ -371,3 +371,56 @@ Second-pass audit over every action in AB105.116R. Findings are review items, no
 - Strong semantic tensions: AdmitCurrent accepts without current authority; Reauthorize can restore VALID without explicit new authority evidence; ReleaseSuccessor is operation/effect-independent.
 - No source/model change authorized yet.
 - TLC remains a separate finite-checking process; its result cannot resolve semantic questions outside the supplied transition relation. TLC explores reachable states and checks configured properties. citeturn0search12turn0search13
+
+## Historical cross-check against AB105.111R/112R — pass 5 — 2026-09-30
+
+The three strongest tensions from pass 4 were compared against the original frozen contracts, without modifying AB105.116R.
+
+### A. AdmitCurrent versus admission contract
+AB105.111R defines ACCEPTED as requiring correlation and validity requirements to be satisfied. It also says RECEIVED != ADMITTED and lists subject identity, operation/authority epoch where applicable, incarnation where applicable, freshness, provenance, and coverage scope as the correlation envelope.
+
+AB105.116R's AdmitCurrent only establishes input + ACCEPTED + FRESH + SUFFICIENT + authorityAtAdmission. It does not explicitly model provenance, authority epoch at admission, observation/event identity, or an admission-time identity binding.
+
+Classification: **REAL MODELING-COVERAGE GAP**, not yet a proven safety violation. The model's ACCEPTED state is currently weaker than the frozen admission contract. This should not be fixed by merely adding a VALID-authority guard; the missing correlation dimensions must first be mapped to the finite abstraction so we do not collapse distinct semantics.
+
+### B. Reauthorize versus authority semantics
+AB105.111R freezes CURRENT authority as a distinct concept and AB105.112R explicitly requires that recovery must not silently transfer current authority.
+
+AB105.116R's Reauthorize guard is only reconciliation COMPLETE + authorityEpoch CURRENT, then it writes authority=VALID. No new authority evidence or authorization transition is represented.
+
+Classification: **STRONG SEMANTIC CONFLICT CANDIDATE**. The current action can manufacture VALID from a current epoch alone after reconciliation. Because authorityEpoch is itself only NONE/CURRENT in the executable model, the action currently lacks an explicit source of fresh authorization evidence.
+
+This does not prove the intended system is wrong; it proves the finite model does not preserve the stronger frozen distinction unless reconciliation-complete is intentionally defined as sufficient reauthorization evidence.
+
+### C. ReleaseSuccessor without operation/effect
+AB105.112R states successor release is consequentially protected by authority, fence, exclusivity, and atomicity, but it does not explicitly state that a successor release must be operation-scoped. Therefore the existing RELEASED-with-NONE-operation witness is **not a direct contradiction** of S4 as written.
+
+However, AB105.111R's correlation envelope says operation_id when operation-scoped and observation/event identity when evidence-scoped. If successor release represents a consequential operation/effect, the current model lacks those bindings.
+
+Classification: **SEMANTIC SCOPE UNKNOWN**, not a declared bug. It becomes a real gap only if the frozen release semantics require operation/effect correlation.
+
+### D. Additional finding: current S2/S3 wording versus model
+AB105.112R describes S2 as STOP request never silently becoming STOP enforced and S3 as fence issuance never silently becoming fence enforcement. The current model uses separate actions, so there is no direct silent assignment in a single action. But this wording is better interpreted as requiring explicit state-transition provenance/guards, not merely distinct enum values.
+
+Classification: **INVARIANT-COVERAGE GAP**. Dedicated S2/S3 invariants should be designed only after deciding the intended transition relation; adding tautological invariants would create false confidence.
+
+### E. Additional finding: S11 cannot be faithfully checked yet
+AB105.112R S11 requires reconciliation where expected and observed effects differ materially. AB105.116R has no explicit expected-effect state/predicate. UNKNOWN effect is not equivalent to a material mismatch.
+
+Classification: **REPRESENTATION GAP**. We must not retrofit UNKNOWN as mismatch; the semantic distinction must remain explicit unless evidence shows the abstraction intentionally equates them.
+
+### F. Additional finding: S12 is only partially represented
+AB105.111R requires subject identity, operation identity when operation-scoped, incarnation identity when runtime/resource-scoped, and observation/event identity when evidence-scoped. AB105.116R has subject/incarnation/operation fields but effectId is not bound to operationId and there is no observation/event identity dimension.
+
+Classification: **REPRESENTATION/COVERAGE GAP**. A future S12 invariant cannot honestly claim full identity preservation from the current variables alone.
+
+### Net result
+Pass 5 separates the findings into:
+- REAL MODELING-COVERAGE GAP: ACCEPTED admission envelope.
+- STRONG SEMANTIC CONFLICT CANDIDATE: Reauthorize can restore VALID from CURRENT epoch alone.
+- SEMANTIC SCOPE UNKNOWN: operation-independent successor release.
+- REPRESENTATION GAP: S11 expected-vs-observed mismatch.
+- REPRESENTATION/COVERAGE GAP: S12 evidence identity binding.
+- INVARIANT-COVERAGE GAPS: S2/S3 and others already recorded.
+
+No source/config/workflow change made. The correct next step is to derive a **minimal missing-dimension proposal** from the frozen contracts, then test whether each added distinction is actually necessary before expanding the model. This follows the formal-method discipline that invariants describe reachable-state properties and should be checked against the actual transition relation, rather than inferred from labels alone. citeturn0search12turn0search15
