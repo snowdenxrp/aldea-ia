@@ -2314,3 +2314,47 @@ Status: PER_SERVER_AUTHORZIER_PRECEDENCE=UNKNOWN; IMPLEMENTATION_BLOCKED_ON_PREC
 ### EXACT NEXT ACTION
 
 AB104.803R — trace TestKitNodes server properties through KafkaClusterTestKit into BrokerServer/ControllerServer configuration, establish precedence for `authorizer.class.name`, then lock the minimal wrapper configuration. No execution.
+
+## 150. AB104.803R — TestKit property precedence is SOURCE_CONFIRMED
+
+`KafkaClusterTestKit.createNodeConfig` starts from the Builder's global `configProps`, applies generated defaults with `put`/`putIfAbsent`, and then applies the associated broker node's `propertyOverrides()` with `props.putAll(...)`, followed by associated controller overrides with another `putAll(...)`. The resulting map is passed directly to `new KafkaConfig(props, false)`.
+
+Therefore a per-server `authorizer.class.name` override on a broker node supersedes the same global `setConfigProp` value for that node. For a non-combined target broker, there is no controller override on the same node. This closes the previously open precedence question.
+
+Status: PER_SERVER_AUTHORIZER_PRECEDENCE=SOURCE_CONFIRMED; BROKER_ONLY_WRAPPER_SCOPING=SOURCE_CONFIRMED; EXACT_RACE=NOT_EXECUTED.
+
+## 151. AB104.804R — Minimal clean cluster configuration is now source-supported
+
+Use separate controller and broker node IDs. Set the normal/real Authorizer globally if required by the cluster, then override only the target broker's `authorizer.class.name` through `TestKitNodes.Builder.setPerServerProperties`. Because `createNodeConfig` applies broker node overrides after global properties, the target broker receives the wrapper while controllers retain the global Authorizer.
+
+The experiment should avoid combined mode because the same node receives both broker and controller role configuration and both associated override maps are applied.
+
+Status: CLEAN_BROKER_ONLY_AUTHORZIER_CONFIG=SOURCE_SUPPORTED; CONTROLLERS_UNMODIFIED=SOURCE_SUPPORTED_BY_DESIGN; COMBINED_MODE=EXCLUDED.
+
+## 152. AB104.805R — Configuration isolation must be verified at runtime before the race
+
+Source now proves configuration precedence, but the race experiment still requires a runtime witness that the target broker actually instantiated the wrapper and that controller Authorizer instances remain unwrapped. This is a configuration sanity check, not the race itself.
+
+The wrapper should expose test-only state sufficient to identify its instance/node, or the harness should inspect `broker.authorizerPlugin` and controller `authorizerPlugin` before sending the Produce. If the expected isolation is absent, abort and preserve UNKNOWN.
+
+Status: RUNTIME_WRAPPER_IDENTITY_CHECK=REQUIRED_BEFORE_RACE; RACE_EXECUTION=NOT_STARTED.
+
+## 153. AB104.806R — Reconfirm no ReplicaManager interception is needed
+
+With broker-only Authorizer scoping now source-confirmed, the previous open path of replacing/intercepting `ReplicaManager.handleProduceAppend` remains unnecessary. The wrapper's post-ALLOW barrier can return the real authorization result to KafkaApis; KafkaApis then reaches the broker's original ReplicaManager and UnifiedLog path unchanged.
+
+This preserves the experiment's causal target: only the authorization-to-append handoff is synchronized; the append implementation itself remains production Kafka code.
+
+Status: REPLICA_MANAGER_PATCH=NOT_REQUIRED; REAL_APPEND_PATH=PRESERVED; EXPERIMENTAL_MUTATION=SYNCHRONIZATION_ONLY.
+
+## 154. AB104.807R — Pre-race readiness contract
+
+Before implementation/execution, the following must all be witnessed: (1) target broker is non-combined and has wrapper Authorizer instance; (2) controller Authorizers are not wrapper instances; (3) target topic WRITE ACL initially ALLOWs; (4) target Produce authorization reaches the exact barrier predicate; (5) ACL deletion completes independently; (6) target broker-local fresh authorization returns DENIED; (7) release occurs only after D1; (8) original Produce reaches real ReplicaManager; (9) append result/effect is captured separately from authorization state.
+
+Any missing witness means the race is not established. No negative security conclusion may be drawn from a failed or incomplete harness.
+
+Status: PRE_RACE_CONTRACT=LOCKED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.808R — audit the existing StandardAuthorizer test/integration construction path to determine the smallest real delegate-wrapper implementation and its lifecycle/configuration requirements. Only after that should test code be written. No race execution yet.
