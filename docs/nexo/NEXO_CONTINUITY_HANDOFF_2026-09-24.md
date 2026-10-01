@@ -2678,3 +2678,37 @@ Status: G0=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
 ### EXACT NEXT ACTION
 
 AB104.849R — close wrapper dependency visibility and the smallest test source placement, then stop source research unless a concrete compile/runtime environment becomes available.
+
+## 196. AB104.849R — Client integration test already has the metadata dependency required by StandardAuthorizer
+
+The Kafka root `build.gradle` explicitly gives `clients:clients-integration-tests` a `testImplementation project(':metadata')` dependency. Therefore a test-only wrapper extending `org.apache.kafka.metadata.authorizer.StandardAuthorizer` is dependency-visible from that module's test source set; this closes the earlier dependency-visibility uncertainty at source level.
+
+Status: WRAPPER_METADATA_DEPENDENCY=SOURCE_CONFIRMED.
+
+## 197. AB104.850R — Topic and leader readiness APIs are sufficient
+
+Existing integration tests use `clusterInstance.waitTopicCreation(topic, 1)` after topic creation, and `clusterInstance.getLeaderBrokerId(new TopicPartition(topic, 0))` when the test needs the actual leader. The harness therefore does not need custom readiness machinery for topic/leader selection.
+
+Status: TOPIC_READINESS=SOURCE_CONFIRMED; LEADER_SELECTION=SOURCE_CONFIRMED.
+
+## 198. AB104.851R — Target broker must be the actual partition leader for the cleanest effect witness
+
+The race contract already requires the target broker's Authorizer to block A1. To make the post-release log witness unambiguous, the test should create/assign the one-partition topic so the same target broker is leader, then read that broker's `UnifiedLog.logEndOffset()`. If the chosen target is not leader, the experiment must either select the leader as target or explicitly add a supported leader-placement step; it must not infer append from a follower log.
+
+Status: TARGET_LEADER_EFFECT_ALIGNMENT=LOCKED.
+
+## 199. AB104.852R — No additional readiness abstraction is needed
+
+With `waitTopicCreation` + target leader selection + direct target broker log access, the G0 readiness chain can remain minimal. Additional polling or duplicate state stores would add complexity without adding an independent witness.
+
+Status: G0_READINESS_SURFACE=MINIMAL_LOCKED.
+
+## 200. AB104.853R — Source design is now closed enough to stop broad source archaeology
+
+Wrapper dependency visibility, single-test execution, topic readiness, leader selection, D1 direct authorization, barrier isolation, and target-log effect witnessing are all source-confirmed. The remaining uncertainty is runtime-only: compiling and executing the dedicated Kafka test in a real Kafka checkout.
+
+Status: SOURCE_AUDIT_FOR_HARNESS=SUFFICIENT; RUNTIME_EXECUTION=PENDING.
+
+### EXACT NEXT ACTION
+
+AB104.854R — no further broad Kafka archaeology unless a concrete blocker appears. The next valid evidence-producing step is an actual Kafka checkout/build running the G0 sanity gate. Until then preserve `G0=NOT_PERFORMED`, `EXACT_RACE=NOT_EXECUTED`, `EXPLOITABILITY=UNKNOWN`.
