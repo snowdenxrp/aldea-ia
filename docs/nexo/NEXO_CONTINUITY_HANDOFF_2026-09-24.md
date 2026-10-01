@@ -2194,3 +2194,47 @@ No implementation has been added. No test has been executed. AB105.116R remains 
 
 ### EXACT NEXT ACTION
 AB104.789R — audit Action fields + exact Produce authorization call construction + effect oracle/ack semantics. Then continue into implementation only if the contract is fully source-supported.
+
+## 136. AB104.789R — Action predicate is source-supported without relying on action ordering
+
+Action is a public class exposing `resourcePattern()`, `operation()`, `resourceReferenceCount()`, `logIfAllowed()`, and `logIfDenied()`. ResourcePattern exposes the resource type and name. Therefore the barrier can deterministically match `AclOperation.WRITE + ResourceType.TOPIC + exact target topic name`, while independently checking `AuthorizableRequestContext.requestType == PRODUCE` and the intended principal/client identity.
+
+Importantly, this predicate does not rely on the position or cardinality of the Action list. It inspects each Action's explicit resource and operation fields. The exact target authorization can therefore be isolated without assuming Kafka's internal Action ordering.
+
+Status: ACTION_FIELDS=SOURCE_CONFIRMED; RESOURCE_TYPE_NAME=SOURCE_CONFIRMED; WRITE_TOPIC_PREDICATE=SOURCE_SUPPORTED; ACTION_ORDER_DEPENDENCY=NONE; EXACT_RACE=NOT_EXECUTED.
+
+## 137. AB104.790R — KafkaApis confirms the exact authorization-to-append handoff
+
+`KafkaApis.handleProduceRequest` first resolves topic IDs/names, then calls `authHelper.filterByAuthorized(request.context, WRITE, TOPIC, ...)`. Only topics surviving this authorization are placed into `authorizedRequestInfo`. If at least one authorized record remains, KafkaApis then invokes the real `replicaManager.handleProduceAppend(...)` with that map.
+
+This source path confirms the experimental barrier belongs immediately around the Authorizer return: before the result returns, the request has not yet reached `authorizedRequestInfo`/ReplicaManager; after release, the ordinary production path continues without an additional ACL check found in this audited method.
+
+Status: PRODUCE_AUTHORIZATION_CONSTRUCTION=SOURCE_CONFIRMED; AUTHORIZED_REQUEST_INFO_DEPENDS_ON_RESULT=SOURCE_CONFIRMED; REAL_RM_HANDOFF=SOURCE_CONFIRMED; SECOND_ACL_CHECK_IN_THIS_HANDOFF=NOT_FOUND; EXACT_RACE=NOT_EXECUTED.
+
+## 138. AB104.791R — The Produce response is not by itself the strongest effect oracle
+
+`handleProduceRequest` sends the Produce response from the ReplicaManager callback. For `acks=0`, no normal response is expected; for `acks != 0`, KafkaApis sends a ProduceResponse after the callback returns. The response therefore represents the server's append/replication result as reported through the callback, but it should not by itself be described as proof of a particular durable-log state beyond what the selected acknowledgement semantics guarantee.
+
+For this experiment, the strongest effect evidence should be separated into two observations: (1) the actual `PartitionResponse.error == NONE` returned through the real append callback, and (2) an independent post-release log/read observation proving the target record is present if the test needs to establish physical/logical effect rather than only successful append processing.
+
+Status: PRODUCE_CALLBACK_RESULT=SOURCE_CONFIRMED; RESPONSE_IS_EFFECT_EVIDENCE=YES_BUT_LIMITED; POST_RELEASE_LOG_WITNESS=RECOMMENDED_FOR_STRONGEST_D2; EXACT_RACE=NOT_EXECUTED.
+
+## 139. AB104.792R — Exact race classification contract tightened
+
+The exact race must now require all of the following, in order: A0 target WRITE ACL exists; A1 the real target Produce authorization returns ALLOWED internally and blocks before returning; D0 ACL deletion completes; D1 the target broker-local Authorizer independently returns DENIED for the same principal/topic/WRITE action; D2 the original request is released and reaches the real ReplicaManager/append path; E the real append callback reports success and, for strongest classification, an independent log/read witness confirms the record.
+
+If any one of A1, D0, D1, D2, or E is missing, the result is not the exact race. It remains UNKNOWN or a narrower observation (for example, successful append without proven post-revocation ordering). This prevents a normal sequential revoke test or a merely successful client response from being misclassified.
+
+Status: EXACT_RACE_ORACLE=FULLY_SPECIFIED; D0_D1_D2_E_ORDERING=PRESERVED; MISCLASSIFICATION_GUARD=SOURCE_DESIGN_CONFIRMED; EXACT_RACE=NOT_EXECUTED.
+
+## 140. AB104.793R — Source audit complete enough to authorize implementation, but execution remains pending
+
+The remaining source audit no longer shows an unresolved semantic blocker at the authorization boundary: request context provides deterministic request identity; Action provides explicit operation/resource fields; KafkaApis shows the authorization result is converted into `authorizedRequestInfo` before the real ReplicaManager call; and the callback supplies a distinct append result that can be supplemented with a post-release log witness.
+
+Implementation may now proceed as a test-only experiment, with the strict constraints already established: delegate to real StandardAuthorizer semantics; add only the synchronization barrier; do not alter ReplicaManager/UnifiedLog behavior; keep ACL deletion and D1 probe independent; record A1/D0/D1/release/D2/E separately; and preserve UNKNOWN if any ordering witness fails.
+
+No experiment has been executed yet. No Nexo implementation or model change has been made. AB105.116R remains the canonical model anchor and this handoff remains the sole continuity artifact.
+
+### EXACT NEXT ACTION
+
+AB104.794R — design the minimal test-only Authorizer wrapper/subclass and its broker-scoped barrier state, then inspect the exact integration-test configuration mechanism before writing code. Execution remains forbidden until the wrapper's lifecycle, broker scoping, and cleanup behavior are source-supported.
