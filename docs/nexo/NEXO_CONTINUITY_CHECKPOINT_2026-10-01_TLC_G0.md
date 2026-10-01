@@ -336,3 +336,22 @@ D1 must execute on a SEPARATE executor/thread from the blocked D2 path. The disc
 - No AB105.117R.
 
 This review is intentionally additive: it preserves the prepared experiment while marking the exact pre-execution defect so it cannot silently contaminate the evidence chain.
+
+
+## PR #84 correction persisted — 2026-10-01
+
+Pre-execution audit finding was corrected on the research branch.
+
+- PR #84 head before correction: c4ebe094282d7315a0d57c2ae83c256dbe08588e
+- Corrected head: a80b4191b550c4c4a855b1576751546c80dc9f9b
+- Correction: D1 now uses a separate single-thread executor from the intentionally blocked D2 path.
+- This removes the identified queue/deadlock contamination from the propagation discriminator.
+- The branch workflow is configured for pull_request execution against main.
+- No workflow result is claimed yet for corrected head; commit workflow lookup currently returns no run.
+- Therefore PROPAGATION_WINDOW remains PENDING_EXECUTION.
+- AB105.116R remains intact.
+- PR #82 and original G0 witness remain unchanged.
+- No TLC rerun.
+- No AB105.117R.
+
+Next: wait/inspect the workflow associated with corrected head a80b4191b550c4c4a855b1576751546c80dc9f9b. Only a recoverable workflow witness may elevate the propagation-window state.
