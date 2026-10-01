@@ -777,3 +777,67 @@ AB104.414 — witness dependency-drift detection and revocation races: determine
 
 ### Continuity
 This pass is audit-only and additive. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 47 — quorum partition / delayed revocation / recovery — 2026-10-01
+
+### Historical artifact recovered
+AB104.415 (commit c0cc62510c508f530e58b173967172a9064a5a7b) audits quorum behavior under partition, delayed revocation, witness disagreement, split-brain, degraded operation, and recovery.
+
+### Findings
+1. QUORUM_COUNT != CURRENT_AUTHORITY. A local majority can represent a stale or partitioned view; it cannot by count alone establish the current protected authority domain.
+2. SIGNATURE_VALID != CURRENT_WITNESS_ELIGIBILITY. A witness that cannot observe a revocation generation cannot prove current eligibility for a protected decision.
+3. Same-generation conflicting roots are a distinct equivocation/dispute condition. They must not be resolved by arbitrary majority selection; unresolved security-critical conflict remains HOLD/QUARANTINE/UNKNOWN.
+4. A higher generation is not automatically current. Predecessor binding and continuity evidence are required before treating generation advancement as authoritative.
+5. Availability fallback must not silently weaken the protected safety property. Threshold reduction, indefinite cached status, acceptance of unreachable witnesses, or reuse of an old quorum evaluation require explicit policy and a protected semantic boundary.
+6. Quorum membership/policy changes are protected state. A witness-set or threshold change must not silently inherit an in-flight quorum evaluation.
+7. Split-brain protection requires a unique protected authority domain/current continuity generation; witness signatures alone do not establish uniqueness.
+8. Delayed revocation is not retroactive to a historical protected decision, but it must block future admission/use and may require reconciliation of resulting external effects according to effect class.
+9. If authorization-versus-revocation ordering is unresolved at the protected boundary, ORDER_UNKNOWN must not be converted into a safe ordering.
+10. Recovery cannot self-authorize from disputed partition state. Candidate recovery requires freeze, collection of divergent views, continuity/equivocation analysis, reconstruction, external-effect identification, reconciliation, new recovery generation, witness revalidation, and explicit release.
+11. Local quorum safety does not prove external non-execution or external-effect atomicity; authority epoch, fence, effect/attempt identity, durable intent, provider fencing where required, and reconciliation remain separate boundaries.
+
+### S9 consequence
+AB104.415 strengthens the requirement that witness/quorum evidence feed an explicit protected authority decision rather than becoming authority by itself. The unresolved chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+The artifact still does not define the exact issuer, protected activation/linearization protocol, or recovery authority that promotes the decision to CURRENT_AUTHORITY. A/B/C remains open.
+
+### New narrowed requirements
+Before model revision, Nexo needs semantic definitions for:
+- exact quorum safety/failure assumptions per claim/effect class;
+- protected witness-set and threshold versioning;
+- currentness/revocation evidence at the final decision boundary;
+- split-brain uniqueness/continuity semantics;
+- recovery authority independent of disputed state;
+- exact handling of delayed revocation when authorization and revocation ordering is ambiguous.
+
+These remain semantic requirements, not TLA+ implementation fields.
+
+### Status
+- QUORUM_COUNT != CURRENT_AUTHORITY.
+- SIGNATURE_VALID != CURRENT_WITNESS_ELIGIBILITY.
+- SAME_GENERATION_DIFFERENT_ROOT => DISPUTED/QUARANTINED candidate confirmed.
+- HIGHER_GENERATION != AUTOMATICALLY_CURRENT.
+- AVAILABILITY_FALLBACK cannot silently weaken protected safety.
+- QUORUM_MEMBERSHIP_CHANGE => NEW_ADMISSION_BOUNDARY.
+- SPLIT_BRAIN_CANNOT_CREATE_TWO_CURRENT_AUTHORITIES remains required.
+- RECOVERY_CANNOT_SELF_AUTHORIZE.
+- REVOCATION_IS_NOT_RETROACTIVE; REVOCATION_REQUIRES_FUTURE_ADMISSION_BLOCKING.
+- ORDER_UNKNOWN != SAFE_ORDER.
+- PROMOTION_TO_CURRENT_AUTHORITY = UNKNOWN/PENDING.
+- RECOVERY_AUTHORITY = UNKNOWN/PENDING.
+- QUORUM_FAILURE_MODEL = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.416 — Byzantine witness behavior and equivocation: selectively signed conflicting generations/roots, collusion across failure domains, replayed evidence, withholding, and the minimum evidence required to classify the quorum as disputed rather than merely stale.
+
+### Continuity
+This pass is additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
