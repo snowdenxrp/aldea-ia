@@ -1589,3 +1589,45 @@ AB104.430 — revocation finality and effect-boundary fencing: determine the min
 
 ### Continuity
 Additive only. No historical artifact modified or deleted. No extra backup/handoff file created.
+
+
+## AB105.116R audit pass 62 — AB104.430 revocation distribution and cache coherence — 2026-10-01
+
+### Historical artifact verified
+AB104.430 exists at commit 5e59a6e84ad31d6c0bd28aefd85de28dd3bf5fe9.
+
+### External corroboration
+RFC 7009 explicitly distinguishes immediate invalidation at the authority from propagation delay at other servers; it also notes that self-contained access tokens make immediate revocation harder without additional backend interaction. citeturn0search0turn0search1
+
+### Findings
+1. PROPAGATION_SUCCESS != CURRENT_AUTHORITY.
+2. CACHE_INTEGRITY != CACHE_CURRENTNESS.
+3. Push invalidation requires authenticated source, ordered generations, anti-replay, gap detection, durable consumer state, and recovery after disconnect.
+4. MISSED_PUSH != NO_REVOCATION.
+5. A current read does not by itself close the read-before-effect race: CURRENT_READ != CURRENT_EFFECT unless bound to the protected effect boundary.
+6. VALID_SNAPSHOT != CURRENT_SNAPSHOT; cryptographic integrity alone does not establish currentness.
+7. Watch streams require sequence/generation, resumable position, gap detection, snapshot fallback, and stream-incarnation handling.
+8. REPLICA_COUNT != CURRENTNESS and QUORUM_COUNT != INDEPENDENCE; common-mode dependencies remain relevant.
+9. Resource-side fencing can protect the resource boundary against stale actors but does not prove upstream authorization was current.
+10. TTL answers a policy-defined staleness allowance; TTL_VALID != AUTHORITY_CURRENT.
+11. Notification failure does not imply revocation failure: NOTIFICATION_FAILED != REVOCATION_FAILED.
+12. Gaps, rollback, replayed old updates and restored snapshots require explicit continuity validation rather than optimistic currentness.
+13. A push+pull/snapshot+watch hybrid can reduce detection and recovery risk, but distribution success still does not prove protected-effect currentness.
+14. For immediate-revocation claims, high-consequence effects need current authoritative validation or an equivalent resource-side fencing/linearization mechanism; otherwise the result must remain HOLD/REVALIDATE/UNKNOWN according to the claim.
+15. Alternate paths and provider-side execution must remain inside the claimed effect boundary; safety of the primary path alone is insufficient.
+
+### Status
+REVOCATION_DISTRIBUTION_SEMANTICS = CLAIM-SPECIFIC / OPEN.
+CACHE_CURRENTNESS = OPEN.
+READ_BEFORE_EFFECT_CLOSURE = OPEN.
+RESOURCE_FENCING_SEMANTICS = OPEN.
+QUORUM_CURRENTNESS = OPEN.
+MODEL_CHANGE = NOT AUTHORIZED.
+AB105.116R remains canonical.
+No AB105.117R created.
+
+### Exact next mission
+AB104.431 — linearizable reads, leases, watches and fencing as currentness mechanisms: compare their actual guarantees and failure boundaries, especially the difference between a current read and a protected effect.
+
+### Continuity
+Additive only. No historical artifact modified or deleted. No extra backup/handoff file created.
