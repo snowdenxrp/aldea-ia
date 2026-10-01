@@ -220,6 +220,7 @@ jobs:
                       Assertions.assertEquals(0L, baseline, "baseline E must be zero");
 
                       ExecutorService executor = Executors.newSingleThreadExecutor();
+                      ExecutorService d1Executor = Executors.newSingleThreadExecutor();
                       Future<?> d2 = null;
                       try {
                           try (Producer<byte[], byte[]> producer = new KafkaProducer<>(new java.util.HashMap<>(Map.of(
@@ -255,7 +256,7 @@ jobs:
                                   ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.ACKS_CONFIG, "all"
                               )) {{ putAll(userClient()); }})) {
-                                  Future<?> d1 = executor.submit(() -> {
+                                  Future<?> d1 = d1Executor.submit(() -> {
                                       try {
                                           d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get();
                                           return null;
@@ -301,6 +302,7 @@ jobs:
                           }
                       } finally {
                           A1_RELEASE.countDown();
+                          d1Executor.shutdownNow();
                           executor.shutdownNow();
                       }
                   }
