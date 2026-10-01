@@ -1876,3 +1876,29 @@ Status: SOURCE_PATH_AUTH_BEFORE_APPEND=SOURCE_CONFIRMED; REQUEST_LOCAL_AUTHORIZA
 EXACT NEXT ACTION: AB104.769R — inspect ReplicaManager.handleProduceAppend and append/purgatory/partition boundaries for hidden generation/state checks (leader epoch, partition epoch, transaction/producer epoch, etc.). Separate partition/producer correctness mechanisms from ACL authority freshness, and inspect upstream tests for ACL-change/Produce ordering guarantees.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.769R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+## 116. AB104.769R — ReplicaManager/Partition/UnifiedLog append boundary
+
+Artifact: NEXO_AB104_769R_REPLICAMAN_APPEND_AUTHORITY_AUDIT_2026-09-30.md (artifact creation was attempted but the connector blocked that write; findings are persisted here to avoid losing continuity)
+
+Fresh direct audit of Apache Kafka trunk:
+- ReplicaManager.handleProduceAppend has no generic ACL reauthorization step. Non-transactional Produce proceeds from the request-local authorized records into appendRecords.
+- appendRecords -> appendRecordsToLeader -> appendToLocalLog -> Partition.appendRecordsToLeader is the append chain.
+- Partition.appendRecordsToLeader holds leaderIsrUpdateLock, requires a local leader, and passes the partition's current leaderEpoch to UnifiedLog.appendAsLeader. This is partition leadership/replication correctness, not ACL authority freshness.
+- UnifiedLog validates records and then validates producer/transaction state. Producer epoch checks, duplicate-batch detection, transaction VerificationGuard, and transaction-version handling are real safeguards, but they are scoped to producer/transaction state and do not consult an ACL generation or current principal authorization.
+- Delayed Produce/purgatory is entered after local append results; it waits for replica/high-watermark conditions and does not create an ACL effect-time reauthorization fence.
+- Repository search found no dedicated upstream test proving the exact ACL ALLOW -> revoke -> in-flight Produce -> append interleaving.
+
+Critical separation:
+PARTITION_LEADER_EPOCH != ACL_AUTHORITY_EPOCH
+PRODUCER_EPOCH != ACL_AUTHORITY_EPOCH
+TRANSACTION_VERIFICATION_GUARD != ACL_AUTHORITY_FENCE
+REPLICATION/HW_PURGATORY != EFFECT_TIME_AUTHORIZATION_FENCE
+
+Status: REPLICAMAN_APPEND_PATH=SOURCE_CONFIRMED; PARTITION_LEADER_CHECK=SOURCE_CONFIRMED; LEADER_EPOCH_BOUNDARY=SOURCE_CONFIRMED; PRODUCER_EPOCH_VALIDATION=SOURCE_CONFIRMED; TRANSACTION_VERIFICATION=SOURCE_CONFIRMED; ACL_AUTHORITY_GENERATION_AT_APPEND=NOT_FOUND_IN_AUDITED_PATH; GENERIC_ACL_REAUTHORIZATION_AT_EFFECT=NOT_FOUND_IN_AUDITED_PATH; ACL_FENCE_PASSED_TO_APPEND=NOT_FOUND_IN_AUDITED_PATH; ACL_REVOKE_INFLIGHT_PRODUCE_TEST=NOT_FOUND_IN_SEARCH; EXECUTED_DETERMINISTIC_RACE=NO; EXPLOITABILITY_OF_EXACT_RACE=UNKNOWN.
+
+No Nexo implementation, V21, formal verification, or runtime Nexo execution.
+
+EXACT NEXT ACTION: AB104.770R — inspect UnifiedLog/ProducerStateManager validation and upstream tests specifically for producer-epoch/transaction guards that may look like generic effect fencing; then audit KafkaApis tests around ACL mutation and Produce scheduling for any synchronization point between authorization and append. Keep ACL authority freshness separate from producer/transaction epochs.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.770R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
