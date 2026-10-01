@@ -133,3 +133,21 @@ Interpretation boundary:
 - NO_AB105.117R
 
 Next: implement only the mechanism-discriminating multi-broker observation in the existing G0 research branch; preserve the original witness unchanged and do not rerun TLC.
+
+
+## Mechanism-test implementation gate — 2026-10-01
+
+Inspected PR #81 workflow and the pinned Kafka authorizer tests. The current G0 harness is intentionally one-broker and D2 reaches authorization before D0; therefore it cannot discriminate in-flight authorization from post-D0 stale/propagation state.
+
+A multi-broker discriminator is now specified, but implementation is NOT yet claimed. Before changing the workflow, the exact pinned `KafkaClusterTestKit`/broker-selection API must be verified from the pinned source or an existing pinned-revision test. No guessed API, no speculative patch.
+
+Required controlled observation remains:
+- broker B1: authorization decision for a NEW producer request after D0;
+- controller/admin path: real DeleteAcls completion;
+- broker B2/B1 metadata state: establish whether ACL deletion has reached the target broker before the NEW decision;
+- outcome: ALLOWED vs DENIED;
+- append result and witness retained separately.
+
+This gate prevents conflating a metadata-propagation delay with an authorization-cache mechanism.
+
+STATE: MULTI_BROKER_TEST_DESIGN_READY / IMPLEMENTATION_PENDING_SOURCE_API_VERIFICATION
