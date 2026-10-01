@@ -424,3 +424,56 @@ Pass 5 separates the findings into:
 - INVARIANT-COVERAGE GAPS: S2/S3 and others already recorded.
 
 No source/config/workflow change made. The correct next step is to derive a **minimal missing-dimension proposal** from the frozen contracts, then test whether each added distinction is actually necessary before expanding the model. This follows the formal-method discipline that invariants describe reachable-state properties and should be checked against the actual transition relation, rather than inferred from labels alone. citeturn0search12turn0search15
+
+## AB105.116R audit pass 6 — minimal-dimension derivation
+
+Method: do not expand the state space merely because a field is missing. Each candidate dimension must close a frozen semantic distinction or an S1–S12 obligation.
+
+### Candidate D1 — admission correlation
+Required distinctions from AB105.111R:
+- operation identity when operation-scoped;
+- authority epoch when authority-scoped;
+- subject identity;
+- incarnation when runtime-scoped;
+- observation/event identity when evidence-scoped;
+- provenance/freshness/coverage.
+
+Existing 116R already has operationId, subject, incarnation, freshness, coverage, and authorityAtAdmission, but lacks an explicit admission-time epoch field and evidence/provenance identity.
+
+Decision: **authority-admission epoch is the first minimal candidate**. Evidence/provenance identity should NOT be added yet unless the admission contract is shown to require evidence-scoped admission in this exact transition.
+
+### Candidate D2 — fresh reauthorization evidence
+Problem: Reauthorize currently derives VALID from reconciliation COMPLETE + CURRENT epoch.
+
+Decision: before adding a new variable, test whether the intended contract permits reconciliation COMPLETE itself to be the evidence of renewed authority. If not, a fresh-authority-evidence distinction is required. Until that semantic decision is frozen, **no code change**.
+
+### Candidate D3 — expected effect for S11
+S11 cannot be expressed faithfully with only effectState UNKNOWN/OBSERVED/ABSENT_UNPROVEN.
+
+Decision: **candidate required if S11 is intended literally**. Minimal form should represent expected effect identity/state, not overload UNKNOWN. Exact domain remains OPEN.
+
+### Candidate D4 — observation/event identity for S12
+effectId exists, but it is only an untyped identifier and is not linked to operationId/incarnation.
+
+Decision: **candidate required for full S12 evidence correlation**, but only after deciding whether effectId is intended as an observation/event identity or an effect identity. Do not add two identifiers until that distinction is frozen.
+
+### Candidate D5 — STOP/FENCE provenance
+Separate enum states already prevent silent equality collapse. However, S2/S3 require more than labels if transitions can be reached from arbitrary contexts.
+
+Decision: first attempt non-tautological invariants over existing state transitions. **No new fields yet.**
+
+### Candidate D6 — successor release scope
+Existing release guard protects authority/fence/exclusivity/atomicity but not operation/effect identity.
+
+Decision: **UNKNOWN semantic scope**. Do not add operation/effect guards until release is explicitly classified as operation-scoped or independently scoped.
+
+### Minimality result
+The current evidence supports only one immediate structural candidate with high confidence:
+**D1a = admission-time authority epoch.**
+D3 and D4 are conditional candidates; D2 and D6 require semantic freeze; D5 can be attempted without new state.
+
+### Next audit
+1. Trace D1a against all admission/start/replay transitions and S1/S8/S12.
+2. Check whether adding D1a alone closes any historical contradiction without creating a false guarantee.
+3. Keep TLC running independently; do not alter the live model while its current run is unresolved.
+4. Save only this canonical handoff; no scattered backup artifact.
