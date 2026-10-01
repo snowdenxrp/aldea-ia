@@ -3337,3 +3337,43 @@ Status: REQUIRED_EVIDENCE=LOCKED.
 ## AB104.990R — Execution boundary
 The next valid advance is an actual external Kafka runtime or a concrete executable tooling path. Further source-only blocks are not evidence progress.
 Status: PHASE=BLOCKED_PENDING_EXECUTION; NEXT=EXTERNAL_RUNTIME_OR_TOOLING_PATH; MODEL_ANCHOR=AB105.116R_UNCHANGED.
+
+## AB104.991R — External execution path rechecked
+Current Apache Kafka documentation still supports the required external path: Gradle wrapper, Java 17+ for broker/server modules, and targeted integration-test execution. This confirms the path remains technically available outside the current connected runtime.
+Status: EXTERNAL_PATH=TECHNICALLY_AVAILABLE; CURRENT_EXECUTION=UNAVAILABLE.
+
+## AB104.992R — Source availability is not runner availability
+Public Kafka source and documentation are accessible, but the current environment does not expose a writable/executable Kafka checkout where the test wrapper can be compiled and run.
+Status: SOURCE=AVAILABLE; EXECUTION_WORKSPACE=UNAVAILABLE.
+
+## AB104.993R — G0 cannot be downgraded
+A static source review, Docker stock broker, or existing Nexo workflow cannot substitute for the exact wrapper-controlled G0 witness because A1 must be captured inside the target broker authorization path.
+Status: EXACT_G0=REQUIRES_WRAPPED_RUNTIME; SUBSTITUTE=INSUFFICIENT.
+
+## AB104.994R — No new empirical claim
+This continuation adds no empirical result about Kafka race behavior. The exact race remains neither observed nor disproved.
+Status: EMPIRICAL_RESULT=NONE; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## AB104.995R — Evidence preservation rule
+When an external runner becomes available, raw logs and synchronization/effect artifacts must be preserved before interpretation. The continuity record may then append a bounded result referencing those artifacts.
+Status: RAW_EVIDENCE_FIRST=LOCKED.
+
+## AB104.996R — Current blocker remains unchanged
+No connected execution path has appeared since AB104.990R. The blocker remains external runtime availability, not an identified Kafka semantic failure.
+Status: BLOCKER=EXTERNAL_RUNTIME_UNAVAILABLE.
+
+## AB104.997R — Canonical state unchanged
+No model migration, implementation, or parallel handoff is justified by the blocker. AB105.116R remains canonical.
+Status: MODEL_ANCHOR=AB105.116R; UNCHANGED.
+
+## AB104.998R — Audit remains bounded
+The audit has reached the boundary where further source-only expansion would be redundant. Any future source investigation must be triggered by a concrete runtime implementation blocker.
+Status: SOURCE_REVIEW=PAUSED; REOPEN=CONDITIONAL.
+
+## AB104.999R — Pre-runtime state
+All required witness conditions and failure classifications are frozen; no runtime witness has been captured.
+Status: G0=READY; RUNTIME=NOT_EXECUTED; A1=NOT_OBSERVED; D0=NOT_OBSERVED; D1=NOT_OBSERVED; EFFECT=NOT_OBSERVED.
+
+## AB105.000R — Execution gate
+The audit crosses the AB104→AB105 numbering boundary without changing the canonical Nexo model anchor. The next meaningful action is an actual external G0 execution or a concrete executable tooling path.
+Status: PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
