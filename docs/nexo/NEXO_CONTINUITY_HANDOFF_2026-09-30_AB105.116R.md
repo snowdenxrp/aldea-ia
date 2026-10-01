@@ -107,3 +107,44 @@ TLC_LIVE_RUN = STILL_IN_PROGRESS.
 
 ### Next
 Audit the semantic definition of effectId against this S11 result and determine whether one shared identity can safely represent both effect identity and observation/event identity, or whether two identity dimensions are required.
+
+## AB105.116R audit pass 24 — S12 effect identity vs observation/event identity — 2026-09-30
+
+### Evidence boundary
+AB105.111R explicitly separates OPERATION_ID (when operation-scoped) from OBSERVATION_ID/EVENT_ID (when evidence-scoped). It also requires SUBJECT_IDENTITY, INCARNATION_ID when runtime-scoped, and provenance/freshness/coverage.
+Therefore the historical contract does not authorize treating an operation identity and an evidence identity as the same semantic object.
+
+### Current 116R
+effectId is currently the only identifier attached to an observed effect. It is selected directly from Effects and is written by both ObserveExternal and ObserveNexo.
+No uniqueness, provenance, observation-event identity, or binding relation is modeled for effectId.
+
+### Three semantic cases
+A. EFFECT_IDENTITY: identifies the consequence/effect itself. Then an observation/event identity is a separate evidence object when multiple observations of the same effect are possible.
+B. OBSERVATION_IDENTITY: identifies the observation/evidence record. Then the underlying effect identity must be represented separately if S11 or reconciliation needs to compare the consequence itself.
+C. Combined identity: one identifier intentionally means both effect and observation. This is only safe if the contract proves that one-to-one identity is always valid; current historical evidence does not establish that.
+
+### S11 interaction
+S11 needs to compare an expected consequence with an observed/reconstructed result. That comparison is about effect semantics, while provenance concerns the evidence event that established the observation.
+Therefore collapsing effect identity and observation/event identity risks conflating two different questions:
+- What consequence exists or was expected?
+- What evidence event established the observation?
+This would make later reconciliation provenance ambiguous.
+
+### Minimum conclusion
+A single identifier is NOT yet justified as the universal identity for both concepts.
+The smallest safe semantic boundary is to define EFFECT_ID separately from OBSERVATION_ID/EVENT_ID when the evidence model requires both. The observation/event identifier may remain absent for genuinely non-evidence-scoped effect state, but the contract must state when it is required.
+Likewise, operation/subject/incarnation correlation should be attached conditionally when the observation is operation- or runtime-scoped, rather than imposed universally.
+
+### Result
+S12 = SEMANTIC DEFINITION GAP CONFIRMED.
+EFFECT_ID_AND_OBSERVATION_ID = DISTINCT_CONCEPTS.
+UNIVERSAL_COMBINED_IDENTITY = NOT_JUSTIFIED.
+CONDITIONAL_CORRELATION = REQUIRED_WHEN_SCOPE_DEMANDS_IT.
+MODEL_CHANGE = NOT_AUTHORIZED.
+TLC_LIVE_RUN = IN_PROGRESS.
+
+### Live TLC checkpoint
+Run 36781846063 / job 110113752493 is still IN_PROGRESS. Step 5 Run TLC finite model remains in progress; step 6 evidence upload remains pending. No PASS/FAIL result exists yet.
+
+### Next
+Freeze the semantic dependency between S11 and S12, then audit epoch-bound admission (D1a) and the exact P1/P2 policy boundary before any model revision.
