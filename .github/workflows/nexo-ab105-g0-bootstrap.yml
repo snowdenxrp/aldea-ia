@@ -235,7 +235,12 @@ jobs:
                                       new DeleteAclsOptions()).all().get();
                               }
 
-                              Assertions.assertEquals(0, TARGET.aclCount(), "target broker must observe ACL revocation before D1");
+                              TestUtils.waitForCondition(
+                                  () -> TARGET.aclCount() == 0,
+                                  30_000,
+                                  100,
+                                  () -> "target broker authorizer did not observe ACL revocation"
+                              );
                               String d0LocalState = "TARGET_LOCAL_ACL_COUNT_AFTER_D0=" + TARGET.aclCount();
                               System.out.println(d0LocalState);
 
