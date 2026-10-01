@@ -98,8 +98,7 @@ jobs:
           import static org.apache.kafka.common.acl.AclOperation.WRITE;
           import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
           import static org.apache.kafka.common.resource.PatternType.LITERAL;
-          import static org.apache.kafka.common.resource.ResourceType.TOPIC;
-
+          
           public final class NexoG0RuntimeTest {
               private static final String TOPIC_NAME = "nexo-g0-runtime";
               private static final String USER = "plain-user1";
@@ -147,13 +146,13 @@ jobs:
 
               private static AclBinding userWriteAcl() {
                   return new AclBinding(
-                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL),
                       new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW));
               }
 
               private static long exactE(BrokerServer broker) {
                   return broker.logManager()
-                      .getLog(new TopicPartition(TOPIC, 0), false)
+                      .getLog(new TopicPartition(TOPIC_NAME, 0), false)
                       .map(UnifiedLog::logEndOffset)
                       .orElse(-1L);
               }
@@ -198,7 +197,7 @@ jobs:
                       TARGET = (TargetAuthorizer) broker.authorizerPlugin().get().get();
 
                       try (Admin admin = cluster.admin()) {
-                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+                          admin.createTopics(List.of(new NewTopic(TOPIC_NAME, 1, (short) 1))).all().get();
                           admin.createAcls(List.of(userWriteAcl())).all().get();
                       }
 
@@ -216,7 +215,7 @@ jobs:
                           )) {{ putAll(userClient()); }})) {
                               d2 = executor.submit(() -> {
                                   try {
-                                      producer.send(new ProducerRecord<>(TOPIC, new byte[] {1})).get();
+                                      producer.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {1})).get();
                                   } catch (Exception e) {
                                       throw new RuntimeException(e);
                                   }
