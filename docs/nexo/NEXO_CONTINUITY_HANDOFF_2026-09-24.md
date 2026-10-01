@@ -2978,3 +2978,31 @@ Status: NEXT_TRANSITION=G0_ONLY; G0_GATE=LOCKED.
 
 ### EXACT NEXT ACTION
 AB104.905R — do not repeat availability checks unless the environment/tooling changes; otherwise wait for real Kafka runtime evidence.
+
+
+## 252. AB104.905R — No further availability polling
+Per the locked boundary, no new execution-surface check is repeated here. The experiment remains externally pending.
+Status: KAFKA_RUNTIME=EXTERNAL_PENDING; G0=NOT_PERFORMED.
+
+## 253. AB104.906R — Research state remains stable
+No new runtime evidence, contradiction, or implementation blocker has entered the record. The completed source design remains the baseline.
+Status: SOURCE_AUDIT=COMPLETE_FOR_CURRENT_SCOPE; CONTRADICTION=NONE_NEW.
+
+## 254. AB104.907R — Evidence transition explicitly defined
+The next valid evidence is a real Kafka execution result. It must begin with G0 and preserve independent witnesses rather than infer later states from earlier ones.
+Status: NEXT_EVIDENCE=RUNTIME_G0.
+
+## 255. AB104.908R — Race conclusion still withheld
+Until that execution occurs, the ACL revoke/in-flight Produce race remains neither established nor disproven.
+Status: EXACT_RACE=NOT_EXECUTED; SECURITY_CONCLUSION=NOT_REACHED.
+
+## 256. AB104.909R — Canonical artifact remains sufficient
+The canonical Nexo continuity file is the only required Nexo-side record for this pending experiment. No duplicate handoff or Kafka-source copy is warranted.
+Status: ARTIFACT_SCOPE=LOCKED.
+
+## 257. AB104.910R — External execution gate
+If a Kafka checkout/build runner becomes available, validate the environment and execute G0 only. If G0 fails, stop and record the failure; if it passes, proceed to the locked A1→D0→D1→release→D2→E sequence.
+Status: NEXT_TRANSITION=G0_ONLY; G0_GATE=LOCKED.
+
+### EXACT NEXT ACTION
+AB104.911R — remain pending for real Kafka runtime evidence; do not create additional source-only blocks unless a concrete new fact or blocker appears.
