@@ -813,3 +813,61 @@ Run 36781846063 / job 110113752493 remains in_progress. Step 5 "Run TLC finite m
 
 ### Next
 Audit S2/S3 for genuinely non-tautological safety properties. Distinguish transition-local guards from state invariants and determine whether historical provenance requires additional state.
+
+## AB105.116R audit pass 19 — S2/S3 STOP/FENCE provenance — 2026-09-30
+
+### Objective
+Separate what the current transition relation structurally guarantees from what a state invariant can independently verify.
+
+### S2 — STOP request vs enforcement
+Current transitions:
+- RequestStop requires operationState=IN_FLIGHT and stop=NONE, then sets stop=REQUESTED and operationState=STOPPING.
+- EnforceStop requires stop=REQUESTED, then sets stop=ENFORCED.
+
+Therefore the current Next relation does NOT contain a direct NONE -> ENFORCED transition. A path to ENFORCED necessarily passes through REQUESTED.
+
+Important limitation:
+EnforceStop itself has no operation-state guard, but the prerequisite stop=REQUESTED was produced by RequestStop in the current model. No action currently resets stop from REQUESTED/ENFORCED to NONE.
+
+Classification:
+S2 transition ordering = STRUCTURALLY ENFORCED.
+S2 dedicated state-invariant coverage = NOT CONFIGURED.
+S2 historical-provenance invariant = NOT REPRESENTABLE from the current state alone without an additional provenance/phase field.
+
+This is not a demonstrated S2 violation. The transition relation already prevents the direct silent transition. The remaining question is whether the specification requires the model to retain explicit provenance that enforcement came from a particular stop request.
+
+### S3 — fence issuance vs enforcement
+Current transitions:
+- IssueFence requires fence=NONE, then sets fence=ISSUED.
+- EnforceFence requires fence=ISSUED, then sets fence=ENFORCED.
+
+Thus there is no direct NONE -> ENFORCED transition. Enforcement structurally requires the ISSUED state.
+
+However, as with S2, a state invariant cannot reconstruct the predecessor history from the ENFORCED value alone. The current state has no field saying which issuance event justified enforcement.
+
+Classification:
+S3 transition ordering = STRUCTURALLY ENFORCED.
+S3 dedicated state-invariant coverage = NOT CONFIGURED.
+S3 provenance-history invariant = NOT REPRESENTABLE from current state alone.
+
+### Critical distinction
+S2/S3 should not be fixed merely by adding tautological invariants. Those would add no evidence.
+Likewise, adding a provenance field solely to make the invariant syntactically expressible is not yet authorized. The semantic contract must first establish whether historical provenance itself is a required persisted state or whether transition ordering is the intended proof boundary.
+
+### Additional S2 semantic witness
+ContinueAfterRecovery can move operationState STOPPING -> IN_FLIGHT while leaving stop=ENFORCED. The current model can therefore represent stop=ENFORCED + operationState=IN_FLIGHT. This does not violate the literal ordering property, but it is a separate semantic question about what ENFORCED STOP permits after recovery. Do not conflate it with S2.
+
+### Additional S3 semantic witness
+An ENFORCED fence can coexist with IN_FLIGHT because StartOperation blocks only fence=ISSUED, not fence=ENFORCED. This is a separate fence-meaning question already preserved from earlier passes, not an S3 ordering violation.
+
+### Result
+S2_TRANSITION_ORDER = STRUCTURALLY_ENFORCED
+S3_TRANSITION_ORDER = STRUCTURALLY_ENFORCED
+S2_STATE_INVARIANT = NOT_CONFIGURED
+S3_STATE_INVARIANT = NOT_CONFIGURED
+S2/S3_PROVENANCE_REQUIREMENT = OPEN
+MODEL_CHANGE = NOT_AUTHORIZED
+TLC_LIVE_RUN = UNTOUCHED
+
+### Next
+Audit the remaining configured/unconfigured S1–S12 coverage as a matrix: identify exactly which properties are structurally enforced, which are represented but not verified, and which lack state representation. Then check the live TLC run again before deciding whether any model change is warranted.
