@@ -89,6 +89,7 @@ jobs:
           import java.util.Map;
           import java.util.concurrent.CountDownLatch;
           import java.util.concurrent.Future;
+          import java.util.concurrent.atomic.AtomicInteger;
           import java.util.concurrent.ExecutorService;
           import java.util.concurrent.Executors;
           import java.util.concurrent.TimeUnit;
@@ -103,6 +104,9 @@ jobs:
               private static final String PASSWORD = "plain-user1-secret";
               private static final CountDownLatch A1_OBSERVED = new CountDownLatch(1);
               private static final CountDownLatch A1_RELEASE = new CountDownLatch(1);
+              private static final CountDownLatch D1_AUTH_DECISION = new CountDownLatch(1);
+              private static final AtomicInteger AUTH_DECISIONS = new AtomicInteger(0);
+              private static volatile AuthorizationResult D1_RESULT;
               private static volatile TargetAuthorizer TARGET;
     
               public static final class TargetAuthorizer extends StandardAuthorizer {
@@ -116,16 +120,21 @@ jobs:
                               && actions.get(0).operation() == WRITE
                               && actions.get(0).resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC
                               && TOPIC_NAME.equals(actions.get(0).resourcePattern().name())
-                              && !results.isEmpty()
-                              && results.get(0) == AuthorizationResult.ALLOWED) {
-                          A1_OBSERVED.countDown();
-                          try {
-                              if (!A1_RELEASE.await(60, TimeUnit.SECONDS)) {
-                                  throw new AssertionError("A1 release timeout");
+                              && !results.isEmpty()) {
+                          int decision = AUTH_DECISIONS.incrementAndGet();
+                          if (decision == 1 && results.get(0) == AuthorizationResult.ALLOWED) {
+                              A1_OBSERVED.countDown();
+                              try {
+                                  if (!A1_RELEASE.await(60, TimeUnit.SECONDS)) {
+                                      throw new AssertionError("A1 release timeout");
+                                  }
+                              } catch (InterruptedException e) {
+                                  Thread.currentThread().interrupt();
+                                  throw new AssertionError(e);
                               }
-                          } catch (InterruptedException e) {
-                              Thread.currentThread().interrupt();
-                              throw new AssertionError(e);
+                          } else if (decision == 2) {
+                              D1_RESULT = results.get(0);
+                              D1_AUTH_DECISION.countDown();
                           }
                       }
                       return results;
@@ -237,15 +246,8 @@ jobs:
                                       new DeleteAclsOptions()).all().get();
                               }
 
-                              long aclDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-                              while (TARGET.aclCount() != 0) {
-                                  if (System.nanoTime() >= aclDeadline) {
-                                      throw new AssertionError("target broker authorizer did not observe ACL revocation");
-                                  }
-                                  Thread.sleep(100);
-                              }
-                              String d0LocalState = "TARGET_LOCAL_ACL_COUNT_AFTER_D0=" + TARGET.aclCount();
-                              System.out.println(d0LocalState);
+                              int targetAclAtD1Start = TARGET.aclCount();
+                              System.out.println("D1_PRE_AUTH_TARGET_LOCAL_ACL_COUNT=" + targetAclAtD1Start);
 
                               try (Producer<byte[], byte[]> d1Producer = new KafkaProducer<>(new java.util.HashMap<>(Map.of(
                                   ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
@@ -253,27 +255,43 @@ jobs:
                                   ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.ACKS_CONFIG, "all"
                               )) {{ putAll(userClient()); }})) {
-                                  java.util.concurrent.ExecutionException d1ExecutionException = Assertions.assertThrows(
-                                      java.util.concurrent.ExecutionException.class,
-                                      () -> d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get());
-                                  Assertions.assertInstanceOf(
-                                      TopicAuthorizationException.class,
-                                      d1ExecutionException.getCause(),
-                                      "D1 must fail with TopicAuthorizationException");
-                                  TopicAuthorizationException d1Exception =
-                                      (TopicAuthorizationException) d1ExecutionException.getCause();
-                                  Assertions.assertTrue(
-                                      d1Exception.unauthorizedTopics().contains(TOPIC_NAME),
-                                      "D1 must deny the target topic");
+                                  Future<?> d1 = executor.submit(() -> {
+                                      try {
+                                          d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get();
+                                          return null;
+                                      } catch (Exception e) {
+                                          return e;
+                                      }
+                                  });
+                                  Assertions.assertTrue(D1_AUTH_DECISION.await(30, TimeUnit.SECONDS),
+                                      "D1 authorization decision was not observed");
+                                  int targetAclAtD1Decision = TARGET.aclCount();
+                                  AuthorizationResult d1Result = D1_RESULT;
+                                  System.out.println("D1_AUTH_RESULT=" + d1Result
+                                      + " D1_TARGET_LOCAL_ACL_COUNT_AT_DECISION=" + targetAclAtD1Decision);
+                                  Object d1Outcome = d1.get(30, TimeUnit.SECONDS);
+                                  if (d1Result == AuthorizationResult.ALLOWED) {
+                                      Assertions.assertNull(d1Outcome, "D1 producer must complete without exception when allowed");
+                                  } else {
+                                      Assertions.assertTrue(d1Outcome instanceof Exception,
+                                          "D1 producer must fail when denied");
+                                      Throwable cause = (Throwable) d1Outcome;
+                                      if (cause instanceof java.util.concurrent.ExecutionException) {
+                                          cause = cause.getCause();
+                                      }
+                                      Assertions.assertTrue(cause instanceof TopicAuthorizationException,
+                                          "D1 denial must surface as TopicAuthorizationException");
+                                  }
                               }
 
                               A1_RELEASE.countDown();
                               d2.get(30, TimeUnit.SECONDS);
                               long after = exactE(targetBroker);
-                              String witness = "G0_MULTI_WITNESS TARGET_BROKER=1 LEADER_TARGET=" + targetLeader
+                              String witness = "G0_PROPAGATION_WITNESS TARGET_BROKER=1 LEADER_TARGET=" + targetLeader
                                   + " LEADER_OTHER_VIEW=" + otherLeader
-                                  + " D0=OBSERVED TARGET_LOCAL_ACL_COUNT_AFTER_D0=" + TARGET.aclCount()
-                                  + " D1=DENIED D2=SUCCESS E_BASELINE=" + baseline + " E_AFTER=" + after;
+                                  + " D0=OBSERVED D1_AUTH_RESULT=" + D1_RESULT
+                                  + " D1_TARGET_LOCAL_ACL_COUNT_AT_DECISION=" + TARGET.aclCount()
+                                  + " D2=SUCCESS E_BASELINE=" + baseline + " E_AFTER=" + after;
                               java.nio.file.Files.writeString(
                                   java.nio.file.Path.of("/tmp/nexo-g0-witness.txt"), witness + System.lineSeparator());
                               System.out.println(witness);
@@ -307,6 +325,7 @@ jobs:
               echo "G0_RUNTIME=OBSERVED_SUCCESS"
               cat /tmp/nexo-g0-witness.txt
               echo "EXACT_RACE=OBSERVED_WITNESS"
+              echo "PROPAGATION_WINDOW=REQUIRES_INTERPRETATION_OF_D1_LOCAL_STATE"
               echo "EXPLOITABILITY=UNKNOWN_PENDING_SEPARATE_ANALYSIS"
             else
               echo "G0_RUNTIME=NO_WITNESS"
