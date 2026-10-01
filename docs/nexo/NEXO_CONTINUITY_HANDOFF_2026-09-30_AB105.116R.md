@@ -82,3 +82,42 @@
 
 ## Next chat
 - On CONTINUITY: start from AB104.759R; read this handoff; verify main HEAD and current commits; verify the TLC run after ec15fb987f79b890c6bd5ad5c957ac2633f4b3dc; inspect actual logs; continue from the verified result. Do not restart old work or create scattered backups.
+
+## Reachability / semantic-independence audit — 2026-09-30
+- Audit performed directly against the canonical AB105.116R TLA+ source and CFG; no model modification.
+- TLC remains independently in progress: run 36781846063, job 110113752493, head ec15fb987f79b890c6bd5ad5c957ac2633f4b3dc. Steps 1–4 succeeded; step 5 "Run TLC finite model" remains in_progress; evidence upload is pending. Therefore no PASS/FAIL conclusion yet.
+- Methodological correction: a value is not classified unreachable merely because no direct assignment appears to produce it. All predecessor paths must be considered. Confirmed example: authorityAtAdmission can be REVOKED because AdmitCurrent copies s.authority.
+- Confirmed current domain/value reachability from Init + Next (subject to full path audit):
+  * authority: UNKNOWN → VALID → REVOKED. STALE has no producer found.
+  * authorityEpoch: NONE → CURRENT. OLD/FUTURE have no producer found.
+  * authorityAtAdmission: UNKNOWN, VALID, REVOKED. STALE has no producer found.
+  * authorityAtExecution: UNKNOWN → VALID. STALE/REVOKED have no producer found.
+  * authorityAtEffect: UNKNOWN → VALID. STALE/REVOKED have no producer found.
+  * admission: NONE, ACCEPTED, STALE, CONFLICTING, DUPLICATE. UNKNOWN has no producer found.
+  * freshness: UNKNOWN, FRESH, STALE.
+  * coverage: UNKNOWN, SUFFICIENT, PARTIAL.
+  * dependency: UNKNOWN → CORRELATED. INDEPENDENT has no producer found.
+  * operationState: NONE, IN_FLIGHT, STOPPING, TERMINAL. UNKNOWN has no producer found.
+  * stop: NONE, REQUESTED, ENFORCED. UNKNOWN has no producer found.
+  * fence: NONE, ISSUED, ENFORCED. UNKNOWN has no producer found.
+  * successor: NONE, PRESENT, RELEASED.
+  * exclusivity: NOT_ESTABLISHED → PROVEN. BOUNDED/CONFLICT/UNKNOWN have no producer found.
+  * effectOrigin: NONE → EXTERNAL_OBSERVED or NEXO_EXECUTED, with mutual exclusion guards.
+  * effectState: NONE, OBSERVED, UNKNOWN, ABSENT_UNPROVEN. PARTIAL has no producer found.
+  * reconstruction: EMPTY, PARTIAL, COMPLETE. CONFLICT/UNKNOWN have no producer found.
+  * reconciliation: NONE, REQUIRED, COMPLETE. CONFLICT/UNKNOWN have no producer found.
+  * atomicity fields: Init UNSUPPORTED; SetAtomicity can independently assign all 4×4 req/avail combinations.
+- Important independent dimensions confirmed in Next:
+  * SetAtomicity has no state guard: 16 req/avail combinations are directly available from any state.
+  * SetCorrelated has no guard and can set dependency=CORRELATED from any state.
+  * SetSuccessor requires only successor=NONE and creates PRESENT.
+  * IssueFence requires only fence=NONE and creates ISSUED; EnforceFence then creates ENFORCED.
+  * MarkUnknown requires only effectState≠OBSERVED and creates UNKNOWN.
+  * ObserveExternal requires only a non-NONE effect and effectOrigin≠NEXO_EXECUTED; it does not require an operation.
+  * Recover requires only operationState≠NONE; it can create PARTIAL reconstruction from IN_FLIGHT, STOPPING, or TERMINAL, and may set reconciliation REQUIRED when effectState=UNKNOWN.
+  * SetContext is constrained to NONE/TERMINAL operation states but resets admission to NONE; subject/incarnation are therefore independent inputs to admission/operation preparation, not freely mutable during an active operation.
+  * SetPartialCoverage requires reconstruction≠COMPLETE but otherwise has no guard.
+- Strongly coupled execution nucleus: StartOperation requires VALID authority + CURRENT epoch + ACCEPTED admission + FRESH freshness + SUFFICIENT coverage + stop NONE + fence≠ISSUED + operation NONE + non-NONE subject/incarnation, plus operation identity/context replay protection.
+- Semantic warning: the existence of a producer-independent dimension does not by itself prove it is an abstraction artifact. It must be classified as (a) semantically intentional, (b) reserved/future, or (c) missing dependency/guard. No dimension/value is to be removed yet.
+- TLC methodology cross-check: TLC model checking explores reachable states of Init ∧ □[Next]vars for the finite model; the raw Cartesian product of declared domains is therefore not the reachable-state count. Lamport's documentation explicitly distinguishes the finite model from the reachable state set. Keep 4.46×10^18 classified only as a raw product upper bound. citeturn0search12turn0search16
+- Next exact audit: finish action-by-action predecessor/producer proof for every suspicious value; then construct the variable→actions→producible values→guards→dependencies→semantic-independence matrix. Cross SetAtomicity + SetContext + SetCorrelated + SetSuccessor + Fence + Effect + Recovery before any model change.
