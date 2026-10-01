@@ -2894,3 +2894,31 @@ Status: EXECUTION_HOLD=ACTIVE; REDUNDANT_RESEARCH=DISALLOWED.
 
 ### EXACT NEXT ACTION
 AB104.887R — only act on genuinely new runtime capability or a concrete blocker; otherwise keep the experiment frozen without manufacturing progress.
+
+
+## 234. AB104.887R — Final availability gate
+A fresh installed-repository check for Apache Kafka again returned no connected Kafka repository. The current workspace therefore still has no executable Kafka integration-test checkout.
+Status: KAFKA_CHECKOUT=NOT_AVAILABLE; G0=NOT_PERFORMED.
+
+## 235. AB104.888R — No transition to runtime
+No new tool surface or runner was exposed by the check. Public/source visibility remains distinct from executable checkout availability.
+Status: RUNTIME_CAPABILITY=ABSENT; EVIDENCE_BOUNDARY=LOCKED.
+
+## 236. AB104.889R — Experiment remains pre-G0
+No runtime observation can be recorded for wrapper instantiation, ACL propagation, baseline authorization, or target log readiness. Consequently no race step has begun.
+Status: G0=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED.
+
+## 237. AB104.890R — No security inference
+The unchanged runtime absence neither confirms nor refutes the ACL revocation/in-flight Produce race.
+Status: RACE_EXISTENCE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## 238. AB104.891R — No further archaeology
+All previously identified source-level requirements remain closed. Without a concrete blocker, another source pass would be redundant.
+Status: SOURCE_AUDIT=SUFFICIENT; ADDITIONAL_ARCHAEOLOGY=DEFERRED.
+
+## 239. AB104.892R — Hold and next gate
+The experiment remains frozen at the execution boundary. A future execution-capable environment must validate G0 first; only a successful G0 permits the A1→D0→D1→release→D2→E sequence.
+Status: EXECUTION_HOLD=ACTIVE; G0_GATE=LOCKED.
+
+### EXACT NEXT ACTION
+AB104.893R — check only for a genuinely new execution capability or concrete blocker; otherwise retain the frozen state and avoid redundant continuity entries.
