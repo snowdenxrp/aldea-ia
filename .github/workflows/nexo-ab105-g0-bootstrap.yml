@@ -88,23 +88,13 @@ jobs:
           import java.util.concurrent.CountDownLatch;
           import java.util.concurrent.atomic.AtomicReference;
 
-          /**
-           * Compile-only probe for the frozen AB105 G0 harness.
-           *
-           * This class is deliberately not a JUnit test and is never executed by this gate.
-           * It verifies that the planned KafkaClusterTestKit + target Authorizer wrapper +
-           * Admin DeleteAcls + Producer + UnifiedLog witness API surface is compilable at the
-           * pinned Kafka revision.
-           */
           public final class NexoG0HarnessCompileProbe {
               private static final CountDownLatch A1_BARRIER = new CountDownLatch(1);
               private static final AtomicReference<List<AuthorizationResult>> A1_DELEGATED =
                   new AtomicReference<>();
 
               public static final class TargetAuthorizer extends StandardAuthorizer {
-                  public TargetAuthorizer() {
-                      super();
-                  }
+                  public TargetAuthorizer() { super(); }
 
                   @Override
                   public List<AuthorizationResult> authorize(
@@ -113,7 +103,6 @@ jobs:
                       List<AuthorizationResult> results = super.authorize(requestContext, actions);
                       A1_DELEGATED.set(results);
                       if (!results.isEmpty() && results.get(0) == AuthorizationResult.ALLOWED) {
-                          // Runtime harness will release this only after D1.
                           awaitA1Barrier();
                       }
                       return results;
@@ -129,8 +118,6 @@ jobs:
                   }
               }
 
-              // Exact compile-time E witness accessor used by the frozen G0 contract.
-              // This method is never invoked by the compile-only gate.
               private static long exactEAccessor(BrokerServer broker, TopicPartition topicPartition) {
                   return broker.logManager().getLog(topicPartition, false)
                       .map(UnifiedLog::logEndOffset)
@@ -223,3 +210,5 @@ jobs:
         with:
           name: nexo-ab105-g0-bootstrap-evidence
           path: /tmp/nexo-g0-bootstrap-evidence.txt
+
+      # AB105 controlled main-branch execution gate: compile-only; G0 runtime remains disabled.
