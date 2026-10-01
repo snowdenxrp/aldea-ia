@@ -3053,3 +3053,8 @@ Status: ACL_MUTATION_CONTROLLER_PATH=SOURCE_CONFIRMED; ACL_PUBLISHER_PATH=SOURCE
 ## AB104.920R — StandardAuthorizer snapshot semantics rechecked
 Current StandardAuthorizer source uses the current authorizer-data snapshot for an authorize() call; current Kafka documentation confirms StandardAuthorizer is the KRaft ACL implementation and KafkaApis performs authorization for Produce. This supports testing an already-authorized Produce across an ACL publication change, but does not itself prove an append-time race.
 Status: SNAPSHOT_SEMANTICS=SOURCE_CONFIRMED; PRODUCE_AUTH=SOURCE_CONFIRMED; APPEND_TIME_REAUTHORIZATION=NOT_FOUND_IN_INSPECTED_PATH; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=RUNTIME_G0.
+
+
+## AB104.921R — Authorizer concurrency contract sharpened
+Current Apache Kafka Authorizer API explicitly requires authorization and ACL-update operations to be thread-safe, while ACL updates are asynchronous. StandardAuthorizer captures its current data reference at the start of authorize() and evaluates the requested actions against that captured data. KafkaApis then passes the authorized records directly to ReplicaManager.handleProduceAppend. This closes the remaining source-level concurrency description without converting it into runtime proof.
+Status: AUTHORIZER_THREAD_SAFETY=SOURCE_CONFIRMED; ACL_UPDATE_ASYNC=SOURCE_CONFIRMED; AUTHORIZE_SNAPSHOT=SOURCE_CONFIRMED; AUTH_TO_APPEND_HANDOFF=SOURCE_CONFIRMED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=RUNTIME_G0.
