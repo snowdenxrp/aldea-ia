@@ -70,3 +70,35 @@ The prior blocker “G0 contract not located” is now resolved as a retrieval p
 The next evidence-producing step is therefore no longer contract recovery: it is the smallest real Kafka harness implementation/build attempt in the observed GitHub Actions execution path, preserving the frozen contract and without changing AB105.116R.
 
 Status: CONTRACT_RECOVERY=RESOLVED; HARNESS_IMPLEMENTATION=NEXT; RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN.
+
+
+## AB105.052R — G0 completeness review and semantic tightening
+
+A full cross-check was performed against the historical execution-readiness freeze AB104.951R-960R and the later concrete harness-source chain AB104.803R-829R. No missing G0 prerequisite was found. The recovered contract covers the previously frozen requirements:
+
+- isolated non-combined target broker and per-server wrapper precedence;
+- controller Authorizers left unwrapped;
+- broker/Authorizer initialization and readiness before traffic;
+- baseline ACL creation, propagation, target authorization ALLOW, leader/partition readiness and baseline log offset;
+- exact A1 barrier after the delegated authorization decision;
+- D0 as the Admin/DeleteAcls control-plane completion boundary;
+- D1 as an independent fresh target-broker DENY after deletion publication/observation;
+- release only after D1;
+- D2 as continuation through the unmodified real Produce→ReplicaManager/append path;
+- E as separate client result plus target-broker log-end/effect evidence;
+- isolation from unrelated writers;
+- raw evidence capture and bounded cleanup;
+- any missing/contradictory step => UNKNOWN/non-witness.
+
+Semantic tightening: the earlier compact wording D0=committed/published ACL deletion is potentially ambiguous because “published to the target broker” belongs to the D1 freshness condition, not to the controller completion witness alone. The frozen contract is therefore interpreted as:
+D0 = controller/metadata-log DeleteAcls completion;
+D1 = target-broker local authorization observes the deletion and returns DENIED.
+No D0 claim may be upgraded into broker-global freshness.
+
+Additional audit conclusion: AB104.951R-960R and AB104.803R-829R together close the known design/readiness dependencies without proving runtime behavior. No source fact is being promoted to an execution result. No harness code has yet been executed. AB105.116R remains untouched.
+
+Status: G0_COMPLETENESS_REVIEW=PASSED_WITH_D0_CLARIFICATION; MISSING_G0_PREREQUISITE=NOT_FOUND_IN_AUDITED_CHAIN; G0_CONTRACT=FROZEN; RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; AB105.116R=INTACT.
+
+### EXACT NEXT ACTION
+
+AB105.053R — implement the smallest temporary Kafka G0 harness exactly against the frozen checklist, then compile/run the sanity gate only. Capture raw evidence for every prerequisite before permitting A1/D0/D1. Do not infer race results from compilation, startup, baseline ALLOW, or D0 alone.
