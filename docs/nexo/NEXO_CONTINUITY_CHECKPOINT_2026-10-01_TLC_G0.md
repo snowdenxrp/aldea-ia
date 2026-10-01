@@ -309,3 +309,30 @@ Interpretation is intentionally bounded:
 - AB105.116R = INTACT
 - NO AB105.117R
 - NO TLC RERUN
+
+
+## Continuity integrity review — critical harness issue found — 2026-10-01
+
+A line-by-line review of the newly prepared PR #84 discriminator found a concurrency flaw BEFORE execution:
+
+- D2 is submitted to a single-thread executor and intentionally blocks at A1.
+- The first PR #84 draft also submitted NEW D1 to that same single-thread executor.
+- Therefore D1 could remain queued behind blocked D2 and never reach the target authorizer until A1 is released.
+- That would invalidate the intended "D1 after controller D0 but before target-local ACL revocation" timing discriminator and could create a deadlock/timeout.
+
+### Corrective requirement
+D1 must execute on a SEPARATE executor/thread from the blocked D2 path. The discriminator must not be executed until this correction is persisted and the resulting workflow run is inspected.
+
+### Integrity state
+- PR #84 = OPEN / DRAFT / UNMERGED.
+- PR #84 execution = MUST NOT BE TREATED AS VALID until executor correction is confirmed.
+- PROPAGATION_WINDOW = PENDING_EXECUTION.
+- POST_D0_NEW_REQUEST = PENDING_EXECUTION.
+- No result from PR #84 may be elevated from this draft.
+- AB105.116R = INTACT.
+- Original G0 witness = UNCHANGED.
+- PR #82 witness = UNCHANGED.
+- No TLC rerun.
+- No AB105.117R.
+
+This review is intentionally additive: it preserves the prepared experiment while marking the exact pre-execution defect so it cannot silently contaminate the evidence chain.
