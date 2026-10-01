@@ -3497,3 +3497,8 @@ Status: RUNTIME_GATE=LOCKED; EXACT_RACE=UNKNOWN.
 ## AB105.040R — Next valid action
 The next meaningful advance is external G0 execution or a concrete executable tooling path. Additional source-only continuation is not evidence progress.
 Status: PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME; NEXT=EXTERNAL_G0_OR_TOOLING_PATH.
+
+
+## AB105.041R — Local runner capability check
+A fresh local capability check found Java 21 available, but no Apache Kafka checkout, no Kafka Gradle wrapper in the working directories, and no nearby Git repository containing Kafka. This is new environment evidence: the JVM prerequisite exists, while the Kafka execution workspace itself is absent.
+Status: JAVA=AVAILABLE_21; KAFKA_CHECKOUT=ABSENT; GRADLE_WRAPPER=ABSENT; EXECUTION_WORKSPACE=UNAVAILABLE; EXACT_RACE=UNKNOWN.
