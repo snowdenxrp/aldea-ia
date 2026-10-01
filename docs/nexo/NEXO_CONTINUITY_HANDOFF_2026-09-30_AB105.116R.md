@@ -1109,3 +1109,74 @@ AB104.420 — cut-analysis algorithm correctness and oracle problem: adversarial
 
 ### Continuity
 Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 52 — cut-analysis correctness / oracle boundary — 2026-10-01
+
+### Historical artifact recovered
+AB104.420 (commit 793c69897431b027e339139a08cc4694d84074da) audits correctness of cut analysis, the oracle problem, differential recomputation, bounded reference models, metamorphic/property/mutation testing, certificates, approximation, timeout behavior, and graph-version races.
+
+### Findings
+1. DETERMINISTIC_CUT_RESULT != CORRECT_CUT_RESULT and REPRODUCIBLE_ANALYSIS != SEMANTIC_CORRECTNESS. A deterministic engine can faithfully implement the wrong property.
+2. Four assurance layers must remain distinct: semantic specification, algorithm correctness, implementation conformance, and current deployment/evidence. Agreement at one layer does not establish the others.
+3. Two analyzers agreeing does not prove the protected specification is correct. Differential agreement is evidence, not a semantic proof.
+4. A bounded exact reference model is valuable for small graphs, but its scope must remain explicit; it cannot silently become a universal oracle.
+5. VALID_CUT, MINIMAL_CUT, and COMPLETE_CUT_SET are distinct claims. Finding one valid cut does not establish minimality or completeness.
+6. Approximate/incomplete analysis cannot silently satisfy a policy requiring complete cut coverage. ANALYSIS_TIMEOUT != NO_CRITICAL_CUT; computation failure must remain UNKNOWN/HOLD/DEGRADED as policy requires.
+7. Graph-version mismatch invalidates currentness. A result computed over G0 cannot be treated as current when protected state is G1.
+8. Independent checking is only useful if critical common-mode dependencies are separately analyzed; different process IDs or implementations alone do not establish independence.
+9. Metamorphic/property/mutation tests provide evidence about structural behavior and defect detection, but surviving tests do not prove semantic correctness.
+10. A cut certificate should bind claim, effect class, graph/policy/trust generations, witness-set root, cut set, validity/minimality/completeness status, unknown dependencies, resource limits and appraisal state so an independent checker can verify what was actually established.
+11. Differential disagreement must remain DISPUTED/UNKNOWN; selecting one analyzer by default would turn the oracle problem into an authority bypass.
+
+### External corroboration
+Current graph-algorithm literature confirms that exact and approximate dynamic minimum-cut maintenance is an active algorithmic problem, and hypergraph minimum-cut algorithms have explicit complexity/approximation tradeoffs. This supports separating algorithmic feasibility from correctness and semantic assurance; it does not validate Nexo's future implementation. citeturn0academia12turn0academia15turn0search10
+
+### S9 consequence
+AB104.420 closes another potential shortcut: even a differentially consistent, independently checked cut result remains **evidence for the protected authority decision**, not authority itself. The chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+No authority-promotion or protected-activation semantics are frozen. A/B/C remains UNKNOWN/PENDING.
+
+### New semantic requirements
+Before model revision:
+- define the exact protected cut property independently of any implementation;
+- define what “complete” means for each claim/effect class;
+- define bounded-reference-model scope and limits;
+- define minimum independence requirements for differential analyzers/checkers;
+- define certificate verification semantics;
+- define timeout/resource-exhaustion handling per consequence class;
+- bind cut-analysis evidence to the final protected authority decision without allowing the analysis result itself to become authority.
+
+No TLA+ change authorized.
+
+### Status
+- DETERMINISTIC_CUT_RESULT != CORRECT_CUT_RESULT.
+- DIFFERENTIAL_AGREEMENT != SPECIFICATION_PROOF.
+- VALID_CUT != MINIMAL_CUT != COMPLETE_CUT_SET.
+- ANALYSIS_TIMEOUT != NO_CRITICAL_CUT.
+- APPROXIMATE/INCOMPLETE != EXACT.
+- GRAPH_VERSION_MISMATCH => STALE_ANALYSIS.
+- ANALYSIS_DISAGREEMENT => DISPUTED/UNKNOWN.
+- REFERENCE_MODEL != AUTHORITY.
+- INDEPENDENT_CHECKER_REQUIRES_OWN_FAILURE-DOMAIN_ANALYSIS.
+- CUT_CERTIFICATE = EVIDENCE, NOT AUTHORITY.
+- SEMANTIC_CUT_PROPERTY = UNKNOWN/PENDING.
+- CUT_COMPLETENESS_CONTRACT = UNKNOWN/PENDING.
+- DIFFERENTIAL_ANALYZER_INDEPENDENCE = UNKNOWN/PENDING.
+- CERTIFICATE_VERIFICATION_SEMANTICS = UNKNOWN/PENDING.
+- TIMEOUT/RESOURCE_EXHAUSTION_POLICY = UNKNOWN/PENDING.
+- AUTHORITY_PROMOTION/PROTECTED_ACTIVATION = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.421 — differential analyzer independence and common-mode failure: shared specification, parser/normalizer, graph source, libraries, compiler/toolchain, policy, test corpus, operator, deployment and trust dependencies.
+
+### Continuity
+Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
