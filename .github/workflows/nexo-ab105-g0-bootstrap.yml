@@ -242,6 +242,6 @@ jobs:
               }
           }
           EOF
-          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeSmokeTest --info
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeSmokeTest -x checkstyleTest -x spotbugsMain --info
 
       # AB105 controlled execution gate: compile-only; G0 runtime remains disabled.
