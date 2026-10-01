@@ -151,3 +151,39 @@ Required controlled observation remains:
 This gate prevents conflating a metadata-propagation delay with an authorization-cache mechanism.
 
 STATE: MULTI_BROKER_TEST_DESIGN_READY / IMPLEMENTATION_PENDING_SOURCE_API_VERIFICATION
+
+
+## Multi-broker discriminator implementation checkpoint — 2026-10-01
+
+Implementation has now been created on a separate research branch/PR; the frozen anchor remains untouched.
+
+- Research branch: `nexo-ab105-g0-multibroker-discriminator`
+- Implementation commit: `c02b5e8940263628530a2ec521664756a6079bab`
+- PR: #82 — OPEN / DRAFT / UNMERGED.
+- Base: main at `638bd12d9aa7ea9d09a254f9fa44c204093db05a`.
+- Kafka remains pinned to `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+### Implemented controls
+- Two brokers, one controller.
+- Target authorizer instrumentation is placed on broker 1 only.
+- Partition 0 is explicitly assigned to broker 1 using the pinned Kafka `NewTopic(topic, Map<Integer,List<Integer>>)` API pattern.
+- Effective leader is independently observed with `metadataCache().getLeaderAndIsr(topic, 0)` on both brokers and required to be broker 1.
+- D0 is real Admin `DeleteAcls`.
+- Before D1, the target broker's local `TargetAuthorizer.aclCount()` is required to reach zero, making local ACL-revocation observation explicit rather than inferred from controller completion.
+- D1 remains a fresh independent Kafka Producer request.
+- D2 remains the earlier request path held at A1.
+- E remains the target broker's actual UnifiedLog end offset.
+
+### Epistemic state
+- MULTI_BROKER_IMPLEMENTATION = PERSISTED
+- MULTI_BROKER_EXECUTION = PENDING
+- MULTI_BROKER_RESULT = UNKNOWN
+- PROPAGATION_WINDOW = UNKNOWN
+- STALE_AUTHORIZATION_MECHANISM = UNKNOWN
+- EXPLOITABILITY = UNKNOWN
+- AB105.116R = INTACT
+- NO AB105.117R
+
+Important: this implementation deliberately waits for target-local ACL revocation before D1. Therefore an ALLOWED result after that wait would be materially stronger evidence than the original G0, while a DENIED result would show the tested local revocation state behaved consistently. It still would not, by itself, establish exploitability.
+
+No TLC rerun.
