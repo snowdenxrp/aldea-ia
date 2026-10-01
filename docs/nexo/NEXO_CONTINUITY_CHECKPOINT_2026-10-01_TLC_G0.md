@@ -244,3 +244,33 @@ The result therefore:
 If mechanism analysis continues, the next distinct experiment is a tightly controlled NEW-request timing test where D1 is issued after controller-side D0 completion but BEFORE target broker local ACL revocation is observed. That experiment must independently record target-local ACL state at the authorization decision, rather than inferring it from controller completion.
 
 No TLC rerun. The original G0 witness remains unchanged.
+
+
+
+## Next mechanism discriminator prepared — 2026-10-01
+
+A distinct research branch/PR was created to test the unresolved metadata-propagation window without altering PR #82 or AB105.116R.
+
+- Branch: `nexo-ab105-g0-propagation-window`
+- PR: #83 — OPEN / DRAFT / UNMERGED.
+- Head: `e86053b9e7e3674d8160962277466bbfaa049827`
+- Base: main at `6c753fceb4f186c07efb77fcb0955ef781a58d59`.
+- Kafka revision remains `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+### Controlled change
+
+After real controller-side D0 (`DeleteAcls(...).all().get()`) completes, D1 is now issued immediately as a NEW independent producer request. The harness deliberately does NOT wait for target-local ACL revocation.
+
+It records:
+- `TARGET_LOCAL_ACL_COUNT_BEFORE_D1`
+- D1 outcome: ALLOWED or DENIED
+- `TARGET_LOCAL_ACL_COUNT_AFTER_D1`
+- D2 success and final UnifiedLog append count.
+
+Interpretation:
+- D1 ALLOWED while target-local ACL count is still 1: supports a metadata-propagation authorization window for this execution.
+- D1 DENIED while target-local ACL count is still 1: does not support that simple stale-state path and requires deeper mechanism analysis.
+- D1 ALLOWED with target-local ACL count already 0: unexpected relative to the local state and requires source/mechanism inspection.
+- If target-local ACL count is already 0 before D1, the run is not sufficient to demonstrate the propagation window; the exact state remains recorded.
+
+No claim of exploitability is permitted from this discriminator alone. Original G0 and PR #82 witnesses remain unchanged. No TLC rerun. AB105.116R remains intact. AB105.117R is not created.
