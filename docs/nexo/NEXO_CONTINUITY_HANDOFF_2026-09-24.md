@@ -2402,3 +2402,47 @@ Status: IMPLEMENTATION_READINESS=SOURCE_CONFIRMED; RACE_EXECUTION=NOT_STARTED; E
 ### EXACT NEXT ACTION
 
 AB104.813R — write the smallest test-only wrapper/harness skeleton and first validate only configuration/lifecycle/instance isolation. Do not run the race until those sanity assertions pass.
+
+## 160. AB104.813R — Runtime Authorizer identity inspection is source-supported
+
+`KafkaClusterTestKit` exposes broker and controller server objects, and existing `KRaftClusterTest` code directly inspects `cluster.controllers().values().iterator().next().authorizerPlugin().get().get()` and the corresponding broker `authorizerPlugin`. Therefore the pre-race sanity check can inspect the actual instantiated Authorizer objects before any Produce is sent.
+
+An existing test also proves the cluster can use a configurable test Authorizer and observe its instance state after startup/reconfiguration. This is sufficient to make wrapper identity a runtime assertion rather than an assumption.
+
+Status: RUNTIME_WRAPPER_IDENTITY_WITNESS=SOURCE_CONFIRMED; PRE_RACE_INSPECTION=FEASIBLE; EXACT_RACE=NOT_EXECUTED.
+
+## 161. AB104.814R — Instance isolation can be asserted without touching the request path
+
+The sanity phase should assert: target broker `authorizerPlugin` instance is the test wrapper class; every controller `authorizerPlugin` is not that wrapper; and every non-target broker remains unwrapped unless intentionally configured. These checks occur after startup and before ACL setup/Produce.
+
+This is stronger than inferring isolation from configuration maps because it verifies the object actually constructed by the server/plugin system.
+
+Status: TARGET_INSTANCE_ASSERTION=LOCKED; CONTROLLER_ISOLATION_ASSERTION=LOCKED; NON_TARGET_ISOLATION=REQUIRED_IF_MULTI_BROKER.
+
+## 162. AB104.815R — The wrapper's inherited lifecycle must be allowed to initialize normally
+
+Existing Kafka test code demonstrates direct inspection of instantiated Authorizer plugins only after `cluster.startup()` and `cluster.waitForReadyBrokers()`. Therefore the sanity harness must not use the wrapper before normal startup. The wrapper's `configure`, `withPluginMetrics`, `start`, metadata publication, and initial-load completion must run through the normal server lifecycle.
+
+After startup, the test can assert identity and then perform the initial ACL authorization check. No custom initialization shortcut is justified.
+
+Status: NORMAL_LIFECYCLE_REQUIRED=SOURCE_CONFIRMED; STARTUP_BEFORE_IDENTITY_CHECK=REQUIRED.
+
+## 163. AB104.816R — First implementation gate is now narrowly defined
+
+Gate G0: build/start the isolated cluster; inspect actual Authorizer instances; verify target wrapper identity and controller/non-target isolation; verify target wrapper has completed normal initialization sufficiently for a fresh authorization; then perform a fresh baseline target WRITE authorization and require ALLOWED before proceeding.
+
+G0 failure aborts before any ACL revocation or blocked Produce. It does not produce a security finding and leaves the race status UNKNOWN.
+
+Status: G0_SANITY_GATE=LOCKED; RACE_MUST_NOT_START_BEFORE_G0=YES; EXACT_RACE=NOT_EXECUTED.
+
+## 164. AB104.817R — Test-only implementation scope is fixed
+
+Implementation scope is now limited to the test source: one StandardAuthorizer-derived wrapper with synchronization state, one integration test/harness using per-server properties, and assertions for A1/D0/D1/D2/E. No production Kafka source, no ReplicaManager modification, no UnifiedLog modification, no model change, and no Nexo V21.
+
+The wrapper must delegate all inherited Authorizer behavior and return the original `super.authorize(...)` results unchanged after release.
+
+Status: TEST_ONLY_SCOPE=LOCKED; PRODUCTION_CODE_CHANGE=FORBIDDEN; EXACT_RACE=NOT_EXECUTED.
+
+### EXACT NEXT ACTION
+
+AB104.818R — inspect the exact existing Kafka integration-test cluster construction pattern and Admin/Producer client setup needed for the smallest G0 implementation. Then implement only the sanity gate, not the race.
