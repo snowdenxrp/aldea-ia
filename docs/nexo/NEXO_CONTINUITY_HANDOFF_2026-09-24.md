@@ -2488,3 +2488,53 @@ Status: HARNESS_ARCHITECTURE_SOURCE_CONFIRMED; EXECUTION=NOT_STARTED; EXACT_RACE
 ### EXACT NEXT ACTION
 
 AB104.823R — inspect the existing Kafka test utilities for waiting on ACL propagation and for obtaining an independent broker-local log/effect witness, then implement/execute only G0. Do not classify the security property until A1/D0/D1/D2/E are all observed.
+
+## 170. AB104.823R — ACL propagation witness is source-confirmed
+
+`ClusterInstance.waitAcls(...)` iterates the cluster's Authorizer instances and waits until the expected ACL entries are observed. Existing integration tests call it after `admin.createAcls(...).all().get(...)`. This gives a supported propagation witness, but it is cluster-wide rather than specifically proving the target broker's wrapper snapshot alone; therefore the harness should additionally perform the target-broker D1 probe.
+
+Status: ACL_PROPAGATION_WAIT_SOURCE_CONFIRMED; D0_CONTROL_PLANE_CONFIRMED; TARGET_D1_STILL_REQUIRED.
+
+## 171. AB104.824R — Deletion propagation must be checked independently
+
+The same `waitAcls` mechanism is used in existing tests around ACL lifecycle operations, but for the revoke phase the experiment must not use absence from an Admin `describeAcls` result as D1. D1 is explicitly defined as a fresh authorization call on the target broker returning DENIED after deletion publication.
+
+This preserves the distinction between metadata/control-plane state and the actual authorization snapshot used by the broker processing the paused Produce.
+
+Status: DELETE_PROPAGATION_SEMANTIC_SEPARATION=LOCKED; D1_TARGET_BROKER_AUTHORIZATION=MANDATORY.
+
+## 172. AB104.825R — Independent effect witness is available inside the real broker
+
+`KafkaBroker` exposes `logManager`; existing Kafka integration/test code reads `broker.logManager().getLog(new TopicPartition(...), false)` and checks `UnifiedLog.logEndOffset`. Therefore the harness can record the target partition's log-end offset before the race and inspect it after release.
+
+This is a stronger effect witness than relying only on the Produce response callback. It directly observes the real broker log used by the append path.
+
+Status: BROKER_LOG_EFFECT_WITNESS=SOURCE_CONFIRMED; PRE_OFFSET_WITNESS=AVAILABLE; POST_OFFSET_WITNESS=AVAILABLE.
+
+## 173. AB104.826R — Effect witness must be interpreted carefully
+
+An increased log-end offset on the target partition after release establishes that the broker log advanced, but by itself does not identify which record caused the advance if unrelated writes are possible. Therefore the experiment should isolate the topic/partition and avoid concurrent writers; additionally, the Produce callback/result should be recorded as a separate witness E-response.
+
+Conversely, a successful client response without an observed log advancement is insufficient to claim durable append. The two witnesses remain separate.
+
+Status: EFFECT_ISOLATION_REQUIRED=LOCKED; RESPONSE_AND_LOG_WITNESSES_SEPARATE=LOCKED.
+
+## 174. AB104.827R — G0 evidence chain is now complete
+
+The pre-race sanity chain is: startup → actual wrapper identity/isolation → target ACL creation → ACL propagation → baseline target authorization ALLOWED → target partition ready → baseline log offset captured. Only after this chain passes may the harness enter A1 and block the real Produce authorization.
+
+Any timeout or contradictory observation aborts before D0/D1 race execution and is recorded as a harness failure/UNKNOWN, not a security result.
+
+Status: G0_EVIDENCE_CHAIN=LOCKED; RACE_GATE=NOT_OPENED_UNTIL_G0_PASS.
+
+## 175. AB104.828R — Race witness chain remains A1/D0/D1/D2/E
+
+After G0, the exact sequence remains: A1 real target Produce authorization returns ALLOW and blocks; D0 Admin ACL deletion completes; D1 target broker's independent fresh authorization returns DENIED; only then release A1; D2 verify the original Produce crosses into the real broker path; E record Produce outcome plus independent target-log evidence.
+
+No step may be inferred from another. In particular, D0 does not imply D1, D1 does not imply D2, and a Produce response does not replace the log witness.
+
+Status: EXACT_WITNESS_CHAIN=LOCKED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.829R — inspect the concrete target-broker log/partition APIs and the cleanest D1 authorization invocation, then implement and run G0 only. Race execution remains blocked until G0 passes.
