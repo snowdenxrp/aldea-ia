@@ -582,3 +582,14 @@ Provider deduplication and ordering are bounded/provider-specific and must not b
 This strengthens the existing separation between replay admission, authority generation, and external-effect reconciliation but does not close S9. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 42 is audit-only until persisted.
 
 Next exact mission: AB104.410, anti-rollback/continuity of replay state across crash recovery, snapshot/backup restore, replica divergence, and authority-epoch rollover; continue independent tracing of CURRENT_AUTHORITY_DECISION issuer/activation.
+
+## AB105.116R audit pass 43 — anti-rollback / continuity anchors — 2026-10-01
+AB104.410 confirms RESTORED_STATE != CURRENT_AUTHORITY and VALID_SNAPSHOT != NON_ROLLBACK. A valid snapshot can be old; a local monotonic counter rolls back with the restored dataset and cannot prove non-rollback by itself. Security-critical replay state therefore needs independent/current continuity evidence or must remain UNKNOWN/HOLD/QUARANTINED until continuity is established.
+
+Candidate continuity anchor fields include domain, continuity generation, authority epoch, replay-state generation, authenticated current-state root, previous-anchor reference, schema/policy versions, resource incarnation, trust/key generation, commit metadata and invalidation generation. The anchor is evidence of continuity lineage, not authority itself. Conflicting current anchors are a fork condition and must not be resolved by an assumed majority without a failure-domain/independence model. Snapshot integrity, provenance, freshness, continuity and authority remain separate predicates.
+
+Recovery should not silently revive an old authority epoch. Candidate sequence is recovery fence -> reconcile post-snapshot uncertainty -> establish new/revalidated authority generation -> rebuild admission context. Missing post-snapshot records do not prove non-execution, and restored logical resources may represent new incarnations.
+
+S9 remains open: continuity evidence can establish lineage of state, but AB104.410 still does not define the exact authority issuer/decision/linearization that promotes CURRENT_AUTHORITY after revocation. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 43 is audit-only until persisted.
+
+Next exact mission: AB104.411, compromise/equivocation/unavailability/restore of the continuity anchor itself and fork recovery; continue independent CURRENT_AUTHORITY_DECISION issuer/activation trace.
