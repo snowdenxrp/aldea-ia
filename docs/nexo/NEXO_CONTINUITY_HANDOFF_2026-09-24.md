@@ -2538,3 +2538,41 @@ Status: EXACT_WITNESS_CHAIN=LOCKED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKN
 ### EXACT NEXT ACTION
 
 AB104.829R — inspect the concrete target-broker log/partition APIs and the cleanest D1 authorization invocation, then implement and run G0 only. Race execution remains blocked until G0 passes.
+
+## 176. AB104.829R — Target-broker log witness API is directly usable
+
+Kafka integration tests directly obtain `broker.logManager().getLog(new TopicPartition(...), false)` and read `UnifiedLog.logEndOffset()`. The API is therefore suitable for the post-release E witness without modifying production code. Existing tests also wait for the log to exist before inspecting it.
+
+Status: TARGET_LOG_API_SOURCE_CONFIRMED; EFFECT_WITNESS_IMPLEMENTATION_READY.
+
+## 177. AB104.830R — D1 should use the wrapper's own delegate path, not a second client request
+
+A fresh client authorization request would prove broker-side authorization only if routing to the target broker were deterministic. The wrapper itself already has the exact `AuthorizableRequestContext`/`Action` semantics and its inherited `StandardAuthorizer` delegate. For D1, the cleanest proof is a direct authorization invocation on the target broker's actual wrapper/delegate instance using a synthetic non-Produce context/action for the same principal/topic/WRITE after ACL deletion.
+
+However, this D1 is only valid if the test explicitly records that it exercised the same target Authorizer instance and its current published snapshot. It must not be conflated with an end-to-end client denial response.
+
+Status: DIRECT_TARGET_AUTH_PROBE=SOURCE_SUPPORTED; D1_SEMANTIC_WITNESS=REQUIRES_EXPLICIT_INSTANCE_ASSERTION.
+
+## 178. AB104.831R — Direct D1 probe must not satisfy the barrier
+
+The wrapper's barrier predicate is restricted to the original Produce context. A D1 direct authorization call must use a non-Produce request type or otherwise fail the exact target-Produce predicate while still checking WRITE on the same topic and principal. This avoids self-deadlock and proves the delegate's fresh decision independently.
+
+Status: D1_BARRIER_NON_MATCH=LOCKED; SAME_TARGET_INSTANCE=REQUIRED.
+
+## 179. AB104.832R — G0 execution remains the only permitted runtime step
+
+Before any ACL revoke or blocked Produce, run only: cluster startup/readiness, runtime Authorizer identity/isolation assertions, topic creation/readiness, ACL creation, ACL propagation, target wrapper baseline authorization ALLOWED, target partition/log readiness, and initial log-end-offset capture.
+
+No barrier release, ACL deletion, or in-flight race should occur during G0. A failure means G0 FAIL/UNKNOWN and the harness must stop.
+
+Status: G0_RUNTIME_SCOPE=LOCKED; RACE_EXECUTION=FORBIDDEN_UNTIL_G0_PASS.
+
+## 180. AB104.833R — No actual G0 execution occurred in this pass
+
+This pass only inspected repository APIs and persisted the execution contract. No KafkaClusterTestKit was started, no wrapper instance was instantiated, no ACL was created/deleted, and no Produce race was run. Therefore there is no runtime result to report.
+
+Status: G0_EXECUTION=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.834R — implement the minimal test-only G0 harness in the canonical repository, compile/run the sanity test, and persist the actual runtime observations. Do not execute the revoke race in the same first run.
