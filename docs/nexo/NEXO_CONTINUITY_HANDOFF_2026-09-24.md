@@ -3097,3 +3097,43 @@ Status: BASELINE_PRODUCE=MANDATORY; INSTANCE_IDENTITY=MANDATORY; G0=NOT_EXECUTED
 ## AB104.930R — First-runtime gate
 The audit is now sufficiently constrained for a first external runtime attempt only if all G0 assertions are implemented: wrapper isolation, baseline ALLOW, independent D1, stable leadership, bounded barrier cleanup, and independent append/effect witness. No runtime result has yet been produced.
 Status: G0_SPEC=READY_FOR_IMPLEMENTATION; RUNTIME=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=IMPLEMENT_AND_EXECUTE_G0.
+
+## AB104.931R — G0 implementation boundary
+The first runtime should be implemented outside the Nexo repository in a temporary Apache Kafka checkout. No Kafka production source is to be copied into Nexo, and no Nexo model/version change is required. The runtime artifact is experimental evidence, not Nexo implementation.
+Status: EXTERNAL_CHECKOUT=REQUIRED; NEXO_SOURCE_MODIFICATION=PROHIBITED; MODEL_CHANGE=NOT_REQUIRED; G0=READY_FOR_IMPLEMENTATION.
+
+## AB104.932R — Test-only authorizer boundary
+The runtime wrapper must be test-only and subclass/delegate to StandardAuthorizer; production Kafka classes remain unmodified. The wrapper is permitted only to observe the exact target ALLOW and synchronize execution.
+Status: PRODUCTION_PATCH=PROHIBITED; TEST_WRAPPER=REQUIRED; G0=READY_FOR_IMPLEMENTATION.
+
+## AB104.933R — A0 ACL precondition
+Before sending the target Produce, the test must establish that the exact target principal has the required Topic WRITE ACL and that the target broker can authorize it. Absence or ambiguity of the ACL invalidates the race attempt.
+Status: A0=MANDATORY; ACL_AMBIGUITY=INVALIDATING; G0=READY_FOR_IMPLEMENTATION.
+
+## AB104.934R — A1 release protocol
+After the real target Produce authorization returns ALLOW inside the wrapper, the wrapper signals A1 and blocks the request until the harness explicitly releases it. The harness must record the timestamp/order of A1 before proceeding to deletion.
+Status: A1=MANDATORY; RELEASE=EXPLICIT; ORDER_RECORDING=MANDATORY; RUNTIME=NOT_EXECUTED.
+
+## AB104.935R — D0 deletion witness
+The harness must record successful ACL deletion through the controller/control-plane API and must not treat merely issuing a deletion request as D0. The publication/visibility condition required for D1 must be independently satisfied.
+Status: D0_COMMIT=REQUIRED; REQUEST_ISSUED_ONLY=INSUFFICIENT; RUNTIME=NOT_EXECUTED.
+
+## AB104.936R — D1 broker-local denial
+After D0 and publication visibility, the harness must obtain a fresh authorization decision from the target broker for the same principal/topic WRITE operation, using an independent context. D1 must be DENIED; otherwise the exact witness chain fails.
+Status: D1_DENIED=REQUIRED; STALE_RESULT=INVALID; TARGET_BROKER=REQUIRED; RUNTIME=NOT_EXECUTED.
+
+## AB104.937R — Release-to-append witness
+Only after D1 is recorded may the harness release A1. It must then observe the original request's progression to the append/effect witness. If the request fails before append for an unrelated reason, the race is not established.
+Status: RELEASE_AFTER_D1=MANDATORY; PRE_APPEND_FAILURE=NON_WITNESS; EXACT_RACE=NOT_EXECUTED.
+
+## AB104.938R — Evidence tuple
+A successful exact-race witness requires one coherent tuple: A1 target Produce ALLOW, D0 ACL deletion committed/published, D1 fresh target-broker DENY, release after D1, and independent append/effect evidence for the original Produce.
+Status: WITNESS_TUPLE=LOCKED; PARTIAL_TUPLE=INSUFFICIENT; EXACT_RACE=NOT_EXECUTED.
+
+## AB104.939R — Negative-result handling
+If the exact tuple is not observed, the result must remain bounded: the run can show that this configuration did not produce the witness under tested conditions, but cannot by itself prove that the race is impossible in Kafka generally.
+Status: NEGATIVE_RUNTIME=BOUNDED_ONLY; UNIVERSAL_DISPROOF=PROHIBITED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.940R — G0 execution gate
+All required design gates are now explicit. The next action is implementation/execution of the external G0 harness; further source-only repetition should stop unless runtime implementation exposes a concrete unresolved dependency.
+Status: SOURCE_AUDIT=SUFFICIENT_FOR_G0; G0=READY_TO_IMPLEMENT; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=EXTERNAL_G0_RUNTIME.
