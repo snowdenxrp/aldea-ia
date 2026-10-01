@@ -3073,3 +3073,27 @@ Status: A1_TARGET_MATCH=DESIGN_LOCKED; D1_INDEPENDENCE=DESIGN_LOCKED; BARRIER_OR
 ## AB104.924R — Wrapper implementation safety review
 Current StandardAuthorizer exposes a synchronous authorize() API intended for locally cached ACLs, and its implementation captures the current data reference before evaluating actions. The test-only wrapper can therefore call super.authorize(), inspect the returned result, and block only after the exact target Produce/WRITE/Topic ALLOW. The wrapper must never alter the returned AuthorizationResult, ACL state, request context, or action list; its only test effect is synchronization. Because authorize() runs on the request thread, the barrier must be explicitly released by the harness and must include timeout/failure cleanup so a missed witness cannot deadlock the broker. This is implementation-review evidence only; no G0 runtime has executed.
 Status: WRAPPER_DELEGATION=DESIGN_LOCKED; RESULT_PRESERVATION=REQUIRED; TEST_SIDE_EFFECT=SYNC_ONLY; TIMEOUT_CLEANUP=REQUIRED; G0=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=HARNESS_IMPLEMENTATION_OR_EXTERNAL_RUNTIME.
+
+## AB104.925R — Barrier timeout semantics
+A harness timeout must fail closed for the experiment: if A1 is not observed within the bounded startup/test window, the target Produce must not be treated as a race witness. The wrapper must release/abort deterministically so the broker test cannot remain blocked indefinitely.
+Status: TIMEOUT_FAIL_CLOSED=DESIGN_LOCKED; G0=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=G0_PRECHECK.
+
+## AB104.926R — D1 freshness witness
+D1 must execute a fresh authorization against the target broker after the ACL deletion is known to be committed/published, using an independent authorization context. A stale cached client-side result is not evidence of broker-local denial.
+Status: D1_FRESH_AUTH=DESIGN_LOCKED; CONTROL_PLANE_COMMIT=REQUIRED; TARGET_BROKER_WITNESS=REQUIRED; G0=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.927R — Effect witness separation
+Authorization and append must be witnessed independently. The experiment requires evidence that the original Produce was released, reached the leader append path, and produced the expected log effect; an ACK alone is insufficient to establish the exact ordering.
+Status: EFFECT_WITNESS=REQUIRED; ACK_ONLY=INSUFFICIENT; G0=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.928R — Leader stability precondition
+The target broker must remain the partition leader throughout A1→D0→D1→release. A leadership change invalidates the exact witness because the observed D1 and append could occur on different broker instances.
+Status: LEADER_STABILITY=REQUIRED; LEADER_CHANGE=INVALIDATING_EVENT; G0=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.929R — Baseline control
+Before attempting the race, G0 must establish a baseline successful Produce with the target ACL and confirm the target broker, topic partition, authorizer wrapper, and effect-witness path are all the intended instances. Failure of any baseline assertion stops the race attempt.
+Status: BASELINE_PRODUCE=MANDATORY; INSTANCE_IDENTITY=MANDATORY; G0=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.930R — First-runtime gate
+The audit is now sufficiently constrained for a first external runtime attempt only if all G0 assertions are implemented: wrapper isolation, baseline ALLOW, independent D1, stable leadership, bounded barrier cleanup, and independent append/effect witness. No runtime result has yet been produced.
+Status: G0_SPEC=READY_FOR_IMPLEMENTATION; RUNTIME=NOT_EXECUTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=IMPLEMENT_AND_EXECUTE_G0.
