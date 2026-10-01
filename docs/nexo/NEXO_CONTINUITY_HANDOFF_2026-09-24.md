@@ -2278,3 +2278,39 @@ Until that question is source-confirmed, do not implement or execute. The canoni
 ### EXACT NEXT ACTION
 
 AB104.799R — audit TestKit server-property merging/precedence and Authorizer instantiation on broker vs controller, then choose the smallest source-supported scoping strategy. No race execution.
+
+## 146. AB104.799R — TestKit per-server properties are truly node-scoped
+
+`TestKitNodes.Builder.setPerServerProperties` stores a map keyed by server ID. During `build()`, the same per-server property map is passed independently into `buildControllerNode(...)` and `buildBrokerNode(...)` for each node ID. Unknown IDs are rejected. Therefore the harness supports properties attached to a specific broker or controller node rather than only a global cluster configuration.
+
+This materially changes the wrapper-scoping question: a target broker can receive a test-only `authorizer.class.name` override through its node-specific properties, while other nodes can retain their normal Authorizer configuration. The source audit does not yet prove the exact property precedence relative to global `setConfigProp`, so that precedence must still be checked before implementation.
+
+Status: PER_SERVER_NODE_SCOPING=SOURCE_CONFIRMED; BROKER_TARGETING=SOURCE_CONFIRMED; PROPERTY_PRECEDENCE=OPEN; EXACT_RACE=NOT_EXECUTED.
+
+## 147. AB104.800R — Combined controller/broker mode must be excluded from the race harness
+
+`TestKitNodes` explicitly supports combined mode, where controller and broker roles can share a node ID. A broker-only Authorizer override would therefore also affect the controller role on that combined node. For a clean experiment, use separate controller and broker nodes and target a broker ID that is not a controller ID.
+
+This is preferable to adding role-based exceptions inside the barrier itself. The experiment should minimize unrelated Authorizer traffic rather than make the predicate increasingly complex.
+
+Status: COMBINED_MODE=SUPPORTED_BUT_UNSUITABLE_FOR_CLEAN_RACE; SEPARATE_CONTROLLER_BROKER_NODES=REQUIRED_FOR_HARNESS_DESIGN; EXACT_RACE=NOT_EXECUTED.
+
+## 148. AB104.801R — Broker-only wrapper is now the preferred scoping strategy
+
+With per-server properties proven node-scoped, the clean design is: keep normal StandardAuthorizer configuration globally; assign the test wrapper only to the target broker's server-specific `authorizer.class.name`; leave controller Authorizers untouched. The wrapper delegates to a real StandardAuthorizer and blocks only the target Produce authorization after a real ALLOW.
+
+This reduces the experimental surface: controller ACL mutation remains on the normal controller Authorizer, D1 is performed against the target broker wrapper's delegated StandardAuthorizer, and no controller-side authorization needs to be filtered through the barrier.
+
+Status: BROKER_ONLY_WRAPPER=PRIMARY_DESIGN; CONTROLLER_PATH_UNMODIFIED=DESIRED; EXPERIMENTAL_SURFACE=MINIMIZED; EXACT_RACE=NOT_EXECUTED.
+
+## 149. AB104.802R — Property precedence is the final configuration-risk before implementation
+
+The node-scoped property is demonstrably passed into each TestKit node's server configuration, but the exact merge order between cluster-level `.setConfigProp(...)` and per-server properties has not yet been source-confirmed in the audited files. We must verify that a per-server `authorizer.class.name` actually overrides the global value for the target broker rather than being overwritten by the builder's common properties.
+
+Do not write the experiment assuming precedence. The next source audit must follow the property map from TestKitNodes into the actual BrokerServer/ControllerServer configuration construction and establish the final value seen by the target broker.
+
+Status: PER_SERVER_AUTHORZIER_PRECEDENCE=UNKNOWN; IMPLEMENTATION_BLOCKED_ON_PRECEDENCE_AUDIT=YES; EXACT_RACE=NOT_EXECUTED.
+
+### EXACT NEXT ACTION
+
+AB104.803R — trace TestKitNodes server properties through KafkaClusterTestKit into BrokerServer/ControllerServer configuration, establish precedence for `authorizer.class.name`, then lock the minimal wrapper configuration. No execution.
