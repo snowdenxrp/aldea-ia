@@ -295,7 +295,9 @@ jobs:
                               java.nio.file.Files.writeString(
                                   java.nio.file.Path.of("/tmp/nexo-g0-witness.txt"), witness + System.lineSeparator());
                               System.out.println(witness);
-                              Assertions.assertEquals(1L, after, "E must show exactly one append");
+                              long expectedAfter = D1_RESULT == AuthorizationResult.ALLOWED ? 2L : 1L;
+                              Assertions.assertEquals(expectedAfter, after,
+                                  "E must reflect D1 append only when D1 was authorized");
                           }
                       } finally {
                           A1_RELEASE.countDown();
