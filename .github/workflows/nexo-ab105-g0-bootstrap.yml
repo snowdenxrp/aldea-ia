@@ -1,0 +1,58 @@
+name: NEXO AB105 G0 Kafka Bootstrap
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-bootstrap
+  workflow_dispatch:
+
+jobs:
+  kafka-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Nexo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Clone pinned Kafka source
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git /tmp/kafka
+          cd /tmp/kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          git rev-parse HEAD
+
+      - name: Record JVM and Gradle
+        working-directory: /tmp/kafka
+        run: |
+          java -version
+          ./gradlew --version
+
+      - name: Compile Kafka test infrastructure
+        working-directory: /tmp/kafka
+        run: |
+          ./gradlew --no-daemon :test-common:test-common-runtime:compileJava :metadata:compileTestJava
+
+      - name: Emit bootstrap evidence
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "JAVA_HOME=$JAVA_HOME"
+            echo "JAVA_VERSION=$(java -version 2>&1 | head -n 1)"
+            echo "BOOTSTRAP_COMPILE=SUCCESS"
+            echo "G0_RUNTIME=NOT_EXECUTED"
+            echo "EXACT_RACE=UNKNOWN"
+          } | tee /tmp/nexo-g0-bootstrap-evidence.txt
+
+      - name: Upload bootstrap evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-bootstrap-evidence
+          path: /tmp/nexo-g0-bootstrap-evidence.txt
