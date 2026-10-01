@@ -3457,3 +3457,43 @@ Status: FIRST_RUN=CONTROLLED_G0; RAW_EVIDENCE_FIRST=REQUIRED.
 ## AB105.030R — Continuation endpoint
 Further source-only continuation is now explicitly non-productive. The next valid step is external G0 execution or a concrete executable tooling path.
 Status: PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME; NEXT=EXTERNAL_G0_OR_TOOLING_PATH.
+
+## AB105.031R — External path revalidated
+Kafka trunk supports the Gradle wrapper, Java 17+ for server modules, and targeted integration-test execution.
+Status: EXTERNAL_PATH=CONFIRMED; CURRENT_RUNNER=UNAVAILABLE.
+
+## AB105.032R — Execution workspace absent
+No writable and executable Kafka checkout is exposed in the current connected environment.
+Status: EXECUTION_WORKSPACE=UNAVAILABLE; RUNTIME=NOT_EXECUTED.
+
+## AB105.033R — Runtime witnesses absent
+No A1 ALLOW, D0 publication, D1 DENY, release, append, or effect artifact has been observed.
+Status: A1=NOT_OBSERVED; D0=NOT_OBSERVED; D1=NOT_OBSERVED; EFFECT=NOT_OBSERVED.
+
+## AB105.034R — No inference from absence
+The missing runtime is not evidence for or against the hypothesized Kafka race.
+Status: EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## AB105.035R — G0 protocol unchanged
+The required witness remains A0 baseline ALLOW, A1 target ALLOW barrier, D0 committed publication, D1 fresh target-broker DENY, release after D1, and independent effect evidence.
+Status: G0=READY; PROTOCOL=UNCHANGED.
+
+## AB105.036R — Source review conditional
+Further source-only review is paused unless an actual implementation attempt reveals a concrete blocker.
+Status: SOURCE_REVIEW=PAUSED; REOPEN=CONDITIONAL.
+
+## AB105.037R — Canonical continuity only
+No parallel handoff or backup is created.
+Status: CANONICAL_HANDOFF=SOLE_SOURCE.
+
+## AB105.038R — Model anchor preserved
+AB105.116R remains canonical and untouched.
+Status: MODEL_ANCHOR=AB105.116R; UNCHANGED.
+
+## AB105.039R — Runtime evidence gate
+Only genuine external execution can change the exact-race epistemic state.
+Status: RUNTIME_GATE=LOCKED; EXACT_RACE=UNKNOWN.
+
+## AB105.040R — Next valid action
+The next meaningful advance is external G0 execution or a concrete executable tooling path. Additional source-only continuation is not evidence progress.
+Status: PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME; NEXT=EXTERNAL_G0_OR_TOOLING_PATH.
