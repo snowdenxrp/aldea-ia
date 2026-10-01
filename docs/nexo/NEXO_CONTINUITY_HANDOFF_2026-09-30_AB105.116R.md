@@ -163,3 +163,47 @@ Direct source review of Init + every action in Next. No model changes.
 - No suspicious value has been deleted or reduced.
 - No AB105.116R source/config/workflow modification was made.
 - Next: construct the full variable/action/guard/dependency matrix and trace minimal witness paths for the candidate orthogonal states above. Then compare each against the semantic freeze and S1–S12 requirements before deciding whether any freedom is legitimate or a missing guard.
+
+
+## Cross-dimension witness audit — pass 2 — 2026-09-30
+Minimal conceptual traces were checked against the actual guards in Next. These are reachability witnesses, not semantic approval.
+
+- Witness A — ENFORCED fence + active operation:
+  Init → IssueFence → EnforceFence → EstablishAuthority → SetContext → AdmitCurrent → StartOperation.
+  This is reachable because StartOperation rejects fence=ISSUED but explicitly permits fence=ENFORCED. Therefore 'fence ENFORCED while operation IN_FLIGHT' is not a Cartesian-only artifact; it is reachable by a short path. Semantic question: whether an already-enforced fence is a prerequisite/permission or a state that should exclude a new operation.
+- Witness B — successor PRESENT without operation:
+  Init → SetSuccessor.
+  No operation, authority, effect, fence, or recovery is needed to create PRESENT. Therefore PRESENT-before-operation is genuinely reachable, not merely a domain-product artifact.
+- Witness C — successor RELEASED without an operation:
+  Init → SetSuccessor → EstablishAuthority → IssueFence → EnforceFence → ProveExclusivity → SetAtomicity(ATOMIC,ATOMIC) → ReleaseSuccessor.
+  All ReleaseSuccessor guards can be satisfied while operationState remains NONE, stop NONE, reconstruction EMPTY, reconciliation NONE, effectState NONE. Therefore RELEASED-without-operation is reachable in the current model. This is a higher-priority semantic review item because release semantics may or may not require a prior operation/effect.
+- Witness D — external OBSERVED effect without operation:
+  Init → ObserveExternal(E1).
+  effectOrigin=EXTERNAL_OBSERVED and effectState=OBSERVED are reachable without any operation. This is legitimate only if external observation is intentionally modeled as independent of Nexo execution.
+- Witness E — UNKNOWN effect without operation:
+  Init → MarkUnknown.
+  effectState=UNKNOWN is reachable immediately. This confirms UNKNOWN is a generic uncertainty classification, not evidence that an operation happened.
+- Witness F — PARTIAL coverage without evidence/reconstruction:
+  Init → SetPartialCoverage.
+  coverage=PARTIAL is reachable while reconstruction=EMPTY, operationState=NONE, effectState=NONE. This is another high-value semantic review item: coverage currently represents a state classification that can be injected independently of evidence.
+- Witness G — reconstruction PARTIAL during IN_FLIGHT:
+  Init → EstablishAuthority → SetContext → AdmitCurrent → StartOperation → Recover.
+  reconstruction=PARTIAL is reachable while operationState=IN_FLIGHT. If recovery is intended only after stop/terminal boundaries, this is a missing guard; if recovery can begin concurrently with an active operation, it is intentional.
+- Witness H — correlated dependency without any admission/operation:
+  Init → SetCorrelated.
+  dependency=CORRELATED is reachable in the initial semantic state. INDEPENDENT remains unreachable.
+- Witness I — all atomicity pairs:
+  From any state, SetAtomicity(req,avail) accepts any req and avail in the four-element Atomicity set. Therefore all 16 pairs are reachable, including combinations such as required=ATOMIC/available=UNSUPPORTED and required=UNSUPPORTED/available=ATOMIC. The model intentionally defers the compatibility question to AtomicitySatisfied/ReleaseSuccessor rather than constraining SetAtomicity.
+
+### Priority for semantic review (not ranking design choices)
+The traces most likely to distinguish 'real state' from 'abstraction freedom' are:
+1. RELEASED with operationState=NONE.
+2. PARTIAL coverage with reconstruction=EMPTY and no evidence.
+3. Recover while operationState=IN_FLIGHT.
+4. ENFORCED fence with operationState=IN_FLIGHT.
+5. EXTERNAL_OBSERVED with no operation.
+6. CORRELATED dependency with no operation/admission.
+These require comparison against the frozen S1–S12 semantics before any guard/domain change.
+
+### Important non-conclusion
+A reachable state can still be semantically invalid. Reachability answers 'can this model produce it?'; semantic audit answers 'should the model produce it?'. We therefore must not convert these witnesses into fixes until their intended meaning is established.
