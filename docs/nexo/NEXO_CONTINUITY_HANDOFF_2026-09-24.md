@@ -2610,3 +2610,37 @@ Status: IMPLEMENTATION_DESIGN=READY; EXECUTION_ENVIRONMENT=PENDING; EXACT_RACE=N
 ### EXACT NEXT ACTION
 
 AB104.839R — continue source audit for the narrowest supported D1 invocation and G0 readiness APIs, while preserving the runtime execution as PENDING. Do not claim G0 success without real test output.
+
+## 186. AB104.839R — Kafka already has concrete test contexts for direct Authorizer calls
+
+`GroupAuthorizerIntegrationTest` defines an `AuthorizableRequestContext` test object and uses `authorizer.createAcls`/`deleteAcls`; `StandardAuthorizerTest` and `StandardAuthorizerData` exercise direct authorization. This confirms direct Authorizer invocation is an established test pattern rather than a production-path invention.
+
+Status: DIRECT_AUTHORIZE_TEST_PATTERN=SOURCE_CONFIRMED.
+
+## 187. AB104.840R — D1 context must provide a non-null client address
+
+`StandardAuthorizerData.authorize` calls `requestContext.clientAddress().getHostAddress()` while matching ACLs. Therefore the earlier anonymous context with `clientAddress() == null` cannot be reused for D1. The harness needs a concrete loopback address (or another explicit test address) while preserving the target principal/topic/WRITE action.
+
+Status: D1_CONTEXT_CLIENT_ADDRESS=REQUIRED; NULL_ADDRESS=INVALID.
+
+## 188. AB104.841R — Concrete Action construction is source-confirmed
+
+Kafka test/benchmark code constructs `Action(AclOperation.WRITE, ResourcePattern(ResourceType.TOPIC, topic, PatternType.LITERAL), 1, ...)`. Therefore D1 can directly authorize the same semantic WRITE/TOPIC/topic action against the target Authorizer without relying on a client round trip.
+
+Status: D1_ACTION_CONSTRUCTION=SOURCE_CONFIRMED.
+
+## 189. AB104.842R — D1 can be made semantically fresh without becoming a second Produce
+
+The direct D1 call should use the target principal, the exact target topic and WRITE action, but a request context whose `requestType` is not PRODUCE. The wrapper's A1 barrier predicate remains keyed to PRODUCE + exact principal/topic/WRITE, so D1 cannot consume the barrier. The authorization result is still computed from the target broker's current StandardAuthorizerData snapshot.
+
+Status: D1_SEMANTIC_FRESHNESS=LOCKED; BARRIER_SELF_DEADLOCK=AVOIDED.
+
+## 190. AB104.843R — G0 implementation still cannot be executed from the Nexo repository
+
+These source findings close the remaining design ambiguity for D1, but they do not provide runtime evidence. The canonical Nexo repository still lacks the Apache Kafka test checkout/build needed to instantiate KafkaClusterTestKit and run G0. No G0 result is claimed.
+
+Status: G0=NOT_PERFORMED; EXECUTION_ENVIRONMENT=PENDING; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.844R — continue auditing the exact Kafka test build/module placement for the minimal harness so that, when executed in a real Kafka checkout, G0 can be run without broad or duplicate artifacts.
