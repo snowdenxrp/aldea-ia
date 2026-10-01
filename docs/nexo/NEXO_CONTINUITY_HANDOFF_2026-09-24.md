@@ -2058,3 +2058,34 @@ No Nexo implementation, V21, formal verification, or runtime Nexo execution.
 AB104.779R — audit the Kafka integration-test/server harness for the narrowest supported way to control or substitute the target broker's ReplicaManager while retaining the real StandardAuthorizer + metadata publication + Partition/UnifiedLog effect path. In parallel, identify the strongest existing broker-local ACL publication observation that can establish D1 without conflating it with controller commit D0. Do not execute the race yet.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.779R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+## 124. AB104.779R — Integration harness exposes the real broker and ReplicaManager
+
+Audited Kafka's current KRaft integration harness. `KafkaServerTestHarness` exposes `brokers: mutable.Buffer[KafkaBroker]`, and `KafkaBroker` exposes `replicaManager: ReplicaManager` and `dataPlaneRequestProcessor: KafkaApis`. Therefore the running target broker's real ReplicaManager is directly reachable from an integration test.
+
+The harness creates real `BrokerServer` instances through `QuorumTestHarness.createBroker`; `BrokerServer` constructs its own real ReplicaManager during startup and wires that same instance into KafkaApis. This is stronger than the earlier unit-test mock path: the test can observe/control the actual broker object without replacing the production ReplicaManager constructor.
+
+New consequence: the remaining problem is not how to substitute ReplicaManager. The cleanest test-only control point is to instrument the existing real target broker's ReplicaManager, but the audit has not yet established a supported runtime interception mechanism for `handleProduceAppend` (the method may not be overridable in the required way). We must inspect its declaration and existing subclass/test patterns before deciding whether a wrapper, subclass at broker construction, or a lower append hook is possible.
+
+Status: REAL_BROKER_ACCESS=SOURCE_CONFIRMED; REAL_REPLICA_MANAGER_ACCESS=SOURCE_CONFIRMED; KAFKAAPIS_REAL_PATH=SOURCE_CONFIRMED; RUNTIME_INTERCEPTION_MECHANISM=OPEN; EXACT_RACE=NOT_EXECUTED.
+
+## 125. AB104.780R — Broker-local ACL publication observation: harness-level target
+
+The integration harness also exposes each broker's `authorizerPlugin`, while `KafkaServerTestHarness.pickAuthorizerForWrite` can obtain an authorizer for writes. However, selecting the controller authorizer is not sufficient for D1; D1 requires the target broker's own local authorizer to deny a fresh authorization after ACL deletion.
+
+The correct observation contract is therefore broker-local: use the target broker's `authorizerPlugin.get.get.authorize(...)` (or the strongest equivalent public authorizer API available in the harness) for the same principal/topic/action. The observed result must transition from ALLOWED before deletion to DENIED after the deletion has been published to that target broker.
+
+This gives a practical D1 witness independent of the controller DeleteAcls completion. We still need to audit how existing tests wait for ACL publication and whether directly invoking the target authorizer is sufficient evidence for the metadata publication boundary, rather than merely reading a local object.
+
+Status: TARGET_BROKER_AUTHORIZER_ACCESS=SOURCE_CONFIRMED; D1_LOCAL_DENIAL_WITNESS=FEASIBLE_IN_PRINCIPLE; PUBLICATION_WAIT_SEMANTICS=OPEN; EXACT_RACE=NOT_EXECUTED.
+
+## 126. AB104.781R — ReplicaManager interception audit begins: declaration and test seams
+
+Next source check is deliberately narrow: inspect the declaration/signature/visibility of `ReplicaManager.handleProduceAppend`, its subclasses or test doubles, and any existing integration/unit seam that can pause execution without modifying production behavior. Do not execute the race and do not infer a fence from a test seam alone.
+
+No Nexo implementation, V21, formal verification, or runtime Nexo execution.
+
+### EXACT NEXT ACTION
+AB104.781R — inspect `ReplicaManager.handleProduceAppend` declaration and existing override/decorator/test-hook patterns; then inspect target-broker ACL publication wait helpers in the integration tests. Preserve UNKNOWN until the complete controlled path is established.
+
+CONTINUITY RULE: recover this same canonical handoff first; resume at AB104.781R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; no parallel handoffs; AB105.116R remains canonical model anchor.
