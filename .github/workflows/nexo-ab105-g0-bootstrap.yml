@@ -76,6 +76,8 @@ jobs:
           import org.apache.kafka.metadata.authorizer.StandardAuthorizer;
           import org.apache.kafka.common.errors.TopicAuthorizationException;
           import org.apache.kafka.server.authorizer.Action;
+          import org.apache.kafka.server.authorizer.AuthorizableRequestContext;
+          import org.apache.kafka.server.authorizer.AuthorizationResult;
           import org.apache.kafka.storage.internals.log.UnifiedLog;
           import kafka.server.BrokerServer;
           import org.apache.kafka.server.config.ServerConfigs;
