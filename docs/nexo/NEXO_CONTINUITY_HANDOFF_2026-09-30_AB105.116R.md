@@ -553,3 +553,38 @@ This is a semantic constraint, not yet a source change.
 
 ### Next
 Construct minimal witnesses for P1 and P2 and identify which S1/S8/S12 obligations each satisfies or leaves open. Keep the live TLC run untouched.
+
+## AB105.116R audit pass 10 — minimal P1/P2 witnesses against S1/S8/S12
+
+No source/config/workflow modification.
+
+### P1 witness
+Establish E1 → AdmitCurrent(op X) → Revoke → Establish E2.
+Expected semantic result under P1: the prior ACCEPTED admission becomes STALE before execution.
+
+S1: preserved because stale admission cannot legitimately authorize execution.
+S8: replay identity remains separate; marking stale must not change operationId/fingerprint.
+S12: improves authority-epoch binding but does not by itself bind evidence/effect identity.
+
+### P2 witness
+Establish E1 → AdmitCurrent(op X) → Revoke → Establish E2 → explicit Revalidate(op X,E2) → StartOperation.
+Expected semantic result: the old admission is not silently accepted under E2; an explicit revalidation step establishes the new epoch binding.
+
+S1: preserved if StartOperation requires the revalidated admission.
+S8: strongest risk is accidental identity reset; operationId/fingerprint/incarnation must remain the same unless the contract explicitly declares a new operation.
+S12: preserves identity only if revalidation records the new authority epoch without erasing subject/incarnation/operation identity.
+
+### What the witnesses prove
+The essential property is common to P1 and P2:
+epoch change must not silently convert old ACCEPTED admission into current authorization context.
+
+P1 and P2 differ only in when/how the admission changes state. Therefore the minimal structural requirement is D1a (admission-time epoch), while the policy transition remains semantic UNKNOWN.
+
+### Important non-result
+These witnesses do NOT justify adding an automatic RevokeAuthority => admission=STALE guard yet. That would choose P1 over P2 without a frozen semantic decision.
+
+### Verification scope reminder
+TLC can check the chosen finite transition relation and configured invariants; it cannot choose between P1 and P2 as the intended semantics.
+
+### Next
+Audit whether current RevokeAuthority / EstablishAuthority semantics actually model a new epoch or merely reuse the same CURRENT label. If the latter, D1a needs a richer finite epoch abstraction before either P1 or P2 can be represented honestly.
