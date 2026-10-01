@@ -3257,3 +3257,43 @@ Status: RAW_EVIDENCE=IMMUTABLE; SUMMARY=DERIVED_ONLY.
 ## AB104.970R — Execution transition locked
 The audit is now at the external execution boundary. No additional source-only AB blocks are needed unless the implementation attempt reveals a concrete blocker.
 Status: PHASE=EXTERNAL_EXECUTION; G0=READY; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
+
+## AB104.971R — External runner prerequisite revalidated
+Apache Kafka's current AGENTS guide confirms Java 17/25 for the relevant non-client modules and supports the Gradle wrapper plus single-test execution. This validates the external runner checklist but does not provide an execution environment here.
+Status: EXTERNAL_BUILD_PREREQS=CONFIRMED; RUNTIME=NOT_EXECUTED.
+
+## AB104.972R — Narrow test execution boundary
+The runtime should invoke only the dedicated G0 integration test, not the full Kafka suite. A broad suite would add unrelated failure modes and weaken evidence attribution.
+Status: SINGLE_G0_TEST=REQUIRED; BROAD_SUITE=PROHIBITED_FOR_FIRST_WITNESS.
+
+## AB104.973R — No Docker substitution
+A stock Kafka Docker image cannot by itself establish the required wrapper-controlled A1 barrier and target-broker authorizer instrumentation. Containers may assist environment setup, but they do not replace the test harness.
+Status: STOCK_IMAGE_ONLY=INSUFFICIENT; TEST_WRAPPER=REQUIRED.
+
+## AB104.974R — Build success is not G0 success
+Successful compilation/startup only proves the harness is executable. G0 remains pending until the controlled A0→A1→D0→D1→release→effect sequence is actually observed or fails with preserved evidence.
+Status: BUILD_SUCCESS≠G0_SUCCESS; RUNTIME=NOT_EXECUTED.
+
+## AB104.975R — First-run artifact set
+The first external attempt must preserve the exact Kafka commit, harness source, Gradle command, JDK version, broker/controller topology, test output, broker logs, and raw synchronization/effect evidence.
+Status: ARTIFACT_SET=MANDATORY; SUMMARY_ONLY=INSUFFICIENT.
+
+## AB104.976R — Failure taxonomy locked
+Compilation/configuration/startup/timeout failures are harness blockers unless a defined witness condition was reached first. A partial race sequence remains a non-witness and must be classified without extrapolation.
+Status: FAILURE_TAXONOMY=LOCKED; UNIVERSAL_CONCLUSION=PROHIBITED.
+
+## AB104.977R — No additional model migration
+External runtime work does not alter the Nexo model anchor. AB105.116R remains canonical and untouched while this Kafka audit is being executed.
+Status: MODEL_ANCHOR=AB105.116R; MIGRATION=PROHIBITED.
+
+## AB104.978R — Source audit closure marker
+The current source-level questions needed for G0 have been sufficiently bounded. New source research is now conditional on an implementation blocker discovered during the external attempt.
+Status: SOURCE_AUDIT=CLOSED_FOR_CURRENT_G0; CONDITIONAL_REOPEN_ONLY.
+
+## AB104.979R — Evidence gate remains unmet
+No A1/D0/D1/effect runtime evidence has been produced in the current environment. Therefore the exact-race hypothesis remains unconfirmed.
+Status: A1=NOT_OBSERVED; D0=NOT_OBSERVED; D1=NOT_OBSERVED; EFFECT=NOT_OBSERVED; EXACT_RACE=UNKNOWN.
+
+## AB104.980R — Next continuation contract
+The next meaningful continuation must either execute the external G0 harness if an executable environment becomes available, or record the concrete blocker preventing execution. Do not manufacture additional source-only results to simulate progress.
+Status: NEXT=EXTERNAL_G0_OR_CONCRETE_BLOCKER; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
