@@ -588,3 +588,32 @@ TLC can check the chosen finite transition relation and configured invariants; i
 
 ### Next
 Audit whether current RevokeAuthority / EstablishAuthority semantics actually model a new epoch or merely reuse the same CURRENT label. If the latter, D1a needs a richer finite epoch abstraction before either P1 or P2 can be represented honestly.
+
+## AB105.116R audit pass 11 — epoch transition semantics
+
+Current 116R uses Epoch = {OLD, CURRENT, FUTURE, NONE}, but the executable transition relation only has:
+- Init -> NONE
+- EstablishAuthority -> CURRENT
+- no transition that moves CURRENT to OLD or creates a distinct successor epoch.
+
+Therefore the model currently has a label named CURRENT, not a genuine sequence of authority epochs.
+
+Consequence:
+- The previously described E1 -> revoke -> E2 witness cannot actually distinguish E1 from E2 in 116R.
+- RevokeAuthority changes authority VALID -> REVOKED but leaves authorityEpoch CURRENT.
+- A later EstablishAuthority returns authority to VALID while the epoch remains CURRENT.
+- D1a cannot be meaningfully tested until the finite model can represent at least two distinct authority epochs.
+
+Classification: **confirmed representation gap in the epoch abstraction**.
+
+Minimal requirement before P1/P2 implementation:
+- represent at least two distinct authority-epoch identities plus NONE;
+- preserve the current/stale distinction;
+- define the transition that advances the epoch on authority replacement/revocation according to the frozen semantics;
+- avoid using OLD/FUTURE labels merely as cosmetic values.
+
+No source/config/workflow change made.
+
+This is important because TLC explores reachable states of the specified finite transition system; if E1 and E2 are not distinct states in that system, a property about cross-epoch admission cannot actually be checked. citeturn0search4turn0search5
+
+Next: inspect AB105.111R/112R for the minimum epoch transition semantics before choosing cardinality or modifying 116R.
