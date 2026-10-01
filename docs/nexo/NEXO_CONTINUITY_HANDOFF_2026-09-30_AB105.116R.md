@@ -593,3 +593,65 @@ Recovery should not silently revive an old authority epoch. Candidate sequence i
 S9 remains open: continuity evidence can establish lineage of state, but AB104.410 still does not define the exact authority issuer/decision/linearization that promotes CURRENT_AUTHORITY after revocation. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 43 is audit-only until persisted.
 
 Next exact mission: AB104.411, compromise/equivocation/unavailability/restore of the continuity anchor itself and fork recovery; continue independent CURRENT_AUTHORITY_DECISION issuer/activation trace.
+
+## AB105.116R audit pass 44 — continuity-anchor compromise / equivocation / fork recovery — 2026-10-01
+
+### Historical artifact recovered
+AB104.411 (commit 98822f5e84fe0950e56199eae1d83a093dd7ba4d) audits compromise, equivocation, unavailability, rollback, replacement, and fork recovery of the external continuity anchor.
+
+### Findings
+1. A continuity anchor is an evidence/control dependency, not automatically the ultimate source of truth:
+   ANCHOR_SIGNATURE_VALID != ANCHOR_CORRECT;
+   ANCHOR_CURRENT != HISTORY_COMPLETE;
+   ANCHOR_AUTHENTIC != AUTHORITY.
+2. Anchor availability cannot silently become authority. Safety-critical/high-consequence authorization requires HOLD/REVALIDATE unless an independently valid current-state mechanism exists.
+3. A stale anchor cannot establish current authorization; generation validity is distinct from signature validity.
+4. Equivocation can occur even when individual anchor statements are cryptographically valid. Conflicting views require conflict detection and quarantine or another explicitly authorized resolution path; no local-majority rule is frozen.
+5. A restored anchor is not automatically current: RESTORED_ANCHOR != CURRENT_ANCHOR. Backup restoration inside the anchor cannot self-prove freshness/non-rollback.
+6. Multiple observers do not automatically provide independence. Independence must be evaluated across trust, dependency, deployment, policy, operator, and failure domains.
+7. A compromised/recovered anchor cannot certify its own replacement. Replacement requires a protected trust transition, cross-reference to accepted history, new trust/key generation, protected activation, and dependent-claim revalidation.
+8. Conflicting protected history must not be resolved by automatically preferring the anchor or local Nexo state; DISPUTED/QUARANTINED remains the safe unresolved state until classification/evidence.
+9. If all independent continuity evidence is lost, CURRENT_CONTINUITY remains UNKNOWN; current authority must not be manufactured.
+
+### S9 consequence
+AB104.411 strengthens the provenance chain but does not close the missing promotion boundary. INTEGRITY != CONSISTENCY != AUTHORITY. An authentic/consistent anchor statement cannot by itself be imported as authority=VALID after revocation.
+
+The missing S9 roles remain separate:
+- continuity/anchor evidence;
+- authority evidence;
+- authority configuration/trust basis;
+- authority decision;
+- protected activation/linearization;
+- current authority as the applicable derived condition.
+
+No A/B/C reauthorization policy is selected.
+
+### Interaction with prior passes
+- Pass 43: restored replay state cannot prove current continuity by itself.
+- Pass 44: the continuity anchor itself can also be stale, rolled back, compromised, equivocating, or forked; it cannot be treated as an implicit ultimate trust root.
+- D1a remains open; AB104.411 does not define executable E1 -> E2 transition or admissionEpoch semantics.
+- S11 remains open; anchor evidence does not define expected-effect/materiality semantics.
+- S12 remains open; anchor observations/witnesses do not collapse effect identity and observation/event identity.
+
+### New narrowed requirement
+Before model revision, the authority path needs an explicit trust/dependency classification for continuity evidence:
+CONTINUITY_EVIDENCE -> CONSISTENCY/INDEPENDENCE APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+This is a semantic dependency chain, not an authorized implementation.
+
+### Status
+- CONTINUITY_ANCHOR_SEMANTICS = FURTHER_CONSTRAINED; anchor is evidence/control dependency, not authority.
+- EQUIVOCATION_RESOLUTION = UNKNOWN/PENDING.
+- WITNESS_INDEPENDENCE_RULE = UNKNOWN/PENDING.
+- ANCHOR_REPLACEMENT_TRUST_TRANSITION = UNKNOWN/PENDING.
+- PROMOTION_TO_CURRENT_AUTHORITY = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Next exact mission
+AB104.412 — attack quorum/witness independence and Byzantine equivocation: determine which continuity observations are genuinely independent, how shared failure domains invalidate apparent quorum, and how conflicting anchor views can be classified/resolved without introducing an unbounded governance TCB.
