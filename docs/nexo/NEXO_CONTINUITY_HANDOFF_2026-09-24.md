@@ -102,3 +102,26 @@ Status: G0_COMPLETENESS_REVIEW=PASSED_WITH_D0_CLARIFICATION; MISSING_G0_PREREQUI
 ### EXACT NEXT ACTION
 
 AB105.053R — implement the smallest temporary Kafka G0 harness exactly against the frozen checklist, then compile/run the sanity gate only. Capture raw evidence for every prerequisite before permitting A1/D0/D1. Do not infer race results from compilation, startup, baseline ALLOW, or D0 alone.
+
+
+## AB105.053R — First executable Kafka bootstrap path created
+
+The first implementation step is now concrete and isolated from the canonical Nexo model. A dedicated branch `nexo-ab105-g0-bootstrap` was created from main, and workflow `.github/workflows/nexo-ab105-g0-bootstrap.yml` was added there.
+
+The workflow:
+- uses `ubuntu-latest`;
+- installs Java 21 with Temurin;
+- clones Apache Kafka at pinned revision `99b940733a9f6bc409457dba7108f08421d81e42`;
+- records the exact Kafka revision and JVM/Gradle versions;
+- compiles Kafka test infrastructure and metadata test sources;
+- uploads raw bootstrap evidence;
+- explicitly records `G0_RUNTIME=NOT_EXECUTED` and `EXACT_RACE=UNKNOWN`.
+
+This is intentionally a bootstrap gate, not the G0 race harness. No A1/D0/D1 operation is executed and no race conclusion can be produced by this workflow.
+
+Important execution status: the GitHub API currently returns no workflow run associated with the bootstrap commit yet. Therefore the workflow's existence is proven, but its execution is NOT proven. No success/failure is inferred from the absence of a run.
+
+Status: BOOTSTRAP_WORKFLOW=CREATED_ON_ISOLATED_BRANCH; KAFKA_REV_PINNED=YES; JAVA21_BOOTSTRAP=DECLARED; BOOTSTRAP_RUNTIME=NOT_OBSERVED; G0_HARNESS=NOT_IMPLEMENTED; G0_RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN; AB105.116R=INTACT.
+
+### DO-NOT-PROMOTE
+Do not treat the workflow file, Kafka checkout, Java setup, compilation command, or missing workflow-run record as evidence that Kafka G0 executed. The next observation must come from an actual workflow run and its raw logs/artifact.
