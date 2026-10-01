@@ -97,3 +97,39 @@ Therefore:
 - NEXT TESTABLE QUESTION: distinguish "in-flight authorization already completed" from "authorization result reused from stale cache after revocation". A valid mechanism test must create the second authorization decision after D0 while controlling whether that decision is served from pre-revocation state or current state; the present D1 already shows current denial and therefore cannot establish stale-cache reuse.
 
 No rerun of TLC. AB105.116R remains untouched.
+
+
+## Pinned-source mechanism audit — 2026-10-01
+
+The exact pinned Kafka revision `99b940733a9f6bc409457dba7108f08421d81e42` was inspected directly.
+
+### StandardAuthorizer / StandardAuthorizerData
+- `StandardAuthorizer` stores a volatile `StandardAuthorizerData data` reference and `authorize()` snapshots that reference into `curData` before evaluating actions.
+- `StandardAuthorizerData` owns the ACL cache. Its `addAcl()` and `removeAcl()` update the ACL-cache field on the same data object; `loadSnapshot()` replaces the data reference with a copied ACL cache.
+- `authorize()` ultimately snapshots the current `aclCache` reference inside `findAclRule()` and evaluates that snapshot.
+- This source structure does NOT support the simplistic claim that StandardAuthorizer has a separate per-request stale ACL cache that survives a completed local deletion. The demonstrated G0 witness is therefore better described as an already-authorized in-flight request unless a separate propagation race is demonstrated.
+
+### New mechanism discriminator
+A stronger test must use at least two brokers and separate the controller-side ACL deletion from the broker that receives a NEW authorization decision:
+1. establish ALLOW ACL and verify the target follower authorizes a fresh producer;
+2. issue real Admin DeleteAcls from the controller path;
+3. immediately issue a NEW producer request to the target follower, before ACL deletion metadata has necessarily reached that follower;
+4. independently observe whether that NEW post-D0 authorization is ALLOWED or DENIED;
+5. record the follower's authorization/metadata state and the final append outcome.
+
+Interpretation boundary:
+- NEW request ALLOWED after D0 + evidence that follower had not yet applied the ACL deletion would support a metadata-propagation authorization window.
+- NEW request DENIED after D0 would falsify that specific stale-state path for that execution.
+- The existing one-broker G0 cannot distinguish these cases because D2's authorization decision is completed before D0.
+- A multi-broker result still would not, by itself, establish attacker exploitability or a production security vulnerability.
+
+### Current epistemic state
+- PINNED_SOURCE_STRUCTURE=OBSERVED
+- LOCAL_STALE_CACHE_AS_CAUSE=NOT_SUPPORTED_BY_CURRENT_EVIDENCE
+- IN_FLIGHT_AUTHORIZATION_WINDOW=SUPPORTED
+- MULTI_BROKER_PROPAGATION_WINDOW=UNKNOWN
+- EXPLOITABILITY=UNKNOWN
+- AB105.116R=INTACT
+- NO_AB105.117R
+
+Next: implement only the mechanism-discriminating multi-broker observation in the existing G0 research branch; preserve the original witness unchanged and do not rerun TLC.
