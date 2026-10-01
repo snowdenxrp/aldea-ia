@@ -528,3 +528,28 @@ The next correct step is to enumerate the possible intended policies for an old 
 No policy is selected yet.
 
 No AB105.116R source/config/workflow change was made.
+
+## AB105.116R audit pass 9 — P1/P2/P3 against frozen admission semantics
+
+Cross-check result:
+
+### P1 — stale old admission
+Strongest alignment with the frozen vocabulary when an input is explicitly authority-scoped. It preserves the distinction between admission under epoch E1 and execution under E2. However, the historical contract does not by itself state that every already-admitted item must be invalidated by a later epoch change. Therefore P1 is **supported but not frozen**.
+
+### P2 — revalidate/re-admit
+Also compatible with the frozen distinction because it creates an explicit transition instead of silently treating old admission as current. It preserves replay identity only if the contract explicitly keeps operationId/fingerprint/incarnation unchanged. Otherwise revalidation could accidentally become a new operation. Classification: **compatible, but requires an explicit revalidation contract**.
+
+### P3 — epoch-independent admission
+This is the weakest fit for inputs described as authority-scoped, because it leaves an ACCEPTED admission without an admission-time authority binding. It can still be valid for inputs whose admission is intentionally not authority-scoped. Classification: **not globally justified; only valid for a separately defined class of inputs**.
+
+### Audit conclusion
+We can now narrow the semantics without choosing an implementation:
+- For **authority-scoped admission**, the model must preserve admission-time epoch identity.
+- A later epoch change must not silently make an old admission appear current.
+- Whether the old admission becomes STALE immediately (P1) or requires explicit revalidation (P2) remains OPEN.
+- P3 cannot be the generic rule for authority-scoped admission; it remains possible only where the contract explicitly says admission is epoch-independent.
+
+This is a semantic constraint, not yet a source change.
+
+### Next
+Construct minimal witnesses for P1 and P2 and identify which S1/S8/S12 obligations each satisfies or leaves open. Keep the live TLC run untouched.
