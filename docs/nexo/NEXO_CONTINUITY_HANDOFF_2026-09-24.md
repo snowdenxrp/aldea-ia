@@ -3507,3 +3507,8 @@ Status: JAVA=AVAILABLE_21; KAFKA_CHECKOUT=ABSENT; GRADLE_WRAPPER=ABSENT; EXECUTI
 ## AB105.042R — External build requirements revalidated
 A fresh Apache Kafka trunk check confirms the project supports targeted integration-test execution through its Gradle wrapper and currently documents Java 17/25 for build/test compatibility. This is feasibility evidence only; it does not create an executable Kafka workspace in the current environment.
 Status: EXTERNAL_BUILD_PATH=CONFIRMED; TARGETED_TEST=SUPPORTED; CURRENT_WORKSPACE=UNAVAILABLE; RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN.
+
+
+## AB105.043R — Executable CI runner path identified
+The canonical Nexo repository already has GitHub Actions jobs running on `ubuntu-latest` with Java 21 setup. Therefore an executable CI runner is available in principle through the repository, even though no existing workflow currently checks out Apache Kafka or runs the required wrapper harness. This is a concrete tooling path, not race evidence; the next implementation step must still provide the exact temporary Kafka harness before execution.
+Status: CI_RUNNER=AVAILABLE_IN_REPO; JAVA_SETUP=AVAILABLE; KAFKA_HARNESS_WORKFLOW=NOT_PRESENT; EXACT_RACE=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
