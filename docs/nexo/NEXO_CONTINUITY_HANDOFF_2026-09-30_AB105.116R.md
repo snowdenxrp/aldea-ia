@@ -1180,3 +1180,75 @@ AB104.421 — differential analyzer independence and common-mode failure: shared
 
 ### Continuity
 Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 52 — cut-analysis correctness / oracle boundary — 2026-10-01
+
+### Historical artifact recovered
+AB104.420 (commit 793c69897431b027e339139a08cc4694d84074da) audits the correctness oracle for cut analysis, differential recomputation, bounded reference models, metamorphic/property-based testing, certificates, approximation, timeouts, and graph mutation races.
+
+### Findings
+1. DETERMINISTIC_CUT_RESULT != CORRECT_CUT_RESULT; reproducibility does not establish semantic correctness.
+2. Four assurance layers remain distinct: correct protected property, algorithm correctness, implementation conformance, and current deployment/evidence.
+3. Differential analyzers increase evidence only when their critical failure domains are sufficiently distinct; shared specification/parser/graph source/policy/toolchain can preserve common-mode failure.
+4. A bounded exhaustive reference model can act as a local oracle for small graphs, but cannot establish arbitrary-scale completeness.
+5. VALID_CUT, MINIMAL_CUT, and COMPLETE_CUT_SET are separate claims and require separate evidence.
+6. Approximate/incomplete analysis must not silently satisfy a policy requiring complete cut coverage.
+7. ANALYSIS_TIMEOUT != NO_CRITICAL_CUT. Resource exhaustion must yield UNKNOWN/HOLD/DEGRADED according to claim policy.
+8. Graph mutation during analysis creates a generation race; the result must bind to graph/policy/trust/witness/failure-domain generations and be revalidated at the protected boundary.
+9. Mutation testing and metamorphic properties can expose validation gaps without supplying a universal oracle.
+10. A cut certificate should be independently checkable; certificate validity is evidence, not authority.
+11. Analyzer A and B must not form a circular validation loop with no independent semantic anchor.
+12. The protected specification itself remains an upstream semantic authority question; two agreeing implementations can share the same specification error.
+
+### External corroboration
+Current algorithmic literature supports the feasibility of exact and dynamic minimum-cut computation in substantial graph/hypergraph settings, but those results concern algorithmic correctness under their formal inputs, not correctness of Nexo's dependency semantics or current-authority promotion. Exact hypergraph minimum-cut work published in 2026 reports scalable exact computation with independently reproducible artifacts, while dynamic graph research demonstrates practical and approximate fully dynamic maintenance. citeturn0search0turn0search3turn0search5
+
+### S9 consequence
+The chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+AB104.420 closes no semantic gap in the final promotion step. Cut-analysis output remains appraisal evidence only. **No result from Analyzer A/B, reference model, certificate, or differential agreement is itself authority.**
+
+### New semantic requirements
+Before model revision:
+- exact protected cut property/specification;
+- independence contract for differential analyzers;
+- bounded-oracle scope and limits;
+- certificate semantics for validity/minimality/completeness;
+- timeout/resource exhaustion semantics;
+- generation binding and final revalidation;
+- explicit handling of analyzer disagreement and common-mode failure.
+
+No TLA+ model change authorized.
+
+### Status
+- DETERMINISTIC_CUT_RESULT != CORRECT_CUT_RESULT.
+- DIFFERENTIAL_AGREEMENT != PROOF_OF_SPEC_CORRECTNESS.
+- VALID_CUT != MINIMAL_CUT != COMPLETE_CUT_SET.
+- ANALYSIS_TIMEOUT != NO_CRITICAL_CUT.
+- GRAPH_VERSION_MISMATCH => STALE_ANALYSIS.
+- CERTIFICATE_VALIDITY != AUTHORITY.
+- REFERENCE_MODEL != AUTHORITY.
+- SHARED_FAILURE_DOMAIN => REDUCED_DIFFERENTIAL_INDEPENDENCE.
+- APPROXIMATE/INCOMPLETE cannot silently satisfy COMPLETE_COVERAGE policy.
+- CUT_ANALYSIS_RESULT remains evidence/input to Z1.
+- ANALYZER_INDEPENDENCE = UNKNOWN/PENDING.
+- CUT_SPECIFICATION = UNKNOWN/PENDING.
+- CUT_CERTIFICATE_SEMANTICS = UNKNOWN/PENDING.
+- DEPENDENCY_GRAPH_COMPLETENESS = UNKNOWN/PENDING.
+- BYZANTINE_FAILURE_MODEL = UNKNOWN/PENDING.
+- AUTHORITY_PROMOTION/PROTECTED_ACTIVATION = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.421 — differential analyzer independence and common-mode failure: shared specification, parser, graph source, libraries, compiler/toolchain, policy, test corpus, operator, deployment, and trust dependencies.
+
+### Continuity
+Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
