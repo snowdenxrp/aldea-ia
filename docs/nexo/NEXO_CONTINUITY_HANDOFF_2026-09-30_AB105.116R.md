@@ -300,3 +300,50 @@ MODEL_REVISION = NOT_AUTHORIZED YET.
 
 ### Next
 Before any revision, perform a compact adversarial witness inventory for each open policy so we know exactly what behavior each choice changes. Then select only semantics supported by the historical contract; otherwise retain UNKNOWN.
+
+## AB105.116R audit pass 29 — adversarial witness inventory for open policy choices — 2026-09-30
+
+### P1 vs P2 — old admission after epoch change
+- W-P1: Establish E1 → AdmitCurrent X → epoch advances to E2 → old X is classified STALE/rejected. It cannot start under E2.
+- W-P2: Establish E1 → AdmitCurrent X → epoch advances to E2 → X remains identifiable as E1 but requires explicit revalidation/re-admission under E2 before Start.
+- Shared mandatory property: no silent E1→E2 authorization transfer.
+- Difference: P1 is terminal rejection of the old admission; P2 preserves it as a recoverable candidate. Historical evidence establishes the shared property, not the policy choice.
+
+### S9 — reauthorization policy A/B/C
+- W-A: revoke authority → recover → reconcile COMPLETE → reconciliation itself carries authoritative evidence → VALID is restored.
+- W-B: revoke authority → recover → reconcile COMPLETE → separate fresh authority evidence/event → VALID is restored.
+- W-C: revoke authority → recover → reconcile COMPLETE → no fresh authority establishment → remain non-VALID until explicit authority establishment.
+- Shared mandatory property: recovery/reconciliation cannot silently manufacture authority.
+- Difference: A permits reconciliation to be authority-bearing; B separates evidence domains; C requires explicit authority establishment.
+- Historical record does not select A/B/C.
+
+### S11 — expected/observed/materiality
+- W-MATCH: expected E1, observation E1 → no material mismatch.
+- W-MISMATCH: expected E1, observation E2 → reconciliation required if materiality rule says the difference matters.
+- W-UNKNOWN: expected E1, observation unknown → must not be treated as either match or mismatch.
+- W-ABSENT: expected E1, absence evidence → must remain distinct from UNKNOWN and OBSERVED.
+- W-PARTIAL: expected E1, partial observation → materiality may remain UNKNOWN or require reconciliation depending on coverage contract.
+- Shared mandatory property: UNKNOWN, ABSENT_UNPROVEN, PARTIAL and OBSERVED remain distinct.
+- Exact materiality rule is not frozen by AB105.111R/112R.
+
+### S12 — effect vs observation/event identity
+- W-EFFECT: effect E1 exists; evidence event O1 establishes observation of E1. E1 and O1 are different semantic objects.
+- W-OPSCOPED: observation O1 concerns effect E1 for operation O1/op identity and required subject/incarnation.
+- W-EVIDENCE-SCOPED: observation O2 is valid evidence but is not operation-scoped; forcing an operationId would create false correlation.
+- W-CONFLICT: observation event O3 reports a different effect E2; identity/provenance must prevent it from being silently treated as E1.
+- Shared mandatory property: evidence provenance cannot be lost by collapsing effect identity and observation identity.
+- Exact mandatory correlation conditions remain OPEN.
+
+### Cross-choice witness
+A single recovery can exercise all four boundaries: old admission from E1, revocation, delayed observation with evidence identity, expected-vs-observed mismatch, and attempted reauthorization. This proves the decisions must be composed rather than selected independently.
+
+### Decision discipline
+No witness selects a policy by itself. Witnesses identify semantic consequences. Historical artifacts can justify mandatory properties; they do not justify inventing the missing policy.
+
+### Result
+OPEN-POLICY WITNESS INVENTORY = COMPLETE.
+No semantic choice was made.
+MODEL_CHANGE = NOT_AUTHORIZED.
+
+### Next
+Cross-check these witnesses against AB105.111R/112R frozen T1–T10 and S1–S12 one final time, looking specifically for any historical sentence that actually resolves one of the open choices. If none does, preserve the choices as UNKNOWN/PENDING.
