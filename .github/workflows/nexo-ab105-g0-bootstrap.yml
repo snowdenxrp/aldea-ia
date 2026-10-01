@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/nexo-ab105-g0-bootstrap.yml
   workflow_dispatch:
 
 jobs:
