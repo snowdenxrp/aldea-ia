@@ -405,3 +405,49 @@ This closes the evidence-integrity check for the reported finite TLC PASS. The f
 The current AB105.116R finite model has now passed both: (a) the GitHub Actions job/result inspection and (b) direct inspection of the uploaded TLC log artifact. No discrepancy was found.
 
 Semantic status is unchanged: unresolved policy choices remain UNKNOWN/PENDING and no TLA+ model revision is authorized yet.
+
+
+## AB105.116R audit pass 32 — Epoch/D1a historical closure check — 2026-10-01
+
+### Scope
+Performed the next semantic audit without modifying AB105.116R. Rechecked the historical epoch/admission boundary against AB105.111R and AB105.112R and searched the canonical repository for an executable epoch-advancement rule or a frozen P1/P2 choice.
+
+### Confirmed historical facts
+- AB105.111R freezes AUTHORITY_EPOCH as mandatory for authority-scoped input.
+- AB105.111R defines OLD/CURRENT/FUTURE and requires an old/outside-current authority input to be STALE/rejected (T1).
+- AB105.111R does NOT define an executable E1→E2 epoch-advancement transition.
+- AB105.112R retains OLD/CURRENT/FUTURE as semantically distinct but also does NOT define epoch advancement.
+- Canonical repository search for AUTHORITY_EPOCH E1/E2, epoch advancement, Reauthorize authorityEpoch, AB105.111R P1/P2, and admissionEpoch returned no additional historical rule resolving the gap.
+- AB105.114R/115R contain no hidden epoch-advancement semantics that resolve it.
+
+### Current 116R consequence
+116R records authorityAtAdmission but does not record admissionEpoch. EstablishAuthority writes CURRENT; RevokeAuthority leaves the epoch CURRENT. Therefore 116R cannot represent distinct E1/E2 authority epochs or execute the historical T1 cross-epoch distinction.
+
+### P1/P2 boundary
+P1: old E1 admission becomes STALE/rejected after E2.
+P2: old E1 admission remains identifiable as E1 but requires explicit revalidation/re-admission under E2 before consequential execution.
+Historical evidence establishes only the shared mandatory property: NO SILENT E1→E2 AUTHORIZATION TRANSFER. P1 vs P2 remains UNKNOWN/PENDING.
+
+### Classification
+D1a = SEMANTIC OBSERVABILITY REQUIREMENT CONFIRMED.
+EPOCH_ADVANCEMENT = UNDEFINED.
+P1/P2 = UNKNOWN/PENDING.
+ADMISSION_EPOCH = REQUIRED SEMANTIC INFORMATION BEFORE CONSEQUENTIAL CROSS-EPOCH ADMISSION CAN BE MODELED.
+MODEL_CHANGE = NOT AUTHORIZED.
+
+### S2/S3 follow-up clarification
+Historical S2/S3 state distinctions remain represented in 116R: REQUESTED≠ENFORCED and ISSUED≠ENFORCED. RequestStop/IssueFence do not themselves imply enforcement. The unresolved gap is provenance/evidence for the transitions to ENFORCED, not a direct S2/S3 invariant counterexample. AB105.112R T4 specifically requires FENCE_ISSUED + absent enforcement evidence to remain blocked; 116R can only model this distinction indirectly because enforcement evidence is not represented separately. No new semantic choice was made.
+
+### Dependency closure update
+The audit dependency order is now confirmed as:
+EPOCH → AUTHORITY PROVENANCE → ADMISSION → OPERATION → EXPECTED EFFECT → OBSERVATION → RECONCILIATION → REAUTHORIZATION.
+Parallel control chain:
+STOP REQUEST → ENFORCEMENT EVIDENCE → STOP ENFORCED;
+FENCE ISSUE → ENFORCEMENT EVIDENCE → FENCE ENFORCED → EXCLUSIVITY EVIDENCE → EXCLUSIVITY PROVEN → SUCCESSOR RELEASE.
+S9 reauthorization semantics must not be frozen before epoch and authority-evidence provenance are resolved. S11/S12 must remain separate from authority provenance.
+
+### Continuity rule
+AB105.116R remains the canonical anchor. No AB105.117R or other derived model version is authorized while the semantic audit remains open. No additional backup/handoff file is created; this pass is appended to the existing canonical handoff only.
+
+### Next exact direction
+Audit authority provenance: distinguish AUTHORITY_EVIDENCE, AUTHORITY_STATE, DECISION, and CURRENT_AUTHORITY as separate semantic roles; determine what historical evidence exists for the transition to VALID after revocation without selecting A/B/C prematurely.
