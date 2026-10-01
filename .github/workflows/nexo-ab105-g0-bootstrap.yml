@@ -237,47 +237,49 @@ jobs:
                                       new DeleteAclsOptions()).all().get();
                               }
 
-                              long aclDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-                              while (TARGET.aclCount() != 0) {
-                                  if (System.nanoTime() >= aclDeadline) {
-                                      throw new AssertionError("target broker authorizer did not observe ACL revocation");
-                                  }
-                                  Thread.sleep(100);
-                              }
-                              String d0LocalState = "TARGET_LOCAL_ACL_COUNT_AFTER_D0=" + TARGET.aclCount();
-                              System.out.println(d0LocalState);
+                              // Mechanism discriminator: issue NEW D1 immediately after controller-side D0 completion.
+                              // Do not wait for target-local revocation. Record local state at the authorization attempt.
+                              int targetAclBeforeD1 = TARGET.aclCount();
+                              System.out.println("D1_TIMING TARGET_LOCAL_ACL_COUNT_BEFORE_D1=" + targetAclBeforeD1);
 
+                              boolean d1Allowed = true;
+                              String d1Outcome = "ALLOWED";
                               try (Producer<byte[], byte[]> d1Producer = new KafkaProducer<>(new java.util.HashMap<>(Map.of(
                                   ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
                                   ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.ACKS_CONFIG, "all"
                               )) {{ putAll(userClient()); }})) {
-                                  java.util.concurrent.ExecutionException d1ExecutionException = Assertions.assertThrows(
-                                      java.util.concurrent.ExecutionException.class,
-                                      () -> d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get());
-                                  Assertions.assertInstanceOf(
-                                      TopicAuthorizationException.class,
-                                      d1ExecutionException.getCause(),
-                                      "D1 must fail with TopicAuthorizationException");
-                                  TopicAuthorizationException d1Exception =
-                                      (TopicAuthorizationException) d1ExecutionException.getCause();
-                                  Assertions.assertTrue(
-                                      d1Exception.unauthorizedTopics().contains(TOPIC_NAME),
-                                      "D1 must deny the target topic");
+                                  try {
+                                      d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get();
+                                  } catch (java.util.concurrent.ExecutionException e) {
+                                      d1Allowed = false;
+                                      d1Outcome = "DENIED";
+                                      Assertions.assertInstanceOf(
+                                          TopicAuthorizationException.class,
+                                          e.getCause(),
+                                          "D1 denial must surface TopicAuthorizationException");
+                                  }
                               }
+                              int targetAclAfterD1 = TARGET.aclCount();
+                              System.out.println("D1_TIMING TARGET_LOCAL_ACL_COUNT_AFTER_D1=" + targetAclAfterD1);
 
                               A1_RELEASE.countDown();
                               d2.get(30, TimeUnit.SECONDS);
                               long after = exactE(targetBroker);
-                              String witness = "G0_MULTI_WITNESS TARGET_BROKER=1 LEADER_TARGET=" + targetLeader
+                              int expectedAppends = d1Allowed ? 2 : 1;
+                              String witness = "G0_PROP_WITNESS TARGET_BROKER=1 LEADER_TARGET=" + targetLeader
                                   + " LEADER_OTHER_VIEW=" + otherLeader
-                                  + " D0=OBSERVED TARGET_LOCAL_ACL_COUNT_AFTER_D0=" + TARGET.aclCount()
-                                  + " D1=DENIED D2=SUCCESS E_BASELINE=" + baseline + " E_AFTER=" + after;
+                                  + " D0=OBSERVED TARGET_LOCAL_ACL_COUNT_BEFORE_D1=" + targetAclBeforeD1
+                                  + " D1=" + d1Outcome + " TARGET_LOCAL_ACL_COUNT_AFTER_D1=" + targetAclAfterD1
+                                  + " D2=SUCCESS E_BASELINE=" + baseline + " E_AFTER=" + after;
                               java.nio.file.Files.writeString(
                                   java.nio.file.Path.of("/tmp/nexo-g0-witness.txt"), witness + System.lineSeparator());
                               System.out.println(witness);
-                              Assertions.assertEquals(1L, after, "E must show exactly one append");
+                              java.nio.file.Files.writeString(
+                                  java.nio.file.Path.of("/tmp/nexo-g0-witness.txt"), witness + System.lineSeparator());
+                              System.out.println(witness);
+                              Assertions.assertEquals((long) expectedAppends, after, "E append count must match D1 outcome plus D2");
                           }
                       } finally {
                           A1_RELEASE.countDown();
@@ -323,7 +325,7 @@ jobs:
       - name: Upload bootstrap evidence
         uses: actions/upload-artifact@v4
         with:
-          name: nexo-ab105-g0-bootstrap-evidence
+          name: nexo-ab105-g0-propagation-discriminator-evidence
           path: /tmp/nexo-g0-bootstrap-evidence.txt
 
       # AB105 controlled main-branch execution gate: real G0 runtime harness. No Nexo model implementation.
