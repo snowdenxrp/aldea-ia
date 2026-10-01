@@ -3048,3 +3048,8 @@ Status: AUTHORIZER_THREADING=SOURCE_CONFIRMED; ACL_UPDATE_ASYNC=SOURCE_CONFIRMED
 ## AB104.919R — ACL publication path confirmed from current Kafka trunk
 Current Kafka trunk confirms KRaft ACL management is controller-backed: when using a ClusterMetadataAuthorizer, ACL mutations go through the controller, and ControllerServer installs AclPublisher to publish metadata into the authorizer. Controller request processing waits for the authorizer publication future; this establishes the control-plane/publication path but does not establish that an already-returned Produce authorization is rechecked at append time. The exact A1→D0→D1 interleaving therefore remains a runtime question.
 Status: ACL_MUTATION_CONTROLLER_PATH=SOURCE_CONFIRMED; ACL_PUBLISHER_PATH=SOURCE_CONFIRMED; APPEND_TIME_REAUTHORIZATION=NOT_FOUND_IN_INSPECTED_PATH; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=RUNTIME_G0.
+
+
+## AB104.920R — StandardAuthorizer snapshot semantics rechecked
+Current StandardAuthorizer source uses the current authorizer-data snapshot for an authorize() call; current Kafka documentation confirms StandardAuthorizer is the KRaft ACL implementation and KafkaApis performs authorization for Produce. This supports testing an already-authorized Produce across an ACL publication change, but does not itself prove an append-time race.
+Status: SNAPSHOT_SEMANTICS=SOURCE_CONFIRMED; PRODUCE_AUTH=SOURCE_CONFIRMED; APPEND_TIME_REAUTHORIZATION=NOT_FOUND_IN_INSPECTED_PATH; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=RUNTIME_G0.
