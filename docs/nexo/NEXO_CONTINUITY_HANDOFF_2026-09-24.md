@@ -2135,3 +2135,62 @@ No race has been executed. No outcome has been inferred. UNKNOWN remains intact.
 AB104.784R — audit AuthorizableRequestContext/Action fields and existing ACL integration helpers for a deterministic barrier predicate and a broker-local D1 publication witness. Continue several blocks in one pass; do not implement or execute until the control contract is fully established.
 
 CONTINUITY RULE: recover this same canonical handoff first; resume at AB104.784R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; no parallel handoffs; AB105.116R remains canonical model anchor.
+
+## 131. AB104.785R — Barrier predicate can be deterministic from request context, but action-level discrimination is still required
+
+AuthorizableRequestContext exposes listener, security protocol, authenticated principal, client address, request API key/version, clientId, and correlationId. This is enough to distinguish a real Produce request from ACL-management requests at the request-context level, using requestType == PRODUCE plus the expected principal/listener/client identity.
+
+However, the Authorizer receives a list of Action objects separately from the context. The exact barrier predicate must also verify the action is the target TOPIC WRITE authorization for the chosen topic. Therefore context-only matching is insufficient; implementation must inspect the Action fields and avoid matching unrelated Produce authorizations such as transactional/group/internal paths.
+
+Status: PRODUCE_CONTEXT_DISCRIMINATION=SOURCE_CONFIRMED; ACTION_LEVEL_DISCRIMINATION=REQUIRED; EXACT_RACE=NOT_EXECUTED.
+
+## 132. AB104.786R — Existing publication tests establish a useful pattern, but direct broker-local authorization is the stronger D1 witness
+
+AuthorizerTest uses TestUtils.waitForCondition to wait until ACL changes are propagated before asserting the resulting ACL state. This confirms Kafka's test infrastructure treats ACL propagation as asynchronous and explicitly waits for convergence.
+
+The integration harness also exposes brokers.head.authorizerPlugin.get.get when a broker-local Authorizer is needed. KafkaServerTestHarness.pickAuthorizerForWrite deliberately chooses the controller Authorizer in controller-backed configurations for ACL mutation, so that helper must NOT be reused as the D1 witness. For D1, the target broker's own Authorizer must be selected directly.
+
+A strong D1 witness remains: issue a fresh authorization against the target broker-local Authorizer after DeleteAcls completes, using the same principal/topic/WRITE action, and require DENIED. This directly observes the target broker's current decision rather than inferring publication from controller completion.
+
+Status: ACL_PROPAGATION_WAIT_PATTERN=SOURCE_CONFIRMED; TARGET_BROKER_AUTHORIZER_DIRECT_ACCESS=SOURCE_CONFIRMED; D1_WITNESS_DESIGN=STRONG; EXACT_RACE=NOT_EXECUTED.
+
+## 133. AB104.787R — The barrier must not use the normal ACL-management Authorizer path
+
+KafkaServerTestHarness.pickAuthorizerForWrite confirms that ACL create/delete operations can be routed through a controller Authorizer in KRaft. Therefore the paused Produce authorization and the ACL revocation must not share a barrier that blocks all Authorizer calls.
+
+The test Authorizer must only pause the exact target Produce authorization. ACL delete requests, controller-side authorization, metadata publication callbacks, and the independent D1 probe must remain unblocked.
+
+This makes the barrier predicate part of the experimental validity contract, not an implementation convenience. If the predicate cannot be proven to isolate exactly one Produce authorization call, the experiment remains UNKNOWN and must not execute.
+
+Status: BARRIER_ISOLATION_REQUIRED=SOURCE_CONFIRMED; ACL_MUTATION_PATH_MUST_REMAIN_UNBLOCKED=YES; D1_PROBE_MUST_REMAIN_UNBLOCKED=YES; EXACT_RACE=NOT_EXECUTED.
+
+## 134. AB104.788R — Preferred experiment contract is now fully specified at the authorization boundary
+
+The cleanest controlled experiment currently identified is:
+1. Start a real KRaft broker with a test-only Authorizer that delegates normal authorization to StandardAuthorizer.
+2. Establish the target WRITE ACL and verify the target broker initially returns ALLOWED.
+3. Send one real Produce request using a uniquely identifiable client/request context.
+4. The test Authorizer computes the real StandardAuthorizer result, confirms the target TOPIC/WRITE action, then blocks before returning ALLOWED.
+5. From an independent control path, delete the ACL.
+6. Wait for DeleteAcls completion and then query the target broker's own Authorizer with a fresh independent authorization; require DENIED as D1.
+7. Release the blocked authorization.
+8. Let the original real KafkaApis request continue into the real ReplicaManager/append path.
+9. Observe the actual Produce result and, if necessary, verify the record exists in the target log.
+10. Classify only initial ALLOW + D1 DENIED + subsequent real append/effect as the exact race.
+
+Any failure to establish the barrier, D1, release ordering, or real effect is UNKNOWN rather than a negative security result.
+
+This contract preserves the distinction between controller mutation (D0), broker-local authorization state (D1), and actual append/effect (D2).
+
+Status: EXPERIMENT_CONTRACT=SPECIFIED; D0_D1_D2_SEPARATION=PRESERVED; EXACT_RACE=NOT_EXECUTED.
+
+## 135. AB104.789R — Stop before implementation: one final source audit remains
+
+Before writing any test code, audit the Action API and the exact KafkaApis.handleProduceRequest authorization construction to prove the target predicate can identify the intended topic WRITE action without relying on assumptions about ordering or list cardinality.
+
+Also audit the Produce response/effect observation path so that a successful client response cannot be mistaken for durable log effect unless the chosen acknowledgement semantics justify that conclusion.
+
+No implementation has been added. No test has been executed. AB105.116R remains the canonical model anchor and this same continuity handoff remains the sole canonical recovery point.
+
+### EXACT NEXT ACTION
+AB104.789R — audit Action fields + exact Produce authorization call construction + effect oracle/ack semantics. Then continue into implementation only if the contract is fully source-supported.
