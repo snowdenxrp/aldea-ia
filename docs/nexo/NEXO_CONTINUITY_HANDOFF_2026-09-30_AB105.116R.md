@@ -386,3 +386,22 @@ AB105.116R TLC = PASS (finite model, configured invariants only).
 Open semantic decisions = preserved UNKNOWN/PENDING.
 TLA+ model modification = NOT AUTHORIZED.
 No additional backup/handoff file created.
+
+
+## AB105.116R audit pass 31 — TLC evidence artifact byte-level/log cross-check — 2026-10-01
+
+The uploaded TLC evidence artifact `nexo-ab105-116r-tlc-evidence` was retrieved and its `tlc.log` inspected directly. The terminal log independently confirms:
+- `Model checking completed. No error has been found.`
+- `7,957,574,337 states generated`
+- `251,910,656 distinct states found`
+- `0 states left on queue`
+- complete state-graph depth `31`
+- finished `2026-10-01 01:06:50`
+- TLC fingerprint estimates: optimistic `.11`, actual-fingerprint `.004`.
+
+This closes the evidence-integrity check for the reported finite TLC PASS. The fingerprint estimates are retained exactly as TLC evidence and are not converted into a correctness claim.
+
+### Consequence
+The current AB105.116R finite model has now passed both: (a) the GitHub Actions job/result inspection and (b) direct inspection of the uploaded TLC log artifact. No discrepancy was found.
+
+Semantic status is unchanged: unresolved policy choices remain UNKNOWN/PENDING and no TLA+ model revision is authorized yet.
