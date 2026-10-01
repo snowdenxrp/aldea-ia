@@ -2922,3 +2922,31 @@ Status: EXECUTION_HOLD=ACTIVE; G0_GATE=LOCKED.
 
 ### EXACT NEXT ACTION
 AB104.893R — check only for a genuinely new execution capability or concrete blocker; otherwise retain the frozen state and avoid redundant continuity entries.
+
+
+## 240. AB104.893R — No new Kafka execution capability
+Fresh search for `KafkaClusterTestKit` in the connected workspace returned no installed repository. No executable Kafka integration-test environment is available.
+Status: EXECUTION_PATH=NOT_AVAILABLE; G0=NOT_PERFORMED.
+
+## 241. AB104.894R — Audit boundary unchanged
+No new runtime evidence or concrete blocker appeared. The source-level experiment contract remains valid and unchanged.
+Status: RUNTIME_EVIDENCE=ABSENT; SOURCE_CONTRACT=UNCHANGED.
+
+## 242. AB104.895R — Race remains untouched
+The experiment has not entered A1. There is still no valid D0, D1, D2, or E witness.
+Status: A1/D0/D1/D2/E=ABSENT; EXACT_RACE=NOT_EXECUTED.
+
+## 243. AB104.896R — Unknown preserved
+The lack of execution cannot be converted into a security conclusion. Race existence and exploitability remain unknown.
+Status: RACE_EXISTENCE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## 244. AB104.897R — No redundant source pass
+Prior source archaeology already closed the relevant implementation questions. No new blocker justifies reopening them.
+Status: SOURCE_AUDIT=SUFFICIENT; REDUNDANT_RESEARCH=DISALLOWED.
+
+## 245. AB104.898R — Controlled freeze
+The only meaningful next transition is a real execution environment followed by G0. Until then, preserve the experiment and avoid creating duplicate artifacts.
+Status: EXECUTION_HOLD=ACTIVE; G0_GATE=LOCKED.
+
+### EXACT NEXT ACTION
+AB104.899R — act only if a genuinely new Kafka runtime surface or concrete blocker appears; otherwise preserve this frozen state.
