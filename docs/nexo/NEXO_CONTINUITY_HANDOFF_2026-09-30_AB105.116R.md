@@ -553,3 +553,12 @@ This further constrains the protected admission context but does not close S9. I
 No model change authorized. AB105.116R remains canonical; no AB105.117R. Pass 39 is audit-only until persisted.
 
 Next exact mission: AB104.407, authenticated lineage and stale-lineage rejection across duplication/reordering/replay, authority epochs, and resource incarnations; continue the independent CURRENT_AUTHORITY_DECISION issuer/lifecycle trace.
+
+## AB105.116R audit pass 40 — authenticated lineage / replay boundary — 2026-10-01
+AB104.407 separates two properties that must not collapse: VALID_LINEAGE_CORRELATION != VALID_AUTHORITY_BINDING. Trace context is correlation/observability, not authorization lineage. A protected downstream boundary needs an authenticated lineage envelope whose exact fields remain claim-specific, potentially including operation/effect/attempt/parent lineage, participant/incarnation, authority epoch, fence generation, effective effect class, footprint closure root, capability generation, policy/contract version, issuer/domain, destination and replay-prevention state.
+
+Stale/replayed lineage must be rejected or held when safety cannot be established. Freshness alone is insufficient: epoch rollover, fence generation, resource incarnation, capability generation, footprint closure invalidation, or policy/contract changes can invalidate otherwise authentic lineage. Cross-domain handoff requires explicit inheritance binding; intermediaries that enforce or preserve the protected property become part of the relevant TCB.
+
+This closes no S9 transition. AUTHENTICATED_LINEAGE != AUTOMATIC_AUTHORITY remains explicit. The issuer/lifecycle and activation/linearization of CURRENT_AUTHORITY_DECISION remain UNKNOWN/PENDING. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 40 is audit-only until persisted.
+
+Next exact mission: AB104.408, cryptographic lineage binding/key lifecycle/rotation/revocation/domain handoff, while independently tracing CURRENT_AUTHORITY_DECISION issuer and protected activation.
