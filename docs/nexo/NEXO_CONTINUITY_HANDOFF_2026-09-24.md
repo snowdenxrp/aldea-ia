@@ -3033,3 +3033,8 @@ Status: SOURCE_AUDIT_SCOPE=NARROW; REDUNDANT_RESEARCH=DISALLOWED.
 ## AB104.916R — UnifiedLog boundary rechecked
 The append path reaches UnifiedLog after authorization and partition checks; the inspected append layer contains log/producer/transaction validation, not an ACL reauthorization. Source audit is therefore closed for this race. Runtime G0 remains the only unresolved evidence.
 Status: SOURCE_AUDIT=CLOSED_FOR_CURRENT_PATH; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN; NEXT=RUNTIME_G0.
+
+
+## AB104.917R — Nexo CI runtime capability recheck
+The canonical Nexo repository workflows were rechecked. Existing workflows run TLA+/TLC or Nexo Node tests; none checks out Apache Kafka or runs a Kafka integration test. Therefore no hidden Kafka runtime path exists in the current CI surface. Apache Kafka itself documents Gradle-based single integration-test execution, so a dedicated external test workflow is technically feasible, but it does not currently exist and has not been executed.
+Status: NEXO_KAFKA_RUNTIME_WORKFLOW=NOT_FOUND; EXTERNAL_RUNTIME_PATH=FEASIBLE_BUT_NOT_IMPLEMENTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
