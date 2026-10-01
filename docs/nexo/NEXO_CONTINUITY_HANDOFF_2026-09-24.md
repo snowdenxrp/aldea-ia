@@ -1968,3 +1968,93 @@ No Nexo implementation, V21, formal verification, or runtime Nexo execution.
 AB104.774R — design the smallest deterministic race experiment without executing it yet. The experiment must create a real Produce request, establish the authorization decision, pause before append, revoke/delete the ACL and establish the relevant publication point, then release the Produce into append; instrument the append/effect outcome separately from the authorization result. First identify the narrowest safe injection/control point in Kafka test infrastructure and define the expected observations for both outcomes. Preserve UNKNOWN until an actual controlled execution exists.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.774R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+
+## 119. AB104.774R — Deterministic race experiment: narrowest injection point
+
+Artifact: findings persisted directly in this canonical handoff.
+
+The smallest controllable boundary identified in current Kafka source is between KafkaApis.handleProduceRequest and ReplicaManager.handleProduceAppend.
+
+Source evidence:
+- KafkaApis constructs authorizedRequestInfo only after authHelper.filterByAuthorized(... WRITE, TOPIC, ...).
+- The same method then calls replicaManager.handleProduceAppend(... entriesPerPartition = authorizedRequestInfo, ...).
+- KafkaApisTest already injects a configurable Authorizer into KafkaApis and mocks ReplicaManager; its Produce tests capture the handleProduceAppend call.
+- ReplicaManager.handleProduceAppend is the real handoff into transactional verification and then appendRecords; a test-only subclass/spied real instance can therefore block immediately on entry and later delegate to the real implementation.
+
+This yields a precise test-only pause point:
+T0 ACL ALLOW -> T1 KafkaApis authorization returns ALLOW -> T2 handleProduceAppend entered and blocks -> T3 ACL deletion is committed/published to the target broker -> T4 release handleProduceAppend -> T5 real append/effect observed.
+
+Important limitation:
+A mocked ReplicaManager can prove the authorization-to-handoff interleaving but cannot prove the actual log effect. The final experiment therefore needs a real ReplicaManager/Partition/UnifiedLog path after the barrier, not only a Mockito callback.
+
+Status: NARROWEST_HANDOFF_POINT=SOURCE_IDENTIFIED; TEST_ONLY_BLOCK_AT_HANDLE_PRODUCE_APPEND=FEASIBLE_IN_PRINCIPLE; REAL_EFFECT_PATH=REQUIRED; EXACT_RACE=NOT_EXECUTED.
+
+## 120. AB104.775R — StandardAuthorizer snapshot/currentness semantics
+
+Fresh direct source audit of StandardAuthorizer.
+
+StandardAuthorizer keeps a volatile StandardAuthorizerData data. Its authorize method takes the current data reference into curData and evaluates all actions against that snapshot. ACL add/remove operations update the authorizer's local state; snapshot loading can replace the ACL cache coherently.
+
+Critical consequence for the experiment:
+- Authorization result is computed from a broker-local authorizer snapshot.
+- The result returned to KafkaApis does not carry an ACL revision/generation that is later checked by ReplicaManager.
+- Once filterByAuthorized has returned ALLOW and authorizedRequestInfo has been constructed, the already-authorized records are independent of later ACL publication unless another authorization/fence occurs.
+- This is a source-semantics observation, not proof that the race has been executed.
+
+Status: STANDARD_AUTHORIZER_LOCAL_SNAPSHOT=SOURCE_CONFIRMED; AUTHORIZATION_RESULT_CARRIES_ACL_VERSION=NOT_FOUND_IN_AUDITED_PATH; POST_AUTHORIZATION_VERSION_RECHECK=NOT_FOUND_IN_AUDITED_PATH; EXACT_RACE=NOT_EXECUTED.
+
+## 121. AB104.776R — Race oracle and observation contract
+
+Defined the minimum observations needed to avoid ambiguous results.
+
+Required timeline:
+1. Establish topic WRITE ACL for the test principal.
+2. Start one real Produce request.
+3. Confirm the request has crossed authorization and reached the controlled handleProduceAppend barrier.
+4. While Produce is paused, delete/revoke the topic WRITE ACL.
+5. Establish the target broker's relevant ACL publication point; separately record controller/metadata commit evidence if available.
+6. Verify that a fresh authorization for the same principal/topic is DENIED after publication.
+7. Release the paused Produce into the real append path.
+8. Record both the Produce response and the actual log/effect outcome independently.
+
+Interpretation contract:
+- ALLOW-before-revoke + effect-after-revoke = exact in-flight revocation race observed.
+- ALLOW-before-revoke + no-effect is not automatically proof of an ACL fence; the rejection reason and exact boundary must be identified.
+- ALLOW-before-revoke + PRODUCER/LEADER/TRANSACTION error does not prove ACL protection.
+- DENY-before-append because authorization was repeated would establish effect-time reauthorization.
+- Failure to reach the barrier, failure to prove broker ACL publication, or test infrastructure failure leaves the race UNKNOWN.
+
+Status: OBSERVATION_CONTRACT=DEFINED; EFFECT_AND_AUTH_RESULT_SEPARATED=REQUIRED; SAFETY_INFERENCE_FROM_SINGLE_ERROR=DISALLOWED; EXACT_RACE=NOT_EXECUTED.
+
+## 122. AB104.777R — Upstream test-harness feasibility audit
+
+Current Kafka unit-test infrastructure confirms two useful capabilities:
+- KafkaApisTest.createKafkaApis(authorizer = ...) can inject a real/custom Authorizer instance into the KafkaApis under test.
+- KafkaApisTest currently uses a mocked ReplicaManager for many Produce tests, proving the handoff can be intercepted without changing production code.
+
+For the real-effect experiment, however, a mocked ReplicaManager is insufficient. The test must preserve the real ReplicaManager.handleProduceAppend -> appendRecords -> appendRecordsToLeader -> Partition/UnifiedLog chain after the synchronization point. The safest architecture is therefore a test-only real ReplicaManager instance with a narrow override/interceptor at handleProduceAppend, or an equivalent test hook that blocks before delegating to the real implementation.
+
+The audit did not establish yet that the full multi-broker integration harness exposes a supported constructor/injection path for replacing the production ReplicaManager with that controlled test instance. That harness-injection question is therefore still OPEN and must be audited before any implementation or execution.
+
+Status: KAFKAAPIS_TEST_AUTHORIZER_INJECTION=SOURCE_CONFIRMED; MOCK_RM_INTERCEPTION=SOURCE_CONFIRMED; REAL_RM_EFFECT_REQUIRED=SOURCE_CONFIRMED; FULL_INTEGRATION_RM_INJECTION_POINT=OPEN; EXACT_RACE=NOT_EXECUTED.
+
+## 123. AB104.778R — Barrier completeness: authorization publication versus effect boundary
+
+The experiment must not use only the controller DeleteAcls response as its revoke barrier. Prior audit established that DeleteAcls completion proves control-plane persistence but does not by itself prove every target broker has applied the deletion.
+
+Therefore the race requires two separate revocation facts:
+D0 = ACL deletion committed/persisted in the metadata/control plane.
+D1 = target broker's local StandardAuthorizer has applied the deletion and now denies a fresh authorization.
+D2 = paused Produce crosses the append/effect boundary.
+
+The decisive ordering is D0 < D1 < D2. D0 < D2 without D1 is insufficient to distinguish a stale broker authorizer from an effect-time fence.
+
+Status: CONTROL_PLANE_COMMIT=INSUFFICIENT_ALONE; TARGET_BROKER_ACL_DENIAL_AFTER_PUBLICATION=REQUIRED; D0_D1_D2_SEPARATION=SOURCE_DEFINED; EXACT_RACE=NOT_EXECUTED.
+
+No Nexo implementation, V21, formal verification, or runtime Nexo execution.
+
+### EXACT NEXT ACTION
+AB104.779R — audit the Kafka integration-test/server harness for the narrowest supported way to control or substitute the target broker's ReplicaManager while retaining the real StandardAuthorizer + metadata publication + Partition/UnifiedLog effect path. In parallel, identify the strongest existing broker-local ACL publication observation that can establish D1 without conflating it with controller commit D0. Do not execute the race yet.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.779R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
