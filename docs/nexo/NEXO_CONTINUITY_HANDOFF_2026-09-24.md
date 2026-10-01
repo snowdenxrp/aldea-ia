@@ -3011,3 +3011,20 @@ AB104.911R — remain pending for real Kafka runtime evidence; do not create add
 ## AB104.911R — Kafka append-path source finding
 Current Kafka trunk shows KafkaApis authorizes Produce records, stores the authorized set, then calls ReplicaManager.handleProduceAppend. The inspected ReplicaManager path performs transaction/producer verification when applicable and then reaches appendRecords; no second Authorizer call appears in this handoff. This strengthens the race hypothesis but is not runtime proof.
 Status: AUTH_TO_APPEND_DIRECT_HANDOFF=SOURCE_CONFIRMED; SECOND_ACL_CHECK=NOT_FOUND_IN_INSPECTED_PATH; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+
+## AB104.912R — Partition append boundary inspected
+Apache Kafka Partition.appendRecordsToLeader performs leader/ISR checks and then invokes leaderLog.appendAsLeader(records, ...). The inspected method contains no Authorizer call or principal/ACL lookup. This narrows the remaining source question to the log append layer rather than the partition authorization layer.
+Status: PARTITION_APPEND=SOURCE_CONFIRMED; ACL_RECHECK=NOT_FOUND_IN_METHOD; RUNTIME_PROOF=ABSENT.
+
+## AB104.913R — Log layer boundary
+The source path now reaches UnifiedLog through leaderLog.appendAsLeader. The relevant next check is whether UnifiedLog.appendAsLeader or its immediate validation path performs any ACL authorization. Producer/transaction validation must remain separate from ACL authorization.
+Status: NEXT_SOURCE_TARGET=UNIFIED_LOG_APPEND; ACL_FENCE=UNKNOWN_AT_NEXT_LAYER.
+
+## AB104.914R — Current hypothesis strengthened
+The source chain is now KafkaApis authorization -> authorized records -> ReplicaManager append path -> Partition.appendRecordsToLeader -> UnifiedLog append. No ACL reauthorization has been found through the inspected request, replica, or partition layers.
+Status: SOURCE_HYPOTHESIS=STRONG; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## AB104.915R — Scope narrowed again
+Continue only into UnifiedLog.appendAsLeader and its immediate append validation. If no ACL lookup exists there, source archaeology closes and runtime becomes the sole unresolved evidence.
+Status: SOURCE_AUDIT_SCOPE=NARROW; REDUNDANT_RESEARCH=DISALLOWED.
