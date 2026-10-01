@@ -1323,3 +1323,75 @@ AB104.422 — specification common-mode failure: attack the protected failure-do
 
 ### Continuity
 Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 54 — specification common-mode attack — 2026-10-01
+
+### Historical artifact recovered
+AB104.422 (commit 7750586b80cdd9fcf35fbfb2b7e53ebacf07a058) attacks the protected quorum/failure-domain specification itself rather than only its implementations.
+
+### Findings
+1. SPECIFICATION_CORRECTNESS != IMPLEMENTATION_CORRECTNESS. A perfectly implemented rule can preserve an unsafe premise if the specification is wrong.
+2. TWO_ANALYZERS_AGREEING_WITH_ONE_SPEC != SPECIFICATION_VALIDATION. Differential implementation agreement cannot validate a shared semantic premise.
+3. The protected specification must explicitly bind property, system boundary, failure/adversary model, witness/dependency/failure-domain semantics, quorum rule, freshness/trust assumptions, partition/recovery semantics, UNKNOWN semantics, external-effect boundary, and exclusions.
+4. AMBIGUOUS_SECURITY_TERM => SPECIFICATION_NOT_VERIFIABLE. Terms such as independent/current/fresh/trusted/majority need claim-scoped semantics.
+5. UNMODELED_FAILURE_CLASS => CLAIM_SCOPE_INCOMPLETE. A proof under crash-only assumptions cannot silently support a Byzantine claim.
+6. WITNESS_AGREEMENT != EXTERNAL_WORLD_TRUTH. Agreement can establish consistency of observations without establishing the external resource state.
+7. NORMAL_MODE_SPECIFICATION != RECOVERY_SPECIFICATION. Restore/failover can change the relevant trust, dependency and continuity assumptions.
+8. UNKNOWN requires explicit semantics; treating unavailable or contradictory evidence as implicitly safe or false can create a fail-open interpretation.
+9. CHECKLIST_COMPLETE != SEMANTICALLY_COMPLETE. Completeness needs adversarial challenge, counterexample search, assumption audit, and independent semantic review.
+10. Critical assumptions need versioned status and invalidation propagation; an invalidated assumption cannot silently continue supporting dependent claims.
+11. Specification mutation testing is useful: if weakening the specification does not cause the assurance stack to detect the weakening, there is a specification-assurance gap.
+12. SPECIFICATION_VALIDATION != AUTHORITY. Even a validated claim-scoped specification only defines the semantics under which Z1 evaluates evidence; it does not grant current authority.
+
+### External corroboration
+Formal-verification literature supports separating the specification/refinement level from implementation correctness. Lamport and Merz present formal specification and hierarchical verification of a Byzantine fault-tolerant system, while later mechanized work has shown that refinement proofs can expose errors in earlier models. This supports the distinction here but does not validate Nexo's proposed specification. citeturn0search12turn0search2
+
+### S9 consequence
+The protected chain remains:
+MISSION/PROPERTY -> FAILURE MODEL -> CLAIM CONTRACT -> QUORUM SPECIFICATION -> ANALYSIS/EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+AB104.422 adds an upstream semantic-validation boundary. It does not close the final authority-promotion gap.
+
+### New semantic requirements
+Before model revision:
+- exact claim-scoped specification contract;
+- bidirectional property/assumption/failure-model/quorum/evidence traceability;
+- explicit unknown, partition, recovery and external-effect semantics;
+- specification mutation/counterexample suite;
+- independent semantic review not sharing the same specification assumptions;
+- invalidation propagation for critical assumptions/specification generations;
+- explicit relation between validated specification and Z1 decision contract.
+
+No TLA+ model change authorized.
+
+### Status
+- SPECIFICATION_CORRECTNESS != IMPLEMENTATION_CORRECTNESS.
+- TWO_ANALYZERS_AGREEING_WITH_ONE_SPEC != SPECIFICATION_VALIDATION.
+- AMBIGUOUS_SECURITY_TERM => SPECIFICATION_NOT_VERIFIABLE.
+- UNMODELED_FAILURE_CLASS => CLAIM_SCOPE_INCOMPLETE.
+- WITNESS_AGREEMENT != EXTERNAL_WORLD_TRUTH.
+- NORMAL_MODE_SPECIFICATION != RECOVERY_SPECIFICATION.
+- UNKNOWN_MUST_HAVE_EXPLICIT_SEMANTICS.
+- CHECKLIST_COMPLETE != SEMANTICALLY_COMPLETE.
+- INVALIDATED_CRITICAL_ASSUMPTION => DEPENDENT_CLAIM_REVALIDATION/INVALIDATION.
+- SPECIFICATION_MUTATION_SURVIVAL => SPECIFICATION_ASSURANCE_GAP.
+- VERIFIED_QUORUM_RULE != VALIDATED_SECURITY_PROPERTY.
+- SPECIFICATION_VALIDATION != AUTHORITY.
+- SPECIFICATION_ASSURANCE = UNKNOWN/PENDING.
+- THREAT/FAILURE_MODEL_COMPLETENESS = UNKNOWN/PENDING.
+- PROPERTY_IMPLICATION = UNKNOWN/PENDING.
+- AUTHORITY_PROMOTION/PROTECTED_ACTIVATION = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.423 — specification counterexample generation and property implication: search systematically for models that satisfy the quorum specification while violating the intended protected property, including bounded model checking, adversarial scenario generation, and refinement/implication contracts.
+
+### Continuity
+Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
