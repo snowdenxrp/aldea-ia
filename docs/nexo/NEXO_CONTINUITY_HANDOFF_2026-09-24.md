@@ -2358,3 +2358,47 @@ Status: PRE_RACE_CONTRACT=LOCKED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOW
 ### EXACT NEXT ACTION
 
 AB104.808R — audit the existing StandardAuthorizer test/integration construction path to determine the smallest real delegate-wrapper implementation and its lifecycle/configuration requirements. Only after that should test code be written. No race execution yet.
+
+## 155. AB104.808R — StandardAuthorizer subclass is source-supported as the minimal delegate wrapper
+
+`StandardAuthorizer` is non-final and its lifecycle is public: `configure`, `start`, `withPluginMetrics`, `authorize`, `close`, ACL mutation/loading, and initial-load completion are implemented on the real class. Existing Kafka tests already use subclasses such as `KraftTestAuthorizer` and `TestableStandardAuthorizer`, confirming subclassing is an established test pattern.
+
+The wrapper can therefore extend `StandardAuthorizer`, inherit the real ACL state/publication behavior, and override only `authorize(...)`. It should call `super.authorize(...)` first, inspect the returned results against the exact target Produce context/action, then block only when the real result is ALLOWED. No reimplementation of ACL semantics is needed.
+
+Status: STANDARD_AUTHORIZER_SUBCLASS=SOURCE_CONFIRMED; REAL_DELEGATION=SOURCE_SUPPORTED; AUTHORIZE_OVERRIDE=SOURCE_SUPPORTED; EXACT_RACE=NOT_EXECUTED.
+
+## 156. AB104.809R — Lifecycle ordering is compatible with the wrapper
+
+Existing StandardAuthorizer tests initialize it by configuring, installing plugin metrics, starting, and completing initial load. The production implementation's `authorize(...)` reads a broker-local `volatile` data snapshot and records metrics. A subclass overriding `authorize` and invoking `super.authorize` preserves this lifecycle and snapshot semantics.
+
+The wrapper must not replace `configure`, `start`, ACL mutation, snapshot loading, or `withPluginMetrics`. It should only add synchronization around the returned authorization decision. This keeps the local Authorizer publication path unchanged.
+
+Status: LIFECYCLE_PRESERVATION=REQUIRED_AND_SOURCE_SUPPORTED; SNAPSHOT_SEMANTICS=PRESERVED; ACL_PUBLICATION_PATH=UNCHANGED; EXACT_RACE=NOT_EXECUTED.
+
+## 157. AB104.810R — Barrier placement is now implementation-ready
+
+The exact safe sequence is: invoke `super.authorize(requestContext, actions)`; obtain the real result list; identify the target TOPIC/WRITE action using resource type/name and the Produce request context; require the corresponding result to be ALLOWED; signal `authorizationEntered`; then wait for explicit release; finally return the original result list unchanged.
+
+Crucially, the wrapper must not pause before `super.authorize`, because that would not prove the real StandardAuthorizer granted the request. It must not recompute or alter the result after release. The returned list must be exactly the list produced by the real Authorizer.
+
+Status: BARRIER_AFTER_REAL_ALLOW=SOURCE_DESIGN_LOCKED; RESULT_MUTATION=FORBIDDEN; REAL_AUTHORIZATION_SEMANTICS=PRESERVED; EXACT_RACE=NOT_EXECUTED.
+
+## 158. AB104.811R — D1 remains independent from the paused Produce
+
+Because the wrapper is installed only on the target broker, the D1 probe will call that same broker-local Authorizer instance. Therefore D1 cannot use an unrestricted `authorize` call while the barrier is active if the predicate accidentally matches it. The probe must use a request context/client identity that cannot satisfy the target Produce predicate, and the predicate must require both context and exact TOPIC/WRITE action.
+
+This provides the required self-deadlock guard without adding a second Authorizer or bypassing the target broker. D1 then observes the same delegated StandardAuthorizer instance after ACL deletion has propagated.
+
+Status: D1_SAME_BROKER_AUTHORIZER=SOURCE_SUPPORTED; D1_SELF_DEADLOCK_GUARD=REQUIRED; PREDICATE_ISOLATION=LOCKED.
+
+## 159. AB104.812R — No implementation yet; readiness threshold reached
+
+Source audits now close the configuration, lifecycle, subclassing, barrier placement, and D1-isolation questions. The experiment can be implemented as a test-only wrapper with no ReplicaManager/UnifiedLog modifications. Runtime wrapper identity must still be asserted before the race, and all A1/D0/D1/D2/E witnesses remain mandatory.
+
+No race has been executed. No exploitability conclusion has been made. UNKNOWN remains the status until the deterministic interleaving is actually run and independently evidenced.
+
+Status: IMPLEMENTATION_READINESS=SOURCE_CONFIRMED; RACE_EXECUTION=NOT_STARTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.813R — write the smallest test-only wrapper/harness skeleton and first validate only configuration/lifecycle/instance isolation. Do not run the race until those sanity assertions pass.
