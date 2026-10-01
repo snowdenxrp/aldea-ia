@@ -268,3 +268,48 @@ BOOTSTRAP_RUNTIME=NOT_OBSERVED
 G0_RUNTIME=NOT_EXECUTED
 EXACT_RACE=UNKNOWN
 EXPLOITABILITY=UNKNOWN
+
+
+## AB105.074R — CURRENT Kafka G0 compile gate directly observed
+
+A direct GitHub Actions read now closes the current-workflow compile-probe boundary.
+
+Run: `36915230502`
+Job: `110547457268` (`kafka-bootstrap`)
+Head branch: `nexo-ab105-g0-current-compile-gate`
+Head SHA: `9b0f33f39df52b90c7086e5b29bc366de65c806b`
+Conclusion: `success`
+
+Observed successful steps include:
+- Checkout Nexo
+- Java 21 setup
+- Clone pinned Kafka revision `99b940733a9f6bc409457dba7108f08421d81e42`
+- Compile Kafka test infrastructure
+- Write temporary G0 harness compile probe
+- Compile temporary G0 harness probe
+- Preserve compile-probe source
+- Emit bootstrap evidence
+- Upload bootstrap evidence
+
+Artifact:
+- `nexo-ab105-g0-bootstrap-evidence`
+- artifact id: `11189462380`
+- digest: `sha256:98e61de4a748d4cfde6ccefdadc496c07b203c49b3cd55885ab17c20dfcd3f36`
+- expires: `2026-12-30T19:34:03Z`
+
+The current main workflow `.github/workflows/nexo-ab105-g0-bootstrap.yml` now contains the temporary compile probe and compiles it with Kafka's `:server:compileTestJava`. The probe defines the target Authorizer wrapper, A1 barrier surface, and exact UnifiedLog E accessor, but it is still only a compile probe; it does not execute A1/D0/D1/D2/E.
+
+Epistemic state:
+- BOOTSTRAP_COMPILE=OBSERVED_SUCCESS_CURRENT_WORKFLOW
+- G0_HARNESS_COMPILE=OBSERVED_SUCCESS_CURRENT_WORKFLOW
+- G0_RUNTIME=NOT_EXECUTED
+- A1=NOT_EXECUTED
+- D0=NOT_EXECUTED
+- D1=NOT_EXECUTED
+- D2=NOT_EXECUTED
+- E=NOT_EXECUTED
+- EXACT_RACE=UNKNOWN
+- EXPLOITABILITY=UNKNOWN
+- AB105.116R=INTACT
+
+Next exact gate: replace the temporary compile probe with the smallest real runtime harness implementing the frozen A1 → D0 → D1 → release → D2 → E protocol, then obtain an observable CI execution and preserve raw run/job/artifact evidence. No promotion from compile to runtime is permitted.
