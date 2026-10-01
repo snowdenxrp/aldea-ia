@@ -232,3 +232,19 @@ Rechecked commit `9ee816706e9a12a9540ee7441e9db7dcc8d0e6ef` on branch `nexo-ab10
 - G0_RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
 
 Next exact action: inspect repository Actions/trigger state with available GitHub evidence and determine why this specific push produced no recorded run; only then choose the smallest trigger-safe correction.
+
+
+### AB105.053R-KAFKA-G0-BOOTSTRAP — trigger diagnosis update
+
+Additional audit:
+- Repository metadata: default branch is `main`; Actions are not shown as repository-archived/disabled at repository level.
+- The Kafka workflow contains both `push` on `nexo-ab105-g0-bootstrap` and `workflow_dispatch`.
+- GitHub documentation states a push workflow can run from a non-default branch when the workflow file exists in the event ref, so branch isolation alone does not explain the empty run list. citeturn0search6turn0search9
+- GitHub documentation also states events caused by the repository `GITHUB_TOKEN` do not create new workflow runs, except `workflow_dispatch` and `repository_dispatch`. citeturn0search0turn0search1
+- We do NOT have sufficient evidence to identify the credential/mechanism used to create commit `9ee8167...`; therefore the `GITHUB_TOKEN` explanation is recorded only as a LEADING HYPOTHESIS, not a confirmed cause.
+- No manual dispatch tool is exposed in the current GitHub tool surface. Therefore we do not claim a dispatch was attempted.
+- No workflow/job/artifact evidence exists for this commit.
+- Status remains: `BOOTSTRAP_RUNTIME=NOT_OBSERVED`, `G0_RUNTIME=NOT_EXECUTED`, `EXACT_RACE=UNKNOWN`, `EXPLOITABILITY=UNKNOWN`.
+
+Decision boundary:
+Do not alter Kafka source/harness based on the missing run. The next safe action is to establish an observable Actions trigger path (prefer an explicit workflow dispatch if/when the available GitHub interface supports it) or otherwise create a trigger-safe CI change, then inspect the resulting raw run before promoting any bootstrap result.
