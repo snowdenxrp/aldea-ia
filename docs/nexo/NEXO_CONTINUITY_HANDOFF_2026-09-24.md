@@ -2238,3 +2238,43 @@ No experiment has been executed yet. No Nexo implementation or model change has 
 ### EXACT NEXT ACTION
 
 AB104.794R — design the minimal test-only Authorizer wrapper/subclass and its broker-scoped barrier state, then inspect the exact integration-test configuration mechanism before writing code. Execution remains forbidden until the wrapper's lifecycle, broker scoping, and cleanup behavior are source-supported.
+
+## 141. AB104.794R — KafkaClusterTestKit supports test Authorizer injection at cluster configuration level
+
+Kafka's KRaftClusterTest directly constructs KafkaClusterTestKit with `.setConfigProp("authorizer.class.name", FakeConfigurableAuthorizer.class.getName())`. The test then inspects both controller and broker Authorizer plugin instances. This is source-confirmed evidence that a purpose-built test Authorizer can be installed without replacing BrokerServer or ReplicaManager construction.
+
+Status: TEST_AUTHORIZER_CLUSTER_INJECTION=SOURCE_CONFIRMED; REAL_BROKER_REPLICA_MANAGER_PRESERVED=YES; EXACT_RACE=NOT_EXECUTED.
+
+## 142. AB104.795R — Per-server property mechanism exists, but Authorizer-specific broker/controller scoping is not yet source-confirmed
+
+Kafka's TestKitNodes supports `.setPerServerProperties(...)` for server-specific properties, and current tests use it for broker configuration. However, the audited usages did not yet demonstrate `authorizer.class.name` being set differently for a broker versus a controller. Therefore broker-only wrapper scoping is feasible as a harness capability in principle, but not yet proven for this exact Authorizer property.
+
+Do not assume that a single global `authorizer.class.name` configuration can safely host a broker-only barrier. If the wrapper is installed globally, controller-side and D1 authorization calls must be explicitly excluded by the barrier predicate; alternatively, per-server Authorizer configuration must first be source-confirmed.
+
+Status: PER_SERVER_PROPERTIES=SOURCE_CONFIRMED; PER_SERVER_AUTHORIZER_SCOPING=NOT_YET_CONFIRMED; GLOBAL_WRAPPER_SAFETY=REQUIRES_PREDICATE; EXACT_RACE=NOT_EXECUTED.
+
+## 143. AB104.796R — Wrapper design must preserve real StandardAuthorizer semantics and lifecycle
+
+The existing Kafka test Authorizer pattern implements the full Authorizer lifecycle and is instantiated reflectively from configuration. The proposed wrapper therefore must be a real configured Authorizer class with the required constructor/lifecycle, delegate authorization and ACL mutation behavior to StandardAuthorizer, and add synchronization only around the single target Produce authorization return.
+
+The wrapper must not replace authorization decisions with ALLOW-all behavior, because that would destroy the security property being tested. It also must not intercept or modify ReplicaManager/UnifiedLog. Cleanup must always release the barrier before cluster shutdown to avoid deadlocks and leaked test state.
+
+Status: WRAPPER_LIFECYCLE_REQUIREMENT=SOURCE_SUPPORTED; DELEGATION_TO_STANDARD_AUTHORIZER=REQUIRED; ALLOW_ALL_WRAPPER=REJECTED; CLEANUP_RELEASE=REQUIRED; EXACT_RACE=NOT_EXECUTED.
+
+## 144. AB104.797R — Minimal synchronization state can be narrowly scoped to one target authorization
+
+The test state should contain explicit latches/events for `authorizationEntered`, `releaseAuthorization`, and an independent failure/timeout signal. The barrier predicate should require the expected Produce request context plus exact target `TOPIC + WRITE` Action and the expected principal/client identity. Only after real StandardAuthorizer returns ALLOWED should the wrapper signal `authorizationEntered` and block.
+
+The D1 probe must use a different request context/client identity so the same predicate cannot capture it. ACL deletion must also use an independent Admin path. This creates three independently observable actors: paused Produce, revocation/control path, and D1 authorization probe.
+
+Status: BARRIER_STATE_DESIGN=SOURCE_SUPPORTED_BY_EXISTING_TEST_PRIMITIVES; THREE_ACTOR_SEPARATION=REQUIRED; D1_SELF_DEADLOCK_GUARD=DESIGN_CONFIRMED; EXACT_RACE=NOT_EXECUTED.
+
+## 145. AB104.798R — No implementation or execution yet; one configuration audit remains
+
+The architecture is now reduced to a minimal test-only wrapper around the real Authorizer, with no ReplicaManager patch and no model change. The only remaining source question before writing the test is whether the selected TestKit configuration can scope the wrapper to the target broker cleanly, or whether the globally installed wrapper can be proven safe through its request/action predicate for controller traffic.
+
+Until that question is source-confirmed, do not implement or execute. The canonical model anchor remains AB105.116R; this handoff remains the sole continuity artifact; UNKNOWN/NOT_EXECUTED states remain intact.
+
+### EXACT NEXT ACTION
+
+AB104.799R — audit TestKit server-property merging/precedence and Authorizer instantiation on broker vs controller, then choose the smallest source-supported scoping strategy. No race execution.
