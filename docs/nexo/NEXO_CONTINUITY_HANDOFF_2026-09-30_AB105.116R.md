@@ -306,3 +306,68 @@ These remain UNKNOWN/OPEN semantic questions, not declared defects. No source ch
 - Step 6 evidence upload remains pending.
 - Therefore there is still no valid TLC PASS/FAIL/counterexample result.
 - A 404/non-available log while step 5 is still running must not be interpreted as a model failure.
+
+## Action/guard dependency matrix — pass 4 — 2026-09-30
+
+Second-pass audit over every action in AB105.116R. Findings are review items, not automatic fixes.
+
+### Admission/context
+- EstablishAuthority: authority/epoch coupling only.
+- RevokeAuthority: authority-only; snapshots remain unchanged.
+- AdmitCurrent: requires NONE/TERMINAL operation, but does not require current VALID authority, CURRENT epoch, or established identity/context. It can create ACCEPTED + FRESH + SUFFICIENT from UNKNOWN/REVOKED authority. StartOperation later blocks execution without VALID/CURRENT authority, so this is not an immediate S1 violation, but it tensions the AB105.111R ACCEPTED contract.
+- AdmitStale and AdmitConflict have similarly broad guards and do not bind the result to explicit epoch/provenance/competing evidence.
+- SetContext resets admission to NONE but leaves freshness/coverage/snapshots unchanged.
+
+### Operation/replay
+- StartOperation is the main cross-dimension gate: VALID authority + CURRENT epoch + ACCEPTED + FRESH + SUFFICIENT coverage + STOP NONE + fence != ISSUED + operation NONE + subject/incarnation + replay guard.
+- fence=ENFORCED is allowed, so an enforced fence does not itself block a new operation.
+- ReplayDuplicate/ReplayConflict have no operationState guard and can alter admission during IN_FLIGHT/STOPPING/TERMINAL when identity context matches.
+- EndOperation changes only operationState; execution/effect identity remains.
+
+### STOP/fence
+- RequestStop is tied to IN_FLIGHT + STOP NONE.
+- EnforceStop is independent of operationState.
+- IssueFence is globally available from fence NONE; it requires no operation, successor, authority, or stop state.
+- EnforceFence is globally available from ISSUED.
+- Therefore fencing is modeled as an independently issuable/enforceable control dimension, not operation-scoped.
+
+### Effect/evidence
+- ObserveExternal is operation-independent and can create OBSERVED external effect from Init.
+- ObserveNexo requires IN_FLIGHT, execution/current authority VALID, STOP not ENFORCED, and admission not DUPLICATE/CONFLICTING; it does not require FRESH, SUFFICIENT coverage, or a particular fence state.
+- MarkUnknown is globally available whenever effect is not OBSERVED.
+- ObserveAbsent requires UNKNOWN + SUFFICIENT coverage, but no operation/effect identity or provenance binding.
+- Effect epistemics are therefore partly generic rather than operation/effect-instance scoped.
+
+### Recovery/reconciliation
+- Recover requires only operationState != NONE. It can run IN_FLIGHT, STOPPING, or TERMINAL and can regress COMPLETE reconstruction to PARTIAL.
+- CompleteReconstruction requires PARTIAL + SUFFICIENT coverage + effect != UNKNOWN.
+- Reconcile requires REQUIRED + SUFFICIENT coverage + effect != UNKNOWN.
+- Reauthorize requires reconciliation COMPLETE + CURRENT epoch, but no fresh authority evidence. It can set authority VALID even if authority was previously REVOKED.
+- ContinueAfterRecovery requires STOPPING + reconciliation COMPLETE + VALID/CURRENT authority + non-UNKNOWN effect.
+- This is a high-priority semantic question because the frozen requirements separate current authority from recovery history.
+
+### Successor/release
+- SetSuccessor requires only successor=NONE.
+- ProveExclusivity requires only fence=ENFORCED; it is not scoped to a specific successor, subject, operation, or participant set.
+- SetAtomicity is fully orthogonal: all 16 required/available pairs are reachable.
+- ReleaseSuccessor requires PRESENT + VALID/CURRENT authority + ENFORCED fence + PROVEN exclusivity + STOP != ENFORCED + reconciliation != REQUIRED + effect != UNKNOWN + AtomicitySatisfied.
+- ReleaseSuccessor has no operationState, operationId, effectOrigin, effectId, subject, incarnation, coverage, or reconstruction guard.
+- Existing witness remains valid: Init → SetSuccessor → EstablishAuthority → IssueFence → EnforceFence → ProveExclusivity → SetAtomicity(ATOMIC,ATOMIC) → ReleaseSuccessor reaches RELEASED with operationState=NONE and effectState=NONE.
+- This is not declared a defect yet; it is the strongest candidate for a missing dependency if successor release is intended to be consequentially operation/effect-scoped.
+
+### Newly identified semantic review questions
+1. Does ACCEPTED admission require current VALID authority/CURRENT epoch?
+2. Should replay classification be permitted after operation start?
+3. Should fence/exclusivity be scoped to successor/runtime/operation rather than global?
+4. May Reauthorize restore VALID from CURRENT epoch alone, or must fresh authority evidence exist?
+5. Can Recover legitimately regress COMPLETE to PARTIAL?
+6. Must ObserveAbsent be scoped to an expected operation/effect?
+7. Must ReleaseSuccessor require operation/effect identity, or is it intentionally independent?
+8. Is external observation intentionally allowed before any Nexo operation?
+
+### Current classification
+- Confirmed representation: major dimensions remain explicitly separated.
+- Confirmed coverage gap: S2/S3/S5/S6/S9/S11/S12 lack dedicated invariants in current cfg.
+- Strong semantic tensions: AdmitCurrent accepts without current authority; Reauthorize can restore VALID without explicit new authority evidence; ReleaseSuccessor is operation/effect-independent.
+- No source/model change authorized yet.
+- TLC remains a separate finite-checking process; its result cannot resolve semantic questions outside the supplied transition relation. TLC explores reachable states and checks configured properties. citeturn0search12turn0search13
