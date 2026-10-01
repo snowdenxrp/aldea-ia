@@ -1865,3 +1865,14 @@ Status: AUTHORIZER_STARTUP_READINESS=SOURCE_CONFIRMED; INITIAL_HIGH_WATERMARK_LO
 EXACT NEXT ACTION: AB104.768R — audit Kafka request/append test infrastructure for authorization versus append-side state transitions, search for ACL mutation during in-flight Produce, and inspect ReplicaManager/request-channel boundaries for generation/version/fencing checks that could invalidate already-authorized records. Do not infer safety or exploitability from source ordering alone.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.768R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+## 115. AB104.768R — Produce authorization versus append boundary
+Artifact commit: d4734235080388be9e79f816733ffdae01be66c4
+
+KafkaApis currently evaluates topic WRITE authorization, stores the authorized records in request-local authorizedRequestInfo, validates them, and passes them directly to ReplicaManager.handleProduceAppend. No generic second topic ACL authorization call was found between authorization and append, and no ACL metadata offset/generation was found being passed as an append-time fence. This confirms an authorization-before-append boundary but does not by source ordering alone prove any particular revocation race is executable. A third-party running-producer ACL-removal scenario reports subsequent attempts being denied, but it is not Apache Kafka's own deterministic proof of the exact in-flight interleaving.
+
+Status: SOURCE_PATH_AUTH_BEFORE_APPEND=SOURCE_CONFIRMED; REQUEST_LOCAL_AUTHORIZATION_REUSE=SOURCE_CONFIRMED; GENERIC_SECOND_TOPIC_ACL_CHECK_BEFORE_APPEND=NOT_FOUND_IN_AUDITED_PATH; ACL_GENERATION_PASSED_TO_REPLICA_APPEND=NOT_ESTABLISHED; APPEND_SIDE_AUTHORIZATION_FENCE=NOT_ESTABLISHED; DEDICATED_UPSTREAM_IN_FLIGHT_REVOKE_TEST=NOT_ESTABLISHED; EXECUTED_DETERMINISTIC_RACE=NO.
+
+EXACT NEXT ACTION: AB104.769R — inspect ReplicaManager.handleProduceAppend and append/purgatory/partition boundaries for hidden generation/state checks (leader epoch, partition epoch, transaction/producer epoch, etc.). Separate partition/producer correctness mechanisms from ACL authority freshness, and inspect upstream tests for ACL-change/Produce ordering guarantees.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.769R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
