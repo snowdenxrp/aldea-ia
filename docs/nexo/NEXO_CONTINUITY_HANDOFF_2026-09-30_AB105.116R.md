@@ -222,3 +222,42 @@ These findings are mutually consistent; none authorizes a model change yet.
 
 ### Next
 Perform the final pre-revision guard audit: determine which current guards can remain unchanged, which are merely candidates, and which would become invalid/insufficient after the semantic contract is frozen. TLC live run remains separate from this semantic work.
+
+## AB105.116R audit pass 27 — pre-revision guard audit — 2026-09-30
+
+### Classification method
+Each current guard is classified without changing it: KEEP = directly consistent with frozen semantics; CANDIDATE = plausible but policy-dependent; INSUFFICIENT = cannot close the identified semantic boundary; CONFLICT-RISK = may encode an unstated assumption.
+
+### KEEP / structurally sound
+- StartOperation requires current VALID authority + CURRENT epoch + ACCEPTED/FRESH/SUFFICIENT context. This remains a necessary execution gate.
+- ObserveNexo requires VALID authority at execution and current VALID authority, and blocks DUPLICATE/CONFLICT admission plus ENFORCED stop. These are useful necessary gates, but not complete S1/S8/S12 verification.
+- EnforceStop requires REQUESTED before ENFORCED; EnforceFence requires ISSUED before ENFORCED. Their ordering guards remain sound.
+- ReleaseSuccessor requires VALID/CURRENT authority, enforced fence, proven exclusivity, and no UNKNOWN effect. These remain necessary but are not sufficient to establish release scope.
+
+### CANDIDATE / policy-dependent
+- AdmitCurrent accepting without current VALID/CURRENT authority: may be valid for durable receipt before later appraisal, but cannot by itself mean consequential admission. Historical RECEIVED != ADMITTED and authority-scoped admission requires epoch context. Exact semantics must be frozen.
+- Reauthorize from COMPLETE reconciliation + CURRENT epoch: candidate only; provenance semantics unresolved.
+- ObserveAbsent from UNKNOWN + SUFFICIENT coverage: candidate only; absence evidence scope/provenance unresolved.
+- Recover from any non-NONE operation state: candidate only; recovery phase semantics unresolved.
+- ProveExclusivity from fence enforcement alone: candidate only; successor/participant scope unresolved.
+- ReplayDuplicate/Conflict without operation-state guard: candidate only; whether replay classification is allowed after start is unresolved.
+
+### INSUFFICIENT for known gaps
+- authorityAtAdmission alone is insufficient for D1a; admissionEpoch semantics are missing.
+- effectId alone is insufficient for S11/S12; expected-effect relation and observation/event identity semantics are missing.
+- Reconciliation COMPLETE alone is insufficient as an explanation of reauthorization provenance.
+- Current release gates do not bind release to a specific operation/effect context.
+
+### CONFLICT-RISK
+- StartOperation blocking only fence=ISSUED while allowing fence=ENFORCED is not automatically wrong, but it encodes a semantic choice that an enforced fence does not itself prohibit starting an operation. This must be explicitly classified, not silently treated as safe.
+- SetContext resets admission but leaves freshness/coverage and authority snapshots intact; after semantic epoch binding this may create stale-context carryover unless the contract deliberately permits it.
+- Recover can regress reconstruction from COMPLETE to PARTIAL; this may be legitimate for newly discovered missing evidence, but the contract must define whether reconstruction is monotonic.
+
+### Revision discipline
+No current guard is promoted to a final requirement merely because it looks safer. No guard is removed merely because it looks restrictive. The semantic contract must decide first; only then should the smallest model delta be derived.
+
+### Result
+PRE-REVISION GUARD AUDIT = COMPLETE.
+MODEL_CHANGE = NOT_AUTHORIZED.
+NEXT_REQUIRED = FREEZE_SEMANTIC CONTRACT FOR D1a/S9/S11/S12, THEN DERIVE MINIMUM REVISION.
+TLC_LIVE_RUN = STILL SEPARATE FROM SEMANTIC AUDIT.
