@@ -222,7 +222,7 @@ jobs:
                               )) {{ putAll(userClient()); }})) {
                                   TopicAuthorizationException d1Exception = Assertions.assertThrows(
                                       TopicAuthorizationException.class,
-                                      () -> d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, new byte[] {2})).get());
+                                      () -> d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get());
                                   Assertions.assertTrue(
                                       d1Exception.unauthorizedTopics().contains(TOPIC_NAME),
                                       "D1 must deny the target topic");
