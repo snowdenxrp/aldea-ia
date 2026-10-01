@@ -3006,3 +3006,8 @@ Status: NEXT_TRANSITION=G0_ONLY; G0_GATE=LOCKED.
 
 ### EXACT NEXT ACTION
 AB104.911R — remain pending for real Kafka runtime evidence; do not create additional source-only blocks unless a concrete new fact or blocker appears.
+
+
+## AB104.911R — Kafka append-path source finding
+Current Kafka trunk shows KafkaApis authorizes Produce records, stores the authorized set, then calls ReplicaManager.handleProduceAppend. The inspected ReplicaManager path performs transaction/producer verification when applicable and then reaches appendRecords; no second Authorizer call appears in this handoff. This strengthens the race hypothesis but is not runtime proof.
+Status: AUTH_TO_APPEND_DIRECT_HANDOFF=SOURCE_CONFIRMED; SECOND_ACL_CHECK=NOT_FOUND_IN_INSPECTED_PATH; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
