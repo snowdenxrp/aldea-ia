@@ -655,3 +655,58 @@ This is a semantic dependency chain, not an authorized implementation.
 
 ### Next exact mission
 AB104.412 — attack quorum/witness independence and Byzantine equivocation: determine which continuity observations are genuinely independent, how shared failure domains invalidate apparent quorum, and how conflicting anchor views can be classified/resolved without introducing an unbounded governance TCB.
+
+## AB105.116R audit pass 45 — witness quorum / independence / Byzantine equivocation — 2026-10-01
+
+### Historical artifact recovered
+AB104.412 (commit a462e2c3e970bcd845ea1254e1cd23f51438c1dd) audits anchor quorum, witness independence, shared failure domains, equivocation, witness loss, dynamic witness sets, and governance TCB.
+
+### Findings
+- QUORUM_COUNT != QUORUM_SAFETY. A numerical witness count is meaningful only relative to an explicit failure-domain and independence model.
+- MULTIPLE_OBSERVERS != INDEPENDENT_OBSERVERS. Distinct instances can share a compromised key, trust root, database, deployment, provider/control plane, verifier, policy, schema/derivation engine, operator path, time source, or recovery system.
+- Witness identity is evidence, not proof of independence. Independence must be evaluated through dependency closure relevant to the claim.
+- A Byzantine anchor can produce two individually authentic roots at the same generation. Neither signature alone establishes which branch is current.
+- Security-critical unresolved witness disagreement must not become affirmative current continuity; candidate safe states remain UNKNOWN/HOLD/QUARANTINED.
+- Witnesses should report observations; they must not silently become a second authority layer. Candidate chain remains ANCHOR_OBSERVATIONS -> WITNESS_EVIDENCE -> DEPENDENCY_CLOSURE -> CONSISTENCY/EQUIVOCATION ANALYSIS -> Z1 POLICY -> AUTHORITY DECISION.
+- Witness freshness is claim-specific. WITNESS_FRESHNESS != CURRENT_AUTHORITY.
+- If the required independent witness set becomes unavailable, the threshold must not silently be lowered. A threshold/policy change is itself a protected semantic change and may require a new admission boundary.
+- Adding witnesses does not necessarily add assurance; removing an actually independent witness can reduce assurance.
+- Governance may authorize a recovery action, but cannot retroactively prove that an unknown external effect did not occur. Governance must therefore be modeled as an explicit decision path rather than an opaque override.
+
+### External corroboration
+Byzantine quorum literature supports the same structural boundary: safety depends on quorum intersection under an explicit fault model, not merely raw vote count; equivocation can produce conflicting authenticated views. citeturn0search3turn0search12
+
+### S9 consequence
+AB104.412 further constrains what could qualify as authority-bearing continuity evidence, but does not define the missing promotion action. The unresolved chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+No A/B/C reauthorization policy is selected.
+
+### New narrowed requirements
+Before model revision, Nexo needs semantic definitions for:
+1. claim-specific required independence domains;
+2. witness enrollment/trust-root provenance;
+3. dependency-closure representation and drift detection;
+4. equivocation classification and evidence;
+5. protected witness-set policy changes;
+6. the boundary between witness evidence and the authority decision.
+
+These remain semantic requirements, not TLA+ implementation fields.
+
+### Status
+- WITNESS_INDEPENDENCE = SEMANTIC REQUIREMENT CONFIRMED; exact metric UNKNOWN/PENDING.
+- QUORUM_SAFETY = DEPENDENT ON FAILURE/INDEPENDENCE MODEL; no numeric threshold frozen.
+- EQUIVOCATION_RESOLUTION = UNKNOWN/PENDING.
+- WITNESS_POLICY_CHANGE = PROTECTED SEMANTIC BOUNDARY; exact mechanism UNKNOWN/PENDING.
+- GOVERNANCE_TCB = EXPLICITLY RECOGNIZED; exact recovery semantics UNKNOWN/PENDING.
+- PROMOTION_TO_CURRENT_AUTHORITY = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Next exact mission
+AB104.413 — witness enrollment, trust-root rotation and dependency drift: determine how a malicious/stale witness can enter the evidence set, how keys/trust roots rotate, and how a previously independent witness can become correlated after software, policy, provider, or operator changes.
