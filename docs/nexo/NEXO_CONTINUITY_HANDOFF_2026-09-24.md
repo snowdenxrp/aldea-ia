@@ -2576,3 +2576,37 @@ Status: G0_EXECUTION=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKN
 ### EXACT NEXT ACTION
 
 AB104.834R — implement the minimal test-only G0 harness in the canonical repository, compile/run the sanity test, and persist the actual runtime observations. Do not execute the revoke race in the same first run.
+
+## 181. AB104.834R — Canonical Nexo repository does not contain a Kafka test harness
+
+Search of `snowdenxrp/aldea-ia` for the planned KafkaClusterTestKit/StandardAuthorizer harness returned no matching implementation. The canonical repository is therefore not currently a runnable home for the Kafka integration experiment itself. This is a repository-scope fact, not evidence that Kafka lacks the race or that the experiment cannot be run elsewhere.
+
+Status: NEXO_REPO_KAFKA_HARNESS=NOT_FOUND; RACE_EXECUTION=BLOCKED_BY_TEST_ENVIRONMENT.
+
+## 182. AB104.835R — Target log witness remains source-confirmed in Apache Kafka
+
+Apache Kafka tests use the concrete broker API `broker.logManager().getLog(topicPartition, false)` and read `UnifiedLog.logEndOffset()`. This confirms the intended broker-local post-effect witness is not hypothetical.
+
+Status: TARGET_LOG_WITNESS=SOURCE_CONFIRMED.
+
+## 183. AB104.836R — G0 cannot honestly be marked executed without a runnable Kafka checkout/build
+
+The planned G0 requires actual `KafkaClusterTestKit` startup, target Authorizer wrapper instantiation, ACL creation/propagation, baseline authorization, partition readiness, and log offset capture. GitHub source inspection alone cannot produce those runtime observations. No attempt is being represented as execution.
+
+Status: G0=NOT_PERFORMED; RUNTIME_EVIDENCE=ABSENT.
+
+## 184. AB104.837R — Do not create a parallel Nexo artifact to fake the missing runtime environment
+
+Because the canonical Nexo repository is the continuity record rather than the Apache Kafka checkout, adding a synthetic harness or copied Kafka source solely to manufacture an execution result would contaminate the evidence boundary. Preserve the experiment as an explicitly pending external Kafka test execution.
+
+Status: EVIDENCE_BOUNDARY=LOCKED; NO_SYNTHETIC_RUNTIME_RESULT.
+
+## 185. AB104.838R — Research state after environment check
+
+The architecture/source audit is sufficiently closed to attempt the experiment, but the actual integration execution remains pending an environment containing the relevant Apache Kafka test sources and build/test runner. Until that is available, the correct state is not-found/not-performed rather than pass/fail.
+
+Status: IMPLEMENTATION_DESIGN=READY; EXECUTION_ENVIRONMENT=PENDING; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.839R — continue source audit for the narrowest supported D1 invocation and G0 readiness APIs, while preserving the runtime execution as PENDING. Do not claim G0 success without real test output.
