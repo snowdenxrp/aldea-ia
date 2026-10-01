@@ -19,4 +19,26 @@ Corrected epistemic interpretation:
 - EXPLOITABILITY=UNKNOWN
 - MODEL_ANCHOR=AB105.116R_UNCHANGED
 
-Evidence: the exact TLC workflow at commit cc6e238 specifies `runs-on: ubuntu-latest`, `actions/setup-java@v4`, and Java 21, but only defines a TLA+/TLC job; it does not run Apache Kafka. This correction does not alter the prior findings; it only prevents workflow configuration from being mistaken for a live runtime observation.
+## AB105.044R — CI execution now directly observed, but not Kafka G0
+A fresh GitHub Actions API check found run `36869796501` for `nexo-deterministic-tests.yml`, triggered by the AB105.043R correction commit. Its job `tests` reached `Set up job`, `Checkout`, `Node.js`, and `Install` successfully before `Run tests` failed. This directly proves that a GitHub Actions runner executed this repository workflow. It does NOT prove that the TLC workflow ran, that a Kafka checkout exists in CI, or that the G0 harness can execute.
+Status: ACTIVE_CI_EXECUTION=OBSERVED; REPO_RUNNER=CONFIRMED; KAFKA_G0_RUNNER=NOT_ESTABLISHED; KAFKA_RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN.
+
+## AB105.045R — G0 CI path remains unimplemented
+The existing observed CI runner is currently used by repository workflows, but no existing workflow checked out Apache Kafka or implemented the frozen G0 wrapper protocol. Therefore the next implementation step, if chosen, is a dedicated temporary/external Kafka harness path; this must not be conflated with the already observed deterministic-test runner.
+Status: CI_RUNNER=EMPIRICALLY_CONFIRMED; KAFKA_HARNESS=NOT_PRESENT; G0=NOT_EXECUTED; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
+
+## AB105.046R — Runner availability is now proven, scope is not
+The observed run proves the repository can execute GitHub Actions jobs on a hosted runner. The evidence is limited to the deterministic persistence workflow: checkout, Node setup, install, and test execution all occurred. It cannot be generalized to the unimplemented Kafka G0 job.
+Status: HOSTED_RUNNER=PROVEN; KAFKA_JOB=NOT_PROVEN; GENERALIZED_EXECUTION=PROHIBITED; EXACT_RACE=UNKNOWN.
+
+## AB105.047R — Failure is unrelated to Kafka race
+The observed CI run failed specifically at the existing `npm test` step after setup and dependency installation. No Kafka code, Kafka checkout, authorizer wrapper, ACL operation, or G0 synchronization point was involved. Therefore this failure is neither positive nor negative evidence about the Kafka race.
+Status: CI_FAILURE=DETERMINISTIC_TEST_WORKFLOW_ONLY; KAFKA_EVIDENCE=NONE; EXACT_RACE=UNKNOWN.
+
+## AB105.048R — No silent promotion of CI capability
+The corrected record must distinguish three states: repository workflow declaration, actual execution of an existing workflow, and execution capability for the new Kafka G0 harness. Only the first two are currently evidenced.
+Status: WORKFLOW_DECLARATION=CONFIRMED; EXISTING_WORKFLOW_EXECUTION=CONFIRMED; KAFKA_G0_EXECUTION_CAPABILITY=NOT_ESTABLISHED.
+
+## AB105.049R — Next implementation question narrowed
+The next useful investigation is no longer whether GitHub Actions can execute at all. It is whether a dedicated temporary CI job can safely obtain/build the required Kafka revision and run the frozen G0 harness without modifying the canonical Nexo model or fabricating evidence.
+Status: NEXT=KAFKA_G0_CI_FEASIBILITY; MODEL_ANCHOR=AB105.116R_UNCHANGED; EXACT_RACE=UNKNOWN.
