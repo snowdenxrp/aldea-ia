@@ -542,3 +542,14 @@ Important boundary: ENQUEUE != DOWNSTREAM_EFFECT; PROVIDER_ACK != DOWNSTREAM_CON
 This strengthens the upstream chain for authority admission but does not resolve S9. Effect-footprint closure must remain separate from authority promotion. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 38 is audit-only until persisted.
 
 Next exact mission: AB104.406, runtime expansion and lineage across queues/callbacks/retries/fan-out/provider boundaries, while independently continuing the issuer/lifecycle trace of CURRENT_AUTHORITY_DECISION.
+
+## AB105.116R audit pass 39 — runtime expansion / lineage — 2026-10-01
+AB104.406 closes another important boundary: a protected participant discovered after the final gate cannot silently expand authority. Safe cases are limited to pre-authorized bounded dynamic expansion, a new admission boundary, or UNKNOWN/HOLD/REVALIDATE. Runtime discovery is evidence, not retroactive authorization.
+
+Lineage must remain layered: OPERATION_ID, EFFECT_ID, ATTEMPT_ID, PARENT_LINEAGE_ID, PARTICIPANT_ID, EXECUTION_ID, FENCE_GENERATION, and RECOVERY_ATTEMPT_ID are semantically distinct. Same operation does not mean same attempt; same execution ID does not prove same attempt; trace correlation does not prove authorization or effect equivalence. Parent authorization cannot become unbounded child authority; cross-boundary inheritance must be authenticated and bounded. Resource incarnation and authority epoch remain binding dimensions.
+
+This further constrains the protected admission context but does not close S9. In particular, no artifact here establishes the exact issuer/lifecycle of CURRENT_AUTHORITY_DECISION or the activation/linearization relation that changes authority state after revocation.
+
+No model change authorized. AB105.116R remains canonical; no AB105.117R. Pass 39 is audit-only until persisted.
+
+Next exact mission: AB104.407, authenticated lineage and stale-lineage rejection across duplication/reordering/replay, authority epochs, and resource incarnations; continue the independent CURRENT_AUTHORITY_DECISION issuer/lifecycle trace.
