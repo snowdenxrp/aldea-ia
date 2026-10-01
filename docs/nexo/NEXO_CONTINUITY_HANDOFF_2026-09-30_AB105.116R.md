@@ -261,3 +261,42 @@ PRE-REVISION GUARD AUDIT = COMPLETE.
 MODEL_CHANGE = NOT_AUTHORIZED.
 NEXT_REQUIRED = FREEZE_SEMANTIC CONTRACT FOR D1a/S9/S11/S12, THEN DERIVE MINIMUM REVISION.
 TLC_LIVE_RUN = STILL SEPARATE FROM SEMANTIC AUDIT.
+
+## AB105.116R audit pass 28 — semantic contract freeze boundary — 2026-09-30
+
+### What can be frozen now
+Four semantic requirements are now supported by the historical record and cross-audits:
+1. D1a: authority-scoped admission must preserve the authority epoch at admission; an old admission must never silently become current after an epoch change.
+2. S9: recovery/reconciliation does not by itself prove what authority evidence permits VALID after revocation; reauthorization provenance must be explicit.
+3. S11: expected effect and observed/reconstructed effect are distinct concepts; material difference must be defined before reconciliation can be made authoritative.
+4. S12: effect identity and observation/event identity are distinct concepts when evidence provenance requires both; operation/subject/incarnation correlation is conditional on scope.
+
+### What must remain OPEN
+- The actual epoch advancement event and exact OLD/CURRENT/FUTURE transition semantics.
+- P1 versus P2 for handling an old admitted input after epoch change.
+- Whether reconciliation may itself contain authority-bearing evidence (S9 policy A) or requires separate authority evidence (B/C).
+- Exact expected-effect domain, relation values, and materiality rule (S11).
+- Exact conditions under which an observation/event identity is mandatory and how it correlates to an effect/operation (S12).
+
+### Important boundary
+These open decisions are semantic policy, not implementation details. Choosing defaults merely to make TLC run would contaminate the model with assumptions that have not been justified by the evidence.
+
+### Minimum revision shape — NOT YET IMPLEMENTED
+Once the open semantics are decided, the likely smallest model change is additive rather than destructive:
+- preserve existing authority and effect dimensions;
+- add only the minimum admission-epoch/evidence/effect-relation identity needed by the frozen contracts;
+- add transitions for epoch advancement and explicit authority evidence only if the chosen semantics require them;
+- add invariants for the historical S1–S12 obligations that the new representation makes expressible;
+- keep UNKNOWN reachable and avoid silently collapsing states.
+
+### TLC boundary
+The live TLC run remains an independent validation of the current 116R model. Its eventual result must not be used to choose unresolved semantics.
+
+### Result
+SEMANTIC CONTRACT = PARTIALLY FROZEN.
+D1a/S9/S11/S12 CORE BOUNDARIES = FROZEN.
+OPEN POLICY DETAILS = PRESERVED AS UNKNOWN/PENDING.
+MODEL_REVISION = NOT_AUTHORIZED YET.
+
+### Next
+Before any revision, perform a compact adversarial witness inventory for each open policy so we know exactly what behavior each choice changes. Then select only semantics supported by the historical contract; otherwise retain UNKNOWN.
