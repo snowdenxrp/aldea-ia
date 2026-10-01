@@ -2712,3 +2712,17 @@ Status: SOURCE_AUDIT_FOR_HARNESS=SUFFICIENT; RUNTIME_EXECUTION=PENDING.
 ### EXACT NEXT ACTION
 
 AB104.854R — no further broad Kafka archaeology unless a concrete blocker appears. The next valid evidence-producing step is an actual Kafka checkout/build running the G0 sanity gate. Until then preserve `G0=NOT_PERFORMED`, `EXACT_RACE=NOT_EXECUTED`, `EXPLOITABILITY=UNKNOWN`.
+
+## 201. AB104.854R — Execution-environment check remains negative
+
+The next evidence-producing step was checked against the currently available GitHub-connected repository surface. No Apache Kafka checkout/repository is available through the connected GitHub repositories, and the canonical Nexo repository still contains no Kafka integration-test harness. Therefore there is still no concrete environment in which to compile and execute the dedicated Kafka G0 test.
+
+This is an environment-availability observation only. It does not imply that G0 would pass or fail, and it provides no evidence about the ACL race itself.
+
+Status: KAFKA_CHECKOUT_AVAILABLE=NOT_FOUND; G0=NOT_PERFORMED; RUNTIME_EVIDENCE=ABSENT; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+No Kafka source was copied into Nexo and no synthetic runtime result was created.
+
+### EXACT NEXT ACTION
+
+AB104.855R — do not continue broad Kafka archaeology. Re-check only for a newly available concrete execution path; if none exists, preserve the experiment as runtime-pending rather than generating more source-only blocks.
