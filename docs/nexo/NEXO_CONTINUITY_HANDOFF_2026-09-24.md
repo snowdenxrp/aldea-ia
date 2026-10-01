@@ -2950,3 +2950,31 @@ Status: EXECUTION_HOLD=ACTIVE; G0_GATE=LOCKED.
 
 ### EXACT NEXT ACTION
 AB104.899R — act only if a genuinely new Kafka runtime surface or concrete blocker appears; otherwise preserve this frozen state.
+
+
+## 246. AB104.899R — Execution hold converted to explicit pending state
+No new Kafka runtime surface has appeared. Rather than repeatedly rechecking the same unavailable environment, the experiment is now explicitly marked pending external execution.
+Status: KAFKA_RUNTIME=EXTERNAL_PENDING; G0=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED.
+
+## 247. AB104.900R — Research completeness boundary
+The source audit needed to design the experiment is complete for the current question. Further source archaeology is not required unless an execution attempt reveals a concrete discrepancy.
+Status: SOURCE_AUDIT=COMPLETE_FOR_CURRENT_SCOPE.
+
+## 248. AB104.901R — Runtime evidence requirement
+The next evidentiary event must come from an actual Kafka test execution and must preserve raw/independent observations for G0 and the locked A1/D0/D1/D2/E chain.
+Status: NEXT_EVIDENCE=RUNTIME_ONLY.
+
+## 249. AB104.902R — No negative finding
+The current state must not be described as evidence that Kafka is safe against this race, nor as evidence that the race exists. It is strictly an unexecuted experiment.
+Status: SECURITY_CONCLUSION=NOT_REACHED.
+
+## 250. AB104.903R — Continuity artifact discipline
+No Kafka checkout, copied source, duplicate handoff, or synthetic test result will be added to the canonical Nexo repository. Only the research state and verified observations belong here.
+Status: ARTIFACT_SCOPE=LOCKED.
+
+## 251. AB104.904R — Stable next transition
+When a real Kafka execution environment becomes available, the first action is G0 only. A failed G0 stops the experiment; a passed G0 permits the locked race sequence.
+Status: NEXT_TRANSITION=G0_ONLY; G0_GATE=LOCKED.
+
+### EXACT NEXT ACTION
+AB104.905R — do not repeat availability checks unless the environment/tooling changes; otherwise wait for real Kafka runtime evidence.
