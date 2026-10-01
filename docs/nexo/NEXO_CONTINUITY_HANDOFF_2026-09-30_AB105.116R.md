@@ -841,3 +841,69 @@ AB104.416 — Byzantine witness behavior and equivocation: selectively signed co
 
 ### Continuity
 This pass is additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 48 — Byzantine witness equivocation / collusive quorum — 2026-10-01
+
+### Historical artifact recovered
+AB104.416 (commit 30f215650fb907b71d4b21ddd950d3baf63cae57) audits Byzantine witnesses that equivocate, replay evidence, selectively withhold observations, collude across nominal failure domains, or change incarnation during recovery.
+
+### Findings
+1. MULTIPLE_VALID_SIGNATURES != ONE_VALID_STATE. A witness can sign incompatible roots/generation claims; authentication does not resolve the semantic conflict.
+2. Same witness + same protected generation/scope + incompatible authenticated claims is a candidate equivocation proof. A single contradiction without matching scope may instead be stale, misbound, corrupt, or otherwise UNKNOWN evidence.
+3. NO_OBSERVATION != OBSERVATION_OF_NO_EVENT. Selective silence cannot become affirmative evidence of absence.
+4. Replay must be generation- and invalidation-bound. A valid observation from generation G cannot satisfy a requirement for G+1 merely because its signature or timestamp remains valid.
+5. QUORUM_COUNT != INDEPENDENCE. Multiple witnesses sharing a compromised trust root, policy source, provider, verifier, operator/control plane, or recovery path can collapse into one effective failure domain.
+6. AUTHENTIC_WITNESS != INDEPENDENT_WITNESS and HONEST_EXECUTION != CORRECT_SEMANTICS when common-mode dependencies are compromised.
+7. Witness contributions require claim/scope and generation/incarnation binding. A logical witness ID cannot silently confer the same trust state on a replacement incarnation.
+8. Equivocation evidence and affected decision context must be preserved rather than rewritten. Confirmed or unresolved security-critical conflicts require contribution blocking and appropriate dispute/quarantine handling.
+9. Fresh message metadata does not prove fresh observation state. Generation, continuity, trust/dependency generation and scope must be evaluated.
+10. A disputed witness cannot independently certify current continuity during recovery.
+
+### S9 consequence
+AB104.416 reinforces the existing boundary: witness evidence is input to appraisal/authority decision, not authority itself. The unresolved chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+No exact Byzantine consensus/failure model or protected activation protocol is frozen. No witness quorum result is authorized to promote authority=VALID by itself.
+
+### New narrowed requirements
+Before model revision, Nexo needs semantic definitions for:
+- Byzantine failure model and claim-specific quorum assumptions;
+- failure-domain composition/algebra across trust roots, policy, verifier, provider, operator and recovery dependencies;
+- minimum evidence for equivocation versus stale/misbound/conflicting observations;
+- protected invalidation propagation from a disputed witness to affected quorum decisions;
+- witness contribution binding across generation, incarnation, claim/scope and continuity state;
+- recovery treatment when a witness is itself disputed.
+
+These remain semantic requirements, not TLA+ implementation fields.
+
+### Status
+- MULTIPLE_VALID_SIGNATURES != ONE_VALID_STATE.
+- SIGNED_CONFLICT => EQUIVOCATION_CANDIDATE.
+- NO_OBSERVATION != OBSERVATION_OF_NO_EVENT.
+- QUORUM_COUNT != INDEPENDENCE.
+- MAJORITY_COUNT != INDEPENDENT_EVIDENCE_WEIGHT.
+- AUTHENTIC_WITNESS != INDEPENDENT_WITNESS.
+- HONEST_EXECUTION != CORRECT_SEMANTICS.
+- FRESH_MESSAGE != FRESH_OBSERVATION.
+- OBSERVED_GENERATION != REQUIRED_GENERATION => STALE/REJECTED candidate.
+- SAME_GENERATION + CONFLICTING_ROOT => DISPUTED/QUARANTINED candidate.
+- BYZANTINE_WITNESS_CANNOT_SELF_ESTABLISH_CURRENT_CONTINUITY.
+- EQUIVOCATION_EVIDENCE_MUST_BE_PRESERVED.
+- PROMOTION_TO_CURRENT_AUTHORITY = UNKNOWN/PENDING.
+- BYZANTINE_FAILURE_MODEL = UNKNOWN/PENDING.
+- FAILURE_DOMAIN_ALGEBRA = UNKNOWN/PENDING.
+- EQUIVOCATION_RESOLUTION = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.417 — witness quorum composition and failure-domain algebra: formally model how witness sets, trust roots, policy sources, verifier generations, providers, operators, and recovery domains compose, and determine when nominally distinct witnesses collapse into one effective failure domain.
+
+### Continuity
+This pass is additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
