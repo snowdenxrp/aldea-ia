@@ -512,3 +512,15 @@ RECOVERY_AUTHORITY_EPOCH_BINDING != CURRENT_AUTHORITY_PROOF.
 
 ### Next exact mission
 Audit the historical authority-establishment artifacts around the recovered recoveryAuthorityEpoch path and compare their inputs against AB104.506, AB104.563–565, AB105.087–088, and AB105.111–112. The goal is to determine whether any already-frozen contract defines the missing authority-bearing evidence/activation boundary. If none does, preserve the gap as UNKNOWN rather than inventing a promotion action.
+
+## AB105.116R audit pass 36 — authority promotion / semantic-admission boundary — 2026-10-01
+
+Historical cross-check extended through AB104.390–403. AB104.390/401 separate evidence producer, verifier/appraisal, and authority decider; verified evidence does not automatically grant authority. AB104.401 defines a protected Z1 promotion boundary requiring claim-specific revalidation immediately before authority grant. AB104.402 establishes that required authority context must be derived from protected property/effect/policy semantics rather than solely from the claim instance. AB104.403 confirms that the schema/derivation mechanism itself is not semantic authority: requirement derivation and instance closure are separate obligations; conflicts, cycles, rollback, or missing dependencies lead to HOLD/UNKNOWN/REVALIDATE.
+
+AB104.506 supplies the strongest historical protected-authorization binding found so far: ClaimDigest + AuthorityEpoch + RevocationGeneration + DependencyClosureDigest + FenceRevision + DecisionDigest, checked at the final protected gate. This is design evidence, not a frozen AB105 implementation contract.
+
+Result: the missing S9 promotion relation is now narrowed to an explicit protected authority-decision boundary. The historical chain supports CURRENT_AUTHORITY_EVIDENCE / CURRENT_AUTHORITY_DECISION as distinct from appraisal, recovery reconstruction, reconciliation, and effect observation. It still does not freeze the issuer, exact decision record, activation/linearization action, or the precise mapping to authority=VALID after revocation.
+
+No model change authorized. AB105.116R remains canonical. No AB105.117R. A/B/C UNKNOWN/PENDING. P1/P2 UNKNOWN/PENDING. Pass 36 is audit-only until persisted.
+
+Next exact mission: trace the authority decision issuer/lifecycle and activation boundary, then test whether AB104.404+ resolves effective effect-class binding or remains upstream of authority promotion.
