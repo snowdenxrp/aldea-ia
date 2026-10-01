@@ -3177,3 +3177,43 @@ Status: HYPOTHESIS=SUPPORTED_FOR_TESTING; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNK
 ## AB104.950R — Next irreversible evidence step
 The audit should now stop expanding the same source-level chain and move to the first external G0 harness implementation/execution when an executable Kafka environment is available.
 Status: NEXT=EXTERNAL_G0_HARNESS; MODEL_ANCHOR=AB105.116R_UNCHANGED.
+
+## AB104.951R — Current Kafka source recheck
+Current Kafka trunk still documents StandardAuthorizer as the KRaft authorizer and configures it through authorizer.class.name. This independently reconfirms the intended plugin boundary; it is not runtime evidence.
+Status: AUTHORIZE_CONFIG=CONFIRMED; RUNTIME=NOT_EXECUTED.
+
+## AB104.952R — Produce authorization location recheck
+Current KafkaApis source shows Produce topic authorization is performed through AuthHelper.filterByAuthorized using WRITE/TOPIC before authorizedRequestInfo is passed onward. This preserves the key A1 observation point in the planned wrapper.
+Status: PRODUCE_AUTH_GATE=CONFIRMED; A1_WITNESS_POINT=VALID_FOR_HARNESS; RUNTIME=NOT_EXECUTED.
+
+## AB104.953R — Controller ACL publisher recheck
+Current ControllerServer source installs AclPublisher for the controller authorizer plugin. Therefore the D0/D1 protocol must retain an explicit publication/visibility condition rather than treating AdminClient deletion submission as sufficient.
+Status: ACL_PUBLISHER=CONFIRMED; D0_VISIBILITY=REQUIRED; RUNTIME=NOT_EXECUTED.
+
+## AB104.954R — Broker startup/authorizer readiness
+Current BrokerServer waits for authorizer readiness futures before enabling request processing. The harness therefore must not begin A0 until the target broker's wrapped authorizer is fully initialized and request processing is enabled.
+Status: AUTHORIZE_READY_BEFORE_TRAFFIC=CONFIRMED; A0_AFTER_READY=REQUIRED.
+
+## AB104.955R — Wrapper initialization constraint
+The wrapper must preserve StandardAuthorizer's normal initialization and metadata-update lifecycle. Synchronization must occur only after the delegated authorization decision for the exact target request; blocking during initialization or metadata publication would invalidate the intended witness.
+Status: INIT_LIFECYCLE=PRESERVE; BLOCK_BEFORE_DECISION=PROHIBITED; RUNTIME=NOT_EXECUTED.
+
+## AB104.956R — No second authorization inference
+The current KafkaApis source confirms the Produce authorization gate, but source inspection alone cannot prove the absence of later authorization in every downstream path. The runtime witness must therefore establish that the original request reaches the independent append/effect witness after D1.
+Status: DOWNSTREAM_REAUTH=NOT_PROVEN_ABSENT_BY_SOURCE_ALONE; EFFECT_WITNESS=MANDATORY; EXACT_RACE=UNKNOWN.
+
+## AB104.957R — G0 harness checklist freeze
+Implementation checklist is frozen: isolated wrapper target broker; readiness gate; A0 baseline ALLOW; A1 exact ALLOW barrier; D0 committed/published ACL deletion; independent D1 fresh DENY on target broker; leader stability; release after D1; independent append/effect witness; bounded cleanup; raw evidence capture.
+Status: G0_CHECKLIST=FROZEN; SOURCE_REVIEW=PAUSED; NEXT=EXTERNAL_IMPLEMENTATION.
+
+## AB104.958R — Evidence interpretation freeze
+A runtime that reaches D1 DENY but fails to produce the original append is a non-witness, not a proof that Kafka prevents the race. A runtime that captures the full tuple advances the exact-race finding. All other partial outcomes remain UNKNOWN/BOUNDED.
+Status: INTERPRETATION=FROZEN; UNIVERSAL_CONCLUSION=PROHIBITED.
+
+## AB104.959R — External execution prerequisite
+The next evidence-producing action requires an executable Kafka checkout/build environment capable of compiling the test wrapper and running the single integration test. The current connected Nexo environment has not supplied that execution path.
+Status: EXTERNAL_EXECUTOR=REQUIRED; CURRENT_EXECUTION=NOT_AVAILABLE; RUNTIME=NOT_EXECUTED.
+
+## AB104.960R — Audit transition
+The source-level audit is now formally transitioned from investigation to execution readiness. No further AB blocks should be added merely by restating the same source facts; the next meaningful continuation should be an actual external G0 implementation attempt or a concrete implementation blocker.
+Status: PHASE=EXECUTION_READY; G0=READY; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
