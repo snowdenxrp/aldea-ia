@@ -2089,3 +2089,49 @@ No Nexo implementation, V21, formal verification, or runtime Nexo execution.
 AB104.781R — inspect `ReplicaManager.handleProduceAppend` declaration and existing override/decorator/test-hook patterns; then inspect target-broker ACL publication wait helpers in the integration tests. Preserve UNKNOWN until the complete controlled path is established.
 
 CONTINUITY RULE: recover this same canonical handoff first; resume at AB104.781R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; no parallel handoffs; AB105.116R remains canonical model anchor.
+
+## 127. AB104.781R — `handleProduceAppend` is not the best deterministic injection seam
+
+Direct source audit: `ReplicaManager.handleProduceAppend(...)` is a public, non-final Scala method, and its non-transactional path proceeds directly to `postVerificationCallback` and then `appendRecords`. This confirms the method boundary is real, but the running integration broker constructs its own ReplicaManager inside BrokerServer; the existing harness does not expose a supported runtime method replacement.
+
+More importantly, the race can be controlled earlier without replacing ReplicaManager: block inside the target broker's real Authorizer immediately after it computes the ALLOW decision and before returning it to KafkaApis. That freezes the exact authorization result while another thread performs ACL revocation/publication. Releasing the barrier then lets the original KafkaApis path continue into the real ReplicaManager and UnifiedLog.
+
+This is a narrower and cleaner test seam because it preserves the real production effect path and controls the exact transition `authorize returned ALLOW -> append`.
+
+Status: HANDLE_PRODUCE_APPEND_METHOD=SOURCE_CONFIRMED; RUNTIME_RM_REPLACEMENT=NOT_ESTABLISHED; AUTHORIZE_RETURN_BARRIER=SOURCE_DESIGN_IDENTIFIED; REAL_EFFECT_PATH_PRESERVED=YES_IN_DESIGN; EXACT_RACE=NOT_EXECUTED.
+
+## 128. AB104.782R — Existing Kafka test infrastructure proves configurable Authorizer injection
+
+`KRaftClusterTest` contains `FakeConfigurableAuthorizer`, a test Authorizer instantiated through the broker configuration property `authorizer.class.name`. The class has a public no-argument constructor and implements the Authorizer lifecycle, including `start`, `authorize`, `createAcls`, and `deleteAcls`. This establishes that an integration cluster can run with a purpose-built test Authorizer without modifying BrokerServer/ReplicaManager production construction.
+
+The remaining design requirement is to preserve real ACL semantics rather than replace them with an ALLOW-all fake. A test Authorizer should therefore wrap/subclass the real StandardAuthorizer, delegate normal behavior to it, and add only a synchronization barrier around the Produce authorization result.
+
+Status: TEST_AUTHORZIER_CONFIG_INJECTION=SOURCE_CONFIRMED; ALLOW_ALL_FAKE=INSUFFICIENT_FOR_RACE; STANDARD_AUTHORIZER_WRAPPER_OR_SUBCLASS=DESIGN_CANDIDATE; EXACT_RACE=NOT_EXECUTED.
+
+## 129. AB104.783R — Strongest race design: barrier after real StandardAuthorizer decision
+
+`StandardAuthorizer` is a non-final class. Its authorization method computes the decision from the current broker-local `StandardAuthorizerData` snapshot. Therefore a test subclass/wrapper can preserve the real decision and introduce a barrier only after the real `authorize(...)` result is obtained and immediately before returning it to KafkaApis.
+
+Controlled sequence:
+A0 target broker has WRITE ACL -> A1 real StandardAuthorizer returns ALLOWED internally -> BARRIER blocks before returning to KafkaApis -> R0 DeleteAcls commits -> R1 target broker applies deletion -> R2 fresh authorization on an independent request is DENIED -> RELEASE -> A2 original request returns its already-computed ALLOWED result -> KafkaApis calls real ReplicaManager.handleProduceAppend -> real append/effect outcome observed.
+
+This avoids a mocked ReplicaManager and avoids any production-code hook. It also makes the semantic question precise: whether an already-computed authorization decision remains sufficient to reach the real append after current ACL state has changed.
+
+Potential harness complication: the same broker-local Authorizer instance is used for both the paused Produce authorization and the fresh post-revoke authorization. The barrier must therefore discriminate the target Produce authorization from the independent probe, otherwise the D1 probe could deadlock behind the same latch. This can be done by matching request context/principal/topic/action and allowing the probe path to proceed, but that matching logic must be audited before implementation.
+
+Status: REAL_STANDARD_AUTHORIZATION_BARRIER=SOURCE_DESIGN_CONFIRMED; REAL_APPEND_PATH=PRESERVED; D1_PROBE_INDEPENDENCE=OPEN; EXACT_RACE=NOT_EXECUTED.
+
+## 130. AB104.784R — No execution yet; next audit narrows to barrier discrimination and ACL publication witness
+
+The research has now eliminated the need to replace/intercept the real ReplicaManager as the primary design. The preferred experiment is a test-only Authorizer subclass/wrapper that delegates to StandardAuthorizer and blocks one specific Produce authorization after the decision is computed but before the decision is returned.
+
+Two remaining questions must be solved before any implementation or execution:
+1. How to identify only the target Produce authorization call without accidentally blocking the independent D1 authorization probe or ACL-management requests.
+2. Which existing integration helper or broker-local observation most strongly establishes that the target StandardAuthorizer has applied DeleteAcls, rather than merely that the controller accepted the deletion.
+
+No race has been executed. No outcome has been inferred. UNKNOWN remains intact.
+
+### EXACT NEXT ACTION
+AB104.784R — audit AuthorizableRequestContext/Action fields and existing ACL integration helpers for a deterministic barrier predicate and a broker-local D1 publication witness. Continue several blocks in one pass; do not implement or execute until the control contract is fully established.
+
+CONTINUITY RULE: recover this same canonical handoff first; resume at AB104.784R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; no parallel handoffs; AB105.116R remains canonical model anchor.
