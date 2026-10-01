@@ -43,26 +43,31 @@ jobs:
         run: |
           ./gradlew --no-daemon :test-common:test-common-runtime:compileJava :metadata:compileTestJava
 
-      - name: Write temporary G0 harness compile probe
+      - name: Write temporary G0 runtime harness
         working-directory: /tmp/kafka
         run: |
           mkdir -p server/src/test/java/org/apache/kafka/server
-          cat > server/src/test/java/org/apache/kafka/server/NexoG0HarnessCompileProbe.java <<'EOF'
+          cat > server/src/test/java/org/apache/kafka/server/NexoG0RuntimeTest.java <<'EOF'
           package org.apache.kafka.server;
 
-          import org.apache.kafka.clients.CommonClientConfigs;
           import org.apache.kafka.clients.admin.Admin;
           import org.apache.kafka.clients.admin.DeleteAclsOptions;
           import org.apache.kafka.clients.admin.NewTopic;
           import org.apache.kafka.clients.producer.KafkaProducer;
           import org.apache.kafka.clients.producer.Producer;
+          import org.apache.kafka.clients.producer.ProducerConfig;
           import org.apache.kafka.clients.producer.ProducerRecord;
-          import org.apache.kafka.common.Endpoint;
-          import org.apache.kafka.common.TopicPartition;
           import org.apache.kafka.common.acl.AclBinding;
           import org.apache.kafka.common.acl.AclBindingFilter;
+          import org.apache.kafka.common.acl.AccessControlEntry;
           import org.apache.kafka.common.acl.AclOperation;
           import org.apache.kafka.common.acl.AclPermissionType;
+          import org.apache.kafka.common.config.SaslConfigs;
+          import org.apache.kafka.common.network.ListenerName;
+          import org.apache.kafka.common.security.auth.KafkaPrincipal;
+          import org.apache.kafka.common.security.auth.SecurityProtocol;
+          import org.apache.kafka.common.TopicPartition;
+          import org.apache.kafka.common.acl.AclBindingFilter;
           import org.apache.kafka.common.resource.PatternType;
           import org.apache.kafka.common.resource.ResourcePattern;
           import org.apache.kafka.common.resource.ResourceType;
@@ -70,61 +75,104 @@ jobs:
           import org.apache.kafka.common.test.KafkaClusterTestKit;
           import org.apache.kafka.common.test.TestKitNodes;
           import org.apache.kafka.metadata.authorizer.StandardAuthorizer;
+          import org.apache.kafka.server.authorizer.Action;
+          import org.apache.kafka.server.authorizer.AuthorizableRequestContext;
+          import org.apache.kafka.server.authorizer.AuthorizationResult;
           import org.apache.kafka.storage.internals.log.UnifiedLog;
           import kafka.server.BrokerServer;
-          import org.apache.kafka.server.authorizer.AclCreateResult;
-          import org.apache.kafka.server.authorizer.AclDeleteResult;
-          import org.apache.kafka.server.authorizer.Action;
-          import org.apache.kafka.server.authorizer.AuthorizationResult;
-          import org.apache.kafka.server.authorizer.AuthorizableRequestContext;
           import org.apache.kafka.server.config.ServerConfigs;
+          import org.junit.jupiter.api.Assertions;
+          import org.junit.jupiter.api.Test;
 
-          import java.io.IOException;
+          import java.net.InetAddress;
           import java.util.HashMap;
           import java.util.List;
           import java.util.Map;
-          import java.util.concurrent.CompletableFuture;
-          import java.util.concurrent.CompletionStage;
           import java.util.concurrent.CountDownLatch;
-          import java.util.concurrent.atomic.AtomicReference;
+          import java.util.concurrent.ExecutionException;
+          import java.util.concurrent.Future;
+          import java.util.concurrent.ExecutorService;
+          import java.util.concurrent.Executors;
+          import java.util.concurrent.TimeUnit;
 
-          public final class NexoG0HarnessCompileProbe {
-              private static final CountDownLatch A1_BARRIER = new CountDownLatch(1);
-              private static final AtomicReference<List<AuthorizationResult>> A1_DELEGATED =
-                  new AtomicReference<>();
+          import static org.apache.kafka.common.acl.AclOperation.WRITE;
+          import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+          import static org.apache.kafka.common.resource.PatternType.LITERAL;
+          import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+
+          public final class NexoG0RuntimeTest {
+              private static final String TOPIC = "nexo-g0-runtime";
+              private static final String USER = "plain-user1";
+              private static final String PASSWORD = "plain-user1-secret";
+              private static final CountDownLatch A1_OBSERVED = new CountDownLatch(1);
+              private static final CountDownLatch A1_RELEASE = new CountDownLatch(1);
+              private static volatile TargetAuthorizer TARGET;
 
               public static final class TargetAuthorizer extends StandardAuthorizer {
-                  public TargetAuthorizer() { super(); }
-
                   @Override
                   public List<AuthorizationResult> authorize(
                           AuthorizableRequestContext requestContext,
                           List<Action> actions) {
                       List<AuthorizationResult> results = super.authorize(requestContext, actions);
-                      A1_DELEGATED.set(results);
-                      if (!results.isEmpty() && results.get(0) == AuthorizationResult.ALLOWED) {
-                          awaitA1Barrier();
+                      if (requestContext.principal().getName().equals(USER)
+                              && actions.size() == 1
+                              && actions.get(0).operation() == WRITE
+                              && actions.get(0).resourcePattern().resourceType() == TOPIC
+                              && TOPIC.name().equals(actions.get(0).resourcePattern().name())
+                              && !results.isEmpty()
+                              && results.get(0) == AuthorizationResult.ALLOWED) {
+                          A1_OBSERVED.countDown();
+                          try {
+                              if (!A1_RELEASE.await(60, TimeUnit.SECONDS)) {
+                                  throw new AssertionError("A1 release timeout");
+                              }
+                          } catch (InterruptedException e) {
+                              Thread.currentThread().interrupt();
+                              throw new AssertionError(e);
+                          }
                       }
                       return results;
                   }
-
-                  private static void awaitA1Barrier() {
-                      try {
-                          A1_BARRIER.await();
-                      } catch (InterruptedException e) {
-                          Thread.currentThread().interrupt();
-                          throw new RuntimeException(e);
-                      }
-                  }
               }
 
-              private static long exactEAccessor(BrokerServer broker, TopicPartition topicPartition) {
-                  return broker.logManager().getLog(topicPartition, false)
+              private static Map<String, Object> userClient() {
+                  return Map.of(
+                      "security.protocol", SecurityProtocol.SASL_PLAINTEXT.name,
+                      SaslConfigs.SASL_MECHANISM, "PLAIN",
+                      SaslConfigs.SASL_JAAS_CONFIG,
+                      "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + USER
+                          + "\" password=\"" + PASSWORD + "\";"
+                  );
+              }
+
+              private static AclBinding userWriteAcl() {
+                  return new AclBinding(
+                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW));
+              }
+
+              private static long exactE(BrokerServer broker) {
+                  return broker.logManager()
+                      .getLog(new TopicPartition(TOPIC, 0), false)
                       .map(UnifiedLog::logEndOffset)
                       .orElse(-1L);
               }
 
-              private static void apiSurface() throws Exception {
+              private static AuthorizableRequestContext userContext() {
+                  return new AuthorizableRequestContext() {
+                      @Override public String listenerName() { return "EXTERNAL"; }
+                      @Override public SecurityProtocol securityProtocol() { return SecurityProtocol.SASL_PLAINTEXT; }
+                      @Override public KafkaPrincipal principal() { return new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER); }
+                      @Override public InetAddress clientAddress() { return null; }
+                      @Override public int requestType() { return org.apache.kafka.common.protocol.ApiKeys.PRODUCE.id; }
+                      @Override public short requestVersion() { return 0; }
+                      @Override public String clientId() { return "nexo-g0-d1"; }
+                      @Override public int correlationId() { return 0; }
+                  };
+              }
+
+              @Test
+              public void frozenA1D0D1D2E() throws Exception {
                   Map<Integer, Map<String, String>> perServer = new HashMap<>();
                   perServer.put(0, Map.of(
                       ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
@@ -134,57 +182,84 @@ jobs:
                       .setNumBrokerNodes(1)
                       .setNumControllerNodes(1)
                       .setCombined(false)
+                      .setBrokerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+                      .setControllerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
                       .setPerServerProperties(perServer)
                       .build();
 
-                  KafkaClusterTestKit cluster = new KafkaClusterTestKit.Builder(nodes)
-                      .setConfigProp(ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
-                          StandardAuthorizer.class.getName())
-                      .build();
+                  try (KafkaClusterTestKit cluster = new KafkaClusterTestKit.Builder(nodes)
+                      .setConfigProp(ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG, StandardAuthorizer.class.getName())
+                      .build()) {
+                      TARGET = null;
+                      cluster.format();
+                      cluster.startup();
+                      cluster.waitForReadyBrokers();
+                      BrokerServer broker = cluster.brokers().get(0);
+                      TARGET = (TargetAuthorizer) broker.authorizerPlugin().get().get();
 
-                  Admin admin = cluster.admin();
-                  admin.createTopics(List.of(new NewTopic("nexo-g0", 1, (short) 1)));
-                  admin.deleteAcls(List.of(AclBindingFilter.ANY), new DeleteAclsOptions());
+                      try (Admin admin = cluster.admin()) {
+                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+                          admin.createAcls(List.of(userWriteAcl())).all().get();
+                      }
 
-                  Producer<byte[], byte[]> producer = new KafkaProducer<>(Map.of(
-                      CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
-                      org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                      ByteArraySerializer.class,
-                      org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                      ByteArraySerializer.class));
-                  producer.send(new ProducerRecord<>("nexo-g0", new byte[] {1})).get();
+                      final long baseline = exactE(broker);
+                      Assertions.assertEquals(0L, baseline, "baseline E must be zero");
 
-                  AclBinding writeAcl = new AclBinding(
-                      new ResourcePattern(ResourceType.TOPIC, "nexo-g0", PatternType.LITERAL),
-                      new org.apache.kafka.common.acl.AccessControlEntry(
-                          "User:user1", "*", AclOperation.WRITE, AclPermissionType.ALLOW));
+                      ExecutorService executor = Executors.newSingleThreadExecutor();
+                      Future<?> d2 = null;
+                      try {
+                          try (Producer<byte[], byte[]> producer = new KafkaProducer<>(new java.util.HashMap<>(Map.of(
+                              ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
+                              ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                              ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                              ProducerConfig.ACKS_CONFIG, "all"
+                          )) {{ putAll(userClient()); }})) {
+                              d2 = executor.submit(() -> {
+                                  try {
+                                      producer.send(new ProducerRecord<>(TOPIC, new byte[] {1})).get();
+                                  } catch (Exception e) {
+                                      throw new RuntimeException(e);
+                                  }
+                              });
 
-                  List<AclBinding> bindings = List.of(writeAcl);
-                  List<AuthorizationResult> delegated = A1_DELEGATED.get();
-                  CompletionStage<Void> marker = CompletableFuture.completedFuture(null);
-                  Endpoint unusedEndpoint = null;
-                  AclCreateResult unusedCreate = null;
-                  AclDeleteResult unusedDelete = null;
-                  IOException unusedIo = null;
+                              Assertions.assertTrue(A1_OBSERVED.await(30, TimeUnit.SECONDS), "A1 not observed");
 
-                  producer.close();
-                  admin.close();
-                  cluster.close();
-                  if (bindings.isEmpty() || delegated == null || marker == null ||
-                      unusedEndpoint != null || unusedCreate != null || unusedDelete != null ||
-                      unusedIo != null) {
-                      throw new AssertionError("compile probe");
+                              try (Admin admin = cluster.admin()) {
+                                  admin.deleteAcls(
+                                      List.of(new AclBindingFilter(
+                                          new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
+                                          AccessControlEntry.ANY.toFilter())),
+                                      new DeleteAclsOptions()).all().get();
+                              }
+
+                              List<AuthorizationResult> d1 = TARGET.authorize(
+                                  userContext(),
+                                  List.of(new Action(WRITE,
+                                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                                      0, true, false)));
+                              Assertions.assertEquals(AuthorizationResult.DENIED, d1.get(0), "D1 must be DENIED after D0");
+
+                              A1_RELEASE.countDown();
+                              d2.get(30, TimeUnit.SECONDS);
+                              long after = exactE(broker);
+                              System.out.println("G0_WITNESS A1=OBSERVED D0=OBSERVED D1=DENIED D2=SUCCESS E_BASELINE="
+                                  + baseline + " E_AFTER=" + after);
+                              Assertions.assertEquals(1L, after, "E must show exactly one append");
+                          }
+                      } finally {
+                          A1_RELEASE.countDown();
+                          executor.shutdownNow();
+                      }
                   }
               }
-
-              private NexoG0HarnessCompileProbe() {}
           }
           EOF
 
-      - name: Compile temporary G0 harness probe
+      - name: Compile and execute real G0 runtime harness
         working-directory: /tmp/kafka
         run: |
           ./gradlew --no-daemon :server:compileTestJava
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info
 
       - name: Emit bootstrap evidence
         working-directory: /tmp/kafka
@@ -211,4 +286,4 @@ jobs:
           name: nexo-ab105-g0-bootstrap-evidence
           path: /tmp/nexo-g0-bootstrap-evidence.txt
 
-      # AB105 controlled main-branch execution gate: compile-only; G0 runtime remains disabled.
+      # AB105 controlled main-branch execution gate: real G0 runtime harness. No Nexo model implementation.
