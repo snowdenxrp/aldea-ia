@@ -2,56 +2,60 @@
 
 ## Canonical anchor
 - AB105.116R remains canonical and unchanged.
-- Do NOT create AB105.117R or silently alter the historical meaning of AB105.116R.
+- No AB105.117R is created.
+- No Nexo architecture implementation is being promoted from this investigation.
 
-## Real TLC evidence
-- Workflow run: 36781846063
-- Job: 110113752493
-- Result: SUCCESS
-- States explored/generated: 7,957,574,337
-- Distinct states: 251,910,656
-- Pending: 0
-- Depth: 31
-- Artifact: nexo-ab105-116r-tlc-evidence
-- Artifact ID: 11134199332
-- SHA-256: ad053fdc48b490819281000cbbf40a8eae76af6bed780d40795a719068ad4f44
-- TLC semantic UNKNOWN/PENDING items remain preserved; TLC completion is not equivalent to proving the Kafka race.
+## TLC
+- Workflow run: 36781846063 — SUCCESS.
+- Job: 110113752493.
+- States explored/generated: 7,957,574,337.
+- Distinct states: 251,910,656.
+- Pending: 0.
+- Depth: 31.
+- Artifact: nexo-ab105-116r-tlc-evidence, ID 11134199332.
+- Artifact SHA-256: ad053fdc48b490819281000cbbf40a8eae76af6bed780d40795a719068ad4f44.
+- TLC completion does not by itself prove the Kafka race; historical UNKNOWN/PENDING semantic items remain preserved.
 
-## Kafka G0 current execution state
-- PR #81: OPEN, DRAFT, NOT MERGED.
-- PR head: 01cf9d7872329450f501861b75463ef6a5245426
-- Workflow run: 36936028499
-- Job: 110616388141
-- Kafka revision: 99b940733a9f6bc409457dba7108f08421d81e42
-- Java 21 bootstrap/compile path executed.
-- The real G0 runtime harness DID execute far enough to run the frozen test. This is execution evidence, not a race witness.
+## Kafka G0 runtime witness
+- PR #81 remains OPEN, DRAFT, UNMERGED.
+- Corrected branch head tested: ab99ea78d7e883ba014a1184bb6b464a670c3fb9.
+- Workflow run: 36938337030 — SUCCESS.
+- Job: 110623769038 — SUCCESS.
+- Kafka revision: 99b940733a9f6bc409457dba7108f08421d81e42.
+- Java: 21.0.12.1 LTS.
+- Artifact: nexo-ab105-g0-bootstrap-evidence, ID 11199086900.
+- Artifact SHA-256: d43efa23640881711f188a17e1af2dfa890f801a04d0d5974945bc8cc9c343eb.
 
-## Latest observed failure
-The runtime test reached D1 and Kafka actually returned TOPIC_AUTHORIZATION_FAILED for nexo-g0-runtime. The failure was in the harness assertion, not evidence of a successful/failed race outcome:
-- Expected directly TopicAuthorizationException from the assertion around producer.send(...).get().
-- Actual outer exception was ExecutionException.
-- Cause was TopicAuthorizationException: Not authorized to access topics: [nexo-g0-runtime].
-- Repeated broker/client logs independently show TOPIC_AUTHORIZATION_FAILED.
-Therefore D1 authorization denial is observed at runtime, but the test did not complete the frozen A1→D0→D1→D2→E tuple.
+## Exact recoverable witness
+G0_WITNESS A1=OBSERVED D0=OBSERVED D1=DENIED D2=SUCCESS E_BASELINE=0 E_AFTER=1
 
-## Epistemic status
+The workflow log independently shows:
+- real G0 harness compiled and executed;
+- A1 was observed by the target authorization wrapper after the delegated ALLOW decision;
+- D0 completed through Admin DeleteAcls;
+- D1 used an independent fresh Kafka Producer and was denied with TopicAuthorizationException (unwrapped from ExecutionException);
+- only after D1 did A1 release;
+- D2 completed successfully;
+- target broker UnifiedLog logEndOffset moved from 0 to 1;
+- the witness was persisted to the CI artifact.
+
+## Audit interpretation
+This is the first complete A1 -> D0 -> D1 -> D2 -> E runtime witness recovered for the frozen G0 contract. It is evidence of the specified execution sequence on the pinned Kafka revision and isolated test harness.
+
+Do NOT automatically translate this into exploitability, impact, or a broader real-world claim. Those require separate analysis.
+
+## Current epistemic state
 - G0_CONTRACT=FROZEN
-- G0_RUNTIME=EXECUTED_PARTIALLY
-- A1=NOT_YET_PROVEN_AS_COMPLETE_TUPLE
-- D0=REACHED/OBSERVED BY TEST FLOW, but do not promote to broker-global freshness
-- D1=RUNTIME_DENIAL_OBSERVED; exact harness assertion needs correction
-- D2=NOT_COMPLETED
-- E=NOT_COMPLETED
-- EXACT_RACE=UNKNOWN
-- EXPLOITABILITY=UNKNOWN
-- WITNESS=NO
-- No race conclusion may be inferred from the failure.
+- G0_RUNTIME=OBSERVED_SUCCESS
+- A1=OBSERVED
+- D0=OBSERVED
+- D1=DENIED
+- D2=SUCCESS
+- E=OBSERVED (0 -> 1)
+- EXACT_RACE=OBSERVED_WITNESS
+- EXPLOITABILITY=UNKNOWN_PENDING_SEPARATE_ANALYSIS
+- WITNESS=YES
+- AB105.116R=INTACT
 
-## Exact next action
-Correct only the D1 assertion/unwrapping so the harness recognizes the observed ExecutionException whose cause is TopicAuthorizationException, then rerun the same isolated harness without changing the frozen G0 semantics. Capture raw evidence. If D1 passes, continue to A1 release, D2, and E. Do not change AB105.116R.
-
-## DO-NOT-REPEAT
-- Do not rerun TLC 36781846063 merely because G0 failed; TLC is already complete.
-- Do not treat TOPIC_AUTHORIZATION_FAILED alone as the race witness.
-- Do not infer D2/E from the D1 denial.
-- Do not create AB105.117R.
+## Next action
+Preserve the raw artifact and perform a separate witness-integrity / semantic audit before any exploitability or architectural conclusion. Do not rerun TLC unnecessarily and do not modify AB105.116R.
