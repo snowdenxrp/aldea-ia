@@ -186,6 +186,14 @@ jobs:
         run: |
           ./gradlew --no-daemon :server:compileTestJava
 
+      - name: Preserve compile-probe source
+        run: |
+          mkdir -p /tmp/nexo-g0-evidence
+          cp /tmp/kafka/server/src/test/java/org/apache/kafka/server/NexoG0HarnessCompileProbe.java /tmp/nexo-g0-evidence/
+          printf '%s\n' 'CURRENT_WORKFLOW_COMPILE_PROBE=EXECUTED' > /tmp/nexo-g0-evidence/status.txt
+          printf '%s\n' 'G0_RUNTIME=NOT_EXECUTED' >> /tmp/nexo-g0-evidence/status.txt
+          printf '%s\n' 'EXACT_RACE=UNKNOWN' >> /tmp/nexo-g0-evidence/status.txt
+
       - name: Emit bootstrap evidence
         working-directory: /tmp/kafka
         run: |
@@ -203,12 +211,13 @@ jobs:
             echo "E=NOT_EXECUTED"
             echo "EXACT_RACE=UNKNOWN"
             echo "EXPLOITABILITY=UNKNOWN"
-          } | tee /tmp/nexo-g0-bootstrap-evidence.txt
+          } | tee /tmp/nexo-g0-evidence/bootstrap-evidence.txt
 
       - name: Upload bootstrap evidence
         uses: actions/upload-artifact@v4
         with:
           name: nexo-ab105-g0-bootstrap-evidence
-          path: /tmp/nexo-g0-bootstrap-evidence.txt
+          path: /tmp/nexo-g0-evidence/
+          if-no-files-found: error
 
-      # AB105 controlled main-branch execution gate: compile-only; G0 runtime remains disabled.
+      # AB105 controlled execution gate: compile-only; G0 runtime remains disabled.
