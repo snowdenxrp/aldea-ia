@@ -178,3 +178,41 @@ DO-NOT-REPEAT:
 - Do not redo the AB104.951R–AB104.960R completeness audit unless new contradictory evidence appears.
 - Do not treat D0 as equivalent to D1.
 - Do not infer race/exploitability from compilation, startup, baseline ALLOW, ACL deletion completion, or source inspection.
+
+
+## CONTINUITY CORRECTION — AB105.053R numbering collision discovered
+
+A repository audit during continuation found that main also contains a separate commit `108fa0360f0f856561e2cff1b6424e7e5a79beb0` titled `docs(nexo): save AB105.053R partial execution rollback audit`, concerning CloudFormation. This means the label `AB105.053R` is not globally unique across concurrent research tracks.
+
+DO NOT overwrite, rename, or silently collapse either track.
+
+For Kafka, use the explicit working discriminator:
+`AB105.053R-KAFKA-G0-BOOTSTRAP`
+until a canonical sequence decision is made.
+
+The Kafka bootstrap branch remains:
+`nexo-ab105-g0-bootstrap`
+
+Kafka bootstrap workflow:
+`.github/workflows/nexo-ab105-g0-bootstrap.yml`
+
+Kafka bootstrap commit:
+`9ee816706e9a12a9540ee7441e9db7dcc8d0e6ef`
+
+Observed state on latest check:
+- branch exists;
+- workflow file exists;
+- GitHub API returned no workflow run for the bootstrap commit;
+- therefore execution remains NOT OBSERVED;
+- no compile success/failure is asserted;
+- no Kafka G0 runtime execution occurred;
+- EXACT_RACE remains UNKNOWN;
+- EXPLOITABILITY remains UNKNOWN.
+
+The CloudFormation AB105.053R track is preserved as an independent research track and must not be used as evidence for Kafka G0.
+
+NEXT KAFKA ACTION:
+1. Re-check whether a GitHub Actions run now exists for the Kafka bootstrap branch/commit.
+2. If absent, do not fabricate execution; diagnose only the CI trigger/status path.
+3. If present, inspect raw job steps/logs/artifacts before changing the workflow.
+4. Only after an observed successful bootstrap gate proceed to the minimal G0 harness.
