@@ -2739,3 +2739,18 @@ Status: EXECUTION_PATH=NOT_AVAILABLE; KAFKA_CHECKOUT=NOT_FOUND; G0=NOT_PERFORMED
 ### EXACT NEXT ACTION
 
 AB104.856R — hold the Kafka race experiment at the execution boundary. Only a newly available real Kafka checkout/build runner can advance G0; otherwise do not add further source archaeology unless a concrete blocker or new evidence appears.
+
+
+## 203. AB104.856R — Correction: Apache Kafka exists publicly, but is not an execution-capable connected checkout
+
+A broader GitHub repository search found the official Apache repository `apache/kafka`. This corrects the wording of the previous environment checks: Kafka source is publicly discoverable on GitHub, but the connected GitHub installation exposes only `snowdenxrp/aldea-ia`; `apache/kafka` is not an installed/connected repository available as a writable or runnable workspace here.
+
+This distinction matters: source availability on public GitHub is not equivalent to a local checkout/build runner. No Kafka test was compiled or executed, and no runtime evidence was obtained.
+
+Status: APACHE_KAFKA_PUBLIC_REPO=FOUND; CONNECTED_EXECUTION_CHECKOUT=NOT_AVAILABLE; KAFKA_BUILD_RUNNER=NOT_AVAILABLE; G0=NOT_PERFORMED; RUNTIME_EVIDENCE=ABSENT; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+No change to the experiment contract and no Nexo parallel artifact was created.
+
+### EXACT NEXT ACTION
+
+AB104.857R — stop treating public source discoverability as an execution environment. Only a real checkout plus build/test runner can advance G0. If no such runner becomes available, preserve the experiment at this boundary.
