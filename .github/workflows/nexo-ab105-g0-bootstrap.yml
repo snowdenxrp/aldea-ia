@@ -287,3 +287,4 @@ jobs:
           path: /tmp/nexo-g0-bootstrap-evidence.txt
 
       # AB105 controlled main-branch execution gate: real G0 runtime harness. No Nexo model implementation.
+      # CI trigger touch: rerun observation after corrected API gate.
