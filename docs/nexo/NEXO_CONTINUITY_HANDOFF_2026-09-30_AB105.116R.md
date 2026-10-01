@@ -573,3 +573,12 @@ Cross-domain handoff requires local validation; Domain B must not inherit Domain
 No S9 closure found. The cryptographic layer supplies authenticated evidence/binding, but still does not define the issuer/action that promotes CURRENT_AUTHORITY_DECISION to authority=VALID after revocation. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 41 is audit-only until persisted.
 
 Next exact mission: AB104.409, replay-state durability under partition/replication lag/failover/rollback/multi-region concurrency, while continuing the independent authority-decision issuer/activation trace.
+
+## AB105.116R audit pass 42 — replay durability / partition / failover — 2026-10-01
+AB104.409 confirms replay safety is not merely cryptographic: REPLAY_SAFETY = IDENTITY + CURRENT_STATE + DURABLE_DECISION + CONCURRENCY_CONTROL. LOCAL_REPLAY_CHECK != GLOBAL_REPLAY_EXCLUSION. A stale replica, partitioned dual admission, rollbacked replay ledger, or failover with stale epoch/fence/capability/closure state cannot silently authorize a protected effect.
+
+Provider deduplication and ordering are bounded/provider-specific and must not be promoted to indefinite Nexo effect identity or global authority ordering. Missing replay records do not prove non-execution; consumed replay state does not prove the external effect happened; replay atomicity != external-effect atomicity. High-consequence cases may require authoritative linearization, proven strong coordination, or a provider guarantee whose semantics become part of the evidence/TCB boundary. Availability vs uniqueness is an explicit semantic trade-off, not something to hide behind generic distributed idempotency.
+
+This strengthens the existing separation between replay admission, authority generation, and external-effect reconciliation but does not close S9. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 42 is audit-only until persisted.
+
+Next exact mission: AB104.410, anti-rollback/continuity of replay state across crash recovery, snapshot/backup restore, replica divergence, and authority-epoch rollover; continue independent tracing of CURRENT_AUTHORITY_DECISION issuer/activation.
