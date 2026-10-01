@@ -477,3 +477,54 @@ D3 and D4 are conditional candidates; D2 and D6 require semantic freeze; D5 can 
 2. Check whether adding D1a alone closes any historical contradiction without creating a false guarantee.
 3. Keep TLC running independently; do not alter the live model while its current run is unresolved.
 4. Save only this canonical handoff; no scattered backup artifact.
+
+## AB105.116R audit pass 7 — D1a admission-epoch trace
+
+D1a was traced against the current transition structure without changing the model.
+
+### Trace 1: Establish → AdmitCurrent → Start
+Current:
+- EstablishAuthority sets authority=VALID, authorityEpoch=CURRENT.
+- AdmitCurrent stores authorityAtAdmission=VALID but no admission-time epoch.
+- StartOperation requires current authority VALID + CURRENT epoch and copies current authority to authorityAtExecution.
+
+Finding: **the missing admission epoch is not observable after admission**. If authority is later revoked/re-established while the same admission remains ACCEPTED, the model cannot distinguish an admission made under the old authorization epoch from one made under the new epoch. StartOperation checks current epoch, but cannot check whether the admission belongs to that epoch.
+
+Classification: **confirmed D1a relevance for epoch-binding semantics**.
+
+### Trace 2: AdmitCurrent before authority establishment
+Current AdmitCurrent can execute from Init and create ACCEPTED/FRESH/SUFFICIENT while authority is UNKNOWN and epoch NONE. StartOperation later blocks execution.
+
+Finding: this is not an immediate S1 effect violation, but it means ACCEPTED does not mean “admitted under current authority.” This is consistent with the pass-5 admission-contract gap.
+
+### Trace 3: Revoke → Establish → old admission → Start
+Because AdmitCurrent stores no epoch, the model can:
+1. establish CURRENT authority;
+2. admit input;
+3. revoke;
+4. establish a new CURRENT authority;
+5. start using the old ACCEPTED admission.
+
+The finite abstraction has no way to determine whether the admission should survive the authority transition.
+
+Classification: **semantic ambiguity converted into an unrepresentable distinction**. D1a would make the distinction testable; it does not by itself prove that the old admission must be rejected.
+
+### Trace 4: Replay
+ReplayDuplicate/ReplayConflict classify based on operationId/fingerprint/subject/incarnation, but admission-time epoch is absent.
+
+Finding: D1a is orthogonal to replay identity. It should not be used as a substitute for S8's operation/fingerprint rules. If epoch is added, replay semantics must specify whether replay classification is epoch-sensitive or intentionally epoch-independent.
+
+### Trace 5: S12 identity
+Subject/incarnation/operation identity are preserved, but authorization epoch at admission is not. Therefore S12's identity distinction is only partial when authority-scoped admission is involved.
+
+### Minimality conclusion
+D1a is justified as a **semantic observability requirement**, not yet as a specific guard.
+
+The next correct step is to enumerate the possible intended policies for an old admission:
+- reject as stale;
+- re-admit/revalidate under the new epoch;
+- allow if the operation contract intentionally permits epoch-independent admission.
+
+No policy is selected yet.
+
+No AB105.116R source/config/workflow change was made.
