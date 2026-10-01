@@ -2446,3 +2446,45 @@ Status: TEST_ONLY_SCOPE=LOCKED; PRODUCTION_CODE_CHANGE=FORBIDDEN; EXACT_RACE=NOT
 ### EXACT NEXT ACTION
 
 AB104.818R — inspect the exact existing Kafka integration-test cluster construction pattern and Admin/Producer client setup needed for the smallest G0 implementation. Then implement only the sanity gate, not the race.
+
+## 165. AB104.818R — KafkaClusterTestKit client path is source-confirmed
+
+`KafkaClusterTestKit` exposes `bootstrapServers()` and existing integration tests construct ordinary Kafka producers from that address. Existing tests also use `cluster.admin()` for Admin operations and `Admin.create(...)` with `cluster.bootstrapServers()` elsewhere. Therefore the smallest harness can use the TestKit's own Admin client for ACL/topic control and a normal KafkaProducer for the target Produce path.
+
+Status: TESTKIT_BOOTSTRAP_SOURCE_CONFIRMED; ADMIN_PATH_SOURCE_CONFIRMED; REAL_PRODUCER_PATH_SOURCE_CONFIRMED.
+
+## 166. AB104.819R — ACL construction/deletion primitives are source-confirmed
+
+Kafka tests construct literal topic ACLs with `ResourcePattern(ResourceType.TOPIC, topic, PatternType.LITERAL)` and `AccessControlEntry(principal, host, AclOperation.WRITE, AclPermissionType.ALLOW)`. Admin integration tests use `createAcls(...)`; the Admin API also exposes `deleteAcls(...)`. Thus the experiment does not need custom controller or metadata calls.
+
+Important: Admin operation completion is still only the control-plane witness D0. It is not by itself D1; the target broker's own wrapper must independently observe DENIED after publication.
+
+Status: ACL_CREATE_PRIMITIVES_SOURCE_CONFIRMED; ACL_DELETE_PRIMITIVES_SOURCE_CONFIRMED; D0_IS_NOT_D1=LOCKED.
+
+## 167. AB104.820R — G0 can be performed before any blocked Produce
+
+The sanity phase can create the topic, install the target WRITE ACL, wait for the normal ACL publication/visibility condition, inspect the target broker Authorizer instance, and perform a baseline authorized Produce or equivalent authorization probe. The blocked barrier is not entered until all identity/isolation assertions pass.
+
+Because the exact race has not yet been executed, baseline success must not be interpreted as evidence about revocation during an in-flight request.
+
+Status: G0_PRECEDES_BLOCKED_PRODUCE=LOCKED; BASELINE_AUTHORIZATION_REQUIRED=YES; RACE_RESULT=UNKNOWN.
+
+## 168. AB104.821R — Client identity must be stable and distinguishable for D1
+
+The wrapper's barrier predicate is request-context based. The experiment therefore needs one stable principal for the original Produce and a distinct D1 probe context that cannot satisfy the target-Produce predicate. The existing Kafka test suite constructs ACLs with explicit principal strings and uses client requests through normal Kafka clients, so identity separation is test-supported.
+
+Do not rely only on thread identity: D1 may execute on a different client/network thread, while the wrapper predicate should remain semantic (API key + principal + WRITE + exact topic).
+
+Status: PRINCIPAL_SEPARATION_REQUIRED=LOCKED; THREAD_IDENTITY_NOT_SUFFICIENT=LOCKED.
+
+## 169. AB104.822R — Smallest implementation boundary is now fully scoped
+
+The harness needs only: isolated `KafkaClusterTestKit`; per-server target Authorizer override; wrapper instance assertions; Admin topic/ACL setup and deletion; normal Producer; independent D1 authorization probe; synchronization state; and post-release effect evidence. No production source modification is required.
+
+The remaining unknown is execution, not architecture: whether the real broker can complete D0 and D1 while the original Produce is paused after ALLOW, and whether that request then reaches append/effect.
+
+Status: HARNESS_ARCHITECTURE_SOURCE_CONFIRMED; EXECUTION=NOT_STARTED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+
+AB104.823R — inspect the existing Kafka test utilities for waiting on ACL propagation and for obtaining an independent broker-local log/effect witness, then implement/execute only G0. Do not classify the security property until A1/D0/D1/D2/E are all observed.
