@@ -1936,3 +1936,35 @@ No Nexo implementation, V21, formal verification, or runtime Nexo execution.
 EXACT NEXT ACTION: AB104.773R — repository-wide search for ACL mutation + Produce concurrency/integration tests, including security/integration test suites and authorizer publication tests; determine whether any existing test actually controls the interleaving or merely verifies eventual authorization changes. If none exists, preserve UNKNOWN and design (but do not yet execute) the smallest deterministic race experiment.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.773R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+## 118. AB104.773R — Repository-wide ACL mutation + Produce concurrency/test-boundary audit
+
+Fresh upstream Kafka audit (trunk) searched unit, integration, security/authorizer, metadata-authorizer and client-security test surfaces for ACL mutation + Produce concurrency and authorization-publication synchronization.
+
+### Evidence found
+- `EndToEndAuthorizationTest.scala` has end-to-end Produce/ACL tests and explicit ACL deletion, but the audited flows are sequential: ACLs are added/removed and then subsequent requests are issued. The tests use `waitAndVerifyAcls` to establish broker-local ACL state before exercising the next operation. No deterministic ALLOW -> revoke -> already-admitted/in-flight Produce -> append interleaving was found.
+- `AuthorizerIntegrationTest.scala` contains ACL removal and Produce tests. It also contains an important transactional boundary test: a producer sends inside a transaction, ACLs are removed, and `commitTransaction()` is expected to fail with `TransactionalIdAuthorizationException`. This demonstrates a later transactional authorization check, but it is NOT evidence of a second ACL check at the non-transactional Produce append boundary.
+- `GroupAuthorizerIntegrationTest.java` explicitly verifies ACL deletion and separately verifies unauthorized Produce after authorization has been removed. Its ACL deletion helper waits for the deletion to be observable. No barrier/latch controls the exact authorization-to-append interleaving.
+- `StandardAuthorizerTest.java`, `ClusterMetadataAuthorizerTest.java`, and authorizer-related unit surfaces cover authorization/data behavior and metadata publication semantics, but the audited search did not find a deterministic Produce request paused between authorization and append while an ACL deletion is concurrently committed/published.
+- Search for `CountDownLatch` in the principal ACL/authorizer integration-test surfaces did not find such a synchronization primitive in the relevant tests. This is evidence about the searched surfaces, not proof that no concurrency primitive exists anywhere in Kafka.
+- Kafka's public `Authorizer` contract explicitly leaves concurrent update guarantees to the authorizer implementation. The current StandardAuthorizer model uses broker-local authorizer state, so publication/freshness and effect-time authorization remain distinct claims.
+
+### Important distinction
+Existing tests establish:
+1. ACL present -> Produce allowed.
+2. ACL absent/removed and published -> later Produce denied.
+3. ACL removed after a transactional send -> later transaction commit can be denied.
+
+They do NOT establish:
+ACL ALLOW at request authorization -> ACL revoke commits/publishes -> same already-authorized non-transactional Produce crosses append boundary -> deterministic observed effect.
+
+No test found in the audited surfaces binds the revocation event to a controlled pause between `KafkaApis` authorization and `ReplicaManager/Partition/UnifiedLog` append. Therefore the exact race remains NOT_EXECUTED.
+
+Status: ACL_MUTATION_TESTS=SOURCE_CONFIRMED; SEQUENTIAL_REVOKE_THEN_PRODUCE_TESTS=SOURCE_CONFIRMED; TRANSACTIONAL_POST_REVOKE_AUTH_CHECK=SOURCE_CONFIRMED; DETERMINISTIC_INFLIGHT_NONTRANSACTIONAL_PRODUCE_REVOKE_TEST=NOT_FOUND_IN_AUDITED_SEARCH; AUTHORIZATION_PUBLICATION_TESTS=SOURCE_CONFIRMED; INTERLEAVING_CONTROL_AT_AUTHORIZATION_APPEND_BOUNDARY=NOT_FOUND_IN_AUDITED_SEARCH; REPOSITORY_WIDE_ABSENCE=UNKNOWN; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+No Nexo implementation, V21, formal verification, or runtime Nexo execution.
+
+### EXACT NEXT ACTION
+AB104.774R — design the smallest deterministic race experiment without executing it yet. The experiment must create a real Produce request, establish the authorization decision, pause before append, revoke/delete the ACL and establish the relevant publication point, then release the Produce into append; instrument the append/effect outcome separately from the authorization result. First identify the narrowest safe injection/control point in Kafka test infrastructure and define the expected observations for both outcomes. Preserve UNKNOWN until an actual controlled execution exists.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.774R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
