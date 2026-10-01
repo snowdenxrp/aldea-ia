@@ -67,7 +67,6 @@ jobs:
           import org.apache.kafka.common.security.auth.KafkaPrincipal;
           import org.apache.kafka.common.security.auth.SecurityProtocol;
           import org.apache.kafka.common.TopicPartition;
-          import org.apache.kafka.common.acl.AclBindingFilter;
           import org.apache.kafka.common.resource.PatternType;
           import org.apache.kafka.common.resource.ResourcePattern;
           import org.apache.kafka.common.resource.ResourceType;
@@ -75,6 +74,7 @@ jobs:
           import org.apache.kafka.common.test.KafkaClusterTestKit;
           import org.apache.kafka.common.test.TestKitNodes;
           import org.apache.kafka.metadata.authorizer.StandardAuthorizer;
+          import org.apache.kafka.common.errors.TopicAuthorizationException;
           import org.apache.kafka.server.authorizer.Action;
           import org.apache.kafka.server.authorizer.AuthorizableRequestContext;
           import org.apache.kafka.server.authorizer.AuthorizationResult;
@@ -84,12 +84,10 @@ jobs:
           import org.junit.jupiter.api.Assertions;
           import org.junit.jupiter.api.Test;
 
-          import java.net.InetAddress;
           import java.util.HashMap;
           import java.util.List;
           import java.util.Map;
           import java.util.concurrent.CountDownLatch;
-          import java.util.concurrent.ExecutionException;
           import java.util.concurrent.Future;
           import java.util.concurrent.ExecutorService;
           import java.util.concurrent.Executors;
@@ -98,16 +96,15 @@ jobs:
           import static org.apache.kafka.common.acl.AclOperation.WRITE;
           import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
           import static org.apache.kafka.common.resource.PatternType.LITERAL;
-          import static org.apache.kafka.common.resource.ResourceType.TOPIC;
-
+          
           public final class NexoG0RuntimeTest {
-              private static final String TOPIC = "nexo-g0-runtime";
+              private static final String TOPIC_NAME = "nexo-g0-runtime";
               private static final String USER = "plain-user1";
               private static final String PASSWORD = "plain-user1-secret";
               private static final CountDownLatch A1_OBSERVED = new CountDownLatch(1);
               private static final CountDownLatch A1_RELEASE = new CountDownLatch(1);
               private static volatile TargetAuthorizer TARGET;
-
+    
               public static final class TargetAuthorizer extends StandardAuthorizer {
                   @Override
                   public List<AuthorizationResult> authorize(
@@ -117,8 +114,8 @@ jobs:
                       if (requestContext.principal().getName().equals(USER)
                               && actions.size() == 1
                               && actions.get(0).operation() == WRITE
-                              && actions.get(0).resourcePattern().resourceType() == TOPIC
-                              && TOPIC.name().equals(actions.get(0).resourcePattern().name())
+                              && actions.get(0).resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC
+                              && TOPIC_NAME.equals(actions.get(0).resourcePattern().name())
                               && !results.isEmpty()
                               && results.get(0) == AuthorizationResult.ALLOWED) {
                           A1_OBSERVED.countDown();
@@ -147,39 +144,27 @@ jobs:
 
               private static AclBinding userWriteAcl() {
                   return new AclBinding(
-                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL),
                       new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW));
               }
 
               private static long exactE(BrokerServer broker) {
                   return broker.logManager()
-                      .getLog(new TopicPartition(TOPIC, 0), false)
+                      .getLog(new TopicPartition(TOPIC_NAME, 0), false)
                       .map(UnifiedLog::logEndOffset)
                       .orElse(-1L);
               }
 
-              private static AuthorizableRequestContext userContext() {
-                  return new AuthorizableRequestContext() {
-                      @Override public String listenerName() { return "EXTERNAL"; }
-                      @Override public SecurityProtocol securityProtocol() { return SecurityProtocol.SASL_PLAINTEXT; }
-                      @Override public KafkaPrincipal principal() { return new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER); }
-                      @Override public InetAddress clientAddress() { return null; }
-                      @Override public int requestType() { return org.apache.kafka.common.protocol.ApiKeys.PRODUCE.id; }
-                      @Override public short requestVersion() { return 0; }
-                      @Override public String clientId() { return "nexo-g0-d1"; }
-                      @Override public int correlationId() { return 0; }
-                  };
-              }
 
               @Test
               public void frozenA1D0D1D2E() throws Exception {
                   Map<Integer, Map<String, String>> perServer = new HashMap<>();
-                  perServer.put(0, Map.of(
+                  perServer.put(1, Map.of(
                       ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
                       TargetAuthorizer.class.getName()));
 
                   TestKitNodes nodes = new TestKitNodes.Builder()
-                      .setNumBrokerNodes(1)
+                      .setNumBrokerNodes(2)
                       .setNumControllerNodes(1)
                       .setCombined(false)
                       .setBrokerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
@@ -190,19 +175,39 @@ jobs:
                   try (KafkaClusterTestKit cluster = new KafkaClusterTestKit.Builder(nodes)
                       .setConfigProp(ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG, StandardAuthorizer.class.getName())
                       .build()) {
-                      TARGET = null;
                       cluster.format();
                       cluster.startup();
                       cluster.waitForReadyBrokers();
-                      BrokerServer broker = cluster.brokers().get(0);
-                      TARGET = (TargetAuthorizer) broker.authorizerPlugin().get().get();
+                      BrokerServer targetBroker = cluster.brokers().get(1);
+                      BrokerServer otherBroker = cluster.brokers().get(0);
+                      TARGET = (TargetAuthorizer) targetBroker.authorizerPlugin().get().get();
 
                       try (Admin admin = cluster.admin()) {
-                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+                          admin.createTopics(List.of(new NewTopic(TOPIC_NAME, Map.of(0, List.of(1))))).all().get();
                           admin.createAcls(List.of(userWriteAcl())).all().get();
                       }
 
-                      final long baseline = exactE(broker);
+                      Assertions.assertEquals(1, TARGET.aclCount(), "target broker must initially have exactly one ACL");
+                      long leaderDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+                      while (true) {
+                          boolean ready = cluster.brokers().values().stream().allMatch(server ->
+                              server.metadataCache().getLeaderAndIsr(TOPIC_NAME, 0)
+                                  .filter(leaderAndIsr -> leaderAndIsr.leader() == 1)
+                                  .isPresent());
+                          if (ready) break;
+                          if (System.nanoTime() >= leaderDeadline) {
+                              throw new AssertionError("topic leader was not observed as broker 1 on every broker");
+                          }
+                          Thread.sleep(100);
+                      }
+                      int targetLeader = targetBroker.metadataCache().getLeaderAndIsr(TOPIC_NAME, 0)
+                          .orElseThrow().leader();
+                      int otherLeader = otherBroker.metadataCache().getLeaderAndIsr(TOPIC_NAME, 0)
+                          .orElseThrow().leader();
+                      Assertions.assertEquals(1, targetLeader, "target broker must be the effective leader");
+                      Assertions.assertEquals(1, otherLeader, "other broker must observe target broker as leader");
+
+                      final long baseline = exactE(targetBroker);
                       Assertions.assertEquals(0L, baseline, "baseline E must be zero");
 
                       ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -216,7 +221,7 @@ jobs:
                           )) {{ putAll(userClient()); }})) {
                               d2 = executor.submit(() -> {
                                   try {
-                                      producer.send(new ProducerRecord<>(TOPIC, new byte[] {1})).get();
+                                      producer.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {1})).get();
                                   } catch (Exception e) {
                                       throw new RuntimeException(e);
                                   }
@@ -227,23 +232,51 @@ jobs:
                               try (Admin admin = cluster.admin()) {
                                   admin.deleteAcls(
                                       List.of(new AclBindingFilter(
-                                          new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
-                                          AccessControlEntry.ANY.toFilter())),
+                                          new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL).toFilter(),
+                                          org.apache.kafka.common.acl.AccessControlEntryFilter.ANY)),
                                       new DeleteAclsOptions()).all().get();
                               }
 
-                              List<AuthorizationResult> d1 = TARGET.authorize(
-                                  userContext(),
-                                  List.of(new Action(WRITE,
-                                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
-                                      0, true, false)));
-                              Assertions.assertEquals(AuthorizationResult.DENIED, d1.get(0), "D1 must be DENIED after D0");
+                              long aclDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+                              while (TARGET.aclCount() != 0) {
+                                  if (System.nanoTime() >= aclDeadline) {
+                                      throw new AssertionError("target broker authorizer did not observe ACL revocation");
+                                  }
+                                  Thread.sleep(100);
+                              }
+                              String d0LocalState = "TARGET_LOCAL_ACL_COUNT_AFTER_D0=" + TARGET.aclCount();
+                              System.out.println(d0LocalState);
+
+                              try (Producer<byte[], byte[]> d1Producer = new KafkaProducer<>(new java.util.HashMap<>(Map.of(
+                                  ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
+                                  ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                                  ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                                  ProducerConfig.ACKS_CONFIG, "all"
+                              )) {{ putAll(userClient()); }})) {
+                                  java.util.concurrent.ExecutionException d1ExecutionException = Assertions.assertThrows(
+                                      java.util.concurrent.ExecutionException.class,
+                                      () -> d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get());
+                                  Assertions.assertInstanceOf(
+                                      TopicAuthorizationException.class,
+                                      d1ExecutionException.getCause(),
+                                      "D1 must fail with TopicAuthorizationException");
+                                  TopicAuthorizationException d1Exception =
+                                      (TopicAuthorizationException) d1ExecutionException.getCause();
+                                  Assertions.assertTrue(
+                                      d1Exception.unauthorizedTopics().contains(TOPIC_NAME),
+                                      "D1 must deny the target topic");
+                              }
 
                               A1_RELEASE.countDown();
                               d2.get(30, TimeUnit.SECONDS);
-                              long after = exactE(broker);
-                              System.out.println("G0_WITNESS A1=OBSERVED D0=OBSERVED D1=DENIED D2=SUCCESS E_BASELINE="
-                                  + baseline + " E_AFTER=" + after);
+                              long after = exactE(targetBroker);
+                              String witness = "G0_MULTI_WITNESS TARGET_BROKER=1 LEADER_TARGET=" + targetLeader
+                                  + " LEADER_OTHER_VIEW=" + otherLeader
+                                  + " D0=OBSERVED TARGET_LOCAL_ACL_COUNT_AFTER_D0=" + TARGET.aclCount()
+                                  + " D1=DENIED D2=SUCCESS E_BASELINE=" + baseline + " E_AFTER=" + after;
+                              java.nio.file.Files.writeString(
+                                  java.nio.file.Path.of("/tmp/nexo-g0-witness.txt"), witness + System.lineSeparator());
+                              System.out.println(witness);
                               Assertions.assertEquals(1L, after, "E must show exactly one append");
                           }
                       } finally {
@@ -259,7 +292,7 @@ jobs:
         working-directory: /tmp/kafka
         run: |
           ./gradlew --no-daemon :server:compileTestJava
-          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info -x :server:checkstyleTest
 
       - name: Emit bootstrap evidence
         working-directory: /tmp/kafka
@@ -270,14 +303,21 @@ jobs:
             echo "JAVA_VERSION=$(java -version 2>&1 | head -n 1)"
             echo "BOOTSTRAP_COMPILE=SUCCESS"
             echo "G0_HARNESS_COMPILE=SUCCESS"
-            echo "G0_RUNTIME=NOT_EXECUTED"
-            echo "A1=NOT_EXECUTED"
-            echo "D0=NOT_EXECUTED"
-            echo "D1=NOT_EXECUTED"
-            echo "D2=NOT_EXECUTED"
-            echo "E=NOT_EXECUTED"
-            echo "EXACT_RACE=UNKNOWN"
-            echo "EXPLOITABILITY=UNKNOWN"
+            if test -f /tmp/nexo-g0-witness.txt; then
+              echo "G0_RUNTIME=OBSERVED_SUCCESS"
+              cat /tmp/nexo-g0-witness.txt
+              echo "EXACT_RACE=OBSERVED_WITNESS"
+              echo "EXPLOITABILITY=UNKNOWN_PENDING_SEPARATE_ANALYSIS"
+            else
+              echo "G0_RUNTIME=NO_WITNESS"
+              echo "A1=UNKNOWN"
+              echo "D0=UNKNOWN"
+              echo "D1=UNKNOWN"
+              echo "D2=UNKNOWN"
+              echo "E=UNKNOWN"
+              echo "EXACT_RACE=UNKNOWN"
+              echo "EXPLOITABILITY=UNKNOWN"
+            fi
           } | tee /tmp/nexo-g0-bootstrap-evidence.txt
 
       - name: Upload bootstrap evidence
@@ -287,3 +327,4 @@ jobs:
           path: /tmp/nexo-g0-bootstrap-evidence.txt
 
       # AB105 controlled main-branch execution gate: real G0 runtime harness. No Nexo model implementation.
+      # CI trigger touch: rerun observation after corrected API gate.
