@@ -74,7 +74,6 @@ jobs:
           import org.apache.kafka.server.authorizer.Action;
           import org.apache.kafka.server.authorizer.AuthorizationResult;
           import org.apache.kafka.server.authorizer.AuthorizableRequestContext;
-          import org.apache.kafka.server.authorizer.AuthorizerServerInfo;
           import org.apache.kafka.server.config.ServerConfigs;
 
           import java.io.IOException;
@@ -127,7 +126,7 @@ jobs:
                   }
               }
 
-              private static void apiSurface() {
+              private static void apiSurface() throws Exception {
                   Map<Integer, Map<String, String>> perServer = new HashMap<>();
                   perServer.put(0, Map.of(
                       ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
@@ -162,7 +161,6 @@ jobs:
                       new org.apache.kafka.common.acl.AccessControlEntry(
                           "User:user1", "*", AclOperation.WRITE, AclPermissionType.ALLOW));
 
-                  // Keep references in the compile probe so the intended API surface is checked.
                   List<AclBinding> bindings = List.of(writeAcl);
                   List<AuthorizationResult> delegated = A1_DELEGATED.get();
                   CompletionStage<Void> marker = CompletableFuture.completedFuture(null);
