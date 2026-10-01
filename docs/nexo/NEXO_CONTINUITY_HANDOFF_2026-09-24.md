@@ -2838,3 +2838,31 @@ Status: EXECUTION_HOLD=ACTIVE; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
 
 ### EXACT NEXT ACTION
 AB104.875R — only inspect a newly appearing execution surface or concrete blocker; otherwise preserve the hold and do not generate redundant audit artifacts.
+
+
+## 222. AB104.875R — Execution-surface recheck
+A fresh connected-workspace search for Kafka test/build surfaces again returned no installed repository. No runnable Apache Kafka checkout is available through the current connection.
+Status: EXECUTION_PATH=NOT_AVAILABLE; G0=NOT_PERFORMED.
+
+## 223. AB104.876R — No hidden Nexo execution route
+The canonical Nexo repository remains the continuity record, not an Apache Kafka checkout. No discovered repository/tool surface provides the Kafka Gradle/JDK integration-test environment required by the experiment.
+Status: NEXO_AS_KAFKA_RUNNER=NOT_AVAILABLE.
+
+## 224. AB104.877R — Runtime boundary preserved
+No source inspection or repository metadata is being promoted to runtime evidence. A real G0 result requires actual startup and observations from Kafka's integration-test environment.
+Status: RUNTIME_EVIDENCE=ABSENT; EVIDENCE_BOUNDARY=LOCKED.
+
+## 225. AB104.878R — Race state unchanged
+Because G0 has not run, there is still no valid A1, D0, D1, D2, or E witness. The ACL revoke/in-flight Produce race remains unexecuted.
+Status: EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## 226. AB104.879R — No new blocker
+This recheck produced no new implementation or semantic blocker. The previously closed design remains the applicable experiment contract.
+Status: SOURCE_AUDIT=SUFFICIENT; NEW_BLOCKER=NOT_FOUND.
+
+## 227. AB104.880R — Stop repeating availability checks
+The audit should not keep consuming blocks by repeating the same unavailable-runner observation. Further progress requires either a newly available Kafka execution surface or a concrete new blocker/evidence source.
+Status: EXECUTION_HOLD=ACTIVE; REDUNDANT_RECHECKS=DISALLOWED.
+
+### EXACT NEXT ACTION
+AB104.881R — wait for a genuinely new execution surface or concrete blocker; if one appears, validate it first and run G0 only. Otherwise preserve the frozen experiment state without creating redundant continuity blocks.
