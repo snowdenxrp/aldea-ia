@@ -3377,3 +3377,43 @@ Status: G0=READY; RUNTIME=NOT_EXECUTED; A1=NOT_OBSERVED; D0=NOT_OBSERVED; D1=NOT
 ## AB105.000R — Execution gate
 The audit crosses the AB104→AB105 numbering boundary without changing the canonical Nexo model anchor. The next meaningful action is an actual external G0 execution or a concrete executable tooling path.
 Status: PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME; EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN; MODEL_ANCHOR=AB105.116R_UNCHANGED.
+
+## AB105.011R — Kafka external build path revalidated
+Kafka trunk currently documents its Gradle wrapper, Java 17+ for server modules, and targeted integration-test execution. This reconfirms the external implementation path.
+Status: EXTERNAL_PATH=CONFIRMED; CURRENT_RUNNER=UNAVAILABLE.
+
+## AB105.012R — Targeted test remains preferred
+Kafka supports invoking a single integration-test method. The first G0 attempt should remain narrowly scoped to avoid unrelated suite failures.
+Status: SINGLE_TEST=REQUIRED; BROAD_SUITE=DEFERRED.
+
+## AB105.013R — Stock broker image remains insufficient
+Kafka's Docker documentation provides normal broker execution, but a stock image does not provide the test-only authorizer wrapper and A1 synchronization point required by the witness protocol.
+Status: STOCK_IMAGE=INSUFFICIENT; WRAPPER_RUNTIME=REQUIRED.
+
+## AB105.014R — No new runtime evidence
+The current source/documentation check produced no execution artifact and no observation of A1, D0, D1, release, or effect.
+Status: RUNTIME=NOT_EXECUTED; EXACT_RACE=UNKNOWN.
+
+## AB105.015R — Blocker unchanged
+The remaining blocker is an executable external Kafka workspace capable of compiling and running the temporary G0 harness.
+Status: BLOCKER=EXTERNAL_RUNTIME_ACCESS.
+
+## AB105.016R — Audit expansion prohibited
+No additional source-only AB records should be created unless a concrete implementation blocker appears. This prevents artificial progress while runtime remains unavailable.
+Status: SOURCE_REVIEW=PAUSED; REOPEN=CONDITIONAL.
+
+## AB105.017R — Canonical state preserved
+The canonical handoff remains the sole continuity artifact. No parallel handoff or backup is created.
+Status: CANONICAL_HANDOFF=SOLE_SOURCE.
+
+## AB105.018R — Model anchor preserved
+AB105.116R remains the canonical Nexo model anchor and is unchanged.
+Status: MODEL_ANCHOR=AB105.116R; MIGRATION=PROHIBITED.
+
+## AB105.019R — Evidence gate remains locked
+Only a genuine external execution can move the exact-race state away from UNKNOWN. Documentation and source review cannot satisfy the witness contract.
+Status: EXACT_RACE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## AB105.020R — Next valid action
+The next meaningful step is an actual external G0 implementation/execution attempt or a concrete executable tooling path. No further source-only continuation is warranted.
+Status: NEXT=EXTERNAL_G0_OR_TOOLING_PATH; PHASE=BLOCKED_PENDING_EXTERNAL_RUNTIME.
