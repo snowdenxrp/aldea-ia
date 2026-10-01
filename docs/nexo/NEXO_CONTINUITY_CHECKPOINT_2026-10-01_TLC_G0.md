@@ -85,3 +85,15 @@ It also does not establish multi-broker behavior, persistence/restart behavior, 
 - NO_AB105.117R
 
 Next: separate mechanism/exploitability analysis only; do not rerun TLC or alter AB105.116R unless new evidence requires it.
+
+## Mechanism analysis checkpoint — 2026-10-01
+
+Apache Kafka's authorizer API documents that authorization is a synchronous request-thread API designed for locally cached ACLs, while ACL create/delete operations are asynchronous update APIs with implementation-specific concurrent-update guarantees. StandardAuthorizer keeps current authorization data and snapshots that data for authorization reads. These facts support the existence of a local authorization-data boundary, but they do not establish that the observed G0 witness was caused by a stale authorization cache. citeturn1search3turn1search0
+
+Therefore:
+- OBSERVED: an already-authorized in-flight request can remain on its authorized path while a later independent request is denied after ACL deletion, producing exactly one append in the controlled one-broker harness.
+- NOT ESTABLISHED: stale-cache use as the causal mechanism.
+- NOT ESTABLISHED: a security vulnerability or exploitable condition in a production/deployed Nexo system.
+- NEXT TESTABLE QUESTION: distinguish "in-flight authorization already completed" from "authorization result reused from stale cache after revocation". A valid mechanism test must create the second authorization decision after D0 while controlling whether that decision is served from pre-revocation state or current state; the present D1 already shows current denial and therefore cannot establish stale-cache reuse.
+
+No rerun of TLC. AB105.116R remains untouched.
