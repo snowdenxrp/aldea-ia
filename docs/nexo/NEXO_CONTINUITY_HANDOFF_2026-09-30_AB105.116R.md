@@ -972,3 +972,73 @@ AB104.418 — minimum-cut / correlated-failure analysis for witness quorums: det
 
 ### Continuity
 Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 50 — minimum-cut / correlated-failure analysis — 2026-10-01
+
+### Historical artifact recovered
+AB104.418 (commit 5ec48b4fa1a519b69b95d95887e1a254f26b73b1) defines claim-specific minimum-cut analysis over shared failure domains and explicitly keeps the result as evidence for Z1, not authority.
+
+### Findings
+1. WITNESS_COUNT != MINIMUM_CUT. A quorum can retain many operational witnesses while a small shared dependency invalidates the required contributions.
+2. MINIMUM_CUT != SECURITY_SCORE. A cut explains structural dependency concentration; it is not a universal trust/safety rating.
+3. Cut analysis must be claim/effect-class specific. Storage integrity, policy integrity, freshness, verifier correctness, and recovery can have different critical domains.
+4. Hypergraph representation is preferable where one dependency can affect many witnesses simultaneously; ordinary pairwise edges can hide common-mode concentration.
+5. UNKNOWN dependency closure means UNKNOWN cut completeness, not absence of a cut.
+6. Key diversity does not establish trust-root diversity; infrastructure diversity does not establish policy independence; live-operation independence does not establish recovery independence.
+7. Cut analysis is versioned evidence. Witness membership, dependency graph, failure-domain assignment, policy, trust generation, or recovery architecture changes can stale the analysis.
+8. A graph change during analysis creates a race: a result computed over G cannot be used as current for G+1 without protected revalidation.
+9. The cut result must remain separate from authority: CUT_ANALYSIS_VALID != AUTHORITY_GRANTED.
+10. Byzantine fault assumptions must be applied after dependency projection; logical witness count cannot be substituted directly for effective independent fault participants.
+
+### S9 consequence
+The chain remains intact:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+AB104.418 provides a stronger quantitative/structural appraisal input, but it does not define the protected authority decision or activation. Therefore S9 remains open.
+
+### New semantic requirements
+Before model revision, Nexo needs:
+- claim-specific cut semantics;
+- protected hypergraph/graph versioning;
+- explicit UNKNOWN closure semantics;
+- race-safe binding of cut analysis to current graph/policy/trust/quorum generations;
+- separate recovery cut analysis;
+- explicit mapping from cut assumptions to any later Byzantine fault model.
+
+No TLA+ model change is authorized.
+
+### Status
+- WITNESS_COUNT != MINIMUM_CUT.
+- MINIMUM_CUT != SECURITY_SCORE.
+- MINIMUM_CUT_IS_CLAIM_SPECIFIC.
+- UNKNOWN_CLOSURE => UNKNOWN_CUT_COMPLETENESS.
+- KEY_DIVERSITY != TRUST_ROOT_DIVERSITY.
+- INFRASTRUCTURE_DIVERSITY != POLICY_INDEPENDENCE.
+- RECOVERY_FAILURE_DOMAINS_REQUIRE_SEPARATE_ANALYSIS.
+- FAILURE_DOMAIN_GRAPH_CHANGE => CUT_ANALYSIS_STALE.
+- STALE_CUT_ANALYSIS cannot support a current high-consequence grant.
+- CUT_ANALYSIS_IS_EVIDENCE_NOT_AUTHORITY.
+- LOGICAL_WITNESS_COUNT != EFFECTIVE_BYZANTINE_PARTICIPANTS.
+- DYNAMIC_HYPERGRAPH_ALGORITHM = UNKNOWN/PENDING.
+- DEPENDENCY_GRAPH_COMPLETENESS = UNKNOWN/PENDING.
+- BYZANTINE_FAILURE_MODEL = UNKNOWN/PENDING.
+- AUTHORITY_PROMOTION/PROTECTED_ACTIVATION = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### External corroboration
+The general direction is consistent with established quorum literature: Byzantine quorum safety depends on explicit assumptions about faulty sets and quorum intersections, while more recent quorum work also shows that the relevant fault set can be structured rather than a simple participant count. citeturn0search2turn0search5
+
+This corroborates the research direction but does not validate Nexo's candidate semantics or prove its model.
+
+### Exact next mission
+AB104.419 — dynamic hypergraph cut analysis under dependency changes, including incremental recomputation, invalidation, and protection against using stale cut results during an in-flight authority decision.
+
+### Continuity
+Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
