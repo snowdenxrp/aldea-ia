@@ -2810,3 +2810,31 @@ Status: SOURCE_AUDIT=SUFFICIENT; EXECUTION_HOLD=ACTIVE; EXACT_RACE=NOT_EXECUTED;
 
 ### EXACT NEXT ACTION
 AB104.869R — re-check only for a newly available real Kafka execution path. If absent, preserve this hold; if present, execute G0 only and record raw runtime evidence before any race attempt.
+
+
+## 216. AB104.869R — Execution-path recheck
+Fresh connected-workspace search for an Apache Kafka checkout/build surface again returned no installed repository. No real Kafka execution path is available through the current connection.
+Status: KAFKA_EXECUTION_PATH=NOT_AVAILABLE; G0=NOT_PERFORMED.
+
+## 217. AB104.870R — No promotion from source to runtime
+The absence of a runnable checkout is an environment limitation only. It does not support either existence or nonexistence of the ACL revoke/in-flight Produce race.
+Status: RACE_EXISTENCE=UNKNOWN; NONEXECUTION_NOT_EVIDENCE.
+
+## 218. AB104.871R — Experiment remains frozen before G0
+No ACL revoke, blocked Produce, D1 probe, release, append, or effect observation has been performed. The experiment remains frozen exactly before the first runtime gate.
+Status: G0=NOT_PERFORMED; A1/D0/D1/D2/E=ABSENT.
+
+## 219. AB104.872R — G0 contract unchanged
+When a real Kafka runner exists, G0 must independently establish wrapper identity/isolation, initial WRITE authorization, ACL propagation, target leader alignment, and baseline log-end offset before any race action.
+Status: G0_CONTRACT=LOCKED.
+
+## 220. AB104.873R — No new source blocker identified
+The latest execution-path check did not expose a new source-level ambiguity requiring more Kafka archaeology. Existing source conclusions on configuration, wrapper lifecycle, barrier placement, D1 isolation, and effect witnessing remain valid.
+Status: SOURCE_AUDIT=SUFFICIENT; NEW_BLOCKER=NOT_FOUND.
+
+## 221. AB104.874R — Controlled hold
+Further repetition of the same repository-availability check would not increase evidence. Continue only if a new execution surface appears or a concrete implementation/runtime blocker is introduced.
+Status: EXECUTION_HOLD=ACTIVE; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+AB104.875R — only inspect a newly appearing execution surface or concrete blocker; otherwise preserve the hold and do not generate redundant audit artifacts.
