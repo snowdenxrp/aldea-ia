@@ -1852,3 +1852,16 @@ Status: BROKER_METADATA_HAS_OFFSET=SOURCE_CONFIRMED; ACL_PUBLISHER_RECEIVES_COMM
 EXACT NEXT ACTION: AB104.767R — search Kafka tests and metadata-loader APIs for explicit offset-observation/barrier primitives (wait-for-metadata/high-watermark mechanisms), determine whether any can force broker observation of ACL version D1 before an operation, and compare with real effect-time revocation/fencing systems.
 
 CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.767R; preserve all UNKNOWN/NOT_FOUND/NOT_EXECUTED states; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
+
+## 114. AB104.767R — Metadata freshness barriers versus effect-time authorization
+Artifact commit: f78dbb08a7ba9ecec7022a12bb1cb2b1b8ff18bc
+
+Audit found startup/catch-up barriers for Kafka authorization metadata, including initial high-watermark loading and broker metadata publication. These establish readiness/applied-state boundaries but no generic caller-supplied ACL metadata-offset barrier consumed by normal Produce. KafkaProducer topic-metadata waiting is not an authorization fence. KIP-801 confirms brokers maintain StandardAuthorizer state along the metadata timeline while authorization can continue during ordered ACL application. Comparison with etcd shows the stronger pattern: a revision predicate is evaluated by the protected resource at the effect boundary; ZooKeeper zxid and Kubernetes ResourceVersion similarly provide ordering/version identities but do not by themselves fence arbitrary external effects.
+
+Key distinction: OBSERVED/APPLIED_AUTHORITY_VERSION != EFFECT_AUTHORIZATION_FENCE. A broker may prove BROKER_APPLIED_VERSION >= D without proving EFFECT_ACCEPTED_ONLY_IF_AUTHORITY_VERSION >= D. The latter requires effect-boundary enforcement or equivalent reauthorization.
+
+Status: AUTHORIZER_STARTUP_READINESS=SOURCE_CONFIRMED; INITIAL_HIGH_WATERMARK_LOAD=SOURCE_CONFIRMED; BROKER_METADATA_HIGH_WATERMARK_STARTUP=SOURCE_CONFIRMED; ACL_ORDERED_APPLICATION=SOURCE_CONFIRMED; GENERIC_CALLER_SUPPLIED_ACL_OFFSET_BARRIER=NOT_FOUND; PRODUCE_EFFECT_TIME_REAUTHORIZATION_ON_METADATA_VERSION=NOT_FOUND; CLIENT_AWAIT_TOPIC_METADATA_AS_AUTHORIZATION_FENCE=NOT_VALID; ETCD_REVISION_COMPARE=SOURCE_CONFIRMED; ZOOKEEPER_ZXID_ORDER=SOURCE_CONFIRMED; EXECUTED_KAFKA_REVOCATION_RACE=NO.
+
+EXACT NEXT ACTION: AB104.768R — audit Kafka request/append test infrastructure for authorization versus append-side state transitions, search for ACL mutation during in-flight Produce, and inspect ReplicaManager/request-channel boundaries for generation/version/fencing checks that could invalidate already-authorized records. Do not infer safety or exploitability from source ordering alone.
+
+CONTINUITY RULE: If chat stops, recover this same canonical handoff first; resume at AB104.768R; preserve UNKNOWN/NOT_FOUND/NOT_EXECUTED; do not create parallel handoffs; AB105.116R remains canonical model anchor; research-only, no implementation/V21, no formal verification claim.
