@@ -1395,3 +1395,197 @@ AB104.423 — specification counterexample generation and property implication: 
 
 ### Continuity
 Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 55 — specification counterexamples and property implication — 2026-10-01
+
+### Historical artifact recovered
+AB104.423 exists at commit ad3b0d40b483a22341fbbc8ee5b24eccdb6e10b5.
+
+### Findings
+1. SPECIFICATION => PROPERTY is only meaningful inside the explicitly frozen model/environment/failure/adversary/external-boundary scope.
+2. A model satisfying the specification while violating the intended property is a counterexample to the implication within that scope; root cause may be a quorum rule, omitted dependency/participant, wrong assumption, recovery/partition semantics, UNKNOWN handling, temporal invalidation, or abstraction error.
+3. ABSTRACT_COUNTEREXAMPLE != REAL_COUNTEREXAMPLE; concretization is required.
+4. A bounded safe model cannot establish full implication unless the abstraction relation is sound for the claimed property.
+5. REALIZABLE != MISSION_VALID; vacuous or over-constrained specifications must be checked separately.
+6. MODEL_ASSUMPTION != DEPLOYMENT_GUARANTEE.
+7. Normal-mode and recovery-mode implication obligations must remain distinct when their trust/dependency boundaries differ.
+8. Counterexample enumeration has scope/completeness limits; resource exhaustion or incomplete generation remains INCONCLUSIVE.
+9. Mutation-based implication testing is evidence about validation strength, not proof that the original specification is correct.
+10. Differential agreement remains evidence only; shared omitted assumptions can survive multiple analyzers.
+
+### Status
+SPECIFICATION_ASSURANCE = UNKNOWN/PENDING.
+FAILURE_MODEL_COMPLETENESS = UNKNOWN/PENDING.
+PROPERTY_IMPLICATION_SCOPE/COMPLETENESS = UNKNOWN/PENDING.
+AUTHORITY_PROMOTION/PROTECTED_ACTIVATION = UNKNOWN/PENDING.
+A/B/C = UNKNOWN/PENDING.
+P1/P2 = UNKNOWN/PENDING.
+S11 materiality = UNKNOWN/PENDING.
+S12 exact correlation scope = UNKNOWN/PENDING.
+MODEL_CHANGE = NOT AUTHORIZED.
+AB105.116R remains canonical.
+No AB105.117R created.
+
+### Exact next
+AB104.424 — abstraction soundness and counterexample-guided refinement.
+
+## AB105.116R audit pass 56 — abstraction soundness and CEGAR — 2026-10-01
+
+### Historical artifact recovered
+AB104.424 commit 2c0350197bb5467f900b1a06e40059d3e8365541.
+
+### Findings
+1. ABSTRACTION_VALIDITY != MODEL_SIZE_REDUCTION.
+2. For safety, an over-approximation can support a sound safety conclusion only when the abstraction relation is established; abstract counterexamples may be spurious.
+3. Under-approximation can expose real counterexamples but cannot prove global safety.
+4. Nexo must preserve property-relevant identities, authority generations, resource incarnations, UNKNOWN semantics, recovery state, failure-domain structure and the external-effect boundary where claimed.
+5. Collapsing witness count or failure-domain count can destroy dependency topology.
+6. Collapsing authority epochs or resource incarnations can hide stale-authority/replacement races.
+7. UNKNOWN cannot silently become SAFE.
+8. NORMAL != RECOVERY when recovery changes trust, continuity, authority or dependency assumptions.
+9. CEGAR refinement exhaustion is INCONCLUSIVE/HOLD, not SAFE.
+10. Abstraction results remain evidence and do not become Z1 authority.
+
+### Status
+ABSTRACTION_SOUNDNESS = UNKNOWN/PENDING.
+PROPERTY-PRESERVING_RELATION = UNKNOWN/PENDING.
+CEGAR_TERMINATION = NOT_ASSUMED.
+MODEL_CHANGE = NOT AUTHORIZED.
+
+### Exact next
+AB104.425 — identity, generation and time abstraction.
+
+## AB105.116R audit pass 57 — identity/generation/time abstraction — 2026-10-01
+
+### Historical artifact recovered
+AB104.425 commit 9346d16363abd84fa286db885d4945b3703e521d.
+
+### Findings
+1. Identity abstraction is safe only when the protected property is invariant under the transformation.
+2. SUBJECT_ID, OPERATION_ID, EFFECT_ID, ATTEMPT_ID, RESOURCE_ID, RESOURCE_INCARNATION, WITNESS_ID/incarnation and recovery/lineage identities are not interchangeable by default.
+3. Generation types must not be collapsed merely because they are all version-like: authority, fence, policy, trust, dependency, graph, replay, continuity and recovery generations can serve different claims.
+4. ORDER_PRESERVATION != IDENTITY_PRESERVATION.
+5. Wall-clock abstraction to logical order is valid only for properties that require ordering rather than elapsed duration.
+6. TIMESTAMP_FRESHNESS != STATE_CURRENTNESS and GENERATION_NEWNESS != universal semantic freshness.
+7. Epoch collapse can hide stale-authority behavior; incarnation collapse can hide replacement/replay behavior.
+8. Recovery generation and normal authority generation remain distinct where recovery can alter trust or authority.
+
+### Status
+IDENTITY/GENERATION ABSTRACTION = CLAIM-SPECIFIC.
+TEMPORAL_ABSTRACTION_SOUNDNESS = UNKNOWN/PENDING.
+MODEL_CHANGE = NOT AUTHORIZED.
+
+### Exact next
+AB104.426 — distributed time and freshness semantics.
+
+## AB105.116R audit pass 58 — distributed time and freshness — 2026-10-01
+
+### Historical artifact recovered
+AB104.426 commit 06ebf5380b3fae8f74419e2e678eb07d2de99e86.
+
+### Findings
+1. TIMESTAMP != GLOBAL_ORDER.
+2. CLOCK_SYNCHRONIZED != CLOCK_TRUSTED_FOR_THIS_PROPERTY.
+3. FRESH_TIMESTAMP != FRESH_STATE.
+4. Message freshness does not establish authority currentness.
+5. Time-source count does not establish time-source independence; common upstreams/failure domains remain relevant.
+6. Time-source quorum != authority quorum and time agreement != correct time without an explicit failure/trust model.
+7. Security-sensitive freshness should bind time evidence to trust/state generations and uncertainty bounds where required.
+8. UNKNOWN/DEGRADED time cannot silently become trusted time.
+9. LOCAL_EXPIRY != REMOTE_CANCELLATION and LOCAL_TIMEOUT != EXTERNAL_NON_EXECUTION.
+
+### Status
+TRUSTED_TIME_SEMANTICS = CLAIM-SPECIFIC.
+CLOCK_INDEPENDENCE = UNKNOWN/PENDING.
+DISTRIBUTED_TIME_SOUNDNESS = UNKNOWN/PENDING.
+MODEL_CHANGE = NOT AUTHORIZED.
+
+### Exact next
+AB104.427 — trusted time versus generations/fences.
+
+## AB105.116R audit pass 59 — trusted time versus generations/fences — 2026-10-01
+
+### Historical artifact recovered
+AB104.427 commit 33cd63a1913e926e82673beea8aa535989bd37db.
+
+### Findings
+1. Physical time should enter the TCB only when the protected property actually requires temporal semantics.
+2. Authority order/currentness can often be expressed with protected generations; stale-actor exclusion can use resource-side fencing; resource currentness can use version/incarnation; replay can use durable EffectID state.
+3. TIME_REQUIRED_FOR_PROPERTY != TIME_REQUIRED_FOR_AUTHORITY_ORDER.
+4. LEASE_EXPIRY != STALE_REQUEST_EXCLUSION.
+5. CURRENTNESS != ELAPSED_AGE.
+6. TRUSTED_TIME_RESULT != AUTHORITY.
+7. Provider time semantics become part of dependency closure when provider-enforced expiry is security-relevant.
+8. If trusted time becomes UNKNOWN/DEGRADED/UNTRUSTED, dependent claims require explicit HOLD/REVALIDATE/DOWNGRADE/QUARANTINE semantics.
+9. Global trusted time should not be added merely for convenience when generation/fence/state controls already express the property.
+
+### Status
+EXACT_TIME_DEPENDENCY_SET = UNKNOWN/PENDING.
+TRUSTED_TIME_ARCHITECTURE = UNKNOWN/PENDING.
+MODEL_CHANGE = NOT AUTHORIZED.
+
+### Exact next
+AB104.428 — expiry/deadline semantics versus revocation/generation semantics.
+
+## AB105.116R audit pass 60 — expiry, deadlines, revocation and generations — 2026-10-01
+
+### Historical artifact recovered
+AB104.428 commit a664a78f2c3a4d9ac564339a2c1924f92391f282.
+
+### Findings
+1. EXPIRATION != REVOCATION.
+2. GENERATION_INVALIDATION != TEMPORAL_EXPIRY.
+3. Generation can replace expiry only when the policy is actually state-based invalidation; elapsed-duration and absolute-deadline policies still require time semantics.
+4. Many claims need hybrid validity: current generation plus temporal validity.
+5. HISTORICALLY_VALID != CURRENTLY_AUTHORIZED.
+6. REVOCATION_REQUESTED != REVOCATION_EFFECTIVE_FOR_ADMISSION; propagation/currentness must be explicit.
+7. Offline immediate-revocation prevention is a currentness/synchronization problem, not merely a timestamp problem.
+8. DEADLINE_PASSED != EXTERNAL_NON_EXECUTION.
+9. Generation reuse without distinguishable incarnation can create replay/staleness risk.
+10. Renewal requires a new validity binding and, where authority semantics require, revalidation.
+
+### Status
+EXPIRY/REVOCATION SEMANTICS = FROZEN AS DISTINCT CONCEPTS.
+OFFLINE REVOCATION = OPEN.
+GENERATION ROLLOVER/CONTINUITY = OPEN.
+MODEL_CHANGE = NOT AUTHORIZED.
+
+### Exact next
+AB104.429 — offline revocation, propagation delay, and stale authorization.
+
+## AB105.116R audit pass 61 — offline revocation, propagation delay, stale authorization — 2026-10-01
+
+### Historical artifact
+AB104.429 persisted at commit 3586d7651bdcace3e3ec9e656fbeb6236341df29.
+
+### External corroboration
+RFC 7009 states that revocation is logically immediate while distributed propagation can leave some servers temporarily unaware. Recent IETF work on finality-bound revocation likewise treats cached authorization as potentially stale and requires explicit maximum-staleness semantics for protected operations. citeturn1search0turn1search2
+
+### Findings
+1. CREDENTIAL_VALIDITY != CURRENT_AUTHORIZATION.
+2. AUTH_CACHE_HIT != CURRENT_AUTHORITY.
+3. SIGNED_REVOCATION_STATE != CURRENT_REVOCATION_STATE unless a protected freshness/currentness anchor exists.
+4. For immediate-revocation prevention, missing current revocation state must remain UNKNOWN/HOLD rather than silently becoming VALID.
+5. Bounded-staleness authorization is a different security claim from zero-staleness/immediate revocation prevention.
+6. Revocation propagation requires explicit states; REQUESTED/COMMITTED/OBSERVED/ EFFECTIVE_FOR_ADMISSION must not be collapsed.
+7. Generation gaps, rollback, lost/reordered events and stale checkpoints require explicit gap detection/revalidation semantics.
+8. Partitioned stale state cannot be treated as current merely for availability.
+9. A primary revocation-safe path is insufficient if queues, retries, recovery, admin paths, provider callbacks or other alternate paths can still produce the protected effect without equivalent enforcement.
+10. Crash recovery must not resurrect pre-revocation authorization or blindly replay an old allow decision.
+11. If a verifier has no current revocation state, no trusted currentness anchor, no permitted staleness bound, and no resource-side fence while the claim requires immediate revocation prevention, the honest result is UNKNOWN.
+
+### Status
+ZERO_STALENESS_REVOCATION_POLICY = UNKNOWN/PENDING.
+BOUNDED_STALENESS_POLICY_BY_EFFECT_CLASS = UNKNOWN/PENDING.
+GENERATION/CHECKPOINT_PROTOCOL = UNKNOWN/PENDING.
+ALTERNATE_PATH_CLOSURE = UNKNOWN/PENDING.
+MODEL_CHANGE = NOT AUTHORIZED.
+AB105.116R remains canonical.
+No AB105.117R created.
+
+### Exact next mission
+AB104.430 — revocation finality and effect-boundary fencing: determine the minimum protected protocol so a revocation authoritative before an external effect cannot be bypassed by in-flight work, retries, queues, recovery, alternate paths, or provider-side execution.
+
+### Continuity
+Additive only. No historical artifact modified or deleted. No extra backup/handoff file created.
