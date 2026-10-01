@@ -524,3 +524,12 @@ Result: the missing S9 promotion relation is now narrowed to an explicit protect
 No model change authorized. AB105.116R remains canonical. No AB105.117R. A/B/C UNKNOWN/PENDING. P1/P2 UNKNOWN/PENDING. Pass 36 is audit-only until persisted.
 
 Next exact mission: trace the authority decision issuer/lifecycle and activation boundary, then test whether AB104.404+ resolves effective effect-class binding or remains upstream of authority promotion.
+
+## AB105.116R audit pass 37 — effective effect-class boundary — 2026-10-01
+Cross-check of AB104.404 found the next upstream boundary. EFFECT_CLASS cannot be caller-authoritative: DECLARED_EFFECT_CLASS and EFFECTIVE_EFFECT_CLASS must be separated. Effective class depends on protected operation semantics and, where applicable, provider capability, resource incarnation, adapter path, asynchronous/cascade behavior, participant footprint, and current policy. UNKNOWN class cannot silently default to a weaker class; a class downgrade requires independent semantic justification. Hidden protected participants make classification incomplete and therefore block a higher-authority grant unless an authoritative exclusion applies.
+
+This reinforces the Pass 36 chain: protected semantic property/effect classification -> required context schema -> instance closure -> authority decision -> protected linearization. It does NOT close S9. No historical artifact found here freezes the exact issuer/decision record or activation action that maps current authority evidence to authority=VALID after revocation.
+
+No model change authorized. AB105.116R remains canonical; no AB105.117R. Pass 37 is audit-only until persisted.
+
+Next exact mission: trace EFFECT_FOOTPRINT/participant closure (AB104.405+) and separately continue tracing the issuer/lifecycle of CURRENT_AUTHORITY_DECISION; do not conflate effect classification with authority promotion.
