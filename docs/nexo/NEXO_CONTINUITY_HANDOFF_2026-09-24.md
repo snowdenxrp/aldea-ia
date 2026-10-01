@@ -2782,3 +2782,31 @@ Status: RACE=UNKNOWN_BY_NONEXECUTION; SECURITY_CONCLUSION=NOT_REACHED.
 
 ### EXACT NEXT ACTION
 AB104.863R — if a real Kafka checkout/build runner becomes available, run only G0 first. If not, keep the experiment frozen at the execution boundary and do not manufacture additional evidence.
+
+
+## 210. AB104.863R — Final execution-surface recheck
+Connected-repository code search for `KafkaClusterTestKit StandardAuthorizer` returns no installed repository. No Kafka checkout has become available through the connected workspace.
+Status: EXECUTION_PATH=NOT_AVAILABLE; G0=NOT_PERFORMED.
+
+## 211. AB104.864R — No substitute environment
+No available connected surface can truthfully substitute for a real Apache Kafka checkout and its Gradle/JDK test execution. A source mirror, public repository metadata, or Nexo repository search cannot produce runtime observations.
+Status: SUBSTITUTE_RUNTIME=NOT_ACCEPTABLE; RUNTIME_EVIDENCE=ABSENT.
+
+## 212. AB104.865R — G0 remains the sole permitted first runtime action
+If execution becomes available, the first run remains G0 only: startup, wrapper identity/isolation, ACL setup/propagation, baseline ALLOW, target leader/log readiness, and initial log offset. No revoke or blocked Produce is permitted before G0 passes.
+Status: G0_GATE=LOCKED; RACE_PREMATURE=BLOCKED.
+
+## 213. AB104.866R — No semantic drift in the experiment
+The exact race definition remains unchanged: real target Produce authorization must return ALLOW and block before KafkaApis continues; ACL deletion must complete; the same target broker must freshly DENY; only then may the original request be released toward the real ReplicaManager/append path.
+Status: RACE_DEFINITION=UNCHANGED.
+
+## 214. AB104.867R — Evidence discipline
+A future runtime result must independently capture A1, D0, D1, D2, and E. In particular, Admin ACL deletion is not D1, a client-side denial is not automatically D1, and a Produce response is not by itself sufficient durable-effect proof.
+Status: WITNESS_SEPARATION=LOCKED.
+
+## 215. AB104.868R — Audit hold
+The relevant source-level design is already sufficient. Continuing broad Kafka archaeology without a concrete runtime blocker would repeat prior work rather than increase evidentiary confidence.
+Status: SOURCE_AUDIT=SUFFICIENT; EXECUTION_HOLD=ACTIVE; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+### EXACT NEXT ACTION
+AB104.869R — re-check only for a newly available real Kafka execution path. If absent, preserve this hold; if present, execute G0 only and record raw runtime evidence before any race attempt.
