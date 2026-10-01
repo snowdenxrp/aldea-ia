@@ -226,7 +226,7 @@ jobs:
                               try (Admin admin = cluster.admin()) {
                                   admin.deleteAcls(
                                       List.of(new AclBindingFilter(
-                                          new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
+                                          new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL).toFilter(),
                                           org.apache.kafka.common.acl.AccessControlEntryFilter.ANY)),
                                       new DeleteAclsOptions()).all().get();
                               }
@@ -234,7 +234,7 @@ jobs:
                               List<AuthorizationResult> d1 = TARGET.authorize(
                                   userContext(),
                                   List.of(new Action(WRITE,
-                                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                                      new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL),
                                       0, true, false)));
                               Assertions.assertEquals(AuthorizationResult.DENIED, d1.get(0), "D1 must be DENIED after D0");
 
