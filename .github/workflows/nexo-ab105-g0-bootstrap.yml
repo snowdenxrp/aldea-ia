@@ -101,7 +101,7 @@ jobs:
           import static org.apache.kafka.common.resource.ResourceType.TOPIC;
 
           public final class NexoG0RuntimeTest {
-              private static final String TOPIC = "nexo-g0-runtime";
+              private static final String TOPIC_NAME = "nexo-g0-runtime";
               private static final String USER = "plain-user1";
               private static final String PASSWORD = "plain-user1-secret";
               private static final CountDownLatch A1_OBSERVED = new CountDownLatch(1);
@@ -117,8 +117,8 @@ jobs:
                       if (requestContext.principal().getName().equals(USER)
                               && actions.size() == 1
                               && actions.get(0).operation() == WRITE
-                              && actions.get(0).resourcePattern().resourceType() == TOPIC
-                              && TOPIC.name().equals(actions.get(0).resourcePattern().name())
+                              && actions.get(0).resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC
+                              && TOPIC_NAME.equals(actions.get(0).resourcePattern().name())
                               && !results.isEmpty()
                               && results.get(0) == AuthorizationResult.ALLOWED) {
                           A1_OBSERVED.countDown();
@@ -165,7 +165,7 @@ jobs:
                       @Override public KafkaPrincipal principal() { return new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER); }
                       @Override public InetAddress clientAddress() { return null; }
                       @Override public int requestType() { return org.apache.kafka.common.protocol.ApiKeys.PRODUCE.id; }
-                      @Override public short requestVersion() { return 0; }
+                      @Override public int requestVersion() { return 0; }
                       @Override public String clientId() { return "nexo-g0-d1"; }
                       @Override public int correlationId() { return 0; }
                   };
@@ -228,7 +228,7 @@ jobs:
                                   admin.deleteAcls(
                                       List.of(new AclBindingFilter(
                                           new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
-                                          AccessControlEntry.ANY.toFilter())),
+                                          org.apache.kafka.common.acl.AccessControlEntryFilter.ANY)),
                                       new DeleteAclsOptions()).all().get();
                               }
 
