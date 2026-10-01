@@ -710,3 +710,70 @@ These remain semantic requirements, not TLA+ implementation fields.
 
 ### Next exact mission
 AB104.413 — witness enrollment, trust-root rotation and dependency drift: determine how a malicious/stale witness can enter the evidence set, how keys/trust roots rotate, and how a previously independent witness can become correlated after software, policy, provider, or operator changes.
+
+
+## AB105.116R audit pass 46 — witness enrollment / trust-root rotation / dependency drift — 2026-10-01
+
+### Historical artifact recovered
+AB104.413 (commit 4a4a7bd1a22456a0414cf6613cfaea5fe0a7c550) audits witness enrollment, trust-root/key rotation, witness substitution/incarnation, hidden dependency closure, trust-root/policy/provider convergence, and dynamic dependency drift.
+
+### Findings
+1. **Enrollment is a protected trust boundary.** A new witness is not trusted merely because it is registered or cryptographically self-described. The historical candidate lifecycle separates candidate identity, dependency appraisal, claim scope, trust generation, protected activation, current use, degradation, suspension, and revocation.
+2. **Independence is not permanent.** The artifact explicitly separates WITNESS_INDEPENDENCE_AT_ENROLLMENT from CURRENT_WITNESS_INDEPENDENCE. Software, provider, policy, operator/control-plane, verifier, backup/recovery, key, time-source, adapter, or deployment changes can create new common-mode dependencies.
+3. **Independence is claim-specific.** A witness may be independent for one claim while correlated for another. Therefore independence must be evaluated as a function of claim semantics and dependency closure, not as one global boolean.
+4. **Trust-root rotation is a revalidation boundary.** Historical evidence under an old trust generation must remain distinguishable from evidence currently admissible under a new generation. A new root does not automatically validate historical evidence or current witness authority.
+5. **Key validity has temporal/semantic scope.** KEY_VALID_FOR_HISTORY is distinct from KEY_VALID_FOR_CURRENT_ADMISSION. Historical signatures may remain useful for reconstruction while current high-consequence evidence requires a current key generation; compromise may invalidate current use without rewriting history.
+6. **Same witness ID does not guarantee same assurance.** Verifier/adapter replacement and witness restart/replacement require incarnation/generation binding where claim semantics require it. Historical identity cannot silently confer current status on a new incarnation.
+7. **Declared dependency metadata is not closure.** DECLARED_DEPENDENCIES != REQUIRED_DEPENDENCY_CLOSURE. Hidden policy, operator, cloud/control-plane, recovery, identity, or other shared dependencies can collapse apparent diversity.
+8. **Multiple keys/IDs do not prove independent trust domains.** Trust-root convergence, common policy sources, common infrastructure, or common recovery paths can make separately signed witnesses common-mode correlated.
+9. **Relevant drift should invalidate current eligibility pending revalidation.** Candidate status is CURRENT -> REVALIDATION_REQUIRED rather than silently remaining CURRENT when trust root, key, software/verifier generation, policy, path, provider/region, backup/recovery, operator/control plane, dependency graph, or incarnation changes.
+10. **Witness enrollment cannot be circular.** The witness set being enrolled cannot be the sole authority that decides its own protected eligibility. Candidate sequence is independent identity/trust verification -> dependency closure -> claim-specific independence assessment -> protected enrollment decision -> activation generation -> eligibility.
+
+### External corroboration
+Current trust/enrollment material reinforces the same separation: trust anchors are configured trust inputs rather than facts established by a certificate path, and key lifecycle/rotation requires explicit enrollment and revalidation boundaries. citeturn0search0
+
+### S9 consequence
+AB104.413 materially narrows the missing authority provenance path but still does not define the final promotion action. The unresolved chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+Witness enrollment, trust-root generation, dependency closure, and current eligibility are distinct from the authority decision itself. A witness can provide evidence for an authority decision without becoming the authority merely by being enrolled or activated.
+
+### New narrowed requirements
+Before model revision, Nexo needs semantic definitions for:
+1. the protected issuer/authority of witness enrollment;
+2. the immutable or versioned witness trust generation and its transition boundary;
+3. claim-specific dependency-closure scope and drift detection semantics;
+4. the exact revalidation/invalidation race rule when drift occurs during quorum evaluation;
+5. the binding between witness evidence, witness generation/incarnation, applicable claim, and authority epoch;
+6. the protected boundary at which a validated witness set becomes eligible input to an authority decision.
+
+These remain semantic requirements, not TLA+ implementation fields.
+
+### Race condition identified for next audit
+A witness may be CURRENT when quorum evaluation begins and become STALE/CORRELATED/REVOKED before the decision is protected. Therefore a future model must not rely only on a point-in-time eligibility check. The decision must bind the witness set to the relevant trust/dependency generations and define what happens if any required member changes during evaluation. The exact linearization/commit rule is UNKNOWN/PENDING.
+
+### Status
+- WITNESS_ENROLLMENT = PROTECTED SEMANTIC BOUNDARY CONFIRMED.
+- CURRENT_WITNESS_INDEPENDENCE = CLAIM-SPECIFIC / DEPENDENCY-CLOSURE-DEPENDENT.
+- TRUST_ROOT_CHANGE = REVALIDATION BOUNDARY CONFIRMED.
+- KEY_HISTORY_VALIDITY != CURRENT_ADMISSION_VALIDITY.
+- DEPENDENCY_DRIFT = CURRENT_ELIGIBILITY INVALIDATION/REVALIDATION REQUIREMENT CONFIRMED.
+- DEPENDENCY_CLOSURE_ALGORITHM = UNKNOWN/PENDING.
+- DRIFT_DETECTION_LATENCY = UNKNOWN/PENDING.
+- QUORUM_EVALUATION_DRIFT_RACE = UNKNOWN/PENDING.
+- WITNESS_ENROLLMENT_AUTHORITY = UNKNOWN/PENDING.
+- WITNESS_SET_ACTIVATION_LINEARIZATION = UNKNOWN/PENDING.
+- PROMOTION_TO_CURRENT_AUTHORITY = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.414 — witness dependency-drift detection and revocation races: determine detection/validity timing, quorum-evaluation race semantics, and how an invalidated witness is prevented from contributing after its trust generation or independence has changed.
+
+### Continuity
+This pass is audit-only and additive. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
