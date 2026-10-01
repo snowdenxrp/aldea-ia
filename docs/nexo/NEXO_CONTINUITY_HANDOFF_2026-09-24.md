@@ -248,3 +248,23 @@ Additional audit:
 
 Decision boundary:
 Do not alter Kafka source/harness based on the missing run. The next safe action is to establish an observable Actions trigger path (prefer an explicit workflow dispatch if/when the available GitHub interface supports it) or otherwise create a trigger-safe CI change, then inspect the resulting raw run before promoting any bootstrap result.
+
+
+### AB105.053R-KAFKA-G0-BOOTSTRAP — decisive trigger finding
+
+The CI trigger audit is now narrowed:
+- GitHub workflow syntax explicitly states `workflow_dispatch` only receives events when the workflow file is on the **default branch**. The bootstrap workflow exists only on isolated branch `nexo-ab105-g0-bootstrap`, while repository default is `main`. citeturn0search5turn0search10
+- Therefore the presence of `workflow_dispatch` in the isolated-branch workflow did NOT provide a usable manual-dispatch path.
+- The `push` trigger remains theoretically valid for a push event whose workflow file is present in that ref. GitHub describes this event-to-workflow resolution explicitly. citeturn0search11
+- However, the observed commit still has `workflow_runs=[]` and `statuses=[]`. We do not know whether commit creation used `GITHUB_TOKEN`, so the documented token suppression remains a possible explanation, not a proven cause. citeturn0search0turn0search3
+- No Kafka code or G0 semantics were changed.
+
+DECISION:
+The isolated bootstrap branch is not sufficient to establish an observable manual trigger. The smallest safe next step is to put a trigger-capable copy of the bootstrap workflow on `main` (without executing Kafka G0), then use an observable Actions trigger path and inspect the resulting raw run. Do not promote compilation/runtime evidence until that run exists.
+
+Status:
+BOOTSTRAP_TRIGGER_DIAGNOSIS=PARTIALLY_RESOLVED
+BOOTSTRAP_RUNTIME=NOT_OBSERVED
+G0_RUNTIME=NOT_EXECUTED
+EXACT_RACE=UNKNOWN
+EXPLOITABILITY=UNKNOWN
