@@ -347,3 +347,42 @@ MODEL_CHANGE = NOT_AUTHORIZED.
 
 ### Next
 Cross-check these witnesses against AB105.111R/112R frozen T1–T10 and S1–S12 one final time, looking specifically for any historical sentence that actually resolves one of the open choices. If none does, preserve the choices as UNKNOWN/PENDING.
+
+## AB105.116R audit pass 30 — final historical cross-check + TLC result — 2026-10-01
+
+### Historical cross-check
+- AB105.111R establishes that AUTHORITY_EPOCH is required for authority-scoped input and that an old/outside-current epoch is STALE; T1 requires delayed old authority to be treated as STALE/rejected. It does NOT define an executable epoch-advancement transition or select P1 versus P2.
+- AB105.112R separates recovery, reconciliation, and reauthorization and states that recovery must not silently transfer current authority. It does NOT establish whether reconciliation itself is authoritative reauthorization evidence (A), whether fresh authority evidence must be separate (B), or whether explicit authority establishment is required (C).
+- AB105.111R/112R preserve OBSERVED, UNKNOWN, ABSENT_UNPROVEN, and PARTIAL as distinct states and require reconciliation when expected/observed effects differ materially, but do NOT freeze an exact expected-effect domain or materiality predicate.
+- AB105.111R distinguishes OPERATION_ID (when operation-scoped) from OBSERVATION_ID/EVENT_ID (evidence-scoped), plus subject/incarnation/provenance/coverage as applicable. It does NOT impose universal operation correlation on every observation, nor define effectId as a universal substitute for observation/event identity.
+- AB105.114R/115R contain no hidden epoch-advancement rule that resolves these choices.
+
+### Final semantic classification
+- P1 vs P2: UNKNOWN/PENDING; only the no-silent-epoch-transfer property is frozen.
+- Reauthorization A/B/C: UNKNOWN/PENDING; provenance separation is frozen, exact authority-bearing evidence rule is not.
+- S11 materiality: UNKNOWN/PENDING; state distinctions are frozen, exact materiality rule is not.
+- S12 identity/correlation: UNKNOWN/PENDING; effect identity and evidence identity are not safely conflated, exact mandatory correlation scope remains open.
+- Therefore: SEMANTIC CONTRACT remains PARTIALLY FROZEN. MODEL REVISION remains NOT AUTHORIZED.
+
+### TLC finite model-checking result
+Run 36781846063, job 110113752493, commit ec15fb987f79b890c6bd5ad5c957ac2633f4b3dc completed successfully.
+- TLC 2026.08.11.125311.
+- Model checking completed with No error has been found.
+- 7,957,574,337 states generated.
+- 251,910,656 distinct states found.
+- 0 states left on queue.
+- Complete graph depth: 31.
+- Finished 2026-10-01 01:06:50 UTC; elapsed about 3h17m.
+- TLC reports optimistic fingerprint collision probability .11 and actual-fingerprint estimate .004. This is TLC's collision estimate, not a proof of unbounded correctness.
+- Evidence artifact: nexo-ab105-116r-tlc-evidence, artifact ID 11134199332, SHA-256 ad053fdc48b490819281000cbbf40a8eae76af6bed780d40795a719068ad4f44.
+
+### Interpretation discipline
+- This is a finite-state TLC PASS for the configured AB105.116R model and checks only the five configured properties: TypeOK, S1_ExecutionAuthority, S1_EffectAuthority, S4_ReleaseRequirements, S7_CompleteNeedsCoverage, S10_AtomicRequirement.
+- It is NOT a proof of all S1–S12, not an implementation verification, not an unbounded correctness proof, and not evidence that the unresolved semantic policies are correct.
+- The TLC PASS must not be used to choose P1/P2, A/B/C, S11 materiality, or S12 correlation semantics.
+
+### Status
+AB105.116R TLC = PASS (finite model, configured invariants only).
+Open semantic decisions = preserved UNKNOWN/PENDING.
+TLA+ model modification = NOT AUTHORIZED.
+No additional backup/handoff file created.
