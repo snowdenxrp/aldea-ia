@@ -739,50 +739,77 @@ effectState contains NONE, OBSERVED, UNKNOWN, PARTIAL, ABSENT_UNPROVEN.
 
 There is no explicit expected-effect identity, expected-effect state, expected-vs-observed relation, or material-mismatch predicate.
 
-### Minimal witness analysis
-A state with:
-- an expected effect X,
-- an observed effect Y,
-- and X != Y materially
-cannot be represented as a distinct state because no expected-effect dimension exists.
+## AB105.116R audit pass 18 — S12 identity / observation binding — 2026-09-30
 
-Likewise:
-- expected X + no observation yet
-- expected X + UNKNOWN observation
-- expected X + proven absence
-cannot be distinguished by current effectState alone.
+### Objective
+Audit whether the current effect identity is sufficient to preserve the AB105.111R identity/incarnation and evidence-scoping requirements.
 
-Using UNKNOWN as the mismatch state would be semantically incorrect because UNKNOWN also has a reachable path from Init via MarkUnknown and therefore does not imply that an expected effect existed.
+### Frozen historical requirement
+AB105.111R defines:
+- SUBJECT_IDENTITY;
+- OPERATION_ID when operation-scoped;
+- INCARNATION_ID when runtime-scoped;
+- OBSERVATION_ID or EVENT_ID when evidence-scoped.
 
-Using ABSENT_UNPROVEN as mismatch would also be incorrect: that state specifically represents insufficiently proven absence after UNKNOWN + SUFFICIENT coverage, not contradiction between expected and observed effects.
+It also requires identity/correlation distinctions to survive finite abstraction.
+
+### Current 116R fields
+The model has:
+- operationId;
+- operationSubject;
+- operationIncarnation;
+- effectId;
+- subject;
+- incarnation.
+
+But effectId is only an element of the finite Effects set. There is no explicit binding:
+effectId -> operationId
+effectId -> subject
+effectId -> incarnation
+and no separate observation/event identity.
+
+### What is preserved
+For NEXO execution, StartOperation snapshots subject/incarnation into operationSubject/operationIncarnation. ObserveNexo requires the operation to be IN_FLIGHT and blocks duplicate/conflicting admission. Therefore the operation identity/context itself is represented.
+
+For external observations, ObserveExternal may create OBSERVED + effectId without any operation, which is compatible with the possibility that an effect is independently observed. It does not, however, establish whether that effect corresponds to a particular operation/incarnation.
+
+### Minimal counterexample to full S12
+Two executions can be represented with different operation identities while an observed effect identifier is not bound to either operation. Conversely, the same effect identifier can be selected by ObserveExternal in unrelated contexts because no uniqueness or correlation guard exists in the model.
+
+Therefore the current model cannot express the distinction:
+"effect E observed for operation O/incarnation I"
+versus
+"the same E observed for operation O2/incarnation I2"
+as separate correlation states.
+
+### Important semantic boundary
+This does NOT prove that effectId must be operation-scoped. External effects may intentionally be operation-independent. The missing semantic question is whether S12 requires:
+A. effect identity only, with operation correlation optional;
+B. observation/event identity separate from effect identity, with explicit correlation when evidence is operation-scoped; or
+C. every consequential effect observation to bind to operation + subject + incarnation.
+
+The historical contract supports operation-scoped and evidence-scoped identities as distinct cases; it does not justify assuming C globally.
 
 ### Classification
-S11 = REPRESENTATION GAP, CONFIRMED.
+S12 = PARTIALLY REPRESENTED, FULL VERIFICATION NOT POSSIBLE.
 
-This is not yet a bug in implementation because the exact expected-effect contract was never frozen. It is a verified limitation: the current model cannot honestly formulate the literal S11 property from its available state.
+High-confidence structural conclusion:
+The model needs an explicit semantic definition of what effectId means before it can claim full S12 verification.
 
-### Minimal candidate
-Before adding state, define the semantic object S11 talks about:
-- what creates the expected effect;
-- whether expectation is an effect identity, operation consequence, or predicate;
-- what counts as materially different;
-- whether partial/unknown observations can satisfy or defer reconciliation.
+Conditional candidate:
+If effectId is an evidence/observation identifier, then it should be bound to the relevant operation/subject/incarnation when the observation is operation-scoped. If effectId is an effect identity, a separate observation/event identity may be required instead.
 
-Only after that freeze should the smallest expected-effect/mismatch dimension be derived.
-
-### Anti-overload rule
-Do not map:
-UNKNOWN -> mismatch
-ABSENT_UNPROVEN -> mismatch
-OBSERVED -> match
-without a frozen contract. Those mappings would erase distinctions already required by AB105.111R.
+No second identity dimension is added yet.
 
 ### Result
-S11_REPRESENTATION = INSUFFICIENT
-S11_MISMATCH_PREDICATE = NOT_DEFINED
-UNKNOWN_OVERLOAD = PROHIBITED
+S12_IDENTITY_PRESERVATION = PARTIAL
+EFFECT_ID_SEMANTICS = OPEN
+OBSERVATION_EVENT_ID = NOT_ADDED
 MODEL_CHANGE = NOT_AUTHORIZED
-TLC_LIVE_RUN = UNTOUCHED
+TLC_LIVE_RUN = STILL_IN_PROGRESS
+
+### Live TLC checkpoint
+Run 36781846063 / job 110113752493 remains in_progress. Step 5 "Run TLC finite model" is still running; step 6 evidence upload is pending. No model-checking result is available.
 
 ### Next
-Audit S12: determine whether effectId can legitimately serve as OBSERVATION_ID/EVENT_ID and how it must bind to operationId, subject, and incarnation without inventing a second identity dimension prematurely.
+Audit S2/S3 for genuinely non-tautological safety properties. Distinguish transition-local guards from state invariants and determine whether historical provenance requires additional state.
