@@ -2866,3 +2866,31 @@ Status: EXECUTION_HOLD=ACTIVE; REDUNDANT_RECHECKS=DISALLOWED.
 
 ### EXACT NEXT ACTION
 AB104.881R — wait for a genuinely new execution surface or concrete blocker; if one appears, validate it first and run G0 only. Otherwise preserve the frozen experiment state without creating redundant continuity blocks.
+
+
+## 228. AB104.881R — Execution surface unchanged
+The latest connected-workspace check still exposes no Kafka checkout or runnable integration-test environment.
+Status: EXECUTION_PATH=NOT_AVAILABLE; G0=NOT_PERFORMED.
+
+## 229. AB104.882R — No new evidence source
+No newly available runtime surface or concrete blocker was identified. The prior source-level experiment design remains unchanged.
+Status: NEW_RUNTIME_EVIDENCE=ABSENT; SOURCE_CONTRACT=UNCHANGED.
+
+## 230. AB104.883R — Frozen race boundary preserved
+The experiment remains before G0. No authorization barrier, ACL deletion, D1 denial, release, append, or effect witness has occurred.
+Status: A1/D0/D1/D2/E=ABSENT; EXACT_RACE=NOT_EXECUTED.
+
+## 231. AB104.884R — Security conclusion remains open
+Non-execution cannot establish either presence or absence of the race. No exploitability conclusion is permitted from the current environment.
+Status: RACE_EXISTENCE=UNKNOWN; EXPLOITABILITY=UNKNOWN.
+
+## 232. AB104.885R — No semantic or implementation drift
+The locked requirements remain: real target-broker wrapper, post-ALLOW barrier, independent D0, same-broker fresh D1 DENY, controlled release, real append/effect evidence, and independent witness separation.
+Status: WITNESS_CHAIN=LOCKED.
+
+## 233. AB104.886R — Audit hold maintained
+No additional source archaeology is justified without a concrete blocker. The continuity record remains the sole Nexo-side artifact; no Kafka source is copied into it.
+Status: EXECUTION_HOLD=ACTIVE; REDUNDANT_RESEARCH=DISALLOWED.
+
+### EXACT NEXT ACTION
+AB104.887R — only act on genuinely new runtime capability or a concrete blocker; otherwise keep the experiment frozen without manufacturing progress.
