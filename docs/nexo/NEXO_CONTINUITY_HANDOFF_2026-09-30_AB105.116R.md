@@ -451,3 +451,64 @@ AB105.116R remains the canonical anchor. No AB105.117R or other derived model ve
 
 ### Next exact direction
 Audit authority provenance: distinguish AUTHORITY_EVIDENCE, AUTHORITY_STATE, DECISION, and CURRENT_AUTHORITY as separate semantic roles; determine what historical evidence exists for the transition to VALID after revocation without selecting A/B/C prematurely.
+
+
+## AB105.116R audit pass 33 — authority provenance / recovery-promotion historical cross-check — 2026-10-01
+
+### Scope
+Continued the authority-provenance audit after Pass 32. Cross-checked the canonical repository history around recovery authority, trust-root activation, authority epochs, revocation, and successor release. No modification to AB105.116R and no derived model version.
+
+### Historical evidence recovered
+1. An earlier exploratory recovery sketch explicitly modeled recoveryAuthorityEpoch. AcquireRecovery bound the recovery context to the then-current authorityEpoch; RevokeAuthority advanced authorityEpoch, invalidated the recovery token/owner, and cleared release authorization. This is historical evidence that recovery provenance must be bound to the authority generation that admitted it, but the sketch was exploratory and is NOT a frozen protocol or formal proof.
+2. Earlier authority-foundation research distinguishes RECOVERED_STATE != AUTHORITY, VALID_SNAPSHOT != CURRENT_AUTHORITY, and SELF_SIGNED_RECOVERY != INDEPENDENT_RECOVERY. It identifies externally/pre-established recovery roots as the basis for creating a new authoritative epoch, while no-root recovery remains non-authoritative.
+3. AB104.567/568 research establishes that blocked recovery requires an independent recovery authority and a protected transition; a new recovery key, witness set, backup, or local snapshot does not by itself establish current authority. If independence/uniqueness cannot be established, the safe state remains UNKNOWN/QUARANTINED.
+4. AB104.563–565 establish that evidence validity, epoch validity, predecessor continuity, and current authority are distinct predicates, and that epoch/witness activation requires a protected semantic activation boundary. NEW_EPOCH != NEW_TRUST_BASIS != CURRENT_AUTHORITY.
+5. AB105.098R successor-transfer research separates successor identity, authority, fencing, reconciliation, exclusivity, and release. Successor establishment/release is downstream of the authority-establishment question; it does not define the missing promotion-to-current-authority transition itself.
+6. AB104.359 conflict-recovery research establishes that authentic competing recovery branches cannot be resolved by choosing the numerically larger/newer branch absent a pre-established authority relation. AUTHENTIC_BRANCH != CURRENT_AUTHORITY and MAX_REVISION != VALID_RESOLUTION.
+7. AB104.506 and related authority-contract research bind protected authorization to authority epoch, revocation generation, dependency closure, fence revision and decision context. This supports treating authority evidence/provenance separately from effect reconciliation.
+
+### Strong historical conclusion
+The historical record supports a semantic chain stronger than the current 116R Reauthorize action:
+RECOVERY_AUTHORITY
++ TRUST/CONTINUITY EVIDENCE
++ OLD-AUTHORITY FENCING/INVALIDATION
++ NEW AUTHORITY CONFIGURATION
++ PROTECTED ACTIVATION
++ REQUIRED RECONCILIATION/EXCLUSIVITY AS APPLICABLE
+-> CURRENT_AUTHORITY
+
+However, the exact action/evidence relation that turns that chain into authority = VALID after revocation is NOT frozen in the canonical AB105.111R/112R history. The historical recovery sketches provide candidate mechanisms but do not authorize silently importing one into 116R.
+
+### S9 consequence
+Current 116R still has: Reconcile COMPLETE AND authorityEpoch = CURRENT -> authority = VALID.
+Pass 33 confirms that this is an explicit finite-model interpretation, not a historically established authority-promotion contract. The missing semantic roles remain:
+- AUTHORITY_EVIDENCE
+- AUTHORITY_CONFIGURATION / TRUST BASIS
+- AUTHORITY_STATE
+- CURRENT_AUTHORITY as the derived/applicable authorization condition
+- DECISION as a separate authorization object where applicable
+
+No A/B/C choice is made:
+- A: reconciliation itself may carry authority-bearing evidence;
+- B: separate fresh authority evidence establishes VALID;
+- C: explicit authority-establishment transition is required after revocation.
+These remain UNKNOWN/PENDING until a canonical frozen contract resolves them.
+
+### Additional historical refinement
+The old recoveryAuthorityEpoch sketch should be treated as provenance evidence only. Binding recovery to an epoch prevents silent cross-epoch reuse, but does NOT by itself prove independence, current configuration activation, exclusivity, or current authority.
+RECOVERY_AUTHORITY_EPOCH_BINDING != CURRENT_AUTHORITY_PROOF.
+
+### Status
+- AUTHORITY_PROVENANCE = semantic gap confirmed; historical layers separated.
+- RECOVERY_AUTHORITY_EPOCH = historical design evidence, not frozen final semantics.
+- PROMOTION_TO_CURRENT_AUTHORITY = UNDEFINED / UNKNOWN.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical anchor.
+- No AB105.117R created.
+
+### Next exact mission
+Audit the historical authority-establishment artifacts around the recovered recoveryAuthorityEpoch path and compare their inputs against AB104.506, AB104.563–565, AB105.087–088, and AB105.111–112. The goal is to determine whether any already-frozen contract defines the missing authority-bearing evidence/activation boundary. If none does, preserve the gap as UNKNOWN rather than inventing a promotion action.
