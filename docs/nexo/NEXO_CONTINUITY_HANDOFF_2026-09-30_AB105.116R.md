@@ -533,3 +533,12 @@ This reinforces the Pass 36 chain: protected semantic property/effect classifica
 No model change authorized. AB105.116R remains canonical; no AB105.117R. Pass 37 is audit-only until persisted.
 
 Next exact mission: trace EFFECT_FOOTPRINT/participant closure (AB104.405+) and separately continue tracing the issuer/lifecycle of CURRENT_AUTHORITY_DECISION; do not conflate effect classification with authority promotion.
+
+## AB105.116R audit pass 38 — effect footprint / participant closure — 2026-10-01
+AB104.405 confirms DECLARED_FOOTPRINT != EFFECTIVE/PROTECTED_FOOTPRINT. Hidden downstream databases, queues, callbacks, asynchronous workers, provider automations, fan-out, retries/redrives, cross-provider triggers, gateways, and resource-incarnation changes can expand the protected participant set. Required distinctions are DECLARED_FOOTPRINT, DISCOVERED_FOOTPRINT, OBSERVED_FOOTPRINT, PROTECTED_FOOTPRINT, and FOOTPRINT_CLOSURE_STATUS. Observed absence cannot prove footprint completeness. An unresolved protected participant yields CLOSURE_INCOMPLETE and cannot silently permit a higher-authority grant.
+
+Important boundary: ENQUEUE != DOWNSTREAM_EFFECT; PROVIDER_ACK != DOWNSTREAM_CONFIRMATION; RETRY != proof of identical downstream topology. A dynamically discovered protected participant requires a new admission boundary or UNKNOWN/HOLD unless the parent contract already proves safe inherited authorization and identity lineage.
+
+This strengthens the upstream chain for authority admission but does not resolve S9. Effect-footprint closure must remain separate from authority promotion. No model change authorized; AB105.116R remains canonical; no AB105.117R. Pass 38 is audit-only until persisted.
+
+Next exact mission: AB104.406, runtime expansion and lineage across queues/callbacks/retries/fan-out/provider boundaries, while independently continuing the issuer/lifecycle trace of CURRENT_AUTHORITY_DECISION.
