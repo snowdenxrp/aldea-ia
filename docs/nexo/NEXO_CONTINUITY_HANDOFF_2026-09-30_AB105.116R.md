@@ -1252,3 +1252,74 @@ AB104.421 — differential analyzer independence and common-mode failure: shared
 
 ### Continuity
 Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
+
+
+## AB105.116R audit pass 53 — differential analyzer independence — 2026-10-01
+
+### Historical artifact recovered
+AB104.421 (commit 840b9b796a19bfe85e0ce33fd8f8e29e0fb740b8) audits whether agreement between two cut analyzers constitutes independent assurance or merely common-mode confirmation.
+
+### Findings
+1. DIFFERENT_IMPLEMENTATIONS != INDEPENDENT_ANALYSIS. Shared specification, graph source, parser/normalizer, policy, test corpus, toolchain, runtime, deployment, trust roots, operator, recovery or time can preserve common-mode failure.
+2. ANALYZER_INDEPENDENCE is claim-specific: independence for implementation does not imply independence for specification, policy, graph source, trust, recovery or another claim-relevant domain.
+3. ANALYZER_AGREEMENT != CORRECTNESS_PROOF. Two analyzers can agree because they share the same wrong specification or compromised input graph.
+4. PROCESS_SEPARATION != FAILURE_DOMAIN_SEPARATION. Separate processes/containers can still share host, orchestration, deployment, policy, trust, operator or recovery dependencies.
+5. PARSER_DIVERSITY != SEMANTIC_PIPELINE_DIVERSITY. Distinct parsers can converge through shared normalization or dependency-closure components.
+6. DIFFERENTIAL_DISAGREEMENT must not silently select either result. Security-critical unresolved disagreement remains DISPUTED/UNKNOWN/HOLD until classified or independently resolved.
+7. Validation must bind the deployed artifact and policy versions to the evidence; substitution of a different binary or policy version makes the prior validation stale for current use.
+8. Recovery independence requires separate analysis; two operationally independent analyzers can share a compromised recovery snapshot or recovery authority.
+9. Analyzer trust/currentness changes require revalidation. Historical agreement remains historical evidence and cannot silently become current authority.
+10. A differential analyzer result remains evidence for Z1. It does not become authority, even when multiple analyzers agree.
+
+### External corroboration
+Classical Byzantine quorum work defines resilience against an explicit failure assumption/fail-prone system, while newer work on asymmetric trust likewise makes the tolerated failure structure an explicit part of quorum semantics. This supports keeping the failure model and independence assumptions explicit rather than inferring them from participant count or implementation diversity. citeturn0search2turn0search1
+
+### S9 consequence
+The protected chain remains:
+CONTINUITY_EVIDENCE -> INDEPENDENCE/CONSISTENCY APPRAISAL -> AUTHORITY_DECISION -> PROTECTED ACTIVATION -> CURRENT_AUTHORITY.
+
+AB104.421 strengthens the independence/consistency appraisal boundary but does not define the protected authority decision or activation protocol. S9 remains UNKNOWN/PENDING.
+
+### New semantic requirements
+Before model revision:
+- claim-specific analyzer independence semantics;
+- explicit common-mode dependency closure;
+- specification assurance independent from implementation diversity;
+- current artifact/policy binding;
+- analyzer-generation and invalidation semantics;
+- exact treatment of differential disagreement;
+- separate recovery-independence appraisal.
+
+No TLA+ model change authorized.
+
+### Status
+- DIFFERENT_IMPLEMENTATIONS != INDEPENDENT_ANALYSIS.
+- ANALYZER_AGREEMENT != CORRECTNESS_PROOF.
+- INDEPENDENCE_IS_CLAIM_SPECIFIC.
+- SPECIFICATION_AGREEMENT != SPECIFICATION_CORRECTNESS.
+- POLICY_AGREEMENT != POLICY_CORRECTNESS.
+- PARSER_DIVERSITY != SEMANTIC_PIPELINE_DIVERSITY.
+- PROCESS_SEPARATION != FAILURE_DOMAIN_SEPARATION.
+- DIFFERENTIAL_DISAGREEMENT => DISPUTED/UNKNOWN/HOLD.
+- VALIDATED_ARTIFACT_DIGEST mismatch => NO_CURRENT_VALIDATION candidate.
+- VALIDATED_POLICY_VERSION mismatch => STALE_ANALYSIS candidate.
+- RECOVERY_INDEPENDENCE_REQUIRES_SEPARATE_ANALYSIS.
+- DIFFERENTIAL_RESULT != AUTHORITY.
+- ANALYZER_INDEPENDENCE_POLICY = UNKNOWN/PENDING.
+- SPECIFICATION_ASSURANCE = UNKNOWN/PENDING.
+- DEPENDENCY_GRAPH_COMPLETENESS = UNKNOWN/PENDING.
+- BYZANTINE_FAILURE_MODEL = UNKNOWN/PENDING.
+- AUTHORITY_PROMOTION/PROTECTED_ACTIVATION = UNKNOWN/PENDING.
+- A/B/C = UNKNOWN/PENDING.
+- P1/P2 = UNKNOWN/PENDING.
+- S11 materiality = UNKNOWN/PENDING.
+- S12 exact correlation scope = UNKNOWN/PENDING.
+- MODEL_CHANGE = NOT AUTHORIZED.
+- AB105.116R remains canonical.
+- No AB105.117R created.
+
+### Exact next mission
+AB104.422 — specification common-mode failure: attack the protected failure-domain/quorum specification itself, including ambiguous semantics, incorrect failure assumptions, policy omissions, and independent assurance that the specification—not merely its implementations—is adequate.
+
+### Continuity
+Additive only. No historical AB artifact is modified or deleted. No extra backup/handoff file is created.
