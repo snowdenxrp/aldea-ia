@@ -2754,3 +2754,31 @@ No change to the experiment contract and no Nexo parallel artifact was created.
 ### EXACT NEXT ACTION
 
 AB104.857R — stop treating public source discoverability as an execution environment. Only a real checkout plus build/test runner can advance G0. If no such runner becomes available, preserve the experiment at this boundary.
+
+
+## 204. AB104.857R — Connected-repository recheck
+No Apache Kafka repository is installed in the connected GitHub workspace. The only installed repository remains `snowdenxrp/aldea-ia`. Public `apache/kafka` discovery does not provide an execution checkout.
+Status: CONNECTED_KAFKA_CHECKOUT=NOT_AVAILABLE; G0=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## 205. AB104.858R — Canonical-repo workflow-run check
+The latest canonical continuity commit `b308ac65225109b5f43c25cb97d535ba6c9c61bc` has no associated GitHub workflow runs. Therefore the canonical repo currently provides no hidden CI job that can be repurposed as a Kafka execution runner.
+Status: KAFKA_RUNNER_VIA_NEXO_CI=NOT_AVAILABLE; RUNTIME_EVIDENCE=ABSENT.
+
+## 206. AB104.859R — Execution boundary re-locked
+Public source discovery, repository connectivity, and executable build/test capability are now explicitly separated. None of the available connected surfaces supplies the required Kafka checkout + Gradle/JDK execution path. No source-only observation is promoted to G0 evidence.
+Status: EXECUTION_BOUNDARY=LOCKED; G0=NOT_PERFORMED; EXACT_RACE=NOT_EXECUTED; EXPLOITABILITY=UNKNOWN.
+
+## 207. AB104.860R — Experiment preservation
+The Kafka ACL revoke/in-flight Produce experiment remains implementation-ready but runtime-pending. The locked witness chain remains unchanged: A1 real ALLOW+barrier → D0 deletion complete → D1 target-broker fresh DENY → release → D2 real Produce path → E callback + target-log evidence. No step may be inferred from another.
+Status: WITNESS_CHAIN=LOCKED; NO_RUNTIME_WITNESS_OBTAINED.
+
+## 208. AB104.861R — No further source archaeology
+The prior source audit already closed the relevant harness design: wrapper subclassing/lifecycle, per-server configuration, ACL propagation, target-leader log witness, D1 direct authorization, and barrier isolation. Repeating those searches would add no new evidence. Further progress is gated on actual execution.
+Status: SOURCE_AUDIT=SUFFICIENT; ADDITIONAL_ARCHAEOLOGY=DEFERRED.
+
+## 209. AB104.862R — Negative finding remains bounded
+The absence of an execution runner does not establish that the Kafka race exists or does not exist. It only establishes that this environment has not executed the designed experiment.
+Status: RACE=UNKNOWN_BY_NONEXECUTION; SECURITY_CONCLUSION=NOT_REACHED.
+
+### EXACT NEXT ACTION
+AB104.863R — if a real Kafka checkout/build runner becomes available, run only G0 first. If not, keep the experiment frozen at the execution boundary and do not manufacture additional evidence.
