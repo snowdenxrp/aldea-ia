@@ -158,6 +158,8 @@ jobs:
 
           import org.apache.kafka.clients.admin.Admin;
           import org.apache.kafka.common.acl.AclBinding;
+          import org.apache.kafka.common.acl.AclBindingFilter;
+          import org.apache.kafka.common.acl.AccessControlEntryFilter;
           import org.apache.kafka.clients.admin.NewTopic;
           import org.apache.kafka.clients.producer.KafkaProducer;
           import org.apache.kafka.clients.producer.Producer;
@@ -189,14 +191,14 @@ jobs:
           import static org.apache.kafka.common.resource.ResourceType.TOPIC;
 
           public final class NexoG0OrderingWitnessTest {
-              private static final String TOPIC = "nexo-g0-ordering";
+              private static final String TOPIC_NAME = "nexo-g0-ordering";
               private static final String USER = "plain-user1";
               private static final String PASSWORD = "plain-user1-secret";
               private static final String CLIENT_ID = "nexo-g0-ordering";
 
               private static AclBinding userWriteAcl() {
                   return new AclBinding(
-                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
                       new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW));
               }
 
@@ -222,7 +224,7 @@ jobs:
 
               private static boolean tryProduce(Producer<byte[], byte[]> producer) {
                   try {
-                      producer.send(new ProducerRecord<>(TOPIC, new byte[] {1})).get(10, TimeUnit.SECONDS);
+                      producer.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {1})).get(10, TimeUnit.SECONDS);
                       return true;
                   } catch (Exception e) {
                       return false;
@@ -249,7 +251,7 @@ jobs:
                       cluster.waitForReadyBrokers();
 
                       try (Admin admin = cluster.admin()) {
-                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+                          admin.createTopics(List.of(new NewTopic(TOPIC_NAME, 1, (short) 1))).all().get();
                       }
 
                       try (Producer<byte[], byte[]> producer = new KafkaProducer<>(
@@ -279,7 +281,7 @@ jobs:
                               try (Admin admin = cluster.admin()) {
                                   admin.deleteAcls(List.of(
                                       new AclBindingFilter(
-                                          new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
+                                          new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
                                           AccessControlEntryFilter.ANY)
                                   )).all().get();
                               }
