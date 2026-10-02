@@ -171,6 +171,7 @@ public class NexoJmmCausalWindowTest {
             StandardAuthorizer authorizer = newAuthorizer();
             Uuid id = new Uuid(iteration + 501L, iteration + 1501L);
             authorizer.addAcl(id, acl());
+            Object preRemoveCache = aclCacheOf(authorizer);
 
             List<AuthorizationResult> baseline =
                 authorizer.authorize(context(), List.of(writeAction()));
@@ -232,12 +233,13 @@ public class NexoJmmCausalWindowTest {
             assertTrue(!writer.isAlive(), "writer did not finish");
 
             Object postRemoveCache = aclCacheOf(authorizer);
+            assertTrue(postRemoveCache != preRemoveCache, "removeAcl must publish a distinct cache instance");
             for (ArrayList<Observation> local : readerObservations) {
                 for (Observation observation : local) {
                     classifyObservation(observation, writerObservation, counts);
                     if (observation.result == AuthorizationResult.ALLOWED
                         && observation.enter > writerObservation.exit
-                        && observation.cacheBeforeAuthorize == postRemoveCache) {
+                        && observation.cacheBeforeAuthorize == preRemoveCache) {
                         counts.postReturnAllowedWithPreRemoveCache++;
                     }
                 }
