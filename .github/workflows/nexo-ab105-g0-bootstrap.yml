@@ -60,6 +60,7 @@ jobs:
           import org.apache.kafka.common.acl.AclBinding;
           import org.apache.kafka.common.acl.AclBindingFilter;
           import org.apache.kafka.common.acl.AccessControlEntry;
+          import org.apache.kafka.common.acl.AccessControlEntryFilter;
           import org.apache.kafka.common.acl.AclOperation;
           import org.apache.kafka.common.acl.AclPermissionType;
           import org.apache.kafka.common.config.SaslConfigs;
@@ -67,7 +68,6 @@ jobs:
           import org.apache.kafka.common.security.auth.KafkaPrincipal;
           import org.apache.kafka.common.security.auth.SecurityProtocol;
           import org.apache.kafka.common.TopicPartition;
-          import org.apache.kafka.common.acl.AclBindingFilter;
           import org.apache.kafka.common.resource.PatternType;
           import org.apache.kafka.common.resource.ResourcePattern;
           import org.apache.kafka.common.resource.ResourceType;
@@ -101,7 +101,7 @@ jobs:
           import static org.apache.kafka.common.resource.ResourceType.TOPIC;
 
           public final class NexoG0RuntimeTest {
-              private static final String TOPIC = "nexo-g0-runtime";
+              private static final String TOPIC_NAME = "nexo-g0-runtime";
               private static final String USER = "plain-user1";
               private static final String PASSWORD = "plain-user1-secret";
               private static final CountDownLatch A1_OBSERVED = new CountDownLatch(1);
@@ -118,7 +118,7 @@ jobs:
                               && actions.size() == 1
                               && actions.get(0).operation() == WRITE
                               && actions.get(0).resourcePattern().resourceType() == TOPIC
-                              && TOPIC.name().equals(actions.get(0).resourcePattern().name())
+                              && TOPIC_NAME.equals(actions.get(0).resourcePattern().name())
                               && !results.isEmpty()
                               && results.get(0) == AuthorizationResult.ALLOWED) {
                           A1_OBSERVED.countDown();
@@ -147,13 +147,13 @@ jobs:
 
               private static AclBinding userWriteAcl() {
                   return new AclBinding(
-                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
                       new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW));
               }
 
               private static long exactE(BrokerServer broker) {
                   return broker.logManager()
-                      .getLog(new TopicPartition(TOPIC, 0), false)
+                      .getLog(new TopicPartition(TOPIC_NAME, 0), false)
                       .map(UnifiedLog::logEndOffset)
                       .orElse(-1L);
               }
@@ -165,7 +165,7 @@ jobs:
                       @Override public KafkaPrincipal principal() { return new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER); }
                       @Override public InetAddress clientAddress() { return null; }
                       @Override public int requestType() { return org.apache.kafka.common.protocol.ApiKeys.PRODUCE.id; }
-                      @Override public short requestVersion() { return 0; }
+                      @Override public int requestVersion() { return 0; }
                       @Override public String clientId() { return "nexo-g0-d1"; }
                       @Override public int correlationId() { return 0; }
                   };
@@ -216,7 +216,7 @@ jobs:
                           )) {{ putAll(userClient()); }})) {
                               d2 = executor.submit(() -> {
                                   try {
-                                      producer.send(new ProducerRecord<>(TOPIC, new byte[] {1})).get();
+                                      producer.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {1})).get();
                                   } catch (Exception e) {
                                       throw new RuntimeException(e);
                                   }
@@ -228,7 +228,7 @@ jobs:
                                   admin.deleteAcls(
                                       List.of(new AclBindingFilter(
                                           new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
-                                          AccessControlEntry.ANY.toFilter())),
+                                          AccessControlEntryFilter.ANY)),
                                       new DeleteAclsOptions()).all().get();
                               }
 
