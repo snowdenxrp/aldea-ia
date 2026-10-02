@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - nexo-ab105-g0-jmm-causal-window
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
