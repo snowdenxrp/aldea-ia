@@ -329,3 +329,50 @@ No tratar `ReentrantLock` de KafkaEventQueue como sincronización de la autoriza
 
 ### Próximo paso
 Formalizar el pequeño grafo JMM de la ruta incremental: escrituras/lecturas de `data`, `aclCache`, publicación del objeto y acciones de los hilos, y separar estrictamente `happens-before`, `synchronizes-with` y simple orden temporal `nanoTime`.
+
+
+## CHECKPOINT — grafo JMM formalizado para ruta incremental
+Fecha: 2026-10-02
+
+### Grafo mínimo
+Definimos, para un objeto D = StandardAuthorizerData ya publicado por StandardAuthorizer.data:
+W0: construcción/publicación inicial de D y su aclCache inicial.
+V0: lectura volatile de StandardAuthorizer.data por un hilo de authorize() que obtiene D.
+R0: lectura de D.aclCache dentro de findAclRule().
+W1: hilo MetadataLoader/AclPublisher ejecuta D.removeAcl(id) y hace D.aclCache = newCache.
+R1: una autorización concurrente vuelve a leer D.aclCache.
+
+### Relaciones JMM separadas
+🟢 Si W0 ocurre antes de la escritura volatile de StandardAuthorizer.data, y V0 lee esa publicación volatile, las acciones anteriores a esa escritura quedan ordenadas antes de V0 por la semántica volatile/happens-before. Eso cubre la publicación inicial correspondiente.
+🔵 W1 es posterior a esa publicación y es una escritura ordinaria sobre D.aclCache. La posterioridad temporal no crea por sí sola happens-before.
+🔵 R1 es una lectura ordinaria de D.aclCache. Si no existe una cadena de sincronización adicional entre W1 y R1, tampoco hay synchronizes-with ni happens-before W1→R1 identificada.
+🔴 El volatile de StandardAuthorizer.data NO arrastra automáticamente las futuras escrituras plain de D.aclCache. Leer el mismo valor volatile D otra vez no convierte W1 en volatile.
+
+### Distinción crucial
+- nanoTime: relación temporal observada por el harness; NO es JMM happens-before.
+- join(): sí establece una relación de sincronización para las acciones realizadas antes de la terminación del hilo respecto del hilo que hace join(), pero el discriminador clasifica después de join() y no usa ese join() para comunicar el estado de ACL entre writer y reader durante la carrera.
+- ReentrantLock de KafkaEventQueue: sincroniza productores/event-handler en la administración de la cola; no envuelve la llamada event.run() y no es adquirido por authorize().
+- volatile data: publica/reemplaza la referencia StandardAuthorizerData cuando esa referencia se escribe; no hace volatile aclCache.
+
+### Qué permite concluir el modelo
+🟢 Existe una ruta concurrente real con W1 y R1 sobre el mismo StandardAuthorizerData.
+🟢 No se identificó HB W1→R1 para la reasignación incremental de aclCache.
+🔵 El modelo JMM deja abierta la posibilidad de que una lectura ordinaria no observe inmediatamente la escritura ordinaria concurrente; esto es una propiedad del modelo, no una observación del harness.
+🔴 No se ha demostrado que R1 vaya a devolver ALLOWED después de W1 en una ejecución real, ni que el cliente pueda convertir esa posibilidad en una autorización indebida.
+🔴 Tampoco se ha demostrado que el código sea necesariamente incorrecto bajo alguna interpretación adicional del entorno: todavía hay que revisar la publicación/estructura de AclCache, la cadena completa de llamadas RPC y si existe sincronización externa fuera de estas clases.
+
+### Estado
+JMM graph: PARTIAL-FORMALIZED.
+HB W1→R1: NOT_IDENTIFIED.
+Stale read in production: UNKNOWN.
+Stale ALLOWED after revocation: UNKNOWN.
+Exploitability: UNKNOWN.
+Generalization: UNKNOWN.
+Production impact: UNKNOWN.
+Security conclusion: NOT_ESTABLISHED.
+
+### DO-NOT-REPEAT
+No presentar plain + no HB como prueba de exploit. No usar nanoTime, join() del harness ni el lock interno de la cola como sustitutos de una sincronización entre writer y RPC reader.
+
+### Próximo paso
+Revisar AclCache y la ruta RPC hasta StandardAuthorizer.authorize() para determinar si existe una sincronización externa o una publicación alternativa que cierre W1→R1.
