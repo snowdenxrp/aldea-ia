@@ -29,10 +29,10 @@ import org.apache.kafka.server.authorizer.AuthorizationResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.ArrayList;
 
 import static org.apache.kafka.common.acl.AclOperation.WRITE;
 import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
@@ -99,14 +99,60 @@ public class NexoJmmCausalWindowTest {
         long exit = Long.MAX_VALUE;
     }
 
+    private static final class ClassificationCounts {
+        long postReturnAllowed;
+        long postReturnDenied;
+        long overlapAllowed;
+        long overlapDenied;
+        long unexpected;
+        long observations;
+    }
+
+    private static void classifyObservation(
+        Observation observation,
+        WriterObservation writerObservation,
+        ClassificationCounts counts
+    ) {
+        counts.observations++;
+        if (observation.result == null) {
+            counts.unexpected++;
+        } else if (observation.enter > writerObservation.exit) {
+            classifyPostReturn(observation, counts);
+        } else if (observation.enter <= writerObservation.exit
+            && observation.exit >= writerObservation.enter) {
+            classifyOverlap(observation, counts);
+        }
+    }
+
+    private static void classifyPostReturn(
+        Observation observation,
+        ClassificationCounts counts
+    ) {
+        if (observation.result == AuthorizationResult.ALLOWED) {
+            counts.postReturnAllowed++;
+        } else if (observation.result == AuthorizationResult.DENIED) {
+            counts.postReturnDenied++;
+        } else {
+            counts.unexpected++;
+        }
+    }
+
+    private static void classifyOverlap(
+        Observation observation,
+        ClassificationCounts counts
+    ) {
+        if (observation.result == AuthorizationResult.ALLOWED) {
+            counts.overlapAllowed++;
+        } else if (observation.result == AuthorizationResult.DENIED) {
+            counts.overlapDenied++;
+        } else {
+            counts.unexpected++;
+        }
+    }
+
     @Test
     public void causalPostReturnWindowIsDiagnosticOnly() throws Exception {
-        long postReturnAllowed = 0;
-        long postReturnDenied = 0;
-        long overlapAllowed = 0;
-        long overlapDenied = 0;
-        long unexpected = 0;
-        long observations = 0;
+        ClassificationCounts counts = new ClassificationCounts();
 
         for (int iteration = 0; iteration < ITERATIONS; iteration++) {
             StandardAuthorizer authorizer = newAuthorizer();
@@ -172,27 +218,7 @@ public class NexoJmmCausalWindowTest {
 
             for (ArrayList<Observation> local : readerObservations) {
                 for (Observation observation : local) {
-                    observations++;
-                    if (observation.result == null) {
-                        unexpected++;
-                    } else if (observation.enter > writerObservation.exit) {
-                        if (observation.result == AuthorizationResult.ALLOWED) {
-                            postReturnAllowed++;
-                        } else if (observation.result == AuthorizationResult.DENIED) {
-                            postReturnDenied++;
-                        } else {
-                            unexpected++;
-                        }
-                    } else if (observation.enter <= writerObservation.exit
-                        && observation.exit >= writerObservation.enter) {
-                        if (observation.result == AuthorizationResult.ALLOWED) {
-                            overlapAllowed++;
-                        } else if (observation.result == AuthorizationResult.DENIED) {
-                            overlapDenied++;
-                        } else {
-                            unexpected++;
-                        }
-                    }
+                    classifyObservation(observation, writerObservation, counts);
                 }
             }
         }
@@ -200,14 +226,14 @@ public class NexoJmmCausalWindowTest {
         System.out.println(
             "CAUSAL_JMM_RACE ITERATIONS=" + ITERATIONS +
             " READERS=" + READERS +
-            " OBSERVATIONS=" + observations +
-            " POST_RETURN_ALLOWED=" + postReturnAllowed +
-            " POST_RETURN_DENIED=" + postReturnDenied +
-            " OVERLAP_ALLOWED=" + overlapAllowed +
-            " OVERLAP_DENIED=" + overlapDenied +
-            " UNEXPECTED=" + unexpected);
+            " OBSERVATIONS=" + counts.observations +
+            " POST_RETURN_ALLOWED=" + counts.postReturnAllowed +
+            " POST_RETURN_DENIED=" + counts.postReturnDenied +
+            " OVERLAP_ALLOWED=" + counts.overlapAllowed +
+            " OVERLAP_DENIED=" + counts.overlapDenied +
+            " UNEXPECTED=" + counts.unexpected);
 
-        assertEquals(0, unexpected, "diagnostic encountered unexpected execution failures");
+        assertEquals(0, counts.unexpected, "diagnostic encountered unexpected execution failures");
     }
 
 }
