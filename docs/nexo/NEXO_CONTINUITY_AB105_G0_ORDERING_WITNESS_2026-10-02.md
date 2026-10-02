@@ -353,3 +353,35 @@ EXPLOITABILITY=UNKNOWN
 AB105.116R=INTACT
 AB105.117R=NOT_CREATED
 TLC=NOT_RERUN
+
+
+## RE-AUDIT UPDATE — 2026-10-02
+A fresh cross-check found that the prior continuity pointer was stale: commit 29242e6e59a6c1b18c681383d250eaa4a436228b removed a duplicate W1 probe rewrite after 91c2a7a. The previous canonical note did not record this later correction.
+
+A second executable-path defect was found in the PR #94 ordering workflow: its W1 rewrite referenced removedAcl without declaring it. The main ordering workflow was corrected on the active branch:
+- 3ab2aa33f45324d0e2414945e34c41e60973549e
+- f7163aa8e193fd3d77db90ebd2aec1850bc3da13
+- aa1d8c65bcf6842abc76fbb0d595d9ecd52a0c02
+- 1eb2e07cad798742518c2cbdd091044fb80f723e
+
+The main workflow now uses source-marker W1 insertion and emits correlationId on ENQUEUE, DEQUEUE, AUTH_ENTER, and AUTH_DECISION. The v2 helper duplication was also removed.
+
+Run 37061544071 must not be treated as ordering evidence: it was NEXO AB105 G0 Kafka Bootstrap and failed compiling the older NexoG0RuntimeTest at ResourcePattern(TOPIC, TOPIC, LITERAL). No NEXO_ORDER evidence was obtained from it.
+
+Persisted re-audit:
+docs/nexo/NEXO_AB105_G0_ORDERING_WITNESS_REAUDIT_2026-10-02.md
+commit b366f16784204b6c2cd1ddb390c0d4df2813e474
+
+Current epistemic state remains:
+ORDERING_WITNESS_INSTALL=NOT_VERIFIED_AFTER_REAUDIT_CORRECTIONS
+ORDERING_WITNESS_RUNTIME=NOT_OBSERVED
+NEXO_ORDER_RAW_EVENTS=NOT_OBSERVED_AFTER_REAUDIT_CORRECTIONS
+W1_TO_R1=UNKNOWN
+JMM_HAPPENS_BEFORE=UNKNOWN
+EXACT_RACE=UNKNOWN
+EXPLOITABILITY=UNKNOWN
+AB105.116R=INTACT
+AB105.117R=NOT_CREATED
+TLC=NOT_RERUN
+
+Next action: verify the Actions run(s) triggered by the corrected ordering workflow, then inspect compile/runtime logs and raw NEXO_ORDER artifact before any scientific promotion.
