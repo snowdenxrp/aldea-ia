@@ -540,3 +540,30 @@ No claim that volatile `data` makes `aclCache` safe. No claim that absence of an
 
 ### Next
 Check whether `RequestChannel` itself introduces synchronization that reaches ACL publisher state (likely queue-local only), then inspect any broker-wide lifecycle barrier shared by metadata and request processing.
+
+
+## CHECKPOINT — RequestChannel synchronization does not connect ACL mutation to authorization
+Fecha: 2026-10-02
+
+🟢 `RequestChannel.requestQueue` es `ArrayBlockingQueue`; `sendRequest()` usa `put()` y `receiveRequest()` usa `poll/take`, por lo que existe la sincronización propia de la transferencia de requests.
+🔵 Esa relación publica el objeto `Request` desde el lado de red hacia el request-handler que lo consume.
+🔴 No es una barrera sobre el estado de `StandardAuthorizerData`: el ACL mutation path no hace `sendRequest()` de la misma cola antes de W1 ni el request authorization path hace una operación de esa cola después de W1.
+🟢 `KafkaRequestHandler` recibe el request y ejecuta `apis.handle()` directamente; no aparece un lock de RequestChannel mantenido durante `authorize()`.
+
+### Límite actual del grafo
+`metadata event thread → W1(plain aclCache write)`
+`request thread → R1(plain aclCache read)`
+`RequestChannel HB` queda en la transferencia del objeto `Request`, no conecta esas dos cadenas.
+
+### Estado
+`HB W1→R1 = NOT_IDENTIFIED`
+`REQUEST_CHANNEL_CLOSURE = NOT_PRESENT`
+`LIFECYCLE_GLOBAL_BARRIER = NOT_IDENTIFIED`
+`STALE_READ = UNKNOWN`
+`STALE_ALLOWED = UNKNOWN`
+`EXPLOITABILITY = UNKNOWN`
+`GENERALIZATION = UNKNOWN`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+### Próximo
+Revisar lifecycle de `BrokerServer`/`MetadataLoader` para comprobar si existe una barrera común que obligue a los request handlers a observar cada actualización ACL. Si tampoco existe, queda formalizado el límite arquitectónico de esta investigación; todavía no equivale a demostrar una lectura stale en producción.
