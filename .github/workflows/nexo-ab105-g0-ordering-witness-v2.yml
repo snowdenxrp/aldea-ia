@@ -33,7 +33,7 @@ jobs:
           start = wf.index("cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'") + len("cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'\n")
           end = wf.index("\n          EOF", start)
           test = wf[start:end]
-          test = test.replace("import org.apache.kafka.common.acl.AclBinding;","import org.apache.kafka.common.acl.AclBinding;\n          import org.apache.kafka.common.acl.AclBindingFilter;\n          import org.apache.kafka.common.acl.AccessControlEntryFilter;")
+          test = test.replace("import org.apache.kafka.common.acl.AclBinding;","import org.apache.kafka.common.acl.AclBinding;\n          import org.apache.kafka.common.acl.AclBindingFilter;\n          import org.apache.kafka.common.acl.AccessControlEntryFilter;")\n          test = test.replace("List<AclBinding> d0Targets = List.of();", "Collection<AclBinding> d0Targets = List.of();")
           p = Path("server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java")
           p.parent.mkdir(parents=True, exist_ok=True)
           p.write_text(test)
