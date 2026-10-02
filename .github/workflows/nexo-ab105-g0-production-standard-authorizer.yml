@@ -94,14 +94,9 @@ jobs:
                   );
               }
 
-              private static Map<String, Object> withBootstrap(Map<String, Object> props, String bootstrap) {
-                  props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap);
-                  return props;
-              }
-
-              private static Map<String, Object> producerProps() {
+              private static Map<String, Object> producerProps(String bootstrap) {
                   Map<String, Object> props = new HashMap<>();
-                  props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "__BOOTSTRAP__");
+                  props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap);
                   props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
                   props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
                   props.put(ProducerConfig.ACKS_CONFIG, "all");
