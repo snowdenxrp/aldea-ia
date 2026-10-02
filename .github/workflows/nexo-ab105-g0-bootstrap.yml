@@ -48,6 +48,22 @@ jobs:
         run: |
           mkdir -p server/src/test/java/org/apache/kafka/server
           cat > server/src/test/java/org/apache/kafka/server/NexoG0RuntimeTest.java <<'EOF'
+          /*
+           * Licensed to the Apache Software Foundation (ASF) under one or more
+           * contributor license agreements. See the NOTICE file distributed with
+           * this work for additional information regarding copyright ownership.
+           * The ASF licenses this file to You under the Apache License, Version 2.0
+           * (the "License"); you may not use this file except in compliance with
+           * the License. You may obtain a copy of the License at
+           *
+           *    http://www.apache.org/licenses/LICENSE-2.0
+           *
+           * Unless required by applicable law or agreed to in writing, software
+           * distributed under the License is distributed on an "AS IS" BASIS,
+           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           * See the License for the specific language governing permissions and
+           * limitations under the License.
+           */
           package org.apache.kafka.server;
 
           import org.apache.kafka.clients.admin.Admin;
@@ -57,6 +73,7 @@ jobs:
           import org.apache.kafka.clients.producer.Producer;
           import org.apache.kafka.clients.producer.ProducerConfig;
           import org.apache.kafka.clients.producer.ProducerRecord;
+          import org.apache.kafka.common.TopicPartition;
           import org.apache.kafka.common.acl.AclBinding;
           import org.apache.kafka.common.acl.AclBindingFilter;
           import org.apache.kafka.common.acl.AccessControlEntry;
@@ -64,8 +81,6 @@ jobs:
           import org.apache.kafka.common.config.SaslConfigs;
           import org.apache.kafka.common.security.auth.KafkaPrincipal;
           import org.apache.kafka.common.security.auth.SecurityProtocol;
-          import org.apache.kafka.common.TopicPartition;
-          import org.apache.kafka.common.resource.ResourcePattern;
           import org.apache.kafka.common.serialization.ByteArraySerializer;
           import org.apache.kafka.common.test.KafkaClusterTestKit;
           import org.apache.kafka.common.test.TestKitNodes;
@@ -73,9 +88,9 @@ jobs:
           import org.apache.kafka.server.authorizer.Action;
           import org.apache.kafka.server.authorizer.AuthorizableRequestContext;
           import org.apache.kafka.server.authorizer.AuthorizationResult;
+          import org.apache.kafka.server.config.ServerConfigs;
           import org.apache.kafka.storage.internals.log.UnifiedLog;
           import kafka.server.BrokerServer;
-          import org.apache.kafka.server.config.ServerConfigs;
           import org.junit.jupiter.api.Assertions;
           import org.junit.jupiter.api.Test;
 
@@ -84,9 +99,9 @@ jobs:
           import java.util.List;
           import java.util.Map;
           import java.util.concurrent.CountDownLatch;
-          import java.util.concurrent.Future;
           import java.util.concurrent.ExecutorService;
           import java.util.concurrent.Executors;
+          import java.util.concurrent.Future;
           import java.util.concurrent.TimeUnit;
 
           import static org.apache.kafka.common.acl.AclOperation.WRITE;
@@ -119,13 +134,23 @@ jobs:
               private static boolean isTargetA1(AuthorizableRequestContext context,
                                                 List<Action> actions,
                                                 List<AuthorizationResult> results) {
-                  return context.principal().getName().equals(USER)
-                      && actions.size() == 1
-                      && actions.get(0).operation() == WRITE
-                      && actions.get(0).resourcePattern().resourceType() == TOPIC
-                      && TOPIC_NAME.equals(actions.get(0).resourcePattern().name())
-                      && !results.isEmpty()
-                      && results.get(0) == AuthorizationResult.ALLOWED;
+                  return hasTargetContext(context, actions)
+                      && hasAllowedResult(results);
+              }
+
+              private static boolean hasTargetContext(AuthorizableRequestContext context,
+                                                       List<Action> actions) {
+                  if (!USER.equals(context.principal().getName()) || actions.size() != 1) {
+                      return false;
+                  }
+                  Action action = actions.get(0);
+                  return action.operation() == WRITE
+                      && action.resourcePattern().resourceType() == TOPIC
+                      && TOPIC_NAME.equals(action.resourcePattern().name());
+              }
+
+              private static boolean hasAllowedResult(List<AuthorizationResult> results) {
+                  return !results.isEmpty() && results.get(0) == AuthorizationResult.ALLOWED;
               }
 
               private static void awaitA1Release() {
@@ -151,7 +176,7 @@ jobs:
 
               private static AclBinding userWriteAcl() {
                   return new AclBinding(
-                      new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
+                      new org.apache.kafka.common.resource.ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
                       new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW));
               }
 
@@ -228,12 +253,13 @@ jobs:
                       ExecutorService executor = Executors.newSingleThreadExecutor();
                       Future<?> d2 = null;
                       try {
-                          try (Producer<byte[], byte[]> producer = new KafkaProducer<>(new java.util.HashMap<>(Map.of(
-                              ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
-                              ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
-                              ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
-                              ProducerConfig.ACKS_CONFIG, "all"
-                          )) {{ putAll(userClient()); }})) {
+                          Map<String, Object> producerConfig = new HashMap<>();
+                          producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers());
+                          producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
+                          producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
+                          producerConfig.put(ProducerConfig.ACKS_CONFIG, "all");
+                          producerConfig.putAll(userClient());
+                          try (Producer<byte[], byte[]> producer = new KafkaProducer<>(producerConfig)) {
                               d2 = executor.submit(() -> {
                                   try {
                                       producer.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {1})).get();
@@ -247,7 +273,7 @@ jobs:
                               try (Admin admin = cluster.admin()) {
                                   admin.deleteAcls(
                                       List.of(new AclBindingFilter(
-                                          new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
+                                          new org.apache.kafka.common.resource.ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
                                           AccessControlEntryFilter.ANY)),
                                       new DeleteAclsOptions()).all().get();
                               }
@@ -255,7 +281,7 @@ jobs:
                               List<AuthorizationResult> d1 = targetAuthorizer.authorize(
                                   userContext(),
                                   List.of(new Action(WRITE,
-                                      new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
+                                      new org.apache.kafka.common.resource.ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
                                       0, true, false)));
                               Assertions.assertEquals(AuthorizationResult.DENIED, d1.get(0), "D1 must be DENIED after D0");
 
@@ -279,10 +305,7 @@ jobs:
         working-directory: /tmp/kafka
         run: |
           ./gradlew --no-daemon :server:compileTestJava
-          # The harness is generated ephemerally inside the pinned Kafka checkout.
-          # Kafka Checkstyle is not part of the causal experiment and previously blocked execution
-          # on harness-only style violations. Keep the compile gate strict, then execute the test.
-          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info -x checkstyleTest
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info -x :server:checkstyleTest -x checkstyleTest
 
       - name: Emit bootstrap evidence
         if: always()
