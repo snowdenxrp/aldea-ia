@@ -49,11 +49,11 @@ jobs:
           marker = "            AclCache aclCacheSnapshot = aclCache.removeAcl(id);"
           if source.count(marker) != 1:
               raise SystemExit("W1 marker mismatch")
-          source = source.replace(marker, "            StandardAcl removedAcl = aclCache.getAcl(id);\n" + marker, 1)
+          source = source.replace(marker, "            StandardAcl removedAcl = aclCache.getAcl(id);" + chr(10) + marker, 1)
           marker2 = "            aclCache = aclCacheSnapshot;"
           if source.count(marker2) != 1:
               raise SystemExit("W1 commit marker mismatch")
-          source = source.replace(marker2, marker2 + "\n            System.err.println(\"NEXO_ORDER ACL_W1 ns=\" + System.nanoTime() + \" thread=\" + Thread.currentThread().getName() + \" id=\" + id + \" acl=\" + removedAcl);", 1)
+          source = source.replace(marker2, marker2 + chr(10) + "            System.err.println(\"NEXO_ORDER ACL_W1 ns=\" + System.nanoTime() + \" thread=\" + Thread.currentThread().getName() + \" id=\" + id + \" acl=\" + removedAcl);", 1)
           p.write_text(source)
 
           replace_once("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java", """        KafkaPrincipal principal = baseKafkaPrincipal(requestContext);
