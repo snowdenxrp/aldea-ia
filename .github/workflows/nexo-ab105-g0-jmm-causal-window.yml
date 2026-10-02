@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - nexo-ab105-g0-jmm-causal-window
+      - nexo-ab105-g0-authorize-snapshot-diagnostic
   pull_request:
     branches:
       - main
