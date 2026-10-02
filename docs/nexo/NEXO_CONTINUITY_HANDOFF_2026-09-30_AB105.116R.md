@@ -1682,3 +1682,51 @@ Additive only. No historical artifact modified or deleted. No extra backup/hando
 
 ### Exact next mission
 Return to **AB104.431** — linearizable reads, leases, watches and fencing as currentness mechanisms — with the recovered G0 evidence preserved as a separate experimental witness, not merged into the semantic conclusion.
+
+
+## AB105.116R audit pass 63 — AB104.431 revalidation: currentness mechanisms and protected-effect boundary — 2026-10-02
+
+### Historical artifact recovered
+AB104.431 exists at commit `dbb59fc550277ca2958d5df292a8ad48ef434a37`. It was research/design only; no implementation was performed.
+
+### External corroboration
+Current etcd API documentation distinguishes linearizable KV operations from watch delivery and leases. Linearizable KV operations reflect cluster consensus at the operation's linearization point; serializable/local reads may be stale. Watch events are ordered/reliable within the available history window and resumable from a revision, but watch itself is not a linearizability guarantee. Lease TTL is a liveness mechanism and expires attached keys; it does not by itself establish stale-request exclusion. citeturn0search1turn0search6
+
+### Recovered semantic findings
+1. CURRENT_READ establishes state at a defined read/linearization point; it does not freeze that state for a later external effect.
+2. CURRENT_READ != FUTURE_AUTHORIZATION.
+3. LINEARIZABLE_READ != LINEARIZABLE_EFFECT unless the protected effect boundary participates in the same atomic/conditional/fencing protocol.
+4. LEASE_VALID != REQUEST_CURRENT; lease expiration/liveness and stale-actor exclusion are distinct proof obligations.
+5. WATCH_CURRENTNESS requires ordered continuity, gap detection, resumability/recovery, and revalidation after continuity loss. A watch can be delayed or disconnected; a progress signal from a partitioned/non-quorum member can itself lag a quorum read. citeturn0search1turn0search8
+6. CONDITIONAL_MUTATION_AT_EFFECT_BOUNDARY is materially stronger for stale-target exclusion than READ_THEN_UNCONDITIONAL_WRITE, because the resource checks the generation/version at mutation time.
+7. A consistency guarantee is scoped to its consistency domain; a linearizable read in authority service A does not automatically linearize an unrelated effect in resource/provider B.
+8. FENCING protects the resource boundary against stale actors when the resource actually enforces the fence; it does not by itself prove upstream authority currentness.
+9. Multi-resource effects remain subject to partial-commit/reconciliation unless an atomic cross-resource protocol actually exists.
+10. The strongest read available is therefore not a universal currentness solution; the protected property must be enforced at the boundary where the protected effect becomes possible.
+
+### Boundary model recovered
+READ_CURRENT → DECIDE → EXTERNAL_EFFECT remains a TOCTOU window.
+
+A stronger composition is:
+CURRENT AUTHORITY EVIDENCE → RESOURCE-BOUND FENCE / CONDITIONAL MUTATION → EFFECT OUTCOME → RECONCILIATION.
+
+Each stage has a different proof obligation:
+- read = state evidence;
+- fence/conditional mutation = stale-actor or stale-target enforcement;
+- effect outcome = what actually happened;
+- reconciliation = recovery/uncertainty closure.
+
+### Status
+AB104.431 = REVALIDATED / SEMANTICALLY FROZEN.
+CURRENT_READ_VS_CURRENT_EFFECT = DISTINCTION CONFIRMED.
+LEASE_VS_FENCE = DISTINCT.
+WATCH_GAP_CURRENTNESS = REQUIRES EXPLICIT RECOVERY.
+MODEL_CHANGE = NOT AUTHORIZED.
+AB105.116R remains canonical.
+No AB105.117R created.
+
+### Exact next mission
+AB104.432 — lease/fence crash-restart semantics and delayed requests: investigate process crash, lease renewal, failover, delayed/duplicated requests, resource restart, and persistence/monotonicity of fence state across recovery.
+
+### Continuity
+Additive only. No historical artifact modified or deleted. No extra backup/handoff file created.
