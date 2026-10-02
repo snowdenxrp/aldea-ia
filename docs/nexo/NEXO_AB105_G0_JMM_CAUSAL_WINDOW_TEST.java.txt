@@ -20,6 +20,7 @@ package org.apache.kafka.metadata.authorizer;
 import org.apache.kafka.common.Endpoint;
 import org.apache.kafka.common.Uuid;
 import org.apache.kafka.common.metrics.Metrics;
+import org.apache.kafka.common.metrics.internals.PluginMetricsImpl;
 import org.apache.kafka.common.resource.ResourcePattern;
 import org.apache.kafka.common.security.auth.KafkaPrincipal;
 import org.apache.kafka.common.security.auth.SecurityProtocol;
@@ -31,8 +32,7 @@ import org.junit.jupiter.api.Timeout;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ArrayList;
 
 import static org.apache.kafka.common.acl.AclOperation.WRITE;
 import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
@@ -82,14 +82,31 @@ public class NexoJmmCausalWindowTest {
             false);
     }
 
+    private static final class Observation {
+        final long enter;
+        final long exit;
+        final AuthorizationResult result;
+
+        Observation(long enter, long exit, AuthorizationResult result) {
+            this.enter = enter;
+            this.exit = exit;
+            this.result = result;
+        }
+    }
+
+    private static final class WriterObservation {
+        long enter = Long.MAX_VALUE;
+        long exit = Long.MAX_VALUE;
+    }
+
     @Test
     public void causalPostReturnWindowIsDiagnosticOnly() throws Exception {
-        AtomicInteger postReturnAllowed = new AtomicInteger();
-        AtomicInteger postReturnDenied = new AtomicInteger();
-        AtomicInteger overlapAllowed = new AtomicInteger();
-        AtomicInteger overlapDenied = new AtomicInteger();
-        AtomicInteger unexpected = new AtomicInteger();
-        AtomicLong observations = new AtomicLong();
+        long postReturnAllowed = 0;
+        long postReturnDenied = 0;
+        long overlapAllowed = 0;
+        long overlapDenied = 0;
+        long unexpected = 0;
+        long observations = 0;
 
         for (int iteration = 0; iteration < ITERATIONS; iteration++) {
             StandardAuthorizer authorizer = newAuthorizer();
@@ -104,57 +121,39 @@ public class NexoJmmCausalWindowTest {
             long raceStart = System.nanoTime();
             long scheduledRemove = raceStart + PRE_REMOVE_NANOS;
             long observationEnd = raceStart + OBSERVATION_END_NANOS;
-            AtomicLong removeEnter = new AtomicLong(Long.MAX_VALUE);
-            AtomicLong removeReturn = new AtomicLong(Long.MAX_VALUE);
+            WriterObservation writerObservation = new WriterObservation();
+            @SuppressWarnings("unchecked")
+            ArrayList<Observation>[] readerObservations = new ArrayList[READERS];
+            for (int r = 0; r < READERS; r++) {
+                readerObservations[r] = new ArrayList<>();
+            }
 
             Thread writer = new Thread(() -> {
-                try {
-                    while (System.nanoTime() < scheduledRemove) {
-                        Thread.onSpinWait();
-                    }
-                    removeEnter.set(System.nanoTime());
-                    authorizer.removeAcl(id);
-                    removeReturn.set(System.nanoTime());
-                } catch (Throwable t) {
-                    unexpected.incrementAndGet();
+                while (System.nanoTime() < scheduledRemove) {
+                    Thread.onSpinWait();
                 }
+                writerObservation.enter = System.nanoTime();
+                authorizer.removeAcl(id);
+                writerObservation.exit = System.nanoTime();
             }, "nexo-jmm-causal-writer");
 
             Thread[] readers = new Thread[READERS];
             for (int r = 0; r < READERS; r++) {
+                final ArrayList<Observation> local = readerObservations[r];
                 readers[r] = new Thread(() -> {
-                    try {
-                        while (System.nanoTime() < observationEnd) {
-                            long enter = System.nanoTime();
-                            List<AuthorizationResult> result =
-                                authorizer.authorize(context(), List.of(writeAction()));
-                            long exit = System.nanoTime();
-                            observations.incrementAndGet();
-
-                            long writerEnter = removeEnter.get();
-                            long writerReturn = removeReturn.get();
-                            if (writerReturn != Long.MAX_VALUE) {
-                                if (enter > writerReturn) {
-                                    if (result.get(0) == AuthorizationResult.ALLOWED) {
-                                        postReturnAllowed.incrementAndGet();
-                                    } else if (result.get(0) == AuthorizationResult.DENIED) {
-                                        postReturnDenied.incrementAndGet();
-                                    } else {
-                                        unexpected.incrementAndGet();
-                                    }
-                                } else if (enter <= writerReturn && exit >= writerEnter) {
-                                    if (result.get(0) == AuthorizationResult.ALLOWED) {
-                                        overlapAllowed.incrementAndGet();
-                                    } else if (result.get(0) == AuthorizationResult.DENIED) {
-                                        overlapDenied.incrementAndGet();
-                                    } else {
-                                        unexpected.incrementAndGet();
-                                    }
-                                }
-                            }
+                    while (System.nanoTime() < observationEnd) {
+                        long enter = System.nanoTime();
+                        AuthorizationResult result;
+                        try {
+                            result = authorizer.authorize(context(), List.of(writeAction())).get(0);
+                        } catch (Throwable t) {
+                            local.add(new Observation(enter, System.nanoTime(), null));
+                            return;
                         }
-                    } catch (Throwable t) {
-                        unexpected.incrementAndGet();
+                        long exit = System.nanoTime();
+                        if (enter >= scheduledRemove) {
+                            local.add(new Observation(enter, exit, result));
+                        }
                     }
                 }, "nexo-jmm-causal-reader-" + r);
             }
@@ -170,18 +169,45 @@ public class NexoJmmCausalWindowTest {
                 assertTrue(!reader.isAlive(), "reader did not finish");
             }
             assertTrue(!writer.isAlive(), "writer did not finish");
+
+            for (ArrayList<Observation> local : readerObservations) {
+                for (Observation observation : local) {
+                    observations++;
+                    if (observation.result == null) {
+                        unexpected++;
+                    } else if (observation.enter > writerObservation.exit) {
+                        if (observation.result == AuthorizationResult.ALLOWED) {
+                            postReturnAllowed++;
+                        } else if (observation.result == AuthorizationResult.DENIED) {
+                            postReturnDenied++;
+                        } else {
+                            unexpected++;
+                        }
+                    } else if (observation.enter <= writerObservation.exit
+                        && observation.exit >= writerObservation.enter) {
+                        if (observation.result == AuthorizationResult.ALLOWED) {
+                            overlapAllowed++;
+                        } else if (observation.result == AuthorizationResult.DENIED) {
+                            overlapDenied++;
+                        } else {
+                            unexpected++;
+                        }
+                    }
+                }
+            }
         }
 
         System.out.println(
             "CAUSAL_JMM_RACE ITERATIONS=" + ITERATIONS +
             " READERS=" + READERS +
-            " OBSERVATIONS=" + observations.get() +
-            " POST_RETURN_ALLOWED=" + postReturnAllowed.get() +
-            " POST_RETURN_DENIED=" + postReturnDenied.get() +
-            " OVERLAP_ALLOWED=" + overlapAllowed.get() +
-            " OVERLAP_DENIED=" + overlapDenied.get() +
-            " UNEXPECTED=" + unexpected.get());
+            " OBSERVATIONS=" + observations +
+            " POST_RETURN_ALLOWED=" + postReturnAllowed +
+            " POST_RETURN_DENIED=" + postReturnDenied +
+            " OVERLAP_ALLOWED=" + overlapAllowed +
+            " OVERLAP_DENIED=" + overlapDenied +
+            " UNEXPECTED=" + unexpected);
 
-        assertEquals(0, unexpected.get(), "diagnostic encountered unexpected execution failures");
+        assertEquals(0, unexpected, "diagnostic encountered unexpected execution failures");
     }
+
 }
