@@ -1,0 +1,226 @@
+name: NEXO AB105 G0 production StandardAuthorizer discriminator
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-production-standard-authorizer
+    paths:
+      - .github/workflows/nexo-ab105-g0-production-standard-authorizer.yml
+  workflow_dispatch:
+
+jobs:
+  production-discriminator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout Nexo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Clone pinned Kafka source
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git /tmp/kafka
+          cd /tmp/kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          test "$(git rev-parse HEAD)" = "99b940733a9f6bc409457dba7108f08421d81e42"
+
+      - name: Compile Kafka test infrastructure
+        working-directory: /tmp/kafka
+        run: |
+          ./gradlew --no-daemon :server:compileTestJava
+
+      - name: Write production-path discriminator
+        working-directory: /tmp/kafka
+        run: |
+          mkdir -p server/src/test/java/org/apache/kafka/server
+          cat > server/src/test/java/org/apache/kafka/server/NexoG0ProductionStandardAuthorizerTest.java <<'EOF'
+          package org.apache.kafka.server;
+
+          import org.apache.kafka.clients.admin.Admin;
+          import org.apache.kafka.clients.admin.DeleteAclsOptions;
+          import org.apache.kafka.clients.admin.NewTopic;
+          import org.apache.kafka.clients.producer.KafkaProducer;
+          import org.apache.kafka.clients.producer.Producer;
+          import org.apache.kafka.clients.producer.ProducerConfig;
+          import org.apache.kafka.clients.producer.ProducerRecord;
+          import org.apache.kafka.common.acl.AclBinding;
+          import org.apache.kafka.common.acl.AclBindingFilter;
+          import org.apache.kafka.common.acl.AccessControlEntry;
+          import org.apache.kafka.common.acl.AclOperation;
+          import org.apache.kafka.common.config.SaslConfigs;
+          import org.apache.kafka.common.errors.TopicAuthorizationException;
+          import org.apache.kafka.common.security.auth.SecurityProtocol;
+          import org.apache.kafka.common.resource.PatternType;
+          import org.apache.kafka.common.resource.ResourcePattern;
+          import org.apache.kafka.common.resource.ResourceType;
+          import org.apache.kafka.common.serialization.ByteArraySerializer;
+          import org.apache.kafka.common.test.JaasUtils;
+          import org.apache.kafka.common.test.KafkaClusterTestKit;
+          import org.apache.kafka.common.test.TestKitNodes;
+          import org.apache.kafka.common.utils.Time;
+          import org.junit.jupiter.api.Assertions;
+          import org.junit.jupiter.api.Test;
+
+          import java.util.ArrayList;
+          import java.util.HashMap;
+          import java.util.List;
+          import java.util.Map;
+
+          import static org.apache.kafka.common.acl.AclOperation.DESCRIBE;
+          import static org.apache.kafka.common.acl.AclOperation.WRITE;
+          import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+          import static org.apache.kafka.common.resource.PatternType.LITERAL;
+          import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+
+          public final class NexoG0ProductionStandardAuthorizerTest {
+              private static final String TOPIC = "nexo-g0-production";
+              private static final int ITERATIONS = 10;
+
+              private static Map<String, Object> userClient() {
+                  return Map.of(
+                      "security.protocol", SecurityProtocol.SASL_PLAINTEXT.name,
+                      SaslConfigs.SASL_MECHANISM, "PLAIN",
+                      SaslConfigs.SASL_JAAS_CONFIG,
+                      "org.apache.kafka.common.security.plain.PlainLoginModule required username=\""
+                          + JaasUtils.KAFKA_PLAIN_USER1
+                          + "\" password=\""
+                          + JaasUtils.KAFKA_PLAIN_USER1_PASSWORD
+                          + "\";"
+                  );
+              }
+
+              private static AclBinding acl(AclOperation operation) {
+                  return new AclBinding(
+                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new AccessControlEntry(
+                          "User:" + JaasUtils.KAFKA_PLAIN_USER1, "*", operation, ALLOW));
+              }
+
+              private static AclBindingFilter writeFilter() {
+                  return new AclBindingFilter(
+                      new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
+                      new AccessControlEntry(
+                          "User:" + JaasUtils.KAFKA_PLAIN_USER1, "*", WRITE, ALLOW).toFilter());
+              }
+
+              @Test
+              public void realStandardAuthorizerD0ThenNewWriteRequest() throws Exception {
+                  TestKitNodes nodes = new TestKitNodes.Builder()
+                      .setNumBrokerNodes(1)
+                      .setNumControllerNodes(1)
+                      .setCombined(false)
+                      .setBrokerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+                      .setControllerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+                      .build();
+
+                  try (KafkaClusterTestKit cluster = new KafkaClusterTestKit.Builder(nodes).build()) {
+                      cluster.format();
+                      cluster.startup();
+                      cluster.waitForReadyBrokers();
+
+                      try (Admin admin = cluster.admin()) {
+                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+
+                          int denied = 0;
+                          int allowed = 0;
+                          int unexpected = 0;
+
+                          for (int i = 0; i < ITERATIONS; i++) {
+                              admin.createAcls(List.of(acl(WRITE), acl(DESCRIBE))).all().get();
+
+                              // Baseline: prove WRITE is effective before D0.
+                              try (Producer<byte[], byte[]> baseline = new KafkaProducer<>(
+                                      new HashMap<>(Map.of(
+                                          ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
+                                          ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                                          ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                                          ProducerConfig.ACKS_CONFIG, "all"
+                                      ))) {{ putAll(userClient()); }}) {
+                                  baseline.partitionsFor(TOPIC);
+                                  baseline.send(new ProducerRecord<>(TOPIC, new byte[] {(byte) i})).get();
+                              }
+
+                              // D1 transport is prepared before D0, but its WRITE request is new and
+                              // is sent only after controller-side ACL deletion completes.
+                              try (Producer<byte[], byte[]> d1 = new KafkaProducer<>(
+                                      new HashMap<>(Map.of(
+                                          ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
+                                          ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                                          ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+                                          ProducerConfig.ACKS_CONFIG, "all"
+                                      ))) {{ putAll(userClient()); }}) {
+                                  d1.partitionsFor(TOPIC);
+
+                                  long d0Start = Time.SYSTEM.milliseconds();
+                                  admin.deleteAcls(List.of(writeFilter()), new DeleteAclsOptions()).all().get();
+                                  long d0Complete = Time.SYSTEM.milliseconds();
+
+                                  try {
+                                      d1.send(new ProducerRecord<>(TOPIC, new byte[] {(byte) (i + 100)})).get();
+                                      allowed++;
+                                      System.out.println("D1_RESULT=ALLOWED iteration=" + i
+                                          + " D0_MS=" + (d0Complete - d0Start));
+                                  } catch (TopicAuthorizationException e) {
+                                      denied++;
+                                      System.out.println("D1_RESULT=DENIED iteration=" + i
+                                          + " D0_MS=" + (d0Complete - d0Start));
+                                  } catch (Exception e) {
+                                      unexpected++;
+                                      System.out.println("D1_RESULT=UNEXPECTED_EXCEPTION iteration=" + i
+                                          + " type=" + e.getClass().getName()
+                                          + " message=" + e.getMessage());
+                                  }
+                              }
+                          }
+
+                          String witness = "G0_PRODUCTION_WITNESS ITERATIONS=" + ITERATIONS
+                              + " D1_DENIED=" + denied
+                              + " D1_ALLOWED=" + allowed
+                              + " D1_UNEXPECTED=" + unexpected
+                              + " STANDARD_AUTHORIZER=REAL"
+                              + " RPC_REQUEST_AFTER_D0=REAL";
+
+                          System.out.println(witness);
+                          java.nio.file.Files.writeString(
+                              java.nio.file.Path.of("/tmp/nexo-g0-production-witness.txt"), witness + "\n");
+
+                          Assertions.assertEquals(0, unexpected,
+                              "D1 must resolve as authorization denied or allowed, not an unrelated failure");
+                      }
+                  }
+              }
+          }
+          EOF
+
+      - name: Execute production-path discriminator
+        working-directory: /tmp/kafka
+        run: |
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0ProductionStandardAuthorizerTest --info
+
+      - name: Emit evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "JAVA_VERSION=$(java -version 2>&1 | head -n 1)"
+            echo "STANDARD_AUTHORIZER=REAL"
+            echo "PRODUCTION_PATH_TEST=EXECUTED"
+            if test -f /tmp/nexo-g0-production-witness.txt; then
+              cat /tmp/nexo-g0-production-witness.txt
+            else
+              echo "G0_PRODUCTION_WITNESS=NOT_EMITTED"
+            fi
+          } | tee /tmp/nexo-g0-production-evidence.txt
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-production-standard-authorizer-evidence
+          path: /tmp/nexo-g0-production-evidence.txt
