@@ -1631,3 +1631,54 @@ AB104.431 — linearizable reads, leases, watches and fencing as currentness mec
 
 ### Continuity
 Additive only. No historical artifact modified or deleted. No extra backup/handoff file created.
+
+
+## AB105 G0 — JMM causal-window execution evidence — 2026-10-02 UTC
+
+### Execution recovered
+The previously pending executions were found and both completed successfully at the workflow/job level:
+
+- runner **36965213770** → job **110707365331** → `jmm-causal-window` → SUCCESS.
+- discriminator **36965213781** → job **110707365140** → `jmm-causal-window` → SUCCESS.
+- Both reached compilation, execution and evidence emission; neither stopped at the prior Checkstyle/`PluginMetricsImpl` blockers.
+
+### Actual test witnesses
+Run 36965213770 / job 110707365331 emitted:
+
+`CAUSAL_JMM_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=2531489 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=2466195 OVERLAP_ALLOWED=18300 OVERLAP_DENIED=62 UNEXPECTED=0`
+
+Run 36965213781 / job 110707365140 emitted:
+
+`CAUSAL_JMM_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=5556071 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=5457434 OVERLAP_ALLOWED=29225 OVERLAP_DENIED=68 UNEXPECTED=0`
+
+Both also emitted `CAUSAL_WINDOW=EXECUTED`.
+
+### Interpretation boundary
+1. The causal-window test **did execute**; the previous UNKNOWN/PENDING execution state is now resolved.
+2. Both runs completed with `UNEXPECTED=0`.
+3. In these two observed executions, **POST_RETURN_ALLOWED=0** and all observed post-return classifications were DENIED.
+4. The observed overlap window contained both ALLOWED and DENIED results.
+5. These observations are evidence from two concrete executions, not a universal JMM proof and not an independent proof that the full Nexo property holds.
+6. The measurement/classification remains post-hoc: observations are retained locally and classified after joins; no shared timestamp read was reintroduced as a synchronization mechanism.
+7. No causal conclusion beyond the witnessed executions is authorized without the corresponding semantic mapping from the experiment to the protected property.
+
+### Code provenance
+Commit `0388dce81a2e08dd90f96f6806fe74683ed6f543`:
+`AB105 G0: reduce causal test complexity without changing classification`.
+
+The diff only extracted classification into helper methods and a `ClassificationCounts` holder; it did not change the classification predicates.
+
+### Status
+CAUSAL_TEST_EXECUTION = VERIFIED.
+CAUSAL_OBSERVATIONS = RECOVERED.
+CAUSAL_UNIVERSAL_CONCLUSION = UNKNOWN / NOT ESTABLISHED.
+MODEL_CHANGE = NOT AUTHORIZED.
+AB105.116R remains canonical.
+No AB105.117R created.
+TLC not repeated.
+
+### Continuity
+Additive only. No historical artifact modified or deleted. No extra backup/handoff file created.
+
+### Exact next mission
+Return to **AB104.431** — linearizable reads, leases, watches and fencing as currentness mechanisms — with the recovered G0 evidence preserved as a separate experimental witness, not merged into the semantic conclusion.
