@@ -154,7 +154,7 @@ jobs:
                                   Thread.sleep(20);
                               }
                               Assertions.assertEquals(1, d0Targets.size(), "D0 target ACL cardinality must be exactly one");
-                              AclBinding d0Target = d0Targets.get(0);
+                              AclBinding d0Target = d0Targets.iterator().next();
                               System.err.println("NEXO_ORDER D0_TARGET cycle="+cycle+" acl="+d0Target+" ns="+System.nanoTime());
                               try(Admin admin=cluster.admin()){ admin.deleteAcls(List.of(new AclBindingFilter(new ResourcePattern(TOPIC,TOPIC_NAME,LITERAL).toFilter(),AccessControlEntryFilter.ANY))).all().get(); }
                               System.err.println("NEXO_ORDER D0_RETURN cycle="+cycle+" acl="+d0Target+" ns="+System.nanoTime());
