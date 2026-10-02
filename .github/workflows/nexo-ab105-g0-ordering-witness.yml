@@ -156,8 +156,10 @@ jobs:
                   );
               }
 
-              private static Map<String, Object> client() {
+              private static Map<String, Object> client(String bootstrapServers) {
                   return Map.of(
+                      ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                      bootstrapServers,
                       "security.protocol",
                       SecurityProtocol.SASL_PLAINTEXT.name(),
                       SaslConfigs.SASL_MECHANISM,
@@ -214,7 +216,7 @@ jobs:
                           ).all().get();
                       }
 
-                      try (Producer<byte[], byte[]> producer = new KafkaProducer<>(client())) {
+                      try (Producer<byte[], byte[]> producer = new KafkaProducer<>(client(cluster.bootstrapServers()))) {
                           for (int cycle = 1; cycle <= 10; cycle++) {
                               try (Admin admin = cluster.admin()) {
                                   admin.createAcls(List.of(acl())).all().get();
