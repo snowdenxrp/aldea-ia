@@ -376,3 +376,31 @@ No presentar plain + no HB como prueba de exploit. No usar nanoTime, join() del 
 
 ### Próximo paso
 Revisar AclCache y la ruta RPC hasta StandardAuthorizer.authorize() para determinar si existe una sincronización externa o una publicación alternativa que cierre W1→R1.
+
+## CHECKPOINT — AclCache + ruta RPC revisadas
+Fecha: 2026-10-02
+
+### AclCache
+🟢 AclCache está documentada e implementada como inmutable: sus referencias internas son final y add/remove construyen una nueva AclCache.
+🟢 Por tanto, la carrera relevante no es mutación interna de una misma AclCache; es la publicación plain de la referencia D.aclCache = newCache.
+🔵 Un reader que ya tiene el mismo StandardAuthorizerData puede leer una referencia AclCache anterior si esa lectura ordinaria no observa W1; esto sigue siendo posibilidad del modelo, no evidencia de ejecución.
+
+### Ruta RPC confirmada
+🟢 AuthHelper.authorize() construye Action y llama directamente a authorizer.get().authorize(requestContext, actions).
+🟢 StandardAuthorizer.authorize() hace una sola lectura de data hacia curData y después ejecuta curData.authorize(...).
+🟢 StandardAuthorizerData.findAclRule() toma una lectura ordinaria de aclCache y la guarda en aclCacheSnapshot.
+🔵 En estas capas no apareció un lock compartido con AclPublisher ni una espera/CompletionStage que sincronice específicamente W1 con la autorización RPC.
+🔴 La búsqueda todavía no constituye prueba de que no exista sincronización en una capa superior concreta del handler RPC; esa parte queda abierta hasta inspeccionar el caller real que invoca AuthHelper para la operación objetivo.
+
+### Estado actualizado
+AclCache immutability: VERIFIED.
+Incremental reference publication D.aclCache: PLAIN_WRITE.
+RPC path to authorize(): VERIFIED through AuthHelper.
+External W1→R1 synchronization: NOT_IDENTIFIED in inspected layers.
+Stale read: UNKNOWN.
+Stale ALLOWED after revocation: UNKNOWN.
+Exploitability: UNKNOWN.
+Security conclusion: NOT_ESTABLISHED.
+
+### Próximo paso
+Inspeccionar el caller RPC concreto para WRITE/TOPIC authorization y cualquier executor/thread handoff que pudiera introducir synchronizes-with antes de AuthHelper.authorize().
