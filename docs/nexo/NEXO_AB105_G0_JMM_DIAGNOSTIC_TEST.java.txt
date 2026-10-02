@@ -1,0 +1,142 @@
+package org.apache.kafka.metadata.authorizer;
+
+import org.apache.kafka.common.Endpoint;
+import org.apache.kafka.common.Uuid;
+import org.apache.kafka.common.acl.AclOperation;
+import org.apache.kafka.common.acl.AclPermissionType;
+import org.apache.kafka.common.metrics.Metrics;
+import org.apache.kafka.common.resource.ResourcePattern;
+import org.apache.kafka.common.resource.ResourceType;
+import org.apache.kafka.common.security.auth.KafkaPrincipal;
+import org.apache.kafka.common.security.auth.SecurityProtocol;
+import org.apache.kafka.server.authorizer.Action;
+import org.apache.kafka.server.authorizer.AuthorizableRequestContext;
+import org.apache.kafka.server.authorizer.AuthorizationResult;
+import org.apache.kafka.common.metrics.internals.PluginMetricsImpl;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.apache.kafka.common.acl.AclOperation.WRITE;
+import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+import static org.apache.kafka.common.resource.PatternType.LITERAL;
+import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Timeout(value = 60)
+public class NexoJmmPublicationTest {
+    private static final Endpoint PLAINTEXT =
+        new Endpoint("PLAINTEXT", SecurityProtocol.PLAINTEXT, "127.0.0.1", 9020);
+
+    private static final String USER = "nexo-jmm";
+    private static final String TOPIC = "nexo-jmm-topic";
+    private static final int ITERATIONS = 200;
+
+    private static StandardAuthorizer newAuthorizer() {
+        StandardAuthorizer authorizer = new StandardAuthorizer();
+        authorizer.configure(Map.of(StandardAuthorizer.SUPER_USERS_CONFIG, "User:superman"));
+        Metrics metrics = new Metrics();
+        authorizer.withPluginMetrics(new PluginMetricsImpl(metrics, Map.of()));
+        authorizer.start(new AuthorizerTestServerInfo(List.of(PLAINTEXT)));
+        authorizer.completeInitialLoad();
+        return authorizer;
+    }
+
+    private static StandardAcl acl() {
+        return new StandardAcl(
+            TOPIC, TOPIC, LITERAL, "User:" + USER, "*", WRITE, ALLOW);
+    }
+
+    private static AuthorizableRequestContext context() {
+        return new MockAuthorizableRequestContext.Builder()
+            .setPrincipal(new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER))
+            .build();
+    }
+
+    private static Action writeAction() {
+        return new Action(
+            WRITE,
+            new ResourcePattern(TOPIC, TOPIC, LITERAL),
+            0,
+            false,
+            false);
+    }
+
+    @Test
+    public void incrementalAclPublicationRaceIsDiagnosticOnly() throws Exception {
+        AtomicInteger staleAllowed = new AtomicInteger();
+        AtomicInteger deniedAfterFlag = new AtomicInteger();
+        AtomicInteger flagTimeouts = new AtomicInteger();
+
+        for (int iteration = 0; iteration < ITERATIONS; iteration++) {
+            StandardAuthorizer authorizer = newAuthorizer();
+            Uuid id = new Uuid(iteration + 1L, iteration + 17L);
+            StandardAcl acl = acl();
+            authorizer.addAcl(id, acl);
+
+            boolean[] writerCompleted = new boolean[] {false};
+            CountDownLatch start = new CountDownLatch(1);
+
+            Thread writer = new Thread(() -> {
+                try {
+                    start.await();
+                    authorizer.removeAcl(id);
+                    // Intentionally plain/non-volatile publication marker.
+                    writerCompleted[0] = true;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }, "nexo-jmm-writer");
+
+            Thread reader = new Thread(() -> {
+                try {
+                    start.await();
+                    long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(500);
+                    while (!writerCompleted[0] && System.nanoTime() < deadline) {
+                        Thread.onSpinWait();
+                    }
+                    if (!writerCompleted[0]) {
+                        flagTimeouts.incrementAndGet();
+                        return;
+                    }
+                    List<AuthorizationResult> result =
+                        authorizer.authorize(context(), List.of(writeAction()));
+                    if (result.get(0) == AuthorizationResult.ALLOWED) {
+                        staleAllowed.incrementAndGet();
+                    } else {
+                        deniedAfterFlag.incrementAndGet();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }, "nexo-jmm-reader");
+
+            writer.start();
+            reader.start();
+            start.countDown();
+
+            writer.join(2000);
+            reader.join(2000);
+            assertTrue(!writer.isAlive(), "writer did not finish");
+            assertTrue(!reader.isAlive(), "reader did not finish");
+        }
+
+        System.out.println(
+            "JMM_DIAGNOSTIC ITERATIONS=" + ITERATIONS +
+            " STALE_ALLOWED=" + staleAllowed.get() +
+            " DENIED_AFTER_FLAG=" + deniedAfterFlag.get() +
+            " FLAG_TIMEOUTS=" + flagTimeouts.get());
+
+        assertEquals(0, flagTimeouts.get(),
+            "plain completion marker was not observed; diagnostic run is inconclusive");
+        // A zero stale count does NOT prove production safety. This test is diagnostic only.
+    }
+}
