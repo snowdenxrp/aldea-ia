@@ -145,7 +145,7 @@ jobs:
 
                               // Baseline: prove WRITE is effective before D0.
                               try (Producer<byte[], byte[]> baseline = new KafkaProducer<>(
-                                      producerProps(cluster.bootstrapServers())) {
+                                      producerProps(cluster.bootstrapServers()))) {
                                   baseline.partitionsFor(TOPIC_NAME);
                                   baseline.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {(byte) i})).get();
                               }
@@ -153,7 +153,7 @@ jobs:
                               // D1 transport is prepared before D0, but its WRITE request is new and
                               // is sent only after controller-side ACL deletion completes.
                               try (Producer<byte[], byte[]> d1 = new KafkaProducer<>(
-                                      withBootstrap(producerProps(), cluster.bootstrapServers())) {
+                                      producerProps(cluster.bootstrapServers()))) {
                                   d1.partitionsFor(TOPIC_NAME);
 
                                   long d0Start = Time.SYSTEM.milliseconds();
