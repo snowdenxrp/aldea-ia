@@ -17,7 +17,6 @@ import org.apache.kafka.common.metrics.internals.PluginMetricsImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -37,7 +36,7 @@ public class NexoJmmPublicationTest {
         new Endpoint("PLAINTEXT", SecurityProtocol.PLAINTEXT, "127.0.0.1", 9020);
 
     private static final String USER = "nexo-jmm";
-    private static final String TOPIC = "nexo-jmm-topic";
+    private static final String TOPIC_NAME = "nexo-jmm-topic";
     private static final int ITERATIONS = 200;
 
     private static StandardAuthorizer newAuthorizer() {
@@ -52,7 +51,7 @@ public class NexoJmmPublicationTest {
 
     private static StandardAcl acl() {
         return new StandardAcl(
-            TOPIC, TOPIC, LITERAL, "User:" + USER, "*", WRITE, ALLOW);
+            TOPIC, TOPIC_NAME, LITERAL, "User:" + USER, "*", WRITE, ALLOW);
     }
 
     private static AuthorizableRequestContext context() {
@@ -64,7 +63,7 @@ public class NexoJmmPublicationTest {
     private static Action writeAction() {
         return new Action(
             WRITE,
-            new ResourcePattern(TOPIC, TOPIC, LITERAL),
+            new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
             0,
             false,
             false);
