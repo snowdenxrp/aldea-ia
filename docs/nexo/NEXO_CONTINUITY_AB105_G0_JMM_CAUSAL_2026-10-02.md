@@ -587,3 +587,26 @@ Esto cierra el candidato de que la sincronización de startup garantice todas la
 
 ### Próximo paso
 Cerrar la rama de EndpointReadyFutures/authorizer startup solo como confirmación de alcance y revisar si existe algún mecanismo específico de actualización ACL (future, lock, volatile publication o callback acknowledgement) que alcance al request thread durante steady-state.
+
+
+## CHECKPOINT — ACL steady-state API has no per-mutation visibility acknowledgement
+Fecha: 2026-10-02
+
+🟢 AclPublisher aplica cada delta en orden: addAcl/removeAcl son invocados secuencialmente sobre el authorizer dentro del callback de metadata.
+🟢 El comentario del código reconoce explícitamente que otros threads continúan haciendo authorization mientras se aplican cambios.
+🟢 ClusterMetadataAuthorizer exige que sus métodos sean thread-safe.
+🔵 createAcls/deleteAcls devuelven CompletionStage ligado a persistencia/llamada de mutación en el controller; eso no constituye por sí mismo un acknowledgement de que todos los request threads hayan observado el nuevo aclCache en cada broker.
+🔴 No se identificó un future/lock/volatile publication que se extienda desde removeAcl() hasta el request-thread R1 durante steady-state.
+
+`ACL_MUTATION_ORDER = IDENTIFIED`
+`PER_MUTATION_VISIBILITY_ACK = NOT_IDENTIFIED`
+`HB W1→R1 = NOT_IDENTIFIED`
+`STALE_READ = UNKNOWN`
+`STALE_ALLOWED = UNKNOWN`
+`EXPLOITABILITY = UNKNOWN`
+`GENERALIZATION = UNKNOWN`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+Nota crítica: esto fortalece la hipótesis de una ventana concurrente, pero no prueba por sí solo una lectura stale ni un bypass de autorización. La propia documentación de AclPublisher advierte que las autorizaciones continúan ocurriendo durante la aplicación de cambios.
+
+Próximo foco: determinar si existe alguna sincronización dentro de StandardAuthorizerData/AclCache o en la implementación concreta de Authorizer que pueda cerrar W1→R1 pese a no aparecer en AclPublisher.
