@@ -699,3 +699,33 @@ Conclusión: el harness actual es un buen discriminador de ventana temporal, per
 `POST_RETURN_STALE_VISIBILITY = UNKNOWN`
 `HB W1→R1 = NOT_IDENTIFIED`
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+
+## CORRECCIÓN — semántica del witness POST_RETURN_ALLOWED
+Fecha: 2026-10-02
+
+La revisión del harness permite precisar una sobreafirmación del checkpoint anterior.
+
+🟢 Aunque el harness no registra la identidad de la referencia `AclCache`, el escenario está construido con una única ACL `WRITE/ALLOW` para `USER` y después ejecuta `removeAcl(id)`. El baseline exige `ALLOWED`. Tras una eliminación efectiva, el resultado esperado para ese mismo principal/recurso es `DENIED`.
+
+Por tanto, si una observación satisficiera simultáneamente:
+`observation.enter > writerObservation.exit` + `result == ALLOWED`,
+ese evento sería un **witness conductual de ALLOWED post-return**, y sería evidencia directa de que la autorización no reflejó la revocación a tiempo en esa ejecución. No necesita conocer físicamente la identidad del `AclCache` para ser relevante.
+
+🔵 Lo que el witness NO demostraría por sí solo es el mecanismo causal exacto: no permitiría distinguir JMM stale-read de otra explicación de implementación si existiera otra ruta legítima hacia `ALLOWED`.
+
+🔴 En las ejecuciones existentes `POST_RETURN_ALLOWED=0`; por tanto no tenemos actualmente ese witness conductual.
+
+Corrección epistemológica:
+`POST_RETURN_ALLOWED > 0` → evidencia conductual de autorización ALLOWED después del retorno medido de la revocación; mecanismo JMM = UNKNOWN.
+`POST_RETURN_ALLOWED = 0` → ausencia de ese witness en las ejecuciones realizadas; NO prueba imposibilidad.
+`CACHE_VERSION_WITNESS` → útil para atribución causal, pero NO requisito lógico para detectar el evento conductual que el harness ya define.
+
+`POST_RETURN_ALLOWED_WITNESS = VALID_BEHAVIORAL_DISCRIMINATOR`
+`MECHANISM_ATTRIBUTION = UNKNOWN`
+`JMM_HB = NOT_IDENTIFIED`
+`STALE_ALLOWED_OBSERVED = NOT_OBSERVED_IN_CURRENT_RUNS`
+`EXPLOITABILITY = UNKNOWN`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+No se modifica AB105.116R, no se crea AB105.117R y no se repite TLC.
