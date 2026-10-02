@@ -456,3 +456,19 @@ No convertir 'threads separados' en 'bug demostrado'. No usar RequestChannel/han
 
 ### Próximo paso
 Revisar la entrega `RaftClient → MetadataLoader.eventQueue` y, por separado, cualquier sincronización de inicialización/publicación del Authorizer que pueda establecer HB entre metadata publisher y request handlers.
+
+
+## CHECKPOINT — startup synchronization vs steady-state ACL mutation
+Fecha: 2026-10-02
+
+🟢 `MetadataLoader` usa su `KafkaEventQueue`; `AclPublisher` aplica deltas desde ese flujo y documenta explícitamente que el Authorizer continúa respondiendo en otros threads durante cambios ACL.
+🟢 `StandardAuthorizer.start()` usa `initialLoadFuture` para sincronizar la disponibilidad inicial del authorizer con la carga inicial.
+🔵 Esa sincronización es de INICIALIZACIÓN; no aparece como sincronización por cada revocación posterior.
+🔴 El comentario de `StandardAuthorizer.data` habla de un read-write lock, pero el código pinneado no contiene tal lock: `data` es `volatile` y `authorize()` toma `curData = data`.
+🔵 La mutación incremental escribe `D.aclCache` dentro del `StandardAuthorizerData` ya publicado. La publicación volatile inicial no convierte las escrituras posteriores plain de `aclCache` en escrituras volatile ni crea por sí sola HB con una lectura concurrente.
+
+Estado: `HB(W1→R1)=NOT_IDENTIFIED`; `STARTUP_HB=VERIFIED_FOR_INITIAL_LOAD_ONLY`; `STEADY_STATE_ACL_MUTATION_HB=NOT_IDENTIFIED`; `STALE_READ=UNKNOWN`; `STALE_ALLOWED=UNKNOWN`; `EXPLOITABILITY=UNKNOWN`; `SECURITY_CONCLUSION=NOT_ESTABLISHED`.
+
+DO-NOT-REPEAT: no usar `initialLoadFuture` como prueba para revocaciones posteriores; no tratar el comentario del supuesto lock como implementación.
+
+Próximo paso: cerrar `KafkaEventQueue` (`append → event.run`) y revisar `StandardAuthorizerData` por sincronización interna omitida.
