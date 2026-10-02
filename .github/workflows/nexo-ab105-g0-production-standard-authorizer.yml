@@ -145,7 +145,7 @@ jobs:
 
                               // Baseline: prove WRITE is effective before D0.
                               try (Producer<byte[], byte[]> baseline = new KafkaProducer<>(
-                                      withBootstrap(producerProps(), cluster.bootstrapServers())) {
+                                      producerProps(cluster.bootstrapServers())) {
                                   baseline.partitionsFor(TOPIC_NAME);
                                   baseline.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {(byte) i})).get();
                               }
