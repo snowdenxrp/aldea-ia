@@ -752,3 +752,33 @@ No se repite el run ni TLC. El segundo run exitoso `36965213781` queda pendiente
 `JMM_HB = NOT_IDENTIFIED`
 `STALE_ALLOWED_OBSERVED = NOT_OBSERVED`
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+
+## CHECKPOINT — segundo witness raw verificado
+Fecha: 2026-10-02
+
+Run `36965213781`, job `110707365140`, fue revisado directamente desde su log raw.
+
+🟢 Job completo SUCCESS; pasos de compilación, ejecución, emisión y upload de evidencia SUCCESS.
+🟢 Witness exacto:
+`CAUSAL_JMM_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=5556071 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=5457434 OVERLAP_ALLOWED=29225 OVERLAP_DENIED=68 UNEXPECTED=0`
+
+Resultado conjunto de los dos runs:
+- Run `36965213770`: `POST_RETURN_ALLOWED=0`, `OVERLAP_ALLOWED=18300`.
+- Run `36965213781`: `POST_RETURN_ALLOWED=0`, `OVERLAP_ALLOWED=29225`.
+- Ambos: `UNEXPECTED=0`.
+
+🟢 La ausencia del witness `POST_RETURN_ALLOWED` queda ahora **raw-log verified en ambas ejecuciones**.
+🔵 Ambos experimentos observaron autorizaciones ALLOWED durante overlap temporal.
+🔴 Ninguno observó ALLOWED con `enter > removeAcl-return`.
+🔴 Esto no demuestra que tal evento sea imposible bajo otras ejecuciones ni demuestra HB/JMM.
+🔴 Mecanismo de visibilidad, stale-read, exploitability, generalización e impacto de producción siguen UNKNOWN; conclusión de seguridad NOT_ESTABLISHED.
+
+`TWO_RUNS_RAW_VERIFIED = TRUE`
+`POST_RETURN_ALLOWED_BOTH_RUNS = 0`
+`OVERLAP_ALLOWED_BOTH_RUNS = OBSERVED`
+`JMM_HB = NOT_IDENTIFIED`
+`STALE_ALLOWED = NOT_OBSERVED`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+No se repiten los experimentos ni TLC y no se crea AB105.117R.
