@@ -1,0 +1,71 @@
+name: NEXO AB105 G0 JMM publication discriminator
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-jmm-publication-discriminator
+    paths:
+      - docs/nexo/NEXO_AB105_G0_JMM_DIAGNOSTIC_TEST.java.txt
+      - .github/workflows/nexo-ab105-g0-jmm-discriminator.yml
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  jmm-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Nexo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Clone pinned Kafka source
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git /tmp/kafka
+          cd /tmp/kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          test "$(git rev-parse HEAD)" = "99b940733a9f6bc409457dba7108f08421d81e42"
+
+      - name: Install diagnostic test at pinned source
+        run: |
+          mkdir -p /tmp/kafka/metadata/src/test/java/org/apache/kafka/metadata/authorizer
+          cp docs/nexo/NEXO_AB105_G0_JMM_DIAGNOSTIC_TEST.java.txt             /tmp/kafka/metadata/src/test/java/org/apache/kafka/metadata/authorizer/NexoJmmPublicationTest.java
+
+      - name: Compile diagnostic test
+        working-directory: /tmp/kafka
+        run: |
+          ./gradlew --no-daemon :test-common:test-common-runtime:compileJava :metadata:compileTestJava
+
+      - name: Execute diagnostic test
+        working-directory: /tmp/kafka
+        run: |
+          ./gradlew --no-daemon :metadata:test --tests org.apache.kafka.metadata.authorizer.NexoJmmPublicationTest --info             | tee /tmp/nexo-ab105-jmm-test.log
+
+      - name: Emit evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "JAVA_VERSION=$(java -version 2>&1 | head -n 1)"
+            echo "JMM_DIAGNOSTIC_COMPILE=SEE_JOB_RESULT"
+            grep -E "JMM_DIAGNOSTIC|STale|STALE|BUILD SUCCESSFUL|BUILD FAILED" /tmp/nexo-ab105-jmm-test.log || true
+            echo "INTERPRETATION=DIAGNOSTIC_ONLY"
+            echo "PRODUCTION_JMM_BUG=UNKNOWN"
+          } | tee /tmp/nexo-ab105-jmm-evidence.txt
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-jmm-diagnostic-evidence
+          path: |
+            /tmp/nexo-ab105-jmm-test.log
+            /tmp/nexo-ab105-jmm-evidence.txt
