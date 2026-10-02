@@ -1,6 +1,7 @@
 name: NEXO AB105 G0 ordering witness runner v2
 
 on:
+  # Trigger-only change; harness and Kafka pin are unchanged.
   push:
     branches:
       - nexo-ab105-g0-ordering-witness
