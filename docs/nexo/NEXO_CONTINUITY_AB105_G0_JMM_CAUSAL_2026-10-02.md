@@ -834,3 +834,30 @@ Estado preservado:
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
 
 No se crea AB105.117R y no se repite TLC.
+
+
+## CORRECCIÓN DE CONTINUIDAD — reconciliación de head PR #89
+Fecha: 2026-10-02
+
+La revisión de continuidad detectó una inconsistencia documental, no una pérdida de evidencia experimental.
+
+El bloque antiguo `Código vigente` todavía decía `Head fuente: 7f6586c00602baf92aee58ed214b823a6f34d8d1`. El estado real de PR #89 en GitHub es:
+- PR #89: OPEN, no merged.
+- Head actual: `0388dce81a2e08dd90f96f6806fe74683ed6f543`.
+- Base: `399a7cefb207c847ec132405a447103b3568f6f3`.
+
+Los dos runs exitosos ya verificados (`36965213770` y `36965213781`) están asociados al head `0388dce...`; por tanto, la evidencia experimental no se perdió ni depende del head documental antiguo.
+
+También se confirma que el análisis posterior no perdió estos estados:
+- `AB105.116R = INTACT / NO MODIFICAR`
+- `AB105.117R = NOT_CREATED`
+- `TLC = NO RERUN`
+- `POST_RETURN_ALLOWED` = 0 en ambos runs raw-verificados.
+- `JMM_HB = NOT_IDENTIFIED`
+- `STALE_ALLOWED = NOT_OBSERVED`
+- `MECHANISM_ATTRIBUTION = UNKNOWN`
+- `SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+`CONTINUITY_RECONCILIATION = COMPLETE`
+`EVIDENCE_LOSS = NOT_FOUND`
+`DOCUMENT_STALE_HEAD = CORRECTED_BY_CHECKPOINT`
