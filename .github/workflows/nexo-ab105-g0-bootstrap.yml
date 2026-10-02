@@ -239,23 +239,27 @@ jobs:
 
                               Assertions.assertTrue(A1_OBSERVED.await(30, TimeUnit.SECONDS), "A1 not observed");
 
-                              try (Admin admin = cluster.admin()) {
-                                  admin.deleteAcls(
-                                      List.of(new AclBindingFilter(
-                                          new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL).toFilter(),
-                                          org.apache.kafka.common.acl.AccessControlEntryFilter.ANY)),
-                                      new DeleteAclsOptions()).all().get();
-                              }
-
-                              int targetAclAtD1Start = TARGET.aclCount();
-                              System.out.println("D1_PRE_AUTH_TARGET_LOCAL_ACL_COUNT=" + targetAclAtD1Start);
-
                               try (Producer<byte[], byte[]> d1Producer = new KafkaProducer<>(new java.util.HashMap<>(Map.of(
                                   ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
                                   ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.ACKS_CONFIG, "all"
                               )) {{ putAll(userClient()); }})) {
+                                  // Warm NEW producer metadata while the WRITE ACL is still present; send no record.
+                                  Assertions.assertTrue(d1Producer.partitionsFor(TOPIC_NAME).stream()
+                                      .anyMatch(info -> info.partition() == 0), "D1 producer must warm partition metadata before D0");
+
+                                  try (Admin admin = cluster.admin()) {
+                                      admin.deleteAcls(
+                                          List.of(new AclBindingFilter(
+                                              new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL).toFilter(),
+                                              org.apache.kafka.common.acl.AccessControlEntryFilter.ANY)),
+                                          new DeleteAclsOptions()).all().get();
+                                  }
+
+                                  int targetAclAtD1Start = TARGET.aclCount();
+                                  System.out.println("D1_PRE_AUTH_TARGET_LOCAL_ACL_COUNT=" + targetAclAtD1Start);
+
                                   Future<?> d1 = d1Executor.submit(() -> {
                                       try {
                                           d1Producer.send(new ProducerRecord<>(TOPIC_NAME, 0, null, new byte[] {2})).get();
