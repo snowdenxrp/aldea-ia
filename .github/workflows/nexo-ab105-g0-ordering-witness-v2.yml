@@ -41,10 +41,6 @@ jobs:
               p=Path(path); s=p.read_text()
               if s.count(old)!=1: raise SystemExit("marker mismatch: "+path)
               p.write_text(s.replace(old,new))
-          def repl(path, old, new):
-              p=Path(path); s=p.read_text()
-              if s.count(old)!=1: raise SystemExit("marker mismatch: "+path)
-              p.write_text(s.replace(old,new))
 
           p=Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java")
           s=p.read_text()
