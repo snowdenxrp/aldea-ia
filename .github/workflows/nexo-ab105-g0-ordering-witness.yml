@@ -1,0 +1,335 @@
+name: NEXO AB105 G0 real broker ordering witness
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-ordering-witness
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  ordering-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout Nexo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Clone pinned Kafka source
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git /tmp/kafka
+          cd /tmp/kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          test "$(git rev-parse HEAD)" = "99b940733a9f6bc409457dba7108f08421d81e42"
+
+      - name: Install workflow-local ordering probes
+        working-directory: /tmp/kafka
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              s = p.read_text()
+              if s.count(old) != 1:
+                  raise SystemExit(f"expected exactly one marker in {path}: {old[:120]!r}")
+              p.write_text(s.replace(old, new))
+
+          replace_once(
+              "metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java",
+              """    void removeAcl(Uuid id) {
+          try {
+              AclCache aclCacheSnapshot = aclCache.removeAcl(id);
+              log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
+              aclCache = aclCacheSnapshot;
+          } catch (Throwable e) {""",
+              """    void removeAcl(Uuid id) {
+          try {
+              AclCache aclCacheSnapshot = aclCache.removeAcl(id);
+              log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
+              aclCache = aclCacheSnapshot;
+              System.err.println("NEXO_ORDER ACL_W1 ns=" + System.nanoTime() +
+                  " thread=" + Thread.currentThread().getName() + " id=" + id);
+          } catch (Throwable e) {"""
+          )
+
+          replace_once(
+              "metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java",
+              """        KafkaPrincipal principal = baseKafkaPrincipal(requestContext);
+          final MatchingRule rule;""",
+              """        KafkaPrincipal principal = baseKafkaPrincipal(requestContext);
+          if ("nexo-g0-ordering".equals(requestContext.clientId()) &&
+              action.operation() == WRITE &&
+              action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC &&
+              "nexo-g0-ordering".equals(action.resourcePattern().name())) {
+              System.err.println("NEXO_ORDER AUTH_ENTER ns=" + System.nanoTime() +
+                  " thread=" + Thread.currentThread().getName());
+          }
+          final MatchingRule rule;"""
+          )
+
+          replace_once(
+              "metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java",
+              """        logAuditMessage(principal, requestContext, action, rule);
+          return rule.result();""",
+              """        logAuditMessage(principal, requestContext, action, rule);
+          if ("nexo-g0-ordering".equals(requestContext.clientId()) &&
+              action.operation() == WRITE &&
+              action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC &&
+              "nexo-g0-ordering".equals(action.resourcePattern().name())) {
+              System.err.println("NEXO_ORDER AUTH_DECISION ns=" + System.nanoTime() +
+                  " result=" + rule.result() + " thread=" + Thread.currentThread().getName());
+          }
+          return rule.result();"""
+          )
+
+          replace_once(
+              "core/src/main/scala/kafka/network/RequestChannel.scala",
+              """  def sendRequest(request: Request): Unit = {
+      requestQueue.put(request)
+  }""",
+              """  def sendRequest(request: Request): Unit = {
+      if (request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering") {
+        System.err.println("NEXO_ORDER ENQUEUE ns=" + System.nanoTime() +
+          " thread=" + Thread.currentThread().getName())
+      }
+      requestQueue.put(request)
+  }"""
+          )
+
+          replace_once(
+              "core/src/main/scala/kafka/network/RequestChannel.scala",
+              """  def receiveRequest(timeout: Long): BaseRequest = {
+      val callbackRequest = callbackQueue.poll()""",
+              """  def receiveRequest(timeout: Long): BaseRequest = {
+      val callbackRequest = callbackQueue.poll()"""
+          )
+
+          # Instrument the actual Request returned by the timed receive, immediately after queue poll.
+          replace_once(
+              "core/src/main/scala/kafka/network/RequestChannel.scala",
+              """      val request = requestQueue.poll(timeout, TimeUnit.MILLISECONDS)
+      request match {""",
+              """      val request = requestQueue.poll(timeout, TimeUnit.MILLISECONDS)
+      request match {
+        case request: Request if request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering" =>
+          System.err.println("NEXO_ORDER DEQUEUE ns=" + System.nanoTime() +
+            " thread=" + Thread.currentThread().getName())
+        case _ =>
+      }
+      request match {"""
+          )
+
+          replace_once(
+              "core/src/main/scala/kafka/network/RequestChannel.scala",
+              """  def receiveRequest(): BaseRequest =
+      requestQueue.take()""",
+              """  def receiveRequest(): BaseRequest = {
+      val request = requestQueue.take()
+      request match {
+        case request: Request if request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering" =>
+          System.err.println("NEXO_ORDER DEQUEUE ns=" + System.nanoTime() +
+            " thread=" + Thread.currentThread().getName())
+        case _ =>
+      }
+      request
+  }"""
+          )
+
+          # Keep the probe visibly workflow-local and make sure the pin is unchanged.
+          assert "NEXO_ORDER" in Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java").read_text()
+          assert "NEXO_ORDER" in Path("core/src/main/scala/kafka/network/RequestChannel.scala").read_text()
+          PY
+
+      - name: Write real broker ordering harness
+        working-directory: /tmp/kafka
+        run: |
+          mkdir -p server/src/test/java/org/apache/kafka/server
+          cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'
+          package org.apache.kafka.server;
+
+          import org.apache.kafka.clients.admin.Admin;
+          import org.apache.kafka.clients.admin.AclBinding;
+          import org.apache.kafka.clients.admin.NewTopic;
+          import org.apache.kafka.clients.producer.KafkaProducer;
+          import org.apache.kafka.clients.producer.Producer;
+          import org.apache.kafka.clients.producer.ProducerConfig;
+          import org.apache.kafka.clients.producer.ProducerRecord;
+          import org.apache.kafka.common.acl.AccessControlEntry;
+          import org.apache.kafka.common.acl.AclOperation;
+          import org.apache.kafka.common.acl.AclPermissionType;
+          import org.apache.kafka.common.resource.PatternType;
+          import org.apache.kafka.common.resource.ResourcePattern;
+          import org.apache.kafka.common.resource.ResourceType;
+          import org.apache.kafka.common.security.auth.SecurityProtocol;
+          import org.apache.kafka.common.serialization.ByteArraySerializer;
+          import org.apache.kafka.common.test.KafkaClusterTestKit;
+          import org.apache.kafka.common.test.TestKitNodes;
+          import org.apache.kafka.common.config.SaslConfigs;
+          import org.apache.kafka.server.config.ServerConfigs;
+          import org.junit.jupiter.api.Assertions;
+          import org.junit.jupiter.api.Test;
+
+          import java.util.List;
+          import java.util.Map;
+          import java.util.HashMap;
+          import java.util.concurrent.TimeUnit;
+
+          import static org.apache.kafka.common.acl.AclOperation.WRITE;
+          import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+          import static org.apache.kafka.common.resource.PatternType.LITERAL;
+          import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+
+          public final class NexoG0OrderingWitnessTest {
+              private static final String TOPIC = "nexo-g0-ordering";
+              private static final String USER = "plain-user1";
+              private static final String PASSWORD = "plain-user1-secret";
+              private static final String CLIENT_ID = "nexo-g0-ordering";
+
+              private static AclBinding userWriteAcl() {
+                  return new AclBinding(
+                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW));
+              }
+
+              private static Map<String, Object> userClient() {
+                  return Map.of(
+                      "security.protocol", SecurityProtocol.SASL_PLAINTEXT.name(),
+                      SaslConfigs.SASL_MECHANISM, "PLAIN",
+                      SaslConfigs.SASL_JAAS_CONFIG,
+                      "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + USER +
+                          "\" password=\"" + PASSWORD + "\";",
+                      ProducerConfig.CLIENT_ID_CONFIG, CLIENT_ID,
+                      ProducerConfig.ACKS_CONFIG, "all"
+                  );
+              }
+
+              private static Map<Integer, Map<String, String>> serverProps() {
+                  Map<Integer, Map<String, String>> props = new HashMap<>();
+                  props.put(0, Map.of(
+                      ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
+                      "org.apache.kafka.metadata.authorizer.StandardAuthorizer"));
+                  return props;
+              }
+
+              private static boolean tryProduce(Producer<byte[], byte[]> producer) {
+                  try {
+                      producer.send(new ProducerRecord<>(TOPIC, new byte[] {1})).get(10, TimeUnit.SECONDS);
+                      return true;
+                  } catch (Exception e) {
+                      return false;
+                  }
+              }
+
+              @Test
+              public void realBrokerOrderingWitness() throws Exception {
+                  TestKitNodes nodes = new TestKitNodes.Builder()
+                      .setNumBrokerNodes(1)
+                      .setNumControllerNodes(1)
+                      .setCombined(false)
+                      .setBrokerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+                      .setControllerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+                      .setPerServerProperties(serverProps())
+                      .build();
+
+                  try (KafkaClusterTestKit cluster = new KafkaClusterTestKit.Builder(nodes)
+                      .setConfigProp(ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
+                          "org.apache.kafka.metadata.authorizer.StandardAuthorizer")
+                      .build()) {
+                      cluster.format();
+                      cluster.startup();
+                      cluster.waitForReadyBrokers();
+
+                      try (Admin admin = cluster.admin()) {
+                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+                      }
+
+                      try (Producer<byte[], byte[]> producer = new KafkaProducer<>(
+                          new HashMap<>(userClient()))) {
+                          for (int cycle = 1; cycle <= 10; cycle++) {
+                              System.err.println("NEXO_ORDER CYCLE_BEGIN cycle=" + cycle +
+                                  " ns=" + System.nanoTime());
+
+                              try (Admin admin = cluster.admin()) {
+                                  admin.createAcls(List.of(userWriteAcl())).all().get();
+                              }
+
+                              long allowedDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+                              boolean allowed = false;
+                              while (System.nanoTime() < allowedDeadline) {
+                                  if (tryProduce(producer)) {
+                                      allowed = true;
+                                      break;
+                                  }
+                                  Thread.sleep(20);
+                              }
+                              Assertions.assertTrue(allowed, "ACL was not observed as ALLOWED before deletion");
+
+                              System.err.println("NEXO_ORDER A1_SUCCESS cycle=" + cycle +
+                                  " ns=" + System.nanoTime());
+
+                              try (Admin admin = cluster.admin()) {
+                                  admin.deleteAcls(List.of(
+                                      new org.apache.kafka.common.acl.AclBindingFilter(
+                                          new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
+                                          AccessControlEntry.ANY.toFilter())
+                                  )).all().get();
+                              }
+
+                              System.err.println("NEXO_ORDER D0_RETURN cycle=" + cycle +
+                                  " ns=" + System.nanoTime());
+
+                              boolean denied = !tryProduce(producer);
+                              System.err.println("NEXO_ORDER D1_RESULT cycle=" + cycle +
+                                  " result=" + (denied ? "DENIED" : "ALLOWED") +
+                                  " ns=" + System.nanoTime());
+                              Assertions.assertTrue(denied, "D1 unexpectedly allowed after D0");
+                          }
+                      }
+                  }
+              }
+          }
+          EOF
+
+      - name: Compile test infrastructure
+        working-directory: /tmp/kafka
+        run: |
+          ./gradlew --no-daemon :test-common:test-common-runtime:compileJava :metadata:compileTestJava :server:compileTestJava
+
+      - name: Execute ordering witness
+        working-directory: /tmp/kafka
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0OrderingWitnessTest --info 2>&1 | tee /tmp/nexo-g0-ordering.log
+
+      - name: Emit raw ordering evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "DIAGNOSTIC=REAL_BROKER_ORDERING_WITNESS"
+            echo "TIMING_INSTRUMENTATION=WORKFLOW_LOCAL"
+            echo "AB105_116R=UNCHANGED"
+            echo "AB105_117R=NOT_CREATED"
+            echo "TLC=NOT_RERUN"
+            echo "---- NEXO_ORDER EVENTS ----"
+            grep 'NEXO_ORDER ' /tmp/nexo-g0-ordering.log || true
+          } | tee /tmp/nexo-g0-ordering-evidence.txt
+
+      - name: Upload raw ordering evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-ordering-witness
+          path: |
+            /tmp/nexo-g0-ordering.log
+            /tmp/nexo-g0-ordering-evidence.txt
