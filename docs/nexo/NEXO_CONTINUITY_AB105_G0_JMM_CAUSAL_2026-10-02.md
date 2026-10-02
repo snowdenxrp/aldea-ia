@@ -511,3 +511,32 @@ No decir que `KafkaEventQueue` carece de HB: sí existe una cadena de lock hacia
 
 ### Próximo paso
 Inspeccionar si existe alguna publicación/lectura posterior de `StandardAuthorizer.data` o mecanismo global de request synchronization que pueda conectar el callback de metadata con los request threads; si no aparece, formalizar el límite exacto de la afirmación sin convertirlo en exploit.
+
+
+## CHECKPOINT — volatile `data` is not a publication edge for later `aclCache` writes
+Fecha: 2026-10-02
+
+🟢 Pinned `StandardAuthorizer` confirms `data` is `volatile`, and `authorize()` performs one volatile read into `curData`.
+🟢 However, steady-state `addAcl()`/`removeAcl()` call `data.addAcl/removeAcl()` without assigning a new `data` reference. Therefore the volatile variable is **not written** at W1.
+🟢 W1 remains the plain write `D.aclCache = newCache`; R1 remains the plain read `D.aclCache` inside `findAclRule()`.
+🟢 `StandardAuthorizerData` is explicitly documented as **not thread-safe**.
+🟢 `KafkaRequestHandler` confirms request processing occurs on dedicated request-handler threads and invokes `apis.handle(request, requestLocal)` directly; no common authorizer lock is introduced here.
+
+### Critical distinction
+`volatile data` can publish writes that happened-before a volatile write/read sequence when the `data` reference is reassigned. It does **not** retroactively make later mutations inside the already-published `StandardAuthorizerData` volatile, and a later volatile read of the unchanged reference does not create a synchronizes-with edge from W1.
+
+### Formal status
+`W1→R1 HB = NOT_IDENTIFIED`
+`VOLATILE_PUBLICATION_CLOSURE = NOT_PRESENT_FOR_STEADY_STATE`
+`REQUEST_SYNC_CLOSURE = NOT_IDENTIFIED`
+`STALE_READ = UNKNOWN`
+`STALE_ALLOWED = UNKNOWN`
+`EXPLOITABILITY = UNKNOWN`
+`GENERALIZATION = UNKNOWN`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+### DO-NOT-REPEAT
+No claim that volatile `data` makes `aclCache` safe. No claim that absence of an HB edge proves stale visibility actually occurs.
+
+### Next
+Check whether `RequestChannel` itself introduces synchronization that reaches ACL publisher state (likely queue-local only), then inspect any broker-wide lifecycle barrier shared by metadata and request processing.
