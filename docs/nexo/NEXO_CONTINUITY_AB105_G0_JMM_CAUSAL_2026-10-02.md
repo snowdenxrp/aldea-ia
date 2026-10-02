@@ -472,3 +472,42 @@ Estado: `HB(W1→R1)=NOT_IDENTIFIED`; `STARTUP_HB=VERIFIED_FOR_INITIAL_LOAD_ONLY
 DO-NOT-REPEAT: no usar `initialLoadFuture` como prueba para revocaciones posteriores; no tratar el comentario del supuesto lock como implementación.
 
 Próximo paso: cerrar `KafkaEventQueue` (`append → event.run`) y revisar `StandardAuthorizerData` por sincronización interna omitida.
+
+
+## CHECKPOINT — KafkaEventQueue HB boundary + StandardAuthorizerData internals
+Fecha: 2026-10-02
+
+### KafkaEventQueue
+🟢 `enqueue()` modifica la cola bajo `ReentrantLock` y hace `unlock()`; el event-handler adquiere el mismo lock antes de retirar el evento (`remove`) y después libera el lock antes de ejecutar `event.run()`.
+🟢 Bajo JMM, la liberación del mismo lock seguida de una adquisición posterior por el event-handler establece una relación de sincronización; por programa, esa adquisición precede al `toRun.run()` que ejecuta el evento. Por tanto, para un evento efectivamente tomado por el handler, la cadena `producer actions → enqueue lock-release → handler lock-acquire → event.run()` proporciona HB hacia la ejecución del callback.
+🟢 Esto fortalece la visibilidad **dentro del metadata/event-handler execution domain**.
+🔴 No aparece ninguna adquisición del `KafkaEventQueue` lock por el request thread que ejecuta `authorize()`. Por ello, la cadena de HB termina en `event.run()` y no alcanza automáticamente R1.
+
+### StandardAuthorizerData
+🟢 `aclCache` es un campo plain y `AclCache` es inmutable.
+🟢 `removeAcl()` construye primero `aclCacheSnapshot = aclCache.removeAcl(id)` y después ejecuta la asignación plain `aclCache = aclCacheSnapshot`.
+🟢 `findAclRule()` captura `AclCache aclCacheSnapshot = aclCache` mediante lectura plain y opera sobre esa instantánea inmutable.
+🟢 No se encontró lock/synchronized/volatile sobre `aclCache` dentro de `StandardAuthorizerData` que cierre W1→R1.
+🔵 Esto significa que el metadata event thread tiene una secuencia bien ordenada internamente, mientras que la publicación hacia un request thread concurrente sigue siendo el punto abierto.
+
+### Refinamiento del grafo
+`Raft/Metadata producer → KafkaEventQueue.enqueue(lock) → handler lock acquire → AclPublisher.onMetadataUpdate() → W1(aclCache=newCache)`
+`request thread → KafkaApis → AuthHelper → StandardAuthorizer.authorize() → R1(aclCache)`
+
+`HB producer→event callback: IDENTIFIED`
+`HB W1→R1: NOT_IDENTIFIED`
+`COMMON_SYNC_TO_R1: NOT_IDENTIFIED`
+
+### Estado
+`STALE_READ=UNKNOWN`
+`STALE_ALLOWED=UNKNOWN`
+`EXPLOITABILITY=UNKNOWN`
+`GENERALIZATION=UNKNOWN`
+`PRODUCTION_IMPACT=UNKNOWN`
+`SECURITY_CONCLUSION=NOT_ESTABLISHED`
+
+### DO-NOT-REPEAT
+No decir que `KafkaEventQueue` carece de HB: sí existe una cadena de lock hacia `event.run()`. La conclusión correcta es más estrecha: **ese HB no cruza hasta el request-thread `authorize()` en las capas revisadas**.
+
+### Próximo paso
+Inspeccionar si existe alguna publicación/lectura posterior de `StandardAuthorizer.data` o mecanismo global de request synchronization que pueda conectar el callback de metadata con los request threads; si no aparece, formalizar el límite exacto de la afirmación sin convertirlo en exploit.
