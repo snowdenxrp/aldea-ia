@@ -1,0 +1,47 @@
+name: NEXO AB105 G0 JMM causal window (PR runner)
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  jmm-causal-window:
+    if: startsWith(github.event.pull_request.head.ref, 'nexo-ab105-g0-jmm-causal-window')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout PR source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Clone pinned Kafka source
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git /tmp/kafka
+          cd /tmp/kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+      - name: Install causal discriminator
+        run: |
+          mkdir -p /tmp/kafka/metadata/src/test/java/org/apache/kafka/metadata/authorizer
+          cp docs/nexo/NEXO_AB105_G0_JMM_CAUSAL_WINDOW_TEST.java.txt /tmp/kafka/metadata/src/test/java/org/apache/kafka/metadata/authorizer/NexoJmmCausalWindowTest.java
+      - name: Compile
+        working-directory: /tmp/kafka
+        run: ./gradlew --no-daemon :metadata:compileTestJava
+      - name: Execute
+        working-directory: /tmp/kafka
+        run: ./gradlew --no-daemon :metadata:test --tests org.apache.kafka.metadata.authorizer.NexoJmmCausalWindowTest --info
+      - name: Emit evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          echo "KAFKA_REV=$(git rev-parse HEAD)"
+          echo "CAUSAL_WINDOW=EXECUTED"
+          echo "TIMING_ONLY_DIAGNOSTIC=TRUE"
+          echo "AB105_116R=UNCHANGED"
+          echo "AB105_117R=NOT_CREATED"
