@@ -782,3 +782,28 @@ Resultado conjunto de los dos runs:
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
 
 No se repiten los experimentos ni TLC y no se crea AB105.117R.
+
+
+## CHECKPOINT — mecanismo concreto de cache confirmado en Kafka pin
+Fecha: 2026-10-02
+
+Se inspeccionaron directamente en el commit Kafka `99b940733a9f6bc409457dba7108f08421d81e42` `StandardAuthorizer`, `StandardAuthorizerData` y `AclCache`.
+
+🟢 `StandardAuthorizer.authorize()` toma una referencia local `curData = data` una sola vez por llamada y luego delega en `curData.authorize(...)`.
+🟢 `StandardAuthorizer.removeAcl()` delega directamente a `data.removeAcl(id)`.
+🟢 `StandardAuthorizerData` declara explícitamente `The class is not thread-safe`.
+🟢 `StandardAuthorizerData.aclCache` es un campo `private` plain; `removeAcl()` calcula un nuevo `AclCache` y después hace `aclCache = aclCacheSnapshot`.
+🟢 `AclCache` está documentada e implementada como **immutable**; `removeAcl()` retorna una instancia nueva y no muta la instancia anterior.
+🔴 Por tanto, la unidad de visibilidad relevante queda bien delimitada: una autorización puede operar sobre una referencia `StandardAuthorizerData` ya publicada y leer su `aclCache` plain; la revocación steady-state reemplaza ese campo por otra instancia sin una publicación volatile de `data` en ese mismo camino.
+🔵 Esto fortalece la hipótesis/mecanismo a investigar, pero no convierte la hipótesis en evidencia de stale-read: la ejecución debe mostrar el resultado conductual o una instrumentación causal válida.
+
+Importante: el comentario de `StandardAuthorizer.data` afirma que hay un read-write lock, pero el código pin no contiene tal lock. Esto ya estaba registrado y queda corroborado por la lectura directa del código.
+
+`CACHE_STRUCTURE = IMMUTABLE_SNAPSHOT`
+`STEADY_STATE_ACLCACHE_WRITE = PLAIN_REFERENCE_REPLACEMENT`
+`AUTHORIZATION_DATA_SNAPSHOT = LOCAL_REFERENCE`
+`STALE_READ = UNKNOWN`
+`HB W1→R1 = NOT_IDENTIFIED`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+No se modifica AB105.116R, no se crea AB105.117R y no se repite TLC.
