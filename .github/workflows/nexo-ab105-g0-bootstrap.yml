@@ -52,8 +52,6 @@ jobs:
           import org.apache.kafka.common.acl.AclBinding;
           import org.apache.kafka.common.acl.AclBindingFilter;
           import org.apache.kafka.common.acl.AccessControlEntry;
-          import org.apache.kafka.common.acl.AclOperation;
-          import org.apache.kafka.common.acl.AclPermissionType;
           import org.apache.kafka.common.config.SaslConfigs;
           import org.apache.kafka.common.security.auth.SecurityProtocol;
           import org.apache.kafka.common.errors.TopicAuthorizationException;
@@ -204,7 +202,7 @@ jobs:
                               ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
                               ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                               ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
-                              ProducerConfig.ACKS_CONFIG, "all"))) {{ putAll(userClient()); }})) {
+                              ProducerConfig.ACKS_CONFIG, "all")) {{ putAll(userClient()); }})) {
                               d2 = executor.submit(() -> {
                                   try { producer.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {1})).get(); }
                                   catch (Exception e) { throw new RuntimeException(e); }
@@ -215,8 +213,8 @@ jobs:
                                   ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, cluster.bootstrapServers(),
                                   ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                   ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
-                                  ProducerConfig.ACKS_CONFIG, "all"))) {{ putAll(userClient()); }})) {
-                                  // DESCRIBE remains after D0. This warms metadata without keeping WRITE authorization.
+                                  ProducerConfig.ACKS_CONFIG, "all")) {{ putAll(userClient()); }})) {
+                                  // Warm D1 metadata while WRITE is still authorized; send no record.
                                   Assertions.assertTrue(d1Producer.partitionsFor(TOPIC_NAME).stream().anyMatch(info -> info.partition() == 0),
                                       "D1 producer must warm partition metadata before D0");
 
@@ -273,6 +271,7 @@ jobs:
         working-directory: /tmp/kafka
         run: |
           ./gradlew --no-daemon :server:compileTestJava
+          touch /tmp/nexo-g0-harness-compile-success
           ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info -x :server:checkstyleTest
       - name: Emit bootstrap evidence
         if: always()
@@ -280,7 +279,11 @@ jobs:
         run: |
           {
             echo "KAFKA_REV=$(git rev-parse HEAD)"
-            echo "G0_HARNESS_COMPILE=SUCCESS"
+            if test -f /tmp/nexo-g0-harness-compile-success; then
+              echo "G0_HARNESS_COMPILE=SUCCESS"
+            else
+              echo "G0_HARNESS_COMPILE=FAILED_OR_NOT_REACHED"
+            fi
             if test -f /tmp/nexo-g0-witness.txt; then
               echo "G0_RUNTIME=OBSERVED_SUCCESS"; cat /tmp/nexo-g0-witness.txt
             else
