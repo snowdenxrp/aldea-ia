@@ -73,14 +73,14 @@ jobs:
           replace_once("core/src/main/scala/kafka/network/RequestChannel.scala", """  def sendRequest(request: Request): Unit = {
       requestQueue.put(request)
   }""", """  def sendRequest(request: Request): Unit = {
-      if (request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering") System.err.println("NEXO_ORDER ENQUEUE ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName())
+      if (request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering") System.err.println("NEXO_ORDER ENQUEUE ns=" + System.nanoTime() + " correlationId=" + request.header.correlationId() + " thread=" + Thread.currentThread().getName())
       requestQueue.put(request)
   }""")
 
           replace_once("core/src/main/scala/kafka/network/RequestChannel.scala", """      val request = requestQueue.poll(timeout, TimeUnit.MILLISECONDS)
       request match {""", """      val request = requestQueue.poll(timeout, TimeUnit.MILLISECONDS)
       request match {
-        case request: Request if request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering" => System.err.println("NEXO_ORDER DEQUEUE ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName())
+        case request: Request if request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering" => System.err.println("NEXO_ORDER DEQUEUE ns=" + System.nanoTime() + " correlationId=" + request.header.correlationId() + " thread=" + Thread.currentThread().getName())
         case _ =>
       }
       request match {""")
