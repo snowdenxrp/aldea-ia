@@ -139,14 +139,19 @@ jobs:
                               while(System.nanoTime()<deadline){ if(produce(p)){allowed=true;break;} Thread.sleep(20); }
                               Assertions.assertTrue(allowed,"ACL was not observed as ALLOWED before deletion");
                               System.err.println("NEXO_ORDER A1_SUCCESS cycle="+cycle+" ns="+System.nanoTime());
-                              List<AclBinding> d0Targets;
-                              try (Admin admin = cluster.admin()) {
-                                  d0Targets = admin.describeAcls(
-                                      new AclBindingFilter(
-                                          new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
-                                          AccessControlEntryFilter.ANY
-                                      )
-                                  ).values().get();
+                              List<AclBinding> d0Targets = List.of();
+                              long d0GuardDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+                              while (System.nanoTime() < d0GuardDeadline) {
+                                  try (Admin admin = cluster.admin()) {
+                                      d0Targets = admin.describeAcls(
+                                          new AclBindingFilter(
+                                              new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
+                                              AccessControlEntryFilter.ANY
+                                          )
+                                      ).values().get();
+                                  }
+                                  if (d0Targets.size() == 1) break;
+                                  Thread.sleep(20);
                               }
                               Assertions.assertEquals(1, d0Targets.size(), "D0 target ACL cardinality must be exactly one");
                               AclBinding d0Target = d0Targets.get(0);
