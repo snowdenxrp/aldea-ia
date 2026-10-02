@@ -1,6 +1,7 @@
 name: NEXO AB105 G0 real broker ordering witness
 
 on:
+  # Trigger retry after v2 registration path audit; instrumentation remains workflow-local.
   push:
     branches:
       - nexo-ab105-g0-ordering-witness
