@@ -6,6 +6,7 @@ on:
     branches:
       - nexo-ab105-g0-jmm-causal-window
       - nexo-ab105-g0-authorize-snapshot-diagnostic
+      - nexo-ab105-g0-ordering-witness-run
   pull_request:
     branches:
       - main
