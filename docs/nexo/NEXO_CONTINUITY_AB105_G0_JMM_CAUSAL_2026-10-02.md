@@ -109,6 +109,20 @@ JMM_DIRECT_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=2598444 STALE_ALLOWED_IN_P
 artifact ID 11207703791, digest b2992d95c0ac3bccdb54cec526424f7e3e65fe77539db7a04fc6e9c8c75ba107
 Critical interpretation: 75,844 ALLOWED are NOT proof of result after removeAcl() return; timing window overlapped writer. COMPLETED_REMOVE_THEN_ALLOWED=NOT_ESTABLISHED.
 
+## G0 runtime attempt — run 36968055705
+Run: 36968055705, job: 110715994610, PR #91 merge ref: 4849480e0a1928f7a75e16642197b0dc9b50577d.
+- Kafka: 99b940733a9f6bc409457dba7108f08421d81e42.
+- Java: 21.0.12.1 LTS.
+- Compile Kafka infrastructure: SUCCESS.
+- Temporary G0 harness compile: SUCCESS.
+- Runtime test actually EXECUTED, but failed before D2 release/witness.
+- Exact first causal harness failure: synthetic D1 AuthorizableRequestContext returned clientAddress() = null; StandardAuthorizerData.authorize() dereferenced clientAddress().getHostAddress(), producing NullPointerException at StandardAuthorizerData.java:245 and NexoG0RuntimeTest.java:231.
+- Raw runtime logs also show A1 reached the TargetAuthorizer and remained blocked on A1_RELEASE; repeated TOPIC_AUTHORIZATION_FAILED messages are downstream of the blocked test and are not a scientific result.
+- Therefore: A1=OBSERVED is supported by the control flow/error sequence, but D0/D1/D2/E witness is NOT established.
+- Minimal correction committed on PR #91 branch: 96aee422286b5602c3f188736e1910c1017112ab, changing only the synthetic clientAddress() return from null to InetAddress.getLoopbackAddress().
+- No change to A1→D0→D1→D2→E causal design; AB105.116R unchanged; AB105.117R not created; TLC not rerun.
+- Next gate: obtain a fresh PR workflow execution for head 96aee422286b5602c3f188736e1910c1017112ab and inspect raw runtime witness.
+
 ## Source-level findings
 Pinned source files:
 - StandardAuthorizer.java
