@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -86,12 +87,23 @@ public class NexoJmmCausalWindowTest {
         final long enter;
         final long exit;
         final AuthorizationResult result;
+        final Object cacheBeforeAuthorize;
 
-        Observation(long enter, long exit, AuthorizationResult result) {
+        Observation(long enter, long exit, AuthorizationResult result, Object cacheBeforeAuthorize) {
             this.enter = enter;
             this.exit = exit;
             this.result = result;
+            this.cacheBeforeAuthorize = cacheBeforeAuthorize;
         }
+    }
+
+    private static Object aclCacheOf(StandardAuthorizer authorizer) throws Exception {
+        Field dataField = StandardAuthorizer.class.getDeclaredField("data");
+        dataField.setAccessible(true);
+        Object data = dataField.get(authorizer);
+        Field cacheField = data.getClass().getDeclaredField("aclCache");
+        cacheField.setAccessible(true);
+        return cacheField.get(data);
     }
 
     private static final class WriterObservation {
@@ -106,6 +118,7 @@ public class NexoJmmCausalWindowTest {
         long overlapDenied;
         long unexpected;
         long observations;
+        long postReturnAllowedWithPreRemoveCache;
     }
 
     private static void classifyObservation(
@@ -190,15 +203,17 @@ public class NexoJmmCausalWindowTest {
                     while (System.nanoTime() < observationEnd) {
                         long enter = System.nanoTime();
                         AuthorizationResult result;
+                        Object cacheBeforeAuthorize;
                         try {
+                            cacheBeforeAuthorize = aclCacheOf(authorizer);
                             result = authorizer.authorize(context(), List.of(writeAction())).get(0);
                         } catch (Throwable t) {
-                            local.add(new Observation(enter, System.nanoTime(), null));
+                            local.add(new Observation(enter, System.nanoTime(), null, null));
                             return;
                         }
                         long exit = System.nanoTime();
                         if (enter >= scheduledRemove) {
-                            local.add(new Observation(enter, exit, result));
+                            local.add(new Observation(enter, exit, result, cacheBeforeAuthorize));
                         }
                     }
                 }, "nexo-jmm-causal-reader-" + r);
@@ -216,9 +231,15 @@ public class NexoJmmCausalWindowTest {
             }
             assertTrue(!writer.isAlive(), "writer did not finish");
 
+            Object postRemoveCache = aclCacheOf(authorizer);
             for (ArrayList<Observation> local : readerObservations) {
                 for (Observation observation : local) {
                     classifyObservation(observation, writerObservation, counts);
+                    if (observation.result == AuthorizationResult.ALLOWED
+                        && observation.enter > writerObservation.exit
+                        && observation.cacheBeforeAuthorize == postRemoveCache) {
+                        counts.postReturnAllowedWithPreRemoveCache++;
+                    }
                 }
             }
         }
@@ -231,6 +252,7 @@ public class NexoJmmCausalWindowTest {
             " POST_RETURN_DENIED=" + counts.postReturnDenied +
             " OVERLAP_ALLOWED=" + counts.overlapAllowed +
             " OVERLAP_DENIED=" + counts.overlapDenied +
+            " POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=" + counts.postReturnAllowedWithPreRemoveCache +
             " UNEXPECTED=" + counts.unexpected);
 
         assertEquals(0, counts.unexpected, "diagnostic encountered unexpected execution failures");
