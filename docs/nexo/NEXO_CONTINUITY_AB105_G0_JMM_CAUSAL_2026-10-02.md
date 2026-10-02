@@ -171,6 +171,38 @@ CAUSAL_JMM_RACE ITERATIONS=... READERS=... OBSERVATIONS=... POST_RETURN_ALLOWED=
 - Do not rerun TLC.
 
 
+
+## NUEVO HALLAZGO — discriminador JMM causal ejecutado
+Se revisaron nuevamente los runs exitosos del PR #89 en el commit 0388dce81a2e08dd90f96f6806fe74683ed6f543.
+
+Run 36965213770 / job 110707365331:
+- Compile: SUCCESS
+- Execute: SUCCESS
+- Witness: CAUSAL_JMM_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=2531489 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=2466195 OVERLAP_ALLOWED=18300 OVERLAP_DENIED=62 UNEXPECTED=0
+
+Run 36965213781 / job 110707365140:
+- Compile: SUCCESS
+- Execute: SUCCESS
+- Witness: CAUSAL_JMM_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=5556071 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=5457434 OVERLAP_ALLOWED=29225 OVERLAP_DENIED=68 UNEXPECTED=0
+
+Lectura correcta:
+- 🟢 El discriminador sí se ejecutó; el estado anterior que lo trataba como simplemente bloqueado por Checkstyle estaba desactualizado.
+- 🟢 En ambos runs, con 100 iteraciones y 4 readers, se observaron cero ALLOWED cuyo inicio medido fuese estrictamente posterior al retorno medido de removeAcl(): POST_RETURN_ALLOWED=0.
+- 🟢 También se observaron autorizaciones dentro de intervalos solapados con removeAcl(), por lo que la carrera temporal sí produjo observaciones concurrentes: OVERLAP_ALLOWED=18300 y 29225 respectivamente.
+- 🔵 La clasificación es post-hoc después de join(); los contadores no participan en la carrera. No se introdujo latch/barrier/volatile gate para liberar readers.
+- 🔵 System.nanoTime() establece una comparación temporal monotónica entre timestamps; NO constituye por sí solo una prueba de Java Memory Model happens-before.
+- 🔴 Por tanto, este resultado NO demuestra un teorema JMM general ni descarta todas las formas de stale visibility. Demuestra únicamente que, en estas dos ejecuciones del harness, no se observó un ALLOWED cuyo enter timestamp quedara después del return timestamp medido de removeAcl().
+- JMM happens-before general: UNKNOWN.
+- Exploitability: UNKNOWN.
+- Generalization: UNKNOWN.
+- Production impact: UNKNOWN.
+- Security conclusion: NOT_ESTABLISHED.
+
+Nota de trazabilidad: el workflow imprime TIMING_ONLY_DIAGNOSTIC=TRUE y no subió artifact en estos runs; los witnesses anteriores son los logs raw de los jobs. No debe confundirse esa etiqueta con “test no ejecutado”: el test sí ejecutó y terminó SUCCESS.
+
+## Próximo paso de investigación
+Antes de avanzar a cualquier nueva versión AB, revisar formalmente la semántica del discriminador contra JMM y resolver la discrepancia ya registrada entre comentarios de StandardAuthorizer sobre read-write lock y la implementación fijada. No crear AB105.117R mientras esa revisión semántica siga abierta.
+
 ## NUEVO CHECKPOINT — G0 runtime bootstrap corregido
 Run: 36969192502 (run #56), job: 110719406205
 Workflow: NEXO AB105 G0 Kafka Bootstrap
