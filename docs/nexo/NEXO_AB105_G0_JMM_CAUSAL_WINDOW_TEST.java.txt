@@ -173,86 +173,99 @@ public class NexoJmmCausalWindowTest {
             && observation.cacheBeforeAuthorize == preRemoveCache;
     }
 
+    private static void runReader(
+        StandardAuthorizer authorizer,
+        long scheduledRemove,
+        long observationEnd,
+        ArrayList<Observation> local
+    ) {
+        while (System.nanoTime() < observationEnd) {
+            long enter = System.nanoTime();
+            AuthorizationResult result;
+            Object cacheBeforeAuthorize;
+            try {
+                cacheBeforeAuthorize = aclCacheOf(authorizer);
+                result = authorizer.authorize(context(), List.of(writeAction())).get(0);
+            } catch (Throwable t) {
+                local.add(new Observation(enter, System.nanoTime(), null, null));
+                return;
+            }
+            long exit = System.nanoTime();
+            if (enter >= scheduledRemove) {
+                local.add(new Observation(enter, exit, result, cacheBeforeAuthorize));
+            }
+        }
+    }
+
+    private static void runIteration(int iteration, ClassificationCounts counts) throws Exception {
+        StandardAuthorizer authorizer = newAuthorizer();
+        Uuid id = new Uuid(iteration + 501L, iteration + 1501L);
+        authorizer.addAcl(id, acl());
+        Object preRemoveCache = aclCacheOf(authorizer);
+
+        List<AuthorizationResult> baseline =
+            authorizer.authorize(context(), List.of(writeAction()));
+        assertEquals(AuthorizationResult.ALLOWED, baseline.get(0),
+            "baseline authorization must be ALLOWED");
+
+        long raceStart = System.nanoTime();
+        long scheduledRemove = raceStart + PRE_REMOVE_NANOS;
+        long observationEnd = raceStart + OBSERVATION_END_NANOS;
+        WriterObservation writerObservation = new WriterObservation();
+        @SuppressWarnings("unchecked")
+        ArrayList<Observation>[] readerObservations = new ArrayList[READERS];
+        for (int r = 0; r < READERS; r++) {
+            readerObservations[r] = new ArrayList<>();
+        }
+
+        Thread writer = new Thread(() -> {
+            while (System.nanoTime() < scheduledRemove) {
+                Thread.onSpinWait();
+            }
+            writerObservation.enter = System.nanoTime();
+            authorizer.removeAcl(id);
+            writerObservation.exit = System.nanoTime();
+        }, "nexo-jmm-causal-writer");
+
+        Thread[] readers = new Thread[READERS];
+        for (int r = 0; r < READERS; r++) {
+            final ArrayList<Observation> local = readerObservations[r];
+            readers[r] = new Thread(
+                () -> runReader(authorizer, scheduledRemove, observationEnd, local),
+                "nexo-jmm-causal-reader-" + r);
+        }
+
+        writer.start();
+        for (Thread reader : readers) {
+            reader.start();
+        }
+
+        writer.join(5000);
+        for (Thread reader : readers) {
+            reader.join(5000);
+            assertTrue(!reader.isAlive(), "reader did not finish");
+        }
+        assertTrue(!writer.isAlive(), "writer did not finish");
+
+        Object postRemoveCache = aclCacheOf(authorizer);
+        assertTrue(postRemoveCache != preRemoveCache,
+            "removeAcl must publish a distinct cache instance");
+        for (ArrayList<Observation> local : readerObservations) {
+            for (Observation observation : local) {
+                classifyObservation(observation, writerObservation, counts);
+                if (isPostReturnAllowedWithPreRemoveCache(
+                    observation, writerObservation, preRemoveCache)) {
+                    counts.postReturnAllowedWithPreRemoveCache++;
+                }
+            }
+        }
+    }
+
     @Test
     public void causalPostReturnWindowIsDiagnosticOnly() throws Exception {
         ClassificationCounts counts = new ClassificationCounts();
-
         for (int iteration = 0; iteration < ITERATIONS; iteration++) {
-            StandardAuthorizer authorizer = newAuthorizer();
-            Uuid id = new Uuid(iteration + 501L, iteration + 1501L);
-            authorizer.addAcl(id, acl());
-            Object preRemoveCache = aclCacheOf(authorizer);
-
-            List<AuthorizationResult> baseline =
-                authorizer.authorize(context(), List.of(writeAction()));
-            assertEquals(AuthorizationResult.ALLOWED, baseline.get(0),
-                "baseline authorization must be ALLOWED");
-
-            long raceStart = System.nanoTime();
-            long scheduledRemove = raceStart + PRE_REMOVE_NANOS;
-            long observationEnd = raceStart + OBSERVATION_END_NANOS;
-            WriterObservation writerObservation = new WriterObservation();
-            @SuppressWarnings("unchecked")
-            ArrayList<Observation>[] readerObservations = new ArrayList[READERS];
-            for (int r = 0; r < READERS; r++) {
-                readerObservations[r] = new ArrayList<>();
-            }
-
-            Thread writer = new Thread(() -> {
-                while (System.nanoTime() < scheduledRemove) {
-                    Thread.onSpinWait();
-                }
-                writerObservation.enter = System.nanoTime();
-                authorizer.removeAcl(id);
-                writerObservation.exit = System.nanoTime();
-            }, "nexo-jmm-causal-writer");
-
-            Thread[] readers = new Thread[READERS];
-            for (int r = 0; r < READERS; r++) {
-                final ArrayList<Observation> local = readerObservations[r];
-                readers[r] = new Thread(() -> {
-                    while (System.nanoTime() < observationEnd) {
-                        long enter = System.nanoTime();
-                        AuthorizationResult result;
-                        Object cacheBeforeAuthorize;
-                        try {
-                            cacheBeforeAuthorize = aclCacheOf(authorizer);
-                            result = authorizer.authorize(context(), List.of(writeAction())).get(0);
-                        } catch (Throwable t) {
-                            local.add(new Observation(enter, System.nanoTime(), null, null));
-                            return;
-                        }
-                        long exit = System.nanoTime();
-                        if (enter >= scheduledRemove) {
-                            local.add(new Observation(enter, exit, result, cacheBeforeAuthorize));
-                        }
-                    }
-                }, "nexo-jmm-causal-reader-" + r);
-            }
-
-            writer.start();
-            for (Thread reader : readers) {
-                reader.start();
-            }
-
-            writer.join(5000);
-            for (Thread reader : readers) {
-                reader.join(5000);
-                assertTrue(!reader.isAlive(), "reader did not finish");
-            }
-            assertTrue(!writer.isAlive(), "writer did not finish");
-
-            Object postRemoveCache = aclCacheOf(authorizer);
-            assertTrue(postRemoveCache != preRemoveCache, "removeAcl must publish a distinct cache instance");
-            for (ArrayList<Observation> local : readerObservations) {
-                for (Observation observation : local) {
-                    classifyObservation(observation, writerObservation, counts);
-                    if (isPostReturnAllowedWithPreRemoveCache(
-                        observation, writerObservation, preRemoveCache)) {
-                        counts.postReturnAllowedWithPreRemoveCache++;
-                    }
-                }
-            }
+            runIteration(iteration, counts);
         }
 
         System.out.println(
