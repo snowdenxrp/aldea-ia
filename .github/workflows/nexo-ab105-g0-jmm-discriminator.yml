@@ -56,7 +56,7 @@ jobs:
             echo "KAFKA_REV=$(git rev-parse HEAD)"
             echo "JAVA_VERSION=$(java -version 2>&1 | head -n 1)"
             echo "JMM_DIAGNOSTIC_COMPILE=SEE_JOB_RESULT"
-            grep -E "JMM_DIAGNOSTIC|STale|STALE|BUILD SUCCESSFUL|BUILD FAILED" /tmp/nexo-ab105-jmm-test.log || true
+            if [ -f /tmp/nexo-ab105-jmm-test.log ]; then\n              grep -E "JMM_DIAGNOSTIC|STale|STALE|BUILD SUCCESSFUL|BUILD FAILED" /tmp/nexo-ab105-jmm-test.log || true\n            else\n              echo "JMM_RUNTIME_LOG=NOT_CREATED_COMPILE_FAILED"\n            fi
             echo "INTERPRETATION=DIAGNOSTIC_ONLY"
             echo "PRODUCTION_JMM_BUG=UNKNOWN"
           } | tee /tmp/nexo-ab105-jmm-evidence.txt
