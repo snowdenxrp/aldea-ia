@@ -78,7 +78,7 @@ jobs:
           import static org.apache.kafka.common.resource.ResourceType.TOPIC;
 
           public final class NexoG0ProductionStandardAuthorizerTest {
-              private static final String TOPIC = "nexo-g0-production";
+              private static final String TOPIC_NAME = "nexo-g0-production";
               private static final int ITERATIONS = 10;
 
               private static Map<String, Object> userClient() {
@@ -94,16 +94,31 @@ jobs:
                   );
               }
 
+              private static Map<String, Object> withBootstrap(Map<String, Object> props, String bootstrap) {
+                  props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap);
+                  return props;
+              }
+
+              private static Map<String, Object> producerProps() {
+                  Map<String, Object> props = new HashMap<>();
+                  props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "__BOOTSTRAP__");
+                  props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
+                  props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
+                  props.put(ProducerConfig.ACKS_CONFIG, "all");
+                  props.putAll(userClient());
+                  return props;
+              }
+
               private static AclBinding acl(AclOperation operation) {
                   return new AclBinding(
-                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                      new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL),
                       new AccessControlEntry(
                           "User:" + JaasUtils.KAFKA_PLAIN_USER1, "*", operation, ALLOW));
               }
 
               private static AclBindingFilter writeFilter() {
                   return new AclBindingFilter(
-                      new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
+                      new ResourcePattern(ResourceType.TOPIC, TOPIC_NAME, LITERAL).toFilter(),
                       new AccessControlEntry(
                           "User:" + JaasUtils.KAFKA_PLAIN_USER1, "*", WRITE, ALLOW).toFilter());
               }
@@ -124,7 +139,7 @@ jobs:
                       cluster.waitForReadyBrokers();
 
                       try (Admin admin = cluster.admin()) {
-                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+                          admin.createTopics(List.of(new NewTopic(TOPIC_NAME, 1, (short) 1))).all().get();
 
                           int denied = 0;
                           int allowed = 0;
@@ -141,8 +156,8 @@ jobs:
                                           ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                           ProducerConfig.ACKS_CONFIG, "all"
                                       ))) {{ putAll(userClient()); }}) {
-                                  baseline.partitionsFor(TOPIC);
-                                  baseline.send(new ProducerRecord<>(TOPIC, new byte[] {(byte) i})).get();
+                                  baseline.partitionsFor(TOPIC_NAME);
+                                  baseline.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {(byte) i})).get();
                               }
 
                               // D1 transport is prepared before D0, but its WRITE request is new and
@@ -154,14 +169,14 @@ jobs:
                                           ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
                                           ProducerConfig.ACKS_CONFIG, "all"
                                       ))) {{ putAll(userClient()); }}) {
-                                  d1.partitionsFor(TOPIC);
+                                  d1.partitionsFor(TOPIC_NAME);
 
                                   long d0Start = Time.SYSTEM.milliseconds();
                                   admin.deleteAcls(List.of(writeFilter()), new DeleteAclsOptions()).all().get();
                                   long d0Complete = Time.SYSTEM.milliseconds();
 
                                   try {
-                                      d1.send(new ProducerRecord<>(TOPIC, new byte[] {(byte) (i + 100)})).get();
+                                      d1.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {(byte) (i + 100)})).get();
                                       allowed++;
                                       System.out.println("D1_RESULT=ALLOWED iteration=" + i
                                           + " D0_MS=" + (d0Complete - d0Start));
