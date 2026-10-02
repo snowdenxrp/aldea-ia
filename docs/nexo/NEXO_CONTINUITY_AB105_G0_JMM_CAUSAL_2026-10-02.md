@@ -280,3 +280,52 @@ Estados: temporalidad por nanoTime = EVIDENCE; JMM happens-before general = UNKN
 No crear AB105.117R. No modificar AB105.116R. No rerun TLC. No repetir el discriminador causal ya ejecutado con éxito.
 Siguiente trabajo: revisión de alcanzabilidad/semántica centrada en si existe una cadena de sincronización real entre el hilo que ejecuta removeAcl()/AclPublisher y el hilo RPC que entra en authorize(), sin asumir que el comentario del lock es correcto.
 DO-NOT-REPEAT: no usar el comentario read-write lock como evidencia de sincronización; verificar siempre el mecanismo ejecutable en la revisión fijada.
+
+
+## CHECKPOINT — alcanzabilidad real AclPublisher → authorize()
+Fecha: 2026-10-02
+
+### Cadena ejecutable verificada
+🟢 MetadataLoader mantiene un hilo propio para callbacks de publishers. `maybePublishMetadata()` ejecuta `publisher.onMetadataUpdate(...)` en ese hilo; `AclPublisher.onMetadataUpdate()` llama directamente `clusterMetadataAuthorizer.addAcl/removeAcl()`.
+
+🟢 `StandardAuthorizer.removeAcl()` delega directamente a `data.removeAcl(id)`. En la revisión fijada, `StandardAuthorizerData.removeAcl()` calcula un nuevo `AclCache` y después reasigna `aclCache`.
+
+🟢 `StandardAuthorizer.authorize()` lee la referencia `data` una vez (`curData = data`) y luego llama `curData.authorize(...)`. Por tanto, una llamada RPC puede conservar el mismo objeto `StandardAuthorizerData` mientras el hilo MetadataLoader modifica su campo `aclCache`.
+
+🟢 `StandardAuthorizerData` declara explícitamente que no es thread-safe y `aclCache` no es volatile.
+
+### KafkaEventQueue: qué sí y qué no sincroniza
+🟢 `KafkaEventQueue` usa `ReentrantLock` para proteger la estructura interna de la cola. El hilo productor adquiere/libera ese lock al encolar; el hilo event-handler también lo adquiere/libera para retirar eventos.
+
+🟢 Pero `EventHandler.handleEvents()` retira el evento bajo el lock y después ejecuta `toRun.run(...)` fuera del lock. La llamada efectiva `AclPublisher.onMetadataUpdate()` ocurre fuera de ese `ReentrantLock`.
+
+Por tanto:
+- 🔵 el lock de la cola sincroniza la administración/entrega del evento;
+- 🔴 no constituye un lock compartido entre la ejecución de `removeAcl()` y el hilo RPC que ejecuta `authorize()`;
+- 🔴 no se puede usar el lock de KafkaEventQueue como happens-before directo para `aclCache` frente a `authorize()`.
+
+### Punto JMM crítico
+La referencia `StandardAuthorizer.data` es volatile, pero la ruta incremental `removeAcl()` no reasigna `data`; muta el objeto referenciado y reasigna solamente `data.aclCache`, que es plain/nonvolatile.
+
+Así, en la ruta incremental observada:
+`MetadataLoader event thread → AclPublisher → StandardAuthorizer.removeAcl() → StandardAuthorizerData.aclCache = newCache`
+no se encontró una escritura volatile, monitor compartido, lock compartido con RPC, thread join, future completion/await ni otra sincronización explícita que establezca un happens-before hacia el hilo de `authorize()` después de esa reasignación.
+
+Esto establece una **ausencia de una cadena HB identificada**, no la existencia demostrada de una lectura stale ni una vulnerabilidad explotable.
+
+### Estado epistemológico actualizado
+🟢 Alcanzabilidad de la mutación incremental desde MetadataLoader/AclPublisher hasta `aclCache` verificada en código.
+🟢 Ausencia del supuesto read-write lock verificada en `StandardAuthorizer` fijado.
+🟢 KafkaEventQueue no cubre la ejecución del publisher bajo su lock.
+🔴 JMM: no se ha demostrado todavía el resultado permitido por el modelo para una lectura concreta de `aclCache` después de `removeAcl()`; requiere formalizar la ejecución concurrente y las reglas de visibilidad aplicables.
+🔴 stale authorization observable: UNKNOWN.
+🔴 exploitability: UNKNOWN.
+🔴 generalization: UNKNOWN.
+🔴 production impact: UNKNOWN.
+🔴 security conclusion: NOT_ESTABLISHED.
+
+### DO-NOT-REPEAT
+No tratar `ReentrantLock` de KafkaEventQueue como sincronización de la autorización. No inferir stale-read/exploitability solamente de que `aclCache` sea nonvolatile. No convertir la ausencia de HB identificada en un exploit demostrado.
+
+### Próximo paso
+Formalizar el pequeño grafo JMM de la ruta incremental: escrituras/lecturas de `data`, `aclCache`, publicación del objeto y acciones de los hilos, y separar estrictamente `happens-before`, `synchronizes-with` y simple orden temporal `nanoTime`.
