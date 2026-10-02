@@ -74,7 +74,7 @@ assert.equal(ambiguous.code,"EFFECT_OUTCOME_UNKNOWN");
 assert.equal(ambiguous.uncertainty,"effect_may_or_may_not_have_occurred");
 assert.equal(exceptionCalls,1);
 assert.equal(exceptionJournal[0].status,"prepared");
-assert.equal(exceptionJournal[0].result.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(exceptionJournal[0].result,undefined);
 const exceptionReconciled=await exceptionAdapter.execute({missionId:"m8",stepId:"s1",action:"ambiguous_effect",target:"alex",idempotencyKey:"m8:s1",reconcile:async()=>({status:"completed",verified:true,evidence:{verified:true,kind:"provider-query"}})});
 assert.equal(exceptionReconciled.status,"completed");
 assert.equal(exceptionJournal[0].status,"completed");
