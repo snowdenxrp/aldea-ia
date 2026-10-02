@@ -170,5 +170,41 @@ CAUSAL_JMM_RACE ITERATIONS=... READERS=... OBSERVATIONS=... POST_RETURN_ALLOWED=
 - Do not create AB105.117R.
 - Do not rerun TLC.
 
+
+## NUEVO CHECKPOINT — G0 runtime bootstrap corregido
+Run: 36969192502 (run #56), job: 110719406205
+Workflow: NEXO AB105 G0 Kafka Bootstrap
+Head: 96aee422286b5602c3f188736e1910c1017112ab
+PR: #91
+Kafka: 99b940733a9f6bc409457dba7108f08421d81e42
+Java: Temurin 21 (runner)
+Resultado del job: SUCCESS
+
+Ejecución:
+- Compile Kafka test infrastructure: SUCCESS
+- Temporary G0 runtime harness: SUCCESS
+- Real G0 runtime harness: EXECUTED, SUCCESS
+- El log del test imprime exactamente:
+  G0_WITNESS A1=OBSERVED D0=OBSERVED D1=DENIED D2=SUCCESS E_BASELINE=0 E_AFTER=1
+- No apareció el NPE anterior de clientAddress(); la corrección mínima de 96aee422... permitió completar el flujo.
+- Artifact: nexo-ab105-g0-bootstrap-evidence
+- Artifact ID: 11210977168
+- Artifact digest: sha256:b0e6ae6499b76f1de0363805a58ae45635b9d661b169cb6338893338d2e31c54
+
+Interpretación epistemológica:
+- 🟢 G0 one-broker bootstrap/runtime witness RECUPERADO en este harness: A1, D0, D1, D2 y transición E fueron observados en la ejecución exitosa.
+- 🔵 La corrección 96aee422... fue estrictamente de soporte del harness: clientAddress sintético no nulo; no cambia el diseño A1→D0→D1→D2→E.
+- 🔴 Esto NO demuestra el discriminador JMM causal ni un happens-before general. Este workflow valida el bootstrap/runtime G0, no la condición POST_RETURN_ALLOWED.
+- JMM HB: UNKNOWN.
+- Exploitability: UNKNOWN.
+- Generalization: UNKNOWN.
+- Production impact: UNKNOWN.
+- Security conclusion: NOT_ESTABLISHED.
+
+## Estado inmediato actualizado
+El bloqueo inmediato del bootstrap G0 queda resuelto con witness completo en run 36969192502. La siguiente investigación debe volver al discriminador JMM causal; el requisito de éxito sigue siendo obtener:
+CAUSAL_JMM_RACE ITERATIONS=... READERS=... OBSERVATIONS=... POST_RETURN_ALLOWED=... POST_RETURN_DENIED=... OVERLAP_ALLOWED=... OVERLAP_DENIED=... UNEXPECTED=...
+No modificar AB105.116R. No crear AB105.117R. No rerun TLC.
+
 ## CONTINUITY recovery command
 At next chat, start by reading this file and then checking the current PR #89 / runs 36964801292 and 36964801327. The immediate unresolved item is the exact failure inside job 110706105958 Execute step.
