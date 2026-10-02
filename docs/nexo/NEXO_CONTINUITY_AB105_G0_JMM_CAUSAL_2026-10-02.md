@@ -676,3 +676,26 @@ Fecha: 2026-10-02
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
 
 La capa wrapper queda sin mecanismo de cierre identificado. El siguiente análisis debe comprobar si existe sincronización común en la infraestructura de MetadataLoader/event delivery y, separadamente, si alguna semántica de `Authorizer`/request processing convierte la obligación thread-safe en una barrera efectiva por mutación.
+
+
+## CHECKPOINT — Harness semántica revisada línea por línea
+Fecha: 2026-10-02
+
+Se recuperó el blob exacto del harness en commit `7f6586c00602baf92aee58ed214b823a6f34d8d1` (blob `410b1e401cf999b064c19283074b19ad6042b32f`).
+
+Hallazgos:
+- 🟢 `writerObservation.enter/exit` son campos plain, pero se leen después de `writer.join()`: esa lectura post-join tiene la garantía de publicación propia de `Thread.join()`, y no participa en la carrera medida.
+- 🟢 Las observaciones de cada reader son estructuras locales; no existe contador compartido durante la carrera.
+- 🟢 La clasificación `POST_RETURN` se hace después de que todos los threads terminan.
+- 🔵 El criterio realmente implementado es `observation.enter > writerObservation.exit`; por tanto mide orden temporal observado de invocaciones, no qué versión de `AclCache` leyó `authorize()`.
+- 🔴 El harness NO registra identidad/version del `AclCache` usado por cada autorización. Por ello `POST_RETURN_ALLOWED=0` no permite distinguir entre 'post-return + nuevo cache', 'post-return + cache viejo', o simplemente ausencia de ALLOWED post-return.
+- 🔴 Tampoco existe un witness que enlace el resultado `ALLOWED` con la referencia concreta de `aclCache`.
+- 🟢 El uso de `join()` está fuera de la ventana de carrera y no introduce un HB artificial entre `removeAcl()` y `authorize()` durante la medición.
+
+Conclusión: el harness actual es un buen discriminador de ventana temporal, pero NO es todavía un witness de stale-cache/version visibility. No debe modificarse AB105.116R ni declararse seguridad/vulnerabilidad a partir de `POST_RETURN_ALLOWED=0`.
+
+`TEMPORAL_DISCRIMINATOR = VALID`
+`CACHE_VERSION_WITNESS = ABSENT`
+`POST_RETURN_STALE_VISIBILITY = UNKNOWN`
+`HB W1→R1 = NOT_IDENTIFIED`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
