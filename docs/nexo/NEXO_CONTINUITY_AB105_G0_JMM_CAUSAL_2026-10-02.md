@@ -428,3 +428,31 @@ Estado: JMM_GRAPH=PARTIAL-FORMALIZED; EXTERNAL_HB=NOT_IDENTIFIED; STALE_READ=UNK
 
 ### Próximo paso
 Inspeccionar el modelo de ejecución del request thread/socket server y el origen del thread de MetadataLoader, buscando una relación de sincronización común que pueda cerrar W1→R1 fuera de las clases ya revisadas.
+
+
+## CHECKPOINT — execution threads y aislamiento confirmados
+Fecha: 2026-10-02
+
+### Request side
+🟢 KafkaRequestHandler es un pool de threads dedicado: recibe Request desde RequestChannel y ejecuta apis.handle(request, requestLocal) directamente en el request thread.
+🟢 Para Produce, ese flujo llega a KafkaApis.handleProduceRequest() y de ahí a AuthHelper/StandardAuthorizer sin un handoff asíncrono previo a la autorización.
+🔵 RequestChannel entrega la petición al handler; no se identificó en el tramo revisado una operación de lock compartido con MetadataLoader que cubra la autorización.
+
+### Metadata side
+🟢 MetadataLoader mantiene su propio thread mediante KafkaEventQueue; sus callbacks a publishers se ejecutan desde ese contexto.
+🟢 handleCommit() y handleLoadSnapshot() hacen append al eventQueue, y maybePublishMetadata() invoca publisher.onMetadataUpdate() desde ese flujo.
+🟢 El estado MetadataLoader.image está documentado como accesible solo desde el event-queue thread.
+🔵 Por tanto, el W1 de AclPublisher pertenece a un execution domain distinto del request thread que realiza R1.
+
+### Resultado JMM
+🟢 Queda reforzada la separación de execution domains.
+🔴 No se identificó todavía una sincronización común que establezca HB(W1→R1).
+🔴 La existencia de dos threads separados no demuestra stale read: solo elimina la hipótesis de que ambos actos sean necesariamente serializados por el mismo thread.
+
+Estado: REQUEST_THREAD=VERIFIED; METADATA_EVENT_THREAD=VERIFIED; SHARED_HB_W1_R1=NOT_IDENTIFIED; STALE_READ=UNKNOWN; STALE_ALLOWED=UNKNOWN; EXPLOITABILITY=UNKNOWN; SECURITY_CONCLUSION=NOT_ESTABLISHED.
+
+### DO-NOT-REPEAT
+No convertir 'threads separados' en 'bug demostrado'. No usar RequestChannel/handler scheduling como sustituto de una sincronización con MetadataLoader.
+
+### Próximo paso
+Revisar la entrega `RaftClient → MetadataLoader.eventQueue` y, por separado, cualquier sincronización de inicialización/publicación del Authorizer que pueda establecer HB entre metadata publisher y request handlers.
