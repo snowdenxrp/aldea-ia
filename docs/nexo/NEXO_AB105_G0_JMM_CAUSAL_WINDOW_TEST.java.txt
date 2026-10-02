@@ -119,18 +119,23 @@ public class NexoJmmCausalWindowTest {
         long unexpected;
         long observations;
         long postReturnAllowedWithPreRemoveCache;
+        long postReturnPreRemoveCache;
+        long postReturnPostRemoveCache;
+        long postReturnUnknownCache;
     }
 
     private static void classifyObservation(
         Observation observation,
         WriterObservation writerObservation,
-        ClassificationCounts counts
+        ClassificationCounts counts,
+        Object preRemoveCache,
+        Object postRemoveCache
     ) {
         counts.observations++;
         if (observation.result == null) {
             counts.unexpected++;
         } else if (observation.enter > writerObservation.exit) {
-            classifyPostReturn(observation, counts);
+            classifyPostReturn(observation, counts, preRemoveCache, postRemoveCache);
         } else if (observation.enter <= writerObservation.exit
             && observation.exit >= writerObservation.enter) {
             classifyOverlap(observation, counts);
@@ -139,7 +144,9 @@ public class NexoJmmCausalWindowTest {
 
     private static void classifyPostReturn(
         Observation observation,
-        ClassificationCounts counts
+        ClassificationCounts counts,
+        Object preRemoveCache,
+        Object postRemoveCache
     ) {
         if (observation.result == AuthorizationResult.ALLOWED) {
             counts.postReturnAllowed++;
@@ -147,6 +154,13 @@ public class NexoJmmCausalWindowTest {
             counts.postReturnDenied++;
         } else {
             counts.unexpected++;
+        }
+        if (observation.cacheBeforeAuthorize == preRemoveCache) {
+            counts.postReturnPreRemoveCache++;
+        } else if (observation.cacheBeforeAuthorize == postRemoveCache) {
+            counts.postReturnPostRemoveCache++;
+        } else {
+            counts.postReturnUnknownCache++;
         }
     }
 
@@ -252,7 +266,8 @@ public class NexoJmmCausalWindowTest {
             "removeAcl must publish a distinct cache instance");
         for (ArrayList<Observation> local : readerObservations) {
             for (Observation observation : local) {
-                classifyObservation(observation, writerObservation, counts);
+                classifyObservation(
+                    observation, writerObservation, counts, preRemoveCache, postRemoveCache);
                 if (isPostReturnAllowedWithPreRemoveCache(
                     observation, writerObservation, preRemoveCache)) {
                     counts.postReturnAllowedWithPreRemoveCache++;
@@ -276,6 +291,9 @@ public class NexoJmmCausalWindowTest {
             " POST_RETURN_DENIED=" + counts.postReturnDenied +
             " OVERLAP_ALLOWED=" + counts.overlapAllowed +
             " OVERLAP_DENIED=" + counts.overlapDenied +
+            " POST_RETURN_PRE_REMOVE_CACHE=" + counts.postReturnPreRemoveCache +
+            " POST_RETURN_POST_REMOVE_CACHE=" + counts.postReturnPostRemoveCache +
+            " POST_RETURN_UNKNOWN_CACHE=" + counts.postReturnUnknownCache +
             " POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=" + counts.postReturnAllowedWithPreRemoveCache +
             " UNEXPECTED=" + counts.unexpected);
 
