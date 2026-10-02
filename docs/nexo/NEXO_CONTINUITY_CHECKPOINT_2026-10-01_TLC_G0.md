@@ -392,3 +392,26 @@ Therefore:
 Inspect the pinned Kafka request/authorization path and adjust the harness so D1 has valid topic metadata before D0 while the actual NEW produce request/authorization occurs after D0. Do not add permissions merely to force the test through unless separately justified and recorded. Preserve the distinction between metadata authorization and WRITE authorization.
 
 The failed run is retained as evidence of a harness limitation, not as evidence for or against the propagation-window hypothesis.
+
+
+## PR #85 — metadata warmup correction persisted — 2026-10-01
+
+PR #84's failure was traced to the NEW D1 producer reaching the metadata authorization path after D0, where the ACL had already been deleted. The intended discriminator requires the producer to have valid topic metadata before D0 while deferring the actual NEW WRITE authorization until after D0.
+
+- PR #85: OPEN / DRAFT / UNMERGED.
+- Branch: `nexo-ab105-g0-propagation-window-metadata-warmup`.
+- Head: `349d0197300ab87f7744452be2d6e2e861fc2c03`.
+- Base: main `4af8d8a0edd0edf4b8460d488684eede28e85201`.
+- Correction: instantiate D1 producer before D0 and call `partitionsFor(TOPIC_NAME)` to warm partition metadata while the WRITE ACL still exists; no record is sent, so baseline E remains zero. D1's actual `send(...).get()` remains after D0 on the separate D1 executor.
+- No additional ACL permission was introduced.
+- Workflow run: `36943841895` — QUEUED at checkpoint time.
+
+Epistemic state remains:
+- `PROPAGATION_WINDOW = PENDING_EXECUTION`
+- `D1_AUTHORIZATION_DECISION = PENDING_EXECUTION`
+- `EXPLOITABILITY = UNKNOWN`
+- `AB105.116R = INTACT`
+- `NO AB105.117R`
+- `NO TLC RERUN`
+
+The PR #84 failure remains preserved as a harness limitation and is not converted into a D1 denial result.
