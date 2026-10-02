@@ -240,3 +240,43 @@ No modificar AB105.116R. No crear AB105.117R. No rerun TLC.
 
 ## CONTINUITY recovery command
 At next chat, start by reading this file and then checking the current PR #89 / runs 36964801292 and 36964801327. The immediate unresolved item is the exact failure inside job 110706105958 Execute step.
+
+
+## CHECKPOINT — revisión semántica JMM del discriminador y discrepancia read-write lock
+Fecha: 2026-10-02
+
+### 1. Log del runner 110706105958 resuelto
+La inspección completa del job confirma que el Execute FAILURE fue causado por Checkstyle del archivo inyectado, no por el runtime del experimento.
+- NexoJmmCausalWindowTest.java, línea 102:5
+- Cyclomatic Complexity = 20, máximo = 16
+- NPath Complexity = 1,409, máximo = 500
+- La compilación de test/infrastructura fue SUCCESS antes de Checkstyle.
+- Por tanto: este run NO es witness científico.
+Esto coincide con la corrección posterior que separó la clasificación en funciones auxiliares y produjo el head 0388dce81a2e08dd90f96f6806fe74683ed6f543, cuyos runs 36965213770 y 36965213781 sí ejecutaron el test.
+
+### 2. Discrepancia read-write lock: confirmación exacta
+En Kafka rev 99b940733a9f6bc409457dba7108f08421d81e42, StandardAuthorizer.java contiene un comentario sobre un read-write lock, pero el campo real es únicamente la referencia volatile data. No existe un ReentrantReadWriteLock ni otra lectura/escritura lock en la clase inspeccionada.
+La ruta real es:
+- authorize() lee data una vez en curData.
+- addAcl/removeAcl llaman data.addAcl/removeAcl() sobre el objeto StandardAuthorizerData actualmente referenciado.
+- StandardAuthorizerData declara explícitamente que la clase no es thread-safe.
+- aclCache es un campo privado no-volátil y add/remove reasignan ese campo dentro del mismo objeto.
+Conclusión: el comentario de read-write lock no describe el mecanismo real presente en la revisión fijada. Debe tratarse como documentación inconsistente/obsoleta, no como evidencia de que existe un lock.
+
+### 3. Consecuencia JMM, delimitada
+La volatilidad de StandardAuthorizer.data sí proporciona semántica volatile para accesos a esa referencia y para la publicación de nuevos objetos StandardAuthorizerData cuando data se reasigna. Pero no convierte en volátil aclCache ni crea por sí misma un happens-before para una reasignación posterior de aclCache hecha sobre el mismo objeto.
+Por ello:
+- 🟢 existe una frontera volatile alrededor de la referencia data;
+- 🟢 aclCache es plain/nonvolatile en el objeto compartido;
+- 🟢 StandardAuthorizerData se declara no thread-safe;
+- 🔴 NO se ha demostrado que una autorización posterior al retorno de removeAcl() necesariamente observe la nueva aclCache bajo JMM;
+- 🔴 tampoco se ha demostrado que necesariamente pueda observar la antigua aclCache después del retorno; la posibilidad concreta y explotabilidad requieren evidencia adicional.
+
+### 4. Relación con el discriminador causal
+Los runs 36965213770 y 36965213781 siguen siendo evidencia temporal del harness: POST_RETURN_ALLOWED=0 en ambos, con OVERLAP_ALLOWED > 0. Eso no contradice la posibilidad teórica de una lectura stale; solamente significa que el harness no observó un ALLOWED cuyo inicio medido fuese posterior al retorno medido de removeAcl() en esas ejecuciones.
+Estados: temporalidad por nanoTime = EVIDENCE; JMM happens-before general = UNKNOWN; stale-read possibility como hecho de ejecución = UNKNOWN; exploitability = UNKNOWN; generalization = UNKNOWN; production impact = UNKNOWN; security conclusion = NOT_ESTABLISHED.
+
+### 5. Decisión de continuidad
+No crear AB105.117R. No modificar AB105.116R. No rerun TLC. No repetir el discriminador causal ya ejecutado con éxito.
+Siguiente trabajo: revisión de alcanzabilidad/semántica centrada en si existe una cadena de sincronización real entre el hilo que ejecuta removeAcl()/AclPublisher y el hilo RPC que entra en authorize(), sin asumir que el comentario del lock es correcto.
+DO-NOT-REPEAT: no usar el comentario read-write lock como evidencia de sincronización; verificar siempre el mecanismo ejecutable en la revisión fijada.
