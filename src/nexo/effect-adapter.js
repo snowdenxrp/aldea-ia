@@ -129,7 +129,7 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     recordIntent(request);
     if(typeof persistPreparedIntent==="function") {
       try {
-        await persistPreparedIntent({idempotencyKey, journalEntry:structuredClone(journalEntry(idempotencyKey)), request:structuredClone(request)});
+        await persistPreparedIntent({idempotencyKey, journalEntry:structuredClone(journalEntry(idempotencyKey)), request:{missionId,stepId,action,target,idempotencyKey,context:structuredClone(context)}});
       } catch(error) {
         const result={status:"blocked",code:"EFFECT_INTENT_PERSISTENCE_FAILED",verified:false,action,target,idempotencyKey,error:String(error?.message??error)};
         return result;
