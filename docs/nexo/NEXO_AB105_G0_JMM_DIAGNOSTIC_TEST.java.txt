@@ -54,7 +54,7 @@ public class NexoJmmPublicationTest {
             TOPIC, TOPIC_NAME, LITERAL, "User:" + USER, "*", WRITE, ALLOW);
     }
 
-    private static AuthorizableRequestContext context() {
+    private static AuthorizableRequestContext context() throws Exception {
         return new MockAuthorizableRequestContext.Builder()
             .setPrincipal(new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER))
             .build();
