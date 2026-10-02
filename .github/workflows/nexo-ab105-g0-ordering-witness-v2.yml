@@ -39,7 +39,7 @@ jobs:
           p = Path("server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java")
           p.parent.mkdir(parents=True, exist_ok=True)
           p.write_text(test)
-          os.system("git add server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java")
+          os.system("git add server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java && git -c user.name=Nexo -c user.email=nexo@example.invalid commit --no-verify -m \"nexo local ordering harness\"")
           def repl(path, old, new):
               p=Path(path); s=p.read_text()
               if s.count(old)!=1: raise SystemExit("marker mismatch: "+path)
