@@ -655,3 +655,24 @@ Conclusión de esta capa: no se encontró wrapper/lock dentro de `StandardAuthor
 `GENERALIZATION = UNKNOWN`
 `PRODUCTION_IMPACT = UNKNOWN`
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+
+## CHECKPOINT — Wrapper/Plugin path inspected
+Fecha: 2026-10-02
+
+🟢 `AclPublisher` obtiene el `ClusterMetadataAuthorizer` desde `Plugin.get()` y llama directamente `loadSnapshot/addAcl/removeAcl/completeInitialLoad`.
+🟢 `Plugin<T>` sólo conserva `instance` y `get()` devuelve esa misma referencia; no introduce `synchronized`, lock, await ni proxy de autorización.
+🟢 `AclPublisher` documenta explícitamente que durante la aplicación de cambios el Authorizer continúa devolviendo resultados en otros threads.
+🔴 No apareció un wrapper externo en esta ruta que serialice las mutaciones ACL con las autorizaciones RPC.
+
+`PLUGIN_SERIALIZATION = NOT_PRESENT`
+`ACL_PUBLISHER_TO_AUTHORIZE_COMMON_LOCK = NOT_IDENTIFIED`
+`HB W1→R1 = NOT_IDENTIFIED`
+`STALE_READ = UNKNOWN`
+`STALE_ALLOWED = UNKNOWN`
+`EXPLOITABILITY = UNKNOWN`
+`GENERALIZATION = UNKNOWN`
+`PRODUCTION_IMPACT = UNKNOWN`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+La capa wrapper queda sin mecanismo de cierre identificado. El siguiente análisis debe comprobar si existe sincronización común en la infraestructura de MetadataLoader/event delivery y, separadamente, si alguna semántica de `Authorizer`/request processing convierte la obligación thread-safe en una barrera efectiva por mutación.
