@@ -385,3 +385,32 @@ AB105.117R=NOT_CREATED
 TLC=NOT_RERUN
 
 Next action: verify the Actions run(s) triggered by the corrected ordering workflow, then inspect compile/runtime logs and raw NEXO_ORDER artifact before any scientific promotion.
+
+
+## LIVE RE-AUDIT UPDATE — 2026-10-02T20:50Z
+A fresh source-level check found a real workflow-script defect in the active ordering witness: the W1 Python injector encoded the newline as a literal escaped sequence rather than a Python newline escape, which could generate invalid Java around the injected declaration/log statement. This was corrected without changing canonical Kafka source.
+
+Correction commit: c990aeead1cd77c4e1c17a405046d0ca7817dcd1
+Message: fix(nexo): correct W1 injector newline escapes
+Active ordering branch now points to this commit.
+
+Important execution check:
+- fetch_commit_workflow_runs for c990aeead1 returns [] because that connector view reports PR-triggered runs only.
+- Commit status is pending with total_count=0 at the time of this checkpoint; no ordering-witness run has been verified from that endpoint.
+- The known run 37062851075 is NEXO AB105 G0 Kafka Bootstrap, not the ordering witness; it must not be counted as ordering evidence.
+- No NEXO_ORDER raw artifact has been observed.
+
+CURRENT STATE:
+ORDERING_WITNESS_INSTALL=NOT_VERIFIED_AFTER_C990AEE
+ORDERING_WITNESS_RUNTIME=NOT_OBSERVED
+NEXO_ORDER_RAW_EVENTS=NOT_OBSERVED
+W1_TO_R1=UNKNOWN
+JMM_HAPPENS_BEFORE=UNKNOWN
+EXACT_RACE=UNKNOWN
+EXPLOITABILITY=UNKNOWN
+AB105.116R=INTACT
+AB105.117R=NOT_CREATED
+TLC=NOT_RERUN
+
+NEXT ACTION:
+Verify the push-triggered ordering workflow directly. If a run appears, inspect install -> compile -> runtime -> raw artifact. If it does not appear, investigate the Actions trigger/registration path rather than interpreting the absence as scientific evidence. Do not modify AB105.116R, create AB105.117R, rerun TLC, or merge PR #94.
