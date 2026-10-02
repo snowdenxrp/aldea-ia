@@ -88,13 +88,25 @@ public class NexoJmmCausalWindowTest {
         final long exit;
         final AuthorizationResult result;
         final Object cacheBeforeAuthorize;
+        final Object authorizeSnapshot;
 
-        Observation(long enter, long exit, AuthorizationResult result, Object cacheBeforeAuthorize) {
+        Observation(long enter, long exit, AuthorizationResult result, Object cacheBeforeAuthorize, Object authorizeSnapshot) {
             this.enter = enter;
             this.exit = exit;
             this.result = result;
             this.cacheBeforeAuthorize = cacheBeforeAuthorize;
+            this.authorizeSnapshot = authorizeSnapshot;
         }
+    }
+
+    private static Object authorizeSnapshotOf(StandardAuthorizer authorizer) throws Exception {
+        Field dataField = StandardAuthorizer.class.getDeclaredField("data");
+        dataField.setAccessible(true);
+        Object data = dataField.get(authorizer);
+        Field snapshotField = data.getClass().getDeclaredField("nexoDiagnosticAuthorizeSnapshot");
+        snapshotField.setAccessible(true);
+        ThreadLocal<?> snapshot = (ThreadLocal<?>) snapshotField.get(data);
+        return snapshot.get();
     }
 
     private static Object aclCacheOf(StandardAuthorizer authorizer) throws Exception {
@@ -122,6 +134,9 @@ public class NexoJmmCausalWindowTest {
         long postReturnPreRemoveCache;
         long postReturnPostRemoveCache;
         long postReturnUnknownCache;
+        long postReturnPreRemoveSnapshot;
+        long postReturnPostRemoveSnapshot;
+        long postReturnUnknownSnapshot;
     }
 
     private static void classifyObservation(
@@ -162,6 +177,13 @@ public class NexoJmmCausalWindowTest {
         } else {
             counts.postReturnUnknownCache++;
         }
+        if (observation.authorizeSnapshot == preRemoveCache) {
+            counts.postReturnPreRemoveSnapshot++;
+        } else if (observation.authorizeSnapshot == postRemoveCache) {
+            counts.postReturnPostRemoveSnapshot++;
+        } else {
+            counts.postReturnUnknownSnapshot++;
+        }
     }
 
     private static void classifyOverlap(
@@ -197,16 +219,18 @@ public class NexoJmmCausalWindowTest {
             long enter = System.nanoTime();
             AuthorizationResult result;
             Object cacheBeforeAuthorize;
+            Object authorizeSnapshot;
             try {
                 cacheBeforeAuthorize = aclCacheOf(authorizer);
                 result = authorizer.authorize(context(), List.of(writeAction())).get(0);
+                authorizeSnapshot = authorizeSnapshotOf(authorizer);
             } catch (Throwable t) {
-                local.add(new Observation(enter, System.nanoTime(), null, null));
+                local.add(new Observation(enter, System.nanoTime(), null, null, null));
                 return;
             }
             long exit = System.nanoTime();
             if (enter >= scheduledRemove) {
-                local.add(new Observation(enter, exit, result, cacheBeforeAuthorize));
+                local.add(new Observation(enter, exit, result, cacheBeforeAuthorize, authorizeSnapshot));
             }
         }
     }
@@ -294,6 +318,9 @@ public class NexoJmmCausalWindowTest {
             " POST_RETURN_PRE_REMOVE_CACHE=" + counts.postReturnPreRemoveCache +
             " POST_RETURN_POST_REMOVE_CACHE=" + counts.postReturnPostRemoveCache +
             " POST_RETURN_UNKNOWN_CACHE=" + counts.postReturnUnknownCache +
+            " POST_RETURN_PRE_REMOVE_SNAPSHOT=" + counts.postReturnPreRemoveSnapshot +
+            " POST_RETURN_POST_REMOVE_SNAPSHOT=" + counts.postReturnPostRemoveSnapshot +
+            " POST_RETURN_UNKNOWN_SNAPSHOT=" + counts.postReturnUnknownSnapshot +
             " POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=" + counts.postReturnAllowedWithPreRemoveCache +
             " UNEXPECTED=" + counts.unexpected);
 
