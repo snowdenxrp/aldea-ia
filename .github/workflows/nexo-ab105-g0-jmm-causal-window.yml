@@ -1,3 +1,4 @@
+# Retriggered after workflow registration; diagnostic semantics unchanged.
 name: NEXO AB105 G0 JMM causal window discriminator
 
 on:
