@@ -46,6 +46,7 @@ jobs:
 
           replace_once("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java", """    void removeAcl(Uuid id) {
           try {
+              StandardAcl removedAcl = aclCache.getAcl(id);
               AclCache aclCacheSnapshot = aclCache.removeAcl(id);
               log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
               aclCache = aclCacheSnapshot;
@@ -54,7 +55,7 @@ jobs:
               AclCache aclCacheSnapshot = aclCache.removeAcl(id);
               log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
               aclCache = aclCacheSnapshot;
-              System.err.println("NEXO_ORDER ACL_W1 ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName() + " id=" + id);
+              System.err.println("NEXO_ORDER ACL_W1 ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName() + " id=" + id + " acl=" + removedAcl);
           } catch (Throwable e) {""")
 
           replace_once("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java", """        KafkaPrincipal principal = baseKafkaPrincipal(requestContext);
