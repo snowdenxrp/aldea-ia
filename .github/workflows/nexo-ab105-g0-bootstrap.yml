@@ -199,7 +199,7 @@ jobs:
                           return new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER);
                       }
                       @Override public InetAddress clientAddress() {
-                          return null;
+                          return InetAddress.getLoopbackAddress();
                       }
                       @Override public int requestType() {
                           return org.apache.kafka.common.protocol.ApiKeys.PRODUCE.id;
