@@ -106,8 +106,12 @@ public class NexoJmmPublicationTest {
                         flagTimeouts.incrementAndGet();
                         return;
                     }
-                    List<AuthorizationResult> result =
-                        authorizer.authorize(context(), List.of(writeAction()));
+                    List<AuthorizationResult> result;
+                    try {
+                        result = authorizer.authorize(context(), List.of(writeAction()));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                     if (result.get(0) == AuthorizationResult.ALLOWED) {
                         staleAllowed.incrementAndGet();
                     } else {
