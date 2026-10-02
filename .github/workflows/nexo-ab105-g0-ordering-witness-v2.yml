@@ -1,0 +1,78 @@
+name: NEXO AB105 G0 ordering witness runner v2
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-ordering-witness
+
+jobs:
+  ordering-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Clone pinned Kafka
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git /tmp/kafka
+          cd /tmp/kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          test "$(git rev-parse HEAD)" = "99b940733a9f6bc409457dba7108f08421d81e42"
+      - name: Install ordering probes and harness
+        working-directory: /tmp/kafka
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          wf = Path("${GITHUB_WORKSPACE}/.github/workflows/nexo-ab105-g0-ordering-witness.yml").read_text()
+          start = wf.index("cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'") + len("cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'\n")
+          end = wf.index("\n          EOF", start)
+          test = wf[start:end]
+          test = test.replace("import org.apache.kafka.common.acl.AclBinding;","import org.apache.kafka.common.acl.AclBinding;\n          import org.apache.kafka.common.acl.AclBindingFilter;\n          import org.apache.kafka.common.acl.AccessControlEntryFilter;")
+          test = test.replace("import org.apache.kafka.common.serialization.ByteArraySerializer;\n","")
+          p = Path("server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java")
+          p.parent.mkdir(parents=True, exist_ok=True)
+          p.write_text(test)
+          def repl(path, old, new):
+              p=Path(path); s=p.read_text()
+              if s.count(old)!=1: raise SystemExit("marker mismatch: "+path)
+              p.write_text(s.replace(old,new))
+          repl("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java","              aclCache = aclCacheSnapshot;\n","              aclCache = aclCacheSnapshot;\n              System.err.println("NEXO_ORDER ACL_W1 ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName() + " id=" + id);\n")
+          repl("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java","        KafkaPrincipal principal = baseKafkaPrincipal(requestContext);\n","        KafkaPrincipal principal = baseKafkaPrincipal(requestContext);\n        if ("nexo-g0-ordering".equals(requestContext.clientId()) && action.operation() == WRITE && action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC && "nexo-g0-ordering".equals(action.resourcePattern().name())) System.err.println("NEXO_ORDER AUTH_ENTER ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName());\n")
+          repl("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java","        return rule.result();\n","        if ("nexo-g0-ordering".equals(requestContext.clientId()) && action.operation() == WRITE && action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC && "nexo-g0-ordering".equals(action.resourcePattern().name())) System.err.println("NEXO_ORDER AUTH_DECISION ns=" + System.nanoTime() + " result=" + rule.result() + " thread=" + Thread.currentThread().getName());\n        return rule.result();\n")
+          repl("core/src/main/scala/kafka/network/RequestChannel.scala","  def sendRequest(request: Request): Unit = {\n      requestQueue.put(request)\n  }","  def sendRequest(request: Request): Unit = {\n      if (request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering") System.err.println("NEXO_ORDER ENQUEUE ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName())\n      requestQueue.put(request)\n  }")
+          repl("core/src/main/scala/kafka/network/RequestChannel.scala","      val request = requestQueue.poll(timeout, TimeUnit.MILLISECONDS)\n      request match {","      val request = requestQueue.poll(timeout, TimeUnit.MILLISECONDS)\n      request match {\n        case request: Request if request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering" => System.err.println("NEXO_ORDER DEQUEUE ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName())\n        case _ =>\n      }\n      request match {")
+          repl("core/src/main/scala/kafka/network/RequestChannel.scala","  def receiveRequest(): BaseRequest =\n      requestQueue.take()","  def receiveRequest(): BaseRequest = {\n      val request = requestQueue.take()\n      request match {\n        case request: Request if request.header.apiKey == ApiKeys.PRODUCE && request.header.clientId == "nexo-g0-ordering" => System.err.println("NEXO_ORDER DEQUEUE ns=" + System.nanoTime() + " thread=" + Thread.currentThread().getName())\n        case _ =>\n      }\n      request\n  }")
+          PY
+      - name: Compile
+        working-directory: /tmp/kafka
+        run: ./gradlew --no-daemon :test-common:test-common-runtime:compileJava :metadata:compileTestJava :server:compileTestJava
+      - name: Execute real broker witness
+        working-directory: /tmp/kafka
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0OrderingWitnessTest --info 2>&1 | tee /tmp/nexo-ordering.log
+      - name: Emit raw evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "DIAGNOSTIC=REAL_BROKER_ORDERING_WITNESS"
+            echo "TIMING_INSTRUMENTATION=WORKFLOW_LOCAL"
+            echo "AB105_116R=UNCHANGED"
+            echo "AB105_117R=NOT_CREATED"
+            echo "TLC=NOT_RERUN"
+            echo "---- NEXO_ORDER EVENTS ----"
+            grep 'NEXO_ORDER ' /tmp/nexo-ordering.log || true
+          } | tee /tmp/nexo-ordering-evidence.txt
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-ordering-witness-v2
+          path: |
+            /tmp/nexo-ordering.log
+            /tmp/nexo-ordering-evidence.txt
