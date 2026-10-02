@@ -139,8 +139,20 @@ jobs:
                               while(System.nanoTime()<deadline){ if(produce(p)){allowed=true;break;} Thread.sleep(20); }
                               Assertions.assertTrue(allowed,"ACL was not observed as ALLOWED before deletion");
                               System.err.println("NEXO_ORDER A1_SUCCESS cycle="+cycle+" ns="+System.nanoTime());
+                              List<AclBinding> d0Targets;
+                              try (Admin admin = cluster.admin()) {
+                                  d0Targets = admin.describeAcls(
+                                      new AclBindingFilter(
+                                          new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
+                                          AccessControlEntryFilter.ANY
+                                      )
+                                  ).values().get();
+                              }
+                              Assertions.assertEquals(1, d0Targets.size(), "D0 target ACL cardinality must be exactly one");
+                              AclBinding d0Target = d0Targets.get(0);
+                              System.err.println("NEXO_ORDER D0_TARGET cycle="+cycle+" acl="+d0Target+" ns="+System.nanoTime());
                               try(Admin admin=cluster.admin()){ admin.deleteAcls(List.of(new AclBindingFilter(new ResourcePattern(TOPIC,TOPIC_NAME,LITERAL).toFilter(),AccessControlEntryFilter.ANY))).all().get(); }
-                              System.err.println("NEXO_ORDER D0_RETURN cycle="+cycle+" ns="+System.nanoTime());
+                              System.err.println("NEXO_ORDER D0_RETURN cycle="+cycle+" acl="+d0Target+" ns="+System.nanoTime());
                               boolean denied=!produce(p);
                               System.err.println("NEXO_ORDER D1_RESULT cycle="+cycle+" result="+(denied?"DENIED":"ALLOWED")+" ns="+System.nanoTime());
                               Assertions.assertTrue(denied,"D1 unexpectedly allowed after D0");
