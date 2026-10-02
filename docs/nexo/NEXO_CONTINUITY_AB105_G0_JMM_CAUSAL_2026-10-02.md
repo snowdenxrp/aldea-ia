@@ -729,3 +729,26 @@ Corrección epistemológica:
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
 
 No se modifica AB105.116R, no se crea AB105.117R y no se repite TLC.
+
+
+## CHECKPOINT — witness raw verificado directamente en Actions
+Fecha: 2026-10-02
+
+Se volvió a comprobar el run `36965213770` desde GitHub Actions, no sólo desde el resumen previo.
+
+🟢 Job `110707365331`: `jmm-causal-window`.
+🟢 Steps `Compile`, `Execute` y `Emit evidence`: SUCCESS.
+🟢 El log raw contiene literalmente:
+`CAUSAL_JMM_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=2531489 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=2466195 OVERLAP_ALLOWED=18300 OVERLAP_DENIED=62 UNEXPECTED=0`
+🟢 El mismo log confirma `BUILD SUCCESSFUL`, `CAUSAL_WINDOW=EXECUTED`, `TIMING_ONLY_DIAGNOSTIC=TRUE`, Kafka rev `99b940733a9f6bc409457dba7108f08421d81e42`, `AB105_116R=UNCHANGED` y `AB105_117R=NOT_CREATED`.
+
+Esto eleva el estado de ese witness de 'resumen recuperado' a **raw-log verified**. No cambia la interpretación: `POST_RETURN_ALLOWED=0` es ausencia del evento conductual buscado en esa ejecución; `OVERLAP_ALLOWED=18300` demuestra concurrencia temporal observada; JMM HB y mecanismo de visibilidad siguen UNKNOWN.
+
+No se repite el run ni TLC. El segundo run exitoso `36965213781` queda pendiente sólo de la misma verificación raw si fuese necesaria para una nueva afirmación; su witness ya está registrado en continuidad.
+
+`RAW_LOG_WITNESS_RUN_36965213770 = VERIFIED`
+`POST_RETURN_ALLOWED = 0`
+`OVERLAP_ALLOWED = 18300`
+`JMM_HB = NOT_IDENTIFIED`
+`STALE_ALLOWED_OBSERVED = NOT_OBSERVED`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
