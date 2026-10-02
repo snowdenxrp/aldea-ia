@@ -178,15 +178,23 @@ jobs:
                                       allowed++;
                                       System.out.println("D1_RESULT=ALLOWED iteration=" + i
                                           + " D0_MS=" + (d0Complete - d0Start));
-                                  } catch (TopicAuthorizationException e) {
-                                      denied++;
-                                      System.out.println("D1_RESULT=DENIED iteration=" + i
-                                          + " D0_MS=" + (d0Complete - d0Start));
                                   } catch (Exception e) {
-                                      unexpected++;
-                                      System.out.println("D1_RESULT=UNEXPECTED_EXCEPTION iteration=" + i
-                                          + " type=" + e.getClass().getName()
-                                          + " message=" + e.getMessage());
+                                      Throwable cause = e;
+                                      while (cause.getCause() != null
+                                          && !(cause instanceof TopicAuthorizationException)) {
+                                          cause = cause.getCause();
+                                      }
+                                      if (cause instanceof TopicAuthorizationException) {
+                                          denied++;
+                                          System.out.println("D1_RESULT=DENIED iteration=" + i
+                                              + " OUTER_EXCEPTION=" + e.getClass().getName()
+                                              + " D0_MS=" + (d0Complete - d0Start));
+                                      } else {
+                                          unexpected++;
+                                          System.out.println("D1_RESULT=UNEXPECTED_EXCEPTION iteration=" + i
+                                              + " type=" + e.getClass().getName()
+                                              + " message=" + e.getMessage());
+                                      }
                                   }
                               }
                           }
