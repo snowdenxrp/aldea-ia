@@ -610,3 +610,25 @@ Fecha: 2026-10-02
 Nota crítica: esto fortalece la hipótesis de una ventana concurrente, pero no prueba por sí solo una lectura stale ni un bypass de autorización. La propia documentación de AclPublisher advierte que las autorizaciones continúan ocurriendo durante la aplicación de cambios.
 
 Próximo foco: determinar si existe alguna sincronización dentro de StandardAuthorizerData/AclCache o en la implementación concreta de Authorizer que pueda cerrar W1→R1 pese a no aparecer en AclPublisher.
+
+
+## CHECKPOINT — Inner authorizer synchronization closed
+Fecha: 2026-10-02
+
+🟢 `AclCache` es explícitamente inmutable: cada add/remove construye un nuevo `AclCache`; no muta las estructuras publicadas.
+🟢 `StandardAuthorizerData.findAclRule()` captura una referencia local `aclCacheSnapshot = aclCache` y toda la decisión usa esa instancia inmutable.
+🔴 Pero la referencia `StandardAuthorizerData.aclCache` es plain y `StandardAuthorizerData` declara explícitamente `not thread-safe`.
+🟢 La interfaz `ClusterMetadataAuthorizer` exige que sus métodos sean thread-safe; por tanto, la implementación debe cumplir esa propiedad externamente o mediante su diseño. En el código inspeccionado no apareció un lock que haga thread-safe la asignación plain de `aclCache`.
+🔴 La inmutabilidad evita corrupción interna de una instancia observada, pero no crea por sí misma publicación JMM de la nueva referencia `AclCache` entre threads.
+
+`ACL_OBJECT_MUTATION = IMMUTABLE_REPLACEMENT`
+`ACL_REFERENCE_PUBLICATION = PLAIN`
+`AUTHORIZE_SNAPSHOT = PLAIN_READ`
+`INNER_LOCK_FOR_ACLCACHE = NOT_IDENTIFIED`
+`HB W1→R1 = NOT_IDENTIFIED`
+`STALE_READ = UNKNOWN`
+`STALE_ALLOWED = UNKNOWN`
+`EXPLOITABILITY = UNKNOWN`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+Esto cierra la búsqueda de una protección interna obvia en AclCache/StandardAuthorizerData. El siguiente punto es comprobar la implementación concreta de la obligación thread-safe de ClusterMetadataAuthorizer y cualquier wrapper/Plugin que pudiera serializar las llamadas.
