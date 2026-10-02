@@ -157,7 +157,7 @@ jobs:
           package org.apache.kafka.server;
 
           import org.apache.kafka.clients.admin.Admin;
-          import org.apache.kafka.clients.admin.AclBinding;
+          import org.apache.kafka.common.acl.AclBinding;
           import org.apache.kafka.clients.admin.NewTopic;
           import org.apache.kafka.clients.producer.KafkaProducer;
           import org.apache.kafka.clients.producer.Producer;
@@ -278,9 +278,9 @@ jobs:
 
                               try (Admin admin = cluster.admin()) {
                                   admin.deleteAcls(List.of(
-                                      new org.apache.kafka.common.acl.AclBindingFilter(
+                                      new AclBindingFilter(
                                           new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
-                                          AccessControlEntry.ANY.toFilter())
+                                          AccessControlEntryFilter.ANY)
                                   )).all().get();
                               }
 
