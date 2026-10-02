@@ -807,3 +807,30 @@ Importante: el comentario de `StandardAuthorizer.data` afirma que hay un read-wr
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
 
 No se modifica AB105.116R, no se crea AB105.117R y no se repite TLC.
+
+
+## CHECKPOINT — frontera de atribución causal
+Fecha: 2026-10-02
+
+Se revisó el siguiente paso metodológico a partir del código pin y del harness existente.
+
+🟢 El witness conductual `POST_RETURN_ALLOWED` ya es suficiente para detectar el evento de interés sin conocer la identidad del `AclCache` usado por la autorización.
+🔵 La identidad/version del cache serviría para **atribuir mecanismo**, no para decidir si ocurrió el evento conductual.
+🔴 El harness actual no observa qué instancia de `AclCache` fue usada por cada `authorize()`: la referencia está encapsulada dentro de `StandardAuthorizerData` y `findAclRule`/autorización consumen el estado interno.
+🔴 Añadir instrumentación dentro de `StandardAuthorizerData` o modificar Kafka para exponer la identidad del cache introduciría una nueva superficie de observación y potencialmente cambiaría el timing de la carrera. Por ello no debe presentarse como evidencia equivalente al experimento actual sin separar explícitamente `diagnostic instrumentation` de `behavioral witness`.
+
+Conclusión metodológica:
+- `POST_RETURN_ALLOWED` = discriminador conductual primario.
+- `CACHE_VERSION/IDENTITY` = atribución causal secundaria.
+- No existe todavía un witness de mecanismo JMM/stale-read.
+- No se justifica rerun ni modificación de AB105.116R sólo para obtener identidad del cache.
+
+Estado preservado:
+`BEHAVIORAL_WITNESS = VALID`
+`MECHANISM_ATTRIBUTION = UNKNOWN`
+`CACHE_VERSION_WITNESS = ABSENT`
+`JMM_HB = NOT_IDENTIFIED`
+`STALE_ALLOWED = NOT_OBSERVED`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
+
+No se crea AB105.117R y no se repite TLC.
