@@ -31,6 +31,25 @@ jobs:
         run: |
           mkdir -p /tmp/kafka/metadata/src/test/java/org/apache/kafka/metadata/authorizer
           cp docs/nexo/NEXO_AB105_G0_JMM_CAUSAL_WINDOW_TEST.java.txt /tmp/kafka/metadata/src/test/java/org/apache/kafka/metadata/authorizer/NexoJmmCausalWindowTest.java
+      - name: Install temporary authorize snapshot probe
+        working-directory: /tmp/kafka
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java")
+          s = p.read_text()
+          marker = "    private AclCache aclCache;\n"
+          field = "    private final ThreadLocal<AclCache> nexoDiagnosticAuthorizeSnapshot = new ThreadLocal<>();\n"
+          if s.count(marker) != 1:
+              raise SystemExit("expected exactly one aclCache field marker")
+          s = s.replace(marker, marker + field)
+          old = "        AclCache aclCacheSnapshot = aclCache;\n"
+          new = "        AclCache aclCacheSnapshot = aclCache;\n        nexoDiagnosticAuthorizeSnapshot.set(aclCacheSnapshot);\n"
+          if s.count(old) != 1:
+              raise SystemExit("expected exactly one findAclRule cache snapshot")
+          s = s.replace(old, new)
+          p.write_text(s)
+          PY
       - name: Compile metadata test infrastructure
         working-directory: /tmp/kafka
         run: ./gradlew --no-daemon :metadata:compileTestJava
