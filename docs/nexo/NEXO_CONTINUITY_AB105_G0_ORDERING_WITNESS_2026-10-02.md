@@ -414,3 +414,36 @@ TLC=NOT_RERUN
 
 NEXT ACTION:
 Verify the push-triggered ordering workflow directly. If a run appears, inspect install -> compile -> runtime -> raw artifact. If it does not appear, investigate the Actions trigger/registration path rather than interpreting the absence as scientific evidence. Do not modify AB105.116R, create AB105.117R, rerun TLC, or merge PR #94.
+
+
+## DISPATCH PATH UPDATE — 2026-10-02
+The ordering witness v2 workflow was verified on the active branch and is currently configured with only:
+- push -> nexo-ab105-g0-ordering-witness
+
+No workflow_dispatch trigger existed there.
+
+GitHub documentation confirms that manual execution requires workflow_dispatch and that the workflow file must exist on the default branch; once available, the workflow can be run against a selected branch. This is now the controlled trigger path for the diagnostic witness.
+
+A dispatchable copy of the v2 workflow was added to main:
+- commit 000285adfebe86f4f81e16362ca07a4458980f0fe initially exposed workflow_dispatch.
+- commit b9b75cf7b137c6e841cb137219ddc3874f38e3c8 corrected a quoting defect in the W1 Python injector introduced while creating the default-branch copy.
+- The workflow remains diagnostic-only and pins Kafka at 99b940733a9f6bc409457dba7108f08421d81e42.
+- The active branch still contains the corrected v2 ordering harness; no canonical Kafka source is modified.
+
+The GitHub connector exposes workflow-run reads and rerun operations but no workflow-dispatch operation. Therefore no dispatch has been claimed or fabricated.
+
+CURRENT EPISTEMIC STATE:
+ORDERING_WITNESS_INSTALL=NOT_VERIFIED
+ORDERING_WITNESS_RUNTIME=NOT_OBSERVED
+NEXO_ORDER_RAW_EVENTS=NOT_OBSERVED
+W1_TO_R1=UNKNOWN
+JMM_HAPPENS_BEFORE=UNKNOWN
+EXACT_RACE=UNKNOWN
+EXPLOITABILITY=UNKNOWN
+AB105.116R=INTACT
+AB105.117R=NOT_CREATED
+TLC=NOT_RERUN
+PR_94=OPEN_DRAFT_UNMERGED
+
+NEXT ACTION:
+Run the dispatchable v2 workflow against ref nexo-ab105-g0-ordering-witness. Then audit install -> compile -> real broker runtime -> raw artifact, preserving exact run/job/artifact identifiers and digest. No scientific promotion from timestamps alone.
