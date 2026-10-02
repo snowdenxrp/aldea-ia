@@ -16,3 +16,10 @@ D0 identity is bounded by a fresh single-target ACL and its exact AclBinding. W1
 
 ## Do not execute yet
 The v2 injector must be statically reviewed after these edits before runtime execution. No runtime evidence is promoted by this audit.
+
+## Additional corrections
+- D0 identity guard now retries `describeAcls` before requiring exactly one matching ACL, because Kafka documents that create/delete ACL changes may take time to appear in `describeAcls`.
+- v2 no longer removes the `ByteArraySerializer` import from the extracted harness.
+- W1 captures `StandardAcl` before `AclCache.removeAcl(id)`, then emits UUID + ACL identity.
+- Kafka source confirms `StandardAuthorizer` delegates `removeAcl(Uuid)` to `StandardAuthorizerData.removeAcl(Uuid)`, and authorization is synchronous over locally cached ACL data. Evidence: Apache Kafka source.
+- No runtime evidence has been promoted.
