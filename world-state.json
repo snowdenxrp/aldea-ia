@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "stateRevision": 45,
-  "savedAt": 1790963161518,
+  "stateRevision": 47,
+  "savedAt": 1790963254110,
   "day": 680,
-  "hour": 18.363413333562725,
+  "hour": 18.37970666689606,
   "world": {
     "day": 680,
-    "timeOfDay": 18.363413333562725,
+    "timeOfDay": 18.37970666689606,
     "speed": 1,
     "resources": {
       "water": {
@@ -29906,7 +29906,7 @@
         },
         "5:2": {
           "key": "5:2",
-          "visits": 2996,
+          "visits": 2998,
           "discovered": true,
           "lastVisitDay": 680,
           "population": 0,
@@ -29936,7 +29936,7 @@
           "key": "3:2",
           "x": 3,
           "z": 2,
-          "visits": 8184,
+          "visits": 8186,
           "discovered": true,
           "biome": "plains",
           "lastDiscoveryDay": 680,
@@ -30808,16 +30808,16 @@
       "age": 16.53698630136942,
       "alive": true,
       "needs": {
-        "hunger": 99.15062399999992,
-        "thirst": 96.63121066666659,
-        "energy": 89.10146666666716,
+        "hunger": 99.11477866666658,
+        "thirst": 96.57907199999993,
+        "energy": 89.06073333333383,
         "social": 0,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": -2.0070818382784026,
-        "z": -17.075560365781744
+        "x": -1.8800222091872436,
+        "z": -17.480913163545885
       },
       "currentActivity": "moving",
       "inventory": [
@@ -70794,43 +70794,43 @@
       },
       "lastPerception": {
         "position": {
-          "x": -2.1282191965220925,
-          "z": -16.689101130625254
+          "x": -2.0070818382784026,
+          "z": -17.075560365781744
         },
         "visibleAgents": [
           {
             "id": "bruno",
             "name": "Bruno",
-            "distance": 11.862957627911813
+            "distance": 12.249557474296287
           }
         ],
         "nearbyResources": [
           {
             "type": "water",
             "location": "river",
-            "distance": 23.03127270521295
+            "distance": 23.39547377449281
           },
           {
             "type": "fertile_land",
             "location": "fertile_zone",
-            "distance": 6.726651509871719
+            "distance": 6.3487644915936405
           },
           {
             "type": "wild_plants",
             "location": "meadow",
-            "distance": 8.690047101172112
+            "distance": 9.075563128830181
           },
           {
             "type": "clay",
             "location": "riverbank",
-            "distance": 9.895802979048437
+            "distance": 10.050633984346755
           }
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 99.15062399999992,
-          "thirst": 96.63121066666659,
-          "energy": 89.10146666666716,
+          "hunger": 99.11477866666658,
+          "thirst": 96.57907199999993,
+          "energy": 89.06073333333383,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -70900,7 +70900,7 @@
         },
         "speed": 1.8,
         "moving": true,
-        "distanceTravelled": 157721.39614155763
+        "distanceTravelled": 157721.82094155764
       },
       "decisionCooldownHours": 0,
       "knownResources": {
@@ -71121,16 +71121,16 @@
       "age": 16.53698630136942,
       "alive": true,
       "needs": {
-        "hunger": 99.15062399999992,
-        "thirst": 96.63121066666659,
-        "energy": 89.0348000000005,
+        "hunger": 99.11477866666658,
+        "thirst": 96.57907199999993,
+        "energy": 88.99406666666717,
         "social": 0,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": 9.285628771698109,
-        "z": -12.329367639457628
+        "x": 9.706938067186652,
+        "z": -12.383713913800467
       },
       "currentActivity": "moving",
       "inventory": [
@@ -112677,43 +112677,43 @@
       },
       "lastPerception": {
         "position": {
-          "x": 8.88395677388064,
-          "z": -12.27755445417314
+          "x": 9.285628771698109,
+          "z": -12.329367639457628
         },
         "visibleAgents": [
           {
             "id": "alex",
             "name": "Alex",
-            "distance": 11.862957627911813
+            "distance": 12.249557474296287
           }
         ],
         "nearbyResources": [
           {
             "type": "water",
             "location": "river",
-            "distance": 29.554787686516537
+            "distance": 29.94192451823738
           },
           {
             "type": "wood",
             "location": "forest",
-            "distance": 23.124567707243983
+            "distance": 22.980011737118204
           },
           {
             "type": "fertile_land",
             "location": "fertile_zone",
-            "distance": 11.912800185356327
+            "distance": 12.107911333164141
           },
           {
             "type": "wild_plants",
             "location": "meadow",
-            "distance": 11.694357065017245
+            "distance": 12.087549004250741
           }
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 99.15062399999992,
-          "thirst": 96.63121066666659,
-          "energy": 89.0348000000005,
+          "hunger": 99.11477866666658,
+          "thirst": 96.57907199999993,
+          "energy": 88.99406666666717,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -112796,7 +112796,7 @@
         },
         "speed": 1.8,
         "moving": true,
-        "distanceTravelled": 158206.27918096186
+        "distanceTravelled": 158206.70398096187
       },
       "decisionCooldownHours": 0,
       "knownResources": {
@@ -118329,6 +118329,24 @@
             }
           ],
           "at": "2026-10-02T17:46:01.292Z"
+        },
+        {
+          "missionId": "lumina-1790963253873-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_social_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-02T17:47:33.873Z"
         }
       ],
       "attempts": [],
