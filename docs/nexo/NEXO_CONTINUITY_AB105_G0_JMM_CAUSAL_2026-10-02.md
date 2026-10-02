@@ -632,3 +632,26 @@ Fecha: 2026-10-02
 `SECURITY_CONCLUSION = NOT_ESTABLISHED`
 
 Esto cierra la búsqueda de una protección interna obvia en AclCache/StandardAuthorizerData. El siguiente punto es comprobar la implementación concreta de la obligación thread-safe de ClusterMetadataAuthorizer y cualquier wrapper/Plugin que pudiera serializar las llamadas.
+
+
+## CHECKPOINT — Concrete StandardAuthorizer implementation inspected
+Fecha: 2026-10-02
+
+🟢 `ClusterMetadataAuthorizer` declara que todos sus métodos deben ser thread-safe.
+🟢 La implementación `StandardAuthorizer` expone `addAcl()`/`removeAcl()` simplemente como `data.addAcl()`/`data.removeAcl()`.
+🔴 No hay `synchronized` ni `ReentrantReadWriteLock` en la implementación inspeccionada.
+🔴 El comentario de `StandardAuthorizer.data` afirma que existe un read-write lock, pero el código fijado contiene solamente `private volatile StandardAuthorizerData data` y no contiene ese lock. Esto es una discrepancia comentario↔implementación, no evidencia de un lock oculto.
+🟢 `loadSnapshot()` sí publica un nuevo `StandardAuthorizerData` mediante la escritura volatile de `data`; esto es distinto de las mutaciones steady-state `addAcl/removeAcl`, que conservan el mismo objeto `data` y sólo cambian su `aclCache` plain.
+
+Conclusión de esta capa: no se encontró wrapper/lock dentro de `StandardAuthorizer` que cierre `W1→R1` para mutaciones ACL incrementales. La obligación de thread-safety de la interfaz no constituye por sí sola un mecanismo JMM identificable.
+
+`STANDARD_AUTHORIZER_INNER_LOCK = NOT_IDENTIFIED`
+`STEADY_STATE_VOLATILE_REPUBLICATION = NOT_PRESENT`
+`LOAD_SNAPSHOT_VOLATILE_PUBLICATION = PRESENT`
+`HB W1→R1 = NOT_IDENTIFIED`
+`STALE_READ = UNKNOWN`
+`STALE_ALLOWED = UNKNOWN`
+`EXPLOITABILITY = UNKNOWN`
+`GENERALIZATION = UNKNOWN`
+`PRODUCTION_IMPACT = UNKNOWN`
+`SECURITY_CONCLUSION = NOT_ESTABLISHED`
