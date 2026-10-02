@@ -404,3 +404,27 @@ Security conclusion: NOT_ESTABLISHED.
 
 ### Próximo paso
 Inspeccionar el caller RPC concreto para WRITE/TOPIC authorization y cualquier executor/thread handoff que pudiera introducir synchronizes-with antes de AuthHelper.authorize().
+
+## CHECKPOINT — caller RPC WRITE/TOPIC revisado
+Fecha: 2026-10-02
+
+### Caller concreto
+🟢 En el rev Kafka fijado, KafkaApis.handleProduceRequest() ejecuta la autorización de topics mediante authHelper.filterByAuthorized(request.context, WRITE, TOPIC, ...) antes de pasar las solicitudes autorizadas a replicaManager.handleProduceAppend(...).
+🟢 AuthHelper.filterByAuthorized() termina llamando directamente a authorizer.get().authorize(requestContext, actions); no introduce un lock/await/future entre el caller y StandardAuthorizer.authorize().
+🟢 El dispatcher de KafkaApis.handle() selecciona ApiKeys.PRODUCE y llama handleProduceRequest directamente en ese flujo; para este camino no se identificó un handoff asíncrono entre dispatch y autorización.
+🔵 Esto hace que el reader RPC sea una llamada síncrona desde el hilo que procesa Produce, mientras el publisher de ACL pertenece al flujo de metadata separado ya identificado.
+
+### Grafo actualizado
+MetadataLoader thread → AclPublisher → StandardAuthorizerData.removeAcl() → W1(aclCache=newCache)
+Kafka request thread → KafkaApis.handleProduceRequest() → AuthHelper.filterByAuthorized() → StandardAuthorizer.authorize() → StandardAuthorizerData.authorize() → R1(aclCache)
+
+🔴 En el tramo inspeccionado no apareció una relación synchronizes-with explícita entre ambos hilos.
+🔴 Sigue sin existir evidencia de HB(W1→R1) específica para la publicación incremental de aclCache.
+
+### Importante
+La ausencia de un handoff en KafkaApis → AuthHelper elimina una posible explicación sencilla basada en Future/await dentro del caller, pero no demuestra por sí sola que el sistema completo carezca de sincronización externa.
+
+Estado: JMM_GRAPH=PARTIAL-FORMALIZED; EXTERNAL_HB=NOT_IDENTIFIED; STALE_READ=UNKNOWN; STALE_ALLOWED=UNKNOWN; EXPLOITABILITY=UNKNOWN; SECURITY_CONCLUSION=NOT_ESTABLISHED.
+
+### Próximo paso
+Inspeccionar el modelo de ejecución del request thread/socket server y el origen del thread de MetadataLoader, buscando una relación de sincronización común que pueda cerrar W1→R1 fuera de las clases ya revisadas.
