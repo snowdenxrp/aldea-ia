@@ -355,3 +355,40 @@ Pre-execution audit finding was corrected on the research branch.
 - No AB105.117R.
 
 Next: wait/inspect the workflow associated with corrected head a80b4191b550c4c4a855b1576751546c80dc9f9b. Only a recoverable workflow witness may elevate the propagation-window state.
+
+
+## PR #84 execution result — harness timing discriminator did NOT produce a valid D1 decision — 2026-10-01
+
+PR #84 corrected head `a80b4191b550c4c4a855b1576751546c80dc9f9b` did execute.
+
+- Workflow run: `36943184415` — FAILURE.
+- Job: `110639182169` — FAILURE.
+- Kafka revision: `99b940733a9f6bc409457dba7108f08421d81e42`.
+- Compile Kafka test infrastructure: SUCCESS.
+- Write temporary G0 runtime harness: SUCCESS.
+- Compile/execute harness: FAILURE.
+
+### Observed failure
+The harness failed at: `D1 authorization decision was not observed ==> expected: <true> but was: <false>`.
+The producer log shows repeated `TOPIC_AUTHORIZATION_FAILED` metadata responses for `nexo-g0-runtime` before the timeout. No `G0_PROPAGATION_WITNESS` was emitted and the evidence-upload step was skipped.
+
+### Critical interpretation
+This run is NOT a valid propagation-window result. It must not be classified as D1=DENIED, because the harness never captured the intended D1 WRITE authorization decision in `TargetAuthorizer`.
+
+The current working hypothesis is a harness-level metadata-path issue: the NEW D1 producer has no warmed metadata state and its initial metadata path encounters topic authorization before the instrumented WRITE authorization decision. The current ACL grants WRITE only. This remains a hypothesis requiring verification, not a source-level conclusion.
+
+Therefore:
+- `PROPAGATION_WINDOW = PENDING_HARNESS_CORRECTION`
+- `POST_D0_NEW_REQUEST = NOT_OBSERVED`
+- `D1_AUTHORIZATION_DECISION = UNKNOWN`
+- `D1_APPEND = UNKNOWN`
+- `G0_PROPAGATION_WITNESS = NO`
+- `EXPLOITABILITY = UNKNOWN`
+- `AB105.116R = INTACT`
+- `NO AB105.117R`
+- `NO TLC RERUN`
+
+### Required next correction
+Inspect the pinned Kafka request/authorization path and adjust the harness so D1 has valid topic metadata before D0 while the actual NEW produce request/authorization occurs after D0. Do not add permissions merely to force the test through unless separately justified and recorded. Preserve the distinction between metadata authorization and WRITE authorization.
+
+The failed run is retained as evidence of a harness limitation, not as evidence for or against the propagation-window hypothesis.
