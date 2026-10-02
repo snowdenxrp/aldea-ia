@@ -567,3 +567,23 @@ Fecha: 2026-10-02
 
 ### Próximo
 Revisar lifecycle de `BrokerServer`/`MetadataLoader` para comprobar si existe una barrera común que obligue a los request handlers a observar cada actualización ACL. Si tampoco existe, queda formalizado el límite arquitectónico de esta investigación; todavía no equivale a demostrar una lectura stale en producción.
+
+
+## CHECKPOINT — Broker lifecycle barrier is startup-only
+Fecha: 2026-10-02
+
+🟢 BrokerServer.startup() instala AclPublisher y espera brokerMetadataPublisher.firstPublishFuture antes de habilitar el procesamiento de requests.
+🟢 También espera las futures del authorizer y después socketServer.enableRequestProcessing(...); existe una barrera real para ARRANQUE, antes de aceptar tráfico normal.
+🔵 Esa barrera no se repite por cada mutación ACL. Una vez iniciado el broker, AclPublisher continúa aplicando actualizaciones desde el flujo de metadata mientras los request handlers procesan requests concurrentemente.
+🔴 No se identificó una operación del lifecycle que, para cada mutación W1 de revocación, obligue a todos los request threads a observar W1 antes de R1.
+
+STARTUP_HB = VERIFIED
+STEADY_STATE_ACL_MUTATION_HB = NOT_IDENTIFIED
+LIFECYCLE_GLOBAL_BARRIER = NOT_PRESENT_FOR_PER_MUTATION
+HB W1→R1 = NOT_IDENTIFIED
+
+### Consecuencia epistemológica
+Esto cierra el candidato de que la sincronización de startup garantice todas las revocaciones posteriores. No lo hace. Sin embargo, sigue sin demostrar que R1 efectivamente pueda leer un aclCache stale en una ejecución real; STALE_READ, STALE_ALLOWED, EXPLOITABILITY, GENERALIZATION y PRODUCTION_IMPACT permanecen UNKNOWN.
+
+### Próximo paso
+Cerrar la rama de EndpointReadyFutures/authorizer startup solo como confirmación de alcance y revisar si existe algún mecanismo específico de actualización ACL (future, lock, volatile publication o callback acknowledgement) que alcance al request thread durante steady-state.
