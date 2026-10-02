@@ -861,3 +861,25 @@ También se confirma que el análisis posterior no perdió estos estados:
 `CONTINUITY_RECONCILIATION = COMPLETE`
 `EVIDENCE_LOSS = NOT_FOUND`
 `DOCUMENT_STALE_HEAD = CORRECTED_BY_CHECKPOINT`
+
+
+## CHECKPOINT — integridad semántica del commit ejecutado
+Fecha: 2026-10-02
+
+Se contrastó directamente el commit ejecutado por los dos runs exitosos: `0388dce81a2e08dd90f96f6806fe74683ed6f543`.
+
+🟢 El cambio de ese commit es exclusivamente la extracción de la clasificación a `ClassificationCounts` y tres métodos auxiliares (`classifyObservation`, `classifyPostReturn`, `classifyOverlap`), además del reordenamiento de imports.
+🟢 El diff no cambia el criterio `observation.enter > writerObservation.exit`.
+🟢 No cambia la ventana temporal, número de iteraciones, número de readers, `removeAcl()`, `authorize()`, ni el almacenamiento local de observaciones.
+🟢 No introduce latch, barrier, volatile gate, lock o comunicación adicional durante la carrera.
+🟢 Por tanto, los dos witnesses exitosos pertenecen al código cuya clasificación causal fue explícitamente simplificada sin cambiar su semántica.
+
+Esto cierra una posible duda de trazabilidad entre la corrección Checkstyle y la evidencia: la corrección fue estructural, no una modificación silenciosa del experimento.
+
+`EXECUTED_HEAD = 0388dce81a2e08dd90f96f6806fe74683ed6f543`
+`CLASSIFICATION_SEMANTICS = PRESERVED`
+`RACE_SYNCHRONIZATION_ADDED = FALSE`
+`EXPERIMENT_SEMANTIC_DRIFT = NOT_FOUND`
+`TWO_RUNS_RAW_VERIFIED = TRUE`
+`AB105.116R = UNCHANGED`
+`AB105.117R = NOT_CREATED`
