@@ -2,7 +2,7 @@ name: NEXO AB105 G0 ordering witness runner v2
 
 on:
   # Trigger-only retry marker after 88935d92; harness and Kafka pin unchanged.
-  # Continuity probe: clean v2 harness; no Java experiment change.
+  # Continuity probe: clean v2 harness; no Java experiment change. Trigger retry after 2c8dd49.
   push:
     branches:
       - nexo-ab105-g0-ordering-witness
