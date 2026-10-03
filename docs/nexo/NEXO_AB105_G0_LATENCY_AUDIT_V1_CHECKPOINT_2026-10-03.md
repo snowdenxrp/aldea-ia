@@ -47,3 +47,11 @@ Continue non-experimental isolation of the failing workflow path against the suc
 - The same exact commit a3aa… successfully executed earlier under workflow 373334522 (run 37081442555), creating job 111082635995 and completing the real-broker witness.
 - Therefore the zero-job failure cannot be attributed to the Java experiment, producer prewarm, latency branch, or that commit’s source tree. The discriminating variable is the workflow/event path, with exact GitHub-side root cause still UNKNOWN.
 - This materially strengthens 🔵 workflow/control-plane isolation and further forbids interpreting the failing runs as Kafka evidence.
+
+## Workflow registration / default-branch control
+
+- main contains the known-good `.github/workflows/nexo-ab105-g0-ordering-witness-v2.yml` (workflow ID 373334522) and does NOT contain `.github/workflows/nexo-ab105-g0-ordering-witness.yml`.
+- The latency branch contains both workflow files. The failing workflow is therefore branch-only; the known-good v2 workflow is default-branch registered.
+- GitHub's documented trigger model says it searches workflow files in the commit/ref for the event, while some event types additionally require the workflow file on the default branch. The observed event here is push, so this is a hypothesis to test, not a confirmed root cause.
+- Crucially, current workflow 373324571 has never produced a job in the observed sample; v2 has produced a real job. This makes workflow registration/identity a stronger candidate than YAML step content.
+- No change made to the Kafka experiment or AB105.116R. Status remains 🔵 exact GitHub-side root cause UNKNOWN.
