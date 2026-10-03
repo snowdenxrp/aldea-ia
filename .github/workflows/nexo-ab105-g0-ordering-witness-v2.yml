@@ -32,8 +32,9 @@ jobs:
           import subprocess
           import textwrap
           from pathlib import Path
+          subprocess.check_call(["git", "-C", os.environ["GITHUB_WORKSPACE"], "fetch", "--no-tags", "origin", "a3aaae3a7839b2ab079b90991231fd42f622e2f1"])
           wf = subprocess.check_output([
-              "git", "show", "a3aaae3a7839b2ab079b90991231fd42f622e2f1:.github/workflows/nexo-ab105-g0-ordering-witness.yml"
+              "git", "-C", os.environ["GITHUB_WORKSPACE"], "show", "a3aaae3a7839b2ab079b90991231fd42f622e2f1:.github/workflows/nexo-ab105-g0-ordering-witness.yml"
           ], text=True)
           start = wf.index("cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'") + len("cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'\n")
           end = wf.index("\n          EOF", start)
