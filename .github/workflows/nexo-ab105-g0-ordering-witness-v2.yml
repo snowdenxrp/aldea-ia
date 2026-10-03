@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - nexo-ab105-g0-ordering-witness
+  pull_request:
+    types: [reopened]
 
 jobs:
   ordering-witness:
