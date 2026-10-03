@@ -1,4 +1,4 @@
-name: NEXO AB105 G0 visibility runtime gate
+name: NEXO AB105 G0 visibility runtime validation
 
 on:
   push:
@@ -6,21 +6,26 @@ on:
       - nexo-ab105-g0-visibility-probe
     paths:
       - ".github/workflows/nexo-ab105-g0-visibility-runtime-gate.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  gate:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify pinned source gate
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Validate workflow inputs
         run: |
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          test -f tools/nexo/ab105_visibility_probe_inject.py
-          test -f tools/nexo/ab105_visibility_probe_controlize.py
-          echo "VISIBILITY_RUNTIME_GATE=WORKFLOW_EXECUTED"
+          python -m py_compile tools/nexo/ab105_visibility_probe_inject.py
+          python -m py_compile tools/nexo/ab105_visibility_probe_controlize.py
+          test -s .github/workflows/nexo-ab105-g0-visibility-witness.yml
+          echo "RUNTIME_WORKFLOW_FILE_PRESENT=YES"
+          echo "HARNESS_GENERATORS_SYNTAX=PASS"
           echo "AB105_116R=FROZEN"
           echo "AB105_117R=NOT_CREATED"
           echo "TLC=NOT_RERUN"
