@@ -86,6 +86,9 @@ jobs:
         case _ =>
       }
       request match {""")
+
+          assert "NEXO_ORDER" in Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java").read_text()
+          assert "NEXO_ORDER" in Path("core/src/main/scala/kafka/network/RequestChannel.scala").read_text()
           PY
 
       - name: Write real broker ordering harness
@@ -93,7 +96,238 @@ jobs:
         run: |
           mkdir -p server/src/test/java/org/apache/kafka/server
           cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'
-          /* workflow-local harness body unchanged from the preserved experiment */
+          /*
+           * Licensed to the Apache Software Foundation (ASF) under one or more
+           * contributor license agreements. See the NOTICE file distributed with
+           * this work for additional information regarding copyright ownership.
+           * The ASF licenses this file to You under the Apache License, Version 2.0
+           * (the "License"); you may not use this file except in compliance with
+           * the License. You may obtain a copy of the License at
+           *
+           *    http://www.apache.org/licenses/LICENSE-2.0
+           *
+           * Unless required by applicable law or agreed to in writing, software
+           * distributed under the License is distributed on an "AS IS" BASIS,
+           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           * See the License for the specific language governing permissions and
+           * limitations under the License.
+           */
+          package org.apache.kafka.server;
+
+          import org.apache.kafka.clients.admin.Admin;
+          import org.apache.kafka.clients.admin.NewTopic;
+          import org.apache.kafka.clients.producer.KafkaProducer;
+          import org.apache.kafka.clients.producer.Producer;
+          import org.apache.kafka.clients.producer.ProducerConfig;
+          import org.apache.kafka.clients.producer.ProducerRecord;
+          import org.apache.kafka.common.acl.AclBinding;
+          import org.apache.kafka.common.acl.AclBindingFilter;
+          import org.apache.kafka.common.acl.AccessControlEntry;
+          import org.apache.kafka.common.acl.AccessControlEntryFilter;
+          import org.apache.kafka.common.config.SaslConfigs;
+          import org.apache.kafka.common.resource.ResourcePattern;
+          import org.apache.kafka.common.security.auth.SecurityProtocol;
+          import org.apache.kafka.common.serialization.ByteArraySerializer;
+          import org.apache.kafka.common.test.KafkaClusterTestKit;
+          import org.apache.kafka.common.test.TestKitNodes;
+          import org.apache.kafka.server.config.ServerConfigs;
+          import org.junit.jupiter.api.Assertions;
+          import org.junit.jupiter.api.Test;
+
+          import java.util.Collection;
+          import java.util.List;
+          import java.util.Map;
+          import java.util.concurrent.TimeUnit;
+
+          import static org.apache.kafka.common.acl.AclOperation.WRITE;
+          import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+          import static org.apache.kafka.common.resource.PatternType.LITERAL;
+          import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+
+          public final class NexoG0OrderingWitnessTest {
+              private static final String TOPIC_NAME = "nexo-g0-ordering";
+              private static final String USER = "plain-user1";
+              private static final String PASSWORD = "plain-user1-secret";
+              private static final String CLIENT_ID = "nexo-g0-ordering";
+
+              private static AclBinding acl() {
+                  return new AclBinding(
+                      new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
+                      new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW)
+                  );
+              }
+
+              private static Map<String, Object> client(String bootstrapServers) {
+                  return Map.of(
+                      ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                      bootstrapServers,
+                      "security.protocol",
+                      SecurityProtocol.SASL_PLAINTEXT.name(),
+                      SaslConfigs.SASL_MECHANISM,
+                      "PLAIN",
+                      SaslConfigs.SASL_JAAS_CONFIG,
+                      "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + USER
+                          + "\" password=\"" + PASSWORD + "\";",
+                      ProducerConfig.CLIENT_ID_CONFIG,
+                      CLIENT_ID,
+                      ProducerConfig.ACKS_CONFIG,
+                      "all",
+                      ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                      ByteArraySerializer.class.getName(),
+                      ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                      ByteArraySerializer.class.getName()
+                  );
+              }
+
+              private static boolean produce(Producer<byte[], byte[]> producer) {
+                  try {
+                      producer.send(
+                          new ProducerRecord<>(TOPIC_NAME, new byte[] {1})
+                      ).get(10, TimeUnit.SECONDS);
+                      return true;
+                  } catch (Exception e) {
+                      return false;
+                  }
+              }
+
+              @Test
+              public void realBrokerOrderingWitness() throws Exception {
+                  TestKitNodes nodes = new TestKitNodes.Builder()
+                      .setNumBrokerNodes(1)
+                      .setNumControllerNodes(1)
+                      .setCombined(false)
+                      .setBrokerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+                      .setControllerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+                      .build();
+
+                  try (KafkaClusterTestKit cluster =
+                      new KafkaClusterTestKit.Builder(nodes)
+                          .setConfigProp(
+                              ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
+                              "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
+                          )
+                          .build()) {
+                      cluster.format();
+                      cluster.startup();
+                      cluster.waitForReadyBrokers();
+
+                      try (Admin admin = cluster.admin()) {
+                          admin.createTopics(
+                              List.of(new NewTopic(TOPIC_NAME, 1, (short) 1))
+                          ).all().get();
+                      }
+
+                      try (Producer<byte[], byte[]> producer = new KafkaProducer<>(client(cluster.bootstrapServers()))) {
+                          // Warm producer metadata/connection before the first experimental ACL cycle.
+                          producer.partitionsFor(TOPIC_NAME);
+                          for (int cycle = 1; cycle <= 100; cycle++) {
+                              try (Admin admin = cluster.admin()) {
+                                  admin.createAcls(List.of(acl())).all().get();
+                              }
+
+                              long deadline =
+                                  System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+                              boolean allowed = false;
+                              while (System.nanoTime() < deadline) {
+                                  if (produce(producer)) {
+                                      allowed = true;
+                                      break;
+                                  }
+                                  Thread.sleep(20);
+                              }
+
+                              Assertions.assertTrue(
+                                  allowed,
+                                  "ACL was not observed as ALLOWED before deletion"
+                              );
+                              System.err.println(
+                                  "NEXO_ORDER A1_SUCCESS cycle="
+                                      + cycle
+                                      + " ns="
+                                      + System.nanoTime()
+                              );
+
+                              Collection<AclBinding> d0Targets = List.of();
+                              long d0GuardDeadline =
+                                  System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+                              while (System.nanoTime() < d0GuardDeadline) {
+                                  try (Admin admin = cluster.admin()) {
+                                      d0Targets =
+                                          admin.describeAcls(
+                                              new AclBindingFilter(
+                                                  new ResourcePattern(
+                                                      TOPIC,
+                                                      TOPIC_NAME,
+                                                      LITERAL
+                                                  ).toFilter(),
+                                                  AccessControlEntryFilter.ANY
+                                              )
+                                          ).values().get();
+                                  }
+                                  if (d0Targets.size() == 1) {
+                                      break;
+                                  }
+                                  Thread.sleep(20);
+                              }
+
+                              Assertions.assertEquals(
+                                  1,
+                                  d0Targets.size(),
+                                  "D0 target ACL cardinality must be exactly one"
+                              );
+                              AclBinding d0Target = d0Targets.iterator().next();
+                              System.err.println(
+                                  "NEXO_ORDER D0_TARGET cycle="
+                                      + cycle
+                                      + " acl="
+                                      + d0Target
+                                      + " ns="
+                                      + System.nanoTime()
+                              );
+
+                              try (Admin admin = cluster.admin()) {
+                                  admin.deleteAcls(
+                                      List.of(
+                                          new AclBindingFilter(
+                                              new ResourcePattern(
+                                                  TOPIC,
+                                                  TOPIC_NAME,
+                                                  LITERAL
+                                              ).toFilter(),
+                                              AccessControlEntryFilter.ANY
+                                          )
+                                      )
+                                  ).all().get();
+                              }
+
+                              long d0ReturnNs = System.nanoTime();
+
+                              boolean denied = !produce(producer);
+                              System.err.println(
+                                  "NEXO_ORDER D0_RETURN cycle="
+                                      + cycle
+                                      + " acl="
+                                      + d0Target
+                                      + " ns="
+                                      + d0ReturnNs
+                              );
+                              System.err.println(
+                                  "NEXO_ORDER D1_RESULT cycle="
+                                      + cycle
+                                      + " result="
+                                      + (denied ? "DENIED" : "ALLOWED")
+                                      + " ns="
+                                      + System.nanoTime()
+                              );
+                              Assertions.assertTrue(
+                                  denied,
+                                  "D1 unexpectedly allowed after D0"
+                              );
+                          }
+                      }
+                  }
+              }
+          }
           EOF
 
       - name: Compile and execute ordering witness
