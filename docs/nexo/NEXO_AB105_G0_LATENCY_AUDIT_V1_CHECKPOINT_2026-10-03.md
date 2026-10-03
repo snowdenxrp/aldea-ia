@@ -12,3 +12,4 @@
 - Important: absence of a run is execution infrastructure state, not experimental evidence.
 - DO-NOT-REPEAT: do not treat prior run 370790/370814 artifacts as evidence for this branch; do not infer stale-read absence/presence; do not modify AB105.116R; do not create AB105.117R; do not rerun TLC.
 - Next: obtain a real Actions execution for PR #96 without changing the Java experiment or manufacturing synchronization.
+- 2026-10-03 correction: workflow harness restored from 59d4f2c…; only latency-branch push trigger added; no valid execution from the temporary corrupt placeholder state.
