@@ -258,3 +258,32 @@ Classification:
 🔴 vulnerability/security conclusion: NOT_DECLARED.
 
 Next exact target: inspect the concrete network Processor/request path for any shared lock or publication object that is also touched by MetadataLoader/authorizer update handling. If none exists, document that absence carefully; absence of a discovered edge is not itself a demonstrated stale read.
+
+
+## Source audit advancement — RequestChannel boundary is one-way for this question
+Pinned source `99b940733a9f6bc409457dba7108f08421d81e42`:
+- `RequestChannel.requestQueue` is an `ArrayBlockingQueue`.
+- Processor-side `sendRequest(request)` performs `requestQueue.put(request)`.
+- Handler-side `receiveRequest()` performs `requestQueue.take()` (or poll).
+- Therefore the queue gives a normal queue publication/synchronization edge from ENQUEUE to DEQUEUE.
+- It does NOT provide a reverse edge from the unrelated MetadataLoader/AclPublisher W1 to the Processor's ENQUEUE operation.
+
+Authorization placement:
+- `KafkaApis` invokes authorization through its `authHelper.authorize(...)` path while processing the dequeued request.
+- This is downstream of the RequestChannel queue boundary, not the source of W1.
+
+Conclusion for the current causal question:
+- The already-observed temporal order W1 < D1_DEQUEUE is insufficient to infer W1→ENQUEUE or W1→D1 visibility.
+- The RequestChannel queue can explain ENQUEUE→DEQUEUE, but cannot manufacture the missing upstream edge.
+- No shared lock, volatile publication, Future completion, or other cross-thread edge connecting the MetadataLoader ACL mutation to Processor ENQUEUE has been identified in the inspected paths.
+
+This still does NOT establish stale-read behavior. The real run produced DENIED in all 10 cycles; no cycle captured D1 observing the pre-W1 ACL cache.
+
+Classification:
+🟢 ENQUEUE→DEQUEUE synchronization boundary identified.
+🟢 D1 authorization is downstream of DEQUEUE.
+🔵 W1→ENQUEUE happens-before remains UNKNOWN / no concrete edge identified so far.
+🔵 W1→D1 aclCache visibility remains UNKNOWN.
+🔴 Vulnerability/security conclusion remains NOT_DECLARED.
+
+Next: inspect the concrete Processor→RequestChannel call site and surrounding Processor loop only for a shared synchronization object also reachable from metadata publication. If none is present, this source audit can close the natural-edge search without converting “not found” into “proven absent everywhere.”
