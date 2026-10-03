@@ -198,3 +198,35 @@ Classification:
 🔵 cross-thread visibility of W1 to D1 read: UNKNOWN.
 🔵 stale-read manifestation: UNKNOWN.
 🔴 vulnerability: NOT_DECLARED.
+
+
+## Source audit advancement — ACL publisher concurrency contract vs actual mutation path
+Exact pinned Kafka source was re-read at `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+New material finding:
+- `AclPublisher.onMetadataUpdate(...)` explicitly states that ACL changes are applied while the Authorizer continues returning authorization results in other threads, and that the implementation must avoid exposing an invalid intermediate state.
+- For normal incremental ACL deltas, the publisher iterates the ordered changes and calls `clusterMetadataAuthorizer.addAcl(...)` / `removeAcl(...)` directly.
+- `StandardAuthorizer.removeAcl()` delegates directly to `StandardAuthorizerData.removeAcl()`; that method replaces the plain `aclCache` reference in the existing `StandardAuthorizerData` object.
+- In the exact pinned `StandardAuthorizer` source, the volatile `data` field is replaced for operations such as `loadSnapshot()`, `completeInitialLoad()`, and configuration changes, but incremental `addAcl/removeAcl` do NOT replace `data`.
+- Therefore the documented concurrency requirement and the concrete incremental mutation path now meet at the exact suspected boundary: concurrent authorization can run while a plain `aclCache` reference is being replaced.
+
+Important distinction:
+- This is stronger source evidence for a real cross-thread visibility/concurrency surface.
+- It is still NOT proof that the real broker produced a stale read, because no observed run captured D1 reading the old cache after W1.
+- It is also NOT yet a proof that W1 lacks all synchronization: the next step remains to inspect whether an existing lock/volatile/executor/queue edge surrounds the incremental callback path elsewhere.
+
+Additional pinned-source observation:
+- `AclPublisher` itself declares no lock around incremental ACL application.
+- `StandardAuthorizerData` declares itself not thread-safe.
+- The comment in `StandardAuthorizer` describes synchronization/read-write-lock intent, but the exact pinned implementation exposes the volatile outer reference plus direct mutable operations; no read-write lock object is present in the inspected class.
+
+Classification update:
+🟢 AclPublisher explicitly documents concurrent authorization during ACL application.
+🟢 Incremental ACL update path directly invokes plain add/remove mutation.
+🟢 Incremental remove does not publish a new volatile StandardAuthorizer.data reference.
+🔵 W1→D1 happens-before remains UNKNOWN until surrounding synchronization is exhausted.
+🔵 Actual stale-read manifestation remains UNKNOWN.
+🔴 Vulnerability/security conclusion remains NOT_DECLARED.
+
+Next exact target:
+Inspect broker construction/wiring and any executor/lock/publication mechanism surrounding AclPublisher and StandardAuthorizer, then stop at the first concrete synchronization edge (if any). Do not add test synchronization and do not rerun the broker experiment yet.
