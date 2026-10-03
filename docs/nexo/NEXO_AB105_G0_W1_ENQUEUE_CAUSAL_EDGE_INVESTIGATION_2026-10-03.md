@@ -177,3 +177,24 @@ Classification:
 🔵 W1→ENQUEUE happens-before: UNKNOWN.
 🔵 D1 visibility of new aclCache: UNKNOWN.
 🔴 vulnerability: NOT_DECLARED.
+
+
+## Source audit advancement — D1 read site
+Exact pinned StandardAuthorizerData source further narrows the observation point:
+
+- `StandardAuthorizerData` explicitly says it is not thread-safe.
+- `aclCache` is a plain reference.
+- `authorize()` reaches `findAclRule()`, where it copies `aclCache` into a local `aclCacheSnapshot` with an ordinary read, then traverses the immutable cache.
+- Therefore the critical cross-thread visibility question is specifically: can the Processor thread's ordinary read of `aclCache` observe the MetadataLoader thread's prior ordinary write to `aclCache`?
+- The immutable `AclCache` structure itself is not the suspected mutable race; the reference publication is the relevant boundary.
+
+This is still NOT a demonstrated stale read. The real broker has produced correct DENIED outcomes in the observed runs, and no run has captured an old cache after W1.
+
+Next target: inspect existing publication mechanisms around authorizer/request handling for a natural edge. No artificial synchronization will be introduced.
+
+Classification:
+🟢 D1 ordinary `aclCache` read site identified.
+🟢 `StandardAuthorizerData` non-thread-safe contract confirmed at pinned source.
+🔵 cross-thread visibility of W1 to D1 read: UNKNOWN.
+🔵 stale-read manifestation: UNKNOWN.
+🔴 vulnerability: NOT_DECLARED.
