@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - nexo-ab105-g0-visibility-probe
-  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   compile-only:
@@ -156,14 +158,14 @@ jobs:
           s = p.read_text()
           class_pos = s.index("private[kafka] class Processor(")
           run_marker = """  override def run(): Unit = {
-    try {
+    try:
 """
           run_pos = s.index(run_marker, class_pos)
           s = s[:run_pos] + s[run_pos:].replace(
               run_marker,
               """  override def run(): Unit = {
     org.apache.kafka.server.common.NexoVisibilityRecorder.init()
-    try {
+    try:
 """, 1)
           fin = """    } finally {
       debug(s"Closing selector - processor $id")
