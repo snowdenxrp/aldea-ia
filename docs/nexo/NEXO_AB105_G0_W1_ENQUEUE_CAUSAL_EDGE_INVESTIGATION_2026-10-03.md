@@ -130,3 +130,27 @@ StandardAuthorizer.data is volatile, but removeAcl() does not write it.
 - Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, AclCache.java
 - Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, AclPublisher.java
 - Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, RequestChannel.scala
+
+## Continuation checkpoint — 2026-10-02
+A further source-navigation pass was attempted for the concrete metadata-loader → request-publication boundary.
+
+Current result:
+- No new pinned-commit causal edge has been established.
+- The already-proven boundary remains: W1 is a plain write to StandardAuthorizerData.aclCache; ENQUEUE→DEQUEUE is synchronized; W1→ENQUEUE remains UNKNOWN.
+- Current upstream Kafka documentation/source was consulted only as contextual guidance and is NOT being promoted to exact-pinned evidence.
+- No experiment was modified and no new synchronization was introduced.
+
+Next exact target:
+1. Resolve the exact pinned MetadataLoader/AclPublisher invocation thread and callback path.
+2. Resolve the independently generated D1 request publication thread/path.
+3. Trace only pre-existing synchronization between those paths.
+4. Stop at the first real synchronization edge; do not infer beyond it.
+
+State remains:
+🟢 real-broker W1 evidence
+🟢 exact pinned aclCache write identified
+🔵 W1→ENQUEUE JMM edge UNKNOWN
+🔵 stale-read manifestation UNKNOWN
+🔴 vulnerability NOT DECLARED
+
+DO-NOT-REPEAT remains unchanged.
