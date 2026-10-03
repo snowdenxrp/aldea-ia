@@ -641,3 +641,42 @@ Audited chain:
 The remaining question is therefore empirical rather than another source-path search: **can a real broker execution capture D1 authorization against the pre-W1 ACL-cache reference despite W1 already having occurred?**
 
 No latch, barrier, volatile handoff, Future gate, or equivalent synchronization was introduced. No broker witness was rerun. TLC was not rerun. `AB105.116R` remains unchanged and `AB105.117R` remains uncreated.
+
+
+## Reinspection of the preserved real-broker artifact (no rerun)
+
+The previously produced artifact `11259107051` from run `37081442555` was downloaded and re-read directly. This was **evidence reinspection only**, not a new execution.
+
+Pinned evidence inside the artifact:
+- Kafka revision: `99b940733a9f6bc409457dba7108f08421d81e42`
+- diagnostic: REAL_BROKER_ORDERING_WITNESS
+- workflow-local timing instrumentation
+- AB105.116R unchanged
+- AB105.117R not created
+- TLC not rerun
+- 10 cycles present.
+
+For all 10 cycles, the sequence is:
+`D0_TARGET → ACL_W1 → D0_RETURN → D1 ENQUEUE → D1 DEQUEUE → AUTH_ENTER → AUTH_DECISION=DENIED`.
+
+Two already-critical cycles were revalidated exactly:
+- Cycle 4: target-broker W1 = `261920590759`; D0_RETURN = `261920489698`; D1 ENQUEUE = `261926567813`. Thus D0_RETURN precedes W1 by 101,061 ns, while W1 precedes D1 ENQUEUE by 5,977,054 ns.
+- Cycle 5: target-broker W1 = `262029090806`; D0_RETURN = `262028693234`; D1 ENQUEUE = `262033...` (the artifact preserves the full downstream sequence). Thus D0_RETURN again precedes W1, and W1 precedes D1 ENQUEUE.
+
+The important empirical result is unchanged:
+- 🟢 W1 occurred before D1 ENQUEUE in all 10 cycles.
+- 🟢 D1 authorization returned DENIED in all 10 cycles.
+- 🔵 No cycle captured an authorization decision that can be demonstrated to have read the pre-W1 cache reference.
+- 🔵 Therefore the artifact does **not** demonstrate an actual stale-read manifestation.
+- 🔵 It also does not prove the absence of a stale-read possibility under other scheduling/interleavings.
+- 🔴 No vulnerability conclusion follows from this run.
+
+### Interpretation boundary
+
+The 10/10 DENIED result is consistent with correct post-removal visibility, but it cannot by itself prove a JMM happens-before edge. Likewise, temporal ordering from `System.nanoTime()` is not a JMM proof.
+
+The artifact therefore closes what this run can empirically establish, while leaving the visibility question UNKNOWN.
+
+No new synchronization was added. No broker was rerun. No TLC rerun. AB105.116R remains unchanged; AB105.117R remains uncreated.
+
+Next step: preserve this artifact as the empirical boundary and reconcile whether any additional non-invasive observation is possible without changing the causality being tested. If not, the investigation should remain UNKNOWN rather than manufacture a synchronization edge.
