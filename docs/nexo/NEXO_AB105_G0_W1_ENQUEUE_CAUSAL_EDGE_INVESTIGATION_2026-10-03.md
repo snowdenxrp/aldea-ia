@@ -230,3 +230,31 @@ Classification update:
 
 Next exact target:
 Inspect broker construction/wiring and any executor/lock/publication mechanism surrounding AclPublisher and StandardAuthorizer, then stop at the first concrete synchronization edge (if any). Do not add test synchronization and do not rerun the broker experiment yet.
+
+
+## Source audit advancement — publisher/wiring path and an important implementation discrepancy
+Pinned source inspection further confirms the production execution topology:
+- `KafkaRaftServer` constructs the broker and controller components separately; startup ordering does not create a per-update synchronization relationship between MetadataLoader and network Processor threads.
+- `MetadataLoader` owns a dedicated `KafkaEventQueue`; `handleCommit()` appends Raft work to that queue, and publisher callbacks execute from the loader thread.
+- `AclPublisher.onMetadataUpdate()` therefore performs incremental `removeAcl()` on the MetadataLoader callback thread.
+- The previously inspected `SocketServer` path performs request publication from independent Processor threads.
+
+New source-level discrepancy requiring caution:
+- The pinned `StandardAuthorizer` comment says: “We use a read-write lock to synchronize reads and writes to the data.”
+- However, the inspected class contains no read-write-lock field or lock acquisition around `authorize()`, `addAcl()`, or `removeAcl()`. The actual implementation uses the volatile outer `data` reference plus direct delegation to mutable `StandardAuthorizerData` for incremental ACL changes.
+- This means the comment must NOT be treated as proof of a lock-based happens-before edge. The executable source is the stronger evidence for this investigation.
+
+Also confirmed:
+- `Authorizer.start()`/initial-load completion is a startup readiness mechanism. It does not establish a synchronization edge for every later incremental ACL update to every subsequent request publication.
+- Therefore no natural W1→ENQUEUE edge has been established yet.
+
+Classification:
+🟢 MetadataLoader → AclPublisher callback thread path confirmed.
+🟢 Incremental W1 remains plain `aclCache` write.
+🟢 D1 publication remains independent Processor path.
+🟢 No read-write lock implementation found in the inspected StandardAuthorizer class despite the comment claiming one.
+🔵 W1→ENQUEUE happens-before: UNKNOWN.
+🔵 stale-read manifestation: UNKNOWN.
+🔴 vulnerability/security conclusion: NOT_DECLARED.
+
+Next exact target: inspect the concrete network Processor/request path for any shared lock or publication object that is also touched by MetadataLoader/authorizer update handling. If none exists, document that absence carefully; absence of a discovered edge is not itself a demonstrated stale read.
