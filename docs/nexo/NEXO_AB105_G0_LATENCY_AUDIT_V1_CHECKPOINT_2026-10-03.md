@@ -40,3 +40,10 @@
 ## Next action
 
 Continue non-experimental isolation of the failing workflow path against the successful v2 control. Prefer metadata/configuration comparison; obtain a real job before interpreting latency results.
+
+## Strong control — same commit, different workflow identity
+
+- Workflow 373324571 also failed on ordering branch commit a3aaae3a7839b2ab079b90991231fd42f622e2f1 (run 37084348946) with 0 jobs.
+- The same exact commit a3aa… successfully executed earlier under workflow 373334522 (run 37081442555), creating job 111082635995 and completing the real-broker witness.
+- Therefore the zero-job failure cannot be attributed to the Java experiment, producer prewarm, latency branch, or that commit’s source tree. The discriminating variable is the workflow/event path, with exact GitHub-side root cause still UNKNOWN.
+- This materially strengthens 🔵 workflow/control-plane isolation and further forbids interpreting the failing runs as Kafka evidence.
