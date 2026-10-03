@@ -1,0 +1,210 @@
+name: NEXO AB105 G0 visibility witness
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-visibility-probe
+    paths:
+      - ".github/workflows/nexo-ab105-g0-visibility-witness.yml"
+      - "tools/nexo/ab105_visibility_probe_inject.py"
+      - "tools/nexo/ab105_visibility_probe_controlize.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visibility-witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Clone pinned Kafka
+        working-directory: /tmp
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git kafka
+          cd kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          test "$(git rev-parse HEAD)" = "99b940733a9f6bc409457dba7108f08421d81e42"
+
+      - name: Install visibility experiment
+        working-directory: /tmp/kafka
+        run: |
+          python3 "$GITHUB_WORKSPACE/tools/nexo/ab105_visibility_probe_inject.py"
+
+      - name: Install witness harness
+        working-directory: /tmp/kafka
+        run: |
+          mkdir -p server/src/test/java/org/apache/kafka/server
+          cat > server/src/test/java/org/apache/kafka/server/NexoG0VisibilityWitnessTest.java <<'EOF'
+package org.apache.kafka.server;
+
+import org.apache.kafka.clients.admin.Admin;
+import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.acl.AclBinding;
+import org.apache.kafka.common.acl.AclBindingFilter;
+import org.apache.kafka.common.acl.AccessControlEntry;
+import org.apache.kafka.common.acl.AccessControlEntryFilter;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.resource.ResourcePattern;
+import org.apache.kafka.common.security.auth.SecurityProtocol;
+import org.apache.kafka.common.serialization.ByteArraySerializer;
+import org.apache.kafka.common.test.KafkaClusterTestKit;
+import org.apache.kafka.common.test.TestKitNodes;
+import org.apache.kafka.server.config.ServerConfigs;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static org.apache.kafka.common.acl.AclOperation.WRITE;
+import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+import static org.apache.kafka.common.resource.PatternType.LITERAL;
+import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+
+public final class NexoG0VisibilityWitnessTest {
+    private static final String TOPIC_NAME = "nexo-g0-ordering";
+    private static final String USER = "plain-user1";
+    private static final String PASSWORD = "plain-user1-secret";
+    private static final String CLIENT_ID = "nexo-g0-ordering";
+
+    private static AclBinding acl() {
+        return new AclBinding(
+            new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
+            new AccessControlEntry("User:" + USER, "*", WRITE, ALLOW)
+        );
+    }
+
+    private static Map<String, Object> client(String bootstrapServers) {
+        return Map.of(
+            ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
+            "security.protocol", SecurityProtocol.SASL_PLAINTEXT.name(),
+            SaslConfigs.SASL_MECHANISM, "PLAIN",
+            SaslConfigs.SASL_JAAS_CONFIG,
+            "org.apache.kafka.common.security.plain.PlainLoginModule required username="" + USER
+                + "" password="" + PASSWORD + "";",
+            ProducerConfig.CLIENT_ID_CONFIG, CLIENT_ID,
+            ProducerConfig.ACKS_CONFIG, "all",
+            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName(),
+            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName()
+        );
+    }
+
+    private static boolean produce(Producer<byte[], byte[]> producer) {
+        try {
+            producer.send(new ProducerRecord<>(TOPIC_NAME, new byte[] {1}))
+                .get(10, TimeUnit.SECONDS);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Test
+    public void realBrokerVisibilityWitness() throws Exception {
+        TestKitNodes nodes = new TestKitNodes.Builder()
+            .setNumBrokerNodes(1)
+            .setNumControllerNodes(1)
+            .setCombined(false)
+            .setBrokerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+            .setControllerSecurityProtocol(SecurityProtocol.SASL_PLAINTEXT)
+            .build();
+
+        try (KafkaClusterTestKit cluster =
+                 new KafkaClusterTestKit.Builder(nodes)
+                     .setConfigProp(
+                         ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG,
+                         "org.apache.kafka.metadata.authorizer.StandardAuthorizer")
+                     .build()) {
+            cluster.format();
+            cluster.startup();
+            cluster.waitForReadyBrokers();
+
+            try (Admin admin = cluster.admin()) {
+                admin.createTopics(List.of(new NewTopic(TOPIC_NAME, 1, (short) 1))).all().get();
+            }
+
+            try (Producer<byte[], byte[]> producer =
+                     new KafkaProducer<>(client(cluster.bootstrapServers()))) {
+                for (int cycle = 1; cycle <= 10; cycle++) {
+                    try (Admin admin = cluster.admin()) {
+                        admin.createAcls(List.of(acl())).all().get();
+                    }
+
+                    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+                    boolean allowed = false;
+                    while (System.nanoTime() < deadline) {
+                        if (produce(producer)) {
+                            allowed = true;
+                            break;
+                        }
+                        Thread.sleep(20);
+                    }
+                    Assertions.assertTrue(allowed, "ACL was not observed as ALLOWED");
+
+                    try (Admin admin = cluster.admin()) {
+                        admin.deleteAcls(List.of(
+                            new AclBindingFilter(
+                                new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
+                                AccessControlEntryFilter.ANY)))
+                            .all().get();
+                    }
+
+                    boolean denied = !produce(producer);
+                    Assertions.assertTrue(denied, "D1 unexpectedly allowed after D0");
+
+                    System.err.println("NEXO_VIS_RESULT cycle=" + cycle
+                        + " d1=DENIED");
+                }
+            }
+        }
+    }
+}
+EOF
+
+      - name: Compile and execute experiment
+        working-directory: /tmp/kafka
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon :test-common:test-common-runtime:compileJava :metadata:compileTestJava :server:compileTestJava
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0VisibilityWitnessTest --info 2>&1 | tee /tmp/nexo-visibility-experiment.log
+
+      - name: Save experiment evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "VARIANT=EXPERIMENT"
+            echo "AB105_116R=UNCHANGED"
+            echo "AB105_117R=NOT_CREATED"
+            echo "TLC=NOT_RERUN"
+            echo "---- VISIBILITY THREAD RECORDS ----"
+            for f in /tmp/nexo-ab105-visibility-*.log; do
+              test -f "$f" && { echo "FILE=$f"; cat "$f"; }
+            done
+            echo "---- TEST RESULTS ----"
+            grep 'NEXO_VIS_RESULT' /tmp/nexo-visibility-experiment.log || true
+          } | tee /tmp/nexo-visibility-experiment-evidence.txt
+
+      - name: Upload experiment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-visibility-experiment
+          path: |
+            /tmp/nexo-visibility-experiment.log
+            /tmp/nexo-visibility-experiment-evidence.txt
+            /tmp/nexo-ab105-visibility-*.log
