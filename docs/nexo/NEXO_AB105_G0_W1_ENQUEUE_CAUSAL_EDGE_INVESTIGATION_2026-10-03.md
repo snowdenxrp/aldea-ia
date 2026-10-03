@@ -357,3 +357,41 @@ Important epistemic boundary: “no concrete edge identified in the inspected pa
 No latch, barrier, volatile handoff, Future gate, or equivalent synchronization was added. No broker rerun was performed. TLC was not rerun. AB105.116R remains unchanged and AB105.117R remains uncreated.
 
 Next scientific step: if continuing, inspect the test harness itself for any accidental publication edge between the ACL operation and D1 issuance, then determine whether a new experiment is justified. Do not alter the causal question by adding synchronization merely to force ordering.
+
+
+## Harness audit checkpoint — no W1-observation gate found
+
+The workflow-local real-broker harness on branch nexo-ab105-g0-ordering-witness was inspected directly.
+
+### Sequencing actually present
+Per cycle, the harness does:
+1. create ACL and wait for Admin future completion;
+2. verify ALLOWED by producer retries;
+3. query/verify D0 target ACL;
+4. call admin.deleteAcls(...).all().get() and record D0_RETURN;
+5. immediately issue D1 through the producer and record the result.
+
+The harness does NOT wait on ACL_W1, does NOT read an ACL_W1 signal, and does NOT use a latch/barrier/volatile handoff/Future gate tied to W1.
+
+### Important distinction
+The deleteAcls(...).all().get() completion is a synchronization/control-flow event in the test thread, but it is not an observed W1 completion signal. The existing evidence already shows D0_RETURN can precede target-broker W1 (cycles 4/5). Therefore this harness sequencing does not manufacture the missing W1→D1 edge under investigation.
+
+Likewise, the producer send(...).get() for D1 occurs after D0_RETURN because the test thread calls it then; this establishes test-thread sequencing after D0_RETURN, not W1→D1 publication.
+
+### Probe instrumentation itself
+The workflow-local probes only emit System.nanoTime() timestamps and thread/correlation identifiers at W1, ENQUEUE, DEQUEUE, AUTH_ENTER and AUTH_DECISION. They do not publish a synchronization signal consumed by the harness or request path.
+
+### Classification
+🟢 Harness does not gate D1 on W1.
+🟢 D0_RETURN → D1 issuance is real test-thread sequencing.
+🟢 D0_RETURN != W1 remains directly demonstrated by prior real-broker evidence.
+🟢 Probe logging itself does not create a W1-observation gate.
+🔵 Whether some unrelated JVM/library synchronization from logging or broker internals affects visibility remains not independently proven.
+🔵 W1→ENQUEUE JMM edge remains UNKNOWN.
+🔵 Stale-read manifestation remains UNKNOWN.
+🔴 Vulnerability remains NOT_DECLARED.
+
+### Epistemic boundary
+This closes the specific accidental-W1-gate concern in the inspected harness. It does not prove absence of every possible synchronization effect in the JVM, Java client, Admin client, or broker internals; those would require a separate, explicitly scoped audit.
+
+No experiment was rerun. AB105.116R remains unchanged. AB105.117R remains uncreated. TLC was not rerun.
