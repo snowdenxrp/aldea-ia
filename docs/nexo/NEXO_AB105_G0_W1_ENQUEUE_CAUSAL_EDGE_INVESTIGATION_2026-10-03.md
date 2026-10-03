@@ -521,3 +521,73 @@ This strengthens, but does not mathematically prove, the bounded result:
 No experiment was rerun. No latch/barrier/volatile handoff/Future gate was added. TLC was not rerun. AB105.116R remains unchanged; AB105.117R remains uncreated.
 
 Next exact target: inspect the request-handler-pool handoff and authorization invocation path for completeness, specifically to determine whether any synchronization reachable from the MetadataLoader path is introduced between RequestChannel DEQUEUE and `StandardAuthorizer.authorize()`. This cannot create W1→DEQUEUE by itself, but it closes the downstream half of the causal graph.
+
+
+## Downstream handoff audit — RequestChannel → request handler → authorize
+
+The downstream half of the path was checked to close the causal graph.
+
+### RequestChannel → KafkaRequestHandler
+
+Pinned `RequestChannel` uses its concurrent request queue for Processor publication and request-handler consumption. The queue boundary provides ENQUEUE→DEQUEUE publication.
+
+Pinned `KafkaRequestHandler.run()` then takes the request from `requestChannel.receiveRequest(300)`, records dequeue time, sets a thread-local current request, and directly invokes `apis.handle(request, requestLocal)`.
+
+No additional lock/future/volatile handoff is inserted between the dequeue and `KafkaApis.handle()` that could somehow reach back to the MetadataLoader ACL publisher.
+
+Classification:
+- 🟢 ENQUEUE→DEQUEUE synchronization exists.
+- 🟢 DEQUEUE→KafkaRequestHandler execution is same-thread after the queue handoff.
+- 🔵 no W1-linked publication is introduced downstream.
+
+### KafkaApis/AuthHelper → StandardAuthorizer
+
+Pinned `KafkaApis` constructs an `AuthHelper` from the configured authorizer plugin. `AuthHelper.authorize()` obtains the plugin instance and directly invokes `authorizer.get().authorize(...)`.
+
+Pinned `Plugin.get()` simply returns its stored instance; it does not synchronize or use an atomic publication for each authorization call.
+
+Pinned `StandardAuthorizer.authorize()` reads the current volatile `data` reference once into `curData`, then delegates authorization to that `StandardAuthorizerData`. Incremental ACL removal does not replace the outer volatile `data` reference; it performs the plain `aclCache` assignment inside the already-published `StandardAuthorizerData`.
+
+Therefore the downstream chain is:
+
+`Processor ENQUEUE`
+→ 🟢 RequestChannel queue publication
+→ `DEQUEUE`
+→ same request-handler thread
+→ `KafkaApis`
+→ `AuthHelper`
+→ `Plugin.get()`
+→ `StandardAuthorizer.authorize()`
+→ plain `StandardAuthorizerData.aclCache` read path.
+
+No new synchronization edge connecting this chain back to W1 was identified.
+
+### Important consequence
+
+The full audited steady-state path now has two explicit publication segments:
+
+1. Metadata side:
+   Raft callback → 🟢 KafkaEventQueue lock → MetadataLoader event → AclPublisher → W1 plain `aclCache` write.
+
+2. Data side:
+   Processor → 🟢 RequestChannel ENQUEUE→DEQUEUE → request handler → authorization read.
+
+The missing relation is between the end of segment 1 and the beginning of segment 2:
+
+**W1 → Processor ENQUEUE = 🔵 UNKNOWN / no concrete JMM edge identified in the pinned paths.**
+
+This is the exact boundary that matters for the stale-read hypothesis.
+
+### Updated status
+
+- 🟢 downstream RequestChannel → handler → authorize path audited.
+- 🟢 Plugin wrapper does not add synchronization per authorization call.
+- 🟢 StandardAuthorizer outer volatile read does not publish incremental `aclCache` replacement.
+- 🔵 W1→ENQUEUE happens-before remains UNKNOWN.
+- 🔵 actual stale-read manifestation remains UNKNOWN.
+- 🔵 security consequence/exploitability/generalization remain UNKNOWN.
+- 🔴 vulnerability NOT DECLARED.
+
+No experiment rerun; no synchronization was added; TLC not rerun; AB105.116R unchanged; AB105.117R uncreated.
+
+Next exact step: perform a final source-level search for any alternate authorizer implementation/wrapper or metadata-to-network shared executor/queue used specifically by this broker configuration. If none is found, the natural-edge source audit can be marked exhausted and the remaining question becomes empirical: can a real broker execution ever capture D1 reading the pre-W1 cache?
