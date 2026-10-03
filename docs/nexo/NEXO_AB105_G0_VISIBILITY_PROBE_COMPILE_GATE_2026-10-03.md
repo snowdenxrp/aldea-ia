@@ -21,36 +21,38 @@ This made the compile job start normally.
 
 ## Compile result — VERIFIED
 
-Run:
-`37146088213`
+Latest verified run:
+`37146415170`
 
 Job:
-`111270212910`
+`111271183120`
 
 Head:
-`7f2a0aed74b6ac0649e2f740a770b266afda60b3`
+`a53c9ddde604abbe9dd5c14b1f803bf9eac4b949`
 
 Kafka:
 `99b940733a9f6bc409457dba7108f08421d81e42`
 
-Observed steps:
+Observed:
 - checkout: SUCCESS
 - Java 21: SUCCESS
 - pinned Kafka clone: SUCCESS
 - isolated recorder/probe injection: SUCCESS
 - `:metadata:compileJava`: SUCCESS
 - `:core:compileScala`: SUCCESS
-- Gradle: `BUILD SUCCESSFUL`
+- Gradle build: SUCCESS
 - artifact upload: SUCCESS
 
 Artifact:
 `nexo-ab105-g0-visibility-probe-compile`
 
 Artifact ID:
-`11282260527`
+`11282980153`
 
 Digest:
-`sha256:83ab75754a46642fcd28ccbc76864721935b291600259fe51164f632c2657527`
+`sha256:11d8187b3759118556626d69de04607e5dd7d2d369fc579ec8d3483b12723872`
+
+The successful compile was repeated after removing lazy recorder initialization from the measured W1 path and after restricting the compile workflow trigger to probe/workflow changes.
 
 ## Source correction discovered during compile gate
 
