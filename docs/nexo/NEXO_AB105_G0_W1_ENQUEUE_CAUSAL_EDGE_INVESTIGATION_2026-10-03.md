@@ -83,3 +83,50 @@ Do not repeat the successful v2 real-broker run unless the implementation audit 
 Real broker witness: 0120ee041852017a80ecc16788bb00f76c778fe4
 Continuity checkpoint: 98cc802d6100888d9b30f8bfee982c2173c8fa9f
 Causal boundary audit: 8ddd92aa59f77d2b2e0789b27e7b08e69405d288
+## Exact pinned-source finding — materially advances the question
+
+The Kafka source at the exact pinned commit 99b940733a9f6bc409457dba7108f08421d81e42 was inspected directly.
+
+StandardAuthorizer has a volatile `data` reference. However, target ACL_W1 occurs inside StandardAuthorizerData.removeAcl(), which performs:
+1. aclCacheSnapshot = aclCache.removeAcl(id)
+2. aclCache = aclCacheSnapshot
+
+Crucially, StandardAuthorizer.removeAcl() does NOT assign a new StandardAuthorizerData to the volatile `data` field. The mutation therefore changes the plain `aclCache` field inside the existing StandardAuthorizerData object.
+
+AclCache itself is immutable: its internal maps/sets are final, and removeAcl() returns a NEW AclCache. The StandardAuthorizerData.aclCache reference that points to that new cache is NOT volatile.
+
+Therefore the following distinction is now explicit:
+- volatile publication exists for the outer StandardAuthorizer.data reference;
+- the specific W1 mutation is a plain write to StandardAuthorizerData.aclCache;
+- W1 does not itself perform the volatile data-reference write;
+- RequestChannel ArrayBlockingQueue synchronizes ENQUEUE→DEQUEUE, but that does not establish W1→ENQUEUE;
+- temporal W1<ENQUEUE therefore remains insufficient to prove a JMM happens-before edge.
+
+This is a much sharper source-level boundary than the previous UNKNOWN statement. It does NOT by itself prove that a stale read occurs in the real broker, but it identifies the exact candidate field/write that must be analyzed for publication.
+
+## Updated causal graph
+W1: metadata-loader thread → StandardAuthorizerData.removeAcl() → plain aclCache reference write
+                       X
+                       ? no demonstrated synchronization edge ?
+D1: independent request publication → RequestChannel ArrayBlockingQueue ENQUEUE → DEQUEUE → authorize() → read of the same StandardAuthorizerData/aclCache state
+
+Potentially relevant outer volatile:
+StandardAuthorizer.data is volatile, but removeAcl() does not write it.
+
+## New classification
+🟢 Exact pinned Kafka source inspected.
+🟢 StandardAuthorizer.data = volatile.
+🟢 StandardAuthorizerData.aclCache = plain field.
+🟢 removeAcl() replaces aclCache without replacing volatile data.
+🔵 W1→ENQUEUE happens-before = UNKNOWN.
+🔵 Whether D1 observes the new aclCache under the real execution = UNKNOWN.
+🔵 Actual stale-read manifestation = UNKNOWN.
+🔵 Incorrect authorization consequence = UNKNOWN.
+🔴 Vulnerability/security conclusion = NOT_DECLARED.
+
+## Sources inspected
+- Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, StandardAuthorizer.java
+- Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, StandardAuthorizerData.java
+- Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, AclCache.java
+- Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, AclPublisher.java
+- Apache Kafka commit 99b940733a9f6bc409457dba7108f08421d81e42, RequestChannel.scala
