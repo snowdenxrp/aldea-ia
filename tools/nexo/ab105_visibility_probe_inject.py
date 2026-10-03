@@ -91,7 +91,7 @@ replace_once(
     "            NexoVisibilityRecorder.w1(aclCacheSnapshot);")
 replace_once(
     p,
-    "            AclCache aclCacheSnapshot = aclCache;",
+    "        AclCache aclCacheSnapshot = aclCache;",
     "            AclCache aclCacheSnapshot = aclCache;\n"
     "            if (\"nexo-g0-ordering\".equals(requestContext.clientId()) && "
     "action.operation() == WRITE && "
