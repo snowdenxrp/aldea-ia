@@ -11,14 +11,18 @@
 
 ## Actions provisioning finding — 2026-10-03
 
-- Runs 91–96 on this latency branch were created by push and immediately completed failure.
-- Run 37092570675 (HEAD 0e4502c…) reports failure with 0 jobs.
-- Commit 0e4502c… reports 0 check-runs and 0 commit statuses.
-- The workflow file at 0e4502c… contains jobs.ordering-witness and the complete preserved harness; no placeholder remains.
-- Historical control: run 37081442555 on the ordering branch created job 111082635995 and completed successfully.
-- Runs 37084348946, 37081441577, and 37081417811 also have 0 jobs, so the zero-job failure is not unique to the latency Java experiment.
-- GitHub’s official incident history records an Actions Job Delays incident on 2026-10-01 involving degraded hosted-runner performance/upstream throttling; it was resolved, so this is contextual evidence only, not proof of the current cause.
-- Current epistemic status: 🔵 Actions provisioning/execution infrastructure failure remains the active blocker; no experimental evidence was produced by runs 91–96.
+- Runs on workflow 373324571 repeatedly fail before job creation.
+- Latest run 37092763654 (HEAD 607ed60…) = failure, 0 jobs.
+- Prior run 37092570675 (HEAD 0e4502c…) = failure, 0 jobs.
+- The workflow content at 607ed60… and 0e4502c… is byte-for-byte identical (18,414 chars). Therefore the repeated zero-job failure persisted without any workflow-file change between those two runs.
+- Run 37092531074 at 170b6843… also failed with 0 jobs.
+- The same workflow ID also recorded failures on the visibility-sample and latency branches with 0 jobs.
+- Historical control: run 37081442555 on the separate ordering-witness-v2 workflow created job 111082635995 and completed successfully.
+- The successful control used workflow ID 373334522, while the failing workflow is ID 373324571. Both expose an ordering-witness job on ubuntu-latest; the current failing workflow also contains the prewarm and two-branch push trigger.
+- Current evidence therefore isolates the blocker to the failing workflow/event processing path more strongly than to the Kafka experiment itself, but does not identify the exact GitHub-side cause.
+- GitHub documentation states that a workflow run normally has a check suite/check run for each job; GitHub also documents workflow-file validity and trigger configuration as first-line troubleshooting areas. See GitHub Actions troubleshooting documentation.
+- GitHub’s availability history documents prior Actions incidents where workflows failed to start because of Actions infrastructure capacity; this is contextual only and does not prove the present cause.
+- Current epistemic status: 🔵 pre-job Actions provisioning/workflow-specific execution blocker; exact root cause UNKNOWN.
 - 🔴 Do not classify these failed zero-job runs as Kafka/test failures.
 
 ## DO-NOT-REPEAT
@@ -28,10 +32,11 @@
 - Do not create AB105.117R.
 - Do not rerun TLC.
 - Do not treat branch commits, zero-job workflow runs, or failed provisioning as experimental evidence.
-- Do not infer stale-read presence/absence from runs 91–96.
+- Do not infer stale-read presence/absence from these runs.
 - Do not add W1-derived synchronization.
+- Do not remove D1 send(...).get(10s) for this diagnostic.
 - Preserve prior real-broker evidence from runs 370790/370814 as the separate completed witness; it is not evidence for this latency branch.
 
 ## Next action
 
-Isolate GitHub Actions infrastructure/provisioning versus repository-specific configuration using non-experimental evidence only. Obtain a real job execution before interpreting the latency experiment.
+Continue non-experimental isolation of the failing workflow path against the successful v2 control. Prefer metadata/configuration comparison; obtain a real job before interpreting latency results.
