@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "stateRevision": 115,
-  "savedAt": 1790986836015,
+  "stateRevision": 117,
+  "savedAt": 1790986850790,
   "day": 680,
-  "hour": 18.92688000022943,
+  "hour": 18.943146666896098,
   "world": {
     "day": 680,
-    "timeOfDay": 18.92688000022943,
+    "timeOfDay": 18.943146666896098,
     "speed": 1,
     "resources": {
       "water": {
@@ -1177,11 +1177,11 @@
             "z": -13.68948813421364
           },
           "discoveredOnDay": 229,
-          "lastVisitedDay": 638,
+          "lastVisitedDay": 680,
           "discoveredBy": [
             "bruno"
           ],
-          "visits": 13,
+          "visits": 14,
           "resources": [
             {
               "type": "renewable",
@@ -29642,7 +29642,7 @@
         },
         "4:0": {
           "key": "4:0",
-          "visits": 19714,
+          "visits": 19716,
           "discovered": true,
           "lastVisitDay": 680,
           "population": 0,
@@ -29768,7 +29768,7 @@
         },
         "6:2": {
           "key": "6:2",
-          "visits": 8725,
+          "visits": 8727,
           "discovered": true,
           "lastVisitDay": 680,
           "population": 0,
@@ -30810,16 +30810,16 @@
       "age": 16.53698630136942,
       "alive": true,
       "needs": {
-        "hunger": 97.91099733333306,
-        "thirst": 94.82811733333338,
-        "energy": 87.6928000000003,
+        "hunger": 97.87521066666639,
+        "thirst": 94.77606400000005,
+        "energy": 87.65213333333364,
         "social": 0,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": 2.302716173902647,
-        "z": -30.824921154349344
+        "x": 2.429237414734945,
+        "z": -31.22855635551279
       },
       "currentActivity": "moving",
       "inventory": [
@@ -70796,22 +70796,22 @@
       },
       "lastPerception": {
         "position": {
-          "x": 2.1132035067836306,
-          "z": -30.220327150904524
+          "x": 2.302716173902647,
+          "z": -30.824921154349344
         },
         "visibleAgents": [],
         "nearbyResources": [
           {
             "type": "fertile_land",
             "location": "fertile_zone",
-            "distance": 8.221106586211262
+            "distance": 8.830111577008799
           }
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 97.91099733333306,
-          "thirst": 94.82811733333338,
-          "energy": 87.6928000000003,
+          "hunger": 97.87521066666639,
+          "thirst": 94.77606400000005,
+          "energy": 87.65213333333364,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -70881,7 +70881,7 @@
         },
         "speed": 1.8,
         "moving": true,
-        "distanceTravelled": 157735.8051415577
+        "distanceTravelled": 157736.22814155772
       },
       "decisionCooldownHours": 0,
       "knownResources": {
@@ -71102,9 +71102,9 @@
       "age": 16.53698630136942,
       "alive": true,
       "needs": {
-        "hunger": 97.91099733333306,
-        "thirst": 94.82811733333338,
-        "energy": 87.62613333333364,
+        "hunger": 97.87521066666639,
+        "thirst": 94.77606400000005,
+        "energy": 87.58546666666697,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -87680,16 +87680,6 @@
           "importance": 0.5
         },
         {
-          "id": "event-10121",
-          "day": 666,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
           "id": "event-640",
           "day": 666,
           "type": "exploration",
@@ -103338,6 +103328,16 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-501",
+          "day": 680,
+          "type": "exploration",
+          "topic": null,
+          "description": "Bruno exploró una zona nueva de su entorno.",
+          "participants": [],
+          "emotionalWeight": 0.04,
+          "importance": 0.6
         }
       ],
       "relationships": [
@@ -112641,17 +112641,13 @@
         }
       ],
       "experiences": [],
-      "currentIntent": {
-        "name": "explore_area",
-        "baseValue": 1.5,
-        "explorationValue": 1.4,
-        "novelty": 1,
-        "target": null
-      },
-      "lastActionName": null,
+      "currentIntent": null,
+      "lastActionName": "explore_area",
       "lastActionResult": {
-        "success": false,
-        "reason": "no_plants"
+        "success": true,
+        "effect": "area_explored",
+        "areaId": "area-44",
+        "regionKey": "6:2"
       },
       "lastPerception": {
         "position": {
@@ -112673,9 +112669,9 @@
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 97.91099733333306,
-          "thirst": 94.82811733333338,
-          "energy": 87.62613333333364,
+          "hunger": 97.87521066666639,
+          "thirst": 94.77606400000005,
+          "energy": 87.58546666666697,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -112757,7 +112753,7 @@
         "moving": false,
         "distanceTravelled": 158211.9203809619
       },
-      "decisionCooldownHours": 0,
+      "decisionCooldownHours": 0.25,
       "knownResources": {
         "water": {
           "x": -18,
@@ -112973,39 +112969,28 @@
       "socialRole": "Recolector",
       "activityRemainingHours": 0,
       "explorationState": {
-        "lastDay": 679,
-        "regionsVisited": 408,
-        "nextExploreAt": 16322.88222288378,
+        "lastDay": 680,
+        "regionsVisited": 409,
+        "nextExploreAt": 16350.376592829847,
         "excursions": 409,
-        "target": {
-          "x": 16.159402631406472,
-          "z": -13.216041643450753
-        }
+        "target": null
       },
       "activitySequence": {
         "intentName": "explore_area",
         "phaseIndex": 2,
         "phase": "discover",
-        "remainingHours": 0.010106666666666654,
+        "remainingHours": 0,
         "completedPhases": [
           "approach",
-          "inspect"
-        ]
+          "inspect",
+          "discover"
+        ],
+        "activityComplete": true
       },
       "activityPhase": "discover"
     }
   ],
   "events": [
-    {
-      "id": "event-1240",
-      "day": 680,
-      "hour": 10.430666666895862,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
     {
       "id": "event-1241",
       "day": 680,
@@ -117995,6 +117980,16 @@
       "participants": [
         "bruno"
       ]
+    },
+    {
+      "id": "event-501",
+      "day": 680,
+      "hour": 18.943146666896098,
+      "type": "exploration",
+      "description": "Bruno exploró una zona nueva de su entorno.",
+      "participants": [
+        "bruno"
+      ]
     }
   ],
   "nexoMemory": {
@@ -118004,24 +117999,6 @@
     "patterns": [],
     "nexo": {
       "missions": [
-        {
-          "missionId": "lumina-1790389094707-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_social_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-09-26T02:18:14.707Z"
-        },
         {
           "missionId": "lumina-1790389649862-1",
           "version": 4,
@@ -118903,6 +118880,24 @@
             }
           ],
           "at": "2026-10-03T00:20:35.662Z"
+        },
+        {
+          "missionId": "lumina-1790986850554-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_social_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-03T00:20:50.554Z"
         }
       ],
       "attempts": [],
