@@ -87,7 +87,6 @@ replace_once(
     p,
     "            aclCache = aclCacheSnapshot;",
     "            aclCache = aclCacheSnapshot;\n"
-    "            NexoVisibilityRecorder.init();\n"
     "            NexoVisibilityRecorder.w1(aclCacheSnapshot);")
 replace_once(
     p,
