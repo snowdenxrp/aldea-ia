@@ -1,0 +1,64 @@
+name: NEXO AB105 G0 visibility control and experiment compile
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-visibility-probe
+    paths:
+      - ".github/workflows/nexo-ab105-g0-visibility-control-compile.yml"
+      - "tools/nexo/ab105_visibility_probe_inject.py"
+      - "tools/nexo/ab105_visibility_probe_controlize.py"
+
+permissions:
+  contents: read
+
+jobs:
+  compile-variants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Clone pinned Kafka
+        working-directory: /tmp
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git kafka
+          cd kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          test "$(git rev-parse HEAD)" = "99b940733a9f6bc409457dba7108f08421d81e42"
+
+      - name: Install experiment probes
+        working-directory: /tmp/kafka
+        run: |
+          python3 "$GITHUB_WORKSPACE/tools/nexo/ab105_visibility_probe_inject.py"
+
+      - name: Compile experiment variant
+        working-directory: /tmp/kafka
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon :metadata:compileJava :core:compileScala 2>&1 | tee /tmp/nexo-ab105-experiment-compile.log
+
+      - name: Transform to control variant
+        working-directory: /tmp/kafka
+        run: |
+          python3 "$GITHUB_WORKSPACE/tools/nexo/ab105_visibility_probe_controlize.py"
+
+      - name: Compile control variant
+        working-directory: /tmp/kafka
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon :metadata:compileJava :core:compileScala 2>&1 | tee /tmp/nexo-ab105-control-compile.log
+
+      - name: Upload variant compile evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-visibility-variant-compile
+          path: |
+            /tmp/nexo-ab105-experiment-compile.log
+            /tmp/nexo-ab105-control-compile.log
