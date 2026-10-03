@@ -444,3 +444,80 @@ New bounded classification:
 - 🔴 vulnerability/security consequence remains NOT_DECLARED.
 
 No experiment rerun. AB105.116R unchanged. AB105.117R uncreated. TLC not rerun.
+
+
+
+## Indirect synchronization audit — startup/lifecycle paths versus per-update authorization
+
+Pinned Kafka commit `99b940733a9f6bc409457dba7108f08421d81e42` was checked for an indirect bridge that could have been missed between the MetadataLoader/ACL publisher thread and the data-plane Processor/request path.
+
+### 1. SocketServer authorizer futures: startup-only edge
+
+`SocketServer.enableRequestProcessing(authorizerFutures)` chains each endpoint's authorizer readiness future before starting its Acceptor. `BrokerServer` constructs these futures from `EndpointReadyFutures` and waits for them during startup.
+
+This is a real publication/startup dependency: request processing does not start until the relevant authorizer readiness future permits it.
+
+However, it is **not a per-ACL-update synchronization edge**:
+- the future is consumed to start the acceptor/processor infrastructure;
+- incremental `StandardAuthorizerData.removeAcl()` does not complete or refresh this future;
+- the future therefore cannot establish W1 → later Processor ENQUEUE for an ACL change occurring after startup.
+
+Classification: 🟢 startup readiness edge; 🔵 irrelevant to incremental W1→ENQUEUE visibility.
+
+### 2. SocketServer lifecycle monitor: unrelated to ACL mutation
+
+Pinned `SocketServer` contains `synchronized` blocks on the SocketServer instance for lifecycle/state such as `stopped`, processor creation, and metrics inspection.
+
+The Processor request path does not acquire this monitor around `requestChannel.sendRequest(req)`, and the MetadataLoader/AclPublisher incremental ACL path does not acquire the same SocketServer monitor around W1.
+
+Therefore these monitors cannot be promoted to a W1→ENQUEUE happens-before edge.
+
+Classification: 🟢 lifecycle synchronization exists; 🔵 no W1/ENQUEUE participation.
+
+### 3. SharedServer lifecycle synchronization: same conclusion
+
+Pinned `SharedServer` uses `synchronized` methods for start/stop ownership and exposes several `@volatile` lifecycle component references.
+
+Those mechanisms govern component lifecycle and publication of component references. The incremental ACL mutation does not write one of those lifecycle references, and the Processor's request enqueue does not read one as part of request admission.
+
+Therefore the SharedServer lifecycle monitor/volatile fields do not bridge W1 to ENQUEUE.
+
+Classification: 🟢 lifecycle synchronization exists; 🔵 unrelated to the incremental ACL visibility question.
+
+### 4. Broker wiring confirms the separation
+
+Pinned `BrokerServer` wires:
+- `KafkaApis` to `socketServer.dataPlaneRequestChannel`;
+- the request-handler pool to that same RequestChannel;
+- metadata publishers including `AclPublisher` separately.
+
+The object graph therefore connects both subsystems to the broker, but object ownership/wiring is not itself a JMM synchronization action. No common lock/future/queue operation was identified at the per-ACL-update boundary.
+
+### 5. Important startup-vs-steady-state distinction
+
+The authorizer future can explain why processors are not started before initial authorizer readiness. It cannot be reused as evidence that every later incremental ACL write is published before every later request.
+
+Thus the source audit now distinguishes:
+- 🟢 startup: authorizer readiness → processor startup;
+- 🟢 steady state: Processor → RequestChannel ENQUEUE → downstream handling;
+- 🟢 metadata update: Raft callback → MetadataLoader queue → AclPublisher → plain `aclCache` write;
+- 🔵 missing cross-path edge: incremental W1 → Processor ENQUEUE / handler-side authorization read.
+
+### Updated bounded conclusion
+
+The indirect synchronization search found real synchronization in lifecycle/startup infrastructure, but none that participates in the steady-state W1→D1 causal path.
+
+This strengthens, but does not mathematically prove, the bounded result:
+- 🟢 W1 is a plain write to `StandardAuthorizerData.aclCache`.
+- 🟢 Processor ENQUEUE is an independent action.
+- 🟢 ENQUEUE→DEQUEUE is synchronized by RequestChannel.
+- 🟢 startup authorizer readiness is synchronized but occurs before steady-state request processing.
+- 🟢 SocketServer/SharedServer lifecycle locks are not acquired on both sides of W1 and ENQUEUE.
+- 🔵 W1→ENQUEUE JMM happens-before remains UNKNOWN; no concrete edge was identified in the audited pinned paths.
+- 🔵 stale-read manifestation remains UNKNOWN.
+- 🔵 security consequence/exploitability/generalization remain UNKNOWN.
+- 🔴 vulnerability is NOT DECLARED.
+
+No experiment was rerun. No latch/barrier/volatile handoff/Future gate was added. TLC was not rerun. AB105.116R remains unchanged; AB105.117R remains uncreated.
+
+Next exact target: inspect the request-handler-pool handoff and authorization invocation path for completeness, specifically to determine whether any synchronization reachable from the MetadataLoader path is introduced between RequestChannel DEQUEUE and `StandardAuthorizer.authorize()`. This cannot create W1→DEQUEUE by itself, but it closes the downstream half of the causal graph.
