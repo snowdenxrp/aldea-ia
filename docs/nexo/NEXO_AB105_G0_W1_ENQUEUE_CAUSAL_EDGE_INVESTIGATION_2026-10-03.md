@@ -591,3 +591,53 @@ This is the exact boundary that matters for the stale-read hypothesis.
 No experiment rerun; no synchronization was added; TLC not rerun; AB105.116R unchanged; AB105.117R uncreated.
 
 Next exact step: perform a final source-level search for any alternate authorizer implementation/wrapper or metadata-to-network shared executor/queue used specifically by this broker configuration. If none is found, the natural-edge source audit can be marked exhausted and the remaining question becomes empirical: can a real broker execution ever capture D1 reading the pre-W1 cache?
+
+
+## Final alternate-wrapper / executor search
+
+A final targeted repository search was performed for alternate authorizer wrappers, ACL publisher/request-channel coupling, and metadata-to-network executor/queue bridges.
+
+### Findings
+
+- The broker wiring search continues to show `AclPublisher` and the data-plane `RequestChannel` as separate components. No shared per-update executor/queue was identified between them.
+- `StandardAuthorizer` remains the built-in `ClusterMetadataAuthorizer` implementation for the inspected configuration.
+- The inspected `Plugin` wrapper is only an object holder; `get()` returns the stored authorizer instance directly and does not create a per-call synchronization boundary.
+- Search results from a newer upstream tree contain a comment describing a lock-based consistency intention around authorizer data, but that result is **not pinned to the audited Kafka commit** and does not override the executable pinned source previously inspected. The pinned source itself still has the relevant plain `aclCache` field/write path and no identified lock acquisition at incremental W1.
+- No alternate metadata-to-network executor, queue, or shared synchronization object specific to this broker configuration was found in the targeted search.
+
+### Exhaustion boundary
+
+The natural synchronization-edge audit is now considered **bounded/exhausted for the targeted production path**, not globally proven exhaustive across every Kafka/JVM implementation detail.
+
+Audited chain:
+
+`Raft callback`
+→ 🟢 `KafkaEventQueue` lock/publication
+→ `MetadataLoader`
+→ `AclPublisher`
+→ 🟢 W1 plain `aclCache` write
+→ **🔵 missing/unknown W1→Processor publication edge**
+→ `Processor`
+→ 🟢 `RequestChannel` ENQUEUE→DEQUEUE
+→ `KafkaRequestHandler`
+→ `KafkaApis`
+→ `AuthHelper`
+→ `StandardAuthorizer.authorize()`
+→ 🔵 ordinary `aclCache` visibility question.
+
+### Epistemic status after exhaustion
+
+- 🟢 Real broker W1 observed.
+- 🟢 W1 precedes D1 temporally in the prior 10/10 witness cycles.
+- 🟢 D0_RETURN can precede target-broker W1; controller completion is not equivalent to local W1.
+- 🟢 Metadata-side and data-side synchronization segments are independently identified.
+- 🟢 No concrete natural W1→Processor ENQUEUE synchronization edge identified in the pinned production paths audited.
+- 🔵 JMM happens-before W1→ENQUEUE: UNKNOWN.
+- 🔵 Whether Processor/request-handler authorization can read the pre-W1 `aclCache` reference: UNKNOWN.
+- 🔵 Actual stale-read manifestation in the real broker: UNKNOWN.
+- 🔵 Security consequence, exploitability, frequency, and generalization: UNKNOWN.
+- 🔴 Vulnerability/security defect: NOT DECLARED.
+
+The remaining question is therefore empirical rather than another source-path search: **can a real broker execution capture D1 authorization against the pre-W1 ACL-cache reference despite W1 already having occurred?**
+
+No latch, barrier, volatile handoff, Future gate, or equivalent synchronization was introduced. No broker witness was rerun. TLC was not rerun. `AB105.116R` remains unchanged and `AB105.117R` remains uncreated.
