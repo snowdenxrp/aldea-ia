@@ -680,3 +680,27 @@ The artifact therefore closes what this run can empirically establish, while lea
 No new synchronization was added. No broker was rerun. No TLC rerun. AB105.116R remains unchanged; AB105.117R remains uncreated.
 
 Next step: preserve this artifact as the empirical boundary and reconcile whether any additional non-invasive observation is possible without changing the causality being tested. If not, the investigation should remain UNKNOWN rather than manufacture a synchronization edge.
+
+
+## Non-invasive empirical extension prepared
+
+The existing 10-cycle witness was inspected for ways to increase sensitivity without introducing the synchronization edge under investigation.
+
+A diagnostic-only extension was prepared on branch `nexo-ab105-g0-visibility-sample-v3` (PR #95):
+- 100 cycles instead of 10.
+- D1 remains the same immediate producer operation after `deleteAcls(...).all().get()`.
+- The pre-D1 `System.err.println(D0_RETURN)` was removed from the critical path: the harness now captures `long d0ReturnNs = System.nanoTime()` and invokes D1 immediately, then emits the D0 timestamp afterward.
+- No latch, barrier, volatile handoff, Future gate, callback, or W1-observation signal was added.
+- Kafka remains pinned at `99b940733a9f6bc409457dba7108f08421d81e42`.
+- AB105.116R remains unchanged; AB105.117R remains uncreated; TLC remains not rerun.
+
+This changes only **sample size and local test-thread timing**. It does not manufacture W1→D1 happens-before.
+
+### Execution status
+
+At the time of this checkpoint, GitHub reports no workflow run/status yet for commit `3bc9d5b74e52e127131c6ce7ba8b0c0e5c5dd335`. Therefore:
+- 🔵 100-cycle result PENDING.
+- 🔵 stale-read manifestation remains UNKNOWN.
+- 🔴 no vulnerability conclusion.
+
+Do not interpret PR #95 as evidence of execution. It is only the prepared diagnostic extension until a real workflow run and raw artifact exist.
