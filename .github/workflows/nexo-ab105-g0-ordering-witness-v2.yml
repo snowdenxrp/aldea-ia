@@ -40,15 +40,7 @@ jobs:
           test = textwrap.dedent(wf[start:end])
           p = Path("server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java")
           p.parent.mkdir(parents=True, exist_ok=True)
-          # Remove only the invalid producer prewarm inherited from the diagnostic source harness.
-          # It runs before ACL creation and therefore changes authorization semantics.
-          prewarm_lines = [
-              "                          // Warm producer metadata/connection before the first experimental ACL cycle.",
-              "                          producer.partitionsFor(TOPIC_NAME);",
-          ]
-          if test.count("producer.partitionsFor(TOPIC_NAME);") != 1: raise SystemExit("prewarm marker mismatch")
-          test = test.replace(prewarm_lines[0] + chr(10), "", 1)
-          test = test.replace(prewarm_lines[1] + chr(10), "", 1)
+          # Source is restored from the exact known-good control commit; no prewarm exists here.
           p.write_text(test)
           def repl(path, old, new):
               p=Path(path); s=p.read_text()
