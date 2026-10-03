@@ -1,0 +1,26 @@
+name: NEXO AB105 G0 visibility runtime gate
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-visibility-probe
+    paths:
+      - ".github/workflows/nexo-ab105-g0-visibility-runtime-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify pinned source gate
+        run: |
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -f tools/nexo/ab105_visibility_probe_inject.py
+          test -f tools/nexo/ab105_visibility_probe_controlize.py
+          echo "VISIBILITY_RUNTIME_GATE=WORKFLOW_EXECUTED"
+          echo "AB105_116R=FROZEN"
+          echo "AB105_117R=NOT_CREATED"
+          echo "TLC=NOT_RERUN"
