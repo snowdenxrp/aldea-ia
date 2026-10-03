@@ -704,3 +704,35 @@ At the time of this checkpoint, GitHub reports no workflow run/status yet for co
 - 🔴 no vulnerability conclusion.
 
 Do not interpret PR #95 as evidence of execution. It is only the prepared diagnostic extension until a real workflow run and raw artifact exist.
+
+
+## Quantitative timing reanalysis of the preserved artifact
+
+A direct parse of the raw `nexo-ordering-evidence.txt` confirms the target broker's `kafka-0-metadata-loader-event-handler` W1 and the first D1 Producer ENQUEUE for every cycle:
+
+| Cycle | D0_RETURN → D1 ENQUEUE | broker W1 → D1 ENQUEUE | D1 |
+|---|---:|---:|---|
+| 1 | 60.12 ms | 64.17 ms | DENIED |
+| 2 | 57.79 ms | 58.18 ms | DENIED |
+| 3 | 53.30 ms | 54.91 ms | DENIED |
+| 4 | 56.35 ms | 56.25 ms | DENIED |
+| 5 | 55.04 ms | 54.64 ms | DENIED |
+| 6 | 53.68 ms | 55.05 ms | DENIED |
+| 7 | 53.70 ms | 56.43 ms | DENIED |
+| 8 | 57.28 ms | 57.84 ms | DENIED |
+| 9 | 50.92 ms | 52.96 ms | DENIED |
+| 10 | **6.06 ms** | **8.66 ms** | DENIED |
+
+This reveals an important experimental limitation: the existing witness proves temporal ordering, but the D1 request usually reaches `RequestChannel.sendRequest` tens of milliseconds after D0_RETURN/W1. Therefore it gives the implementation a substantial natural interval to publish/observe the new `aclCache` reference. Cycle 10 is the tightest observed case, but it still did not produce stale authorization.
+
+This does **not** invalidate the witness. It changes the next empirical question: can the same production path be observed with a materially shorter D0_RETURN→ENQUEUE interval **without waiting on W1 or adding any W1-derived signal**?
+
+A valid next diagnostic should therefore:
+1. prewarm the producer/network path before deletion;
+2. avoid the `send().get()` latency as part of the measurement trigger;
+3. issue D1 immediately after the existing D0_RETURN control point;
+4. retain the same W1/ENQUEUE/DEQUEUE/AUTH probes;
+5. add no latch, barrier, volatile publication, Future completion, callback, or other signal derived from W1;
+6. treat any D1 ALLOWED after target-broker W1 as candidate stale-read evidence requiring source/JMM reconciliation, not as an automatic vulnerability declaration.
+
+No run was started in this step. AB105.116R remains unchanged; AB105.117R remains uncreated; TLC remains not rerun.
