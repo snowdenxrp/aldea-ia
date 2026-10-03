@@ -287,3 +287,16 @@ Classification:
 🔴 Vulnerability/security conclusion remains NOT_DECLARED.
 
 Next: inspect the concrete Processor→RequestChannel call site and surrounding Processor loop only for a shared synchronization object also reachable from metadata publication. If none is present, this source audit can close the natural-edge search without converting “not found” into “proven absent everywhere.”
+
+
+## Processor call-site audit — no shared synchronization edge found in inspected path
+Pinned `SocketServer.Processor` source at `99b940733a9f6bc409457dba7108f08421d81e42`:
+- Processor runs its own loop/thread: configure connections → responses → selector.poll → completed receives → sends.
+- In `processCompletedReceives()`, it constructs the request and directly calls `requestChannel.sendRequest(req)`.
+- No lock, synchronized block, volatile publication, Future completion, or explicit handoff involving the Authorizer/MetadataLoader state appears around this call site.
+- The only explicit synchronization relevant to this request path is the `ArrayBlockingQueue` publication from `sendRequest` to `receiveRequest`, i.e. downstream ENQUEUE→DEQUEUE.
+- Processor-local structures (`selector`, response queue, inflight responses, connection state) are not shared with the MetadataLoader ACL mutation path in the inspected code.
+
+This strengthens the causal map: W1 and Processor ENQUEUE are independent cross-thread actions; the queue synchronizes only after ENQUEUE. Temporal W1 < D1 remains real observation, but does not create a JMM edge.
+
+Status unchanged on the security question: stale-read manifestation remains UNKNOWN and vulnerability remains NOT_DECLARED.
