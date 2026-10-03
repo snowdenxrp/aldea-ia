@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - nexo-ab105-g0-ordering-witness
+      - nexo-ab105-g0-latency-audit-v1
 
 jobs:
   ordering-witness:
