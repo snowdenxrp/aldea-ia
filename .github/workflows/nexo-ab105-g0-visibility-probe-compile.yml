@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - nexo-ab105-g0-visibility-probe
+    paths:
+      - ".github/workflows/nexo-ab105-g0-visibility-probe-compile.yml"
+      - "tools/nexo/ab105_visibility_probe_inject.py"
 
 permissions:
   contents: read
