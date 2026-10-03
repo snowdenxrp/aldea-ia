@@ -1,0 +1,19 @@
+name: NEXO AB105 G0 visibility witness minimal
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scheduling-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "MINIMAL_VISIBILITY_WORKFLOW=EXECUTED"
+          echo "SOURCE=${GITHUB_SHA}"
+          echo "AB105_116R=FROZEN"
+          echo "AB105_117R=NOT_CREATED"
+          echo "TLC=NOT_RERUN"
