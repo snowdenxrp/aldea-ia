@@ -40,9 +40,13 @@ jobs:
           p.parent.mkdir(parents=True, exist_ok=True)
           # Remove only the invalid producer prewarm inherited from the diagnostic source harness.
           # It runs before ACL creation and therefore changes authorization semantics.
-          prewarm = "                          // Warm producer metadata/connection before the first experimental ACL cycle.\\n                          producer.partitionsFor(TOPIC_NAME);\\n"
-          if test.count(prewarm) != 1: raise SystemExit("prewarm marker mismatch")
-          test = test.replace(prewarm, "", 1)
+          prewarm_lines = [
+              "                          // Warm producer metadata/connection before the first experimental ACL cycle.",
+              "                          producer.partitionsFor(TOPIC_NAME);",
+          ]
+          if test.count("producer.partitionsFor(TOPIC_NAME);") != 1: raise SystemExit("prewarm marker mismatch")
+          test = test.replace(prewarm_lines[0] + chr(10), "", 1)
+          test = test.replace(prewarm_lines[1] + chr(10), "", 1)
           p.write_text(test)
           def repl(path, old, new):
               p=Path(path); s=p.read_text()
