@@ -1,0 +1,85 @@
+# NEXO AB105 G0 — W1→ENQUEUE Causal Edge Investigation — 2026-10-03
+
+## Continuity state
+Active anchor: AB105.116R — UNCHANGED
+AB105.117R: NOT_CREATED
+TLC: NOT_RERUN
+PR #94: draft / not merged
+Kafka pin: 99b940733a9f6bc409457dba7108f08421d81e42
+
+Prior evidence:
+- 0120ee041852017a80ecc16788bb00f76c778fe4 — real broker ordering witness
+- 98cc802d6100888d9b30f8bfee982c2173c8fa9f — continuity checkpoint
+- 8ddd92aa59f77d2b2e0789b27e7b08e69405d288 — W1→D1 causal boundary audit
+
+## Question now isolated
+Does target-broker ACL_W1 (the plain aclCache write performed during StandardAuthorizerData.removeAcl()) have a real JMM happens-before / synchronization path to the later D1 request's publication into RequestChannel?
+Temporal W1 < ENQUEUE is observed, but this is not itself a JMM edge.
+
+## Source audit findings
+1. StandardAuthorizer uses a volatile data reference and delegates ACL mutation to data.removeAcl(id). Authorization snapshots the current data reference and delegates to curData.authorize(...).
+2. The current upstream StandardAuthorizer documentation/source describes authorization as a synchronous API designed for locally cached ACLs, while ACL updates are asynchronous. The Authorizer contract explicitly leaves concurrent update guarantees to the implementation.
+3. ControllerServer installs an AclPublisher for the controller-side authorizer and documents that metadata publishers do not publish until the controller has caught up to the high watermark. This supports the previously established distinction between controller-side metadata durability and downstream broker-local ACL application.
+4. The existing real-broker evidence remains decisive for the temporal boundary: cycles 4 and 5 show target W1 occurring after D0_RETURN, while still before D1 DEQUEUE/AUTH.
+5. RequestChannel's ArrayBlockingQueue remains a valid synchronization/publication boundary from D1 ENQUEUE to D1 DEQUEUE. It does not, by itself, establish a reverse or upstream W1→ENQUEUE edge.
+6. No evidence has yet been found that justifies treating System.nanoTime() ordering as a JMM happens-before relation.
+
+## Critical experimental constraint
+DO NOT add a latch, volatile handoff, CountDownLatch, barrier, Future completion gate, or equivalent W1-observation signal that gates D1 issuance.
+Such a construction could create the very W1→D1 publication edge under investigation and would invalidate the causal question.
+
+## Current causal graph
+Controller:
+deleteAcls() → controller operation / metadata-log persistence → D0_RETURN → [does not prove target W1]
+
+Target broker:
+metadata-log replay → MetadataLoader / AclPublisher → StandardAuthorizer.removeAcl() → StandardAuthorizerData.removeAcl() → target ACL_W1 / aclCache write
+
+Request:
+D1 ENQUEUE → ArrayBlockingQueue → D1 DEQUEUE → StandardAuthorizer.authorize() → StandardAuthorizerData.authorize() → aclCache read
+
+Known edge:
+ENQUEUE → DEQUEUE = synchronization/publication boundary.
+
+Unknown edge:
+W1 → ENQUEUE = UNKNOWN.
+
+Therefore the scientific target is NOT to make W1 happen before D1. It is to determine whether the existing implementation naturally supplies a causal edge, or whether W1 and D1 merely have temporal order in the observed execution.
+
+## Classification
+🟢 REAL_BROKER_W1: OBSERVED
+🟢 W1 < D1_DEQUEUE temporal order: 10/10
+🟢 D1 DENIED: 10/10
+🟢 D0 != W1: directly demonstrated by cycles 4/5
+🔵 W1 → ENQUEUE JMM edge: UNKNOWN
+🔵 W1 → D1 aclCache-read visibility: UNKNOWN
+🔵 stale read after W1: UNKNOWN
+🔵 incorrect authorization from stale read: UNKNOWN
+🔵 exploitability/generalization/production impact: UNKNOWN
+🔴 vulnerability: NOT_DECLARED
+
+## Next investigation step
+Inspect the concrete implementation between the target broker's ACL_W1 and the independently generated D1 request publication.
+Specifically determine:
+- which thread performs W1;
+- which thread invokes the D1 send/publication;
+- whether they share a synchronization primitive, lock, queue, Future/CompletionStage, executor handoff, or volatile publication already present in production code;
+- whether that primitive occurs before or after the relevant W1 write;
+- whether the observed test harness itself introduces an accidental publication edge.
+Do not infer an edge merely from method return, wall/monotonic timestamp order, thread scheduling, or successful DENIED results.
+Do not repeat the successful v2 real-broker run unless the implementation audit identifies a new experimental question.
+
+## DO-NOT-REPEAT
+- Do not call D0_RETURN W1.
+- Do not call temporal W1 < ENQUEUE a JMM theorem.
+- Do not introduce synchronization from W1 to D1.
+- Do not modify AB105.116R.
+- Do not create AB105.117R.
+- Do not rerun TLC.
+- Do not merge PR #94.
+- Do not discard cycles 4/5.
+
+## Evidence references
+Real broker witness: 0120ee041852017a80ecc16788bb00f76c778fe4
+Continuity checkpoint: 98cc802d6100888d9b30f8bfee982c2173c8fa9f
+Causal boundary audit: 8ddd92aa59f77d2b2e0789b27e7b08e69405d288
