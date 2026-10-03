@@ -300,3 +300,24 @@ Pinned `SocketServer.Processor` source at `99b940733a9f6bc409457dba7108f08421d81
 This strengthens the causal map: W1 and Processor ENQUEUE are independent cross-thread actions; the queue synchronizes only after ENQUEUE. Temporal W1 < D1 remains real observation, but does not create a JMM edge.
 
 Status unchanged on the security question: stale-read manifestation remains UNKNOWN and vulnerability remains NOT_DECLARED.
+
+
+## StandardAuthorizerData read/write audit — boundary remains a plain field publication
+Pinned source confirms:
+- `StandardAuthorizerData` explicitly declares itself “not thread-safe”.
+- `aclCache` is a plain non-volatile field.
+- Incremental `removeAcl` computes a new immutable cache and then performs the plain assignment `aclCache = aclCacheSnapshot`.
+- Authorization eventually calls `findAclRule`, whose lookup operates from the current `aclCache`; no synchronization primitive is present around this field access in the inspected class.
+- The outer `StandardAuthorizer.data` volatile field is not rewritten by incremental `addAcl/removeAcl`; therefore its volatile semantics cannot be used as the publication edge for the incremental cache replacement.
+
+Important distinction:
+- This is strong source evidence of a potential visibility boundary.
+- It is NOT yet proof that a Processor authorization read actually observes the old cache after W1 in the real broker.
+- The real run observed DENIED in all 10 cycles, so no stale-read manifestation has been captured.
+
+Classification unchanged:
+🟢 plain W1 write to aclCache confirmed.
+🟢 plain D1-side aclCache read path confirmed.
+🔵 inter-thread visibility from W1 to D1 UNKNOWN.
+🔵 stale-read manifestation UNKNOWN.
+🔴 vulnerability NOT_DECLARED.
