@@ -154,3 +154,26 @@ State remains:
 🔴 vulnerability NOT DECLARED
 
 DO-NOT-REPEAT remains unchanged.
+
+
+## Source audit advancement — concrete thread boundary
+Exact pinned Kafka source inspection now establishes:
+
+1. MetadataLoader owns a dedicated KafkaEventQueue and explicitly documents that it maintains its own thread used for all publisher callbacks.
+2. handleCommit(...) does not invoke publishers inline from the Raft callback; it appends work to that metadata-loader event queue.
+3. AclPublisher.onMetadataUpdate(...) runs on that MetadataLoader callback path and calls ClusterMetadataAuthorizer.removeAcl(...); therefore target W1 is on the MetadataLoader event-queue thread.
+4. SocketServer has independent data-plane Processor threads. The exact pinned source shows the Processor path calls requestChannel.sendRequest(req). Thus D1 ENQUEUE is performed by a network Processor path, independently of the MetadataLoader event-queue thread.
+5. No synchronization edge between these two paths has been demonstrated yet. Their being separate queues/threads is evidence of independence, not proof of a stale read.
+
+Important refinement:
+- We now know W1 thread != D1 ENQUEUE thread in the normal broker architecture.
+- ArrayBlockingQueue still gives ENQUEUE→DEQUEUE, but the causal gap under investigation remains W1→ENQUEUE.
+- Do NOT infer that separate threads imply missing happens-before; inspect any shared synchronization/publication mechanism before concluding UNKNOWN.
+
+Classification:
+🟢 MetadataLoader dedicated callback thread identified.
+🟢 D1 ENQUEUE Processor path identified.
+🟢 W1 and ENQUEUE are distinct execution paths.
+🔵 W1→ENQUEUE happens-before: UNKNOWN.
+🔵 D1 visibility of new aclCache: UNKNOWN.
+🔴 vulnerability: NOT_DECLARED.
