@@ -395,3 +395,30 @@ The workflow-local probes only emit System.nanoTime() timestamps and thread/corr
 This closes the specific accidental-W1-gate concern in the inspected harness. It does not prove absence of every possible synchronization effect in the JVM, Java client, Admin client, or broker internals; those would require a separate, explicitly scoped audit.
 
 No experiment was rerun. AB105.116R remains unchanged. AB105.117R remains uncreated. TLC was not rerun.
+
+
+## D0_RETURN semantic audit — controller commit vs broker ACL application
+
+Exact pinned source inspection clarifies what D0_RETURN means in this harness.
+
+- Broker-side KafkaApis forwards DELETE_ACLS to the controller; it does not directly call StandardAuthorizerData.removeAcl for the deletion request.
+- AclApis calls the authorizer's deleteAcls and waits on the returned CompletionStages before sending DeleteAclsResponse.
+- StandardAuthorizer obtains its ACL mutator from the controller wiring. The AclMutator contract says create/delete operations are implemented by QuorumController and are thread-safe.
+- QuorumController.deleteAcls uses appendWriteEvent(...), which queues a ControllerWriteEvent.
+- ControllerWriteEvent generates the ACL metadata records, prepares/schedules the Raft append, applies the records to controller in-memory state, then places the operation in deferred completion keyed by the resulting log offset.
+- The ControllerWriteEvent future is completed only when the deferred completion is released at the relevant stable/committed offset. The completion path is driven by controller Raft commit handling.
+
+Therefore D0_RETURN is evidence that the controller-side ACL deletion operation reached the controller's deferred completion/commit condition. It is NOT evidence that the target broker's MetadataLoader has already invoked AclPublisher.removeAcl and performed W1.
+
+This matches the real-broker timing already observed: D0_RETURN preceded broker-local ACL_W1 in cycles 4 and 5. That is not contradictory; it is now explained by the architecture: controller completion and broker metadata application are distinct stages.
+
+Epistemic classification:
+- 🟢 D0_RETURN has controller commit/deferred-completion semantics, not broker-local W1 semantics.
+- 🟢 D0_RETURN ≠ W1 is architecturally explained, not merely timestamp-observed.
+- 🟢 The harness's D0_RETURN → D1 sequencing therefore does not provide a W1→D1 happens-before edge.
+- 🔵 Exact controller-to-target-broker metadata publication/commit edge sufficient for aclCache visibility remains outside this D0 completion guarantee.
+- 🔵 W1→ENQUEUE JMM edge remains UNKNOWN.
+- 🔵 stale-read manifestation remains UNKNOWN.
+- 🔴 vulnerability/security conclusion remains NOT_DECLARED.
+
+No experiment was rerun. AB105.116R remains unchanged. AB105.117R remains uncreated. TLC was not rerun.
