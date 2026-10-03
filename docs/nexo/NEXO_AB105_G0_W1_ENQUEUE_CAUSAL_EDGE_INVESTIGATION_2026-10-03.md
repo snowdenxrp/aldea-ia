@@ -321,3 +321,39 @@ Classification unchanged:
 🔵 inter-thread visibility from W1 to D1 UNKNOWN.
 🔵 stale-read manifestation UNKNOWN.
 🔴 vulnerability NOT_DECLARED.
+
+## Natural-edge audit checkpoint — broker wiring and shared-publication search
+
+Further exact-pinned inspection was performed without changing the experiment.
+
+### Broker wiring result
+- Pinned BrokerServer wiring confirms the broker owns the data-plane KafkaApis / RequestChannel path and also installs AclPublisher as a metadata publisher.
+- These are separate production subsystems; the wiring itself does not establish a per-ACL-update synchronization edge from the metadata publisher to Processor request publication.
+- BrokerServer does contain a lifecycle ReentrantLock, but that lock protects broker startup/shutdown status (status, awaitShutdownCond). It is not the lock used by incremental ACL mutation or Processor request enqueue, so it is not evidence for W1→ENQUEUE.
+
+### Targeted search result
+- Searches for an additional StandardAuthorizer read/write lock, ReentrantReadWriteLock, or a clusterMetadataAuthorizer-to-RequestChannel synchronization path did not identify a concrete shared primitive that bridges the two execution paths at the pinned implementation.
+- A newer upstream search result shows a StandardAuthorizer comment describing lock-based consistency intent, but this is not promoted to pinned evidence and does not override the executable pinned source already inspected.
+
+### Bounded conclusion of this audit phase
+The natural production-edge search is now substantially exhausted across the relevant path: MetadataLoader → AclPublisher → StandardAuthorizerData.write and Processor → RequestChannel.enqueue → KafkaApis → StandardAuthorizerData.read.
+
+What is established:
+- 🟢 W1 is a plain write to StandardAuthorizerData.aclCache on the MetadataLoader publisher thread.
+- 🟢 D1 ENQUEUE occurs on an independent Processor thread.
+- 🟢 RequestChannel supplies ENQUEUE→DEQUEUE publication, not W1→ENQUEUE.
+- 🟢 No concrete pre-existing lock/volatile/Future/queue handoff bridging W1 to Processor ENQUEUE was identified in the inspected pinned paths.
+
+What remains unresolved:
+- 🔵 JMM happens-before W1→ENQUEUE: UNKNOWN (no concrete edge identified).
+- 🔵 Whether the Processor ordinary aclCache read can actually observe the old reference in a real execution: UNKNOWN.
+- 🔵 Actual stale-read manifestation: UNKNOWN.
+- 🔵 Security consequence/exploitability/generalization: UNKNOWN.
+- 🔴 Vulnerability declaration: NOT MADE.
+
+Important epistemic boundary: “no concrete edge identified in the inspected paths” is a bounded source-audit result, not a universal proof that no synchronization exists anywhere in Kafka or in the JVM/runtime.
+
+### Experimental status
+No latch, barrier, volatile handoff, Future gate, or equivalent synchronization was added. No broker rerun was performed. TLC was not rerun. AB105.116R remains unchanged and AB105.117R remains uncreated.
+
+Next scientific step: if continuing, inspect the test harness itself for any accidental publication edge between the ACL operation and D1 issuance, then determine whether a new experiment is justified. Do not alter the causal question by adding synchronization merely to force ordering.
