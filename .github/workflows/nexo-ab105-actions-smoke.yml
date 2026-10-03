@@ -1,0 +1,12 @@
+name: NEXO AB105 Actions smoke
+
+on:
+  push:
+    branches:
+      - nexo-ab105-g0-visibility-probe
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ACTIONS_SMOKE_OK
