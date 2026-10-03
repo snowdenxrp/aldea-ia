@@ -1,6 +1,11 @@
 name: NEXO AB105 G0 visibility witness minimal
 
 on:
+  push:
+    branches:
+      - nexo-ab105-g0-visibility-probe
+    paths:
+      - ".github/workflows/nexo-ab105-g0-visibility-witness-min.yml"
   workflow_dispatch:
 
 permissions:
