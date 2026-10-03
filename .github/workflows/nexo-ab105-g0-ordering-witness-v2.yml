@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - nexo-ab105-g0-ordering-witness
+  workflow_dispatch:
 
 jobs:
   ordering-witness:
