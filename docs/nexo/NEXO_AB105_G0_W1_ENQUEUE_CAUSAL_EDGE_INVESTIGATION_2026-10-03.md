@@ -422,3 +422,25 @@ Epistemic classification:
 - 🔴 vulnerability/security conclusion remains NOT_DECLARED.
 
 No experiment was rerun. AB105.116R remains unchanged. AB105.117R remains uncreated. TLC was not rerun.
+
+
+## MetadataLoader publication boundary — pinned source
+
+The pinned Kafka source shows a concrete synchronization boundary between the Raft callback thread and the MetadataLoader event-handler thread, but it does not extend to the data-plane Processor.
+
+- `MetadataLoader.handleCommit(...)` does not process the BatchReader inline. It creates an event and calls `eventQueue.append(...)`.
+- `KafkaEventQueue.enqueue(...)` protects queue state with a `ReentrantLock`. The producer thread acquires/releases that lock while inserting the event; the event-handler thread acquires the same lock before removing the event for execution. This is a concrete cross-thread synchronization mechanism for the queued event's object/state publication.
+- The event-handler then executes `batchLoader.loadBatch(...)`, which can reach `maybePublishMetadata(...)`, and that invokes `AclPublisher.onMetadataUpdate(...)` on the MetadataLoader event-handler thread.
+- Therefore the Raft-listener → MetadataLoader event execution path has a concrete queue/lock synchronization edge.
+- Crucially, this does not establish W1 → Processor ENQUEUE. The lock belongs to the MetadataLoader queue and is not the RequestChannel/Processor queue. No shared lock between the two paths was identified in the pinned sources audited so far.
+
+New bounded classification:
+- 🟢 Raft callback → MetadataLoader event execution has concrete `KafkaEventQueue` lock publication.
+- 🟢 MetadataLoader publisher callback → W1 is same-thread execution on the event-handler thread.
+- 🟢 W1 therefore occurs after metadata has crossed the loader queue boundary.
+- 🔵 W1 → Processor `RequestChannel.sendRequest` remains UNKNOWN.
+- 🔵 W1 → D1 `aclCache` visibility remains UNKNOWN.
+- 🔵 stale-read manifestation remains UNKNOWN.
+- 🔴 vulnerability/security consequence remains NOT_DECLARED.
+
+No experiment rerun. AB105.116R unchanged. AB105.117R uncreated. TLC not rerun.
