@@ -64,3 +64,8 @@ The real-broker witness materially strengthens the temporal evidence but does **
 - Do not treat D0_RETURN as W1.
 - Do not promote timestamp ordering into JMM happens-before.
 - Preserve artifact `11265332252` and digest above.
+
+## Archaeology addendum — PR #84
+PR #84 was also checked as a historical candidate. Its commit/workflow path did reach a real Kafka Producer and produced a denial, but the run `36943184415` failed because the harness did not observe its `D1_AUTH_DECISION` latch within the timeout. The job log shows `Topic authorization failed`, but no recoverable complete A1→D0→D1→D2→E witness was emitted. Therefore PR #84 is **NOT evidence of the target race** and is not an independent sample. The later PR #86 runtime witness is the valid recovered propagation-window result.
+
+This closes another archaeology branch without changing the conclusion: **UNKNOWN / NOT OBSERVED**.
