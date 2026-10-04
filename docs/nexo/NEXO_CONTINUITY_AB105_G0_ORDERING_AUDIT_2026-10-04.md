@@ -4,36 +4,49 @@
 - AB105.116R: UNCHANGED.
 - AB105.117R: NOT CREATED.
 - TLC: NOT RERUN.
-- PR #92/#93/#94/#95/#96: diagnostic/draft only.
+- PR #94: draft/unmerged.
 - Kafka pin: 99b940733a9f6bc409457dba7108f08421d81e42.
 
-## Final findings
-1. D0_RETURN is not W1. DeleteAcls completion is tied to controller metadata-log commit/stable-offset completion; local broker ACL publication is a separate asynchronous MetadataLoader/AclPublisher path.
-2. Metadata commit -> W1 is a real path through MetadataLoader/KafkaEventQueue/AclPublisher/StandardAuthorizerData.
-3. RequestChannel ArrayBlockingQueue gives producer->consumer publication for actions before ENQUEUE, but does not establish a universal metadata-thread -> RPC-authorizer happens-before edge.
-4. PR #93 executed the actual findAclRule() snapshot diagnostic at the pinned revision. Raw result: ITERATIONS=100 READERS=4 OBSERVATIONS=2939007 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=2845069 OVERLAP_ALLOWED=17769 OVERLAP_DENIED=81 POST_RETURN_PRE_REMOVE_CACHE=0 POST_RETURN_POST_REMOVE_CACHE=2845069 POST_RETURN_UNKNOWN_CACHE=0 POST_RETURN_PRE_REMOVE_SNAPSHOT=0 POST_RETURN_POST_REMOVE_SNAPSHOT=2845069 POST_RETURN_UNKNOWN_SNAPSHOT=0 POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=0 UNEXPECTED=0.
-5. Therefore no post-return stale snapshot and no post-return ALLOWED were observed in that diagnostic. This is executed evidence, not a formal JMM proof.
-6. The real-broker ordering witness remains methodologically separate. Prior W1<ENQUEUE observations are temporal only; no fresh raw artifact currently inspected upgrades them to causal/JMM proof.
-7. No identified production synchronization closes W1 -> authorization globally for incremental aclCache publication.
+## Corrected complete evidence classification
+1. D0_RETURN is not W1. Admin deleteAcls future completion is tied to controller/metadata-log completion; local broker ACL publication is a separate MetadataLoader/AclPublisher path. The audit found no proof D0_RETURN -> W1.
+2. Metadata commit -> W1 is real: MetadataLoader owns a KafkaEventQueue/event thread; committed metadata reaches publishers and AclPublisher applies the ACL delta to StandardAuthorizerData.
+3. W1 -> ENQUEUE is not a demonstrated JMM happens-before edge. The harness records timestamps but does not perform a W1-derived synchronized handoff. RequestChannel's ArrayBlockingQueue establishes publication for ENQUEUE -> DEQUEUE, not a retroactive publication from W1.
+4. PR #93 is valid bounded local runtime evidence. Run 37040412845, job 110948860837, artifact 11242611554: ITERATIONS=100 READERS=4 OBSERVATIONS=5935698 POST_RETURN_ALLOWED=0 POST_RETURN_DENIED=5770322 OVERLAP_ALLOWED=53444 OVERLAP_DENIED=121 POST_RETURN_PRE_REMOVE_CACHE=0 POST_RETURN_POST_REMOVE_CACHE=5770322 POST_RETURN_UNKNOWN_CACHE=0 POST_RETURN_PRE_REMOVE_SNAPSHOT=0 POST_RETURN_POST_REMOVE_SNAPSHOT=5770322 POST_RETURN_UNKNOWN_SNAPSHOT=0 POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=0 UNEXPECTED=0.
+5. PR #94 is the accepted bounded real-broker witness. Run 37081442555, artifact 11259107051: 10/10 cycles showed target W1 < D1 ENQUEUE < D1 DEQUEUE < AUTH_ENTER < AUTH_DECISION=DENIED. Two cycles showed D0_RETURN < target W1. This is real end-to-end temporal evidence, not JMM proof.
+6. PR #87's 126692 STALE_ALLOWED_IN_POST_WINDOW labels are invalid as stale evidence because the window starts at scheduledRemove while removeAcl executes afterward. Correct classification: concurrent overlap observed; stale-after-writer-return not established.
+7. PR #83 did not observe its intended pre-local-revocation state: target local ACL count was already 0 before D1. It cannot support that hypothesis.
+8. PR #89 -> #92 -> #93 are methodological refinements, not independent samples to add together. #93 is the strongest local snapshot diagnostic.
+9. PR #95 is execution-path unverified; its branch was not included in the relevant workflow trigger.
+10. PR #96 prewarm is implementation-unverified for the claimed change: its workflow reconstructs the harness from an older control commit without the prewarm. Do not count it as prewarm runtime evidence.
 
 ## Final epistemic state
-🟢 Executed/source-verified: controller completion, MetadataLoader/AclPublisher, RequestChannel, authorize/findAclRule snapshot.
-🟢 Observed: no post-return stale snapshot; no post-return ALLOWED in PR #93.
-🟡 Temporal: prior W1<ENQUEUE observations.
-🟡 JMM W1->authorize: UNKNOWN.
-🟡 Stale-read: NOT OBSERVED, not formally excluded.
-🟡 Security impact: UNKNOWN.
-🔴 Unsupported: calling it proven vulnerable, proven safe, or treating D0_RETURN as W1.
+🟢 SOURCE-VERIFIED: controller completion, MetadataLoader/AclPublisher, RequestChannel, StandardAuthorizer/StandardAuthorizerData, authorize/findAclRule path.
+🟢 EXECUTED: PR #93 local snapshot diagnostic; PR #94 real-broker ordering witness.
+🟢 OBSERVED: no post-return pre-remove cache/snapshot in PR #93; no stale ALLOWED observed after the corrected writer-return boundary.
+🟡 TEMPORAL: PR #94 W1 < ENQUEUE < DEQUEUE < AUTH in 10/10.
+🟡 JMM W1 -> authorization snapshot: UNKNOWN.
+🟡 Real-broker stale-read manifestation: NOT OBSERVED.
+🟡 Production exploitability/generalization: UNKNOWN.
+🔴 UNSUPPORTED: vulnerability proven; vulnerability disproven; PR87 labels treated as stale; PR95/96 treated as valid new runtime evidence; D0_RETURN treated as W1; timestamps treated as JMM causality.
 
 ## Conclusion
-Audit complete at the current evidence boundary. The strongest defensible conclusion is: Kafka's incremental ACL publication path contains an asynchronous publication boundary, and existing experiments did not observe stale authorization after measured local ACL removal; however, no direct JMM happens-before proof from W1 to the authorization snapshot has been established.
+The complete retrospective audit does NOT demonstrate a stale-read vulnerability, and does NOT prove that stale reads are impossible. The strongest defensible result is:
 
-Status: UNKNOWN / NOT OBSERVED — neither SAFE nor VULNERABLE.
+**UNKNOWN / NOT OBSERVED.**
+
+Kafka's incremental ACL publication has an asynchronous publication boundary. The strongest local diagnostic (#93) observed no post-return stale snapshot across 5.9M observations, while the real-broker witness (#94) observed the expected temporal ordering in all 10 cycles. Neither establishes a universal JMM happens-before edge from W1 to the authorization snapshot.
+
+## Frozen state
+AB105.116R = FROZEN / unchanged.
+AB105.117R = NOT CREATED.
+TLC = NOT RERUN.
 
 ## DO-NOT-REPEAT
 - Do not rerun TLC.
 - Do not create AB105.117R.
-- Do not repeat PR #92/#93 cache/snapshot diagnostics.
-- Do not add latch/volatile/barrier/future gates between W1 and authorization.
+- Do not repeat PR #87/#89/#92/#93 as if they were independent evidence.
+- Do not count PR #95/#96 as new runtime evidence for their claimed variants.
+- Do not add W1-derived latch/volatile/barrier/future synchronization.
 - Do not treat D0_RETURN as W1.
-- Do not promote timing ordering into JMM causality.
+- Do not promote timestamps into JMM happens-before.
+- Do not modify canonical Kafka source to repair Actions control-plane failures.
