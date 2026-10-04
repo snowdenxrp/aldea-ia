@@ -140,3 +140,26 @@ Status: UNKNOWN.
 - Do not equate D0_RETURN with W1.
 - Do not promote W1 < ENQUEUE to JMM HB.
 - Do not claim vulnerability or safety without the missing causal chain.
+
+
+## 2026-10-04 — synchronization-edge audit continuation
+
+### New source-level constraint recovered
+The Kafka Authorizer contract explicitly states that authorization and ACL updates are concurrent/thread-safe operations, and that `authorize()` is a synchronous API intended to use locally cached ACLs. This establishes the concurrency model, but **does not by itself establish a W1→D1 JMM happens-before edge**. citeturn0search2
+
+The current StandardAuthorizer structure also confirms that the outer `data` reference is volatile and that `authorize()` snapshots that reference before delegating to the contained data object. The remaining race question is therefore narrower: whether mutation/publication of the nested plain `aclCache` becomes visible to a later authorization when `data` itself is not republished. citeturn0search0turn0search4
+
+**Status:** 🔵 narrowed UNKNOWN.  
+- Thread-safety contract: VERIFIED.  
+- `data` volatile publication: VERIFIED at source level.  
+- Nested `aclCache` visibility through that boundary: UNKNOWN.  
+- W1→D1 HB: UNKNOWN.  
+- Vulnerability: NOT ESTABLISHED.
+
+### Audit decision
+Do **not** add synchronization to the experiment. The next source trace remains:
+`Producer.send → client/network path → broker socket → RequestChannel → request handler → authorize`
+and independently:
+`MetadataLoader → AclPublisher → StandardAuthorizerData.addAcl/removeAcl → aclCache publication`.
+
+The objective is to identify an **existing production synchronization/publication edge**, not manufacture one.
