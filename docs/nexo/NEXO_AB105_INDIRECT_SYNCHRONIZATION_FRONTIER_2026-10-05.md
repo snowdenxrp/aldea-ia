@@ -150,3 +150,40 @@ Do not re-audit the BrokerServer lifecycle lock/startup-future boundary unless n
 
 ### Next frontier
 Continue only with a concrete post-startup cross-domain executor submission, concurrent-collection handoff, synchronizer, or W1-derived callback that reaches request admission/authorization.
+
+
+## Continuity resumption — metadataCache volatile ordering candidate — 2026-10-05
+
+Exact AB105 Kafka pin: 99b940733a9f6bc409457dba7108f08421d81e42.
+
+### New candidate audited
+A potentially important indirect bridge was checked: `KRaftMetadataCache.currentImage` is `volatile`, and `KafkaApis` reads metadataCache during request handling. Because volatile publication can establish HB, this had to be tested against the exact publisher ordering rather than dismissed by search alone.
+
+### Exact source result
+In pinned `BrokerMetadataPublisher.onMetadataUpdate`:
+1. `metadataCache.setImage(newImage)` executes first.
+2. Only later in the same MetadataLoader callback does `aclPublisher.onMetadataUpdate(delta, newImage, manifest)` execute.
+3. Therefore the volatile metadata-cache publication is **before W1**, not after W1.
+4. A later request-thread read of `currentImage` can publish the metadata-image write to that reader, but it cannot retroactively publish the later ACL mutation W1, because program order is `metadataCache.setImage -> ... -> W1`.
+5. `KafkaApis` performs direct `authHelper.authorize(...) ` calls; metadataCache accesses in request handlers are not an observed per-request ACL publication barrier.
+
+### Critical conclusion
+This candidate is **CLOSED as a W1→D1 HB bridge**.
+It is not enough that both W1 and D1 touch metadata-related state. The exact ordering is the opposite of what would be required for transitive HB from W1 through the volatile cache publication.
+
+Formally, the inspected path gives:
+`metadataCache volatile write -> W1` (program order), and potentially `metadataCache volatile write -> later metadataCache read`; it does **not** give `W1 -> volatile write -> D1`.
+
+### Epistemic state
+- 🟢 `KRaftMetadataCache.currentImage` volatile publication is real.
+- 🟢 BrokerMetadataPublisher ordering is verified: cache publication precedes ACL publication.
+- 🟢 This candidate does not establish W1→D1 HB.
+- 🟡 Other post-W1 shared-state publications remain to be checked only if they are actually read before authorization.
+- 🔴 stale ACL read not reproduced.
+- 🔴 vulnerability not established.
+
+### DO-NOT-REPEAT
+Do not re-audit `KRaftMetadataCache.currentImage` ordering unless new source evidence changes the pinned publisher order.
+
+### Next frontier
+The remaining high-value question is narrower: **after W1, does any other publisher in the same metadata callback perform a synchronization/publication operation on state that the request path reads before D1?** If yes, trace that exact state and its synchronization semantics. If no, retain UNKNOWN.
