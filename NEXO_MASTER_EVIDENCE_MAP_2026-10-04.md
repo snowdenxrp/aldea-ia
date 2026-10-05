@@ -453,3 +453,36 @@ This materially narrows the remaining ???: the obvious publisher-chain completio
 DO-NOT-REPEAT: do not rerun PR93, do not add synchronization, do not rerun TLC.
 
 Next exact source target: inspect the concrete request admission/authorizer invocation path for any read/acquire of broker state that is written after AclPublisher in the same metadata callback. If none exists, document the remaining UNKNOWN as a bounded absence-of-identified-edge result, not as a proof of impossible stale visibility.
+
+
+## 2026-10-04 — concrete request-admission / authorization path audit
+
+The data-plane path was traced from the broker request handler into KafkaApis and authorization.
+
+### Request side
+- KafkaRequestHandler receives a Request from RequestChannel, records dequeue timing, and directly invokes apis.handle(request, requestLocal) on the request-handler thread.
+- KafkaApis.handle dispatches PRODUCE to handleProduceRequest.
+- handleProduceRequest performs authorization through AuthHelper before the request proceeds to the append path; the authorization result is used to build authorizedRequestInfo and only authorized topic data reaches the produce append machinery.
+- The Authorizer contract independently states that authorize() is invoked synchronously on the request thread for each request.
+
+This confirms the D1 reader is the request-handler execution domain, not the metadata EventHandler domain.
+
+### Synchronization consequence
+The RequestChannel handoff publishes the Request object from its producer into the request-handler consumer, but nothing in this path shows the metadata EventHandler's prior aclCache mutation being written into the RequestChannel publication. KafkaRequestHandler's local request processing therefore does not create a new metadata-to-request happens-before edge.
+
+The inspected request path also reads ordinary request/metadata state and invokes the authorizer; no shared post-AclPublisher volatile/atomic/monitor state was identified that is acquired specifically before D1 and that would publish the later aclCache write.
+
+### Important boundary
+The StandardAuthorizer.data volatile read occurs inside StandardAuthorizer.authorize(), but the incremental ACL mutation path does not write data; it mutates the nested plain aclCache in the existing data object. Thus the D1 volatile read of data cannot be promoted into a W1→D1 publication edge for the later nested cache replacement.
+
+### Epistemic status
+🟢 Request-handler → KafkaApis → authorization path identified.
+🟢 D1 executes on the request-handler side after RequestChannel dequeue.
+🟢 RequestChannel publication is local to request producer → request handler.
+🟢 No concrete post-AclPublisher state acquisition bridging metadata EventHandler → D1 identified in the inspected path.
+🔵 W1→D1 JMM HB remains UNKNOWN: this is bounded absence-of-identified-edge, not proof that stale visibility is impossible.
+🔴 Vulnerability remains NOT ESTABLISHED.
+
+DO-NOT-REPEAT remains: no PR93 rerun, no synchronization added, no TLC rerun.
+
+Next exact target: audit the append-side continuation after D1 and the request-path state reads immediately surrounding authorization, looking only for any shared state that could retrospectively provide publication of aclCache. If none is found, freeze this branch as a bounded causal-gap result and move to full evidence reconciliation (PR84/89/95/96 and documented-vs-recoverable runs).
