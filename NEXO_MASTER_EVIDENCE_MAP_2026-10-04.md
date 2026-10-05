@@ -82,14 +82,16 @@ Status:
 Run 37040417803 / job 110948877687; pinned Kafka.
 Latest canonical checkpoint records:
 - 100 iterations, 4 readers.
-- 2,939,007 observations.
+- 4,071,307 observations.
 - POST_RETURN_ALLOWED=0.
 - POST_RETURN_PRE_REMOVE_CACHE=0.
 - POST_RETURN_PRE_REMOVE_SNAPSHOT=0.
-- POST_RETURN_POST_REMOVE_SNAPSHOT=2,845,069.
+- POST_RETURN_POST_REMOVE_CACHE=3,941,104.
+- POST_RETURN_POST_REMOVE_SNAPSHOT=3,941,104.
+- OVERLAP_ALLOWED=78,521.
 - UNEXPECTED=0.
 Interpretation: no post-return stale snapshot or post-return ALLOWED was observed in this diagnostic. This is executed evidence, not a formal JMM proof and not a real-broker exploit witness.
-Known historical count discrepancy (older note reported 4,071,307 observations) remains a reconciliation item; latest saved checkpoint is canonical until raw artifact is recovered.
+The earlier 2,939,007 figure is superseded for this same run by the recovered raw job log; the count discrepancy is resolved.
 
 ### Producer -> broker causal gap
 Recovered source/audit conclusion:
@@ -117,7 +119,7 @@ Status: UNKNOWN.
 
 ## Known contradictions / recovery targets
 1. AB104 continuity contains many sequential checkpoint commits plus later fork/collision corrections. Need a chronological graph, not a single linear list.
-2. PR #93 observation count discrepancy: 4,071,307 vs 2,939,007. Latest checkpoint is canonical pending raw-artifact reconciliation.
+2. PR #93 observation count discrepancy: RESOLVED. Raw job log for run 37040417803 reports 4,071,307; the earlier 2,939,007 figure is superseded for that run.
 3. Historical 117R references exist in archaeology, but this map must not create a new 117R.
 4. Documented run != recoverable raw artifact.
 5. D0_RETURN != W1.
@@ -346,3 +348,57 @@ The most important reconciliation is now: OVERLAP_ALLOWED=78,521 proves the prob
 🔵 A stale-read execution remains unproven, not disproven.
 
 Next: inspect the exact probe instrumentation boundary to ensure POST_RETURN is anchored to the ACL mutation return rather than to a stronger synchronization point that could silently bias the result. This is an evidence-integrity audit, not a rerun.
+
+
+## 2026-10-04 — PR93 instrumentation-integrity audit
+
+The exact PR #93 workflow and test source were inspected at draft head 001367b6dc392ad15440cc98aebf282f6f14f3f5.
+
+### Correctly anchored
+- writerObservation.enter is captured immediately before removeAcl(id).
+- writerObservation.exit is captured immediately after removeAcl returns.
+- Post-return classification uses observation.enter > writerObservation.exit.
+- Reader observations are reconciled only after writer/readers have joined, so classification fields do not participate in the race.
+- The diagnostic does not use a latch, barrier, Future, shared volatile gate, or cross-thread callback to release readers after W1.
+
+Therefore the POST_RETURN boundary is correctly tied to removeAcl() return, not D0_RETURN or a later join.
+
+### Instrumentation caveats
+The workflow temporarily adds a ThreadLocal<AclCache> and records the already-read aclCacheSnapshot. This is same-thread diagnostic state, not a cross-thread publication edge, but it can affect timing/JIT behavior.
+
+The reader also performs reflective reads of StandardAuthorizer.data and aclCache before authorization. Reading data is a volatile read. It does not create W1→D1 HB because removeAcl does not perform a corresponding per-update volatile write, but it is still instrumentation-induced synchronization and means the diagnostic is not perfectly neutral with respect to timing/optimization.
+
+The run therefore remains valid as OBSERVED behavioral evidence, but must not be promoted to proof that the uninstrumented production path cannot stale-read.
+
+### Exact pinned-source reconciliation
+At Kafka pin 99b940733a9f6bc409457dba7108f08421d81e42:
+- StandardAuthorizerData is explicitly documented as not thread-safe.
+- aclCache is a plain field.
+- removeAcl computes a new cache and assigns aclCache = aclCacheSnapshot.
+- findAclRule performs one plain aclCache read and uses that local snapshot through the authorization scan.
+- StandardAuthorizer.data is volatile.
+- StandardAuthorizer.authorize reads data into curData and then calls curData.authorize().
+- Incremental addAcl/removeAcl do not assign a new data object.
+- No executable shared authorizer lock was found around both mutation and authorization.
+
+### Request/metadata bridge result
+Pinned KafkaEventQueue uses ReentrantLock/Condition for queue insertion and its EventHandler, but that synchronization covers the metadata queue participants.
+
+Pinned RequestChannel uses ArrayBlockingQueue for network-to-request-handler handoff. That gives producer→consumer publication for the Request object, but the metadata EventHandler does not enqueue the request. Therefore RequestChannel synchronization cannot by itself publish the earlier metadata-thread aclCache write.
+
+KafkaRequestHandler receives the Request and invokes the API handler on its request thread. No shared metadata-queue state was identified in that path.
+
+### Epistemic state
+🟢 POST_RETURN boundary integrity: VERIFIED for timestamp semantics.
+🟢 Queue/request execution domains: VERIFIED.
+🟢 Exact aclCache mutation/read path: VERIFIED.
+🟢 No executable shared authorizer lock identified: VERIFIED in inspected source.
+🟡 PR93 neutrality: LIMITED / timing-affecting.
+🔵 W1→D1 JMM HB: UNKNOWN.
+🔵 Stale-read execution: NOT OBSERVED, NOT DISPROVEN.
+🔴 Vulnerability: NOT ESTABLISHED.
+
+### Next exact target
+Do not rerun PR93. Do not add synchronization.
+
+Next source-only target: inspect the complete BrokerMetadataPublisher/AclPublisher callback chain at the pinned revision for any per-update completion, callback, future, monitor, or shared state that is subsequently acquired/read by the data-plane request path. The initial-load future is already excluded as startup-only.
