@@ -73,3 +73,16 @@ Continue only with production code paths that can actually carry a synchronizati
 4. any request-admission metadata-version/offset gate actually executed per request.
 
 Stop at the first real edge. If none is identified, retain **HB(W1→D1) = UNKNOWN / NOT IDENTIFIED**.
+
+
+## Continuity resumption — metadata-offset candidate — 2026-10-05
+
+Exact AB105 pin: 99b940733a9f6bc409457dba7108f08421d81e42.
+
+Verified: BrokerLifecycleManager receives highest applied metadata offset/provenance and reports it as currentMetadataOffset in BrokerHeartbeatRequestData. During STARTING/RECOVERY, controller heartbeat responses drive initial catch-up/unfence futures. BrokerServer waits for initial unfencing before enabling inbound request processing. Once RUNNING, a successful heartbeat response only schedules the next heartbeat; no per-update ACL metadata-offset wait was identified in RequestChannel, KafkaRequestHandler, AuthHelper, or StandardAuthorizer authorization. KafkaApis authorization calls are direct authHelper.authorize calls inside request handling; no metadata-version/offset wait was identified immediately before authorization.
+
+Conclusion: metadata offset is a real lifecycle/provenance signal and startup gate, but NOT a per-ACL request-admission/authorization gate. It does not establish W1 -> D1 happens-before.
+
+State: W1 -> D1 HB = UNKNOWN / NOT IDENTIFIED; stale ACL read = NOT OBSERVED / NOT DISPROVEN; vulnerability = NOT ESTABLISHED; metadata-offset/lifecycle candidate = CLOSED.
+
+DO-NOT-REPEAT: metadata-offset/lifecycle candidate. Next frontier remains only post-startup cross-domain executor submission, concurrent-collection handoff, synchronizer, callback, or explicit per-request metadata-version check not already audited.
