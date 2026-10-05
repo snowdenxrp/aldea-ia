@@ -182,3 +182,16 @@ This is stronger than the previous UNKNOWN wording, but it is still NOT a vulner
 Status: HIGH-VALUE SOURCE FINDING / causal edge still UNKNOWN.
 
 Next exact target: inspect the production metadata-publisher execution mechanism and the broker request-handler execution mechanism for an existing synchronization edge. No experimental synchronization is to be added.
+
+
+## 2026-10-04 — publisher/request execution-edge finding
+
+Fresh source evidence confirms ACL mutation is executed through the broker metadata publication event machinery: BrokerMetadataPublisher/BrokerMetadataListener invoke StandardAuthorizer ACL updates from a KafkaEventQueue EventHandler thread. This establishes the writer execution context, but not yet a cross-thread happens-before edge to data-plane authorization.
+
+The key distinction is now explicit: the metadata EventHandler serializes work within its own queue, while authorization runs on broker request-handler threads. We still need the exact handoff between these execution domains before deciding visibility.
+
+Status: 🟢 writer execution path identified; 🔵 W1→D1 publication/HB remains UNKNOWN.
+
+Do not infer safety from queue serialization alone, and do not infer vulnerability from the plain field alone.
+
+Next: inspect the exact KafkaEventQueue handoff and request-handler scheduling path for an existing publication edge.
