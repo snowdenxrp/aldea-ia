@@ -43,3 +43,57 @@ Search for any remaining indirect production synchronization/publication mechani
 
 ## DO-NOT-REPEAT
 Do not repeat completed source audits or successful G0 solely because the chat is lost. Recover from this checkpoint and the linked prior checkpoints first.
+
+
+## REGLA OFICIAL — CONTINUITY
+
+Cuando Kevin indique **CONTINUITY**, no se debe recuperar únicamente el último mensaje, chat o checkpoint.
+
+**CONTINUITY = reconstruir el estado completo de la investigación NEXO antes de continuar.**
+
+### 1. Estado histórico
+Debe integrar obligatoriamente:
+- Checkpoints AB104/AB105.
+- Findings anteriores.
+- Evidencia ya validada.
+- UNKNOWN/PENDING.
+- Contradicciones y correcciones históricas.
+
+### 2. Estado nuevo
+Debe integrar:
+- Commits posteriores.
+- PRs.
+- Workflows/runs.
+- Artifacts y hashes.
+- Nuevos experimentos.
+- Nuevos hallazgos posteriores al último checkpoint.
+
+### 3. Reconciliación
+Debe determinar:
+- Qué evidencia sigue vigente.
+- Evidencia duplicada.
+- Evidencia supersedida.
+- Contradicciones.
+- Hallazgos antiguos que hayan quedado enterrados.
+
+### 4. Mapa epistemológico
+Cada afirmación debe clasificarse como:
+- 🟢 VERIFIED / OBSERVED
+- 🟡 UNKNOWN / PENDING
+- 🔴 CONFLICT / UNSUPPORTED
+- SUPERSEDED / DUPLICATE, cuando corresponda.
+
+### 5. Control de repetición
+CONTINUITY debe respetar el **DO-NOT-REPEAT** y evitar repetir experimentos, TLC, auditorías o búsquedas ya cerradas, salvo razón nueva y explícita.
+
+### 6. Destino
+Después de reconstruir el estado completo, CONTINUITY debe llevar directamente al siguiente punto de investigación que todavía falta resolver.
+
+### Regla fundamental
+- Nunca continuar desde memoria parcial si existe información histórica que pueda cambiar la conclusión.
+- Nunca considerar que «lo último encontrado» equivale automáticamente a «lo último verdadero».
+- La continuidad canónica es el **estado reconciliado de toda la evidencia**, no la antigüedad del mensaje.
+
+### Objetivo operativo
+Que Kevin pueda escribir simplemente **CONTINUITY** y recuperar:
+**lo anterior + lo nuevo + lo perdido/enterrado + las contradicciones + lo que ya NO debe repetirse + el siguiente paso correcto.**
