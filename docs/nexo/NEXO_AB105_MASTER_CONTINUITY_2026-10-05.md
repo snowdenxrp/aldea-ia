@@ -97,3 +97,34 @@ The remaining source-audit frontier is outside the collection itself:
 
 ## Continuity rule
 No finding, contradiction, failed attempt, epistemic state, or do-not-repeat decision is silently discarded or replaced.
+
+
+## 2026-10-05 — diagnostic cache-observation frontier
+
+The source audit is now exhausted for the concrete G0 authorizer path. The remaining empirical question is whether D1 actually reads a pre- or post-removal immutable AclCache snapshot.
+
+Exact pinned source confirms that `findAclRule()` performs `AclCache aclCacheSnapshot = aclCache` and then uses that same local snapshot for both ACL scans. A diagnostic immediately after that local read can therefore observe the exact cache object used by D1 without changing authorizer state.
+
+Safe diagnostic requirements:
+- observe only the already-selected local `aclCacheSnapshot`;
+- identify the target ACL structurally, with no W1-shared variable;
+- record cache identity/count/membership only after the snapshot read;
+- keep W1 and D1 observation sinks separate; do not reuse shared `System.err`;
+- do not introduce volatile/latch/barrier/Future synchronization;
+- preserve AB105.117R unchanged as baseline;
+- treat the run as diagnostic evidence, not JMM proof.
+
+Classification:
+- POST_W1_CACHE: D1 snapshot lacks the target ACL.
+- PRE_W1_CACHE: D1 snapshot still contains the target ACL, with independent evidence W1 preceded D1.
+- AMBIGUOUS: cycle/target cannot be uniquely correlated.
+
+Current state remains:
+- W1→D1 HB = UNKNOWN / NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- AB105.116R unchanged
+- AB105.117R not recreated
+- TLC not rerun
+
+Next action: build and validate one isolated workflow-local diagnostic probe, then execute only after its instrumentation path has been audited for absence of an artificial W1→D1 synchronization edge.
