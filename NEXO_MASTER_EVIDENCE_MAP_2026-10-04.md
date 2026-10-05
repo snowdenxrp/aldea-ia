@@ -195,3 +195,17 @@ Status: 🟢 writer execution path identified; 🔵 W1→D1 publication/HB remai
 Do not infer safety from queue serialization alone, and do not infer vulnerability from the plain field alone.
 
 Next: inspect the exact KafkaEventQueue handoff and request-handler scheduling path for an existing publication edge.
+
+
+## 2026-10-04 — cross-thread boundary narrowed
+
+The audit now separates two publication mechanisms:
+1. Metadata-side enqueue → KafkaEventQueue event-handler: the queue uses a ReentrantLock/Condition and a dedicated event-handler thread, so queue insertion/consumption is a real synchronization boundary for the metadata event itself.
+2. Data-plane network → RequestChannel → KafkaRequestHandler: requests are handed to dedicated request-handler threads through the request channel; the handler then invokes API authorization on that thread.
+
+Critical result: the first boundary publishes into the metadata event-handler domain, but the evidence found so far does NOT show that completion of the ACL mutation establishes a happens-before edge to a later RequestChannel/request-handler execution. Therefore W1→D1 remains UNKNOWN. Temporal ordering W1 < ENQUEUE is still not equivalent to JMM HB.
+
+🟢 Event-handler/request-handler execution domains identified.
+🔵 Cross-domain W1→D1 publication edge still unresolved.
+
+Next exact target: inspect RequestChannel's concrete queue implementation and the metadata-to-request path for any shared synchronization/volatile/future/monitor edge that could publish aclCache.
