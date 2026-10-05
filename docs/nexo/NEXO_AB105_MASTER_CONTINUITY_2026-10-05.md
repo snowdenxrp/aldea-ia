@@ -29,6 +29,34 @@ Critical distinction:
 - The immutable object's final fields do not themselves establish publication of the new aclCache reference to another thread.
 - Therefore immutable/persistent structure solves snapshot coherence, but does not by itself establish W1→D1 JMM happens-before.
 
+## PCollections 4.0.2 publication audit
+Kafka pins PCollections 4.0.2.
+
+A version-labelled upstream-source mirror was inspected for the PCollections implementation. It identifies the dependency as 4.0.2 and exposes the relevant implementation classes.
+
+Confirmed in the inspected implementation:
+- HashPMap stores its backing PMap and size in final fields.
+- HashPMap.plus/minus construct new HashPMap instances; they do not mutate the existing map.
+- HashTreePMap uses a static final EMPTY instance and delegates to HashPMap; no lock/volatile/atomic/future publication primitive was identified in the class.
+- TreePSet stores its tree, comparator and direction in final fields.
+- TreePSet.plus/minus produce a new TreePSet through withTree(); no lock/volatile/atomic/future publication primitive was identified in the class.
+- KVTree uses final fields for height, size, left, key, value and right; node construction creates new immutable tree nodes.
+- IntTree likewise uses final node fields and creates new nodes for updates.
+- No explicit synchronization/publication mechanism was identified in these relevant PCollections classes.
+
+Epistemic interpretation:
+- 🟢 Persistent/immutable structure confirmed.
+- 🟢 Structural snapshot coherence strengthened.
+- 🔴 No PCollections-level W1→D1 publication/HB mechanism identified.
+- This does NOT prove that no HB exists elsewhere in the Kafka execution path.
+- It only closes the hypothesis that the PCollections primitives themselves provide the missing publication bridge.
+- Final-field safe initialization of newly constructed immutable objects is not equivalent to publication of Kafka's plain StandardAuthorizerData.aclCache reference.
+
+Evidence qualification:
+- The inspected source mirror explicitly identifies the dependency as org.pcollections:pcollections:4.0.2.
+- This is source evidence for the 4.0.2 implementation, not a Maven artifact checksum. Do not silently upgrade this to artifact-byte identity.
+- Maven metadata independently confirms 4.0.2 exists and was released in March 2024.
+
 ## Current model
 AclPublisher thread:
   W1 -> StandardAuthorizerData.removeAcl()
@@ -58,9 +86,14 @@ No inspected PR discussion, exact pinned implementation, or post-merge change id
 - Do not repeat the already-covered D1 snapshot structural probe.
 - Do not use D0_RETURN as a proxy for W1.
 - Do not treat temporal ordering as JMM happens-before.
+- Do not repeat the PCollections wrapper audit unless a genuinely new dependency/version/source discrepancy appears.
 
 ## Next frontier
-Inspect the exact pinned implementations of Kafka immutable collection primitives used by AclCache (ImmutableMap / ImmutableNavigableSet) only to determine whether they contain an actual synchronization/publication mechanism. Do not assume immutability implies cross-thread publication. If no such mechanism exists, record that as another closed synchronization hypothesis while preserving UNKNOWN for W1→D1 HB.
+The PCollections primitive hypothesis is now closed at the implementation level: no publication primitive was identified in the relevant persistent structures.
+
+The remaining source-audit frontier is outside the collection itself:
+- determine whether any Kafka-level publication/admission mechanism connects the metadata-loader W1 update to the request-serving authorization read;
+- otherwise preserve W1→D1 HB as UNKNOWN / NOT IDENTIFIED.
 
 ## Continuity rule
 No finding, contradiction, failed attempt, epistemic state, or do-not-repeat decision is silently discarded or replaced.
