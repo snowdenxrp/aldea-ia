@@ -486,3 +486,38 @@ The StandardAuthorizer.data volatile read occurs inside StandardAuthorizer.autho
 DO-NOT-REPEAT remains: no PR93 rerun, no synchronization added, no TLC rerun.
 
 Next exact target: audit the append-side continuation after D1 and the request-path state reads immediately surrounding authorization, looking only for any shared state that could retrospectively provide publication of aclCache. If none is found, freeze this branch as a bounded causal-gap result and move to full evidence reconciliation (PR84/89/95/96 and documented-vs-recoverable runs).
+
+
+## 2026-10-04 — D1 → append/E continuation audit
+
+The post-authorization continuation was inspected to determine whether the append machinery introduces any synchronization that could retroactively establish publication from the metadata EventHandler to D1.
+
+### Concrete continuation
+- After `AuthHelper` filters the Produce request, `authorizedRequestInfo` is built only from authorized topic data.
+- `KafkaApis.handleProduceRequest` then calls `ReplicaManager.handleProduceAppend(...)` for the authorized entries.
+- The append operation continues from the same request-handler execution context; it does not return to the metadata EventHandler before the append decision/path.
+- The ReplicaManager append/action-queue machinery can synchronize its own partition/delayed-operation state, but those operations occur after D1 and have no metadata-writer participant. They therefore cannot create a W1→D1 happens-before edge retrospectively.
+- The append path does not perform a second generic TOPIC WRITE authorization before the records are handed to the local append machinery.
+
+### Causal consequence
+The required exploit chain remains exactly:
+`W1 → stale aclCache read at D1 → D1 ALLOWED → same request → append/E`
+
+The append-side execution does not supply the missing first arrow. If D1 had already observed the stale authorization state, later append synchronization cannot turn that observation into evidence that W1 was visible to D1.
+
+The source trace therefore closes the post-D1 search for a plausible reverse/retroactive publication bridge, while preserving the distinction between temporal execution order and JMM happens-before.
+
+### Epistemic status
+🟢 D1 → authorizedRequestInfo → ReplicaManager append continuation identified.
+🟢 No second generic topic authorization identified after D1 in the inspected Produce path.
+🟢 Append/action synchronization is downstream of D1 and cannot establish W1→D1 retroactively.
+🔵 W1→D1 JMM HB remains UNKNOWN.
+🔵 Stale-read execution remains NOT OBSERVED / NOT DISPROVEN.
+🔴 Vulnerability remains NOT ESTABLISHED.
+
+### Branch decision
+The direct production causal-path audit is now bounded: no identified production synchronization edge closes W1→D1 in the inspected metadata publisher, request admission, authorization, or append continuation.
+
+This is **not** a proof of impossible stale visibility. It is a bounded absence-of-identified-edge result. The next work should therefore switch from inventing further synchronization candidates to full evidence reconciliation: PR84/PR89/PR95/PR96, documented-vs-recoverable workflow runs, historical contradictions, and duplicate/superseded claims.
+
+DO-NOT-REPEAT: PR93 rerun, TLC rerun, experimental latch/volatile/barrier/Future additions, or treating W1 < ENQUEUE as JMM HB.
