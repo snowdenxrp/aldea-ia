@@ -151,3 +151,6 @@ Audit status:
 - Current epistemic state remains unchanged: HB UNKNOWN, stale read NOT OBSERVED/NOT DISPROVEN, vulnerability NOT ESTABLISHED.
 
 Next action: run the workflow only after reviewing the final generated probe/source diff; any resulting artifact must be independently reconciled before changing epistemic state.
+
+
+Probe preparation correction: PR #97 workflow source-recovery now uses the Actions workspace path from `GITHUB_WORKSPACE` when reading the existing Nexo witness branch. This removes the prior mistake of attempting to resolve the Nexo branch from the Apache Kafka clone's `origin`. Latest probe branch head: `1c8b2e3483212541d052c1589d18cc8bcd7722c9`. Still not executed; epistemic state unchanged.
