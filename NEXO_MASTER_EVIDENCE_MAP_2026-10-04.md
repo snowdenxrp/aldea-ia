@@ -402,3 +402,26 @@ KafkaRequestHandler receives the Request and invokes the API handler on its requ
 Do not rerun PR93. Do not add synchronization.
 
 Next source-only target: inspect the complete BrokerMetadataPublisher/AclPublisher callback chain at the pinned revision for any per-update completion, callback, future, monitor, or shared state that is subsequently acquired/read by the data-plane request path. The initial-load future is already excluded as startup-only.
+
+
+## 2026-10-04 — metadata-cache volatile bridge ordering audit
+
+A potentially hidden bridge was checked at the pinned Kafka revision.
+
+BrokerMetadataPublisher.onMetadataUpdate first executes metadataCache.setImage(newImage), then later invokes aclPublisher.onMetadataUpdate(...). The ACL publisher then calls StandardAuthorizer.addAcl/removeAcl, which mutates the plain aclCache field.
+
+KRaftMetadataCache.currentImage is volatile, and setImage performs a volatile write. Therefore this volatile publication occurs BEFORE the incremental aclCache mutation in the same metadata EventHandler execution. A later request-side read of currentImage can establish visibility of writes that precede setImage, but it cannot by itself publish the later aclCache write that occurs after setImage.
+
+The separate KRaftMetadataCachePublisher also only assigns currentImage; no post-ACL cache publication was identified in the inspected production path.
+
+Status:
+🟢 metadataCache volatile field: VERIFIED.
+🟢 setImage ordering before AclPublisher in BrokerMetadataPublisher: VERIFIED.
+🟢 AclPublisher incremental mutation occurs after that setImage: VERIFIED.
+🔵 metadataCache volatile read does NOT currently close W1→D1 for the later aclCache write.
+🔵 W1→D1 JMM HB remains UNKNOWN.
+🔴 no vulnerability claim.
+
+This removes a concrete hidden-bridge hypothesis without claiming proof of absence of every possible bridge.
+
+Next exact target: finish the publisher-installation/order trace and verify whether any later publisher or broker lifecycle callback writes a shared volatile/atomic state after AclPublisher and before data-plane authorization. If none exists, the causal publication boundary becomes substantially narrowed.
