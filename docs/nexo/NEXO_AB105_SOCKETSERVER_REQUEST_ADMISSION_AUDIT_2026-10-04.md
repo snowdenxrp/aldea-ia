@@ -29,3 +29,31 @@ Do not add synchronization to the experiment.
 
 ## Remaining frontier
 Only inspect whether a hidden per-request metadata-readiness dependency exists inside AuthHelper/authorization itself or an immediately enclosing request-handler path. If absent, the source audit can be closed as bounded NOT-IDENTIFIED HB.
+
+
+## 2026-10-04 continuation — AuthHelper → Authorizer
+
+### 🟢 Direct invocation confirmed
+At the pinned Kafka source, AuthHelper.authorize(...) performs no wait, Future join, condition, lock acquisition, metadata-offset check, or MetadataLoader consultation. It constructs the Action and directly calls authorizer.get().authorize(requestContext, actions).
+
+### 🟢 StandardAuthorizer readiness is startup-only
+StandardAuthorizer.start() returns initialLoadFuture for non-early-start listeners. That future represents initial ACL loading only. After startup, StandardAuthorizer.authorize() reads the current data reference and immediately delegates to StandardAuthorizerData.authorize().
+
+### 🟢 Incremental ACL mutation has no per-request completion dependency
+StandardAuthorizerData.addAcl/removeAcl mutate the plain aclCache field by assigning a newly returned cache. authorize/findAclRule subsequently reads that plain field. No per-call synchronization was identified between these operations.
+
+### 🔵 Important JMM consequence
+The volatile StandardAuthorizer.data read/write is not, by itself, a publication mechanism for later writes to the nested plain aclCache when the same StandardAuthorizerData instance is retained during incremental mutation. Therefore the inspected source still does not identify an HB edge from incremental W1 mutation to D1 authorization.
+
+This is consistent with the earlier PR93 source finding and does not prove that a stale read will occur in production.
+
+## Frontier status
+Inspected chain:
+MetadataLoader → AclPublisher → StandardAuthorizerData.removeAcl (W1)
+Request/network → RequestChannel → KafkaRequestHandler → KafkaApis → AuthHelper → Authorizer.authorize (D1)
+
+Known edges remain on each execution domain, but W1→D1 publication is not identified.
+
+Result: HB(W1→D1) = UNKNOWN / NOT IDENTIFIED; stale-read execution = NOT OBSERVED / NOT DISPROVEN; vulnerability = NOT ESTABLISHED.
+
+No runtime experiment was repeated. No artificial synchronization was added.
