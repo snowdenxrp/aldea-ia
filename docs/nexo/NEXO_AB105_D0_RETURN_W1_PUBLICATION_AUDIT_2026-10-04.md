@@ -40,10 +40,18 @@ The important correction is that **D0_RETURN cannot be used as a proxy for W1**.
 ## Stronger consequence
 The search did not merely fail to find a synchronization edge: the DeleteAcls API contract identifies a completion condition that is explicitly upstream of broker-local metadata application. Therefore the obvious D0_RETURN -> client request path is insufficient to publish the W1 cache replacement.
 
-## Next frontier
-Only one meaningful source question remains: identify whether some independent synchronization/publication from the MetadataLoader thread (or AclPublisher execution) to the request/network execution domain exists outside the D0_RETURN path. Do not rerun the broker witness or add synchronization to the experiment.
+## Continuity correction
+A later repository closure note incorrectly said AB105.117R was not created. Direct GitHub history proves that AB105.117R **exists**:
+- commit: 604a692b753bfac69a88819c58e95d92f594e881
+- run: 37098764557
+- job: 111133973894
+- artifact: 11265332252
+- artifact SHA-256: d8a9e021e02871a3158b1ce0e88e7fae34b33ba5a804f9375a5fd8b20f878a7c
+
+AB105.117R remains temporal/raw broker evidence and explicitly leaves W1 -> R1 and JMM W1 -> authorization as UNKNOWN. This correction does not change the HB conclusion.
 
 ## Protected state
 AB105.116R unchanged.
-AB105.117R not created.
+AB105.117R EXISTS / VERIFIED_RAW_EVIDENCE.
 TLC not rerun.
+W1 -> D1 HB remains UNKNOWN / NOT IDENTIFIED.
