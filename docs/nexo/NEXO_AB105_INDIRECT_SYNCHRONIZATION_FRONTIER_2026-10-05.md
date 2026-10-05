@@ -119,3 +119,34 @@ Do not re-audit the request-handler callback/shutdown-latch boundary unless new 
 
 ### Next frontier
 Continue with concrete cross-domain executor submission, concurrent-collection publication, lock/condition/semaphore handoff, or a W1-derived callback into request admission. Stop at the first actual synchronization edge; otherwise retain UNKNOWN.
+
+
+## Continuity resumption — BrokerServer lifecycle lock / scheduler boundary — 2026-10-05
+
+Exact AB105 Kafka pin: 99b940733a9f6bc409457dba7108f08421d81e42.
+
+Inspected exact `BrokerServer.scala` lifecycle/startup synchronization around the metadata publisher and request-processing startup.
+
+### Verified
+- `BrokerServer` has a `ReentrantLock` and `Condition`, but `maybeChangeStatus` uses them only for broker process-status transitions and shutdown notification.
+- The lock is not acquired by `AclPublisher.onMetadataUpdate`, MetadataLoader publication, RequestChannel admission, KafkaRequestHandler authorization, or AuthHelper in the inspected path.
+- BrokerServer creates the `AclPublisher` as part of `BrokerMetadataPublisher`; this does not add a per-update lock handoff to request processing.
+- `initialCatchUpFuture`, `firstPublishFuture`, and authorizer endpoint futures are explicitly awaited during startup before request processing is enabled. This is startup synchronization already classified as such, not a steady-state per-ACL-update edge.
+- The broker's scheduler is started during startup, but no causal W1-derived scheduler submission into the request/authorization path was identified in this boundary.
+
+### JMM interpretation
+A lock/condition can establish happens-before only when the relevant threads actually release/acquire the same synchronizer in a causally connected path. Java's concurrency specification explicitly defines those release/acquire guarantees. citeturn0search0turn0search1 The BrokerServer lifecycle lock therefore cannot be promoted to W1→D1 HB merely because it exists.
+
+### Epistemic state
+- 🟢 BrokerServer lifecycle lock/condition are real, but their scope is status/shutdown.
+- 🟢 Startup futures remain confirmed as startup-only synchronization.
+- 🟡 No new post-startup cross-domain synchronization edge identified.
+- 🔴 W1→D1 HB remains UNKNOWN / NOT IDENTIFIED.
+- 🔴 stale ACL read remains NOT OBSERVED / NOT DISPROVEN.
+- 🔴 vulnerability remains NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not re-audit the BrokerServer lifecycle lock/startup-future boundary unless new source evidence shows W1 causally acquires/releases it or derives a request from it.
+
+### Next frontier
+Continue only with a concrete post-startup cross-domain executor submission, concurrent-collection handoff, synchronizer, or W1-derived callback that reaches request admission/authorization.
