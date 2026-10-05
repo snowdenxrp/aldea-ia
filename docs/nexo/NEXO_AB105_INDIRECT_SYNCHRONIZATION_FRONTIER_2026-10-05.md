@@ -352,3 +352,42 @@ Do not rerun 117R unchanged. Do not use the existing shared `System.err` marker 
 
 ### Next frontier
 Design/inspect one **new diagnostic-only cache observation** that records the exact `AclCache` identity and whether the target ACL is still present at D1, while avoiding any synchronization path from W1 to that D1 read. First validate the instrumentation itself for absence of an artificial HB edge; only then consider execution.
+
+
+## Continuation — cache probe design resolved — 2026-10-05
+
+Exact pinned `AclCache` and `StandardAuthorizerData.findAclRule()` were inspected.
+
+A safe diagnostic point exists **inside the same D1 snapshot** that authorization uses: `findAclRule()` assigns `AclCache aclCacheSnapshot = aclCache` and then passes that exact snapshot to both `checkSection(...)` calls. `AclCache` is immutable; its ACL set is exposed through `aclsByResource()`. Therefore a probe can inspect that already-selected snapshot without publishing or changing authorizer state.
+
+The target ACL can be identified structurally (exact TOPIC name + expected principal/operation/permission), avoiding any W1→D1 shared variable carrying the ACL ID. The probe can record:
+- D1 thread/correlation id;
+- `System.identityHashCode(aclCacheSnapshot)` as a diagnostic identity token;
+- snapshot ACL count;
+- whether the target ACL is present in that exact snapshot.
+
+### Instrumentation safety constraint
+The observation must occur **after the local snapshot read** and before/alongside the existing scan, and it must not write to any state later consumed by W1/D1. For output, W1 and D1 must not share the same `PrintStream`/logger publication mechanism. A separate output stream (or an independent per-thread file record) is acceptable only as an observation sink; the cache read must happen before the sink operation. The sink is not evidence of W1→D1 HB.
+
+This is materially stronger than merely logging at AUTH_ENTER: it observes the exact `AclCacheSnapshot` from which the authorization decision is computed. It still remains a diagnostic experiment, not a JMM proof, because instrumentation can affect timing. The JMM defines HB from program order plus synchronization edges; an observation must not manufacture the edge under investigation. citeturn0search12turn0search13
+
+### Expected diagnostic classifications
+- **POST_W1_CACHE**: D1 snapshot lacks the target ACL → direct empirical evidence that D1 used a cache after removal.
+- **PRE_W1_CACHE**: D1 snapshot still contains the target ACL → direct empirical stale-cache evidence for that authorization attempt, provided the cycle's W1 is independently established.
+- **AMBIGUOUS**: probe cannot uniquely classify the target snapshot/cycle.
+
+Important: even repeated PRE_W1_CACHE observations would establish an observed stale-cache behavior under the diagnostic setup, but would not by themselves prove a general vulnerability or generalize beyond the exact pinned configuration/workload.
+
+### Result
+- 🟢 Exact D1 cache snapshot point identified.
+- 🟢 No W1-shared variable is required to identify the target ACL.
+- 🟢 Cache is immutable, so inspection does not mutate the observed state.
+- 🟡 Runtime stale-cache behavior remains unobserved.
+- 🟡 HB(W1→D1) remains UNKNOWN.
+- 🔴 vulnerability remains NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not instrument before `AclCache aclCacheSnapshot = aclCache` and call that D1-cache evidence. Do not use the shared W1/D1 `System.err` sink. Do not add volatile/latch/barrier/Future synchronization. Do not rerun 117R unchanged.
+
+### Next frontier
+Implement only this diagnostic probe, validate the probe has no W1→D1 synchronization path, then run it as a distinct evidence generation step. Preserve 117R unchanged as the baseline.
