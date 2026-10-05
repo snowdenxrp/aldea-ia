@@ -213,3 +213,27 @@ Do not re-audit BrokerMetadataPublisher's post-W1 ordering unless a new candidat
 
 ### Next frontier
 Inspect the exact request-side authorization boundary for any shared state produced after W1 that is actually consumed before `AuthHelper.authorize`; otherwise retain UNKNOWN.
+
+
+## Continuation — request-side shared-state candidate audit — 2026-10-05
+
+Exact pinned `KafkaApis.scala` was inspected at `99b940733a9f6bc409457dba7108f08421d81e42` around multiple direct authorization sites.
+
+Verified: authorization is invoked directly through `authHelper.authorize(...)` from request-handler code. Some request handlers read `metadataCache` for topic/broker metadata, but the inspected authorization sites do not first perform a metadata-version/offset wait, ACL-publisher callback, or explicit synchronization with MetadataLoader/W1.
+
+Important distinction: `KafkaApis` does contain unrelated `CompletableFuture`, `ConcurrentHashMap`, and `AtomicInteger` uses in other request operations. Their existence is not a W1→D1 edge. No inspected authorization path showed a Future.get, executor handoff, or concurrent-collection handoff causally originating at W1 before authorization.
+
+### Result
+- 🟢 Direct request-side authorization boundary verified.
+- 🟢 MetadataCache reads can coexist with authorization, but no per-request ACL publication gate was identified.
+- 🟢 Unrelated concurrent structures/futures are not promoted as evidence without a causal W1 path.
+- 🟡 Other concrete shared state immediately surrounding `AuthHelper` remains the only worthwhile candidate if it can be traced to W1.
+- 🔴 W1→D1 HB still UNKNOWN / NOT IDENTIFIED.
+- 🔴 stale ACL read not reproduced.
+- 🔴 vulnerability not established.
+
+### DO-NOT-REPEAT
+Do not treat arbitrary `CompletableFuture`, `ConcurrentHashMap`, or `AtomicInteger` instances in KafkaApis as synchronization evidence; only a structure causally connected to W1 and consumed before D1 qualifies.
+
+### Next frontier
+Audit `AuthHelper` and the concrete `AuthorizerPlugin` call boundary for any hidden executor/Future/lock/collection synchronization immediately before the authorizer invocation. Stop at the first actual W1-connected edge.
