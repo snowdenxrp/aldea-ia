@@ -320,3 +320,35 @@ Do not reopen alternate-authorizer configuration for the G0 witness unless a new
 
 ### Next frontier
 The source-side W1→D1 investigation is now exhausted for the concrete G0 authorizer path. The remaining high-value question is empirical: whether the existing real-broker harness can observe the actual authorization cache identity/value used by D1 without introducing synchronization or changing the experiment semantics. Any such probe must preserve the existing witness and must not add a W1-derived barrier.
+
+
+## Continuation — AB105.117R raw-artifact inspection and stale-cache probe boundary — 2026-10-05
+
+The preserved artifact `11265332252` (SHA-256 `d8a9e021e02871a3158b1ce0e88e7fae34b33ba5a804f9375a5fd8b20f878a7c`) was downloaded and inspected directly. It contains only `nexo-ordering.log` and `nexo-ordering-evidence.txt`.
+
+The raw trace confirms the existing witness markers but contains no cache identity/cache-membership observation at D1. In the observed cycles, D1 authorization decisions are DENIED after ACL_W1; this is an observed result, not proof that D1 necessarily observed the post-removal cache under the JMM.
+
+The exact harness source was also recovered from the pinned commit/workflow. It explicitly configures:
+`ServerConfigs.AUTHORIZER_CLASS_NAME_CONFIG = org.apache.kafka.metadata.authorizer.StandardAuthorizer`.
+Thus the concrete-authorizer conclusion is independently confirmed by the harness configuration, not only by probe placement.
+
+### Safe empirical probe constraint
+A useful next experiment must observe the cache state actually used by D1 without creating a W1→D1 synchronization edge. In particular, extending the existing `System.err.println` instrumentation at D1 would be unsafe as a proof mechanism because W1 already prints to the same `System.err` stream; a shared PrintStream synchronization path could itself create an artificial publication chain.
+
+A candidate diagnostic therefore must keep the W1 marker and D1 cache observation on distinct publication mechanisms (for example, separate output streams) or otherwise prove that the observation mechanism itself does not connect W1 to D1. The observation may change timing, so it remains a diagnostic experiment rather than a proof by itself. It must not add volatile/latch/barrier/Future synchronization derived from W1.
+
+### Result
+- 🟢 AB105.117R raw artifact independently inspected.
+- 🟢 No D1 cache identity/membership observation exists in 117R.
+- 🟢 Exact witness harness explicitly configures pinned StandardAuthorizer.
+- 🟢 Existing D1 DENIED observations remain valid temporal evidence only.
+- 🟡 Actual D1 cache identity/value remains unobserved.
+- 🟡 stale-read reproduction remains NOT OBSERVED / NOT DISPROVEN.
+- 🟡 HB(W1→D1) remains UNKNOWN / NOT IDENTIFIED.
+- 🔴 vulnerability/security impact remains NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not rerun 117R unchanged. Do not use the existing shared `System.err` marker as proof of cache visibility. Do not add a W1-derived synchronization primitive.
+
+### Next frontier
+Design/inspect one **new diagnostic-only cache observation** that records the exact `AclCache` identity and whether the target ACL is still present at D1, while avoiding any synchronization path from W1 to that D1 read. First validate the instrumentation itself for absence of an artificial HB edge; only then consider execution.
