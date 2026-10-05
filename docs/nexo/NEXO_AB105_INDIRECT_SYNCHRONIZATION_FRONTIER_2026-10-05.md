@@ -187,3 +187,29 @@ Do not re-audit `KRaftMetadataCache.currentImage` ordering unless new source evi
 
 ### Next frontier
 The remaining high-value question is narrower: **after W1, does any other publisher in the same metadata callback perform a synchronization/publication operation on state that the request path reads before D1?** If yes, trace that exact state and its synchronization semantics. If no, retain UNKNOWN.
+
+
+## Continuation — post-W1 publishers audit — 2026-10-05
+
+Inspected the exact pinned `BrokerMetadataPublisher.onMetadataUpdate` continuation after `aclPublisher.onMetadataUpdate(...)`.
+
+Verified order:
+`W1 ACL publisher` → `groupCoordinator.onMetadataUpdate` → `shareCoordinator.onMetadataUpdate` → feature/share-version handling → `firstPublishFuture.complete`.
+
+No inspected operation in this post-W1 sequence is a request-admission/authorization callback. The request path enters `KafkaApis` independently and performs `authHelper.authorize(...)` directly. Therefore these post-W1 publisher calls do not, by themselves, create a demonstrated W1→D1 synchronization edge.
+
+The `firstPublishFuture.complete` at the end is the already-closed startup readiness future; it is not a per-update future and is not awaited by steady-state request authorization.
+
+### Status
+- 🟢 Post-W1 callback order verified from exact pin.
+- 🟢 Startup future remains startup-only.
+- 🟡 A deeper synchronizer inside group/share coordinator code is only relevant if D1 reads the same state before authorization; no such causal path is established here.
+- 🔴 No new W1→D1 HB edge identified.
+- 🔴 stale ACL read not reproduced.
+- 🔴 vulnerability not established.
+
+### DO-NOT-REPEAT
+Do not re-audit BrokerMetadataPublisher's post-W1 ordering unless a new candidate identifies a specific shared state read by D1.
+
+### Next frontier
+Inspect the exact request-side authorization boundary for any shared state produced after W1 that is actually consumed before `AuthHelper.authorize`; otherwise retain UNKNOWN.
