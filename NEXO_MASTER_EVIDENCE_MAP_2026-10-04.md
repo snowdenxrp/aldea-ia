@@ -425,3 +425,31 @@ Status:
 This removes a concrete hidden-bridge hypothesis without claiming proof of absence of every possible bridge.
 
 Next exact target: finish the publisher-installation/order trace and verify whether any later publisher or broker lifecycle callback writes a shared volatile/atomic state after AclPublisher and before data-plane authorization. If none exists, the causal publication boundary becomes substantially narrowed.
+
+
+## 2026-10-04 — publisher-chain completion audit
+
+The pinned Kafka source was traced one step beyond AclPublisher.
+
+BrokerMetadataPublisher.onMetadataUpdate executes synchronously on the MetadataLoader EventHandler thread. Its order is: metadataCache.setImage(newImage), coordinator/topic/config/quota/SCRAM/token publishers, AclPublisher.onMetadataUpdate, then groupCoordinator.onMetadataUpdate, shareCoordinator.onMetadataUpdate, startup-only replica-manager completion, feature/share-version handling, and finally the outer firstPublishFuture completion in the finally block.
+
+AclPublisher.onMetadataUpdate applies incremental ACL changes synchronously by iterating the ordered delta and calling addAcl/removeAcl. Its completedInitialLoad guard causes completeInitialLoad() only on the first metadata update containing ACL changes; subsequent incremental ACL updates do not call it. Thus completeInitialLoad()/initialLoadFuture remains a startup gate and does not provide per-update publication for W1→D1.
+
+BrokerServer separately constructs dataPlaneRequestProcessor and dataPlaneRequestHandlerPool, then installs metadata publishers through sharedServer.loader.installPublishers. The broker metadata publisher is followed in the publisher list by BrokerRegistrationTracker, but each publisher callback remains part of the same metadata-loader event-handler sequence; no callback/future was identified that is awaited by data-plane authorization on each ACL update.
+
+The outer firstPublishFuture is completed in BrokerMetadataPublisher finally, but it represents first publication/startup and is not a per-ACL-update handoff.
+
+Status:
+🟢 AclPublisher incremental mutation is synchronous inside the metadata EventHandler.
+🟢 completeInitialLoad is first-load/startup-only, not per-update.
+🟢 BrokerMetadataPublisher post-AclPublisher callback order is verified.
+🟢 data-plane request processor/handler pool is independently constructed.
+🔵 No post-AclPublisher production synchronization edge consumed by D1 has been identified.
+🔵 W1→D1 JMM HB remains UNKNOWN.
+🔴 Vulnerability/safety conclusion remains unestablished.
+
+This materially narrows the remaining ???: the obvious publisher-chain completion/future candidates inspected so far do not provide a demonstrated per-update bridge to request authorization.
+
+DO-NOT-REPEAT: do not rerun PR93, do not add synchronization, do not rerun TLC.
+
+Next exact source target: inspect the concrete request admission/authorizer invocation path for any read/acquire of broker state that is written after AclPublisher in the same metadata callback. If none exists, document the remaining UNKNOWN as a bounded absence-of-identified-edge result, not as a proof of impossible stale visibility.
