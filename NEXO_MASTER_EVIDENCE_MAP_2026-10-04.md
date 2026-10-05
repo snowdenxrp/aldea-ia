@@ -576,3 +576,69 @@ For future experiment claims, require all six links to reconcile before promotio
 5. raw artifact/log,
 6. semantic interpretation.
 Missing any link => PENDING/UNKNOWN, not runtime evidence.
+## 2026-10-04 — PR #87–#93 family reconciliation
+
+### Family map
+
+#### PR #87 — direct JMM race
+🟢 The harness design is a direct in-process StandardAuthorizer race: writer calls removeAcl(); readers call authorize(); no completion latch, volatile gate, or reader barrier is added after removal.
+🔴 No independently reconciled runtime chain was recovered here with the mandatory six-link acceptance gate (trigger/path → run → job → executed head/pin → raw artifact/log → interpretation).
+Therefore PR #87 is retained as a diagnostic precursor/design, not promoted as runtime race evidence.
+
+#### PR #88 — causal post-return discriminator
+🟢 The harness introduced explicit removeEnter/removeReturn timing and distinguishes post-return observations from temporal overlap.
+🔵 This is a methodological refinement over PR #87, not an independent production-path witness.
+🔴 No separately accepted raw runtime package was recovered for PR #88 itself.
+Therefore PR #88 = diagnostic design / superseded by later reconciled executions, not an independent sample.
+
+#### PR #89 — causal discriminator v2
+🟢 The classification logic was refactored to preserve the key criterion observation.enter > writerObservation.exit while keeping the race unsynchronized.
+🟢 The accompanying source audit correctly identified that StandardAuthorizer.data is volatile while steady-state aclCache replacement occurs inside the existing StandardAuthorizerData object.
+🔵 PR #89 is the methodological bridge to the cache-identity diagnostic; it is not itself an accepted runtime sample.
+Therefore PR #89 = superseded diagnostic design/source analysis.
+
+#### PR #90 / #91 — harness compile/API corrections
+🟢 These PRs address executable-harness correctness (including the topic-name/type API mismatch) rather than changing the scientific race model.
+🔴 A compile correction is not runtime evidence. No raw six-link runtime chain from these PRs was recovered that independently changes the evidence map.
+Therefore PR #90/#91 = mechanical prerequisite/fix lineage, not evidence samples.
+
+#### PR #92 — cache-identity diagnostic
+🟢 Two raw-identified executions are recorded:
+- run 37034044664, job 110927711849, commit 307fa2e...: POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=0.
+- run 37036029543, job 110934345861, commit 37d5fbe...: POST_RETURN_ALLOWED=0, POST_RETURN_PRE_REMOVE_CACHE=0, POST_RETURN_POST_REMOVE_CACHE=6262072, POST_RETURN_UNKNOWN_CACHE=0, OVERLAP_ALLOWED=14392.
+🟢 The second census is the stronger/superseding cache-identity observation because it explicitly classified every post-return reader sample against pre/post-remove cache identity.
+🟢 Artifacts are recorded with IDs 11238798341 and 11240635939 and SHA-256 digests in the PR checkpoint.
+🔵 These are empirical diagnostics with timing/reflection effects; they do not prove JMM safety, impossibility, or the exact stale-read mechanism.
+Therefore PR #92 = ACCEPTED OBSERVED diagnostic evidence, with the second census superseding the first for the cache-identity question.
+
+#### PR #93 — authorize/publication-boundary audit family
+🟢 The recovered source audit established the concrete steady-state mutation path: MetadataLoader → AclPublisher → StandardAuthorizer.removeAcl() → StandardAuthorizerData.removeAcl() → plain aclCache replacement.
+🟢 The authorization path was traced through StandardAuthorizer.authorize() and StandardAuthorizerData.findAclRule(), including the local aclCache snapshot used for the decision.
+🟢 The broker request path was traced to KafkaRequestHandler → KafkaApis → authorization, establishing that D1 executes on the request-handler side.
+🟢 The audit also established the RequestChannel distinction: a queue hand-off can publish producer actions before enqueue to the consumer after dequeue, but it does not by itself create a blanket W1→D1 edge for a mutation that occurs independently of that request publication.
+🟢 The post-D1 append continuation was inspected; downstream append/action synchronization cannot retroactively establish W1→D1.
+🔵 Final result: HB(W1,R1/D1)=NOT_IDENTIFIED in the inspected production paths. This is a bounded absence-of-identified-edge result, not proof of stale visibility.
+🔴 No security/vulnerability conclusion is established.
+Therefore PR #93 = ACCEPTED SOURCE/ARCHITECTURE + empirical-context family, with its runtime observations remaining behavioral rather than JMM proof.
+
+### Duplicate/supersession decisions
+- PR #87 → superseded by the stronger causal-window methodology; no independent accepted runtime sample.
+- PR #88 → superseded by PR #89/92 methodology; do not count as a separate experiment.
+- PR #89 → superseded diagnostic design/source refinement; do not count as a separate runtime sample.
+- PR #90/#91 → compile/API repair lineage; do not count as scientific samples.
+- PR #92 first run → retained as historical raw evidence, but second cache census is the stronger result for cache-identity classification.
+- PR #92 second run → accepted diagnostic witness; does not establish JMM.
+- PR #93 → accepted architectural/source-boundary finding plus recovered empirical context; does not establish JMM HB.
+- PR #94 → separate real-broker ordering family; its temporal W1→ENQUEUE→DEQUEUE→AUTH observations must not be merged with PR #92's in-process cache diagnostics.
+
+### Reconciliation result
+🟢 No buried PR #87–#93 result found that changes the current epistemic boundary.
+🟢 No result from this family upgrades HB(W1→D1) from UNKNOWN/NOT_IDENTIFIED.
+🟢 No result establishes stale-read execution.
+🟢 Temporal overlap remains observed in the controlled diagnostics.
+🟢 Real-broker post-D0 authorization observations remain bounded empirical evidence.
+🔴 Security impact/exploitability remains NOT ESTABLISHED.
+
+DO-NOT-REPEAT: PR #87/#88/#89 diagnostic reruns, PR #92 cache-identity reruns, PR #93 rerun, TLC rerun, or adding latch/volatile/barrier/Future synchronization to the race.
+
+Next distinct target: reconcile the remaining PR #94 ordering family against PR #93's RequestChannel/source audit, especially whether the observed W1→ENQUEUE ordering has any legitimate publication consequence for the actual D1 reader. Temporal ordering must remain separate from JMM HB.
