@@ -29,11 +29,13 @@ jobs:
         run: |
           git -C "$GITHUB_WORKSPACE" fetch origin nexo-ab105-g0-ordering-witness:refs/remotes/origin/nexo-ab105-g0-ordering-witness
           python3 - <<'PY'
+          import os
           import subprocess
           from pathlib import Path
 
+          workspace = os.environ["GITHUB_WORKSPACE"]
           src = subprocess.check_output([
-              "git", "-C", "$GITHUB_WORKSPACE",
+              "git", "-C", workspace,
               "show",
               "origin/nexo-ab105-g0-ordering-witness:.github/workflows/nexo-ab105-g0-ordering-witness.yml"
           ], text=True)
