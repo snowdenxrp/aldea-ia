@@ -86,3 +86,36 @@ Conclusion: metadata offset is a real lifecycle/provenance signal and startup ga
 State: W1 -> D1 HB = UNKNOWN / NOT IDENTIFIED; stale ACL read = NOT OBSERVED / NOT DISPROVEN; vulnerability = NOT ESTABLISHED; metadata-offset/lifecycle candidate = CLOSED.
 
 DO-NOT-REPEAT: metadata-offset/lifecycle candidate. Next frontier remains only post-startup cross-domain executor submission, concurrent-collection handoff, synchronizer, callback, or explicit per-request metadata-version check not already audited.
+
+
+## Continuity resumption — request-handler callback/executor boundary — 2026-10-05
+
+Exact AB105 Kafka pin: 99b940733a9f6bc409457dba7108f08421d81e42.
+
+Inspected exact `KafkaRequestHandler.scala` at the pinned source.
+
+### Verified
+- Request handlers are dedicated Kafka threads started directly by `KafkaThread.daemon(...).start()`; this is request-pool startup, not a W1-derived submission edge.
+- `KafkaRequestHandler.run()` receives requests through `RequestChannel.receiveRequest(...)`, then executes `apis.handle(request, requestLocal)` in the handler thread.
+- `wrapAsyncCallback` can reschedule an asynchronous callback onto a request thread through `requestChannel.sendCallbackRequest(...)`, but the wrapper is explicitly required to be created from an existing request thread and captures that request's channel/current request. It is therefore a request-originated callback bridge, not a MetadataLoader/AclPublisher-to-request publication primitive.
+- The only `CountDownLatch` in this handler is `shutdownComplete`; it coordinates shutdown completion and is unrelated to ACL publication.
+- The request handler pool's `synchronized` methods protect thread-pool resize/shutdown bookkeeping; they do not synchronize MetadataLoader W1 with authorization.
+- KafkaApis at the same pin contains no `wrapAsyncCallback` use, so this generic callback mechanism does not provide an observed W1→D1 path in the inspected authorization path.
+
+### JMM interpretation
+An executor submission, concurrent-collection handoff, Future.get, or synchronizer acquire could establish HB when causally connected to W1; Java documents those guarantees. cite turn0search0 turn0search1 turn0search3 No such W1-derived operation was identified in this request-handler boundary.
+
+### Epistemic state
+- 🟢 Request-thread callback machinery is real, but its causal origin is request-side, not W1.
+- 🟢 Request handler startup/thread creation is not a per-ACL synchronization edge.
+- 🟢 Shutdown latch/pool synchronization is unrelated to steady-state ACL authorization.
+- 🟡 Other post-startup cross-domain bridges remain to be checked.
+- 🔴 No stale ACL read reproduced.
+- 🔴 No vulnerability established.
+- 🟡 HB(W1→D1) remains UNKNOWN / NOT IDENTIFIED.
+
+### DO-NOT-REPEAT
+Do not re-audit the request-handler callback/shutdown-latch boundary unless new evidence shows MetadataLoader/AclPublisher causally invokes it.
+
+### Next frontier
+Continue with concrete cross-domain executor submission, concurrent-collection publication, lock/condition/semaphore handoff, or a W1-derived callback into request admission. Stop at the first actual synchronization edge; otherwise retain UNKNOWN.
