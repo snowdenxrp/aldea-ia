@@ -642,3 +642,36 @@ Therefore PR #93 = ACCEPTED SOURCE/ARCHITECTURE + empirical-context family, with
 DO-NOT-REPEAT: PR #87/#88/#89 diagnostic reruns, PR #92 cache-identity reruns, PR #93 rerun, TLC rerun, or adding latch/volatile/barrier/Future synchronization to the race.
 
 Next distinct target: reconcile the remaining PR #94 ordering family against PR #93's RequestChannel/source audit, especially whether the observed W1→ENQUEUE ordering has any legitimate publication consequence for the actual D1 reader. Temporal ordering must remain separate from JMM HB.
+
+## 2026-10-04 — PR #94 ↔ PR #93 publication-path audit
+
+### New source findings
+🟢 PR #94's W1 instrumentation is inside `StandardAuthorizerData.removeAcl()`, on the metadata/ACL mutation execution path.
+🟢 The real Kafka request ENQUEUE is performed by the network `Processor.processCompletedReceives()`, which constructs the Request and then calls `requestChannel.sendRequest(req)`.
+🟢 `RequestChannel.sendRequest()` performs `requestQueue.put(request)`; `KafkaRequestHandler.receiveRequest()` later polls/takes from that queue. This provides a valid queue publication edge for actions sequenced before the put on the ENQUEUE thread.
+🟢 The inspected network Processor thread is distinct from the metadata publisher thread executing W1. Therefore the missing edge remains W1 --po--> ENQUEUE.
+🟢 The controller ACL operation is asynchronous: `AclApis.handleDeleteAcls()` calls `AclMutator.deleteAcls()`; `QuorumController.deleteAcls()` queues a controller write event; the controller generates/removes metadata records and completes the client future only after the relevant deferred/log progress. This is a cross-thread/cross-process causal path, but it does not itself create a Java Memory Model HB edge from the broker metadata-loader thread to the broker network Processor thread.
+🟢 `AclPublisher.onMetadataUpdate()` applies committed ACL deltas by calling `StandardAuthorizer.removeAcl()`; `StandardAuthorizerData` explicitly declares itself not thread-safe, and steady-state `aclCache` is a plain field.
+
+### Important correction/precision
+The prior statement “W1 and ENQUEUE are different execution domains” is now source-backed by the actual production path: W1 is emitted from ACL metadata publication, while ENQUEUE is emitted from `SocketServer.Processor.processCompletedReceives()`.
+
+The observed temporal chain
+`W1 → ENQUEUE → DEQUEUE → D1`
+does NOT establish JMM HB from W1 to D1 merely because the request was issued after D0_RETURN.
+
+A client-side `Future.get()`, network response, or controller/metadata log causality can establish synchronization within the participating Java processes/threads where the JMM contract applies, but it cannot be promoted into a single broker-local W1→ENQUEUE HB edge without an explicit broker-local synchronization chain connecting the W1 thread to the ENQUEUE thread.
+
+### Result
+🟢 `ENQUEUE → DEQUEUE`: valid queue publication edge.
+🟢 `DEQUEUE → D1`: same request-handler program order.
+🔴 `W1 → ENQUEUE`: no broker-local HB edge identified.
+🔴 Therefore `HB(W1 → D1)` remains **NOT_IDENTIFIED / UNKNOWN**.
+🔴 Stale-read execution remains **NOT OBSERVED / NOT DISPROVEN**.
+🔴 Security impact/exploitability remains **NOT ESTABLISHED**.
+
+### New DO-NOT-REPEAT boundary
+Do not treat controller future completion, client-side D0_RETURN, or network request issuance as a substitute for a broker-local JMM edge. Do not merge cross-process causal ordering with Java happens-before.
+
+### Next distinct audit target
+Only continue if needed by auditing the exact metadata-loader/event-queue implementation for a broker-local synchronization primitive that connects ACL publication to the network Processor. If none exists, the HB question is bounded at UNKNOWN/NOT_IDENTIFIED and further runtime ordering runs add no epistemic value.
