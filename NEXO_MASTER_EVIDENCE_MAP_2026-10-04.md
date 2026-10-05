@@ -163,3 +163,22 @@ and independently:
 `MetadataLoader → AclPublisher → StandardAuthorizerData.addAcl/removeAcl → aclCache publication`.
 
 The objective is to identify an **existing production synchronization/publication edge**, not manufacture one.
+
+
+## 2026-10-04 — critical publication finding
+
+Source-level inspection sharpened the race model:
+
+- StandardAuthorizerData is explicitly documented as not thread-safe.
+- Its aclCache field is a plain field.
+- addAcl/removeAcl replace that field inside the existing StandardAuthorizerData object.
+- StandardAuthorizer.data is volatile, but those ACL mutations do not assign a new StandardAuthorizer.data object.
+- authorize() first reads the volatile data reference, then the nested aclCache reference is read later inside StandardAuthorizerData.authorize().
+
+Therefore the volatile data field is not, by itself, a publication event for every later aclCache replacement. It does not close W1->D1 merely because data is volatile.
+
+This is stronger than the previous UNKNOWN wording, but it is still NOT a vulnerability proof: the actual execution/publication edge from the metadata publisher thread to the authorization thread must still be identified, including any lock/queue/volatile/monitor edge.
+
+Status: HIGH-VALUE SOURCE FINDING / causal edge still UNKNOWN.
+
+Next exact target: inspect the production metadata-publisher execution mechanism and the broker request-handler execution mechanism for an existing synchronization edge. No experimental synchronization is to be added.
