@@ -238,3 +238,18 @@ No concrete broker-state read/write bridge has yet been identified that turns me
 🔵 vulnerability/safety impact unresolved.
 
 Next: inspect the exact MetadataLoader/AclPublisher completion semantics and whether any request-admission/authorizer readiness gate is reused after initial startup. Do not confuse the initial-load future with per-ACL-update publication.
+
+
+## 2026-10-04 — readiness gate is startup-only, not per-update publication
+
+A high-value distinction is now verified: StandardAuthorizer has an initialLoadFuture used by start() so listeners wait for initial authorization metadata before normal request processing. completeInitialLoad() publishes the new data reference and completes that future. This gate protects startup readiness, not each subsequent ACL mutation.
+
+The incremental addAcl/removeAcl path still calls data.addAcl/data.removeAcl without completing or replacing the initial-load future. Therefore the startup readiness mechanism cannot be used as a per-ACL-update W1→D1 happens-before edge.
+
+KIP-801 explicitly says StandardAuthorizer is multi-threaded and continues authorizing while ACL records are applied in order; initialization is a separate concern. This sharply removes one possible hidden bridge.
+
+🟢 Startup readiness gate identified.
+🟢 It is not a per-update publication mechanism.
+🔵 W1→D1 HB remains UNKNOWN.
+
+Next: inspect AclPublisher/MetadataLoader per-update callback completion and whether any shared future/lock is awaited by the request path after ACL changes. If not, the causal bridge remains absent from identified production mechanisms.
