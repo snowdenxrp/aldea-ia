@@ -521,3 +521,58 @@ The direct production causal-path audit is now bounded: no identified production
 This is **not** a proof of impossible stale visibility. It is a bounded absence-of-identified-edge result. The next work should therefore switch from inventing further synchronization candidates to full evidence reconciliation: PR84/PR89/PR95/PR96, documented-vs-recoverable workflow runs, historical contradictions, and duplicate/superseded claims.
 
 DO-NOT-REPEAT: PR93 rerun, TLC rerun, experimental latch/volatile/barrier/Future additions, or treating W1 < ENQUEUE as JMM HB.
+
+## 2026-10-04 — full evidence reconciliation: PR84 / PR95 / PR96 + execution-path integrity
+
+### PR #84 archaeology
+🟢 Historical run `36943184415` reached a real Kafka Producer and produced a denial.
+🟢 The job log reported `Topic authorization failed`.
+🔴 The run failed because the harness did not observe its `D1_AUTH_DECISION` latch within timeout; no complete recoverable A1→D0→D1→D2→E witness was emitted.
+Therefore PR #84 is NOT target-race evidence and is NOT an independent sample. Later PR #86 remains the valid recovered propagation-window result.
+Source checkpoint: `13f92dc0b6ffc25c7ae5d37b91fe4873eb8014cb`.
+
+### PR #95 execution-path reconciliation
+🟢 Branch/workflow configuration was inspected.
+🔴 The claimed 100-cycle visibility branch was not included in the workflow's declared push trigger; the workflow also reconstructs the harness from the ordering-witness workflow rather than directly establishing the claimed 100-cycle executable source.
+Therefore PR #95 = EXECUTION-PATH UNVERIFIED; its 100-cycle claim is not accepted as runtime evidence.
+Source checkpoint: `c509333539d3980c913a1f5b8b86a4d20f76e6b1`.
+
+### PR #96 prewarm reconciliation
+🟢 The claimed producer prewarm was inspected.
+🔴 The workflow reconstructs `NexoG0OrderingWitnessTest.java` from historical commit `a3aaae3a...`, whose source lacks the claimed prewarm.
+Therefore PR #96 = IMPLEMENTATION UNVERIFIED; no runtime result is accepted from it.
+Source checkpoint: `f3347281472a78f368c585c78de701f8b43258c8`.
+
+### Visibility-probe integrity
+🟢 The executed-head audit established that the two accepted JMM diagnostic witnesses used executed head `0388dce81a2e08dd90f96f6806fe74683ed6f543`, and the classification refactor preserved the `observation.enter > writerObservation.exit` criterion without adding race synchronization.
+🟢 The probe-neutrality audit correctly rejects shared logging/PrintStream as a visibility primitive.
+🔵 Even a neutral snapshot-identity observation would remain empirical evidence, not JMM proof.
+Sources: `f554a0733920e6174395059fff11d9548b21c14c`, `3d1f67ede6380814a7517656657207888cbb6b78`.
+
+### Missed-gap reconciliation
+🟢 A retrospective review identified the recurring acceptance failure: PR/branch/documentation is not execution. Acceptance requires:
+`workflow trigger compatible → run ID → job ID → executed steps → artifact/raw evidence → commit/pin concordant`.
+🟢 The review also confirms there is no accepted control-vs-experiment runtime pair for the visibility experiment.
+🔵 Cache-identity mismatch alone is insufficient to classify stale-read without reconciling the exact prior cache/update sequence.
+Source checkpoint: `acfacf21e739738e85788761b6c4aeabe650e5e7`.
+
+### Reconciliation outcome
+- PR #84: HISTORICAL FAILED / NOT TARGET-RACE EVIDENCE.
+- PR #95: EXECUTION-PATH UNVERIFIED / NOT ACCEPTED.
+- PR #96: IMPLEMENTATION UNVERIFIED / NOT ACCEPTED.
+- PR #93: EXECUTED empirical JMM diagnostic; raw run recovered and valid as OBSERVED, but not JMM proof.
+- PR #94: real-broker ordering witness family; bounded temporal evidence only.
+- No newly recovered item changes AB105.116R.
+- No AB105.117R created.
+- No TLC rerun.
+- No new vulnerability conclusion.
+
+### Evidence acceptance gate (now mandatory)
+For future experiment claims, require all six links to reconcile before promotion:
+1. trigger/path,
+2. run,
+3. job,
+4. executed head/pin,
+5. raw artifact/log,
+6. semantic interpretation.
+Missing any link => PENDING/UNKNOWN, not runtime evidence.
