@@ -330,3 +330,19 @@ Interpretation remains conservative: this is an empirical diagnostic, not a JMM 
 🟢 No post-return pre-remove cache/snapshot observed.
 🔵 JMM publication edge remains UNKNOWN.
 🔵 Security impact remains UNKNOWN.
+
+
+## 2026-10-04 — PR93 vs JMM reconciliation
+
+The recovered PR93 run now gives a clean empirical boundary: 4,071,307 observations, with zero POST_RETURN_ALLOWED, zero POST_RETURN_PRE_REMOVE_CACHE, and zero POST_RETURN_PRE_REMOVE_SNAPSHOT. This is consistent with the observed implementation behavior, but it does not establish a JMM happens-before edge.
+
+The JLS requires an actual synchronization edge (for example, unlock→lock on the same monitor or volatile-write→volatile-read) to create happens-before visibility; absence of observed stale reads cannot manufacture such an edge. Therefore PR93 is evidence about behavior under the tested schedule/runtime, not proof that the stale snapshot execution is impossible.
+
+The most important reconciliation is now: OVERLAP_ALLOWED=78,521 proves the probe can observe ALLOWED outcomes while the causal window overlaps, but the probe saw none after the tested return boundary. This separates overlap behavior from post-return visibility and prevents the two from being conflated.
+
+🟢 PR93 empirical result recovered/reconciled.
+🟢 Pinned Kafka revision verified.
+🔵 JMM publication edge still UNKNOWN.
+🔵 A stale-read execution remains unproven, not disproven.
+
+Next: inspect the exact probe instrumentation boundary to ensure POST_RETURN is anchored to the ACL mutation return rather than to a stronger synchronization point that could silently bias the result. This is an evidence-integrity audit, not a rerun.
