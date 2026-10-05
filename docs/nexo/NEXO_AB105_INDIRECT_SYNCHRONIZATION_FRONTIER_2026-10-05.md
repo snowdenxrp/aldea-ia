@@ -297,3 +297,26 @@ The exact `StandardAuthorizer` / `StandardAuthorizerData` lock hypothesis is CLO
 
 ### Next frontier
 Only a genuinely new causal edge outside the already audited path can change the conclusion. The remaining high-value check is alternate authorizer configuration/implementation actually used by the witness; if the witness uses StandardAuthorizer, the source-side HB investigation is exhausted and the remaining question is empirical stale-read reproduction, which current evidence has not achieved.
+
+
+## Continuation — concrete authorizer used by G0 witness — 2026-10-05
+
+The G0 v2 workflow and AB105.117R raw-evidence checkpoint were reconciled against the authorizer question.
+
+The workflow checks out the exact Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42` and injects the `ACL_W1`, `AUTH_ENTER`, and `AUTH_DECISION` probes directly into `metadata/.../StandardAuthorizerData.java`. The successful AB105.117R artifact reports the expected ACL_W1 and authorization markers. Therefore the real-broker witness is exercising the pinned `StandardAuthorizerData` implementation rather than an unexamined alternate authorizer implementation.
+
+This closes the alternate-authorizer ambiguity for G0. It does not convert the ordering witness into JMM proof: the raw witness still lacks an R1/downstream-effect marker and does not establish W1→D1 happens-before. The JMM requires an actual happens-before chain built from program order and synchronization edges; timestamps/temporal observation alone are insufficient. citeturn0search13
+
+### Result
+- 🟢 Concrete authorizer implementation used by G0 witness: pinned `StandardAuthorizerData`.
+- 🟢 Source-side implementation and runtime instrumentation refer to the same class.
+- 🟢 Alternate-authorizer ambiguity for this witness CLOSED.
+- 🟡 HB(W1→D1) remains UNKNOWN / NOT IDENTIFIED.
+- 🟡 stale ACL read remains NOT OBSERVED / NOT DISPROVEN.
+- 🔴 vulnerability/security impact remains NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not reopen alternate-authorizer configuration for the G0 witness unless a new raw artifact shows a different authorizer class. Do not infer HB from the successful runtime ordering witness.
+
+### Next frontier
+The source-side W1→D1 investigation is now exhausted for the concrete G0 authorizer path. The remaining high-value question is empirical: whether the existing real-broker harness can observe the actual authorization cache identity/value used by D1 without introducing synchronization or changing the experiment semantics. Any such probe must preserve the existing witness and must not add a W1-derived barrier.
