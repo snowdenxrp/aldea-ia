@@ -287,3 +287,16 @@ This does not prove absence of every possible JMM edge, but it removes the speci
 🔵 W1→D1 remains UNKNOWN.
 
 Next: reconcile this structural source result against the pinned experimental witness and then inspect whether any authorizer-specific lock is taken by both ACL mutation and authorize().
+
+
+## 2026-10-04 — no shared authorizer lock identified
+
+Fresh source inspection finds no lock in StandardAuthorizerData protecting both mutation and authorization. StandardAuthorizerData is explicitly documented as not thread-safe; aclCache is a plain field. addAcl/removeAcl replace aclCache inside the existing data object, while StandardAuthorizer.authorize() snapshots the outer data reference and then calls curData.authorize(). The Authorizer API itself describes authorize() as synchronous and intended for locally cached ACLs on request threads.
+
+Important correction to avoid overclaiming: the current StandardAuthorizer source comment says a read-write lock synchronizes data, but the executable methods shown do not perform such a lock around incremental addAcl/removeAcl/authorize. Therefore the comment cannot be treated as proof of a shared lock edge.
+
+🟢 No executable shared authorizer lock found in the inspected source.
+🔵 W1→D1 JMM edge remains UNKNOWN.
+🔵 Stale-read vulnerability remains UNPROVEN.
+
+Next: reconcile this source finding with the pinned experiment and existing PR93 diagnostic. The key question is now whether the observed zero stale snapshots can be explained by a concrete publication edge, or only by empirical scheduling/implementation behavior.
