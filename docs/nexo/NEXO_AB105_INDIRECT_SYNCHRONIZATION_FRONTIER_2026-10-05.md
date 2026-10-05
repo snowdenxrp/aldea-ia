@@ -264,3 +264,36 @@ Do not re-audit `AuthHelper → Plugin.get() → Authorizer.authorize()` unless 
 
 ### Next frontier
 Reconcile the Authorizer thread-safety contract against the exact pinned `StandardAuthorizer` / `StandardAuthorizerData` implementation and any alternate authorizer implementation actually used by the experiment. Stop if no additional publication edge exists.
+
+
+## Continuation — final StandardAuthorizer reconciliation — 2026-10-05
+
+Exact AB105 pin `99b940733a9f6bc409457dba7108f08421d81e42` was re-inspected against the Authorizer thread-safety contract.
+
+### Definitive source facts
+- `StandardAuthorizer.data` is `volatile`.
+- `authorize()` performs a volatile read of `data` into `curData`, then calls `curData.authorize()`.
+- Incremental `addAcl/removeAcl` mutate the existing `StandardAuthorizerData` through `data.addAcl/removeAcl`; they do not replace the outer volatile `data` reference.
+- `StandardAuthorizerData.aclCache` is plain, and the class explicitly says it is not thread-safe.
+- `removeAcl/addAcl` replace that plain `aclCache` reference inside the same `StandardAuthorizerData` object.
+- `findAclRule()` later reads the plain `aclCache` into `aclCacheSnapshot`.
+- The comment claiming a read-write lock exists is not matched by an actual lock field/import/use in this exact pinned implementation. This is source/comment inconsistency, not evidence of a hidden lock.
+- `start()` / `initialLoadFuture` remain startup readiness only.
+
+### Consequence
+The outer volatile read can publish the `StandardAuthorizerData` object/reference, but the incremental W1 mutation occurs later inside that already-published object. There is no identified synchronization edge from that nested plain `aclCache` replacement to D1's later plain `aclCache` read. Under the JMM, volatile HB applies to a write/read of the same volatile field; HB is formed by program order plus synchronization edges. It cannot be inferred merely from the presence of the volatile outer reference. citeturn0search12
+
+### Epistemic state
+- 🟢 Exact implementation shape verified.
+- 🟢 Authorizer thread-safety contract verified.
+- 🟢 Comment-vs-implementation lock discrepancy verified.
+- 🔴 No hidden W1→D1 synchronization edge identified in this implementation.
+- 🟡 HB(W1→D1) = UNKNOWN / NOT IDENTIFIED.
+- 🟡 stale ACL read = NOT OBSERVED / NOT DISPROVEN.
+- 🔴 vulnerability/security impact = NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+The exact `StandardAuthorizer` / `StandardAuthorizerData` lock hypothesis is CLOSED for this pin. Do not substitute a later Kafka implementation containing a read-write lock, and do not interpret the stale comment as an implemented synchronization primitive.
+
+### Next frontier
+Only a genuinely new causal edge outside the already audited path can change the conclusion. The remaining high-value check is alternate authorizer configuration/implementation actually used by the witness; if the witness uses StandardAuthorizer, the source-side HB investigation is exhausted and the remaining question is empirical stale-read reproduction, which current evidence has not achieved.
