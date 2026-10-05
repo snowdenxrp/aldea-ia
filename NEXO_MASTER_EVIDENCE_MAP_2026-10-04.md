@@ -209,3 +209,17 @@ Critical result: the first boundary publishes into the metadata event-handler do
 🔵 Cross-domain W1→D1 publication edge still unresolved.
 
 Next exact target: inspect RequestChannel's concrete queue implementation and the metadata-to-request path for any shared synchronization/volatile/future/monitor edge that could publish aclCache.
+
+
+## 2026-10-04 — RequestChannel does NOT close W1→D1
+
+RequestChannel inspection confirms the network/request handoff is a producer-consumer boundary: the network side enqueues a Request and KafkaRequestHandler dequeues it. That queue handoff provides the normal synchronization/publication semantics needed to safely transfer the Request object to the handler thread.
+
+Critical audit consequence: this does NOT publish the earlier metadata-thread aclCache write. The metadata EventHandler writes aclCache before the client request is later enqueued, but the metadata thread does not perform that enqueue. Therefore RequestChannel synchronization can establish publication of request-object state from network processor → request handler, but cannot be used as proof of metadata EventHandler W1 → request-handler D1 happens-before.
+
+🟢 RequestChannel producer/consumer boundary identified.
+🟢 It is a real inter-thread handoff.
+🔵 It does not bridge the independent metadata writer to D1.
+🔵 W1→D1 JMM edge remains UNKNOWN.
+
+Next exact target: inspect whether the metadata publication completion itself crosses into a shared broker state/volatile/lock that the network/request path later reads before authorization. If none exists, the causal edge remains formally unresolved rather than being declared vulnerable.
