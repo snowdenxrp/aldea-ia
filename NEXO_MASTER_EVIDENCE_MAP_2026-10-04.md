@@ -300,3 +300,33 @@ Important correction to avoid overclaiming: the current StandardAuthorizer sourc
 🔵 Stale-read vulnerability remains UNPROVEN.
 
 Next: reconcile this source finding with the pinned experiment and existing PR93 diagnostic. The key question is now whether the observed zero stale snapshots can be explained by a concrete publication edge, or only by empirical scheduling/implementation behavior.
+
+
+## 2026-10-04 — PR93 raw-run reconciliation recovered
+
+The previously unresolved PR93 count discrepancy is now resolved at the source level. Workflow run 37040417803, job 110948877687, on pinned Kafka 99b940733a9f6bc409457dba7108f08421d81e42, has recoverable job logs and artifact 11242636371.
+
+Raw job log reports:
+CAUSAL_JMM_RACE ITERATIONS=100 READERS=4 OBSERVATIONS=4071307
+POST_RETURN_ALLOWED=0
+POST_RETURN_DENIED=3941104
+OVERLAP_ALLOWED=78521
+OVERLAP_DENIED=87
+POST_RETURN_PRE_REMOVE_CACHE=0
+POST_RETURN_POST_REMOVE_CACHE=3941104
+POST_RETURN_UNKNOWN_CACHE=0
+POST_RETURN_PRE_REMOVE_SNAPSHOT=0
+POST_RETURN_POST_REMOVE_SNAPSHOT=3941104
+POST_RETURN_UNKNOWN_SNAPSHOT=0
+POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=0
+UNEXPECTED=0
+
+The uploaded artifact is intentionally only a provenance marker (327 bytes) and does not contain the counters; the authoritative raw counters are therefore the recoverable workflow job log. This explains the historical 4,071,307 count. A prior 2,939,007 figure must be treated as superseded for this run unless a distinct artifact/run is identified.
+
+Interpretation remains conservative: this is an empirical diagnostic, not a JMM proof. Zero POST_RETURN stale/pre-remove observations is OBSERVED, not proof that stale visibility is impossible. OVERLAP_ALLOWED=78,521 occurred during the overlapping window and is not evidence of post-return stale authorization.
+
+🟢 Raw run/log recovered and reconciled.
+🟢 Pinned revision verified in run.
+🟢 No post-return pre-remove cache/snapshot observed.
+🔵 JMM publication edge remains UNKNOWN.
+🔵 Security impact remains UNKNOWN.
