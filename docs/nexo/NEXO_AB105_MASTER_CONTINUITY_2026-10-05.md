@@ -128,3 +128,26 @@ Current state remains:
 - TLC not rerun
 
 Next action: build and validate one isolated workflow-local diagnostic probe, then execute only after its instrumentation path has been audited for absence of an artificial W1→D1 synchronization edge.
+
+
+## 2026-10-05 — isolated cache-probe prepared (PR #97)
+
+A new draft-only workflow was prepared on branch `nexo-ab105-g0-cache-probe` / PR #97.
+
+Design:
+- recovers the existing G0 harness from the prior witness branch without modifying the baseline harness;
+- pins Kafka exactly to `99b940733a9f6bc409457dba7108f08421d81e42`;
+- observes D1 immediately after `AclCache aclCacheSnapshot = aclCache`;
+- tests exact target ACL membership in that same immutable snapshot;
+- records cache identity/count/membership in a D1-only file sink;
+- records W1 completion in a separate W1-only file sink;
+- adds no volatile/latch/barrier/Future/lock synchronization;
+- leaves AB105.116R untouched, does not recreate AB105.117R, and does not rerun TLC.
+
+Audit status:
+- PR #97 is DRAFT and not merged.
+- No diagnostic runtime execution has been accepted as evidence yet.
+- Static safety review caught and corrected an initial workflow-source checkout mistake; current workflow fetches the baseline harness from the Nexo repository branch, not the Apache Kafka clone.
+- Current epistemic state remains unchanged: HB UNKNOWN, stale read NOT OBSERVED/NOT DISPROVEN, vulnerability NOT ESTABLISHED.
+
+Next action: run the workflow only after reviewing the final generated probe/source diff; any resulting artifact must be independently reconciled before changing epistemic state.
