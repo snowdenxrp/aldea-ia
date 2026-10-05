@@ -237,3 +237,30 @@ Do not treat arbitrary `CompletableFuture`, `ConcurrentHashMap`, or `AtomicInteg
 
 ### Next frontier
 Audit `AuthHelper` and the concrete `AuthorizerPlugin` call boundary for any hidden executor/Future/lock/collection synchronization immediately before the authorizer invocation. Stop at the first actual W1-connected edge.
+
+
+## Continuation — AuthHelper / Plugin / Authorizer boundary — 2026-10-05
+
+Exact AB105-pinned `AuthHelper.java`, `Plugin.java`, and `Authorizer.java` were inspected at Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+Verified:
+- `AuthHelper.authorize()` constructs the Action and directly calls `authorizer.get().authorize(...)`; no Future wait, executor submission, lock, condition, metadata-offset check, or queue handoff occurs in this boundary.
+- `Plugin.get()` simply returns the wrapped authorizer instance; it introduces no synchronization.
+- The Authorizer contract states that `authorize()` is a synchronous API invoked on the request thread using locally cached ACLs.
+- The Authorizer threading contract requires authorization and ACL updates to be thread-safe, but that contract does not itself create a W1→D1 happens-before edge.
+- The `start()` futures are explicitly readiness/startup futures for accepting requests; they are not per-ACL-update waits.
+
+### Result
+- 🟢 AuthHelper → Authorizer invocation boundary verified as direct.
+- 🟢 Plugin wrapper does not bridge W1 to D1.
+- 🟢 Thread-safety requirement confirmed as a contract, not a publication proof.
+- 🔴 No new W1→D1 HB edge identified.
+- 🟡 HB(W1→D1) remains UNKNOWN / NOT IDENTIFIED.
+- 🔴 stale ACL read not reproduced.
+- 🔴 vulnerability not established.
+
+### DO-NOT-REPEAT
+Do not re-audit `AuthHelper → Plugin.get() → Authorizer.authorize()` unless a new implementation or call-site evidence changes the pinned path. The remaining question is now implementation-specific synchronization/state inside the concrete authorizer, already narrowed to `StandardAuthorizerData` cache visibility.
+
+### Next frontier
+Reconcile the Authorizer thread-safety contract against the exact pinned `StandardAuthorizer` / `StandardAuthorizerData` implementation and any alternate authorizer implementation actually used by the experiment. Stop if no additional publication edge exists.
