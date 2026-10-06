@@ -1939,3 +1939,38 @@ The currently resolved G0 baseline branch commit remains `a3aaae3a7839b2ab079b90
 
 ### DO-NOT-REPEAT
 Do not modify the safety grep merely for the previously suspected false-positive reason. Do not create a new diagnostic revision from this resolved concern. Continue to the pending runtime execution/reconciliation.
+
+
+## 2026-10-06 — AclCache and incremental volatile-publication boundary rechecked
+
+### 🟢 Exact pinned source reconciliation
+The exact pinned Kafka `AclCache.java`, `StandardAuthorizer.java`, and `StandardAuthorizerData.java` were rechecked at `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+Confirmed:
+- `AclCache` is immutable: its `aclsByResource` and `aclsById` fields are final, and `addAcl/removeAcl` return newly constructed caches rather than mutating an existing cache.
+- `StandardAuthorizerData.aclCache` is a plain reference.
+- Incremental `addAcl/removeAcl` replace only that inner plain `aclCache` reference; they do not replace the outer `StandardAuthorizer.data` reference.
+- `StandardAuthorizer.data` is volatile, but the volatile publication edge applies when `data` itself is reassigned, not automatically to later writes performed through the already-published `StandardAuthorizerData` object.
+- `loadSnapshot()` constructs a new `StandardAuthorizerData` and assigns it to volatile `data`; that is a real publication path, but it is distinct from steady-state incremental ACL updates.
+
+### 🔴 Interpretation
+Do not use volatile `StandardAuthorizer.data` as proof of W1→D1 publication for incremental ACL deltas. The concrete path remains:
+`W1 → StandardAuthorizerData.removeAcl/addAcl → plain aclCache replacement → D1 plain aclCache read`.
+No JMM synchronizes-with edge has been identified in this direct cache layer.
+
+The immutable `AclCache` guarantees structural snapshot coherence and safe initialization of its final fields, but it does not by itself publish the new `StandardAuthorizerData.aclCache` reference to another thread.
+
+### 🟡 State preserved
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED / UNCHANGED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not repeat the direct `AclCache`/`StandardAuthorizerData` primitive audit unless a new pinned-source discrepancy appears. Do not reinterpret snapshot-load volatile publication as incremental-update publication. Do not add artificial synchronization to the diagnostic.
+
+### Next frontier
+Continue only with a concrete external production bridge between the MetadataLoader/AclPublisher incremental update and request-serving authorization. If no such bridge is found, preserve UNKNOWN rather than claiming universal absence.
