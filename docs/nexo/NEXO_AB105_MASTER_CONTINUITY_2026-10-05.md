@@ -209,3 +209,19 @@ Search only for a concrete cross-thread bridge after W1:
 2. a shared synchronization/publication primitive between MetadataLoader/AclPublisher and the request-serving path.
 
 If neither exists, the diagnostic cache-snapshot probe in PR #97 remains the next empirical discriminator, without treating its timing result as JMM proof.
+
+
+## 2026-10-05 — startup admission gate fully separated from steady-state ACL updates
+
+Exact pinned BrokerServer/ControllerServer source was checked after the MetadataLoader audit.
+
+- 🟢 BrokerServer waits for initial broker metadata publication, then builds authorizer readiness futures and calls SocketServer.enableRequestProcessing(authorizerFutures). Each endpoint starts only after its matching authorizer future completes.
+- 🟢 ControllerServer has the analogous endpoint readiness gate. Its source explicitly states that non-superuser requests cannot be processed until AclPublisher has published metadata after controller catch-up.
+- 🔴 These are startup/endpoint-enablement mechanisms. They do not run on every subsequent ACL delta and therefore cannot supply W1→D1 HB for steady-state addAcl/removeAcl.
+- 🟢 After endpoints are enabled, AclPublisher remains on the MetadataLoader event thread while request handling uses the independent request handler path. No per-delta rendezvous was identified in these server startup paths.
+
+Result: the candidate Kafka-level admission mechanism is now narrowed to initial startup only and is excluded as the steady-state W1→D1 publication bridge.
+
+State unchanged: W1→D1 HB UNKNOWN / NOT IDENTIFIED; stale read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED; AB105.116R protected; AB105.117R not created; TLC not rerun.
+
+Next frontier: inspect the concrete SocketServer/request-handler handoff only for a synchronization edge that could somehow reconnect to the MetadataLoader publisher state after startup. Do not infer HB from mere queue ordering or endpoint readiness.
