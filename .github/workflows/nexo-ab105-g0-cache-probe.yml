@@ -70,30 +70,30 @@ jobs:
           s = p.read_text()
 
           old = """            AclCache aclCacheSnapshot = aclCache.removeAcl(id);
-            log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
-            aclCache = aclCacheSnapshot;"""
+           log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
+           aclCache = aclCacheSnapshot;"""
           new = """            AclCache aclCacheSnapshot = aclCache.removeAcl(id);
-            log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
-            aclCache = aclCacheSnapshot;
-            try {
-                java.nio.file.Files.writeString(
-                    java.nio.file.Path.of("/tmp/nexo-w1-cache.log"),
-                    "NEXO_CACHE W1 ns=" + System.nanoTime() +
-                        " thread=" + Thread.currentThread().getName() +
-                        " id=" + id +
-                        System.lineSeparator(),
-                    java.nio.file.StandardOpenOption.CREATE,
-                    java.nio.file.StandardOpenOption.APPEND
-                );
-            } catch (java.io.IOException e) {
-                throw new RuntimeException("NEXO_CACHE W1 probe sink failed", e);
-            }"""
+           log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
+           aclCache = aclCacheSnapshot;
+           try {
+               java.nio.file.Files.writeString(
+                   java.nio.file.Path.of("/tmp/nexo-w1-cache.log"),
+                   "NEXO_CACHE W1 ns=" + System.nanoTime() +
+                       " thread=" + Thread.currentThread().getName() +
+                       " id=" + id +
+                       System.lineSeparator(),
+                   java.nio.file.StandardOpenOption.CREATE,
+                   java.nio.file.StandardOpenOption.APPEND
+               );
+           } catch (java.io.IOException e) {
+               throw new RuntimeException("NEXO_CACHE W1 probe sink failed", e);
+           }"""
           if s.count(old) != 1:
               raise SystemExit("W1 insertion marker mismatch")
           s = s.replace(old, new, 1)
 
           old = """        AclCache aclCacheSnapshot = aclCache;
-        checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"""
+         checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"""
           new = """        AclCache aclCacheSnapshot = aclCache;
         if ("nexo-g0-ordering".equals(action.resourcePattern().name())
                 && action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC
@@ -114,7 +114,6 @@ jobs:
                     java.nio.file.Path.of("/tmp/nexo-d1-cache.log"),
                     "NEXO_CACHE D1 ns=" + System.nanoTime() +
                         " correlationId=" + requestContext.correlationId() +
-
                         " thread=" + Thread.currentThread().getName() +
                         " cacheIdentity=" + System.identityHashCode(aclCacheSnapshot) +
                         " cacheCount=" + aclCacheSnapshot.count() +
@@ -139,7 +138,9 @@ jobs:
         working-directory: /tmp/kafka
         run: |
           echo "---- INJECTED DIAGNOSTIC SAFETY AUDIT ----"
-          if grep -n -E "volatile|Atomic|CountDownLatch|Future|synchronized|Reentrant|Semaphore|Lock"               metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java               metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java; then
+          if grep -n -E "volatile|Atomic|CountDownLatch|Future|synchronized|Reentrant|Semaphore|Lock" \
+              metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java \
+              metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java; then
             echo "Injected diagnostic source contains a forbidden synchronization token"
             exit 1
           fi
