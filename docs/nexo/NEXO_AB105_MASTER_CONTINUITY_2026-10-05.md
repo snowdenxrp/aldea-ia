@@ -1337,3 +1337,53 @@ Do not add correlationId transfer state to W1. Do not repeat the cacheIdentity-o
 
 ### Next exact frontier
 Reconcile the **existing PR #97 D1 correlationId** with the **existing baseline NEXO_ORDER request markers** in one execution/evidence artifact, if the workflow output actually contains both. If the artifact cannot demonstrate both in the same run, preserve UNKNOWN rather than inferring the linkage.
+
+
+## 2026-10-06 — authoritative workflow audit: PR #97 current D1 sink does NOT emit correlationId
+
+A direct read of the current `.github/workflows/nexo-ab105-g0-cache-probe.yml` supersedes the immediately previous note that claimed current PR #97 D1 already records `requestContext.correlationId()`.
+
+### 🟢 Exact current source
+The current cache-probe workflow injects D1 immediately after:
+`AclCache aclCacheSnapshot = aclCache;`
+and its D1 sink records:
+- nanoTime
+- thread name
+- cacheIdentity
+- cacheCount
+- targetPresent
+- targetId
+
+It does **not** record `requestContext.correlationId()`.
+
+The workflow's evidence step separately greps baseline `NEXO_ORDER` events, but that is not the same as putting the D1 correlationId into the D1 diagnostic record.
+
+### 🔴 Superseded statement
+The previous continuity note saying “D1 correlationId instrumentation: PRESENT IN CURRENT PR #97 SOURCE” was based on an incorrect source inference and is superseded by this exact workflow audit. It must not be used as evidence.
+
+### 🟢 Correct current frontier
+The original causal-correlation gap therefore remains:
+- baseline G0 witness can expose request-path correlationId;
+- PR #97 D1 cache sink currently does not expose that correlationId;
+- W1 cannot naturally know the later request correlationId;
+- no shared W1→request state may be introduced.
+
+A valid observational extension must add only the request correlationId to the existing D1 diagnostic observation (and, if needed, ensure the existing NEXO_ORDER markers are emitted in the same artifact). This must be audited for source placement and must not add any synchronization primitive or shared mutable publication mechanism.
+
+### Formal state
+- W1→ENQUEUE HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- stale ACL read: NOT OBSERVED (Run #21: 10/10)
+- D1 cacheIdentity=W1 cacheIdentity: OBSERVED 10/10 in Run #21
+- D1 correlationId in current PR #97 cache sink: NOT PRESENT
+- complete W1→request→D1 linkage in accepted Run #21 evidence: NOT DEMONSTRATED
+- vulnerability: NOT ESTABLISHED
+- TLC: NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### DO-NOT-REPEAT
+Do not rely on the previous incorrect “D1 already has correlationId” statement. Do not add W1→request shared state. Do not repeat the cacheIdentity-only probe without the narrowly defined request-path linkage improvement.
+
+### Next exact frontier
+Design the smallest source-only diagnostic change: capture the existing request correlationId at D1 and make the existing NEXO_ORDER request-path markers available in the same evidence artifact, without changing the baseline request/authorization behavior or introducing synchronization.
