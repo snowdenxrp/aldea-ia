@@ -1141,3 +1141,55 @@ Do not repeat the Plugin wrapper/final-field publication search unless a new exa
 
 ### Next frontier
 The production-source audit is now effectively closed for the inspected G0 path. The only remaining discriminator is the already-prepared PR #97 diagnostic execution/reconciliation. If that workflow cannot execute, preserve the bounded UNKNOWN.
+
+
+## 2026-10-06 — Correction: PR #97 cache-probe Run #21 is executed evidence
+
+A newer repository evidence freeze was found at commit `c9251e968a3d0287d79f2600f3ae576047856539`, with dedicated evidence document `NEXO_AB105_G0_CACHE_PROBE_RUN21_EVIDENCE_2026-10-06.md`. This supersedes the earlier execution-status statements that PR #97 had not executed.
+
+### 🟢 Run #21 evidence accepted within scope
+- 10/10 cycles executed.
+- W1 executed 10/10 and D1 executed 10/10.
+- D1_RESULT was DENIED 10/10.
+- In the expected post-removal state, D1 observed `targetPresent=false`, `targetId=NONE`, `cacheCount=0`.
+- When causally paired by ACL identity, cycle identity and sequence, D1's `cacheIdentity` exactly matched the corresponding W1-produced cache identity in 10/10 cycles.
+- W1 ran on MetadataLoader event-handler threads; D1 ran on data-plane request-handler threads.
+- No probe-added volatile/synchronized/latch/barrier/lock/equivalent publication mechanism was introduced.
+
+### 🟢 Empirical consequence
+Run #21 is now accepted as real-broker diagnostic evidence that **stale ACL cache visibility was not observed in 10/10 executions** and that D1 selected the same immutable cache snapshot identity recorded at W1 in those paired cycles.
+
+This is stronger than the previous state "PR #97 not executed" and that earlier execution-status statement is explicitly superseded here.
+
+### 🔴 Critical limitation preserved
+Run #21 does NOT prove formal JMM happens-before from W1 to D1. Its artifact's baseline ordering is:
+`A1_SUCCESS → D0_TARGET → W1 → D0_RETURN → D1_RESULT`
+
+It does not contain the complete request-path markers:
+`W1 → ENQUEUE → DEQUEUE → AUTH_ENTER → AUTH_DECISION/D1`.
+
+Therefore Run #21 does not by itself prove that its D1 event is the same request event as the complete request-path witness from run 370778. Evidence families remain separate unless a shared correlation identity establishes equivalence.
+
+### 🟡 Updated epistemic state
+- W1 → ENQUEUE HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1 → D1 formal JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- stale ACL read: NOT OBSERVED (Run #21: 10/10)
+- D1 cache snapshot identity match with W1: OBSERVED 10/10 in Run #21
+- Run #21 → 370778 event identity: NOT DEMONSTRATED
+- vulnerability: NOT ESTABLISHED
+- W1 → R1: UNKNOWN
+- TLC: NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### 🔴 Superseded execution-status statements
+Earlier master entries stating `PR #97 cache-probe = NOT EXECUTED / NOT ACCEPTED` are historical observations from before Run #21 and must not be used as the current state. They are superseded by this evidence freeze; they are not silently deleted.
+
+### 🎯 New exact frontier
+Do not create another cacheIdentity probe. The remaining question is now narrowly the **real data-plane causal linkage**:
+`W1 → ENQUEUE → DEQUEUE → AUTH_ENTER → AUTH_DECISION/D1`
+
+Use the already-existing request-path witness/correlation machinery where possible. Do not add synchronization merely to manufacture HB. If the causal identity between Run #21 D1 and the full request-path witness cannot be demonstrated, preserve the formal JMM UNKNOWN while retaining the strong 10/10 empirical non-observation of stale cache.
+
+### DO-NOT-REPEAT
+Do not repeat PR #97 cacheIdentity instrumentation merely to obtain the same 10/10 result. Do not merge Run #21 and 370778 solely by wall-clock order. Do not rerun TLC. Do not create AB105.117R. Do not introduce synchronization into the witness.
