@@ -1870,3 +1870,44 @@ Do not reuse the older failed cache-probe runs as evidence for PR #97. Do not tr
 
 ### Next action
 Manual dispatch of the existing PR #97 cache-probe workflow at its current head, followed by job/artifact/raw-log reconciliation. No source change required.
+
+
+## 2026-10-06 — Reproducibility audit: baseline G0 harness is branch-floating
+
+### 🟢 New concrete finding
+The current PR #97 workflow pins Kafka itself to `99b940733a9f6bc409457dba7108f08421d81e42`, but it does **not** pin the recovered G0 harness to a commit SHA.
+
+The workflow executes:
+`git fetch origin nexo-ab105-g0-ordering-witness:refs/remotes/origin/nexo-ab105-g0-ordering-witness`
+and then reads the workflow source from:
+`origin/nexo-ab105-g0-ordering-witness:.github/workflows/nexo-ab105-g0-ordering-witness.yml`.
+
+At the current audit time, that branch resolves to commit `a3aaae3a7839b2ab079b90991231fd42f622e2f1`.
+
+### 🟡 Why this matters
+This is a **reproducibility/provenance gap**, not a discovered synchronization bug.
+
+A future manual dispatch could recover a different version of the G0 harness if that branch advances, while the Kafka revision remains identical. Therefore an artifact would currently prove:
+- exact Kafka pin;
+- exact PR #97 workflow head;
+- but only the branch-resolved version of the recovered baseline harness, not a permanently fixed harness commit.
+
+This does not invalidate the existing historical witnesses, and it does not justify modifying the diagnostic source during the current execution. It means the execution record must capture the resolved harness commit before interpreting results.
+
+### 🔴 Experimental rule
+Do **not** silently fix this by changing the workflow immediately before the intended run; that would create a new experimental revision and reset the execution state.
+
+For the pending PR #97 execution, record the resolved branch SHA `a3aaae3a7839b2ab079b90991231fd42f622e2f1` as part of provenance. If a future repeat is required, pinning the harness commit should be a separate controlled revision, not an in-place mutation of this pending run.
+
+### Current state unchanged
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED in Run #21 / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- PR #97: DRAFT, head `23c71ece22e37a788a48b0e767b121482570f6d9`.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not treat the branch-floating harness as equivalent to a pinned harness commit. Do not create a new probe solely to fix provenance before the pending execution. Do not reinterpret this provenance gap as a JMM finding.
