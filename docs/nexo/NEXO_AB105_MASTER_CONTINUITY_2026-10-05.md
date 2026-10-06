@@ -1911,3 +1911,31 @@ For the pending PR #97 execution, record the resolved branch SHA `a3aaae3a7839b2
 
 ### DO-NOT-REPEAT
 Do not treat the branch-floating harness as equivalent to a pinned harness commit. Do not create a new probe solely to fix provenance before the pending execution. Do not reinterpret this provenance gap as a JMM finding.
+
+
+## 2026-10-06 — PR #97 safety-audit concern resolved
+
+### 🟢 Verification
+The suspected false-positive risk in the PR #97 `Probe safety audit` was checked against the exact pinned Kafka file `StandardAuthorizerData.java` at `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+The audit scans the complete `StandardAuthorizerData.java` and `AclCache.java` files for synchronization-related tokens. The exact pinned `StandardAuthorizerData.java` contains no occurrences of the checked tokens `volatile`, `Atomic`, `CountDownLatch`, `Future`, `synchronized`, `Reentrant`, `Semaphore`, or `Lock`.
+
+Therefore the earlier concern that the safety grep would necessarily fail because of unrelated Kafka baseline code is **not realized at this pin**. The current safety audit is not proven defective on that basis.
+
+### 🟢 Additional provenance confirmation
+The currently resolved G0 baseline branch commit remains `a3aaae3a7839b2ab079b90991231fd42f622e2f1`. This is the branch-resolved harness provenance that must be captured by the pending PR #97 execution.
+
+### Current state unchanged
+- PR #97 head: `23c71ece22e37a788a48b0e767b121482570f6d9`.
+- Kafka pin: `99b940733a9f6bc409457dba7108f08421d81e42`.
+- G0 harness resolved SHA: `a3aaae3a7839b2ab079b90991231fd42f622e2f1`.
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not modify the safety grep merely for the previously suspected false-positive reason. Do not create a new diagnostic revision from this resolved concern. Continue to the pending runtime execution/reconciliation.
