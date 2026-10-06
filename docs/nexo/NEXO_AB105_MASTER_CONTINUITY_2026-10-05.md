@@ -1714,3 +1714,48 @@ Do not treat Authorizer thread-safety documentation or KIP-801 ordering language
 
 ### Next frontier
 The only remaining legitimate question is whether the pinned StandardAuthorizer implementation has an implicit publication mechanism not yet identified in the exact `StandardAuthorizerData`/cache path, or whether the documented thread-safety guarantee is satisfied by semantics that do not expose a simple W1→D1 HB edge. Continue at the concrete implementation level only.
+
+
+## 2026-10-06 — StandardAuthorizerData concrete read/write audit completed
+
+### 🟢 Exact pinned implementation
+The exact pinned `StandardAuthorizerData` confirms:
+- the class explicitly states it is **not thread-safe**;
+- `aclCache` is a plain, non-volatile reference;
+- `addAcl` performs `aclCache = aclCache.addAcl(...)`;
+- `removeAcl` computes a new cache snapshot and then performs `aclCache = aclCacheSnapshot`;
+- `authorize` eventually reads the current `aclCache` through the same `StandardAuthorizerData` object.
+
+The source also shows that `copyWithNewAcls` creates a new `StandardAuthorizerData` and that `StandardAuthorizer.loadSnapshot()` publishes that new object through the outer volatile `data` field. That is a genuine publication path for **snapshot loading**, not for ordinary incremental ACL updates. citeturn0search1turn0search0
+
+### 🔴 No hidden primitive found in this layer
+No synchronized block, lock, volatile `aclCache`, atomic reference, future completion, concurrent collection, or queue operation appears in the concrete incremental `addAcl/removeAcl` path itself.
+
+Therefore the concrete StandardAuthorizerData layer does not reveal the missing W1→D1 publication mechanism.
+
+### 🟡 Important nuance
+The documented thread-safety requirement for the Authorizer remains real, but the exact mechanism that makes the implementation safe is not exposed as a simple W1→D1 synchronizes-with edge in this layer. The source audit must not invent one.
+
+### New bounded conclusion
+The **direct cache implementation layer is now closed** as a source-audit frontier:
+- immutable `AclCache`: audited;
+- plain `StandardAuthorizerData.aclCache`: audited;
+- outer volatile `StandardAuthorizer.data`: audited;
+- incremental vs snapshot replacement distinction: audited.
+
+This does not prove universal absence of a publication mechanism elsewhere. It proves only that no such mechanism is present in the concrete cache read/write layer examined.
+
+### Current state
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED in Run #21 (10/10).
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not repeat the `StandardAuthorizerData`/AclCache primitive audit unless a new pinned-source discrepancy appears. Do not mistake `loadSnapshot()`'s outer-volatile publication for incremental ACL-update publication. Do not add artificial synchronization.
+
+### Next frontier
+Only an external production mechanism can still explain publication: a synchronization edge outside `StandardAuthorizerData`/AclCache, or semantics elsewhere in the execution path not yet concretely connected to W1. If no such edge is identified, preserve UNKNOWN.
