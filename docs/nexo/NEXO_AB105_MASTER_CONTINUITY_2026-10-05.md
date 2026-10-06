@@ -2,6 +2,17 @@
 
 ## CHAT START — RECOVERY GATE (PERMANENT)
 
+### ÚLTIMA SESIÓN — 2026-10-06 — frontera W1→solicitud real
+- 🟢 Run #21: 10/10 W1 cacheIdentity = D1 cacheIdentity; 10/10 D1 observa ACL ausente; ciclos 1–8 W1→D0_RETURN→D1; ciclos 9–10 D0_RETURN→W1→D1. Esto confirma empíricamente que D0_RETURN NO es proxy de W1. Evidencia guardada previamente; commit de referencia aportado por la sesión: `44a41780cb2dcddd2c12008cb06d54cc582a38c1`.
+- 🟢 Se reconciliaron además las rutas investigadas durante hoy: MetadataLoader/KafkaEventQueue, AclPublisher, startup/readiness futures, D0/controller completion, KafkaProducer `send().get()`, red/socket, SocketServer Processor y RequestChannel. No reabrirlas genéricamente.
+- 🟢 La cadena real queda separada en dos dominios: metadata `...→MetadataLoader→AclPublisher→W1`; request `Producer/I/O→SocketServer Processor→ENQUEUE→DEQUEUE→D1`.
+- 🟢 KafkaEventQueue da publicación dentro del dominio metadata; ArrayBlockingQueue da publicación Processor→RequestHandler. No se identificó una operación compartida entre ambos dominios que conecte W1 con ENQUEUE.
+- 🔴 No se debe interpretar `D0_RETURN→Producer→ENQUEUE` como W1→ENQUEUE HB. Los ciclos 9–10 lo contradicen como proxy de finalización de W1.
+- 🔵 Frontera exacta actual: buscar únicamente un **puente de producción concreto** que salga después de W1/AclPublisher y alcance causalmente el contexto que crea la solicitud de red/ENQUEUE. Si no aparece, conservar UNKNOWN; no convertir ausencia de búsqueda en prueba universal.
+- 🚫 DO-NOT-REPEAT: Run #21 cacheIdentity, D0 marker experiment, RequestChannel/SocketServer basic source audit, KafkaProducer producer-side bridge, startup futures, AclCache direct publication, PCollections y MetadataLoader/AclPublisher basic serialization ya fueron auditados.
+- 🚫 No artificial synchronization; no AB105.117R; no TLC rerun.
+
+
 **Esta sección debe leerse ANTES de continuar cualquier investigación en un chat nuevo.**
 
 ### Estado que NO debe perderse
