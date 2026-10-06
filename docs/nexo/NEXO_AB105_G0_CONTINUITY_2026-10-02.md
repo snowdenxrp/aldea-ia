@@ -56,3 +56,57 @@ The later metadata-warmup/isolation corrections supersede that harness limitatio
 
 ## Next research boundary
 Do not repeat the same propagation experiment without a new hypothesis. The current evidence separates the reproducible in-flight authorization window from the specific stale local propagation hypothesis tested here. Any next experiment must target a distinct mechanism and preserve raw evidence before status promotion.
+
+## 2026-10-06 — Ordering/JMM continuity extension
+### Run #21 raw-artifact reconciliation
+- 10/10 cycles executed.
+- 10/10 W1 cacheIdentity == D1 cacheIdentity.
+- 10/10 D1 observed ACL absent (cacheCount=0, targetPresent=false, targetId=NONE).
+- Cycles 1–8: W1 -> D0_RETURN -> D1.
+- Cycles 9–10: D0_RETURN -> W1 -> D1.
+- Therefore D0_RETURN is NOT a valid proxy/barrier for W1 propagation.
+- Stale aclCache read was NOT OBSERVED.
+- JMM W1 -> D1 happens-before remains UNKNOWN.
+- Vulnerability remains NOT ESTABLISHED.
+
+### Kafka source-level boundary verified at pinned revision
+- RequestChannel.sendRequest() performs requestQueue.put(request).
+- RequestChannel.receiveRequest() obtains requests via queue poll/take.
+- This establishes a real queue handoff only from producer sendRequest to consumer receive; it does NOT establish W1 -> requestQueue.put.
+- AclApis.handleDeleteAcls() waits on ACL deletion completion stages before completing the response path.
+- ClusterMetadataAuthorizer.deleteAcls() documents completion after controller processing and persistence of the ACL deletion to the cluster metadata log.
+- StandardAuthorizer.data is volatile, but StandardAuthorizerData.aclCache is ordinary/non-volatile.
+- StandardAuthorizerData is explicitly documented as not thread-safe.
+- addAcl/removeAcl replace aclCache inside the existing StandardAuthorizerData; they do not replace StandardAuthorizer.data.
+- Therefore the volatile data field alone cannot be promoted as proof of publication of the later aclCache replacement.
+
+### Current exact research boundary
+The only useful next boundary is observational:
+W1 -> real request -> ENQUEUE -> DEQUEUE -> AUTH_ENTER -> D1.
+
+Required evidence in the same execution:
+- W1: ACL identity, cacheIdentity, timestamp, thread.
+- ENQUEUE: real request correlation identity, timestamp, thread.
+- DEQUEUE: same request correlation identity, timestamp, thread.
+- AUTH_ENTER: same request correlation identity, timestamp, thread.
+- D1: same request correlation identity, cacheIdentity, targetId, timestamp, thread.
+
+Guardrails:
+- Do NOT introduce a shared mutable last-W1 bridge read by ENQUEUE.
+- Do NOT add volatile/latch/barrier/synchronized/Future solely to connect W1 to D1.
+- Temporal/log order is evidence of observed execution order, not by itself JMM happens-before.
+- Do NOT repeat the Run #21 cacheIdentity experiment or the D0 marker experiment.
+
+### Frozen status
+- AB105.116R = FROZEN / UNCHANGED.
+- AB105.117R = NOT_CREATED.
+- TLC = NOT_RERUN.
+- STALE_READ = NOT_OBSERVED.
+- W1_TO_D1_JMM_HB = UNKNOWN.
+- VULNERABILITY = NOT_ESTABLISHED.
+
+## DO-NOT-REPEAT
+- Do not use D0_RETURN as a propagation barrier.
+- Do not infer JMM HB from temporal event ordering alone.
+- Do not manufacture the W1->request edge with test synchronization.
+- Do not rerun cacheIdentity/D0 experiments without a distinct hypothesis.
