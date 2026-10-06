@@ -963,3 +963,41 @@ No production synchronization changes and no new cacheIdentity probe. The remain
 
 ### DO-NOT-REPEAT
 Do not repeat the MetadataLoader queue, startup-future, metadataCache volatile-order, Plugin.get, SocketServer admission, or RequestChannel HB searches unless a new pinned-source discrepancy appears.
+
+
+## 2026-10-06 — exact Producer.send() boundary audited
+
+### 🟢 New source finding
+The canonical G0 harness was opened at the executable-source level. After `D0_RETURN`, the test calls the real `KafkaProducer.send(...).get(...)`. The producer is a real network client using the broker bootstrap address; the broker receives the request on the independent SocketServer Processor path and eventually publishes it through RequestChannel.
+
+The exact local sequence is therefore:
+`D0_RETURN → KafkaProducer.send().get() → client/network transport → broker SocketServer Processor → RequestChannel.sendRequest(ENQUEUE) → RequestChannel.receiveRequest(DEQUEUE) → KafkaRequestHandler → D1`.
+
+### 🔴 Important JMM boundary
+The client-side `send().get()` completion is not a Java in-process synchronizes-with edge from the MetadataLoader thread that performed W1 to the broker Processor/request-handler threads. The request crosses the Kafka network protocol and is processed by independent broker execution contexts. Therefore `D0_RETURN → send().get() → ENQUEUE` cannot be promoted into W1 → ENQUEUE HB.
+
+The Producer future may synchronize client-side producer state, but it has no W1 participant and does not publish the MetadataLoader's plain `aclCache` replacement to the broker request path.
+
+### 🟢 Consequence
+This closes another tempting bridge:
+`W1 → D0_RETURN → ProducerFuture → ENQUEUE` = NOT A VALID JMM CHAIN.
+
+The remaining legitimate HB question is unchanged:
+`W1 → ? → ENQUEUE`.
+
+No production code changed. No new experiment opened.
+
+### Epistemic state
+- MetadataLoader → W1: 🟢 IDENTIFIED
+- D0_RETURN → local target-broker W1: 🔴 NOT IDENTIFIED / may be temporally reversed
+- D0_RETURN → client request: 🟢 protocol/control flow
+- client request → broker ENQUEUE: 🟢 real network/request path
+- W1 → ENQUEUE HB: 🔴 NOT IDENTIFIED
+- ENQUEUE → DEQUEUE: 🟢 publication boundary
+- DEQUEUE → D1: 🟢 same-handler execution path
+- W1 → D1 HB: 🔵 UNKNOWN
+- stale read: 🔵 NOT OBSERVED / NOT DISPROVEN
+- vulnerability: 🔴 NOT ESTABLISHED
+
+### DO-NOT-REPEAT
+Do not revisit ProducerFuture/D0_RETURN as a candidate W1 publication bridge unless a new source fact shows that the target broker's MetadataLoader participates in that same completion object.
