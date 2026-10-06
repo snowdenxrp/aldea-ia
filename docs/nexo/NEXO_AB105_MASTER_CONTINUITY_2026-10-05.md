@@ -874,3 +874,23 @@ State unchanged: W1→D1 HB UNKNOWN / NOT IDENTIFIED; stale ACL NOT OBSERVED/NOT
 
 ### Do-not-repeat
 Do not broaden the probe's result to superuser, pre-initial-load, or unrelated authorization paths. Do not rerun TLC or introduce synchronization merely to strengthen this diagnostic.
+
+
+## 2026-10-05 — Fresh execution-status recheck after final D1 scope audit
+
+A fresh GitHub Actions lookup was performed against PR #97 HEAD `844a37a6b850f07575e2ab18269c010f3a695f6b`.
+
+### 🟢 Confirmed
+- The commit has associated workflow runs, but none is the PR #97 `nexo-ab105-g0-cache-probe` workflow.
+- The associated AB105 JMM causal-window workflow is `skipped`.
+- Bootstrap #143 is `failure` and remains the separate frozen-harness run already classified.
+- No PR #97 cache-probe runtime/artifact result was identified.
+
+### 🔴 Execution state
+The cache-probe workflow remains `workflow_dispatch`-only. The currently available GitHub tool surface cannot dispatch that manual workflow. Therefore no execution is claimed or inferred.
+
+### Epistemic state unchanged
+W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED; stale ACL read = NOT OBSERVED / NOT DISPROVEN; vulnerability = NOT ESTABLISHED; PR #97 cache-probe = NOT EXECUTED / NOT ACCEPTED; TLC = NOT_RERUN; AB105.116R protected; AB105.117R not created.
+
+### Do-not-repeat
+Do not use unrelated runs attached to the same commit as cache-probe evidence. Do not rerun bootstrap #143 merely to obtain the missing PR #97 result.
