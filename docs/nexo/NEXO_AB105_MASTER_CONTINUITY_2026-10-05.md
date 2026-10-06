@@ -1001,3 +1001,63 @@ No production code changed. No new experiment opened.
 
 ### DO-NOT-REPEAT
 Do not revisit ProducerFuture/D0_RETURN as a candidate W1 publication bridge unless a new source fact shows that the target broker's MetadataLoader participates in that same completion object.
+
+
+## 2026-10-06 — Run #21 artifact reconciliation: preserve evidence-family separation
+
+### 🟢 Exact distinction recovered
+Direct reconciliation of the Run #21 workflow/artifacts against the canonical 370778 witness establishes that they must remain two separate evidence families.
+
+**Run #21**:
+- pins Kafka to `99b940733a9f6bc409457dba7108f08421d81e42`;
+- executes the real `NexoG0OrderingWitnessTest` through `:server:test`;
+- observes the real broker D1 authorization path;
+- records W1/D1 cacheIdentity and target state;
+- reports the baseline order as `A1_SUCCESS → D0_TARGET → D0_RETURN → D1_RESULT`;
+- does **not** contain the full `ENQUEUE → DEQUEUE → AUTH_ENTER → AUTH_DECISION` marker sequence in its artifact.
+
+**Run 370778**:
+- contains the explicit temporal witness `W1 → ENQUEUE → DEQUEUE → AUTH_ENTER → AUTH_DECISION → D1`;
+- is the source for that complete request-path ordering observation;
+- does not provide a correlation identity proving that a particular Run #21 D1 event is the same request event as a particular 370778 event.
+
+### 🟢 Run #21 result accepted within its proper scope
+Across 10/10 cycles, the D1-observed `cacheIdentity` matches the corresponding W1 broker-0 cache identity, and D1 occurs after W1 temporally in the paired diagnostic records. This is strong empirical evidence that the authorization operation observed the exact immutable cache object identified by W1 in those executions.
+
+It is **not** evidence that Run #21 reproduces the full 370778 request-order witness, and it is **not** JMM happens-before proof.
+
+### 🔴 Explicit non-conflation rule
+Do not write or imply:
+`Run #21 D1 = Run 370778 D1`
+
+unless a future artifact supplies a shared correlation identity that actually establishes that event equivalence.
+
+The correct combined statement is:
+- Run #21 establishes real-broker D1 snapshot identity in 10/10 diagnostic cycles.
+- Run 370778 establishes the real request-path temporal sequence in 10/10 cycles.
+- Together they constrain the architecture strongly, but remain independently scoped evidence.
+
+### 🟢 Producer/network bridge remains closed
+The executable G0 harness confirms:
+`D0_RETURN → KafkaProducer.send().get() → network → SocketServer Processor → ENQUEUE → DEQUEUE → D1`.
+
+The producer Future is client-side and does not share a JMM synchronization participant with the MetadataLoader thread that performs W1. Therefore it cannot be promoted to a W1→ENQUEUE publication bridge.
+
+### 🟡 Current epistemic state
+- W1 → D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1 → ENQUEUE publication edge: NOT IDENTIFIED
+- Run #21 stale-cache observation: NOT OBSERVED
+- Run #21 exact cache identity match: OBSERVED 10/10
+- 370778 full request-path temporal witness: OBSERVED
+- Run #21 ↔ 370778 event identity: NOT DEMONSTRATED
+- stale read: NOT DISPROVEN
+- vulnerability: NOT ESTABLISHED
+- TLC: NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### DO-NOT-REPEAT
+Do not launch another cacheIdentity experiment merely to reconstruct the 370778 markers. Do not merge evidence families by temporal similarity. Do not treat Producer.send().get(), RequestChannel ordering, startup futures, MetadataLoader queue serialization, or metadataCache publication as an incremental W1→D1 bridge without a new concrete source fact.
+
+### Next frontier
+Continue only with the remaining production-source question: whether any concrete post-startup mechanism touched by every incremental ACL mutation is subsequently read/awaited by the Processor or authorization path. If no such mechanism is identified, preserve the bounded UNKNOWN rather than converting absence of a discovered edge into a vulnerability claim.
