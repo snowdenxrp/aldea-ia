@@ -2289,3 +2289,29 @@ Do not reopen generically: MetadataLoader/KafkaEventQueue serialization, startup
 - AB105.117R = **NOT_CREATED**
 - TLC = **NOT_RERUN**
 - No new runtime experiment or synchronization was introduced by this audit.
+
+
+## 2026-10-06 — Continuity delta: MetadataLoader post-publisher boundary
+
+### 🔵 New frontier identified
+- A fresh source pass narrowed the next legitimate target to the **MetadataLoader post-publisher boundary**.
+- The loader owns delivery of `MetadataPublisher` updates; `BrokerMetadataPublisher` installs the ACL publisher as part of that publication path.
+- The important unresolved question is not whether W1 executes on the MetadataLoader event-handler thread (already established), but whether **after all publishers return** the MetadataLoader performs a concrete barrier/queue/executor/publication operation whose acquire is reachable by the request path.
+- This is a source-audit target only; no new experiment or harness modification has been introduced.
+
+### 🔴 Do not overclaim
+- The existence of MetadataLoader publisher sequencing does **not** itself establish W1→D1 JMM HB.
+- No post-publisher release/acquire edge has yet been identified.
+- Keep W1→ENQUEUE and W1→D1 at UNKNOWN until that concrete edge is verified or ruled out within the audited scope.
+
+### DO-NOT-REPEAT
+Do not reopen the already closed generic paths: MetadataLoader/KafkaEventQueue serialization itself, AclPublisher direct serialization, startup/firstPublishFuture, D0/controller completion, ProducerFuture/network/SocketServer, RequestChannel, metadataCache ordering, Plugin identity, shared Authorizer identity, outer `data` volatile reads, AclCache/PCollections.
+
+### Epistemic state
+- W1→ENQUEUE JMM HB = **UNKNOWN / NO CONCRETE EDGE IDENTIFIED**
+- W1→D1 JMM HB = **UNKNOWN / NO CONCRETE EDGE IDENTIFIED**
+- stale ACL = **NOT OBSERVED in Run #21 / NOT DISPROVEN universally**
+- vulnerability = **NOT ESTABLISHED**
+- AB105.116R = **PROTECTED / UNCHANGED**
+- AB105.117R = **NOT_CREATED**
+- TLC = **NOT_RERUN**
