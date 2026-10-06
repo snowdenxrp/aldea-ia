@@ -1061,3 +1061,49 @@ Do not launch another cacheIdentity experiment merely to reconstruct the 370778 
 
 ### Next frontier
 Continue only with the remaining production-source question: whether any concrete post-startup mechanism touched by every incremental ACL mutation is subsequently read/awaited by the Processor or authorization path. If no such mechanism is identified, preserve the bounded UNKNOWN rather than converting absence of a discovered edge into a vulnerability claim.
+
+
+## 2026-10-06 — Post-startup publication frontier: authorization-side recheck
+
+### 🟢 New audit result
+A final targeted source pass searched for a **post-startup mechanism that is touched by each incremental ACL mutation and then read/awaited by the request authorization path**.
+
+The recheck covered:
+- `ClusterMetadataAuthorizer` thread-safety contract versus concrete `StandardAuthorizer`;
+- `AclPublisher.onMetadataUpdate()` and `BrokerMetadataPublisher` boundaries;
+- `KafkaApis → AuthHelper → Authorizer.authorize()`;
+- request-handler execution/callback mechanisms;
+- metadata-version/offset gates and broker lifecycle state;
+- synchronized/lock/condition/future/atomic/concurrent-collection candidates.
+
+### 🟢 Result
+No new cross-domain publication mechanism was identified.
+
+The important distinction is explicit:
+- The `ClusterMetadataAuthorizer` contract requires thread-safe behavior, but that contract is not itself a JMM synchronizes-with edge.
+- Incremental `StandardAuthorizer.addAcl/removeAcl()` still mutate the same `StandardAuthorizerData` instance.
+- W1 still writes only the plain `aclCache` reference.
+- The request path still authorizes directly; no per-ACL-update await, metadata-offset gate, shared lock, or callback rendezvous was found before D1.
+- Existing `CompletableFuture`, `ConcurrentHashMap`, `AtomicInteger`, synchronized pool-management methods, and lifecycle latches elsewhere are unrelated unless a causal path from W1 is established. None was found.
+- `BrokerMetadataPublisher`'s volatile metadata-image publication remains ordered **before** the ACL publisher callback, so it cannot retroactively publish the later W1 plain write.
+
+### 🔵 Epistemic consequence
+The static search frontier is now substantially exhausted for the inspected pinned G0 path.
+
+This does **not** prove a stale read. It establishes only:
+`NO CONCRETE POST-STARTUP W1→REQUEST PUBLICATION EDGE IDENTIFIED`.
+
+Therefore:
+- W1 → ENQUEUE HB = UNKNOWN / NOT IDENTIFIED
+- W1 → D1 HB = UNKNOWN / NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+
+### 🔴 Do-not-overclaim
+Do not convert absence of a discovered synchronization mechanism into proof of a JMM violation. Do not use the thread-safety contract as proof of visibility. Do not treat unrelated concurrency primitives as bridges without a source-level causal chain.
+
+### 🎯 Next frontier
+The remaining discriminator is empirical reconciliation of the already-prepared real-path cache probe (PR #97), if/when its manual workflow can actually execute. No new experiment is opened here. If execution remains unavailable, preserve the bounded UNKNOWN.
+
+### DO-NOT-REPEAT
+Do not repeat the authorization-side lock/future/offset/concurrent-collection search. Do not rerun TLC. Do not create AB105.117R. Do not introduce synchronization into the witness.
