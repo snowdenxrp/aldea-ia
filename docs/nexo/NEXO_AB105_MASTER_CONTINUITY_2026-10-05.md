@@ -1638,3 +1638,39 @@ The crucial ordering counterexample remains cycles 4/5 where target-broker W1 oc
 
 ### Current frontier
 The source audit has now eliminated the obvious broker-side queue and harness-side completion paths as carriers of the W1 write. Remaining question is only whether some independent production metadata publication mechanism (outside the already audited AclPublisher/StandardAuthorizer/RequestChannel paths) connects the W1 thread to the later authorization request. If no such mechanism exists, the bounded conclusion remains UNKNOWN rather than a proof of universal absence.
+
+
+## 2026-10-06 — pinned-source lock-comment discrepancy rechecked against current Kafka
+
+### 🟢 Exact pinned fact
+At Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, `StandardAuthorizer.java` contains a comment saying that a read-write lock is used to synchronize ACL reads/writes, but the actual class contains **no ReentrantReadWriteLock field and no lock acquisition** around `addAcl`, `removeAcl`, or `authorize`.
+
+The actual pinned implementation is:
+- `private volatile StandardAuthorizerData data`;
+- `addAcl/removeAcl -> data.addAcl/removeAcl` directly;
+- `authorize -> StandardAuthorizerData curData = data` followed by authorization on that object;
+- incremental `aclCache` mutation remains inside the selected `StandardAuthorizerData`.
+
+### 🟢 Cross-check against current upstream source
+Current Apache Kafka source still contains the same stale lock-description comment while the shown implementation likewise has no lock field/acquisition in `StandardAuthorizer`. Therefore the comment must not be treated as executable evidence of synchronization. The executable source is authoritative for this audit. citeturn0search0turn1search0
+
+### 🔴 No new HB bridge
+This recheck does not discover a hidden lock. It strengthens the existing conclusion that the outer volatile `data` publication mechanism is not automatically refreshed by incremental `aclCache` replacement. The source-level lock hypothesis is therefore closed unless a different pinned revision is intentionally introduced (which is outside the current experiment).
+
+### Important historical distinction
+Older Kafka implementations did explicitly use `ReentrantReadWriteLock` around these operations. That is historical evidence only and must not be projected onto the pinned implementation. citeturn1search2
+
+### Current state
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED in Run #21 (10/10).
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not interpret the stale read-write-lock comment as a synchronization mechanism. Do not reopen the lock hypothesis without a new executable source revision. Do not add an artificial lock/barrier/volatile/Future to the G0 experiment.
+
+### Next frontier
+The source audit remains bounded at the same final frontier: any remaining uncertainty is whether some **other** production synchronization edge outside the audited authorizer/update/request paths connects W1 to the later request. If none is found, preserve UNKNOWN rather than converting source absence into a universal proof.
