@@ -2171,3 +2171,26 @@ The remaining target stays narrowly defined: a production operation **after or a
 
 ### DO-NOT-REPEAT
 Do not reopen `BrokerMetadataPublisher.metadataCache` as the missing bridge unless a new pinned-source discrepancy shows a post-W1 publication. Do not infer HB merely because metadataCache and AclPublisher execute in the same metadata publication callback.
+
+
+## 2026-10-06 — Initial-load exception precisely bounded
+
+### 🟢 Exact pinned AclPublisher nuance
+The exact pinned `AclPublisher` source shows `completeInitialLoad()` is invoked **after** the first `onMetadataUpdate()` ACL application, when `completedInitialLoad == false`. `ClusterMetadataAuthorizer.completeInitialLoad()` then updates `StandardAuthorizer.data` via a new data object and completes `initialLoadFuture`.
+
+This means there is a real volatile/future publication path for the **initial-load readiness boundary**. It does not establish a steady-state publication edge for later incremental ACL deltas, because subsequent `onMetadataUpdate()` calls apply `addAcl/removeAcl` without reassigning the outer volatile `data` or completing the readiness future again.
+
+### 🔴 Scientific consequence
+This does not reopen the vulnerability question. It sharpens the boundary: any W1→D1 publication claim based on `volatile data` / `initialLoadFuture` can apply to startup initialization, but cannot be generalized to post-start incremental ACL updates.
+
+### State unchanged
+- W1→ENQUEUE JMM HB: UNKNOWN for steady-state incremental updates.
+- W1→D1 JMM HB: UNKNOWN for steady-state incremental updates.
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not use the initial-load volatile/future publication as a steady-state ACL-delta bridge. Do not reopen startup-readiness auditing unless the target hypothesis changes.
