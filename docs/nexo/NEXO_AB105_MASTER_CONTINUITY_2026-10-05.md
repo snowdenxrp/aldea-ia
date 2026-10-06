@@ -225,3 +225,42 @@ Result: the candidate Kafka-level admission mechanism is now narrowed to initial
 State unchanged: W1→D1 HB UNKNOWN / NOT IDENTIFIED; stale read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED; AB105.116R protected; AB105.117R not created; TLC not rerun.
 
 Next frontier: inspect the concrete SocketServer/request-handler handoff only for a synchronization edge that could somehow reconnect to the MetadataLoader publisher state after startup. Do not infer HB from mere queue ordering or endpoint readiness.
+
+
+## 2026-10-05 — SocketServer / RequestChannel / KafkaRequestHandler handoff audit
+
+Exact pinned Kafka source at 99b940733a9f6bc409457dba7108f08421d81e42 was inspected for the concrete request handoff, specifically looking for a synchronization edge that could reconnect steady-state W1 to D1.
+
+### 🟢 Confirmed network-to-handler publication edge
+- SocketServer Processor constructs/receives a request and calls RequestChannel.sendRequest(req).
+- RequestChannel stores requests in a java.util.concurrent.ArrayBlockingQueue.
+- KafkaRequestHandler receives through RequestChannel.receiveRequest(300), which polls the same request queue.
+- Therefore the queue handoff can publish Processor-side actions before enqueue to the handler that dequeues the request, subject to the queue's established concurrent-queue synchronization semantics.
+
+### 🔴 Critical boundary
+This publication edge begins at the Processor/request-enqueue side. It does NOT begin at MetadataLoader/AclPublisher W1.
+
+The inspected path is:
+  network Processor -> ArrayBlockingQueue.put/enqueue -> KafkaRequestHandler receive/poll -> KafkaApis -> authorization
+
+There is no ACL-update operation on this queue handoff, and no inspected code connects an incremental AclPublisher addAcl/removeAcl to requestQueue.put(). Therefore queue HB cannot be extended backward from D1 to W1 merely because W1 happened earlier in wall-clock time.
+
+### 🟢 Handler synchronization found, but unrelated to W1
+KafkaRequestHandlerPool uses AtomicInteger counters for metrics/thread counts and KafkaRequestHandler has a volatile stopped flag plus shutdown CountDownLatch. These primitives govern handler lifecycle/metrics/shutdown. They are not causally linked to each incremental ACL update and therefore do not establish W1→D1 publication.
+
+### 🟢 Startup gate remains startup-only
+SocketServer.enableRequestProcessing(authorizerFutures) uses CompletableFuture readiness to start acceptors/processors after initial authorizer readiness. This is endpoint startup admission, not a per-ACL-delta rendezvous. Once processing is enabled, requests continue through the independent Processor → RequestChannel → Handler path.
+
+### Current conclusion
+- 🟢 Processor → RequestChannel → Handler is a real cross-thread publication boundary for request state.
+- 🔴 It does not provide MetadataLoader/AclPublisher W1 → RequestChannel publication.
+- 🔴 No steady-state W1 → Processor/admission bridge was identified in this frontier.
+- 🟡 W1→D1 JMM happens-before remains UNKNOWN / NOT IDENTIFIED.
+- 🟡 stale ACL read remains NOT OBSERVED / NOT DISPROVEN.
+- 🔴 vulnerability remains NOT ESTABLISHED.
+
+### Do-not-repeat refinement
+Do not treat RequestChannel/ArrayBlockingQueue ordering as a W1→D1 bridge. The exact queue HB starts with actions sequenced before enqueue by the Processor thread; it does not retroactively publish unrelated MetadataLoader/AclPublisher writes.
+
+### Next frontier
+The remaining source audit is narrowed further: inspect only any concrete code that could make an incremental ACL update directly trigger, gate, or synchronize with the Processor/request admission path. If none exists, preserve UNKNOWN and use the isolated PR #97 cache-snapshot diagnostic as the empirical discriminator, without calling timing evidence a JMM proof.
