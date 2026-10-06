@@ -1,5 +1,35 @@
 # NEXO AB105 — MASTER CONTINUITY — 2026-10-05
 
+## CHAT START — RECOVERY GATE (PERMANENT)
+
+**Esta sección debe leerse ANTES de continuar cualquier investigación en un chat nuevo.**
+
+### Estado que NO debe perderse
+- No iniciar desde cero ni repetir auditorías ya cerradas en esta maestra.
+- La maestra es el estado científico canónico; el chat nuevo debe recuperar también la **frontera exacta de la investigación**, no solo el resumen final.
+- Antes de abrir una hipótesis nueva: reconciliar contra las secciones más recientes de esta maestra y respetar todos los **DO-NOT-REPEAT**.
+- Si una ruta ya fue investigada hoy y cerrada, no volver a recorrerla salvo que exista una **nueva discrepancia de código/evidencia**.
+- Si algo permanece UNKNOWN, conservar exactamente qué fue descartado y qué puente concreto sigue faltando.
+
+### Frontera canónica al iniciar chat
+- W1→ENQUEUE JMM HB: **UNKNOWN / NO CONCRETE EDGE IDENTIFIED**.
+- W1→D1 JMM HB: **UNKNOWN / NO CONCRETE EDGE IDENTIFIED**.
+- Stale ACL read: **NOT OBSERVED in Run #21 / NOT DISPROVEN universally**.
+- Vulnerability: **NOT ESTABLISHED**.
+- AB105.116R: **PROTECTED / UNCHANGED**.
+- AB105.117R: **NOT_CREATED**.
+- TLC: **NOT_RERUN**.
+- PR #97: draft diagnostic already contains the needed D1 `correlationId` instrumentation; do **not** create another correlationId-only probe.
+- Run #21 already supplied the strongest current cache-observation evidence: 10/10 W1, 10/10 D1, no stale ACL observed, W1/D1 cacheIdentity correspondence as reported; it lacks ENQUEUE/DEQUEUE/AUTH events.
+- The already-audited routes (MetadataLoader/AclPublisher serialization, KafkaEventQueue, startup/readiness futures, BrokerServer/ControllerServer admission, RequestChannel/ArrayBlockingQueue, handler lifecycle primitives, PCollections, AclCache/StandardAuthorizerData direct cache publication) are **not open generic search targets**. Reopen only on a concrete new source discrepancy.
+- The remaining high-value target is the **concrete external production bridge**, if any, between incremental W1 and the real request admission/authorization path; otherwise preserve UNKNOWN.
+- Do not infer JMM happens-before from `System.nanoTime()`, temporal ordering, cacheIdentity equality, or queue ordering alone.
+
+### Regla de continuidad
+**No repetir lo ya cerrado. No inventar un puente. No convertir evidencia observacional en HB. Guardar toda delta real en esta maestra.**
+
+
+
 ## Canonical project state
 - Repository: snowdenxrp/aldea-ia
 - Master branch: main
