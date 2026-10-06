@@ -319,3 +319,44 @@ State unchanged:
 - TLC = NOT_RERUN
 
 Next frontier: inspect only a concrete indirect bridge from the end of the MetadataLoader publisher callback to request admission. If none exists, stop expanding the source search and independently audit PR #97's final generated probe before any execution.
+
+
+## 2026-10-05 — PR #97 cycle-correlation audit: UUID identity is available inside AclCache, but not yet exposed by the probe
+
+Exact pinned Kafka `AclCache.java` was inspected at `99b940733a9f6bc409457dba7108f08421d81e42` to determine whether the cache diagnostic can correlate W1 and D1 to the same ACL cycle without introducing W1→D1 synchronization.
+
+### 🟢 Structural identity finding
+- `AclCache` keeps a final immutable `aclsById` map keyed by `Uuid`, in addition to `aclsByResource`.
+- `addAcl(Uuid id, StandardAcl acl)` inserts the ACL under that UUID and `removeAcl(Uuid id)` removes exactly that UUID.
+- `getAcl(Uuid id)` reads the UUID-indexed immutable map from the selected cache snapshot.
+- `StandardAcl` itself does not contain the UUID; the UUID is metadata identity stored by `AclCache`.
+
+### 🔴 Limitation in the current PR #97 probe
+The current D1 diagnostic checks structural target membership/count/cache identity, while W1 logs the removal UUID. Because D1 does not currently expose the UUID associated with the target ACL, the two logs cannot be guaranteed to identify the same ACL cycle solely from their own records. Repeated create/delete cycles therefore leave a genuine correlation ambiguity.
+
+This reinforces the previous decision: a timestamp-near W1/D1 pairing is not sufficient to promote a `PRE_W1_CACHE` observation to a uniquely correlated cycle or to JMM proof.
+
+### 🟢 Possible diagnostic improvement — no synchronization edge required in principle
+A workflow-local diagnostic could expose, from the already-selected immutable D1 `AclCache` snapshot, the UUID associated with the exact structural target ACL. The probe could then compare that UUID with the W1 removal UUID after the run.
+
+If implemented only as a read-only inspection of the already-selected snapshot:
+- it does not require a shared W1/D1 variable;
+- it does not require volatile/latch/barrier/Future/lock synchronization;
+- it does not publish W1 state to D1;
+- it would improve cycle identity independently of timing.
+
+However, adding such a helper is still instrumentation and can perturb execution. It must therefore remain diagnostic evidence, not a JMM proof, and its generated diff must be audited before execution.
+
+### Epistemic state unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- TLC = NOT_RERUN
+
+### Do-not-repeat refinement
+Do not treat cache identity, count, timestamp proximity, or structural membership alone as a unique cycle identifier. Do not execute PR #97 until the final probe correlation limitation is either explicitly accepted or replaced by an independently audited identity mechanism.
+
+### Next action
+Audit the smallest possible UUID-correlation instrumentation against the exact generated PR #97 source. Prefer a read-only operation on the same D1 snapshot and reject any design that introduces a cross-thread publication edge.
