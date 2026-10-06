@@ -2224,3 +2224,26 @@ No new W1→ENQUEUE or W1→D1 JMM edge was identified.
 
 ### DO-NOT-REPEAT
 Do not reopen `Plugin`/basic `KafkaApis` authorization delegation unless a new pinned-source discrepancy appears. Do not confuse final-field safe initialization of the plugin wrapper with publication of later mutable ACL state.
+
+
+## 2026-10-06 — Shared Authorizer instance does not create W1→D1 publication
+
+### 🟢 Exact pinned topology
+`BrokerServer` creates a single `authorizerPlugin` for the broker and passes that plugin into the data-plane `KafkaApis`. The ACL publisher is also built around the broker's authorizer plugin through `BrokerMetadataPublisher`/`AclPublisher`.
+
+### 🔴 Interpretation
+Sharing the same Authorizer/Plugin instance across metadata and request domains is **object identity, not a JMM publication edge**. The wrapper's final reference safely initializes the instance, but incremental W1 mutates `StandardAuthorizerData` through the existing object; no volatile write, lock, Future, executor handoff, or queue publication was identified at this shared-instance boundary.
+
+Therefore this apparent cross-domain bridge is closed without changing the formal state.
+
+### State
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not reopen shared Authorizer/Plugin identity as a publication mechanism unless a concrete synchronization operation is found on the same path.
