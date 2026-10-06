@@ -49,6 +49,23 @@ jobs:
           )
           Path("server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java").write_text(test)
 
+          cache = Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java")
+          cs = cache.read_text()
+          cache_marker = """    AclCache removeAcl(Uuid id) {"""
+          cache_method = """    java.util.Optional<Uuid> nexoFindId(StandardAcl target) {
+        final java.util.concurrent.atomic.AtomicReference<Uuid> found = new java.util.concurrent.atomic.AtomicReference<>();
+        aclsById.forEach((id, acl) -> {
+            if (acl.equals(target)) found.set(id);
+        });
+        return java.util.Optional.ofNullable(found.get());
+    }
+
+"""
+          if cs.count(cache_marker) != 1:
+              raise SystemExit("AclCache injection marker mismatch")
+          cs = cs.replace(cache_marker, cache_method + cache_marker, 1)
+          cache.write_text(cs)
+
           p = Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java")
           s = p.read_text()
 
@@ -91,6 +108,7 @@ jobs:
                 org.apache.kafka.common.acl.AclPermissionType.ALLOW
             );
             boolean targetPresent = aclCacheSnapshot.aclsByResource().contains(targetAcl);
+            String targetId = aclCacheSnapshot.nexoFindId(targetAcl).map(Object::toString).orElse("NONE");
             try {
                 java.nio.file.Files.writeString(
                     java.nio.file.Path.of("/tmp/nexo-d1-cache.log"),
@@ -99,7 +117,8 @@ jobs:
                         " thread=" + Thread.currentThread().getName() +
                         " cacheIdentity=" + System.identityHashCode(aclCacheSnapshot) +
                         " cacheCount=" + aclCacheSnapshot.count() +
-                        " targetPresent=" + targetPresent + System.lineSeparator(),
+                        " targetPresent=" + targetPresent +
+                        " targetId=" + targetId + System.lineSeparator(),
                     java.nio.file.StandardOpenOption.CREATE,
                     java.nio.file.StandardOpenOption.APPEND
                 );
