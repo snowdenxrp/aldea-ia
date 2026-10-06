@@ -2117,3 +2117,29 @@ Search must target only such a concrete cross-domain bridge. Do not reopen alrea
 - Do not use startup `firstPublishFuture` as steady-state ACL synchronization.
 - Do not add artificial synchronization, barriers, volatile fields, Futures, latches, locks, or shared probes.
 - Do not create AB105.117R or rerun TLC.
+
+
+## 2026-10-06 — Exact AclPublisher contract recheck: no per-update cross-domain publication
+
+### 🟢 Pinned source verification
+At Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, `AclPublisher.onMetadataUpdate()` directly iterates incremental `aclsDelta().changes()` and invokes `ClusterMetadataAuthorizer.addAcl()` / `removeAcl()`. Its own state contains no executor submission, Future handoff, lock, queue publication, or callback into the request-processing path.
+
+The source explicitly distinguishes steady-state incremental ACL application from snapshot initialization. `completeInitialLoad()` is called only on the initial-load path and is described as enabling the authorizer after the MetadataLoader reaches local high water mark. It is not a per-ACL-update synchronization mechanism.
+
+### 🟢 Contract precision
+`ClusterMetadataAuthorizer` requires all authorizer methods to be thread-safe, but that interface contract does not identify a concrete JMM synchronizes-with edge from W1 to Processor/ENQUEUE. Its `createAcls/deleteAcls` futures are controller-side completion mechanisms for persistence/results, not publication objects shared with the data-plane request path.
+
+### 🔴 Frontier result
+This exact-source recheck adds no new production bridge. It strengthens the conclusion that the remaining gap is not inside the AclPublisher call itself: the missing edge, if one exists, must be external to W1 and must connect ACL-derived state to the request-admission path.
+
+### State unchanged
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not reopen the AclPublisher basic serialization audit unless new pinned-source evidence appears. Do not treat the thread-safe interface contract as proof of a specific JMM edge. Do not use initial-load completion as steady-state ACL publication.
