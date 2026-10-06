@@ -2194,3 +2194,33 @@ This does not reopen the vulnerability question. It sharpens the boundary: any W
 
 ### DO-NOT-REPEAT
 Do not use the initial-load volatile/future publication as a steady-state ACL-delta bridge. Do not reopen startup-readiness auditing unless the target hypothesis changes.
+
+
+## 2026-10-06 — Plugin wrapper / KafkaApis authorization boundary checked
+
+### 🟢 Exact pinned source
+The exact Kafka pin was checked for the request-side authorization transition:
+- `KafkaApis` constructs one `AuthHelper` from the broker's `authorizerPlugin`.
+- Request handlers call `authHelper.authorize(...)` / `filterByAuthorized(...)` directly on the request path.
+- `AuthHelper` delegates directly to the wrapped `Authorizer`; no per-request Future wait, executor handoff, lock, or metadata-publication callback appears at this boundary.
+- `org.apache.kafka.common.internals.Plugin` was checked because it wraps the Authorizer instance. Its `instance` field is `final`, and `get()` simply returns that instance. The wrapper introduces no synchronization/publication operation for later Authorizer state changes.
+
+### 🔴 Interpretation
+This closes a small but concrete possible bridge: the `Plugin[Authorizer]` wrapper itself does not transform W1 into a request-side synchronization edge. Final-field publication makes the wrapper/instance reference safely initialized, but it does not publish later incremental writes to `StandardAuthorizerData.aclCache`.
+
+The request-side boundary therefore remains:
+`ENQUEUE → KafkaRequestHandler → KafkaApis → AuthHelper → Authorizer.authorize()`.
+
+No new W1→ENQUEUE or W1→D1 JMM edge was identified.
+
+### 🟡 State unchanged
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED / UNCHANGED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not reopen `Plugin`/basic `KafkaApis` authorization delegation unless a new pinned-source discrepancy appears. Do not confuse final-field safe initialization of the plugin wrapper with publication of later mutable ACL state.
