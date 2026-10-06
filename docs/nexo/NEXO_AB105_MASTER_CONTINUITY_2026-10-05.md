@@ -2247,3 +2247,14 @@ Therefore this apparent cross-domain bridge is closed without changing the forma
 
 ### DO-NOT-REPEAT
 Do not reopen shared Authorizer/Plugin identity as a publication mechanism unless a concrete synchronization operation is found on the same path.
+
+
+## 2026-10-06 — StandardAuthorizer volatile read is not an incremental publication bridge
+
+🟢 Exact pinned source rechecked: `authorize()` snapshots the volatile outer `data` reference, while incremental `addAcl/removeAcl` only update the inner `StandardAuthorizerData.aclCache`. `aclCount()`/`acls()` also read through the outer volatile `data`, but there is no corresponding volatile write on each incremental ACL delta.
+
+🔴 Therefore merely reading `volatile data` on the request side cannot establish W1→D1 HB for a later incremental update. The JMM requires a relevant volatile write/read synchronization pair; the unchanged outer reference does not provide a new release for each `aclCache` replacement. The JLS defines the volatile-write → subsequent volatile-read HB rule. citeturn0search12
+
+State unchanged: W1→ENQUEUE UNKNOWN; W1→D1 UNKNOWN; stale read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED; AB105.116R protected; AB105.117R not created; TLC not rerun.
+
+DO-NOT-REPEAT: do not treat `authorize()`, `aclCount()`, or `acls()` volatile reads as incremental publication evidence unless a matching post-W1 volatile write is identified.
