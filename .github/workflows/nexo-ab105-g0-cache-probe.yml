@@ -1,0 +1,194 @@
+name: NEXO AB105 G0 diagnostic cache snapshot probe
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cache-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout Nexo
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Clone pinned Kafka
+        run: |
+          git clone --filter=blob:none https://github.com/apache/kafka.git /tmp/kafka
+          cd /tmp/kafka
+          git checkout 99b940733a9f6bc409457dba7108f08421d81e42
+          test "$(git rev-parse HEAD)" = "99b940733a9f6bc409457dba7108f08421d81e42"
+
+      - name: Recover baseline G0 harness without changing it
+        working-directory: /tmp/kafka
+        run: |
+          git -C "$GITHUB_WORKSPACE" fetch origin nexo-ab105-g0-ordering-witness:refs/remotes/origin/nexo-ab105-g0-ordering-witness
+          python3 - <<'PY'
+          import os
+          import subprocess
+          from pathlib import Path
+
+          workspace = os.environ["GITHUB_WORKSPACE"]
+          src = subprocess.check_output([
+              "git", "-C", workspace,
+              "show",
+              "origin/nexo-ab105-g0-ordering-witness:.github/workflows/nexo-ab105-g0-ordering-witness.yml"
+          ], text=True)
+
+          marker = "cat > server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java <<'EOF'"
+          start = src.index(marker) + len(marker) + 1
+          end = src.index("\n          EOF", start)
+          test = src[start:end]
+          Path("server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java").parent.mkdir(
+              parents=True, exist_ok=True
+          )
+          Path("server/src/test/java/org/apache/kafka/server/NexoG0OrderingWitnessTest.java").write_text(test)
+
+          cache = Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java")
+          cs = cache.read_text()
+          cache_marker = """    AclCache removeAcl(Uuid id) {"""
+          cache_method = """    java.util.Optional<Uuid> nexoFindId(StandardAcl target) {
+        Uuid[] found = new Uuid[1];
+        aclsById.forEach((id, acl) -> {
+            if (acl.equals(target)) found[0] = id;
+        });
+        return java.util.Optional.ofNullable(found[0]);
+    }
+
+"""
+          if cs.count(cache_marker) != 1:
+              raise SystemExit("AclCache injection marker mismatch")
+          cs = cs.replace(cache_marker, cache_method + cache_marker, 1)
+          cache.write_text(cs)
+
+          p = Path("metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java")
+          s = p.read_text()
+
+          old = """            AclCache aclCacheSnapshot = aclCache.removeAcl(id);
+            log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
+            aclCache = aclCacheSnapshot;"""
+          new = """            AclCache aclCacheSnapshot = aclCache.removeAcl(id);
+            log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
+            aclCache = aclCacheSnapshot;
+            try {
+                java.nio.file.Files.writeString(
+                    java.nio.file.Path.of("/tmp/nexo-w1-cache.log"),
+                    "NEXO_CACHE W1 ns=" + System.nanoTime() +
+                        " thread=" + Thread.currentThread().getName() +
+                        " id=" + id +
+                        System.lineSeparator(),
+                    java.nio.file.StandardOpenOption.CREATE,
+                    java.nio.file.StandardOpenOption.APPEND
+                );
+            } catch (java.io.IOException e) {
+                throw new RuntimeException("NEXO_CACHE W1 probe sink failed", e);
+            }"""
+          if s.count(old) != 1:
+              raise SystemExit("W1 insertion marker mismatch")
+          s = s.replace(old, new, 1)
+
+          old = """        AclCache aclCacheSnapshot = aclCache;
+        checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"""
+          new = """        AclCache aclCacheSnapshot = aclCache;
+        if ("nexo-g0-ordering".equals(action.resourcePattern().name())
+                && action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC
+                && action.operation() == org.apache.kafka.common.acl.AclOperation.WRITE) {
+            StandardAcl targetAcl = new StandardAcl(
+                org.apache.kafka.common.resource.ResourceType.TOPIC,
+                "nexo-g0-ordering",
+                org.apache.kafka.common.resource.PatternType.LITERAL,
+                "User:plain-user1",
+                "*",
+                org.apache.kafka.common.acl.AclOperation.WRITE,
+                org.apache.kafka.common.acl.AclPermissionType.ALLOW
+            );
+            boolean targetPresent = aclCacheSnapshot.aclsByResource().contains(targetAcl);
+            String targetId = aclCacheSnapshot.nexoFindId(targetAcl).map(Object::toString).orElse("NONE");
+            try {
+                java.nio.file.Files.writeString(
+                    java.nio.file.Path.of("/tmp/nexo-d1-cache.log"),
+                    "NEXO_CACHE D1 ns=" + System.nanoTime() +
+                        " correlationId=" + requestContext.correlationId() +
+
+                        " thread=" + Thread.currentThread().getName() +
+                        " cacheIdentity=" + System.identityHashCode(aclCacheSnapshot) +
+                        " cacheCount=" + aclCacheSnapshot.count() +
+                        " targetPresent=" + targetPresent +
+                        " targetId=" + targetId + System.lineSeparator(),
+                    java.nio.file.StandardOpenOption.CREATE,
+                    java.nio.file.StandardOpenOption.APPEND
+                );
+            } catch (java.io.IOException e) {
+                throw new RuntimeException("NEXO_CACHE D1 probe sink failed", e);
+            }
+        }
+        checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"""
+          if s.count(old) != 1:
+              raise SystemExit("D1 insertion marker mismatch")
+          s = s.replace(old, new, 1)
+
+          p.write_text(s)
+          PY
+
+      - name: Probe safety audit
+        working-directory: /tmp/kafka
+        run: |
+          echo "---- INJECTED DIAGNOSTIC SAFETY AUDIT ----"
+          if grep -n -E "volatile|Atomic|CountDownLatch|Future|synchronized|Reentrant|Semaphore|Lock"               metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java               metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java; then
+            echo "Injected diagnostic source contains a forbidden synchronization token"
+            exit 1
+          fi
+          grep -n 'nexoFindId' metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java
+          grep -n 'targetId' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          test "$(grep -c 'NEXO_CACHE W1' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java)" -eq 1
+          test "$(grep -c 'NEXO_CACHE D1' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java)" -eq 1
+          grep -n 'AclCache aclCacheSnapshot = aclCache' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n 'targetPresent' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n 'nexo-w1-cache.log' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n 'nexo-d1-cache.log' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+
+      - name: Compile
+        working-directory: /tmp/kafka
+        run: ./gradlew --no-daemon :test-common:test-common-runtime:compileJava :metadata:compileTestJava :server:compileTestJava
+
+      - name: Execute real broker diagnostic
+        working-directory: /tmp/kafka
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0OrderingWitnessTest --info 2>&1 | tee /tmp/nexo-cache-probe.log
+
+      - name: Emit diagnostic evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "DIAGNOSTIC=REAL_BROKER_D1_ACLCACHE_SNAPSHOT"
+            echo "TIMING_INSTRUMENTATION=WORKFLOW_LOCAL"
+            echo "W1_AND_D1_SINKS=SEPARATE_FILES"
+            echo "AB105_116R=UNCHANGED"
+            echo "AB105_117R=NOT_CREATED"
+            echo "TLC=NOT_RERUN"
+            echo "---- W1 CACHE EVENTS ----"
+            cat /tmp/nexo-w1-cache.log 2>/dev/null || true
+            echo "---- D1 CACHE EVENTS ----"
+            cat /tmp/nexo-d1-cache.log 2>/dev/null || true
+            echo "---- BASELINE ORDER EVENTS ----"
+            grep 'NEXO_ORDER ' /tmp/nexo-cache-probe.log || true
+          } | tee /tmp/nexo-cache-probe-evidence.txt
+
+      - name: Upload diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-cache-probe
+          path: |
+            /tmp/nexo-cache-probe.log
+            /tmp/nexo-cache-probe-evidence.txt
+            /tmp/nexo-w1-cache.log
+            /tmp/nexo-d1-cache.log
