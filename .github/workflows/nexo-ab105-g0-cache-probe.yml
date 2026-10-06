@@ -229,6 +229,7 @@ jobs:
           ./gradlew --no-daemon \
             :server:test \
             --tests org.apache.kafka.server.NexoG0OrderingWitnessTest \
+            -x :server:checkstyleTest \
             --info 2>&1 | tee /tmp/nexo-cache-probe.log
 
       - name: Emit diagnostic evidence
