@@ -809,3 +809,38 @@ The workflow is `workflow_dispatch` only. No PR #97 cache-probe run/artifact has
 
 ### State
 W1→D1 HB UNKNOWN; stale ACL NOT OBSERVED/NOT DISPROVEN; vulnerability NOT ESTABLISHED; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
+
+
+## 2026-10-05 — PR #97 diagnostic sink audit: I/O is observational but not semantically neutral
+
+A fresh read of the exact PR #97 workflow exposed an important qualification that was not explicit enough in the previous safety review.
+
+### 🟡 W1/D1 file sinks are not synchronization bridges, but they are real behavioral instrumentation
+Both W1 and D1 call `java.nio.file.Files.writeString(..., APPEND)`. The sinks are separate files, and no shared Java synchronization primitive is introduced between W1 and D1. Therefore the probe does not intentionally create a W1→D1 Java happens-before edge.
+
+However, file I/O is not semantically free:
+- it can block or contend in the operating system/runtime;
+- it can change scheduling and therefore the probability of observing a stale snapshot;
+- the W1 sink throws `RuntimeException` if the diagnostic write fails;
+- the D1 sink likewise throws on write failure.
+
+Therefore the probe remains **diagnostic/observational**, but it is not a zero-perturbation experiment. Any runtime result must be labeled with this instrumentation effect.
+
+### 🟢 Important non-conflation
+The I/O perturbation does not invalidate the cache-identity/UUID observation itself. If D1 records target UUID X and W1 independently records removal of UUID X earlier in the same uniquely identified cycle/request reconstruction, that is evidence about the snapshot actually selected by D1. It is not proof that an execution without instrumentation would make the same observation, and it is not proof of JMM happens-before.
+
+### 🔴 Additional execution rule
+Do not classify a run with missing/failed sink writes as clean negative evidence. If W1/D1 sink errors occur, the corresponding cycle is **AMBIGUOUS / INVALID DIAGNOSTIC OBSERVATION**, even if the broker test subsequently produces an authorization result.
+
+### State unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- PR #97 cache-probe evidence = NOT EXECUTED / NOT ACCEPTED
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### Do-not-repeat
+Do not add a shared sink, latch, volatile flag, Future, barrier, lock, or other synchronization to make W1/D1 logging more reliable. Reliability must come from post-run reconciliation, not from an artificial publication edge.
