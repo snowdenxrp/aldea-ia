@@ -454,3 +454,37 @@ PR #97 remains NOT EXECUTED. No new evidence has been generated. Epistemic state
 - TLC = NOT_RERUN
 - AB105.116R protected
 - AB105.117R not created
+
+
+## 2026-10-05 — Final pre-execution source audit: UUID correlation is valid and cycle-distinguishing
+
+Pinned-source inspection completed for the UUID identity path.
+
+### 🟢 Immutable-map API verified at exact Kafka pin
+`AclCache.aclsById` is an `ImmutableMap<Uuid, StandardAcl>`. The exact pinned PCollections-backed implementation exposes `forEach(BiConsumer)` by delegating to the persistent map. Therefore the diagnostic `nexoFindId(target)` scan is source-compatible with the pinned dependency and does not require exposing or mutating the underlying map.
+
+The map is held by a final field inside immutable `AclCache`; ACL updates create new immutable cache instances rather than mutating the selected snapshot.
+
+### 🟢 UUID is the correct lifecycle identity
+At the exact pin, `StandardAclWithId` explicitly pairs `(Uuid id, StandardAcl acl)` and reconstructs that identity from the metadata record. `AclControlManager.newAclId()` generates a random UUID and loops until the UUID is not already present in `idToAcl`. Therefore a newly created ACL lifecycle receives a distinct UUID while an existing UUID identifies the corresponding metadata ACL record.
+
+This removes the previous ambiguity where repeated create/delete cycles could only be paired structurally or by timing. A D1 snapshot reporting `targetId=X` can be matched directly against W1's removal `id=X`.
+
+### 🟡 What this proves / does not prove
+UUID correlation proves event identity for the diagnostic observation. It does **not** establish a Java Memory Model happens-before relation between W1 and D1. A PRE_W1 observation would be evidence that D1 selected a snapshot still containing the exact ACL record later removed by W1, but the publication mechanism remains the separate question.
+
+### 🟢 Pre-execution source audit result
+The generated helper uses only local state plus `ImmutableMap.forEach`. No W1 state is read. No cross-thread variable, volatile field, atomic primitive, latch, future, monitor, semaphore, or lock was added for correlation.
+
+### 🔴 Execution remains gated
+PR #97 is still NOT EXECUTED. The next action is a final generated-source/safety check and only then the real-broker diagnostic, without changing AB105.116R or rerunning TLC.
+
+State unchanged:
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
