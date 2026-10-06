@@ -198,7 +198,7 @@ jobs:
                       TARGET = (TargetAuthorizer) broker.authorizerPlugin().get().get();
 
                       try (Admin admin = cluster.admin()) {
-                          admin.createTopics(List.of(new NewTopic(TOPIC, 1, (short) 1))).all().get();
+                          admin.createTopics(List.of(new NewTopic(TOPIC_NAME, 1, (short) 1))).all().get();
                           admin.createAcls(List.of(userWriteAcl())).all().get();
                       }
 
@@ -227,7 +227,7 @@ jobs:
                               try (Admin admin = cluster.admin()) {
                                   admin.deleteAcls(
                                       List.of(new AclBindingFilter(
-                                          new ResourcePattern(TOPIC, TOPIC, LITERAL).toFilter(),
+                                          new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL).toFilter(),
                                           AccessControlEntryFilter.ANY)),
                                       new DeleteAclsOptions()).all().get();
                               }
@@ -235,7 +235,7 @@ jobs:
                               List<AuthorizationResult> d1 = TARGET.authorize(
                                   userContext(),
                                   List.of(new Action(WRITE,
-                                      new ResourcePattern(TOPIC, TOPIC, LITERAL),
+                                      new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
                                       0, true, false)));
                               Assertions.assertEquals(AuthorizationResult.DENIED, d1.get(0), "D1 must be DENIED after D0");
 
