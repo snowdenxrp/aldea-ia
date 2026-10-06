@@ -137,10 +137,13 @@ jobs:
       - name: Probe safety audit
         working-directory: /tmp/kafka
         run: |
-          if grep -n "NEXO_CACHE" metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java | grep -E "volatile|Atomic|CountDownLatch|Future|synchronized|Reentrant|Semaphore|Lock"; then
-            echo "NEXO_CACHE probe contains a forbidden synchronization primitive"
+          echo "---- INJECTED DIAGNOSTIC SAFETY AUDIT ----"
+          if grep -n -E "volatile|Atomic|CountDownLatch|Future|synchronized|Reentrant|Semaphore|Lock"               metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java               metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java; then
+            echo "Injected diagnostic source contains a forbidden synchronization token"
             exit 1
           fi
+          grep -n 'nexoFindId' metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java
+          grep -n 'targetId' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
           test "$(grep -c 'NEXO_CACHE W1' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java)" -eq 1
           test "$(grep -c 'NEXO_CACHE D1' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java)" -eq 1
           grep -n 'AclCache aclCacheSnapshot = aclCache' metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
