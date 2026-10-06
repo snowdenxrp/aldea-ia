@@ -894,3 +894,31 @@ W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED; stale ACL read = NOT OBSERVED / NOT D
 
 ### Do-not-repeat
 Do not use unrelated runs attached to the same commit as cache-probe evidence. Do not rerun bootstrap #143 merely to obtain the missing PR #97 result.
+
+
+## 2026-10-05 — JMM boundary resolved to the concrete publication question
+
+The remaining static question was narrowed to the exact JMM edge rather than the mere presence of `volatile`.
+
+### 🟢 Resolved static point
+For incremental ACL changes, W1 updates the plain reference `StandardAuthorizerData.aclCache` inside the existing `StandardAuthorizerData` instance. `StandardAuthorizer.data` is volatile, but the incremental `addAcl/removeAcl` path does not perform a new volatile write to `data` after the `aclCache` mutation.
+
+Therefore the volatile nature of `data` cannot, by itself, be treated as a publication edge for a later `aclCache` mutation. A volatile read of `data` establishes HB from the corresponding volatile write to `data` and earlier actions, not automatically from a later plain write to a field of the already-published object.
+
+### 🔵 Consequence for the audit
+This resolves the static reasoning frontier:
+- We have identified why `data volatile` does **not** close W1→D1 for incremental ACL mutation.
+- We have **not** proved that D1 must observe a stale cache.
+- We have **not** identified a different concrete W1→D1 synchronization/publication edge.
+- Therefore the remaining question is empirical: whether the real concurrent execution can produce a D1 snapshot retaining the ACL removed by W1.
+
+The existing PR #97 diagnostic is correctly positioned to observe that exact snapshot without manufacturing a synchronization edge.
+
+### Execution gate
+No further production-code/static modification is justified before execution. The next valid step is the real PR #97 cache-probe run and artifact reconciliation.
+
+### Epistemic state
+W1→D1 JMM HB = UNKNOWN / NO CONCRETE EDGE IDENTIFIED; stale ACL = NOT OBSERVED / NOT DISPROVEN; vulnerability = NOT ESTABLISHED; PR #97 cache-probe = NOT EXECUTED / NOT ACCEPTED; TLC = NOT_RERUN; AB105.116R protected; AB105.117R not created.
+
+### Do-not-repeat
+Do not claim that `data volatile` publishes later `aclCache` writes. Do not claim stale visibility without runtime evidence. Do not introduce synchronization to force publication. Do not rerun TLC.
