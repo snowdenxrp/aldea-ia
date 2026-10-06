@@ -631,3 +631,43 @@ This correction does **not** establish that PR #97 is ready to execute or that i
 
 ### Do-not-repeat
 Do not use bootstrap #142's `clientAddress=null` failure as a reason to reject or modify PR #97. Re-evaluate PR #97 only from its own generated harness, source audit, and runtime artifacts.
+
+
+## 2026-10-05 — PR #97 harness audit: real producer/request path verified
+
+The recovered `NexoG0OrderingWitnessTest` was inspected directly.
+
+### 🟢 Runtime-path finding
+The witness creates a real `KafkaClusterTestKit` with `StandardAuthorizer`, creates the target ACL through `Admin.createAcls`, and performs D1 through a real `KafkaProducer.send(...).get(...)` using SASL/PLAIN and client id `nexo-g0-ordering`.
+
+The source contains no `TargetAuthorizer`, no `TARGET.authorize`, no `NexoG0RuntimeTest`, and no local `clientAddress() { return null; }` harness implementation.
+
+Therefore the bootstrap #142 `clientAddress=null` failure is not an identified defect of PR #97's recovered runtime path.
+
+### 🟢 Ordering witness semantics
+For each cycle the harness:
+1. creates the ACL;
+2. waits until real produce is observed ALLOWED;
+3. uses Admin `describeAcls` as D0 to verify exactly one target ACL;
+4. deletes the ACL;
+5. performs a real producer operation and requires DENIED.
+
+This is a real-broker behavioral witness. It does not by itself establish W1→D1 JMM happens-before.
+
+### 🟡 Remaining runtime risk
+The harness has not yet been executed with PR #97's cache instrumentation in this audit state. Successful authorization before deletion and denial after deletion establish behavioral correctness at the tested points, but do not prove absence/presence of an intermediate stale cache read.
+
+### State
+- PR #97 runtime path = source-verified as real producer/request path
+- PR #97 cache-probe evidence = NOT EXECUTED / NOT ACCEPTED
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### Do-not-repeat
+Do not attribute bootstrap #142's `clientAddress=null` failure to PR #97 unless a fresh PR #97 artifact independently reproduces it.
