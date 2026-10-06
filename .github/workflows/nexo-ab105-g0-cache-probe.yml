@@ -53,11 +53,11 @@ jobs:
           cs = cache.read_text()
           cache_marker = """    AclCache removeAcl(Uuid id) {"""
           cache_method = """    java.util.Optional<Uuid> nexoFindId(StandardAcl target) {
-        final java.util.concurrent.atomic.AtomicReference<Uuid> found = new java.util.concurrent.atomic.AtomicReference<>();
+        Uuid[] found = new Uuid[1];
         aclsById.forEach((id, acl) -> {
-            if (acl.equals(target)) found.set(id);
+            if (acl.equals(target)) found[0] = id;
         });
-        return java.util.Optional.ofNullable(found.get());
+        return java.util.Optional.ofNullable(found[0]);
     }
 
 """
