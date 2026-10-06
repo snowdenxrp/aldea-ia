@@ -1826,3 +1826,30 @@ Historical reconciliation is sufficiently complete to stop looking backward for 
 
 ### DO-NOT-REPEAT
 Do not rerun PR #92/Run #21 cacheIdentity-only diagnostics, PR #94 ordering-only diagnostics, or PR #93 source audit without a new hypothesis. Do not add synchronization to create event identity.
+
+
+## 2026-10-06 — Important correction: PR #97 already contains the event-identity discriminator
+
+### 🟢 Source-verified finding
+The directed audit of PR #97 head 23c71ece22e37a788a48b0e767b121482570f6d9 found that the previously proposed next diagnostic is already implemented in the existing draft workflow.
+
+PR #97 D1 instrumentation records requestContext.correlationId() at the exact point after AclCache aclCacheSnapshot = aclCache and before checkSection(...). The recovered baseline ordering witness independently emits ENQUEUE with request.header.correlationId(), DEQUEUE with the same request header correlationId, AUTH_ENTER with requestContext.correlationId(), and AUTH_DECISION with requestContext.correlationId().
+
+Therefore one PR #97 execution can already provide the required request identity chain: ENQUEUE(correlationId) → DEQUEUE(correlationId) → AUTH_ENTER(correlationId) → D1(correlationId + cacheIdentity/targetPresent/targetId).
+
+### 🟢 Why this is materially stronger
+We do not need a new source modification merely to add correlationId to D1. The current draft already contains it. The remaining missing evidence is runtime execution of this exact workflow and artifact reconciliation.
+
+### 🟡 Remaining limitation
+PR #97 W1 sink records ACL UUID, timestamp and thread but does not emit request correlationId, which is expected because W1 occurs on the metadata-loader path and the request is independently generated. This does not prevent identifying the real D1 request event; it only means W1↔request causality remains an observational correlation question rather than a shared-state bridge.
+
+The workflow also emits baseline NEXO_ORDER events into the same evidence artifact, while W1 and D1 use separate files. No added volatile/latch/barrier/Future/lock synchronization is introduced by the diagnostic.
+
+### 🔴 Epistemic consequence
+Even if PR #97 executes and the correlationId chain is complete, it will establish event identity, not by itself establish JMM W1→D1 happens-before. It can eliminate the current cross-run event-identity ambiguity and make the behavioral observation substantially stronger.
+
+### Next action
+Do not modify PR #97 for correlationId. Audit/execute the existing draft as-is; then reconcile the raw artifact using the six-link acceptance gate: trigger/path → run → job → executed head/pin → raw artifact → semantic interpretation.
+
+### DO-NOT-REPEAT
+Do not create another correlationId-only probe. Do not rerun Run #21 merely for cache identity. Do not add a W1→request shared variable or synchronization bridge.
