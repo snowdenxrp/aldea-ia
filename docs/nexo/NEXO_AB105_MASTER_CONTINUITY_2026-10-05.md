@@ -1193,3 +1193,47 @@ Use the already-existing request-path witness/correlation machinery where possib
 
 ### DO-NOT-REPEAT
 Do not repeat PR #97 cacheIdentity instrumentation merely to obtain the same 10/10 result. Do not merge Run #21 and 370778 solely by wall-clock order. Do not rerun TLC. Do not create AB105.117R. Do not introduce synchronization into the witness.
+
+
+## 2026-10-06 — exact next discriminator: causal identity inside one real-path diagnostic
+
+A direct workflow audit of the current PR #97 cache-probe found the precise remaining instrumentation gap.
+
+### 🟢 Confirmed
+- The current cache-probe already runs the real `NexoG0OrderingWitnessTest` against pinned Kafka.
+- W1 records ACL `id` and `cacheIdentity`.
+- D1 records `cacheIdentity`, target presence and `targetId`.
+- The current cache-probe does **not** emit the request `correlationId` at D1.
+- Its evidence emission also does not include the full `ENQUEUE → DEQUEUE → AUTH_ENTER → AUTH_DECISION` markers.
+
+### 🎯 Exact discriminator
+The next useful extension is **not another cacheIdentity experiment**. It is to add observational correlation to the existing diagnostic path:
+1. D1 records the request `correlationId` alongside the already-recorded cacheIdentity/targetId.
+2. The same workflow-local request path records ENQUEUE and DEQUEUE for that correlationId.
+3. AUTH_ENTER/AUTH_DECISION retain the same correlationId.
+4. W1 remains keyed by ACL id/cycle; no shared mutable state is introduced.
+
+This would permit one-run causal matching:
+`W1(ACL id) → ENQUEUE(correlationId) → DEQUEUE(correlationId) → AUTH_ENTER(correlationId) → D1(correlationId, cacheIdentity)`.
+
+### 🔴 Formal limitation
+Even with this complete causal/event identity, the result would still not by itself prove W1→D1 JMM happens-before. It would close the **event-identity gap**, not manufacture a memory-model edge.
+
+### Safety constraints
+- No volatile, synchronized, latch, barrier, Future, lock, semaphore, or equivalent publication mechanism.
+- No modification to AB105.116R.
+- No AB105.117R.
+- No TLC rerun.
+- Keep diagnostic sinks observational only.
+- Preserve Run #21 as the already-accepted 10/10 cache-identity evidence; do not relabel it as a full request-path witness.
+
+### Current state after this audit
+- W1→ENQUEUE HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- stale ACL read: NOT OBSERVED (Run #21: 10/10)
+- D1 cacheIdentity=W1 cacheIdentity: OBSERVED 10/10 in Run #21
+- Run #21 ↔ 370778 request-event identity: NOT DEMONSTRATED
+- vulnerability: NOT ESTABLISHED
+
+### DO-NOT-REPEAT
+Do not rerun the existing cacheIdentity-only probe merely for the same result. Only an observational causal-correlation extension is justified by the remaining evidence gap.
