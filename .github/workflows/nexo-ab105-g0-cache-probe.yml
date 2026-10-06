@@ -58,17 +58,17 @@ jobs:
           )
           cs = cache.read_text()
 
-          cache_marker = """    AclCache removeAcl(Uuid id) {"""
+          cache_marker = "    AclCache removeAcl(Uuid id) {"
 
-          cache_method = """    java.util.Optional<Uuid> nexoFindId(StandardAcl target) {
-        Uuid[] found = new Uuid[1];
-        aclsById.forEach((id, acl) -> {
-            if (acl.equals(target)) found[0] = id;
-        });
-        return java.util.Optional.ofNullable(found[0]);
-    }
-
-"""
+          cache_method = (
+              "    java.util.Optional<Uuid> nexoFindId(StandardAcl target) {\n"
+              "        Uuid[] found = new Uuid[1];\n"
+              "        aclsById.forEach((id, acl) -> {\n"
+              "            if (acl.equals(target)) found[0] = id;\n"
+              "        });\n"
+              "        return java.util.Optional.ofNullable(found[0]);\n"
+              "    }\n\n"
+          )
 
           if cs.count(cache_marker) != 1:
               raise SystemExit("AclCache injection marker mismatch")
@@ -81,82 +81,89 @@ jobs:
           )
           s = p.read_text()
 
-          old = """            AclCache aclCacheSnapshot = aclCache.removeAcl(id);
-            log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
-            aclCache = aclCacheSnapshot;"""
+          old_w1 = (
+              "            AclCache aclCacheSnapshot = aclCache.removeAcl(id);\n"
+              "            log.trace(\"Removed ACL {}: {}\", id, aclCacheSnapshot.getAcl(id));\n"
+              "            aclCache = aclCacheSnapshot;"
+          )
 
-          new = """            AclCache aclCacheSnapshot = aclCache.removeAcl(id);
-            log.trace("Removed ACL {}: {}", id, aclCacheSnapshot.getAcl(id));
-            aclCache = aclCacheSnapshot;
-            try {
-                java.nio.file.Files.writeString(
-                    java.nio.file.Path.of("/tmp/nexo-w1-cache.log"),
-                    "NEXO_CACHE W1 ns=" + System.nanoTime() +
-                        " thread=" + Thread.currentThread().getName() +
-                        " id=" + id +
-                        " cacheIdentity=" + System.identityHashCode(aclCache) +
-                        " cacheCount=" + aclCache.count() +
-                        System.lineSeparator(),
-                    java.nio.file.StandardOpenOption.CREATE,
-                    java.nio.file.StandardOpenOption.APPEND
-                );
-            } catch (java.io.IOException e) {
-                throw new RuntimeException("NEXO_CACHE W1 probe sink failed", e);
-            }"""
+          new_w1 = (
+              "            AclCache aclCacheSnapshot = aclCache.removeAcl(id);\n"
+              "            log.trace(\"Removed ACL {}: {}\", id, aclCacheSnapshot.getAcl(id));\n"
+              "            aclCache = aclCacheSnapshot;\n"
+              "            try {\n"
+              "                java.nio.file.Files.writeString(\n"
+              "                    java.nio.file.Path.of(\"/tmp/nexo-w1-cache.log\"),\n"
+              "                    \"NEXO_CACHE W1 ns=\" + System.nanoTime() +\n"
+              "                        \" thread=\" + Thread.currentThread().getName() +\n"
+              "                        \" id=\" + id +\n"
+              "                        \" cacheIdentity=\" + System.identityHashCode(aclCache) +\n"
+              "                        \" cacheCount=\" + aclCache.count() +\n"
+              "                        System.lineSeparator(),\n"
+              "                    java.nio.file.StandardOpenOption.CREATE,\n"
+              "                    java.nio.file.StandardOpenOption.APPEND\n"
+              "                );\n"
+              "            } catch (java.io.IOException e) {\n"
+              "                throw new RuntimeException(\"NEXO_CACHE W1 probe sink failed\", e);\n"
+              "            }"
+          )
 
-          if s.count(old) != 1:
+          if s.count(old_w1) != 1:
               raise SystemExit("W1 insertion marker mismatch")
 
-          s = s.replace(old, new, 1)
+          s = s.replace(old_w1, new_w1, 1)
 
-          old = """        AclCache aclCacheSnapshot = aclCache;
-        checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"""
+          old_d1 = (
+              "        AclCache aclCacheSnapshot = aclCache;\n"
+              "        checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"
+          )
 
-          new = """        AclCache aclCacheSnapshot = aclCache;
-        if ("nexo-g0-ordering".equals(action.resourcePattern().name())
-                && action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC
-                && action.operation() == org.apache.kafka.common.acl.AclOperation.WRITE) {
-            StandardAcl targetAcl = new StandardAcl(
-                org.apache.kafka.common.resource.ResourceType.TOPIC,
-                "nexo-g0-ordering",
-                org.apache.kafka.common.resource.PatternType.LITERAL,
-                "User:plain-user1",
-                "*",
-                org.apache.kafka.common.acl.AclOperation.WRITE,
-                org.apache.kafka.common.acl.AclPermissionType.ALLOW
-            );
+          new_d1 = (
+              "        AclCache aclCacheSnapshot = aclCache;\n"
+              "        if (\"nexo-g0-ordering\".equals(action.resourcePattern().name())\n"
+              "                && action.resourcePattern().resourceType() == org.apache.kafka.common.resource.ResourceType.TOPIC\n"
+              "                && action.operation() == org.apache.kafka.common.acl.AclOperation.WRITE) {\n"
+              "            StandardAcl targetAcl = new StandardAcl(\n"
+              "                org.apache.kafka.common.resource.ResourceType.TOPIC,\n"
+              "                \"nexo-g0-ordering\",\n"
+              "                org.apache.kafka.common.resource.PatternType.LITERAL,\n"
+              "                \"User:plain-user1\",\n"
+              "                \"*\",\n"
+              "                org.apache.kafka.common.acl.AclOperation.WRITE,\n"
+              "                org.apache.kafka.common.acl.AclPermissionType.ALLOW\n"
+              "            );\n"
+              "\n"
+              "            boolean targetPresent = aclCacheSnapshot.aclsByResource().contains(targetAcl);\n"
+              "            String targetId = aclCacheSnapshot.nexoFindId(targetAcl)\n"
+              "                .map(Object::toString)\n"
+              "                .orElse(\"NONE\");\n"
+              "\n"
+              "            try {\n"
+              "                java.nio.file.Files.writeString(\n"
+              "                    java.nio.file.Path.of(\"/tmp/nexo-d1-cache.log\"),\n"
+              "                    \"NEXO_CACHE D1 ns=\" + System.nanoTime() +\n"
+              "                        \" correlationId=\" + requestContext.correlationId() +\n"
+              "                        \" thread=\" + Thread.currentThread().getName() +\n"
+              "                        \" cacheIdentity=\" + System.identityHashCode(aclCacheSnapshot) +\n"
+              "                        \" cacheCount=\" + aclCacheSnapshot.count() +\n"
+              "                        \" targetPresent=\" + targetPresent +\n"
+              "                        \" targetId=\" + targetId +\n"
+              "                        System.lineSeparator(),\n"
+              "                    java.nio.file.StandardOpenOption.CREATE,\n"
+              "                    java.nio.file.StandardOpenOption.APPEND\n"
+              "                );\n"
+              "            } catch (java.io.IOException e) {\n"
+              "                throw new RuntimeException(\"NEXO_CACHE D1 probe sink failed\", e);\n"
+              "            }\n"
+              "        }\n"
+              "\n"
+              "        checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"
+          )
 
-            boolean targetPresent = aclCacheSnapshot.aclsByResource().contains(targetAcl);
-            String targetId = aclCacheSnapshot.nexoFindId(targetAcl)
-                .map(Object::toString)
-                .orElse("NONE");
-
-            try {
-                java.nio.file.Files.writeString(
-                    java.nio.file.Path.of("/tmp/nexo-d1-cache.log"),
-                    "NEXO_CACHE D1 ns=" + System.nanoTime() +
-                        " correlationId=" + requestContext.correlationId() +
-                        " thread=" + Thread.currentThread().getName() +
-                        " cacheIdentity=" + System.identityHashCode(aclCacheSnapshot) +
-                        " cacheCount=" + aclCacheSnapshot.count() +
-                        " targetPresent=" + targetPresent +
-                        " targetId=" + targetId +
-                        System.lineSeparator(),
-                    java.nio.file.StandardOpenOption.CREATE,
-                    java.nio.file.StandardOpenOption.APPEND
-                );
-            } catch (java.io.IOException e) {
-                throw new RuntimeException("NEXO_CACHE D1 probe sink failed", e);
-            }
-        }
-
-        checkSection(aclCacheSnapshot, action, exemplar, matchingPrincipals, host, matchingRuleBuilder);"""
-
-          if s.count(old) != 1:
+          if s.count(old_d1) != 1:
               raise SystemExit("D1 insertion marker mismatch")
 
-          s = s.replace(old, new, 1)
-
+          s = s.replace(old_d1, new_d1, 1)
           p.write_text(s)
           PY
 
@@ -203,52 +210,4 @@ jobs:
             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
 
       - name: Compile
-        working-directory: /tmp/kafka
-        run: |
-          ./gradlew --no-daemon \
-            :test-common:test-common-runtime:compileJava \
-            :metadata:compileTestJava \
-            :server:compileTestJava
-
-      - name: Execute real broker diagnostic
-        working-directory: /tmp/kafka
-        run: |
-          set -o pipefail
-          ./gradlew --no-daemon \
-            :server:test \
-            --tests org.apache.kafka.server.NexoG0OrderingWitnessTest \
-            --info 2>&1 | tee /tmp/nexo-cache-probe.log
-
-      - name: Emit diagnostic evidence
-        if: always()
-        working-directory: /tmp/kafka
-        run: |
-          {
-            echo "KAFKA_REV=$(git rev-parse HEAD)"
-            echo "DIAGNOSTIC=REAL_BROKER_D1_ACLCACHE_SNAPSHOT"
-            echo "TIMING_INSTRUMENTATION=WORKFLOW_LOCAL"
-            echo "W1_AND_D1_SINKS=SEPARATE_FILES"
-            echo "AB105_116R=UNCHANGED"
-            echo "AB105_117R=NOT_CREATED"
-            echo "TLC=NOT_RERUN"
-
-            echo "---- W1 CACHE EVENTS ----"
-            cat /tmp/nexo-w1-cache.log 2>/dev/null || true
-
-            echo "---- D1 CACHE EVENTS ----"
-            cat /tmp/nexo-d1-cache.log 2>/dev/null || true
-
-            echo "---- BASELINE ORDER EVENTS ----"
-            grep 'NEXO_ORDER ' /tmp/nexo-cache-probe.log || true
-          } | tee /tmp/nexo-cache-probe-evidence.txt
-
-      - name: Upload diagnostic evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: nexo-ab105-g0-cache-probe
-          path: |
-            /tmp/nexo-cache-probe.log
-            /tmp/nexo-cache-probe-evidence.txt
-            /tmp/nexo-w1-cache.log
-            /tmp/nexo-d1-cache.log
+        working-directory: /
