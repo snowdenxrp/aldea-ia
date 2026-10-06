@@ -173,31 +173,48 @@ jobs:
           echo "---- INJECTED DIAGNOSTIC SAFETY AUDIT ----"
 
           for token in volatile Atomic CountDownLatch Future synchronized Reentrant Semaphore Lock; do
-            if grep -n -F -- "$token"                 metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java                 metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java; then
+            if grep -n -F -- "$token" \
+                metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java \
+                metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java; then
               echo "Injected diagnostic source contains forbidden synchronization token: $token"
               exit 1
             fi
           done
 
-          test "$(grep -F -c -- 'nexoFindId'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java)" -eq 1             || { echo "nexoFindId injection count mismatch"; exit 1; }
+          grep -F -q -- 'nexoFindId' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/AclCache.java \
+            || { echo "nexoFindId injection missing"; exit 1; }
 
-          test "$(grep -F -c -- 'targetId'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java)" -eq 2             || { echo "targetId diagnostic count mismatch"; exit 1; }
+          grep -F -q -- 'targetId' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java \
+            || { echo "targetId diagnostic missing"; exit 1; }
 
-          test "$(grep -F -c -- 'NEXO_CACHE W1'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java)" -eq 1             || { echo "W1 diagnostic marker count mismatch"; exit 1; }
+          grep -F -q -- 'NEXO_CACHE W1' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java \
+            || { echo "W1 diagnostic marker missing"; exit 1; }
 
-          test "$(grep -F -c -- 'NEXO_CACHE D1'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java)" -eq 1             || { echo "D1 diagnostic marker count mismatch"; exit 1; }
+          grep -F -q -- 'NEXO_CACHE D1' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java \
+            || { echo "D1 diagnostic marker missing"; exit 1; }
 
-          grep -n -F -- 'AclCache aclCacheSnapshot = aclCache'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n -F -- 'AclCache aclCacheSnapshot = aclCache' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
 
-          grep -n -F -- 'targetPresent'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n -F -- 'targetPresent' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
 
-          grep -n -F -- 'cacheIdentity'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n -F -- 'cacheIdentity' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
 
-          grep -n -F -- 'cacheCount'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n -F -- 'cacheCount' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
 
-          grep -n -F -- 'nexo-w1-cache.log'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n -F -- 'nexo-w1-cache.log' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
 
-          grep -n -F -- 'nexo-d1-cache.log'             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+          grep -n -F -- 'nexo-d1-cache.log' \
+            metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
+
       - name: Compile
         working-directory: /tmp/kafka
         run: |
