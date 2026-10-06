@@ -2071,3 +2071,49 @@ This checkpoint records the supplied Run #21 artifact reconciliation as experime
 - AB105.116R: PROTECTED / UNCHANGED.
 - AB105.117R: NOT_CREATED.
 - TLC: NOT_RERUN.
+
+
+## 2026-10-06 — W1→Producer/Processor bridge closed; final remaining frontier narrowed
+
+### 🟢 New continuity checkpoint
+The harness G0 executable path was re-opened and reconciled, not inferred from documents alone. After D0_RETURN the actual sequence is:
+`D0_RETURN → KafkaProducer.send().get() → Kafka network transport → SocketServer Processor → RequestChannel.sendRequest(ENQUEUE) → DEQUEUE → KafkaRequestHandler → D1`.
+
+### 🟢 Bridge eliminated
+`KafkaProducer.send().get()` is a real client-side wait, but no shared Future, lock, callback, or other JMM publication object was identified connecting the MetadataLoader/AclPublisher W1 write to the client-side producer operation. The request then crosses the network before the broker Processor invokes `sendRequest()`.
+
+Therefore the apparent chain:
+`W1 → D0_RETURN → ProducerFuture → ENQUEUE`
+is **not** a demonstrated JMM happens-before chain. This closes the producer/Future/network hypothesis.
+
+### 🟢 Exact pinned BrokerServer reconciliation
+At Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, BrokerServer installs AclPublisher among metadata publishers, while SocketServer/request processing is configured separately. BrokerServer contains lifecycle/startup synchronization primitives, but the audited startup futures and lifecycle locks are not per-incremental-ACL publication mechanisms. The `firstPublishFuture` is used for initial metadata publication before request processing is enabled; it is not reused as a steady-state W1→Processor synchronization edge.
+
+### 🔴 No new production bridge identified
+No concrete production operation was identified that takes the state written by incremental AclPublisher/W1 and publishes it into a state/event/future/queue that the SocketServer Processor reads before `RequestChannel.sendRequest(ENQUEUE)`.
+
+This is an **absence-of-identified-bridge finding**, not a universal proof that no such mechanism exists anywhere in Kafka.
+
+### 🟡 Scientific frontier now
+The only remaining source-level question is:
+> Is there any concrete production publication/synchronization between the incremental ACL state written at W1 and state consumed by the request-admission/Processor path before ENQUEUE?
+
+Search must target only such a concrete cross-domain bridge. Do not reopen already-closed D0_RETURN, ProducerFuture, network transport, RequestChannel, startup futures, or direct AclCache primitive audits unless a new pinned-source discrepancy appears.
+
+### Formal state
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED in Run #21 / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED / UNCHANGED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+- PR #97: no source modification made for this checkpoint.
+
+### DO-NOT-REPEAT
+- Do not rerun the D0 marker experiment.
+- Do not treat `KafkaProducer.send().get()` or network transport as W1 publication.
+- Do not re-audit RequestChannel as the missing W1 bridge.
+- Do not use startup `firstPublishFuture` as steady-state ACL synchronization.
+- Do not add artificial synchronization, barriers, volatile fields, Futures, latches, locks, or shared probes.
+- Do not create AB105.117R or rerun TLC.
