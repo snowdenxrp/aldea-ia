@@ -735,3 +735,32 @@ The added `requestContext.correlationId()` is read-only request metadata and doe
 - TLC = NOT_RERUN
 - AB105.116R protected
 - AB105.117R not created
+
+
+## 2026-10-05 — Execution status after PR #97 correlation commit
+
+The commit containing the D1 `correlationId` diagnostic was checked against GitHub Actions.
+
+### 🟢 Confirmed
+PR #97's cache-probe workflow remains **workflow_dispatch-only**, so the new commit did not automatically execute the cache probe.
+
+### 🟡 Concurrent run is unrelated
+Commit `844a37a6b850f07575e2ab18269c010f3a695f6b` has an in-progress **Bootstrap #143** run, job `112075954286`. It has reached the real G0 runtime harness step.
+
+This is the separate bootstrap workflow, not PR #97's cache-probe workflow. It must not be promoted to cache-probe evidence.
+
+### 🔴 Current execution gap
+There is still no PR #97 cache-probe runtime/artifact result after adding `correlationId`.
+
+### State unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- PR #97 cache-probe evidence = NOT EXECUTED / NOT ACCEPTED
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### Do-not-repeat
+Do not interpret Bootstrap #143 as PR #97 evidence. Do not rerun it merely to obtain cache-probe evidence.
