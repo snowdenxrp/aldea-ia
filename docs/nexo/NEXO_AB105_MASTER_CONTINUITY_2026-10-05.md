@@ -1621,3 +1621,20 @@ W1→D1 HB = UNKNOWN / NO CONCRETE PRODUCTION EDGE IDENTIFIED.
 Stale ACL read = NOT OBSERVED in Run #21 (10/10).
 Vulnerability = NOT ESTABLISHED.
 AB105.116R remains protected; AB105.117R is not to be created; TLC remains frozen.
+
+
+## 2026-10-06 — producer-side bridge audited: no W1 publication carried into network request
+
+### 🟢 Exact executable harness path
+The canonical G0 harness performs the D1 action from the test/client side after D0_RETURN using the real KafkaProducer (`producer.send(...).get()`). The producer send is asynchronous/buffered and its network I/O is handled by the producer's background path before the broker SocketServer Processor receives the request.
+
+### 🟢 / 🔴 JMM boundary
+There can be normal synchronization inside the KafkaProducer implementation between the application thread and its own producer I/O machinery, and there is then the network handoff into the broker Processor. Those edges publish the request/producer state; they do not automatically publish the independent MetadataLoader W1 write.
+
+The crucial ordering counterexample remains cycles 4/5 where target-broker W1 occurred after D0_RETURN. Thus the test-thread completion/control-flow before producer.send cannot be used as evidence that W1 had already been published. The later producer/network synchronization cannot create a happens-before edge from a W1 that occurred on a separate broker metadata thread unless an explicit causal synchronization chain from that W1 exists.
+
+### 🔴 Closed candidate
+`D0_RETURN → producer.send().get() → producer I/O → network → SocketServer Processor → ENQUEUE` is NOT the missing W1→ENQUEUE HB chain. It is a request-delivery chain beginning from the test/client thread. The W1 predecessor remains outside that chain.
+
+### Current frontier
+The source audit has now eliminated the obvious broker-side queue and harness-side completion paths as carriers of the W1 write. Remaining question is only whether some independent production metadata publication mechanism (outside the already audited AclPublisher/StandardAuthorizer/RequestChannel paths) connects the W1 thread to the later authorization request. If no such mechanism exists, the bounded conclusion remains UNKNOWN rather than a proof of universal absence.
