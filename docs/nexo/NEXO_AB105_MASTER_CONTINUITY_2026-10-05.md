@@ -601,3 +601,33 @@ The correct next step is a harness-only correction that supplies a valid authori
 
 ### Do-not-repeat
 Do not execute PR #97 unchanged merely to reproduce the already-confirmed `clientAddress=null` harness failure. Do not treat bootstrap #142's runtime failure as ACL-cache evidence.
+
+
+## 2026-10-05 — Correction: bootstrap #142 harness is distinct from PR #97 ordering-witness harness
+
+A direct source comparison corrected the previous overbroad continuity statement.
+
+### 🟢 Verified distinction
+- Bootstrap #142 generated and executed a temporary `NexoG0RuntimeTest`; its runtime stack explicitly contained `NexoG0RuntimeTest$TargetAuthorizer` and failed on `clientAddress() == null`.
+- PR #97 does **not** generate or recover `NexoG0RuntimeTest`. Its workflow extracts `NexoG0OrderingWitnessTest.java` from `nexo-ab105-g0-ordering-witness` and then injects only the cache diagnostics.
+- The ordering-witness workflow source inspected here uses `KafkaClusterTestKit`, `KafkaProducer`, SASL/PLAIN configuration, and the real broker/request path. Searches of the repository found no `TargetAuthorizer`, `TARGET.authorize`, or literal `clientAddress() { return null; }` associated with that ordering-witness harness.
+
+### 🔴 Superseded conclusion
+The earlier entry claiming that PR #97 “inherits the same frozen G0 runtime harness” as bootstrap #142 was too broad and is **superseded by this entry**. Bootstrap #142's `clientAddress=null` failure must not be projected onto PR #97 without a separate runtime/source finding.
+
+### 🟡 What remains unknown
+This correction does **not** establish that PR #97 is ready to execute or that its runtime will succeed. It only removes an unsupported blocker. PR #97 still requires its own final generated-source audit and, if executed, its own runtime evidence.
+
+### Epistemic state unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- PR #97 cache-probe evidence = NOT EXECUTED / NOT ACCEPTED
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### Do-not-repeat
+Do not use bootstrap #142's `clientAddress=null` failure as a reason to reject or modify PR #97. Re-evaluate PR #97 only from its own generated harness, source audit, and runtime artifacts.
