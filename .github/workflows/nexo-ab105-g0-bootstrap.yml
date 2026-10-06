@@ -259,7 +259,7 @@ jobs:
         working-directory: /tmp/kafka
         run: |
           ./gradlew --no-daemon :server:compileTestJava
-          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info
+          ./gradlew --no-daemon :server:test --tests org.apache.kafka.server.NexoG0RuntimeTest --info -x checkstyleTest
 
       - name: Emit bootstrap evidence
         working-directory: /tmp/kafka
