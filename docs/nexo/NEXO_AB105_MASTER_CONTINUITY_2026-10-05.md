@@ -1974,3 +1974,59 @@ Do not repeat the direct `AclCache`/`StandardAuthorizerData` primitive audit unl
 
 ### Next frontier
 Continue only with a concrete external production bridge between the MetadataLoader/AclPublisher incremental update and request-serving authorization. If no such bridge is found, preserve UNKNOWN rather than claiming universal absence.
+
+
+## 2026-10-06 — Run #21 cache-probe evidence reconciled: stale snapshot not observed, ordering still open
+
+### 🟢 Evidence received/reviewed
+The complete Run #21 cache-probe artifact was reviewed and reconciled as an observational result. The evidence reports 10/10 cycles with W1 and D1 present, and D1_RESULT=DENIED in all 10 cycles.
+
+For the corresponding ACL-removal cases, D1 observed targetPresent=false, targetId=NONE, cacheCount=0, and the same AclCache object identity associated with the corresponding W1-produced cache on the broker under test.
+
+The reported per-cycle reconciliation pairs W1 and D1 by ACL id / cycle sequence rather than by textual line position. The reported examples include cycle 1 with W1 and D1 both observing cacheIdentity=682579460, W1 timestamp 236977495882 and D1 timestamp 236988737420. The supplied 10-cycle table reports matching W1/D1 cache identities for every reconciled case, with the noted duplicate identity in cycle 9 handled by id/sequence rather than textual position.
+
+### 🟢 Runtime topology strengthened
+W1 was observed on metadata-loader event-handler threads (kafka-0-metadata-loader-event-handler / kafka-3000-metadata-loader-event-handler) while D1 ran on data-plane request-handler threads. The diagnostic introduced no volatile/synchronized/latch/barrier synchronization between W1 and D1.
+
+### 🟡 What Run #21 now establishes
+- Real broker execution: observed.
+- W1: 10/10 cycles observed.
+- D1: 10/10 cycles observed.
+- D1 stale ACL snapshot: NOT OBSERVED in 10/10 reconciled cases.
+- W1/D1 cacheIdentity correspondence: observed in the supplied artifact reconciliation.
+- D1 snapshot observability: confirmed.
+
+This is materially stronger empirical evidence than a mere line-order comparison because the reported pairs are associated by ACL identity/cycle and cache identity.
+
+### 🔴 What it does NOT establish
+The artifact does not contain ENQUEUE, DEQUEUE, AUTH_ENTER, or AUTH_DECISION events. Its NEXO_ORDER sequence is limited to the A1/D0/D1 family. Therefore Run #21 does not establish the complete same-request chain: W1 → ENQUEUE(correlationId) → DEQUEUE(correlationId) → AUTH_ENTER(correlationId) → D1.
+
+The observed System.nanoTime() ordering is execution-time evidence only; it is not by itself a Java Memory Model happens-before relation.
+
+Therefore W1→ENQUEUE JMM HB = UNKNOWN; W1→D1 JMM HB = UNKNOWN; stale ACL visibility = NOT OBSERVED / NOT DISPROVEN universally; vulnerability = NOT ESTABLISHED.
+
+### 🟡 Experimental consequence
+This result closes another redundant direction: do not add more identical W1/D1 cache snapshots merely to increase the 10/10 count. The remaining high-value question is causal/request-path identity, not another cache observation.
+
+The next discriminator remains the existing PR #97 instrumentation, which already records D1 requestContext.correlationId() and the recovered G0 witness emits ENQUEUE/DEQUEUE/AUTH_ENTER/AUTH_DECISION correlation IDs. No new AclCache modification is warranted.
+
+### DO-NOT-REPEAT
+- Do not rerun another cacheIdentity-only snapshot probe for the same hypothesis.
+- Do not treat nanoTime ordering as JMM HB.
+- Do not manufacture a W1→request shared variable or synchronization edge.
+- Do not modify PR #97 merely to add correlationId; it already contains the required D1/request identity instrumentation.
+- Do not reopen AB105.116R / create AB105.117R / rerun TLC.
+
+### Provenance note
+This checkpoint records the supplied Run #21 artifact reconciliation as experimental evidence. The numerical pairings above are not independently re-fetched in this checkpoint; they are preserved as reported evidence and should not be promoted beyond that epistemic status until the raw artifact is independently re-opened if needed.
+
+### Current canonical state
+- PR #97 head: 23c71ece22e37a788a48b0e767b121482570f6d9.
+- Kafka pin: 99b940733a9f6bc409457dba7108f08421d81e42.
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED in Run #21 / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED / UNCHANGED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
