@@ -1795,3 +1795,34 @@ No implementation change is made in this checkpoint.
 
 ### DO-NOT-REPEAT
 Do not reopen the already audited MetadataLoader/KafkaEventQueue/startup-future/scheduler candidates without a new source discrepancy. Do not add a synchronization bridge merely to make event identity easier.
+
+
+## 2026-10-06 — Directed historical reconciliation: PR #92/#93/#94 vs Run #21
+
+### 🟢 Reconciled historical evidence
+The older accepted families remain internally consistent and do not upgrade the current JMM conclusion:
+- PR #92 cache-identity runs were in-process diagnostic executions; useful for cache behavior, not the real broker request-path witness.
+- PR #93 established the production-source boundary and bounded HB(W1,D1)=NOT_IDENTIFIED.
+- PR #94 established real-broker temporal ordering, but remains separate from PR #92's in-process cache diagnostics.
+- Run #21 adds a stronger cache-identity observation (10/10 W1 identity == D1 identity), but does not identify the exact real request event consumed at D1.
+
+### 🔴 No historical bridge recovered
+No previously accepted artifact establishes, in one execution: W1 cache mutation → exact real client request → ENQUEUE correlationId → DEQUEUE same correlationId → AUTH_ENTER same correlationId → D1 cache observation. Therefore the historical record contains no buried event-identity witness that closes W1→D1 HB.
+
+### 🟡 Non-merge rule
+Keep these evidence classes separate: (1) PR #92 / Run #21 cache identity, (2) PR #94 / run 37098764557 real request-path ordering, (3) PR #93 production source/JMM boundary. A result from one class cannot be silently paired with another to manufacture event identity.
+
+### Current frontier
+Historical reconciliation is sufficiently complete to stop looking backward for an existing witness. Next distinct target: one diagnostic execution carrying the existing request correlationId from ENQUEUE through D1, with no added synchronization. This is an observational discriminator only; it cannot itself prove JMM HB.
+
+### Frozen status
+- AB105.116R = FROZEN / UNCHANGED.
+- AB105.117R = NOT_CREATED.
+- TLC = NOT_RERUN.
+- W1→ENQUEUE JMM HB = UNKNOWN.
+- W1→D1 JMM HB = UNKNOWN.
+- stale read = NOT_OBSERVED in Run #21.
+- vulnerability = NOT_ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not rerun PR #92/Run #21 cacheIdentity-only diagnostics, PR #94 ordering-only diagnostics, or PR #93 source audit without a new hypothesis. Do not add synchronization to create event identity.
