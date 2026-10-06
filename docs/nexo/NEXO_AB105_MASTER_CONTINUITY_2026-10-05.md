@@ -764,3 +764,22 @@ There is still no PR #97 cache-probe runtime/artifact result after adding `corre
 
 ### Do-not-repeat
 Do not interpret Bootstrap #143 as PR #97 evidence. Do not rerun it merely to obtain cache-probe evidence.
+
+
+## 2026-10-05 — Bootstrap #143 terminal result
+
+Bootstrap #143 (run `37403560486`, job `112075954286`) completed **FAILURE** at the real G0 runtime harness step. The exact failure is the previously known frozen-harness defect:
+`AuthorizableRequestContext.clientAddress()` returned null, causing NPE at `StandardAuthorizerData.authorize:245`, through `StandardAuthorizer.authorize:146` and the frozen `TargetAuthorizer`.
+
+The producer then emitted repeated `TOPIC_AUTHORIZATION_FAILED` messages, but these are secondary to the harness failure and are **not ACL-cache evidence**.
+
+No bootstrap artifact was produced.
+
+Classification:
+- 🟢 Confirms the bootstrap reached real runtime.
+- 🔴 Does not provide W1/D1 cache-probe evidence.
+- 🔴 Does not establish stale ACL behavior or the vulnerability.
+- 🔵 No projection to PR #97: PR #97 uses the distinct real ordering-witness harness.
+
+State remains unchanged:
+W1→D1 HB UNKNOWN; W1→ENQUEUE NOT IDENTIFIED; stale ACL NOT OBSERVED/NOT DISPROVEN; vulnerability NOT ESTABLISHED; PR #97 cache-probe NOT EXECUTED/NOT ACCEPTED; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
