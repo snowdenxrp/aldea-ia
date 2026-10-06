@@ -2258,3 +2258,34 @@ Do not reopen shared Authorizer/Plugin identity as a publication mechanism unles
 State unchanged: W1→ENQUEUE UNKNOWN; W1→D1 UNKNOWN; stale read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED; AB105.116R protected; AB105.117R not created; TLC not rerun.
 
 DO-NOT-REPEAT: do not treat `authorize()`, `aclCount()`, or `acls()` volatile reads as incremental publication evidence unless a matching post-W1 volatile write is identified.
+
+
+## 2026-10-06 — Continuity delta: caller-side bridge search narrowed
+
+### 🟢 New source-audit result
+- Rechecked the production boundary immediately surrounding `AclPublisher.onMetadataUpdate()`, focusing only on operations after incremental W1 that could publish state toward request processing.
+- No new `Executor`, `Future`, lock, monitor, concurrent-collection handoff, or equivalent cross-thread publication primitive was identified at that boundary.
+- `BrokerMetadataPublisher` performs `metadataCache.setImage(newImage)` before `aclPublisher.onMetadataUpdate(...)`; this cannot publish the later incremental `StandardAuthorizerData.aclCache` update.
+- `firstPublishFuture.complete(null)` occurs after publisher processing but is a first-publication/startup gate, not a per-ACL-delta completion signal; it remains excluded as a steady-state W1→D1 bridge.
+- Broker/controller `authorizerPlugin` instances are created separately; shared plugin identity is not a controller→broker publication path.
+
+### 🔴 Boundary preserved
+- Normal return from `AclPublisher.onMetadataUpdate()` is not itself a JMM `synchronizes-with` edge to the request thread.
+- No concrete release/acquire pair has been identified from the incremental W1 mutation to the request-serving authorization read.
+- This is not converted into a universal absence proof.
+
+### 🔵 Refined frontier
+Search only for a concrete caller-side or adjacent production operation after W1 that (1) publishes the incremental ACL state or a state object carrying it and (2) is acquired/consumed by the request path before or during authorization.
+
+### DO-NOT-REPEAT
+Do not reopen generically: MetadataLoader/KafkaEventQueue serialization, startup futures, D0/controller completion, KafkaProducer `send().get()`, network/socket transport, SocketServer, RequestChannel, metadataCache ordering, Plugin identity, outer `data` volatile reads, AclCache/PCollections, or shared Authorizer identity.
+
+### Epistemic state
+- W1→ENQUEUE JMM HB = **UNKNOWN / NO CONCRETE EDGE IDENTIFIED**
+- W1→D1 JMM HB = **UNKNOWN / NO CONCRETE EDGE IDENTIFIED**
+- stale ACL = **NOT OBSERVED in Run #21 / NOT DISPROVEN universally**
+- vulnerability = **NOT ESTABLISHED**
+- AB105.116R = **PROTECTED / UNCHANGED**
+- AB105.117R = **NOT_CREATED**
+- TLC = **NOT_RERUN**
+- No new runtime experiment or synchronization was introduced by this audit.
