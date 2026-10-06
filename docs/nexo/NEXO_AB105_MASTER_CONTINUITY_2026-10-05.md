@@ -1288,3 +1288,52 @@ Do not add a W1→request shared variable, volatile, latch, barrier, Future, loc
 
 ### Next exact frontier
 First validate the observational-only correlation instrumentation against the current workflow source. If direct W1↔request identity remains impossible, evaluate the cycle-unique resource identity design before any runtime execution. No new runtime claim is made here.
+
+
+## 2026-10-06 — correction: current PR #97 D1 already carries request correlationId
+
+A direct PR #97 patch audit corrected one point from the immediately preceding causal-correlation note.
+
+### 🟢 Confirmed
+The current PR #97 diagnostic source already records:
+- D1 `requestContext.correlationId()`
+- D1 `cacheIdentity`
+- D1 target membership / `targetId`
+
+The baseline G0 witness also already records the request-path correlationId at ENQUEUE/DEQUEUE/AUTH_ENTER/AUTH_DECISION.
+
+Therefore the statement that the **current PR #97 source does not emit correlationId at D1 is stale/incorrect** and is superseded here.
+
+### 🔴 What is still missing
+The Run #21 frozen evidence document remains explicit that its accepted artifact did not close the complete:
+`W1 → ENQUEUE → DEQUEUE → AUTH_ENTER → AUTH_DECISION/D1`
+chain.
+
+The important distinction is now:
+- **Source capability:** correlationId at D1 already exists in PR #97.
+- **Accepted Run #21 evidence:** does not demonstrate the complete request-path linkage.
+- **W1:** still has ACL identity/cacheIdentity, not the later request correlationId.
+- Therefore no shared W1→request mutable state should be added.
+
+### 🟢 Existing evidence gives a safer route
+The prior real-broker ordering witness already demonstrated correlationId-bearing ENQUEUE/DEQUEUE/AUTH events and reconciled the test request IDs by cycle. The remaining question is whether the **same diagnostic execution** can expose/reconcile those existing request-path markers together with PR #97's D1 cache observation.
+
+No new synchronization is required for that. No direct W1→correlationId transfer is required.
+
+### Current state
+- W1→ENQUEUE HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- stale ACL read: NOT OBSERVED (Run #21: 10/10)
+- D1 cacheIdentity=W1 cacheIdentity: OBSERVED 10/10 in Run #21
+- D1 correlationId instrumentation: PRESENT IN CURRENT PR #97 SOURCE
+- complete W1→request→D1 linkage in accepted Run #21 evidence: NOT DEMONSTRATED
+- vulnerability: NOT ESTABLISHED
+- TLC: NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### DO-NOT-REPEAT
+Do not add correlationId transfer state to W1. Do not repeat the cacheIdentity-only experiment. Do not treat source capability as executed evidence. Do not treat the prior 370778 correlation chain as automatically identical to Run #21.
+
+### Next exact frontier
+Reconcile the **existing PR #97 D1 correlationId** with the **existing baseline NEXO_ORDER request markers** in one execution/evidence artifact, if the workflow output actually contains both. If the artifact cannot demonstrate both in the same run, preserve UNKNOWN rather than inferring the linkage.
