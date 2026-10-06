@@ -712,3 +712,26 @@ W1/D1 file sinks and UUID lookup remain timing perturbations. Correlation IDs im
 
 ### Do-not-repeat
 Do not treat the new correlationId field as a synchronization mechanism. Do not rerun TLC or modify production synchronization.
+
+
+## 2026-10-05 — Revalidation: PR #97 safety gate is meaningful at the pinned baseline
+
+### 🟢 Verification
+The workflow's complete-file forbidden-token scan was checked against the exact pinned Kafka sources before injection:
+- `StandardAuthorizerData.java`: none of `volatile|Atomic|CountDownLatch|Future|synchronized|Reentrant|Semaphore|Lock`
+- `AclCache.java`: none of those tokens
+
+Therefore the widened safety gate is not trivially invalidated by pre-existing synchronization tokens in the two injected files. If the gate fails after generation, that failure can be attributed to the generated source rather than a known baseline token.
+
+### 🟢 D1 correlation remains diagnostic-only
+The added `requestContext.correlationId()` is read-only request metadata and does not create a synchronization edge.
+
+### State unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- PR #97 cache-probe evidence = NOT EXECUTED / NOT ACCEPTED
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
