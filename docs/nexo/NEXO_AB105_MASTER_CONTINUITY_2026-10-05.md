@@ -297,3 +297,25 @@ StandardAuthorizer's data field comment describes a read-write lock protecting A
 
 ### Next frontier
 Do not broaden the search generically. Inspect only concrete paths where an incremental ACL update could directly trigger, gate, or synchronize Processor/request admission. If no such path exists, the source audit has reached its remaining boundary and PR #97 can be independently audited as an empirical discriminator only; its timing/cache observations must not be promoted to JMM proof.
+
+
+## 2026-10-05 — MetadataLoader callback boundary: W1 remains inside loader event domain
+
+Exact pinned MetadataLoader source was inspected at 99b940733a9f6bc409457dba7108f08421d81e42.
+
+- 🟢 handleCommit() appends the metadata-processing callback to MetadataLoader's dedicated eventQueue.
+- 🟢 maybePublishMetadata() invokes each MetadataPublisher, including AclPublisher, from that event-queue callback. Therefore W1 executes inside the MetadataLoader event-queue thread/domain.
+- 🟢 After publisher callbacks return, the inspected code continues with metadata metrics/version bookkeeping and related loader work; no request-processing admission, Processor enqueue, RequestChannel operation, latch, future, lock, or other cross-thread request signal was identified at that boundary.
+- 🔴 Consequently, MetadataLoader event-queue serialization establishes ordering among loader/publisher callbacks, but does not by itself establish W1→D1 JMM happens-before.
+
+This closes the specific hypothesis that the code immediately surrounding maybePublishMetadata() implicitly hands W1 into request processing.
+
+State unchanged:
+- W1→D1 HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- TLC = NOT_RERUN
+
+Next frontier: inspect only a concrete indirect bridge from the end of the MetadataLoader publisher callback to request admission. If none exists, stop expanding the source search and independently audit PR #97's final generated probe before any execution.
