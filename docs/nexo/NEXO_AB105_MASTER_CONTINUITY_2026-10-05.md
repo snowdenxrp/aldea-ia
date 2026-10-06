@@ -1468,3 +1468,53 @@ Do not reopen these closed source candidates without a new pinned-source discrep
 
 ### Next frontier
 The production-source audit for the concrete G0 path is effectively exhausted. The remaining uncertainty is empirical: whether the real execution can ever produce a stale authorization/cache observation under the existing semantics. Any future diagnostic must remain observational and must not manufacture W1→D1 publication.
+
+
+## 2026-10-06 — Run #21 artifact independently re-verified
+
+The actual GitHub Actions artifact was downloaded and inspected directly, closing the remaining uncertainty about what Run #21 really contained.
+
+### 🟢 Exact provenance
+- Workflow run: `37520308442`
+- Artifact: `11441125547`
+- Artifact SHA-256 reported by GitHub: `42b595cf6daffe3b24ea651c3b807781fd6f374d6ada8881330a016fe446f1ca`
+- Run head SHA: `3d55d745c4a2a44336a122f327cb3e9e760362c4`
+- Kafka pin: `99b940733a9f6bc409457dba7108f08421d81e42`
+- Artifact contains separate W1/D1 logs plus the baseline ordering evidence.
+
+### 🟢 Direct observations in the artifact
+The artifact contains 20 W1 records: two broker metadata-loader threads participate in the 10 ACL-removal cycles. For each cycle, the D1 record after removal uses the cache identity produced by the corresponding broker's W1 event.
+
+Observed post-removal D1 pattern in all 10 cycles:
+- `cacheCount=0`
+- `targetPresent=false`
+- `targetId=NONE`
+- D1 `cacheIdentity` matches the corresponding W1-produced cache identity for the broker serving that request.
+
+The artifact also contains the baseline request-order events showing, per cycle, `A1_SUCCESS → D0_TARGET → D0_RETURN → D1_RESULT=DENIED`.
+
+### 🟢 Important new precision
+This independently confirms that the Run #21 result was not merely a prose summary: the raw artifact itself contains the paired W1/D1 cache identities and the baseline cycle events.
+
+It therefore strengthens the empirical statement:
+**Run #21 observed no stale pre-removal AclCache snapshot in 10/10 post-removal D1 observations.**
+
+### 🔴 Formal boundary unchanged
+The artifact still does NOT establish Java Memory Model W1→D1 happens-before. The separate-file sinks are observational instrumentation; the matching object identity is evidence of what D1 actually read in those executions, not proof of the language-level publication guarantee for all executions.
+
+It also does not turn Run #21 into the canonical full request-path witness. The canonical witness remains the separate run `37098764557` / artifact `11265332252` for the complete ENQUEUE→DEQUEUE→AUTH path.
+
+### Current epistemic state
+- 🟢 Run #21 raw artifact independently verified.
+- 🟢 D1 cacheIdentity = corresponding W1 cacheIdentity: 10/10.
+- 🟢 D1 target absent after removal: 10/10.
+- 🟢 stale cache observation: NOT OBSERVED in this run.
+- 🟡 W1→ENQUEUE formal HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- 🟡 W1→D1 formal JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- 🔴 vulnerability: NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not repeat the same cacheIdentity-only experiment merely to obtain another 10/10. Do not rerun TLC. Do not create AB105.117R. Do not add synchronization or shared mutable correlation state.
+
+### Next frontier
+Only a genuinely new empirical discriminator is justified now: reconcile the existing D1 cache observation with the full request-path event identity in one execution, **without** adding a W1→request publication mechanism. If that cannot be done observationally, preserve UNKNOWN rather than manufacturing the linkage.
