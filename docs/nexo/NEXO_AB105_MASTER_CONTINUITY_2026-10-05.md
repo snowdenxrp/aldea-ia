@@ -360,3 +360,35 @@ Do not treat cache identity, count, timestamp proximity, or structural membershi
 
 ### Next action
 Audit the smallest possible UUID-correlation instrumentation against the exact generated PR #97 source. Prefer a read-only operation on the same D1 snapshot and reject any design that introduces a cross-thread publication edge.
+
+
+## 2026-10-05 — UUID-correlation implementation audit: current probe cannot read AclCache identity index
+
+The final PR #97 workflow was inspected directly before any execution.
+
+### 🟢 What is available
+The exact pinned `AclCache` contains the UUID-indexed `aclsById` map and a package-private `getAcl(Uuid id)` accessor. W1 already has the removal UUID.
+
+### 🔴 Concrete implementation limitation
+The current PR #97 D1 instrumentation runs inside `StandardAuthorizerData`, but it only receives the selected `AclCache` and does not know the W1 UUID. The UUID index is private inside `AclCache`; there is no existing read-only API that enumerates the UUID together with the matching `StandardAcl`.
+
+Therefore the previously suggested UUID correlation is not a one-line probe change. It would require additional instrumentation (for example, a package-local diagnostic-only lookup in `AclCache`) or another independently audited mechanism.
+
+### 🟡 Instrumentation consequence
+Adding such a lookup would not inherently create W1→D1 synchronization if it only scans the already-selected immutable snapshot and returns the UUID corresponding to the exact target ACL. Nevertheless, it changes the pinned source during the diagnostic and must be audited as instrumentation. It cannot be treated as part of the production memory model.
+
+The current PR #97 remains **not ready to execute as uniquely correlated evidence**. Its existing timestamp/cache observations remain useful only as diagnostic observations with an explicit correlation limitation.
+
+### Additional probe limitation retained
+The current safety grep only examines source lines containing `NEXO_CACHE`. It therefore does not constitute a proof that library calls such as `Files.writeString` have no internal synchronization. The file sinks are instrumentation and can perturb scheduling even if they do not establish a direct W1→D1 happens-before edge in this test design.
+
+### State unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- TLC = NOT_RERUN
+
+### Next action
+Do not execute PR #97 yet. First evaluate the smallest diagnostic-only UUID lookup against the generated source diff; reject it if it requires any cross-thread communication or if the resulting correlation still depends on timing.
