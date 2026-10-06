@@ -1434,3 +1434,37 @@ No new cacheIdentity probe is justified. No synchronization may be added to manu
 - Do not add volatile/synchronized/latch/barrier/Future/lock/semaphore/shared mutable correlation state.
 - Do not conflate PR #97 head with main workflow source.
 - Do not delete the superseded historical notes; retain them as provenance, but use this entry as the current reconciliation.
+
+
+## 2026-10-06 — post-W1 publisher and request-side shared-state audit
+
+The remaining broker-local candidate was narrowed to operations occurring **after** W1 in the same BrokerMetadataPublisher callback, then checked against the request-side authorization boundary.
+
+### 🟢 Exact pinned order
+At Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, the verified sequence after the ACL publisher is:
+`W1 ACL publisher → groupCoordinator.onMetadataUpdate → shareCoordinator.onMetadataUpdate → feature/share-version handling → firstPublishFuture.complete`.
+
+No inspected post-W1 operation is itself a request-admission or authorization callback. `firstPublishFuture.complete` is startup readiness and is not awaited by steady-state authorization.
+
+### 🟢 Request-side boundary remains direct
+The request handler enters `KafkaApis`, where authorization reaches `AuthHelper.authorize(...)` and then the concrete `Authorizer.authorize(...)` directly. Arbitrary `CompletableFuture`, `ConcurrentHashMap`, `AtomicInteger`, coordinator state, or metadata reads elsewhere in KafkaApis are not evidence unless a causal W1 path reaches them and the request path synchronizes on the same state before D1. No such path was identified.
+
+### 🔴 Candidate closed
+No new W1→ENQUEUE/W1→D1 synchronization edge was identified in the post-W1 publisher continuation or request-side shared-state boundary. The already-closed candidates remain closed: MetadataLoader queue lock, metadataCache volatile publication, startup futures/readiness, BrokerServer lifecycle lock, request-handler shutdown/callback machinery, RequestChannel ENQUEUE→DEQUEUE, Plugin wrapper, and AuthHelper/Authorizer direct call.
+
+### 🟡 Important epistemic boundary
+This is a bounded source-audit conclusion, not a mathematical proof that no synchronization exists anywhere in Kafka. It means no concrete W1-connected production edge was identified in the inspected G0 path. Therefore formal JMM state remains UNKNOWN / NOT IDENTIFIED.
+
+### Current state
+- W1→ENQUEUE temporal ordering: OBSERVED in canonical real-broker witness.
+- W1→ENQUEUE formal HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 formal JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED (Run #21 10/10).
+- D1 cacheIdentity=W1 cacheIdentity: OBSERVED 10/10 in Run #21.
+- vulnerability: NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not reopen these closed source candidates without a new pinned-source discrepancy. Do not add synchronization. Do not rerun the cacheIdentity probe merely for another 10/10. Do not rerun TLC. Do not create AB105.117R.
+
+### Next frontier
+The production-source audit for the concrete G0 path is effectively exhausted. The remaining uncertainty is empirical: whether the real execution can ever produce a stale authorization/cache observation under the existing semantics. Any future diagnostic must remain observational and must not manufacture W1→D1 publication.
