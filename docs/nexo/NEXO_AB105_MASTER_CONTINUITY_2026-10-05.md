@@ -671,3 +671,44 @@ The harness has not yet been executed with PR #97's cache instrumentation in thi
 
 ### Do-not-repeat
 Do not attribute bootstrap #142's `clientAddress=null` failure to PR #97 unless a fresh PR #97 artifact independently reproduces it.
+
+
+## 2026-10-05 — PR #97 D1 request-correlation gap closed before execution
+
+### 🟢 New finding
+The final pre-execution review found one diagnostic observability gap: D1 logged the selected `AclCache` identity, count, target presence, and target UUID, but did not directly record the Kafka request correlation ID.
+
+This did not invalidate the UUID correlation, but it made exact pairing between a D1 cache observation and the corresponding authorization request less direct.
+
+### 🟢 Harness-only correction
+PR #97 workflow was updated at commit `844a37a6b850f07575e2ab18269c010f3a695f6b` so the D1 diagnostic line now also records:
+
+`correlationId=requestContext.correlationId()`
+
+The change is workflow-local diagnostic logging only. It does not modify Kafka synchronization, cache publication, request admission, or authorization behavior.
+
+### 🟢 Why this is useful
+The resulting evidence can now correlate:
+- W1 removal UUID X;
+- D1 selected cache snapshot containing target UUID X;
+- exact Kafka authorization correlation ID for that D1 observation;
+- existing AUTH_ENTER/AUTH_DECISION and ENQUEUE/DEQUEUE records for the same request where applicable.
+
+This strengthens event identity and request-path reconstruction, but **still does not establish JMM happens-before**.
+
+### 🟡 Remaining diagnostic limitations
+W1/D1 file sinks and UUID lookup remain timing perturbations. Correlation IDs improve attribution; they do not create or prove a publication edge.
+
+### State
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- PR #97 cache-probe evidence = NOT EXECUTED / NOT ACCEPTED
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### Do-not-repeat
+Do not treat the new correlationId field as a synchronization mechanism. Do not rerun TLC or modify production synchronization.
