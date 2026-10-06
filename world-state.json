@@ -1,17 +1,17 @@
 {
   "version": 5,
-  "stateRevision": 753,
-  "savedAt": 1791294064645,
-  "day": 680,
-  "hour": 23.986746666896572,
+  "stateRevision": 755,
+  "savedAt": 1791295165568,
+  "day": 681,
+  "hour": 0.0032266668965732492,
   "world": {
-    "day": 680,
-    "timeOfDay": 23.986746666896572,
+    "day": 681,
+    "timeOfDay": 0.0032266668965732492,
     "speed": 1,
     "resources": {
       "water": {
         "type": "renewable",
-        "amount": 0,
+        "amount": 1000,
         "quality": 1,
         "location": "river",
         "position": {
@@ -77,7 +77,7 @@
       },
       "wild_plants": {
         "type": "renewable",
-        "amount": 0,
+        "amount": 29.700000000000003,
         "quality": 0.85,
         "location": "meadow",
         "position": {
@@ -155,7 +155,7 @@
           "key": "action",
           "strength": 1,
           "originDay": 120,
-          "lastObservedDay": 680
+          "lastObservedDay": 681
         },
         {
           "key": "failed_action",
@@ -2393,8 +2393,8 @@
       "biodiversity": 0,
       "soilQuality": 1,
       "waterQuality": 0,
-      "humanPressure": 0.6332846090516339,
-      "lastUpdateDay": 680
+      "humanPressure": 0.6342218403275032,
+      "lastUpdateDay": 681
     },
     "institutions": [],
     "commons": {
@@ -2407,7 +2407,7 @@
     },
     "specialization": {
       "roles": {
-        "gatherer": 1044
+        "gatherer": 1046
       },
       "history": [
         {
@@ -2434,41 +2434,6 @@
         "tool": 48
       },
       "priceHistory": [
-        {
-          "day": 281,
-          "type": "fish",
-          "price": 16,
-          "stock": 0,
-          "perCapita": 0
-        },
-        {
-          "day": 281,
-          "type": "farm_food",
-          "price": 12,
-          "stock": 0,
-          "perCapita": 0
-        },
-        {
-          "day": 281,
-          "type": "wood",
-          "price": 8,
-          "stock": 0.7040000000000002,
-          "perCapita": 0.3520000000000001
-        },
-        {
-          "day": 281,
-          "type": "stone",
-          "price": 0.925,
-          "stock": 180.00000000000014,
-          "perCapita": 90.00000000000007
-        },
-        {
-          "day": 281,
-          "type": "tool",
-          "price": 48,
-          "stock": 0,
-          "perCapita": 0
-        },
         {
           "day": 282,
           "type": "fish",
@@ -16433,6 +16398,41 @@
           "price": 48,
           "stock": 0,
           "perCapita": 0
+        },
+        {
+          "day": 681,
+          "type": "fish",
+          "price": 16,
+          "stock": 0,
+          "perCapita": 0
+        },
+        {
+          "day": 681,
+          "type": "farm_food",
+          "price": 12,
+          "stock": 0,
+          "perCapita": 0
+        },
+        {
+          "day": 681,
+          "type": "wood",
+          "price": 8,
+          "stock": 0.7040000000000002,
+          "perCapita": 0.3520000000000001
+        },
+        {
+          "day": 681,
+          "type": "stone",
+          "price": 0.5,
+          "stock": 180.00000000000014,
+          "perCapita": 90.00000000000007
+        },
+        {
+          "day": 681,
+          "type": "tool",
+          "price": 48,
+          "stock": 0,
+          "perCapita": 0
         }
       ]
     },
@@ -16446,48 +16446,20 @@
           "variable": "humanPressure",
           "measure": "regeneration",
           "confidence": 0.86,
-          "experimentCount": 1044,
+          "experimentCount": 1046,
           "contributors": [
             "alex",
             "bruno"
           ],
           "createdDay": 159,
-          "lastExperimentDay": 680,
+          "lastExperimentDay": 681,
           "status": "reproduced",
-          "supportedCount": 1044,
+          "supportedCount": 1046,
           "contradictedCount": 0,
-          "independentReplications": 1043
+          "independentReplications": 1045
         }
       ],
       "experiments": [
-        {
-          "id": "experiment-381-alex-resource-regeneration",
-          "day": 381,
-          "topicId": "resource-regeneration",
-          "question": "¿La presión sobre un recurso afecta su recuperación?",
-          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
-          "agentId": "alex",
-          "variable": "humanPressure",
-          "baseline": 0.365194,
-          "intervention": "comparación controlada",
-          "result": 0.301713,
-          "supported": true,
-          "reproducible": false
-        },
-        {
-          "id": "experiment-381-bruno-resource-regeneration",
-          "day": 381,
-          "topicId": "resource-regeneration",
-          "question": "¿La presión sobre un recurso afecta su recuperación?",
-          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
-          "agentId": "bruno",
-          "variable": "humanPressure",
-          "baseline": 0.365194,
-          "intervention": "comparación controlada",
-          "result": 0.301713,
-          "supported": true,
-          "reproducible": false
-        },
         {
           "id": "experiment-382-alex-resource-regeneration",
           "day": 382,
@@ -24859,37 +24831,37 @@
           "result": 0.303387,
           "supported": true,
           "reproducible": false
+        },
+        {
+          "id": "experiment-681-alex-resource-regeneration",
+          "day": 681,
+          "topicId": "resource-regeneration",
+          "question": "¿La presión sobre un recurso afecta su recuperación?",
+          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
+          "agentId": "alex",
+          "variable": "humanPressure",
+          "baseline": 0.365778,
+          "intervention": "comparación controlada",
+          "result": 0.302356,
+          "supported": true,
+          "reproducible": false
+        },
+        {
+          "id": "experiment-681-bruno-resource-regeneration",
+          "day": 681,
+          "topicId": "resource-regeneration",
+          "question": "¿La presión sobre un recurso afecta su recuperación?",
+          "hypothesis": "Una presión humana mayor reduce la recuperación de recursos.",
+          "agentId": "bruno",
+          "variable": "humanPressure",
+          "baseline": 0.365778,
+          "intervention": "comparación controlada",
+          "result": 0.302356,
+          "supported": true,
+          "reproducible": false
         }
       ],
       "evidence": [
-        {
-          "id": "experiment-621-alex-resource-regeneration-evidence",
-          "experimentId": "experiment-621-alex-resource-regeneration",
-          "day": 621,
-          "topicId": "resource-regeneration",
-          "agentId": "alex",
-          "variable": "humanPressure",
-          "baseline": 0.384902,
-          "intervention": "comparación controlada",
-          "result": 0.323392,
-          "delta": -0.06151,
-          "supported": true,
-          "reliability": 0.65
-        },
-        {
-          "id": "experiment-621-bruno-resource-regeneration-evidence",
-          "experimentId": "experiment-621-bruno-resource-regeneration",
-          "day": 621,
-          "topicId": "resource-regeneration",
-          "agentId": "bruno",
-          "variable": "humanPressure",
-          "baseline": 0.384902,
-          "intervention": "comparación controlada",
-          "result": 0.323392,
-          "delta": -0.06151,
-          "supported": true,
-          "reliability": 0.65
-        },
         {
           "id": "experiment-622-alex-resource-regeneration-evidence",
           "experimentId": "experiment-622-alex-resource-regeneration",
@@ -26541,17 +26513,37 @@
           "delta": -0.063328,
           "supported": true,
           "reliability": 0.65
+        },
+        {
+          "id": "experiment-681-alex-resource-regeneration-evidence",
+          "experimentId": "experiment-681-alex-resource-regeneration",
+          "day": 681,
+          "topicId": "resource-regeneration",
+          "agentId": "alex",
+          "variable": "humanPressure",
+          "baseline": 0.365778,
+          "intervention": "comparación controlada",
+          "result": 0.302356,
+          "delta": -0.063422,
+          "supported": true,
+          "reliability": 0.65
+        },
+        {
+          "id": "experiment-681-bruno-resource-regeneration-evidence",
+          "experimentId": "experiment-681-bruno-resource-regeneration",
+          "day": 681,
+          "topicId": "resource-regeneration",
+          "agentId": "bruno",
+          "variable": "humanPressure",
+          "baseline": 0.365778,
+          "intervention": "comparación controlada",
+          "result": 0.302356,
+          "delta": -0.063422,
+          "supported": true,
+          "reliability": 0.65
         }
       ],
       "history": [
-        {
-          "day": 381,
-          "type": "research_day",
-          "contributors": [
-            "alex",
-            "bruno"
-          ]
-        },
         {
           "day": 382,
           "type": "research_day",
@@ -28943,6 +28935,14 @@
             "alex",
             "bruno"
           ]
+        },
+        {
+          "day": 681,
+          "type": "research_day",
+          "contributors": [
+            "alex",
+            "bruno"
+          ]
         }
       ]
     },
@@ -29253,10 +29253,10 @@
           "visits": 4168,
           "discovered": true,
           "lastVisitDay": 680,
-          "population": 1,
+          "population": 0,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0.12,
+          "activity": 0,
           "biome": "plains",
           "x": 7,
           "z": 6,
@@ -29589,10 +29589,10 @@
           "visits": 10973,
           "discovered": true,
           "lastVisitDay": 680,
-          "population": 1,
+          "population": 0,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0.12,
+          "activity": 0,
           "biome": "plains",
           "x": 6,
           "z": 0,
@@ -29642,17 +29642,17 @@
         },
         "4:0": {
           "key": "4:0",
-          "visits": 20352,
+          "visits": 20354,
           "discovered": true,
-          "lastVisitDay": 680,
-          "population": 0,
+          "lastVisitDay": 681,
+          "population": 1,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0,
+          "activity": 0.12,
           "biome": "plains",
           "x": 4,
           "z": 0,
-          "lastDiscoveryDay": 680
+          "lastDiscoveryDay": 681
         },
         "2:0": {
           "key": "2:0",
@@ -29768,17 +29768,17 @@
         },
         "6:2": {
           "key": "6:2",
-          "visits": 9363,
+          "visits": 9365,
           "discovered": true,
-          "lastVisitDay": 680,
-          "population": 0,
+          "lastVisitDay": 681,
+          "population": 1,
           "structures": 0,
           "settlementLevel": 0,
-          "activity": 0,
+          "activity": 0.12,
           "biome": "plains",
           "x": 6,
           "z": 2,
-          "lastDiscoveryDay": 680
+          "lastDiscoveryDay": 681
         },
         "6:4": {
           "key": "6:4",
@@ -30807,11 +30807,11 @@
     {
       "id": "alex",
       "name": "Alex",
-      "age": 16.53698630136942,
+      "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 86.77929066666452,
-        "thirst": 78.63654400000127,
+        "hunger": 86.74303466666451,
+        "thirst": 78.58380800000127,
         "energy": 100,
         "social": 0,
         "safety": 100,
@@ -70808,8 +70808,8 @@
         ],
         "currentActivity": "resting",
         "needs": {
-          "hunger": 86.77929066666452,
-          "thirst": 78.63654400000127,
+          "hunger": 86.74303466666451,
+          "thirst": 78.58380800000127,
           "energy": 100,
           "social": 0,
           "safety": 100,
@@ -70897,7 +70897,7 @@
         "fertile_land": {
           "x": 2,
           "z": -22,
-          "learnedDay": 680
+          "learnedDay": 681
         },
         "wild_plants": {
           "x": -2,
@@ -70941,7 +70941,7 @@
       "children": [],
       "pregnancy": null,
       "generation": 0,
-      "lifeExperience": 561,
+      "lifeExperience": 562,
       "cultureKnowledge": [
         "action",
         "social_interaction",
@@ -71074,11 +71074,11 @@
           "topicId": "resource-regeneration",
           "belief": "Una presión humana mayor reduce la recuperación de recursos.",
           "confidence": 0.95,
-          "evidenceCount": 522,
-          "lastTestedDay": 680
+          "evidenceCount": 523,
+          "lastTestedDay": 681
         }
       ],
-      "researchExperiments": 522,
+      "researchExperiments": 523,
       "socialRole": "Recolector",
       "activityRemainingHours": 0.35,
       "explorationState": {
@@ -71648,6 +71648,8 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -71657,11 +71659,11 @@
     {
       "id": "bruno",
       "name": "Bruno",
-      "age": 16.53698630136942,
+      "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 86.77929066666452,
-        "thirst": 78.63654400000127,
+        "hunger": 86.74303466666451,
+        "thirst": 78.58380800000127,
         "energy": 100,
         "social": 0,
         "safety": 100,
@@ -113233,8 +113235,8 @@
         ],
         "currentActivity": "resting",
         "needs": {
-          "hunger": 86.77929066666452,
-          "thirst": 78.63654400000127,
+          "hunger": 86.74303466666451,
+          "thirst": 78.58380800000127,
           "energy": 100,
           "social": 0,
           "safety": 100,
@@ -113345,7 +113347,7 @@
         "fertile_land": {
           "x": 2,
           "z": -22,
-          "learnedDay": 680
+          "learnedDay": 681
         },
         "clay": {
           "x": -12,
@@ -113355,7 +113357,7 @@
         "wood": {
           "x": 20,
           "z": 8,
-          "learnedDay": 680
+          "learnedDay": 681
         },
         "stone": {
           "x": 24,
@@ -113381,7 +113383,7 @@
       "children": [],
       "pregnancy": null,
       "generation": 0,
-      "lifeExperience": 561,
+      "lifeExperience": 562,
       "cultureKnowledge": [
         "action",
         "social_interaction",
@@ -113533,11 +113535,11 @@
           "topicId": "resource-regeneration",
           "belief": "Una presión humana mayor reduce la recuperación de recursos.",
           "confidence": 0.95,
-          "evidenceCount": 522,
-          "lastTestedDay": 680
+          "evidenceCount": 523,
+          "lastTestedDay": 681
         }
       ],
-      "researchExperiments": 522,
+      "researchExperiments": 523,
       "socialRole": "Recolector",
       "activityRemainingHours": 0.35,
       "explorationState": {
@@ -114160,6 +114162,8 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -114171,66 +114175,6 @@
     {
       "id": "event-501",
       "day": 680,
-      "hour": 22.007173333563067,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 680,
-      "hour": 22.007173333563067,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 680,
-      "hour": 22.012373333563065,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 680,
-      "hour": 22.012373333563065,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 680,
-      "hour": 22.022373333563067,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 680,
-      "hour": 22.022373333563067,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 680,
       "hour": 22.0286666668964,
       "type": "action",
       "description": "Alex descansó.",
@@ -119162,6 +119106,66 @@
       "id": "event-502",
       "day": 680,
       "hour": 23.986746666896572,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 680,
+      "hour": 23.996746666896573,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 680,
+      "hour": 23.996746666896573,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "research-event-500",
+      "day": 681,
+      "hour": 0,
+      "type": "research_experiment",
+      "description": "Alex realizó un experimento sobre resource-regeneration.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "research-event-501",
+      "day": 681,
+      "hour": 0,
+      "type": "research_experiment",
+      "description": "Bruno realizó un experimento sobre resource-regeneration.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-503",
+      "day": 681,
+      "hour": 0.0032266668965732492,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-504",
+      "day": 681,
+      "hour": 0.0032266668965732492,
       "type": "action",
       "description": "Bruno descansó.",
       "participants": [
@@ -119176,38 +119180,6 @@
     "patterns": [],
     "nexo": {
       "missions": [
-        {
-          "missionId": "lumina-1791251884903-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_behavior_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_behavior_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            },
-            {
-              "id": "step-2",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            },
-            {
-              "id": "step-3",
-              "action": "inspect_and_collect_evidence",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-10-06T01:58:04.903Z"
-        },
         {
           "missionId": "lumina-1791251984341-1",
           "version": 4,
@@ -120775,6 +120747,38 @@
             }
           ],
           "at": "2026-10-06T13:41:04.418Z"
+        },
+        {
+          "missionId": "lumina-1791295165324-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_behavior_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_behavior_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            },
+            {
+              "id": "step-2",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            },
+            {
+              "id": "step-3",
+              "action": "inspect_and_collect_evidence",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-06T13:59:25.324Z"
         }
       ],
       "attempts": [],
