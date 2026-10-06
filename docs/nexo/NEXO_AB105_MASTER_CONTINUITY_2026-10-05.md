@@ -488,3 +488,22 @@ State unchanged:
 - TLC = NOT_RERUN
 - AB105.116R protected
 - AB105.117R not created
+
+
+## 2026-10-05 — Generated-code final safety review
+
+### 🟢 Exact generated logic reviewed
+The workflow-generated changes were inspected as text, not inferred from the intended patch. The helper is inserted into `AclCache` immediately before `removeAcl`; D1 reads `AclCache aclCacheSnapshot = aclCache` first, then performs the diagnostic target test and UUID lookup against that already-selected snapshot. The helper does not read W1 state and does not mutate `AclCache`.
+
+### 🟢 No hidden synchronization primitive in the injected correlation path
+The generated helper uses a local `Uuid[]`, `ImmutableMap.forEach`, equality against `StandardAcl`, and `Optional`. The pinned `ImmutableMap` interface is a persistent-map wrapper, and its PCollections implementation delegates `forEach` directly to the underlying map. No explicit monitor/volatile/atomic/latch/future/lock is introduced by the helper.
+
+The workflow safety gate scans the complete generated `AclCache.java` and `StandardAuthorizerData.java`, not merely marker lines.
+
+### 🟡 Diagnostic perturbation remains explicit
+W1 and D1 each perform `Files.writeString(... APPEND ...)` to separate files. This is diagnostic I/O and can perturb scheduling/timing. It is therefore valid for observation/correlation but cannot be treated as a proof of natural timing or JMM ordering. The safety gate is a guardrail against intentionally added synchronization; it is not a proof that every library-level operation is synchronization-free.
+
+### 🔴 No execution yet
+No runtime result was obtained in this step. PR #97 remains NOT EXECUTED. The source audit is now clean enough to permit execution as a diagnostic, but execution itself must remain a separate evidence step.
+
+Canonical state unchanged: W1→D1 HB UNKNOWN; W1→ENQUEUE edge NOT IDENTIFIED; stale read NOT OBSERVED/NOT DISPROVEN; vulnerability NOT ESTABLISHED; W1→R1 UNKNOWN; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
