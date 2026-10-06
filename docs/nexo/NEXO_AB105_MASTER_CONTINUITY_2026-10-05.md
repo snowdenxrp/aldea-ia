@@ -1237,3 +1237,54 @@ Even with this complete causal/event identity, the result would still not by its
 
 ### DO-NOT-REPEAT
 Do not rerun the existing cacheIdentity-only probe merely for the same result. Only an observational causal-correlation extension is justified by the remaining evidence gap.
+
+
+## 2026-10-06 — causal-correlation audit refinement: W1 cannot carry request correlationId directly
+
+A further audit of the exact current diagnostic workflows found an important constraint in the proposed causal-correlation extension.
+
+### 🟢 Confirmed current request identity path
+The existing G0 witness already exposes the broker request correlation identity at:
+- ENQUEUE: `request.header.correlationId()`
+- DEQUEUE: `request.header.correlationId()`
+- AUTH_ENTER: `requestContext.correlationId()`
+- AUTH_DECISION: `requestContext.correlationId()`
+
+The current cache-probe D1 diagnostic does not yet emit that correlationId.
+
+### 🔴 Critical correction to the earlier shorthand
+W1 occurs on the MetadataLoader/AclPublisher path while processing the ACL removal. W1 does **not** naturally possess the later producer request's broker `correlationId`.
+
+The real sequence is:
+`W1 (ACL update) → D0_RETURN → client creates/sends request → broker assigns/uses request correlationId → ENQUEUE → DEQUEUE → AUTH_ENTER → D1`.
+
+Therefore a diagnostic must NOT invent a direct field-level identity such as `W1(correlationId)` unless the source actually provides that identity. Adding shared mutable state solely to transfer the correlationId from W1 to the later request would itself alter the concurrency experiment and is forbidden.
+
+### 🟢 Minimal valid extension
+The safe observational extension is therefore two-layer correlation:
+1. W1 records the ACL identity, cacheIdentity, cycle context and timestamp.
+2. ENQUEUE/DEQUEUE/AUTH_ENTER/AUTH_DECISION/D1 record the same broker request correlationId.
+3. D1 additionally records cacheIdentity/targetId as already done.
+4. Correlation between the ACL-update event and the request event is established by immutable request/ACL identity plus the single-cycle harness structure and temporal ordering, not by a shared W1→request variable.
+
+If stronger event identity is required, a future diagnostic may use a **cycle-unique request resource/ACL identity carried naturally in the Kafka request itself** (for example a cycle-specific topic name), so W1's ACL identity and the later request's resource identity can be matched without cross-thread mutable state. That would be an experimental-scope change and must be audited before use; it is not yet executed evidence.
+
+### 🔴 What this does NOT establish
+Even a complete correlationId chain from ENQUEUE through D1 would only prove which broker request produced the observed authorization event. It would not create or prove W1→ENQUEUE or W1→D1 JMM happens-before.
+
+Current formal state therefore remains:
+- W1→ENQUEUE HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- stale ACL read: NOT OBSERVED (Run #21: 10/10)
+- D1 cacheIdentity=W1 cacheIdentity: OBSERVED 10/10 in Run #21
+- Run #21 ↔ 370778 request-event identity: NOT DEMONSTRATED
+- vulnerability: NOT ESTABLISHED
+- TLC: NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### DO-NOT-REPEAT
+Do not add a W1→request shared variable, volatile, latch, barrier, Future, lock, semaphore, or equivalent just to transfer correlationId. Do not call temporal coincidence a direct event identity. Do not rerun the cacheIdentity-only probe merely to repeat Run #21.
+
+### Next exact frontier
+First validate the observational-only correlation instrumentation against the current workflow source. If direct W1↔request identity remains impossible, evaluate the cycle-unique resource identity design before any runtime execution. No new runtime claim is made here.
