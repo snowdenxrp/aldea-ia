@@ -1518,3 +1518,36 @@ Do not repeat the same cacheIdentity-only experiment merely to obtain another 10
 
 ### Next frontier
 Only a genuinely new empirical discriminator is justified now: reconcile the existing D1 cache observation with the full request-path event identity in one execution, **without** adding a W1→request publication mechanism. If that cannot be done observationally, preserve UNKNOWN rather than manufacturing the linkage.
+
+
+## 2026-10-06 — Run #21 raw timing reconciliation: D0_RETURN is not a W1 proxy
+
+The raw Run #21 artifact was parsed cycle-by-cycle rather than relying on the summary.
+
+### 🟢 Exact result
+For all 10 cycles, the broker-0 W1 cacheIdentity matches the subsequent post-removal D1 cacheIdentity, and D1 observes the target ACL absent.
+
+However, the timing relation between W1 and D0_RETURN is **not invariant**:
+- cycles 1–8: W1 < D0_RETURN < D1
+- cycles 9–10: D0_RETURN < W1 < D1
+
+Therefore D0_RETURN cannot be used as a proxy for “W1 already happened.” This is direct empirical support for the existing architectural distinction that the Admin delete completion/result path is not itself evidence of the MetadataLoader W1 completion point.
+
+### 🟢 Stronger empirical observation
+Even in cycles 9–10, where D0_RETURN precedes the broker-0 W1 timestamp, D1 subsequently reads exactly the cache object produced by that W1 and observes the ACL absent.
+
+This strengthens the empirical non-observation of a stale D1 snapshot while simultaneously showing that the test's D0_RETURN marker does not define the publication boundary.
+
+### 🔴 Formal boundary
+The timestamp order remains observational only. It does not establish W1→D1 JMM happens-before. The matching immutable object identity demonstrates what object D1 actually read in those executions; it does not establish a universal publication guarantee.
+
+### Current state
+- 🟢 Run #21: D1 cacheIdentity matches broker-0 W1: 10/10.
+- 🟢 Run #21: target absent at D1 after removal: 10/10.
+- 🟢 D0_RETURN is proven empirically unsuitable as a W1 proxy: 2/10 cycles had D0_RETURN before W1.
+- 🟡 W1→ENQUEUE formal HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- 🟡 W1→D1 formal JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- 🔴 vulnerability: NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not use D0_RETURN as a publication marker. Do not repeat cacheIdentity-only execution. Do not rerun TLC or create AB105.117R. Do not add synchronization to force W1/request correlation.
