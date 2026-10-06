@@ -154,3 +154,58 @@ Next action: run the workflow only after reviewing the final generated probe/sou
 
 
 Probe preparation correction: PR #97 workflow source-recovery now uses the Actions workspace path from `GITHUB_WORKSPACE` when reading the existing Nexo witness branch. This removes the prior mistake of attempting to resolve the Nexo branch from the Apache Kafka clone's `origin`. Latest probe branch head: `1c8b2e3483212541d052c1589d18cc8bcd7722c9`. Still not executed; epistemic state unchanged.
+
+
+## 2026-10-05 — Kafka publication/admission audit: MetadataLoader → AclPublisher → request authorization
+
+Exact pinned Kafka source at 99b940733a9f6bc409457dba7108f08421d81e42 was inspected beyond PCollections.
+
+### 🟢 Confirmed Kafka-side serialization boundary
+MetadataLoader owns a dedicated KafkaEventQueue and its documented contract states that it uses its own thread for all callbacks into metadata publishers. maybePublishMetadata() iterates the installed publishers on that loader event-queue thread.
+
+AclPublisher.onMetadataUpdate() therefore executes W1 on the MetadataLoader publisher thread. For incremental ACL deltas it calls clusterMetadataAuthorizer.addAcl()/removeAcl() in LinkedHashMap order.
+
+This establishes serialization/order within the MetadataLoader publisher path.
+
+### 🟢 Important admission distinction
+The same exact source shows that the authorizer startup gate is separate:
+- StandardAuthorizer.start() returns initialLoadFuture for non-early-start listeners.
+- AclPublisher.completeInitialLoad() completes that future only after the loader has caught up to local high watermark and processed an update.
+- ControllerServer waits for the authorizer futures before enabling request processing.
+
+Therefore Kafka has a real publication/admission mechanism for initial authorization readiness.
+
+### 🔴 Critical steady-state result
+That startup future is not a per-ACL-update publication mechanism.
+
+After initial load:
+- AclPublisher continues to call incremental addAcl/removeAcl.
+- StandardAuthorizerData.aclCache remains a plain reference.
+- StandardAuthorizer.authorize() reads the volatile outer data reference, then invokes authorization on that same StandardAuthorizerData.
+- The incremental ACL update does not replace the outer volatile data reference.
+- There is no inspected Kafka-level admission gate between an incremental AclPublisher callback and a later request-thread authorization read.
+
+### 🟢 Strong source evidence from AclPublisher itself
+The exact pinned AclPublisher comment explicitly describes the intended situation as ACL changes being applied while the Authorizer continues returning authorization results in other threads. The implementation performs incremental updates directly; it does not acquire a lock around the authorizer/read path.
+
+This is important because it rules out an easy interpretation that MetadataLoader serialization itself means request authorization is serialized behind W1.
+
+### Current interpretation
+The Kafka-level audit closes another candidate:
+- 🟢 MetadataLoader serializes publisher callbacks.
+- 🟢 Initial-load readiness has a real future/admission edge.
+- 🔴 No per-incremental-ACL Kafka publication/admission edge from W1 to D1 has been identified.
+- 🔴 MetadataLoader thread serialization cannot by itself be promoted to W1→D1 JMM happens-before.
+- 🟡 W1→D1 HB remains UNKNOWN / NOT IDENTIFIED because an independent JVM/Kafka synchronization edge elsewhere has not been proven absent.
+- 🟡 stale read remains NOT OBSERVED / NOT DISPROVEN.
+- 🔴 vulnerability remains NOT ESTABLISHED.
+
+### Do-not-repeat refinement
+Do not repeat a generic search for “MetadataLoader has an event queue.” The relevant boundary is now documented precisely: publisher callbacks are serialized on the loader thread, while steady-state authorization executes concurrently outside that publisher serialization domain.
+
+### Next frontier
+Search only for a concrete cross-thread bridge after W1:
+1. a Kafka request-processing admission/readiness mechanism that is invoked on every ACL delta, or
+2. a shared synchronization/publication primitive between MetadataLoader/AclPublisher and the request-serving path.
+
+If neither exists, the diagnostic cache-snapshot probe in PR #97 remains the next empirical discriminator, without treating its timing result as JMM proof.
