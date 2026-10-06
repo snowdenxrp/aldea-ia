@@ -783,3 +783,29 @@ Classification:
 
 State remains unchanged:
 W1→D1 HB UNKNOWN; W1→ENQUEUE NOT IDENTIFIED; stale ACL NOT OBSERVED/NOT DISPROVEN; vulnerability NOT ESTABLISHED; PR #97 cache-probe NOT EXECUTED/NOT ACCEPTED; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
+
+
+## 2026-10-05 — PR #97 final workflow semantics audit
+
+Reviewed the exact `nexo-ab105-g0-cache-probe.yml` and the source workflow from `nexo-ab105-g0-ordering-witness`.
+
+### 🟢 Valid diagnostic semantics
+- PR #97 pins Kafka exactly to `99b940733a9f6bc409457dba7108f08421d81e42`.
+- It recovers the real `NexoG0OrderingWitnessTest`, not the frozen bootstrap harness.
+- W1 is injected immediately after `aclCache = aclCacheSnapshot` in `removeAcl`.
+- D1 samples exactly the local `AclCache aclCacheSnapshot = aclCache` before `checkSection`.
+- D1 records the real request `correlationId`.
+- UUID lookup occurs only inside the already-selected immutable D1 snapshot; it does not publish state from W1 to D1.
+- Fresh snapshot should report `targetId=NONE`; a stale snapshot retaining the removed ACL can correlate to W1's removed UUID.
+
+### 🟡 Known diagnostic limitations
+- W1/D1 file writes perturb scheduling.
+- UUID correlation is an O(n) scan over the immutable ID map.
+- The textual synchronization-token gate is a guardrail, not a proof that every library/runtime operation is synchronization-free.
+- The probe is observational; it does not create or prove a JMM happens-before edge.
+
+### 🔴 No execution evidence yet
+The workflow is `workflow_dispatch` only. No PR #97 cache-probe run/artifact has been identified.
+
+### State
+W1→D1 HB UNKNOWN; stale ACL NOT OBSERVED/NOT DISPROVEN; vulnerability NOT ESTABLISHED; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
