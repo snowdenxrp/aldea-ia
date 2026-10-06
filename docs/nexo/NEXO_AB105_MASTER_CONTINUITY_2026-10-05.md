@@ -430,3 +430,27 @@ Do **not** execute yet. Before execution, strengthen the workflow safety audit s
 - TLC = NOT_RERUN
 - AB105.116R protected
 - AB105.117R not created
+
+
+## 2026-10-05 — Diagnostic safety audit widened to full injected source
+
+The PR #97 workflow safety gate was strengthened before execution.
+
+### 🟢 Change
+The previous grep inspected only lines containing `NEXO_CACHE`. The gate now scans the complete injected target source files (`AclCache.java` and `StandardAuthorizerData.java`) for forbidden synchronization/publication tokens, and explicitly requires the UUID helper and D1 `targetId` observation before compilation.
+
+### 🟢 Current design
+The UUID lookup remains a local scan of the immutable D1-selected `AclCache`. No W1→D1 communication mechanism was introduced.
+
+### ⚠️ Limitation
+This textual gate is a guardrail, not a proof that library calls have no internal synchronization or that file I/O cannot perturb scheduling. The generated source still requires final inspection before execution.
+
+### Execution state
+PR #97 remains NOT EXECUTED. No new evidence has been generated. Epistemic state unchanged.
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
