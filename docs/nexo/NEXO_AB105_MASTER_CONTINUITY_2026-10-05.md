@@ -392,3 +392,41 @@ The current safety grep only examines source lines containing `NEXO_CACHE`. It t
 
 ### Next action
 Do not execute PR #97 yet. First evaluate the smallest diagnostic-only UUID lookup against the generated source diff; reject it if it requires any cross-thread communication or if the resulting correlation still depends on timing.
+
+
+## 2026-10-05 — UUID correlation probe: audited and corrected before execution
+
+The smallest UUID-correlation mechanism was implemented workflow-locally for audit, then reviewed before any runtime execution.
+
+### 🟢 Final mechanism
+The workflow injects a package-local diagnostic method into the pinned `AclCache` that scans the already-selected immutable `aclsById` snapshot and returns the UUID whose `StandardAcl` equals the exact D1 target. D1 logs this `targetId` alongside target presence. W1 already logs the UUID passed to `removeAcl`.
+
+This creates a possible post-run identity relation:
+- W1 removed UUID = X
+- D1 selected snapshot contains exact target with UUID = X
+
+The lookup itself is local to the D1 snapshot. It does not read W1 state, does not write shared state, and does not add a volatile/latch/barrier/Future/lock edge.
+
+### ⚠️ Important failed intermediate attempt — corrected before execution
+While constructing the diagnostic, an intermediate workflow revision briefly used `AtomicReference<Uuid>` inside the snapshot lookup to mutate a value from a lambda. This was immediately identified as incompatible with the no-artificial-synchronization rule and replaced before any workflow execution with a local `Uuid[]` holder used only during the same snapshot-local iteration.
+
+The AtomicReference revision was never executed and must not be treated as evidence.
+
+### 🟢 Final source audit result
+The final generated mechanism contains no explicit synchronization primitive for UUID correlation. The array holder is ordinary local state confined to the D1 call; it is not shared with W1 or another thread.
+
+### 🟡 Remaining instrumentation caveat
+The UUID lookup adds diagnostic work inside D1 and the existing `Files.writeString` sinks remain timing perturbations. Therefore even a perfectly correlated PRE_W1/POST_W1 observation remains empirical diagnostic evidence, not a JMM happens-before proof.
+
+### 🔴 Execution decision
+Do **not** execute yet. Before execution, strengthen the workflow safety audit so it rejects forbidden synchronization tokens across the complete injected diagnostic source, not only lines containing `NEXO_CACHE`. Then perform a final generated-source inspection.
+
+### State unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
