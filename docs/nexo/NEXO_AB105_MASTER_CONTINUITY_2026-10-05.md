@@ -1853,3 +1853,20 @@ Do not modify PR #97 for correlationId. Audit/execute the existing draft as-is; 
 
 ### DO-NOT-REPEAT
 Do not create another correlationId-only probe. Do not rerun Run #21 merely for cache identity. Do not add a W1→request shared variable or synchronization bridge.
+
+
+## 2026-10-06 — Execution-state audit of PR #97
+
+### 🟢 Verified
+PR #97 remains open/draft at head `23c71ece22e37a788a48b0e767b121482570f6d9`.
+
+The Actions history on branch `nexo-ab105-g0-cache-probe` contains older failed runs of the cache-probe workflow, but they executed older heads (for example `92acdba736f7bf8c4b72bd6e89b73ff8ce95d33e`, run #12). They are not valid evidence for the current PR #97 head. There is also an ordering-witness run at the current PR #97 head (`23c71ece...`), but that is a different workflow and therefore does not execute the PR #97 cache-probe diagnostic.
+
+### 🟡 Consequence
+There is still **no accepted runtime execution of the PR #97 cache-probe workflow at head `23c71ece...`**. Therefore no new D1 correlationId/cacheIdentity artifact exists for this exact diagnostic yet.
+
+### 🔴 Do not misclassify
+Do not reuse the older failed cache-probe runs as evidence for PR #97. Do not treat the ordering-witness failure at the same head as execution of the cache-probe workflow. The source audit remains valid; runtime evidence remains pending.
+
+### Next action
+Manual dispatch of the existing PR #97 cache-probe workflow at its current head, followed by job/artifact/raw-log reconciliation. No source change required.
