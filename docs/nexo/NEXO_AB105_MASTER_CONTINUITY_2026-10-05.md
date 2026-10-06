@@ -1551,3 +1551,48 @@ The timestamp order remains observational only. It does not establish W1→D1 JM
 
 ### DO-NOT-REPEAT
 Do not use D0_RETURN as a publication marker. Do not repeat cacheIdentity-only execution. Do not rerun TLC or create AB105.117R. Do not add synchronization to force W1/request correlation.
+
+
+## 2026-10-06 — exact request-admission source boundary: SocketServer Processor → RequestChannel
+
+### 🟢 Pinned source result
+At Kafka revision 99b940733a9f6bc409457dba7108f08421d81e42, the concrete production call that performs ENQUEUE is in core/src/main/scala/kafka/network/SocketServer.scala:
+- a SocketServer Processor thread reads/decodes an incoming socket request;
+- constructs the Request;
+- calls requestChannel.sendRequest(req);
+- only then mutes the connection.
+
+RequestChannel.sendRequest(req) performs the queue insertion. KafkaRequestHandler later receives from that queue and dispatches the request.
+
+### 🔴 Critical boundary
+The real path is:
+
+MetadataLoader/AclPublisher W1
+→ [UNKNOWN production bridge]
+→ client/network Processor thread reads a socket request
+→ SocketServer.requestChannel.sendRequest(req) = ENQUEUE
+→ request-handler dequeue
+→ KafkaApis/AuthHelper/Authorizer.authorize() = D1
+
+The source does not show W1 being executed on the SocketServer Processor thread, nor does the request enqueue operation consume a W1-produced state transition. MetadataLoader thread serialization therefore cannot be extended to ENQUEUE merely because both events occur in the same broker.
+
+### 🟡 JMM interpretation
+The queue put/take boundary is a legitimate publication edge for actions that precede put on the producer/Processor thread. W1 occurs on a different MetadataLoader publisher thread. Unless an independent production synchronization edge connects W1 to the Processor thread/request creation, queue HB cannot retroactively publish W1.
+
+### 🟢 Consequence for experiment design
+Existing NEXO_ORDER correlationId instrumentation is sufficient to identify the request-path sequence once ENQUEUE occurs. No W1→request shared variable is needed or allowed.
+
+The next source-audit target is now narrower: determine whether the client/request generation side has any legitimate synchronization with MetadataLoader after the ACL update, or whether W1-before-ENQUEUE is only observed execution ordering without demonstrated JMM publication.
+
+### Current state
+- SocketServer Processor → ENQUEUE: VERIFIED.
+- ENQUEUE → DEQUEUE publication: VERIFIED.
+- DEQUEUE → AUTH_ENTER → AUTH_DECISION/D1: VERIFIED/OBSERVED.
+- W1 → ENQUEUE temporal order: OBSERVED in canonical witness.
+- W1 → ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1 → D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale read: NOT OBSERVED (Run #21, 10/10).
+- vulnerability: NOT ESTABLISHED.
+
+### DO-NOT-REPEAT
+Do not add synchronization between MetadataLoader and SocketServer merely for the probe. Do not treat broker-global execution order as a happens-before relation. Do not repeat cacheIdentity-only runs.
