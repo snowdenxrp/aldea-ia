@@ -210,4 +210,52 @@ jobs:
             metadata/src/main/java/org/apache/kafka/metadata/authorizer/StandardAuthorizerData.java
 
       - name: Compile
-        working-directory: /
+        working-directory: /tmp/kafka
+        run: |
+          ./gradlew --no-daemon \
+            :test-common:test-common-runtime:compileJava \
+            :metadata:compileTestJava \
+            :server:compileTestJava
+
+      - name: Execute real broker diagnostic
+        working-directory: /tmp/kafka
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon \
+            :server:test \
+            --tests org.apache.kafka.server.NexoG0OrderingWitnessTest \
+            --info 2>&1 | tee /tmp/nexo-cache-probe.log
+
+      - name: Emit diagnostic evidence
+        if: always()
+        working-directory: /tmp/kafka
+        run: |
+          {
+            echo "KAFKA_REV=$(git rev-parse HEAD)"
+            echo "DIAGNOSTIC=REAL_BROKER_D1_ACLCACHE_SNAPSHOT"
+            echo "TIMING_INSTRUMENTATION=WORKFLOW_LOCAL"
+            echo "W1_AND_D1_SINKS=SEPARATE_FILES"
+            echo "AB105_116R=UNCHANGED"
+            echo "AB105_117R=NOT_CREATED"
+            echo "TLC=NOT_RERUN"
+
+            echo "---- W1 CACHE EVENTS ----"
+            cat /tmp/nexo-w1-cache.log 2>/dev/null || true
+
+            echo "---- D1 CACHE EVENTS ----"
+            cat /tmp/nexo-d1-cache.log 2>/dev/null || true
+
+            echo "---- BASELINE ORDER EVENTS ----"
+            grep 'NEXO_ORDER ' /tmp/nexo-cache-probe.log || true
+          } | tee /tmp/nexo-cache-probe-evidence.txt
+
+      - name: Upload diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-ab105-g0-cache-probe
+          path: |
+            /tmp/nexo-cache-probe.log
+            /tmp/nexo-cache-probe-evidence.txt
+            /tmp/nexo-w1-cache.log
+            /tmp/nexo-d1-cache.log
