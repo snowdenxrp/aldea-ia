@@ -1674,3 +1674,43 @@ Do not interpret the stale read-write-lock comment as a synchronization mechanis
 
 ### Next frontier
 The source audit remains bounded at the same final frontier: any remaining uncertainty is whether some **other** production synchronization edge outside the audited authorizer/update/request paths connects W1 to the later request. If none is found, preserve UNKNOWN rather than converting source absence into a universal proof.
+
+
+## 2026-10-06 — Authorizer contract vs concrete publication guarantee
+
+### 🟢 New source reconciliation
+Apache Kafka's Authorizer contract explicitly requires all authorizer operations, including authorization and ACL updates, to be thread-safe. Its `start()` contract separately describes endpoint readiness: listeners start only after authorization metadata is available. citeturn0search1turn0search11
+
+KIP-801 further states that StandardAuthorizer is multi-threaded and continues authorizing requests while ACL record changes are being applied, while requiring ACL records to be applied in metadata-log order. citeturn0search6
+
+### 🔴 Critical interpretation
+Neither the thread-safety contract nor the ordering requirement identifies a specific Java Memory Model synchronizes-with edge for each incremental ACL replacement.
+
+Therefore:
+- “thread-safe” is a correctness contract, not proof of a particular volatile/lock/queue/future edge;
+- metadata-log ordering is an ordering requirement for applying ACL records, not proof that every later request thread has a happens-before edge from the applying MetadataLoader thread;
+- startup `start()` readiness remains distinct from steady-state incremental publication.
+
+This reinforces, rather than changes, the current epistemic boundary: no concrete W1→D1 JMM edge has been identified in the audited pinned execution path.
+
+### 🟡 Important consequence
+We must not turn Kafka's documented concurrency guarantee into either of these unsupported claims:
+1. “stale reads are impossible,” or
+2. “a vulnerability is proven.”
+
+The correct bounded state remains: implementation is required to be thread-safe; our audit has not yet identified the concrete publication mechanism that explains the observed post-W1 D1 visibility.
+
+### Current state
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED in Run #21 (10/10).
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not treat Authorizer thread-safety documentation or KIP-801 ordering language as a hidden synchronization primitive. Do not reopen already-closed RequestChannel/startup/AclPublisher candidates without a new executable-source discrepancy.
+
+### Next frontier
+The only remaining legitimate question is whether the pinned StandardAuthorizer implementation has an implicit publication mechanism not yet identified in the exact `StandardAuthorizerData`/cache path, or whether the documented thread-safety guarantee is satisfied by semantics that do not expose a simple W1→D1 HB edge. Continue at the concrete implementation level only.
