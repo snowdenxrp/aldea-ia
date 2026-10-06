@@ -1759,3 +1759,39 @@ Do not repeat the `StandardAuthorizerData`/AclCache primitive audit unless a new
 
 ### Next frontier
 Only an external production mechanism can still explain publication: a synchronization edge outside `StandardAuthorizerData`/AclCache, or semantics elsewhere in the execution path not yet concretely connected to W1. If no such edge is identified, preserve UNKNOWN.
+
+
+## 2026-10-06 — Indirect-publication frontier rechecked; no new W1→D1 bridge
+
+### 🟢 Reconciliation
+A repository-wide search was rechecked for the remaining indirect candidates: `AclPublisher`, `MetadataLoader`, `KafkaEventQueue`, `CompletableFuture`, `firstPublishFuture`, scheduler/executor handoffs, and `StandardAuthorizerData.aclCache`.
+
+The existing evidence remains internally consistent:
+- MetadataLoader invokes publisher callbacks synchronously on its own event-handler thread.
+- KafkaEventQueue synchronization covers metadata-event queue participants, not the independent later client/network request.
+- BrokerMetadataPublisher's `firstPublishFuture` and authorizer endpoint futures are startup/readiness mechanisms.
+- Incremental `addAcl/removeAcl` do not complete those startup futures.
+- No causal W1-derived scheduler/executor submission into request admission or authorization was identified.
+- RequestChannel publication begins only when the independent network Processor calls `sendRequest`.
+
+### 🔴 Boundary now sharpened
+The source audit has now crossed the remaining obvious indirect-candidate set without identifying a concrete W1→request-admission or W1→D1 JMM bridge.
+
+This still is **not** a universal proof that no synchronization exists anywhere in Kafka. It is a bounded result for the exact pinned execution path and candidate mechanisms inspected.
+
+### 🟡 Next action
+Stop expanding the same source-search surface. The highest-value discriminator is now event identity: one diagnostic artifact that correlates the existing real request `correlationId` from ENQUEUE/DEQUEUE/AUTH to D1's observed cache identity, without adding any synchronization or W1→request shared state. This would connect the already-proven request-path witness to the cache observation in one execution.
+
+No implementation change is made in this checkpoint.
+
+### Current state
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED in Run #21 (10/10).
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not reopen the already audited MetadataLoader/KafkaEventQueue/startup-future/scheduler candidates without a new source discrepancy. Do not add a synchronization bridge merely to make event identity easier.
