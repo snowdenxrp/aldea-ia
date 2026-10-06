@@ -1596,3 +1596,28 @@ The next source-audit target is now narrower: determine whether the client/reque
 
 ### DO-NOT-REPEAT
 Do not add synchronization between MetadataLoader and SocketServer merely for the probe. Do not treat broker-global execution order as a happens-before relation. Do not repeat cacheIdentity-only runs.
+
+
+## 2026-10-06 — narrowed causal boundary: W1 does not own the later client request
+
+### 🟢 Reconciliation
+The repository's prior causal-edge records show the later D1 request is a client/network request whose broker-side admission begins only when the SocketServer Processor receives it and calls ENQUEUE. The ACL publisher W1 does not naturally carry that request's correlationId or invoke ENQUEUE. Existing evidence explicitly warns that transferring identity from W1 to the later request through shared mutable state would alter the concurrency experiment.
+
+### 🔴 Consequence
+The phrase “W1 → ENQUEUE” must be treated as an observed temporal relation, not as an assumed production causal chain. The missing edge is not simply “some broker queue”: the request first has to exist on the client/network side and arrive at the broker Processor. The RequestChannel queue only publishes the request after the Processor calls put/sendRequest.
+
+Therefore the strongest current statement is:
+- W1(target ACL update) < ENQUEUE(D1 request) was observed in the real-broker witness.
+- No production call path from W1 to creation/submission of that later client request has been identified.
+- No JMM synchronization edge from W1 to the SocketServer Processor has been identified.
+- ENQUEUE→DEQUEUE remains a separate, real queue publication edge.
+
+### 🟡 Important experimental implication
+A new probe that merely captures more timestamps or copies W1 identity into the request would not resolve the JMM question. It would either reproduce already-known temporal ordering or introduce an artificial communication edge. The remaining uncertainty is architectural/causal: whether any legitimate shared synchronization exists between ACL metadata publication and the independent client request generation/arrival.
+
+### Current epistemic state
+W1→ENQUEUE HB = UNKNOWN / NO CONCRETE PRODUCTION EDGE IDENTIFIED.
+W1→D1 HB = UNKNOWN / NO CONCRETE PRODUCTION EDGE IDENTIFIED.
+Stale ACL read = NOT OBSERVED in Run #21 (10/10).
+Vulnerability = NOT ESTABLISHED.
+AB105.116R remains protected; AB105.117R is not to be created; TLC remains frozen.
