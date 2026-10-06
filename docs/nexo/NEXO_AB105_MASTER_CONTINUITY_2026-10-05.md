@@ -922,3 +922,44 @@ W1→D1 JMM HB = UNKNOWN / NO CONCRETE EDGE IDENTIFIED; stale ACL = NOT OBSERVED
 
 ### Do-not-repeat
 Do not claim that `data volatile` publishes later `aclCache` writes. Do not claim stale visibility without runtime evidence. Do not introduce synchronization to force publication. Do not rerun TLC.
+
+
+## 2026-10-06 — indirect synchronization frontier rechecked after Run #21
+
+### 🟢 New reconciliation result
+Run #21 does not require a new cacheIdentity experiment. The master source audit and the 37098764557 witness remain compatible:
+- Run #21 observes the exact immutable AclCache snapshot selected by D1, with target identity/correlation in 10/10 cycles.
+- The canonical real-broker witness observes W1 → ENQUEUE → DEQUEUE → AUTH_ENTER → AUTH_DECISION as temporal order.
+- These evidence families can be combined for event identity, but not promoted to JMM happens-before.
+
+### 🟢 Remaining indirect-publication candidates rechecked
+The pinned-source audit was narrowed to broker-local state that could be touched after W1 and then read by the data-plane path.
+
+1. KafkaEventQueue / MetadataLoader lock: the queue lock publishes the metadata event to the MetadataLoader event-handler execution, but the handler releases the queue lock before event.run(); the request thread does not acquire that lock during authorization. No transitive W1 → request-reader edge identified.
+2. BrokerMetadataPublisher / KRaftMetadataCache.currentImage: metadataCache.setImage(newImage) is volatile and occurs BEFORE aclPublisher.onMetadataUpdate(...), hence before W1. A later request-side read of metadata state cannot retroactively publish the later aclCache write.
+3. AclPublisher futures: only initial-load completion was identified. Incremental addAcl/removeAcl does not complete a per-update future consumed by request processing.
+4. Plugin.get()/ClusterMetadataAuthorizer wrapper: the plugin returns the same authorizer instance; no synchronized/lock/await/proxy serialization was identified on this path.
+5. SocketServer/request admission: startup futures control endpoint enablement only. No per-incremental-ACL rendezvous with Processor/request admission was identified.
+6. RequestChannel: ArrayBlockingQueue gives the real ENQUEUE → DEQUEUE publication edge, but that edge starts with Processor-side actions before enqueue; it does not publish unrelated W1 actions from the MetadataLoader thread.
+
+### 🔴 Consequence
+The previously open W1 → ? → ENQUEUE bridge is now substantially narrowed by the indirect-synchronization audit. No concrete Kafka-level cross-thread publication edge from incremental W1 to request admission has been identified in the inspected pinned path.
+
+This is still an absence-of-identified-edge result, NOT proof that a stale read must occur and NOT a vulnerability finding.
+
+### 🟡 Epistemic state
+- W1 → D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1 → ENQUEUE publication edge: NOT IDENTIFIED
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN
+- vulnerability: NOT ESTABLISHED
+- W1 → R1: UNKNOWN
+- Run #21: diagnostic evidence accepted for exact D1 snapshot identity, not JMM proof
+- TLC: NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### 🎯 Next exact action
+No production synchronization changes and no new cacheIdentity probe. The remaining empirical discriminator is the already-prepared PR #97 real-path cache probe: reconcile its artifact against the canonical 37098764557 request witness using ACL ID + cycle + correlationId + broker/sequence. If the probe cannot be executed from the available GitHub workflow surface, preserve UNKNOWN rather than manufacturing or inferring a result.
+
+### DO-NOT-REPEAT
+Do not repeat the MetadataLoader queue, startup-future, metadataCache volatile-order, Plugin.get, SocketServer admission, or RequestChannel HB searches unless a new pinned-source discrepancy appears.
