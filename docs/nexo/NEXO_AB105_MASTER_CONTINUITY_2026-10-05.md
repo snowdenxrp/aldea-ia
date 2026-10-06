@@ -564,3 +564,40 @@ State remains:
 
 ### Next action
 Do not alter the PR #97 cache-probe design to inherit the frozen harness's `clientAddress=null` defect. First inspect the PR #97 generated runtime path and determine whether it uses the real authorization context/request path or reproduces the frozen direct-authorize harness. Any correction must remain harness-only and must not add synchronization to W1/D1.
+
+
+## 2026-10-05 — PR #97 inherits the frozen G0 runtime harness defect
+
+The PR #97 workflow was inspected directly against its exact branch content and compared with the ordering-witness workflow it recovers.
+
+### 🟢 Concrete finding
+PR #97 does not contain an independent runtime harness. Its `Recover baseline G0 harness without changing it` step extracts `NexoG0OrderingWitnessTest.java` verbatim from `origin/nexo-ab105-g0-ordering-witness`, then injects only the cache diagnostics into Kafka source files.
+
+The recovered harness is therefore the same frozen G0 harness used by bootstrap #142.
+
+### 🔴 Consequence
+Bootstrap #142 already demonstrated at runtime that this frozen harness reaches `StandardAuthorizerData.authorize()` with an `AuthorizableRequestContext` whose `clientAddress()` is null and fails with the corresponding NPE.
+
+Therefore PR #97, if executed unchanged, is expected to encounter the same harness defect before it can be accepted as W1/D1 cache-probe evidence. The current cache instrumentation itself has not been implicated in this failure.
+
+### 🟢 Important separation
+The defect is in the harness/request-context construction, not in the newly injected UUID correlation or cache observation logic. No change to W1/D1 synchronization should be made to work around it.
+
+The correct next step is a harness-only correction that supplies a valid authorization request context/client address through the same real request path, followed by a fresh source audit. The correction must preserve:
+- exact Kafka pin;
+- W1/D1 diagnostic-only design;
+- no volatile/latch/barrier/Future/lock added for ordering;
+- AB105.116R unchanged;
+- AB105.117R not created;
+- TLC not rerun.
+
+### Epistemic state unchanged
+- W1→D1 JMM HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- PR #97 cache-probe evidence = NOT EXECUTED / NOT ACCEPTED
+
+### Do-not-repeat
+Do not execute PR #97 unchanged merely to reproduce the already-confirmed `clientAddress=null` harness failure. Do not treat bootstrap #142's runtime failure as ACL-cache evidence.
