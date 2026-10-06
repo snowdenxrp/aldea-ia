@@ -113,6 +113,7 @@ jobs:
                 java.nio.file.Files.writeString(
                     java.nio.file.Path.of("/tmp/nexo-d1-cache.log"),
                     "NEXO_CACHE D1 ns=" + System.nanoTime() +
+                        " correlationId=" + requestContext.correlationId() +
 
                         " thread=" + Thread.currentThread().getName() +
                         " cacheIdentity=" + System.identityHashCode(aclCacheSnapshot) +
