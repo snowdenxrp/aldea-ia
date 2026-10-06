@@ -844,3 +844,33 @@ Do not classify a run with missing/failed sink writes as clean negative evidence
 
 ### Do-not-repeat
 Do not add a shared sink, latch, volatile flag, Future, barrier, lock, or other synchronization to make W1/D1 logging more reliable. Reliability must come from post-run reconciliation, not from an artificial publication edge.
+
+
+## 2026-10-05 — Final source recheck: D1 probe is on the exact authorization snapshot path
+
+A fresh read of the pinned `StandardAuthorizerData.java` confirms the diagnostic insertion point remains exact:
+
+- `authorize()` routes the non-superuser, loaded path into `findAclRule(...)`.
+- `findAclRule()` performs exactly one local `AclCache aclCacheSnapshot = aclCache` read.
+- The same local snapshot is then passed to the first `checkSection()` and the wildcard `checkSection()`.
+- PR #97 places D1 observation immediately after that snapshot read and before either scan.
+
+Therefore, for the target G0 request, a recorded D1 `cacheIdentity`, count, membership, and target UUID describe the immutable cache object selected by that authorization operation, not a later cache read.
+
+### Important scope qualification
+The probe is not a universal probe of every authorization path:
+- superusers bypass `findAclRule()`;
+- requests before `loadingComplete` throw `AuthorizerNotReadyException` instead of entering the normal ACL scan;
+- the probe only records the specific TOPIC/WRITE action for `nexo-g0-ordering`.
+
+The G0 witness uses `plain-user1` and the real producer/request path, so these bypass cases are not the intended D1 target. Nevertheless, they are now explicitly recorded as scope boundaries rather than silently generalized away.
+
+### Result
+🟢 The exact D1 observation point is source-verified.
+🟡 This strengthens the diagnostic interpretation only.
+🔴 It still does not establish W1→D1 JMM happens-before or a vulnerability.
+
+State unchanged: W1→D1 HB UNKNOWN / NOT IDENTIFIED; stale ACL NOT OBSERVED/NOT DISPROVEN; vulnerability NOT ESTABLISHED; PR #97 cache-probe NOT EXECUTED/NOT ACCEPTED; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
+
+### Do-not-repeat
+Do not broaden the probe's result to superuser, pre-initial-load, or unrelated authorization paths. Do not rerun TLC or introduce synchronization merely to strengthen this diagnostic.
