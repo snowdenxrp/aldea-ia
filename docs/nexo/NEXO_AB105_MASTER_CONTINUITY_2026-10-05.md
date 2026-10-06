@@ -2143,3 +2143,31 @@ This exact-source recheck adds no new production bridge. It strengthens the conc
 
 ### DO-NOT-REPEAT
 Do not reopen the AclPublisher basic serialization audit unless new pinned-source evidence appears. Do not treat the thread-safe interface contract as proof of a specific JMM edge. Do not use initial-load completion as steady-state ACL publication.
+
+
+## 2026-10-06 — BrokerMetadataPublisher shared-state candidate ruled out
+
+### 🟢 Exact pinned source finding
+A targeted search for a shared production object between AclPublisher/W1 and the request path found one apparent candidate worth checking: `BrokerMetadataPublisher` owns `metadataCache`, and its `onMetadataUpdate()` calls `metadataCache.setImage(newImage)` before invoking `aclPublisher.onMetadataUpdate(delta, newImage, manifest)`.
+
+This ordering is decisive for the current hypothesis: the metadata-cache publication occurs **before** incremental ACL W1, not after it. The request path's `KafkaApis` receives the same `authorizerPlugin` separately, while authorization calls `authorizer.get().authorize(...)` directly through `AuthHelper`.
+
+### 🔴 Interpretation
+The shared `metadataCache` is therefore not a discovered W1→Processor publication bridge. Its update is upstream of W1 and does not carry the incremental `StandardAuthorizerData.aclCache` replacement performed by `addAcl/removeAcl`.
+
+This closes the specific hypothesis that BrokerMetadataPublisher's metadata-cache publication might silently publish the ACL delta into the request-serving path.
+
+### 🟡 Frontier
+The remaining target stays narrowly defined: a production operation **after or as part of W1** that publishes ACL-derived state and is then consumed/synchronized by the request-admission/authorization path before or at ENQUEUE/D1. No new code or probe is warranted.
+
+### State unchanged
+- W1→ENQUEUE JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1→D1 JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN universally.
+- vulnerability: NOT ESTABLISHED.
+- AB105.116R: PROTECTED.
+- AB105.117R: NOT_CREATED.
+- TLC: NOT_RERUN.
+
+### DO-NOT-REPEAT
+Do not reopen `BrokerMetadataPublisher.metadataCache` as the missing bridge unless a new pinned-source discrepancy shows a post-W1 publication. Do not infer HB merely because metadataCache and AclPublisher execute in the same metadata publication callback.
