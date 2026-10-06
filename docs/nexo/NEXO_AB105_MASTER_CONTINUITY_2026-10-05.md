@@ -1387,3 +1387,50 @@ Do not rely on the previous incorrect “D1 already has correlationId” stateme
 
 ### Next exact frontier
 Design the smallest source-only diagnostic change: capture the existing request correlationId at D1 and make the existing NEXO_ORDER request-path markers available in the same evidence artifact, without changing the baseline request/authorization behavior or introducing synchronization.
+
+
+## 2026-10-06 — supersession: PR #97 head vs main workflow correlationId + authoritative Run #21 reconciliation
+
+This entry supersedes the immediately preceding source note that treated the current default-branch workflow as if it were PR #97 head. The two refs are different and must not be conflated.
+
+### 🟢 Exact ref distinction
+- PR #97 head: `23c71ece22e37a788a48b0e767b121482570f6d9`. Its diagnostic source includes D1 `requestContext.correlationId()` in the D1 sink.
+- Current `main` workflow: `.github/workflows/nexo-ab105-g0-cache-probe.yml`. Its D1 sink does NOT include `requestContext.correlationId()`; it records nanoTime, thread, cacheIdentity, cacheCount, targetPresent and targetId.
+- Therefore the earlier entry saying “current PR #97 D1 sink does NOT emit correlationId” was wrong as a statement about PR #97 head: it inspected the current main workflow. That statement is now superseded. The main-vs-PR distinction is authoritative.
+
+### 🟢 Run #21 authoritative reconciliation
+Dedicated reconciliation document: `docs/nexo/NEXO_AB105_RUN21_AUTHORITATIVE_RECONCILIATION_2026-10-06.md`.
+- Run #21 = workflow run `37520308442`, artifact `11441125547`.
+- Canonical request-path witness = workflow run `37098764557`, artifact `11265332252`.
+- Both use Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`.
+- Run #21: 10 ACL cycles; W1/D1 observations present; D1 targetPresent=false/cacheCount=0 after removal; D1 cacheIdentity matches corresponding broker-0 W1 cacheIdentity in all 10 cycles when paired by ACL id/cycle/causal sequence.
+- Canonical witness: 10 cycles with real ENQUEUE, DEQUEUE, AUTH_ENTER, AUTH_DECISION and D1_RESULT markers. It establishes the observed real-broker temporal chain W1 -> ENQUEUE -> DEQUEUE -> AUTH_ENTER -> AUTH_DECISION -> D1.
+- The reconciliation reports no contradiction between the two evidence families. Together they provide strong observational coverage of the real request path plus D1 cache identity, but they still do NOT establish W1 -> ENQUEUE or W1 -> D1 formal JMM happens-before.
+
+### 🔴 Evidence-family boundary that remains mandatory
+Do not claim that Run #21 D1 and the canonical witness D1 are the same request event merely because both are 10/10 or temporally similar. The reconciliation combines their scoped evidence; it does not manufacture event identity or JMM HB.
+
+### 🟡 Current epistemic state
+- Real broker request path: VERIFIED.
+- W1 -> ENQUEUE temporal ordering: OBSERVED.
+- ENQUEUE -> DEQUEUE queue publication boundary: VERIFIED by concurrent queue semantics.
+- DEQUEUE -> AUTH_ENTER -> AUTH_DECISION -> D1: OBSERVED/VERIFIED in canonical witness.
+- W1 -> ENQUEUE formal HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- W1 -> D1 formal JMM HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED.
+- stale ACL read: NOT OBSERVED (Run #21 10/10).
+- D1 cacheIdentity=W1 cacheIdentity: OBSERVED 10/10 in Run #21.
+- vulnerability: NOT ESTABLISHED.
+- TLC: NOT_RERUN.
+- AB105.116R: PROTECTED / unchanged.
+- AB105.117R: NOT_CREATED.
+
+### 🎯 Next exact frontier
+No new cacheIdentity probe is justified. No synchronization may be added to manufacture HB. The remaining source question is narrowly whether an existing production synchronization/publication edge connects the ACL publisher/MetadataLoader W1 to the client/request submission that later reaches RequestChannel ENQUEUE. Search that concrete boundary only. If no such production edge is found, preserve UNKNOWN.
+
+### DO-NOT-REPEAT
+- Do not rerun the cacheIdentity-only probe merely to repeat Run #21.
+- Do not rerun TLC.
+- Do not create AB105.117R.
+- Do not add volatile/synchronized/latch/barrier/Future/lock/semaphore/shared mutable correlation state.
+- Do not conflate PR #97 head with main workflow source.
+- Do not delete the superseded historical notes; retain them as provenance, but use this entry as the current reconciliation.
