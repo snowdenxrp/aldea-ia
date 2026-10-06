@@ -507,3 +507,19 @@ W1 and D1 each perform `Files.writeString(... APPEND ...)` to separate files. Th
 No runtime result was obtained in this step. PR #97 remains NOT EXECUTED. The source audit is now clean enough to permit execution as a diagnostic, but execution itself must remain a separate evidence step.
 
 Canonical state unchanged: W1→D1 HB UNKNOWN; W1→ENQUEUE edge NOT IDENTIFIED; stale read NOT OBSERVED/NOT DISPROVEN; vulnerability NOT ESTABLISHED; W1→R1 UNKNOWN; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
+
+
+## 2026-10-05 — Execution gate status checked
+
+Checked GitHub Actions runs associated with PR #97 head `3a70ac734f621e38f9d3d15f87380358ed27d4f2`.
+
+### 🟢 What exists
+A `NEXO AB105 G0 Kafka Bootstrap` run `37392816999` is currently in progress. Its current job is still compiling Kafka test infrastructure; the actual G0 runtime harness step has not started yet.
+
+### 🔴 What does NOT exist yet
+This run is the bootstrap workflow, not evidence from the PR #97 `nexo-ab105-g0-cache-probe` diagnostic. Therefore there is still **no PR #97 cache-probe runtime result** to interpret. The previous statement that PR #97 was NOT EXECUTED remains correct.
+
+### Important non-conflation rule
+The bootstrap run must not be treated as W1/D1 cache evidence. Its successful/failed status, if later available, only establishes bootstrap/harness state unless its artifacts explicitly contain the cache-probe instrumentation and corresponding W1/D1 evidence.
+
+State unchanged: W1→D1 HB UNKNOWN / NOT IDENTIFIED; W1→ENQUEUE edge NOT IDENTIFIED; stale ACL read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED; W1→R1 UNKNOWN; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
