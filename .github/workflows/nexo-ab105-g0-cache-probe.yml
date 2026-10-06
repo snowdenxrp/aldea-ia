@@ -142,6 +142,7 @@ jobs:
               "                java.nio.file.Files.writeString(\n"
               "                    java.nio.file.Path.of(\"/tmp/nexo-d1-cache.log\"),\n"
               "                    \"NEXO_CACHE D1 ns=\" + System.nanoTime() +\n"
+              "                        " thread=" + Thread.currentThread().getName() +\n"
               "                        \" thread=\" + Thread.currentThread().getName() +\n"
               "                        \" cacheIdentity=\" + System.identityHashCode(aclCacheSnapshot) +\n"
               "                        \" cacheCount=\" + aclCacheSnapshot.count() +\n"
