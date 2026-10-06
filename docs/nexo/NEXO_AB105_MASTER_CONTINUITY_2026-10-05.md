@@ -523,3 +523,44 @@ This run is the bootstrap workflow, not evidence from the PR #97 `nexo-ab105-g0-
 The bootstrap run must not be treated as W1/D1 cache evidence. Its successful/failed status, if later available, only establishes bootstrap/harness state unless its artifacts explicitly contain the cache-probe instrumentation and corresponding W1/D1 evidence.
 
 State unchanged: W1→D1 HB UNKNOWN / NOT IDENTIFIED; W1→ENQUEUE edge NOT IDENTIFIED; stale ACL read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED; W1→R1 UNKNOWN; TLC NOT_RERUN; AB105.116R protected; AB105.117R not created.
+
+
+## 2026-10-05 — Bootstrap #142 reached real runtime but failed on frozen-harness defects
+
+GitHub Actions run `37396197766` (run #142), job `112052624129`, based on correction commit `1c950f53d7fd8342b7b8477833319976756828f9`, completed with failure.
+
+### 🟢 What was actually achieved
+- Kafka test infrastructure compiled successfully.
+- Temporary `NexoG0RuntimeTest` was generated successfully.
+- The frozen G0 runtime harness compiled successfully.
+- The real broker/test execution step actually started and ran.
+
+This run is stronger than the previous two bootstrap attempts: the failure is no longer a compile/checkstyle-only failure.
+
+### 🔴 Runtime failure — still not W1/D1 cache-probe evidence
+The frozen harness failed inside `StandardAuthorizerData.authorize()` because its `AuthorizableRequestContext.clientAddress()` returned `null`: `NullPointerException: Cannot invoke "java.net.InetAddress.getHostAddress()" because the return value of "org.apache.kafka.server.authorizer.AuthorizableRequestContext.clientAddress()" is null`.
+
+The stack is: `StandardAuthorizerData.authorize → StandardAuthorizer.authorize → NexoG0RuntimeTest$TargetAuthorizer.authorize → frozenA1D0D1D2E`.
+
+This confirms the previously identified harness defect in actual runtime, not a Kafka/JMM finding.
+
+### 🔴 Secondary runtime symptom
+The producer repeatedly received `TOPIC_AUTHORIZATION_FAILED` for `nexo-g0-runtime`. Because the frozen harness failed through the null `clientAddress()` path, this symptom cannot be promoted into evidence about the ACL-cache ordering question.
+
+### Epistemic interpretation
+This bootstrap run does **not** produce W1→D1 JMM HB evidence, stale-cache evidence, W1/D1 UUID-correlated evidence, or vulnerability evidence.
+
+The frozen G0 harness remains a separate bootstrap artifact and must not be conflated with PR #97.
+
+State remains:
+- W1→D1 HB = UNKNOWN / NOT IDENTIFIED
+- W1→ENQUEUE publication edge = NOT IDENTIFIED
+- stale ACL read = NOT OBSERVED / NOT DISPROVEN
+- vulnerability = NOT ESTABLISHED
+- W1→R1 = UNKNOWN
+- TLC = NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### Next action
+Do not alter the PR #97 cache-probe design to inherit the frozen harness's `clientAddress=null` defect. First inspect the PR #97 generated runtime path and determine whether it uses the real authorization context/request path or reproduces the frozen direct-authorize harness. Any correction must remain harness-only and must not add synchronization to W1/D1.
