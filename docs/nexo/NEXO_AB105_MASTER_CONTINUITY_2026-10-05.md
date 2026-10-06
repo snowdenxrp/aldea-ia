@@ -264,3 +264,36 @@ Do not treat RequestChannel/ArrayBlockingQueue ordering as a W1→D1 bridge. The
 
 ### Next frontier
 The remaining source audit is narrowed further: inspect only any concrete code that could make an incremental ACL update directly trigger, gate, or synchronize with the Processor/request admission path. If none exists, preserve UNKNOWN and use the isolated PR #97 cache-snapshot diagnostic as the empirical discriminator, without calling timing evidence a JMM proof.
+
+
+## 2026-10-05 — AclPublisher concurrent-read contract and exact cache publication gap
+
+Exact pinned Kafka source at 99b940733a9f6bc409457dba7108f08421d81e42 was re-read at the concrete implementation level.
+
+### 🟢 AclPublisher explicitly acknowledges concurrent authorization
+AclPublisher.onMetadataUpdate() contains an explicit invariant: ACL changes are applied while the Authorizer continues returning authorization results in other threads. Incremental deltas are applied by iterating the LinkedHashMap changes in performed order and calling addAcl/removeAcl sequentially.
+
+This confirms the intended ordering constraint is within the publisher/update sequence. It does not itself provide a cross-thread publication edge to request authorization.
+
+### 🔴 Exact steady-state cache write/read remains a plain-reference boundary
+StandardAuthorizerData is explicitly documented as not thread-safe. Its aclCache field is a plain reference. Incremental addAcl and removeAcl replace that field with the result of persistent-cache operations.
+
+D1 authorization does:
+- volatile read of outer StandardAuthorizer.data;
+- then reads that selected StandardAuthorizerData's plain aclCache inside findAclRule().
+
+Incremental addAcl/removeAcl do not replace the outer volatile data reference. Therefore the already-identified outer volatile read is not a per-delta publication bridge for the inner aclCache write.
+
+### ⚠️ Source-comment discrepancy recorded, not interpreted as a fix
+StandardAuthorizer's data field comment describes a read-write lock protecting ACL data, but the inspected pinned implementation contains no such lock around incremental addAcl/removeAcl. StandardAuthorizerData itself says it is not thread-safe. This discrepancy is recorded as source evidence; it is not treated as proof of a bug beyond the already-known JMM gap.
+
+### Epistemic state
+- W1 → D1 JMM HB: UNKNOWN / NOT IDENTIFIED
+- W1 → ENQUEUE publication edge: NOT IDENTIFIED
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN
+- vulnerability: NOT ESTABLISHED
+- W1 → R1: UNKNOWN
+- TLC: NOT_RERUN
+
+### Next frontier
+Do not broaden the search generically. Inspect only concrete paths where an incremental ACL update could directly trigger, gate, or synchronize Processor/request admission. If no such path exists, the source audit has reached its remaining boundary and PR #97 can be independently audited as an empirical discriminator only; its timing/cache observations must not be promoted to JMM proof.
