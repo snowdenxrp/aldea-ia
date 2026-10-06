@@ -1107,3 +1107,37 @@ The remaining discriminator is empirical reconciliation of the already-prepared 
 
 ### DO-NOT-REPEAT
 Do not repeat the authorization-side lock/future/offset/concurrent-collection search. Do not rerun TLC. Do not create AB105.117R. Do not introduce synchronization into the witness.
+
+
+## 2026-10-06 — exact pinned source recheck: no hidden Plugin publication bridge
+
+A targeted recheck was performed at the exact Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, limited to the remaining question of whether the authorizer wrapper/object publication could reconnect W1 to the request path.
+
+### 🟢 Confirmed
+- `AclPublisher` holds an `Optional<Plugin<Authorizer>>` and invokes the same `ClusterMetadataAuthorizer` instance for incremental `addAcl/removeAcl`.
+- `Plugin.instance` is a `private final` field and `Plugin.get()` simply returns that field; there is no volatile field, synchronized accessor, lock, await, or per-update callback in this wrapper.
+- The final-field publication of the already-constructed Plugin/authorizer object is an initialization/publication concern, not a publication mechanism for later mutations of `StandardAuthorizerData.aclCache`.
+- Exact pinned `StandardAuthorizer` still has `volatile StandardAuthorizerData data`, but incremental `addAcl/removeAcl` call directly into the existing data object and do not assign `data` afterward.
+- Exact pinned `StandardAuthorizerData` explicitly states that the class is not thread-safe, while its `aclCache` field is plain and incremental updates replace that field with a new immutable snapshot.
+- The pinned `StandardAuthorizer` source comment still describes a read-write lock, but no such lock exists in the inspected implementation. This remains a documented source/comment discrepancy, not proof by itself of a vulnerability.
+
+### 🔴 Boundary closed
+No hidden publication bridge was found in the Plugin/authorizer wrapper layer that turns the later W1 plain write into a request-thread-visible write.
+
+This further narrows the source frontier but does not establish stale visibility or a JMM violation.
+
+### Epistemic state unchanged
+- W1 → ENQUEUE HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- W1 → D1 HB: UNKNOWN / NO CONCRETE EDGE IDENTIFIED
+- stale ACL read: NOT OBSERVED / NOT DISPROVEN
+- vulnerability: NOT ESTABLISHED
+- PR #97 cache-probe: NOT EXECUTED / NOT ACCEPTED
+- TLC: NOT_RERUN
+- AB105.116R protected
+- AB105.117R not created
+
+### DO-NOT-REPEAT
+Do not repeat the Plugin wrapper/final-field publication search unless a new exact-pinned source discrepancy appears. Do not reinterpret final-field initialization as publication of later `aclCache` mutations. Do not introduce synchronization or rerun TLC.
+
+### Next frontier
+The production-source audit is now effectively closed for the inspected G0 path. The only remaining discriminator is the already-prepared PR #97 diagnostic execution/reconciliation. If that workflow cannot execute, preserve the bounded UNKNOWN.
