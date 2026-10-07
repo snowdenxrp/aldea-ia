@@ -2934,3 +2934,36 @@ DO-NOT-REPEAT:
 - P0–P14 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding and prepared-persistence audits are closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P15 — world-state persistence has revision integrity, not operation receipt/incarnation
+
+🟢 Audited the concrete persistState() → world-state.json → loadState() → applyState() path and the restart persistence test.
+
+persistState() serializes version, stateRevision, savedAt, day/hour, world, agents, events and nexoMemory. simulation.nexoMemory therefore carries the retained effectJournal, missions, attempts, executions and doNotRepeat records when the state is checkpointed.
+
+🟢 The file boundary has real protections: sibling lock, optional expectedRevision check, temporary-file write, atomic rename, and restart reconstruction. Tests cover successful prepared-journal retention, restart preservation, stale revision conflict, concurrent writer conflict, write failure, rename failure, and stale lock recovery.
+
+🟢 These protections establish a durable state-file revision/write boundary for cooperating state writers. stateRevision answers whether the loaded state is the expected state version for the file writer.
+
+🔵 They do not establish a durable effect-operation identity or target/resource incarnation. No persisted field in the current world-state envelope is an executable OperationID, semantic effect identity, target incarnation, authority epoch, fence token, capability class, request fingerprint, or target-side receipt.
+
+🔵 nexoEffectRevision is absent from the serialized payload. simulation-adapter.js maintains it only in memory and persistState() does not include it. After restart, the adapter's local revision is recreated rather than recovered as a durable monotonic target/resource incarnation.
+
+🔵 The persisted effectJournal remains mission-scoped (missionId:stepId / idempotencyKey) and bounded by the existing 200-entry normalization/adapter retention. Persistence therefore preserves the carrier that exists; it does not add an independent semantic operation registry.
+
+🔵 The restart test proves that a prepared journal entry survives a normal checkpoint/restart and remains prepared. It does not prove that the world mutation and prepared record share one linearization point, nor that the target can answer whether the physical effect committed.
+
+🔴 Exact boundary: handler mutation → later persistState() checkpoint is separate from durable operation identity → target acceptance/commit receipt.
+
+A successful temp-file rename means the state file was replaced consistently; it does not prove an already-running effect was atomically coupled to that replacement.
+
+No implementation patch. No external duplicate effect claimed. No exactly-once claim.
+
+Exact recovery point: POST-AB105.116R implementation audit → P15 → world-state persistence closes as revision/file-integrity boundary, not durable operation receipt/incarnation boundary.
+
+Next independent investigation: inspect whether any concrete target/action consequence in src/actions.js or the Lúmina world model itself carries a durable, action-specific receipt/state marker that could independently reconcile an old effect after mission identity is lost. This is target-state evidence, not another persistence-hook audit.
+
+DO-NOT-REPEAT:
+- P0–P15 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence and world-state persistence audits are closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
