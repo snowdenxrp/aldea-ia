@@ -2347,3 +2347,37 @@ Exact recovery point: AB105.109R → reconciliation-window closure → absence i
 Next exact frontier: AB105.110R → late completion/callback after reconciliation closure: determine how delayed external evidence is handled without rewriting historical claims.
 
 DO-NOT-REPEAT: AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.110R late completion/callback after reconciliation closure: preserve history, surface contradiction
+
+🟢 A late external callback or authoritative operation record can arrive after a local reconciliation window was considered closed. The system must not silently delete or rewrite the earlier claim.
+
+Required distinction:
+- a local closure/timeout/cleanup is not authoritative closure;
+- a provider-authoritative closure may justify REJECTED only within its explicit contract;
+- later evidence that contradicts that claim is an integrity/conflict event requiring provenance review.
+
+🟢 If the late evidence is authoritative and proves the exact operation/effect committed, the historical record must preserve both:
+1. the earlier claim and why it was made;
+2. the later authoritative evidence;
+then transition the current epistemic state to COMMITTED/CONFLICT according to the contradiction protocol.
+
+🟢 If the earlier REJECTED claim was provider-authoritative and explicitly guaranteed impossible later commitment, a purported late success is not silently accepted. It indicates provider-contract violation, stale/wrong-domain evidence, resource-incarnation mismatch, or compromised provenance; quarantine is required until reconciled.
+
+🟢 If the earlier closure was only local/non-authoritative, late authoritative COMMITTED evidence may legitimately resolve the prior UNKNOWN without contradiction to the provider contract; the local claim was simply insufficiently strong.
+
+🟢 A late callback must be bound to exact operation identity, fingerprint, target/resource incarnation, and provider authority. A callback merely carrying a familiar operation_id is insufficient.
+
+🟢 Late evidence must never be used to retroactively label a prior retry as safe or prove that an earlier attempt did not commit. Historical attempts and claims remain immutable provenance.
+
+🟢 If a replacement operation was already executed after an unsafe local closure and the original later commits, both effects are historical facts. The system must surface duplicate/conflict exposure and cannot pretend the second operation was a retry of a proven non-commit.
+
+🔵 This establishes an important distinction between epistemic finality and contractual finality: local confidence can be overturned by stronger evidence; an explicit provider guarantee being contradicted is an integrity incident, not normal reconciliation.
+
+🔴 No current Nexo/Lúmina executable immutable claim ledger, late-callback reconciliation protocol, or provider-contract violation quarantine exists.
+
+Exact recovery point: AB105.110R → late completion/callback after reconciliation closure → preserve prior claim, attach late evidence, and escalate contradictions instead of rewriting history.
+
+Next exact frontier: AB105.111R → immutable claim/evidence lineage: define the minimum event history required to reconstruct why each commitment state was asserted and later changed.
+
+DO-NOT-REPEAT: AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
