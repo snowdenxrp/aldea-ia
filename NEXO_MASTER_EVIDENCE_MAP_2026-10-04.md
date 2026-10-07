@@ -3586,3 +3586,22 @@ Classification: **deterministic CI exact-SHA traceability = UNKNOWN / absent rep
 Next mission P46: inspect workflow architecture for any other indirect certificate/consumption mechanism (job outputs, artifacts, comments, badges, status files, or downstream workflow dependency). If none exists, close the CI-linkage branch and move to the next independent recovery invariant.
 
 DO-NOT-REPEAT: P0–P45 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P46 — indirect CI certificate/consumption sweep
+
+🟢 Searched the repository for indirect mechanisms that could bind `nexo-deterministic-tests.yml` results to state admission: `GITHUB_RUN_ID`, `github.event.workflow_run`, `repository_dispatch`, job-output patterns, status/badge references, and references to the deterministic workflow from other workflow files.
+
+🟢 `nexo-deterministic-tests.yml` is not referenced by another workflow as a dependency/consumer; no `workflow_run` consumer or downstream gate was found. No `GITHUB_RUN_ID`/workflow-run output persistence was found. No repository badge or status file was found that turns its result into an authoritative state certificate.
+
+🟢 `actions/upload-artifact` exists in other NEXO diagnostic workflows, but not in `nexo-deterministic-tests.yml`; therefore those artifacts do not establish certification of the Lúmina state commits under audit.
+
+🔵 GitHub's external commit/status/branch-protection layer may still contain information not represented in repository files or exposed by the connector. That remains outside this repository-side sweep.
+
+🔴 Result: no indirect in-repository CI certificate/consumption mechanism found. Exact CI-to-state admission remains UNKNOWN, not disproven and not a CI failure claim.
+
+Classification: **CI linkage branch CLOSED at repository level; external GitHub status/protection linkage remains UNKNOWN**.
+
+Next mission P47: move to the next independent recovery invariant from P35/P38 — determine whether any persisted state field, Git history rule, or workflow step identifies an authoritative last-known-good snapshot *at the moment of recovery*, rather than merely recording ordinary state revisions. Research only; no patch.
+
+DO-NOT-REPEAT: P0–P46 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
