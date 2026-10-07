@@ -1555,3 +1555,43 @@ Exact recovery point: **AB105.087R → claim-transition audit → outcome promot
 Next exact frontier: audit retry/reconciliation identity across provider retention expiry, resource reincarnation, and payload changes.
 
 DO-NOT-REPEAT: AB105.086R outcome coverage; AB105.085R carrier; AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.088R retry/reconciliation identity audit: identity alone is insufficient without retention and incarnation scope
+
+🟢 Audited the identity contract against the four open ambiguity cases from AB105.087R.
+
+The minimum correlation tuple remains:
+operation_id + effect_id + attempt_id + payload/effect_fingerprint + resource_id + resource_incarnation.
+
+But operation identity is not globally safe by itself. Reconciliation safety additionally requires:
+- provider operation-record retention/lookup horizon;
+- exact scope in which operation_id is unique;
+- resource incarnation binding;
+- fingerprint compatibility;
+- authority/fence context where acceptance depends on currentness;
+- provider semantics for expired/unknown historical operation records.
+
+🟢 Resource reincarnation:
+A matching operation_id against a different resource_incarnation cannot resolve to the old effect. It must be treated as RESOURCE_REPLACED or QUARANTINE according to authoritative target semantics.
+
+🟢 Payload mutation:
+Same operation identity with a different effect fingerprint is a collision, not a new retry. It must not be interpreted as DUPLICATE_COMMITTED or safely retried under the old identity.
+
+🟢 Provider retention expiry:
+If the provider can no longer authoritatively distinguish an old operation after its retention horizon, absence from the lookup is not proof of REJECTED/non-commit. The state remains UNKNOWN unless another authoritative observation closes the boundary.
+
+🟢 Retry:
+A retry is safe only when the provider's idempotency/duplicate semantics cover the exact identity, fingerprint, target incarnation and retention interval needed for the ambiguity window. Otherwise the coordinator must not silently upgrade the retry to exactly-once or non-duplicate semantics.
+
+🟢 Attempt identity:
+attempt_id distinguishes execution attempts but does not itself create a new logical operation. Multiple attempts for one operation must remain correlated to the same operation/effect identity when provider semantics require duplicate suppression.
+
+🔵 Authority/fence fields are not universally part of the provider's lookup key; they remain binding evidence when the effect's commitment depends on them. Therefore the reconciliation key is provider/effect-specific, not one universal string.
+
+🔴 No current Nexo/Lúmina adapter establishes durable provider-side identity, retention guarantees, resource-incarnation enforcement, or authoritative historical lookup. This is a contract finding, not an implementation claim.
+
+Exact recovery point: **AB105.088R → retry/reconciliation identity audit → identity must be bound to retention horizon, resource incarnation, fingerprint, and provider lookup semantics; absence after expiry cannot prove non-commit.**
+
+Next exact frontier: audit **operation-record retention/expiry and reuse risk**—when an operation identity can safely be reused, when it must remain permanently reserved, and how restore/clone/failover can create identity aliasing.
+
+DO-NOT-REPEAT: AB105.087R claim transitions; AB105.086R outcome coverage; AB105.085R carrier; AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation already audited at adapter level; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
