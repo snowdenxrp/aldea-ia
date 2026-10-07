@@ -1325,3 +1325,41 @@ Exact recovery point: **AB105.083R → capability admission matrix → claims bo
 Next exact frontier: audit whether the existing Nexo effect contract has a place to carry this capability class and the admission evidence without silently changing runtime behavior; repository inspection only, no implementation.
 
 DO-NOT-REPEAT: AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.084R effect-contract carrier audit: capability evidence is not carried by the executable request
+
+🟢 Repository inspection completed across the executable effect path and the recovered capability-vector contracts.
+
+Current executable request fields in `executeNexoStep()` are effectively:
+`missionId, stepId, action, target, idempotencyKey, context, precondition, postcondition`.
+
+The adapter carries these into the handler and journal, but there is no explicit executable field for:
+- capability_class / admission class;
+- capability assessment evidence;
+- provider capability version/scope;
+- authority epoch/context;
+- resource incarnation;
+- target fence;
+- payload/effect fingerprint;
+- transaction/commit-domain identity.
+
+🟢 The existing design documents already distinguish these concepts. AB104.531 explicitly says the Effect Adapter should expose a claim-specific capability vector, and that admission should degrade to RESTRICT/RECONCILE/QUARANTINE when required capability is absent or UNKNOWN. The executable adapter does not currently encode that contract.
+
+🟢 This is a **contract-carrier gap**, not yet an implementation defect requiring immediate patching: current runtime never claimed STRONG_COMMIT, and adding fields without defining their authoritative source would risk creating decorative metadata rather than enforceable safety.
+
+🔵 Important separation:
+1. `effectResult.verified` is evidence about the observed result/postcondition.
+2. `capability_class` is a statement about what the target/provider contract permits Nexo to claim.
+3. authority/fence fields are execution-currentness inputs.
+4. operation/effect identity binds the exact attempted effect.
+These must not collapse into one generic `verified` flag.
+
+🔵 Existing `context` could technically carry arbitrary metadata, but that does **not** establish a typed contract, provenance, scope, or enforcement. Therefore it is not counted as an existing capability carrier.
+
+🔴 No executable path was found that enforces admission based on STRONG_COMMIT/FENCED_IDEMPOTENT/RECONCILIATION_ONLY/UNSAFE-UNSUPPORTED. Current Lúmina remains local/in-memory and cannot be promoted by merely attaching a capability label.
+
+Exact recovery point: **AB105.084R → effect-contract carrier audit → capability/admission evidence not yet an authoritative executable field.**
+
+Next exact frontier: define the minimum *semantic carrier contract* for capability/admission (fields, provenance, scope, freshness, and authority), without implementing it or choosing a provider.
+
+DO-NOT-REPEAT: AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
