@@ -118,3 +118,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Posterior AB104.152+ research was checked only as retrospective cross-check; no missing AB104.185 primary artifact was backfilled.
 - Main result: fixed object-only version is insufficient; protected transition footprint must include admission reads, handler reads/writes, predicate/range/aggregate dependencies, derived provenance and relevant versions/incarnations with conditional validation.
 - Exact next: complete the full admission chain perception -> options -> scoring -> selection -> execution, separating authoritative final-gate dependencies from observational inputs.
+
+
+## P112 posterior AB evidence reconciliation
+- `P112_POSTERIOR_AB_EVIDENCE_RECONCILIATION_2026-10-07.md`
+- Commit `1475fc1e8025217ab92d87edbd0ec81f561d896a`.
+- Later AB104.180-.184 directly corroborate the current protected-transition/version-set direction.
+- AB104.600-.602 add strong provenance-loss classes: derived/helper leakage, cache races/invalidation, speculative reads, external observations, crash/retry provenance loss, and final-gate staleness.
+- No historical AB104.185 backfill; later artifacts remain retrospective cross-checks.
+- Exact next: continue admission-chain trace and adversarially test each Lúmina envelope against AB104.602 provenance-loss classes.
