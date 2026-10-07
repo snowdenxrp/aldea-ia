@@ -3820,3 +3820,21 @@ DO-NOT-REPEAT: P0–P58 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 **P60:** perform a final adversarial gap scan of the P34–P59 recovery/CI/retry chain, checking whether any previously established evidence was overclaimed or whether an unresolved proposition still needs one targeted read. No patch. Do not rerun TLC. Do not create AB105.117R.
 
 DO-NOT-REPEAT: P0–P59 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P60 — adversarial gap scan: trigger/concurrency interaction is real; prior provenance claims remain bounded
+
+🟢 Re-read the P34–P59 chain against the current `scripts/simulate.mjs`, `scripts/assistants.mjs`, and `.github/workflows/lumina-simulation.yml`. The core claims remain correctly bounded: fallback-blind recovery is confirmed; cross-file memory/world persistence is non-atomic; retry skips assistants/tests; CI is post-commit/advisory; no authoritative last-known-good marker exists; and no historical retry execution was proven.
+
+🟢 **New overlooked workflow interaction:** `lumina-simulation.yml` triggers on every `push` to `main` unless the pushed commit message contains `Actualizar estado`. Therefore NEXO CONTINUITY commits (whose messages do not contain that phrase) can themselves start a Lúmina simulation run. The same workflow uses `concurrency.group: lumina-simulation` with `cancel-in-progress: true`. Consequently a non-state repository commit can cancel an in-flight Lúmina simulation and replace it with a new run that resets to `origin/main` before validation.
+
+🔵 This interaction explains why state commits and CONTINUITY commits can be interleaved in the observed Git history, but it does **not** prove that any particular observed state commit was caused by cancellation/restart or by the retry branch. No live cancellation incident was established.
+
+🟢 The workflow's push guard does prevent a normal `Actualizar estado de Lúmina` state commit from recursively launching another Lúmina simulation run. The guard therefore blocks direct self-recursion, but not simulation triggered by unrelated repository pushes.
+
+🔴 **P60 RESULT:** One genuine workflow-level gap was found: **UNRELATED_PUSH_CAN_CANCEL_AND_REPLACE_LUMINA_RUN = CONFIRMED CODE PATH**. It is a scheduling/continuity interaction, not evidence of a retry execution and not a proven data-loss/security incident. Existing P34–P59 classifications remain valid; no prior claim is promoted beyond its evidence.
+
+## Exact next mission
+**P61:** determine whether the confirmed `cancel-in-progress` interaction can produce a specific persistence anomaly (e.g. partial cross-file commit, skipped validation, or state based on a moving `origin/main`) using only source/workflow reasoning and existing Git history. Research only; no patch. Do not rerun TLC. Do not create AB105.117R.
+
+DO-NOT-REPEAT: P0–P60 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
