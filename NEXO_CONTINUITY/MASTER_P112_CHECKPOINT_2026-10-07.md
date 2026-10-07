@@ -167,3 +167,16 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - No demonstrated generic agent revision, relationship revision, resource revision, economy aggregate revision, collective-project revision, spatial predicate/range token, or random-selection evidence binding.
 - Conclusion: do not invent a global revision merely to make the matrix pass; token validity depends on complete mutation coverage or explicit dependency revalidation.
 - Exact next: audit mutation ownership/bypasses for resource, agent inventory/needs, relationship, economy aggregate, and spatial/range domains.
+
+
+## P112 representative action trace — 2026-10-07
+- `P112_RESOURCE_TRADE_COOPERATE_TRACE_2026-10-07.md`
+- Commit: `b8b8f052ff67c9bbf9cbb49aca88b0c23c9fa367`.
+- Resource, trade and cooperate were traced end-to-end from admission inputs through handler mutation and shared invalidators.
+- Resource: single resource token is insufficient because agent/tool/skill/spatial/ecosystem/random dependencies can invalidate the claim.
+- Trade: participant-only revisions are insufficient because daily economy pricing reads the inventories of all alive agents; relationship and inventory writers also bypass the trade handler.
+- Cooperate: project token alone is insufficient because eligibility/completion spans participants, inventories, relationships, structures/home and spatial predicates.
+- Cross-class conclusion: direct WriteSet validation misses authoritative admission dependencies; token ownership must sit at the authoritative mutation boundary and cover every invalidating writer.
+- 🔵 Exact token ownership/update discipline and composite-token vs broader protected-footprint optimization remain OPEN.
+- Exact next: adversarial stale-admission/write-skew cases for resource/trade/cooperate, then compare composite tokens vs protected-footprint serialization vs conditional snapshot/commit with stale rejection.
+- Search for AB104.18 / AB104_18 still returned no indexed later primary artifacts; no historical backfill made.
