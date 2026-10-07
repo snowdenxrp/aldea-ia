@@ -2203,3 +2203,36 @@ Exact recovery point: AB105.105R → split-brain/dual-authority effect acceptanc
 Next exact frontier: AB105.106R → fence enforcement boundary: distinguish fence issuance, presentation, validation, and actual target rejection of stale effects.
 
 DO-NOT-REPEAT: AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.106R fence enforcement boundary: issued/presented/validated/rejected are distinct claims
+
+🟢 A fence becomes a safety boundary only when the target enforces it at the actual effect-acceptance point.
+
+Required distinctions:
+- FENCE_ISSUED: authority generated a fence/epoch/token.
+- FENCE_PRESENTED: operation carried a fence value.
+- FENCE_VALIDATED: target checked the presented value at some point.
+- FENCE_ACCEPTED: target accepted the effect under that fence at its commitment boundary.
+- STALE_EFFECT_REJECTED: target authoritatively guarantees the effect was not accepted because its fence was stale.
+
+🟢 Issuance does not prove delivery, presentation does not prove validation, and validation before a later mutation does not prove the fence remained current until acceptance.
+
+🟢 A local pre-check such as “current fence == presented fence” is not sufficient when authority can advance concurrently.
+
+🟢 Strong fencing requires the target to compare the presented fence against the target-authoritative current fence/version at the same boundary that accepts the effect, or to provide an equivalent atomic protocol.
+
+🟢 A fence rejection is evidence of non-acceptance only when the target contract guarantees the stale request could not have crossed the commit boundary.
+
+🟢 A fence value may be monotonically ordered yet still be unsafe if the target does not enforce it, if resource incarnation is missing, or if restore/failover can resurrect an older accepted fence.
+
+🟢 “Fence issued” and “revocation issued” remain coordinator/authority facts until the target enforces the new boundary. This directly preserves the earlier STOP distinction: ISSUED ≠ ENFORCED.
+
+🔵 Fence freshness and capability freshness remain separate. A currently valid fence does not prove the provider has the capability needed for the claimed commitment, and capability admission does not authorize a stale fence.
+
+🔴 No current Nexo/Lúmina executable external target demonstrates an authoritative fence comparison atomically coupled to effect acceptance.
+
+Exact recovery point: AB105.106R → fence enforcement boundary → only target-enforced comparison at the acceptance boundary can turn a fence into a commitment-safety property.
+
+Next exact frontier: AB105.107R → concurrent fence advancement versus effect acceptance: audit the race where revocation/new epoch and target commit occur simultaneously.
+
+DO-NOT-REPEAT: AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
