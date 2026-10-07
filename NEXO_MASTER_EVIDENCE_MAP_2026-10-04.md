@@ -1126,3 +1126,22 @@ The historical contract requires the final effect gate to validate revocation ge
 **Exact next investigation:** inspect every executable target/effect adapter and persistence path for an actual atomic coupling between target mutation and operation receipt/registry. If none exists, close this branch as SEMANTIC_BOUNDARY_RECOVERED / RUNTIME_ATOMIC_TARGET_REGISTRY_NOT_ESTABLISHED and move on rather than inventing a store.
 
 **DO-NOT-REPEAT:** AB104.227/228/229 design semantics, local missionId:stepId idempotency, runtime commit lock, generic fencing, S9, Kafka/JMM/G0, TLC, AB105.117R.
+
+
+## 2026-10-07 — AB105.078R target-path sweep: local journal is not atomic target registry
+
+🟢 **Executable path inspected:** `src/nexo/effect-adapter.js` records `prepared` in an in-memory `executionJournal`, optionally calls `persistPreparedIntent`, invokes the handler, then locally `persist()`s the result. A handler exception returns `EFFECT_OUTCOME_UNKNOWN` without persisting a terminal result, correctly preserving ambiguity rather than falsely declaring non-execution.
+
+🟢 **Concurrency control classified:** the adapter's `sharedInFlight` and `sharedQueue` prevent duplicate concurrent execution only within the same in-memory journal/process. They are not a durable target registry and do not atomically couple external/resource mutation to receipt registration.
+
+🟢 **Lúmina target path cross-check:** the repository's current Lúmina effect handlers directly mutate `simulation.agents/world` and increment `nexoEffectRevision`; the later runtime memory commit and world-state persistence are separate operations. Existing research already records that `nexoEffectRevision` is in-memory and not a durable external fence.
+
+🔵 **Critical boundary:** no executable path was recovered that atomically performs: (1) current authority/fence/resource-version acceptance, (2) target/resource mutation, and (3) durable operation receipt/registry commit. Therefore a crash between target mutation and local recording can remain externally ambiguous and cannot be resolved by the local `missionId:stepId` key alone.
+
+🟢 **Useful safety behavior already present:** prepared entries block blind retry and require reconciliation; an unverified reconciliation cannot become completed. This is a good local UNKNOWN/STOP control, but it is not proof that the target mutation and registry are atomic.
+
+**Status:** semantic registry contract = 🟢 RECOVERED; local idempotency/reconciliation controls = 🟢 OBSERVED; target-side atomic effect+receipt registry = 🔵 NOT ESTABLISHED; crash-after-target-before-receipt = 🔵 UNKNOWN unless target-authoritative evidence exists.
+
+**Exact next investigation:** inspect the concrete persistence implementation behind `persistState` / world-state storage and every `persistPreparedIntent` caller, looking only for an atomic transaction/journal boundary that includes both the target mutation and operation identity/receipt. If absent, close this runtime branch as an implementation gap.
+
+**DO-NOT-REPEAT:** AB104.227/228/229 design semantics; local `missionId:stepId` idempotency; `runtimeCommitLocks`; generic fencing; S9; Kafka/JMM/G0; TLC; AB105.117R.
