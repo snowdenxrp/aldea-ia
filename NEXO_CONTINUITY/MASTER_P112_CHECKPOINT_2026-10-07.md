@@ -269,3 +269,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - First viable design candidates are an explicit protected-transition executor or complete conditional snapshot/commit, but neither is implemented or proven.
 - Post-effect memory/learning/discovery/events should remain outside the physical critical footprint unless they are authoritative inputs to the same claim.
 - Exact next: audit durable commit/crash cuts and classify each point as COMMITTED, NOT_COMMITTED, or UNKNOWN without inferring outcome from exceptions.
+
+
+## P112 durable commit / crash-cut audit V1 — 2026-10-07
+- Saved `P112_DURABLE_COMMIT_CRASH_CUT_AUDIT_V1_2026-10-07.md`, commit `11f74ff7ca786db6ef1be4ba9f97fce9edba5234`.
+- Reconciled current final-boundary research with primary AB104.142–151 evidence.
+- Crash cuts classified: before prepared checkpoint = NOT_COMMITTED/blocked; durable prepared before handler = PREPARED if ordering is evidenced; mutation before durable outcome = UNKNOWN; handler return without durable outcome = UNKNOWN; durable outcome = COMMITTED; uncertain persistence crash = UNKNOWN until storage evidence/reconciliation.
+- Exception/catch cannot prove effect absence. Retry requires known absence or a valid idempotency/reconciliation contract.
+- Local durable transition still does not imply exactly-once external effect; provider capability/fencing/idempotency remains separate.
+- Exact next: trace the smallest local transaction candidate and identify which crash cuts it actually closes.
