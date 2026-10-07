@@ -3908,3 +3908,22 @@ DO-NOT-REPEAT: P0–P60 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 
 ## Exact next mission
 P65: audit whether the deterministic post-push workflow can be canceled/replaced before completion and whether any branch-protection/required-check mechanism makes its success authoritative before another Lúmina mutation. No patch; no TLC; no AB105.117R.
+
+## 2026-10-07 — P65 — deterministic CI authority / cancellation / required-check audit
+
+🟢 The repository-side deterministic workflow has its own concurrency group nexo-deterministic-tests with cancel-in-progress=true. Therefore a newer push to main can cancel an in-flight deterministic test run and replace it with a newer run. This is a confirmed workflow code path, not an observed incident.
+
+🟢 The Lúmina mutation workflow uses a different concurrency group (lumina-simulation) and does not declare a dependency on the deterministic workflow (workflow_run, downstream gate, or equivalent). Therefore Lúmina can start independently while deterministic CI for an earlier state commit is still running; there is no cross-workflow serialization in the repository workflows reviewed.
+
+🟢 The deterministic workflow is post-push CI, not an admission gate in its own file: it runs npm test after the commit already exists on main. No repository-side step consumes its conclusion before the next Lúmina mutation, and no durable validation marker is written back to the state files.
+
+🔵 Branch-protection authority could in principle change the effective admission behavior, so it was checked rather than inferred. The GitHub integration returned 403 Resource not accessible by integration for the main branch protection endpoint; this is an access limitation, not evidence that protection exists or does not exist. The repository's rulesets endpoint returned an empty list ([]). This supports no visible repository ruleset, but does not prove that classic branch protection is absent because the branch-protection endpoint was inaccessible.
+
+🔴 No evidence was recovered that a required check named for Nexo deterministic persistence tests is currently configured and enforced before the Lúmina workflow actor can mutate main. Therefore the claim that deterministic CI is an authoritative pre-next-mutation gate remains UNKNOWN, not YES and not NO.
+
+🔵 cancel-in-progress=true also means that even if a particular deterministic run is headed toward success, a later push can replace that run before completion. Without an external required-check gate or a workflow dependency consuming the successful conclusion, repository source alone provides no guarantee that every state commit waits for a completed deterministic result before another mutation.
+
+P65 RESULT: DETERMINISTIC_CI_CAN_BE_CANCELLED_AND_REPLACED = CONFIRMED CODE PATH; LUMINA_WAITS_FOR_DETERMINISTIC_CI = NO; CROSS_WORKFLOW_SERIALIZATION = ABSENT; CLASSIC_BRANCH_PROTECTION_READ = INACCESSIBLE (403); VISIBLE_RULESETS = EMPTY; REQUIRED_CHECK_AUTHORITY = UNKNOWN; AUTHORITATIVE_PRE_NEXT_MUTATION_GATE = NOT ESTABLISHED.
+
+## Exact next mission
+P66: inspect whether any current repository-side mechanism (workflow triggers, commit/status conventions, branch/ref behavior, or persisted state metadata) can establish an authoritative per-state-commit validation lineage despite P65's missing/unknown required-check evidence. Reuse P41–P65; do not repeat closed searches. Research only; no patch; no TLC; no AB105.117R.
