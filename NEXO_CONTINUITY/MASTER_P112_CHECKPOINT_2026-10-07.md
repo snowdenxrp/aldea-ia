@@ -230,3 +230,14 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Spatial/range state is also written after `performDecision()` in the same tick.
 - Result: final protection cannot be reduced to executeAction() alone; exact smallest shared-writer exclusion set remains OPEN. This is not a proof that the entire simulation must serialize.
 - Exact next: build the intersection graph of representative classes × shared writers × invalidated dependencies, then compare the minimum exclusion set against a broader protected transition.
+
+
+## P112 shared-writer intersection graph V1 — 2026-10-07
+- Saved `P112_SHARED_WRITER_INTERSECTION_GRAPH_V1_2026-10-07.md`, commit `87a7eeb39d79aad09492da4a7e4f096ddb956a9f`.
+- Resource: token must cover shared resource writers plus agent/spatial/ecosystem/random dependencies; agent-only revision is insufficient.
+- Trade: participant-only token is insufficient because `advanceEconomyDay()` recomputes dynamic price from inventories of all alive agents.
+- Cooperate: requires participant + relationship + project + resource + spatial/alive dependencies; project contribution can change project status/structures and other writers can invalidate admission predicates.
+- `tick()` and `performDecision()` are coordinators across multiple mutation domains, not demonstrated minimal token owners.
+- Result: global `stateRevision` remains an unjustified shortcut; composite tokens are viable only with complete authoritative writer coverage. Otherwise broader protected footprint or conditional snapshot/commit with complete dependency closure is required.
+- Status GREEN concrete intersections; BLUE exact token ownership/order remains OPEN.
+- Exact next: trace subordinate writers of the shared writers and identify whether each candidate token has a single authoritative mutation boundary.
