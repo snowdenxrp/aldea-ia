@@ -1693,3 +1693,37 @@ Exact recovery point: **AB105.091R → multi-source recovery reconciliation → 
 Next exact frontier: audit **reconciliation finality**—when enough evidence exists to leave UNKNOWN permanently, when a conflict must remain QUARANTINED, and whether later evidence can reopen a previously resolved outcome.
 
 DO-NOT-REPEAT: AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.092R reconciliation finality: resolution requires a closure witness; quarantine is monotonic until authoritative correction
+
+🟢 Finality is now separated from mere resolution.
+
+An outcome may leave UNKNOWN only when a closure witness satisfies the exact claim being made:
+- COMMITTED requires authoritative commitment evidence bound to exact operation/effect identity, fingerprint, target incarnation and commit domain.
+- REJECTED requires authoritative non-acceptance semantics for the exact attempt/effect boundary.
+- DUPLICATE_COMMITTED requires authoritative existing-record evidence with compatible identity/fingerprint.
+- STALE_FENCE / RESOURCE_REPLACED require authoritative target semantics establishing the relevant rejection boundary.
+- PARTIAL requires authoritative participant-level outcomes showing mixed commitment, or an explicit aggregate protocol that defines the partial state.
+
+🟢 Absence of evidence is not a closure witness. Expired lookup, missing local journal, missing receipt, timeout, failover, or stale resource observation cannot permanently resolve UNKNOWN.
+
+🟢 Quarantine is monotonic with respect to unsafe commitment claims: once contradictory evidence prevents a safe claim, the coordinator must not silently downgrade the conflict to REJECTED or silently upgrade it to COMMITTED.
+
+🟢 Later authoritative evidence may resolve UNKNOWN/QUARANTINED, but that is not an arbitrary “reopen.” It is a new evidence event that creates a new claim transition from the still-open epistemic state.
+
+🟢 A previously resolved COMMITTED/REJECTED result must not be casually rewritten. If later evidence contradicts it, preserve the original provenance and create a conflict/integrity state requiring reconciliation. Historical claims remain immutable records; current world state is a separate claim.
+
+🟢 Finality therefore has two dimensions:
+1. epistemic finality — enough authoritative evidence exists to make the claim;
+2. operational finality — no further retry/reconciliation action is permitted under the effect contract.
+They are not automatically identical.
+
+🔵 The exact point at which UNKNOWN becomes operationally final depends on provider retention, asynchronous completion windows, cancellation guarantees, and recovery protocol. No universal timeout can establish finality.
+
+🔴 No current Nexo/Lúmina runtime implements a durable finality/quarantine ledger or immutable claim history. This remains a semantic contract.
+
+Exact recovery point: **AB105.092R → reconciliation finality → UNKNOWN closes only with a claim-specific authoritative closure witness; quarantine is not silently resolved by absence, and later contradiction becomes a new conflict record.**
+
+Next exact frontier: audit **compensation/cancellation after UNKNOWN**—whether a compensating action can itself create a second ambiguity and how the original operation and compensation must remain causally linked without falsely proving either outcome.
+
+DO-NOT-REPEAT: AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
