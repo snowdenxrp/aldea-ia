@@ -3802,3 +3802,21 @@ DO-NOT-REPEAT: P0–P57 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 P59: inspect the commit-tree/file-blob relationship for state commits to determine whether any persisted blob-level invariant can distinguish a simulation-only retry from an assistant-generated primary run. Research only; no patch. Do not rerun TLC and do not create AB105.117R.
 
 DO-NOT-REPEAT: P0–P58 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P59 — Blob/tree relationship confirms a classifier, not authoritative execution provenance
+
+🟢 Recent real state commits have distinct Git blob SHAs for both persisted files. For example, `53421122...` has world-state blob `78b78bcf...` and assistant-memory blob `8dc55b1f...`; `89cd66a9...` has `c98297f...` and `fd11ebe...`; `bba09eca...` has `42ebab63...` and `0feb4de1...`. The tree therefore records exact file content identity per commit.
+
+🟢 The normal primary-path commits sampled show both blobs changing together: `.lumina-assistant-memory.json` receives a new run while `world-state.json` advances and carries the corresponding assistant-generated Nexo mission fingerprint established in P54.
+
+🔵 A retry-shaped commit would be observable at blob level if it reached main: `world-state.json` would receive a new blob while `.lumina-assistant-memory.json` remained byte-identical to its parent blob. This is stronger and more mechanical than inspecting only filenames, but it is still a retrospective classifier.
+
+🔴 The blob/tree model contains no semantic field saying “this commit came from retry.” Git stores content identity, not the workflow branch that produced the content. Another writer or future workflow could create the same blob pattern. Therefore blob-level evidence cannot become authoritative execution provenance by itself.
+
+🔴 P59 RESULT: **BLOB_LEVEL_RETRY_SHAPE = DETECTABLE; AUTHORITATIVE_RETRY_PROVENANCE = ABSENT.** No historical retry witness was found in the reviewed post-memory history. This closes the currently available Git-content avenues without patching the application.
+
+## Exact next mission
+**P60:** perform a final adversarial gap scan of the P34–P59 recovery/CI/retry chain, checking whether any previously established evidence was overclaimed or whether an unresolved proposition still needs one targeted read. No patch. Do not rerun TLC. Do not create AB105.117R.
+
+DO-NOT-REPEAT: P0–P59 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
