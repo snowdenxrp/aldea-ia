@@ -127,3 +127,14 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - AB104.600-.602 add strong provenance-loss classes: derived/helper leakage, cache races/invalidation, speculative reads, external observations, crash/retry provenance loss, and final-gate staleness.
 - No historical AB104.185 backfill; later artifacts remain retrospective cross-checks.
 - Exact next: continue admission-chain trace and adversarially test each Lúmina envelope against AB104.602 provenance-loss classes.
+
+
+## P112 admission-chain + provenance audit — 2026-10-07
+- `P112_ADMISSION_CHAIN_PROVENANCE_AUDIT_2026-10-07.md`
+- Commit: `3436ad264f5a7671aaf6f0ce11d7d4490098ea05`
+- Full chain traced: perception -> options -> decision context -> scoring -> randomized selection -> execution boundary.
+- Admission footprint confirmed wider than executeAction WriteSet; multi-stage derived dependencies, predicate/aggregate inputs, hidden mutation-capable normalization/context paths, and random selection are claim-relevant where they influence the protected outcome.
+- AB104.602 cross-check: A1 and A8 concretely relevant; A2/A3/A5/A6/A7 remain open where no corresponding current Lúmina mechanism was evidenced.
+- Final-gate DependencySet is claim-specific: include every observation that influenced eligibility/target/score/branch/protected precondition plus transitive authoritative inputs, not every merely observed value.
+- Complete provenance propagation and final-gate conditional validation remain OPEN.
+- Exact next: trace selected action into performDecision()/executeAction() and locate the future protected final-gate revalidation boundary, including hidden writes and recovery/reconciliation state.
