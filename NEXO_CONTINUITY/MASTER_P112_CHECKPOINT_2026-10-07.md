@@ -251,3 +251,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Concrete bypasses: `getOrCreateRelationship()` can mutate while observing; spatial/biome helpers can materialize state; `discoverArea()` mutates spatial/discovery state; `advanceSocietyDay()` is a broad cross-domain writer; `tick()` writes spatial state after decision/effect processing.
 - Result: composite tokens remain candidate representations, not proven minimal protection. Defensible choices are explicit authoritative mutation boundaries, claim-specific protected footprint, or complete dependency-capture + conditional commit/stale rejection.
 - Exact next: audit the admission→commit temporal window and classify each writer as block, invalidate-by-version, or reconcile; separately isolate post-commit learning/event writes.
+
+
+## P112 admission→commit temporal window audit V1 — 2026-10-07
+- Saved `P112_ADMISSION_COMMIT_TEMPORAL_WINDOW_AUDIT_V1_2026-10-07.md`, commit `3d62373380a1d9732cf826ef6017713e0bd18a9f`.
+- Current temporal window has broad invalidators: world/society day transitions, tick-level needs/perception/knownResources/selection updates, relationship materialization, spatial/exploration materialization, randomness, and daily technology/research/specialization/institution/governance writers.
+- Day/shared writers must be blocked/excluded or cause final revalidation; they cannot be treated as invisible concurrent state.
+- Hidden mutations during observation must occur before capture or be modeled as mutation/dependency events.
+- Post-effect learning/memory/discovery/events are separated from the physical atomic footprint unless they become authoritative inputs to later claims.
+- Defensible protocol shape: capture claim-specific provenance → protected admission → prevent/detect invalidation → complete final revalidation → commit or stale/UNKNOWN/reconcile.
+- Exact next: identify the first common final-commit boundary covering admission context + dependency validation + local protected mutation + durable history/state, while excluding non-authoritative post-effect writes from unnecessary serialization.
