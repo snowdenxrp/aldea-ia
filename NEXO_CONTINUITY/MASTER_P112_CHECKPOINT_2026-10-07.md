@@ -158,3 +158,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Conclusion: smallest protected unit must include Admission ReadSet + transitive dependency closure + handler ReadSet + predicate/range/aggregate dependencies + protected WriteSet + concurrent shared writers.
 - Repository search for AB104.186+ / AB104_18 returned no indexed results; no posterior claim or historical backfill made.
 - Exact next: overlap matrix for representative action classes and determine which conflicts need object/subsystem version, predicate/range token, or broader transaction footprint.
+
+
+## P112 existing version-token audit — 2026-10-07
+- `P112_EXISTING_VERSION_TOKEN_AUDIT_2026-10-07.md`
+- Commit `0f78649b7c91a1fb03b3cfd887afce0f5761feef`.
+- Existing spatial version-like fields found, but no demonstrated uniform increment/conditional-commit discipline.
+- No demonstrated generic agent revision, relationship revision, resource revision, economy aggregate revision, collective-project revision, spatial predicate/range token, or random-selection evidence binding.
+- Conclusion: do not invent a global revision merely to make the matrix pass; token validity depends on complete mutation coverage or explicit dependency revalidation.
+- Exact next: audit mutation ownership/bypasses for resource, agent inventory/needs, relationship, economy aggregate, and spatial/range domains.
