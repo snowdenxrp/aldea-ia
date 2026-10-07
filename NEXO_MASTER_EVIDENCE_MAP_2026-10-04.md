@@ -3070,3 +3070,28 @@ DO-NOT-REPEAT:
 - P0–P18 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence, world-state persistence, action-consequence, target-acceptance and reconciliation-hook audits are closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P19 — Lúmina observable state cannot uniquely reconcile an exact prior effect
+
+🟢 Audited the concrete Lúmina reconciliation surface: `runtime.js`, `simulation-adapter.js`, `actions.js`, and `economy.js`. There is no Lúmina-specific `reconcile` implementation for `execute_lumina_action`.
+
+🟢 Current Lúmina postconditions are ordinary local-state predicates. They validate that an expected observable consequence exists after execution (for example energy/thirst/activity, inventory/resource presence, shelter success, or generic `success:true`). They are useful post-execution checks, but they do not identify one exact historical operation.
+
+🔴 The observable predicates are non-unique across repeated executions. Examples: `rest` only checks an energy-recovered result and current activity; `drink` checks thirst/activity; gathering checks inventory/resource presence; `build_shelter` accepts the effect/result success; trade and several production/institution actions accept generic success. None binds the observation to an independent operation identity, request fingerprint, attempt generation, or target-side receipt.
+
+🔴 Lúmina world history does not repair this identity gap. Trade history records day, seller, buyer, type, amount, unit price and total; cooperation/history and agent markers similarly describe consequences but do not contain the Nexo idempotency key or an independent operation identity. A later equivalent action can therefore produce an indistinguishable or overlapping observable state/history.
+
+🔵 Some actions are even intrinsically non-deterministic or state-dependent (`catch_fish` uses a random success path; resource/inventory quantities change with intervening activity). A current-state predicate cannot prove whether the ambiguous earlier invocation committed, whether a later invocation caused the observed state, or whether both did.
+
+🔵 The adapter's `stateVersion`/`nexoEffectRevision` also cannot solve this: it is a coarse local counter, is not persisted as an operation receipt, and does not map a revision to a specific Nexo operation. The runtime's postcondition is evaluated after the handler and is not a historical target-side receipt.
+
+🔴 Therefore, for the current Lúmina carrier, reconciliation of an ambiguous `PREPARED` effect cannot be implemented soundly from existing observable state alone. Without an independent operation identity/receipt (or an equivalently authoritative deterministic effect record), the correct outcome remains `UNKNOWN`, not `NOT_APPLIED` merely because the current state lacks an obvious marker.
+
+🟢 This also sharpens the prior boundary: the generic adapter correctly demands reconciliation before retry, but the current Lúmina world lacks the evidence required to produce a trustworthy `NOT_APPLIED` or `COMMITTED` answer for the exact prior operation.
+
+Scope: current Lúmina executable carrier only. No external duplicate effect is claimed and no implementation patch was made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P19 → Lúmina reconciliation surface audited; existing postconditions/history are consequence evidence, not exact operation receipts.
+
+Next independent investigation: audit whether the **action request itself** has enough stable parameters to construct a deterministic operation fingerprint (action + target + all effect-relevant parameters), or whether some actions depend on hidden mutable/random inputs that make even a future fingerprint insufficient without target-side operation registration.
+
+DO-NOT-REPEAT: P0–P19 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
