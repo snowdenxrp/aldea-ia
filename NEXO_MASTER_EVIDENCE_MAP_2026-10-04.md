@@ -3183,3 +3183,23 @@ Exact recovery point: POST-AB105.116R implementation audit → P23 → report-to
 Next independent investigation: inspect the report-generation boundary actually feeding `scripts/assistants.mjs` (assistant squad/report builders) and determine whether its findings are generated in this repository or arrive as already-formed report objects. If no producer exists, document the missing contract as an explicit trust boundary rather than inventing one.
 
 DO-NOT-REPEAT: P0–P23 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P24 — current AssistantSquad does not produce LUMINA_ACTION
+
+🟢 Audited `src/assistants/squad.js` and the `scripts/assistants.mjs` integration. The six specialist producers currently are VisualAgent, ExplorerAgent, BehaviorAgent, RoutineAgent, EcosystemAgent and SocietyAgent; AuditAgent only aggregates specialist findings. Their current finding codes are visual/scene/exploration/behavior/routine/resource/social diagnostics. None constructs a `LUMINA_ACTION` finding or an `action` payload.
+
+🟢 `scripts/assistants.mjs` passes `[...squadReport.reports, debuggerReport, testerReport, analystReport]` into `buildNexoMission()`. Therefore the current in-repo AssistantSquad path does not supply the action intent consumed by the Lúmina execution path. The known `LUMINA_ACTION` objects remain test fixtures in the current carrier.
+
+🔵 This resolves the immediate P24 question without inventing a producer: there is no current executable report-generation contract for Lúmina action intents in the audited squad. Consequently, action-intent completeness/canonicalization is an unimplemented boundary in the current carrier, not a demonstrated bug in an existing producer.
+
+🔴 Important consequence: the earlier P21 coarse deduplication finding remains a valid property of `buildNexoMission()`, but its practical production impact cannot be established from the current AssistantSquad alone because no current specialist emits `LUMINA_ACTION`. It remains a conditional planner behavior when such findings are supplied.
+
+🔵 The debugger/tester/analyst reports were not yet treated as producers of `LUMINA_ACTION`; they are the next boundary to inspect because they are explicitly merged into the same report array. Do not assume they create action intents without code evidence.
+
+No patch. No external duplicate effect claimed. No exactly-once claim.
+
+Exact recovery point: POST-AB105.116R implementation audit → P24 → current AssistantSquad producer census closed.
+
+Next independent investigation: inspect `runDebugger`, `runTester`, `analyzeLumina` and their report builders for any action-intent construction before `buildNexoMission()`.
+
+DO-NOT-REPEAT: P0–P24 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
