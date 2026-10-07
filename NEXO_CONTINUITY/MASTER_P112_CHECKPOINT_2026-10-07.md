@@ -35,3 +35,57 @@ Continue auditing actual Lúmina code for:
 
 ## DO-NOT-REPEAT
 No implementation. No TLC rerun. No semantic freeze. No backfill of missing primary AB104 artifacts. No exactly-once/JMM-HB claims.
+
+## P112 additive continuation — 2026-10-07
+
+### Helper/derived/predicate audit
+Confirmed concrete cross-domain dependencies:
+- economy inventory aggregation and price state;
+- production/development eligibility predicates plus technology/land reads;
+- research specialization/knowledge/skills/ecosystem/economy reads;
+- institution/governance thresholds from cooperation, trades, population, shelters, commons, membership, relationships and hunger.
+
+A helper-return value is not a dependency boundary. Its authoritative inputs remain dependencies.
+
+### Action/decision audit
+The decision/admission footprint is larger than the final executeAction() mutation footprint.
+Confirmed reads include:
+- perception and visible agents;
+- inventories and money of participants;
+- economy price state;
+- hunger/needs;
+- relationships/trust/cooperation/tension;
+- knowledge/memory/confidence;
+- institutions/commons;
+- territory/spatial state;
+- technology/skills/tools;
+- plans/priorities;
+- resources and exploration state.
+
+Therefore WriteSet-only validation is rejected.
+
+### Current protected-transition candidate
+Decision/admission reads
++ handler reads
++ helper/derived reads
++ dependency-producing context
++ complete WriteSet
++ predicate/range/aggregate dependencies
++ relevant version/incarnation/policy context
+→ conditional validation
+→ commit.
+
+### Current status
+🟢 Writer overlap confirmed.
+🟢 Hidden/derived/predicate dependencies confirmed.
+🟢 Decision-layer dependencies beyond executeAction confirmed.
+🟢 WriteSet-only validation rejected.
+🔵 Complete dependency capture OPEN.
+🔵 Exact minimal practical granularity OPEN.
+🔵 Conservative action-class envelope OPEN.
+
+### Exact next
+Audit perceiveWorld(), evaluateOptions()/createDecisionContext(), getTerritorialContext(), collective/cooperation helpers, and branch-dependent/random/external observations. Map authoritative reads, derived reads, predicates/aggregates, writes and provenance; compare against direct Nexo handlers and recovery/reconciliation paths.
+
+### DO-NOT-REPEAT
+No VersionSet implementation yet. No new executor/caller. No TLC rerun. No historical AB104.185 backfill. Do not treat stateRevision as a mutation fence or filesystem lock as exactly-once external-effect protection.
