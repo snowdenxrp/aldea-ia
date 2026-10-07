@@ -3042,3 +3042,31 @@ DO-NOT-REPEAT:
 - P0–P17 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence, world-state persistence, action-consequence and target-acceptance audits are closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P18 — reconciliation is a generic hook; no production authoritative reconciler found
+
+🟢 Audited every executable `reconcile` occurrence in the current repository carrier. The only concrete caller supplied to `createEffectAdapter().execute()` is the Nexo effect-adapter test suite; no `reconcile` callback was found in `src/` or `scripts/`.
+
+🟢 The adapter itself is deliberately conservative: when a `prepared` entry exists and no reconciler is supplied, it returns `EFFECT_RECONCILIATION_REQUIRED` and does not invoke the handler. A reconciler may return a terminal status, but `completed` is accepted only when `verified:true`. Invalid/unverified results remain blocked and the prepared entry is retained.
+
+🟢 The tests exercise three important states: (1) no reconciler → blocked/handler not called; (2) a synthetic `completed + verified:true` provider-query/effect-reconciled result → accepted; (3) blocked or unverified reconciliation → ambiguity remains prepared and a later stronger reconciliation can resolve it.
+
+🔵 The acceptance contract is therefore structurally sound as a local gate, but the current production carrier has no implementation of the evidence source behind that gate. The `reconcile` callback is injected capability, not an authoritative target registry.
+
+🔵 In the test, the `verified:true` evidence is synthetic. The adapter checks the shape/trust assertion (`verified===true`), but does not independently authenticate that the evidence came from a target-side receipt, OperationID lookup, provider query, immutable receipt log, or equivalent authoritative source.
+
+🔵 The reconciler receives only the prepared journal context currently exposed by the adapter (`journalEntry`, missionId, stepId, action, target, context). It is not automatically given the missing AB105.082R dimensions such as independent operation identity, attempt/retry generation, authority epoch, resource incarnation/fence, expected version, request fingerprint or capability class.
+
+🔵 Therefore the current carrier can enforce **“do not retry without a reconciler”**, but it cannot by itself enforce **“retry only after authoritative proof of NOT_APPLIED”**. A caller could technically inject a reconciler that returns `completed/verified:true` without an independently authoritative target-side proof; the adapter would accept its claim.
+
+🔵 No production reconciler was found for the current Lúmina path. Thus there is currently no executable implementation proving `COMMITTED`, `NOT_COMMITTED`, or `UNKNOWN` from authoritative target evidence after an ambiguous effect. The research/design documents define that contract, but those documents are not executable enforcement.
+
+🔴 Scope boundary: this is a current executable-carrier finding. It does not invalidate the conservative adapter gate itself, and it does not claim that an external effect was duplicated. No patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P18 → reconciliation caller/evidence audit closed; current production carrier has no authoritative reconciler, only a generic injected reconciliation hook plus tests.
+
+Next independent investigation: audit the **Lúmina-specific reconciliation surface** that would have to exist for `execute_lumina_action`: determine whether current world state/history can be queried through a single deterministic predicate that identifies the exact intended effect, or whether the missing operation identity makes such reconciliation fundamentally non-unique. Do not reopen P16/P17 or generic adapter reconciliation mechanics.
+
+DO-NOT-REPEAT:
+- P0–P18 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence, world-state persistence, action-consequence, target-acceptance and reconciliation-hook audits are closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
