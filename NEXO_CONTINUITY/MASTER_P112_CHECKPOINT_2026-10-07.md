@@ -190,3 +190,11 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Compared three candidate strategies: composite dependency tokens, serialization over the intersecting protected footprint, and conditional snapshot/commit with stale rejection.
 - 🔵 Exact minimal boundary and token ownership remain OPEN.
 - Exact next: construct writer→token coverage for the three classes and identify uncovered mutators; uncovered mutators define the minimum broader protected footprint.
+
+## P112 writer→token coverage matrix cross-check — 2026-10-07
+- Existing artifact: `P112_WRITER_TOKEN_COVERAGE_MATRIX_V1_2026-10-07.md`
+- Existing commit: `57abed4c62150ba3e71f247197e84f2c23d3e043`; read-back artifact SHA: `6077361dd06f8e5724ef17571a76a538d0210d12`.
+- No duplicate artifact was created.
+- Matrix confirms Resource, Agent inventory/needs, Relationship, Economy aggregate/price, Collective project, Structures/land, Knowledge/discovery, Memory, Technology/culture/specialization and Institutions/commons are C (no demonstrated complete token); Spatial/range is B (partial token only).
+- Therefore no current token set can honestly be promoted to a complete semantic fence for the three representative classes.
+- Exact next remains: trace narrowest authoritative mutation boundary for each C domain and determine whether one token can cover all invalidators; otherwise use dependency token class or broader protected footprint.
