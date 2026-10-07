@@ -2683,3 +2683,25 @@ Exact recovery point: POST-AB105.116R implementation audit → P4 → replan/new
 Next investigation: inspect all replan callers and failure/UNKNOWN mappings to determine whether an UNKNOWN handler exception can reach the same replan path and become a fresh mission.
 
 DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; P0–P4 are implementation enforcement audits.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P5 — UNKNOWN exception is locally blocked, not auto-replanned
+
+🟢 Traced the exact handler-exception path.
+
+In `effect-adapter.js`, a handler exception returns `EFFECT_OUTCOME_UNKNOWN` with `status:"blocked"` and leaves the PREPARED journal entry unresolved. It does not persist a terminal result.
+
+🟢 In `runtime.js`, adapter status `blocked` maps to mission outcome `blocked`, so the normal runtime path does NOT automatically convert `EFFECT_OUTCOME_UNKNOWN` into `failed → needs_replan`.
+
+🟢 Therefore the feared direct path “handler UNKNOWN → automatic replan → new mission” is NOT present in the current runtime.
+
+🔵 P4 remains valid as a conditional architectural gap: an externally supplied/manual replan can create a new missionId/idempotency domain, but the normal UNKNOWN exception path first blocks and preserves the unresolved local PREPARED record.
+
+🔴 The remaining exposure is still P0/P1/P2: if that PREPARED record is later evicted/truncated, the local adapter loses the reconciliation gate; a separately created replan can then be a fresh execution unless an authoritative reconciliation boundary exists.
+
+No patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P5 → UNKNOWN exception is conservatively blocked; no automatic replan.
+
+Next investigation: determine whether any other caller can invoke `buildNexoMission()`/replan after a blocked UNKNOWN, or whether only explicit external orchestration can create that new mission.
+
+DO-NOT-REPEAT: P4's direct automatic-UNKNOWN-to-replan hypothesis is closed as NOT PRESENT; retain P4 only as the manual/external replan architectural gap.
