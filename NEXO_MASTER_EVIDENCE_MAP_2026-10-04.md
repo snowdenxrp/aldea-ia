@@ -3770,3 +3770,19 @@ Exact next mission: P56 — search the real state-commit history for any commit 
 P57: inspect the boundary between the workflow's rebase failure and the retry commit more directly: determine whether any available GitHub workflow/run metadata can identify a rebase-retry execution for a historical 'Actualizar estado de Lúmina' commit. Research only; no patch. Do not rerun TLC and do not create AB105.117R.
 
 DO-NOT-REPEAT: P0–P56 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P57 — available workflow metadata cannot prove historical rebase-retry execution
+
+🟢 Queried the available GitHub Actions association tool for real state commits `53421122...`, `89cd66a9...`, and `6538f6d9...`; all returned `runs: []`. The connector explicitly exposes only pull-request-triggered workflow associations, while Lúmina simulation is push/schedule/workflow_dispatch driven. Therefore empty results do not prove absence of Actions runs.
+
+🟢 Inspected commit metadata for five real recent state commits (`53421122...`, `89cd66a9...`, `bba09eca...`, `ea2d5d99...`, `cc51448c...`). All are authored/committed by `lumina-simulation`, modify both `.lumina-assistant-memory.json` and `world-state.json`, and carry the generic `Actualizar estado de Lúmina` message. This is consistent with the primary path, but the author/message do not encode whether the rebase retry branch was executed before the final commit.
+
+🔵 No available read-only workflow metadata exposed a historical push-run ID, job log, or step record for these state commits. Consequently we cannot connect any specific main commit to the `Carrera detectada; reconstruyendo...` retry branch.
+
+🔴 P57 RESULT: **HISTORICAL_REBASE_RETRY_EXECUTION = UNKNOWN / UNPROVABLE WITH CURRENT CONNECTOR EVIDENCE.** No provenance upgrade. P56 remains the strongest Git-history result: no retry-shaped commit observed in the reviewed history.
+
+## Exact next mission
+**P58:** inspect whether Git graph/parent metadata exposed by available GitHub read-only endpoints can establish any stronger invariant around the state commits (without relying on unavailable push-run metadata). Research only; no patch. Do not rerun TLC and do not create AB105.117R.
+
+DO-NOT-REPEAT: P0–P57 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
