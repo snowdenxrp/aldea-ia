@@ -3280,3 +3280,23 @@ Exact recovery point: POST-AB105.116R implementation audit → P28 → CLI/outpu
 Next independent investigation: audit whether learnFromReports() intentionally excludes structural findings and whether this creates a second loss of safety-relevant diagnostic history; do not reopen P24–P28 routing/status searches.
 
 DO-NOT-REPEAT: P0–P28 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P29 — structural findings are also excluded from assistant learning memory
+
+🟢 Audited `learnFromReports()` and its caller. `scripts/assistants.mjs` passes only `[debuggerReport, testerReport, analystReport]`; `structuralReport` is not included.
+
+🟢 `learnFromReports()` derives findings, conclusions, test failures, pattern signatures, lessons, and run status exclusively from the supplied reports. Therefore `DEAD_WITH_HEALTH` and `DEAD_STATE_MISMATCH` cannot create a learned pattern, lesson, or finding count in the assistant-learning memory through the current workflow.
+
+🟢 This is independent of the P28 aggregate-status loss: P28 concerned `buildAssistantReport()`/CLI status; P29 concerns durable learning history in `.lumina-assistant-memory.json`.
+
+🟢 The exclusion is not repaired by Nexo memory. `simulation.nexoMemory` stores mission/attempt/execution/effect-journal structures, while `learnFromReports()` owns assistant-learning `runs/lessons/patterns`. Structural findings are absent from both the assistant-learning input and the Nexo mission input in the current workflow.
+
+🔵 No evidence establishes that structural findings are intentionally excluded from learning. Also, this does not prove the omission causes unsafe behavior; it proves loss of historical learning signal. A future run can regenerate the same structural condition, but the learning layer will not increment a corresponding pattern or create a lesson from it.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P29 → structural-report learning-memory audit closed.
+
+Next independent investigation: inspect whether `structuralReport` is persisted or exposed through any other durable channel outside `buildAssistantReport`, `learnFromReports`, and `buildNexoMission`; if none exists, classify the finding as an unpersisted diagnostic stream.
+
+DO-NOT-REPEAT: P0–P29 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
