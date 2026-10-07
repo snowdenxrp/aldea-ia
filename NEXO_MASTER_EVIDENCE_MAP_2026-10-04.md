@@ -4003,3 +4003,23 @@ Next: sample mid/late AB104 strata for claims that materially affect the current
 P66e RESULT: MID_ARCHIVE_MATERIAL_CLAIMS = RECOVERED; HISTORICAL_BOUNDARIES_NOT_FULLY_REPRESENTED = CONFIRMED; PROTOCOL_LAWS_ADDED = NONE.
 
 Next: late-stratum sampling around AB104.600–900, prioritizing authority/STOP/fencing, reconstruction, and canonicality boundaries that may connect directly to the current AB105 state.
+
+
+## 2026-10-07 — P66f — late-archive recovery: canonicality + authority/fencing boundaries
+
+🟢 Late-stratum sampling recovered several continuity rules and technical boundaries that are materially relevant to the current AB105 audit:
+
+- AB104.600–711 identified duplicate-number artifacts and unsaved research steps; duplicates must be preserved and classified, while missing persisted steps remain UNKNOWN/PENDING rather than being reconstructed from chat.
+- The 2026-09-27 continuity response audit explicitly downgraded chat-only AB104.731–733 claims and required direct source evidence before promotion. This is a historical example of the current evidence discipline.
+- AB104.758R/759R established a source-confirmed separation between channel/socket lifecycle and already-enqueued logical requests: transport disconnect does not itself prove operation revocation or effect cancellation.
+- AB104.759R→762R established the distinct domains of request-context authorization, current authority, transport closure, and append/effect; a point-in-time authorization decision is not automatically current authority at effect time.
+- The canonical AB104.759R master handoff records fencing research through AB104.769R–782R: resource-side enforcement is required at the protected effect boundary; authority generation, operation identity, observation/resource version, namespace, and incarnation are distinct; fencing does not retroactively erase an already committed external effect; timeout/ACK loss does not prove effect absence; outbox does not make arbitrary external effects atomic.
+- The AB104.862R handoff additionally preserves the semantic boundary that UNKNOWN is epistemic uncertainty, INCOMPARABLE does not authorize invented precedence, immutable history is not fencing or external-effect proof, and operation_id / authority_generation / resource version / freshness remain distinct domains.
+
+🔵 The current master already contains portions of these concepts through later AB105 work, but the late archive establishes their provenance and historical progression. The reconciliation value is therefore mainly lineage/provenance, not a new protocol claim.
+
+🟢 No historical duplicate was merged, no chat-only claim was promoted, and no experiment was rerun.
+
+P66f RESULT: LATE_ARCHIVE_AUTHORITY_FENCING_BOUNDARIES = RECOVERED; HISTORICAL_PROVENANCE = MATERIAL; NEW_PROTOCOL_LAW = NONE.
+
+Next bounded action: compare these recovered late-archive boundaries directly against the current AB105.111R–116R evidence map and identify only provenance/claim gaps that materially affect the open ordering audit.
