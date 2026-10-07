@@ -261,3 +261,11 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Post-effect learning/memory/discovery/events are separated from the physical atomic footprint unless they become authoritative inputs to later claims.
 - Defensible protocol shape: capture claim-specific provenance → protected admission → prevent/detect invalidation → complete final revalidation → commit or stale/UNKNOWN/reconcile.
 - Exact next: identify the first common final-commit boundary covering admission context + dependency validation + local protected mutation + durable history/state, while excluding non-authoritative post-effect writes from unnecessary serialization.
+
+
+## P112 final-commit common-boundary audit V1 — 2026-10-07
+- Saved `P112_FINAL_COMMIT_COMMON_BOUNDARY_AUDIT_V1_2026-10-07.md`, commit `f8704496184eb498d87847afebbd47d1004c61ec`.
+- `performDecision()` is too broad to be treated as a durable atomic boundary by itself; `executeAction()` is too narrow because direct mutation branches exist outside it; persistence boundary alone does not prove in-memory mutation atomicity or retroactive fencing.
+- First viable design candidates are an explicit protected-transition executor or complete conditional snapshot/commit, but neither is implemented or proven.
+- Post-effect memory/learning/discovery/events should remain outside the physical critical footprint unless they are authoritative inputs to the same claim.
+- Exact next: audit durable commit/crash cuts and classify each point as COMMITTED, NOT_COMMITTED, or UNKNOWN without inferring outcome from exceptions.
