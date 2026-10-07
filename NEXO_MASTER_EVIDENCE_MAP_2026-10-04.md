@@ -2866,3 +2866,30 @@ DO-NOT-REPEAT:
 - P0–P12 current executable retention, reconstruction, semantic-deduplication, identity-constructor, and admission-boundary audits are closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P13 — no hidden authority/fence/incarnation/fingerprint/capability enforcement at execution callers
+
+🟢 Caller audit completed for the current executable carrier.
+
+`executeNexoStep()` accepts only mission, stepId, adapter, memory, context, precondition and postcondition. It derives `idempotencyKey = missionId:stepId` and forwards `step.context ?? context` to `adapter.execute()`.
+
+`executeLuminaNexoStep()` creates the concrete Lúmina adapter and forwards the same execution boundary. Its `context` is used for the Lúmina action payload (`context.action`) and its generated postconditions verify local simulation state. Neither function constructs or validates an authority epoch, STOP binding, fence/generation, resource incarnation, operation identity, request fingerprint, or capability class.
+
+🟢 Direct executable callers found in the current tests invoke these functions with ordinary `precondition` callbacks based on local `stateVersion` and `postcondition` callbacks based on local result/simulation state. No caller supplies a hidden AB105.082R identity tuple.
+
+🟢 The concrete Lúmina handler consumes `context.action`, target and local simulation state. It does not inspect authority/fence/incarnation/fingerprint/capability metadata.
+
+🔵 `precondition` is therefore only a local executable predicate. It can check stateVersion, but its presence does not bind the request to an authority generation, target incarnation, operation identity or fingerprint. `postcondition` is verification after the handler, not an admission credential.
+
+🔵 Result: the P12 identity-collapse boundary is not bypassed by a hidden caller-side binding in the current carrier. The richer identity dimensions are absent both from the runtime admission constructor and from the inspected concrete callers/handler.
+
+🔴 No patch made. No external duplicate effect claimed.
+
+Exact recovery point: POST-AB105.116R implementation audit → P13 → caller/context audit confirms no hidden AB105.082R authority/fence/incarnation/fingerprint/capability enforcement before handler reachability.
+
+Next independent investigation: audit the `persistPreparedIntent` owner boundary and determine whether the prepared checkpoint itself binds any operation identity, authority generation, target incarnation, fingerprint or capability, or merely persists the same `missionId:stepId` record. This is distinct from the already-closed P0–P13 admission/deduplication search.
+
+DO-NOT-REPEAT:
+- P0–P13 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, and caller-binding audits are closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
