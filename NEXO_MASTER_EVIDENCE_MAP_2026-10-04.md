@@ -1094,3 +1094,19 @@ The historical contract requires the final effect gate to validate revocation ge
 🔵 **Decisive implementation gap:** AB104.487 explicitly says the final activation must be linearizable/consensus-protected in an authoritative store, while the exact storage/consensus mechanism remains OPEN. No runtime store, consensus implementation, activation writer, or durable record implementation was recovered in the repository search. Thus the missing S9 artifact is not merely hard to locate; the research itself records the storage mechanism as unresolved.
 
 🟢 **S9 closure condition reached:** semantic activation/recovery rules, identity/binding requirements, and crash outcomes are sufficiently specified as design evidence. 🔵 What remains unestablished is executable implementation/formal verification of the authoritative activation path. Do not invent a store or issuer. The next frontier should move beyond S9 rather than repeat the same authority searches.
+
+## 2026-10-07 — AB105.078R freshness/revocation boundary: primary evidence confirms authorization is not durable by default
+
+🟢 **Fresh primary evidence:** AWS IAM states that IAM is eventually consistent: changes to users, groups, roles, policies and related attributes can take time to become visible across endpoints, and caching can add delay. AWS recommends verifying propagation before production workflows depend on the change. citeturn0search0
+
+🟢 **Revocation evidence:** AWS documents an explicit mechanism to revoke permissions for existing role sessions by attaching a deny policy keyed to session issue time. It also notes that propagation delay is accounted for with a future cutoff and that affected users must obtain new temporary credentials. This demonstrates that a previously issued/usable session does not itself establish continuing authorization after revocation. citeturn0search1
+
+🟢 **Evaluation-time evidence:** AWS enforcement evaluates applicable policies against the request context at request time; explicit deny overrides allow. Therefore authorization is a function of current request context plus the applicable policy/control set, not merely a historical identity grant. citeturn0search2turn0search7
+
+🟢 **Simulation boundary:** AWS explicitly warns that IAM policy simulator results can differ from the live environment and recommends checking against the live environment. Therefore a prior evaluated/simulated ALLOW cannot be treated as proof of a later live authorization decision. citeturn0search4
+
+🔵 **Nexo implication:** a stored authorization decision requires a freshness/applicability boundary before it can authorize a later effect. At minimum, the model must distinguish: decision-time validity, current revocation/credential state, policy/control propagation state, execution-time context, and whether the decision remains applicable. A historical ALLOW without a valid freshness basis must not silently become CURRENT_AUTHORITY.
+
+🔵 **Still open:** primary evidence establishes the need for freshness/revocation semantics, but does not by itself determine Nexo's exact freshness mechanism, bounded staleness rule, or whether an already-authorized operation may continue after revocation once execution has crossed a defined protected boundary. Those remain Nexo design questions requiring separate evidence.
+
+**Exact next investigation:** trace primary evidence for the boundary between *authorization decision* and *execution commitment*—specifically whether revocation occurring after authorization but before/at/after effect commitment invalidates the effect, and what protected point (if any) makes the decision durable for that exact operation.
