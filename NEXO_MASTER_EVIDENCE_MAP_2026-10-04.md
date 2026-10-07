@@ -297,8 +297,7 @@ Fresh source inspection finds no lock in StandardAuthorizerData protecting both 
 
 Important correction to avoid overclaiming: the current StandardAuthorizer source comment says a read-write lock synchronizes data, but the executable methods shown do not perform such a lock around incremental addAcl/removeAcl/authorize. Therefore the comment cannot be treated as proof of a shared lock edge.
 
-🟢 No executable shared authorizer lock found in the inspected source.🔵 W1→D1 JMM edge remains UNKNOWN.
-🔵 Stale-read vulnerability remains UNPROVEN.
+🟢 No executable shared authorizer lock found in the inspected source.🔵 W1→D1 JMM edge remains UNKNOWN.🔵 Stale-read vulnerability remains UNPROVEN.
 
 Next: reconcile this source finding with the pinned experiment and existing PR93 diagnostic. The key question is now whether the observed zero stale snapshots can be explained by a concrete publication edge, or only by empirical scheduling/implementation behavior.
 
@@ -597,8 +596,7 @@ Therefore PR #88 = diagnostic design / superseded by later reconciled executions
 Therefore PR #89 = superseded diagnostic design/source analysis.
 
 #### PR #90 / #91 — harness compile/API corrections🟢 These PRs address executable-harness correctness (including the topic-name/type API mismatch) rather than changing the scientific race model.
-🔴 A compile correction is not runtime evidence. No raw six-link runtime chain from these PRs was recovered that independently changes the evidence map.
-Therefore PR #90/#91 = mechanical prerequisite/fix lineage, not evidence samples.
+🔴 A compile correction is not runtime evidence. No raw six-link runtime chain from these PRs was recovered that independently changes the evidence map.Therefore PR #90/#91 = mechanical prerequisite/fix lineage, not evidence samples.
 
 #### PR #92 — cache-identity diagnostic
 🟢 Two raw-identified executions are recorded:
@@ -898,7 +896,6 @@ Status:
 - Exact issuer + authoritative activation record mapping to authority=VALID after revocation: 🔵 UNKNOWN / OPEN.- Implementation: NOT ESTABLISHED.
 - Formal verification: NOT ESTABLISHED.
 - No AB105.117R created; AB105.116R remains canonical.
-
 DO-NOT-REPEAT: do not create a duplicate generic “proof-obligation” contract, do not reopen AB104.409 replay research, and do not reopen the closed Kafka/JMM branch. Next distinct target is the concrete authority-establishment artifact/record and its issuer/linearization semantics.
 
 
@@ -1047,3 +1044,15 @@ The historical contract requires the final effect gate to validate revocation ge
 🔵 **Status:** abstract promotion boundary = RECOVERED; protected binding fields = RECOVERED as historical design evidence; concrete issuer/record/implementation/formal verification = UNKNOWN / OPEN.
 
 **DO-NOT-REPEAT:** do not create another generic authority-promotion contract. Continue only by locating a concrete authority-establishment artifact/implementation or explicitly mark the repository as lacking one.
+
+## 2026-10-07 — S9 finding: T-AUTH-02 names the transition output, but not a canonical grant record
+
+🟢 **Recovered:** `NEXO_TRANSITION_CONTRACT_STATE_VARIABLE_DECOMPOSITION_V1` defines the Authority domain with `authority_context_id`, `authority_epoch`, `scope`, `basis`, `issuer`, issuance/expiry, revocation state, policy version and invariant version. Its T-AUTH-02 transition is **Admitted → Authorized** and reads exact operation/effect identity, current AuthorityContext, policy/invariant baseline and stop/recovery fences. It says the transition writes a **bound authorization context** and requires the linearization point to be the authoritative acceptance of current authority for that exact effect.
+
+🔵 **Important gap:** this contract still does not name a concrete durable `AUTHORITY_GRANT` event/record, its writer/owner, or the persistence primitive that makes that T-AUTH-02 acceptance the reconstructable source of `authority=VALID`. Therefore T-AUTH-02 identifies the semantic output and required LP, but does not by itself identify the implementation artifact requested by S9.
+
+🟢 **Cross-check:** the formal AB104.594 effect lifecycle model contains `authority=VALID/INVALID` and a `RestoreAuthority` transition, but that transition has no evidence/issuer/epoch/revocation/fence preconditions in the model. It is therefore a lifecycle model, not evidence of a concrete authority issuer or safe reauthorization implementation. We must not treat `RestoreAuthority` as the missing S9 artifact.
+
+🔵 **Result:** S9 is narrowed further: **the repository has a named semantic transition (T-AUTH-02) and an authority state domain, but no recovered concrete durable authority-grant artifact/issuer that realizes it.**
+
+**Next exact search:** trace the implementation-facing names around `bound authorization context`, `authority_context_id`, `issuer`, and the T-AUTH-02 write set, looking specifically for a concrete event/store/record or executable state mutation. Do not create a new contract and do not reinterpret AB104.594 `RestoreAuthority` as implementation.
