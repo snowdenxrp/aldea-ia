@@ -2422,3 +2422,42 @@ Exact recovery point: AB105.111R → immutable claim/evidence lineage → histor
 Next exact frontier: AB105.112R → claim-ledger integrity and tamper/rewrite detection: determine what protects lineage against silent deletion, fork, rollback, or conflicting recovery histories.
 
 DO-NOT-REPEAT: AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.112R claim-ledger integrity: tamper, fork, rollback and recovery-conflict detection
+
+🟢 Immutable claim lineage requires more than append-only intent. Recovery must detect silent deletion, rewriting, rollback to an older ledger state, divergent forks, and conflicting histories restored from different authorities.
+
+Minimum integrity properties:
+- each claim/event has a stable identifier and parent/causal references;
+- records are append-only within the protected claim domain;
+- cryptographic integrity linkage detects mutation/deletion/reordering;
+- checkpoints/snapshots identify the covered sequence and recovery generation;
+- authority for the ledger itself is explicit and separate from ordinary coordinator authority;
+- recovery rejects or quarantines histories whose lineage cannot be authenticated or whose generation is older/conflicting;
+- competing valid histories are preserved as distinct branches until an authoritative reconciliation decision exists.
+
+🟢 A hash chain detects modification only if an attacker/recovery process cannot simply replace the trusted checkpoint. Integrity therefore also needs an independently protected trust anchor/checkpoint or equivalent authenticated storage boundary.
+
+🟢 A signed record proves provenance/authorship of the record, not truth of the claim. Signature validity cannot turn a stale or unauthorized claim into current authority.
+
+🟢 Monotonic sequence numbers alone do not prevent rollback when an older valid snapshot can be restored. Recovery generation/epoch and an external or independently protected monotonic anchor are required for rollback detection.
+
+🟢 Two histories with valid internal hashes/signatures are not automatically mergeable. If they diverge from a common predecessor, preserve both branches and quarantine any claim that depends on choosing between incompatible histories.
+
+🟢 A ledger fork is different from a target-effect conflict: the former is disagreement about Nexo's evidence/claim history; the latter is disagreement about what an external target committed. They may correlate but must not be collapsed.
+
+🟢 Recovery must never “repair” a conflict by deleting one branch. It should create an explicit reconciliation/conflict event linked to both histories and establish a new trusted generation after resolution.
+
+🔵 This produces a three-layer integrity distinction:
+1. record integrity — was the stored lineage altered?
+2. history integrity — is this the authoritative/latest lineage generation?
+3. claim truth — does target-domain evidence actually support the claim?
+Passing layer 1 or 2 does not prove layer 3.
+
+🔴 No current Nexo/Lúmina executable protected claim ledger, independent checkpoint anchor, rollback detector, or fork-reconciliation protocol exists.
+
+Exact recovery point: AB105.112R → claim-ledger integrity → tamper/rollback/fork detection requires protected lineage plus an independent recovery-generation/trust anchor; cryptographic integrity alone does not establish claim truth.
+
+Next exact frontier: AB105.113R → checkpoint/snapshot authority: define how a recovery checkpoint becomes trusted without circularly trusting the ledger being recovered.
+
+DO-NOT-REPEAT: AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
