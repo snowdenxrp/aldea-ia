@@ -822,3 +822,48 @@ Current epistemic state remains:
 - vulnerability: NOT ESTABLISHED.
 
 DO-NOT-REPEAT: StandardAuthorizer.start()/initialLoadFuture, BrokerServer endpointReadyFutures, SocketServer enableRequestProcessing startup chain, unless a future is found that is completed/awaited specifically by each incremental ACL W1.
+
+
+## 2026-10-07 — NEXO Core semantic distillation from AB104/AB105
+
+🔵 This section is a semantic distillation of already recovered AB104/AB105 evidence. It creates no new runtime evidence and does not reopen the bounded Kafka/JMM branch.
+
+### Canonical epistemic separation
+NEXO must never collapse these states:
+OBSERVATION != CLAIM != APPRAISAL != CAUSALITY != AUTHORITY != POLICY != DECISION != EFFECT != VERIFICATION.
+
+A temporal observation may support a claim, but timestamp/order alone is not causality. A favorable appraisal is not authority. A decision is not proof that an external effect occurred. An observed effect is not proof that the decision was authorized.
+
+### Safety propagation rules
+- UNKNOWN is a first-class state, not an error to coerce into TRUE/FALSE.
+- If material assurance required by a Decision Contract is missing, the consequential decision remains UNKNOWN/RECHECK or STOP according to policy.
+- STOP REQUESTED != STOP ENFORCED.
+- REVOCATION ISSUED != REVOCATION ENFORCED EVERYWHERE.
+- AUTH CACHE HIT != CURRENT AUTHORITY.
+- FENCE ISSUED != FENCE ENFORCED.
+- RECIBIDO != ADMITIDO; ADMITIDO != EFFECT EXECUTED.
+- CRASH != EXECUTION RESULT; after crash, unresolved effect state requires reconciliation.
+
+### Authority/target independence
+Authority state and target/resource state are independent dimensions. A valid authority with UNKNOWN target state remains UNKNOWN/STOP for a consequential operation; a known target does not compensate for UNKNOWN authority.
+
+### Evidence contract
+Decision-relevant evidence must retain at least: exact scope/subject/target, provenance, freshness boundary, dependency/common-mode context, authority epoch/version, policy version, and verification status. Evidence is historical data; appraisal/decision must not silently rewrite it.
+
+### Decision identity and effect identity
+Every consequential decision/effect path must be bound to an operation identity and target/effect identity. Duplicate operation arrival is not a new authorization. A missing terminal outcome is UNKNOWN/reconciliation, not permission to execute a second effect.
+
+### Reconstruction boundary
+Event/history reconstruction is claim-relative. COMPLETE is permitted only when decision-relevant predecessor/successor coverage, ordering, duplicate/fork resolution, terminality, source-history boundary, and reconstruction version are satisfied. Missing successor != terminal; prefix reconstruction != complete history; timestamp order != causal order.
+
+### Epoch/fencing boundary
+Authority is generation-bound. A decision valid under epoch E1 cannot silently authorize execution under current epoch E2 when the contract requires current authority. Epoch advancement, revocation, STOP and fencing must be explicit state transitions with enforceable boundaries; restart does not restore authority by itself.
+
+### Effect verification boundary
+DECISION_RECORDED != EFFECT_PROVEN and EFFECT_OBSERVED != AUTHORIZATION_PROVEN. Where external execution cannot be fully observed, the unobservable portion remains explicit UNKNOWN and must be handled by reconciliation/fencing policy.
+
+### Formalization status
+These are 🔵 derived architectural rules grounded in 🟢 recovered AB104/AB105 evidence and existing semantic contracts. They are not claims that the NEXO implementation already exists or is formally verified. Current implementation/formal verification remain NOT PERFORMED unless separately recorded.
+
+### Research boundary
+Do not reopen the closed evidence taxonomy or AB105 W1→D1 Kafka branch merely to restate these rules. The next architecture-level work should target a concrete unresolved NEXO semantic dependency, with formal verification/implementation only after the semantic contract is frozen.
