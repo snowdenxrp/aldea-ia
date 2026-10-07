@@ -1175,3 +1175,29 @@ Exact recovery point: AB105.079R → persistence-boundary sweep → world-state 
 Next exact frontier: move beyond the already-closed local Lúmina persistence branch and audit the target/effect commitment contract at the architecture level: what authoritative store/resource could own the operation receipt and enforce authority/fence/resource-version acceptance at the same commitment boundary. Do not invent or implement a store yet.
 
 DO-NOT-REPEAT: persistState() temp-file/rename semantics; local filesystem lock/revision semantics; persistPreparedIntent seam discovery; generic local idempotency; Lúmina direct-mutation path; AB104.227/228/229 semantic registry design; S9; Kafka/JMM/G0; TLC; AB105.117R.
+## 2026-10-07 — AB105.080R target-commit contract sweep: no executable authoritative commitment store recovered
+
+🟢 A focused repository-wide search was performed for an executable target commitment primitive, not another design document. Searches covered operation receipt/registry, operation_id/effect_identity, authority_epoch, resource_incarnation, SQLite/BEGIN TRANSACTION/database, capability store, and target commit paths.
+
+🟢 The result is consistent across the current tree: concrete matches for operation registry, atomic target acceptance, receipt binding, fencing, SQLite transactions, and crash recovery are research/design artifacts. No executable SQLite/database transaction, operation-registry implementation, target-authoritative receipt writer, or protected target commit primitive was recovered.
+
+🟢 The existing code therefore remains exactly at the previously established split: local effect-adapter/runtime state can provide in-process idempotency, prepared-intent reconciliation and UNKNOWN handling; world-state persistence can durably replace the state file; but neither is an authoritative target commitment boundary.
+
+🟢 An important architecture constraint is also confirmed by existing research: a local transaction/store cannot make an external effect atomic merely by recording an outbox/receipt. If the effect target is outside that transaction domain, the target itself must expose a sufficiently strong acceptance/receipt boundary, or Nexo must remain in reconciliation/UNKNOWN semantics.
+
+🔵 The missing implementation is therefore not merely 'a database'. The required boundary must bind, at minimum, operation identity/effect identity, payload semantics, target incarnation, current authority context/fence, resource version/precondition, mutation and authoritative receipt. A generic durable log or idempotency table alone would not establish this.
+
+🔵 Multi-target atomicity remains a separate condition: if an effect footprint spans independently committing targets, one target receipt cannot prove the aggregate effect. The system must either have one transaction domain covering the full participant set or expose participant-level COMMITTED/PARTIAL/UNKNOWN evidence.
+
+Status:
+- executable authoritative operation registry = 🔵 NOT ESTABLISHED.
+- executable target-side atomic mutation+receipt boundary = 🔵 NOT ESTABLISHED.
+- executable authority/fence/resource-version enforcement at that boundary = 🔵 NOT ESTABLISHED.
+- generic durable local persistence = 🟢 OBSERVED, but insufficient for external-effect atomicity.
+- exactly-once external effect = 🔴 NOT CLAIMED.
+
+Exact recovery point: AB105.080R → target-commit contract sweep → no executable authoritative commitment store recovered.
+
+Next exact frontier: stop searching for an implementation that the current repository does not contain. Move to the provider/target capability contract: classify which future effect targets can actually supply an atomic target-side acceptance+mutation+receipt boundary, which can only supply idempotency/fencing/reconciliation, and which must remain UNKNOWN/STOP. This is a capability classification, not implementation.
+
+DO-NOT-REPEAT: local persistence sweep AB105.079R; SQLite-as-reference research; operation-registry design AB104.227/228/229/311/312; local idempotency/reconciliation; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
