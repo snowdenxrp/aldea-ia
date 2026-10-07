@@ -109,3 +109,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Derived helper output is not an authority boundary; normalization may write; collection selection creates predicate/order dependencies; knowledge and memory are mutable admission inputs.
 - Complete dependency capture UNKNOWN; minimal granularity OPEN.
 - Exact next: trace representative action-class envelopes: resource action, trade, cooperate, exploration, build/farm, including admission reads, handler reads/writes, derived/predicate dependencies and recovery/reconciliation inputs.
+
+
+## P112 action-class envelopes v1
+- `P112_ACTION_CLASS_ENVELOPES_V1_2026-10-07.md`
+- Commit `7d56009d3abd8bc1cd8ef2c6e1f05303c89e286f`.
+- Representative envelopes mapped: gather_wood, catch_fish, trade, cooperate, exploration, build/farm.
+- Posterior AB104.152+ research was checked only as retrospective cross-check; no missing AB104.185 primary artifact was backfilled.
+- Main result: fixed object-only version is insufficient; protected transition footprint must include admission reads, handler reads/writes, predicate/range/aggregate dependencies, derived provenance and relevant versions/incarnations with conditional validation.
+- Exact next: complete the full admission chain perception -> options -> scoring -> selection -> execution, separating authoritative final-gate dependencies from observational inputs.
