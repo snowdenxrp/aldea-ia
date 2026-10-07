@@ -3514,3 +3514,24 @@ Exact recovery point: P40 closed.
 Next independent investigation: determine whether the deterministic post-push workflow can itself race with subsequent `Actualizar estado de Lúmina` commits, and whether its result is required for any subsequent state admission/recovery decision. Research only.
 
 DO-NOT-REPEAT: P0–P40 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P41 — post-push CI is not an admission gate
+
+🟢 `.github/workflows/nexo-deterministic-tests.yml` triggers on every push to `main` and runs `npm test`; it has its own concurrency group, separate from `lumina-simulation`.
+
+🟢 `.github/workflows/lumina-simulation.yml` has a separate concurrency group and pushes state commits directly to `main`. Nothing in the repository workflows inspected makes the deterministic test result a prerequisite for the next `Actualizar estado de Lúmina` run or for accepting another state commit.
+
+🟢 The simulation workflow does not consume a prior deterministic-test result, workflow conclusion, artifact, commit status, state hash, or validation certificate before generating/committing the next state.
+
+🔵 Therefore deterministic CI can provide post-push evidence for a commit, but there is no repository-level admission/lineage mechanism making that result authoritative for that exact state snapshot or requiring it before subsequent state mutation/commit.
+
+🔴 Do not claim a proven temporal race between two specific live workflow runs from this inspection; the available connector did not expose a complete push-triggered run history here. The proven finding is architectural: the workflows are independently triggered/concurrent and no dependency or validation-result handoff exists.
+
+Classification: **post-push validation is advisory evidence, not a blocking state-admission/recovery gate**. No patch.
+
+Exact recovery point: P41 closed.
+
+Next independent investigation: audit whether GitHub branch protection/status requirements or repository settings enforce successful deterministic CI before `main` accepts `Actualizar estado de Lúmina`. Only claim this if directly observable; otherwise keep it UNKNOWN.
+
+DO-NOT-REPEAT: P0–P41 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
