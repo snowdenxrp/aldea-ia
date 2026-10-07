@@ -302,3 +302,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Separated two independent guarantees: logical recovery evidence (PREPARED/COMMITTED/UNKNOWN) versus physical storage durability under a chosen crash model.
 - Existing lock/temp/rename can be reused conceptually, but rename alone is not promoted to power-loss durable commit. A future local transaction needs an explicit durability contract and matching barriers.
 - Exact next: audit existing `nexoMemory` journal fields for PREPARED/COMMITTED/UNKNOWN semantics and identify execution metadata still only in memory.
+
+
+## P112 Nexo journal semantics audit V1 — 2026-10-07
+- Current `nexoMemory.nexo` persistence is real: missions/attempts/doNotRepeat/executions/effectJournal are serialized by `persistState()` and reconstructed by `loadState()`/`applyState()`.
+- Restart test explicitly preserves a `prepared` effectJournal entry, proving serialization/reconstruction of PREPARED evidence, not external-effect completion.
+- Mission terminal outcomes are a separate history: `recordNexoOutcome()` accepts completed/failed/blocked and requires verified evidence for completed. Do not collapse mission outcome and effect journal into one authority.
+- `effectJournal` is bounded to the last 200 entries; unresolved evidence can therefore be evicted. Absence from the bounded journal must not mean ABSENT.
+- `nexoEffectRevision` is in-memory and not serialized, so it is not a durable commit marker or fence.
+- Exact next: trace complete effectJournal lifecycle from prepare/record through handler, terminal update, persistence, exception and crash cuts.
