@@ -1110,3 +1110,19 @@ The historical contract requires the final effect gate to validate revocation ge
 🔵 **Still open:** primary evidence establishes the need for freshness/revocation semantics, but does not by itself determine Nexo's exact freshness mechanism, bounded staleness rule, or whether an already-authorized operation may continue after revocation once execution has crossed a defined protected boundary. Those remain Nexo design questions requiring separate evidence.
 
 **Exact next investigation:** trace primary evidence for the boundary between *authorization decision* and *execution commitment*—specifically whether revocation occurring after authorization but before/at/after effect commitment invalidates the effect, and what protected point (if any) makes the decision durable for that exact operation.
+
+## 2026-10-07 — AB105.078R operation-registry trace: semantic design exists, runtime registry boundary not established
+
+🟢 **Concrete runtime trace:** current src/nexo/runtime.js derives idempotencyKey as missionId:stepId, calls the adapter, then records the adapter result through local memory functions. runtimeCommitLocks serializes local memory commits only. No target-side operation registry, target receipt, or atomic target-effect + registry commit was found in this runtime path.
+
+🟢 **Historical evidence recovered:** AB104.227/228/229 already specify the required target-side registry semantics: a prepared entry blocks blind re-execution; the same operation_id with a different payload fingerprint is a collision/quarantine case; a target-authoritative operation record can establish commitment after a coordinator crash; and a negative receipt is meaningful only if it binds to the exact operation and guarantees non-acceptance.
+
+🔵 **Critical distinction:** the repository therefore has a detailed semantic contract for operation-registry atomicity, but the current executable runtime still uses a local missionId:stepId idempotency key and local memory persistence. This does not establish that target resource mutation and EFFECT_COMMITTED/receipt registration occur atomically.
+
+🟢 **Primary external analogue:** etcd's transaction primitive demonstrates the required shape: multiple comparisons are evaluated atomically and, only if they all succeed, the transaction applies the success writes; completed KV operations are durable and linearizable by default. This is evidence of a concrete primitive shape, not a decision to use etcd in Nexo. citeturn0search1turn0search0
+
+🔵 **Result:** AB105.078R is narrowed again. The remaining implementation question is not whether operation-registry semantics have been designed—they have. It is whether Nexo has an executable target/store that atomically couples (a) current authority/fence/version acceptance, (b) resource mutation, and (c) operation receipt/registry state.
+
+**Exact next investigation:** inspect every executable target/effect adapter and persistence path for an actual atomic coupling between target mutation and operation receipt/registry. If none exists, close this branch as SEMANTIC_BOUNDARY_RECOVERED / RUNTIME_ATOMIC_TARGET_REGISTRY_NOT_ESTABLISHED and move on rather than inventing a store.
+
+**DO-NOT-REPEAT:** AB104.227/228/229 design semantics, local missionId:stepId idempotency, runtime commit lock, generic fencing, S9, Kafka/JMM/G0, TLC, AB105.117R.
