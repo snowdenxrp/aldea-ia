@@ -1,11 +1,9 @@
 name: NEXO AB105 G0 ordering witness runner v2
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - nexo-ab105-g0-ordering-witness
-  workflow_dispatch:
 
 jobs:
   ordering-witness:
