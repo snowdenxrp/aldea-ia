@@ -712,3 +712,22 @@ DO-NOT-REPEAT: firstPublishFuture, installPublishers future, waitForAllEventsToB
 🔵 The run should be retained as a distinct valid execution identity, but its temporal ordering must not be promoted to JMM happens-before merely because the full request path executed successfully.
 
 DO-NOT-REPEAT: zero-job runs 37549706571 and 37549855165 are invalid evidence; do not rerun TLC; do not create AB105.117R; do not add synchronization; do not reopen already closed generic MetadataLoader/Future/RequestChannel/SocketServer bridges.
+
+
+## 2026-10-06 — DynamicConfigPublisher callback boundary closure
+
+🟢 Audited the exact pinned BrokerMetadataPublisher → DynamicConfigPublisher path as a possible indirect bridge from ACL W1 to the SocketServer Processor. BrokerMetadataPublisher invokes DynamicConfigPublisher before AclPublisher; therefore this callback cannot publish a later W1 action by ordering alone.
+
+🟢 At pin 99b940733a9f6bc409457dba7108f08421d81e42, DynamicConfigPublisher.onMetadataUpdate() only enters configuration handlers when delta.configsDelta() is present. It processes TOPIC/BROKER/CLIENT_METRICS/GROUP configuration resources. An ACL-only delta does not invoke those configuration handlers merely because the publisher callback itself is called.
+
+🟢 No inspected DynamicConfigPublisher path creates a per-ACL-update synchronization/publication handoff to SocketServer Processor or RequestChannel ENQUEUE.
+
+🔵 Dedicated audit saved as docs/nexo/NEXO_AB105_DYNAMIC_CONFIG_CALLBACK_BOUNDARY_2026-10-06.md (commit 4fddbe10e880483a73644c8eb633a300b14de774).
+
+Current epistemic state unchanged:
+- W1→ENQUEUE HB: UNKNOWN / NOT IDENTIFIED.
+- W1→D1 HB: UNKNOWN / NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: DynamicConfigPublisher generically, unless a new source path shows an ACL delta itself invokes a shared reconfiguration primitive that the SocketServer Processor subsequently acquires.
