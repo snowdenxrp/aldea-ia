@@ -3360,3 +3360,23 @@ Exact recovery point: POST-AB105.116R implementation audit → P33 → loadState
 Next independent investigation: audit the malformed/unsupported-state fallback path specifically: determine whether a load failure can be distinguished downstream from a legitimate freshly initialized state, and whether that distinction is persisted or surfaced to the assistant report.
 
 DO-NOT-REPEAT: P0–P33 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P34 — load failure collapses into indistinguishable default state
+
+🟢 Audited `loadState()` → `applyState()` → assistant diagnostics → persistence. On read/JSON/schema failure, `loadState()` catches the error and returns a normal-looking version-5 default state with `stateRevision:0`, current timestamp, default world, initial agents, empty events and `nexoMemory:null`.
+
+🟢 Downstream `applyState()` receives no `loadFailed`, `recoveredFromFallback`, source path, parse error, original-state hash, or recovery provenance. The assistant workflow then runs normally and eventually persists the resulting simulation as a valid `version:5` state with an incremented revision.
+
+🟢 Therefore a failed/corrupt/unsupported persisted state can become observationally equivalent downstream to a legitimate freshly initialized state. The original failure is swallowed before diagnostics and is not represented in `report`, learning memory, Nexo memory, or the persisted state payload.
+
+🟢 The next persistence can overwrite the prior unusable state with a syntactically valid default-derived state. This is a continuity/evidence-loss boundary: after overwrite, the system may retain no local artifact proving that recovery-from-load-failure occurred.
+
+🔵 This does not prove data loss in every failure scenario because external filesystem/version-control backups may exist. It proves the executable application path itself does not preserve recovery provenance or distinguish fallback initialization from normal initialization.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P34 → load-failure/default-state provenance audit closed.
+
+Next independent investigation: audit whether the first persistence after fallback can be prevented from silently replacing the failed source state, or whether an explicit recovery marker/lineage is required before normal persistence. Focus on the persistence admission decision after load failure; do not reopen P33's mutation census.
+
+DO-NOT-REPEAT: P0–P34 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
