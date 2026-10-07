@@ -110,3 +110,42 @@ Guardrails:
 - Do not infer JMM HB from temporal event ordering alone.
 - Do not manufacture the W1->request edge with test synchronization.
 - Do not rerun cacheIdentity/D0 experiments without a distinct hypothesis.
+
+
+## 2026-10-06 — MetadataLoader post-publisher boundary (source audit)
+
+### 🟢 Exact pinned-source result
+Kafka revision: `99b940733a9f6bc409457dba7108f08421d81e42`.
+
+Inspected the executable source of `MetadataLoader.maybePublishMetadata()` and `BrokerMetadataPublisher.onMetadataUpdate()`.
+
+After the publisher loop completes in `MetadataLoader.maybePublishMetadata()`, the production path performs only:
+- metadata-loader metrics updates;
+- finalized-feature metric bookkeeping;
+- optional `scheduleInitializeNewPublishers(0)` for publishers that are still uninitialized.
+
+No per-update `Future/CompletionStage`, request-queue enqueue, lock handoff, condition signal, or explicit publication operation is created for the request/authorization domain after all publishers return.
+
+### 🟢 Stronger boundary
+Inside `BrokerMetadataPublisher.onMetadataUpdate()`, the ACL mutation occurs at:
+`aclPublisher.onMetadataUpdate(delta, newImage, manifest)`.
+After that returns, the publisher continues with group/share coordinator callbacks, first-publish initialization work, and feature bookkeeping, then completes `firstPublishFuture` in `finally`.
+
+`firstPublishFuture` is therefore after W1 by program order, but prior source audit established it is a startup-only readiness mechanism; no steady-state request handler awaits it per ACL mutation.
+
+### Important ordering consequence
+`metadataCache.setImage(newImage)` still occurs BEFORE `aclPublisher.onMetadataUpdate(...)`. Therefore any publication semantics associated with the metadata-cache write cannot be promoted to publish the later plain `aclCache` replacement performed by W1.
+
+### Epistemic status
+- 🟢 MetadataLoader publisher callbacks are serialized on its event-queue thread.
+- 🟢 After all publishers return, no production per-update handoff toward D1 was identified in MetadataLoader itself.
+- 🟢 `firstPublishFuture.complete(null)` is after the first publication path, but is startup-only.
+- 🔵 W1 → D1 JMM happens-before remains UNKNOWN / NOT IDENTIFIED.
+- 🔵 Absence is bounded to the inspected production path; it is not a proof that no synchronization exists anywhere else.
+- 🔴 No vulnerability/exploitability conclusion.
+
+### Next frontier
+Trace only the remaining request-side admission/authorization path for a read/await that is causally tied to incremental metadata-loader progress (offset/future/condition/lock). If none exists, close this branch as bounded NOT-IDENTIFIED HB.
+
+### DO-NOT-REPEAT
+Do not rerun cacheIdentity/D0/Run #21 experiments, do not add artificial synchronization, do not rerun TLC, and do not create AB105.117R.
