@@ -3605,3 +3605,22 @@ Classification: **CI linkage branch CLOSED at repository level; external GitHub 
 Next mission P47: move to the next independent recovery invariant from P35/P38 — determine whether any persisted state field, Git history rule, or workflow step identifies an authoritative last-known-good snapshot *at the moment of recovery*, rather than merely recording ordinary state revisions. Research only; no patch.
 
 DO-NOT-REPEAT: P0–P46 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P47 — authoritative last-known-good identity
+
+🟢 Inspected the actual persistence/recovery path again: `loadState()` returns a normal-looking v5 default on read/parse/schema failure with `stateRevision: 0` and a fresh `savedAt`; `persistState()` writes only version/stateRevision/savedAt/day/hour/world/agents/events/nexoMemory. There is no persisted recovery provenance or health certificate.
+
+🟢 Repository search found no `lastKnownGoodSnapshot`, `lastKnownGoodCommit`, `validatedAt`, `validatedRevision`, or equivalent machine-readable authoritative marker. `stateRevision` is the only explicit persisted revision/coordination field; it is not a health or validation certificate.
+
+🟢 `.lumina-assistant-memory.json` records assistant run timestamps/status/findings, but it does not bind a successful validation to the exact `world-state.json` bytes, commit SHA, or a recovery-authoritative snapshot. The workflow commits both files but does not create a validation marker.
+
+🔵 Git history can show historical state commits, but no machine-readable rule identifies which one is authoritative last-known-good at recovery time.
+
+🔴 P47 result: **NO_AUTHORITATIVE_LAST_KNOWN_GOOD_MARKER**. This confirms the previously identified recovery-provenance gap; it does not by itself prove data loss on every recovery.
+
+Classification: **recovery identity/provenance = MISSING**.
+
+Next mission P48: inspect the exact fallback→persist sequence for a stronger consequence: determine whether a failed/unreadable `world-state.json` can be converted into a new revision-1 state without any durable record that the prior source was unreadable. Focus on concrete code/test coverage; research only, no patch.
+
+DO-NOT-REPEAT: P0–P47 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
