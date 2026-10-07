@@ -2639,3 +2639,25 @@ Exact recovery point: POST-AB105.116R implementation audit → P1 memory-normali
 Next investigation: audit whether any code path can convert a missing/evicted PREPARED record into a fresh executable attempt without requiring authoritative reconciliation, including mission reconstruction and idempotency-key reuse.
 
 DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; P0/P1 are executable implementation audits of the already-established retention/reconciliation contract.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P2 — fresh execution becomes possible after prepared-record loss
+
+🟢 Trace completed from reconstruction to execution.
+
+`executeNexoStep()` derives the stable key `missionId:stepId` and calls `adapter.execute()`. The adapter correctly blocks when it can still find a `prepared` journal entry. However, if that entry has been evicted, `journalEntry(idempotencyKey)` returns null and `executeFresh()` calls `recordIntent()` followed by the handler.
+
+🟢 Therefore the safety property depends directly on retention of the unresolved journal entry. There is no independent authoritative reconciliation registry consulted when the local entry is absent.
+
+🟢 The normal runtime path does not automatically make the missing entry safe: `recordNexoExecution()` records the adapter result separately, while `recordNexoOutcome()` records the mission outcome separately. Neither is an authoritative target-operation registry, and neither can prove that an evicted PREPARED effect did not commit.
+
+🔵 Important boundary: the ordinary mission flow may stop a completed/blocked reconstructed step from being started again. This does not eliminate the lower-level adapter gap because `executeNexoStep()` accepts a mission object directly and the effect adapter itself has no durable external registry fallback.
+
+🔵 Thus the precise finding is conditional: **if a logically unresolved effect loses its local PREPARED record and the same logical execution is subsequently admitted to the adapter, the adapter has no remaining mechanism that forces reconciliation before invoking the handler.**
+
+🔴 No patch made. No duplicate external effect claimed.
+
+Exact recovery point: POST-AB105.116R implementation audit → P2 → loss of PREPARED record removes the adapter's mandatory reconciliation gate.
+
+Next investigation: identify every persistence/restart/reconstruction path that can produce an executable mission/step after such record loss, and determine whether any of them enforce a separate authoritative reconciliation gate.
+
+DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; P0–P2 are executable manifestations of the already-established retention/reconciliation requirement.
