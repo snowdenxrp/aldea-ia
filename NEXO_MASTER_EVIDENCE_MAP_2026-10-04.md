@@ -867,3 +867,39 @@ These are 🔵 derived architectural rules grounded in 🟢 recovered AB104/AB10
 
 ### Research boundary
 Do not reopen the closed evidence taxonomy or AB105 W1→D1 Kafka branch merely to restate these rules. The next architecture-level work should target a concrete unresolved NEXO semantic dependency, with formal verification/implementation only after the semantic contract is frozen.
+
+
+## 2026-10-07 — S9 authority-promotion / activation boundary reconciliation
+
+🔵 This pass continued the independent S9 trace: identify whether the repository already freezes the exact issuer/action that promotes CURRENT_AUTHORITY_DECISION to authority=VALID after revocation. No Kafka/JMM branch was reopened.
+
+🟢 Existing contracts already cover most prerequisites and the protected nature of the transition:
+- T-AUTH-02 defines Authorized admission as requiring current AuthorityContext, exact operation/effect identity, policy/invariant baseline and stop/recovery fences, with a linearization requirement for authoritative acceptance of current authority.
+- The transition-variable contract explicitly separates authority state from evidence, verification and external truth; hidden safety-relevant reads are prohibited and critical state changes bind to relevant epochs/versions.
+- AB104.563 establishes EPOCH_FENCE != HISTORICAL_ERASURE, VALID_SIGNATURE != CURRENT_AUTHORITY, and VALID_CERTIFICATE != CURRENT_CERTIFICATE.
+- AB104.565 establishes that epoch/witness activation itself is a protected semantic boundary with a durable linearization point; crash ambiguity at that boundary remains UNKNOWN/QUARANTINED.
+- AB104.567/568 establish that blocked recovery requires an independent recovery authority and a protected transition; a new key, witness set, backup or local snapshot does not by itself create current authority.
+- AB104.506 binds protected authorization to authority epoch, revocation generation, dependency closure, fence revision and decision context.
+- AB104.359 establishes AUTHENTIC_BRANCH != CURRENT_AUTHORITY and MAX_REVISION != VALID_RESOLUTION when competing recovery authorities exist.
+
+🟢 Historical/exploratory recovery material also shows the correct direction: recoveryAuthorityEpoch is bound to the authority generation that admitted recovery; revocation advances authorityEpoch and invalidates prior recovery authorization. This is evidence for generation binding, not a frozen implementation protocol.
+
+🔵 The remaining S9 gap is therefore narrower than “does Nexo have an activation concept?” It does. The unresolved item is the exact authority-bearing transition record and issuer/serialization boundary that converts a valid CURRENT_AUTHORITY_DECISION into current authority after revocation, including its durable linearization/activation identity and reconstruction semantics.
+
+Required distinction remains:
+- AUTHENTIC_EVIDENCE != CURRENT_AUTHORITY
+- CURRENT_AUTHORITY_DECISION != AUTHORITY_ACTIVATED
+- VALID_SIGNATURE != VALID_PERMISSION
+- NEW_EPOCH != CURRENT_AUTHORITY
+- REVOCATION_OBSERVED != NEW_AUTHORITY_VALID
+
+For the protected transition, the minimum unresolved questions are: who is authorized to issue/commit activation; what exact decision record is authoritative; which epoch/revocation generation/fence/policy/dependency context is atomically bound; what invalidates it; and what crash/recovery evidence distinguishes pre-activation, activation-committed and post-activation states.
+
+Status:
+- Existing semantic prerequisites/activation boundary: 🟢 RECOVERED.
+- Exact issuer + authoritative activation record mapping to authority=VALID after revocation: 🔵 UNKNOWN / OPEN.
+- Implementation: NOT ESTABLISHED.
+- Formal verification: NOT ESTABLISHED.
+- No AB105.117R created; AB105.116R remains canonical.
+
+DO-NOT-REPEAT: do not create a duplicate generic “proof-obligation” contract, do not reopen AB104.409 replay research, and do not reopen the closed Kafka/JMM branch. Next distinct target is the concrete authority-establishment artifact/record and its issuer/linearization semantics.
