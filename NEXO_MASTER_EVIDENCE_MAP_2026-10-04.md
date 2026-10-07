@@ -2098,3 +2098,37 @@ Exact recovery point: AB105.102R → resource-version/fingerprint binding → ca
 Next exact frontier: AB105.103R → resource reincarnation/generation binding: audit whether identity and version remain safe across delete/recreate/restore/failover.
 
 DO-NOT-REPEAT: AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.103R resource reincarnation/generation binding: identity and version are not stable across replacement
+
+🟢 Resource identity and version are insufficient across delete/recreate, restore, clone, failover, or equivalent replacement unless the target exposes an authoritative incarnation/generation boundary.
+
+Minimum binding for an effect claim:
+- stable logical resource identity;
+- authoritative resource incarnation/generation;
+- version within that incarnation;
+- operation/effect identity and fingerprint;
+- authority/fence context where required;
+- target receipt/operation record bound to the same incarnation.
+
+🟢 Reusing the same logical resource_id after replacement does not preserve continuity. An old operation against incarnation A must not be reconciled as a commit against incarnation B.
+
+🟢 Reusing a version number is equally unsafe. Version 7 on generation A and version 7 on generation B are distinct states.
+
+🟢 Restore/clone can resurrect old operation registries, receipts, versions, or prepared intents. Recovery generation must prevent historical records from being silently treated as current unless the provider explicitly defines them as authoritative after recovery.
+
+🟢 Failover with missing operation state cannot imply REJECTED. If the previous authoritative target may have committed before failover, the effect remains UNKNOWN until the new authority can reconcile it.
+
+🟢 A new incarnation may intentionally invalidate outstanding operations from the old incarnation. That can justify RESOURCE_REPLACED only when the target contract guarantees that old operations cannot subsequently commit against the new incarnation.
+
+🟢 Incarnation changes must be part of reconciliation keys and commit evidence, not merely diagnostic metadata.
+
+🔵 Logical identity is useful for user-facing continuity, but commitment safety requires a target-authoritative generation boundary underneath it.
+
+🔴 No current Nexo/Lúmina executable target provides authoritative resource incarnation/recovery generation binding for external effects.
+
+Exact recovery point: AB105.103R → resource reincarnation/generation binding → resource_id/version cannot safely identify commitment across replacement; authoritative incarnation must bind operation and receipt.
+
+Next exact frontier: AB105.104R → failover/leader-change commit reconciliation: audit whether authority transfer can safely preserve, reject, or leave UNKNOWN in-flight effects.
+
+DO-NOT-REPEAT: AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
