@@ -1630,3 +1630,34 @@ Exact recovery point: **AB105.089R → operation-record retention/reuse audit �
 Next exact frontier: audit restore/clone/failover recovery ordering as a state-machine problem: how operation registry, resource state, authority epoch, and receipts must be recovered/fenced so an old snapshot cannot authorize or duplicate a newer effect.
 
 DO-NOT-REPEAT: AB105.088R identity tuple; AB105.087R claim transitions; AB105.086R outcome coverage; AB105.085R carrier; AB105.084R carrier gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.090R recovery-ordering audit: restored snapshots require a newer namespace/fence before effects can resume
+
+🟢 Recovery ordering is bounded:
+1. enter recovery/STOP for protected effects;
+2. identify snapshot generation/epoch and provenance;
+3. establish a newer recovery generation/namespace fence;
+4. reconcile or quarantine operations whose outcome may lie outside the snapshot;
+5. establish current authority epoch/fence independently of stale snapshot state;
+6. bind recovered resource incarnation/version to the new recovery generation;
+7. only then admit new effect attempts.
+
+🟢 Snapshot completeness is not world completeness. An older snapshot can contain durable intent while the external target already committed, or omit an external commitment after the snapshot. Restore cannot infer REJECTED from snapshot absence.
+
+🟢 Restoring an old operation registry can resurrect an already-used identity. A recovery generation/namespace fence must prevent collision with post-snapshot history.
+
+🟢 Restoring an older resource version without changing its incarnation can alias prior state. Recovery needs a new incarnation or equivalent fence when rollback can satisfy an old precondition.
+
+🟢 Restored authority state cannot reactivate historical authority. Current authority must be re-established through the protected authority boundary.
+
+🟢 A standby cannot become authoritative merely by loading a snapshot. Unresolved external effects remain UNKNOWN until authoritative reconciliation.
+
+🔵 Exact recovery protocol is provider/effect-specific. A monotonic generation is required where rollback can alias identity, but its mechanism must be authoritative for the target domain.
+
+🔴 No current Nexo/Lúmina executable path implements this recovery fence or authoritative target recovery boundary.
+
+Exact recovery point: **AB105.090R → recovery-ordering audit → STOP/recovery fence must precede effect admission; stale snapshots cannot manufacture current authority, non-commit, or absence of external effects.**
+
+Next exact frontier: audit multi-source recovery reconciliation—how conflicting evidence from local journal, target operation records, resource state, and authority state is classified without choosing the most convenient source.
+
+DO-NOT-REPEAT: AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
