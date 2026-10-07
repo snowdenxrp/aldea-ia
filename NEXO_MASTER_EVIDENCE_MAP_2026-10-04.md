@@ -2705,3 +2705,34 @@ Exact recovery point: POST-AB105.116R implementation audit → P5 → UNKNOWN ex
 Next investigation: determine whether any other caller can invoke `buildNexoMission()`/replan after a blocked UNKNOWN, or whether only explicit external orchestration can create that new mission.
 
 DO-NOT-REPEAT: P4's direct automatic-UNKNOWN-to-replan hypothesis is closed as NOT PRESENT; retain P4 only as the manual/external replan architectural gap.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P6 — fresh planning run creates a new mission without reconciling prior PREPARED effect
+
+🟢 Full caller audit found an important path that is broader than explicit `replanReason`.
+
+`scripts/assistants.mjs` loads persisted `simulation.nexoMemory`, then on every assistant run unconditionally calls:
+`buildNexoMission({ simulation, reports: [...], memory: nexoMemory })`
+with no `parentMissionId` and no effect-level reconciliation gate.
+
+🟢 Therefore a prior handler exception can leave:
+- old mission M1;
+- effectJournal entry M1:step-1 = `prepared`;
+- effect outcome unresolved (`EFFECT_OUTCOME_UNKNOWN`).
+
+A later assistant run can observe the same finding and construct fresh mission M2. Because runtime derives idempotency as `M2:step-1`, M2 is a different idempotency domain. The adapter lookup for M2 does not find M1's PREPARED entry and can call `recordIntent()` and the handler again.
+
+This is NOT an explicit “replan after failure” path and does NOT require `needs_replan`. It is a fresh-planning/re-entry path.
+
+🔴 No external duplicate effect is claimed: current handlers/tests are local Lúmina simulation. The proven gap is local control-plane behavior: a durable unresolved PREPARED from M1 does not automatically block/reconcile a semantically repeated effect when a fresh mission M2 is generated.
+
+🔵 This materially strengthens P4/P0-P2: mission identity is currently part of the idempotency key, while effect-level reconciliation needs an identity that survives mission recreation for the same intended effect/target operation.
+
+No patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P6 → fresh planning can bypass prior PREPARED through a new missionId.
+
+Next exact investigation: determine whether `buildNexoMission()` has any existing semantic deduplication beyond missionId (action/target/fingerprint/history/doNotRepeat) that could block this M1→M2 transition. If absent, document the exact missing cross-mission effect identity/reconciliation gate.
+
+DO-NOT-REPEAT:
+- P5 automatic UNKNOWN→needs_replan path is closed as NOT PRESENT.
+- Do not rerun historical AB105.079R–AB105.116R.
