@@ -3838,3 +3838,21 @@ DO-NOT-REPEAT: P0–P59 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 **P61:** determine whether the confirmed `cancel-in-progress` interaction can produce a specific persistence anomaly (e.g. partial cross-file commit, skipped validation, or state based on a moving `origin/main`) using only source/workflow reasoning and existing Git history. Research only; no patch. Do not rerun TLC. Do not create AB105.117R.
 
 DO-NOT-REPEAT: P0–P60 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P61 — cancellation/replacement anomaly analysis
+
+🟢 Source reasoning confirms an unrelated push can cancel an in-flight Lúmina run before its local commit/push. The replacement run then executes `git fetch origin main` + `git reset --hard origin/main` before `npm test`, assistants, and simulation. Thus the replacement bases its work on the then-current `main`, not the canceled run's stale checkout.
+
+🟢 A canceled run can lose runner-local work (including assistant-memory/world-state changes made before cancellation) without reaching `main`; this is an execution/work-loss possibility, not a proven persisted-state corruption incident.
+
+🟢 If cancellation occurs before the `git push`, the canceled run cannot establish a new state commit through the shown shell sequence. The replacement run can subsequently produce a fresh state commit from current `origin/main`.
+
+🔵 A cancellation exactly during/around `git push` cannot be classified as impossible from repository source alone; no concrete incident or raw Actions run was recovered. Therefore do not claim atomic cancellation around remote push.
+
+🔴 No concrete evidence was found that the cancellation/replacement interaction produced a malformed pair, skipped tests in the replacement path, or a stale-base state commit. The replacement explicitly resets to `origin/main` before validation. P61 therefore does **not** upgrade to data-corruption proof.
+
+**P61 RESULT:** `CANCELLATION_CAN_DISCARD_RUNNER_LOCAL_WORK = CONFIRMED CODE PATH`; `CANCELLATION_CAUSES_PERSISTED_STATE_CORRUPTION = NOT PROVEN`; `REPLACEMENT_RUN_USES_MOVING_ORIGIN_MAIN = CONFIRMED CODE PATH`; `PERSISTENCE_ANOMALY_IN_GIT_HISTORY = NOT OBSERVED IN REVIEWED EVIDENCE`.
+
+## Exact next mission
+**P62:** audit whether the `push`-time race itself can violate the intended cross-file/revision invariants, especially because the retry path stages both files after `npm run simulate` but may inherit assistant-memory from the current `origin/main`. Use current code and reviewed Git history only. No patch; no TLC; no AB105.117R.
