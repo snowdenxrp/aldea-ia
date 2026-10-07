@@ -18,7 +18,7 @@ This confirms the previously audited pinned-source model.
 ## 🟢 Current-upstream check
 Current Apache Kafka trunk was inspected separately. Its StandardAuthorizer source contains a comment describing read/write-lock synchronization, but the fetched source does not contain ReadWriteLock/ReentrantReadWriteLock/readLock/writeLock identifiers. Current StandardAuthorizerData still contains a plain `AclCache aclCache` and is documented as not thread-safe.
 
-Therefore the earlier shorthand "current upstream changed to a read-write lock" is NOT established by the source inspection and must not be used as a version-drift conclusion.
+A separate current-source check confirms that the comment must not be interpreted as proof of an actual read/write-lock implementation. The current source still exposes the same relevant plain-field `aclCache` structure. Therefore the earlier shorthand "current upstream changed to a read-write lock" is NOT established and is explicitly retired.
 
 ## 🔵 Epistemic consequence
 No version-drift bridge was discovered that changes the AB105 conclusion.
