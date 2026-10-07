@@ -939,3 +939,71 @@ Status:
 - Formal verification: NOT ESTABLISHED.
 
 DO-NOT-REPEAT: do not create another generic authority-promotion contract; do not reopen AB104.409 or Kafka/JMM. Next target is the concrete LP-01 authoritative record/owner and its crash/recovery semantics.
+
+
+## 2026-10-07 — CONTINUITY HANDOFF: next-chat recovery anchor
+
+🟢 **Purpose:** explicit recovery instruction for the next chat. This records exactly where the investigation stopped and what has already been done so no work is lost or repeated.
+
+### Canonical state to recover
+- Protected AB boundary: **AB105.116R**.
+- Kafka pin: **99b940733a9f6bc409457dba7108f08421d81e42**.
+- Do **NOT** create AB105.117R.
+- TLC remains frozen; do **NOT** rerun it.
+- Closed Kafka/JMM branch: W1→D1 causal-path audit is bounded. Do **NOT** reopen generic KafkaEventQueue, RequestChannel, startup futures, DynamicConfigPublisher, Processor lifecycle, MetadataCache/ApiVersionManager, or generic shared-state searches unless a genuinely new concrete production synchronization edge appears.
+- AB104.409 replay-safety branch is already covered; do **NOT** restart it merely for continuity.
+
+### Exact point where work stopped
+The active architecture frontier is **S9 authority-promotion / activation**.
+
+The question is NOT whether NEXO has an abstract activation concept. It already does. The unresolved question is narrower:
+
+AUTHORITY EVIDENCE → CURRENT_AUTHORITY_DECISION → AUTHORITY ACTIVATION → authority=VALID
+
+**Identify the exact authoritative issuer, activation/transition record, and linearization/commit point that performs this promotion after revocation.**
+
+### Already investigated and established
+🟢 Existing architecture/contracts already cover:
+- current AuthorityContext and authoritative admission requirements;
+- epoch/generation binding;
+- revocation generation;
+- fence revision;
+- dependency closure;
+- protected activation as a semantic boundary;
+- durable linearization requirement;
+- independent recovery authority;
+- crash ambiguity at protected transitions → UNKNOWN/QUARANTINED;
+- VALID_SIGNATURE != CURRENT_AUTHORITY;
+- AUTHENTIC_EVIDENCE != CURRENT_AUTHORITY;
+- NEW_EPOCH != CURRENT_AUTHORITY;
+- CURRENT_AUTHORITY_DECISION != AUTHORITY_ACTIVATED.
+
+Recovered references include T-AUTH-02 and AB104.563 / .565 / .567 / .568 / .506 / .359 authority/recovery lines. These are existing evidence/contract references, not newly invented implementation.
+
+🔵 **Still OPEN:** exact issuer + authoritative activation record + serialization/linearization boundary that makes authority current after revocation; exact invalidation and crash-reconstruction semantics for that record.
+
+### Required next investigation
+Search the repository for the **concrete authority-establishment artifact**, not another generic semantic contract. Prioritize:
+1. exact state variable/event/record that represents authority=VALID or CURRENT_AUTHORITY;
+2. writer/issuer of that state;
+3. authorization required to perform that write;
+4. epoch + revocation-generation + fence + policy + dependency context atomically bound to it;
+5. durable commit/linearization point;
+6. invalidation on revocation/epoch advancement/STOP/fencing;
+7. crash states before/during/after activation and deterministic reconstruction;
+8. whether multiple issuers can race and what arbitrates them.
+
+### Epistemic discipline
+Do not infer an issuer from terminology alone. If source only specifies the contract but not an executable issuer, mark **🔵 UNKNOWN / OPEN**. Do not claim implementation or formal verification unless source/TLA+ evidence establishes it.
+
+### No-loss / no-repeat rules
+- Do not create a duplicate proof-obligation contract; that idea was reconciled as already covered by existing ProofContext/ProofResult/ContextCompatibility and Decision Sufficiency architecture.
+- Do not reopen AB105 W1→D1 merely to restate semantic rules.
+- Do not rerun Run #21, PR #93, G0 witness, TLC, or correlationId-only probe.
+- Do not add artificial latch/volatile/barrier/Future synchronization.
+- Do not treat temporal order as causality or JMM happens-before.
+- Every material new finding must be saved in the master/continuity before moving to the next distinct frontier.
+
+### Last saved checkpoint
+Master update commit: **1ac81c7aba895e044c137de018c93c71e5b75290**.
+This handoff is the instruction set for the next chat.
