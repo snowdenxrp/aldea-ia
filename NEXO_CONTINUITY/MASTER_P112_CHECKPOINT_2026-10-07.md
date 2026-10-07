@@ -241,3 +241,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Result: global `stateRevision` remains an unjustified shortcut; composite tokens are viable only with complete authoritative writer coverage. Otherwise broader protected footprint or conditional snapshot/commit with complete dependency closure is required.
 - Status GREEN concrete intersections; BLUE exact token ownership/order remains OPEN.
 - Exact next: trace subordinate writers of the shared writers and identify whether each candidate token has a single authoritative mutation boundary.
+
+
+## P112 shared-writer subordinate coverage audit V1 — 2026-10-07
+- Saved `P112_SHARED_WRITER_SUBORDINATE_COVERAGE_AUDIT_V1_2026-10-07.md`, commit `6847f288d023a3e9ab98cc370f3519cae629b569`.
+- Resource invalidators are distributed across actions, production, world/ecosystem, agent state, spatial/exploration and daily simulation paths; no single token owner demonstrated.
+- Trade has two especially broad dependencies: inventory writers across domains and aggregate price recomputation over all alive-agent inventories.
+- Cooperate spans project state, participant inventory, relationships, homes/structures/safety, spatial/alive state; project revision alone is insufficient.
+- Concrete bypasses: `getOrCreateRelationship()` can mutate while observing; spatial/biome helpers can materialize state; `discoverArea()` mutates spatial/discovery state; `advanceSocietyDay()` is a broad cross-domain writer; `tick()` writes spatial state after decision/effect processing.
+- Result: composite tokens remain candidate representations, not proven minimal protection. Defensible choices are explicit authoritative mutation boundaries, claim-specific protected footprint, or complete dependency-capture + conditional commit/stale rejection.
+- Exact next: audit the admission→commit temporal window and classify each writer as block, invalidate-by-version, or reconcile; separately isolate post-commit learning/event writes.
