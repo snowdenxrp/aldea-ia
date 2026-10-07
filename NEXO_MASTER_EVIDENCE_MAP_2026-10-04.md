@@ -3624,3 +3624,22 @@ Classification: **recovery identity/provenance = MISSING**.
 Next mission P48: inspect the exact fallback→persist sequence for a stronger consequence: determine whether a failed/unreadable `world-state.json` can be converted into a new revision-1 state without any durable record that the prior source was unreadable. Focus on concrete code/test coverage; research only, no patch.
 
 DO-NOT-REPEAT: P0–P47 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P48 — fallback can be persisted as a new revision without durable failure provenance
+
+🟢 Concrete code path confirmed: `loadState()` catches read/parse/validation failure and returns a synthetic version-5 state with `stateRevision: 0`, fresh `savedAt`, default world/agents, empty events, and `nexoMemory: null`. No failure bit/source/hash is carried forward.
+
+🟢 `main()` treats that fallback exactly like ordinary loaded state: it computes elapsed time, applies/advances it, then calls `persistState(... expectedRevision: state.stateRevision, stateRevision: state.stateRevision + 1)`. Therefore a fallback can be admitted as revision 1.
+
+🟢 `persistState()` re-reads the current file for `expectedRevision`. If the source is malformed/unreadable, that second `loadState()` also returns synthetic revision 0, so `expectedRevision: 0` passes. The subsequent atomic rename replaces the unreadable source with the newly serialized normal-looking state.
+
+🟢 Existing persistence tests cover injected write/rename failures, stale revisions, concurrent writers, lock recovery, and normal restart/reconstruction. They do **not** test malformed/unreadable source → fallback → persist → source preservation/quarantine/provenance.
+
+🔴 This establishes a concrete **recovery provenance loss / source replacement** path. It does not establish universal data loss: the old bytes may still exist externally (Git/history/backups), but the application itself does not preserve their unreadable identity before overwrite.
+
+Classification: **FAILED_LOAD_CAN_BE_NORMALIZED_AND_COMMITTED_WITHOUT_PROVENANCE = CONFIRMED (code-level)**.
+
+Next mission P49: inspect whether any caller other than `main()` can invoke `loadState()` and then `persistState()` in the same fallback-blind manner, including assistants/browser/API paths. Determine whether the confirmed gap is simulation-only or broader within Lúmina.
+
+DO-NOT-REPEAT: P0–P48 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
