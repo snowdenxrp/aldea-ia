@@ -3260,3 +3260,23 @@ Exact recovery point: POST-AB105.116R implementation audit → P27 → report-co
 Next independent investigation: trace the generated CLI/output contract and any documentation describing assistant reports, to determine whether report.status is intended to represent all diagnostics or only debugger/tester/analyst. Do not reopen P24–P26.
 
 DO-NOT-REPEAT: P0–P27 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P28 — report.status contract is limited by implementation, not documented
+
+🟢 Audited the current CLI/output path and documentation. scripts/assistants.mjs emits the aggregate report as JSON and uses only report.status === "error" to set process.exitCode=1. No separate structural status/exit handling exists.
+
+🟢 src/assistants/index.js defines buildAssistantReport({ debuggerReport, testerReport, analystReport }) and computes status exclusively from those three reports. The structuralReport argument passed by scripts/assistants.mjs is ignored by the function boundary.
+
+🟢 The emitted JSON therefore excludes structuralReport from the aggregate assistants array, while report.assistantSquad and report.nexoMission are added separately afterward. No CLI/documentation contract found in README or repository search defines report.status as covering StateAuditor/structural findings.
+
+🟢 No repository documentation was found establishing structuralReport as intentionally evidence-only, nor defining a separate status contract for it. Strongest conclusion: current report.status semantics are implementation-defined around debugger/tester/analyst, while the caller constructs an additional structural diagnostic stream that is not covered by that status contract.
+
+🔵 This is not evidence that the CLI is unsafe or that structural findings should automatically drive Nexo. It is a contract ambiguity/routing gap. Existing structural codes are not explicit action mappings, so routing them would currently fall back to inspect_and_collect_evidence rather than direct mutation.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P28 → CLI/output/documentation contract audit closed.
+
+Next independent investigation: audit whether learnFromReports() intentionally excludes structural findings and whether this creates a second loss of safety-relevant diagnostic history; do not reopen P24–P28 routing/status searches.
+
+DO-NOT-REPEAT: P0–P28 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
