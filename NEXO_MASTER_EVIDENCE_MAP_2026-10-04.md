@@ -2817,3 +2817,52 @@ DO-NOT-REPEAT:
 - P0–P11 local retention/semantic-deduplication carrier search is closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P12 — planned-step admission boundary lacks AB105.082R minimum identity tuple
+
+🟢 Admission boundary traced directly in the current executable carrier.
+
+`src/nexo/runtime.js` is the exact bridge from a planned mission step to the effect adapter. After `beginNexoStep()` changes the step to `executing`, runtime constructs exactly:
+
+```text
+idempotencyKey = `${started.missionId}:${stepId}`
+```
+
+It then calls `adapter.execute()` with:
+
+```text
+missionId, stepId, action, target, idempotencyKey, context, precondition, postcondition
+```
+
+🟢 No admission validator at this boundary requires an independent effect identity, operation identity, attempt/retry generation, authority context/epoch, resource incarnation/fence, expected version, payload fingerprint, or capability class before the adapter is invoked.
+
+🟢 `beginNexoStep()` itself checks only mission/step existence, terminal status, and dependency completion. `planNexoExecution()` likewise exposes planned step fields but does not construct or validate the AB105.082R tuple.
+
+🟢 `createEffectAdapter()` then accepts the supplied idempotency key as the execution identity. Its first durable execution gate is exact-key lookup / PREPARED reconciliation. There is no separate admission layer between `adapter.execute()` and the handler that rejects a request missing the remaining identity dimensions.
+
+🔵 Therefore the current carrier has a concrete identity-collapse boundary:
+
+```text
+planned step
+  → missionId + stepId
+  → idempotencyKey = missionId:stepId
+  → adapter.execute()
+  → handler
+```
+
+The richer dimensions required by the AB105.082R minimum tuple are not enforced at this transition.
+
+🔵 Important precision: `precondition` and `postcondition` are executable callbacks, not substitutes for authority/fence, target incarnation, operation identity, fingerprint, or capability-class binding. The local `getStateVersion()` check in the adapter also does not supply the missing authority/fence dimensions.
+
+🔵 This is an implementation-boundary finding, not proof that an external effect was duplicated. It establishes that a caller can reach the effect adapter/handler without first presenting the complete minimum identity/admission tuple.
+
+🔴 No patch made. Research-first rule remains active.
+
+Exact recovery point: POST-AB105.116R implementation audit → P12 → planned-step admission boundary audited; missionId:stepId is the only constructed execution identity and no AB105.082R minimum-tuple gate exists before handler reachability.
+
+Next independent investigation: audit whether any caller of `executeNexoStep()` or `executeLuminaNexoStep()` supplies hidden authority/fence/incarnation/fingerprint/capability metadata through `context`, `precondition`, or `postcondition`, and whether any such metadata is actually enforced rather than merely carried. Do not repeat the P0–P12 constructor/deduplication search.
+
+DO-NOT-REPEAT:
+- P0–P12 current executable retention, reconstruction, semantic-deduplication, identity-constructor, and admission-boundary audits are closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
