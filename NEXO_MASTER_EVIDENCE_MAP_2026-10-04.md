@@ -749,3 +749,16 @@ Current epistemic state unchanged:
 - vulnerability: NOT ESTABLISHED.
 
 DO-NOT-REPEAT: generic Processor lifecycle, RequestChannel, DynamicConfigPublisher, or AclCache searches unless a new concrete source path is identified.
+
+
+## 2026-10-06 — ApiVersionManager / MetadataCache bridge closure
+
+🟢 Audited the shared MetadataCache held by DefaultApiVersionManager and read by the network Processor's ApiVersions path. BrokerMetadataPublisher performs metadataCache.setImage(newImage) before AclPublisher/W1, while the incremental ACL mutation changes authorizer state rather than MetadataCache. Thus this shared object does not create W1→Processor publication.
+
+🟢 The Processor's ordinary request construction path has no identified metadataCache read that is causally dependent on the later ACL W1 before RequestChannel.sendRequest.
+
+🔵 Dedicated audit saved as docs/nexo/NEXO_AB105_APIVERSION_METADATA_CACHE_BRIDGE_AUDIT_2026-10-06.md (commit 74a57d4e4a2bec775d907c7c1a15836338f35acd).
+
+Current epistemic state unchanged: W1→Processor HB UNKNOWN / NOT IDENTIFIED; W1→ENQUEUE HB UNKNOWN / NOT IDENTIFIED; W1→D1 HB UNKNOWN / NOT IDENTIFIED; stale-read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED.
+
+DO-NOT-REPEAT: ApiVersionManager/MetadataCache as a generic W1 publication candidate unless a new source path shows a post-W1 write/read or explicit synchronization handoff.
