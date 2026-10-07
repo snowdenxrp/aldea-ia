@@ -2567,3 +2567,29 @@ Exact recovery point: AB105.115R → old-generation fencing during recovery → 
 Next exact frontier: AB105.116R → recovery admission ordering: prove the complete sequence from independent recovery authority through stale-operation quarantine/fencing to first safe new effect. AB105.116R is the final protected recovery audit anchor; do not create AB105.117R.
 
 DO-NOT-REPEAT: AB105.114R independent recovery authority; AB105.113R checkpoint authority; AB105.112R ledger integrity; AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.116R FINAL PROTECTED RECOVERY ANCHOR
+
+🟢 Complete recovery ordering:
+1. independent recovery authority;
+2. new monotonic recovery generation/epoch;
+3. target-enforced fence bound to that generation;
+4. stop critical external admission during transition;
+5. identify prior-generation operations outside the recovered snapshot;
+6. quarantine unresolved operations as UNKNOWN;
+7. establish current target/resource incarnation and fence;
+8. prove stale-generation effects are rejected at the target acceptance boundary;
+9. only then admit the first new critical effect;
+10. persist generation, unresolved set, fence, and admission decision in protected recovery lineage.
+
+🟢 Recovery completion, authority establishment, old-effect fencing, and first-new-effect commitment are separate claims. Local process restart or an empty journal cannot prove the external safety boundary.
+
+🟢 The first post-recovery critical effect requires its own current authority, fence, capability, identity, target/incarnation, and commitment evidence. It does not inherit these from the recovery transition.
+
+🟢 If any authoritative boundary is missing, critical external admission remains STOP/QUARANTINE.
+
+🔵 FINAL AUDIT RESULT: the semantic recovery protocol is closed through this protected anchor. Current Nexo/Lúmina code does not implement the independent recovery authority, target-enforced recovery fence, authoritative external operation registry, or immutable recovery claim ledger required for an implementation-level safety proof. This is therefore an evidence/specification closure, not an implementation-complete safety proof.
+
+🔴 AB105.117R is prohibited. Future work must begin as a separately named investigation without renumbering or silently reopening AB105.116R.
+
+Exact protected recovery point: AB105.116R → independent authority → new generation → target fence → old-operation quarantine/reconciliation → stale-effect rejection → first safe new-effect admission.
