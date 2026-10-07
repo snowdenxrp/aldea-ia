@@ -311,3 +311,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - `effectJournal` is bounded to the last 200 entries; unresolved evidence can therefore be evicted. Absence from the bounded journal must not mean ABSENT.
 - `nexoEffectRevision` is in-memory and not serialized, so it is not a durable commit marker or fence.
 - Exact next: trace complete effectJournal lifecycle from prepare/record through handler, terminal update, persistence, exception and crash cuts.
+
+
+## P112 effect journal lifecycle/crash-cut audit V1 — 2026-10-07
+- `effect-adapter.js` lifecycle confirmed: prepared entry → optional `persistPreparedIntent` → handler → postcondition → terminal `persist()`; runtime separately records mission execution/outcome.
+- Crash before hook completion leaves PREPARED only in RAM unless caller made the hook durable.
+- Handler mutation precedes terminal journal update; crash between them can leave PREPARED while mutation may already have occurred. PREPARED is therefore not NOT_ATTEMPTED.
+- Handler exceptions intentionally return `EFFECT_OUTCOME_UNKNOWN` without terminal `persist()`; recovery must reconcile when durable PREPARED exists.
+- Terminal journal updates are in-memory until `persistState()` is invoked; no demonstrated atomic join exists between handler mutation, journal terminal state, and persisted simulation state.
+- Current repository still has no demonstrated integrated production caller that supplies a durable `persistPreparedIntent` checkpoint.
+- Exact next: trace actual `persistPreparedIntent` callers and terminal `persist()`→`persistState()` integration to locate the missing durable atomic/recovery boundary.
