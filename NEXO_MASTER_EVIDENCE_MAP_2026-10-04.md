@@ -2236,3 +2236,37 @@ Exact recovery point: AB105.106R → fence enforcement boundary → only target-
 Next exact frontier: AB105.107R → concurrent fence advancement versus effect acceptance: audit the race where revocation/new epoch and target commit occur simultaneously.
 
 DO-NOT-REPEAT: AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.107R concurrent fence advancement vs effect acceptance: race resolves only at an authoritative boundary
+
+🟢 When authority/fence advancement races with effect acceptance, wall-clock order, request-send order, response order, and coordinator observation order cannot by themselves determine which authority was valid at commitment.
+
+Three cases require distinct semantics:
+- Effect accepted under old fence before the authoritative fence transition: COMMITTED under the old authority, if the target contract permits it.
+- New fence becomes authoritative before target acceptance: stale effect must be rejected, if target enforces the fence at acceptance.
+- No authoritative ordering witness exists: the effect remains UNKNOWN; do not infer from timestamps.
+
+🟢 A local sequence of revocation-issued then request-sent does not prove safety. Conversely, request-sent then revocation-issued does not prove the request committed before revocation.
+
+🟢 The required ordering is between the target acceptance boundary and the authority/fence transition boundary, not between client-side events.
+
+🟢 Safe designs therefore need one of:
+1. shared atomic commit domain containing both authority transition and effect acceptance;
+2. target-enforced monotonic fence checked atomically at effect acceptance;
+3. an authoritative linearizable authority/target protocol that establishes which boundary precedes the other.
+
+🟢 If the authority transition is durable but the target has not observed/enforced it, the new authority is not yet a safety fence for that target.
+
+🟢 If the effect is accepted and the response is lost, later authoritative operation lookup can establish COMMITTED under the fence that the target recorded. Lost response does not become REJECTED.
+
+🟢 If revocation is observed by the coordinator but the target cannot prove whether the effect crossed acceptance, preserve UNKNOWN and quarantine/reconcile according to effect class.
+
+🔵 This race is fundamentally about linearization, not timestamp precision. Increasing timestamp resolution or adding logs does not manufacture a happens-before/commit ordering.
+
+🔴 No current Nexo/Lúmina executable target jointly linearizes authority/fence advancement with external effect acceptance.
+
+Exact recovery point: AB105.107R → concurrent fence advancement vs effect acceptance → only authoritative ordering at/around the target acceptance boundary can resolve the race; client-side event order cannot.
+
+Next exact frontier: AB105.108R → lost response/receipt after fenced acceptance: determine the minimum authoritative lookup needed to recover COMMITTED without retry duplication.
+
+DO-NOT-REPEAT: AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
