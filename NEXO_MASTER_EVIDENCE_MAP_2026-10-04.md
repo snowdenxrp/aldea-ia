@@ -1481,3 +1481,38 @@ Exact recovery point: **AB105.085R → semantic carrier contract → provenance-
 Next exact frontier: test the envelope against the adversarial AB105.082R outcome matrix and identify whether every outcome can be represented without collapsing UNKNOWN, PARTIAL, REJECTED, or COMMITTED.
 
 DO-NOT-REPEAT: AB105.084R carrier audit; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.086R carrier outcome-coverage audit: all adversarial outcomes remain distinguishable
+
+🟢 The AB105.085R semantic carrier was tested against every AB105.082R adversarial outcome.
+
+| Outcome | Representable without collapse? | Required evidence distinction |
+|---|---|---|
+| REJECTED | 🟢 Yes | target rejection + exact operation/effect identity + guarantee of non-acceptance |
+| COMMITTED | 🟢 Yes | authoritative target commitment evidence bound to exact identity/fingerprint and commit domain |
+| DUPLICATE_COMMITTED | 🟢 Yes | authoritative existing receipt/operation record + matching identity/fingerprint |
+| COLLISION/QUARANTINE | 🟢 Yes | same operation identity with incompatible fingerprint/binding; STOP |
+| STALE_FENCE | 🟢 Yes | target-authoritative stale epoch/fence rejection |
+| RESOURCE_REPLACED | 🟢 Yes | target-authoritative incarnation mismatch |
+| UNKNOWN | 🟢 Yes | unresolved acceptance boundary; absence of receipt/response is insufficient to convert it to REJECTED |
+| PARTIAL | 🟢 Yes | independently committing participants with non-uniform outcomes; aggregate COMMITTED prohibited |
+
+🟢 The carrier therefore does not need a new outcome value to solve the representation problem. The critical requirement is that evidence provenance identifies *why* an outcome is known and which commitment domain established it.
+
+🟢 Strong distinction recovered:
+- **REJECTED** requires positive evidence that the exact effect was not accepted.
+- **UNKNOWN** is the absence of a resolved acceptance boundary, not merely a missing response.
+- **COMMITTED** requires authoritative commitment evidence, not `verified=true`.
+- **PARTIAL** is a property of participant coverage and cannot be collapsed into a single target result.
+- **DUPLICATE_COMMITTED** is only safe when the authoritative existing record matches the exact effect identity and fingerprint.
+- **COLLISION** must quarantine rather than reinterpret the second request as a retry.
+
+🔵 Remaining semantic dependency: the carrier can represent these states, but it cannot manufacture the required evidence. Provider/target capability determines whether a state can legitimately be asserted.
+
+🔴 No current executable adapter has been promoted to enforce this matrix. This remains contract-level evidence.
+
+Exact recovery point: **AB105.086R → carrier outcome-coverage audit → all AB105.082R adversarial outcomes remain distinguishable.**
+
+Next exact frontier: define the **claim transition rules** from request/admission/evidence to each outcome, including which transitions are forbidden (especially UNKNOWN→REJECTED, UNKNOWN→COMMITTED, and provider ACK→COMMITTED).
+
+DO-NOT-REPEAT: AB105.085R carrier definition; AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
