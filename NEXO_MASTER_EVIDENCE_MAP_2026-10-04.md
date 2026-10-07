@@ -2461,3 +2461,39 @@ Exact recovery point: AB105.112R → claim-ledger integrity → tamper/rollback/
 Next exact frontier: AB105.113R → checkpoint/snapshot authority: define how a recovery checkpoint becomes trusted without circularly trusting the ledger being recovered.
 
 DO-NOT-REPEAT: AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.113R checkpoint/snapshot authority: recovered state cannot authenticate itself
+
+🟢 A recovery checkpoint cannot be trusted merely because the checkpoint is internally consistent, hash-valid, or signed by an identity whose authority is contained only inside the recovered state.
+
+Minimum trust model:
+- checkpoint identity and covered ledger sequence/generation;
+- independently authenticated checkpoint anchor or authority;
+- recovery generation/epoch;
+- integrity proof for the checkpoint contents;
+- explicit scope: what facts the checkpoint is authoritative for;
+- freshness/monotonicity evidence preventing rollback;
+- provenance showing who/what produced and finalized the checkpoint;
+- reconciliation status for effects outside the checkpoint boundary.
+
+🟢 A valid snapshot proves integrity relative to its trust anchor; it does not prove that it is the newest authoritative snapshot.
+
+🟢 A signed snapshot proves the signer produced/endorsed it, but signer authority must itself be current and independently established. Historical authority cannot bootstrap current authority.
+
+🟢 Two valid checkpoints from different generations cannot be merged by timestamp, file size, local sequence, or majority of local nodes. If no authoritative ordering exists, preserve both and quarantine dependent claims.
+
+🟢 A checkpoint may be authoritative for local coordinator state while remaining non-authoritative for external effect commitment. Snapshot scope must therefore be claim-specific.
+
+🟢 Recovery must establish a new recovery generation before admitting new effects when the restored checkpoint cannot prove it includes all effects that may have committed outside the snapshot.
+
+🟢 The checkpoint anchor and the recovered ledger should not share a single failure domain if the goal is to detect rollback or self-consistent malicious restoration. Otherwise an attacker can restore both to the same older state.
+
+🔵 This confirms a general rule: **recovery provenance is not recovery authority**. A perfectly preserved historical state can still be stale.
+
+🔴 No current Nexo/Lúmina executable independent checkpoint anchor, protected recovery-generation authority, or snapshot-scope enforcement exists.
+
+Exact recovery point: AB105.113R → checkpoint/snapshot authority → recovered state cannot be its own root of trust; checkpoint freshness and authority require an independent boundary.
+
+Next exact frontier: AB105.114R → independent recovery authority and generation monotonicity: determine how a new recovery generation is established when the old authority/ledger may be compromised or unavailable.
+
+DO-NOT-REPEAT: AB105.112R ledger integrity; AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
