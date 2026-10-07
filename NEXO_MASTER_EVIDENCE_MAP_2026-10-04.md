@@ -2532,3 +2532,38 @@ Exact recovery point: AB105.114R → independent recovery authority/generation m
 Next exact frontier: AB105.115R → old-generation fencing during recovery: determine the exact conditions under which a new recovery generation can safely prevent stale in-flight effects.
 
 DO-NOT-REPEAT: AB105.113R checkpoint authority; AB105.112R ledger integrity; AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.115R old-generation fencing during recovery: new generation is safe only when stale effects are target-rejected
+
+🟢 Establishing a new recovery generation does not by itself stop effects issued by the old generation. Safe recovery requires an enforced boundary that makes old-generation effects unable to cross the target acceptance boundary.
+
+Minimum conditions:
+- new recovery generation/epoch is independently authoritative;
+- target/resource stores the current accepted generation or equivalent fence;
+- every critical effect presents its generation/fence;
+- target checks that fence at the actual acceptance/commit boundary;
+- stale generations are authoritatively rejected before acceptance;
+- rejection semantics guarantee the stale effect did not commit;
+- recovery reconciles in-flight old-generation operations whose outcome crossed or may have crossed the transition.
+
+🟢 Merely marking the old coordinator STOPPED, revoking its credential, or recording a new epoch in the coordinator is insufficient if the target can still accept an old-generation request.
+
+🟢 Credential revocation and generation fencing are related but distinct: revocation may prevent future authentication, while an already-issued capability/request may still reach the target unless the target enforces current generation at acceptance.
+
+🟢 A stale effect that reaches the target after the new generation is established must resolve to STALE_FENCE/REJECTED only when target semantics prove non-acceptance. Otherwise the old operation remains UNKNOWN and requires reconciliation.
+
+🟢 Recovery should fence before admitting new critical effects. If old-generation effects remain unfenced, new effects can race with stale effects and recovery cannot establish a clean authority boundary.
+
+🟢 If the target cannot enforce a fence, recovery may establish a new coordinator generation for bookkeeping, but it cannot claim that external effects from the old generation are safely stopped. Critical external admission remains STOP/QUARANTINE.
+
+🟢 Fence enforcement must survive target failover/restore; otherwise a stale replica or restored target can resurrect acceptance under an old generation.
+
+🔵 This closes the distinction between authority lifecycle and effect safety: OLD_AUTHORITY_DISABLED is a coordinator fact; OLD_EFFECTS_CANNOT_COMMIT is a target-enforced fact.
+
+🔴 No current Nexo/Lúmina executable external target provides a recovery-generation fence enforced atomically at effect acceptance.
+
+Exact recovery point: AB105.115R → old-generation fencing during recovery → new recovery authority is not an external safety boundary until stale generations are target-rejected at acceptance.
+
+Next exact frontier: AB105.116R → recovery admission ordering: prove the complete sequence from independent recovery authority through stale-operation quarantine/fencing to first safe new effect. AB105.116R is the final protected recovery audit anchor; do not create AB105.117R.
+
+DO-NOT-REPEAT: AB105.114R independent recovery authority; AB105.113R checkpoint authority; AB105.112R ledger integrity; AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
