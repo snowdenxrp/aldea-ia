@@ -731,3 +731,21 @@ Current epistemic state unchanged:
 - vulnerability: NOT ESTABLISHED.
 
 DO-NOT-REPEAT: DynamicConfigPublisher generically, unless a new source path shows an ACL delta itself invokes a shared reconfiguration primitive that the SocketServer Processor subsequently acquires.
+
+
+## 2026-10-06 — AclPublisher ↔ Processor shared-state inventory
+
+🟢 Audited the remaining candidate class: an object/state touched by incremental ACL W1 and subsequently acquired/read by the SocketServer Processor before RequestChannel ENQUEUE. The inspected Processor-side shared objects include RequestChannel, ApiVersionManager, CredentialProvider, socket/selector state and Processor lifecycle state; no ACL W1 write into a Processor-side synchronization object was identified.
+
+🟢 RequestChannel producer publication, Processor lifecycle/startup, DynamicConfigPublisher, and AclCache were already independently bounded and are not reopened here.
+
+🔵 Dedicated source audit saved as docs/nexo/NEXO_AB105_ACLPUBLISHER_PROCESSOR_SHARED_STATE_INVENTORY_2026-10-06.md (commit 8379851b511ffaf87cd7eddaf902d915094db126).
+
+Current epistemic state unchanged:
+- HB(W1→Processor): UNKNOWN / NOT IDENTIFIED.
+- W1→ENQUEUE HB: UNKNOWN / NOT IDENTIFIED.
+- W1→D1 HB: UNKNOWN / NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: generic Processor lifecycle, RequestChannel, DynamicConfigPublisher, or AclCache searches unless a new concrete source path is identified.
