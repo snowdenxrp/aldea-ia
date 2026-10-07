@@ -1768,3 +1768,40 @@ Exact recovery point: **AB105.093R → compensation/cancellation after UNKNOWN �
 Next exact frontier: audit **effect dependency/causal graph semantics**—how original operations, retries, cancellations, compensations, and dependent effects are linked so UNKNOWN cannot leak into a false downstream assumption.
 
 DO-NOT-REPEAT: AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.094R effect dependency/causal graph: UNKNOWN must block unsafe downstream assumptions
+
+🟢 Effect causality is now explicit. A dependent effect D may reference predecessor O, but that edge does not resolve O's outcome.
+
+Minimum dependency edge carries:
+- predecessor operation_id/effect_id;
+- dependency relation (requires-commit, compensates, cancels, observes, or merely follows);
+- required predecessor outcome set;
+- target/resource incarnation assumptions;
+- authority/fence context where inherited;
+- dependency policy for UNKNOWN/PARTIAL/QUARANTINED.
+
+🟢 For a dependency requiring predecessor commitment:
+O = COMMITTED is sufficient only when the required commitment claim is authoritative.
+O = UNKNOWN, PARTIAL, COLLISION/QUARANTINE, or stale/replaced state cannot silently satisfy the dependency.
+The dependent operation must remain BLOCKED/SAFE_WAIT/UNKNOWN according to its contract.
+
+🟢 Retry edges do not create new logical effects. A retry attempt remains causally attached to the same logical operation when duplicate suppression/reconciliation requires that identity. A new logical operation requires an explicit new effect identity and must not inherit the old operation's unresolved outcome as fact.
+
+🟢 Compensation/cancellation edges are not ordinary success dependencies. They reference the original operation but preserve independent outcomes, as established in AB105.093R.
+
+🟢 Observation edges do not establish causality. Seeing resource state after O does not prove O caused that state unless the observation contract binds the state transition to O.
+
+🟢 UNKNOWN propagation is claim-specific, not a universal “everything stops” rule. An effect may proceed if its contract explicitly requires only a non-conflicting fact that is already authoritative; otherwise an UNKNOWN predecessor must prevent a stronger downstream claim.
+
+🟢 Cycles in dependency/compensation graphs require quarantine or explicit cycle semantics; the coordinator must not resolve a cycle by assuming any member succeeded.
+
+🔵 No current Nexo/Lúmina executable graph carries these typed dependency semantics or enforces UNKNOWN propagation. Existing mission dependencies are planning/execution ordering, not authoritative effect-causality proofs.
+
+🔴 No implementation claim is made.
+
+Exact recovery point: **AB105.094R → effect dependency/causal graph → dependency edges carry claim requirements; UNKNOWN cannot silently satisfy a requires-commit edge, and observation/order alone does not prove causality.**
+
+Next exact frontier: audit **cross-effect authority/fence inheritance**—whether a dependent effect may reuse predecessor authority context, epoch, fence, resource incarnation, or capability evidence, and where that inheritance must be rejected as stale.
+
+DO-NOT-REPEAT: AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
