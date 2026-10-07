@@ -3141,3 +3141,25 @@ Exact recovery point: POST-AB105.116R implementation audit → P21 → planner p
 Next independent investigation: audit whether `finding.action` can contain all effect-relevant inputs for every Lúmina action, especially hidden execution inputs such as random draws and state-derived values; then define the minimum canonical request fields needed before an operation fingerprint can be considered complete.
 
 DO-NOT-REPEAT: P0–P21 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P22 — action request inputs are incomplete relative to execution-time effect inputs
+
+🟢 Audited the concrete Lúmina action dispatcher and action modules: `src/actions.js`, `src/economy.js`, `src/development.js`, `src/production.js`, `src/institutions.js`. The planner can carry explicit request parameters for actions that expose them, but several actions derive additional effect inputs from mutable target/world state at execution time.
+
+🔴 Classification: explicit request parameters are not a complete effect description. Examples: `drink` depends on current water availability; `eat_plant` depends on current plant amount, foodProperties and quality; `eat_fish` depends on current inventory; `gather_wood`/`gather_stone` depend on current skill, tool selection/efficiency/durability and resource amount; `build_shelter` depends on current materials and construction technology and creates a structure ID from current collection length; `craft_tool` depends on current materials, toolmaking skill and technology; `farm` depends on current wood/fertile land; `harvest` depends on current farm readiness; institution actions depend on membership and current commons balances; `trade` depends on current partner existence, inventory, money and supplied price.
+
+🔴 `catch_fish` has an additional non-request input: the execution-time random draw from `getRandom(simulation)`. Its success probability depends on current skill and the random draw is not part of the request payload or target receipt.
+
+🟢 Some actions do have a clean explicit request portion: `rest(duration)`, amount-based consumption/gathering, institution `resourceType+amount`, and trade `partnerId+offerType+amount+unitPrice`. These can form part of a canonical request fingerprint, but they remain only request identity, not commitment evidence.
+
+🔵 Important distinction: an operation fingerprint should not hash only the eventual mutable state/result. That would conflate request identity with observed consequence. The minimum useful model is at least: canonical explicit request + target identity + relevant authority/capability context + target/resource incarnation/fence + execution attempt/generation. Execution-time state and random decisions belong to the commitment/evidence record, not necessarily to the pre-execution request fingerprint.
+
+🔴 Current carrier has no target-side receipt that records these derived inputs/decisions alongside an independent operation identity. Therefore P20's conclusion is strengthened: even a complete canonical request fingerprint would improve correlation but would not make an ambiguous PREPARED effect retrospectively provable as COMMITTED or NOT_COMMITTED.
+
+🔵 No patch. No external duplicate effect claimed. No exactly-once claim.
+
+Exact recovery point: POST-AB105.116R implementation audit → P22 → explicit-vs-derived action-input census closed.
+
+Next independent investigation: identify the exact boundary where the planner creates each `finding.action` and determine whether request parameters themselves are complete, stable and canonical before execution; do not treat mutable derived state/randomness as planner inputs unless the contract explicitly requires pre-binding them.
+
+DO-NOT-REPEAT: P0–P22 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
