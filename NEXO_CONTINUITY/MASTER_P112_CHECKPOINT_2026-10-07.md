@@ -220,3 +220,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Therefore the first common semantic boundary is broader than the local effect function for all three classes.
 - 🔵 Exact minimum common boundary/token ownership remains open; no runtime concurrency claim.
 - Exact next: trace shared writers (tick/day transitions/normalization/social-economic helpers) into the protected footprints, then test whether composite tokens can reduce that footprint without losing coverage.
+
+
+## P112 shared-writer footprint audit — 2026-10-07
+- Saved `P112_SHARED_WRITER_FOOTPRINT_AUDIT_V1_2026-10-07.md`, commit `d2cfeb66e7df4f533f9f806a6f2963ca6dac075e`.
+- `tick()` is a shared writer and surrounds the selected transition with time/day, needs, perception, decision, action, spatial-region and learning mutations.
+- `advanceWorldDay()` and `advanceSocietyDay()` can invalidate admission assumptions outside the selected action handler.
+- `performDecision()` has protected-relevant mutation branches outside `executeAction()` (social, knowledge, cooperation, exploration/discovery, memory/events/skills).
+- Spatial/range state is also written after `performDecision()` in the same tick.
+- Result: final protection cannot be reduced to executeAction() alone; exact smallest shared-writer exclusion set remains OPEN. This is not a proof that the entire simulation must serialize.
+- Exact next: build the intersection graph of representative classes × shared writers × invalidated dependencies, then compare the minimum exclusion set against a broader protected transition.
