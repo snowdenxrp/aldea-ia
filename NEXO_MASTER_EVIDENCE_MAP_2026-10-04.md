@@ -2787,3 +2787,33 @@ DO-NOT-REPEAT:
 - P6/P7/P8 are the fresh-planning → semantic-dedup → concrete-handler chain.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P11 — final executable identity-constructor census
+
+🟢 Audited the remaining direct constructors in `src/nexo/effect-adapter.js` and `src/nexo/orchestrator.js`, against the already inspected memory/persistence layer.
+
+`buildNexoMission()` creates a new mission identity as `lumina-${Date.now()}-${missionSequence}`. Step identity is local to that mission (`step-1`, `step-2`, ...). No mission-independent operation/effect identity is generated from action+target+parameters.
+
+`createEffectAdapter()` receives/uses the supplied `idempotencyKey` as the execution identity. Its prepared journal entry stores that key plus missionId/stepId/action/target. It does not derive an independent semantic operation digest or OperationID.
+
+The adapter's in-flight map and queue are keyed by the exact supplied idempotency key and the journal object. These are process-local concurrency controls, not durable semantic operation registries.
+
+`recordNexoExecution()` and `recordNexoOutcome()` were previously inspected: their durable identities remain exact mission/step and idempotency-key identities. `buildNexoMission()` only deduplicates findings inside the newly constructed mission using action|target|action-name and `doNotRepeat`; it does not search prior effect history for semantic equivalence.
+
+🟢 Therefore the final constructor census finds no missed executable constructor that creates a stable mission-independent operation/effect identity surviving a new mission.
+
+🔵 Scope: this closes the current executable local-carrier search, not every possible future provider implementation. It also does not claim an external duplicate effect occurred. The finding is that the present carrier lacks an authoritative mission-independent operation identity/reconciliation registry.
+
+🟢 P11 closes the implementation search for hidden local deduplication. The P0→P11 chain is now complete as an executable-carrier audit.
+
+🔴 No implementation patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P11 FINAL → no hidden mission-independent operation identity constructor.
+
+Next independent gap: stop searching for hidden deduplication in this carrier and audit the admission boundary that converts a planned step into an effect request: verify exactly where action/target/context become an idempotencyKey and whether that boundary can require the AB105.082R minimum identity tuple (effect identity, operation identity, attempt/retry generation, authority context, resource incarnation/fence, expected version, fingerprint, capability class) before any handler is callable.
+
+DO-NOT-REPEAT:
+- P0–P11 local retention/semantic-deduplication carrier search is closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
