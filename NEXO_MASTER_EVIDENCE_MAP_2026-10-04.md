@@ -3445,3 +3445,28 @@ Exact recovery point: POST-AB105.116R implementation audit → P37 → Git-histo
 Next independent investigation: determine whether there is any machine-readable notion of **last known good** such as a CI-passing state commit, validation gate, state health marker, or persisted hash/lineage. Do not implement yet.
 
 DO-NOT-REPEAT: P0–P37 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P38 — no machine-readable last-known-good state marker found
+
+🟢 Audited repository state/version metadata, persistence tests, and workflow validation for a machine-readable notion of `last known good` for `world-state.json`.
+
+🟢 `stateRevision` is durable version/conflict metadata, but it is not a health marker or validation certificate. Existing continuity evidence explicitly limits it to persistence-level optimistic conflict checking; it does not identify a semantically healthy historical snapshot.
+
+🟢 The GitHub Actions workflow runs `npm test`, `npm run assistants`, and `npm run simulate` before committing the resulting state, but it does not persist an artifact/marker linking the resulting `world-state.json` to a successful validation result. The commit message only records `Actualizar estado de Lúmina`.
+
+🟢 No repository search found a persisted `lastKnownGood`, health marker, validation marker, state hash/lineage field, signed state marker, or workflow artifact that is consumed by the recovery path to select a known-good state.
+
+🟢 Existing restart/persistence tests verify persistence behavior and failure handling, but no test establishes a durable mapping of `state snapshot → validation success → recoverable last-known-good identity`.
+
+🔵 Therefore the repository has validation execution and Git historical snapshots, but lacks a machine-readable bridge that makes one historical snapshot authoritative as the last known good state after a load failure.
+
+🔴 Do not claim that no Git commit was healthy, nor that recovery is impossible. The finding is specifically that **the application has no machine-readable last-known-good contract**.
+
+Classification: **validation exists; last-known-good identity/lineage contract absent**. No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P38 → last-known-good marker/lineage audit closed.
+
+Next independent investigation: inspect whether commit/CI ordering itself can accidentally create a false last-known-good candidate—for example, state is committed after tests but `npm run assistants`/`simulate` can mutate the same state after validation. Determine whether validation covers the exact bytes that are committed. Research only.
+
+DO-NOT-REPEAT: P0–P38 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
