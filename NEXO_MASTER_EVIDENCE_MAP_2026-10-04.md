@@ -3856,3 +3856,21 @@ DO-NOT-REPEAT: P0–P60 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 
 ## Exact next mission
 **P62:** audit whether the `push`-time race itself can violate the intended cross-file/revision invariants, especially because the retry path stages both files after `npm run simulate` but may inherit assistant-memory from the current `origin/main`. Use current code and reviewed Git history only. No patch; no TLC; no AB105.117R.
+
+
+## 2026-10-07 — P62 — push-time race / retry consistency
+
+🟢 The existing `stateRevision` lock protects filesystem writers inside a single runner, but the GitHub workflow has a separate remote-branch race. The primary path reads state A, runs assistants (writing memory A-derived), runs simulation, commits both files, then fetches `origin/main` and rebases. The rebase does not rerun assistants or reconstruct the pair from the rebased state.
+
+🟢 Therefore, if `origin/main` advanced from A to B while the runner was working, a successful rebase can potentially carry a commit produced from A onto B. Whether Git can auto-merge the two JSON changes or raises a conflict depends on the exact diff; source alone does not prove either outcome for every race. If rebase conflicts, the workflow resets to B and enters the known retry path (`npm run simulate` only), which can produce world B+1 with assistant-memory B.
+
+🟢 If the retry commit is itself beaten at push time, the shown shell sequence has no second fetch/rebase/push fallback; that push fails rather than proving a corrupted remote state. Thus the push-time race does not create an additional confirmed persistence corruption path by itself.
+
+🔵 The important invariant gap is stronger than the earlier wording: **remote rebase is a Git reconciliation step, not a semantic state reconciliation step**. No post-rebase `stateRevision`/cross-file lineage validation exists before push. The workflow assumes Git's textual rebase is sufficient to reconcile simulation state.
+
+🔴 No concrete historical commit was recovered proving a stale-A primary commit was successfully rebased onto B. Therefore classify the concrete anomaly as **POSSIBLE / NOT OBSERVED**, not confirmed execution.
+
+**P62 RESULT:** `REMOTE_REBASE_IS_NOT_SEMANTIC_STATE_RECONCILIATION = CONFIRMED CODE PATH`; `STALE_PRIMARY_STATE_CAN_BE_CARRIED_ACROSS_REBASE = POSSIBLE`; `RETRY_WORLD_PLUS1/MEMORY_B_PATH = CONFIRMED CODE PATH`; `PUSH_RACE_CAUSES_PERSISTED_CORRUPTION = NOT PROVEN`.
+
+## Exact next mission
+**P63:** inspect whether existing tests or persisted fields can detect/reject a semantically stale rebased pair after Git reconciliation. No patch; no TLC; no AB105.117R.
