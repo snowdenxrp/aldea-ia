@@ -1363,3 +1363,63 @@ Exact recovery point: **AB105.084R → effect-contract carrier audit → capabil
 Next exact frontier: define the minimum *semantic carrier contract* for capability/admission (fields, provenance, scope, freshness, and authority), without implementing it or choosing a provider.
 
 DO-NOT-REPEAT: AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.085R semantic carrier contract: minimum typed provenance boundary
+
+🟢 The minimum semantic carrier is now defined without implementation.
+
+A protected effect request needs five separated layers:
+
+1. **Identity**
+   - `operation_id`
+   - `effect_id`
+   - `attempt_id`
+   - `payload/effect_fingerprint`
+
+2. **Target binding**
+   - `resource_id`
+   - `resource_incarnation`
+   - `expected_resource_version`
+
+3. **Authority/currentness**
+   - `authority_context_id`
+   - `authority_epoch`
+   - `presented_fence`
+   - required authority scope/policy version where the claim depends on it
+
+4. **Capability admission**
+   - `capability_class`: STRONG_COMMIT | FENCED_IDEMPOTENT | RECONCILIATION_ONLY | UNSAFE/UNSUPPORTED
+   - `capability_assessment_id`
+   - `capability_scope`
+   - `capability_observed_at`
+   - `capability_expiry_or_freshness` when provider semantics require it
+
+5. **Commit-domain provenance**
+   - `commit_domain_id`
+   - `provider_operation_reference` when available
+   - authoritative receipt/reference only after the target establishes commitment
+
+🟢 Provenance rules:
+- Caller-supplied identity is not authoritative commitment evidence.
+- Capability assessment describes what the provider contract permits; it does not itself authorize an effect.
+- Authority fields describe currentness/fencing inputs; they do not prove target acceptance.
+- A receipt is authoritative only if its provenance binds it to the target commitment domain and exact operation/effect identity.
+- `verified=true` remains result/postcondition evidence, not capability or commitment evidence.
+
+🟢 Freshness rules:
+- Capability admission must be scoped to the exact provider/API/effect class and validity horizon.
+- A stale capability assessment cannot silently promote a request.
+- Authority currentness must be evaluated at the protected target boundary where the safety property requires it.
+- A capability assessment and an authority decision may be referenced by the request, but neither reference substitutes for target enforcement.
+
+🔵 Scope rule: capability is not globally attached to a provider. The assessment must cover the exact provider/API/operation/effect class/resource semantics needed by the claim.
+
+🔵 No implementation field has been added. This is a semantic contract only; the repository remains unchanged except for this continuity record.
+
+🔴 This contract does not prove that any current adapter can satisfy these fields. Current Lúmina remains without an authoritative target commitment boundary.
+
+Exact recovery point: **AB105.085R → semantic carrier contract → identity, target, authority, capability, and commit provenance separated.**
+
+Next exact frontier: adversarially test this carrier against the AB105.082R outcome matrix and verify whether every outcome can be represented without collapsing UNKNOWN, REJECTED, COMMITTED, DUPLICATE, COLLISION, STALE_FENCE, RESOURCE_REPLACED, or PARTIAL.
+
+DO-NOT-REPEAT: AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
