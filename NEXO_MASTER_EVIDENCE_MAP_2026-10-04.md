@@ -2270,3 +2270,40 @@ Exact recovery point: AB105.107R → concurrent fence advancement vs effect acce
 Next exact frontier: AB105.108R → lost response/receipt after fenced acceptance: determine the minimum authoritative lookup needed to recover COMMITTED without retry duplication.
 
 DO-NOT-REPEAT: AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.108R lost response/receipt after fenced acceptance: reconcile before retry
+
+🟢 A lost client response after target acceptance is not REJECTED. The effect may already be COMMITTED.
+
+Minimum authoritative reconciliation lookup should bind:
+- exact operation_id/effect_id;
+- exact payload/effect fingerprint;
+- target/resource_id;
+- resource incarnation/generation;
+- authority/fence context recorded at acceptance where relevant;
+- authoritative operation status/receipt;
+- commit-domain identity when the effect participates in shared atomicity.
+
+🟢 If lookup returns an exact compatible COMMITTED record, resolve UNKNOWN → COMMITTED or DUPLICATE_COMMITTED according to the provider's defined semantics. Do not execute the effect again merely because the client did not receive the receipt.
+
+🟢 If lookup returns an exact authoritative REJECTED record whose semantics guarantee non-acceptance, resolve UNKNOWN → REJECTED.
+
+🟢 If lookup returns no record, that is not automatically REJECTED. The result remains UNKNOWN unless the provider contract defines absence as authoritative non-acceptance within a closed reconciliation window.
+
+🟢 If lookup finds the same operation identity with incompatible fingerprint, treat it as COLLISION/QUARANTINE rather than retrying or accepting either result silently.
+
+🟢 If the operation record exists but its retention window has expired, historical absence remains non-proof. Reuse of the same operation identity must be prevented unless the provider guarantees the old operation can no longer complete or be reconciled.
+
+🟢 A successful retry is not evidence that the first attempt failed. Retry safety requires provider-side duplicate semantics covering the same identity, fingerprint, target incarnation, and applicable retention/fence rules.
+
+🟢 Reconciliation lookup and effect execution must remain separate. The lookup may close an epistemic claim without generating a new external effect.
+
+🔵 A client-visible receipt can be lost while the target remains authoritative. Therefore receipt delivery is transport; commitment is target-domain state.
+
+🔴 No current Nexo/Lúmina executable target exposes the required durable authoritative operation lookup/receipt registry.
+
+Exact recovery point: AB105.108R → lost response/receipt after fenced acceptance → authoritative lookup must precede retry; absence of a record is not rejection unless the provider explicitly guarantees it.
+
+Next exact frontier: AB105.109R → reconciliation-window closure: determine when a provider may safely declare historical absence authoritative and what proof is required before operation identity reuse.
+
+DO-NOT-REPEAT: AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
