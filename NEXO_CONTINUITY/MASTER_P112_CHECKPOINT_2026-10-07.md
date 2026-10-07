@@ -100,3 +100,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Random choice must be bound or treated as nondeterministic evidence for protected claims.
 - Complete instrumentation/coverage remains UNKNOWN; minimal granularity and action-class envelopes remain OPEN.
 - Exact next: audit specialization, territorial bonus, exploration, relationship, memory, discovery helpers and random/external observation paths.
+
+
+## P112 latest helper audit
+- `P112_HELPER_DEPENDENCY_AUDIT_2026-10-07.md`
+- Commit `2c16869bc5f92b2e1bbbe7bdfb63378af1ef2008`.
+- Specialization, exploration, relationship, memory and discovery paths mapped.
+- Derived helper output is not an authority boundary; normalization may write; collection selection creates predicate/order dependencies; knowledge and memory are mutable admission inputs.
+- Complete dependency capture UNKNOWN; minimal granularity OPEN.
+- Exact next: trace representative action-class envelopes: resource action, trade, cooperate, exploration, build/farm, including admission reads, handler reads/writes, derived/predicate dependencies and recovery/reconciliation inputs.
