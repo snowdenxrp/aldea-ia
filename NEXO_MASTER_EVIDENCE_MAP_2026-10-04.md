@@ -3242,3 +3242,21 @@ Exact recovery point: POST-AB105.116R implementation audit → P26 → structura
 Next independent investigation: audit tests/consumers for report-status assumptions and determine whether any test proves structuralReport must be visible to aggregate status or Nexo planning. Do not reopen the closed producer searches P24–P25.
 
 DO-NOT-REPEAT: P0–P26 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P27 — no test contract covers structural-report routing
+
+🟢 Searched the executable test suite for buildAssistantReport, scripts/assistants.mjs, DEAD_WITH_HEALTH and DEAD_STATE_MISMATCH. No test currently asserts that structuralReport appears in the aggregate assistant report, affects aggregate status, or is passed into buildNexoMission().
+
+🟢 The only current runtime consumer found for aggregate report status is scripts/assistants.mjs itself: it serializes the report and sets process.exitCode when report.status === error. Because buildAssistantReport() excludes structuralReport, a structural DEAD_STATE_MISMATCH can exist without causing this exit path through report.status.
+
+🟢 No test contract was found establishing structuralReport as intentionally evidence-only. Therefore the observed exclusion cannot be classified as deliberate design from test evidence; it is an undocumented routing boundary.
+
+🔵 This is a contract gap, not proof of unsafe execution. The structural findings currently observed are diagnostic consistency findings, and actionFor() would conservatively map unknown codes to inspect_and_collect_evidence if they were routed. No external effect or duplicate effect is demonstrated.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P27 → report-consumer/test-contract audit closed.
+
+Next independent investigation: trace the generated CLI/output contract and any documentation describing assistant reports, to determine whether report.status is intended to represent all diagnostics or only debugger/tester/analyst. Do not reopen P24–P26.
+
+DO-NOT-REPEAT: P0–P27 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
