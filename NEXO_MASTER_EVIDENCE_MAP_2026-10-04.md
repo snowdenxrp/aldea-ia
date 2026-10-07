@@ -1967,3 +1967,36 @@ Exact recovery point: **AB105.098R → shared commit-boundary linearization → 
 Next exact frontier: audit **prepare-vs-commit separation**—whether a provider's prepare/stage/validated state can ever be treated as a commitment claim, and how UNKNOWN between prepare and commit must be handled.
 
 DO-NOT-REPEAT: AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.099R prepare-vs-commit separation: PREPARED/VALIDATED never implies COMMITTED
+
+🟢 Prepare, validate, stage, reserve, or admission-success states are now explicitly non-commit states unless the provider contract defines that exact state as the authoritative commit boundary.
+
+Minimum distinction:
+- PREPARED: intent/parameters accepted for possible later commit.
+- VALIDATED: predicates checked at a point in time.
+- STAGED/RESERVED: provider has allocated or reserved state, but final effect acceptance is not established.
+- COMMITTED: authoritative commitment boundary has accepted the exact effect/domain.
+- UNKNOWN: the boundary outcome cannot be established.
+
+🟢 A crash after PREPARED but before COMMITTED does not justify REJECTED. The effect may still commit later or may already have crossed an unobserved boundary.
+
+🟢 A successful PREPARE response cannot be reused as proof that authority, resource version, fence, capability, or participant membership remained valid until COMMIT unless the provider contract explicitly guarantees those predicates across the interval.
+
+🟢 A prepare token/transaction ID is correlation material unless the provider explicitly binds it to an authoritative commit record. Client possession of a token is not a commitment receipt.
+
+🟢 If the provider exposes abort/cancel for PREPARED state, successful abort proves only what the provider contract says about that prepared transaction. It does not retroactively prove that an earlier operation outside the transaction never committed.
+
+🟢 For multi-effect domains, all required participants must reach the provider-defined commit boundary. “Prepared everywhere” is not aggregate COMMITTED.
+
+🟢 Retry after UNKNOWN between PREPARE and COMMIT must follow provider transaction/idempotency semantics. Blindly starting a new transaction can create duplicate or competing effects.
+
+🔵 Some providers intentionally combine validation and commit into one atomic API. In that case there is no meaningful externally observable prepare state; the API's authoritative acceptance boundary remains the relevant claim point.
+
+🔴 No current Nexo/Lúmina executable path exposes a provider-authoritative prepare/commit protocol. Existing prepared intent is local coordinator evidence and does not establish target commitment.
+
+Exact recovery point: **AB105.099R → prepare-vs-commit separation → PREPARED/VALIDATED/STAGED are not COMMITTED; UNKNOWN around the commit boundary remains unresolved until authoritative evidence closes it.**
+
+Next exact frontier: audit **abort/cancel semantics for prepared domains**, including whether abort is authoritative, what it proves, and what happens when abort races with commit.
+
+DO-NOT-REPEAT: AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
