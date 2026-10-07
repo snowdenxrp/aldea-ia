@@ -1661,3 +1661,35 @@ Exact recovery point: **AB105.090R → recovery-ordering audit → STOP/recovery
 Next exact frontier: audit multi-source recovery reconciliation—how conflicting evidence from local journal, target operation records, resource state, and authority state is classified without choosing the most convenient source.
 
 DO-NOT-REPEAT: AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.091R multi-source recovery reconciliation: source authority and conflict classes are explicit
+
+🟢 Recovery evidence is not resolved by source priority alone. Each source has a defined evidentiary domain:
+
+- Local execution journal: evidence of coordinator intent/attempt and locally observed outcomes; it cannot prove external commitment.
+- Target operation record/receipt: authoritative for commitment only within its target commit domain and exact operation/fingerprint binding.
+- Resource state: authoritative for current resource state only within its own version/incarnation semantics; it does not by itself prove which operation caused the state.
+- Authority state: authoritative for current authorization/fence only within its protected authority domain; it does not prove effect commitment.
+- Independent audit/observation: can corroborate or constrain claims, but cannot silently replace the target commitment boundary unless the contract explicitly makes it authoritative.
+
+🟢 Conflict examples:
+- Local UNKNOWN + target authoritative COMMITTED → COMMITTED, with the target evidence closing the ambiguity.
+- Local COMPLETED + target has no authoritative record → not COMMITTED; remain UNKNOWN unless another authoritative commitment witness exists.
+- Target COMMITTED + resource state appears unchanged → do not erase the target commitment; classify the resource discrepancy separately (stale read, projection lag, failed postcondition, compensation, or integrity conflict) and enter reconciliation/quarantine as required.
+- Target REJECTED + local success flag → REJECTED only if target rejection semantics guarantee non-acceptance at the commitment boundary; otherwise the contradiction remains unresolved.
+- Old authority state + current target commitment → commitment outcome and authority-currentness are separate claims; do not rewrite current authority from the historical effect.
+- Conflicting target records from different epochs/incarnations → no merge by convenience; quarantine until the target/domain recovery protocol establishes the authoritative lineage.
+
+🟢 Anti-rule: the most recent timestamp, the majority of sources, the local coordinator's status, or a matching resource version cannot by itself override a stronger domain-specific commitment witness.
+
+🟢 Recovery result must preserve provenance: each resolved claim records source, scope/domain, identity/fingerprint, generation/epoch, observation time, and why conflicting evidence was accepted, rejected, or left UNKNOWN.
+
+🔵 Multi-target effects require participant-by-participant reconciliation first. An aggregate COMMITTED claim is allowed only if the contract has authoritative coverage for every required participant and an aggregate commit boundary; otherwise PARTIAL/UNKNOWN remains.
+
+🔴 No current Nexo/Lúmina executable recovery resolver implements these conflict classes or authoritative source binding. This is a semantic reconciliation contract, not an implementation claim.
+
+Exact recovery point: **AB105.091R → multi-source recovery reconciliation → resolve by evidentiary domain and provenance, never by timestamp/majority/local convenience.**
+
+Next exact frontier: audit **reconciliation finality**—when enough evidence exists to leave UNKNOWN permanently, when a conflict must remain QUARANTINED, and whether later evidence can reopen a previously resolved outcome.
+
+DO-NOT-REPEAT: AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
