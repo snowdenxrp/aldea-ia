@@ -782,3 +782,25 @@ Current epistemic state:
 DO-NOT-REPEAT: startup authorizer futures, generic metadata offset/readiness gates, RequestChannel, Processor lifecycle, DynamicConfigPublisher, ApiVersionManager/MetadataCache, and generic shared-state inventory unless a new concrete production synchronization path is identified.
 
 Next distinct source target: only a concrete cross-domain synchronization primitive that is actually written/released after incremental ACL W1 and acquired/read by the Processor/request path before ENQUEUE.
+
+
+## 2026-10-07 — cross-domain primitive source sweep / no new W1→Processor bridge
+
+🟢 Rechecked the exact pinned Kafka source for the remaining cross-domain synchronization class, focusing on SocketServer Processor state and the MetadataLoader publication path rather than reopening already closed candidates.
+
+🟢 At pin 99b940733a9f6bc409457dba7108f08421d81e42, Processor has startup/lifecycle atomics (shouldRun/started), its own newConnections ArrayBlockingQueue, responseQueue and selector state; processCompletedReceives() constructs the request and then calls RequestChannel.sendRequest(req). None of these inspected Processor-side primitives is written by incremental ACL W1.
+
+🟢 MetadataLoader's callbacks to publishers run on its event-queue thread. maybePublishMetadata() invokes publishers in order, but the inspected loader path contains no post-W1 Future/Executor/lock/volatile publication that is subsequently acquired/read by SocketServer Processor before ENQUEUE. Its AtomicReference occurrence is used for default metrics provenance, not ACL publication.
+
+🟢 The exact source therefore did not identify a new production synchronization bridge beyond the already bounded RequestChannel producer boundary. No artificial synchronization was added and no runtime experiment was started.
+
+🔵 Epistemic state remains unchanged:
+- HB(W1→Processor): UNKNOWN / NOT IDENTIFIED.
+- W1→ENQUEUE HB: UNKNOWN / NOT IDENTIFIED.
+- W1→D1 HB: UNKNOWN / NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: generic Processor atomics/queues, MetadataLoader publisher ordering, metrics AtomicReference, RequestChannel, startup futures, DynamicConfigPublisher, ApiVersionManager/MetadataCache, and prior closed bridges unless a new concrete W1 write/release → Processor acquire/read path is found.
+
+Next distinct target remains singular: a concrete production synchronization primitive actually written/released after incremental ACL W1 and acquired/read by the Processor/request path before ENQUEUE.
