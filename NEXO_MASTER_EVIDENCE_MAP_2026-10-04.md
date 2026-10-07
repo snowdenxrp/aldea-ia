@@ -804,3 +804,21 @@ Next distinct source target: only a concrete cross-domain synchronization primit
 DO-NOT-REPEAT: generic Processor atomics/queues, MetadataLoader publisher ordering, metrics AtomicReference, RequestChannel, startup futures, DynamicConfigPublisher, ApiVersionManager/MetadataCache, and prior closed bridges unless a new concrete W1 write/release → Processor acquire/read path is found.
 
 Next distinct target remains singular: a concrete production synchronization primitive actually written/released after incremental ACL W1 and acquired/read by the Processor/request path before ENQUEUE.
+
+
+## 2026-10-07 — authorizer startup-future source recheck
+
+🟢 Rechecked the exact pinned BrokerServer/SocketServer/StandardAuthorizer chain for the only remaining Future-shaped candidate. BrokerServer obtains endpointReadyFutures from the Authorizer, passes them to SocketServer.enableRequestProcessing(), and waits for them during broker startup; SocketServer chains them to Acceptor.start(). StandardAuthorizer.start() returns initialLoadFuture for non-early listeners, and that future is completed by completeInitialLoad().
+
+🟢 Incremental ACL W1 in AclPublisher calls StandardAuthorizer.addAcl/removeAcl directly; those methods mutate StandardAuthorizerData and do not complete, await, or submit work to initialLoadFuture. Therefore this Future path is startup publication only and cannot supply a per-incremental-ACL W1→Processor happens-before edge.
+
+🔵 This source recheck adds no new bridge and does not change the epistemic state. No experiment or new audit artifact was created to avoid duplication.
+
+Current epistemic state remains:
+- HB(W1→Processor): UNKNOWN / NOT IDENTIFIED.
+- W1→ENQUEUE HB: UNKNOWN / NOT IDENTIFIED.
+- W1→D1 HB: UNKNOWN / NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: StandardAuthorizer.start()/initialLoadFuture, BrokerServer endpointReadyFutures, SocketServer enableRequestProcessing startup chain, unless a future is found that is completed/awaited specifically by each incremental ACL W1.
