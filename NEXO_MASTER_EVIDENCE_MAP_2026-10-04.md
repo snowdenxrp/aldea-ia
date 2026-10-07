@@ -3679,3 +3679,18 @@ DO-NOT-REPEAT: P0–P49 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 🔴 P50 classification: **DURABLE ASSISTANT-MEMORY / WORLD-STATE CROSS-FILE CONSISTENCY GAP = CONFIRMED**. Combined with P48/P49, a failed world-state load can produce a durable, normal-looking assistant-memory update without durable recovery provenance.
 
 Next mission P51: inspect the workflow retry path and commit/rebase behavior to determine whether this cross-file divergence can be committed to `main` or whether the workflow necessarily fails before Git commit. Research only; no patch.
+
+
+## 2026-10-07 — P51 — workflow admission of the P50 divergent pair
+
+🟢 In `lumina-simulation.yml`, `npm run assistants` is a required sequential step before `npm run simulate`; if `assistants.mjs` throws during `persistState()` after its memory-file write, the step exits non-zero and the job stops before `git add/commit/push`. Thus the specific P50 failure (memory write succeeds, world-state persist fails) is **not proven to reach `main` through this workflow**.
+
+🟢 However, the workflow's Git staging/commit is not atomic with the two Node filesystem writes. The files are only grouped at the later `git add` boundary if all prior steps succeed.
+
+🟢 The retry branch after a rebase failure does `git reset --hard origin/main` and then runs only `npm run simulate`; it does not rerun `npm test` or `npm run assistants`. Therefore the retry is capable of committing a newly generated `world-state.json` while retaining the repository's existing `.lumina-assistant-memory.json` from `origin/main`, but this is a different consistency path—not proof of the P50 failed-persist pair reaching main.
+
+🟢 Because `npm run assistants` itself normally persists both assistant memory and `world-state.json` before the later simulation step, a successful workflow commit can contain a pair produced by separate filesystem writes, but no transaction/lineage binds them to the same successful recovery context.
+
+🔴 P51 classification: **P50 divergent-pair-to-main = NOT PROVEN / workflow stops on assistants persistence failure. Cross-file atomicity/lineage at commit boundary remains missing. Retry path has separate state/memory consistency risk and bypasses assistant validation on retry.**
+
+Next mission P52: inspect the retry branch's exact stateRevision and memory behavior to determine whether `reset --hard origin/main` + `npm run simulate` can commit a world state derived from one revision while assistant memory remains from another, and whether that can be detected from persisted fields. Research only; no patch.
