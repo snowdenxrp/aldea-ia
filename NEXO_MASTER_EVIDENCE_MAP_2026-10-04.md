@@ -3966,3 +3966,20 @@ Next bounded action: continue archive inventory only, identify historical artifa
 P66c RESULT: `PRE_MASTER_ARCHIVE_BREADTH = CONFIRMED`; `MASTER_COMPLETENESS = UNKNOWN`; `HISTORICAL_CLAIM_GAPS = NOT_YET_CLASSIFIED`.
 
 Next bounded action: sample the archive at three strata (early AB104, mid AB104.200–400, late AB104.600–900) and identify only claims/evidence that are not already represented in the master. No reruns.
+
+
+## 2026-10-07 — P66d — semantic-gap sampling, early archive
+
+🟢 Targeted samples from the early archive were read, not merely indexed. They recover durable research boundaries around LEASE_RENEW / LEASE_CONSUME / replay semantics (AB104.4, .22, .67, .68) and independently recover verified Lúmina workflow/visual evidence (AB104.81, .82, .84, .88).
+
+🟢 The sampled protocol artifacts explicitly preserve UNKNOWN rather than promoting scaffold/countermodel behavior into protocol law. In particular, AB104.67/.68 state that no complete renewal/consumption law, replay reconstruction, quotient congruence, or concrete P_AA collision had been established.
+
+🟢 AB104.82 provides historical execution evidence that the AB104.81 Lúmina sync-order repair was later verified by Actions run 2097 / job 108269000133; this is stronger than the earlier AB104.81 PENDING state.
+
+🔵 The current master does not contain these sampled artifact identifiers or the exact historical LEASE_RENEW/LEASE_CONSUME status strings. This is evidence of representation omission in the master, NOT proof that the underlying claims were forgotten or invalid.
+
+🟢 No rerun was performed and no old UNKNOWN was promoted. This sample therefore identifies a genuine archival-reconciliation candidate: preserve the historical epistemic boundary and the AB104.82 verification fact in the master, while keeping them explicitly historical.
+
+P66d RESULT: `EARLY_ARCHIVE_SAMPLE = MATERIAL`; `HISTORICAL_UNKNOWN_BOUNDARY = RECOVERED`; `AB104.82_LUMINA_REPAIR_VERIFICATION = RECOVERED`; `MASTER_REPRESENTATION_GAP = CONFIRMED_FOR_SAMPLED_ARTIFACTS`.
+
+Next: sample mid/late AB104 strata for claims that materially affect the current NEXO state, especially any historical verification or UNKNOWN boundary that is absent from the master. Do not rerun experiments.
