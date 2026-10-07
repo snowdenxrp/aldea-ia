@@ -3493,3 +3493,24 @@ Exact recovery point: P39 closed.
 Next independent investigation: audit the race/retry branch of `lumina-simulation.yml`: after a failed rebase it resets to `origin/main` and runs `npm run simulate` without rerunning `npm test` or `npm run assistants`. Determine whether the retry can generate and commit a state that bypasses the workflow's pre-mutation validation path.
 
 DO-NOT-REPEAT: P0–P39 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P40 — rebase retry bypasses the validation path
+
+🟢 The failure branch in `.github/workflows/lumina-simulation.yml` is explicit: after `git rebase origin/main` fails, it aborts/reset to `origin/main`, then executes only `npm run simulate`, stages the state, commits `Actualizar estado de Lúmina`, and pushes. It does not rerun `npm test` or `npm run assistants` on the retry path.
+
+🟢 `scripts/simulate.mjs` loads `world-state.json`, advances the simulation according to elapsed time, and persists a new revision. Thus the retry itself can generate the exact `world-state.json` that is subsequently committed.
+
+🟢 Therefore a rebase-conflict retry can produce and push a new state snapshot without executing the workflow's `npm test` gate in that attempt. This is a real validation-path bypass, distinct from the P39 exact-byte lineage gap.
+
+🔵 This does not prove the resulting state is corrupt or unsafe. The retry uses the current `origin/main` checkout and the same `simulate` implementation; the finding is that **the retry path has weaker validation provenance than the primary path**.
+
+🔴 Do not claim that the pushed retry state is necessarily invalid, nor that CI never validates it: the separate deterministic-test workflow can run after the push. The precise finding is that the state is committed/pushed before that independent post-push CI result exists, and the retry itself has no local test gate.
+
+Classification: **rebase recovery path bypasses primary validation; post-push CI is asynchronous and not a pre-commit admission gate**. No patch.
+
+Exact recovery point: P40 closed.
+
+Next independent investigation: determine whether the deterministic post-push workflow can itself race with subsequent `Actualizar estado de Lúmina` commits, and whether its result is required for any subsequent state admission/recovery decision. Research only.
+
+DO-NOT-REPEAT: P0–P40 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
