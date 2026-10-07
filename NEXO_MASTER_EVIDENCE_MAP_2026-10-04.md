@@ -1423,3 +1423,61 @@ Exact recovery point: **AB105.085R → semantic carrier contract → identity, t
 Next exact frontier: adversarially test this carrier against the AB105.082R outcome matrix and verify whether every outcome can be represented without collapsing UNKNOWN, REJECTED, COMMITTED, DUPLICATE, COLLISION, STALE_FENCE, RESOURCE_REPLACED, or PARTIAL.
 
 DO-NOT-REPEAT: AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.085R semantic carrier contract: minimum provenance-bound admission envelope
+
+🟢 The minimum semantic carrier is now bounded without implementation.
+
+The admission envelope must distinguish four domains:
+
+1. **Claim/admission**
+   - capability_class: STRONG_COMMIT | FENCED_IDEMPOTENT | RECONCILIATION_ONLY | UNSAFE/UNSUPPORTED
+   - capability_assessment_id
+   - capability_scope
+   - capability_basis/provenance
+   - capability_freshness/valid_until where applicable
+
+2. **Authority/currentness**
+   - authority_context_id
+   - authority_epoch
+   - required fence/revision
+   - policy/invariant version when the claim depends on them
+
+3. **Exact effect identity**
+   - operation_id
+   - effect_id
+   - attempt/retry generation
+   - resource_id
+   - resource_incarnation
+   - payload/effect fingerprint
+
+4. **Commit/evidence boundary**
+   - target/commit-domain identity
+   - required commitment semantics
+   - authoritative receipt/reference when one exists
+   - evidence provenance and verification status
+
+🟢 Binding rule: the capability assessment is valid only for its declared scope; it cannot silently authorize another target, resource incarnation, effect identity, provider operation, or authority epoch.
+
+🟢 Freshness rule: capability evidence and authority evidence have different freshness semantics. A capability document remaining valid does not make an old authorization decision current.
+
+🟢 Provenance rule: Nexo must be able to distinguish provider-declared capability, independently verified runtime behavior, and target-produced commitment evidence. These are not interchangeable.
+
+🟢 Anti-collapse rules:
+- capability_class != authorization decision
+- capability assessment != authority grant
+- authority context != target commitment
+- effect identity != idempotency key alone
+- target receipt != client acknowledgement
+- evidence verified=true != COMMITTED
+- capability freshness != authority freshness
+
+🔵 The envelope is a semantic contract only. No existing runtime field is being retroactively reinterpreted as carrying these meanings, and no implementation is claimed.
+
+🔴 Current Nexo/Lúmina still has no executable authoritative admission gate consuming this envelope.
+
+Exact recovery point: **AB105.085R → semantic carrier contract → provenance-bound admission envelope defined.**
+
+Next exact frontier: test the envelope against the adversarial AB105.082R outcome matrix and identify whether every outcome can be represented without collapsing UNKNOWN, PARTIAL, REJECTED, or COMMITTED.
+
+DO-NOT-REPEAT: AB105.084R carrier audit; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
