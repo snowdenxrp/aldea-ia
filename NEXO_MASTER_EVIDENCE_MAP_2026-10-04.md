@@ -3006,3 +3006,39 @@ DO-NOT-REPEAT:
 - P0–P16 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence, world-state persistence and concrete action-consequence audits are closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P17 — target acceptance is check → mutate → post-verify, not atomic operation receipt
+
+🟢 Audited the concrete acceptance path `createEffectAdapter()` → `execute_lumina_action` → `executeAction()` and the action-specific mutation path.
+
+🟢 The current sequence is structurally:
+`prepared journal` → optional `persistPreparedIntent` → precondition → `getStateVersion()` snapshot → handler → concrete mutation → `bump(simulation)` → postcondition → persist execution result.
+
+🟢 In `simulation-adapter.js`, `execute_lumina_action` captures the local `beforeVersion`, calls `executeAction(simulation, agent, action)`, and only after successful return calls `bump(simulation)`. The handler then returns a completed result containing the local state version observed before the mutation.
+
+🔵 This does **not** create a target-side commit record at the same linearization point as the mutation. The mutation functions in `src/actions.js` directly change agent/world state and return ordinary result objects. There is no operation receipt written by the target at mutation time containing the Nexo execution identity.
+
+🔵 The local `nexoEffectRevision` is therefore a coarse state-change counter, not an operation receipt. It is incremented after `executeAction()` returns and is not bound to the exact action identity, request fingerprint, target incarnation, authority generation or fence.
+
+🔵 Postcondition verification occurs after the mutation. A successful postcondition proves that the expected observable state/result was present when checked; it does not establish that the mutation and the Nexo operation record were committed atomically.
+
+🔵 The ambiguity path is explicit: if the handler throws after a concrete mutation has already occurred, `effect-adapter.js` returns `EFFECT_OUTCOME_UNKNOWN`, does not persist a terminal result, and preserves the operation as unresolved. Because there is no target-side operation receipt, recovery still needs an independent reconciliation source.
+
+🔵 The same applies to semantic duplicate suppression: `executeAction()` has no access to the Nexo `idempotencyKey`, so the target cannot independently reject a second invocation of the same logical effect based on that identity.
+
+🟢 Some mutations are compound (for example `trade` changes two inventories, two money balances, relationship state and a trade-history record). Those changes happen inside the synchronous function, but there is no transaction/receipt object coupling all of them to the Nexo operation identity. The resulting state/history is consequence evidence, not an authoritative operation commit record.
+
+🔵 Therefore the current target boundary is accurately modeled as:
+`check local state → mutate world/agent state → increment local revision → return result → post-verify → persist Nexo execution record`.
+
+🔴 This closes the target-acceptance/atomic-receipt question for the current Lúmina carrier. It is an implementation finding, not a claim that every future provider must behave this way. No duplicate external effect is claimed and no exactly-once guarantee is inferred.
+
+🔴 No implementation patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P17 → current Lúmina target boundary audited; no atomic operation-identity + mutation + durable-receipt commit point exists in the executable carrier.
+
+Next independent investigation: audit the **reconciliation capability** itself — enumerate every current `reconcile` caller/test and determine whether any concrete reconciler can distinguish `committed`, `rejected/not-committed`, and `unknown` using target evidence, or whether reconciliation currently has only generic local-state predicates. Do not reopen P14/P15/P17 or the closed identity-carrier searches.
+
+DO-NOT-REPEAT:
+- P0–P17 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence, world-state persistence, action-consequence and target-acceptance audits are closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
