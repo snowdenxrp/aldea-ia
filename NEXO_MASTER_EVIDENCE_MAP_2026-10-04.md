@@ -642,3 +642,22 @@ Therefore PR #93 = ACCEPTED SOURCE/ARCHITECTURE + empirical-context family, with
 DO-NOT-REPEAT: PR #87/#88/#89 diagnostic reruns, PR #92 cache-identity reruns, PR #93 rerun, TLC rerun, or adding latch/volatile/barrier/Future synchronization to the race.
 
 Next distinct target: reconcile the remaining PR #94 ordering family against PR #93's RequestChannel/source audit, especially whether the observed W1→ENQUEUE ordering has any legitimate publication consequence for the actual D1 reader. Temporal ordering must remain separate from JMM HB.
+
+## 2026-10-06 — exact RequestChannel/AclPublisher publication-boundary refinement
+
+🟢 At the exact Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, `RequestChannel.requestQueue` is an `ArrayBlockingQueue`. `sendRequest()` performs `requestQueue.put(request)`; request-handler consumption uses `poll()` / `take()`. This supports the ordinary queue hand-off semantics from ENQUEUE to DEQUEUE.
+
+🟢 The same exact pin shows `AclPublisher.onMetadataUpdate()` applying ACL deltas directly on the metadata-publisher callback thread through `ClusterMetadataAuthorizer.addAcl/removeAcl`. Its source comment explicitly distinguishes this mutation from authorization occurring concurrently on other threads.
+
+🟢 Therefore the source confirms the already-audited boundary: the RequestChannel queue can provide publication for actions performed before ENQUEUE, but the queue itself cannot manufacture a W1→ENQUEUE happens-before edge for the independent metadata-thread ACL mutation.
+
+🔵 This is a source-level refinement of the existing PR #93 / PR #94 reconciliation, not a new runtime experiment and not a new sample. It does not change AB105.116R.
+
+Current epistemic state remains:
+- HB(W1→D1): UNKNOWN / NOT IDENTIFIED.
+- HB(W1→ENQUEUE): NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+- no new synchronization primitive introduced.
+
+DO-NOT-REPEAT: do not treat ArrayBlockingQueue ENQUEUE→DEQUEUE as W1→D1 publication; do not rerun the G0 witness solely for this source finding.
