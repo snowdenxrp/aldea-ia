@@ -3892,3 +3892,19 @@ DO-NOT-REPEAT: P0–P60 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 
 ## Exact next mission
 **P64:** final adversarial scan of whether the workflow itself can accidentally create a false appearance of validation because `npm test` runs before `assistants`, while the committed files are mutated afterward. Determine whether any current artifact/status can bind the exact post-mutation pair to that test result. No patch; no TLC; no AB105.117R.
+
+
+## 2026-10-07 — P64 — validation-to-commit boundary audit
+
+🟢 Current lumina-simulation.yml order is: sync to origin/main → npm test → npm run assistants → npm run simulate → commit/push. Therefore the pre-mutation npm test result is not a certificate over the later mutated files.
+
+🟢 A separate nexo-deterministic-tests.yml triggers on every push to main, checks out the pushed revision, installs Node dependencies, and runs the same npm test. Thus a Lúmina state commit receives post-commit CI against the pushed commit's checkout. The stronger claim “state commits receive no tests” is false.
+
+🟢 However, the workflow does not calculate/store a hash of the committed world-state.json + .lumina-assistant-memory.json, does not emit a durable in-repo validation marker, and does not make the commit conditional on the deterministic workflow's conclusion. concurrency cancel-in-progress=true also means a later push can cancel an earlier deterministic test run.
+
+🔵 Therefore there is a temporal/CI association between a pushed commit and its checkout-based test run, but no durable semantic certificate consumed by the mutation workflow saying “this exact final pair passed validation.”
+
+🔴 P64 RESULT: PRE_MUTATION_TEST_CERTIFIES_POST_MUTATION_PAIR = NO; STATE_COMMIT_RECEIVES_POST_COMMIT_TEST = YES; EXACT_PAIR_DURABLE_VALIDATION_CERTIFICATE = NO; VALIDATION_REQUIRED_BEFORE_NEXT_MUTATION = NO.
+
+## Exact next mission
+P65: audit whether the deterministic post-push workflow can be canceled/replaced before completion and whether any branch-protection/required-check mechanism makes its success authoritative before another Lúmina mutation. No patch; no TLC; no AB105.117R.
