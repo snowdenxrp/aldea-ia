@@ -2307,3 +2307,43 @@ Exact recovery point: AB105.108R → lost response/receipt after fenced acceptan
 Next exact frontier: AB105.109R → reconciliation-window closure: determine when a provider may safely declare historical absence authoritative and what proof is required before operation identity reuse.
 
 DO-NOT-REPEAT: AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.109R reconciliation-window closure: absence becomes authoritative only under an explicit provider boundary
+
+🟢 Expiration or absence of an operation record does not by itself prove non-commit. To close UNKNOWN from absence, the provider/target contract must define a closed reconciliation boundary covering the operation's possible completion, visibility, replay, failover, and recovery paths.
+
+Minimum proof for authoritative absence should establish:
+- exact operation identity and scope;
+- target/resource incarnation;
+- provider retention and lookup semantics;
+- maximum completion/visibility/replay horizon for that operation class;
+- failover/restore behavior cannot resurrect an older operation;
+- all authoritative replicas/domains relevant to the lookup have crossed the closure boundary;
+- stale or delayed callbacks cannot still create the effect;
+- the provider explicitly defines post-closure absence as non-acceptance/non-commit.
+
+🟢 Before that boundary, NOT_FOUND means “not found in this lookup context”, not necessarily REJECTED.
+
+🟢 After a provider-defined closure boundary with all required guarantees, authoritative absence may resolve UNKNOWN → REJECTED, but only for the exact operation/effect/resource scope covered by that contract.
+
+🟢 Operation identity reuse is a separate decision. Even if an old lookup becomes closed, reuse is unsafe unless the provider guarantees the old identity cannot later complete, reappear after restore/failover, or be confused with the new operation.
+
+🟢 Safe reuse therefore needs a new identity namespace/generation or provider-enforced generation fence, plus proof that the prior identity is outside every relevant effect/reconciliation window.
+
+🟢 Local TTLs, cleanup jobs, cache eviction, or database deletion do not create authoritative closure. They are coordinator housekeeping unless the target contract makes them the commitment boundary.
+
+🟢 If closure cannot be proven, preserve UNKNOWN/quarantine rather than manufacturing REJECTED for operational convenience.
+
+🔵 This separates three events that are often collapsed:
+1. record expired/deleted locally;
+2. record no longer discoverable through a lookup;
+3. provider-authoritative proof that the operation can never commit/reappear.
+Only the third can close UNKNOWN by absence.
+
+🔴 No current Nexo/Lúmina executable provider establishes such a target-authoritative reconciliation closure boundary or safe identity-reuse fence.
+
+Exact recovery point: AB105.109R → reconciliation-window closure → absence is authoritative only after provider-defined closure of every relevant completion/recovery/replay path.
+
+Next exact frontier: AB105.110R → late completion/callback after reconciliation closure: determine how delayed external evidence is handled without rewriting historical claims.
+
+DO-NOT-REPEAT: AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
