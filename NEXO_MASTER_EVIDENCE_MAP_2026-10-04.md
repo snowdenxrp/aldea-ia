@@ -1007,3 +1007,30 @@ Do not infer an issuer from terminology alone. If source only specifies the cont
 ### Last saved checkpoint
 Master update commit: **1ac81c7aba895e044c137de018c93c71e5b75290**.
 This handoff is the instruction set for the next chat.
+
+
+## 2026-10-07 — S9 concrete-artifact sweep: LP-01 exists as architecture, issuer remains unresolved
+
+🟢 The repository contains an explicit technology-independent linearization architecture defining **LP-01 Authorization admission** and requiring every protected transition to specify pre-state, read set, guard, exact linearization event, write set, post-state, crash behavior, retry behavior, concurrency exclusions, refinement mapping, and trace evidence. The same architecture states that authorization admission requires the current AuthorityContext and must be durably recorded before AUTHORIZED is exposed.
+
+🟢 AB104.401 independently defines the final evidence-to-authority boundary: evidence/appraisal is not authority; a protected Z1 transition must independently revalidate claim scope, policy/semantic versions, verifier trust, dependency generations, resource incarnation, invalidation generation and authority epoch where applicable. It explicitly separates APPRAISAL_STATUS from AUTHORITY_STATUS and requires a protected final gate.
+
+🟢 AB104.506 supplies the strongest historical protected-authorization binding recovered so far:
+`{ClaimDigest, AuthorityEpoch, RevocationGeneration, DependencyClosureDigest, FenceRevision, DecisionDigest}`.
+It requires the final protected effect gate to evaluate current revocation generation and states that the authorization/revocation ordering point must be explicit.
+
+🔵 However, the sweep did **not** recover a concrete executable issuer/record in the current Nexo repository that maps `CURRENT_AUTHORITY_DECISION` to `authority=VALID` after revocation. The repository evidence remains architecture/design and formal-model representation rather than an implemented authority-establishment record. The existing AB105.116R `Reauthorize` transition is therefore not evidence of a real issuer; it is the finite-model behavior already known to have unresolved provenance semantics.
+
+🔵 Exact open boundary:
+`CURRENT_AUTHORITY_DECISION → [authoritative activation record + issuer] → authority=VALID`.
+Still unresolved: authorization of the writer, atomic context binding, durable commit/linearization identity, revocation/epoch/STOP invalidation, crash states, deterministic reconstruction, and concurrent issuer arbitration.
+
+Status:
+- LP-01 / protected activation architecture: 🟢 RECOVERED.
+- Evidence→authority promotion contract: 🟢 RECOVERED as design evidence.
+- Concrete executable issuer/activation record: 🔵 UNKNOWN / OPEN.
+- Mapping to real `authority=VALID` after revocation: 🔵 UNKNOWN / OPEN.
+- Implementation: NOT ESTABLISHED.
+- Formal verification: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: do not treat LP-01's existence as proof of implementation; do not reopen Kafka/JMM, TLC, AB104.409, or create AB105.117R. Next target remains the concrete authority-establishment artifact, if one exists, and its writer/linearization/recovery semantics.
