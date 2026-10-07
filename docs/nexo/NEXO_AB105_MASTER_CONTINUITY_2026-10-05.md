@@ -2381,3 +2381,29 @@ Epistemic state unchanged: W1→ENQUEUE HB UNKNOWN; W1→D1 HB UNKNOWN; stale AC
 Test whether a known-good minimal workflow already present in the repository can materialize a job on the same branch/event, or compare a known successful workflow run against the G0 workflow registration. Do not modify Kafka instrumentation or add synchronization. Do not count any zero-job run as AB105 evidence.
 
 DO-NOT-REPEAT: duplicate `workflow_dispatch` repair, active G0 YAML inspection already completed, Run #21, TLC, AB105.117R.
+
+
+## 2026-10-06 — G0 v2 registration discriminant + valid real-broker run
+
+🟢 **CI discriminant resolved:** repository Actions are not globally broken. On the same G0 branch and the exact same head `c478ebf8ef70685a3bc3ffe77358e6622832f278`, the companion workflow `.github/workflows/nexo-ab105-g0-ordering-witness-v2.yml` registered and executed normally while the active legacy workflow `.github/workflows/nexo-ab105-g0-ordering-witness.yml` still produced `failure + 0 jobs`. This narrows the defect to the legacy workflow registration/path (or its GitHub-side workflow entity), not the repository Actions dispatcher globally.
+
+🟢 Valid run: workflow `NEXO AB105 G0 ordering witness runner v2`, run `37549856369`, job `112562494993`, head `c478ebf8...`, artifact `11452027547`. Job completed all steps successfully, including checkout, Kafka pin, workflow-local probe installation, compile, real broker witness, evidence emission and artifact upload.
+
+🟢 Artifact SHA256: `5351aebd5242f1d42c5168a03f89baf53916c1ebc2a64472fc8613643563f29f`.
+
+🟢 Artifact confirms Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, `AB105_116R=UNCHANGED`, `AB105_117R=NOT_CREATED`, `TLC=NOT_RERUN`.
+
+🟢 Runtime evidence: 10/10 D1 results were `DENIED`. The run emitted 20 ACL_W1 events (controller + broker metadata-loader threads), 20 ENQUEUE, 20 DEQUEUE, 20 AUTH_ENTER and 20 AUTH_DECISION events, corresponding to the 10 allow/delete/deny cycles. The request path therefore executed end-to-end in a real broker run.
+
+🔵 This is **new valid empirical evidence**, but it does **not** establish W1→ENQUEUE or W1→D1 JMM happens-before. It also does not disprove a stale-read race universally. The observation is consistent with the prior Run #21 / 370778 evidence: the intended post-delete request was denied in every observed cycle.
+
+🔵 The v2 workflow reconstructs the test harness from the active legacy workflow file in the checked-out workspace, so the successful execution is not evidence from a different Kafka probe design; it uses the same harness/probe semantics present in the active workflow at that commit.
+
+🔴 The legacy workflow entity `373324571` remains unexplained at GitHub registration level. The successful v2 entity `373334522` on the same SHA is the strongest current discriminator. No claim of backend corruption is made without further evidence.
+
+### Next legitimate step
+Treat v2 run `37549856369` as valid AB105 empirical evidence and stop diagnosing repository-wide Actions. If CI remediation is needed, target only legacy workflow entity/path `373324571`; do not alter Kafka instrumentation to fix CI. Any further race work must use the valid v2 path and preserve the no-artificial-synchronization constraint.
+
+DO-NOT-REPEAT: repository-wide Actions diagnosis; duplicate `workflow_dispatch` repair; Run #21/cache probe; TLC; AB105.117R; generic JMM source audit already exhausted.
+
+Epistemic state: W1→ENQUEUE HB **UNKNOWN**; W1→D1 HB **UNKNOWN**; stale ACL **NOT OBSERVED in valid run / NOT DISPROVEN universally**; vulnerability **NOT ESTABLISHED**; AB105.116R **PROTECTED**.
