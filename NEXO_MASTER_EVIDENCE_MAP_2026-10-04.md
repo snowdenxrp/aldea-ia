@@ -3163,3 +3163,23 @@ Exact recovery point: POST-AB105.116R implementation audit → P22 → explicit-
 Next independent investigation: identify the exact boundary where the planner creates each `finding.action` and determine whether request parameters themselves are complete, stable and canonical before execution; do not treat mutable derived state/randomness as planner inputs unless the contract explicitly requires pre-binding them.
 
 DO-NOT-REPEAT: P0–P22 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P23 — no production producer of LUMINA_ACTION found; planner consumes externally supplied action payload
+
+🟢 Searched the current executable repository for `LUMINA_ACTION` producers and traced the known path into `buildNexoMission()`. The production source tree contains the consumer in `src/nexo/orchestrator.js` and the execution consumer in `src/nexo/runtime.js`, but no production assistant/probe/script currently constructs a `LUMINA_ACTION` finding. Concrete `LUMINA_ACTION` objects found in executable tests are fixtures, e.g. `{name:"drink",amount:2}`.
+
+🟢 Therefore the current production boundary is: external/other report producer → `buildNexoMission(reports)` → `finding.action` → shallow-copied `step.context.action` → runtime. The repository does not currently demonstrate an in-tree canonical action-intent constructor that validates or normalizes all effect-relevant request fields before planning.
+
+🔴 This means P22 cannot be weakened into “the planner has complete action inputs.” The planner preserves whatever action object arrives, but the current carrier has no production schema/validator at the report-to-planner boundary proving that required fields are present, canonicalized, type-normalized, or stable.
+
+🔵 Existing tests prove preservation of a supplied `drink(amount=2)` payload and replan preservation, but they are fixtures rather than evidence of a production producer contract. No test was found that rejects incomplete trade/institution/action payloads or verifies canonical equivalence of semantically identical payloads with different property ordering/types.
+
+🔴 Important boundary: absence of a production producer in this repository is not proof that no upstream/external producer exists. It is only proof that this repo's executable carrier does not currently define one. Therefore the safe conclusion is “request schema/canonicalization contract is missing at this boundary,” not “requests are always malformed.”
+
+No patch. No external duplicate effect claimed. No exactly-once claim.
+
+Exact recovery point: POST-AB105.116R implementation audit → P23 → report-to-planner action-intent producer/schema census closed.
+
+Next independent investigation: inspect the report-generation boundary actually feeding `scripts/assistants.mjs` (assistant squad/report builders) and determine whether its findings are generated in this repository or arrive as already-formed report objects. If no producer exists, document the missing contract as an explicit trust boundary rather than inventing one.
+
+DO-NOT-REPEAT: P0–P23 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
