@@ -2893,3 +2893,44 @@ DO-NOT-REPEAT:
 - P0–P13 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, and caller-binding audits are closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P14 — persistPreparedIntent is a hook, not an authoritative prepared-operation record
+
+🟢 The persistence seam was traced end-to-end.
+
+`executeNexoStep()` does not expose `persistPreparedIntent`; only `executeLuminaNexoStep()` accepts the optional callback and passes it into `createLuminaEffectAdapter()`. The generic adapter invokes the hook after creating the in-memory `prepared` journal entry and before the handler.
+
+🟢 The callback payload is deliberately narrow:
+
+```text
+{
+  idempotencyKey,
+  journalEntry,
+  request: { missionId, stepId, action, target, idempotencyKey, context }
+}
+```
+
+`precondition`, `postcondition`, reconciliation callback, authority context/epoch, resource incarnation/fence, expected version, fingerprint and capability class are not included in the persisted `request` payload. The `journalEntry` itself contains only idempotencyKey, missionId, stepId, action, target, status=prepared and timestamp.
+
+🟢 The current repository persistence owner is `scripts/simulate.mjs::persistState()`. It persists `simulation.nexoMemory`, including the effect journal, as part of the world-state payload under a stateRevision/file-lock/temp-rename mechanism. This protects the state-file write, but it does not atomically couple the prepared record to the later handler mutation.
+
+🟢 `nexoEffectRevision` is not serialized by `persistState()`. Therefore the prepared record does not acquire a durable target incarnation/fence through the existing persistence path.
+
+🟢 The handler mutates the in-memory simulation after the prepared hook returns; only later can `persistState()` serialize the resulting world plus Nexo memory. Consequently there is no single current transaction containing prepared intent + operation identity + target mutation + receipt/commit evidence.
+
+🔵 Important distinction: `persistPreparedIntent` can improve crash recovery when its owner actually persists the prepared record, but a persisted `prepared` record is still ambiguity evidence, not proof that the effect did or did not occur. The current seam does not create an authoritative operation registry or target-side receipt.
+
+🔵 No current production execution path was found that supplies an authoritative `persistPreparedIntent` owner to `executeLuminaNexoStep()`. Existing tests exercise the seam, but test wiring is not production ownership.
+
+🔵 Therefore P14 closes the question of whether the hook secretly provides the missing identity/fence boundary: it does not. It persists the same mission-scoped execution identity and remains outside the handler/world-state atomic boundary.
+
+🔴 No patch made. No external duplicate effect claimed. No exactly-once claim.
+
+Exact recovery point: POST-AB105.116R implementation audit → P14 → prepared persistence seam audited; hook payload remains missionId:stepId scoped and no authoritative atomic prepared+mutation+receipt boundary exists.
+
+Next independent investigation: audit the concrete `persistState()`/`world-state.json` serialization contract for whether any persisted field can serve as a durable target/resource incarnation or operation receipt, without reopening the already-closed `persistPreparedIntent` hook search.
+
+DO-NOT-REPEAT:
+- P0–P14 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding and prepared-persistence audits are closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
