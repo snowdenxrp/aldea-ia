@@ -89,3 +89,14 @@ Audit perceiveWorld(), evaluateOptions()/createDecisionContext(), getTerritorial
 
 ### DO-NOT-REPEAT
 No VersionSet implementation yet. No new executor/caller. No TLC rerun. No historical AB104.185 backfill. Do not treat stateRevision as a mutation fence or filesystem lock as exactly-once external-effect protection.
+
+
+## P112 latest saved checkpoint
+- `P112_PERCEPTION_TERRITORIAL_COLLECTIVE_AUDIT_2026-10-07.md`
+- Commit: `2af97f32a11b579b505adba4a145bb5e873c8ccb`
+- Concrete perception/decision/territorial/collective dependencies mapped.
+- Nearby-agent/resource membership predicates and derived territorial/score values are claim-relevant dependencies.
+- `normalizeSpatialWorld()` is a hidden mutation-capable path inside territorial context extraction.
+- Random choice must be bound or treated as nondeterministic evidence for protected claims.
+- Complete instrumentation/coverage remains UNKNOWN; minimal granularity and action-class envelopes remain OPEN.
+- Exact next: audit specialization, territorial bonus, exploration, relationship, memory, discovery helpers and random/external observation paths.
