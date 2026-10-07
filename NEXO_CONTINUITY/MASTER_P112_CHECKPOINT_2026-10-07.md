@@ -321,3 +321,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Terminal journal updates are in-memory until `persistState()` is invoked; no demonstrated atomic join exists between handler mutation, journal terminal state, and persisted simulation state.
 - Current repository still has no demonstrated integrated production caller that supplies a durable `persistPreparedIntent` checkpoint.
 - Exact next: trace actual `persistPreparedIntent` callers and terminal `persist()`→`persistState()` integration to locate the missing durable atomic/recovery boundary.
+
+
+## P112 prepared checkpoint owner audit V1 — 2026-10-07
+- Repository search independently confirms no production caller supplies `persistPreparedIntent`; only generic seam + tests were found.
+- `scripts/simulate.mjs` is canonical world-state persistence owner; `scripts/assistants.mjs` persists planning/report state but does not execute `executeLuminaNexoStep()`.
+- Test callback proves local contract only, not production integration.
+- Adapter `persist()` updates in-memory journal/executed state; it does not call `persistState()`.
+- Therefore no demonstrated production boundary currently joins prepared checkpoint, handler mutation, terminal journal, and canonical stateRevision persistence.
+- Exact next: audit whether `scripts/simulate.mjs` can legitimately own effect execution or whether a separate execution-owner boundary is required; trace load→applyState→tick/mission→effect→persist before implementation.
