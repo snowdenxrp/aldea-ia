@@ -2381,3 +2381,44 @@ Exact recovery point: AB105.110R → late completion/callback after reconciliati
 Next exact frontier: AB105.111R → immutable claim/evidence lineage: define the minimum event history required to reconstruct why each commitment state was asserted and later changed.
 
 DO-NOT-REPEAT: AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.111R immutable claim/evidence lineage: reconstructable commitment history
+
+🟢 A commitment state is only safely auditable if Nexo can reconstruct which claim was made, from which evidence, under which authority/context, and what later evidence changed or contradicted it.
+
+Minimum immutable lineage for each claim transition:
+- claim_id and parent/superseded claim_id;
+- operation_id/effect_id/attempt_id;
+- effect fingerprint;
+- target/resource identity and incarnation;
+- authority context, epoch/generation and fence presented/observed;
+- capability/admission assessment relevant to the claim;
+- claim state and exact transition reason;
+- evidence references with provenance/domain and observation time;
+- commit-domain/participant-set identity when applicable;
+- reconciliation lookup scope and provider semantics;
+- actor/component that asserted the claim;
+- policy/contract version used to interpret the evidence;
+- integrity linkage/digest so historical records cannot be silently rewritten.
+
+🟢 A claim record is not itself authoritative commitment evidence. It is the immutable explanation/provenance layer for why Nexo held a claim.
+
+🟢 Evidence and interpretation must remain separate. The same evidence may be re-evaluated under a corrected contract, while the original interpretation remains preserved as historical provenance.
+
+🟢 A later stronger claim should supersede the current epistemic state without deleting prior claims. Contradictions become explicit conflict/integrity events.
+
+🟢 Reconciliation must be deterministic from retained evidence: if two operators/recovery processes read the same authoritative evidence and contract version, they should reach the same claim transition.
+
+🟢 Missing lineage is itself an audit limitation. If the system cannot reconstruct the evidence and contract behind a past COMMITTED/REJECTED assertion, it must not manufacture stronger historical certainty.
+
+🟢 Event timestamps are useful provenance but cannot establish authority/commit ordering unless the contract explicitly makes them authoritative. Causal/commit boundaries remain domain-specific.
+
+🔵 This lineage layer is distinct from the target's operation registry. The target registry proves target-domain facts; Nexo lineage records how those facts were observed, interpreted, and promoted into Nexo claims.
+
+🔴 No current Nexo/Lúmina executable immutable claim ledger with complete evidence/contract lineage exists. Existing local journals are bounded operational records, not a protected historical claim ledger.
+
+Exact recovery point: AB105.111R → immutable claim/evidence lineage → historical claims must remain reconstructable without confusing provenance records with authoritative target commitment.
+
+Next exact frontier: AB105.112R → claim-ledger integrity and tamper/rewrite detection: determine what protects lineage against silent deletion, fork, rollback, or conflicting recovery histories.
+
+DO-NOT-REPEAT: AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
