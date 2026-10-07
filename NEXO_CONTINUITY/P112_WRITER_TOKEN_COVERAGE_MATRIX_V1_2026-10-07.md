@@ -34,3 +34,30 @@ No implementation, no TLC rerun, no AB104.185 primary.
 
 ## Exact next
 For each C domain, trace the narrowest authoritative mutation boundary and ask whether one token can cover all invalidating writers. If not, define the dependency token class (object, aggregate, predicate/range, incarnation, or broader protected footprint) without implementing it.
+
+## Narrowest authoritative mutation-boundary trace — resource / trade / cooperate
+
+### Resource
+- Physical resource mutation is concentrated in action handlers (drink, eatPlant, catchFish, gatherWood, gatherStone) plus daily advanceWorldDay() and its advanceEcosystemDay() dependency.
+- Agent-side consequences are separate writers: inventory and needs change in the same handlers; tool durability can also change through useTool.
+- Therefore a single resourceRevision alone is insufficient for admission: it must be paired with agent-state/tool dependencies, or the protected footprint must cover them.
+- No current authoritative mutation funnel updates a semantic resource token across all these writers.
+
+### Trade
+- trade() is one physical transfer boundary for a completed trade, but its admission dependencies are not owned there: generateTradeOptions() reads partner inventory, buyer money, dynamic price, proximity and relationship context.
+- Inventory can be invalidated outside trade by actions, production, development and collective contribution.
+- Price can be invalidated by advanceEconomyDay(), whose aggregate input is inventory across all alive agents.
+- Relationship can be invalidated by social/economic/collective paths.
+- Therefore no single trade-local token is sufficient. A protected trade transition needs participant/resource dependencies plus economy aggregate/price and relationship dependencies, unless a broader protected boundary encompasses those writers.
+
+### Cooperate
+- findOrCreateProject() is a project admission/creation boundary, but project validity depends on both participants' inventories, homes, alive state and relationship; spatial proximity is selected upstream.
+- contributeToProject() mutates participant inventory, project progress/status, structures, homes/safety, relationships, events and memory.
+- These domains have independent writers outside the collective module.
+- Therefore a project revision/incarnation alone cannot protect cooperation admission. The protected footprint must include the participant/project/resource predicates or a broader common transaction boundary.
+
+### New conclusion
+The narrowest single-function mutation boundary is not equivalent to the narrowest semantic protected boundary. Each candidate function has external invalidators. A token is only useful if its authoritative mutation boundary covers every writer that can invalidate the claim before final commit. This is consistent with serializable concurrency systems where read/predicate dependencies matter in addition to final writes. 
+
+### Exact next
+Trace the remaining invalidators into a writer→dependency graph and identify the first common boundary that actually dominates all writers for each class. If no common boundary exists, record the minimum multi-domain protected footprint rather than inventing a token.
