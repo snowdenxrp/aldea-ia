@@ -1851,3 +1851,46 @@ Exact recovery point: **AB105.095R → cross-effect authority/fence inheritance 
 Next exact frontier: audit **shared commit domains / multi-effect transactions**—when several logical effects can legitimately share one authoritative commitment boundary without collapsing participant identity or hiding partial outcomes.
 
 DO-NOT-REPEAT: AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.096R shared commit domains: multi-effect atomicity requires explicit participant coverage and one authoritative boundary
+
+🟢 Shared commit-domain semantics are now bounded.
+
+Several logical effects may legitimately share one atomic commitment boundary only when the target/provider contract explicitly defines a commit domain that covers every required participant/effect.
+
+Minimum shared-domain evidence:
+- commit_domain_id;
+- complete participant/effect set known before commitment;
+- exact operation/effect identity and fingerprint for each participant;
+- shared authority/currentness/fence predicates where required;
+- target/resource incarnation and version predicates for each participant;
+- one authoritative atomic acceptance/commit boundary covering the complete declared set;
+- authoritative receipt/status that identifies the domain and participant outcomes;
+- recovery/reconciliation semantics for the domain.
+
+🟢 Participant identity is preserved. A shared transaction does not collapse distinct operation_ids/effect_ids into one generic effect. Each participant remains independently attributable.
+
+🟢 Aggregate COMMITTED is legal only when the authoritative commit domain proves the complete required participant set committed under the same boundary. One participant receipt cannot prove aggregate commitment.
+
+🟢 PARTIAL/UNKNOWN remains possible when:
+- participant coverage is incomplete;
+- the provider exposes per-participant outcomes without an atomic aggregate boundary;
+- commit-domain membership is ambiguous;
+- recovery cannot establish whether all participants belonged to the same commit;
+- the provider's transaction scope excludes a required participant.
+
+🟢 Cross-domain effects cannot be made atomic by coordinator bookkeeping. A local coordinator record spanning two independent providers is not a shared commit domain.
+
+🟢 A transaction identifier supplied by the caller is not proof of atomicity. The provider/target must authoritatively bind that identifier to its own commit boundary.
+
+🟢 Retry/reconciliation must preserve the domain and participant fingerprints. A retry that changes membership or payload is not an ordinary duplicate; it requires a new domain/operation identity or explicit provider semantics.
+
+🔵 Nested/shared domains remain provider-specific. A provider transaction may atomically cover several effects inside its domain, but external effects outside that domain remain separate participants and cannot inherit atomicity.
+
+🔴 No current Nexo/Lúmina executable path exposes an authoritative shared commit domain or multi-target atomic commit boundary. No aggregate atomicity is claimed.
+
+Exact recovery point: **AB105.096R → shared commit domains → aggregate COMMITTED requires authoritative coverage of every required participant under one explicit commit boundary; coordinator bookkeeping cannot manufacture atomicity.**
+
+Next exact frontier: audit **domain membership and participant-set freezing**—when the participant set becomes immutable, how late-added/removed effects are handled, and how membership races affect COMMITTED/PARTIAL/UNKNOWN.
+
+DO-NOT-REPEAT: AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
