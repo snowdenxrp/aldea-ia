@@ -3203,3 +3203,23 @@ Exact recovery point: POST-AB105.116R implementation audit → P24 → current A
 Next independent investigation: inspect `runDebugger`, `runTester`, `analyzeLumina` and their report builders for any action-intent construction before `buildNexoMission()`.
 
 DO-NOT-REPEAT: P0–P24 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P25 — no action-intent producer in debugger/tester/analyst; structural report also excluded from Nexo mission input
+
+🟢 Audited `src/assistants/debugger.js`, `src/assistants/tester.js`, `src/assistants/analyst.js`, and `scripts/assistants.mjs`. `runDebugger()` produces static/runtime diagnostic findings only; `runTester()` produces test results only; `analyzeLumina()` produces observations/conclusions only. None constructs a `LUMINA_ACTION` finding or action payload.
+
+🟢 `scripts/assistants.mjs` merges `squadReport.reports`, `debuggerReport`, `testerReport`, and `analystReport` into the `buildNexoMission()` input. Code evidence therefore closes the suspected hidden producer path: these audited report generators do not currently create Lúmina action intents.
+
+🟢 Additional boundary found: `structuralReport` is built in `scripts/assistants.mjs` with state-consistency findings, but the call to `buildNexoMission()` passes only `[...squadReport.reports, debuggerReport, testerReport, analystReport]`. `structuralReport` is included in `buildAssistantReport()` but is NOT included in Nexo mission planning input. This is a report-routing gap, separate from the LUMINA_ACTION producer question.
+
+🔵 The current repository therefore has no demonstrated production path from these assistant reports to a `LUMINA_ACTION` request. The action-intent boundary remains external/unimplemented in this carrier. P21's parameter-dropping behavior remains conditional on receiving action findings.
+
+🔵 This does not prove no external caller can supply action findings; it proves the audited in-repo assistant/report producers do not do so. No duplicate external effect claimed. No exactly-once claim.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P25 → debugger/tester/analyst producer census closed; structuralReport routing gap recorded.
+
+Next independent investigation: inspect the contract/consumers around `buildAssistantReport()` and whether excluding `structuralReport` from `buildNexoMission()` can cause a safety-relevant finding to be omitted from planning, without reopening the closed action-producer search.
+
+DO-NOT-REPEAT: P0–P25 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
