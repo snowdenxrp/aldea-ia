@@ -1595,3 +1595,38 @@ Exact recovery point: **AB105.088R → retry/reconciliation identity audit → i
 Next exact frontier: audit **operation-record retention/expiry and reuse risk**—when an operation identity can safely be reused, when it must remain permanently reserved, and how restore/clone/failover can create identity aliasing.
 
 DO-NOT-REPEAT: AB105.087R claim transitions; AB105.086R outcome coverage; AB105.085R carrier; AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation already audited at adapter level; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.089R operation-record retention/reuse audit: expiry is not deletion of historical truth
+
+🟢 The retention/reuse boundary is now explicit.
+
+An operation identity is safely reusable only when the provider/target contract guarantees that no still-relevant historical or in-flight operation can be confused with the new operation. Expiring a lookup record is not, by itself, such a guarantee.
+
+Required conditions before reuse:
+- prior operation is outside every possible effect/reconciliation window;
+- provider guarantees the old identity cannot still commit, complete asynchronously, or be returned as a duplicate;
+- resource incarnation/domain binding prevents aliasing with the old target;
+- restore/clone/failover does not resurrect an older operation registry without an epoch/generation boundary;
+- the new identity cannot collide with retained or recoverable historical records.
+
+🟢 Expiry semantics:
+record absent after retention expiry means only “not discoverable in the retained registry.” It does not mean REJECTED and does not erase the epistemic possibility of an old commitment.
+
+🟢 Reuse semantics:
+If any old effect could still complete, be reconciled, or be replayed against the same identity, reuse is unsafe. The safe result is quarantine/STOP or a new identity domain that is cryptographically/structurally separated from the old one.
+
+🟢 Restore/clone:
+Restoring an older operation registry snapshot can recreate identities that the live system has already consumed. Therefore recovery needs a monotonic generation/epoch or equivalent namespace fence that makes restored identities ineligible to collide with newer operations.
+
+🟢 Failover:
+A standby that resumes an operation registry must not infer “never committed” from missing local state when another authority/provider may have accepted the operation. Failover therefore preserves UNKNOWN until authoritative reconciliation closes the boundary.
+
+🔵 The precise safe reuse horizon is provider/effect-specific: synchronous effects may have a finite completion window, while asynchronous effects require a bound covering late completion and authoritative lookup. No universal TTL is valid.
+
+🔴 No current Nexo/Lúmina implementation provides a durable target operation registry, retention contract, recovery generation, or provider-enforced identity namespace fence. This remains a semantic requirement, not an implementation claim.
+
+Exact recovery point: **AB105.089R → operation-record retention/reuse audit → expiry does not prove non-commit; identity reuse requires a closed effect/reconciliation horizon plus a recovery-safe namespace boundary.**
+
+Next exact frontier: audit restore/clone/failover recovery ordering as a state-machine problem: how operation registry, resource state, authority epoch, and receipts must be recovered/fenced so an old snapshot cannot authorize or duplicate a newer effect.
+
+DO-NOT-REPEAT: AB105.088R identity tuple; AB105.087R claim transitions; AB105.086R outcome coverage; AB105.085R carrier; AB105.084R carrier gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
