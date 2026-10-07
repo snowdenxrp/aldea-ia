@@ -148,3 +148,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Ordinary actions also re-read mutable state at execution (e.g. trade partner; skill/random/resource state), so selected intent is not final validated state.
 - Post-effect learning/memory/discovery/event writes are additional mutation surfaces.
 - Exact next: map ReadSet/WriteSet for every mutation entry point and intersect with `tick()`, `advanceWorldDay()`, `advanceSocietyDay()` and other writers to determine smallest protected transition footprint.
+
+
+## P112 protected-footprint intersection audit — 2026-10-07
+- `P112_PROTECTED_FOOTPRINT_INTERSECTION_AUDIT_2026-10-07.md`
+- Commit `013d4aef479ab29cdc689fe965d60019f2e8d924`.
+- Direct mutation entry points and shared-writer intersections mapped.
+- Concrete overlap: water/wood/fish/land actions intersect daily world/ecosystem writers; trade intersects daily economy aggregation; collective actions span multiple agents/structures/relationships.
+- Conclusion: smallest protected unit must include Admission ReadSet + transitive dependency closure + handler ReadSet + predicate/range/aggregate dependencies + protected WriteSet + concurrent shared writers.
+- Repository search for AB104.186+ / AB104_18 returned no indexed results; no posterior claim or historical backfill made.
+- Exact next: overlap matrix for representative action classes and determine which conflicts need object/subsystem version, predicate/range token, or broader transaction footprint.
