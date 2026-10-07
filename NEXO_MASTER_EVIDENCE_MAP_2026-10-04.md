@@ -3095,3 +3095,28 @@ Exact recovery point: POST-AB105.116R implementation audit → P19 → Lúmina r
 Next independent investigation: audit whether the **action request itself** has enough stable parameters to construct a deterministic operation fingerprint (action + target + all effect-relevant parameters), or whether some actions depend on hidden mutable/random inputs that make even a future fingerprint insufficient without target-side operation registration.
 
 DO-NOT-REPEAT: P0–P19 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P20 — action fingerprints are possible only as request identity, not proof of effect
+
+🟢 Audited every current Lúmina action and all effect-relevant parameters in `actions.js`, `development.js`, `production.js`, `institutions.js`, and `economy.js`.
+
+🟢 Deterministic request inputs exist for many actions: target agent plus action name and explicit parameters such as duration/amount, and for trade partnerId/offerType/amount/unitPrice; institution actions add resourceType/amount. These inputs are sufficient to construct a canonical request fingerprint if normalized explicitly.
+
+🟡 However, the request fingerprint is not sufficient to identify the actual committed effect. Several actions derive their outcome from mutable state at execution time: available resources/inventory, skills, tool efficiency/durability, technology, farm state, institution membership/commons balances, prices and current agent state. Thus the same fingerprint can legitimately produce different results at different times.
+
+🔴 `catch_fish` has an additional non-deterministic input: `getRandom(simulation)`. The same action/target/amount/fingerprint can succeed or fail on different invocations. The random draw is not part of the current request identity and no target-side receipt records it.
+
+🔴 Several actions create fresh structure identifiers from current collection length (`shelter-N`, `farm-N`). Those IDs are consequence identifiers generated during execution, not pre-existing operation identity. They cannot be used to determine whether a prior ambiguous invocation created the structure unless the receipt is already bound to the original request.
+
+🔴 Tool use/crafting and resource gathering also mutate secondary state (durability, inventory, energy) whose final values can be changed by later actions. A post-hoc state comparison therefore cannot uniquely attribute the observed state to one ambiguous invocation.
+
+🟢 The strongest safe conclusion is: a canonical request fingerprint can identify **what Nexo intended to request**, but current Lúmina has no durable mechanism binding that fingerprint to **which execution committed**. Fingerprint ≠ OperationID ≠ commit receipt.
+
+🔵 Consequently, adding only a deterministic fingerprint would improve correlation and reconciliation queries, but would not by itself make `UNKNOWN` resolvable. To establish `COMMITTED`/`NOT_COMMITTED`, the target or an authoritative operation registry must record the fingerprint together with an independent operation identity and commit outcome at the mutation boundary.
+
+🔴 No patch made and no duplicate external effect claimed.
+
+Exact recovery point: POST-AB105.116R implementation audit → P20 → action/request identity census closed; deterministic request fingerprints are feasible for current actions, but insufficient as standalone commitment evidence.
+
+Next independent investigation: inspect the exact construction path of `context.action` in the Nexo planner/orchestrator and determine whether all effect-relevant parameters survive into the planned step, or whether planning currently drops parameters needed to make a canonical fingerprint complete.
+
+DO-NOT-REPEAT: P0–P20 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
