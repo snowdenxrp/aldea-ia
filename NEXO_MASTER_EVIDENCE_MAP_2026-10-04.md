@@ -2661,3 +2661,25 @@ Exact recovery point: POST-AB105.116R implementation audit → P2 → loss of PR
 Next investigation: identify every persistence/restart/reconstruction path that can produce an executable mission/step after such record loss, and determine whether any of them enforce a separate authoritative reconciliation gate.
 
 DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; P0–P2 are executable manifestations of the already-established retention/reconciliation requirement.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P4 — replan intentionally creates a new idempotency domain without effect-level reconciliation
+
+🟢 The replan path is now traced in executable code and tests.
+
+`buildNexoMission()` always creates a new `missionId`. The runtime derives idempotency as `missionId:stepId`. Therefore a replan creates a new idempotency key even when the new mission repeats the same action/target.
+
+🟢 Existing tests explicitly validate this behavior for a prior `failed` step: a replan gets a different missionId and is allowed to execute again. That is correct for a contractually resolved failure, but it does not establish safety for an earlier UNKNOWN/PREPARED effect whose local record was lost.
+
+🟢 More importantly, the replan mechanism does not consult the effect journal or an authoritative target operation registry before creating the new execution identity. The lineage fields `parentMissionId` and `replanReason` preserve provenance, but they are not duplicate-suppression or commitment evidence.
+
+🔵 Therefore the precise gap is: a new mission identity can intentionally bypass the old mission's idempotency domain. If the parent effect was truly unresolved rather than authoritatively rejected, the new mission may be admitted as a fresh effect unless a separate reconciliation gate exists upstream.
+
+🔵 This is not a claim that current tests demonstrate a duplicate external effect. The tests use resolved failures/local simulation. The finding is that the executable contract has no general rule preventing replan from becoming an unsafe fresh attempt after UNKNOWN.
+
+🔴 No patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P4 → replan/new mission identity can bypass prior effect idempotency unless reconciliation closes the parent effect first.
+
+Next investigation: inspect all replan callers and failure/UNKNOWN mappings to determine whether an UNKNOWN handler exception can reach the same replan path and become a fresh mission.
+
+DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; P0–P4 are implementation enforcement audits.
