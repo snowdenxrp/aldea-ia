@@ -2614,3 +2614,28 @@ Exact recovery point: POST-AB105.116R implementation audit → P0 bounded-journa
 Next investigation: determine whether any other executable path can discard, overwrite, or reconstruct an unresolved operation record before authoritative reconciliation, including memory reconstruction/persistence boundaries. Do not rerun AB105.079R–AB105.116R.
 
 DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; this is an implementation-carrier audit of an already-established contract gap.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P1 — reconstruction also truncates unresolved effectJournal
+
+🟢 Follow-up audit traced the persistence boundary.
+
+`src/assistants/memory.js` reconstructs Nexo memory through `createLearningMemory()`, which applies `source.nexo.effectJournal.slice(-200)`. Therefore the 200-entry bound is not only an adapter-local mutation: every reconstruction through this normalizer can discard older effect-journal entries.
+
+🟢 `scripts/simulate.mjs` persists `simulation.nexoMemory` and `applyState()` restores it, so ordinary restart persistence preserves a still-retained PREPARED record. The existing restart test confirms this for a single retained entry.
+
+🟢 The new gap is the combination:
+PREPARED unresolved effect → repeated memory normalization / accumulation → bounded last-200 retention → unresolved record may disappear → later same idempotency key is no longer recognized as PREPARED.
+
+🟢 This is stronger than a mere in-process cache observation because the truncation occurs at the memory reconstruction/persistence model itself.
+
+🔵 The current tests verify preservation of a retained PREPARED record and atomic state-file replacement/concurrency, but do not verify that an unresolved PREPARED record remains non-evictable after more than 200 subsequent Nexo journal entries.
+
+🔵 This does not prove an external duplicate effect occurred. It proves the executable persistence layer lacks the retention invariant required to safely treat unresolved effects as non-retryable until authoritative reconciliation.
+
+🔴 No implementation patch or test modification made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P1 memory-normalization eviction of unresolved PREPARED records.
+
+Next investigation: audit whether any code path can convert a missing/evicted PREPARED record into a fresh executable attempt without requiring authoritative reconciliation, including mission reconstruction and idempotency-key reuse.
+
+DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; P0/P1 are executable implementation audits of the already-established retention/reconciliation contract.
