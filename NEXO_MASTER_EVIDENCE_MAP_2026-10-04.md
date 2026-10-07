@@ -3927,3 +3927,16 @@ P65 RESULT: DETERMINISTIC_CI_CAN_BE_CANCELLED_AND_REPLACED = CONFIRMED CODE PATH
 
 ## Exact next mission
 P66: inspect whether any current repository-side mechanism (workflow triggers, commit/status conventions, branch/ref behavior, or persisted state metadata) can establish an authoritative per-state-commit validation lineage despite P65's missing/unknown required-check evidence. Reuse P41–P65; do not repeat closed searches. Research only; no patch; no TLC; no AB105.117R.
+
+
+## 2026-10-07 — Pre-master archive archaeology: first recovery signal
+
+🟢 Targeted GitHub commit-history search confirms the pre-master archive is materially distributed: recoverable continuity commits exist well before the current master, including AB104.743 through AB104.762 and later AB105 checkpoints, plus older AUDIT-105 continuity. This validates the rule that the master must not be treated as the complete historical archive.
+
+🟢 Examples recovered directly from commit history: `478bb578...` persisted AB104.759R; `8f53caf...` persisted AB104.760R; `b87b6e7...` persisted AB104.761R Produce authorization audit; `4a06a256...` and `8719e0f...` persisted AB104.762; `1ce706e...` checkpointed AB105.018R; `b6aa710...` records NEXO continuity AUDIT-105.
+
+🔵 This is inventory evidence only. It does not yet prove which of these historical artifacts are absent from the master or whether any old claim was superseded. No experiment was rerun.
+
+P66/PRE-MASTER RESULT: `PRE_MASTER_DISTRIBUTED_ARCHIVE = CONFIRMED`; `HISTORICAL_GAPS_IN_MASTER = NOT_YET_CLASSIFIED`.
+
+Next bounded action: continue targeted inventory of pre-master continuity documents/commits, then cross-reference against the master before promoting any historical claim.
