@@ -569,3 +569,20 @@ AB104.17 harness logic executed in an actual local Python runtime. Observed repr
 
 ## AB104.19 — 2026-09-25
 AB65 audit: workflow definition exists and is configured to persist gate output, but the expected output file is absent from main; no matching execution-output commit was found and the trigger commit has no reported statuses. AB65_EXECUTION therefore remains NOT_VERIFIED. No semantic gate was upgraded.
+
+
+## POST-AB105.116R implementation-audit continuity — 2026-10-07
+
+Canonical recovery handoff: NEXO_CONTINUITY/POST_AB105_116R_P34_P35_HANDOFF_2026-10-07.md.
+
+Latest completed point: P34 CLOSED. Master evidence map commit: afda1da32b9bbbe3eac417405b58c100508936bf; content SHA: d66fd4e75e4c1140dfac62094f5d6b25c820e391.
+
+P34 established: loadState() silently converts read/JSON/schema failure into an ordinary-looking default version-5 state. No fallback/recovery provenance, error marker, source hash, or lineage is passed downstream. The assistant path can therefore proceed as if the state were legitimately initialized, and the application itself does not preserve proof that fallback occurred.
+
+EXACT NEXT ACTION = P35, not yet executed: audit only whether the first persistence after fallback can write the fallback-derived state back over the unusable source. Trace: load failure → fallback → caller → persistState() → world-state replacement. Determine whether any caller/guard/marker distinguishes fallback from legitimate state, whether overwrite can occur, and whether a recovery marker/quarantine/backup/lineage or test exists.
+
+P35 must be saved to both this CONTINUITY layer and NEXO_MASTER_EVIDENCE_MAP_2026-10-04.md before P36. Do not reopen P33 normalizer/load mutation internals. No patch unless evidence requires it.
+
+DO-NOT-REPEAT: P0–P34 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited. Hidden deduplication/identity/reconciliation audits P0–P21 and structural routing/normalization P26–P33 are closed.
+
+NEW-CHAT RESUME: read the P34-P35 handoff and master evidence map, then continue directly at P35. Do not restart the chain or infer missing results.
