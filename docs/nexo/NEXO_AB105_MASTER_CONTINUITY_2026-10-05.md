@@ -2315,3 +2315,21 @@ Do not reopen the already closed generic paths: MetadataLoader/KafkaEventQueue s
 - AB105.116R = **PROTECTED / UNCHANGED**
 - AB105.117R = **NOT_CREATED**
 - TLC = **NOT_RERUN**
+
+
+## 2026-10-06 — Reconciliación final de la frontera MetadataLoader → D1
+
+🟢 Reinspección exacta de `MetadataLoader.maybePublishMetadata()` en pin `99b940733a9f6bc409457dba7108f08421d81e42`: después de ejecutar todos los publishers, el loader solo actualiza métricas/provenance y puede programar inicialización de publishers no inicializados. No aparece un Future por actualización, enqueue hacia RequestChannel, lock/condition compartido ni callback de autorización.
+
+🟢 `BrokerMetadataPublisher` mantiene el orden `metadataCache.setImage(newImage) → ... → aclPublisher/W1 → post-W1 callbacks → firstPublishFuture.complete`. El future es startup-only.
+
+🟢 El candidato `lastAppliedProvenance/lastAppliedOffset` ya fue auditado: es una publicación AtomicReference real y llega al heartbeat/lifecycle, pero no constituye un gate por ACL antes de D1.
+
+🟢 Run #21 ya aporta observación directa del snapshot de D1: 10/10 D1 vieron `targetPresent=false`, `targetId=NONE`, `cacheCount=0`, y cacheIdentity coincidió con W1 en 10/10. Esto es evidencia empírica fuerte de ausencia de stale snapshot en ese run, pero no JMM HB.
+
+🔵 La búsqueda de un puente natural W1→ENQUEUE/W1→D1 queda agotada dentro del camino productivo auditado. No se encontró un edge concreto adicional. El estado correcto sigue siendo: W1→ENQUEUE HB UNKNOWN; W1→D1 HB UNKNOWN; stale-read universal NOT DISPROVEN; vulnerabilidad NOT ESTABLECIDA.
+
+### Próximo paso permitido
+No repetir source audit ni Run #21. Si se continúa, debe ser únicamente mediante una nueva evidencia empírica que preserve la ausencia de sincronización artificial y, preferentemente, conecte causalmente el request real con W1/ENQUEUE sin usar el propio mecanismo de observación como puente. Si no puede hacerse sin alterar la semántica, conservar UNKNOWN.
+
+DO-NOT-REPEAT: MetadataLoader post-publisher genérico, firstPublishFuture/startup, metadataCache ordering, lastAppliedOffset/lifecycle, RequestChannel, SocketServer producer, AuthHelper/Plugin, shared Authorizer identity, outer volatile data, Run #21 cache probe, TLC, AB105.117R.
