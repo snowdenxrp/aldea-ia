@@ -1292,3 +1292,36 @@ Exact recovery point: **AB105.082R → minimum target commitment interface → a
 Next exact frontier: map the contract to concrete provider capability classes and define admission rules: which claims are permitted for STRONG_COMMIT, FENCED_IDEMPOTENT, RECONCILIATION_ONLY, and UNSAFE/UNSUPPORTED.
 
 DO-NOT-REPEAT: AB105.081R taxonomy reconciliation; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite selection; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.083R capability admission matrix: claims are bounded by target semantics
+
+🟢 The capability admission rules are now explicit.
+
+| Capability class | Safe admission | Unsafe promotion |
+|---|---|---|
+| **STRONG_COMMIT** | COMMITTED when the target proves the exact operation/effect identity, required authority/fence/resource predicates, mutation, and authoritative receipt share one target commitment domain. Exact duplicate may resolve to DUPLICATE_COMMITTED when fingerprint/binding matches. | Claiming atomicity outside the target domain; treating a client acknowledgement as the receipt; treating a partial participant set as aggregate COMMITTED. |
+| **FENCED_IDEMPOTENT** | Permit bounded retry/deduplication and stale-fence rejection when those semantics are explicitly enforced by the target. After ambiguous crash/timeout, remain UNKNOWN until authoritative reconciliation. | Universal exactly-once; assuming idempotency token alone proves physical effect; assuming target fencing equals Nexo authority activation. |
+| **RECONCILIATION_ONLY** | Permit execution only where the effect class tolerates UNKNOWN and reconciliation/compensation semantics are sufficient. A later authoritative observation can resolve UNKNOWN. | Converting send/ack/history into COMMITTED without an authoritative commitment witness; blind retry after unresolved ambiguity. |
+| **UNSAFE/UNSUPPORTED** | Observe or prepare intent only; critical effect remains STOP/UNKNOWN. | Executing a critical effect under a stronger claim than the target can enforce. |
+
+🟢 Admission is therefore a proof/claim boundary, not merely a feature flag. The same provider may qualify as different classes for different APIs/effects because capability is scoped to the exact target operation, resource, identity, and transaction domain.
+
+🟢 Minimum admission evidence:
+1. exact effect identity and operation identity;
+2. target/resource identity and incarnation;
+3. current authority/fence semantics required by the effect;
+4. idempotency scope and retention;
+5. authoritative duplicate/receipt lookup semantics;
+6. crash/timeout outcome semantics;
+7. transaction/commit domain;
+8. for multi-target effects, participant coverage and mixed-outcome semantics.
+
+🔵 Important refinement: **UNKNOWN is an allowed terminal epistemic state for a capability class; it is not a provider failure.** A provider can be correctly admitted as FENCED_IDEMPOTENT or RECONCILIATION_ONLY while still requiring Nexo to quarantine an ambiguous operation.
+
+🔴 No current Nexo/Lúmina adapter has been promoted to STRONG_COMMIT by this matrix. That remains unestablished.
+
+Exact recovery point: **AB105.083R → capability admission matrix → claims bounded by target semantics.**
+
+Next exact frontier: audit whether the existing Nexo effect contract has a place to carry this capability class and the admission evidence without silently changing runtime behavior; repository inspection only, no implementation.
+
+DO-NOT-REPEAT: AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
