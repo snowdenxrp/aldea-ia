@@ -2967,3 +2967,42 @@ DO-NOT-REPEAT:
 - P0–P15 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence and world-state persistence audits are closed.
 - AB105.079R–AB105.116R remain closed.
 - AB105.117R remains prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P16 — Lúmina target state has consequences/history, but no independent operation receipt
+
+🟢 Audited the concrete action consequence layer in `src/actions.js` and the action-specific modules it dispatches to: `src/development.js`, `src/production.js`, `src/economy.js` and `src/institutions.js`. The world does retain durable consequences of successful actions, but none of the inspected consequence records binds the mutation to an independent Nexo operation identity.
+
+🟢 `src/actions.js` is only a dispatcher/consequence engine. `executeAction()` routes the action name to concrete mutations. The concrete functions receive `simulation`, `agent` and action parameters; they do not inspect `missionId`, `stepId`, `idempotencyKey`, OperationID, request fingerprint, authority epoch, fence or target incarnation.
+
+🟢 There are several real durable state consequences:
+- resource actions decrement world resources and add inventory (`drink`, `eat_plant`, `catch_fish`, `gather_wood`, `gather_stone`);
+- `build_shelter` creates a persistent structure with a generated `shelter-N` id and assigns `agent.home`;
+- `farm` creates a persistent `farm-N` structure and assigns `agent.farm`;
+- `trade` mutates both inventories and money and appends a trade record to `world.economy.trades`;
+- commons contribution/withdrawal mutates `world.commons` and appends contribution/withdrawal history;
+- tools, crops and other production effects persist through inventory/structure/resource fields.
+
+🔵 These are **state consequences, not operation receipts**. For example, a shelter id identifies the resulting structure, but it does not identify which logical operation created it, nor bind that creation to a request fingerprint, attempt generation, authority context, target incarnation or provider receipt. Likewise, a farm id identifies the resulting farm but is not an operation identity.
+
+🔵 The action histories are also insufficient as independent reconciliation records. `world.economy.trades` records day, sellerId, buyerId, type, amount, unitPrice and total, but no operation/idempotency identity or request fingerprint; it is bounded to the last 5000 trades. `world.commons.contributions` and `withdrawals` similarly record day, agentId, type and amount, but no operation identity and are bounded to 5000 entries.
+
+🔵 Agent-local markers do not close the gap. `lastActionName`, `lastActionResult` and `lastAttemptedAction` describe recent execution state, but they are not independent operation receipts and can be overwritten by later actions. Generic `experiences` retain descriptions/consequences but use experience ids supplied by the caller and do not establish target-side operation identity.
+
+🔵 Final resource/inventory/structure values cannot generally distinguish a prior committed operation from an equivalent later operation. The same semantic action can legitimately produce the same final state shape without leaving a stable operation identity. Therefore observing the expected consequence is not equivalent to proving which operation committed it.
+
+🔵 Some concrete consequences are more informative than a final scalar: trade and commons histories preserve a bounded event trail, and structure creation preserves a structure identifier. However, without binding those records to an independent operation identity plus request/target context, they cannot serve as authoritative reconciliation for a lost `missionId:stepId`.
+
+🔵 No hidden target-side receipt/operation registry was found in the inspected action-consequence path. The result is consistent with P8/P9/P11/P15: the current Lúmina carrier has durable world consequences and bounded histories, but no independent mission-independent operation receipt capable of answering `did this exact logical effect commit?` after the Nexo execution identity is lost.
+
+🔴 Scope boundary: this closes the inspected current Lúmina action/world-model carrier, not every future provider or a universal claim about all possible state semantics. No duplicate external effect is claimed, and no exactly-once guarantee is inferred.
+
+🔴 No implementation patch made. Research-first rule remains active.
+
+Exact recovery point: POST-AB105.116R implementation audit → P16 → concrete Lúmina target/action consequence audit closed; durable consequences exist, but no independent operation receipt/semantic identity/target-incarnation binding was recovered.
+
+Next independent investigation: audit the **target acceptance boundary itself** in the current Lúmina adapter path: determine whether any single mutation point can atomically couple operation identity + precondition/expected state + target mutation + durable receipt, or whether the current handler necessarily remains `check local state → mutate → return result` with no atomic target-side commit record. Do not reopen P14/P15 persistence searches or P0–P16 identity-carrier searches.
+
+DO-NOT-REPEAT:
+- P0–P16 current executable retention, reconstruction, semantic-deduplication, identity-constructor, admission-boundary, caller-binding, prepared-persistence, world-state persistence and concrete action-consequence audits are closed.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
