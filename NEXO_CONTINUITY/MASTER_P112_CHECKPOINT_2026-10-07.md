@@ -287,3 +287,11 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Current JS in-memory mutation followed by filesystem persistence has no demonstrated atomic point joining mutation and durable commit; lock/temp/rename do not imply rollback or transaction semantics.
 - External effects remain a separate capability boundary.
 - Exact next: trace the actual lock/temp/rename/stateRevision primitive and determine which crash cuts it closes by contract.
+
+
+## P112 persistence primitive crash-cut audit V1 — 2026-10-07
+- Exact `scripts/simulate.mjs` persistence sequence inspected at `f8704496184eb498d87847afebbd47d1004c61ec`: lock → expectedRevision check → payload serialization → temp write → rename → unlock.
+- This closes a cooperating-writer stale-revision race at the persistence boundary, but the lock is acquired only during persistence; simulation mutation happens earlier, so the lock is not an execution/effect fence.
+- Failed write/rename behavior is bounded by AB104.142: prior canonical state is preserved and temp is cleaned. Rename gives a namespace replacement boundary, but current code does not demonstrate fsync/durable flush before rename or directory sync after rename.
+- Therefore rename success is not promoted to universal crash/power-loss durable COMMITTED; strict durability outcome can remain UNKNOWN around storage failure/power loss.
+- Exact next: separate recoverable local journal/commit-marker semantics from the storage durability model (process crash vs OS crash vs power loss), then compare against current `persistState()` without assuming a new database.
