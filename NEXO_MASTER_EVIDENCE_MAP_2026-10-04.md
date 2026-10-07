@@ -1145,3 +1145,33 @@ The historical contract requires the final effect gate to validate revocation ge
 **Exact next investigation:** inspect the concrete persistence implementation behind `persistState` / world-state storage and every `persistPreparedIntent` caller, looking only for an atomic transaction/journal boundary that includes both the target mutation and operation identity/receipt. If absent, close this runtime branch as an implementation gap.
 
 **DO-NOT-REPEAT:** AB104.227/228/229 design semantics; local `missionId:stepId` idempotency; `runtimeCommitLocks`; generic fencing; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.079R persistence-boundary sweep: world-state replacement is not effect+receipt atomicity
+
+🟢 Current executable persistence implementation inspected directly at the canonical master head. scripts/simulate.mjs::persistState() acquires a sibling filesystem lock, optionally reloads world-state.json and checks expectedRevision, serializes the entire simulation including simulation.nexoMemory, writes a temporary file, then renames that file over world-state.json. This is a protected file-persistence/revision boundary for cooperating writers.
+
+🟢 The same inspection confirms the persistence boundary is after the Lúmina effect mutation. src/nexo/simulation-adapter.js handlers mutate simulation.agents/world directly and increment the in-memory nexoEffectRevision; src/nexo/runtime.js then records the execution/outcome in memory. Nothing in the inspected execution path invokes persistState() around the handler mutation as one transaction.
+
+🟢 persistPreparedIntent remains only an injected callback seam. executeLuminaNexoStep() accepts it and forwards it to createLuminaEffectAdapter(), which forwards it to createEffectAdapter(). The current repository search found no production caller that actually supplies this callback to an effect execution. The only executable definition/use chain is runtime → simulation-adapter → effect-adapter; scripts/assistants.mjs builds/persists mission plans but does not call executeLuminaNexoStep().
+
+🟢 effectJournal is included in the durable simulation.nexoMemory envelope when persistState() is eventually called, but the journal is still a local mutable array before that checkpoint and is capped at 200 entries. Therefore inclusion in world-state.json proves eventual serialization, not atomic coupling to the physical effect.
+
+🔵 Critical boundary: no executable atomic transaction/journal was recovered that simultaneously commits (1) prepared operation identity, (2) authority/fence/resource acceptance, (3) target mutation, and (4) durable operation receipt. The existing temp-file+rename operation atomically replaces the single state file, but it cannot retroactively include an already-completed in-memory effect in the same linearization point.
+
+🔵 Crash classification: a crash after the handler mutates simulation.agents/world but before persistState() durably records the resulting state and effect identity leaves recovery dependent on whatever durable evidence survived. The adapter's EFFECT_OUTCOME_UNKNOWN behavior correctly refuses to invent a terminal result, but the current topology does not supply a target-authoritative receipt that resolves the ambiguity.
+
+🟢 Important negative result: this is not a newly discovered defect requiring another implementation patch. Earlier AB104 research already established the same architectural boundary; this sweep now ties that conclusion to the current executable persistence code and confirms no hidden caller/transaction was missed in the current tree.
+
+Status:
+- persistState() lock/revision/temp-rename persistence = 🟢 OBSERVED/BOUNDED.
+- Nexo memory/effectJournal serialization = 🟢 OBSERVED.
+- persistPreparedIntent production integration = 🔵 NOT ESTABLISHED; no current caller recovered.
+- target mutation + operation receipt atomicity = 🔵 NOT ESTABLISHED.
+- crash-after-effect-before-durable-receipt = 🔵 UNKNOWN.
+- exactly-once/external-effect guarantee = 🔴 NOT CLAIMED.
+
+Exact recovery point: AB105.079R → persistence-boundary sweep → world-state replacement ≠ atomic effect+receipt registry.
+
+Next exact frontier: move beyond the already-closed local Lúmina persistence branch and audit the target/effect commitment contract at the architecture level: what authoritative store/resource could own the operation receipt and enforce authority/fence/resource-version acceptance at the same commitment boundary. Do not invent or implement a store yet.
+
+DO-NOT-REPEAT: persistState() temp-file/rename semantics; local filesystem lock/revision semantics; persistPreparedIntent seam discovery; generic local idempotency; Lúmina direct-mutation path; AB104.227/228/229 semantic registry design; S9; Kafka/JMM/G0; TLC; AB105.117R.
