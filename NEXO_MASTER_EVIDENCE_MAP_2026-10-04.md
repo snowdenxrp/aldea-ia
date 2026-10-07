@@ -3643,3 +3643,22 @@ Classification: **FAILED_LOAD_CAN_BE_NORMALIZED_AND_COMMITTED_WITHOUT_PROVENANCE
 Next mission P49: inspect whether any caller other than `main()` can invoke `loadState()` and then `persistState()` in the same fallback-blind manner, including assistants/browser/API paths. Determine whether the confirmed gap is simulation-only or broader within Lúmina.
 
 DO-NOT-REPEAT: P0–P48 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P49 — scope of fallback-blind recovery
+
+🟢 `scripts/assistants.mjs` imports the same `loadState`/`persistState` pair. It loads `persisted = await loadState(STATE_PATH)`, performs analysis/mutation, then unconditionally writes `.lumina-assistant-memory.json` and calls `persistState(... expectedRevision: persisted.stateRevision, stateRevision: nextRevision)`. Thus the same malformed/unreadable `world-state.json` → synthetic revision 0 → persistence path exists outside `scripts/simulate.mjs` main.
+
+🟢 Browser `src/main.js` has a separate localStorage persistence path. `parseSavedState()` returns null on malformed JSON; `restoreSimulation()` then returns false, after which initialization continues and the normal save loop can write a fresh `lumina-world-v5` snapshot. There is no durable marker that the prior localStorage value was unreadable. This is the same provenance class, but a separate storage implementation.
+
+🟢 Browser remote `world-state.json` loading rejects invalid HTTP/JSON/schema and does not itself overwrite the remote file; it falls back to local/default behavior. Therefore the confirmed remote-file overwrite path remains server/script-side, not proven from the browser fetch path.
+
+🟢 Search found no additional production caller of the Node `loadState()`/`persistState()` pair beyond `scripts/simulate.mjs` and `scripts/assistants.mjs`; other matches are tests/docs/continuity records.
+
+🔴 P49 result: the gap is **NOT simulation-only**. It is confirmed in the assistant workflow and independently present in browser localStorage recovery. The exact remote-file replacement mechanism remains the Node persistence path.
+
+Classification: **fallback-blind recovery is cross-path within Lúmina (Node simulation + assistants; browser local persistence separately)**.
+
+Next mission P50: inspect whether `scripts/assistants.mjs` can make the provenance loss stronger by persisting assistant memory successfully before `world-state.json`, creating a durable record that looks healthy while the authoritative world state was recovered from failure. Research ordering and failure boundaries only; no patch.
+
+DO-NOT-REPEAT: P0–P49 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
