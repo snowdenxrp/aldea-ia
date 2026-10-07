@@ -1076,3 +1076,13 @@ The historical contract requires the final effect gate to validate revocation ge
 🔵 **S9 implementation gap is now stronger:** the repository currently establishes the *requirements* for an authority issuer and durable linearization, but the searched runtime surface does not establish the actual issuer/store/commit path. Therefore no claim may be made that `CURRENT_AUTHORITY` can presently be issued, durably committed, reconstructed, or invalidated by an implemented Nexo authority plane.
 
 **Next frontier:** move to the already-defined crash/recovery semantics and trace whether recovery has a concrete authoritative source/commit identifier for authority activation. If that also remains documentary, record S9 as an architecture-without-runtime-implementation boundary and stop inventing implementation artifacts.
+
+## 2026-10-07 — S9 crash/recovery trace: activation semantics exist, implementation source remains absent
+
+🟢 **Recovered historical recovery semantics:** AB104.487 explicitly distinguishes PREPARED, OLD_FENCED, NEW_VALIDATED and ACTIVATION_COMMITTED. It states that `NEW_VALIDATED` without `ACTIVATION_COMMITTED` remains non-authoritative; after durable `ACTIVATION_COMMITTED`, recovery may restore NEW_ACTIVE even if acknowledgement was lost; conflicting durable activation records require quarantine. AB104.571 likewise states that a successful conditional commit establishes the new authority boundary, failed commit grants no new authority, and UNKNOWN commit result requires authoritative reconciliation.
+
+🟢 **Identity semantics recovered:** AB104.572/573 bind the final recovery commit to stable `OperationID/RecoveryCommitID`, with recovery generation, authority epoch and fence revision/epoch participating in the candidate identity/binding. This is strong design evidence for crash-safe reconciliation.
+
+🔵 **Critical S9 distinction:** these documents define the exact *recovery semantics* that a concrete authority implementation must satisfy, but searches still found no runtime authoritative store, activation record, commit writer, or implementation that produces `ACTIVATION_COMMITTED` and reconstructs it into `CURRENT_AUTHORITY`. Therefore crash/recovery behavior is specified, not implemented/verified.
+
+**S9 status:** architecture/design boundary is now highly constrained; executable authority activation remains UNKNOWN/OPEN. Next step is not another generic recovery design: inspect whether any existing runtime/storage component in the repository can serve as the authoritative source for these named durable activation states. If none exists, S9 can be closed as an implementation gap and the research frontier can move to the next unresolved architectural boundary.
