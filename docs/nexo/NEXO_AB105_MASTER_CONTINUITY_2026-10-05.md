@@ -2363,3 +2363,21 @@ Epistemic state unchanged: W1→ENQUEUE HB UNKNOWN; W1→D1 HB UNKNOWN; stale AC
 DO-NOT-REPEAT: do not count runs `37549706571` or `37549855165`; do not rerun TLC; do not create AB105.117R; do not interpret zero-job failure as Kafka behavior.
 
 Epistemic state unchanged: W1→ENQUEUE HB UNKNOWN; W1→D1 HB UNKNOWN; stale ACL NOT OBSERVED in Run #21 / NOT DISPROVEN universally; vulnerability NOT ESTABLISHED; AB105.116R PROTECTED.
+
+
+## 2026-10-06 — CI registration diagnosis: zero-job frontier narrowed
+
+🟢 Rechecked the entire `.github/workflows/` directory on branch `nexo-ab105-g0-ordering-witness`: no workflow file showed the previously identified duplicate `workflow_dispatch` pattern or an anomalous duplicate top-level `jobs:` key in this bounded structural scan.
+
+🟢 The active G0 workflow itself has exactly one `workflow_dispatch`, a push trigger for `nexo-ab105-g0-ordering-witness`, a pull_request trigger for `main`, and one `ordering-witness` job. Its source remains unchanged by this diagnostic pass.
+
+🔵 GitHub documentation confirms that a created run can fail before job execution when workflow configuration/registration is invalid; GitHub also notes that an invalid workflow file in `.github/workflows` can generate failed runs. Therefore the next diagnostic target is the repository-level Actions dispatcher/registration state, not Kafka.
+
+🔵 External contemporary GitHub reports show the same distinctive `jobs=0` / pre-job failure class, including cases where a minimal workflow also failed; these are analogous reports only, not evidence about this repository.
+
+🔴 No claim of GitHub backend corruption is made yet. We have not established that all workflows in this repository fail to materialize jobs.
+
+### Next legitimate diagnostic
+Test whether a known-good minimal workflow already present in the repository can materialize a job on the same branch/event, or compare a known successful workflow run against the G0 workflow registration. Do not modify Kafka instrumentation or add synchronization. Do not count any zero-job run as AB105 evidence.
+
+DO-NOT-REPEAT: duplicate `workflow_dispatch` repair, active G0 YAML inspection already completed, Run #21, TLC, AB105.117R.
