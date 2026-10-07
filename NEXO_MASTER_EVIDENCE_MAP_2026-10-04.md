@@ -3874,3 +3874,21 @@ DO-NOT-REPEAT: P0–P60 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 
 ## Exact next mission
 **P63:** inspect whether existing tests or persisted fields can detect/reject a semantically stale rebased pair after Git reconciliation. No patch; no TLC; no AB105.117R.
+
+
+## 2026-10-07 — P63 — stale-pair detection capability audit
+
+🟢 Current tests verify `stateRevision` on `world-state.json`, including sequential revision rejection and a two-process filesystem-writer race. They do not inspect `.lumina-assistant-memory.json` as a lineage partner.
+
+🟢 Search found no operational fields/contracts for `lastKnownGood`, `validatedRevision`, `recoverySource`, assistant-memory revision, state hash, commit SHA, or cross-file lineage. `stateRevision` exists only in world-state persistence.
+
+🟢 `simulation-restart-persistence.test.mjs` proves restart reconstruction of embedded `nexoMemory` inside `world-state.json`; it does not prove consistency between that embedded memory and the separate `.lumina-assistant-memory.json`.
+
+🟢 Therefore an externally introduced pair such as `world-state.stateRevision = R+1` with assistant-memory content from R is not rejected by current application tests/fields and has no authoritative persisted marker from which to reconstruct the pair's intended lineage.
+
+🔵 The filesystem lock/race tests should not be interpreted as coverage of the GitHub remote rebase/push race; they exercise local persistence only.
+
+🔴 **P63 RESULT:** `SEMANTIC_STALE_CROSS_FILE_PAIR_DETECTABLE_BY_CURRENT_CONTRACT = NO`; `LOCAL_STATE_REVISION_CONFLICT_COVERAGE = CONFIRMED`; `CROSS_FILE_LINEAGE_VALIDATION = MISSING`; `REBASE_STALE_PAIR_REJECTION = NOT PRESENT`.
+
+## Exact next mission
+**P64:** final adversarial scan of whether the workflow itself can accidentally create a false appearance of validation because `npm test` runs before `assistants`, while the committed files are mutated afterward. Determine whether any current artifact/status can bind the exact post-mutation pair to that test result. No patch; no TLC; no AB105.117R.
