@@ -1727,3 +1727,44 @@ Exact recovery point: **AB105.092R → reconciliation finality → UNKNOWN close
 Next exact frontier: audit **compensation/cancellation after UNKNOWN**—whether a compensating action can itself create a second ambiguity and how the original operation and compensation must remain causally linked without falsely proving either outcome.
 
 DO-NOT-REPEAT: AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.093R compensation/cancellation after UNKNOWN: compensation is a separate effect, never proof of original non-commit
+
+🟢 Compensation and cancellation are now separated from the original operation.
+
+If operation O is UNKNOWN, a compensating operation C must have its own:
+- operation identity;
+- effect identity/fingerprint;
+- target/resource incarnation binding;
+- authority/fence requirements;
+- capability/admission assessment;
+- outcome and reconciliation record.
+
+🟢 CANNOT infer:
+- O UNKNOWN + C COMMITTED → O REJECTED.
+- O UNKNOWN + C REJECTED → O REJECTED.
+- O UNKNOWN + successful inverse observation → O never happened.
+- C accepted → O committed or uncommitted.
+
+The original O remains UNKNOWN until its own commitment boundary is authoritatively resolved.
+
+🟢 Causal linkage is required: C references O as the operation it intends to compensate/cancel, but this linkage is metadata/provenance, not proof of O's outcome.
+
+🟢 Cancellation semantics must be explicit:
+- If the provider guarantees cancellation before acceptance, C may establish a non-acceptance claim for O only when that provider contract explicitly binds the cancellation boundary to O.
+- If cancellation races with O, both outcomes require independent authoritative evidence.
+- If O already committed and C commits, the correct result is “O committed; compensation committed,” not “O did not happen.”
+
+🟢 Compensation can itself be UNKNOWN. Therefore the state machine may contain linked unresolved operations O and C; the coordinator must not collapse them into a single boolean success/failure.
+
+🟢 Non-compensable effects: when no authoritative cancellation/reversal exists, UNKNOWN must remain UNKNOWN/QUARANTINED according to effect class. A local inverse mutation is not a universal rollback.
+
+🔵 Whether a provider's cancellation operation can close O depends on exact provider semantics: cancellation timing, operation identity binding, commit point, asynchronous completion, and authoritative lookup.
+
+🔴 No current Nexo/Lúmina executable path implements causal compensation records or provider-authoritative cancellation semantics. This is a semantic contract, not an implementation claim.
+
+Exact recovery point: **AB105.093R → compensation/cancellation after UNKNOWN → compensation is a separate effect; it never proves the original effect did not commit.**
+
+Next exact frontier: audit **effect dependency/causal graph semantics**—how original operations, retries, cancellations, compensations, and dependent effects are linked so UNKNOWN cannot leak into a false downstream assumption.
+
+DO-NOT-REPEAT: AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
