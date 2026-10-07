@@ -3552,3 +3552,20 @@ Exact recovery point: P42 closed as UNKNOWN.
 Next independent investigation: audit the actual GitHub Actions run/result relationship for a concrete `Actualizar estado de Lúmina` commit, if observable, and determine whether the deterministic test run's checked-out SHA exactly equals that state commit and whether later state commits can supersede it before its result is consumed. Do not infer branch protection.
 
 DO-NOT-REPEAT: P0–P42 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P43 — concrete Lúmina state commits: CI/status linkage not observable; rapid consecutive state pushes confirmed
+
+🟢 Git commit search returned multiple real `Actualizar estado de Lúmina` commits on 2026-10-07, including `e5c326b6a7eae2671554b3ff366005d272a92428` (18:37:23Z), `4b42fd044c29a30a3fe8c34ea599896631c53997` (18:37:39Z), and `99cb5cd110be4e8502de6ae2d67086662790935c` (18:37:56Z). The commits directly modify `world-state.json` and `.lumina-assistant-memory.json`; the state revision advances 1303→1305→1307 across the observed sequence.
+
+🟢 This is concrete evidence that multiple state mutations can be committed to `main` within ~33 seconds.
+
+🔵 `get_commit_combined_status` returned an empty status list for all three sampled state commits. This does **not** prove that Actions did not run: the repository's deterministic workflow is an Actions workflow rather than a legacy commit-status context, and the connector's commit-run endpoint only exposes PR-triggered runs.
+
+🔴 Therefore the exact proposition “the deterministic workflow checked this exact state commit SHA and its successful result was consumed before the next state commit” remains **UNPROVEN**. We have no connector-visible push-run history sufficient to establish that temporal relationship.
+
+Classification: **CI-to-exact-state admission/consumption linkage = UNKNOWN**. The observed rapid commit sequence strengthens the concurrency concern, but is not by itself proof of a race with CI.
+
+Next mission P44: inspect any connector-visible workflow run/job metadata or workflow logs/artifacts that can establish the `GITHUB_SHA`/checkout SHA for a deterministic test run, and compare it against an exact `Actualizar estado de Lúmina` commit. If unavailable, preserve UNKNOWN.
+
+DO-NOT-REPEAT: P0–P43 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
