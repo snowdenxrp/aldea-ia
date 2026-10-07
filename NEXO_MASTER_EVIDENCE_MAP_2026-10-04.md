@@ -903,3 +903,39 @@ Status:
 - No AB105.117R created; AB105.116R remains canonical.
 
 DO-NOT-REPEAT: do not create a duplicate generic “proof-obligation” contract, do not reopen AB104.409 replay research, and do not reopen the closed Kafka/JMM branch. Next distinct target is the concrete authority-establishment artifact/record and its issuer/linearization semantics.
+
+
+
+## 2026-10-07 — S9 refinement: abstract linearization exists; concrete authority issuer remains open
+
+🟢 The deeper source reconciliation found that S9 does NOT lack an abstract activation/linearization point. Existing architecture already defines:
+- T-AUTH-02 Admitted → Authorized, whose linearization requirement is the authoritative acceptance of current authority for the exact effect.
+- LP-01 Authorization admission as a critical protected linearization point.
+- The transition contract requires OWNER, AUTHORITY_BASIS, read/write sets, linearization point, durability, crash semantics, invalidation triggers, recovery path and verification method.
+- A05/A06 requires one authoritative ordering point (or demonstrably equivalent protocol) for every protected transition.
+
+🔵 Therefore the real S9 gap is now narrower and more concrete: the architecture specifies the semantic transition, but the repository still does not freeze the authority-bearing implementation record and issuer/owner that realizes LP-01 and maps CURRENT_AUTHORITY_DECISION to AUTHORITY_STATUS=GRANTED/VALID, especially across revocation races and crash recovery.
+
+This yields a three-layer distinction:
+1. CURRENT_AUTHORITY_EVIDENCE — evidence/input.
+2. CURRENT_AUTHORITY_DECISION — protected appraisal/decision that the context is currently sufficient.
+3. AUTHORITY_GRANT/ACTIVATION at LP-01 — authoritative state transition whose issuer/owner and durable record determine when authority actually becomes current.
+
+🟢 AB104.401 already specifies the semantic requirement: validated appraisal does not itself grant authority; Z1 must perform claim-specific revalidation and a protected final gate. FINAL_AUTHORITY_GATE must have one protected linearization point or equivalent fencing/versioned commit. Therefore creating another generic promotion contract would duplicate existing architecture.
+
+🔵 Remaining exact questions:
+- Which protected owner is authoritative for LP-01?
+- What durable record is the canonical AUTHORITY_GRANT/ACTIVATION fact?
+- What fields bind that record to authority epoch, revocation generation, fence, scope/effect, policy and dependency closure?
+- How does revocation order against LP-01?
+- What durable states distinguish pre-gate, committed-gate, and crash-ambiguous activation?
+- How is LP-01 reconstructed after rollback/recovery without synthesizing authority from evidence alone?
+
+Status:
+- Abstract authority transition/linearization: 🟢 RECOVERED.
+- Claim-specific final-gate semantics: 🟢 RECOVERED as design input.
+- Concrete issuer/owner + canonical authority-grant record + crash/recovery mapping: 🔵 UNKNOWN / OPEN.
+- Implementation: NOT ESTABLISHED.
+- Formal verification: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: do not create another generic authority-promotion contract; do not reopen AB104.409 or Kafka/JMM. Next target is the concrete LP-01 authoritative record/owner and its crash/recovery semantics.
