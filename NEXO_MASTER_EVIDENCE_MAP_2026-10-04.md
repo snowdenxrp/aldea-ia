@@ -1201,3 +1201,32 @@ Exact recovery point: AB105.080R → target-commit contract sweep → no executa
 Next exact frontier: stop searching for an implementation that the current repository does not contain. Move to the provider/target capability contract: classify which future effect targets can actually supply an atomic target-side acceptance+mutation+receipt boundary, which can only supply idempotency/fencing/reconciliation, and which must remain UNKNOWN/STOP. This is a capability classification, not implementation.
 
 DO-NOT-REPEAT: local persistence sweep AB105.079R; SQLite-as-reference research; operation-registry design AB104.227/228/229/311/312; local idempotency/reconciliation; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+## 2026-10-07 — AB105.081R provider-capability matrix: reconcile against existing effect-class contracts
+
+🟢 The repository already contains the capability taxonomy that this frontier requires; this is reconciliation, not a new invented taxonomy. AB104.531 defines a provider capability vector including explicit idempotency scope, retention/expiry, independent authoritative observation, reconciliation, and cancellation/compensation. AB104.386 explicitly distinguishes TARGET_CONDITION from AUTHORITY_FENCE. AB104.373 states that missing capability is a contract mismatch when a claimed property requires it.
+
+🟢 The minimum target commitment contract is therefore classified by capability, not provider brand:
+- **STRONG_COMMIT**: target atomically binds the required currentness/authority/fence/resource predicates to mutation and authoritative operation receipt within one target commitment domain.
+- **FENCED_IDEMPOTENT**: target can enforce target-side conditions/fences and stable idempotency, but a crash/timeout can still leave effect-vs-receipt ambiguity; reconciliation remains part of the contract.
+- **RECONCILIATION_ONLY**: target exposes authoritative observation/history sufficient to reconcile outcomes, but does not provide a single acceptance+mutation+receipt boundary.
+- **UNSAFE/UNSUPPORTED**: required identity/currentness/reconciliation properties are absent; critical execution must not be promoted to a stronger claim.
+
+🟢 Existing repository evidence fixes the identity needed for a protected effect: authority epoch, resource identity/incarnation, resource fence, EFFECT_ID and OPERATION_ID; AB104.383 distinguishes authority generation from resource fence and resource incarnation.
+
+🟢 Primary AWS evidence independently matches the same abstraction: DynamoDB conditional writes evaluate conditions at the target write boundary; TransactWriteItems atomically commits grouped writes or rejects the transaction, and ClientRequestToken provides idempotency for repeated identical transaction calls. These guarantees are bounded to DynamoDB's transaction domain, not arbitrary external effects. citeturn0search4turn0search0turn0search6
+
+🔵 Therefore **conditional write ≠ authority fence**, and **provider transaction ≠ arbitrary external-effect atomicity**. A provider qualifies as STRONG only for the exact effect footprint and predicates that its own commitment domain covers.
+
+🔵 Multi-provider/multi-target effects remain composite: if participants do not share one commitment domain, Nexo cannot promote the aggregate to one atomic committed effect. It must retain participant-level outcomes and potentially PARTIAL/UNKNOWN semantics.
+
+Current implementation status:
+- Repository-defined capability taxonomy = 🟢 recovered/reconciled.
+- Exact provider capability classification contract = 🟢 established at semantic level.
+- Current Nexo/Lúmina runtime satisfying STRONG_COMMIT = 🔵 not established.
+- Exactly-once across arbitrary external providers = 🔴 not claimed.
+
+Exact recovery point: **AB105.081R → provider-capability matrix → existing effect-class contracts reconciled; atomicity belongs to the target boundary.**
+
+Next exact frontier: define the **minimum target commitment interface** and adversarial outcome matrix using the recovered identity fields and capability classes, without implementing a provider or changing runtime behavior.
+
+DO-NOT-REPEAT: AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite selection; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
