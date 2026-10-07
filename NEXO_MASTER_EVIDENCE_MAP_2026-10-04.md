@@ -697,3 +697,18 @@ Current epistemic state unchanged:
 - vulnerability: NOT ESTABLISHED.
 
 DO-NOT-REPEAT: firstPublishFuture, installPublishers future, waitForAllEventsToBeHandled, generic KafkaEventQueue ordering, or callback rescheduling as standalone W1→D1 bridges.
+
+
+## 2026-10-06 — Valid G0 v2 runtime reconciliation
+
+🟢 A valid real-broker G0 v2 execution is recorded at run `37549856369`, job `112562494993`, head `c478ebf8ef70685a3bc3ffe77358e6622832f278`, artifact `11452027547`, SHA256 `5351aebd5242f1d42c5168a03f89baf53916c1ebc2a64472fc8613643563f29f`.
+
+🟢 The job completed the real-broker witness path successfully. The artifact records Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, AB105.116R unchanged, AB105.117R not created, and TLC not rerun.
+
+🟢 Runtime counts: 10/10 D1_RESULT=DENIED; 20 ACL_W1, 20 ENQUEUE, 20 DEQUEUE, 20 AUTH_ENTER, 20 AUTH_DECISION across the 10 cycles.
+
+🔵 This is valid empirical evidence from the same bounded G0 ordering family. It reinforces the observed real-broker behavior but does not by itself create a new JMM edge: W1→ENQUEUE HB remains UNKNOWN/NOT IDENTIFIED and W1→D1 HB remains UNKNOWN/NOT IDENTIFIED. Stale-read remains NOT OBSERVED / NOT DISPROVEN universally; vulnerability remains NOT ESTABLISHED.
+
+🔵 The run should be retained as a distinct valid execution identity, but its temporal ordering must not be promoted to JMM happens-before merely because the full request path executed successfully.
+
+DO-NOT-REPEAT: zero-job runs 37549706571 and 37549855165 are invalid evidence; do not rerun TLC; do not create AB105.117R; do not add synchronization; do not reopen already closed generic MetadataLoader/Future/RequestChannel/SocketServer bridges.
