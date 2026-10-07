@@ -2348,3 +2348,18 @@ DO-NOT-REPEAT: MetadataLoader post-publisher genérico, firstPublishFuture/start
 DO-NOT-REPEAT: do not count run `37549706571`; do not rerun TLC; do not create AB105.117R; do not add synchronization to the probe.
 
 Epistemic state unchanged: W1→ENQUEUE HB UNKNOWN; W1→D1 HB UNKNOWN; stale ACL NOT OBSERVED in Run #21 / NOT DISPROVEN universally; vulnerability NOT ESTABLISHED; AB105.116R PROTECTED.
+
+
+## 2026-10-06 — Second workflow gap: active G0 workflow still yields zero jobs
+
+🟢 The first YAML repair was applied to `nexo-ab105-g0-ordering-witness-v2.yml`, but that file is not the workflow that actually executed in the ordering run. The active run `37549855165` points to `.github/workflows/nexo-ab105-g0-ordering-witness.yml` (workflow id `373324571`).
+
+🟢 I inspected that active workflow on branch `nexo-ab105-g0-ordering-witness`: it has a single `workflow_dispatch`, the push trigger, and a normal `ordering-witness` job definition. Nevertheless, run `37549855165` completed with failure and the Jobs API reports **0 jobs**.
+
+🔴 Therefore run `37549855165` is also **NOT experiment evidence**. The failure is at workflow execution/registration level, before the broker job; no Kafka witness data can be inferred from it.
+
+🔵 Important correction: the previous repair of v2 did not repair the actually executing workflow. The active workflow now needs a targeted GitHub Actions validation/registration diagnosis before another execution is counted. Do not change the Kafka probe semantics to solve this.
+
+DO-NOT-REPEAT: do not count runs `37549706571` or `37549855165`; do not rerun TLC; do not create AB105.117R; do not interpret zero-job failure as Kafka behavior.
+
+Epistemic state unchanged: W1→ENQUEUE HB UNKNOWN; W1→D1 HB UNKNOWN; stale ACL NOT OBSERVED in Run #21 / NOT DISPROVEN universally; vulnerability NOT ESTABLISHED; AB105.116R PROTECTED.
