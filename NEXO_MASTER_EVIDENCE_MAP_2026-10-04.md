@@ -3300,3 +3300,21 @@ Exact recovery point: POST-AB105.116R implementation audit → P29 → structura
 Next independent investigation: inspect whether `structuralReport` is persisted or exposed through any other durable channel outside `buildAssistantReport`, `learnFromReports`, and `buildNexoMission`; if none exists, classify the finding as an unpersisted diagnostic stream.
 
 DO-NOT-REPEAT: P0–P29 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P30/P31 — structural diagnostic is not persisted and continuity is not guaranteed
+
+🟢 P30 closure: repository-wide search found `structuralReport`, `structuralFindings`, `StateAuditor`, `DEAD_WITH_HEALTH`, and `DEAD_STATE_MISMATCH` only in `scripts/assistants.mjs`. No alternate durable consumer or persistence channel was found. The workflow persists `world-state.json` and `.lumina-assistant-memory.json`, but the structural report is not inserted into either store.
+
+🟢 P31 continuity check: the structural findings are recomputed from current simulation state on each assistant run. There is no persisted structural finding history, finding signature, last-seen timestamp, or continuity marker for these codes. No tests establish cross-run structural continuity.
+
+🟢 Important nuance: `normalizeCoreAgents()` runs before structural findings are generated and forces `currentActivity = "dead"` whenever `alive === false`. Therefore a `DEAD_STATE_MISMATCH` present in loaded state can be normalized away before the StateAuditor evaluates it. This means that specific diagnostic may disappear on the next run without a durable record proving it previously existed. `DEAD_WITH_HEALTH` is not similarly cleared by normalization when health remains >0, so its recurrence depends on current state.
+
+🔵 This is diagnostic-continuity loss, not proof that the underlying state repair is wrong or unsafe. The normalization itself may be an intended invariant repair; the gap is that the pre-normalization anomaly is not persisted as evidence before normalization.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P31 → structural diagnostic continuity/pre-normalization evidence audit closed.
+
+Next independent investigation: audit whether other normalization/repair steps in `scripts/assistants.mjs` mutate loaded state before diagnostics and therefore erase evidence of pre-existing anomalies. Focus only on pre-diagnostic normalization; do not reopen P26–P31 structural routing questions.
+
+DO-NOT-REPEAT: P0–P31 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
