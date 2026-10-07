@@ -209,3 +209,14 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Matrix update commit: 0581f8221094065a485af612f3101585cdaf12b8; content SHA: afeeabee0757a2085374ece2ebcb25378b68351a.
 - External conceptual cross-check: serializable systems track read/predicate dependencies, not final writes alone. citeturn0search2turn0search0
 - Exact next: trace remaining invalidators into a writer→dependency graph and locate the first common boundary dominating all writers per class; if absent, define the minimum multi-domain protected footprint.
+
+
+## P112 writer→dependency graph V1 — 2026-10-07
+- Saved `P112_WRITER_DEPENDENCY_GRAPH_V1_2026-10-07.md` at commit `d5adbea085eb541e46683b0d0ab9a0a612d828d3`.
+- Resource, trade and cooperate graphs show no single local effect function dominates all admission invalidators.
+- Resource shared invalidators: action handlers + production + world/day + ecosystem.
+- Trade shared invalidators: inventory writers + trade + aggregate economy recomputation + relationships + lifecycle/position.
+- Cooperate shared invalidators: inventory + relationships + collective project + structures/home + spatial/lifecycle.
+- Therefore the first common semantic boundary is broader than the local effect function for all three classes.
+- 🔵 Exact minimum common boundary/token ownership remains open; no runtime concurrency claim.
+- Exact next: trace shared writers (tick/day transitions/normalization/social-economic helpers) into the protected footprints, then test whether composite tokens can reduce that footprint without losing coverage.
