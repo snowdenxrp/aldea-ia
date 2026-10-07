@@ -680,3 +680,20 @@ Current state unchanged:
 - vulnerability: NOT ESTABLISHED.
 
 DO-NOT-REPEAT: do not rerun the ordering witness solely to prove queue semantics; do not interpret W1 < ENQUEUE timestamps as JMM HB.
+
+
+## 2026-10-06 — reconciliation of metadata callback/future frontier
+
+🟢 Rechecked the previously recorded MetadataLoader/BrokerMetadataPublisher audit before opening another branch. The exact production path is already covered: MetadataLoader's KafkaEventQueue invokes publishers synchronously on the loader thread; AclPublisher performs W1 there; `firstPublishFuture` / publisher-installation futures are startup/readiness mechanisms, not per-update futures consumed by request authorization; the testing-only `waitForAllEventsToBeHandled()` is not in the production ACL/request path.
+
+🟢 The callback-rescheduling mechanism in KafkaRequestHandler is likewise already bounded: it is a real RequestChannel hand-off, but it has no identified causal dependency on the incremental ACL W1 and therefore cannot compose into W1→D1 HB by itself.
+
+🔵 This pass adds no new experiment and no new evidence sample. It confirms that the remaining frontier is not another generic Future/EventQueue/callback candidate. The productive next step is now evidence reconciliation/closure rather than opening duplicate synchronization hypotheses.
+
+Current epistemic state unchanged:
+- W1→ENQUEUE HB: UNKNOWN / NOT IDENTIFIED.
+- W1→D1 HB: UNKNOWN / NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: firstPublishFuture, installPublishers future, waitForAllEventsToBeHandled, generic KafkaEventQueue ordering, or callback rescheduling as standalone W1→D1 bridges.
