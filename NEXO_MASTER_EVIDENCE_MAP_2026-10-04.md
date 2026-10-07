@@ -762,3 +762,23 @@ DO-NOT-REPEAT: generic Processor lifecycle, RequestChannel, DynamicConfigPublish
 Current epistemic state unchanged: W1→Processor HB UNKNOWN / NOT IDENTIFIED; W1→ENQUEUE HB UNKNOWN / NOT IDENTIFIED; W1→D1 HB UNKNOWN / NOT IDENTIFIED; stale-read NOT OBSERVED / NOT DISPROVEN; vulnerability NOT ESTABLISHED.
 
 DO-NOT-REPEAT: ApiVersionManager/MetadataCache as a generic W1 publication candidate unless a new source path shows a post-W1 write/read or explicit synchronization handoff.
+
+
+## 2026-10-07 — metadata admission gate recheck / frontier closure
+
+🟢 Reconciled the remaining metadata-admission candidate against the existing SocketServer request-admission audit. The authorizer futures used by SocketServer.enableRequestProcessing() gate acceptor/Processor startup only; they are not awaited per incremental ACL update. The previously audited metadata version/offset and request-admission paths likewise contain no identified steady-state W1 → Processor gate.
+
+🟢 This confirms that the remaining material frontier is narrower than a generic “metadata gate” search: only a concrete production cross-domain executor/Future, concurrent collection, lock/condition/semaphore, volatile publication, or equivalent admission primitive shared by incremental W1 and the Processor would change the epistemic state.
+
+🔵 This is source-level reconciliation only; it is not runtime evidence and does not prove absence in all future code. No experiment, TLC run, synchronization aid, or AB105.117R was created.
+
+Current epistemic state:
+- HB(W1→Processor): UNKNOWN / NOT IDENTIFIED.
+- W1→ENQUEUE HB: UNKNOWN / NOT IDENTIFIED.
+- W1→D1 HB: UNKNOWN / NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: startup authorizer futures, generic metadata offset/readiness gates, RequestChannel, Processor lifecycle, DynamicConfigPublisher, ApiVersionManager/MetadataCache, and generic shared-state inventory unless a new concrete production synchronization path is identified.
+
+Next distinct source target: only a concrete cross-domain synchronization primitive that is actually written/released after incremental ACL W1 and acquired/read by the Processor/request path before ENQUEUE.
