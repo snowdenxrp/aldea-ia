@@ -3983,3 +3983,23 @@ Next bounded action: sample the archive at three strata (early AB104, mid AB104.
 P66d RESULT: `EARLY_ARCHIVE_SAMPLE = MATERIAL`; `HISTORICAL_UNKNOWN_BOUNDARY = RECOVERED`; `AB104.82_LUMINA_REPAIR_VERIFICATION = RECOVERED`; `MASTER_REPRESENTATION_GAP = CONFIRMED_FOR_SAMPLED_ARTIFACTS`.
 
 Next: sample mid/late AB104 strata for claims that materially affect the current NEXO state, especially any historical verification or UNKNOWN boundary that is absent from the master. Do not rerun experiments.
+
+
+## 2026-10-07 — P66e — mid-archive material claim recovery (AB104.214–365)
+
+🟢 Targeted mid-stratum samples recovered several research-level invariants/boundaries not explicitly represented in the current master:
+
+- AB104.214: the historical prototype had a bounded effectJournal retention of 200 entries; eviction of old PREPARED/UNKNOWN evidence could make a later same-idempotency-key recovery appear fresh. This was recorded as a concrete prototype defect/risk, not a protocol law. Required boundary: journal absence must not mean non-execution.
+- AB104.268: transactional outbox durability is a durable handoff within one state domain, not atomicity with an external effect; relay crash after target acceptance can remain UNKNOWN_EXTERNAL, and authority rotation requires target-side revalidation/fencing.
+- AB104.299: admitted operations should bind immutable contract identity/digest and version lineage; a new contract version must not silently reinterpret an existing operation_id.
+- AB104.315: negative evidence requires authenticated coverage of the relevant universe/range/history; a Merkle root or empty query alone is insufficient. A historical candidate CoverageCertificate was proposed, explicitly as research, not implementation.
+- AB104.332: incomparable recovery frontiers cannot safely be collapsed to a scalar maximum; INCOMPARABLE != NEWER and SCALAR_MAX != SAFE_SUBSUMPTION.
+- AB104.365: compensation after partial external effect is a distinct operation with its own identity/authorization/contract/target binding/effect evidence; compensation success does not erase the original partial effect.
+
+🔵 Master comparison shows some of these concepts already exist in generalized form (for example effectJournal and external-effect UNKNOWN), while the exact historical boundaries above were not all represented. Therefore this is a material historical reconciliation, not a claim that the underlying research was newly discovered.
+
+🟢 No implementation, rerun, TLC execution, or semantic promotion occurred.
+
+P66e RESULT: MID_ARCHIVE_MATERIAL_CLAIMS = RECOVERED; HISTORICAL_BOUNDARIES_NOT_FULLY_REPRESENTED = CONFIRMED; PROTOCOL_LAWS_ADDED = NONE.
+
+Next: late-stratum sampling around AB104.600–900, prioritizing authority/STOP/fencing, reconstruction, and canonicality boundaries that may connect directly to the current AB105 state.
