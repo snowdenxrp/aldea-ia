@@ -3940,3 +3940,16 @@ P66: inspect whether any current repository-side mechanism (workflow triggers, c
 P66/PRE-MASTER RESULT: `PRE_MASTER_DISTRIBUTED_ARCHIVE = CONFIRMED`; `HISTORICAL_GAPS_IN_MASTER = NOT_YET_CLASSIFIED`.
 
 Next bounded action: continue targeted inventory of pre-master continuity documents/commits, then cross-reference against the master before promoting any historical claim.
+
+
+## 2026-10-07 — Pre-master archaeology P66b
+
+🟢 The legacy NEXO_CONTINUITY/CURRENT_STATE.md is itself a historical index predating the master. It records the older AB49→AB66-era chain, explicit epistemic labels, unresolved questions, and a persistent rule that continuity artifacts must be stored in NEXO_CONTINUITY rather than chat. This confirms that the historical archive contains structured state beyond the current master.
+
+🟢 Direct recovery of older artifacts also confirmed concrete pre-master records such as AB104_81_LUMINA_WORKFLOW_SYNC_ORDER_REPAIR_2026-09-25.md and AB104_122_NEXO_DURABLE_MISSION_LINEAGE_REPAIR_2026-09-26.md, each preserving source evidence, exact commits, epistemic status, next action, and DO-NOT-REPEAT constraints.
+
+🔵 These artifacts are not being promoted as new technical findings; they are archive/index evidence. The historical gap classification remains open until the pre-master corpus is systematically cross-referenced against the master.
+
+P66b RESULT: PRE_MASTER_STRUCTURED_CONTINUITY_ARCHIVE = CONFIRMED; HISTORICAL_GAP_CLASSIFICATION = OPEN; CLOSED_AUDIT_RERUN = NONE.
+
+Next bounded action: continue archive inventory only, identify historical artifacts with material claims not represented in the master, and reconcile references without rerunning their experiments.
