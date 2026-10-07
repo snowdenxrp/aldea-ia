@@ -3694,3 +3694,42 @@ Next mission P51: inspect the workflow retry path and commit/rebase behavior to 
 🔴 P51 classification: **P50 divergent-pair-to-main = NOT PROVEN / workflow stops on assistants persistence failure. Cross-file atomicity/lineage at commit boundary remains missing. Retry path has separate state/memory consistency risk and bypasses assistant validation on retry.**
 
 Next mission P52: inspect the retry branch's exact stateRevision and memory behavior to determine whether `reset --hard origin/main` + `npm run simulate` can commit a world state derived from one revision while assistant memory remains from another, and whether that can be detected from persisted fields. Research only; no patch.
+
+
+## 2026-10-07 — P52 — retry can commit world-state R+1 with assistant-memory from R
+
+🟢 The rebase-retry branch performs `git reset --hard origin/main` and then runs only `npm run simulate`; it does not rerun `npm test` or `npm run assistants`.
+
+🟢 Starting from an `origin/main` pair at stateRevision R, the retry can advance `world-state.json` to R+1 while `.lumina-assistant-memory.json` remains the file from R. The assistant-memory schema has no stateRevision, world-state hash, commit SHA, or equivalent cross-file lineage field.
+
+🟢 `scripts/simulate.mjs` carries `nexoMemory` inside `world-state.json` independently of `.lumina-assistant-memory.json`; the retry does not generate a new assistant run or mission.
+
+🔴 P52 classification: **RETRY_CAN_COMMIT_WORLD_STATE_R_PLUS_1_WITH_ASSISTANT_MEMORY_FROM_R; CROSS_FILE_REVISION/LINEAGE_IS_UNDETECTABLE_FROM_CURRENT_PERSISTED_FIELDS.** No specific live retry incident was observed; this is a code-path proof.
+
+## 2026-10-07 — P53 — Git-visible origin of a state/memory pair is absent
+
+🟢 Recent real `Actualizar estado de Lúmina` commits show both files changing together on the normal path. Sample `53421122b37e61fdd4cb1aa62cc03b1a7273af35` advances `world-state.json` 1337→1339 and adds an assistant run at `2026-10-07T18:45:30.802Z`; the world state also adds Nexo mission `lumina-1791398730802-1` at the same timestamp.
+
+🟢 The same Git commit message is used by normal and rebase-retry paths, and no persisted field identifies whether the pair came from the primary assistant+simulation path or the retry-only simulation path.
+
+🔴 P53 classification: **GIT_VISIBLE_ORIGIN_OF_PAIR = ABSENT.** A retry inconsistency can reach `main` without an automatic Git-visible marker distinguishing it from a normal state commit; no specific retry incident was observed.
+
+## 2026-10-07 — P54 — indirect mission fingerprint exists, but it is not authoritative cross-file lineage
+
+🟢 Code inspection establishes an important distinction: `scripts/simulate.mjs` does not call `buildNexoMission()` or `recordNexoPlan()`. The Nexo mission is generated in `scripts/assistants.mjs`, then inserted into `simulation.nexoMemory` by `recordNexoPlan()`, and finally persisted inside `world-state.json`.
+
+🟢 Therefore a normal assistant run leaves an indirect fingerprint in `world-state.json`: the latest Nexo mission has a unique `missionId` and `at/generatedAt` timestamp. Recent real commits confirm the mission timestamp matches the assistant-memory run timestamp to the millisecond (for example, 18:45:30.802Z).
+
+🟢 However, `.lumina-assistant-memory.json` does **not** persist that `missionId`. Its durable `runs[]` records only `at/status/day/hour/agents/findings/testFailures`. Thus the cross-file correlation is temporal, not an explicit foreign-key/lineage field.
+
+🟢 The retry path makes the limitation decisive: `npm run simulate` preserves the existing `nexoMemory` and does not generate a new mission, while it advances `stateRevision` and `savedAt`. A retry can therefore produce a newer world snapshot whose latest mission and assistant-memory run still belong to the prior revision.
+
+🔵 Retrospective pairing is possible only as **heuristic reconstruction** when Git history exposes adjacent parent/child diffs and matching timestamps; it is not authoritative reconstruction from the persisted state itself.
+
+🔴 P54 result: **INDIRECT_FINGERPRINT_PRESENT / AUTHORITATIVE_CROSS_FILE_LINEAGE_ABSENT.** Lineage loss is therefore **not total at the evidentiary level**, but authoritative pair reconstruction is unavailable from current persisted fields. Do not upgrade the timestamp match into proof that a given state snapshot was produced by that exact assistant run.
+
+Classification: **cross-file lineage = heuristic/temporal only; authoritative provenance = MISSING**.
+
+Exact next mission: inspect whether any commit-level relationship, parent revision, or file-diff invariant can turn the P54 temporal fingerprint into a deterministic retrospective classifier for normal-vs-retry state commits, without changing code. Research only.
+
+DO-NOT-REPEAT: P0–P54 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
