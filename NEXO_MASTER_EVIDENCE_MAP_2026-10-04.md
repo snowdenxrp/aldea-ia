@@ -3470,3 +3470,26 @@ Exact recovery point: POST-AB105.116R implementation audit → P38 → last-know
 Next independent investigation: inspect whether commit/CI ordering itself can accidentally create a false last-known-good candidate—for example, state is committed after tests but `npm run assistants`/`simulate` can mutate the same state after validation. Determine whether validation covers the exact bytes that are committed. Research only.
 
 DO-NOT-REPEAT: P0–P38 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P39 — CI validation is not validation of the exact committed state bytes
+
+🟢 Inspected `.github/workflows/lumina-simulation.yml`: it resets to `origin/main`, runs `npm test`, then runs `npm run assistants` and `npm run simulate`, and only afterward stages/commits `world-state.json` and `.lumina-assistant-memory.json`.
+
+🟢 Therefore the Lúmina workflow's `npm test` gate executes before the two commands that can mutate the persisted state ultimately committed by that workflow. The workflow does not re-run `npm test` after those mutations and does not hash/compare the final staged state against the state tested by the gate.
+
+🟢 A separate `.github/workflows/nexo-deterministic-tests.yml` does run `npm test` on every push to `main`, including `Actualizar estado de Lúmina` commits. This closes the stronger claim that state commits receive no CI at all.
+
+🟢 However, `npm test` is a declared suite of code/audit/restart tests. Repository search did not establish that it loads the repository's current `world-state.json` as the object under validation and certifies its exact bytes/content. The persistence tests construct isolated temporary state fixtures and test persistence semantics.
+
+🔵 Consequently there are two distinct validation moments: (1) pre-mutation tests in the self-mutating simulation workflow, and (2) post-commit deterministic tests on the pushed commit. The latter validates the repository checkout after commit, but no durable artifact/marker binds its success to a specific `world-state.json` hash or makes that snapshot the recovery authority.
+
+🔴 Do not claim that the committed state is untested. The separate deterministic workflow materially tests the codebase after the state commit. The precise gap is **no exact-byte validation certificate/lineage from the committed `world-state.json` to a successful CI result**.
+
+Classification: **post-commit CI exists; exact state-snapshot validation/identity contract absent**. No patch.
+
+Exact recovery point: P39 closed.
+
+Next independent investigation: audit the race/retry branch of `lumina-simulation.yml`: after a failed rebase it resets to `origin/main` and runs `npm run simulate` without rerunning `npm test` or `npm run assistants`. Determine whether the retry can generate and commit a state that bypasses the workflow's pre-mutation validation path.
+
+DO-NOT-REPEAT: P0–P39 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
