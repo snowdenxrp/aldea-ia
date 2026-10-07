@@ -297,8 +297,7 @@ Fresh source inspection finds no lock in StandardAuthorizerData protecting both 
 
 Important correction to avoid overclaiming: the current StandardAuthorizer source comment says a read-write lock synchronizes data, but the executable methods shown do not perform such a lock around incremental addAcl/removeAcl/authorize. Therefore the comment cannot be treated as proof of a shared lock edge.
 
-🟢 No executable shared authorizer lock found in the inspected source.
-🔵 W1→D1 JMM edge remains UNKNOWN.
+🟢 No executable shared authorizer lock found in the inspected source.🔵 W1→D1 JMM edge remains UNKNOWN.
 🔵 Stale-read vulnerability remains UNPROVEN.
 
 Next: reconcile this source finding with the pinned experiment and existing PR93 diagnostic. The key question is now whether the observed zero stale snapshots can be explained by a concrete publication edge, or only by empirical scheduling/implementation behavior.
@@ -597,8 +596,7 @@ Therefore PR #88 = diagnostic design / superseded by later reconciled executions
 🔵 PR #89 is the methodological bridge to the cache-identity diagnostic; it is not itself an accepted runtime sample.
 Therefore PR #89 = superseded diagnostic design/source analysis.
 
-#### PR #90 / #91 — harness compile/API corrections
-🟢 These PRs address executable-harness correctness (including the topic-name/type API mismatch) rather than changing the scientific race model.
+#### PR #90 / #91 — harness compile/API corrections🟢 These PRs address executable-harness correctness (including the topic-name/type API mismatch) rather than changing the scientific race model.
 🔴 A compile correction is not runtime evidence. No raw six-link runtime chain from these PRs was recovered that independently changes the evidence map.
 Therefore PR #90/#91 = mechanical prerequisite/fix lineage, not evidence samples.
 
@@ -897,8 +895,7 @@ For the protected transition, the minimum unresolved questions are: who is autho
 
 Status:
 - Existing semantic prerequisites/activation boundary: 🟢 RECOVERED.
-- Exact issuer + authoritative activation record mapping to authority=VALID after revocation: 🔵 UNKNOWN / OPEN.
-- Implementation: NOT ESTABLISHED.
+- Exact issuer + authoritative activation record mapping to authority=VALID after revocation: 🔵 UNKNOWN / OPEN.- Implementation: NOT ESTABLISHED.
 - Formal verification: NOT ESTABLISHED.
 - No AB105.117R created; AB105.116R remains canonical.
 
@@ -1034,3 +1031,19 @@ Status:
 - Formal verification: NOT ESTABLISHED.
 
 DO-NOT-REPEAT: do not treat LP-01's existence as proof of implementation; do not reopen Kafka/JMM, TLC, AB104.409, or create AB105.117R. Next target remains the concrete authority-establishment artifact, if one exists, and its writer/linearization/recovery semantics.
+
+## 2026-10-07 — S9 concrete-artifact trace: historical boundary narrowed, implementation still open
+
+🟢 **New historical evidence recovered:** AB104.390 establishes a strict role separation: EVIDENCE_PRODUCER != EVIDENCE_VERIFIER != AUTHORITY_DECIDER. The verifier produces an appraisal/attestation result; it does not automatically grant operational authority. This is research/design evidence only, not an AB105 implementation.
+
+🟢 **AB104.401 recovered:** the protected promotion boundary is explicitly modeled as EVIDENCE → VERIFICATION/APPRAISAL → ATTESTATION_RESULT → Z1 PRE-AUTHORIZATION CHECK → Z1 AUTHORITY DECISION → PROTECTED TRANSITION. It states that the final checks require a protected linearization point or equivalent fencing/versioned commit, and that CHECK_AUTHORITY != AUTHORITY_COMMIT. It also states that authority grant is not permanent external permission; the external-effect boundary still needs current authority/fencing.
+
+🟢 **AB104.506 recovered:** the strongest historical protected-authorization binding found so far is:
+`Authorization = {ClaimDigest, AuthorityEpoch, RevocationGeneration, DependencyClosureDigest, FenceRevision, DecisionDigest}`.
+The historical contract requires the final effect gate to validate revocation generation and makes the linearization point explicit. It also requires crash recovery to revalidate prepared-but-uncommitted effects and prevents crash recovery from resurrecting authorization. This is a candidate historical contract, not a frozen AB105 implementation.
+
+🔵 **S9 conclusion:** these artifacts do not identify an executable issuer/writer or a canonical durable AUTHORITY_GRANT record in the current implementation. They do, however, close one ambiguity: the missing piece is **not** another abstract promotion theory. The remaining gap is the concrete realization of the already-defined protected transition: owner/issuer, durable record, commit/linearization, revocation ordering, and crash reconstruction.
+
+🔵 **Status:** abstract promotion boundary = RECOVERED; protected binding fields = RECOVERED as historical design evidence; concrete issuer/record/implementation/formal verification = UNKNOWN / OPEN.
+
+**DO-NOT-REPEAT:** do not create another generic authority-promotion contract. Continue only by locating a concrete authority-establishment artifact/implementation or explicitly mark the repository as lacking one.
