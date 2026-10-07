@@ -661,3 +661,22 @@ Current epistemic state remains:
 - no new synchronization primitive introduced.
 
 DO-NOT-REPEAT: do not treat ArrayBlockingQueue ENQUEUE→DEQUEUE as W1→D1 publication; do not rerun the G0 witness solely for this source finding.
+
+
+## 2026-10-06 — exact ENQUEUE producer-side boundary
+
+🟢 At Kafka pin `99b940733a9f6bc409457dba7108f08421d81e42`, the real `RequestChannel.sendRequest(req)` producer path is in `SocketServer.scala` / the network Processor. After a socket receive is completed, the Processor constructs the request and directly calls `requestChannel.sendRequest(req)`.
+
+🟢 This confirms the authoritative G0 distinction at source level: the test request's ENQUEUE is produced by the data-plane network Processor after a completed socket receive, whereas the incremental ACL W1 is performed by `AclPublisher` on the metadata-publisher/MetadataLoader execution path. The source paths are distinct; the RequestChannel hand-off publishes actions already performed by the network producer before its enqueue, not an independent metadata-thread write.
+
+🔵 This is a source-level closure/refinement of the existing W1→ENQUEUE frontier, not a new runtime sample. It strengthens the statement that the observed W1 < ENQUEUE timestamps cannot be promoted to W1→ENQUEUE JMM HB merely because RequestChannel is a BlockingQueue.
+
+The Java API contract independently states that actions in a thread before placing an object into a BlockingQueue happen-before actions after that object is accessed/removed in another thread. citeturn0search0 The missing condition here is precisely that W1 must belong to the producer-thread action chain before ENQUEUE; the audited production source places W1 on the independent metadata path.
+
+Current state unchanged:
+- W1→ENQUEUE HB: UNKNOWN / NOT IDENTIFIED.
+- W1→D1 HB: UNKNOWN / NOT IDENTIFIED.
+- stale-read execution: NOT OBSERVED / NOT DISPROVEN.
+- vulnerability: NOT ESTABLISHED.
+
+DO-NOT-REPEAT: do not rerun the ordering witness solely to prove queue semantics; do not interpret W1 < ENQUEUE timestamps as JMM HB.
