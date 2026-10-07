@@ -1230,3 +1230,65 @@ Exact recovery point: **AB105.081R → provider-capability matrix → existing e
 Next exact frontier: define the **minimum target commitment interface** and adversarial outcome matrix using the recovered identity fields and capability classes, without implementing a provider or changing runtime behavior.
 
 DO-NOT-REPEAT: AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite selection; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.082R minimum target commitment interface: acceptance/outcome matrix
+
+🟢 The minimum interface is now bounded by recovered repository contracts rather than implementation assumptions. A protected effect request must bind, at minimum: authority_epoch, resource_id, resource_incarnation, resource_fence, EFFECT_ID, OPERATION_ID, retry/attempt identity, and the payload/effect fingerprint. The target must evaluate the predicates against its current state at its own commitment boundary.
+
+### Commitment contract
+
+**INPUT**
+- effect_identity / EFFECT_ID
+- OPERATION_ID
+- attempt/retry generation
+- authority epoch/context required by the effect
+- resource_id + resource_incarnation
+- presented resource fence
+- expected resource/version precondition
+- payload/effect fingerprint
+- required capability class
+
+**ATOMIC ACCEPTANCE**
+The target may return COMMITTED only when the target's authoritative commitment boundary has accepted the predicates and durably coupled the accepted effect to the target mutation and receipt/operation record. A coordinator-side record alone cannot create this claim.
+
+**OUTCOMES**
+- **REJECTED**: target guarantees the effect was not accepted/committed for that exact operation identity.
+- **COMMITTED**: target provides authoritative evidence that the mutation and operation receipt belong to the same commitment boundary.
+- **DUPLICATE_COMMITTED**: exact operation identity already committed; target returns the existing authoritative receipt, subject to fingerprint compatibility.
+- **COLLISION/QUARANTINE**: same protected operation identity is presented with incompatible fingerprint or binding; execution must stop.
+- **STALE_FENCE**: presented fence/epoch/resource incarnation is below the target's current accepted boundary; no commitment.
+- **RESOURCE_REPLACED**: resource incarnation mismatch; no commitment against the new incarnation.
+- **UNKNOWN**: timeout/crash/transport loss leaves acceptance unresolved and the target cannot yet provide authoritative evidence.
+- **PARTIAL**: multiple independently committing participants have mixed outcomes; aggregate effect is not COMMITTED.
+
+### Adversarial matrix
+
+| Case | Required Nexo state |
+|---|---|
+| Accept + durable receipt | COMMITTED |
+| Explicit reject before acceptance | REJECTED |
+| Exact duplicate with same fingerprint | DUPLICATE_COMMITTED |
+| Same operation identity + different fingerprint | COLLISION/QUARANTINE |
+| Stale authority/fence | STALE_FENCE |
+| Wrong resource incarnation | RESOURCE_REPLACED |
+| Target timeout/crash before authoritative answer | UNKNOWN |
+| Lost receipt but target later proves commit | COMMITTED after reconciliation |
+| Multi-target mixed participant results | PARTIAL/UNKNOWN, never aggregate COMMITTED |
+
+🟢 Critical anti-collapse rules recovered from prior evidence:
+- receipt != mere client response;
+- timeout != rejection;
+- historical ALLOW != current authority;
+- target condition != authority fence;
+- durable local intent != external effect commitment;
+- one participant's receipt != aggregate multi-target atomicity.
+
+🔵 The interface does not require every provider to implement every outcome directly. Capability admission determines which claims are legal. A target without authoritative duplicate lookup cannot safely convert an ambiguous retry into COMMITTED merely because the original request was sent.
+
+🔴 No implementation is being claimed. This is the minimum semantic contract for future target adapters.
+
+Exact recovery point: **AB105.082R → minimum target commitment interface → adversarial outcome matrix established.**
+
+Next exact frontier: map the contract to concrete provider capability classes and define admission rules: which claims are permitted for STRONG_COMMIT, FENCED_IDEMPOTENT, RECONCILIATION_ONLY, and UNSAFE/UNSUPPORTED.
+
+DO-NOT-REPEAT: AB105.081R taxonomy reconciliation; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite selection; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
