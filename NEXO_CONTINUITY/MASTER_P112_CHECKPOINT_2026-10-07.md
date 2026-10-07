@@ -180,3 +180,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - 🔵 Exact token ownership/update discipline and composite-token vs broader protected-footprint optimization remain OPEN.
 - Exact next: adversarial stale-admission/write-skew cases for resource/trade/cooperate, then compare composite tokens vs protected-footprint serialization vs conditional snapshot/commit with stale rejection.
 - Search for AB104.18 / AB104_18 still returned no indexed later primary artifacts; no historical backfill made.
+
+
+## P112 adversarial stale-admission/write-skew audit — 2026-10-07
+- `P112_ADVERSARIAL_STALE_ADMISSION_WRITE_SKEW_V1_2026-10-07.md`
+- Commit: `994af1116478039db7862b0fc1619160fae45730`.
+- Modeled three distinct conflict surfaces from actual code paths: shared resource quantity, economy aggregate/price, and collective-project predicate/progress.
+- Result: participant/agent-local tokens cannot reject these conflicts; complete writer coverage is the decisive requirement for any composite token.
+- Compared three candidate strategies: composite dependency tokens, serialization over the intersecting protected footprint, and conditional snapshot/commit with stale rejection.
+- 🔵 Exact minimal boundary and token ownership remain OPEN.
+- Exact next: construct writer→token coverage for the three classes and identify uncovered mutators; uncovered mutators define the minimum broader protected footprint.
