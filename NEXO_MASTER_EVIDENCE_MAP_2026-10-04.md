@@ -2132,3 +2132,40 @@ Exact recovery point: AB105.103R → resource reincarnation/generation binding �
 Next exact frontier: AB105.104R → failover/leader-change commit reconciliation: audit whether authority transfer can safely preserve, reject, or leave UNKNOWN in-flight effects.
 
 DO-NOT-REPEAT: AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.104R failover/leader-change reconciliation: authority transfer does not resolve in-flight effects by itself
+
+🟢 A failover or leader change changes who is authoritative; it does not by itself determine whether an in-flight effect committed before the transition.
+
+Required separation:
+- old authority state;
+- new authority/recovery generation;
+- target/resource incarnation;
+- operation/effect identity;
+- authoritative commit/operation record;
+- fence/epoch semantics;
+- reconciliation evidence spanning the authority transition.
+
+🟢 If the old leader has an authoritative COMMITTED record, the new leader must preserve/reconcile that claim rather than infer non-commit from missing local state.
+
+🟢 If the new leader has no record and the old leader may have accepted the effect, the correct state remains UNKNOWN unless the provider's replication/recovery contract proves non-acceptance.
+
+🟢 A new leader's empty journal is not evidence of REJECTED. Local absence after failover is only absence from that replica's state.
+
+🟢 A new authority epoch/fence can prevent old operations from committing after the transition only if the target enforces the fence at its acceptance boundary. Issuing a new epoch in coordinator state is not enough.
+
+🟢 If the provider guarantees durable replicated operation records and defines the recovery point from which they are authoritative, failover reconciliation can resolve prior UNKNOWN states. The guarantee must cover the exact operation identity/fingerprint and resource incarnation.
+
+🟢 Split-brain or overlapping authorities require fencing/quarantine. Two leaders each claiming local success cannot produce a single COMMITTED aggregate without an authoritative resolution boundary.
+
+🟢 Failover can create a new recovery generation without changing the historical outcome of operations that committed under the previous generation. Historical provenance and current authority must remain separate.
+
+🔵 “Leader changed successfully” is an authority-lifecycle fact, not an effect-commit fact.
+
+🔴 No current Nexo/Lúmina executable path provides an authoritative replicated operation registry plus enforced failover fencing sufficient to resolve in-flight external effects.
+
+Exact recovery point: AB105.104R → failover/leader-change reconciliation → authority transfer alone does not resolve in-flight effects; authoritative replicated history or enforced fencing is required.
+
+Next exact frontier: AB105.105R → split-brain/dual-authority effect acceptance: determine how conflicting commit claims are quarantined and which boundary can resolve them.
+
+DO-NOT-REPEAT: AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
