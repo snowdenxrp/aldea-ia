@@ -1056,3 +1056,13 @@ The historical contract requires the final effect gate to validate revocation ge
 🔵 **Result:** S9 is narrowed further: **the repository has a named semantic transition (T-AUTH-02) and an authority state domain, but no recovered concrete durable authority-grant artifact/issuer that realizes it.**
 
 **Next exact search:** trace the implementation-facing names around `bound authorization context`, `authority_context_id`, `issuer`, and the T-AUTH-02 write set, looking specifically for a concrete event/store/record or executable state mutation. Do not create a new contract and do not reinterpret AB104.594 `RestoreAuthority` as implementation.
+
+## 2026-10-07 — S9 implementation trace: authority context remains architectural, not executable
+
+🟢 **Trace result:** searches for the exact implementation-facing terms `bound authorization context`, `authority_context_id`, `issuer + authority_epoch + revocation`, and `boundAuthorization/authorizationContext` recovered architectural/research artifacts (T-AUTH-02, CORE-2, atomicity group G2, A12 canonical model, AB85 renewal evidence, AB104.252 conflict-resolution material), but no executable authority issuer/writer or concrete durable authority-grant record.
+
+🟢 **Useful narrowing:** the strongest recovered executable-looking authority state remains in formal models/docs, not runtime code. The architecture says G2 authorization decision binds `operation_id, effect_id, authority_context_id, authority_epoch, scope, policy_version, invariant_version`; however, this is a required state/atomicity specification, not evidence that a runtime store actually persists it atomically.
+
+🔵 **S9 conclusion:** as of this trace, the repository demonstrates a **semantic authority-context schema and transition contract**, but still does **not establish an implementation artifact that issues, durably commits, reconstructs, and invalidates CURRENT_AUTHORITY**. No issuer should be inferred merely from the presence of `issuer` fields or capability terminology.
+
+**Next exact frontier:** search for concrete runtime/storage primitives and writers that could materialize G2/T-AUTH-02 (event log, authoritative state store, commit record, capability store, or kernel authority mutation). If only design documents are found again, record the implementation gap and move to crash/recovery reconstruction rather than generating another contract.
