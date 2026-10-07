@@ -295,3 +295,10 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Failed write/rename behavior is bounded by AB104.142: prior canonical state is preserved and temp is cleaned. Rename gives a namespace replacement boundary, but current code does not demonstrate fsync/durable flush before rename or directory sync after rename.
 - Therefore rename success is not promoted to universal crash/power-loss durable COMMITTED; strict durability outcome can remain UNKNOWN around storage failure/power loss.
 - Exact next: separate recoverable local journal/commit-marker semantics from the storage durability model (process crash vs OS crash vs power loss), then compare against current `persistState()` without assuming a new database.
+
+
+## P112 local journal vs storage durability V1 — 2026-10-07
+- Repository search found no `fsync`, `fdatasync`, or `FileHandle.sync()` associated with `persistState()`.
+- Separated two independent guarantees: logical recovery evidence (PREPARED/COMMITTED/UNKNOWN) versus physical storage durability under a chosen crash model.
+- Existing lock/temp/rename can be reused conceptually, but rename alone is not promoted to power-loss durable commit. A future local transaction needs an explicit durability contract and matching barriers.
+- Exact next: audit existing `nexoMemory` journal fields for PREPARED/COMMITTED/UNKNOWN semantics and identify execution metadata still only in memory.
