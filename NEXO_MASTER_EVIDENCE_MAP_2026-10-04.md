@@ -3338,3 +3338,25 @@ Exact recovery point: POST-AB105.116R implementation audit → P32 → pre-diagn
 Next independent investigation: enumerate the exact mutation surface of `loadState()` itself (before `applyState()`), because it also rewrites persisted state in memory—resource regeneration metadata/version migrations/stateRevision—and determine which of those transformations can erase evidence before any diagnostic component runs.
 
 DO-NOT-REPEAT: P0–P32 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P33 — loadState mutates loaded state before diagnostics
+
+🟢 `scripts/simulate.mjs::loadState()` is itself a pre-diagnostic transformation boundary. After JSON parsing, it mutates the in-memory loaded document before `applyState()` or any assistant diagnostic runs.
+
+🟢 Exact mutations: `state.world.day` is rewritten from top-level `state.day`; `state.world.timeOfDay` is rewritten from top-level `state.hour`; for `wild_plants` and `fish`, persisted `regenerationPerDay` is overwritten from `defaultWorld`; for states with version <4 and non-positive persisted resource amount, the resource amount is replaced by the current default amount; `state.version` is promoted to at least 4; `state.stateRevision` is normalized to a non-negative integer or 0.
+
+🟢 The strongest evidence-loss case is the version migration: a persisted v3-or-earlier state with `wild_plants.amount <= 0` or `fish.amount <= 0` is changed in memory to the current default amount before downstream diagnostics can observe the persisted value. This can erase evidence of a depleted resource in the loaded snapshot. The regeneration-rate overwrite likewise replaces persisted metadata with current defaults before analysis.
+
+🟢 `loadState()` also has a broad catch: malformed/unreadable/unsupported state falls through to a newly constructed default state. The fallback itself is intentional recovery behavior, but no diagnostic record is produced explaining that persisted state could not be loaded and that analysis is running against defaults.
+
+🔵 `stateRevision` normalization is primarily integrity metadata, not a world-state semantic repair; it still changes the in-memory representation before later checks. No claim that this alone creates a safety defect.
+
+🔵 No evidence found of a separate persisted pre-load snapshot or audit trail for these transformations. Current tests/searches did not establish a contract requiring migration/recovery transformations to emit provenance before diagnostics.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P33 → loadState pre-diagnostic mutation/recovery boundary closed.
+
+Next independent investigation: audit the malformed/unsupported-state fallback path specifically: determine whether a load failure can be distinguished downstream from a legitimate freshly initialized state, and whether that distinction is persisted or surfaced to the assistant report.
+
+DO-NOT-REPEAT: P0–P33 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
