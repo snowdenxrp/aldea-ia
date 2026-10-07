@@ -21,12 +21,16 @@ Canonical handoff so the next chat resumes from the current NEXO state without r
 2. cbbfc4b0a98e8c61a595184c7ef265977635481e — finalize AB105 evidence reconciliation.
 3. 27fa117c807347b0eb681b07734c082fd2eeb423 — audit AB105 R1 downstream append boundary.
 4. 673d166f1157204f792aaf980f87021d9ee325a3 — refine AB105 D1 R1 batch authorization boundary.
+5. ff0772c5a0c22bc5698f406f3132fb804b3c05aa — record exact Partition/leader-log R1 append boundary.
+6. e525e5ae625ebdc361315c8b18e5730951a463ac — distinguish R1 local append from post-append completion/purgatory.
 
 ## Latest source-level refinement
 D1 authorization is consumed synchronously on the request-handler path:
 D1 authorize → immediate AuthorizationResult consumption → authorizedRequestInfo → target existence check → handleProduceAppend → appendRecords → appendRecordsToLeader → appendToLocalLog → Partition.appendRecordsToLeader.
 
 This establishes D1→R1 conditionally for the ordinary non-transactional Produce path, but does NOT establish W1→D1 or W1→R1.
+
+R1 is specifically the Partition/leader-log append boundary (`leaderLog.appendAsLeader`). Post-append completion/purgatory is a later state and must not be conflated with R1.
 
 ## Important reconciliation
 The authoritative real-broker witness identity is:
@@ -56,6 +60,9 @@ If research continues, it must be genuinely distinct and downstream-aware:
 1. inspect exact ReplicaManager/Partition local append semantics and any hidden async boundary;
 2. determine whether an R1 observation can be instrumented at the real local append boundary without introducing synchronization into W1→D1;
 3. if an experiment is justified, require the full acceptance chain: trigger/path → run → job → executed head/pin → raw artifact/log → semantic interpretation.
+
+## Deduplication rule
+The ff0772 and e525e5 documents are NOT independent discoveries/runs. They are two source-level refinements of the same D1→R1 downstream branch. Count the underlying evidence once; retain the more precise semantic distinction in the master state. No new runtime evidence was produced by these commits.
 
 ## Continuity rule
 Every material new finding, contradiction, evidence identity, epistemic-state change, or experiment result must be appended to the master/continuity record so the next chat starts here, not from an earlier checkpoint.
