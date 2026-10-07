@@ -2000,3 +2000,27 @@ Exact recovery point: **AB105.099R → prepare-vs-commit separation → PREPARED
 Next exact frontier: audit **abort/cancel semantics for prepared domains**, including whether abort is authoritative, what it proves, and what happens when abort races with commit.
 
 DO-NOT-REPEAT: AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.100R abort/cancel versus commit: cancellation is not retroactive non-commit proof
+
+🟢 ABORT/CANCEL is a separate operation unless the provider contract explicitly defines it as an atomic transition on the original operation's commitment state.
+
+- Abort before the authoritative commit boundary can establish REJECTED/non-commit only when the provider guarantees that the original operation could not have crossed acceptance.
+- Abort after the original commit boundary does not undo the historical COMMITTED claim; cancellation/compensation is a new effect with its own identity and outcome.
+- Concurrent ABORT ↔ COMMIT requires an authoritative ordering/linearization rule. Client response order is not sufficient.
+- A successful cancel response without authoritative binding to the original commit boundary does not prove the original effect never committed.
+- Timeout/crash during cancel creates a new UNKNOWN for the cancel operation and does not resolve the original operation.
+- If the provider can authoritatively return the original operation's terminal state and guarantees cancellation semantics relative to that state, reconciliation may resolve the original claim; otherwise it remains UNKNOWN.
+- Blindly mapping CANCEL_SUCCESS → ORIGINAL_REJECTED is forbidden.
+- If original COMMIT and compensation both succeed, history remains ORIGINAL=COMMITTED plus COMPENSATION=COMMITTED; compensation does not rewrite the original claim.
+- For a shared commit domain, abort must cover the same frozen participant set/domain if it is intended to terminate the prepared transaction. Partial cancellation does not establish aggregate non-commit.
+
+🔵 The critical proof question is not whether an API is named cancel, abort, or rollback, but which authoritative boundary the provider binds that operation to and what it guarantees about effects that may already have crossed the commit point.
+
+🔴 No current Nexo/Lúmina executable path has an authoritative abort/commit race protocol or target-side cancellation record that can close the original commitment claim.
+
+Exact recovery point: AB105.100R → abort/cancel versus commit → cancellation is not retroactive proof of non-commit; only provider-authoritative boundary semantics can close the original claim.
+
+Next exact frontier: AB105.101R → commit receipt versus world-state observation: determine whether a post-commit state observation can prove commitment, and when state equality is insufficient.
+
+DO-NOT-REPEAT: AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
