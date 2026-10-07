@@ -3380,3 +3380,25 @@ Exact recovery point: POST-AB105.116R implementation audit → P34 → load-fail
 Next independent investigation: audit whether the first persistence after fallback can be prevented from silently replacing the failed source state, or whether an explicit recovery marker/lineage is required before normal persistence. Focus on the persistence admission decision after load failure; do not reopen P33's mutation census.
 
 DO-NOT-REPEAT: P0–P34 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P35 — persistence admits fallback state and can replace failed source
+
+🟢 Audited the persistence admission after `loadState()` fallback. Both executable entry paths (`scripts/simulate.mjs` main and `scripts/assistants.mjs`) treat the returned object as ordinary state and calculate the next revision from `state.stateRevision`.
+
+🟢 When `loadState()` failed, it returned `stateRevision:0`. The caller then invokes `persistState(..., { expectedRevision: 0, stateRevision: 1 })` (or equivalent next revision). Inside `persistState()`, the expected-revision check calls `loadCurrentState(statePath)`, whose default is the same `loadState()`. If the source file is still unreadable/corrupt, that second load also returns the indistinguishable fallback with revision 0, so the expected-revision check passes.
+
+🟢 The persistence path then writes a normal `version:5` payload and atomically renames it over the original path. Therefore the application has no built-in admission barrier preventing a fallback-derived state from replacing the failed persisted state.
+
+🟢 A missing file follows the same shape: fallback revision 0 is accepted and a new normal state is created. That is legitimate initialization; the critical gap is that corrupt/unreadable/unsupported state is indistinguishable from it.
+
+🟢 Existing persistence tests cover write failure, rename failure, stale revision conflicts, concurrent writers, lock recovery, and normal restart retention. They do not establish a contract that `loadState()` fallback must block persistence or preserve recovery provenance. No test was found asserting “failed load must not overwrite source state.”
+
+🔵 This does not claim the atomic rename itself is unsafe. The overwrite is an explicit application behavior reached after fallback; filesystem atomicity protects the replacement operation, not the semantic distinction between recovered-default and legitimately loaded state.
+
+Classification: **recovery-provenance / persistence-admission evidence loss**. No external effect duplication claimed. No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P35 → fallback persistence admission closed.
+
+Next independent investigation: audit whether any workflow/CLI wrapper, outside these two entry points, preserves the original file or captures load errors before persistence. If none exists, close this branch as application-level provenance loss and move to the next pre-diagnostic/recovery boundary.
+
+DO-NOT-REPEAT: P0–P35 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
