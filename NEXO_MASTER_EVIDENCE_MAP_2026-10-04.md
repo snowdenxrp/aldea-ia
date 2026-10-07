@@ -2736,3 +2736,54 @@ Next exact investigation: determine whether `buildNexoMission()` has any existin
 DO-NOT-REPEAT:
 - P5 automatic UNKNOWN→needs_replan path is closed as NOT PRESENT.
 - Do not rerun historical AB105.079R–AB105.116R.
+
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P7 — no cross-mission semantic deduplication gate
+
+🟢 Code audit completed after P6.
+
+`src/assistants/memory.js` retains missions/attempts/executions/effectJournal, but the relevant execution records are keyed by exact mission identity/idempotency key. `recordNexoExecution()` does not perform cross-mission semantic matching. `recordNexoOutcome()` records one outcome for the same missionId + stepId and only adds `doNotRepeat` when explicitly requested.
+
+🟢 `src/nexo/orchestrator.js` uses a local `seen` set only while constructing the current mission, based on the action/target/action-name combination. `repeatBlocked()` consults `memory.nexo.doNotRepeat`, not prior missions, attempts, executions, or unresolved effectJournal entries.
+
+🟢 `reconstructNexoMission()` reconstructs from mission attempts; it does not turn an older unresolved effectJournal entry into an execution-admission block.
+
+Therefore a semantically repeated action/target can be planned in fresh mission M2 even when M1 has an unresolved PREPARED effect, unless an explicit doNotRepeat marker happens to exist.
+
+🔵 Missing boundary identified precisely:
+`intended effect identity (action + target + relevant parameters/fingerprint) → authoritative prior-operation lookup/reconciliation → only then admission of new mission execution`.
+
+🔵 This does not prove an external duplicate effect. It proves the current mission/planning layer has no cross-mission semantic reconciliation gate that survives missionId changes.
+
+🔴 No implementation patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P7 → absence of cross-mission semantic deduplication/reconciliation.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P8 — concrete Lúmina adapter has no independent mission-independent deduplication
+
+🟢 Lower execution layer inspected directly: `src/nexo/simulation-adapter.js`, `src/actions.js`, and `src/nexo/effect-adapter.js`.
+
+🟢 `createLuminaEffectAdapter()` exposes `execute_lumina_action` and delegates directly to `executeAction(simulation, agent, action)`. The handler receives the mission/idempotency context only through the adapter call; it does not maintain an independent operation registry keyed by semantic action/target/parameters.
+
+🟢 `src/actions.js` is a consequence engine: `executeAction()` dispatches to the concrete mutation functions. The action functions mutate simulation state directly and do not inspect Nexo `idempotencyKey`, missionId, or a prior-operation registry.
+
+🟢 `nexoEffectRevision` is incremented after successful local mutation, but it is only a local simulation-state revision. It is not an operation identity, not a durable deduplication registry, and not an externally enforced fence.
+
+🟢 `effect-adapter.js` is therefore the only current executable duplicate/retry barrier at this layer: exact `idempotencyKey` lookup plus PREPARED reconciliation. Once the PREPARED record is absent, the lower Lúmina handler provides no independent semantic deduplication fallback.
+
+🔵 This closes the P6→P8 path at the concrete handler boundary: a new missionId produces a new idempotency domain, and the concrete action engine does not independently recognize that it may represent the same unresolved intended effect.
+
+🔵 Scope remains local prototype behavior. No external duplicate effect is claimed, and no claim of production-grade target semantics is made.
+
+🔴 No implementation patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P8 → concrete Lúmina execution layer has no mission-independent semantic deduplication/operation registry.
+
+Next exact investigation: inspect whether the persistence/state-load layer can retain a durable semantic operation identity outside `missionId:stepId` (for example action/target/parameters/fingerprint), or whether that identity is absent end-to-end. Do not modify the architecture yet.
+
+DO-NOT-REPEAT:
+- P0–P2 remain closed as retention/reconciliation findings.
+- P5 automatic UNKNOWN→replan is closed as NOT PRESENT.
+- P6/P7/P8 are the fresh-planning → semantic-dedup → concrete-handler chain.
+- AB105.079R–AB105.116R remain closed.
+- AB105.117R remains prohibited.
