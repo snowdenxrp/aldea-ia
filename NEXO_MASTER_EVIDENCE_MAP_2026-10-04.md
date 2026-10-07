@@ -1066,3 +1066,13 @@ The historical contract requires the final effect gate to validate revocation ge
 🔵 **S9 conclusion:** as of this trace, the repository demonstrates a **semantic authority-context schema and transition contract**, but still does **not establish an implementation artifact that issues, durably commits, reconstructs, and invalidates CURRENT_AUTHORITY**. No issuer should be inferred merely from the presence of `issuer` fields or capability terminology.
 
 **Next exact frontier:** search for concrete runtime/storage primitives and writers that could materialize G2/T-AUTH-02 (event log, authoritative state store, commit record, capability store, or kernel authority mutation). If only design documents are found again, record the implementation gap and move to crash/recovery reconstruction rather than generating another contract.
+
+## 2026-10-07 — S9 runtime/storage trace: no executable authority implementation recovered
+
+🟢 **Concrete-primitives search completed:** targeted searches for event log, commit record, capability store, authority mutation, CURRENT_AUTHORITY store, Java/runtime `AuthorityContext`, and source-tree `AuthorityContext` found only research/design artifacts. No executable writer, authoritative storage implementation, or runtime mutation of authority state was recovered.
+
+🟢 **Recovered semantic candidates, not implementation:** prior research names `AUTH_ISSUE` as a semantic event and discusses commit records / authoritative stores, while AB104.604 lists outbox commit record and etcd revision/CAS as evidence-supplying mechanisms. These are architecture/evidence candidates, not proof that Nexo currently implements either mechanism.
+
+🔵 **S9 implementation gap is now stronger:** the repository currently establishes the *requirements* for an authority issuer and durable linearization, but the searched runtime surface does not establish the actual issuer/store/commit path. Therefore no claim may be made that `CURRENT_AUTHORITY` can presently be issued, durably committed, reconstructed, or invalidated by an implemented Nexo authority plane.
+
+**Next frontier:** move to the already-defined crash/recovery semantics and trace whether recovery has a concrete authoritative source/commit identifier for authority activation. If that also remains documentary, record S9 as an architecture-without-runtime-implementation boundary and stop inventing implementation artifacts.
