@@ -2024,3 +2024,39 @@ Exact recovery point: AB105.100R → abort/cancel versus commit → cancellation
 Next exact frontier: AB105.101R → commit receipt versus world-state observation: determine whether a post-commit state observation can prove commitment, and when state equality is insufficient.
 
 DO-NOT-REPEAT: AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.101R commit receipt versus world-state observation: state equality is not causal commitment proof
+
+🟢 A post-effect observation of target/resource state can be strong evidence about current state, but it does not automatically prove that the exact operation/effect committed.
+
+Required distinction:
+- COMMITTED claim: authoritative evidence that exact operation/effect identity and fingerprint crossed the target commit boundary.
+- STATE_OBSERVED: authoritative or trusted observation of current resource state/version.
+- CAUSAL_COMMIT: stronger claim that the observed state was produced by the exact operation under audit.
+
+🟢 State equality alone cannot establish CAUSAL_COMMIT when:
+- another operation could produce the same state;
+- the resource can converge to the same value independently;
+- an earlier/later retry or duplicate could have produced the state;
+- restore/replay/reconciliation can reproduce the same state;
+- the state lacks operation provenance.
+
+🟢 A matching resource version is not automatically an operation receipt. Version semantics must explicitly bind the version transition to the exact operation/effect.
+
+🟢 Conversely, an authoritative COMMITTED receipt should not be discarded merely because a later state observation appears unchanged. The commitment claim and current-state claim are separate domains; discrepancy becomes a reconciliation/integrity issue.
+
+🟢 Strong causal state evidence can legitimately close UNKNOWN only when the target contract explicitly provides operation-to-state provenance, such as an authoritative operation record binding the exact operation/fingerprint to the resulting resource version/incarnation.
+
+🟢 For idempotent effects whose contract defines the operation record as authoritative, a later lookup may prove COMMITTED even if the current resource state has subsequently changed. Current state is not the historical commit record.
+
+🟢 For multi-participant effects, matching state on every participant is insufficient for aggregate COMMITTED unless each state transition is authoritatively bound to the exact participant operation and the shared commit-domain contract establishes common atomicity.
+
+🔵 Independent observation is valuable for reconciliation and detecting discrepancies, but its evidentiary strength depends on explicit provenance/causal semantics rather than visual equality of state.
+
+🔴 No current Nexo/Lúmina executable path provides an authoritative operation-to-resource causal receipt binding. Current world-state persistence/revision is not sufficient to claim exact external operation commitment.
+
+Exact recovery point: AB105.101R → commit receipt versus world-state observation → current state can corroborate/reconcile but state equality alone does not prove exact operation commitment or aggregate atomicity.
+
+Next exact frontier: AB105.102R → resource-version/fingerprint binding: determine what minimum target-side version transition evidence is required to causally bind a committed operation to the resulting resource state.
+
+DO-NOT-REPEAT: AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
