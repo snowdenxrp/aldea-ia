@@ -2593,3 +2593,24 @@ DO-NOT-REPEAT: AB105.114R independent recovery authority; AB105.113R checkpoint 
 🔴 AB105.117R is prohibited. Future work must begin as a separately named investigation without renumbering or silently reopening AB105.116R.
 
 Exact protected recovery point: AB105.116R → independent authority → new generation → target fence → old-operation quarantine/reconciliation → stale-effect rejection → first safe new-effect admission.
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P0 — bounded journal can evict unresolved prepared effects
+
+🟢 New executable gap found without reopening AB105.116R.
+
+In `src/nexo/effect-adapter.js`, the local `executionJournal` is truncated to the last 200 entries in both `recordIntent()` and `persist()`.
+
+🟢 A `prepared` entry represents an unresolved effect and is deliberately not safe to retry blindly. However, the same bounded array can later evict that unresolved `prepared` entry.
+
+🟢 Once evicted, `journalEntry(idempotencyKey)` can no longer find it. A later call with the same idempotency key can therefore pass the `prepared` reconciliation gate and enter `recordIntent()`/handler execution as if no prior unresolved attempt existed.
+
+🟢 This is an implementation-level manifestation of the already-established retention rule: loss of an operation record is not proof of non-commit and must not reopen fresh execution. The finding is new only at the executable-carrier level; it does not reopen AB105.089R.
+
+🔵 Scope: this is a bounded local/in-process journal limitation, not evidence of an external duplicate effect by itself. It becomes safety-relevant whenever an unresolved prepared operation survives beyond the 200-entry retention window and its idempotency key is retried.
+
+🔴 No patch is made here. Research-first rule remains active: do not silently replace the journal policy or invent retention semantics.
+
+Exact recovery point: POST-AB105.116R implementation audit → P0 bounded-journal eviction of unresolved prepared operations.
+
+Next investigation: determine whether any other executable path can discard, overwrite, or reconstruct an unresolved operation record before authoritative reconciliation, including memory reconstruction/persistence boundaries. Do not rerun AB105.079R–AB105.116R.
+
+DO-NOT-REPEAT: AB105.079R–AB105.116R remain closed; this is an implementation-carrier audit of an already-established contract gap.
