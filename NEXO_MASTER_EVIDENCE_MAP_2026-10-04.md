@@ -3318,3 +3318,23 @@ Exact recovery point: POST-AB105.116R implementation audit → P31 → structura
 Next independent investigation: audit whether other normalization/repair steps in `scripts/assistants.mjs` mutate loaded state before diagnostics and therefore erase evidence of pre-existing anomalies. Focus only on pre-diagnostic normalization; do not reopen P26–P31 structural routing questions.
 
 DO-NOT-REPEAT: P0–P31 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P32 — multiple pre-diagnostic normalizers mutate loaded state
+
+🟢 Audited the full assistant startup path: `loadState()` → `applyState()` → `recoverCoreAgents()` → `createSimulation()` normalizers → second `normalizeCoreAgents()` → diagnostics. This is broader than the previously identified `currentActivity` repair.
+
+🟢 `applyState()` calls `recoverCoreAgents()` before diagnostics. `createSimulation()` then runs additional world/agent normalizers before `scripts/assistants.mjs` runs its own `normalizeCoreAgents()`.
+
+🟢 Several normalizers are potentially lossy with respect to pre-existing anomalous state: `normalizeCollectiveWorld()` filters invalid collective projects; `normalizeInstitutionWorld()` filters invalid institutions and clamps commons quantities to non-negative numbers; `normalizeTechnologyWorld()` clamps technology levels into [0,2]; `normalizeEcosystemWorld()` clamps biodiversity/soil/water/human-pressure into [0,1]; `normalizeSpatialWorld()` supplies/defaults structural spatial fields; `normalizeAgentLife()` fills/defaults life fields; `recoverCoreAgents()` and `normalizeCoreAgents()` clamp/default needs and force dead agents' activity to `dead`.
+
+🟢 Therefore the system does not have a single immutable pre-diagnostic snapshot. Loaded state is normalized/mutated before debugger/tester/analyst/StateAuditor observe it. Some malformed or out-of-range values may be repaired or discarded before any report can establish that they existed in persisted state.
+
+🔵 This does not mean every normalization is wrong; many are deliberate invariant restoration. The evidence gap is that there is no persisted pre-normalization diagnostic record or provenance indicating which loaded fields were changed, filtered, defaulted, or clamped before analysis.
+
+No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P32 → pre-diagnostic normalization/evidence-loss audit closed.
+
+Next independent investigation: enumerate the exact mutation surface of `loadState()` itself (before `applyState()`), because it also rewrites persisted state in memory—resource regeneration metadata/version migrations/stateRevision—and determine which of those transformations can erase evidence before any diagnostic component runs.
+
+DO-NOT-REPEAT: P0–P32 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
