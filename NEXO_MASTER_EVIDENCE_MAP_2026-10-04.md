@@ -1805,3 +1805,49 @@ Exact recovery point: **AB105.094R → effect dependency/causal graph → depend
 Next exact frontier: audit **cross-effect authority/fence inheritance**—whether a dependent effect may reuse predecessor authority context, epoch, fence, resource incarnation, or capability evidence, and where that inheritance must be rejected as stale.
 
 DO-NOT-REPEAT: AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.095R cross-effect authority/fence inheritance: predecessor context is evidence, not automatically reusable authority
+
+🟢 Cross-effect inheritance is now bounded.
+
+A dependent effect must not automatically inherit from its predecessor:
+- authority epoch/context;
+- revocation generation;
+- fence token/revision;
+- resource incarnation/version;
+- capability assessment;
+- provider receipt;
+- freshness timestamp.
+
+Each inherited item has a different semantic role and must be revalidated against the dependent effect's own target/claim.
+
+🟢 Safe inheritance is limited to provenance:
+A dependent operation may reference the predecessor operation, claim digest, causal relation, and evidence provenance. This does not make the predecessor's authority or capability current for the dependent operation.
+
+🟢 Authority:
+A predecessor being authorized does not authorize a later dependent effect. The dependent effect requires current authority/fence at its own acceptance boundary.
+
+🟢 Resource binding:
+A predecessor resource incarnation/version cannot be assumed current after mutation, replacement, rollback, or recovery. The dependent effect must bind to the target's current authoritative incarnation/version.
+
+🟢 Capability:
+A capability assessment is reusable only within its exact documented scope/freshness/provider contract. Capability for effect O does not automatically admit effect D merely because both use the same provider.
+
+🟢 Fence:
+A predecessor fence may be carried as provenance or a precondition, but cannot be treated as a fresh fence for D unless the target contract explicitly defines monotonic inheritance and verifies it at D's commitment boundary.
+
+🟢 Receipt:
+O's receipt proves O's commitment within its domain. It cannot prove D's acceptance, nor authorize D.
+
+🟢 UNKNOWN predecessor:
+If D depends on O's current authority or committed effect, O=UNKNOWN prevents that claim unless D's contract explicitly allows an independent safe path that does not rely on O's unresolved fact.
+
+🔵 There may be valid transactional protocols where one provider transaction intentionally covers multiple effects. In that case the shared commit domain must be explicit and authoritative; this is not generic “inheritance.”
+
+🔴 No current Nexo/Lúmina executable path performs these cross-effect validations. This is a semantic contract, not an implementation claim.
+
+Exact recovery point: **AB105.095R → cross-effect authority/fence inheritance → predecessor context may provide provenance, but authority, capability, resource currentness and receipts must not be silently reused as current facts for a dependent effect.**
+
+Next exact frontier: audit **shared commit domains / multi-effect transactions**—when several logical effects can legitimately share one authoritative commitment boundary without collapsing participant identity or hiding partial outcomes.
+
+DO-NOT-REPEAT: AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
