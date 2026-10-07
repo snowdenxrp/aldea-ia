@@ -3733,3 +3733,22 @@ Classification: **cross-file lineage = heuristic/temporal only; authoritative pr
 Exact next mission: inspect whether any commit-level relationship, parent revision, or file-diff invariant can turn the P54 temporal fingerprint into a deterministic retrospective classifier for normal-vs-retry state commits, without changing code. Research only.
 
 DO-NOT-REPEAT: P0–P54 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P55 — Git parent/child diff can classify the retry shape, but only retrospectively
+
+🟢 The current workflow's retry path runs `npm run simulate` after `git reset --hard origin/main`, and does not run `npm run assistants`. Therefore, under the current code path, retry does not create a new assistant-memory run.
+
+🟢 The primary path runs `npm run assistants` before `npm run simulate`; the assistant script writes `.lumina-assistant-memory.json`, so a successful primary state commit is expected to carry a new assistant-memory run together with the world-state advancement.
+
+🟢 Real sampled commits `53421122...`, `89cd66a9...`, `bba09eca...`, `ea2d5d99...`, and `cc51448c...` all show the normal shape: `world-state.json` advances by +2 in `stateRevision` and `.lumina-assistant-memory.json` receives a new run. Their Git commit message is identical.
+
+🟢 Consequently, a Git parent/child diff that changes `world-state.json` but leaves `.lumina-assistant-memory.json` byte-identical is a deterministic **retry-shape witness under the current implementation**, because the retry path is the only known workflow path that deliberately skips assistants while still committing simulation state.
+
+🔵 This is a classifier of the **current workflow shape**, not proof of execution intent in an arbitrary historical commit. A manually created commit, future workflow change, or other writer could produce the same shape.
+
+🔴 P55 result: **RETROSPECTIVE_GIT_CLASSIFIER = AVAILABLE FOR CURRENT WORKFLOW SHAPE; AUTHORITATIVE_EXECUTION_PROVENANCE = STILL ABSENT.** The classifier can distinguish the known retry-shaped commit from the known normal-shaped commit when parent/child diffs are available, but it cannot prove that no other writer produced that shape.
+
+No specific retry-shaped live commit was observed in this mission.
+
+Exact next mission: P56 — search the real state-commit history for any commit whose parent/child diff modifies `world-state.json` without modifying `.lumina-assistant-memory.json`; if found, determine whether it is a concrete retry witness or an unrelated writer. Research only; no patch.
