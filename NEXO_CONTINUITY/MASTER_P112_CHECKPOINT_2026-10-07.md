@@ -198,3 +198,14 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Matrix confirms Resource, Agent inventory/needs, Relationship, Economy aggregate/price, Collective project, Structures/land, Knowledge/discovery, Memory, Technology/culture/specialization and Institutions/commons are C (no demonstrated complete token); Spatial/range is B (partial token only).
 - Therefore no current token set can honestly be promoted to a complete semantic fence for the three representative classes.
 - Exact next remains: trace narrowest authoritative mutation boundary for each C domain and determine whether one token can cover all invalidators; otherwise use dependency token class or broader protected footprint.
+
+
+## P112 authoritative mutation-boundary trace — 2026-10-07
+- Extended existing writer→token matrix; no duplicate artifact created.
+- Resource: action handlers + daily world/ecosystem writers invalidate resource state; agent inventory/needs/tool state are separate dependencies. No common semantic token funnel demonstrated.
+- Trade: trade() is the physical transfer boundary, but admission dependencies are invalidated by external inventory, economy aggregate/price, and relationship writers. Trade-local token is insufficient.
+- Cooperate: project creation/contribution are local boundaries, but admission and completion depend on participant inventory/home/alive/relationship plus project/structure/memory/event domains with external writers. Project token alone is insufficient.
+- New conclusion: narrowest function boundary is not necessarily narrowest semantic protected boundary. Token ownership must dominate every invalidating writer; otherwise broader multi-domain footprint is required.
+- Matrix update commit: 0581f8221094065a485af612f3101585cdaf12b8; content SHA: afeeabee0757a2085374ece2ebcb25378b68351a.
+- External conceptual cross-check: serializable systems track read/predicate dependencies, not final writes alone. citeturn0search2turn0search0
+- Exact next: trace remaining invalidators into a writer→dependency graph and locate the first common boundary dominating all writers per class; if absent, define the minimum multi-domain protected footprint.
