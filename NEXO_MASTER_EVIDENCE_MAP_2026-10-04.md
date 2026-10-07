@@ -3223,3 +3223,22 @@ Exact recovery point: POST-AB105.116R implementation audit → P25 → debugger/
 Next independent investigation: inspect the contract/consumers around `buildAssistantReport()` and whether excluding `structuralReport` from `buildNexoMission()` can cause a safety-relevant finding to be omitted from planning, without reopening the closed action-producer search.
 
 DO-NOT-REPEAT: P0–P25 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P26 — structural findings are dropped twice before/at Nexo planning
+
+🟢 Audited the exact routing path and src/nexo/orchestrator.js. scripts/assistants.mjs constructs structuralReport, then calls buildAssistantReport({ debuggerReport, testerReport, analystReport, structuralReport }). However src/assistants/index.js::buildAssistantReport() destructures only debuggerReport, testerReport, analystReport; structuralReport is therefore silently ignored and never appears in report.assistants or the aggregate status/counts.
+
+🟢 Independently, the subsequent buildNexoMission() call passes only squadReport.reports, debuggerReport, testerReport, and analystReport; structuralReport is omitted a second time. Thus structural consistency findings have two separate routing losses: they are absent from the aggregate assistant report and absent from Nexo mission input.
+
+🟢 The structural codes currently produced are DEAD_WITH_HEALTH and DEAD_STATE_MISMATCH. They are not present in actionFor() explicit map in src/nexo/orchestrator.js, so if they were routed into planning they would currently fall back to inspect_and_collect_evidence, not a direct repair. This means the observed gap is evidence-loss/routing, not proof of unsafe automatic mutation.
+
+🔵 Safety significance is limited but real: a structural finding can be generated with severity error and still fail to influence both aggregate report status and mission planning. Therefore downstream consumers can observe a cleaner status/mission than the actual structural diagnostic set warrants. No evidence currently shows this omission causes an external effect or duplicate action.
+
+🔵 This is not an implementation patch recommendation yet. The correct contract question is whether every error/warning finding intended to influence Nexo must be present in one authoritative report set, and whether structural findings should map to an explicit conservative action or remain evidence-only.
+
+No patch. No external duplicate effect claimed. No exactly-once claim.
+
+Exact recovery point: POST-AB105.116R implementation audit → P26 → structural-report routing audit closed.
+
+Next independent investigation: audit tests/consumers for report-status assumptions and determine whether any test proves structuralReport must be visible to aggregate status or Nexo planning. Do not reopen the closed producer searches P24–P25.
+
+DO-NOT-REPEAT: P0–P26 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
