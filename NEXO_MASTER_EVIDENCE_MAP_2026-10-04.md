@@ -1894,3 +1894,39 @@ Exact recovery point: **AB105.096R → shared commit domains → aggregate COMMI
 Next exact frontier: audit **domain membership and participant-set freezing**—when the participant set becomes immutable, how late-added/removed effects are handled, and how membership races affect COMMITTED/PARTIAL/UNKNOWN.
 
 DO-NOT-REPEAT: AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.097R participant-set freezing: atomic claims require an immutable declared set at the commit boundary
+
+🟢 Participant-set semantics are now explicit.
+
+For a multi-effect/shared commit claim, the required participant set must be fixed before the authoritative commit boundary. The commit record must bind the declared set (or an authoritative equivalent digest) to the commit domain.
+
+🟢 Late participant:
+An effect added after the participant set is frozen is outside the existing atomic claim. It requires a separate operation/commit domain or explicit provider semantics that atomically extend membership before commitment. It cannot inherit the earlier COMMITTED claim.
+
+🟢 Removed participant:
+Removing a required participant before commitment changes the transaction contract. It cannot be silently omitted. The domain must reject/quarantine or establish a new declared set.
+
+🟢 Membership race:
+If the system cannot establish whether a participant was inside the authoritative commit set at the boundary, aggregate COMMITTED is not justified. Result remains PARTIAL/UNKNOWN until authoritative membership evidence resolves it.
+
+🟢 Membership digest:
+A stable participant-set digest is useful as binding evidence, but a caller-computed digest is not itself authoritative. The provider/target must bind the actual commit membership to its commit record.
+
+🟢 Participant identity includes effect identity/fingerprint and target incarnation. Same logical participant name with changed fingerprint or incarnation is a different binding and cannot silently satisfy the old set.
+
+🟢 Retry:
+A retry must use the same frozen membership when claiming duplicate/continuation semantics. Changing membership converts it into a different transaction/effect contract unless the provider explicitly defines a safe extension protocol.
+
+🟢 Recovery:
+After crash/failover, the participant set must be reconstructed from authoritative commit-domain evidence, not inferred from whichever local tasks remain in memory.
+
+🔵 Some providers may implement dynamic transaction membership internally. That is safe only if the provider defines an authoritative membership/commit boundary; dynamic client-side lists are not equivalent.
+
+🔴 No current Nexo/Lúmina executable path freezes or authoritatively records a multi-effect participant set. No aggregate atomicity is claimed.
+
+Exact recovery point: **AB105.097R → participant-set freezing → aggregate COMMITTED requires authoritative binding of the complete declared participant set at the commit boundary; late/removed/ambiguous members cannot be silently included or excluded.**
+
+Next exact frontier: audit **commit-boundary linearization for shared domains**—the exact instant/order at which membership, authority/fence, resource predicates, participant mutations, and the authoritative receipt become one commitment claim.
+
+DO-NOT-REPEAT: AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
