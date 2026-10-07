@@ -3662,3 +3662,20 @@ Classification: **fallback-blind recovery is cross-path within Lúmina (Node sim
 Next mission P50: inspect whether `scripts/assistants.mjs` can make the provenance loss stronger by persisting assistant memory successfully before `world-state.json`, creating a durable record that looks healthy while the authoritative world state was recovered from failure. Research ordering and failure boundaries only; no patch.
 
 DO-NOT-REPEAT: P0–P49 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P50 — assistant memory can outlive failed world-state persistence
+
+🟢 `scripts/assistants.mjs` order is concrete: load world state → run assistant analysis/mission planning → compute `learned` memory → `fs.writeFile(MEMORY_PATH, ...)` → only afterward call `persistState(STATE_PATH, ...)`.
+
+🟢 Therefore the assistant-memory file can be successfully replaced before the authoritative `world-state.json` persistence attempt completes. If `persistState()` fails after the memory write, the memory mutation remains durable while the world-state write does not.
+
+🟢 When the initial `loadState()` was a fallback caused by malformed/unreadable `world-state.json`, the reports, mission planning, and learned run are derived from that synthetic default state. The memory schema has no `loadFailed`, recovery source, state hash, or world-state revision binding, so the persisted assistant record does not reveal that its run was based on fallback state.
+
+🟢 The workflow stages both files together later, but that Git commit grouping does not make the two filesystem writes atomic. The primary workflow executes `npm run assistants` before `npm run simulate`; each can mutate persistence independently.
+
+🟢 Existing search found no test specifically asserting that assistant-memory persistence must roll back/quarantine when world-state persistence fails after assistant write, nor one binding `.lumina-assistant-memory.json` to the exact `world-state.json` revision/source.
+
+🔴 P50 classification: **DURABLE ASSISTANT-MEMORY / WORLD-STATE CROSS-FILE CONSISTENCY GAP = CONFIRMED**. Combined with P48/P49, a failed world-state load can produce a durable, normal-looking assistant-memory update without durable recovery provenance.
+
+Next mission P51: inspect the workflow retry path and commit/rebase behavior to determine whether this cross-file divergence can be committed to `main` or whether the workflow necessarily fails before Git commit. Research only; no patch.
