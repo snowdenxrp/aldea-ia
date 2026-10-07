@@ -3786,3 +3786,19 @@ DO-NOT-REPEAT: P0–P56 closed; AB105.079R–AB105.116R closed; AB105.117R prohi
 **P58:** inspect whether Git graph/parent metadata exposed by available GitHub read-only endpoints can establish any stronger invariant around the state commits (without relying on unavailable push-run metadata). Research only; no patch. Do not rerun TLC and do not create AB105.117R.
 
 DO-NOT-REPEAT: P0–P57 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P58 — Git parent graph gives linearity, not retry provenance
+
+🟢 Direct GitHub commit metadata was fetched for recent state commits. The sampled commits are single-parent commits and form a linear main history. Examples: 53421122... parent 65c4b5d5...; 89cd66a9... parent bba09eca...; bba09eca... parent d5822ef9...; ea2d5d99... parent 35cdb63f...; cc51448c... parent 96836017....
+
+🟢 The parent chain also confirms that the state commits were based on the then-current main tip, interleaved with NEXO CONTINUITY commits. Example: 65c4b5d5... (P51 master) was created at 18:45:18Z and 53421122... was created at 18:45:31Z with 65c4b5d5... as parent. This is useful temporal/graph evidence but does not reveal which workflow branch produced the state commit.
+
+🟢 No sampled state commit is a merge commit. No parent topology distinguishes the primary path from the retry path: both workflow branches ultimately create an ordinary single-parent commit on main.
+
+🔴 P58 RESULT: GIT_GRAPH_CAN_PROVE_LINEAR_PARENTAGE = CONFIRMED; GIT_GRAPH_CAN_PROVE_REBASE_RETRY_ORIGIN = NO. No provenance upgrade. The graph cannot distinguish npm run assistants → npm run simulate from reset --hard origin/main → npm run simulate because both end as the same commit shape.
+
+## Exact next mission
+P59: inspect the commit-tree/file-blob relationship for state commits to determine whether any persisted blob-level invariant can distinguish a simulation-only retry from an assistant-generated primary run. Research only; no patch. Do not rerun TLC and do not create AB105.117R.
+
+DO-NOT-REPEAT: P0–P58 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
