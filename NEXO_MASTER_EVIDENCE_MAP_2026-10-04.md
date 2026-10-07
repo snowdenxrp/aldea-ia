@@ -3402,3 +3402,25 @@ Exact recovery point: POST-AB105.116R implementation audit → P35 → fallback 
 Next independent investigation: audit whether any workflow/CLI wrapper, outside these two entry points, preserves the original file or captures load errors before persistence. If none exists, close this branch as application-level provenance loss and move to the next pre-diagnostic/recovery boundary.
 
 DO-NOT-REPEAT: P0–P35 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P36 — no wrapper preserves load-failure provenance before persistence
+
+🟢 Audited the workflow/CLI wrappers around the P35 fallback→persist path. `.github/workflows/lumina-simulation.yml` invokes `npm run assistants` and then `npm run simulate`; `package.json` maps those commands directly to `node scripts/assistants.mjs` and `node scripts/simulate.mjs`. Neither wrapper captures a load-failure signal because `loadState()` exposes no such signal.
+
+🟢 `scripts/assistants.mjs` calls `loadState(STATE_PATH)`, continues through diagnostics/planning, and calls `persistState()` with the loaded revision as expectedRevision. `scripts/simulate.mjs` does the same from its main entry point. There is no CLI-level quarantine, backup/copy, recovery marker, or operator acknowledgement between fallback and persistence.
+
+🟢 The workflow's final Git commit/rebase/push logic preserves whatever `world-state.json` was produced; it does not inspect whether the state originated from fallback. Its concurrency/rebase handling is orthogonal to provenance: it can serialize/reconcile writers, but it does not distinguish a corrupt-source recovery from legitimate initialization.
+
+🟢 The browser readers in `src/main.js` / `src/main-stable.js` can reject an invalid remote state and fall back to local behavior, but they are read/display paths and do not provide evidence that the server-side failed-load source is preserved before `scripts/assistants.mjs` or `scripts/simulate.mjs` overwrites it.
+
+🟢 No executable test was found covering the exact invariant “corrupt/unreadable world-state → load failure → fallback → first persistence must preserve/quarantine the original source.” Existing persistence tests cover normal restart, revision conflicts, concurrent writers, write/rename failures and stale-lock recovery, not fallback provenance.
+
+🔵 Therefore the P35 finding is not merely a missing guard inside `persistState()`: the current surrounding workflow/CLI topology provides no independent recovery-preservation layer before the overwrite.
+
+Classification: **application-level recovery-provenance loss confirmed across current entry wrappers**. No universal data-loss claim; no claim that external Git history/backups are absent. No patch.
+
+Exact recovery point: POST-AB105.116R implementation audit → P36 → wrapper/CLI recovery-preservation audit closed.
+
+Next independent investigation: identify whether any existing Git-history/versioning or deployment-level recovery contract is intentionally relied upon as the authoritative recovery mechanism; if not, document the missing recovery/quarantine contract without implementing it.
+
+DO-NOT-REPEAT: P0–P36 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
