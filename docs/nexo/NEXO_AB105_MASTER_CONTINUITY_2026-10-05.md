@@ -2333,3 +2333,18 @@ Do not reopen the already closed generic paths: MetadataLoader/KafkaEventQueue s
 No repetir source audit ni Run #21. Si se continúa, debe ser únicamente mediante una nueva evidencia empírica que preserve la ausencia de sincronización artificial y, preferentemente, conecte causalmente el request real con W1/ENQUEUE sin usar el propio mecanismo de observación como puente. Si no puede hacerse sin alterar la semántica, conservar UNKNOWN.
 
 DO-NOT-REPEAT: MetadataLoader post-publisher genérico, firstPublishFuture/startup, metadataCache ordering, lastAppliedOffset/lifecycle, RequestChannel, SocketServer producer, AuthHelper/Plugin, shared Authorizer identity, outer volatile data, Run #21 cache probe, TLC, AB105.117R.
+
+
+## 2026-10-06 — Workflow validity repaired
+
+🟢 Confirmed the G0 ordering workflow had a duplicated `workflow_dispatch:` key under `on:`, which caused the observed run `37549706571` to complete with zero jobs. This run remains invalid as experiment evidence.
+
+🟢 Repaired only the YAML trigger definition, removing the duplicate `workflow_dispatch:`. The broker probe logic, pinned Kafka revision, instrumentation, and synchronization semantics were not changed.
+
+🟢 Repair commit: `56ebbe8986c0c3b892c7c6ce8d04c8daf07c76f3`.
+
+🔵 Next legitimate step: obtain a real workflow execution/artifact from the repaired definition. Until then, no new empirical conclusion is added.
+
+DO-NOT-REPEAT: do not count run `37549706571`; do not rerun TLC; do not create AB105.117R; do not add synchronization to the probe.
+
+Epistemic state unchanged: W1→ENQUEUE HB UNKNOWN; W1→D1 HB UNKNOWN; stale ACL NOT OBSERVED in Run #21 / NOT DISPROVEN universally; vulnerability NOT ESTABLISHED; AB105.116R PROTECTED.
