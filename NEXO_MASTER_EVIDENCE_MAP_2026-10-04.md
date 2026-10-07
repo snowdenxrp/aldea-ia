@@ -2497,3 +2497,38 @@ Exact recovery point: AB105.113R → checkpoint/snapshot authority → recovered
 Next exact frontier: AB105.114R → independent recovery authority and generation monotonicity: determine how a new recovery generation is established when the old authority/ledger may be compromised or unavailable.
 
 DO-NOT-REPEAT: AB105.112R ledger integrity; AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.114R independent recovery authority and generation monotonicity
+
+🟢 A recovered coordinator cannot safely declare itself the newest authority using only its restored snapshot. A new recovery generation requires an authority boundary independent enough to detect or reject rollback to an older generation.
+
+Minimum recovery-generation evidence:
+- new recovery_generation/epoch identifier;
+- authoritative issuer or quorum whose current authority is established outside the stale snapshot;
+- monotonicity/anti-rollback anchor;
+- predecessor generation reference;
+- reason and evidence for transition;
+- fence binding that prevents the old generation from continuing to commit effects;
+- explicit recovery scope and unresolved-operation set.
+
+🟢 A locally generated random/new epoch is not by itself authoritative. It provides uniqueness, not proof that the issuer is the current recovery authority.
+
+🟢 A quorum of mutually restored stale nodes is not automatically independent authority. If all derive from the same compromised/old snapshot, majority only reproduces the same history.
+
+🟢 Recovery can proceed without proving the old generation's final effect state, but then the unresolved set must be quarantined/UNKNOWN and the new generation must fence old effects before admitting new critical effects.
+
+🟢 If no independent authority or target-enforced fence exists, the safe result is STOP/QUARANTINE rather than self-promotion.
+
+🟢 A new recovery generation does not rewrite historical outcomes. It establishes a new currentness boundary and links unresolved historical operations to the new reconciliation process.
+
+🟢 Generation monotonicity must survive crash/restart/restore. A counter stored only inside the recoverable snapshot can roll back with the snapshot and therefore cannot be the sole anti-rollback anchor.
+
+🔵 This closes a common circularity: “the recovered state says it is current, therefore it is current.” Currentness must be established from outside the state being recovered.
+
+🔴 No current Nexo/Lúmina executable independent recovery authority, external monotonic generation anchor, or target-enforced old-generation fence exists.
+
+Exact recovery point: AB105.114R → independent recovery authority/generation monotonicity → new recovery authority cannot be self-certified by the stale state it recovered.
+
+Next exact frontier: AB105.115R → old-generation fencing during recovery: determine the exact conditions under which a new recovery generation can safely prevent stale in-flight effects.
+
+DO-NOT-REPEAT: AB105.113R checkpoint authority; AB105.112R ledger integrity; AB105.111R lineage; AB105.110R late evidence; AB105.109R closure; AB105.108R lost receipt; AB105.107R fence race; AB105.106R fence enforcement; AB105.105R split-brain; AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
