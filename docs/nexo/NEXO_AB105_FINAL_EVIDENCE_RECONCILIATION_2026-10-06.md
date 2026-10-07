@@ -77,3 +77,14 @@ No current evidence justifies upgrading UNKNOWN to vulnerability or safety.
 Protected research anchor: AB105.116R.
 Kafka pin: 99b940733a9f6bc409457dba7108f08421d81e42.
 Previous closure commit: 0c7258fd895a31aec823c1cde0678fb66af11c19.
+
+
+## 2026-10-06 — Run #21 cache observation is already the distinct empirical branch
+
+🟢 Reconciled Run #21 (37520308442 / artifact 11441125547) against the valid G0 v2 execution and canonical witness. Run #21 already performs the materially distinct diagnostic: D1 observes the exact selected AclCache snapshot, with targetPresent=false/cacheCount=0 and matching broker-0 W1 cacheIdentity in all 10 paired cycles.
+
+🔵 Therefore the previously identified "new diagnostic cache observation" is not a pending experiment anymore. It has already been executed and preserved. Re-running it would duplicate the same scientific question.
+
+🔵 Combined interpretation remains observational only: W1 temporally precedes the request path, and D1 observed a post-removal cache in Run #21. This still does not manufacture or prove W1→ENQUEUE/W1→D1 JMM HB, and no stale-cache execution was observed.
+
+Final epistemic matrix remains unchanged. The source-side production HB audit and the empirical cache-observation branch are both bounded; future work must ask a genuinely distinct question or preserve UNKNOWN.
