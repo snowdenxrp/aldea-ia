@@ -2169,3 +2169,37 @@ Exact recovery point: AB105.104R → failover/leader-change reconciliation → a
 Next exact frontier: AB105.105R → split-brain/dual-authority effect acceptance: determine how conflicting commit claims are quarantined and which boundary can resolve them.
 
 DO-NOT-REPEAT: AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.105R split-brain/dual-authority effect acceptance: conflicting commits require authoritative fencing or quarantine
+
+🟢 Two actors may each hold locally valid-looking authority while the system lacks a single current authority boundary. Local validity is not sufficient to establish globally current authority.
+
+Required safety properties:
+- one authoritative authority epoch/generation;
+- target-enforced fencing that rejects stale/competing epochs at the actual acceptance boundary;
+- resource incarnation binding;
+- operation/effect identity and fingerprint;
+- authoritative commit record with authority/fence provenance;
+- conflict/quarantine state when the system cannot establish a unique winner.
+
+🟢 If old and new authorities can both cause target acceptance, Nexo cannot safely select a winner using timestamps, arrival order, local leadership status, majority of coordinator logs, or “latest response”.
+
+🟢 If both effects actually committed under a target that permits dual acceptance, the result is not a single atomic claim. Preserve both participant/effect outcomes and classify the conflict according to the target's authoritative history.
+
+🟢 If only one commit is authoritatively established and the other side has merely local intent/ACK, the authoritative commit can stand; the weaker side remains unresolved or rejected only according to its own contract.
+
+🟢 If two authoritative records conflict about the same operation identity/fingerprint or resource incarnation, the contradiction itself becomes an integrity/conflict event. It must not be silently reconciled by choosing one record.
+
+🟢 A new authority epoch is useful only when the target enforces the ordering/fence. Coordinator-side epoch comparison cannot undo an already accepted stale effect.
+
+🟢 Quarantine must be monotonic against unsafe promotion: conflicting evidence blocks new claims that depend on choosing a winner until an authoritative reconciliation boundary resolves the conflict.
+
+🔵 Split-brain safety is therefore a target-enforcement property, not merely a coordinator election property.
+
+🔴 No current Nexo/Lúmina executable target provides dual-authority fencing plus an authoritative conflict-resolution record for external effects.
+
+Exact recovery point: AB105.105R → split-brain/dual-authority effect acceptance → conflicting authority claims require target-enforced fencing or explicit quarantine; local timestamps/leader status cannot choose the winner.
+
+Next exact frontier: AB105.106R → fence enforcement boundary: distinguish fence issuance, presentation, validation, and actual target rejection of stale effects.
+
+DO-NOT-REPEAT: AB105.104R failover; AB105.103R reincarnation; AB105.102R version/fingerprint; AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
