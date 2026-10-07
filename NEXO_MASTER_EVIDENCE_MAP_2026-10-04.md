@@ -3535,3 +3535,20 @@ Exact recovery point: P41 closed.
 Next independent investigation: audit whether GitHub branch protection/status requirements or repository settings enforce successful deterministic CI before `main` accepts `Actualizar estado de Lúmina`. Only claim this if directly observable; otherwise keep it UNKNOWN.
 
 DO-NOT-REPEAT: P0–P41 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P42 — branch protection / required CI remains UNKNOWN
+
+🟢 Repository metadata confirms `main` is the default branch and the connected GitHub principal has repository administration permission.
+
+🔵 The available GitHub connector exposes repository metadata but does not expose branch-protection/ruleset settings or required-status-check configuration for this repository. No repository file inspected declares those server-side GitHub rules.
+
+🔴 Therefore we cannot truthfully assert that successful deterministic CI is required before `main` accepts an `Actualizar estado de Lúmina` push. Nor can we assert the opposite from the absence of an exposed setting.
+
+Classification: **server-side branch protection / required CI = UNKNOWN**. The workflow-level finding from P41 remains: no in-repository workflow dependency makes deterministic CI a blocking admission gate.
+
+Exact recovery point: P42 closed as UNKNOWN.
+
+Next independent investigation: audit the actual GitHub Actions run/result relationship for a concrete `Actualizar estado de Lúmina` commit, if observable, and determine whether the deterministic test run's checked-out SHA exactly equals that state commit and whether later state commits can supersede it before its result is consumed. Do not infer branch protection.
+
+DO-NOT-REPEAT: P0–P42 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
