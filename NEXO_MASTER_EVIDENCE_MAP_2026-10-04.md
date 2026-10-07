@@ -3953,3 +3953,16 @@ Next bounded action: continue targeted inventory of pre-master continuity docume
 P66b RESULT: PRE_MASTER_STRUCTURED_CONTINUITY_ARCHIVE = CONFIRMED; HISTORICAL_GAP_CLASSIFICATION = OPEN; CLOSED_AUDIT_RERUN = NONE.
 
 Next bounded action: continue archive inventory only, identify historical artifacts with material claims not represented in the master, and reconcile references without rerunning their experiments.
+
+
+## 2026-10-07 — Pre-master archaeology P66c — archive breadth confirmed
+
+🟢 Targeted repository searches reveal a substantially broader historical corpus than the master: NEXO_CONTINUITY contains early AB104 audits (AB104_4, _5, _6, _7, _8, _11, _22, _67, _68), later AB104.131–AB104.151 records, and many `docs/nexo/NEXO_CONTINUITY_CHECKPOINT_2026-09-26_AB104.*` artifacts extending through the hundreds. It also contains later canonical/handoff records such as AB104.758/759R and AB104.862R-era documents.
+
+🔵 Search results establish archive breadth, not yet semantic gaps. We must not infer that every historical file contains a unique claim or that every claim is absent from the master.
+
+🟢 This materially strengthens the pre-master archaeology track: the archive is large enough that a simple master-file reread cannot establish completeness.
+
+P66c RESULT: `PRE_MASTER_ARCHIVE_BREADTH = CONFIRMED`; `MASTER_COMPLETENESS = UNKNOWN`; `HISTORICAL_CLAIM_GAPS = NOT_YET_CLASSIFIED`.
+
+Next bounded action: sample the archive at three strata (early AB104, mid AB104.200–400, late AB104.600–900) and identify only claims/evidence that are not already represented in the master. No reruns.
