@@ -138,3 +138,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Final-gate DependencySet is claim-specific: include every observation that influenced eligibility/target/score/branch/protected precondition plus transitive authoritative inputs, not every merely observed value.
 - Complete provenance propagation and final-gate conditional validation remain OPEN.
 - Exact next: trace selected action into performDecision()/executeAction() and locate the future protected final-gate revalidation boundary, including hidden writes and recovery/reconciliation state.
+
+
+## P112 final-gate / execution-boundary audit — 2026-10-07
+- `P112_FINAL_GATE_EXECUTION_BOUNDARY_AUDIT_2026-10-07.md`
+- Commit: `c18d8c330cefd6b0ad1d85ace30eacef2805adde`
+- No demonstrated FINAL_GATE exists between selected intent and mutation.
+- `executeAction()` is insufficient: socialize, share_knowledge, cooperate, exploration and discovery branches mutate directly outside it.
+- Ordinary actions also re-read mutable state at execution (e.g. trade partner; skill/random/resource state), so selected intent is not final validated state.
+- Post-effect learning/memory/discovery/event writes are additional mutation surfaces.
+- Exact next: map ReadSet/WriteSet for every mutation entry point and intersect with `tick()`, `advanceWorldDay()`, `advanceSocietyDay()` and other writers to determine smallest protected transition footprint.
