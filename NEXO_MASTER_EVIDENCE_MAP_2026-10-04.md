@@ -3120,3 +3120,24 @@ Exact recovery point: POST-AB105.116R implementation audit → P20 → action/re
 Next independent investigation: inspect the exact construction path of `context.action` in the Nexo planner/orchestrator and determine whether all effect-relevant parameters survive into the planned step, or whether planning currently drops parameters needed to make a canonical fingerprint complete.
 
 DO-NOT-REPEAT: P0–P20 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+## 2026-10-07 — POST-AB105.116R IMPLEMENTATION AUDIT P21 — planner preserves action payload but dedup key drops effect parameters
+
+🟢 Audited `src/nexo/orchestrator.js` plus the existing orchestrator/runtime tests. For `LUMINA_ACTION`, `buildNexoMission()` copies the complete finding action with `{...finding.action}` into `step.context.action`; `planNexoExecution()` then forwards `step.context` unchanged. Thus explicit action parameters are not generally stripped at the planner→step→execution handoff.
+
+🔴 However, the planner's intra-mission deduplication key is only `action + target + finding.action.name`: `const key=action+"|"+(target??"global")+"|"+(finding.action?.name??"")`. It does not include amount, duration, partnerId, offerType, unitPrice, resourceType, or other effect-relevant action parameters.
+
+🔴 Therefore two findings for the same target and same Lúmina action name but different parameters can collapse into one step before execution. Example: `{name:"drink",amount:2}` and `{name:"drink",amount:5}` for the same agent share the same planner dedup key. Likewise two trades differing in amount/price/partner can be collapsed if target and action name match.
+
+🟢 This is distinct from the earlier cross-mission identity problem: the payload survives once the step exists, but the planner can discard a distinct requested effect before a step is ever created. So the current carrier cannot assume that the planned-step set is a complete representation of all effect intents present in the input reports.
+
+🔵 The existing test confirms parameter preservation for one `drink` action (`context.action` remains `{name:"drink",amount:2}`), but does not test two same-target/same-name actions with different parameters. No test currently proves parameter-sensitive deduplication.
+
+🔵 This does not itself prove an external duplicate effect or a safety violation; it is an intent-loss / request-canonicalization gap. If distinct reports are supposed to represent distinct effect requests, the current dedup rule is too coarse. If the product intentionally wants one action per target/name regardless of parameters, that policy is implicit and undocumented in the planner.
+
+🔴 No patch made.
+
+Exact recovery point: POST-AB105.116R implementation audit → P21 → planner payload-preservation and parameter-sensitive dedup audit closed.
+
+Next independent investigation: audit whether `finding.action` can contain all effect-relevant inputs for every Lúmina action, especially hidden execution inputs such as random draws and state-derived values; then define the minimum canonical request fields needed before an operation fingerprint can be considered complete.
+
+DO-NOT-REPEAT: P0–P21 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
