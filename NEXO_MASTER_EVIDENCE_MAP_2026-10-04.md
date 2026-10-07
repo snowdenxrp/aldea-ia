@@ -2060,3 +2060,41 @@ Exact recovery point: AB105.101R → commit receipt versus world-state observati
 Next exact frontier: AB105.102R → resource-version/fingerprint binding: determine what minimum target-side version transition evidence is required to causally bind a committed operation to the resulting resource state.
 
 DO-NOT-REPEAT: AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.102R resource-version/fingerprint binding: minimum causal witness for operation-to-state attribution
+
+🟢 A resource version can become causal evidence for an exact operation only when the target contract binds the version transition to that operation at the authoritative commit boundary.
+
+Minimum witness:
+- exact operation_id/effect_id;
+- exact payload/effect fingerprint;
+- target resource_id;
+- resource_incarnation/generation;
+- authoritative pre-commit resource version or equivalent expected-version predicate;
+- authoritative resulting resource version;
+- target-side record that the exact operation caused that version transition;
+- commit-domain/receipt provenance linking the record to the same acceptance boundary.
+
+🟢 A before-version + after-version pair is insufficient by itself. Another operation may have consumed the same transition, or multiple operations may produce indistinguishable state.
+
+🟢 An after-version alone is insufficient because it does not identify the operation that produced it.
+
+🟢 A fingerprint alone is insufficient because it identifies intended content, not acceptance or resulting state.
+
+🟢 Resource incarnation is mandatory whenever replacement/recreation can reset or reuse versions. Version 42 on incarnation A is not equivalent to version 42 on incarnation B.
+
+🟢 The target must define whether version advancement occurs atomically with effect acceptance. If the version is advanced separately, it cannot automatically serve as the commit witness.
+
+🟢 An authoritative operation record containing operation identity, fingerprint, target incarnation, and resulting version can bind historical commitment even after the current resource has advanced further.
+
+🟢 If only resource state/version remains after operation-record retention expires, UNKNOWN may remain unresolved. Absence of the operation record does not prove that the version transition was not caused by the operation.
+
+🔵 This is a causal-attribution contract, not merely optimistic concurrency. An expected-version check prevents stale writes but does not by itself prove which operation produced the resulting state.
+
+🔴 No current Nexo/Lúmina executable target provides this complete authoritative operation-to-version/fingerprint binding. Existing local world-state revision is a persistence revision, not a target-authoritative causal receipt.
+
+Exact recovery point: AB105.102R → resource-version/fingerprint binding → causal commitment requires target-authoritative binding of exact operation/fingerprint to the resulting version within the same commitment provenance.
+
+Next exact frontier: AB105.103R → resource reincarnation/generation binding: audit whether identity and version remain safe across delete/recreate/restore/failover.
+
+DO-NOT-REPEAT: AB105.101R receipt vs state; AB105.100R abort/cancel; AB105.099R prepare/commit; AB105.098R linearization; AB105.097R participant set; AB105.096R shared domain; AB105.095R inheritance; AB105.094R causal graph; AB105.093R compensation; AB105.092R finality; AB105.091R source conflict; AB105.090R recovery ordering; AB105.089R retention/reuse; AB105.088R identity; AB105.087R transitions; AB105.086R coverage; AB105.085R carrier; AB105.084R gap; AB105.083R admission; AB105.082R commitment; AB105.081R taxonomy; AB105.080R target-store search; AB105.079R persistence; local adapter idempotency; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
