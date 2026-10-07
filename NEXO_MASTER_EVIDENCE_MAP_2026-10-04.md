@@ -1516,3 +1516,42 @@ Exact recovery point: **AB105.086R → carrier outcome-coverage audit → all AB
 Next exact frontier: define the **claim transition rules** from request/admission/evidence to each outcome, including which transitions are forbidden (especially UNKNOWN→REJECTED, UNKNOWN→COMMITTED, and provider ACK→COMMITTED).
 
 DO-NOT-REPEAT: AB105.085R carrier definition; AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
+
+## 2026-10-07 — AB105.087R claim-transition audit: forbidden promotions and evidence-gated resolution
+
+🟢 The outcome-transition rules are now explicit.
+
+REQUESTED → ADMISSION_EVALUATED → ATTEMPTED → one of:
+REJECTED, COMMITTED, DUPLICATE_COMMITTED, STALE_FENCE, RESOURCE_REPLACED, COLLISION/QUARANTINE, UNKNOWN, PARTIAL.
+
+UNKNOWN may transition only through stronger authoritative evidence:
+- UNKNOWN → COMMITTED when the target later proves exact commitment.
+- UNKNOWN → DUPLICATE_COMMITTED when an authoritative existing record proves the exact operation/fingerprint.
+- UNKNOWN → REJECTED only when the target provides a guarantee of exact non-acceptance.
+- UNKNOWN → PARTIAL only when participant-level authoritative evidence establishes mixed outcomes.
+
+🟢 Explicitly forbidden:
+- client timeout → REJECTED
+- missing receipt → REJECTED
+- provider error without non-acceptance semantics → REJECTED
+- client ACK → COMMITTED
+- local journal entry → COMMITTED
+- verified postcondition → COMMITTED
+- retry success → proof that the first attempt did not commit
+- capability admission → COMMITTED
+- coordinator persistence → target commitment
+- one participant COMMITTED → aggregate multi-target COMMITTED
+
+🟢 Retry rule: an UNKNOWN operation cannot be blindly retried merely because no receipt was observed. Retry requires authoritative proof of non-acceptance or provider-native idempotent/duplicate semantics binding the retry to the same exact operation identity and fingerprint.
+
+🔵 Coordinator state and effect state remain separate until authoritative evidence binds them.
+
+🔵 REJECTED, STALE_FENCE, and RESOURCE_REPLACED are equivalent to no commitment only when the provider contract explicitly guarantees rejection before acceptance at that exact boundary. A generic error code is insufficient.
+
+🔴 No current runtime path enforces these transitions. This is a semantic state-machine contract, not an implementation claim.
+
+Exact recovery point: **AB105.087R → claim-transition audit → outcome promotion is evidence-gated; ambiguous states cannot be rewritten by absence, ACK, or local persistence.**
+
+Next exact frontier: audit retry/reconciliation identity across provider retention expiry, resource reincarnation, and payload changes.
+
+DO-NOT-REPEAT: AB105.086R outcome coverage; AB105.085R carrier; AB105.084R carrier gap; AB105.083R admission matrix; AB105.082R commitment matrix; AB105.081R taxonomy; AB105.080R store search; AB105.079R persistence; local idempotency/reconciliation; SQLite; Lúmina persistence; S9; Kafka/JMM/G0; TLC; AB105.117R.
