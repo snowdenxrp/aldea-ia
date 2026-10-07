@@ -278,3 +278,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Exception/catch cannot prove effect absence. Retry requires known absence or a valid idempotency/reconciliation contract.
 - Local durable transition still does not imply exactly-once external effect; provider capability/fencing/idempotency remains separate.
 - Exact next: trace the smallest local transaction candidate and identify which crash cuts it actually closes.
+
+
+## P112 smallest local transaction candidate V1 — 2026-10-07
+- Saved `P112_SMALLEST_LOCAL_TRANSACTION_CANDIDATE_V1_2026-10-07.md`, commit `aee531352304a5b94f0d7e118892fa67b4983761`.
+- Candidate boundary: Operation/Admission identity + authority/dependency provenance + prepared intent + deterministic local transition inputs + local state/history delta + durable commit marker/outcome.
+- Crash cuts: before durable PREPARED = NOT_COMMITTED; durable PREPARED before mutation = PREPARED/NOT_ATTEMPTED; mutation + durable commit = COMMITTED; mutation before durable commit = UNKNOWN unless true atomic storage/recovery proves otherwise; durable commit before response = COMMITTED after recovery.
+- Current JS in-memory mutation followed by filesystem persistence has no demonstrated atomic point joining mutation and durable commit; lock/temp/rename do not imply rollback or transaction semantics.
+- External effects remain a separate capability boundary.
+- Exact next: trace the actual lock/temp/rename/stateRevision primitive and determine which crash cuts it closes by contract.
