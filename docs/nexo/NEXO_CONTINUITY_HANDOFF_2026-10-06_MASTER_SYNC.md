@@ -61,6 +61,19 @@ If research continues, it must be genuinely distinct and downstream-aware:
 2. determine whether an R1 observation can be instrumented at the real local append boundary without introducing synchronization into W1→D1;
 3. if an experiment is justified, require the full acceptance chain: trigger/path → run → job → executed head/pin → raw artifact/log → semantic interpretation.
 
+
+## R1 semantic refinement — same evidence branch, no new runtime sample
+At the exact Kafka pin, the downstream R1 path is more precise than a generic "append":
+- `Partition.appendRecordsToLeader` calls `leaderLog.appendAsLeader` while holding the partition ISR read lock.
+- `UnifiedLog.appendAsLeader` enters the normal append path.
+- The append path performs validation/offset assignment, then enters the UnifiedLog log lock before the local-log mutation.
+- `LogSegment.append` performs the actual `FileRecords.append(records)` call and then updates in-memory/index state.
+- Therefore R1 can be defined as the real local-log append boundary, with the physical record append occurring inside the existing Kafka UnifiedLog lock.
+- This is still downstream of D1. It does not create or prove any retroactive W1→D1 publication.
+- Important distinction: this R1 boundary is an append-to-local-log event, not proof of an fsync/durable-on-disk flush or client response completion.
+
+This is a semantic refinement of the already-accepted D1→R1 branch, not a new experiment/run and must not be counted as independent evidence.
+
 ## Deduplication rule
 The ff0772 and e525e5 documents are NOT independent discoveries/runs. They are two source-level refinements of the same D1→R1 downstream branch. Count the underlying evidence once; retain the more precise semantic distinction in the master state. No new runtime evidence was produced by these commits.
 
