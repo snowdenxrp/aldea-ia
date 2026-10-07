@@ -3569,3 +3569,20 @@ Classification: **CI-to-exact-state admission/consumption linkage = UNKNOWN**. T
 Next mission P44: inspect any connector-visible workflow run/job metadata or workflow logs/artifacts that can establish the `GITHUB_SHA`/checkout SHA for a deterministic test run, and compare it against an exact `Actualizar estado de Lúmina` commit. If unavailable, preserve UNKNOWN.
 
 DO-NOT-REPEAT: P0–P43 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
+
+
+## 2026-10-07 — P45 — no repository-side SHA traceability for deterministic CI
+
+🟢 The deterministic workflow is confirmed as push-triggered on `main`, with `actions/checkout@v4`, Node 22, `npm install`, and `npm test`.
+
+🟢 Repository code search for `GITHUB_SHA` and `github.sha` returned no matches. There is no in-repository logging/artifact step that explicitly records the workflow's commit SHA.
+
+🔵 The workflow itself inherently checks out the triggering revision through `actions/checkout`, but the repository does not persist an auditable SHA/result certificate or artifact tying the test result to a specific `Actualizar estado de Lúmina` commit.
+
+🔴 Therefore P45 cannot establish exact CI-to-state identity or result consumption. This remains UNKNOWN, not a failure claim.
+
+Classification: **deterministic CI exact-SHA traceability = UNKNOWN / absent repository-side certificate**.
+
+Next mission P46: inspect workflow architecture for any other indirect certificate/consumption mechanism (job outputs, artifacts, comments, badges, status files, or downstream workflow dependency). If none exists, close the CI-linkage branch and move to the next independent recovery invariant.
+
+DO-NOT-REPEAT: P0–P45 closed; AB105.079R–AB105.116R closed; AB105.117R prohibited.
