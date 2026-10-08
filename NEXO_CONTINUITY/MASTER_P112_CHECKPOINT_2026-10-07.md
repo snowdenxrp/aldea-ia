@@ -406,3 +406,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - This strengthens the conclusion that the existing persistence primitive can be reused rather than duplicated; future protocol must still enforce writer cooperation.
 - Separate known issue: `loadState()` fallback provenance remains a distinct authority gate and must not be mistaken for authoritative current state.
 - Exact next: trace only the future protected-owner lifecycle: authoritative load → revision/provenance capture → isolated execution → final revalidation → existing conditional commit → conflict/reconciliation.
+
+
+## P112 final-revalidation → conditional-commit → reconciliation audit V1 — 2026-10-07
+- Saved `NEXO_CONTINUITY/P112_FINAL_REVALIDATION_CONDITIONAL_COMMIT_RECONCILIATION_AUDIT_V1_2026-10-07.md`, commit `8486015f7a8208494d3ea8ac5cb390b54300f9bd`.
+- Existing `persistState(expectedRevision)` is confirmed sufficient as the generic conditional snapshot-commit primitive; do not duplicate it.
+- Current code/tests do not demonstrate one production lifecycle combining authoritative provenance, protected admission/dependency closure, durable PREPARED, isolated execution, final commit-time revalidation, existing conditional commit, conflict classification, and reconciliation/replan.
+- `STATE_REVISION_CONFLICT` is only a stale canonical revision signal; it does not itself prove authority, dependency closure, resource/fence validity, durable PREPARED, external-effect absence, or safe reconciliation.
+- 🟢 Generic persistence primitive is closed. 🔵 Protected final-gate + conflict/reconciliation owner remains open. 🔴 No full atomicity/exactly-once/power-loss/dependency-coverage claim.
+- Exact next: audit the authoritative inputs required at final revalidation, map them against the isolated snapshot/provenance, then trace existing conflict callers to derive the minimum safe classification/reconciliation contract. No implementation.
+- DO-NOT-REPEAT: no second persistence wrapper; no executor merely to fill the caller; no TLC rerun; no AB104.185 primary; no AB105.117R.
