@@ -102,3 +102,35 @@ AB104.402 independently establishes the relevant architectural direction:
 Applied here, this means the new Core admission decision cannot let an ObservationEnvelope or provider proposal define its own eligibility/selection authority. The policy and required context must come from the protected semantic layer.
 
 This is a cross-check, not a new mechanism and not a reopening of AB research.
+
+
+## Cross-check — historical PG-009 admission research
+Historical PG-009 research provides a stronger candidate principle for the unresolved selection relation:
+- admission should be policy-driven by effect/claim characteristics, not model confidence;
+- increasing uncertainty, risk, blast radius, or loss of reversibility cannot silently increase autonomy;
+- missing/ambiguous risk dimensions cannot silently become LOW;
+- aggregate/global dependencies cannot be treated as independent when UNKNOWN;
+- policy must record required guarantees, supplied guarantees, residual uncertainty, and rationale/evidence.
+
+This is useful as an architectural constraint, but it does NOT justify importing the old PG-009 risk-profile machinery into STEP 7.
+
+## New distinction: eligibility vs bounded selection
+The evidence suggests two separate questions:
+1. **Eligibility:** does this candidate satisfy the claim-specific evidence/policy prerequisites required to be considered admissible?
+2. **Bounded selection:** when multiple eligible candidates compete for the fixed 8 slots, which policy-governed relation selects the admitted subset?
+
+The current repository provides stronger evidence for the first architectural separation than for the second concrete relation. Legacy severity ordering answers neither safely by itself.
+
+Therefore:
+- severity is not promoted to authoritative selection;
+- model confidence is not promoted;
+- observation equivalence is not promoted;
+- risk/effect characteristics may constrain future policy, but their concrete fields and authority for these mission findings are not yet established.
+
+## Result of this research pass
+The unresolved question is now narrower:
+**What protected semantic policy, with what authoritative candidate attributes, decides the bounded subset once candidates are eligible?**
+
+Current evidence does not establish that relation for the present producer findings without importing legacy semantics or inventing missing attributes.
+
+Status remains **PENDING**, not UNKNOWN-as-failure.
