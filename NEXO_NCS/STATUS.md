@@ -286,6 +286,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Resolved section contains only claim-required semantic facts/dependencies, not a universal frozen Policy/Conflict/Verifier snapshot, preserving future replaceability.
 - ⚠️ Next: adversarial schema test design before implementation. It must prove malformed/incomplete context cannot become authoritative admission input, while complete context still cannot bypass final validation/current authority. BUILD `5a2c10e6db9725ff582108798de534bdee73d6ca`.
 
+- 🟢 Adversarial policyContext matrix completed. Missing claim-critical identity/scope/facts/dependencies => UNKNOWN; explicit scope mismatch/hard expiry => FAIL when governed; dependency stale/unknown/incompatible => UNKNOWN; provider self-provenance => UNKNOWN; authority epoch change => REVALIDATE/UNKNOWN.
+- 🔴 Complete policyContext is only context-valid. It cannot produce ADMITTED, authority, SAFE_COMMIT or external-effect outcome. Admission still requires candidate/evidence/policy/selection/set semantics; authority remains independently checked.
+- 🟠 Validator must not become an implicit universal Policy engine. It validates contractual completeness/epistemic state; policy-specific semantics remain in governed contracts.
+- 🟢 No new top-level object or compatibility layer justified. Typed existing `ClaimEnvelope.policyContext` is now semantically constrained enough for implementation design.
+- ⚠️ Next: design the typed contract implementation and focused tests, but still no authority/admission/commit behavior. BUILD `f7ecfbc64bcd52382d61d521ae7ebe5380885a9c`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
