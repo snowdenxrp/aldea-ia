@@ -222,6 +222,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - ⚠️ Next action: determine whether MASTER/CORE contains an existing protected owner for cross-candidate comparability/selection. If not, keep STEP 7 PENDING rather than invent one.
 - Latest analysis commit: `2cc1458d52aa0990eb358838798dac3187ecd91d`.
 
+- 🟢 MASTER/CORE now identifies the protected owner previously missing: **Policy/Admission**. MASTER explicitly defines `Mission/Goal → Request/Effect Identity → Policy/Admission → Coordination/Fencing → Execution` and a versioned Policy Contract with owner/authority, scope, evidence, assumptions, failure conditions and dependencies.
+- 🔵 Therefore no new `SelectorAuthority` is needed. The semantic chain is: `Mission/Goal context + Claim/Observation evidence + applicable Policy Contract → eligibility/comparability/preference relation → bounded admission decision`.
+- 🟠 Owner question CLOSED. Exact relation remains PENDING because no applicable policy for the current heterogeneous observation classes has yet been demonstrated.
+- 🔴 Do not invent universal `priority`, scheduler authority, or a second selector authority. If applicable policy is absent, preserve UNKNOWN/PENDING.
+- Latest analysis commit: `750e267b3f1b3e292130507c848dc536bcf48f71`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
