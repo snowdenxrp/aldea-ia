@@ -531,3 +531,13 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Failure classes bounded: STALE_ADMISSION for known dependency/authority mismatch before effect; HOLD for missing/indeterminate required authority/provenance; UNKNOWN for possible physical effect without authoritative outcome; RECONCILE for known prior effect requiring lookup/idempotency/reconciliation. STATE_REVISION_CONFLICT is only STALE_COMMIT_CANDIDATE.
 - 🟢 Final-validator shape narrowed. 🔵 Dynamic dependency completeness and production reconciliation owner remain OPEN. 🔴 No runtime concurrency/JMM-HB/exactly-once/power-loss claim.
 - Exact next: compare claim-specific validation against whole-snapshot validation and determine what dependencies cannot safely be captured dynamically; use that to decide whether composite tokens offer a justified reduction or whether the isolated snapshot should remain the protected conflict domain.
+
+
+## P112 dynamic dependency vs whole-snapshot conflict domain V1 — 2026-10-07
+- Saved P112_DYNAMIC_DEPENDENCY_VS_WHOLE_SNAPSHOT_CONFLICT_DOMAIN_V1_2026-10-07.md, commit 7f9fd1f9fcd4f12e264250c8a344447c6625805e.
+- Dynamic/transitive dependencies make small composite-token completeness hard to prove: predicates/ranges, aggregates, helper/cache provenance, random evidence, external observations, policy/config/logic versions can all influence admission.
+- Static object-token capture is insufficient unless conservative closure is proven. Cache/helper-derived values retain authoritative-read provenance; unproven closure requires HOLD/REVALIDATE.
+- Whole-snapshot conditional commit has a broader conflict domain but currently the stronger demonstrated completeness argument for persisted repository state: snapshot changes that advance canonical revision conflict with the candidate.
+- Composite tokens remain a possible optimization/reduction, not a proven semantic replacement. They do not automatically cover non-snapshot external/RNG/policy provenance.
+- 🟢 Current evidence favors isolated snapshot + expectedRevision as conservative protected conflict domain for repository state. 🔵 Exact revision coverage of every snapshot writer and non-snapshot provenance remain OPEN. 🔴 No runtime race/JMM-HB/exactly-once/performance claim.
+- Exact next: audit which writers actually advance canonical stateRevision and whether every snapshot-changing writer participates; separately classify external/provider/RNG/policy dependencies outside stateRevision.
