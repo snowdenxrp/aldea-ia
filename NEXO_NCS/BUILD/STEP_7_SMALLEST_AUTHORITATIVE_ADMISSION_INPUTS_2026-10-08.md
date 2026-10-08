@@ -464,3 +464,32 @@ There is one remaining schema question: whether the typed `policyContext` should
 
 ### Status
 **PENDING — exact internal shape only.** The top-level boundary should not expand yet. The next attack is reference-vs-resolved-snapshot semantics, including when resolution occurs, what is retained as provenance, and how epoch/expiry changes invalidate a previously resolved context. No implementation yet.
+
+
+## Reference vs resolved snapshot attack — lifecycle/provenance
+Historical evidence breaks the tie: a live policy reference alone is unsafe for a protected decision because policy meaning, dependency versions, authority epoch and expiry can change after the reference is captured. Existing AB evidence explicitly requires an admission-time authorization snapshot or equivalent reconstructible history when current state cannot reconstruct historical validity; canonical rules require re-evaluation when authority epoch, policy/invariant version, dependency graph, trust root, target identity, freshness or provenance changes.
+
+A fully embedded snapshot alone has the opposite problem: it can become a detached copy with no authoritative provenance or current applicability anchor. It must not be treated as authority merely because it is immutable.
+
+### Minimum semantic shape
+The strongest current boundary is therefore **reference + resolved semantic snapshot**, but only as one ClaimEnvelope policy context, not as a new authority object:
+1. governed policy reference (identity/version/hash and applicable scope);
+2. resolved semantic facts required by the claim at the protected evaluation boundary;
+3. resolved dependency references/versions needed for semantic closure;
+4. authority epoch/currentness where the claim depends on authority;
+5. validity/expiry state at resolution;
+6. provenance identifying that Core resolved the context from protected sources.
+
+The snapshot is **evidence/context**, not authorization. Current authority must still be evaluated at the protected authority boundary. If any material dependency changes before a later protected transition, the prior context is stale and must be revalidated; it cannot silently remain current.
+
+### Why not live reference only?
+It makes the meaning of an already-evaluated claim time-dependent and risks validating one semantic policy while later execution interprets another. This is precisely the stale-cache/current-authority class already frozen in MASTER/AB.
+
+### Why not snapshot only?
+It preserves historical semantics but loses a necessary anchor to the governed policy/dependency source and can be replayed as if it were current authority. Snapshot-only therefore cannot establish current applicability.
+
+### Future-countereffect
+Keeping both reference and resolved context adds some representation, but it prevents two opposite architectural traps: live-reference semantic drift and unanchored snapshot authority. The duplication is semantic provenance, not a compatibility layer.
+
+### Conclusion
+The representation question is sufficiently constrained: **do not create a new top-level PolicyBinding; type `ClaimEnvelope.policyContext` as a protected reference-plus-resolution context.** Implementation remains pending until the exact fields and resolver boundary are attacked for authority leakage, dependency completeness and invalidation semantics.
