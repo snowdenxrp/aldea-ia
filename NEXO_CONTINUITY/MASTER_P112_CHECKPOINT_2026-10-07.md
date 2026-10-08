@@ -585,3 +585,15 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Status semantics are now separated: PREPARED is not proof of non-occurrence; COMPLETED is not external acceptance without verifying evidence; FAILED/BLOCKED/UNSUPPORTED do not by themselves prove external non-occurrence; UNKNOWN is explicit uncertainty but is not durably journaled by the current exception path.
 - 🟢 Restart preservation of PREPARED; 🟢 canonical snapshot conflict behavior; 🔵 durable terminal linkage; 🔵 ARCHIVED-vs-NEVER_SEEN semantics; 🔴 no atomic effect+journal+snapshot or exactly-once claim.
 - Exact next: trace remaining recovery/status producers and consumers and determine whether an existing record distinguishes evicted/archived evidence from NEVER_SEEN, and whether an existing outcome field can link effect evidence to canonical commit without inventing a new identity.
+
+## P112 recovery status / eviction semantics audit V1 — 2026-10-07
+- Saved `P112_RECOVERY_STATUS_CONSUMER_EVICTION_SEMANTICS_AUDIT_V1_2026-10-07.md`.
+- Commit: `60d4efbcbb97e743e8f8bf0bfb65e7bb583e58a7`.
+- No ARCHIVED/EVICTED/TOMBSTONE marker exists in the inspected effectJournal path.
+- `createLearningMemory()` retains only the last 200 effectJournal/execution entries; no archive pointer, high-water mark, or eviction marker.
+- After unresolved evidence is evicted, current `effect-adapter.executeFresh()` cannot distinguish old evidence evicted from operation never seen: both lack a matching entry and can proceed to a new PREPARED/handler path.
+- Mission reconstruction uses attempts, not effectJournal; execution-only does not become completion.
+- `recordNexoOutcome()` is a separate mission-outcome domain and does not restore missing external-effect evidence.
+- Runtime records execution/outcome in memory after adapter execution but does not itself persist the canonical simulation snapshot.
+- 🟢 conservative PREPARED/reconcile behavior and execution-only separation; 🔵 cross-artifact linkage; 🔴 no current EVICTED-vs-NEVER_SEEN distinction; 🔴 missing journal must not be interpreted as NOT_ATTEMPTED.
+- Exact next: inspect other Nexo memory/effect/persistence-envelope fields for any existing non-evictable identity/outcome marker before inventing architecture.
