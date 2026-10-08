@@ -120,6 +120,15 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - No identity/timestamp/queue/retry/tombstone mechanism is invented.
 - Next exact action: focused semantic test of this concrete predicate using only existing evidence. If the test requires fabricated missing dimensions, STOP and redesign the root observation contract.
 
+## STEP 7 equivalence implementation checkpoint — NEGATIVE_RESOURCE
+- 🟢 Claim-specific evaluator added: `src/nexo/core/observation-equivalence.mjs`, commit `3407146ef60b88a85fcecad687de0df3024ed1c8`.
+- 🟢 Semantics: NON_EQUIVALENT only when an observed claim-critical difference is established; UNKNOWN when required dimensions are missing; EQUIVALENT is reachable only when the evaluator has all required dimensions.
+- 🟢 Focused test corrected to use only currently available producer evidence: `tests/nexo/step-7-negative-resource-equivalence.test.mjs`, commit `8ee7172b3ff5cde0cfad272715b7e524889b73d5`.
+- 🟢 The test deliberately does NOT fabricate resource incarnation/version/freshness to force EQUIVALENT.
+- 🟢 Runtime workflow added: `.github/workflows/nexo-step-7-negative-resource-equivalence.yml`, commit `9bceda233326b3c0064f2486caf0ceef517fcd95`.
+- 🔵 Runtime PASS is not yet independently established in this checkpoint.
+- Next exact action: manually dispatch the focused workflow and record the result. If the test fails because the evaluator assumes evidence not present in the producer contract, STOP and revisit the root contract rather than patching.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
