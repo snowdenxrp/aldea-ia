@@ -1,0 +1,14 @@
+name: Nexo — STEP 7 negative-resource equivalence
+
+on:
+  workflow_dispatch:
+
+jobs:
+  negative-resource-equivalence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/nexo/step-7-negative-resource-equivalence.test.mjs
