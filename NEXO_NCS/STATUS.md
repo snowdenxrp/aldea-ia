@@ -358,3 +358,9 @@ This separation exists specifically to prevent historical research volume from b
 - 🟢 Adversarial attack closed in `NEXO_NCS/BUILD/STEP_7_PROTECTED_POLICY_CONTEXT_EVIDENCE_BOUNDARY_ATTACK_2026-10-08.md`, commit `73f2dfe59862425628c52aacb88eb0895dc343f7`.
 - Boundary survives provider self-attestation, policy-reference substitution, scope substitution, dependency laundering, temporal laundering, circular trust, TOCTOU, authority leakage, and future coupling attacks.
 - Next exact action: define the smallest contract representation for protected evidence establishment; do not implement the evaluator yet.
+
+## STEP 7 minimum protected evidence contract
+- 🟢 Candidate contract saved: `NEXO_NCS/BUILD/STEP_7_MINIMUM_PROTECTED_POLICY_CONTEXT_EVIDENCE_CONTRACT_2026-10-08.md`, commit `618b0b3b30f1157c5e67888a76d2e21f923ebab5`.
+- 🟢 Adversarial attack/refinement saved: `NEXO_NCS/BUILD/STEP_7_MINIMUM_PROTECTED_POLICY_CONTEXT_EVIDENCE_CONTRACT_ATTACK_2026-10-08.md`, commit `480d4e23e7686018a50a847e8549aa95de0a8eb2`.
+- Key refinement: no generic check.status field; evidence must be represented as governed facts/evidence so callers cannot inject pre-decided PASS/FAIL/UNKNOWN.
+- Next exact action: derive the smallest concrete evidence structure from this refinement, then attack it before implementation.
