@@ -63,6 +63,8 @@ assert.notEqual(candidateB.admission, "RETRIED");
 // UNKNOWN remains explicit when classification evidence is insufficient.
 const unknown = createMissionCandidate({ observation: observationA });
 assert.equal(unknown.admission, ADMISSION.UNKNOWN);
+assert.deepEqual(unknown.observation, observationA);
+assert.equal("authority" in unknown, false);
 
 // Candidate remains non-authoritative data; it has no authority/commit declaration.
 assert.equal("authority" in candidateA, false);
