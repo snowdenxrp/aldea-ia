@@ -147,6 +147,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Handoff test strengthened so UNKNOWN admission explicitly retains the complete ObservationEnvelope and exposes no authority, commit `0c75cd3d4aa84a0b5dd329e0b26b2b244f775550`.
 - The handoff is transport-only: observation evidence, claim proposal, admission state, and admission evidence remain separate; no legacy integration or new identity mechanism.
 
+- 🟢 Concrete NEGATIVE_RESOURCE handoff test added: `tests/nexo/step-7-negative-resource-handoff.test.mjs`, commit `00949f1a1bcd289413709a0e1deb64149e5fe056`.
+- 🟢 Test proves current producer evidence yields `EQUIVALENCE.UNKNOWN`, and the handoff preserves that as `MissionCandidate(admission=UNKNOWN)` without silently converting to ADMITTED or NOT_ADMITTED. Runtime checkpoint: `NEXO_NCS/BUILD/STEP_7_NEGATIVE_RESOURCE_HANDOFF_RUNTIME.md`, commit `ed59541f3133aa38bb56fbc085087f2feba9ef2b`.
+- Next: wire this focused contract into a manual-dispatch workflow only; no legacy orchestration integration and no producer-contract invention.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
