@@ -54,3 +54,15 @@ Proceed to the next construction step only after reading the current BUILD/STATU
 
 ## Do-not-repeat
 No V1–V20 code reuse as architecture. No AB105.117R. No historical TLC/Kafka rerun. No speculative transaction wrappers, run IDs, effect tombstones, deferred queues, compatibility layers, or external-effect machinery without a current construction contract requiring them.
+
+## Permanent evidence-integration rule
+Before defining or advancing any architectural construction boundary, use **MASTER + AB + P** together:
+- MASTER = what must be preserved.
+- AB = what was demonstrated, including failures and frozen distinctions.
+- P/P112 = research evidence, cross-checks and gaps that can change/constrain design.
+- NCS = translate only sufficiently supported conclusions into explicit contracts.
+
+If the three layers converge, the conclusion must be reflected in the new architecture. If they contradict, STOP and investigate; never hide the contradiction with a patch, assumption, compatibility layer or silent migration.
+
+Decision record: NEXO_NCS/DECISIONS/MASTER_AB_P_EVIDENCE_INTEGRATION_RULE_2026-10-08.md
+Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
