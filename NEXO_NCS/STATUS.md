@@ -188,6 +188,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Strongest recovered historical policy candidates are now exhausted without finding an already-authoritative selection relation for the fixed 8 mission slots.
 - 🔵 STEP 7 remains PENDING specifically for a new protected semantic bounded-selection relation. No implementation is authorized until that relation is explicitly defined from MASTER + AB + P research and checked for future countereffects.
 
+- 🔵 Recuperada una rama histórica más profunda de PG-009. Sus cadenas `MISSION/CONSTITUTION → GOAL → HAZARD/FAILURE → SAFETY OBJECTIVE → INVARIANT → ... → ADMISSION` y su análisis de conflictos sirven para derivar requisitos/eligibilidad y restricciones de seguridad, pero **no** definen por sí mismas un ranking de candidatos para los 8 slots.
+- 🔵 Nuevo criterio: bounded selection puede requerir una relación de **elegibilidad + orden parcial**, no necesariamente un score total. Si dos candidatos son conjuntamente elegibles pero incomparables bajo la política protegida, elegir uno arbitrariamente sería introducir una nueva política.
+- 🟠 Un scalar score sería fácil ahora, pero podría convertir restricciones de seguridad en pesos de optimización y crear un ranking API permanente para futuros proveedores.
+- 🔴 No se introduce score, priority ni ranking universal. STEP 7 continúa PENDING en la relación de selección protegida.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
