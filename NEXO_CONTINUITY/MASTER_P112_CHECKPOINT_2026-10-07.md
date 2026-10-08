@@ -755,3 +755,17 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - New rule: action+target is not a unique claim identity. Planner deduplication cannot be assumed safe until collision classes are semantically classified.
 - Status: 🟢 two-stage provenance compression established; 🟢 producer provenance is present at planner input; 🟢 exact dedupe key recovered; 🔵 semantic equivalence of duplicate findings remains OPEN; 🔵 minimum claim identity OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
 - Exact next: audit deduplication collision classes and determine when same action/target findings are equivalent versus independent claims, then feed that result into the final-gate/durable reconstruction analysis.
+
+
+## P112 dedup collision semantics audit V2 — 2026-10-07
+- Saved `P112_DEDUP_COLLISION_SEMANTICS_AUDIT_V2_2026-10-07.md`.
+- Commit: `d6aabbb61c52ea1108fe85bd6495421d91709fba`.
+- Important correction/advance: current single-run ordinary squad findings do NOT show widespread harmful deduplication. Visual cause codes map to distinct actions; explorer/routine target agents; ecosystem target resource; society/behavior are global target=null findings.
+- The proven issue is narrower: the dedupe key has no observation identity/freshness semantics, so repeated samples can collapse even when they are different causal observations.
+- Current collision classes: repeated EXPLORER_STALLED per agent; repeated ROUTINE_PHASE_MISSING per agent; repeated NEGATIVE_RESOURCE per resource type; repeated visual findings for the same cause/target; cross-run SOCIAL_DEPRIVATION and BEHAVIOR_IDLE_SAMPLE global collisions; repeated SPECIALIST_ERRORS meta-findings.
+- Because collectFindings() sorts severity descending before dedupe, collision resolution implicitly keeps the highest-severity finding and discards the others. This is an implicit severity-based claim-selection policy, not an explicit semantic equivalence proof.
+- NEGATIVE_RESOURCE is especially concrete: its causal `amount` is present in the finding but is not retained in the mission step after planning.
+- Global target=null findings are especially vulnerable across repeated reports because every same-code observation shares the same action/target key.
+- New rule: dedupe-key equality is implementation equality, not proof of claim equivalence. Safe equivalence requires causal claim dimensions (code, target/incarnation, producer, observation inputs, freshness, aggregate/predicate closure, and action payload where applicable) to be equivalent.
+- Status: 🟢 collision classes mapped; 🟢 severity winner behavior recovered; 🟢 V1 risk narrowed without overstating current corruption; 🔵 existing run/sample identity remains to be audited before inventing any new observation identity; 🔵 semantic equivalence protocol OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
+- Exact next: trace the report execution/run boundary and determine whether an existing run/sample identifier plus canonical state revision/time can already distinguish repeated observations, then map that identity into the minimum claim envelope/final validator.
