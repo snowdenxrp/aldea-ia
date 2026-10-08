@@ -133,6 +133,7 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Review found a semantic edge case in the evaluator: empty `derivedProvenance` must mean absence of causal evidence, not equivalence.
 - 🟢 Corrected evaluator commit: `561bb62287ef4fc7546f3889f5b8437b126fbd18`.
 - 🟢 Corrected focused test commit: `0e435bdec4db1c64c269f3d2e6d4c18a3a8211c4`.
+- 🟢 Test-output placement corrected: PASS is emitted only after every assertion, commit `f3021b6a556f0344b7ddaf27a49b9052518f0d3b`.
 - 🟢 Added source-difference non-equivalence coverage.
 - 🔵 Runtime PASS is still not claimed; workflow has not been independently observed in this checkpoint.
 - The architectural rule remains: missing causal evidence => UNKNOWN, never silently equivalent.
