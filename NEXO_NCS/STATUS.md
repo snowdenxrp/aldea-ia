@@ -155,6 +155,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - STEP 7 handoff boundary is now runtime-verified for the concrete NEGATIVE_RESOURCE case. This does not prove general admission policy, execution, external effects, or legacy integration.
 - Next exact action: inspect the smallest admission-policy boundary needed after the handoff, using only existing evidence; do not reopen 8-step semantics or invent identity/queue/retry mechanisms.
 
+- 🟢 Admission-policy boundary analyzed and frozen without inventing a policy: `NEXO_NCS/BUILD/STEP_7_ADMISSION_POLICY_BOUNDARY_2026-10-08.md`, commit `3e41e1e117e066d69dda8a7c5bc79b01e0d804e7`.
+- Key result: Observation/equivalence evidence does not itself determine ADMITTED or NOT_ADMITTED. Current Core safely carries an explicit admission state; it must not infer NOT_ADMITTED from UNKNOWN equivalence. For NEGATIVE_RESOURCE, current producer evidence leaves equivalence UNKNOWN.
+- Next exact action: define the smallest authoritative inputs for one bounded admission decision, or record the boundary as PENDING if repository evidence is insufficient. No legacy integration and no invented identity/queue/retry machinery.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
