@@ -304,6 +304,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Runtime verifies only the typed policyContext schema boundary/tests; it does not prove policy applicability, admission, authority, execution, commit, or external-effect outcomes.
 - Next exact action: adversarial semantic attack of the typed boundary before any resolver implementation: distinguish context-validity `VALID` from claim-validation `PASS`; ensure provenance/dependencies are evidence carriers, not self-authenticating authority; scope presence is not applicability proof; missing expiry cannot imply currentness; hash/version cannot imply authority.
 
+- 🟢 PolicyContext semantic attack closed: `NEXO_NCS/BUILD/STEP_7_POLICY_CONTEXT_SEMANTIC_ATTACK_2026-10-08.md`, commit `cc1aceba4149ae74d1b7635454e71531e8ce49fe`. No root contradiction found.
+- 🟢 Confirmed: context `VALID` is distinct from Claim validation `PASS`; provenance/dependencies are evidence carriers, not self-authenticating authority; scope presence is not applicability; missing expiry never implies currentness; policy hash/version never implies authority.
+- 🟠 Future-countereffect guard: do not turn the schema constructor into a provenance authenticator, universal dependency engine, applicability engine, expiry engine, or authority engine.
+- Next exact action: derive the smallest resolver contract for governed policy reference + required context → explicit context evidence/status, with no authorization, admission, commit, or external-effect capability.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
