@@ -352,3 +352,9 @@ This separation exists specifically to prevent historical research volume from b
 - Runtime PASS reported earlier remains only structural/execution evidence; it does not prove semantic resolver correctness.
 - STOP: do not patch with `trusted`, `authoritative`, `verified`, provider self-attestation, or equivalent flags.
 - Next exact action: derive the smallest authoritative evidence-input contract for the resolver, then redesign implementation from the root before continuing.
+
+## STEP 7 protected evidence boundary
+- 🟢 Corrected/saved `NEXO_NCS/BUILD/STEP_7_PROTECTED_POLICY_CONTEXT_EVIDENCE_BOUNDARY_2026-10-08.md`, commit `1c5a1eb86eee8ef763f62310a797f8d7a107ee24`.
+- 🟢 Adversarial attack closed in `NEXO_NCS/BUILD/STEP_7_PROTECTED_POLICY_CONTEXT_EVIDENCE_BOUNDARY_ATTACK_2026-10-08.md`, commit `73f2dfe59862425628c52aacb88eb0895dc343f7`.
+- Boundary survives provider self-attestation, policy-reference substitution, scope substitution, dependency laundering, temporal laundering, circular trust, TOCTOU, authority leakage, and future coupling attacks.
+- Next exact action: define the smallest contract representation for protected evidence establishment; do not implement the evaluator yet.
