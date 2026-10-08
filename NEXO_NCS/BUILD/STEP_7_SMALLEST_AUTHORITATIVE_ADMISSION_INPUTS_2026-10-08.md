@@ -309,3 +309,20 @@ A candidate can be individually eligible while a combination is inadmissible. Co
 A universal pairwise comparator would look simple but would force future mission classes into local ordering semantics and could miss set-level hazards. A universal set optimizer would be even worse: it would turn all mission semantics into one global optimization API. The safer architecture is **policy-scoped eligibility + policy-scoped pair/set constraints + bounded selection**, with unresolved relations remaining UNKNOWN/CONFLICT.
 
 This is now the strongest candidate semantic shape. Exact policy fields/relations are still not frozen, and no implementation is authorized.
+
+
+## Adversarial set cases — minimality of set-level constraints
+The proposed semantic shape was attacked with concrete abstract cases:
+
+- **A-B compatible, B-C compatible, A-C conflicting:** pairwise local preference/compatibility cannot be reduced to transitive safety. Set-level evaluation is required before admitting `{A,B,C}`.
+- **A and B individually eligible, shared exclusive resource:** individual eligibility does not imply joint admissibility. The resource/conflict domain must be evaluated at set level.
+- **A and B use distinct targets but share an UNKNOWN dependency:** distinct target IDs do not prove independence. Set admission remains UNKNOWN when required dependency completeness is missing.
+- **A and B both eligible, but A's policy scope excludes the combined effect with B:** the set is inadmissible even though each candidate passes individually.
+- **Two contradictory observations for the same protected claim:** contradiction is not a ranking signal. Without a prevalidated contradiction policy, the relevant candidate/set remains CONFLICT/UNKNOWN.
+- **Eight candidates form an admissible set, ninth is incomparable but harmless:** the fixed bound permits the first admissible eight only if their selection is policy-supported; the bound itself does not establish why those eight outrank the ninth.
+- **Nine candidates with multiple equally admissible 8-element sets and no policy distinction:** there is no justified unique selection. Returning an arbitrary eight would create hidden authority in enumeration order.
+
+### Minimality result
+The attack demonstrates that a set-level **compatibility/admissibility predicate** is genuinely necessary, but a universal optimizer is not. The Core contract should therefore expose the *semantic result* of policy evaluation, not a global optimization algorithm.
+
+The unresolved issue is narrower now: how a Policy Contract expresses the admissibility/compatibility predicate and any permitted preference relation without introducing a universal schema prematurely. The next step is to test whether existing Policy/Claim/Conflict contracts already provide enough vocabulary to express this, before adding any new contract fields.
