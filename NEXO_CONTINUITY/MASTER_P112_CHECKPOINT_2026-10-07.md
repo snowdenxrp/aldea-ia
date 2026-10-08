@@ -741,3 +741,17 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - LUMINA_ACTION remains non-live in the demonstrated production assistant path; no current production producer found.
 - Status: 🟢 claim-critical vs explanatory classification materially narrowed; 🟢 aggregate/meta provenance trap identified; 🔵 minimum durable claim envelope/schema OPEN; 🔵 producer trust/freshness semantics OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claims.
 - Exact next: trace actual `buildNexoMission/actionFor` mappings for ordinary classes against the isolated-snapshot final validator, then separately inspect any non-assistant LUMINA_ACTION producer path.
+
+
+## P112 mission claim compression / deduplication audit — 2026-10-07
+- Saved `P112_MISSION_CLAIM_COMPRESSION_DEDUPLICATION_AUDIT_V1_2026-10-07.md`.
+- Commit: `38f484befd208e2284811702cb712479330a837a`.
+- Major advance: found a second provenance-loss boundary **before** durable persistence. `collectFindings()` correctly injects producer `source`; live mission retains source/reason/priority/target and LUMINA_ACTION payload, but planner deduplication can erase distinct findings before execution.
+- Exact dedupe key is `action|target|finding.action.name`. It excludes finding.code, source, message, severity, evidence, freshness/sample boundary and observation identity.
+- Therefore two findings that map to the same action/target/action-name can collapse into one step even when their causal claims differ. This is a claim-compression boundary, not merely an execution optimization.
+- There are now two distinct provenance-loss stages: (1) finding → mission step, where deduplication/compression occurs; (2) live mission step → durable mission, where `recordNexoPlan()` drops source/reason/context/verification metadata.
+- Severity survives only as numeric `priority`; whether that is sufficient depends on policy semantics. Original severity is not automatically authoritative.
+- Mission summaries such as `evidenceCount: reports.length`, `observedAgentCount`, `uncertainty`, and memory array counts are summaries, not underlying claim evidence; notably evidenceCount is report count, not evidence-item count.
+- New rule: action+target is not a unique claim identity. Planner deduplication cannot be assumed safe until collision classes are semantically classified.
+- Status: 🟢 two-stage provenance compression established; 🟢 producer provenance is present at planner input; 🟢 exact dedupe key recovered; 🔵 semantic equivalence of duplicate findings remains OPEN; 🔵 minimum claim identity OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
+- Exact next: audit deduplication collision classes and determine when same action/target findings are equivalent versus independent claims, then feed that result into the final-gate/durable reconstruction analysis.
