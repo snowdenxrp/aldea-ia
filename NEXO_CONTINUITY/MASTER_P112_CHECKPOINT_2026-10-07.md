@@ -659,3 +659,17 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Main consequence: current P112 failure is primarily **isolation + final semantic validation + conditional commit**, not a proven existing external side-effect transaction failure.
 - Exact next: audit caller-level `applyState()` → isolated execution → `persistState(expectedRevision)` lifecycle for hidden live references, then classify stale candidate vs effect uncertainty; keep external-effect protocol as future extension.
 - Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
+
+
+## P112 snapshot alias / memory crossing audit V1 — 2026-10-07
+- Saved `P112_SNAPSHOT_ALIAS_MEMORY_CROSSING_AUDIT_V1_2026-10-07.md`.
+- Commit: `f7a4408a16b369d88f252c8d7c03731b11d7f2e8`.
+- 🟢 `applyState()` deep-clones world and agents.
+- 🔴 `applyState()` does not deep-clone `state.nexoMemory`; `createLearningMemory()` then shallow-copies its arrays, leaving entry objects shared.
+- 🔴 Effect-adapter terminal `persist()` mutates existing effectJournal entry objects in place, so a working candidate can mutate objects still referenced by the source `state.nexoMemory`.
+- 🔵 Runtime memory commit can preserve the same entry-object aliases because `createLearningMemory()` is shallow for entries.
+- 🔵 `state.events` is also shallow-copied by array slice; no inspected current path was shown mutating existing event objects, so this is lower-confidence latent alias.
+- Consequence: protected snapshot isolation must detach mutable Nexo memory/effectJournal (and any future mutable event records), not merely world/agents, before candidate execution.
+- This is a pre-commit isolation finding; it does not invalidate the existing `persistState(expectedRevision)` conditional commit primitive.
+- Exact next: audit complete mutable graph crossing `createSimulation()`, including non-plain random/provider references, and determine minimum detachment boundary before stale candidates can be safely discarded.
+- Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
