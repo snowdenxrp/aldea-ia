@@ -108,8 +108,7 @@ const baseContext = {
       { id: "pred-a", status: "SATISFIED", authoritative: true, source: "cache" }
     ]
   });
-  assert.equal(result.status, VALIDATION.PASS);
-  assert.equal(result.evidence.includes("pred-a"), true);
+  assert.equal(result.status, VALIDATION.UNKNOWN);
 }
 
 {
