@@ -173,6 +173,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 New conclusion: ObservationEnvelope/provider proposal cannot define its own admission authority. Required admission context/policy must originate from the protected semantic layer; missing required context remains UNKNOWN/HOLD/REVALIDATE rather than being treated as unconstrained.
 - 🔵 The exact candidate-selection relation under the fixed bound of 8 remains PENDING. Legacy severity ordering is evidence of existing behavior, not authorization for the new Core policy.
 
+- 🔵 PG-009 historical research cross-check completed for STEP 7. It supports a general constraint: admission must be policy-driven by claim/effect characteristics, not model confidence; uncertainty/risk/blast-radius/reversibility loss cannot silently increase autonomy. This research is not imported as machinery.
+- 🟢 The unresolved admission question is narrowed into two distinct relations: (1) **eligibility** — whether a candidate satisfies claim-specific evidence/policy prerequisites; (2) **bounded selection** — which eligible candidates occupy the fixed 8 slots when they compete.
+- 🔴 Legacy severity ordering, model confidence, observation equality, and legacy mission metadata are not authorized as the new-Core selection relation.
+- 🔵 Current evidence is stronger for the separation itself than for a concrete authoritative bounded-selection rule. No legitimate policy has been recovered without importing legacy semantics or inventing missing attributes.
+- Current STEP 7 status remains **PENDING** specifically for the authoritative bounded-selection relation; this is not failure and does not reopen the closed 8-step semantics.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
