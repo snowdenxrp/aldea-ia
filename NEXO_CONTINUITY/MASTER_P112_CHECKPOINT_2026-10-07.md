@@ -447,3 +447,16 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Institution actions add membership/commons predicates and balances to the protected dependency graph.
 - Conclusion: no single fixed DependencySet; use claim-specific transition record (Operation/Action identity, DependencySet/ReadSet, WriteSet, participant/resource identity, RNG evidence where relevant, policy/invariant version).
 - 🔵 Existing authoritative object version/incarnation mechanism is not yet established; exact next is audit actual existing version tokens for these branches, without adding another global revision primitive.
+
+## P112 existing version tokens × executeAction branch cross-check — 2026-10-07
+- Saved `P112_EXISTING_VERSION_TOKENS_BRANCH_CROSSCHECK_V1_2026-10-07.md`.
+- Commit: `1be7f0c4fc0dc914afc74b681a433295ee4a7d39`.
+- Read-back blob SHA: `31f328b24182657d73c0e858cd6dcab0268fa08d`.
+- This is additive and does not repeat the earlier existing-version-token audit.
+- Cross-check of the actual executeAction branches found no overlooked branch-local semantic revision/incarnation token for resources, inventory, needs, tools, fertile land, structures, trade participants, relationships, economy aggregates, institutions/commons, or partner incarnation.
+- `stateRevision` remains only the canonical persistence conflict token; `nexoEffectRevision` remains an in-memory local execution counter; spatial version-like fields remain incomplete without demonstrated writer coverage.
+- `catch_fish` still has outcome-defining RNG inside mutation with no bound evidence token.
+- Conclusion: no existing token can safely replace claim-specific dependency capture/final revalidation; do not invent a global revision.
+- Status: 🟢 no overlooked branch-local semantic token found; 🔵 complete dependency coverage and exact minimal partition remain OPEN; 🔴 no atomicity/exactly-once claim.
+- Exact next: trace the first common authoritative mutation boundaries for resource/day/ecosystem, inventory/needs, relationships, economy aggregates, and spatial normalization/range writers; determine whether any existing version-like field can acquire complete writer coverage without a new global revision.
+- DO-NOT-REPEAT: do not repeat the existing-version-token audit; no persistence-primitive re-search; no TLC rerun; no AB104.185 primary; no AB105.117R; no implementation.
