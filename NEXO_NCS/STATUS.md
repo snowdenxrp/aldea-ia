@@ -529,3 +529,12 @@ This separation exists specifically to prevent historical research volume from b
 - This is a recommendation for architectural review, not a root/channel/vendor selection. No implementation or activation authorized.
 - Existing unresolved blockers remain: independently legitimate genesis trust basis, exact confirmation/verifier/UI contract, revocation/offline/recovery/portability, adversarial review, and complete MASTER + AB + P/P112 evidence reconciliation.
 - **Next exact action:** recover/map canonical P/P112 evidence relevant to human binding, credential lifecycle, revocation, recovery and dependency closure; then derive and attack the minimum action-bound confirmation contract before any implementation.
+
+
+## 2026-10-08 — Action-bound confirmation contract attacked
+- 🟢 Candidate saved and re-fetched/verified: `NEXO_NCS/BUILD/STEP_7_MINIMUM_ACTION_BOUND_CONFIRMATION_CONTRACT_CANDIDATE_2026-10-08.md`; commit `bb806070e3e91c277992fce851adf40500364b3c`.
+- 🟢 Adversarial review saved and re-fetched/verified: `NEXO_NCS/BUILD/STEP_7_ACTION_BOUND_CONFIRMATION_CONTRACT_ADVERSARIAL_REVIEW_2026-10-08.md`; commit `c78c7991596f0abb58401bb754c3d2c0f9d11be6`.
+- Review result: candidate NOT ACCEPTED / implementation blocked. Attacks found root gaps in canonical transaction semantics, trusted presentation/common-mode compromise, atomic confirmation consumption and concurrency, effect-boundary currentness/revocation guarantees, lost-root recovery legitimacy, consent/coercion limits, provider effect evidence, claim-specific dependency closure, fallback assurance and state-transition guards.
+- P/P112 retrieval this pass found the existing NCS “smallest authoritative admission inputs” note and AB109 audit, but did not find dedicated P/P112 human-confirmation protocol evidence. This is a retrieval limitation, not proof no such evidence exists. Dependency-closure findings are relevant cross-checks only, not a confirmation protocol.
+- Genesis/Constitution root legitimacy, succession and recovery authority remain unresolved. The confirmation design cannot establish its own root. STEP 7 future-countereffects gate remains closed; no implementation authorized.
+- **Next exact action:** define a bounded transaction-canonicalization/effect-boundary sub-contract only with explicit root/currentness assumptions, then adversarially review it. If the contract cannot state who authorizes canonical meaning or enforces current authority, STOP and return to root/commissioning design rather than patching around the gap.
