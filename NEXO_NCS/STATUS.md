@@ -70,7 +70,7 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 ## STEP 7 — mission / observation provenance boundary
 - Design contract: `NEXO_NCS/BUILD/STEP_7_MISSION_OBSERVATION_PROVENANCE_BOUNDARY_2026-10-08.md`
 - Design commit: 78f8672a40f756d7e9acd2708092003dde6a4715
-- Status: DESIGN EVIDENCE CLOSED — implementation not started.
+- Status: DESIGN EVIDENCE CLOSED; MINIMUM CONTRACT IMPLEMENTED; BASE RUNTIME TEST REPORTED PASS.
 - Basis: MASTER/final distillation + frozen AB evidence + P/P112 evidence + repository mapping.
 - Evidence mapping: NEXO_NCS/BUILD/STEP_7_EVIDENCE_MAPPING_2026-10-08.md
 - Decision: NEXO_NCS/DECISIONS/STEP_7_OBSERVATION_CLAIM_SEPARATION_2026-10-08.md
@@ -84,17 +84,14 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - Evidence basis: MASTER + frozen AB + P/P112 + actual producer shapes.
 - Decision: ObservationEnvelope is producer-side evidence; MissionCandidate transports it through planning; existing ClaimEnvelope remains the protected claim boundary.
 - No observation ID is invented. Missing claim-critical provenance remains explicit and claim-specific UNKNOWN/INVALID classification is not guessed globally.
-- Next exact action: implement the smallest loss-preserving ObservationEnvelope/MissionCandidate contract and focused tests from actual producer shapes. Do not integrate legacy yet.
-- STEP 7 must STOP if implementation requires an invented mechanism merely to make the boundary pass.
-
+- STEP 7 STOP condition: if implementation requires an invented mechanism merely to make the boundary pass, stop and redesign the semantic contract.
 
 ### STEP 7 implementation checkpoint — 2026-10-08
-- 🟢 Minimum ObservationEnvelope/MissionCandidate contract implemented in `src/nexo/core/observation.mjs` (commit `f43f65b5a6937f86a9c0d2584f9e7764b3b73aba`).
-- 🟢 Focused contract tests added in `tests/nexo/observation.test.mjs` (commit `30895aa6ea98f7d513ba8b164d1a38e9229a3608`).
-- 🟢 Manual-dispatch workflow added at `.github/workflows/nexo-step-7-observation-contract.yml` (commit `e955745dd8fb44936a1c8caa04f69243abda5182`).
-- 🔵 Runtime verification remains PENDING because this connector cannot dispatch workflow_dispatch runs; user must manually run the workflow in GitHub.
-- 🔵 Actual producer inspection confirms current findings are small diagnostic objects; producer source is available, but claim-critical causal identity/freshness is not universally present.
-- 🔴 First manual runtime attempt failed in the test harness at the immutability assertion: the test mutated the original input object instead of the detached/frozen ObservationEnvelope clone. This does not establish an implementation/contract failure.
-- 🟢 Harness assertion corrected in `tests/nexo/observation.test.mjs` (commit `baeac44f9b0e0d35d356c3235a957c0bdcd308ad`).
-- 🔵 Runtime verification remains PENDING; rerun the same workflow after this test-only correction. Do not claim STEP 7 runtime PASS until the workflow itself passes.
-- Next exact action: rerun the STEP 7 workflow, inspect the result, then after PASS continue with focused semantic tests for causal-distinct findings and the action/target dedupe boundary. No legacy integration, no invented observation IDs, queues, retries, tombstones, or external-effect machinery.
+- 🟢 Minimum ObservationEnvelope/MissionCandidate contract: `src/nexo/core/observation.mjs`, commit `f43f65b5a6937f86a9c0d2584f9e7764b3b73aba`.
+- 🟢 Focused base tests: `tests/nexo/observation.test.mjs`.
+- 🟢 Manual-dispatch workflow: `.github/workflows/nexo-step-7-observation-contract.yml`.
+- 🟢 Test-harness immutability assertion corrected in commit `baeac44f9b0e0d35d356c3235a957c0bdcd308ad`.
+- 🟢 User manually reran the workflow after the correction and reported PASS.
+- 🟢 Runtime proof recorded: `NEXO_NCS/PROOF/STEP_7_RUNTIME_VERIFICATION_2026-10-08.md`, commit `b70ca05680ea449509b92be415af92a46c2d266f`.
+- 🔵 The GitHub connector cannot independently retrieve the manual workflow_dispatch run in this session; no run/job ID is invented.
+- Next exact action: add focused semantic tests for causal-distinct findings, provenance preservation, explicit NOT_ADMITTED semantics, and the action/target dedupe boundary. Then manually run the focused workflow. No legacy integration, no invented observation IDs, queues, retries, tombstones, or external-effect machinery.
