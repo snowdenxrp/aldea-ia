@@ -1,0 +1,14 @@
+name: Nexo — STEP 7 semantic provenance
+
+on:
+  workflow_dispatch:
+
+jobs:
+  semantic-provenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/nexo/step-7-provenance.test.mjs
