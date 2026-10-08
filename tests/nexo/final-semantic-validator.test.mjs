@@ -139,6 +139,27 @@ const baseContext = {
 }
 
 {
+  const result = validator.validate(candidate({claim: {policyContext: {policyVersion: 2}}},), {
+    ...baseContext,
+    policyContext: {policyVersion: 2}
+  });
+  assert.equal(result.status, VALIDATION.PASS);
+}
+
+{
+  const result = validator.validate(candidate({claim: {policyContext: {policyVersion: 2}}},), {
+    ...baseContext,
+    policyContext: {policyVersion: 3}
+  });
+  assert.equal(result.status, VALIDATION.FAIL);
+}
+
+{
+  const result = validator.validate(candidate({claim: {policyContext: {policyVersion: 2}}},), baseContext);
+  assert.equal(result.status, VALIDATION.UNKNOWN);
+}
+
+{
   const result = validator.validate(candidate(), {
     ...baseContext,
     claimId: "different-claim"
