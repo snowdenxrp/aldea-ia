@@ -210,6 +210,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - ⚠️ This narrows the design space substantially but is not yet enough to define the concrete relation for current heterogeneous findings. STEP 7 remains PENDING until the candidate contract is reconciled against MASTER + AB + P and can produce a non-arbitrary relation.
 - Latest BUILD analysis commit: `494f1b8dcf544b4e91d7d2ea2245b88213299dde`.
 
+- 🟢 MASTER/AB cross-check now supports a **partial-order candidate** for bounded selection: eligibility first; then only policy-defined preference/precedence; incomparable/conflicting candidates are not arbitrarily ordered.
+- 🔵 If >8 candidates are mutually incomparable/conflicting and filling all 8 would require an invented winner rule, selection must preserve UNKNOWN/CONFLICT rather than use input order, timestamp, score, severity, provider order, or model confidence.
+- 🟠 This avoids a universal ranking API and preserves evolution/replaceability, but exact policy ownership and the concrete preference relation remain unresolved.
+- ⚠️ No implementation yet. Next proof obligation: test this candidate relation against heterogeneous producer classes and future-countereffect scenarios before freezing the selector contract.
+- Latest analysis commit: `37263749af50cb39c148f8db6b5446f2ffec2c0`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
