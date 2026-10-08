@@ -245,6 +245,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Pair-vs-set semantic question is CLOSED. Remaining exact task: derive the minimum protected Policy/Admission contract representation from existing MASTER/CORE vocabulary, then attack that representation before implementation.
 - Latest analysis commit: `6fa90cf931db10ebe065c248161febe89f3af984`.
 
+- 🟢 Derivamos el mínimo semántico de Policy/Admission sin crear un SelectorAuthority: applicability/version/scope + candidate evidence + required-context rules + claim/policy-specific pair/set interaction semantics + explicit preference only when governed + set-admissibility result + fixed bound 8 + explicit decision/evidence.
+- 🔵 La Policy Contract no necesita convertirse en un contenedor monolítico de algoritmos: puede enlazar semánticas versionadas de Claim/Conflict/Composite/Higher-Order. Esto preserva replaceability.
+- 🟠 Future-countereffect: policy-id sin binding semántico sería demasiado débil; Policy Contract monolítica sería demasiado acoplada. Mínimo robusto = binding protegido a semánticas requeridas, no universal selector.
+- ⚠️ Schema sufficiency sigue PENDING: falta atacar la representación machine-readable/binding exacta antes de implementación.
+- Latest analysis commit: `44c27ae33d9ede483f02a2dde2f807a490cbfc5e`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
