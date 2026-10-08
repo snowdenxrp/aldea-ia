@@ -173,3 +173,16 @@ Therefore PG-009 contributes constraints, not the missing selection algorithm. I
 
 ### Research conclusion
 We have now exhausted the strongest recovered candidates without finding an already-authoritative policy that fits the present STEP 7 boundary. The remaining gap is genuinely architectural: define the protected semantic relation for selecting among eligible mission candidates, with explicit scope and future replaceability, rather than borrowing an unrelated effect-admission policy.
+
+
+## Deeper branch cross-check — policy derivation is not candidate ranking
+A broader historical branch was recovered in PG-009: protected decisions are derived through semantic chains such as `MISSION/CONSTITUTION -> GOAL -> HAZARD/FAILURE -> SAFETY OBJECTIVE -> INVARIANT -> ... -> ADMISSION`, and critical aggregate admission evaluates conflict domains, shared resources, dependencies, common-mode domains, cumulative exposure and global invariants.
+
+This branch is relevant, but it does not reveal a ready-made ranking relation for STEP 7. It clarifies the architecture boundary:
+- protected policy can determine **requirements/eligibility and safety constraints**;
+- conflict/risk analysis can constrain which combinations are jointly admissible;
+- none of that automatically defines a total order saying “candidate A occupies slot 1, candidate B slot 2”.
+
+Therefore a future bounded-selection policy may need a **partial-order / eligibility-plus-selection** model rather than a universal scalar priority. If several candidates are jointly eligible and incomparable under protected policy, silently forcing a winner would itself be a new policy decision and must be governed explicitly.
+
+Future-countereffect check: a scalar score would be easy to implement now, but risks hiding incomparable claims, turning safety constraints into optimization weights, and creating a permanent provider-facing ranking API. No score/ranking field is introduced.
