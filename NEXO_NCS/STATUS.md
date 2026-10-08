@@ -66,3 +66,13 @@ If the three layers converge, the conclusion must be reflected in the new archit
 
 Decision record: NEXO_NCS/DECISIONS/MASTER_AB_P_EVIDENCE_INTEGRATION_RULE_2026-10-08.md
 Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
+
+## STEP 7 — mission / observation provenance boundary
+- Design contract: `NEXO_NCS/BUILD/STEP_7_MISSION_OBSERVATION_PROVENANCE_BOUNDARY_2026-10-08.md`
+- Design commit: 78f8672a40f756d7e9acd2708092003dde6a4715
+- Status: DESIGN READY — implementation not started.
+- Basis: MASTER/final distillation + frozen AB evidence + P/P112 evidence.
+- Scope: preserve claim-critical observation provenance through mission planning, define explicit NOT_ADMITTED semantics, prevent coarse dedupe from silently collapsing distinct causal observations, and keep mission/provider authority separate from protected-transition safety.
+- Explicitly NOT introduced: observation/run IDs, deferred queues, retries, tombstones, transaction wrappers, external-effect machinery, legacy compatibility layers.
+- Next exact action: recover existing observation/run/sample identity candidates from current code/tests, map the minimum provenance envelope to ClaimEnvelope, then determine the smallest implementation contract.
+- STEP 7 must STOP if implementation requires an invented mechanism merely to make the boundary pass.
