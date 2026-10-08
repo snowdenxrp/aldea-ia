@@ -275,6 +275,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Keeping both reference and resolution context is semantic provenance, not a compatibility layer; it prevents both live-reference drift and unanchored-snapshot authority.
 - ⚠️ Next exact attack: exact fields + resolver boundary, specifically authority leakage, dependency completeness and invalidation. No implementation yet. BUILD `7607ede0d893b9aafb99f6453939b46f031e2be8`.
 
+- 🟢 Exact field boundary closed: `policyContext` carries policy semantics/context (governed reference, applicable scope, resolved relied-upon semantics, required dependency refs/versions/status, validity/expiry, Core resolution provenance).
+- 🔴 Authority grant/release, STOP/revocation enforcement, execution permission, commit outcome and external-effect outcome remain outside `policyContext`; `authority_epoch` may be a dependency/currentness fact but does not turn Policy context into AuthorityContext.
+- 🟢 Resolver is evidence/context resolver only: resolve governed refs, verify version/hash/scope/expiry/dependencies, report PASS/FAIL/UNKNOWN, return provenance. It cannot authorize, commit, SAFE_COMMIT, suppress STOP/revocation, or resolve external effects.
+- 🟠 TOCTOU remains explicit: resolver output is not durable authorization; material changes require final revalidation. Dependency expansion must be explicitly governed; unresolved/UNKNOWN dependency => UNKNOWN.
+- ⚠️ Next exact step: minimize concrete field schema and attack missing/UNKNOWN/expiry/epoch/dependency cases before implementation. BUILD `464431c61745936b18a1a7d591ce600cdce2d66e`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
