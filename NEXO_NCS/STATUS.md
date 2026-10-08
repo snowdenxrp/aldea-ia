@@ -183,6 +183,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Future-risk conclusion: a generic priority field would become a hidden global scheduler/compatibility constraint; future providers and agents would be forced into legacy ranking semantics.
 - 🔵 STEP 7 admission-selection document updated in commit `b2b867e904b3fc14b5ec7855c67af146a35c5a57`.
 
+- 🟢 PG-009 risk-aware effect-admission policy was cross-checked. It supplies useful constraints (scheduler priority does not increase authority; uncertainty/risk cannot silently increase autonomy) but does **not** fit STEP 7 as the bounded mission-candidate selection relation: its scope is consequential effect admission and it requires attributes not established by current observation producers. Historical PG-009 artifacts are also marked NOT TLC-VERIFIED.
+- 🔴 Do not import PG-009 effect-risk machinery into STEP 7 merely to fill the selection gap; that would couple observation admission to external-effect governance prematurely.
+- 🟢 Strongest recovered historical policy candidates are now exhausted without finding an already-authoritative selection relation for the fixed 8 mission slots.
+- 🔵 STEP 7 remains PENDING specifically for a new protected semantic bounded-selection relation. No implementation is authorized until that relation is explicitly defined from MASTER + AB + P research and checked for future countereffects.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
