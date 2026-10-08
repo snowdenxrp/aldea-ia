@@ -453,3 +453,11 @@ This separation exists specifically to prevent historical research volume from b
 - Defines a narrow initial commissioning binding, exact Constitution/version/context binding, independent trust-basis prerequisite, and `ESTABLISHED|INVALID|UNKNOWN` semantics. It does not grant operation authority or authorize amendment, recovery, migration, credential replacement, delegation, or succession.
 - This is a design candidate only. Independent genesis basis and deployment threat model remain unresolved; no trust-root implementation or activation is authorized.
 - Next: adversarially attack this contract specifically for circular bootstrap, fabricated commissioning, replay/substitution, stale/revoked evidence, loss/offline recovery, conflicting successors, and false enforcement claims. Do not repeat closed probes absent a materially new risk.
+
+
+## 2026-10-08 — Commissioning binding contract adversarial review
+- Created and re-fetched/verified `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_BINDING_CONTRACT_ADVERSARIAL_REVIEW_2026-10-08.md`.
+- Commit: `846a523f0f6700579987a372c72893117b158bcb`; blob: `fa0dc92f7c101db667c077c4959b6478b6ae788f`.
+- Core fail-closed semantics survived this design-level attack pass: fabricated model approval, circular self-bootstrap, signature/hash/attestation-as-legitimacy, context replay/substitution, implicit consent, recovery self-promotion, conflicting successors, hardware-integrity-as-legitimacy, and unsupported global-enforcement claims do not yield positive activation.
+- This is not formal verification or runtime evidence. Open blockers: independently recognized genesis basis, threat model/common-mode dependencies, canonical evidence/context representation, offline currentness/revocation, and separate lifecycle transition contracts.
+- Next: reconcile those unresolved points against existing Master, preservation addendum, trust-foundation research, and commissioning/succession decisions. Reuse existing conclusions; do not create duplicate research. No implementation/activation until the genesis legitimacy basis is independently established.
