@@ -641,3 +641,21 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Current research preference: when complete semantic dependency coverage cannot be proven, whole-snapshot expectedRevision is the conservative conflict domain for canonical persisted state.
 - Exact next: classify current Lumina handlers by mutation timing: candidate-local state preparation versus irreversible/external effect. Determine which can safely occur before final commit and which require a durable PREPARED/final decision boundary.
 - Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
+
+
+## P112 action mutation / irreversibility audit V1 — 2026-10-07
+- Saved `P112_ACTION_MUTATION_IRREVERSIBILITY_SNAPSHOT_CANDIDATE_AUDIT_V1_2026-10-07.md`.
+- Commit: `59d7d426428b2d589e7b4fd40dbde28b59f95f95`.
+- Direct source inspection of concrete Lumina handlers shows no explicit network, filesystem, remote-provider, payment, or device I/O in the inspected action paths.
+- 🟢 Current Lumina handlers are therefore structurally **local candidate-state transitions** when executed over an isolated simulation snapshot.
+- 🔴 They are not safe on a canonical/live object: handlers mutate supplied state before `persistState(expectedRevision)` can reject stale revision; persistence cannot undo a mutation already applied to the live object.
+- 🟢 Resource/need, build/farm/production, trade, institution, collective, exploration/discovery and social/knowledge effects all remain local snapshot mutations in the inspected implementation.
+- 🔵 Random selection, aggregate/predicate reads, relationships, spatial normalization, knowledge/memory and technology remain claim dependencies even when mutation is local.
+- 🟢 Trade has no external payment effect in inspected code; it mutates both participants + money/inventory + relationship/economy history inside the simulation snapshot.
+- 🟢 Collective actions mutate project/structure/inventory/relationship/event/memory state inside the snapshot.
+- 🟢 Exploration/discovery mutates spatial/discovery/knowledge/memory state; `normalizeSpatialWorld()` is mutation-capable and must not be treated as pure observation.
+- 🔵 Generic effect-adapter UNKNOWN handling remains necessary as an abstraction; it must not be weakened solely because current Lumina handlers appear local.
+- 🔵 If future handlers add external/provider/device/filesystem effects, those leave the local-candidate class and require explicit durable intent/effect identity/outcome/reconciliation.
+- Main consequence: current P112 failure is primarily **isolation + final semantic validation + conditional commit**, not a proven existing external side-effect transaction failure.
+- Exact next: audit caller-level `applyState()` → isolated execution → `persistState(expectedRevision)` lifecycle for hidden live references, then classify stale candidate vs effect uncertainty; keep external-effect protocol as future extension.
+- Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
