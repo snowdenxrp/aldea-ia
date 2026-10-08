@@ -376,3 +376,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Remaining gaps: random source binding (`simulation.random` or Math.random fallback), mutating normalization/derived helpers, shared day writers, external observations, and exhaustive future-handler coverage.
 - Therefore snapshot/conditional-commit remains the strongest current candidate, but this is structural compatibility, not atomicity or complete dependency proof.
 - Exact next: trace `executeLuminaNexoStep`/adapter/runtime against an isolated simulation and determine how mission/effect journal semantics and canonical final revalidation would cross the snapshot boundary.
+
+
+## P112 runtime-adapter snapshot crossing audit V1 — 2026-10-07
+- `executeLuminaNexoStep` builds the concrete adapter directly over its supplied `simulation`; handlers and postconditions close over that same object.
+- Therefore an isolated working simulation can structurally carry the entire concrete effect execution without an inherent canonical-singleton bypass.
+- Runtime mission/effect memory also follows `memory ?? simulation.nexoMemory`; a working snapshot can therefore carry its own cloned `nexoMemory`, effectJournal, mission execution and outcome before conditional canonical commit.
+- The actual missing protocol is outside this crossing: durable PREPARED, final canonical revalidation, conditional commit, and crash/reconciliation classification are not performed by runtime/adapter today.
+- `nexoEffectRevision` remains RAM-only and cannot replace canonical revision/dependency validation.
+- Strong narrowing: snapshot crossing is not the blocker; the missing canonical final-commit owner is.
+- Exact next: determine whether existing `persistState(expectedRevision)` can serve as final commit for a fully isolated working snapshot or requires a narrower transaction wrapper, without mutating canonical state first.
