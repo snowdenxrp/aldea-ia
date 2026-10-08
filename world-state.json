@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "stateRevision": 2317,
-  "savedAt": 1791491012710,
+  "stateRevision": 2319,
+  "savedAt": 1791492165642,
   "day": 681,
-  "hour": 12.342773333563114,
+  "hour": 12.359386666896448,
   "world": {
     "day": 681,
-    "timeOfDay": 12.342773333563114,
+    "timeOfDay": 12.359386666896448,
     "speed": 1,
     "resources": {
       "water": {
@@ -29642,7 +29642,7 @@
         },
         "4:0": {
           "key": "4:0",
-          "visits": 21916,
+          "visits": 21918,
           "discovered": true,
           "lastVisitDay": 681,
           "population": 1,
@@ -29768,7 +29768,7 @@
         },
         "6:2": {
           "key": "6:2",
-          "visits": 10927,
+          "visits": 10929,
           "discovered": true,
           "lastVisitDay": 681,
           "population": 1,
@@ -30810,8 +30810,8 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 59.59603199999426,
-        "thirst": 39.09725866667075,
+        "hunger": 59.55948266666093,
+        "thirst": 39.04409600000408,
         "energy": 100,
         "social": 0,
         "safety": 100,
@@ -70808,8 +70808,8 @@
         ],
         "currentActivity": "resting",
         "needs": {
-          "hunger": 59.59603199999426,
-          "thirst": 39.09725866667075,
+          "hunger": 59.55948266666093,
+          "thirst": 39.04409600000408,
           "energy": 100,
           "social": 0,
           "safety": 100,
@@ -73212,6 +73212,8 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -73224,8 +73226,8 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 59.59603199999426,
-        "thirst": 39.09725866667075,
+        "hunger": 59.55948266666093,
+        "thirst": 39.04409600000408,
         "energy": 100,
         "social": 0,
         "safety": 100,
@@ -114797,8 +114799,8 @@
         ],
         "currentActivity": "resting",
         "needs": {
-          "hunger": 59.59603199999426,
-          "thirst": 39.09725866667075,
+          "hunger": 59.55948266666093,
+          "thirst": 39.04409600000408,
           "energy": 100,
           "social": 0,
           "safety": 100,
@@ -117288,6 +117290,8 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -117299,46 +117303,6 @@
     {
       "id": "event-501",
       "day": 681,
-      "hour": 10.388000000229797,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 681,
-      "hour": 10.388000000229797,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 681,
-      "hour": 10.39637333356313,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 681,
-      "hour": 10.39637333356313,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 681,
       "hour": 10.40637333356313,
       "type": "action",
       "description": "Alex descansó.",
@@ -122290,6 +122254,46 @@
       "id": "event-502",
       "day": 681,
       "hour": 12.342773333563114,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 681,
+      "hour": 12.352773333563114,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 681,
+      "hour": 12.352773333563114,
+      "type": "action",
+      "description": "Bruno descansó.",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 681,
+      "hour": 12.359386666896448,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 681,
+      "hour": 12.359386666896448,
       "type": "action",
       "description": "Bruno descansó.",
       "participants": [
@@ -122304,38 +122308,6 @@
     "patterns": [],
     "nexo": {
       "missions": [
-        {
-          "missionId": "lumina-1791487559243-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_behavior_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_behavior_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            },
-            {
-              "id": "step-2",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            },
-            {
-              "id": "step-3",
-              "action": "inspect_and_collect_evidence",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-10-08T19:25:59.243Z"
-        },
         {
           "missionId": "lumina-1791487574695-1",
           "version": 4,
@@ -123903,6 +123875,38 @@
             }
           ],
           "at": "2026-10-08T20:23:32.494Z"
+        },
+        {
+          "missionId": "lumina-1791492165393-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_behavior_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_behavior_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            },
+            {
+              "id": "step-2",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            },
+            {
+              "id": "step-3",
+              "action": "inspect_and_collect_evidence",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-08T20:42:45.393Z"
         }
       ],
       "attempts": [],
