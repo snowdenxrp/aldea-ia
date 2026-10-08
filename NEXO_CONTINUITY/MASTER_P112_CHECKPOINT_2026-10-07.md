@@ -512,3 +512,12 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Isolated applyState() + persistState(expectedRevision) can reject stale whole-state snapshots, but does not alone prove semantic admission validity; final dependency revalidation remains required.
 - 🟢 Six adversarial safety cases modeled. 🔵 Exact token ownership/generation and minimum boundary remain OPEN. 🔴 No runtime interleaving/JMM-HB claim.
 - Exact next: trace each case to the smallest canonical writer and test whether composite dependency tokens can be complete without a global revision; compare complexity/coverage against whole-snapshot conditional commit.
+
+
+## P112 canonical writer minimum-boundary trace V1 — 2026-10-07
+- Saved P112_CANONICAL_WRITER_MINIMUM_BOUNDARY_TRACE_V1_2026-10-07.md, commit ea6ca055d6e69f5c827b02b3a0a70802bb01e2e9.
+- Six cases traced toward smallest defensible boundary. No class currently has a proven small complete composite token.
+- Resource requires more than resource-object revision; Trade includes all-alive-agent inventory aggregate/price; Cooperate spans project + participant + relationship/structure/spatial/alive predicates; Exploration includes moveAgent()/normalization spatial writers; Build/Farm crosses development/production/institutions + world/structure; Social/Knowledge crosses relationship/memory/knowledge/proximity/learning.
+- Key distinction: persistState(expectedRevision) detects stale whole snapshots at persistence, but does not alone prove semantic validity of a previously admitted intent. Final semantic revalidation remains necessary unless a proven equivalent token protocol exists.
+- 🟢 Writer-boundary direction narrowed. 🔵 Complete token generation/ownership, final-gate semantics, and footprint reduction remain OPEN. 🔴 No runtime race/JMM-HB/exactly-once claim.
+- Exact next: audit admission→commit temporal-window writers and classify BLOCK vs INVALIDATE vs RECONCILE; then isolate post-commit learning/event writes.
