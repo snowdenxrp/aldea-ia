@@ -368,3 +368,11 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - It does not make current JSON persistence a true in-place transaction: PREPARED and final commit remain separate durable states; no fsync/power-loss contract is demonstrated; all competing writers must honor the same conditional protocol; any live-state bypass breaks isolation.
 - Therefore current architecture is more compatible with a snapshot/conditional-commit protected transition than with an in-place atomic transaction. This is feasibility evidence, not implementation.
 - Exact next: trace whether all protected mutation branches can operate on the isolated snapshot without hidden live references, then map stale conditional-commit outcomes into existing UNKNOWN/reconciliation semantics.
+
+
+## P112 snapshot isolation bypass audit V1 — 2026-10-07
+- Inspected representative protected mutation modules: actions, development, production, economy, collective, institutions.
+- Positive result: protected handlers receive explicit simulation/world/agent references and do not import a canonical singleton simulation in the inspected paths. This makes them structurally compatible with an isolated snapshot.
+- Remaining gaps: random source binding (`simulation.random` or Math.random fallback), mutating normalization/derived helpers, shared day writers, external observations, and exhaustive future-handler coverage.
+- Therefore snapshot/conditional-commit remains the strongest current candidate, but this is structural compatibility, not atomicity or complete dependency proof.
+- Exact next: trace `executeLuminaNexoStep`/adapter/runtime against an isolated simulation and determine how mission/effect journal semantics and canonical final revalidation would cross the snapshot boundary.
