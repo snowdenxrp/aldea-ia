@@ -326,3 +326,22 @@ The proposed semantic shape was attacked with concrete abstract cases:
 The attack demonstrates that a set-level **compatibility/admissibility predicate** is genuinely necessary, but a universal optimizer is not. The Core contract should therefore expose the *semantic result* of policy evaluation, not a global optimization algorithm.
 
 The unresolved issue is narrower now: how a Policy Contract expresses the admissibility/compatibility predicate and any permitted preference relation without introducing a universal schema prematurely. The next step is to test whether existing Policy/Claim/Conflict contracts already provide enough vocabulary to express this, before adding any new contract fields.
+
+
+## Existing-vocabulary cross-check — pair/set semantics
+The repository already contains sufficient *historical semantic vocabulary* to express the needed distinction without inventing a universal selector field:
+- versioned conflict relation classifies **pairs/sets** as INDEPENDENT, COMMUTATIVE, ORDER_SENSITIVE, READ_WRITE, WRITE_WRITE, EFFECT_COLLISION, GLOBAL_INVARIANT_INTERACTION, COMMON_MODE, UNKNOWN;
+- aggregate admission evaluates mission-window state including shared resources/authority, dependency overlap, common-mode domains, cumulative exposure, global invariants, unknowns and temporal window;
+- higher-order interaction research explicitly establishes PAIRWISE_COMPATIBILITY != SET_COMPATIBILITY and models higher-order combinations against mission invariants;
+- composite-effect research establishes individual admissibility != composite admissibility and requires recomputation of composite closure.
+
+### Architectural consequence
+No new generic `priority`, `score`, `selector`, or universal optimizer is justified. The semantic vocabulary points to a layered Policy/Admission evaluation:
+`candidate eligibility → claim/policy-specific pair/set interaction classification → set admissibility → bounded selection`.
+The exact current Policy Contract schema is still not proven to expose these historical interaction concepts as executable new-Core fields. Therefore **semantic sufficiency is established; schema sufficiency is NOT yet established**.
+
+### Future-countereffect check
+Reusing historical interaction concepts as semantic evidence preserves replaceability and avoids a new global selector API. Directly importing legacy objects/fields into Core would instead couple the new architecture to historical effect orchestration and prematurely widen scope. Therefore use the concepts as contract requirements/evidence, not legacy objects.
+
+### Status
+The pair-vs-set question is CLOSED at the semantic level: both pairwise and higher-order/set-level relations can be necessary, and neither subsumes the other. The remaining work is to determine the minimum protected Policy/Admission contract representation needed for STEP 7, without implementation until that representation is justified.
