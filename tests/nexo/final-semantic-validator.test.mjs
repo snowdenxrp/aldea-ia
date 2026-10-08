@@ -95,7 +95,23 @@ const baseContext = {
 {
   const result = validator.validate(candidate(), {
     ...baseContext,
+    target: undefined
+  });
+  assert.equal(result.status, VALIDATION.FAIL);
+}
+
+{
+  const result = validator.validate(candidate(), {
+    ...baseContext,
     targetIncarnation: { epoch: 5 }
+  });
+  assert.equal(result.status, VALIDATION.FAIL);
+}
+
+{
+  const result = validator.validate(candidate(), {
+    ...baseContext,
+    targetIncarnation: undefined
   });
   assert.equal(result.status, VALIDATION.FAIL);
 }
@@ -109,6 +125,17 @@ const baseContext = {
     ]
   });
   assert.equal(result.status, VALIDATION.UNKNOWN);
+}
+
+{
+  const result = validator.validate(candidate({claim: {authoritativeReads: [{id: "read-a", required: true}]}}), {
+    ...baseContext,
+    requirements: [
+      ...baseContext.requirements,
+      { id: "read-a", status: "SATISFIED", authoritative: true }
+    ]
+  });
+  assert.equal(result.status, VALIDATION.PASS);
 }
 
 {
