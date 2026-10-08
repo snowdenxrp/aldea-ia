@@ -300,6 +300,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - ⚠️ Runtime check attempted: GitHub Actions currently shows no `workflow_dispatch` run for the new policyContext workflow, so no PASS is claimed. Existing unrelated/cancelled runs do not count as verification.
 - Next action remains manual execution of `Nexo — STEP 7 policyContext contract`; after a completed run, inspect the exact job result before closing the runtime proof. No code change made from this check.
 
+- 🟢 User manually executed `Nexo — STEP 7 policyContext contract` and reported PASS. Runtime proof closed in `NEXO_NCS/PROOF/STEP_7_POLICY_CONTEXT_RUNTIME_PENDING_2026-10-08.md`, commit `ce5ea318fc0c380b7c3a90ca66b60473a8e76a8c`. No run/job ID invented because the connector could not independently retrieve the manual dispatch run.
+- 🟢 Runtime verifies only the typed policyContext schema boundary/tests; it does not prove policy applicability, admission, authority, execution, commit, or external-effect outcomes.
+- Next exact action: adversarial semantic attack of the typed boundary before any resolver implementation: distinguish context-validity `VALID` from claim-validation `PASS`; ensure provenance/dependencies are evidence carriers, not self-authenticating authority; scope presence is not applicability proof; missing expiry cannot imply currentness; hash/version cannot imply authority.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
