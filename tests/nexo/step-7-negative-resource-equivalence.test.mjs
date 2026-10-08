@@ -30,8 +30,6 @@ const incomplete = evaluateNegativeResourceEquivalence(base, sameAvailableFields
 assert.equal(incomplete.status, EQUIVALENCE.UNKNOWN);
 assert.deepEqual(incomplete.reasons, ["claim_critical_dimension_missing"]);
 
-console.log("NEXO STEP 7 negative-resource equivalence tests: PASS");
-
 
 const differentSource = createObservationEnvelope({
   source: "OtherAgent",
