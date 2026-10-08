@@ -493,3 +493,56 @@ Keeping both reference and resolved context adds some representation, but it pre
 
 ### Conclusion
 The representation question is sufficiently constrained: **do not create a new top-level PolicyBinding; type `ClaimEnvelope.policyContext` as a protected reference-plus-resolution context.** Implementation remains pending until the exact fields and resolver boundary are attacked for authority leakage, dependency completeness and invalidation semantics.
+
+
+## Exact fields + resolver-boundary attack
+Historical contracts support a strict separation between **policy semantics** and **authority**. AuthorityContext is independently versioned/epoch-fenced and includes authority epoch, authorization basis, scope, policy/invariant versions, expiry and revocation state. Therefore these authority facts must not be hidden inside a Policy resolver result and then treated as authorization.
+
+### Fields that belong in policyContext
+Only claim-relevant policy semantics/context belong here:
+- governed policy reference: policy identity + policy semantic version/hash;
+- applicability scope required to interpret the claim;
+- resolved policy semantics actually relied upon by the claim;
+- required policy dependency references/versions and their resolved semantic status;
+- policy validity/expiry as an input to semantic applicability;
+- Core provenance of the resolution.
+
+### Fields that must remain separate
+- current authorization decision;
+- authority grant/release;
+- stop/revocation enforcement state;
+- execution permission;
+- commit outcome;
+- external-effect outcome.
+These remain protected boundaries. In particular, `authority_epoch` may be recorded as a dependency/currentness fact when the claim requires it, but it must not turn `policyContext` into `AuthorityContext`.
+
+### Resolver boundary
+The resolver is an **evidence/context resolver**, not an authority engine. It may:
+1. resolve governed policy references;
+2. verify version/hash/scope/expiry;
+3. resolve required semantic dependencies;
+4. report PASS/FAIL/UNKNOWN for policy-context completeness/applicability;
+5. return provenance of what it resolved.
+It may not:
+- grant authority;
+- authorize execution;
+- commit state;
+- declare SAFE_COMMIT;
+- suppress STOP/revocation;
+- convert UNKNOWN to success;
+- infer external-world outcome.
+
+### Critical attack: resolver TOCTOU
+A resolver can return a valid context and the world/policy/authority can change before final validation or commit. Therefore resolver output is not a durable authorization. Final semantic validation and protected authority checks remain mandatory at their own boundaries. A material change invalidates/requires revalidation of the context.
+
+### Critical attack: hidden dependency expansion
+The resolver must not silently expand an unbounded dependency graph and call it complete. The applicable Policy Contract must explicitly identify required semantic dependencies/roots. If a required dependency cannot be resolved or its status is UNKNOWN, the policy context remains UNKNOWN.
+
+### Critical attack: provider-supplied resolution
+A provider can supply a candidate context, but Core must independently resolve protected references. Provider-supplied `resolved=true`, authority fields, or confidence cannot establish protected applicability.
+
+### Future-countereffect
+Putting authority fields into policyContext would couple policy semantics to authority lifecycle. Putting all dependency material into a universal snapshot would couple every future Policy/Conflict/Verifier implementation to ClaimEnvelope schema. Keeping policy semantics in policyContext and authority/execution in their existing protected boundaries preserves replaceability.
+
+### Conclusion
+The exact semantic boundary is now sufficiently constrained. No new top-level resolver authority or PolicyBinding is justified. `ClaimEnvelope.policyContext` can carry policy reference + resolved semantic context + dependency/provenance evidence; a separate protected AuthorityContext remains responsible for current authority. Implementation can proceed only after the concrete field schema is minimized and tested against missing/UNKNOWN/expiry/epoch/dependency cases.
