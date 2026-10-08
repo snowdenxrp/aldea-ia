@@ -1,0 +1,21 @@
+name: Nexo — STEP 5 outcome classification
+
+on:
+  push:
+    paths:
+      - 'src/nexo/core/**'
+      - 'tests/nexo/**'
+      - 'NEXO_NCS/BUILD/STEP_5*'
+      - '.github/workflows/nexo-step-5-outcome-classification.yml'
+  workflow_dispatch:
+
+jobs:
+  outcome-classification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/nexo/outcome-classifier.test.mjs
+      - run: node tests/nexo/protected-transition.test.mjs
