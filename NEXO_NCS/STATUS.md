@@ -228,6 +228,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🔴 Do not invent universal `priority`, scheduler authority, or a second selector authority. If applicable policy is absent, preserve UNKNOWN/PENDING.
 - Latest analysis commit: `750e267b3f1b3e292130507c848dc536bcf48f71`.
 
+- 🟢 Pairwise-vs-set attack found a real constraint: historical conflict-domain architecture requires aggregate admission over pairs/sets, shared resources, dependencies, common-mode domains, cumulative exposure and global invariants. Pairwise ordering alone is insufficient.
+- 🔵 Strongest current semantic shape: `eligibility + policy-scoped pairwise comparability/preference + policy-scoped set compatibility + fixed bound 8 + unresolved UNKNOWN/CONFLICT`.
+- 🟠 This avoids both extremes: universal pairwise comparator and universal set optimizer. Neither is justified across all future mission classes.
+- ⚠️ Exact policy fields/relations remain PENDING; no implementation. Next action: test this shape against concrete adversarial sets (A-B, B-C, A-C; shared resource; dependency overlap; contradictory observations) to determine which constraints are genuinely required versus accidental complexity.
+- Latest analysis commit: `8e41c9bb7614b32cf9f734fc22d1c8c369636a4c`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
