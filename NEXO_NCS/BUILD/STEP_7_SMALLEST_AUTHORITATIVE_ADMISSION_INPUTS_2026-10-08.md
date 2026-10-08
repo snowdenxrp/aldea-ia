@@ -378,3 +378,37 @@ A monolithic Policy Contract containing every possible pair/set algorithm would 
 
 ### Current conclusion
 The repository supports deriving the semantic minimum without adding a new universal selector object. **Schema sufficiency remains PENDING** only for the exact machine representation/binding mechanism; semantic requirements are now sufficiently constrained to attack that representation next.
+
+
+## Binding-representation attack — no new selector authority
+The existing `ClaimEnvelope.policyContext` is a generic carrier, but its current implementation does not itself prove semantic validity, applicability, policy version binding, expiry, dependency completeness, or interaction-contract closure. Therefore merely placing an arbitrary object in `policyContext` would be insufficient and could create a false sense of policy authority.
+
+The historical Policy Contract vocabulary already supplies the required semantic dimensions: policy id/version/hash, scope, evidence requirements, freshness, independence, thresholds/reference values, assumptions, failure conditions, tests, owner/authority, expiry and dependencies. Historical conflict contracts separately carry versioned pair/set interaction semantics. Semantic-version research also establishes that schema version, semantic version, policy version and authority epoch must remain distinct.
+
+### Minimum representation candidate
+The new Core should not invent a `SelectorAuthority`. If a future implementation needs a machine-readable admission binding, the smallest defensible shape is a **protected policy applicability binding** containing/referencing:
+- policy identity + semantic version/hash;
+- applicable mission/goal scope;
+- authority/owner and authority epoch where required;
+- validity/expiry;
+- required evidence/context contract references;
+- required conflict/interaction contract references and versions;
+- dependency roots/closure required to interpret those contracts;
+- explicit failure/UNKNOWN behavior.
+
+This is a binding/reference to already governed semantics, not a new ranking algorithm or authority layer.
+
+### Attack: can policy identity alone suffice?
+No. Same policy identifier/bytes can be semantically insufficient if required interaction dependencies, reference values, authority epoch, expiry or claim-specific context are missing. `policy_id == policy_id` is not proof of applicability/completeness.
+
+### Attack: can policyContext be reused as-is?
+Only as a transport slot, not as proof. Its contents require a protected contract defining what constitutes a valid applicable policy binding. Otherwise a provider could populate policyContext and accidentally self-declare policy authority, violating the provider-proposes/Core-governs boundary.
+
+### Attack: can policy version alone establish precedence?
+No. Policy version establishes which semantics are referenced; it does not mean the policy contains a preference between heterogeneous candidates. If no governed precedence exists, comparison remains UNKNOWN/INCOMPARABLE.
+
+### Future-countereffect
+A dedicated selector object would duplicate Policy/Admission. An unconstrained `policyContext` object would become an untyped escape hatch. A monolithic policy schema would freeze all future interaction algorithms into Core. The protected applicability binding is the narrowest currently supported boundary.
+
+### Result
+Semantic minimum is now sufficiently constrained. **Machine representation is still PENDING implementation review:** before coding, the binding itself must be attacked for schema-version/policy-version/authority-epoch confusion, dependency incompleteness, cross-policy scope mismatch, expiry, and provider self-declaration.
