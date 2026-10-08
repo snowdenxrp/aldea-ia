@@ -591,3 +591,12 @@ This separation exists specifically to prevent historical research volume from b
 - Decision: no technical channel/build/platform/verifier/root selected. P0 design/research only is currently justified by this record; P1 requires actual isolation evidence, P2 separate review, P3 protected commissioning/root operations remain blocked, P4 external effects are not authorized by this contract.
 - **Next exact action:** continue mining existing MASTER/AB/P findings for genuinely new NCS invariants/countereffects, without repeating old probes. The next governance choice about accepting a bounded initial verifier environment is required before runtime implementation; do not infer it from “continue.”
 - Future-countereffects gate remains CLOSED. Trust Foundation and Constitution Authority Context remain BLOCKED.
+
+
+## 2026-10-08 — Root-transition / P112 final-gate cross-check
+- 🟢 New cross-layer audit saved and re-fetched/verified: `NEXO_NCS/RESEARCH/STEP_7_ROOT_TRANSITION_P112_FINAL_GATE_CROSSCHECK_2026-10-08.md`; commit `748d5ee6138696baa9df6c8d9f808af0fc55851b`; read-back blob `14b816e55a3e02334c34785c2cde47be9295ee66`.
+- Reused AB104.446 root-governance and P112 final-revalidation/conflict findings without rerunning historical probes or backfilling primary AB artifacts.
+- Cross-layer result: root enrollment/de-enrollment, verifier-root changes, recovery and succession are protected authority transitions; a fresh/authentic approval may become stale before the protected boundary; authentic restored history is not current authority.
+- P112 conditional persistence revision is not a semantic authority fence. No global revision, generic wrapper, coordinator, or extra security layer was introduced.
+- No architecture selection changed. Initial verifier trust assumption remains NOT ACCEPTED; Trust Foundation, Constitution Authority Context, genesis activation and protected authority implementation remain BLOCKED; future-countereffects gate remains CLOSED.
+- **Next exact action:** P0 research only—continue mapping genuinely relevant MASTER/AB/P evidence about initial verifier/root legitimacy and currentness. Do not repeat AB104.446 or P112 persistence audits; do not select a device/provider/channel or implement protected authority without an explicit governance decision.
