@@ -582,3 +582,12 @@ This separation exists specifically to prevent historical research volume from b
 - No initial verifier basis selected. An owner-verified bounded prototype assumption is a possible research-only basis if explicitly accepted; it is not production security or constitutional activation. Candidate verifier's self-checking is rejected.
 - Capability boundary result: P0 design/research may continue. P1 simulation remains conditional on evidence that isolation, credentials, IPC and egress are actually bounded; no current runtime isolation was verified. P2 needs separate review. P3 root/Constitution operations remain blocked; P4 external effects are not authorized by this contract.
 - **Next exact action:** continue root/verifier trust-boundary reconciliation from existing MASTER, specifically whether a bounded owner-verified prototype assumption is acceptable for non-authoritative research only. No implementation or root/channel selection until the trust assumptions are explicit and future-countereffects gate passes.
+
+
+## 2026-10-08 — Initial verifier trust assumption reconciled with MASTER / prior research
+- 🟢 Reconciliation saved and re-fetched/verified: `NEXO_NCS/DECISIONS/STEP_7_INITIAL_VERIFIER_TRUST_ASSUMPTION_RECONCILIATION_2026-10-08.md`; commit `f014f1652e07940715aa457bfdb5082b0650369d`.
+- Canonical MASTER and prior Trust Foundation/AB104.452 research support claim-relative TCB closure and explicit bounded environment assumptions, but do **not** accept a concrete owner-verified prototype verifier assumption. Do not infer acceptance.
+- Prior AB104.452 external recovery-root findings were reused as design constraints; no old AB probe was rerun. The separate AB research remains historical evidence, not proof of NCS runtime behavior.
+- Decision: no technical channel/build/platform/verifier/root selected. P0 design/research only is currently justified by this record; P1 requires actual isolation evidence, P2 separate review, P3 protected commissioning/root operations remain blocked, P4 external effects are not authorized by this contract.
+- **Next exact action:** continue mining existing MASTER/AB/P findings for genuinely new NCS invariants/countereffects, without repeating old probes. The next governance choice about accepting a bounded initial verifier environment is required before runtime implementation; do not infer it from “continue.”
+- Future-countereffects gate remains CLOSED. Trust Foundation and Constitution Authority Context remain BLOCKED.
