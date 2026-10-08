@@ -573,3 +573,15 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - `memory.js` bounds `effectJournal` to the last 200 entries during reconstruction, and adapter persistence also trims to 200.
 - Therefore the smallest currently observed durable journal evidence is the PREPARED entry plus, only on successful terminal `persist()`, the terminal result/status/timestamp; canonical state revision linkage is still absent.
 - Exact next remains: map each status transition + serialization/crash cut and determine which fields can prove linkage to a canonical commit without introducing a new identity prematurely.
+## P112 effect journal transition / restart semantics audit V1 — 2026-10-07
+- Saved `P112_EFFECT_JOURNAL_TRANSITION_RESTART_SEMANTICS_AUDIT_V1_2026-10-07.md`.
+- Commit: `a74075bb822054209acc657458f3020763d3fcf3`.
+- Direct source + restart-test trace confirms PREPARED can survive ordinary save/load when the containing snapshot is persisted.
+- Normal terminal `persist()` updates journal result/status/completedAt in memory; those fields become durable only through subsequent canonical snapshot persistence.
+- Critical source fact: handler exception returns `EFFECT_OUTCOME_UNKNOWN` without calling `persist()`; the journal therefore remains PREPARED in that path rather than receiving a durable UNKNOWN terminal update.
+- Prepared recovery requires reconciliation; blocked reconciliation deliberately leaves PREPARED so uncertainty is not converted into a cached terminal block.
+- Journal retention remains bounded to 200; unresolved evidence can be evicted, and prior AB104.214 already documented the replay risk after such eviction.
+- Existing restart/persistence tests establish snapshot reconstruction and stateRevision conflict behavior, but do not couple an external effect to journal persistence or canonical commit.
+- Status semantics are now separated: PREPARED is not proof of non-occurrence; COMPLETED is not external acceptance without verifying evidence; FAILED/BLOCKED/UNSUPPORTED do not by themselves prove external non-occurrence; UNKNOWN is explicit uncertainty but is not durably journaled by the current exception path.
+- 🟢 Restart preservation of PREPARED; 🟢 canonical snapshot conflict behavior; 🔵 durable terminal linkage; 🔵 ARCHIVED-vs-NEVER_SEEN semantics; 🔴 no atomic effect+journal+snapshot or exactly-once claim.
+- Exact next: trace remaining recovery/status producers and consumers and determine whether an existing record distinguishes evicted/archived evidence from NEVER_SEEN, and whether an existing outcome field can link effect evidence to canonical commit without inventing a new identity.
