@@ -556,3 +556,11 @@ This separation exists specifically to prevent historical research volume from b
 - Standards cross-check: current NIST SP 800-63B-4 provides useful authenticator binding/recovery/revocation guidance; it does not define Nexo's constitutional legitimacy. FIDO/WebAuthn can inform challenge-response, not self-bootstrap authority.
 - **Next exact action:** produce a decision checkpoint listing accepted trust assumptions, what cannot be proven by Nexo itself, and which mechanism properties are independently testable. If a required assumption has no legitimate owner/acceptance basis, keep root unresolved and stop technical selection.
 - Trust Foundation, Constitution Authority Context and future-countereffects gate remain blocked; no implementation authorized.
+
+
+## 2026-10-08 — Root-basis assumptions and independently testable claims checkpoint
+- 🟢 Decision checkpoint saved and re-fetched/verified: `NEXO_NCS/DECISIONS/STEP_7_ROOT_BASIS_ASSUMPTIONS_AND_TESTABLE_CLAIMS_CHECKPOINT_2026-10-08.md`; commit `c64a65490a5e7249fdc5aa0c85b0e03795677710`.
+- The checkpoint separates normative legitimacy, independent-channel control, credential enrollment, exact presentation/binding, cryptographic freshness, revocation/currentness, common-mode independence, recovery authority, migration and consent/coercion limits.
+- Independently testable mechanism claims are listed separately from governance/human assumptions that Nexo cannot prove from its own uncommissioned state.
+- Current semantic direction retained only as a candidate: explicit owner-authorized commissioning + pre-existing independently recognized channel under Kevin's control + fresh challenge and exact Constitution/context binding + separately governed lifecycle. No channel/authenticator/provider/root selected.
+- **Next exact action:** resolve from existing MASTER/Constitution material whether prior control of an independent device/channel is an accepted trust assumption, and what minimum evidence makes its enrollment independent of the candidate Nexo instance. If already accepted, cite the existing decision and proceed to mechanism-specific enrollment/binding contract; otherwise keep root unresolved. No implementation until root basis and future-countereffects gate pass.
