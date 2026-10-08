@@ -8,11 +8,11 @@ import {
   createCandidate,
   createClaimEnvelope,
   createCommitResult,
-  createOutcome,
   createValidationResult
 } from "../../src/nexo/core/contracts.mjs";
 import { createCorePorts } from "../../src/nexo/core/ownership.mjs";
 import { executeProtectedTransition } from "../../src/nexo/core/protected-transition.mjs";
+import { createOutcomeClassifier } from "../../src/nexo/core/outcome-classifier.mjs";
 
 const claim = createClaimEnvelope({ claimId: "protected-1", action: "set-value" });
 
@@ -47,10 +47,7 @@ function makePorts(overrides = {}) {
         return createCommitResult(COMMIT.COMMITTED);
       }
     },
-    outcomeClassifier: {
-      classify: ({ kind, reasons = [], evidence = [] }) =>
-        createOutcome(kind, { reasons, evidence })
-    },
+    outcomeClassifier: createOutcomeClassifier(),
     ...overrides
   });
   return { ports, calls, canonical };
