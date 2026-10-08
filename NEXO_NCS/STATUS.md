@@ -151,6 +151,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Test proves current producer evidence yields `EQUIVALENCE.UNKNOWN`, and the handoff preserves that as `MissionCandidate(admission=UNKNOWN)` without silently converting to ADMITTED or NOT_ADMITTED. Runtime checkpoint: `NEXO_NCS/BUILD/STEP_7_NEGATIVE_RESOURCE_HANDOFF_RUNTIME.md`, commit `ed59541f3133aa38bb56fbc085087f2feba9ef2b`.
 - Next: wire this focused contract into a manual-dispatch workflow only; no legacy orchestration integration and no producer-contract invention.
 
+- 🟢 User-reported manual PASS for `nexo-step-7-negative-resource-handoff`; proof `NEXO_NCS/PROOF/STEP_7_NEGATIVE_RESOURCE_HANDOFF_RUNTIME_2026-10-08.md`, commit `aeefcdcbd25ef0a0bae7a363aec86fe8cc55c58e`. Connector did not independently retrieve the manual run, so no run/job ID asserted.
+- STEP 7 handoff boundary is now runtime-verified for the concrete NEGATIVE_RESOURCE case. This does not prove general admission policy, execution, external effects, or legacy integration.
+- Next exact action: inspect the smallest admission-policy boundary needed after the handoff, using only existing evidence; do not reopen 8-step semantics or invent identity/queue/retry mechanisms.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
