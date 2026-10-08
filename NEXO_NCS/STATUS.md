@@ -478,3 +478,12 @@ This separation exists specifically to prevent historical research volume from b
 - 🟠 Another device or a physical medium are examples only; no specific mechanism/channel has been selected or proven independent.
 - 🔴 Trust Foundation / Constitution Authority Context implementation and genesis activation remain blocked. This is a governance requirement, not a technical security proof.
 - **Next exact action:** build the minimum concrete commissioning threat model and compare only mechanisms compatible with local-first operation, provider independence, portability, explicit approval, exact Constitution/context binding, and fail-closed behavior. Attack the chosen mechanism and pass the future-countereffects gate before implementation.
+
+
+## 2026-10-08 — Minimum genesis commissioning threat model
+- 🟢 Threat-model draft saved: `NEXO_NCS/RESEARCH/STEP_7_MINIMUM_GENESIS_COMMISSIONING_THREAT_MODEL_2026-10-08.md`; commit `9447420beb9dcd531cf630b74b1d3efcd52bb051`.
+- 🟢 Defines the protected claim, candidate-device/provider/network adversary assumptions, exact Constitution/context binding, replay resistance, and fail-closed outcomes for loss, offline revocation, coercion, shared dependencies, migration, conflicting successors and interrupted commissioning.
+- 🟠 Candidate families are research candidates only: separate authenticator, external provisioning, physical medium; previously commissioned device is for post-genesis migration; hardware attestation is supporting integrity/key protection only. No mechanism selected.
+- 🟠 Standards cross-check scoped: RFC 9334 RATS helps separate attestation roles; NIST SP 800-193 addresses platform firmware resilience; FIDO/WebAuthn may inform authentication but its relying-party assumptions must be evaluated before adaptation. None supplies Nexo's constitutional legitimacy.
+- 🔴 Trust root/Constitution Authority Context implementation remains blocked.
+- **Next exact action:** compare candidate channels against provider independence, portability, offline use, theft/loss, revocation, coercion, and common-mode compromise; select no mechanism until evidence and dependency closure can be appraised.
