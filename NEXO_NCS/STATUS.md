@@ -380,3 +380,12 @@ This separation exists specifically to prevent historical research volume from b
 - Historical AB/P cross-check reinforces: policy version ≠ compatibility; epoch ordering ≠ authority ordering; metadata/revision ≠ authority certificate; missing protected evidence remains UNKNOWN.
 - 🔴 Previous implementation STOP is confirmed.
 - **Next exact action:** define the smallest Core-owned Policy Authority/Policy Source contract required to establish policy semantics + protected provenance, then attack it before implementation.
+
+
+## STEP 7 — minimum Core Policy Authority / Policy Source contract
+- 🟢 MASTER research confirmed the protected owner: `Mission/Goal → Request/Effect Identity → Policy/Admission → Coordination/Fencing → Execution`, plus the Policy Contract vocabulary and `CLAIM → POLICY → REFERENCES → VERIFIER → EVIDENCE → RESULT → DECISION` chain.
+- 🟢 Contract saved: `NEXO_NCS/BUILD/STEP_7_MINIMUM_CORE_POLICY_AUTHORITY_SOURCE_CONTRACT_2026-10-08.md`, commit `8608fbdd9279d152da2e1787953eb11d63340191`.
+- 🟢 Attack closed: `NEXO_NCS/BUILD/STEP_7_MINIMUM_CORE_POLICY_AUTHORITY_SOURCE_CONTRACT_ATTACK_2026-10-08.md`, commit `a8b51fe454a334e1c2731b09a21e3b8aa06652f3`.
+- Contract establishes only governed policy identity/semantics, applicability authority/context, and required semantic dependencies, with protected establishment provenance. It does not authorize, admit, validate final claims, execute, commit, or resolve effects.
+- Provider self-attestation, policy substitution, scope/dependency laundering, version/authority confusion, universal-policy-engine creep, TOCTOU, and missing-evidence collapse all rejected.
+- **Next exact action:** implement the smallest Core-owned policy source boundary and focused semantic tests; do not implement admission/authorization behavior through it.
