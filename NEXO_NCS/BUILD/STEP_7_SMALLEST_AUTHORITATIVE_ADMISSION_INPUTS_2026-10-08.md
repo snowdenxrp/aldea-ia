@@ -345,3 +345,36 @@ Reusing historical interaction concepts as semantic evidence preserves replaceab
 
 ### Status
 The pair-vs-set question is CLOSED at the semantic level: both pairwise and higher-order/set-level relations can be necessary, and neither subsumes the other. The remaining work is to determine the minimum protected Policy/Admission contract representation needed for STEP 7, without implementation until that representation is justified.
+
+
+## Minimum protected Policy/Admission representation — derivation
+Cross-checking MASTER Policy Contract, Goal/Claim contracts, and historical Conflict/Composite/Higher-Order contracts yields a smaller semantic requirement than a new selector schema.
+
+A protected bounded-admission evaluation needs only these semantic inputs/results:
+1. **Applicability context:** policy identity/version/scope plus mission/goal context establishing why this policy applies.
+2. **Candidate evidence:** claim-specific observation/provenance/epistemic state sufficient for eligibility.
+3. **Required-context rules:** protected policy requirements for freshness, independence, dependencies, assumptions and other claim-critical context; missing required context => UNKNOWN/HOLD.
+4. **Interaction semantics:** an applicable policy/conflict contract capable of classifying relevant candidate pairs/sets, including UNKNOWN and higher-order/global-invariant interactions.
+5. **Selection relation:** only where the applicable policy explicitly establishes a preference/precedence relation; absence is not permission for ranking.
+6. **Set-admissibility result:** whether the candidate subset jointly satisfies applicable interaction/invariant/dependency constraints.
+7. **Bound:** fixed 8, already closed.
+8. **Decision state/evidence:** explicit ADMITTED / NOT_ADMITTED / UNKNOWN (or CONFLICT where the protected policy semantics require it) with evidence supporting the result.
+
+### Important minimality observation
+The Policy Contract itself does **not** need to contain every interaction rule as a monolithic field. Existing architecture supports policy references/dependencies plus separate claim/conflict/composite contracts. Therefore the minimum new-Core representation can be a protected **applicability/context binding** to the relevant versioned policy/claim/conflict semantics, rather than importing historical schemas wholesale.
+
+### What is NOT required
+- universal `priority` or `score`;
+- generic selector authority;
+- provider confidence;
+- timestamp/input order as hidden precedence;
+- legacy missionId/generatedAt as observation identity;
+- a universal optimizer;
+- new observation IDs solely to solve selection;
+- queue/retry/tombstone/compatibility machinery.
+
+### Future-countereffect attack
+A monolithic Policy Contract containing every possible pair/set algorithm would become a permanent coupling point and make policy evolution equivalent to Core schema evolution. Conversely, a Policy Contract containing only a policy ID with no binding to its required interaction semantics would be too weak and could hide missing context. The minimum robust shape is therefore **versioned protected policy applicability + explicit required semantic dependencies + claim-specific interaction/selection results**, while leaving algorithms policy-scoped.
+
+### Current conclusion
+The repository supports deriving the semantic minimum without adding a new universal selector object. **Schema sufficiency remains PENDING** only for the exact machine representation/binding mechanism; semantic requirements are now sufficiently constrained to attack that representation next.
