@@ -10,9 +10,17 @@ const TERMINAL_OUTCOMES = Object.freeze([
 const VALIDATION_STATES = Object.freeze(["PASS", "FAIL", "UNKNOWN"]);
 const COMMIT_STATES = Object.freeze(["COMMITTED", "CONDITIONAL_CONFLICT", "FAILED", "UNKNOWN"]);
 
-function immutable(value) {
+function immutable(value, seen = new WeakSet()) {
   if (value === null || typeof value !== "object") return value;
+  if (seen.has(value)) return value;
+  seen.add(value);
+  for (const child of Object.values(value)) immutable(child, seen);
   return Object.freeze(value);
+}
+
+function detachedImmutable(value) {
+  if (value === undefined) return value;
+  return immutable(structuredClone(value));
 }
 
 function requiredString(value, field) {
@@ -28,13 +36,13 @@ export function createClaimEnvelope(input = {}) {
   return immutable({
     claimId,
     action,
-    target: input.target ?? null,
-    targetIncarnation: input.targetIncarnation ?? null,
+    target: detachedImmutable(input.target ?? null),
+    targetIncarnation: detachedImmutable(input.targetIncarnation ?? null),
     authoritativeReads: immutable([...(input.authoritativeReads ?? [])]),
     dependencies: immutable([...(input.dependencies ?? [])]),
     predicateDependencies: immutable([...(input.predicateDependencies ?? [])]),
     derivedProvenance: immutable([...(input.derivedProvenance ?? [])]),
-    policyContext: input.policyContext ?? null,
+    policyContext: detachedImmutable(input.policyContext ?? null),
     causalInputs: immutable([...(input.causalInputs ?? [])]),
     sourceProvenance: immutable([...(input.sourceProvenance ?? [])])
   });
