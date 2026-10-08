@@ -198,6 +198,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Input-order tie-break is deterministic today but makes upstream enumeration order a hidden authority boundary and can change with providers/concurrency/data sources; rejected.
 - 🔴 No selector introduced. Authoritative bounded selection remains PENDING.
 
+- 🔵 Final cross-check: canonical requirements require explicit mission/goal context and distinguish objective from proxy/metric (REQ-M01), while mission changes must identify affected goals/claims/invariants/policies (REQ-M04). Critical requirements also need explicit conflict/precedence rules.
+- 🔵 This establishes where future selection authority must originate—protected mission/goal/policy semantics—but does not define a precedence relation for the current heterogeneous observation candidates.
+- 🔴 Therefore objective/goal, `goalPressure`, severity, score, input order, or timestamp cannot be promoted into a universal selector.
+- 🟢 The strongest evidence now supports a clean conclusion: the missing bounded-selection relation is genuinely not present in the recovered architecture. It must be designed explicitly before implementation; no historical mechanism is being repurposed.
+- Latest STEP 7 build cross-check commit: `c3d7e2600b943fdbfa364dc521c8dfd751cde612`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
