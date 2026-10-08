@@ -158,3 +158,18 @@ Contradiction risk: observation/proposal metadata would become admission authori
 Evolution cost: every future producer/provider would need to map its semantics into the old ranking scale.
 
 No implementation change is authorized from this cross-check.
+
+
+## PG-009 risk-aware admission cross-check — scope boundary
+The canonical Nexo index exposes a much richer historical PG-009 risk-aware **effect admission** policy: governed effect profile, consequence/risk, likelihood, reversibility, observability, target consistency C0-C4, duplicate hazard, blast radius, authority criticality, compensation quality, plus governed admission states ADMIT/RESTRICTED/HUMAN_REQUIRED/BLOCKED. It also explicitly separates scheduler priority from authority.
+
+This is strong evidence for a general principle but is **not** sufficient to become STEP 7's bounded mission-candidate selection relation:
+- PG-009 governs consequential effect admission, not which observational candidates occupy a bounded mission list;
+- several PG-009 dimensions (target capability, external effect class, compensation, duplicate hazard) are not established for the current assistant findings;
+- importing the full profile would create premature coupling between observation admission and external-effect governance;
+- the PG-009 artifacts are historical research/formal sketches and explicitly marked NOT TLC-VERIFIED in the canonical index.
+
+Therefore PG-009 contributes constraints, not the missing selection algorithm. In particular, scheduler priority must not increase authority, and uncertainty cannot silently increase autonomy. The exact bounded-selection relation remains PENDING.
+
+### Research conclusion
+We have now exhausted the strongest recovered candidates without finding an already-authoritative policy that fits the present STEP 7 boundary. The remaining gap is genuinely architectural: define the protected semantic relation for selecting among eligible mission candidates, with explicit scope and future replaceability, rather than borrowing an unrelated effect-admission policy.
