@@ -17,20 +17,11 @@ import { executeProtectedTransition } from "../../src/nexo/core/protected-transi
 const claim = createClaimEnvelope({ claimId: "protected-1", action: "set-value" });
 
 function makePorts(overrides = {}) {
-  const calls = {
-    isolate: 0,
-    execute: 0,
-    validate: 0,
-    commit: 0
-  };
+  const calls = { isolate: 0, execute: 0, validate: 0, commit: 0 };
   const canonical = { value: 1, nested: { stable: true } };
   const ports = createCorePorts({
-    claimBuilder: {
-      build: () => claim
-    },
-    authorityGate: {
-      check: () => createAuthorityResult(AUTHORITY.AUTHORIZED)
-    },
+    claimBuilder: { build: () => claim },
+    authorityGate: { check: () => createAuthorityResult(AUTHORITY.AUTHORIZED) },
     snapshotIsolator: {
       isolate: ({ state }) => {
         calls.isolate += 1;
@@ -41,11 +32,7 @@ function makePorts(overrides = {}) {
       execute: ({ claim: candidateClaim, state, expectedRevision }) => {
         calls.execute += 1;
         state.value = 2;
-        return createCandidate({
-          claim: candidateClaim,
-          state,
-          expectedRevision
-        });
+        return createCandidate({ claim: candidateClaim, state, expectedRevision });
       }
     },
     finalSemanticValidator: {
@@ -71,11 +58,8 @@ function makePorts(overrides = {}) {
 
 {
   const { ports, calls, canonical } = makePorts();
-  const outcome = executeProtectedTransition({
-    ports,
-    proposal: { action: "set-value" },
-    state: canonical,
-    expectedRevision: 7
+  const outcome = await executeProtectedTransition({
+    ports, proposal: { action: "set-value" }, state: canonical, expectedRevision: 7
   });
   assert.equal(outcome.kind, OUTCOMES.SAFE_COMMIT);
   assert.deepEqual(canonical, { value: 1, nested: { stable: true } });
@@ -86,15 +70,13 @@ function makePorts(overrides = {}) {
   let commitCalls = 0;
   const { ports } = makePorts({
     finalSemanticValidator: {
-      validate: () => createValidationResult(VALIDATION.FAIL, {
-        reasons: ["predicate disproved"]
-      })
+      validate: () => createValidationResult(VALIDATION.FAIL, { reasons: ["predicate disproved"] })
     },
     conditionalCommit: {
       commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); }
     }
   });
-  const outcome = executeProtectedTransition({
+  const outcome = await executeProtectedTransition({
     ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
   });
   assert.equal(outcome.kind, OUTCOMES.SEMANTIC_CONFLICT);
@@ -111,7 +93,7 @@ function makePorts(overrides = {}) {
       commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); }
     }
   });
-  const outcome = executeProtectedTransition({
+  const outcome = await executeProtectedTransition({
     ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
   });
   assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
@@ -127,7 +109,7 @@ function makePorts(overrides = {}) {
       check: () => createAuthorityResult(AUTHORITY.STOP, { reasons: ["stop enforced"] })
     }
   });
-  const outcome = executeProtectedTransition({
+  const outcome = await executeProtectedTransition({
     ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
   });
   assert.equal(outcome.kind, OUTCOMES.AUTHORITY_STOP);
@@ -141,7 +123,7 @@ function makePorts(overrides = {}) {
       })
     }
   });
-  const outcome = executeProtectedTransition({
+  const outcome = await executeProtectedTransition({
     ports, proposal: {}, state: { value: 1 }, expectedRevision: 3
   });
   assert.equal(outcome.kind, OUTCOMES.STALE_CANDIDATE);
@@ -155,7 +137,7 @@ function makePorts(overrides = {}) {
       })
     }
   });
-  const outcome = executeProtectedTransition({
+  const outcome = await executeProtectedTransition({
     ports, proposal: {}, state: { value: 1 }, expectedRevision: 3
   });
   assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
@@ -173,9 +155,12 @@ function makePorts(overrides = {}) {
       })
     }
   });
-  assert.throws(() => executeProtectedTransition({
-    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
-  }), /required terminal classification/);
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /required terminal classification/
+  );
 }
 
 {
@@ -188,9 +173,24 @@ function makePorts(overrides = {}) {
       })
     }
   });
-  assert.throws(() => executeProtectedTransition({
-    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
-  }), /preserve the claimed transition identity/);
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /preserve the claimed transition identity/
+  );
 }
 
-console.log("NEXO STEP 3B protected-transition composition tests: PASS");
+{
+  const { ports } = makePorts({
+    conditionalCommit: {
+      commit: async () => { throw Object.assign(new Error("commit uncertain"), { code: "IO_UNCERTAIN" }); }
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+}
+
+console.log("NEXO STEP 3B/3C protected-transition composition tests: PASS");
