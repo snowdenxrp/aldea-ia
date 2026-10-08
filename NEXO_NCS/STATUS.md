@@ -281,6 +281,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 TOCTOU remains explicit: resolver output is not durable authorization; material changes require final revalidation. Dependency expansion must be explicitly governed; unresolved/UNKNOWN dependency => UNKNOWN.
 - ⚠️ Next exact step: minimize concrete field schema and attack missing/UNKNOWN/expiry/epoch/dependency cases before implementation. BUILD `464431c61745936b18a1a7d591ce600cdce2d66e`.
 
+- 🟢 Minimal `policyContext` shape constrained: `policyRef {id, semanticVersion, hash}` + `scope` + `resolved {semanticFacts, dependencies}` + `validity {status, expiresAt}` + `resolutionProvenance`.
+- 🔴 Hash is content identity only, not applicability/current authority. Expiry is temporal validity only. Provider cannot self-assert Core resolution. Missing required fields/dependencies/scope/provenance never default to valid/global/trusted.
+- 🟠 Resolved section contains only claim-required semantic facts/dependencies, not a universal frozen Policy/Conflict/Verifier snapshot, preserving future replaceability.
+- ⚠️ Next: adversarial schema test design before implementation. It must prove malformed/incomplete context cannot become authoritative admission input, while complete context still cannot bypass final validation/current authority. BUILD `5a2c10e6db9725ff582108798de534bdee73d6ca`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
