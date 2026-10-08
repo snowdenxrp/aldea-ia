@@ -129,6 +129,15 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🔵 Runtime PASS is not yet independently established in this checkpoint.
 - Next exact action: manually dispatch the focused workflow and record the result. If the test fails because the evaluator assumes evidence not present in the producer contract, STOP and revisit the root contract rather than patching.
 
+## STEP 7 correction checkpoint — provenance absence
+- 🟢 Review found a semantic edge case in the evaluator: empty `derivedProvenance` must mean absence of causal evidence, not equivalence.
+- 🟢 Corrected evaluator commit: `561bb62287ef4fc7546f3889f5b8437b126fbd18`.
+- 🟢 Corrected focused test commit: `0e435bdec4db1c64c269f3d2e6d4c18a3a8211c4`.
+- 🟢 Added source-difference non-equivalence coverage.
+- 🔵 Runtime PASS is still not claimed; workflow has not been independently observed in this checkpoint.
+- The architectural rule remains: missing causal evidence => UNKNOWN, never silently equivalent.
+- Next exact action: runtime execution of the focused workflow; if it exposes a contract mismatch, STOP and redesign rather than patch.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
