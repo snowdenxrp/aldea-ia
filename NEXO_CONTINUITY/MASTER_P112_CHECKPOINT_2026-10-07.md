@@ -794,3 +794,15 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Correct status: 🟢 bounded-cap historical intent recovered; 🟢 eight-step cap is original design; 🔵 disposition of omitted claims OPEN; 🔵 exact meaning of budget=8 OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
 - Do not remove the cap or call it accidental. Do not equate omitted with resolved.
 - Exact next: trace the post-AB104.100 execution/replan/tests to determine whether non-admitted claims are expected to reappear through fresh observation, explicit replan/defer semantics, or intentional discard.
+
+
+## P112 bounded-cap vs replan disposition audit — 2026-10-07
+- Saved `P112_BOUNDED_CAP_REPLAN_DISPOSITION_AUDIT_V1_2026-10-07.md`.
+- Commit: `1696ac7aca7ad726c760587d77938ba5a7d49aa6`.
+- Existing replan semantics are failure-driven: an admitted mission step fails, mission enters `needs_replan`, and a new mission carries `parentMissionId` + `replanReason`.
+- No dedicated evidence was found that exhausting the eight-step bound itself creates a replan obligation, overflow record, deferred marker, or continuation cursor.
+- Therefore candidate 9+ is semantically different from a failed step: it was never admitted into `mission.steps`, so `recordNexoOutcome()` / failure-replan lineage cannot by itself receipt that omission.
+- A later fresh assistant run may re-observe the candidate, but current evidence does not establish that the original observation survives, that disappearance means resolution, or that repeated observations have stable identity.
+- Correct status: 🟢 failure-driven replan recovered; 🟢 lineage semantics validated historically; 🟢 no evidence that bounded overflow uses that mechanism; 🔵 fresh-observation continuation OPEN; 🔵 explicit NOT_ADMITTED/DEFERRED semantics OPEN; 🔵 existing run/sample identity still needs audit; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
+- DO-NOT-REPEAT: do not treat omitted candidates as failed; do not reuse failure-replan as proof of overflow continuation; do not invent a deferred queue.
+- Exact next: trace the complete assistant report lifecycle across consecutive runs—report generation → mission construction → persistence → next-run inputs—and determine whether prior findings survive outside the truncated mission and whether an existing run/sample identifier can distinguish re-observation from a new observation.
