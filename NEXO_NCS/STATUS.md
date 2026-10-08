@@ -11,26 +11,26 @@ Research phase is intentionally exited. Do not reopen broad historical audits un
 PROPOSAL → CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATION → CONDITIONAL COMMIT → OUTCOME → RECONCILIATION
 
 ## Current build
-STEP 3A complete — protected-transition contract skeleton + ownership ports.
+STEP 3A — isolation contract closure completed at code level; runtime execution still unverified.
 
 Implemented:
 - src/nexo/core/contracts.mjs
 - src/nexo/core/ownership.mjs
 - tests/nexo/core-contracts.test.mjs
+- NEXO_NCS/BUILD/STEP_3A_ISOLATION_CLOSURE_2026-10-08.md
 
-Execution of the focused test is not verified in this environment because repository cloning/network resolution was unavailable; no test pass is claimed.
+Isolation closure:
+- claim-critical nested inputs are deep-detached and deeply immutable;
+- candidate state is deep-detached but remains mutable for CandidateExecutor;
+- adversarial alias tests were added in fae2e826c7b51dee3560b28fa8736414c4f55c98.
 
-First target:
-- immutable contract types;
-- semantic result unions;
-- ownership interfaces;
-- focused invariant tests;
-- no legacy-orchestrator integration.
+Execution of the focused test is NOT VERIFIED in this environment; no test pass is claimed.
 
 ## Previous authoritative construction artifacts
 - Final distillation: NEXO_CONTINUITY/NEXO_CORE_FINAL_DISTILLATION_2026-10-08.md
 - Construction design: NEXO_CONTINUITY/NEXO_CORE_CONSTRUCTION_DESIGN_2026-10-08.md
-- MASTER P112 checkpoint: NEXO_CONTINUITY/MASTER_P112_CHECKPOINT_2026-10-07.md
+- STEP 1→3A cross-verification: NEXO_NCS/BUILD/STEP_1_TO_3A_CROSS_VERIFICATION_2026-10-08.md
+- STEP 3A isolation closure: NEXO_NCS/BUILD/STEP_3A_ISOLATION_CLOSURE_2026-10-08.md
 
 ## Non-negotiables
 - New architecture; no V21 patch lineage.
@@ -50,4 +50,6 @@ First target:
 - Do not patch the legacy orchestrator into Nexo Core.
 
 ## Next action
-STEP 3B — compose the protected-transition pipeline while preserving ownership separation, then implement the first isolation and final-validation gates. Keep provider/model and legacy orchestration outside the Core commit path.
+1. Verify the focused STEP 3A isolation tests in an executable environment.
+2. If they pass, proceed to the smallest STEP 3B protected-transition composition.
+3. If any test reveals an architectural contradiction, STOP and revisit the design; do not patch around it.
