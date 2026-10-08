@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 
 import { loadState, applyState, persistState } from "../../scripts/simulate.mjs";
 import {
@@ -21,7 +20,7 @@ import { executeProtectedTransition } from "../../src/nexo/core/protected-transi
 import { createPersistStateConditionalCommit } from "../../src/nexo/adapters/conditional-commit-persist-state.mjs";
 
 const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-3c-"));
-const statePath = pathToFileURL(path.join(tempDir, "world-state.json"));
+const statePath = path.join(tempDir, "world-state.json");
 
 try {
   const initial = await loadState(statePath);
@@ -55,7 +54,7 @@ try {
       }
     },
     finalSemanticValidator: {
-      validate: candidate => createValidationResult(VALIDATION.PASS, {
+      validate: () => createValidationResult(VALIDATION.PASS, {
         evidence: ["final-persist-gate-pass"]
       })
     },
