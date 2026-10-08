@@ -608,3 +608,13 @@ This separation exists specifically to prevent historical research volume from b
 - Reconciliation: no contradiction found. The architectural principle is closed; the concrete deployment verifier/root/channel and its enrollment, enforcement, recovery and currentness assumptions remain unselected/unproven.
 - This prevents both reopening solved architecture and falsely treating architecture closure as deployment/runtime proof. No new mechanism introduced.
 - **Next exact action:** continue P0 evidence mapping only where it can establish new deployment-specific evidence; if none exists, record no architectural change. Do not repeat the same bootstrap argument or select/implement a root by implication.
+
+
+## 2026-10-08 — Commissioning/succession candidate families narrowed
+- 🟢 Extended and re-fetched/verified the canonical decision candidate `NEXO_NCS/DECISIONS/STEP_7_COMMISSIONING_AND_SUCCESSION_SEMANTIC_RULE_2026-10-08.md`; update commit `0caaec6a32a80881a2a89706282f06fbdfe683ec`; blob `624a7e0b28a9c491db58520785d52c61f7124af5`.
+- Reused the canonical Trust Function / Root Role Map and existing threat-model/options records. The first-trust principle is not reopened and no historical AB/P probes were rerun.
+- Narrowing: self-verifying genesis, hardware-only governance, and immutable local root without legitimate provisioning cannot stand alone. External provisioning, threshold governance and hybrid composition remain conditional—not defaults.
+- Best-aligned semantic proposal for the recorded personal/local-first/provider-independent Nexo goal: explicit owner-authorized commissioning under the Constitution, recognized through a pre-existing independent basis, exact-context-bound, with bounded scope and separately governed succession. This is a proposal, not a frozen governance decision.
+- No physical verifier/root/channel/provider/threshold selected. Trust Foundation, Constitution Authority Context and genesis activation remain BLOCKED; implementation remains unauthorized.
+- Temporary duplicate research drafts created during this continuation were removed after discovering the canonical BUILD role map already existed; canonical source-of-truth remains `NEXO_NCS/BUILD/STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md`.
+- **Next exact action:** obtain the owner's explicit governance choice on whether owner-authorized commissioning is the normative legitimacy rule, or whether a different model (e.g. multiple custodians or a designated external authority) is intended. After that decision, attack the chosen semantic contract before selecting hardware/cryptographic mechanisms. Do not treat “continue” as consent to a constitutional governance choice.
