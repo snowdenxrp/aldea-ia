@@ -445,3 +445,11 @@ This separation exists specifically to prevent historical research volume from b
 - This is a semantic design rule candidate, not implementation and not final selection of a commissioning ceremony.
 - The MASTER already states that Genesis activation requires an external/independent authority or a deployment-appropriate threshold. Existing succession research also blocks self-promotion, stale-snapshot authority resurrection, and candidate-to-current transitions without ordered succession and required predecessor cutoff/fencing.
 - Next: evaluate candidate commissioning/succession families against the intended local-first personal Nexo deployment and existing Constitution/Kevin authority principle. Do not choose hardware/cryptography prematurely. If a remaining choice genuinely depends on an unrecorded governance preference, ask one focused question; otherwise derive only what existing constraints justify. Attack the chosen semantic contract before implementation.
+
+
+## 2026-10-08 — Minimum commissioning binding contract candidate
+- Created and re-fetched/verified `NEXO_NCS/BUILD/STEP_7_MINIMUM_COMMISSIONING_BINDING_CONTRACT_2026-10-08.md`.
+- Commit: `60d49714f285704a8fcfe31e00fd4c0e66ea1504`; blob: `d5ac1cc568d70ffc9acb5abe9a2921c06d3ac4d0`.
+- Defines a narrow initial commissioning binding, exact Constitution/version/context binding, independent trust-basis prerequisite, and `ESTABLISHED|INVALID|UNKNOWN` semantics. It does not grant operation authority or authorize amendment, recovery, migration, credential replacement, delegation, or succession.
+- This is a design candidate only. Independent genesis basis and deployment threat model remain unresolved; no trust-root implementation or activation is authorized.
+- Next: adversarially attack this contract specifically for circular bootstrap, fabricated commissioning, replay/substitution, stale/revoked evidence, loss/offline recovery, conflicting successors, and false enforcement claims. Do not repeat closed probes absent a materially new risk.
