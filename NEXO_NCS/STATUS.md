@@ -3,67 +3,76 @@
 Date: 2026-10-08
 
 ## Current phase
-CONSTRUCTION — STEP 3C
+CONSTRUCTION — STEP 4
 
 Research phase is intentionally exited. Do not reopen broad historical audits unless new implementation evidence contradicts an established invariant.
 
 ## Current architecture
 PROPOSAL → CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATION → CONDITIONAL COMMIT → OUTCOME → RECONCILIATION
 
-## Authoritative foundation
-- MASTER/final distillation remains authoritative for the protected-transition lifecycle and non-bypass invariants.
-- AB104/AB105/P112 evidence remains historical evidence for the established invariants; it is not being replayed.
-- P112 already established that existing persistState(expectedRevision) is the canonical conditional snapshot-commit primitive for cooperating writers.
-- No second generic transaction/commit wrapper is being invented.
-
 ## Completed construction
 STEP 3A — isolation contract closure completed and runtime-verified.
 STEP 3B — smallest protected-transition composition completed and runtime-verified.
+STEP 3C — canonical persistence integration completed and runtime-verified.
 
-STEP 3C — canonical persistence integration is now structurally wired at the ownership boundary.
+STEP 3C proof:
+- Workflow run 37740178286
+- Job 113188835156
+- Proof commit a5e88fca26eedcd4c03e186e591bfb7b30d1ee9
 
-Implemented:
-- src/nexo/core/protected-transition.mjs
-- src/nexo/adapters/conditional-commit-persist-state.mjs
-- tests/nexo/protected-transition.test.mjs
-- tests/nexo/conditional-commit-persist-state.test.mjs
-- .github/workflows/nexo-step-3a-isolation.yml
-- NEXO_NCS/BUILD/STEP_3C_INTEGRATION_GATE_2026-10-08.md
+## STEP 4 current boundary
+FinalSemanticValidator is the next smallest construction boundary.
 
-## STEP 3C structural correction
-The real persistState(...) primitive is asynchronous while the first STEP 3B composition was synchronous.
+The current composition already makes FinalSemanticValidator mandatory, but the validator is still only a skeleton. STEP 4 therefore defines the semantic obligations that a PASS must establish before ConditionalCommit.
 
-This was detected before hiding it behind an adapter.
+Design checkpoint:
+- NEXO_NCS/BUILD/STEP_4_FINAL_SEMANTIC_VALIDATION_BOUNDARY_2026-10-08.md
+- commit 41bb9ad254a65d86e9196fe62a88598972bd15d0
 
-Decision:
-- protected-transition composition is now asynchronous;
-- the ConditionalCommit port is awaited;
-- no synchronous bridge, polling loop, second persistence primitive, or speculative transaction layer was introduced;
-- Core remains schema-independent; simulation-specific persistence details stay in the adapter.
+## STEP 4 contract
+PASS requires all applicable claim-critical conditions to be positively established:
+1. claim identity remains bound;
+2. target/incarnation remain valid when claim-relevant;
+3. required authoritative reads remain valid/current;
+4. required direct/transitive dependencies remain satisfied;
+5. required predicate/range/aggregate dependencies remain satisfied;
+6. relevant policy/config/logic versions remain valid;
+7. causal random/time/external/provider inputs remain valid where applicable;
+8. candidate invariants hold;
+9. no required evidence is missing, stale, ambiguous, contradictory, or merely helper/cache-derived;
+10. PASS carries supporting evidence.
 
-This is an architectural contract correction, not a patch around the persistence boundary.
+Required result:
+- disproven condition → FAIL;
+- insufficient evidence → UNKNOWN;
+- UNKNOWN never becomes PASS.
 
-## STEP 3C commit semantics
-- STATE_REVISION_CONFLICT → CONDITIONAL_CONFLICT → STALE_CANDIDATE.
-- Non-conflict persistence exception → UNKNOWN conservatively.
-- Invalid/unknown commit result → UNKNOWN.
-- Final semantic validation remains mandatory before commit.
-- Terminal outcomes still pass through OutcomeClassifier.
-- Canonical persistence remains exclusively behind ConditionalCommit.
-- Revision conflict is NOT treated as proof of dependency validity, fencing, exactly-once, or external-effect absence.
+## STEP 4 ownership
+Validator reads candidate/claim and explicit authoritative validation context.
+Validator cannot mutate canonical state, authorize, commit, or declare terminal outcomes.
+ConditionalCommit remains the sole canonical mutation owner.
 
-## Runtime proof state
-🟢 STEP 3A runtime verified.
-🟢 STEP 3B runtime verified: run 37737359129 / job 113179842110.
-🟢 STEP 3C source/integration tests have been added.
-🟢 STEP 3C test assertion corrected: persisted candidate state must reflect the isolated candidate mutation (`hour + 1`), not the canonical source state.
-🟢 STEP 3C GitHub Actions runtime verification passed: run 37740178286 / job 113188835156.
-🔵 This still does not prove power-loss durability, universal writer participation, external-effect correctness, exactly-once, distributed fencing, or reconciliation.
+## STEP 4 implementation gate
+Implement only the smallest deterministic validator contract and runtime tests.
+
+Required tests:
+- complete valid evidence → PASS;
+- disproven predicate → FAIL;
+- unavailable required evidence → UNKNOWN;
+- missing claim-critical evidence rejected;
+- helper/cache evidence cannot substitute for authoritative evidence;
+- claim/candidate identity mismatch rejected;
+- validator cannot mutate canonical state or invoke commit through its owned interface.
+
+No speculative queues, run IDs, effect tombstones, transaction wrappers, distributed fencing, compatibility layers, or external-effect machinery.
+
+## Epistemic state
+🔵 STEP 4 boundary defined.
+🟢 STEP 3A/3B/3C runtime evidence remains valid.
+🔴 STEP 4 semantic validation is NOT implemented/proven yet.
 
 ## Next action
-1. STEP 3C is runtime-verified and closed; the dedicated proof is saved.
-2. Advance to the next smallest construction boundary only if the contracts remain coherent.
-3. Before implementation, define the next boundary and its non-bypass invariants; do not invent infrastructure merely from historical gaps.
+Implement STEP 4 only after this boundary remains contract-coherent. If implementation reveals ClaimEnvelope lacks information required to establish a protected predicate, STOP and redesign the claim contract before adding a patch.
 
 ## Non-negotiables
 - New architecture; no V21 patch lineage.
@@ -84,4 +93,4 @@ This is an architectural contract correction, not a patch around the persistence
 - Do not create a second generic conditional persistence primitive.
 
 ## Continuity
-All prior MASTER, AB104/AB105, P112, final distillation, construction design, STEP 3A, STEP 3B, and the new STEP 3C integration gate remain part of the continuity chain. They must be consulted as evidence/constraints when a later implementation boundary depends on them.
+All prior MASTER, final distillation, construction design, STEP 3A, STEP 3B, and STEP 3C evidence remains authoritative for this construction boundary.
