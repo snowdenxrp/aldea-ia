@@ -169,6 +169,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - Future-countereffect review applied to severity-as-policy, global stateRevision, observation equality/dedupe, and legacy mission metadata. No new mechanism introduced.
 - Current status of the authoritative selection-policy contract: PENDING. Preserve UNKNOWN/PENDING rather than inventing admission semantics or modifying legacy orchestration.
 
+- 🔵 Admission-input boundary cross-checked against historical AB104.402 and its protected-context result; no new mechanism or AB reopening. Updated STEP 7 document commit: `670cbdc9c972d6911119c4de7cbbb99625f9d07d`.
+- 🟢 New conclusion: ObservationEnvelope/provider proposal cannot define its own admission authority. Required admission context/policy must originate from the protected semantic layer; missing required context remains UNKNOWN/HOLD/REVALIDATE rather than being treated as unconstrained.
+- 🔵 The exact candidate-selection relation under the fixed bound of 8 remains PENDING. Legacy severity ordering is evidence of existing behavior, not authorization for the new Core policy.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
