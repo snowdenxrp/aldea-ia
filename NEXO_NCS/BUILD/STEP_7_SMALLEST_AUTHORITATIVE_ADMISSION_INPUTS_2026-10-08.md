@@ -232,3 +232,19 @@ For STEP 7 this supports a **minimum semantic contract for a future bounded-sele
 - Explicit policy-scoped relation: more work now, but preserves replaceability and lets different mission classes define different selection semantics. This is the only candidate currently consistent with the recovered constraints.
 
 This is a **contract candidate for further review**, not an implementation decision and not yet sufficient to derive a concrete selection relation for current findings.
+
+
+## Selector relation result — partial-order candidate, not yet implementation
+A direct MASTER/AB cross-check strengthens the boundary. MASTER states that proxy satisfaction is not goal satisfaction, critical disagreement remains CONFLICT/UNKNOWN unless a prevalidated policy resolves it, and conflicting observations must not yield arbitrary winner selection. The canonical requirements also require explicit precedence for conflicting authorities and fail-safe behavior.
+
+Therefore the currently strongest semantic candidate is **eligibility + policy-scoped partial-order selection**, rather than a universal scalar ranking:
+- First establish eligibility under claim-specific evidence and applicable protected policy.
+- Then apply an explicit policy-defined preference/precedence relation only where the policy establishes that relation.
+- Comparable candidates may be ordered by that relation.
+- Incomparable candidates are not silently ordered.
+- Conflicting candidates are not silently resolved.
+- If the fixed bound of 8 can be filled without inventing an ordering, select the supported subset.
+- If more than 8 mutually incomparable/conflicting candidates require an arbitrary winner to fill the bound, the selector must preserve UNKNOWN/CONFLICT for the unresolved selection rather than use input order, timestamp, score, severity, provider order, or model confidence.
+- Being selected remains distinct from authority/execution/commit.
+
+This does **not** yet define the exact preference relation or what policy owns it. It is the first candidate relation that satisfies the recovered MASTER + AB constraints without introducing a universal ranking field. The next proof obligation is to test this relation against concrete heterogeneous producer classes and future evolution/countereffects before implementation.
