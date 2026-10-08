@@ -487,3 +487,12 @@ This separation exists specifically to prevent historical research volume from b
 - 🟠 Standards cross-check scoped: RFC 9334 RATS helps separate attestation roles; NIST SP 800-193 addresses platform firmware resilience; FIDO/WebAuthn may inform authentication but its relying-party assumptions must be evaluated before adaptation. None supplies Nexo's constitutional legitimacy.
 - 🔴 Trust root/Constitution Authority Context implementation remains blocked.
 - **Next exact action:** compare candidate channels against provider independence, portability, offline use, theft/loss, revocation, coercion, and common-mode compromise; select no mechanism until evidence and dependency closure can be appraised.
+
+
+## 2026-10-08 — Recognition channel comparative assessment
+- 🟢 Saved and re-fetched/verified `NEXO_NCS/RESEARCH/STEP_7_RECOGNITION_CHANNEL_COMPARATIVE_ASSESSMENT_2026-10-08.md`.
+- The separate authenticator can potentially establish credential control and context-bound approval, but depends on a trustworthy enrollment ceremony and verifier/UI boundaries.
+- External provisioning can supply a prior reference only if its issuer governance, portability/exit, and capture risks are bounded.
+- A physical medium may support out-of-band approval/recovery but cannot alone establish informed consent, currentness, or safe revocation; a static bearer secret is copyable/theft-sensitive.
+- No channel or protocol selected; no implementation authorized.
+- **Next exact action:** compare dependency/failure modes across enrollment/issuer, verifier, candidate UI, provider/network, updates, offline revocation, loss/theft, recovery, and portability/exit; then attack the narrowest viable binding contract.
