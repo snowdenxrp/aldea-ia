@@ -591,3 +591,39 @@ This minimum deliberately avoids a universal policy schema, selector score, auth
 
 ### Current result
 The minimum field categories are now sufficiently constrained for a dedicated adversarial schema test design. Implementation remains blocked only on that test: demonstrate that malformed/incomplete contexts cannot become authoritative admission inputs and that complete contexts still cannot bypass final validation/current authority. 
+
+
+## Adversarial schema test design — policyContext
+Before implementation, the minimum schema was attacked as a boundary rather than as a parser test.
+
+### Required cases
+| Case | Expected result | Reason |
+|---|---|---|
+| missing policyRef | UNKNOWN | governed semantic identity absent |
+| policyRef hash differs from resolved semantics | FAIL/UNKNOWN | reference and resolved meaning disagree; contract decides whether contradiction is definitive |
+| missing required scope | UNKNOWN | applicability cannot be established |
+| scope mismatch | FAIL | policy explicitly does not cover claim |
+| missing required semantic fact | UNKNOWN | claim-critical policy meaning incomplete |
+| missing dependency | UNKNOWN | semantic closure incomplete |
+| dependency UNKNOWN/stale/incompatible | UNKNOWN | cannot establish applicable semantics |
+| expired policy/context | FAIL when expiry is hard; otherwise UNKNOWN | governed temporal rule decides |
+| provider asserts Core provenance | UNKNOWN | self-assertion is not protected provenance |
+| authority epoch changed | REVALIDATE/UNKNOWN | historical context cannot silently become current authority |
+| stop/revocation changed | not resolved by policyContext | separate authority/control boundary |
+| complete policyContext | context-valid only | never SAFE_COMMIT/authority by itself |
+| complete context + failed final validation | FAIL/semantic conflict | final validation remains mandatory |
+
+### Critical distinction: FAIL vs UNKNOWN
+The schema must not encode one universal missing-data rule. If a governed Policy explicitly proves a condition false (for example, scope mismatch or hard expiry), FAIL is justified. If required evidence is absent, stale without authoritative conclusion, or dependency status is unknown, UNKNOWN is required.
+
+### Critical distinction: context validity vs admission
+Even a fully valid policy context does not mean ADMITTED. Admission still requires candidate set, claim-specific evidence, explicit policy/selection semantics, bounded selection, and set-level interaction constraints. PolicyContext is one protected semantic input, not the admission decision.
+
+### Critical distinction: context validity vs authority
+Even a complete context does not grant current authority. Authority remains independently checked at the protected boundary; epoch/revocation/STOP changes can invalidate current usability without rewriting historical provenance.
+
+### Future-countereffect
+Do not make the schema validator an implicit policy engine. It should validate structural/contractual completeness and return epistemic state; policy-specific semantics remain governed by the referenced contracts. This prevents the new Core from freezing today's policy algorithms into a universal validator.
+
+### Result
+The adversarial matrix exposes no need for a new top-level object or compatibility layer. The remaining design boundary is sufficiently constrained to implement a typed `policyContext` contract, provided the implementation preserves UNKNOWN/FAIL distinctions and cannot emit authority/admission/commit outcomes.
