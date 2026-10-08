@@ -493,3 +493,12 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - 🟢 Distributed mutation ownership and additional spatial bypass confirmed. 🔵 Exhaustive mutation coverage, exact composite-token closure, minimum exclusion set and final revalidation semantics remain OPEN. 🔴 No runtime race/JMM-HB/exactly-once/atomic power-loss claim.
 - Exact next: build representative-class × writer matrix including movement/position, trace remaining direct spatial/inventory/relationship/economy writers, and compare composite-token closure against the existing isolated-snapshot + `persistState(expectedRevision)` path.
 - DO-NOT-REPEAT: no new global stateRevision; no implementation; no TLC rerun; no AB104.185 primary/backfill; no AB105.117R; do not repeat the earlier generic version-token or persistence-primitive audits.
+
+
+## P112 action-class × writer matrix V2 — 2026-10-07
+- Saved P112_ACTION_CLASS_WRITER_MATRIX_V2_2026-10-07.md, commit a7a49ef98d2d332bf66ea22615ca445e8889e479.
+- Six representative classes audited: Resource, Trade, Cooperate, Exploration, Build/Farm, Social/Knowledge.
+- New matrix incorporates concrete movement/position and normalization writers. No class has demonstrated complete writer→token coverage.
+- 🟢 Write-skew, aggregate and predicate/range invalidators are present across the representative classes. 🔵 Exact minimum token partition remains OPEN.
+- Snapshot + persistState(expectedRevision) remains structurally compatible, but final semantic revalidation, dependency completeness, crash atomicity and prepared-intent durability remain OPEN.
+- Exact next: six adversarial stale-admission cases, one per class; identify the post-admission writer and minimum rejection token set; then compare against isolated snapshot + conditional commit.
