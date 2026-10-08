@@ -1,7 +1,8 @@
 # NEXO NCS — STATUS
 
 ## Current phase
-CONSTRUCTION — STEP 7 MISSION / OBSERVATION PROVENANCE BOUNDARY
+CONSTRUCTION — STEP 7 POLICY CONTEXT RESOLVER TRUST BOUNDARY STOP
+
 
 ## Closed / runtime verified
 - STEP 3A isolation: runtime verified.
@@ -344,3 +345,10 @@ V1–V20, AB/TLC/Kafka/G0 and related historical investigations are evidence, no
 When a new chat begins with **NCS**, recover the current STATUS and resume from its exact next action. Do not infer a historical step from memory when STATUS already defines the operational checkpoint.
 
 This separation exists specifically to prevent historical research volume from becoming operational continuity or contaminating the clean new architecture.
+
+## STEP 7 resolver STOP
+- 🔴 Implementation attack found a root semantic weakness: the resolver currently accepts caller-supplied PASS/FAIL/UNKNOWN check statuses and aggregates them; it does not itself establish authoritative evidence.
+- Proof/design note: `NEXO_NCS/BUILD/STEP_7_POLICY_CONTEXT_RESOLVER_IMPLEMENTATION_ATTACK_2026-10-08.md`, commit `c53641e9a3b00d3609d9a6543a69977efaca3589`.
+- Runtime PASS reported earlier remains only structural/execution evidence; it does not prove semantic resolver correctness.
+- STOP: do not patch with `trusted`, `authoritative`, `verified`, provider self-attestation, or equivalent flags.
+- Next exact action: derive the smallest authoritative evidence-input contract for the resolver, then redesign implementation from the root before continuing.
