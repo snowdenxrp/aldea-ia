@@ -216,6 +216,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - ⚠️ No implementation yet. Next proof obligation: test this candidate relation against heterogeneous producer classes and future-countereffect scenarios before freezing the selector contract.
 - Latest analysis commit: `37263749af50cb39c148f8db6b5446f2ffec2c0`.
 
+- 🟢 Adversarial matrix applied to heterogeneous producer classes. Same-claim differences do not automatically establish preference; cross-claim candidates remain incomparable unless protected policy establishes comparability.
+- 🔴 New boundary: a generic `candidateA > candidateB` relation without the semantic context that authorizes the comparison would merely recreate universal priority under another name.
+- 🟠 The partial-order concept survives the attack, but its owner/context is still unresolved. No implementation authorized.
+- ⚠️ Next action: determine whether MASTER/CORE contains an existing protected owner for cross-candidate comparability/selection. If not, keep STEP 7 PENDING rather than invent one.
+- Latest analysis commit: `2cc1458d52aa0990eb358838798dac3187ecd91d`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
