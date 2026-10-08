@@ -496,3 +496,11 @@ This separation exists specifically to prevent historical research volume from b
 - A physical medium may support out-of-band approval/recovery but cannot alone establish informed consent, currentness, or safe revocation; a static bearer secret is copyable/theft-sensitive.
 - No channel or protocol selected; no implementation authorized.
 - **Next exact action:** compare dependency/failure modes across enrollment/issuer, verifier, candidate UI, provider/network, updates, offline revocation, loss/theft, recovery, and portability/exit; then attack the narrowest viable binding contract.
+
+
+## 2026-10-08 — Natural recognition and risk-adaptive confirmation
+- 🟢 User-approved UX direction recorded: Nexo should recognize Kevin naturally/automatically where supported, minimize repeated password prompts, and request stronger confirmation when the action's risk warrants it.
+- 🟢 Decision: `NEXO_NCS/DECISIONS/STEP_7_NATURAL_RECOGNITION_AND_RISK_ADAPTIVE_CONFIRMATION_2026-10-08.md`; commit `b18345bdce39326a2098e1ce910b32b00fd41ea1`; re-fetched and verified.
+- 🟠 This is an experience principle only. No biometric/channel/vendor/root/protocol has been selected; no implementation or activation authorized.
+- Core distinction: recognition ≠ identity proof ≠ authority ≠ action-specific authorization. Voice/face alone cannot authorize consequential protected actions; risk policy must bind confirmation to the exact action/context and consider independent failure domains.
+- **Next exact action:** extend the comparative assessment across voice, face, platform fingerprint/biometrics, separate authenticator/device, and physical/cryptographic credentials; attack spoofing/replay, coercion, common-mode compromise, privacy, accessibility, offline revocation, recovery and portability. Reconcile MASTER + AB + P/P112; do not implement until the narrowest binding contract passes adversarial review and future-countereffects gate.
