@@ -157,3 +157,50 @@ Estas fuentes informan mecanismos y prácticas técnicas; no definen la Constitu
 ## Próximo paso exacto
 
 Auditar primero las fronteras de compromiso y operaciones en curso durante la revocación; después causalidad/frescura y evidencia de efectos; luego desconexión/sucesión paralela; por último formalizar los criterios de salida y la matriz adversarial completa. No implementar todavía. No afirmar que este documento está guardado en la biblioteca ChatGPT /NCS; solo se ha creado este respaldo GitHub.
+
+
+## Auditoría incremental: operaciones en curso y frontera de compromiso
+
+Estado: análisis provisional; las opciones siguientes requieren validación constitucional por dominio.
+
+### Tres semánticas contractuales candidatas
+
+1. **Autorización al admitir (ADMISSION_AUTHORIZATION):** la operación queda admitida cuando se satisfacen las precondiciones de autorización. El contrato define explícitamente si una revocación posterior cancela pasos pendientes o permite terminar una operación acotada. No autoriza operaciones nuevas ni amplía el alcance original.
+2. **Autorización en el compromiso (COMMIT_AUTHORIZATION):** antes de la frontera que hace efectivo el cambio, debe demostrarse la autorización exigida por el contrato. Si no se puede comprobar una precondición necesaria, no presumir que el commit está autorizado. La frontera es semántica del dominio; no equivale universalmente a enviar una solicitud, recibir un ACK o escribir un registro local.
+3. **Autorización continua (CONTINUOUS_AUTHORIZATION):** para operaciones prolongadas, el contrato identifica los puntos de control donde debe seguir cumpliéndose la autorización. La revocación puede bloquear etapas futuras; no implica que los efectos anteriores desaparezcan ni que un sistema externo obedezca una cancelación.
+
+No son modos globales de Nexo ni deben asignarse solo por comodidad de implementación. Governance define los límites admisibles; el Operation Contract selecciona una semántica concreta según el efecto/riesgo; Assurance evalúa la evidencia disponible.
+
+### Preguntas obligatorias por operación
+
+- ¿Cuál es el efecto protegido y quién lo confirma?
+- ¿Dónde está la frontera semántica de compromiso?
+- ¿La autorización debe ser válida al admitir, al comprometer o en puntos de control explícitos?
+- ¿Qué sucede si se revoca antes, durante o después de esa frontera?
+- ¿La cancelación es posible, y qué prueba demuestra que fue efectiva?
+- ¿Puede haber efecto parcial o externo sin confirmación local?
+- ¿Qué permite el contrato cuando el dispositivo está offline y no puede consultar autoridad actual?
+- ¿Qué acción segura está permitida si la ejecución está en curso y la autoridad pasa a UNKNOWN?
+- ¿Cómo se demuestra NO_EFFECT_CONFIRMED sin confundir ausencia de observación con ausencia de efecto?
+- ¿La compensación es posible, está autorizada por separado y qué consecuencias no puede revertir?
+
+### Tabla de decisión provisional
+
+| Situación probada | Respuesta exigida |
+|---|---|
+| Revocación efectiva según las reglas aplicables antes del punto de autorización requerido | Denegar/bloquear la operación dependiente; si pudo producirse un efecto, reconciliarlo aparte |
+| Revocación durante ejecución, pero antes del commit protegido | Aplicar la semántica previamente definida por el contrato; no improvisar ni asumir cancelación efectiva |
+| Revocación después de un efecto confirmado | Conservar el efecto; evaluar autorización y consecuencias por separado |
+| Solicitud enviada a un sistema externo, resultado sin confirmar | EFFECT_UNKNOWN; reconciliar con el sistema/dominio; no reintentar automáticamente |
+| ACK recibido pero garantía semántica insuficiente para probar el efecto | No elevar a EFFECT_CONFIRMED hasta satisfacer la garantía definida para ese propósito |
+| No puede determinarse si la revocación precedió al punto relevante | AUTHORIZATION_UNKNOWN; bloquear nuevas transiciones dependientes y reconciliar |
+| La operación estaba offline y el contrato no autorizaba ese riesgo/alcance | No validar retroactivamente por el mero hecho de que la operación ocurrió |
+| Operación offline cubierta por una delegación/preautorización explícita y limitada | Evaluar cumplimiento del alcance, límites y condiciones; el permiso en caché por sí solo no basta |
+
+### Hueco estructural que no debe taparse
+
+Una revocación no puede garantizar que todos los sistemas externos detengan instantáneamente operaciones ya aceptadas. El protocolo debe distinguir entre: (a) la decisión constitucional de revocar, (b) el alcance/instante efectivo definido por la Constitución, (c) la propagación y observación de la revocación, y (d) los efectos reales que todavía pueden ocurrir. Si la arquitectura exige una garantía de detención que el dominio externo no puede proporcionar, eso es un conflicto de contrato/capacidad que debe resolverse antes de permitir esa operación, no un motivo para añadir un lock global.
+
+### Criterio provisional de avance
+
+No cerrar este análisis hasta que una matriz por clase de operación (reversible, irreversible, compensable; local o externa; online u offline; breve o prolongada) defina punto de compromiso, autorización exigida, semántica de revocación, evidencia del efecto, cancelación y reconciliación. Esta matriz debe ser específica por dominio y compatible con Governance, Decision & Action, Assurance y CSTC. No implementar todavía.
