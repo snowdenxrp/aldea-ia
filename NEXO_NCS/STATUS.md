@@ -309,6 +309,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Future-countereffect guard: do not turn the schema constructor into a provenance authenticator, universal dependency engine, applicability engine, expiry engine, or authority engine.
 - Next exact action: derive the smallest resolver contract for governed policy reference + required context → explicit context evidence/status, with no authorization, admission, commit, or external-effect capability.
 
+- 🟢 Minimum PolicyContext Resolver contract recorded: `NEXO_NCS/BUILD/STEP_7_MINIMUM_POLICY_CONTEXT_RESOLVER_CONTRACT_2026-10-08.md`, commit `8f2f2c5eb9a0467d37a0f1d982fb1a23a64c6a3a`.
+- Boundary: governed policyRef + required claim/mission context + authoritative evidence → `VALID|FAIL|UNKNOWN` context result. No authority/admission/execution/commit capability.
+- 🟠 Resolver explicitly avoids unbounded dependency traversal and invented identity/queue/retry/effect machinery. Missing claim-critical evidence remains UNKNOWN.
+- Next exact action: adversarially attack this resolver contract against TOCTOU, dependency closure, provenance, scope/applicability, expiry and provider substitution before implementation.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
