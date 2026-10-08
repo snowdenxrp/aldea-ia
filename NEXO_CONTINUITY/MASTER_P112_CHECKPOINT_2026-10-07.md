@@ -426,3 +426,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - 🟢 Persistence primitive and conflict detection are closed. 🔵 Binding complete final-gate provenance to that commit and mapping conflict to semantic reconciliation remain open.
 - Exact next: audit the current `executeAction()/performDecision()` boundary versus Nexo runtime to determine whether one isolated-snapshot final validator can cover the claim-specific DependencySet without swallowing unrelated post-effect writes; map failures to STALE_ADMISSION / HOLD / UNKNOWN / RECONCILE.
 - No implementation; no TLC; no AB104.185 primary; no AB105.117R.
+
+
+## P112 executeAction FINAL_GATE boundary audit V1 — 2026-10-07
+- Saved `NEXO_CONTINUITY/P112_EXECUTEACTION_FINAL_GATE_BOUNDARY_AUDIT_V1_2026-10-07.md`, commit `f96d4d67b5a408e09f1b4a68d4b6af98e42fe4f3`.
+- Normal path and Nexo path both converge on `executeAction(simulation, agent, action)`, but neither demonstrates a semantic FINAL_GATE immediately before the protected mutation.
+- Admission footprint is wider than WriteSet: needs/perception/resources/partner/inventory/prices/knowledge/memory/relationships/skills/territory/plan/randomness can influence selection; several action helpers re-read current state during mutation.
+- Important separation: `tick()` performs world/day mutations before decisions and learning/event/memory/region/need writes after `executeAction()`. A future protected boundary must not accidentally absorb those post-effect writes.
+- `nexoEffectRevision` is local/in-memory and distinct from canonical `stateRevision`.
+- 🟢 common mutation boundary identified; 🔵 complete final-gate provenance and protected-vs-learning write separation remain open.
+- Exact next: audit individual `executeAction` branches and real helper read/write graphs, starting with resource consumption, inventory mutation, and trade/partner mutation.
