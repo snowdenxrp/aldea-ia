@@ -19,14 +19,22 @@ function assertCandidate(candidate, claim) {
   }
 }
 
-function outcomeFromValidation(result) {
+function classify(ports, kind, { reasons = [], evidence = [] } = {}) {
+  const outcome = ports.outcomeClassifier.classify({ kind, reasons, evidence });
+  if (!outcome || outcome.kind !== kind) {
+    throw new Error("outcomeClassifier violated the required terminal classification");
+  }
+  return outcome;
+}
+
+function outcomeFromValidation(ports, result) {
   if (result.status === VALIDATION.FAIL) {
-    return createOutcome(OUTCOMES.SEMANTIC_CONFLICT, {
+    return classify(ports, OUTCOMES.SEMANTIC_CONFLICT, {
       reasons: result.reasons,
       evidence: result.evidence
     });
   }
-  return createOutcome(OUTCOMES.UNKNOWN, {
+  return classify(ports, OUTCOMES.UNKNOWN, {
     reasons: result.reasons,
     evidence: result.evidence
   });
@@ -54,14 +62,14 @@ export function executeProtectedTransition({
   }
 
   if (authority.status === AUTHORITY.STOP) {
-    return createOutcome(OUTCOMES.AUTHORITY_STOP, {
+    return classify(ports, OUTCOMES.AUTHORITY_STOP, {
       reasons: authority.reasons,
       evidence: authority.evidence
     });
   }
 
   if (authority.status === AUTHORITY.UNKNOWN) {
-    return createOutcome(OUTCOMES.UNKNOWN, {
+    return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: authority.reasons,
       evidence: authority.evidence
     });
@@ -69,7 +77,7 @@ export function executeProtectedTransition({
 
   const isolatedState = ports.snapshotIsolator.isolate({ claim, state });
   if (isolatedState === undefined) {
-    return createOutcome(OUTCOMES.UNKNOWN, {
+    return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["snapshot isolation did not establish isolated state"]
     });
   }
@@ -83,35 +91,35 @@ export function executeProtectedTransition({
 
   const validation = ports.finalSemanticValidator.validate(candidate);
   if (!validation || !Object.values(VALIDATION).includes(validation.status)) {
-    return createOutcome(OUTCOMES.UNKNOWN, {
+    return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["final semantic validator returned no valid result"]
     });
   }
 
   if (validation.status !== VALIDATION.PASS) {
-    return outcomeFromValidation(validation);
+    return outcomeFromValidation(ports, validation);
   }
 
   const commit = ports.conditionalCommit.commit(candidate);
   if (!commit || !Object.values(COMMIT).includes(commit.status)) {
-    return createOutcome(OUTCOMES.UNKNOWN, {
+    return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["conditional commit returned no valid result"]
     });
   }
 
   if (commit.status === COMMIT.COMMITTED) {
-    return createOutcome(OUTCOMES.SAFE_COMMIT, {
+    return classify(ports, OUTCOMES.SAFE_COMMIT, {
       evidence: validation.evidence
     });
   }
 
   if (commit.status === COMMIT.CONDITIONAL_CONFLICT) {
-    return createOutcome(OUTCOMES.STALE_CANDIDATE, {
+    return classify(ports, OUTCOMES.STALE_CANDIDATE, {
       reasons: [commit.errorCode ?? "conditional commit conflict"]
     });
   }
 
-  return createOutcome(OUTCOMES.UNKNOWN, {
+  return classify(ports, OUTCOMES.UNKNOWN, {
     reasons: [
       commit.status === COMMIT.UNKNOWN
         ? "conditional commit outcome is UNKNOWN"
