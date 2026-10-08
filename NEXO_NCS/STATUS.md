@@ -239,6 +239,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Remaining question is now narrow: whether existing Policy/Claim/Conflict contracts already have enough vocabulary to express the required set predicate and permitted preference relation. Do not add fields until this is checked.
 - ⚠️ No implementation. Latest analysis commit: `dbf5e038fb89106438d946ed9a3530ea51cb5e97`.
 
+- 🟢 Existing repository vocabulary closes the pair-vs-set semantic question: versioned conflict relations explicitly classify pairs/sets; aggregate admission covers shared resources/authority, dependency overlap, common-mode domains, cumulative exposure, global invariants and temporal state; higher-order research explicitly rejects pairwise-only compatibility; composite research rejects individual-admissibility ⇒ composite-admissibility.
+- 🔵 Therefore STEP 7 semantic shape is now: `candidate eligibility → policy/claim-specific pair/set interaction classification → set admissibility → bounded selection`.
+- 🟠 Schema sufficiency is NOT established: historical concepts are evidence, not fields to import into new Core. Do not create generic priority/score/selector/optimizer or legacy compatibility objects.
+- 🟢 Pair-vs-set semantic question is CLOSED. Remaining exact task: derive the minimum protected Policy/Admission contract representation from existing MASTER/CORE vocabulary, then attack that representation before implementation.
+- Latest analysis commit: `6fa90cf931db10ebe065c248161febe89f3af984`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
