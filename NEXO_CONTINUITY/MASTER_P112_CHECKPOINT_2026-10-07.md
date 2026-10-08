@@ -597,3 +597,16 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Runtime records execution/outcome in memory after adapter execution but does not itself persist the canonical simulation snapshot.
 - 🟢 conservative PREPARED/reconcile behavior and execution-only separation; 🔵 cross-artifact linkage; 🔴 no current EVICTED-vs-NEVER_SEEN distinction; 🔴 missing journal must not be interpreted as NOT_ATTEMPTED.
 - Exact next: inspect other Nexo memory/effect/persistence-envelope fields for any existing non-evictable identity/outcome marker before inventing architecture.
+
+## P112 non-evictable marker / linkage audit V1 — 2026-10-07
+- Saved `P112_NON_EVICTABLE_MARKER_SEARCH_LINKAGE_AUDIT_V1_2026-10-07.md`.
+- Commit: `7243044b634fcf65d4e78da94754639487390a58`.
+- No existing non-evictable effect marker, archive/tombstone registry, or effect-specific durable identity was found.
+- missions(50), attempts(100), doNotRepeat(100), executions(200), effectJournal(200) are all bounded structures; none safely substitutes for an unresolved-effect tombstone.
+- executions shares the local `missionId:stepId` key and is mission execution history, not an external-effect ledger.
+- attempts are mission outcomes; doNotRepeat is explicit lesson/history; neither can safely replace effect evidence.
+- nexoEffectRevision is local/in-memory simulation state and is not serialized as part of nexoMemory.
+- stateRevision is a canonical snapshot conflict primitive, not an effect identity/outcome registry.
+- Runtime can carry a cloned working simulation + nexoMemory together, but no existing field links terminal effect evidence to the canonical stateRevision commit.
+- 🟢 existing structures/snapshot crossing; 🔵 possible reuse of stateRevision for conflict detection; 🔴 no non-evictable effect marker; 🔴 missing journal entry cannot mean NOT_ATTEMPTED.
+- Exact next: inspect the physical persistState(expectedRevision) boundary and establish exactly which working-snapshot fields become durable together versus RAM-only, without inventing a new identity.
