@@ -86,3 +86,13 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - No observation ID is invented. Missing claim-critical provenance remains explicit and claim-specific UNKNOWN/INVALID classification is not guessed globally.
 - Next exact action: implement the smallest loss-preserving ObservationEnvelope/MissionCandidate contract and focused tests from actual producer shapes. Do not integrate legacy yet.
 - STEP 7 must STOP if implementation requires an invented mechanism merely to make the boundary pass.
+
+
+### STEP 7 implementation checkpoint — 2026-10-08
+- 🟢 Minimum ObservationEnvelope/MissionCandidate contract implemented in `src/nexo/core/observation.mjs` (commit `f43f65b5a6937f86a9c0d2584f9e7764b3b73aba`).
+- 🟢 Focused contract tests added in `tests/nexo/observation.test.mjs` (commit `30895aa6ea98f7d513ba8b164d1a38e9229a3608`).
+- 🟢 Manual-dispatch workflow added at `.github/workflows/nexo-step-7-observation-contract.yml` (commit `e955745dd8fb44936a1c8caa04f69243abda5182`).
+- 🔵 Runtime verification remains PENDING because this connector cannot dispatch workflow_dispatch runs; user must manually run the workflow in GitHub.
+- 🔵 Actual producer inspection confirms current findings are small diagnostic objects; producer source is available, but claim-critical causal identity/freshness is not universally present.
+- 🔴 Do not claim STEP 7 runtime PASS yet.
+- Next exact action: manually execute the STEP 7 workflow, then inspect the run. After PASS, continue with focused semantic tests for causal-distinct findings and the action/target dedupe boundary. No legacy integration, no invented observation IDs, queues, retries, tombstones, or external-effect machinery.
