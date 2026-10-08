@@ -714,3 +714,12 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - reconstructNexoMission can restore terminal evidence from attempts but cannot recover discarded admission context.
 - This makes missionId:stepId + terminal evidence insufficient as a complete claim-context binding, especially for execute_lumina_action whose action payload is held in context.action.
 - Exact next: trace concrete findings into buildNexoMission for execute_lumina_action and an ordinary repair action; classify each claim input as RE-DERIVABLE, MUST-PERSIST, or NON-AUTHORITATIVE.
+
+
+## P112 producer-to-mission provenance audit — 2026-10-07
+- Saved P112_PRODUCER_TO_MISSION_CLAIM_PROVENANCE_AUDIT_V1; commit d6c7e513c367a9fccbf189fb37f1b23a92f1484a.
+- Current production assistant squad emits ordinary diagnostic findings, but repository-wide source search found no current production producer emitting LUMINA_ACTION. The bounded execute_lumina_action bridge is implemented/tested, but its demonstrated producer is test-level rather than the live assistants.mjs pipeline.
+- Ordinary findings do reach buildNexoMission; actionFor() can derive the repair action from finding code and target from agent/resource, but recordNexoPlan drops finding code, source, reason/message and evidence. Thus action reconstruction is not equivalent to admission-claim reconstruction.
+- LUMINA_ACTION payload is stronger: context.action is the concrete operation and is not recoverable from the persisted mission projection; if that path becomes live, the payload is MUST-PERSIST/bind.
+- Provenance boundary identified: specialist report -> finding -> mission step. Claim-critical observation/evidence must not be confused with UI/summary metadata.
+- Exact next: trace finding evidence producers for ordinary classes and classify explanatory vs claim-critical evidence; separately verify any non-assistant LUMINA_ACTION producer.
