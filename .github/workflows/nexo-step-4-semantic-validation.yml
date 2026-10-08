@@ -18,3 +18,5 @@ jobs:
         with:
           node-version: 22
       - run: node tests/nexo/final-semantic-validator.test.mjs
+
+# Runtime verification trigger retained; logic unchanged.
