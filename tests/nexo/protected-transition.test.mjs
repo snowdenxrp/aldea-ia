@@ -8,6 +8,7 @@ import {
   createCandidate,
   createClaimEnvelope,
   createCommitResult,
+  createOutcome,
   createValidationResult
 } from "../../src/nexo/core/contracts.mjs";
 import { createCorePorts } from "../../src/nexo/core/ownership.mjs";
