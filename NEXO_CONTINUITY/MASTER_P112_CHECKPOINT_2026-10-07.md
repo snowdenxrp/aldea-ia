@@ -806,3 +806,18 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Correct status: 🟢 failure-driven replan recovered; 🟢 lineage semantics validated historically; 🟢 no evidence that bounded overflow uses that mechanism; 🔵 fresh-observation continuation OPEN; 🔵 explicit NOT_ADMITTED/DEFERRED semantics OPEN; 🔵 existing run/sample identity still needs audit; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
 - DO-NOT-REPEAT: do not treat omitted candidates as failed; do not reuse failure-replan as proof of overflow continuation; do not invent a deferred queue.
 - Exact next: trace the complete assistant report lifecycle across consecutive runs—report generation → mission construction → persistence → next-run inputs—and determine whether prior findings survive outside the truncated mission and whether an existing run/sample identifier can distinguish re-observation from a new observation.
+
+
+## P112 assistant-run observation lifecycle audit — 2026-10-07
+- Saved `P112_ASSISTANT_RUN_OBSERVATION_LIFECYCLE_AUDIT_V1_2026-10-07.md`.
+- Commit: `eae9c459d6c52add41efc259dcd3ef8b36eb2001`.
+- Production lifecycle traced: canonical load → squad/debugger/tester/analyst reports → mission planning → mission persistence → learning-memory persistence → canonical stateRevision increment.
+- No explicit production `runId`, `reportId`, `sampleId`, or `executionId` was recovered on assistant findings/reports.
+- The squad report is process-local in `report.assistantSquad` and feeds mission construction, but is not directly persisted as a raw report artifact.
+- `learnFromReports()` receives debugger/tester/analyst only; it excludes `squadReport`. Its durable run record stores timestamp/status/day/hour/agent count/finding count/test-failure count, while patterns store only severity+code+message fingerprints. Raw squad findings therefore have no demonstrated durable home outside admitted mission data.
+- `stateRevision` is computed and assigned after observation/planning; findings do not carry the observed revision or eventual committed revision.
+- Consequence: candidates excluded by the eight-step bound have no demonstrated durable continuation receipt. Their later return depends on fresh re-observation, but that semantic contract is not yet proven.
+- Classification sharpened: **NOT_ADMITTED_BY_BOUND is neither FAILED nor RESOLVED; current persistence provides no explicit deferred disposition.** “OBSERVATION_DROPPED_AFTER_PLANNING” is an analytical label only.
+- Existing deduplication freshness concern is corroborated: no explicit observation identity was found at the report boundary. Do not invent a new identity until existing implicit boundaries are exhausted.
+- Status: 🟢 lifecycle recovered; 🟢 omitted squad-finding durability gap confirmed; 🔵 intended fresh-reobservation semantics OPEN; 🔵 identity sufficiency OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
+- Exact next: inspect tests/report outputs for implicit observation boundaries and deterministic re-observation, then audit the pre-cap objective/dependency graph versus the admitted eight-step mission graph.
