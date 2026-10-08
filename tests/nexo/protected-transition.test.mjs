@@ -166,6 +166,11 @@ function makePorts(overrides = {}) {
     outcomeClassifier: {
       classify: ({ kind, reasons = [], evidence = [] }) =>
         createOutcome(kind === OUTCOMES.UNKNOWN ? OUTCOMES.SAFE_COMMIT : kind, { reasons, evidence })
+    },
+    finalSemanticValidator: {
+      validate: () => createValidationResult(VALIDATION.UNKNOWN, {
+        reasons: ["forced classifier-integrity probe"]
+      })
     }
   });
   assert.throws(() => executeProtectedTransition({
