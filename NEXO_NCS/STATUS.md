@@ -364,3 +364,10 @@ This separation exists specifically to prevent historical research volume from b
 - 🟢 Adversarial attack/refinement saved: `NEXO_NCS/BUILD/STEP_7_MINIMUM_PROTECTED_POLICY_CONTEXT_EVIDENCE_CONTRACT_ATTACK_2026-10-08.md`, commit `480d4e23e7686018a50a847e8549aa95de0a8eb2`.
 - Key refinement: no generic check.status field; evidence must be represented as governed facts/evidence so callers cannot inject pre-decided PASS/FAIL/UNKNOWN.
 - Next exact action: derive the smallest concrete evidence structure from this refinement, then attack it before implementation.
+
+## STEP 7 evidence facts attack
+- 🟢 Attack completed: `NEXO_NCS/BUILD/STEP_7_MINIMUM_PROTECTED_POLICY_CONTEXT_EVIDENCE_FACTS_ATTACK_2026-10-08.md`, commit `f328028deab5c059e2840d5319c4d78e9e056986`.
+- `policyRef`, context, policyFacts, dependencyFacts and temporalFacts survive as semantic categories under their constraints.
+- 🔴 `provenanceFacts` cannot be an ordinary provider-facing field; its meaning must come from the protected establishment boundary itself.
+- No new ID/operation identity is justified.
+- Next exact action: define the smallest protected-boundary creation capability whose output can carry established provenance without self-attestation.
