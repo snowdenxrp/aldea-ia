@@ -12,7 +12,7 @@ PROPOSAL → CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATIO
 
 ## Current build
 STEP 3A — isolation contract closure completed and runtime-verified.
-STEP 3B — smallest protected-transition composition implemented; behavioral runtime verification still pending.
+STEP 3B — smallest protected-transition composition implemented and runtime-verified.
 
 Implemented:
 - src/nexo/core/contracts.mjs
@@ -76,13 +76,21 @@ Architectural correction:
 Evidence:
 - 🟢 STEP 3A behavioral runtime PASS is proven.
 - 🟢 STEP 3B protected-transition source syntax checked with Node.js 22.
-- 🔵 STEP 3B behavioral runtime execution is NOT VERIFIED yet.
-- 🔴 STEP 3B is NOT closed and NOT production-safe yet.
+- 🟢 STEP 3B behavioral runtime execution is verified by GitHub Actions run 37737359129, job 113179842110.
+- 🔵 This does not prove persistence wiring, distributed fencing, external-effect correctness, exactly-once, power-loss durability, or reconciliation.
+- 🔴 Production-safe Nexo Core is not claimed.
 
 ## Next action
-1. Obtain executable behavioral verification of tests/nexo/protected-transition.test.mjs.
-2. If PASS, record proof and close STEP 3B only to the demonstrated boundary.
-3. If FAIL, classify root defect vs architectural contradiction; do not patch around it.
-4. Then proceed to the next smallest construction step.
+Proceed to STEP 3C: wire the canonical conditional snapshot commit primitive behind the ConditionalCommit ownership port.
+
+STEP 3C must:
+1. map revision conflict to STALE_CANDIDATE;
+2. never infer dependency validity, fencing, exactly-once, or external-effect absence from revision alone;
+3. preserve the final-validation gate;
+4. preserve UNKNOWN on commit uncertainty/failure;
+5. keep persistence behind the ConditionalCommit boundary;
+6. stop and redesign if wiring reveals a structural contradiction.
+
+Runtime proof for STEP 3B is recorded in NEXO_NCS/PROOF/STEP_3B_RUNTIME_VERIFICATION_2026-10-08.md.
 
 Do not add speculative transaction wrappers, run IDs, effect tombstones, deferred queues, or compatibility layers unless the construction contract itself proves they are required.
