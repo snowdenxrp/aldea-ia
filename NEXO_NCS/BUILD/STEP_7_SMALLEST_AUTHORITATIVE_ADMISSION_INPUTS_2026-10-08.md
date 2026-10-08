@@ -134,3 +134,27 @@ The unresolved question is now narrower:
 Current evidence does not establish that relation for the present producer findings without importing legacy semantics or inventing missing attributes.
 
 Status remains **PENDING**, not UNKNOWN-as-failure.
+
+
+## Additional repository cross-check — multiple legacy ranking semantics
+A repository search found at least two different historical prioritization mechanisms:
+- squad findings use severity ordering in the legacy Nexo planner;
+- Lúmina agent planning uses goal-specific goalPressure() to rank plans.
+
+These are not interchangeable semantics and neither is a demonstrated protected Nexo admission policy.
+
+This matters because promoting a generic field such as priority would hide the source semantics:
+- severity answers a producer/report classification question;
+- goalPressure answers a Lúmina agent-goal urgency question.
+
+Treating either as a universal admission authority would create semantic coupling and make future providers/agents conform to an accidental legacy ranking vocabulary.
+
+Therefore the new Core must not define a universal priority field merely to make bounded selection easy. If a future admission policy needs ordering, its ordering relation must be explicit, claim/policy-scoped, provenance-supported, and independently authoritative.
+
+### Future-countereffect conclusion
+Current benefit of legacy ranking: deterministic behavior.
+Future risk: one generic priority field becomes a hidden global scheduler and semantic compatibility constraint.
+Contradiction risk: observation/proposal metadata would become admission authority without a protected policy contract.
+Evolution cost: every future producer/provider would need to map its semantics into the old ranking scale.
+
+No implementation change is authorized from this cross-check.
