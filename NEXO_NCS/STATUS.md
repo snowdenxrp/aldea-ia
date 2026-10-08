@@ -618,3 +618,13 @@ This separation exists specifically to prevent historical research volume from b
 - No physical verifier/root/channel/provider/threshold selected. Trust Foundation, Constitution Authority Context and genesis activation remain BLOCKED; implementation remains unauthorized.
 - Temporary duplicate research drafts created during this continuation were removed after discovering the canonical BUILD role map already existed; canonical source-of-truth remains `NEXO_NCS/BUILD/STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md`.
 - **Next exact action:** obtain the owner's explicit governance choice on whether owner-authorized commissioning is the normative legitimacy rule, or whether a different model (e.g. multiple custodians or a designated external authority) is intended. After that decision, attack the chosen semantic contract before selecting hardware/cryptographic mechanisms. Do not treat “continue” as consent to a constitutional governance choice.
+
+
+## 2026-10-08 — Owner authority decision
+
+- Owner decision accepted: Kevin is the sole initial constitutional authority; Nexo's commissioning and protected constitutional/root transitions require his authorization, separately authenticated by a yet-unselected independent trust mechanism.
+- Intended future successor: Kevin's daughter after him. She is currently a baby and has no present authority from this intention. Exact succession trigger, evidence, eligibility, transfer ceremony, predecessor fencing and dispute handling remain OPEN and must be governed in advance.
+- This does not require fresh approval for every harmless/low-risk interaction; ordinary actions remain bounded by Constitution, policy and action-specific risk. Owner authorization is never a bypass.
+- Canonical decision: `NEXO_NCS/DECISIONS/STEP_7_COMMISSIONING_AND_SUCCESSION_SEMANTIC_RULE_2026-10-08.md`; commit `eee454788f12d553c4fce291ea6188d2798e495e`.
+- No verifier, channel, credential, platform or root selected. Trust Foundation, Constitution Authority Context, genesis activation and protected implementation remain BLOCKED / NOT AUTHORIZED.
+- Next: P0 adversarial review of disputed intent/coercion, incapacity/death evidence, lost/compromised channel, succession races, predecessor fencing and future transfer to a minor successor. Do not ask again who holds initial authority; do not infer unprovided succession details.
