@@ -297,6 +297,9 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🔴 This is schema validation only: no admission, authority, execution, commit, or external-effect behavior was added.
 - ⚠️ Runtime verification is PENDING USER-RUN. Implementation `fd8c3ad05107151b4cdbe40c230593f1de34174e`; tests `98dd4dbbfc1297833d868bb622739cde83927b3f`; workflow `9c11622ad9f0d00e9cd9f80a6209738e614c38d4`; proof pending `42e18339095bdad2fd3f5a9057df15c4525fc5c0`.
 
+- ⚠️ Runtime check attempted: GitHub Actions currently shows no `workflow_dispatch` run for the new policyContext workflow, so no PASS is claimed. Existing unrelated/cancelled runs do not count as verification.
+- Next action remains manual execution of `Nexo — STEP 7 policyContext contract`; after a completed run, inspect the exact job result before closing the runtime proof. No code change made from this check.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
