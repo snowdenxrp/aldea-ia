@@ -35,6 +35,43 @@ function requiredString(value, field) {
   return value;
 }
 
+
+
+const POLICY_CONTEXT_STATUS = Object.freeze(["VALID", "FAIL", "UNKNOWN"]);
+
+function requiredPolicyRef(value) {
+  if (!value || typeof value !== "object") throw new TypeError("policyContext.policyRef is required");
+  requiredString(value.id, "policyContext.policyRef.id");
+  requiredString(value.semanticVersion, "policyContext.policyRef.semanticVersion");
+  requiredString(value.hash, "policyContext.policyRef.hash");
+  return value;
+}
+
+function createPolicyContext(input = {}) {
+  const policyRef = requiredPolicyRef(input.policyRef);
+  if (input.scope === undefined) throw new TypeError("policyContext.scope is required");
+  if (!input.validity || typeof input.validity !== "object") throw new TypeError("policyContext.validity is required");
+  if (!POLICY_CONTEXT_STATUS.includes(input.validity.status)) {
+    throw new TypeError("policyContext.validity.status must be VALID, FAIL, or UNKNOWN");
+  }
+  if (input.resolved === undefined || input.resolved === null || typeof input.resolved !== "object") {
+    throw new TypeError("policyContext.resolved is required");
+  }
+  if (!Array.isArray(input.resolved.dependencies)) {
+    throw new TypeError("policyContext.resolved.dependencies must be an array");
+  }
+  if (!Array.isArray(input.resolutionProvenance)) {
+    throw new TypeError("policyContext.resolutionProvenance must be an array");
+  }
+  return immutable({
+    policyRef: detachedImmutable(policyRef),
+    scope: detachedImmutable(input.scope),
+    resolved: detachedImmutable(input.resolved),
+    validity: detachedImmutable(input.validity),
+    resolutionProvenance: detachedImmutable(input.resolutionProvenance)
+  });
+}
+
 export function createClaimEnvelope(input = {}) {
   const claimId = requiredString(input.claimId, "claimId");
   const action = requiredString(input.action, "action");
@@ -47,7 +84,7 @@ export function createClaimEnvelope(input = {}) {
     dependencies: detachedImmutable([...(input.dependencies ?? [])]),
     predicateDependencies: detachedImmutable([...(input.predicateDependencies ?? [])]),
     derivedProvenance: detachedImmutable([...(input.derivedProvenance ?? [])]),
-    policyContext: detachedImmutable(input.policyContext ?? null),
+    policyContext: input.policyContext == null ? null : createPolicyContext(input.policyContext),
     causalInputs: detachedImmutable([...(input.causalInputs ?? [])]),
     sourceProvenance: detachedImmutable([...(input.sourceProvenance ?? [])])
   });
