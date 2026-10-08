@@ -188,3 +188,11 @@ When P112 is genuinely closed:
 - verify read-back;
 - state exact next;
 - then resume AB sequence in blocks of 10 from the real primary frontier (AB104.151 boundary), never backfilling missing ABs.
+
+
+## Latest persistence verification
+- Handoff create commit: 2f62fb74e2a4dd345ed0340e0bef3c83eb3871af
+- Handoff read-back blob SHA: 508a2ed6b78f08de890bb57a82c716788add7d5f
+- MASTER_P112 update commit: 81050b113d55d08b07ef62776371ba6b35e64877
+- MASTER_P112 read-back blob SHA: 89f2a9261ce91f858ecab73b4e6d0c879b3bb662
+- Both files were independently read back after writing.
