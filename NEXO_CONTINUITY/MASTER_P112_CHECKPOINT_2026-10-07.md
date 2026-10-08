@@ -705,3 +705,12 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Execution/outcome records preserve result/evidence but do not restore admission dependency/provenance.
 - This is a distinct durability boundary from the live admission→execution gap: even complete live provenance would currently be erased by mission serialization.
 - Exact next: trace producer-side finding/report fields and handler inputs; classify which admission facts are authoritative, which can be re-derived from the isolated snapshot, and which must survive as evidence.
+
+
+## P112 mission plan serialization/reconstruction semantics — 2026-10-07
+- Saved P112_MISSION_PLAN_SERIALIZATION_RECONSTRUCTION_SEMANTICS_AUDIT_V1; commit 3ddcc82edbe24b555b7804fdf9d662297d7a336f.
+- Important reconciliation: runtime.js now calls recordNexoPlan() during commitRuntimeOutcome(), so durable mission lineage exists; the gap is field preservation, not mission existence.
+- buildNexoMission creates rich live step data, but recordNexoPlan persistently reduces each step to id/action/target/status/dependsOn, dropping reason/source/reversibility/verification requirements/context.action.
+- reconstructNexoMission can restore terminal evidence from attempts but cannot recover discarded admission context.
+- This makes missionId:stepId + terminal evidence insufficient as a complete claim-context binding, especially for execute_lumina_action whose action payload is held in context.action.
+- Exact next: trace concrete findings into buildNexoMission for execute_lumina_action and an ordinary repair action; classify each claim input as RE-DERIVABLE, MUST-PERSIST, or NON-AUTHORITATIVE.
