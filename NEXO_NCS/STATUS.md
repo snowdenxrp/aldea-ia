@@ -470,3 +470,11 @@ This separation exists specifically to prevent historical research volume from b
 - 🟠 No candidate family alone establishes genesis legitimacy. Hardware is supporting integrity/key protection only; a previously protected local root is continuity-only; threshold is deferred absent a threat-model need; external provisioning is conditional on governance, portability, compromise and exit.
 - 🔴 No technical root, provider, hardware, credential, ceremony or protocol selected. No implementation or activation authorized.
 - **Next exact action:** define the deployment threat model for first commissioning using established preferences (local-first, provider-independent, portable) while leaving unknown assumptions explicit. The remaining governance choice is which independent recognition channel is acceptable and what loss/compromise/recovery assumptions it must tolerate. Ask one focused question if existing context does not settle this; do not infer the answer.
+
+
+## 2026-10-08 — Independent commissioning recognition requirement accepted
+- 🟢 Kevin accepted the requirement that first commissioning use an independent recognition channel under his control; activation may remain blocked if that channel cannot be verified.
+- 🟢 Decision saved: `NEXO_NCS/DECISIONS/STEP_7_INDEPENDENT_COMMISSIONING_RECOGNITION_REQUIREMENT_2026-10-08.md`; commit `a9ab2ca7a8c955a5e24f9c1fbcca5fede0247cb8`.
+- 🟠 Another device or a physical medium are examples only; no specific mechanism/channel has been selected or proven independent.
+- 🔴 Trust Foundation / Constitution Authority Context implementation and genesis activation remain blocked. This is a governance requirement, not a technical security proof.
+- **Next exact action:** build the minimum concrete commissioning threat model and compare only mechanisms compatible with local-first operation, provider independence, portability, explicit approval, exact Constitution/context binding, and fail-closed behavior. Attack the chosen mechanism and pass the future-countereffects gate before implementation.
