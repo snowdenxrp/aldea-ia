@@ -521,3 +521,11 @@ This separation exists specifically to prevent historical research volume from b
 - P/P112 cross-reference is still unresolved: targeted searches did not retrieve the relevant artifacts. This is a retrieval limitation, not proof that no relevant research exists.
 - Trust Foundation, Constitution Authority Context and genesis activation remain blocked.
 - Next: recover canonical P/P112 references, then define and adversarially review the minimum action-bound confirmation contract. No implementation until the evidence layers converge and the future-countereffects gate passes.
+
+
+## 2026-10-08 — Recommended layered recognition and step-up model
+- 🟢 Recommendation saved and re-fetched/verified: `NEXO_NCS/DECISIONS/STEP_7_RECOMMENDED_RECOGNITION_AND_STEP_UP_MODEL_2026-10-08.md`; commit `0f4bf3f09c5c4bdb19bef6f107e7d1e3e0b4c22e`.
+- Recommended direction: natural recognition for low-friction interaction; cryptographic authenticator as a leading step-up candidate; password/passphrase/keyword only as bounded fallback; action-bound confirmation for consequential operations; separate high-assurance ceremony for Constitution/root/enrollment/recovery/succession; privacy-preserving local biometrics; no silent assurance downgrade.
+- This is a recommendation for architectural review, not a root/channel/vendor selection. No implementation or activation authorized.
+- Existing unresolved blockers remain: independently legitimate genesis trust basis, exact confirmation/verifier/UI contract, revocation/offline/recovery/portability, adversarial review, and complete MASTER + AB + P/P112 evidence reconciliation.
+- **Next exact action:** recover/map canonical P/P112 evidence relevant to human binding, credential lifecycle, revocation, recovery and dependency closure; then derive and attack the minimum action-bound confirmation contract before any implementation.
