@@ -398,3 +398,12 @@ This separation exists specifically to prevent historical research volume from b
 - Contract binds constitutional regime → governed policy identity/semantics → authority domain → applicability → validity/dependencies → protected establishment provenance. It does not authorize actions, admit candidates, prove claims, execute, commit, or prove external effects.
 - Provider/policy self-authorization, version confusion, scope laundering, authority-to-action leap, dependency laundering, stale binding, universal-policy-engine creep and future coupling rejected.
 - **Next exact action:** inspect how the repository can obtain/represent constitutional authority context without caller-supplied authority metadata; if no existing path exists, define the minimum Core Constitution Authority context contract before implementation.
+
+
+## STEP 7 — Constitution Authority Context
+- 🟢 Research reuse audit closed: no implemented current constitutional-authority establishment path exists. Audit: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md`, commit `9ef86e1e2b2c2e3266803c9d2db0abc2f516738c`.
+- MASTER/AB/P cross-check used: Constitution root/gates; AB104.390 anti-self-attestation; AB104.451 UNKNOWN authority; AB104.563–565 and AB105 recovery distinctions; PG-009 trust closure/common-mode boundaries.
+- 🟢 Minimum context contract saved: `NEXO_NCS/BUILD/STEP_7_MINIMUM_CORE_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_2026-10-08.md`, commit `fe430b6950c9547ec292abaaca7ea43feffa4f1b`.
+- 🟢 Attack closed: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_ATTACK_2026-10-08.md`, commit `a0ae75725b1b8c6b7342b58c3c228934ff753577`.
+- Context establishes only the constitutional regime recognized by Core; it does not grant Policy, capability, admission, execution or claim truth. Caller-supplied identity/provenance cannot self-promote. Version/epoch/snapshot/recovery are not authority by themselves.
+- **Next exact action:** implement the minimum protected Constitution Authority Context boundary and adversarial tests; then connect it to Policy binding without allowing either boundary to absorb the other's authority.
