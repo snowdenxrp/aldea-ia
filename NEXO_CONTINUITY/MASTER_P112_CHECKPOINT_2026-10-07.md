@@ -460,3 +460,23 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Status: 🟢 no overlooked branch-local semantic token found; 🔵 complete dependency coverage and exact minimal partition remain OPEN; 🔴 no atomicity/exactly-once claim.
 - Exact next: trace the first common authoritative mutation boundaries for resource/day/ecosystem, inventory/needs, relationships, economy aggregates, and spatial normalization/range writers; determine whether any existing version-like field can acquire complete writer coverage without a new global revision.
 - DO-NOT-REPEAT: do not repeat the existing-version-token audit; no persistence-primitive re-search; no TLC rerun; no AB104.185 primary; no AB105.117R; no implementation.
+
+
+## NEW-CHAT CONTINUITY HANDOFF — 2026-10-07
+A dedicated recovery artifact was saved so a new chat can resume without losing instructions or research state:
+- `NEXO_CONTINUITY/NEW_CHAT_HANDOFF_P112_AB_WAIT_2026-10-07.md`
+- Commit: `2f62fb74e2a4dd345ed0340e0bef3c83eb3871af`
+
+It explicitly preserves:
+- P112 active/open status and exact next writer-ownership/bypass audit;
+- AB temporarily on hold, not abandoned;
+- historical primary frontier AB104.151 and the prohibition against backfilling AB104.185 or treating AB104.152–.184 as primary;
+- protected anchor AB105.116R, AB105.117R prohibition, and frozen TLC;
+- all global epistemic/safety rules, no-repeat constraints, and workflow INVESTIGAR → ANALIZAR → CONSTRUIR → GUARDAR;
+- latest P112 artifact/commit/read-back and the completed audit chain;
+- exact code-level branch facts and known architectural gaps;
+- requirement to update CONTINUITY + master and verify read-back after each bounded continuation;
+- instruction to resume AB in blocks of 10 only after P112 genuinely closes.
+
+### Immediate continuation rule
+Do NOT start AB yet. Continue P112 from the exact saved next action: trace first common authoritative mutation boundaries for resource/day/ecosystem, inventory/needs, relationships, economy aggregates, and spatial normalization/range writers; determine whether existing version-like fields can obtain complete writer coverage without a new global revision. This is an additive writer-ownership/bypass audit and must not repeat the existing-version-token audit.
