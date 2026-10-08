@@ -350,3 +350,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Correction: do not narrow execution owner to `simulate.mjs` caller. Treat it as a lifecycle/protocol owner question.
 - Status: GREEN later evidence materially constrains the owner; BLUE exact minimal current-repository boundary remains open; no implementation or runtime proof inferred.
 - Exact next: reconcile AB104.227–585 lifecycle requirements against current `runtime.js` + `effect-adapter.js` + `simulate.mjs` and derive the smallest boundary that satisfies already-established protocol without inventing a global coordinator.
+
+
+## P112 execution-owner protocol reconciliation V1 — 2026-10-07
+- AB104.227 requires operation identity/effect mutation/committed result ordering at an authoritative target boundary; registry presence alone is not completion proof.
+- AB104.543 separates local durable intent from heterogeneous external execution; no generic 2PC assumption.
+- AB104.585 requires final commit-time predicate validation and stale-admission rejection.
+- AB104.214 confirms current prepared/reconcile mechanisms remain partial and `persistPreparedIntent` is only a seam.
+- Current topology has three separate boundaries: in-memory effect journal, runtime mission-memory commit, canonical world-state persistence; no common atomic boundary is demonstrated.
+- Correct owner target is therefore a local protected-transition/lifecycle boundary, not simply `simulate.mjs`, not merely the effect adapter callback, and not a global scheduler.
+- Exact next: test the feasibility of enclosing the audited Lúmina WriteSet and canonical persistence in one local protected-transition transaction, including all bypasses and crash cuts, before implementation.
