@@ -330,3 +330,11 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Adapter `persist()` updates in-memory journal/executed state; it does not call `persistState()`.
 - Therefore no demonstrated production boundary currently joins prepared checkpoint, handler mutation, terminal journal, and canonical stateRevision persistence.
 - Exact next: audit whether `scripts/simulate.mjs` can legitimately own effect execution or whether a separate execution-owner boundary is required; trace load→applyState→tick/mission→effect→persist before implementation.
+
+
+## P112 execution-owner feasibility audit V1 — 2026-10-07
+- `scripts/simulate.mjs`: load → applyState → tick/movement → persist; no Nexo execution API call.
+- `scripts/assistants.mjs`: reports → buildNexoMission → recordNexoPlan → persistState; no mission execution.
+- Therefore `simulate.mjs` is a simulation/persistence owner, not an existing effect-execution owner. Making it one would be new architecture.
+- The missing owner must coordinate canonical revision, durable PREPARED checkpoint, protected admission, handler mutation, terminal journal/result, and canonical persistence/recovery; merely calling persistState more often is insufficient.
+- Exact next: trace complete mission lifecycle and search for any dormant/alternate mission runner outside these scripts before declaring the execution-owner gap architectural.
