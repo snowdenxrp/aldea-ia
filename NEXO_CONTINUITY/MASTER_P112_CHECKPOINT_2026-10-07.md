@@ -550,3 +550,26 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - `assistants.mjs` writes separate `MEMORY_PATH` before world-state `persistState`; therefore world-state revision does not automatically cover that separate durable artifact.
 - 🟢 `stateRevision` remains valid as a persistence-level conflict token for cooperating canonical world-state writers. 🔵 Its coverage must not be promoted to universal semantic revision. 🔴 No runtime race/JMM-HB/exactly-once/power-loss claim.
 - Exact next: audit `MEMORY_PATH` + runtime/effect lifecycle for cross-artifact divergence across conflict/crash and define minimum provenance/linkage needed to identify authoritative durable state.
+
+## P112 effect identity / cross-artifact linkage audit V1 — 2026-10-07
+- Saved `P112_EFFECT_IDENTITY_CROSS_ARTIFACT_LINKAGE_AUDIT_V1_2026-10-07.md`.
+- Commit: `6aba794f94fbc50b713a208bec917e6510fe1217`.
+- Existing runtime identity is `missionId:stepId`: real local mission-step deduplication, but not a complete protected effect identity.
+- Existing evidence confirms missing bindings for target/resource incarnation, authority epoch/root and payload fingerprint.
+- `effectJournal` is serialized inside `simulation.nexoMemory` when canonical world-state persistence succeeds, but adapter `persist()` is RAM-only and `persistPreparedIntent` is only a durability seam.
+- Mission outcome, Nexo execution history and effectJournal remain distinct evidence domains; none should be treated as the other.
+- Journal retention remains bounded to 200 entries; disappearance cannot mean NOT_ATTEMPTED.
+- No durable linkage currently demonstrated from effect identity to the canonical state revision that contains its terminal record.
+- Decision: do not invent a new identity yet; investigate existing schema/provenance linkage first.
+- 🟢 Local identity evidence; 🔵 complete cross-artifact commit provenance OPEN; 🔴 no exactly-once/external fencing/atomic effect+commit claim.
+- Exact next: trace every effectJournal status transition and serialization boundary, including exception/crash cuts, and identify fields preserved/lost.
+
+## P112 direct effect-adapter schema readback — 2026-10-07
+- Direct source inspection of `src/nexo/effect-adapter.js` confirms `recordIntent()` creates entries with: `idempotencyKey, missionId, stepId, action, target, status:"prepared", at`.
+- Terminal `persist()` preserves the existing entry and adds/replaces `result`, `status`, and `completedAt`; if no entry exists it creates a smaller terminal record.
+- The terminal result may carry `evidence`, `effectResult`, `beforeVersion`, `afterVersion`, error/code/uncertainty depending on the path.
+- Critical exception path: handler exception constructs `EFFECT_OUTCOME_UNKNOWN` but returns it without calling `persist()`. Therefore the existing PREPARED journal entry is not terminally updated by that catch branch. This is source-level behavior, not a test-pass claim.
+- A prepared entry is deliberately retained after blocked reconciliation so a later stronger reconciliation can retry resolution; this is conservative while the entry remains available.
+- `memory.js` bounds `effectJournal` to the last 200 entries during reconstruction, and adapter persistence also trims to 200.
+- Therefore the smallest currently observed durable journal evidence is the PREPARED entry plus, only on successful terminal `persist()`, the terminal result/status/timestamp; canonical state revision linkage is still absent.
+- Exact next remains: map each status transition + serialization/crash cut and determine which fields can prove linkage to a canonical commit without introducing a new identity prematurely.
