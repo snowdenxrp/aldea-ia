@@ -290,3 +290,22 @@ This closes the previously unresolved **owner** question, but not the exact poli
 
 ### Future-countereffect check
 Creating a dedicated `SelectorAuthority` would duplicate the existing Policy/Admission boundary and create a second policy authority. Creating a universal `priority` field would leak one policy's semantics into future mission classes. Both are rejected. Reusing the protected Policy/Admission boundary preserves replaceability because different policy versions can define different claim-scoped relations without changing the Core transport contract.
+
+
+## Pairwise-vs-set selection attack
+The recovered conflict-domain architecture establishes that pairwise relations are not sufficient for all protected admissions: conflict can be represented over pairs/sets, and aggregate admission must evaluate active mission window, shared resources, dependency overlap, common-mode domains, cumulative exposure and global invariants. Therefore STEP 7 must not define bounded selection as a simple pairwise tournament.
+
+Minimum semantic decomposition now supported:
+1. **Candidate eligibility:** each candidate independently satisfies the applicable claim/policy prerequisites.
+2. **Pairwise comparability/preference:** policy may establish A ≻ B where the comparison is valid.
+3. **Set compatibility:** the selected set must jointly satisfy applicable conflict/invariant/dependency constraints.
+4. **Bounded selection:** choose at most the fixed 8 candidates subject to 1–3.
+5. **Unresolved selection:** if multiple admissible sets remain and policy provides no valid relation to distinguish them, do not invent a winner through input order, timestamp, score, severity, or provider order.
+
+### Why this matters
+A candidate can be individually eligible while a combination is inadmissible. Conversely, two candidates can be individually incomparable while a third candidate changes the admissibility of the pair. Therefore a pure partial order over individual candidates cannot by itself prove that the selected 8 are safe/admissible.
+
+### Future-countereffect result
+A universal pairwise comparator would look simple but would force future mission classes into local ordering semantics and could miss set-level hazards. A universal set optimizer would be even worse: it would turn all mission semantics into one global optimization API. The safer architecture is **policy-scoped eligibility + policy-scoped pair/set constraints + bounded selection**, with unresolved relations remaining UNKNOWN/CONFLICT.
+
+This is now the strongest candidate semantic shape. Exact policy fields/relations are still not frozen, and no implementation is authorized.
