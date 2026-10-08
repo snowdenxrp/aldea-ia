@@ -80,5 +80,9 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - No observation ID is invented. Missing identity remains an explicit contract gap.
 - Scope: preserve claim-critical observation provenance through mission planning, define explicit NOT_ADMITTED semantics, prevent coarse dedupe from silently collapsing distinct causal observations, and keep mission/provider authority separate from protected-transition safety.
 - Explicitly NOT introduced: observation/run IDs, deferred queues, retries, tombstones, transaction wrappers, external-effect machinery, legacy compatibility layers.
-- Next exact action: define the smallest loss-preserving ObservationEnvelope/MissionCandidate contract from the actual finding shapes, then write focused contract tests before any legacy integration.
+- Minimum contract: NEXO_NCS/BUILD/STEP_7_MINIMUM_OBSERVATION_ENVELOPE_CONTRACT_2026-10-08.md
+- Evidence basis: MASTER + frozen AB + P/P112 + actual producer shapes.
+- Decision: ObservationEnvelope is producer-side evidence; MissionCandidate transports it through planning; existing ClaimEnvelope remains the protected claim boundary.
+- No observation ID is invented. Missing claim-critical provenance remains explicit and claim-specific UNKNOWN/INVALID classification is not guessed globally.
+- Next exact action: implement the smallest loss-preserving ObservationEnvelope/MissionCandidate contract and focused tests from actual producer shapes. Do not integrate legacy yet.
 - STEP 7 must STOP if implementation requires an invented mechanism merely to make the boundary pass.
