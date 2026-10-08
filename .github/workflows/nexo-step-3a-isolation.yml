@@ -19,5 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run focused isolation contract tests
+      - name: Run STEP 3A isolation contract tests
         run: node tests/nexo/core-contracts.test.mjs
+      - name: Run STEP 3B protected-transition composition tests
+        run: node tests/nexo/protected-transition.test.mjs
