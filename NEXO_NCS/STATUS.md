@@ -12,6 +12,7 @@ PROPOSAL → CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATIO
 
 ## Current build
 STEP 3A — isolation contract closure completed and runtime-verified.
+STEP 3B — smallest protected-transition composition implemented; behavioral runtime verification still pending.
 
 Implemented:
 - src/nexo/core/contracts.mjs
@@ -57,19 +58,31 @@ This proves the focused STEP 3A contract tests execute successfully in a clean r
 - Do not restart broad audits already closed by the research exit.
 - Do not patch the legacy orchestrator into Nexo Core.
 
+## STEP 3B status
+Implemented:
+- src/nexo/core/protected-transition.mjs
+- tests/nexo/protected-transition.test.mjs
+- formal AuthorityResult contract in src/nexo/core/contracts.mjs
+- focused verification workflow
+
+Composition:
+CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATION → CONDITIONAL COMMIT → OUTCOME
+
+Architectural correction:
+- terminal outcomes now pass through the explicit OutcomeClassifier boundary;
+- classifier output is checked against the required terminal kind;
+- UNKNOWN/STOP cannot be silently reclassified as SAFE_COMMIT.
+
+Evidence:
+- 🟢 STEP 3A behavioral runtime PASS is proven.
+- 🟢 STEP 3B protected-transition source syntax checked with Node.js 22.
+- 🔵 STEP 3B behavioral runtime execution is NOT VERIFIED yet.
+- 🔴 STEP 3B is NOT closed and NOT production-safe yet.
+
 ## Next action
-Proceed to the smallest STEP 3B protected-transition composition.
+1. Obtain executable behavioral verification of tests/nexo/protected-transition.test.mjs.
+2. If PASS, record proof and close STEP 3B only to the demonstrated boundary.
+3. If FAIL, classify root defect vs architectural contradiction; do not patch around it.
+4. Then proceed to the next smallest construction step.
 
-Construction target:
-PROPOSAL → CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATION → CONDITIONAL COMMIT → OUTCOME.
-
-STEP 3B must:
-1. preserve the STEP 3A isolation invariants;
-2. keep authority outside candidate mutation;
-3. require final semantic validation before conditional commit;
-4. classify revision conflicts as STALE_CANDIDATE;
-5. preserve UNKNOWN as UNKNOWN/RECONCILE_REQUIRED;
-6. contain no hidden external-effect path;
-7. stop and redesign if implementation exposes a structural contradiction.
-
-Do not add speculative transaction wrappers, run IDs, effect tombstones, deferred queues, or compatibility layers unless the STEP 3B contract itself proves they are required.
+Do not add speculative transaction wrappers, run IDs, effect tombstones, deferred queues, or compatibility layers unless the construction contract itself proves they are required.
