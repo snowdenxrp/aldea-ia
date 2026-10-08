@@ -41,16 +41,16 @@ export function createFinalSemanticValidator() {
         });
       }
 
-      if (claim.target !== null && context.target !== undefined &&
-          !sameValue(claim.target, context.target)) {
+      if (claim.target !== null &&
+          (context.target === undefined || !sameValue(claim.target, context.target))) {
         return createValidationResult(VALIDATION.FAIL, {
           reasons: ["claim target does not match authoritative validation target"]
         });
       }
 
       if (claim.targetIncarnation !== null &&
-          context.targetIncarnation !== undefined &&
-          !sameValue(claim.targetIncarnation, context.targetIncarnation)) {
+          (context.targetIncarnation === undefined ||
+           !sameValue(claim.targetIncarnation, context.targetIncarnation))) {
         return createValidationResult(VALIDATION.FAIL, {
           reasons: ["claim target incarnation does not match authoritative validation incarnation"]
         });
@@ -63,8 +63,10 @@ export function createFinalSemanticValidator() {
       }
 
       const requiredIds = [
+        ...claim.authoritativeReads,
         ...claim.dependencies,
-        ...claim.predicateDependencies
+        ...claim.predicateDependencies,
+        ...claim.causalInputs
       ]
         .filter(item => item && typeof item.id === "string" && item.required !== false)
         .map(item => item.id);
@@ -86,7 +88,9 @@ export function createFinalSemanticValidator() {
           continue;
         }
 
-        if (requiredIds.includes(requirement.id) && requirement.authoritative !== true) {
+        if (requiredIds.includes(requirement.id) &&
+            (requirement.authoritative !== true ||
+             ["cache", "helper", "derived"].includes(requirement.source))) {
           nonAuthoritative.push(requirement.id);
           continue;
         }
