@@ -397,3 +397,12 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - This does not close the full protected-transition protocol: final authority/dependency/resource revalidation, complete writer/dependency coverage, durable PREPARED integration, conflict reconciliation, storage crash/power-loss durability, and external-effect capability boundaries remain separate.
 - Important distinction: `persistState` is a canonical conditional snapshot replacement primitive, not an execution/effect fence and not a universal durable-commit proof.
 - Exact next: audit the future protected-transition owner against this existing primitive: isolated snapshot → final revalidation → `persistState(expectedRevision)` → conflict classification/reconciliation. Add a narrower wrapper only if a concrete semantic gap is found.
+
+
+## P112 protected owner against existing persistence primitive V1 — 2026-10-07
+- Saved `P112_PROTECTED_OWNER_AGAINST_EXISTING_PERSISTENCE_PRIMITIVE_V1_2026-10-07.md`, commit `2b450e8e30fac93be3dc24fbd8c8d03b8246ff0a`.
+- Cross-check of canonical writers found `scripts/simulate.mjs` owns the `world-state.json` primitive and `scripts/assistants.mjs` converges on the same `persistState(expectedRevision)` path after operating on an `applyState()` snapshot.
+- No inspected direct canonical world-state writer bypassing `persistState()` was found.
+- This strengthens the conclusion that the existing persistence primitive can be reused rather than duplicated; future protocol must still enforce writer cooperation.
+- Separate known issue: `loadState()` fallback provenance remains a distinct authority gate and must not be mistaken for authoritative current state.
+- Exact next: trace only the future protected-owner lifecycle: authoritative load → revision/provenance capture → isolated execution → final revalidation → existing conditional commit → conflict/reconciliation.
