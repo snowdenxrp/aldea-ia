@@ -16,7 +16,7 @@ assert.equal(observation.source, "VisualAgent");
 assert.equal(observation.code, "MESH_MISSING");
 assert.equal(observation.target, "agent-1");
 assert.equal(observation.inputs.probe.frame, 12);
-assert.throws(() => { inputs.probe.frame = 99; }, TypeError);
+assert.throws(() => { observation.inputs.probe.frame = 99; }, TypeError);
 
 const candidate = createMissionCandidate({
   observation,
