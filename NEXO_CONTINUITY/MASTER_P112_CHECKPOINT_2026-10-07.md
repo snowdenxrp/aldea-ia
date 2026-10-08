@@ -782,3 +782,15 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - 🟢 Three separate compression mechanisms are now distinguished: (A) finding→step dedupe, (B) hard eight-step truncation, (C) coarse DO_NOT_REPEAT history blocking.
 - Status: 🟢 step-cap loss boundary proven; 🔵 intended contract for the cap still OPEN; 🔵 continuation/replan semantics for omitted steps OPEN; 🔵 DO_NOT_REPEAT production usage OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
 - Exact next: audit tests/docs/callers for the eight-step cap to recover whether it is an intentional execution budget, a presentation cap accidentally applied to execution state, or an undocumented loss boundary; then trace whether omitted findings can be safely replanned without losing claim provenance.
+
+
+## P112 bounded mission cap historical-intent reconciliation — 2026-10-07
+- Saved `P112_MISSION_BOUNDED_CAP_HISTORICAL_INTENT_RECONCILIATION_V1_2026-10-07.md`.
+- Commit: `8963bd7cfe01fec96462a64e76d6e60e158b47fd`.
+- Historical source inspection recovered the original implementation commit `d85616354d4d2ff0da0bd71fbf6da78f1a59cfcc`, whose message is **Nexo: add bounded mission orchestration core** and whose initial code already used `steps.slice(0,8)`.
+- AB104.100 likewise explicitly described the feature as a bounded observe→prioritize→plan→advance cycle and bounded orchestration kernel. Therefore the eight-step cap is historically intentional at the feature level and must NOT be labeled an accidental late regression.
+- The open semantic problem is narrower: the repository does not yet expose what happens to candidates 9+ when the bounded budget is exhausted. No explicit overflow/deferred/not-admitted marker, continuation cursor, or durable disposition was recovered in this audit.
+- Because `objective`/dependencies are computed over the pre-cap array while returned/persisted `mission.steps` is truncated, an explicit bounded-budget contract is still needed to explain the relationship between full candidate graph and admitted mission graph.
+- Correct status: 🟢 bounded-cap historical intent recovered; 🟢 eight-step cap is original design; 🔵 disposition of omitted claims OPEN; 🔵 exact meaning of budget=8 OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
+- Do not remove the cap or call it accidental. Do not equate omitted with resolved.
+- Exact next: trace the post-AB104.100 execution/replan/tests to determine whether non-admitted claims are expected to reappear through fresh observation, explicit replan/defer semantics, or intentional discard.
