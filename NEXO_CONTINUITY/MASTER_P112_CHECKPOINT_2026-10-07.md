@@ -696,3 +696,12 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Consequence: a concrete provenance-loss boundary exists between admission and execution. This corroborates earlier P112 work.
 - Next: trace whether existing admission inputs can be preserved or re-derived at execution without inventing a second identity system.
 - P112 remains open; AB105.116R protected; AB105.117R prohibited; TLC frozen; no implementation.
+
+
+## P112 durable mission reconstruction provenance loss — 2026-10-07
+- Saved P112_DURABLE_MISSION_RECONSTRUCTION_PROVENANCE_LOSS_AUDIT_V1_2026-10-07.md; commit 61620a2ae7d6fffb7be8fe63d8b5a321245a8236.
+- recordNexoPlan() persists only step id/action/target/status/dependsOn; it drops context plus reason/source/reversibility/evidence/verification metadata.
+- Therefore execute_lumina_action loses its action context across durable mission reconstruction; reconstructNexoMission() cannot recover discarded fields.
+- Execution/outcome records preserve result/evidence but do not restore admission dependency/provenance.
+- This is a distinct durability boundary from the live admission→execution gap: even complete live provenance would currently be erased by mission serialization.
+- Exact next: trace producer-side finding/report fields and handler inputs; classify which admission facts are authoritative, which can be re-derived from the isolated snapshot, and which must survive as evidence.
