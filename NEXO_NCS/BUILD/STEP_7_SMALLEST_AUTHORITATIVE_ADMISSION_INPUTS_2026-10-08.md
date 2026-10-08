@@ -412,3 +412,28 @@ A dedicated selector object would duplicate Policy/Admission. An unconstrained `
 
 ### Result
 Semantic minimum is now sufficiently constrained. **Machine representation is still PENDING implementation review:** before coding, the binding itself must be attacked for schema-version/policy-version/authority-epoch confusion, dependency incompleteness, cross-policy scope mismatch, expiry, and provider self-declaration.
+
+
+## Binding integrity attack — version, epoch, scope, expiry, dependency closure
+The binding was attacked against the existing architecture rather than inventing a new compatibility layer.
+
+### 1. schema_version vs semantic_version vs policy_version vs authority_epoch
+These dimensions cannot be collapsed. A representation/schema change does not necessarily change policy meaning; a policy meaning change can occur without changing bytes; an authority epoch changes which authority context is current. A valid binding must not use one field as a substitute for the others. If a critical dimension is required and missing, the result is UNKNOWN/REVALIDATE.
+
+### 2. Scope mismatch
+A valid policy can still be inapplicable because its mission/goal/resource/effect scope does not cover the candidate. Policy existence + version validity is insufficient. Protected Core must evaluate applicability; provider-supplied scope cannot self-authorize it.
+
+### 3. Expiry / temporal validity
+Policy validity is claim-relative and temporal. An unexpired policy does not prove evidence or authority context is current, and an expired policy cannot remain valid merely because its bytes are unchanged. Material policy, authority, evidence, world, or dependency changes require re-evaluation.
+
+### 4. Dependency closure
+A policy may depend on reference values, conflict/interaction semantics, verifier/claim contracts, or other governed roots. policy id/version/hash without resolving required dependencies is not semantic closure. Missing, stale, incompatible, or UNKNOWN required dependencies prevent silent admission.
+
+### 5. Provider self-declaration
+A provider may propose a policy reference in policyContext, but that is input/evidence only. Core must resolve applicability against protected policy/authority state. The candidate cannot be the authority for the policy governing itself.
+
+### 6. Future-countereffect result
+A single token combining schema+semantic+policy+epoch would simplify today's code but create ambiguity and future coupling. Requiring every consumer to understand every low-level contract would create a universal schema. The narrower boundary is: protected policy applicability is resolved by Core from versioned governed contracts and declared dependencies; candidates carry context/evidence, not authority.
+
+### 7. Current conclusion
+The semantic requirement is sufficiently attacked to proceed to exact representation review. No implementation is authorized yet. The next proof obligation is whether existing ClaimEnvelope.policyContext can be made semantically typed by contract/reference without adding a new top-level mechanism, or whether a dedicated protected field is genuinely necessary. Any new field must first prove policyContext cannot express the protected binding without becoming an untyped escape hatch.
