@@ -371,3 +371,12 @@ This separation exists specifically to prevent historical research volume from b
 - 🔴 `provenanceFacts` cannot be an ordinary provider-facing field; its meaning must come from the protected establishment boundary itself.
 - No new ID/operation identity is justified.
 - Next exact action: define the smallest protected-boundary creation capability whose output can carry established provenance without self-attestation.
+
+
+## STEP 7 — protected Policy authority owner audit
+- 🟢 Repository audit closed: no existing implemented policy-source/authority owner was found that can establish protected policy evidence provenance.
+- 🟢 Audit saved: `NEXO_NCS/BUILD/STEP_7_EXISTING_PROTECTED_POLICY_AUTHORITY_OWNER_AUDIT_2026-10-08.md`, commit `1662fdfdcb9354a73d7a8876686c9c06adf35c94`.
+- `ClaimEnvelope.policyContext` is a carrier, not an authority owner; structural construction cannot authenticate provenance. Final validation and conditional persistState are later boundaries and must not be repurposed.
+- Historical AB/P cross-check reinforces: policy version ≠ compatibility; epoch ordering ≠ authority ordering; metadata/revision ≠ authority certificate; missing protected evidence remains UNKNOWN.
+- 🔴 Previous implementation STOP is confirmed.
+- **Next exact action:** define the smallest Core-owned Policy Authority/Policy Source contract required to establish policy semantics + protected provenance, then attack it before implementation.
