@@ -821,3 +821,15 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Existing deduplication freshness concern is corroborated: no explicit observation identity was found at the report boundary. Do not invent a new identity until existing implicit boundaries are exhausted.
 - Status: 🟢 lifecycle recovered; 🟢 omitted squad-finding durability gap confirmed; 🔵 intended fresh-reobservation semantics OPEN; 🔵 identity sufficiency OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
 - Exact next: inspect tests/report outputs for implicit observation boundaries and deterministic re-observation, then audit the pre-cap objective/dependency graph versus the admitted eight-step mission graph.
+
+
+## P112 pre-cap vs admitted graph semantics audit — 2026-10-07
+- Saved `P112_PRECAP_ADMITTED_GRAPH_SEMANTICS_AUDIT_V1_2026-10-07.md`.
+- Commit: `38f7dd3a7011bcecbf51cdefcc3a5ae035de2c57`.
+- Confirmed from source: dependency IDs, cycle detection, DO_NOT_REPEAT blocking, blocked-only classification and first executable objective are computed over the full pre-cap `steps` array; only afterward does `steps.slice(0,8)` define the returned mission.
+- Execution and verification consume only the returned post-cap `mission.steps`.
+- This creates a concrete semantic mismatch surface: `objective` can name a step omitted by the cap, and a retained step can structurally depend on an omitted dependency node. Current source/tests do not prove such a >8 witness occurs in production.
+- Verification is over admitted steps only. This is compatible with a bounded execution budget only if non-admission semantics are explicit; current mission object has no dedicated NOT_ADMITTED/DEFERRED representation.
+- Historical evidence still supports that the 8-step cap is intentional as a bounded orchestration feature, but does not prove that the pre-cap objective/dependency graph semantics at the boundary were intentional.
+- Status: 🟢 pre-cap/post-cap boundary recovered; 🟢 objective/dependency/verification scope mismatch surface established; 🔵 concrete >8 cross-boundary witness OPEN; 🔵 exact budget semantics OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
+- Exact next: build/recover a deterministic >8-step test-harness witness without production changes, checking objective outside returned steps, dependency crossing the cap, and verification scope.
