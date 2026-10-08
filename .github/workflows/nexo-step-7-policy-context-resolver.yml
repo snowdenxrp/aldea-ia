@@ -1,0 +1,19 @@
+name: Nexo — STEP 7 policyContext resolver
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - src/nexo/core/policy-context-resolver.mjs
+      - tests/nexo/policy-context-resolver.test.mjs
+      - .github/workflows/nexo-step-7-policy-context-resolver.yml
+
+jobs:
+  resolver:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/nexo/policy-context-resolver.test.mjs
