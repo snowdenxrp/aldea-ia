@@ -1,7 +1,7 @@
 # NEXO NCS — STATUS
 
 ## Current phase
-CONSTRUCTION — STEP 6 RECONCILIATION BOUNDARY
+CONSTRUCTION — STEP 7 MISSION / OBSERVATION PROVENANCE BOUNDARY
 
 ## Closed / runtime verified
 - STEP 3A isolation: runtime verified.
@@ -70,9 +70,15 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 ## STEP 7 — mission / observation provenance boundary
 - Design contract: `NEXO_NCS/BUILD/STEP_7_MISSION_OBSERVATION_PROVENANCE_BOUNDARY_2026-10-08.md`
 - Design commit: 78f8672a40f756d7e9acd2708092003dde6a4715
-- Status: DESIGN READY — implementation not started.
-- Basis: MASTER/final distillation + frozen AB evidence + P/P112 evidence.
+- Status: DESIGN EVIDENCE CLOSED — implementation not started.
+- Basis: MASTER/final distillation + frozen AB evidence + P/P112 evidence + repository mapping.
+- Evidence mapping: NEXO_NCS/BUILD/STEP_7_EVIDENCE_MAPPING_2026-10-08.md
+- Decision: NEXO_NCS/DECISIONS/STEP_7_OBSERVATION_CLAIM_SEPARATION_2026-10-08.md
+- Recovered identity: no production runId/reportId/sampleId/executionId attached to findings; missionId is post-admission; generatedAt is not observation identity; stateRevision is not attached to observations.
+- Current boundary: specialist reports -> findings -> buildNexoMission -> mission -> persistence. recordNexoPlan() drops original finding code/source/reason/message/evidence.
+- Design conclusion: keep ObservationEnvelope separate from protected ClaimEnvelope; MissionCandidate transports provenance between them.
+- No observation ID is invented. Missing identity remains an explicit contract gap.
 - Scope: preserve claim-critical observation provenance through mission planning, define explicit NOT_ADMITTED semantics, prevent coarse dedupe from silently collapsing distinct causal observations, and keep mission/provider authority separate from protected-transition safety.
 - Explicitly NOT introduced: observation/run IDs, deferred queues, retries, tombstones, transaction wrappers, external-effect machinery, legacy compatibility layers.
-- Next exact action: recover existing observation/run/sample identity candidates from current code/tests, map the minimum provenance envelope to ClaimEnvelope, then determine the smallest implementation contract.
+- Next exact action: define the smallest loss-preserving ObservationEnvelope/MissionCandidate contract from the actual finding shapes, then write focused contract tests before any legacy integration.
 - STEP 7 must STOP if implementation requires an invented mechanism merely to make the boundary pass.
