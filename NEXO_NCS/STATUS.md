@@ -407,3 +407,12 @@ This separation exists specifically to prevent historical research volume from b
 - 🟢 Attack closed: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_ATTACK_2026-10-08.md`, commit `a0ae75725b1b8c6b7342b58c3c228934ff753577`.
 - Context establishes only the constitutional regime recognized by Core; it does not grant Policy, capability, admission, execution or claim truth. Caller-supplied identity/provenance cannot self-promote. Version/epoch/snapshot/recovery are not authority by themselves.
 - **Next exact action:** implement the minimum protected Constitution Authority Context boundary and adversarial tests; then connect it to Policy binding without allowing either boundary to absorb the other's authority.
+
+
+## STEP 7 — future-countereffects gate / Trust Foundation prerequisite
+- 🔴 Implementation of Constitution Authority Context intentionally STOPPED after future-countereffects review. Gate: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_FUTURE_COUNTEREFFECTS_GATE_2026-10-08.md`, commit `25c602cea689064188b9b8507f5c64bd3645ad6b`.
+- Reason: repository still lacks an independently recognized implemented trust foundation. A constructor/exported function would otherwise manufacture the root by naming itself Core.
+- 🟢 Minimum Trust Foundation contract candidate saved: `NEXO_NCS/BUILD/STEP_7_MINIMUM_TRUST_FOUNDATION_CONTRACT_CANDIDATE_2026-10-08.md`, commit `d89f2af17f41df40dbffea5174738bc6a2b2cba3`.
+- 🟢 Attack completed: `NEXO_NCS/BUILD/STEP_7_TRUST_FOUNDATION_CONTRACT_CANDIDATE_ATTACK_2026-10-08.md`, commit `95840ecb77bd906ece0441aee47f47512c37272b`.
+- Future problems explicitly rejected: fake root, trust recursion, snapshot resurrection, epoch/version confusion, provider capture, monolithic authority, schema-as-security, TOCTOU, common-mode trust, recovery dead-end, legacy migration trap, provider/storage lock-in.
+- **Next exact action:** identify and define the actual Nexo trust foundation/root contract (including how it is independently recognized). Do not implement Constitution Authority Context until that root exists as a real protected boundary.
