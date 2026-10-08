@@ -257,6 +257,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Rejected: policy-id-only, policy-version-only, arbitrary `policyContext`, monolithic universal policy schema, new SelectorAuthority.
 - ⚠️ Before implementation, attack binding against schema-version/policy-version/authority-epoch confusion, dependency incompleteness, scope mismatch, expiry, and provider self-declaration. Latest commit: `1671e5f8c7e99e8db8122867eb2532d9eb965afa`.
 
+- 🟢 Binding integrity attack closed: schema_version, semantic_version, policy_version and authority_epoch cannot substitute for one another; missing critical dimension => UNKNOWN/REVALIDATE.
+- 🟢 Policy existence/version is insufficient: protected Core must verify mission/goal/resource/effect scope, temporal validity/expiry, and dependency closure.
+- 🟢 Provider-supplied policyContext is input/evidence only; it cannot self-declare applicability or authority.
+- 🟠 Single composite token would create semantic ambiguity/coupling; universal low-level schema would overcouple consumers. Narrow boundary: Core resolves protected policy applicability from versioned governed contracts + dependencies; candidate carries context/evidence, not authority.
+- ⚠️ Next exact proof obligation: determine whether existing ClaimEnvelope.policyContext can be made semantically typed by governed contract/reference without a new top-level mechanism. No implementation yet. BUILD checkpoint `6a54acedce3c882c432d4b33c60499d8a539143f`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
