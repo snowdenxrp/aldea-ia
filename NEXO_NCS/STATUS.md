@@ -251,6 +251,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - ⚠️ Schema sufficiency sigue PENDING: falta atacar la representación machine-readable/binding exacta antes de implementación.
 - Latest analysis commit: `44c27ae33d9ede483f02a2dde2f807a490cbfc5e`.
 
+- 🟢 Binding attack: existing `ClaimEnvelope.policyContext` is only a transport carrier today; arbitrary contents cannot prove policy applicability/completeness and must not become an authority escape hatch.
+- 🔵 Historical Policy Contract already provides the semantic vocabulary: policy id/version/hash, scope, evidence/freshness/independence, assumptions, owner/authority, expiry, dependencies; conflict semantics are separately versioned. Schema version, semantic version, policy version and authority epoch remain distinct.
+- 🔵 Minimum representation candidate is a **protected policy applicability binding** referencing governed policy semantics, mission/goal scope, authority/epoch when required, validity/expiry, required evidence/context contracts, interaction/conflict contracts + versions, dependency roots/closure, and explicit failure/UNKNOWN behavior.
+- 🟠 Rejected: policy-id-only, policy-version-only, arbitrary `policyContext`, monolithic universal policy schema, new SelectorAuthority.
+- ⚠️ Before implementation, attack binding against schema-version/policy-version/authority-epoch confusion, dependency incompleteness, scope mismatch, expiry, and provider self-declaration. Latest commit: `1671e5f8c7e99e8db8122867eb2532d9eb965afa`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
