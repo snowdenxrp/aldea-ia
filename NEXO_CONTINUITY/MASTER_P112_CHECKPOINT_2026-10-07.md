@@ -436,3 +436,14 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - `nexoEffectRevision` is local/in-memory and distinct from canonical `stateRevision`.
 - 🟢 common mutation boundary identified; 🔵 complete final-gate provenance and protected-vs-learning write separation remain open.
 - Exact next: audit individual `executeAction` branches and real helper read/write graphs, starting with resource consumption, inventory mutation, and trade/partner mutation.
+
+
+## P112 executeAction branch read/write graph V1 — 2026-10-07
+- Saved `NEXO_CONTINUITY/P112_EXECUTEACTION_BRANCH_READ_WRITE_GRAPH_V1_2026-10-07.md`, commit `7683359c1047720785ff95a926110d181c9186f7`.
+- Resource actions read live resource state plus agent state; `catchFish` also has outcome-defining RNG inside mutation.
+- Inventory-only actions are smallest protected transitions but still require exact inventory/hunger revalidation.
+- Production actions cross agent + world/structure domains.
+- Trade is explicitly multi-participant: seller/buyer inventory + money, relationships, economy history/priceMemory; `partnerId` alone is insufficient provenance.
+- Institution actions add membership/commons predicates and balances to the protected dependency graph.
+- Conclusion: no single fixed DependencySet; use claim-specific transition record (Operation/Action identity, DependencySet/ReadSet, WriteSet, participant/resource identity, RNG evidence where relevant, policy/invariant version).
+- 🔵 Existing authoritative object version/incarnation mechanism is not yet established; exact next is audit actual existing version tokens for these branches, without adding another global revision primitive.
