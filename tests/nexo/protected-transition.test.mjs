@@ -8,6 +8,7 @@ import {
   createCandidate,
   createClaimEnvelope,
   createCommitResult,
+  createOutcome,
   createValidationResult
 } from "../../src/nexo/core/contracts.mjs";
 import { createCorePorts } from "../../src/nexo/core/ownership.mjs";
@@ -58,6 +59,10 @@ function makePorts(overrides = {}) {
         calls.commit += 1;
         return createCommitResult(COMMIT.COMMITTED);
       }
+    },
+    outcomeClassifier: {
+      classify: ({ kind, reasons = [], evidence = [] }) =>
+        createOutcome(kind, { reasons, evidence })
     },
     ...overrides
   });
@@ -154,6 +159,18 @@ function makePorts(overrides = {}) {
     ports, proposal: {}, state: { value: 1 }, expectedRevision: 3
   });
   assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+}
+
+{
+  const { ports } = makePorts({
+    outcomeClassifier: {
+      classify: ({ kind, reasons = [], evidence = [] }) =>
+        createOutcome(kind === OUTCOMES.UNKNOWN ? OUTCOMES.SAFE_COMMIT : kind, { reasons, evidence })
+    }
+  });
+  assert.throws(() => executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  }), /required terminal classification/);
 }
 
 {
