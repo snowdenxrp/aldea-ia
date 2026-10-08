@@ -91,3 +91,14 @@ The architectural boundary is explicit:
 Observation evidence + claim-specific evidence + explicit admission policy/context + bounded selection rule -> admission decision.
 Only the first two evidence categories are concretely present today. The explicit authoritative selection policy remains PENDING.
 If repository evidence cannot establish that policy without inventing semantics, preserve PENDING and move the unresolved decision into final Core distillation rather than patching legacy orchestration.
+
+## Historical cross-check — AB104.402
+AB104.402 independently establishes the relevant architectural direction:
+- required admission context cannot be defined solely by the claim instance;
+- protected semantic policy/rules outside the claim determine required context;
+- missing required context yields UNKNOWN/HOLD/REVALIDATE rather than being treated as unconstrained;
+- context schema integrity does not prove semantic completeness.
+
+Applied here, this means the new Core admission decision cannot let an ObservationEnvelope or provider proposal define its own eligibility/selection authority. The policy and required context must come from the protected semantic layer.
+
+This is a cross-check, not a new mechanism and not a reopening of AB research.
