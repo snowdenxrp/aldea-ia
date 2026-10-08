@@ -833,3 +833,59 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Historical evidence still supports that the 8-step cap is intentional as a bounded orchestration feature, but does not prove that the pre-cap objective/dependency graph semantics at the boundary were intentional.
 - Status: 🟢 pre-cap/post-cap boundary recovered; 🟢 objective/dependency/verification scope mismatch surface established; 🔵 concrete >8 cross-boundary witness OPEN; 🔵 exact budget semantics OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claim.
 - Exact next: build/recover a deterministic >8-step test-harness witness without production changes, checking objective outside returned steps, dependency crossing the cap, and verification scope.
+
+## FINAL TRANSITION DECISION — 2026-10-08
+
+### Research exit / construction handoff
+The current P112/AB research is **not to be extended by another circular audit** merely to eliminate every remaining UNKNOWN. The evidence already recovered is sufficient to define the Nexo Core construction boundary.
+
+**AB105 role:** AB105 remains a frozen historical evidence source, not an active audit queue. Protected analytical anchor remains **AB105.116R**. **AB105.117R is prohibited. TLC remains frozen; do not rerun.** Consult AB105 only when MASTER lacks a detail needed to interpret or implement an already-established invariant. Do not replay AB105 sequentially.
+
+**MASTER role:** MASTER is the operational guide for construction. Historical AB artifacts remain the evidence archive behind it.
+
+### Why we are stopping the audit loop
+Architecture-changing questions have converged:
+- protected safety unit is a transition footprint, not a single object version;
+- WriteSet-only validation is insufficient;
+- complete static token coverage is not proven;
+- existing persistState(expectedRevision) is a conservative conditional snapshot-commit primitive for cooperating canonical writers;
+- final semantic revalidation is still required before commit;
+- mutable nexoMemory/effectJournal aliasing must be detached in the protected working snapshot;
+- random/time/external/provider inputs are causal provenance, not magically covered by stateRevision;
+- inspected Lumina handlers are local snapshot mutations, not proven external irreversible effects;
+- UNKNOWN/RECONCILE semantics remain required for future external effects and ambiguous recovery;
+- mission/finding provenance compression and bounded-cap semantics are known design issues and must not be silently discarded.
+
+Remaining unknowns that do not change this architecture become explicit **PENDING/UNKNOWN contracts**, not reasons for another broad audit.
+
+### Mandatory construction invariants
+1. No patches or silent migration.
+2. No invented verification.
+3. No global revision shortcut masquerading as semantic dependency coverage.
+4. Isolate the complete mutable candidate graph before protected mutation.
+5. Carry claim-specific provenance/dependencies through admission to final validation.
+6. Final validation re-checks authoritative dependencies, authority/STOP/fence, identity/incarnation, policy/config/logic and causal random/time/external inputs as applicable.
+7. Use existing persistState(expectedRevision) as the canonical conditional snapshot commit primitive.
+8. STATE_REVISION_CONFLICT means stale commit candidate, not proof that an intended effect did or did not occur.
+9. Separate candidate-local snapshot mutation from irreversible/external effects.
+10. Missing/evicted effect evidence never means NOT_ATTEMPTED.
+11. Preserve claim-critical provenance through deduplication, mission bounding, durable reconstruction and recovery.
+12. Historical eight-step mission bound must not be silently removed; its non-admission/deferred semantics need explicit treatment when redesigned.
+13. Contradiction with an established invariant triggers an evidence stop; do not patch around it.
+
+### Immediate next phase
+One final **DESTILACIÓN**, then **CONSTRUIR**:
+- distill evidence into Core contracts/invariants;
+- define minimum Core modules and ownership;
+- build protected-transition skeleton first;
+- then place execution/mission layers on top.
+
+The next chat must begin from this handoff, not restart P112/AB audits.
+
+### DO-NOT-REPEAT
+- Do not rerun TLC.
+- Do not create AB105.117R.
+- Do not backfill AB104.185.
+- Do not repeat VersionSet/provenance/isolation/final-gate/persistState audits unless new implementation facts contradict them.
+- Do not invent global revision, deferred queue, effect tombstone, observation ID, or transaction wrapper before checking existing evidence/contracts.
+- Do not begin by patching the old orchestrator into becoming the new Core.
