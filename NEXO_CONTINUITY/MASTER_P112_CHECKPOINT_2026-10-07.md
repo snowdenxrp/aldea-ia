@@ -338,3 +338,15 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Therefore `simulate.mjs` is a simulation/persistence owner, not an existing effect-execution owner. Making it one would be new architecture.
 - The missing owner must coordinate canonical revision, durable PREPARED checkpoint, protected admission, handler mutation, terminal journal/result, and canonical persistence/recovery; merely calling persistState more often is insufficient.
 - Exact next: trace complete mission lifecycle and search for any dormant/alternate mission runner outside these scripts before declaring the execution-owner gap architectural.
+
+
+## Posterior AB execution-owner evidence reconciliation V1 — 2026-10-07
+- Later corpus was checked because it materially bears on the open owner boundary.
+- AB104.152–153 corroborate that the owner is a protocol/topology boundary, not merely a missing call site; canonical checkpoint ownership and separation of execution/recovery/reconciliation remain required.
+- AB104.227–230 sharpen operation identity + effect mutation + committed result ordering, receipt/target binding, and crash/restore semantics.
+- AB104.543 supplies the lifecycle vocabulary AUTHORITY_COMMIT → DURABLE_INTENT → PROVIDER_ADMISSION → EXTERNAL_ATTEMPT → RECONCILIATION, without inventing a global external commit point.
+- AB104.585 reinforces final TOCTOU admission/re-admission and UNKNOWN on ambiguous commit.
+- AB104.990R–999R reinforce attempt identity, scoped idempotency, multiple downstream effect boundaries, rollback as a new effect, and preservation of UNKNOWN/coverage reasons.
+- Correction: do not narrow execution owner to `simulate.mjs` caller. Treat it as a lifecycle/protocol owner question.
+- Status: GREEN later evidence materially constrains the owner; BLUE exact minimal current-repository boundary remains open; no implementation or runtime proof inferred.
+- Exact next: reconcile AB104.227–585 lifecycle requirements against current `runtime.js` + `effect-adapter.js` + `simulate.mjs` and derive the smallest boundary that satisfies already-established protocol without inventing a global coordinator.
