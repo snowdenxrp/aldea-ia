@@ -723,3 +723,21 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - LUMINA_ACTION payload is stronger: context.action is the concrete operation and is not recoverable from the persisted mission projection; if that path becomes live, the payload is MUST-PERSIST/bind.
 - Provenance boundary identified: specialist report -> finding -> mission step. Claim-critical observation/evidence must not be confused with UI/summary metadata.
 - Exact next: trace finding evidence producers for ordinary classes and classify explanatory vs claim-critical evidence; separately verify any non-assistant LUMINA_ACTION producer.
+
+
+## P112 finding evidence / provenance classification audit — 2026-10-07
+- Saved `P112_FINDING_EVIDENCE_PROVENANCE_CLASSIFICATION_AUDIT_V1_2026-10-07.md`.
+- Commit: `5cfcd4fd71924b42292a14f8822cba52a9b8926d`.
+- Major advance: narrowed the provenance problem from “persist all assistant reports” to “persist/bind the minimum causal claim inputs.” Whole-report persistence is not justified by current evidence.
+- Visual: renderProbe predicates are claim-critical when they drive repair and are not automatically re-derivable from canonical simulation state; target identity/incarnation must bind to the observation.
+- Explorer: agent identity + zero-exploration predicate are claim-critical; knownRegions is re-derivable only when it is merely canonical-state context.
+- Behavior: currentActivity/agent population is sample-time evidence; freshness/sample boundary matters.
+- Routine: active sequence + missing phase predicate is claim-critical; action may be re-derived, but the admission claim is not.
+- Ecosystem: resource type + negative amount are directly causal; amount is evidence, not a generic summary.
+- Society: average social need is a derived aggregate; preserving only the scalar loses the underlying dependency closure.
+- SPECIALIST_ERRORS is a meta-finding, not an independent authority domain; underlying specialist findings are the real dependency set.
+- New rule: RE-DERIVABLE action/target does not imply RE-DERIVABLE claim. Re-derivation is safe only when complete authoritative inputs and the observation boundary remain available.
+- Current production squad findings contain no structured `evidence` object in inspected classes; causal inputs are encoded in finding fields/report observations, so provenance loss can occur without an explicit evidence field.
+- LUMINA_ACTION remains non-live in the demonstrated production assistant path; no current production producer found.
+- Status: 🟢 claim-critical vs explanatory classification materially narrowed; 🟢 aggregate/meta provenance trap identified; 🔵 minimum durable claim envelope/schema OPEN; 🔵 producer trust/freshness semantics OPEN; 🔴 no implementation/TLC/JMM-HB/exactly-once/power-loss claims.
+- Exact next: trace actual `buildNexoMission/actionFor` mappings for ordinary classes against the isolated-snapshot final validator, then separately inspect any non-assistant LUMINA_ACTION producer path.
