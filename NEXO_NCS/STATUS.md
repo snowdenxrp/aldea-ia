@@ -389,3 +389,12 @@ This separation exists specifically to prevent historical research volume from b
 - Contract establishes only governed policy identity/semantics, applicability authority/context, and required semantic dependencies, with protected establishment provenance. It does not authorize, admit, validate final claims, execute, commit, or resolve effects.
 - Provider self-attestation, policy substitution, scope/dependency laundering, version/authority confusion, universal-policy-engine creep, TOCTOU, and missing-evidence collapse all rejected.
 - **Next exact action:** implement the smallest Core-owned policy source boundary and focused semantic tests; do not implement admission/authorization behavior through it.
+
+
+## STEP 7 — Constitution-to-Policy authority binding
+- 🟢 MASTER cross-check confirms Constitution is the immutable/versioned root of authority and the chain `TRUST ANCHOR → IDENTITY → AUTHORITY → CAPABILITY → POLICY → WORLD REVALIDATION → EXECUTION → VERIFICATION`.
+- 🟢 Minimum binding contract saved: `NEXO_NCS/BUILD/STEP_7_MINIMUM_CONSTITUTION_TO_POLICY_AUTHORITY_BINDING_CONTRACT_2026-10-08.md`, commit `855d1cff38718721a9ce0d5869f3f399209760ac`.
+- 🟢 Attack closed: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_TO_POLICY_AUTHORITY_BINDING_CONTRACT_ATTACK_2026-10-08.md`, commit `5fa8b0376bc101dfc332afbd9b1cb2c9c11821f3`.
+- Contract binds constitutional regime → governed policy identity/semantics → authority domain → applicability → validity/dependencies → protected establishment provenance. It does not authorize actions, admit candidates, prove claims, execute, commit, or prove external effects.
+- Provider/policy self-authorization, version confusion, scope laundering, authority-to-action leap, dependency laundering, stale binding, universal-policy-engine creep and future coupling rejected.
+- **Next exact action:** inspect how the repository can obtain/represent constitutional authority context without caller-supplied authority metadata; if no existing path exists, define the minimum Core Constitution Authority context contract before implementation.
