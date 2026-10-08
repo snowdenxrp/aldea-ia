@@ -1,0 +1,23 @@
+name: Nexo — STEP 3A isolation verification
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: nexo-step-3a-isolation
+  cancel-in-progress: true
+
+jobs:
+  isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run focused isolation contract tests
+        run: node tests/nexo/core-contracts.test.mjs
