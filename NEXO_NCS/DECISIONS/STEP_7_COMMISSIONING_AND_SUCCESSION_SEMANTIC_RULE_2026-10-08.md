@@ -123,3 +123,27 @@ The material unresolved choice is whether the user wants **owner-authorized comm
 - 🔴 No implementation authorized.
 
 The current NIST SP 800-63B-4 guidance is relevant to authenticator binding, invalidation and account recovery lifecycle, but it governs digital authentication practice; it does not determine Nexo's constitutional legitimacy rule. See https://csrc.nist.gov/pubs/sp/800/63/b/4/final.
+
+
+## Explicit owner governance decision — 2026-10-08
+
+**Decision received from the owner:** “La autoridad soy yo y después de mi sería mi hija … todo solo sobre mi autorización.”
+
+This explicitly resolves the previously open normative choice for the initial Nexo governance model:
+
+1. **Initial constitutional authority:** Kevin is the sole initial human authority entitled to authorize Nexo's initial commissioning. No model, provider, device, recovery agent, local process, or technical credential may appoint itself or another party as constitutional authority.
+2. **Owner authorization is the legitimacy rule; authentication remains separate.** The system must still establish, through a yet-unselected independently trusted mechanism, that a commissioning/amendment/other protected authorization genuinely came from Kevin and binds the exact action and Constitution/context. A claimed approval, voice match, local flag, valid signature, or recovered snapshot alone is not sufficient proof.
+3. **Future intended successor:** Kevin's daughter is the intended successor after him. She is currently a baby and has no present Nexo authority by virtue of this stated future intention. This is a succession intention, not a current credential, delegation, or automatic transfer.
+4. **Succession details remain to be governed before any transfer:** the exact triggering condition and evidence (including death, permanent incapacity, or any other condition), her eligibility/assumption ceremony, how she is authenticated at that future time, how Kevin's authority is fenced/revoked where applicable, and how disputes or unavailable evidence are handled must be specified in advance while Kevin can authorize those rules. Do not invent or infer these details, and do not let the successor or recovery mechanism decide them unilaterally.
+5. **Scope of “only on my authorization”:** constitutional legitimacy, commissioning, protected authority-root changes, constitutional amendments, and succession must trace to Kevin's authorization under the Constitution until a valid, pre-authorized succession occurs. This does not mean every harmless interaction or low-risk operation must require a fresh explicit human approval; ordinary capabilities must remain separately bounded by the Constitution, policy and action-specific risk. No operation may bypass those limits by invoking “owner authorization.”
+6. **No technical selection or activation implied:** this decision does not select a phone, voice/face method, cryptographic authenticator, verifier, hardware root, vendor, protocol, or recovery design. It does not accept the bounded prototype verifier assumption and does not authorize protected implementation.
+
+### State after the owner's decision
+- 🟢 Normative initial authority choice: ACCEPTED — sole initial authority is Kevin.
+- 🟢 Intended future successor: ACCEPTED as an intention — Kevin's daughter after him; she has no present authority.
+- 🔵 Detailed succession trigger and transfer ceremony: OPEN; must be governed explicitly before any transfer.
+- 🔴 Independent authentication/verifier/root, enrollment, currentness, recovery and enforcement: unresolved; protected activation remains blocked.
+- 🔴 Implementation and protected root operations: NOT AUTHORIZED.
+
+### Next required work
+Do not ask again who holds initial authority. Continue P0 research by adversarially reviewing this owner-approved semantic rule for coercion, disputed intent, incapacity/death evidence, compromised/lost channels, succession races, predecessor fencing, Constitution amendment and future transfer to a currently minor successor. Separate questions that Kevin can decide normatively from mechanism properties that can be tested. Do not freeze a specific succession trigger or implementation mechanism without explicit authorization and supporting evidence.
