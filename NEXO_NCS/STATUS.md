@@ -138,7 +138,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 User manually executed the focused NEGATIVE_RESOURCE equivalence workflow after the final test-harness correction and reported PASS.
 - 🔵 The GitHub connector cannot independently retrieve that manual workflow_dispatch run in this session; no run/job ID is invented.
 - The architectural rule remains: missing causal evidence => UNKNOWN, never silently equivalent.
-- Next exact action: runtime execution of the focused workflow; if it exposes a contract mismatch, STOP and redesign rather than patch.
+- 🟢 Focused NEGATIVE_RESOURCE workflow was manually executed by the user and reported PASS; this closes the current runtime checkpoint without inventing a run ID.
+- 🟢 Legacy dedupe boundary inspected in `NEXO_NCS/BUILD/STEP_7_LEGACY_DEDUPE_BOUNDARY_INSPECTION_2026-10-08.md`, commit `2d1aa53517a62d716c4854a6d139c0403c92c291`.
+- Finding: legacy `action|target|action.name` dedupe is not claim-specific equivalence and drops claim-critical observation dimensions; it remains evidence only and is not modified.
+- Next exact action: define the smallest Core handoff contract from ObservationEnvelope to MissionCandidate/admission for one concrete finding, without changing legacy orchestration.
 
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
