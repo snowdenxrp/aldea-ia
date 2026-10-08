@@ -416,3 +416,13 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - 🟢 Generic persistence primitive is closed. 🔵 Protected final-gate + conflict/reconciliation owner remains open. 🔴 No full atomicity/exactly-once/power-loss/dependency-coverage claim.
 - Exact next: audit the authoritative inputs required at final revalidation, map them against the isolated snapshot/provenance, then trace existing conflict callers to derive the minimum safe classification/reconciliation contract. No implementation.
 - DO-NOT-REPEAT: no second persistence wrapper; no executor merely to fill the caller; no TLC rerun; no AB104.185 primary; no AB105.117R.
+
+
+## P112 final-revalidation inputs + conflict semantics audit V1 — 2026-10-07
+- Saved `NEXO_CONTINUITY/P112_FINAL_REVALIDATION_INPUTS_CONFLICT_SEMANTICS_AUDIT_V1_2026-10-07.md`, commit `a19a500647ac5794e731131384d73890ff8c17cd`.
+- Current callers confirmed: `simulate.mjs` and `assistants.mjs` use existing `persistState(expectedRevision)`; runtime/effect adapter do not join canonical persistence.
+- Final-gate inputs are broader than `stateRevision`: claim-specific DependencySet/provenance, authority/invalidation context, resource incarnation/fence/STOP context where applicable, policy/config version, freshness/consistency, random evidence, operation/effect/retry identity, plus canonical revision.
+- `STATE_REVISION_CONFLICT` is best classified as STALE_COMMIT_CANDIDATE. It is not generic failure, not proof of absent effect, and no production semantic reconciliation/replan caller was found.
+- 🟢 Persistence primitive and conflict detection are closed. 🔵 Binding complete final-gate provenance to that commit and mapping conflict to semantic reconciliation remain open.
+- Exact next: audit the current `executeAction()/performDecision()` boundary versus Nexo runtime to determine whether one isolated-snapshot final validator can cover the claim-specific DependencySet without swallowing unrelated post-effect writes; map failures to STALE_ADMISSION / HOLD / UNKNOWN / RECONCILE.
+- No implementation; no TLC; no AB104.185 primary; no AB105.117R.
