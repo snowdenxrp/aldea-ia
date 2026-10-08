@@ -502,3 +502,13 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - 🟢 Write-skew, aggregate and predicate/range invalidators are present across the representative classes. 🔵 Exact minimum token partition remains OPEN.
 - Snapshot + persistState(expectedRevision) remains structurally compatible, but final semantic revalidation, dependency completeness, crash atomicity and prepared-intent durability remain OPEN.
 - Exact next: six adversarial stale-admission cases, one per class; identify the post-admission writer and minimum rejection token set; then compare against isolated snapshot + conditional commit.
+
+
+## P112 six adversarial stale-admission cases V2 — 2026-10-07
+- Saved P112_SIX_ADVERSARIAL_STALE_ADMISSION_CASES_V2_2026-10-07.md, commit 14b1efafc6c3d5ee6a91e90af147e39d1b0811e8.
+- One modeled stale-admission/write-skew case per class: Resource, Trade, Cooperate, Exploration, Build/Farm, Social/Knowledge.
+- Common result: Admission ReadSet can intersect an invalidator while direct WriteSets remain disjoint; therefore direct WriteSet versioning is insufficient.
+- A composite token is only a complete semantic fence if every authoritative dependency has generation semantics, every invalidating writer updates it, derived/aggregate/predicate dependencies are covered, and the final gate revalidates canonical state.
+- Isolated applyState() + persistState(expectedRevision) can reject stale whole-state snapshots, but does not alone prove semantic admission validity; final dependency revalidation remains required.
+- 🟢 Six adversarial safety cases modeled. 🔵 Exact token ownership/generation and minimum boundary remain OPEN. 🔴 No runtime interleaving/JMM-HB claim.
+- Exact next: trace each case to the smallest canonical writer and test whether composite dependency tokens can be complete without a global revision; compare complexity/coverage against whole-snapshot conditional commit.
