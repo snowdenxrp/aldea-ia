@@ -234,6 +234,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - ⚠️ Exact policy fields/relations remain PENDING; no implementation. Next action: test this shape against concrete adversarial sets (A-B, B-C, A-C; shared resource; dependency overlap; contradictory observations) to determine which constraints are genuinely required versus accidental complexity.
 - Latest analysis commit: `8e41c9bb7614b32cf9f734fc22d1c8c369636a4c`.
 
+- 🟢 Adversarial A-B-C/set cases establish that set-level compatibility/admissibility is genuinely necessary: pairwise eligibility/ordering cannot prove joint admissibility when conflicts, shared resources, unknown dependencies, scope interactions, or contradictory claims exist.
+- 🔵 Universal optimization is NOT required. The Core should consume the semantic result of protected Policy/Admission evaluation rather than expose a global optimizer.
+- 🟠 Remaining question is now narrow: whether existing Policy/Claim/Conflict contracts already have enough vocabulary to express the required set predicate and permitted preference relation. Do not add fields until this is checked.
+- ⚠️ No implementation. Latest analysis commit: `dbf5e038fb89106438d946ed9a3530ea51cb5e97`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
