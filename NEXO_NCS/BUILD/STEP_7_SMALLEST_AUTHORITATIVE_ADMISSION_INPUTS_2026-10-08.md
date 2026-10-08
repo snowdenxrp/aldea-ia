@@ -199,3 +199,13 @@ Applied carefully to STEP 7, this does **not** create a new admission algorithm.
 This is useful because it narrows the design space without inventing a selector: the future relation must specify what happens to **eligible + comparable**, **eligible + incomparable**, and **conflicting** candidates separately.
 
 Future-countereffect check: using input order as a tie-break gives deterministic output today but makes upstream enumeration order a hidden authority boundary and can change behavior when providers, concurrency, or data sources change. Rejected.
+
+
+## Final cross-check of mission/goal semantics — objective is not a selector
+The canonical requirements baseline states that every protected action requires explicit mission/goal context and must distinguish the objective from a proxy/metric (`REQ-M01`). It also requires mission changes to identify affected goals, claims, invariants and policies (`REQ-M04`). Research further requires critical requirements to carry an explicit conflict/precedence rule.
+
+This provides a possible **source of authoritative selection context** in the future, but the repository does not define a protected precedence relation among the current heterogeneous observation claims. Therefore “goal/objective” cannot be promoted into a ranking function without an explicit precedence policy.
+
+The result is stronger than simply “we found nothing”: the evidence establishes that selection authority must be rooted in protected mission/goal/policy semantics and distinguish objective from proxy, but it does not supply the missing relation for the current candidate set.
+
+No new priority, score, tie-break, or goal-pressure adapter is introduced.
