@@ -1,0 +1,20 @@
+name: Nexo — STEP 6 reconciliation
+
+on:
+  push:
+    paths:
+      - 'src/nexo/core/reconciliation.mjs'
+      - 'tests/nexo/reconciliation.test.mjs'
+      - 'NEXO_NCS/BUILD/STEP_6*'
+      - '.github/workflows/nexo-step-6-reconciliation.yml'
+  workflow_dispatch:
+
+jobs:
+  reconciliation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/nexo/reconciliation.test.mjs
