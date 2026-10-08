@@ -85,6 +85,24 @@ export function createOutcome(kind, { reasons = [], evidence = [] } = {}) {
   });
 }
 
+
+const AUTHORITY_STATES = Object.freeze(["AUTHORIZED", "STOP", "UNKNOWN"]);
+
+export function createAuthorityResult(status, { reasons = [], evidence = [] } = {}) {
+  if (!AUTHORITY_STATES.includes(status)) throw new TypeError(`invalid authority status: ${status}`);
+  return immutable({
+    status,
+    reasons: immutable([...reasons]),
+    evidence: immutable([...evidence])
+  });
+}
+
+export const AUTHORITY = Object.freeze({
+  AUTHORIZED: "AUTHORIZED",
+  STOP: "STOP",
+  UNKNOWN: "UNKNOWN"
+});
+
 export const OUTCOMES = Object.freeze({
   SAFE_COMMIT: "SAFE_COMMIT",
   STALE_CANDIDATE: "STALE_CANDIDATE",
