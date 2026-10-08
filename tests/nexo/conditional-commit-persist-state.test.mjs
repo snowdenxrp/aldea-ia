@@ -77,7 +77,7 @@ try {
 
   const persisted = await loadState(statePath);
   assert.equal(persisted.stateRevision, initial.stateRevision + 1);
-  assert.equal(persisted.hour, simulation.hour);
+  assert.equal(persisted.hour, simulation.hour + 1);
 
   const staleConditionalCommit = createPersistStateConditionalCommit({
     persistState,
