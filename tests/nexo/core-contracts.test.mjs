@@ -76,4 +76,24 @@ assert.throws(() => ports.conditionalCommit.commit(), /NOT_IMPLEMENTED/);
 assert.equal("commit" in { action: "example" }, false);
 assert.equal("conditionalCommit" in ports.proposal, false);
 
+
+const completePolicyContext = {
+  policyRef: { id: "policy-1", semanticVersion: "1.0.0", hash: "sha256:test" },
+  scope: { mission: "mission-1" },
+  resolved: { semanticFacts: { threshold: 1 }, dependencies: [{ id: "dep-1", version: "1" }] },
+  validity: { status: "VALID", expiresAt: "2099-01-01T00:00:00Z" },
+  resolutionProvenance: [{ source: "protected-core" }]
+};
+const policyClaim = createClaimEnvelope({ claimId: "claim-policy", action: "example", policyContext: completePolicyContext });
+assert.equal(policyClaim.policyContext.policyRef.id, "policy-1");
+assert.equal(policyClaim.policyContext.validity.status, "VALID");
+assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-ref", action: "example", policyContext: { ...completePolicyContext, policyRef: null } }), /policyRef/);
+assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-scope", action: "example", policyContext: { ...completePolicyContext, scope: undefined } }), /scope/);
+assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-deps", action: "example", policyContext: { ...completePolicyContext, resolved: { semanticFacts: {} } } }), /dependencies/);
+assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-invalid-status", action: "example", policyContext: { ...completePolicyContext, validity: { status: "AUTHORIZED" } } }), /validity.status/);
+assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-provenance", action: "example", policyContext: { ...completePolicyContext, resolutionProvenance: undefined } }), /resolutionProvenance/);
+assert.throws(() => { policyClaim.policyContext.policyRef.id = "attacker"; }, TypeError);
+assert.equal("authorize" in policyClaim.policyContext, false);
+assert.equal("safeCommit" in policyClaim.policyContext, false);
+
 console.log("NEXO CORE isolation contract tests: PASS");
