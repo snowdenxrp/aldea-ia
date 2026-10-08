@@ -1,0 +1,14 @@
+name: Nexo — STEP 7 observation contract
+
+on:
+  workflow_dispatch:
+
+jobs:
+  observation-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/nexo/observation.test.mjs
