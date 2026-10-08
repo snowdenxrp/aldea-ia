@@ -156,4 +156,19 @@ function makePorts(overrides = {}) {
   assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
 }
 
+{
+  const { ports } = makePorts({
+    candidateExecutor: {
+      execute: ({ state, expectedRevision }) => createCandidate({
+        claim: createClaimEnvelope({ claimId: "wrong-claim", action: "set-value" }),
+        state,
+        expectedRevision
+      })
+    }
+  });
+  assert.throws(() => executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  }), /preserve the claimed transition identity/);
+}
+
 console.log("NEXO STEP 3B protected-transition composition tests: PASS");
