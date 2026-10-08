@@ -25,6 +25,16 @@ assert.equal(claim.action, "example");
 assert.throws(() => { claim.claimId = "mutated"; }, TypeError);
 assert.throws(() => createClaimEnvelope({ action: "missing-id" }), /claimId/);
 
+const mutableTarget = { id: "target-1", meta: { version: 1 } };
+const claimWithTarget = createClaimEnvelope({
+  claimId: "claim-target",
+  action: "example",
+  target: mutableTarget
+});
+mutableTarget.meta.version = 2;
+assert.equal(claimWithTarget.target.meta.version, 1);
+assert.throws(() => { claimWithTarget.target.meta.version = 3; }, TypeError);
+
 const candidateState = { value: 1 };
 const candidate = createCandidate({ claim, state: candidateState, expectedRevision: 7 });
 assert.equal(candidate.expectedRevision, 7);
