@@ -45,3 +45,5 @@ assert.equal(
   evaluateNegativeResourceEquivalence(base, differentSource).status,
   EQUIVALENCE.NON_EQUIVALENT
 );
+
+console.log("NEXO STEP 7 negative-resource equivalence tests: PASS");
