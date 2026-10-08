@@ -248,3 +248,25 @@ Therefore the currently strongest semantic candidate is **eligibility + policy-s
 - Being selected remains distinct from authority/execution/commit.
 
 This does **not** yet define the exact preference relation or what policy owns it. It is the first candidate relation that satisfies the recovered MASTER + AB constraints without introducing a universal ranking field. The next proof obligation is to test this relation against concrete heterogeneous producer classes and future evolution/countereffects before implementation.
+
+
+## Adversarial selector matrix — heterogeneous candidates
+The partial-order candidate was tested conceptually against representative producer classes already recovered from `src/assistants/squad.js`.
+
+| Case | Eligibility/evidence | Policy relation | Result | Reason |
+|---|---|---|---|---|
+| Two NEGATIVE_RESOURCE candidates, distinct resource types | potentially eligible | none established | INCOMPARABLE | Resource identity alone cannot define universal preference |
+| Two NEGATIVE_RESOURCE candidates, same resource but different amounts | claim-specific difference established | none established | INCOMPARABLE unless policy defines amount precedence | Amount magnitude is not automatically authority |
+| NEGATIVE_RESOURCE vs ROUTINE_PHASE_MISSING | heterogeneous claims | none | INCOMPARABLE | Cross-claim ordering is absent |
+| Two candidates with explicit protected mission precedence | eligible | A precedes B established by applicable policy | A precedes B | Governed relation, not score |
+| Candidate missing claim-critical admission context | insufficient | relation cannot be evaluated | UNKNOWN | Missing context is not permission |
+| Conflicting observations with no prevalidated resolution rule | conflict | none | CONFLICT | No arbitrary winner |
+| More than 8 eligible candidates with enough policy relations to choose 8 | eligible | relation establishes supported maximal set | SELECT supported subset | Bound does not create new semantic priority |
+| More than 8 eligible candidates where remaining candidates are mutually incomparable | eligible | unresolved | UNKNOWN/CONFLICT for unresolved selection | Never fill remaining slots with hidden tie-break |
+
+### Countereffect finding
+The strongest remaining risk is not the partial-order idea itself; it is **cross-claim comparability**. If the implementation introduces a generic relation such as `candidateA > candidateB` without carrying the policy/mission/claim context that makes that comparison valid, the partial order becomes a disguised universal priority system.
+
+Therefore the relation must be scoped at least by the protected semantic context that establishes comparability. A relation between candidates from different claim classes cannot be inferred merely because both are eligible or because one has a larger numeric observation.
+
+No implementation authorized yet. The next question is whether the current architecture contains a protected owner for this cross-candidate relation. If not, the selector must remain PENDING rather than inventing one.
