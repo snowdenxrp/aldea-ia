@@ -209,3 +209,26 @@ This provides a possible **source of authoritative selection context** in the fu
 The result is stronger than simply “we found nothing”: the evidence establishes that selection authority must be rooted in protected mission/goal/policy semantics and distinguish objective from proxy, but it does not supply the missing relation for the current candidate set.
 
 No new priority, score, tie-break, or goal-pressure adapter is introduced.
+
+
+## Selector contract candidate — minimum properties, not implementation
+A further cross-check found two strong constraints in the canonical architecture: `Goal Refinement Contract` carries objective, refinement type, justification, evidence, scope, constraints, success relation, required capabilities, policy version, authority epoch and expiry; and the authoritative-core boundary states that a metric is not authorization. Research also states that no metric/score/reward/result may by itself authorize a critical external effect.
+
+For STEP 7 this supports a **minimum semantic contract for a future bounded-selection relation**, without selecting an algorithm:
+1. **Policy-bound:** selection is evaluated under an explicit applicable policy/context, not provider-local preference.
+2. **Objective-bound:** the relation is tied to an explicit mission/goal objective and must not silently substitute a proxy metric for that objective.
+3. **Evidence-bound:** candidate attributes used by the relation must have provenance/epistemic status sufficient for the claim; missing critical inputs remain UNKNOWN.
+4. **Scope-bound:** the relation declares the candidate population and fixed bound (8) to which it applies.
+5. **Precedence-bound:** conflicts/incomparability require an explicit governed rule; absence of a rule is not permission for arbitrary tie-breaking.
+6. **Authority-separated:** being selected does not authorize execution, commit, or external effect.
+7. **Temporal-bound:** material policy/authority/evidence changes invalidate or require re-evaluation of the selection; selection is not permanent authority.
+8. **Replaceable:** the relation is policy-scoped and versioned rather than exposed as a universal `priority`/`score` field.
+
+### Future-countereffect check
+- Scalar score: easy optimization, but hides policy meaning and creates permanent coupling. Reject as default.
+- Input-order tie-break: deterministic but makes upstream enumeration an authority boundary. Reject.
+- Model confidence: adaptable but provider-dependent and non-authoritative. Reject.
+- Universal priority field: convenient cross-module vocabulary but freezes heterogeneous semantics into one ranking contract. Reject.
+- Explicit policy-scoped relation: more work now, but preserves replaceability and lets different mission classes define different selection semantics. This is the only candidate currently consistent with the recovered constraints.
+
+This is a **contract candidate for further review**, not an implementation decision and not yet sufficient to derive a concrete selection relation for current findings.
