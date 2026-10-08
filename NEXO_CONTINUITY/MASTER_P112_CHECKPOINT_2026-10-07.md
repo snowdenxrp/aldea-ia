@@ -521,3 +521,13 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Key distinction: persistState(expectedRevision) detects stale whole snapshots at persistence, but does not alone prove semantic validity of a previously admitted intent. Final semantic revalidation remains necessary unless a proven equivalent token protocol exists.
 - 🟢 Writer-boundary direction narrowed. 🔵 Complete token generation/ownership, final-gate semantics, and footprint reduction remain OPEN. 🔴 No runtime race/JMM-HB/exactly-once claim.
 - Exact next: audit admission→commit temporal-window writers and classify BLOCK vs INVALIDATE vs RECONCILE; then isolate post-commit learning/event writes.
+
+
+## P112 isolated-snapshot final validator / conflict classification V1 — 2026-10-07
+- Saved P112_ISOLATED_SNAPSHOT_FINAL_VALIDATOR_CONFLICT_CLASSIFICATION_V1_2026-10-07.md, commit 79011e0b8306b311db71ab8d37d48bac36680a8e.
+- A claim-specific final validator can conceptually run over the isolated snapshot before existing persistState(expectedRevision), without absorbing unrelated post-effect learning/memory/discovery/event writes.
+- Validator inputs must include operation/intent identity, complete claim-specific DependencySet/provenance, authority/invalidation context, participant/resource identity/incarnation, policy/config version, freshness, RNG evidence when outcome-defining, and canonical expectedRevision.
+- executeAction() is too narrow; performDecision() is too broad; Nexo runtime currently mutates through an adapter over live simulation before canonical persistence, so the future owner must move the protected transition onto an isolated snapshot before canonical replacement.
+- Failure classes bounded: STALE_ADMISSION for known dependency/authority mismatch before effect; HOLD for missing/indeterminate required authority/provenance; UNKNOWN for possible physical effect without authoritative outcome; RECONCILE for known prior effect requiring lookup/idempotency/reconciliation. STATE_REVISION_CONFLICT is only STALE_COMMIT_CANDIDATE.
+- 🟢 Final-validator shape narrowed. 🔵 Dynamic dependency completeness and production reconciliation owner remain OPEN. 🔴 No runtime concurrency/JMM-HB/exactly-once/power-loss claim.
+- Exact next: compare claim-specific validation against whole-snapshot validation and determine what dependencies cannot safely be captured dynamically; use that to decide whether composite tokens offer a justified reduction or whether the isolated snapshot should remain the protected conflict domain.
