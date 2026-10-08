@@ -23,6 +23,11 @@ function detachedImmutable(value) {
   return immutable(structuredClone(value));
 }
 
+function detachedMutable(value) {
+  if (value === undefined) return value;
+  return structuredClone(value);
+}
+
 function requiredString(value, field) {
   if (typeof value !== "string" || value.length === 0) {
     throw new TypeError(`${field} must be a non-empty string`);
@@ -38,13 +43,13 @@ export function createClaimEnvelope(input = {}) {
     action,
     target: detachedImmutable(input.target ?? null),
     targetIncarnation: detachedImmutable(input.targetIncarnation ?? null),
-    authoritativeReads: immutable([...(input.authoritativeReads ?? [])]),
-    dependencies: immutable([...(input.dependencies ?? [])]),
-    predicateDependencies: immutable([...(input.predicateDependencies ?? [])]),
-    derivedProvenance: immutable([...(input.derivedProvenance ?? [])]),
+    authoritativeReads: detachedImmutable([...(input.authoritativeReads ?? [])]),
+    dependencies: detachedImmutable([...(input.dependencies ?? [])]),
+    predicateDependencies: detachedImmutable([...(input.predicateDependencies ?? [])]),
+    derivedProvenance: detachedImmutable([...(input.derivedProvenance ?? [])]),
     policyContext: detachedImmutable(input.policyContext ?? null),
-    causalInputs: immutable([...(input.causalInputs ?? [])]),
-    sourceProvenance: immutable([...(input.sourceProvenance ?? [])])
+    causalInputs: detachedImmutable([...(input.causalInputs ?? [])]),
+    sourceProvenance: detachedImmutable([...(input.sourceProvenance ?? [])])
   });
 }
 
@@ -54,7 +59,7 @@ export function createCandidate({ claim, state, expectedRevision } = {}) {
     throw new TypeError("expectedRevision must be a non-negative integer");
   }
   if (state === undefined) throw new TypeError("candidate requires isolated state");
-  return { claim, state, expectedRevision };
+  return { claim, state: detachedMutable(state), expectedRevision };
 }
 
 export function createValidationResult(status, { reasons = [], evidence = [] } = {}) {
