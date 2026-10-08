@@ -163,6 +163,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - The rule now combines MASTER + AB + P/P112 + future-countereffect analysis before NCS contracts. Every researched mechanism must be checked for current benefit, future coupling/lock-in, hidden dependencies, scalability/state growth, migration constraints, authority/security erosion, recovery/reconciliation consequences, and whether today's shortcut becomes tomorrow's patch/compatibility layer.
 - This is an evaluation rule, not permission to invent future machinery. Contradictions still require STOP, root redesign, and UNKNOWN/PENDING preservation.
 
+- 🟢 Smallest authoritative admission-input analysis recorded: `NEXO_NCS/BUILD/STEP_7_SMALLEST_AUTHORITATIVE_ADMISSION_INPUTS_2026-10-08.md`, commit `8ca534f985d9aa1f7d296072918c18f77fb5fffb`.
+- Result: repository evidence supports five semantic input classes for bounded admission — candidate set, claim-specific evidence, explicit admission policy/context, bound, and explicit selection relation — but does not establish the authoritative selection policy needed to derive ADMITTED/NOT_ADMITTED in new Core.
+- Legacy severity ordering is observable behavior only; it is not promoted into Core policy because doing so creates future coupling and is not supported by sufficient evidence.
+- Future-countereffect review applied to severity-as-policy, global stateRevision, observation equality/dedupe, and legacy mission metadata. No new mechanism introduced.
+- Current status of the authoritative selection-policy contract: PENDING. Preserve UNKNOWN/PENDING rather than inventing admission semantics or modifying legacy orchestration.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
