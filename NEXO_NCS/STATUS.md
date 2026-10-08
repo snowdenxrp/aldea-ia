@@ -436,3 +436,12 @@ This separation exists specifically to prevent historical research volume from b
 - Candidate basis families are listed for evaluation only (owner-authorized commissioning, external genesis provisioning, hardware/platform root, multi-custodian ceremony, protected local root, hybrid); none is selected or implementation-authorized.
 - No implementation is permitted while the candidate root would self-certify or the protected legitimacy basis remains UNKNOWN.
 - Latest next action: apply MASTER's authority/Constitution principles and reconciled AB/P evidence to choose the legitimate commissioning/succession model before choosing physical or cryptographic mechanisms. Evaluate only compatible basis families; attack the resulting semantic contract before any code.
+
+
+## 2026-10-08 — Commissioning and succession semantic rule
+- Added and re-fetched/verified `NEXO_NCS/DECISIONS/STEP_7_COMMISSIONING_AND_SUCCESSION_SEMANTIC_RULE_2026-10-08.md`.
+- Commit: `bb76a42fa6496fc1974777c8118e5170e6f43f3e`; blob: `c565be3c051a77f1d2f653baf9fd146a2e9f4bd9`.
+- Clarifies an existing Master invariant: constitutional legitimacy and technical authentication are separate. The legitimacy rule defines who may commission/amend/succeed; deployment mechanisms only authenticate/protect that binding and cannot invent legitimacy.
+- This is a semantic design rule candidate, not implementation and not final selection of a commissioning ceremony.
+- The MASTER already states that Genesis activation requires an external/independent authority or a deployment-appropriate threshold. Existing succession research also blocks self-promotion, stale-snapshot authority resurrection, and candidate-to-current transitions without ordered succession and required predecessor cutoff/fencing.
+- Next: evaluate candidate commissioning/succession families against the intended local-first personal Nexo deployment and existing Constitution/Kevin authority principle. Do not choose hardware/cryptography prematurely. If a remaining choice genuinely depends on an unrecorded governance preference, ask one focused question; otherwise derive only what existing constraints justify. Attack the chosen semantic contract before implementation.
