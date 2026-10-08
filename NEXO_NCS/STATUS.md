@@ -292,6 +292,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 No new top-level object or compatibility layer justified. Typed existing `ClaimEnvelope.policyContext` is now semantically constrained enough for implementation design.
 - ⚠️ Next: design the typed contract implementation and focused tests, but still no authority/admission/commit behavior. BUILD `f7ecfbc64bcd52382d61d521ae7ebe5380885a9c`.
 
+- 🟢 Implementation boundary added: `ClaimEnvelope.policyContext` is now structurally typed with `policyRef`, `scope`, `resolved.semanticFacts/dependencies`, `validity.status/expiresAt`, and `resolutionProvenance`; nested data remains detached/immutable.
+- 🟢 Focused tests added for missing policyRef/scope/dependencies/provenance, invalid validity state, deep immutability, and absence of `authorize`/`safeCommit` capabilities.
+- 🔴 This is schema validation only: no admission, authority, execution, commit, or external-effect behavior was added.
+- ⚠️ Runtime verification is PENDING USER-RUN. Implementation `fd8c3ad05107151b4cdbe40c230593f1de34174e`; tests `98dd4dbbfc1297833d868bb622739cde83927b3f`; workflow `9c11622ad9f0d00e9cd9f80a6209738e614c38d4`; proof pending `42e18339095bdad2fd3f5a9057df15c4525fc5c0`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
