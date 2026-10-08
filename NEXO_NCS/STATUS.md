@@ -94,4 +94,9 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 User manually reran the workflow after the correction and reported PASS.
 - 🟢 Runtime proof recorded: `NEXO_NCS/PROOF/STEP_7_RUNTIME_VERIFICATION_2026-10-08.md`, commit `b70ca05680ea449509b92be415af92a46c2d266f`.
 - 🔵 The GitHub connector cannot independently retrieve the manual workflow_dispatch run in this session; no run/job ID is invented.
-- Next exact action: add focused semantic tests for causal-distinct findings, provenance preservation, explicit NOT_ADMITTED semantics, and the action/target dedupe boundary. Then manually run the focused workflow. No legacy integration, no invented observation IDs, queues, retries, tombstones, or external-effect machinery.
+- 🟢 Focused semantic provenance tests added in `tests/nexo/step-7-provenance.test.mjs`, commit `db6bdc9852cef24b8eaa2aa448242e19520cdfda`.
+- 🟢 Focused semantic workflow added at `.github/workflows/nexo-step-7-semantic-provenance.yml`, commit `b3f13478fc99a265298c221a46bf4917456fc5fc`.
+- 🟢 User manually executed the focused workflow and reported PASS.
+- 🟢 Semantic runtime proof recorded: `NEXO_NCS/PROOF/STEP_7_SEMANTIC_PROVENANCE_RUNTIME_2026-10-08.md`, commit `9016e182fa8ac8dd5df971c890640f99690082a1`.
+- 🔵 The GitHub connector cannot independently retrieve the manual workflow_dispatch run in this session; no run/job ID is invented.
+- Next exact action: inspect the actual legacy `buildNexoMission()` deduplication boundary against the frozen STEP 7 contract before any integration. Do not modify legacy orchestration yet. No invented observation IDs, queues, retries, tombstones, or external-effect machinery.
