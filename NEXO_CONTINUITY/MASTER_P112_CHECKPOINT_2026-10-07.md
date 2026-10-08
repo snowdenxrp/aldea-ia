@@ -480,3 +480,16 @@ It explicitly preserves:
 
 ### Immediate continuation rule
 Do NOT start AB yet. Continue P112 from the exact saved next action: trace first common authoritative mutation boundaries for resource/day/ecosystem, inventory/needs, relationships, economy aggregates, and spatial normalization/range writers; determine whether existing version-like fields can obtain complete writer coverage without a new global revision. This is an additive writer-ownership/bypass audit and must not repeat the existing-version-token audit.
+
+
+## P112 authoritative mutation-boundary trace V2 — 2026-10-07
+- Saved `NEXO_CONTINUITY/P112_AUTHORITATIVE_MUTATION_BOUNDARY_TRACE_V2_2026-10-07.md`.
+- Commit: `b1ec40a226c2f02d7e93c55fa00c5adb561110fc`.
+- New concrete bypass: `moveAgent()` directly mutates agent position and is called from `scripts/simulate.mjs`, `src/main.js`, and `src/main-stable.js`, not only from the `tick()` decision path. Spatial/range protection therefore cannot assume tick owns every position mutation.
+- Resource/day boundary remains distributed across action handlers, `advanceWorldDay()`, and `advanceEcosystemDay()`.
+- Economy price is a global inventory-derived aggregate; relationship state is mutated through `recordInteraction()` from trade/collective/society paths; inventory also has direct institutional mutation bypasses.
+- Collective project mutation spans participant inventory, project state, structures/home, relationships, events and memory.
+- No hidden single semantic mutation funnel was found in this pass. Existing spatial version-like fields still lack complete writer coverage; `stateRevision` remains a persistence conflict token, not a domain-validity fence.
+- 🟢 Distributed mutation ownership and additional spatial bypass confirmed. 🔵 Exhaustive mutation coverage, exact composite-token closure, minimum exclusion set and final revalidation semantics remain OPEN. 🔴 No runtime race/JMM-HB/exactly-once/atomic power-loss claim.
+- Exact next: build representative-class × writer matrix including movement/position, trace remaining direct spatial/inventory/relationship/economy writers, and compare composite-token closure against the existing isolated-snapshot + `persistState(expectedRevision)` path.
+- DO-NOT-REPEAT: no new global stateRevision; no implementation; no TLC rerun; no AB104.185 primary/backfill; no AB105.117R; do not repeat the earlier generic version-token or persistence-primitive audits.
