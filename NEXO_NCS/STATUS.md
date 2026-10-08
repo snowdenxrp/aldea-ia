@@ -263,6 +263,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Single composite token would create semantic ambiguity/coupling; universal low-level schema would overcouple consumers. Narrow boundary: Core resolves protected policy applicability from versioned governed contracts + dependencies; candidate carries context/evidence, not authority.
 - ⚠️ Next exact proof obligation: determine whether existing ClaimEnvelope.policyContext can be made semantically typed by governed contract/reference without a new top-level mechanism. No implementation yet. BUILD checkpoint `6a54acedce3c882c432d4b33c60499d8a539143f`.
 
+- 🟢 Exact representation review: `ClaimEnvelope.policyContext` already exists and is detached/immutable; MASTER already defines the Policy Contract vocabulary and CLAIM→POLICY→REFERENCES→VERIFIER→EVIDENCE→RESULT→DECISION chain.
+- 🔴 Current `policyContext` is structurally arbitrary; presence does not prove policy existence, applicability, scope, validity/expiry, authority epoch, or dependency closure. Caller convention alone cannot make it a protected semantic boundary.
+- 🟢 Therefore do NOT add a new top-level PolicyBinding yet. Preferred direction: type the existing `policyContext` contractually at the ClaimEnvelope boundary, while Core independently resolves/validates governed policy semantics.
+- 🟠 Remaining exact-shape question: compact live reference vs resolved protected semantic snapshot. Live reference risks temporal drift; embedded snapshot risks duplication/stale semantics. Need lifecycle/provenance attack before implementation.
+- ⚠️ STEP 7 remains PENDING implementation. Latest BUILD `65b8177f6386172e0df7171fa0f5e232cd870476`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
