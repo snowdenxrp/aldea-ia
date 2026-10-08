@@ -437,3 +437,30 @@ A single token combining schema+semantic+policy+epoch would simplify today's cod
 
 ### 7. Current conclusion
 The semantic requirement is sufficiently attacked to proceed to exact representation review. No implementation is authorized yet. The next proof obligation is whether existing ClaimEnvelope.policyContext can be made semantically typed by contract/reference without adding a new top-level mechanism, or whether a dedicated protected field is genuinely necessary. Any new field must first prove policyContext cannot express the protected binding without becoming an untyped escape hatch.
+
+
+## Exact representation review — `ClaimEnvelope.policyContext`
+Repository evidence now permits a sharper conclusion.
+
+### Existing capability
+`ClaimEnvelope` already has `policyContext`, and it is detached/immutable at construction. MASTER explicitly defines a Policy Contract with id/version/hash, scope, evidence requirements, freshness, independence, thresholds/reference values, assumptions, failure conditions, tests, owner/authority, expiry and dependencies. The canonical semantic chain is CLAIM → POLICY → REFERENCES → VERIFIER → EVIDENCE → RESULT → DECISION.
+
+### What `policyContext` cannot safely mean by itself
+The current field is structurally an arbitrary detached value. It does not validate that the referenced policy exists, is applicable to the mission/goal, is current, has complete dependencies, is within expiry, or is authorized under the current authority epoch. Therefore changing only the caller's convention would not create a protected semantic boundary.
+
+### What this does NOT justify
+It does not justify a new top-level `PolicyBinding` object yet. Doing so before proving necessity would duplicate the existing ClaimEnvelope boundary and create another place where policy semantics could drift.
+
+### Minimum conclusion
+The preferred direction is to **type the existing `policyContext` contractually at the ClaimEnvelope boundary**, while keeping policy resolution/authority outside the candidate/provider. The typed context must be a reference/binding to already governed Policy/Claim/Conflict/Reference/Verifier semantics, not an embedded copy of all algorithms.
+
+The protected semantics therefore become:
+`ClaimEnvelope.policyContext` → governed policy applicability/reference context → Core resolves existence + version/semantic identity + scope + validity/epoch + dependency closure → admission/validation uses the resolved semantics.
+
+A provider may propose this context, but Core must independently resolve and validate it. A context that cannot be resolved completely yields UNKNOWN/REVALIDATE; it does not become authority by being present in the claim.
+
+### Structural warning
+There is one remaining schema question: whether the typed `policyContext` should contain a compact policy reference plus dependency references, or a fully resolved protected semantic snapshot. These are not equivalent. A live reference risks temporal drift if evaluated later; an embedded snapshot risks duplication and stale semantics. The choice must be made from the lifecycle/validation boundary, not convenience.
+
+### Status
+**PENDING — exact internal shape only.** The top-level boundary should not expand yet. The next attack is reference-vs-resolved-snapshot semantics, including when resolution occurs, what is retained as provenance, and how epoch/expiry changes invalidate a previously resolved context. No implementation yet.
