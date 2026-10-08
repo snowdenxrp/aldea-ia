@@ -56,6 +56,19 @@ export function createFinalSemanticValidator() {
         });
       }
 
+      if (claim.policyContext !== null) {
+        if (context.policyContext === undefined) {
+          return createValidationResult(VALIDATION.UNKNOWN, {
+            reasons: ["claim policy/config context is unavailable"]
+          });
+        }
+        if (!sameValue(claim.policyContext, context.policyContext)) {
+          return createValidationResult(VALIDATION.FAIL, {
+            reasons: ["claim policy/config context does not match authoritative validation context"]
+          });
+        }
+      }
+
       if (!Array.isArray(context.requirements)) {
         return createValidationResult(VALIDATION.UNKNOWN, {
           reasons: ["authoritative validation requirements are unavailable"]
