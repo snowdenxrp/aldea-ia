@@ -100,3 +100,29 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Semantic runtime proof recorded: `NEXO_NCS/PROOF/STEP_7_SEMANTIC_PROVENANCE_RUNTIME_2026-10-08.md`, commit `9016e182fa8ac8dd5df971c890640f99690082a1`.
 - 🔵 The GitHub connector cannot independently retrieve the manual workflow_dispatch run in this session; no run/job ID is invented.
 - Next exact action: inspect the actual legacy `buildNexoMission()` deduplication boundary against the frozen STEP 7 contract before any integration. Do not modify legacy orchestration yet. No invented observation IDs, queues, retries, tombstones, or external-effect machinery.
+
+## NCS OPERATING STRUCTURE — PERMANENT
+NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
+
+The canonical seven-layer separation is:
+- MASTER — what Nexo must be / vision and permanent direction.
+- CORE — fundamental architecture, contracts and invariants.
+- BUILD — current construction.
+- RESEARCH — historical knowledge and investigations.
+- DECISIONS — closed architectural decisions.
+- PROOF — evidence and runtime verification.
+- STATUS — exact operational continuation point.
+
+### Sole resume gate
+**STATUS is the only operational entry point for resuming work.**
+
+New chat / continuation flow:
+**STATUS → MASTER/CORE → BUILD → work**
+
+RESEARCH and PROOF are consulted only when evidence is needed for the current construction decision. Historical material is not automatically replayed.
+
+V1–V20, AB/TLC/Kafka/G0 and related historical investigations are evidence, not dependencies of the new Nexo architecture. Historical files are not moved, deleted, rewritten, or mixed into current construction merely for organization.
+
+When a new chat begins with **NCS**, recover the current STATUS and resume from its exact next action. Do not infer a historical step from memory when STATUS already defines the operational checkpoint.
+
+This separation exists specifically to prevent historical research volume from becoming operational continuity or contaminating the clean new architecture.
