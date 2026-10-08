@@ -110,6 +110,16 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - The 8-step bounded admission semantics are already CLOSED and must not be reopened.
 - Next exact action: select one concrete finding-to-claim mapping and define/test its smallest equivalence predicate from existing evidence. Do not generalize until that concrete contract is proven.
 
+## STEP 7 concrete claim checkpoint — NEGATIVE_RESOURCE
+- 🟢 Concrete mapping defined in `NEXO_NCS/BUILD/STEP_7_NEGATIVE_RESOURCE_EQUIVALENCE_2026-10-08.md`, commit `9f4d1e6f2257230366aa9b35f4cd76314009c5ac`.
+- Finding: `NEGATIVE_RESOURCE`; observed fields: producer/code/resource type/amount.
+- Legacy action mapping `repair_resource_state` is evidence only; no legacy integration.
+- Minimum equivalence requires resource identity, incarnation/version, observed value semantics, freshness/temporal validity, and any claim-critical authoritative dependencies.
+- Current producer does not establish all of those dimensions.
+- Therefore identical available fields remain UNKNOWN for equivalence; differing resource/value can establish non-equivalence.
+- No identity/timestamp/queue/retry/tombstone mechanism is invented.
+- Next exact action: focused semantic test of this concrete predicate using only existing evidence. If the test requires fabricated missing dimensions, STOP and redesign the root observation contract.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
