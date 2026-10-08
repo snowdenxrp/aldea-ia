@@ -57,14 +57,13 @@ This is an architectural contract correction, not a patch around the persistence
 🟢 STEP 3B runtime verified: run 37737359129 / job 113179842110.
 🟢 STEP 3C source/integration tests have been added.
 🟢 STEP 3C test assertion corrected: persisted candidate state must reflect the isolated candidate mutation (`hour + 1`), not the canonical source state.
-🔵 STEP 3C GitHub Actions runtime verification is the immediate pending proof after this correction.
+🟢 STEP 3C GitHub Actions runtime verification passed: run 37740178286 / job 113188835156.
 🔵 This still does not prove power-loss durability, universal writer participation, external-effect correctness, exactly-once, distributed fencing, or reconciliation.
 
 ## Next action
-1. Verify the STEP 3C GitHub Actions run for the corrected integration test.
-2. If PASS, save a dedicated STEP 3C runtime proof and advance the construction frontier.
-3. If FAIL, classify the concrete failure; do not patch around it.
-4. After 3C closure, proceed to the next smallest construction boundary only if the contracts remain coherent.
+1. STEP 3C is runtime-verified and closed; the dedicated proof is saved.
+2. Advance to the next smallest construction boundary only if the contracts remain coherent.
+3. Before implementation, define the next boundary and its non-bypass invariants; do not invent infrastructure merely from historical gaps.
 
 ## Non-negotiables
 - New architecture; no V21 patch lineage.
