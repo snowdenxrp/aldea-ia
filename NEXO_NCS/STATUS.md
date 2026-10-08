@@ -416,3 +416,11 @@ This separation exists specifically to prevent historical research volume from b
 - 🟢 Attack completed: `NEXO_NCS/BUILD/STEP_7_TRUST_FOUNDATION_CONTRACT_CANDIDATE_ATTACK_2026-10-08.md`, commit `95840ecb77bd906ece0441aee47f47512c37272b`.
 - Future problems explicitly rejected: fake root, trust recursion, snapshot resurrection, epoch/version confusion, provider capture, monolithic authority, schema-as-security, TOCTOU, common-mode trust, recovery dead-end, legacy migration trap, provider/storage lock-in.
 - **Next exact action:** identify and define the actual Nexo trust foundation/root contract (including how it is independently recognized). Do not implement Constitution Authority Context until that root exists as a real protected boundary.
+
+
+## STEP 7 — Trust Foundation root contract / independent recognition gate
+- 🟢 P0 semantic contract saved: `NEXO_NCS/BUILD/STEP_7_TRUST_FOUNDATION_ROOT_CONTRACT_AND_RECOGNITION_GATE_2026-10-08.md`, commit `f0ee856ae8fe29b47b595d36b295179722252b8e`.
+- Contract makes independent recognition, root currentness, recovery/revocation, dependency closure, transition safety, rollback/clone resistance and claim-relative failure domains explicit.
+- 🔴 No real trust root or independent recognition mechanism is selected or implemented. The contract does not resolve that empirical/governance choice and does not authorize implementation.
+- 🟢 Candidate families remain alternatives, not decisions: immutable/external provisioning; previously protected mutable-root update; platform/hardware root where independently enforced; multi-root/threshold arrangements only with demonstrated independence.
+- **Next exact action:** compare candidate recognition families against concrete Nexo deployment claims and failure domains (common-mode compromise, offline currentness/revocation, recovery, replacement failure, portability). Mark assumptions and unresolved dependencies explicitly. Do not implement Constitution Authority Context, root enrollment, root rotation, recovery or protected commissioning until a real independent recognition boundary is evidenced.
