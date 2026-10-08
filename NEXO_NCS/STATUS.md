@@ -204,6 +204,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 The strongest evidence now supports a clean conclusion: the missing bounded-selection relation is genuinely not present in the recovered architecture. It must be designed explicitly before implementation; no historical mechanism is being repurposed.
 - Latest STEP 7 build cross-check commit: `c3d7e2600b943fdbfa364dc521c8dfd751cde612`.
 
+- 🟢 New cross-check recovered `Goal Refinement Contract` fields (objective, refinement type, justification, evidence, scope, constraints, success relation, required capabilities, policy version, authority epoch, expiry) plus the invariant `metric != authorization`.
+- 🔵 Derived a **candidate minimum contract** for bounded selection (not implementation): policy-bound, objective-bound, evidence-bound, scope/bound-bound, precedence-bound, authority-separated, temporal-bound, and replaceable/versioned.
+- 🟠 Explicit policy-scoped selection is more work now but avoids freezing a universal score/priority API. Scalar score, input-order tie-break, model confidence, and universal priority are rejected as defaults under the future-countereffects rule.
+- ⚠️ This narrows the design space substantially but is not yet enough to define the concrete relation for current heterogeneous findings. STEP 7 remains PENDING until the candidate contract is reconciled against MASTER + AB + P and can produce a non-arbitrary relation.
+- Latest BUILD analysis commit: `494f1b8dcf544b4e91d7d2ea2245b88213299dde`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
