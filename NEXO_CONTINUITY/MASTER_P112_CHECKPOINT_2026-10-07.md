@@ -610,3 +610,19 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Runtime can carry a cloned working simulation + nexoMemory together, but no existing field links terminal effect evidence to the canonical stateRevision commit.
 - 🟢 existing structures/snapshot crossing; 🔵 possible reuse of stateRevision for conflict detection; 🔴 no non-evictable effect marker; 🔴 missing journal entry cannot mean NOT_ATTEMPTED.
 - Exact next: inspect the physical persistState(expectedRevision) boundary and establish exactly which working-snapshot fields become durable together versus RAM-only, without inventing a new identity.
+
+
+## P112 persistState physical boundary / crash-cut audit V2 — 2026-10-07
+- Saved `P112_PERSISTSTATE_PHYSICAL_BOUNDARY_CRASH_CUT_AUDIT_V2_2026-10-07.md`.
+- Commit: `978fc54e5d14531f3cadaf16106b0d2f6a53cc39`.
+- Direct source inspection of `scripts/simulate.mjs` establishes: sibling filesystem lock → reload/compare expectedRevision → construct one payload → write unique sibling temp file → rename temp over canonical `world-state.json` → release lock.
+- Canonical payload contains `version, stateRevision, savedAt, day, hour, world, agents, events.slice(-500), nexoMemory`; world state and simulation-owned Nexo memory/effectJournal cross the same serialized snapshot boundary.
+- 🟢 Revision mismatch occurs before payload write; cooperating stale writers are rejected under the lock.
+- 🟢 Tests cover restart reconstruction, PREPARED effectJournal preservation, stale expectedRevision rejection, two-worker race (one commit/one conflict), injected write failure, injected rename failure + temp cleanup, and stale-lock recovery after SIGKILL.
+- 🔵 Failure injections prove explicit error paths, not arbitrary process interruption at every byte boundary.
+- 🔴 No fsync/fdatasync/FileHandle.sync contract found; no power-loss durability/storage-ordering claim.
+- 🔵 Successful rename replaces the canonical path, but survival of sudden process/OS/power interruption is unproven.
+- 🔵 Separate assistant memory file remains outside this canonical envelope; runtime/effect-adapter terminal persistence is not itself the canonical persistState commit.
+- 🟢 Decision: existing persistState(expectedRevision) remains the conditional whole-snapshot commit primitive; do not invent a second generic commit wrapper.
+- Exact next: identify the protected-transition owner’s isolated-snapshot → final semantic revalidation point, then hand the validated candidate to existing persistState(expectedRevision), while separately classifying external/provider and independent-memory artifacts.
+- Formal P112 closure remains NOT DECLARED; AB105.116R remains protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
