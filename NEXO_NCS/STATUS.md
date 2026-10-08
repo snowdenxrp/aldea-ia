@@ -314,6 +314,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Resolver explicitly avoids unbounded dependency traversal and invented identity/queue/retry/effect machinery. Missing claim-critical evidence remains UNKNOWN.
 - Next exact action: adversarially attack this resolver contract against TOCTOU, dependency closure, provenance, scope/applicability, expiry and provider substitution before implementation.
 
+- 🟢 Minimum PolicyContext resolver semantic attack closed: `NEXO_NCS/BUILD/STEP_7_MINIMUM_POLICY_CONTEXT_RESOLVER_SEMANTIC_ATTACK_2026-10-08.md`, commit `c706ed27330ab443e5b9f5da5e8cc6f4159e1626`.
+- Attacks covered TOCTOU/currentness, dependency closure, provenance substitution, scope/applicability, expiry, provider substitution/circular trust, and universal-policy-engine creep. No root contradiction found.
+- Decision frozen: implement only the smallest resolver returning `VALID|FAIL|UNKNOWN` plus evidence/reasons/provenance; no authority, admission, execution, commit, or external-effect capability.
+- Next exact action: inspect current Core contracts and implement the smallest resolver plus focused semantic tests; then create a manual runtime workflow. No runtime PASS will be claimed until verified.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
