@@ -269,6 +269,12 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Remaining exact-shape question: compact live reference vs resolved protected semantic snapshot. Live reference risks temporal drift; embedded snapshot risks duplication/stale semantics. Need lifecycle/provenance attack before implementation.
 - ⚠️ STEP 7 remains PENDING implementation. Latest BUILD `65b8177f6386172e0df7171fa0f5e232cd870476`.
 
+- 🟢 Reference-vs-snapshot attack resolved: live Policy reference alone permits semantic drift; snapshot alone lacks authoritative anchor and can be replayed as current authority.
+- 🟢 Preferred minimum: type existing `ClaimEnvelope.policyContext` as **governed reference + resolved semantic snapshot/context**: policy identity/version/hash/scope, claim-required resolved facts, dependency references/versions, authority epoch/currentness when relevant, validity/expiry, and Core resolution provenance.
+- 🔴 Snapshot is evidence/context, NOT authorization. Later protected transitions must revalidate current authority and material dependency changes; stale context cannot silently remain current.
+- 🟠 Keeping both reference and resolution context is semantic provenance, not a compatibility layer; it prevents both live-reference drift and unanchored-snapshot authority.
+- ⚠️ Next exact attack: exact fields + resolver boundary, specifically authority leakage, dependency completeness and invalidation. No implementation yet. BUILD `7607ede0d893b9aafb99f6453939b46f031e2be8`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
