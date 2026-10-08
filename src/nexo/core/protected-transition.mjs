@@ -2,9 +2,7 @@ import {
   AUTHORITY,
   COMMIT,
   OUTCOMES,
-  VALIDATION,
-  createCandidate,
-  createOutcome
+  VALIDATION
 } from "./contracts.mjs";
 
 function assertCandidate(candidate, claim) {
@@ -40,7 +38,7 @@ function outcomeFromValidation(ports, result) {
   });
 }
 
-export function executeProtectedTransition({
+export async function executeProtectedTransition({
   ports,
   proposal,
   state,
@@ -51,12 +49,12 @@ export function executeProtectedTransition({
     throw new TypeError("expectedRevision must be a non-negative integer");
   }
 
-  const claim = ports.claimBuilder.build(proposal);
+  const claim = await ports.claimBuilder.build(proposal);
   if (!claim || typeof claim.claimId !== "string") {
     throw new TypeError("claimBuilder must return a ClaimEnvelope");
   }
 
-  const authority = ports.authorityGate.check(claim);
+  const authority = await ports.authorityGate.check(claim);
   if (!authority || !Object.values(AUTHORITY).includes(authority.status)) {
     throw new TypeError("authorityGate must return an AuthorityResult");
   }
@@ -75,21 +73,21 @@ export function executeProtectedTransition({
     });
   }
 
-  const isolatedState = ports.snapshotIsolator.isolate({ claim, state });
+  const isolatedState = await ports.snapshotIsolator.isolate({ claim, state });
   if (isolatedState === undefined) {
     return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["snapshot isolation did not establish isolated state"]
     });
   }
 
-  const candidate = ports.candidateExecutor.execute({
+  const candidate = await ports.candidateExecutor.execute({
     claim,
     state: isolatedState,
     expectedRevision
   });
   assertCandidate(candidate, claim);
 
-  const validation = ports.finalSemanticValidator.validate(candidate);
+  const validation = await ports.finalSemanticValidator.validate(candidate);
   if (!validation || !Object.values(VALIDATION).includes(validation.status)) {
     return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["final semantic validator returned no valid result"]
@@ -100,7 +98,15 @@ export function executeProtectedTransition({
     return outcomeFromValidation(ports, validation);
   }
 
-  const commit = ports.conditionalCommit.commit(candidate);
+  let commit;
+  try {
+    commit = await ports.conditionalCommit.commit(candidate);
+  } catch (error) {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: [error?.code ?? "conditional commit raised an exception"]
+    });
+  }
+
   if (!commit || !Object.values(COMMIT).includes(commit.status)) {
     return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["conditional commit returned no valid result"]
