@@ -673,3 +673,16 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - This is a pre-commit isolation finding; it does not invalidate the existing `persistState(expectedRevision)` conditional commit primitive.
 - Exact next: audit complete mutable graph crossing `createSimulation()`, including non-plain random/provider references, and determine minimum detachment boundary before stale candidates can be safely discarded.
 - Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
+
+
+## P112 random / non-serializable execution input audit V1 — 2026-10-07
+- Saved `P112_RANDOM_NONSERIALIZABLE_EXECUTION_INPUT_AUDIT_V1_2026-10-07.md`.
+- Commit: `2e217e0ec7facec40e09611733cfeae2d5f783ea`.
+- 🟢 `createSimulation()` stores injected `options.random`; `getRandom()` uses it or falls back to `Math.random`.
+- 🔴 `applyState()` does not restore random generator state/source from canonical state.
+- 🟢 `catch_fish` directly consumes randomness and changes candidate outcome; decision selection and exploration also consume randomness.
+- 🔵 A stale-revision retry can be a new stochastic attempt, but cannot be represented as reproduction of the discarded attempt unless random evidence/state is bound.
+- 🔵 `movement.js` also derives idle wandering from `Date.now()`, another non-snapshot causal input.
+- 🟢 `stateRevision` protects persisted state conflict but cannot establish semantic replay equivalence for random/time-dependent claims.
+- Exact next: audit policy/config/logic versions, environment/provider observations, clock/time, external callbacks and closures for replay-critical provenance.
+- Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
