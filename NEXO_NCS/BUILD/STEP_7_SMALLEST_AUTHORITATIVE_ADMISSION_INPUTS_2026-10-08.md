@@ -186,3 +186,16 @@ This branch is relevant, but it does not reveal a ready-made ranking relation fo
 Therefore a future bounded-selection policy may need a **partial-order / eligibility-plus-selection** model rather than a universal scalar priority. If several candidates are jointly eligible and incomparable under protected policy, silently forcing a winner would itself be a new policy decision and must be governed explicitly.
 
 Future-countereffect check: a scalar score would be easy to implement now, but risks hiding incomparable claims, turning safety constraints into optimization weights, and creating a permanent provider-facing ranking API. No score/ranking field is introduced.
+
+
+## Selection safety cross-check — incomparability is not a tie to break
+Historical Nexo evidence explicitly establishes that conflicting observations should produce CONFLICT/QUARANTINE rather than arbitrary winner selection, and AB104.782R states that CONFLICTING must not become an implicit winner-selection mechanism.
+
+Applied carefully to STEP 7, this does **not** create a new admission algorithm. It establishes a negative constraint on any future selector:
+- if protected policy establishes a meaningful incompatibility/conflict, the selector cannot silently choose a winner merely to fill the 8-slot budget;
+- if candidates are genuinely incomparable but not conflicting, a deterministic tie-break may still require an explicit policy authority; it cannot be smuggled in as array order, timestamp, provider order, or generic score;
+- unresolved selection authority therefore remains PENDING rather than being converted into arbitrary ordering.
+
+This is useful because it narrows the design space without inventing a selector: the future relation must specify what happens to **eligible + comparable**, **eligible + incomparable**, and **conflicting** candidates separately.
+
+Future-countereffect check: using input order as a tie-break gives deterministic output today but makes upstream enumeration order a hidden authority boundary and can change behavior when providers, concurrency, or data sources change. Rejected.
