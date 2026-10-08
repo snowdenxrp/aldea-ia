@@ -179,6 +179,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🔵 Current evidence is stronger for the separation itself than for a concrete authoritative bounded-selection rule. No legitimate policy has been recovered without importing legacy semantics or inventing missing attributes.
 - Current STEP 7 status remains **PENDING** specifically for the authoritative bounded-selection relation; this is not failure and does not reopen the closed 8-step semantics.
 
+- 🔵 Additional repository cross-check: legacy Nexo severity ranking and Lúmina goalPressure are distinct historical prioritization semantics. Neither is a demonstrated protected Nexo admission policy. Do not introduce a universal priority field to bridge them.
+- 🟠 Future-risk conclusion: a generic priority field would become a hidden global scheduler/compatibility constraint; future providers and agents would be forced into legacy ranking semantics.
+- 🔵 STEP 7 admission-selection document updated in commit `b2b867e904b3fc14b5ec7855c67af146a35c5a57`.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
