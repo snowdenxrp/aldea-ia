@@ -546,3 +546,48 @@ Putting authority fields into policyContext would couple policy semantics to aut
 
 ### Conclusion
 The exact semantic boundary is now sufficiently constrained. No new top-level resolver authority or PolicyBinding is justified. `ClaimEnvelope.policyContext` can carry policy reference + resolved semantic context + dependency/provenance evidence; a separate protected AuthorityContext remains responsible for current authority. Implementation can proceed only after the concrete field schema is minimized and tested against missing/UNKNOWN/expiry/epoch/dependency cases.
+
+
+## Minimal concrete policyContext schema attack
+The field set was minimized against the established boundary rather than copying the full Policy Contract.
+
+### Candidate minimum
+```text
+policyContext = {
+  policyRef: { id, semanticVersion, hash },
+  scope,
+  resolved: { semanticFacts, dependencies },
+  validity: { status, expiresAt },
+  resolutionProvenance
+}
+```
+This is a semantic shape, not implementation approval yet. `authority_epoch` is included only inside resolved dependencies/currentness when the claim explicitly depends on it; it is not a Policy-owned authority grant.
+
+### Required semantics
+- `policyRef`: identifies the governed policy semantics relied upon. Missing/ambiguous identity => UNKNOWN.
+- `scope`: must cover the claim's mission/goal/resource/effect applicability. Mismatch => FAIL; missing required scope => UNKNOWN.
+- `resolved.semanticFacts`: only facts actually required by the claim/policy. Missing required fact => UNKNOWN; extraneous universal snapshots are not required.
+- `resolved.dependencies`: required dependency references + versions/status. Missing/stale/UNKNOWN required dependency => UNKNOWN.
+- `validity`: expiry/applicability status. Expired => FAIL where expiry is a hard policy condition; uncertain temporal validity => UNKNOWN. Expiry is not authorization.
+- `resolutionProvenance`: establishes that protected Core resolved the context from governed sources. Provider assertion cannot substitute for it.
+
+### Attack: `hash` as magic truth
+Hash equality proves content identity only; it does not prove scope, authority, applicability, dependency closure or currentness. Therefore hash cannot replace the other dimensions.
+
+### Attack: resolved snapshot as universal copy
+Rejected. Only claim-required semantic facts belong in the resolved portion. Otherwise ClaimEnvelope becomes a frozen copy of the whole Policy/Conflict/Verifier world and becomes a future coupling bottleneck.
+
+### Attack: `expiresAt` alone
+Rejected as authority mechanism. Expiry only addresses temporal validity of the referenced policy/context. Current authority remains a separate protected check.
+
+### Attack: provenance as self-assertion
+Rejected. `resolutionProvenance` must identify the protected resolution path/source; a provider cannot write `resolvedByCore=true` and thereby establish Core resolution.
+
+### Attack: missing fields
+No defaults such as `null => valid`, absent dependencies => empty closure, absent scope => global scope, absent provenance => trusted. Required absence maps to UNKNOWN or FAIL according to the governed contract.
+
+### Future-countereffect
+This minimum deliberately avoids a universal policy schema, selector score, authority token, observation ID, queue, retry, tombstone or compatibility layer. It preserves replaceability of Policy/Conflict/Verifier implementations while retaining the semantic dependencies needed by the Claim.
+
+### Current result
+The minimum field categories are now sufficiently constrained for a dedicated adversarial schema test design. Implementation remains blocked only on that test: demonstrate that malformed/incomplete contexts cannot become authoritative admission inputs and that complete contexts still cannot bypass final validation/current authority. 
