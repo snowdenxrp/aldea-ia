@@ -94,5 +94,7 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟢 Manual-dispatch workflow added at `.github/workflows/nexo-step-7-observation-contract.yml` (commit `e955745dd8fb44936a1c8caa04f69243abda5182`).
 - 🔵 Runtime verification remains PENDING because this connector cannot dispatch workflow_dispatch runs; user must manually run the workflow in GitHub.
 - 🔵 Actual producer inspection confirms current findings are small diagnostic objects; producer source is available, but claim-critical causal identity/freshness is not universally present.
-- 🔴 Do not claim STEP 7 runtime PASS yet.
-- Next exact action: manually execute the STEP 7 workflow, then inspect the run. After PASS, continue with focused semantic tests for causal-distinct findings and the action/target dedupe boundary. No legacy integration, no invented observation IDs, queues, retries, tombstones, or external-effect machinery.
+- 🔴 First manual runtime attempt failed in the test harness at the immutability assertion: the test mutated the original input object instead of the detached/frozen ObservationEnvelope clone. This does not establish an implementation/contract failure.
+- 🟢 Harness assertion corrected in `tests/nexo/observation.test.mjs` (commit `baeac44f9b0e0d35d356c3235a957c0bdcd308ad`).
+- 🔵 Runtime verification remains PENDING; rerun the same workflow after this test-only correction. Do not claim STEP 7 runtime PASS until the workflow itself passes.
+- Next exact action: rerun the STEP 7 workflow, inspect the result, then after PASS continue with focused semantic tests for causal-distinct findings and the action/target dedupe boundary. No legacy integration, no invented observation IDs, queues, retries, tombstones, or external-effect machinery.
