@@ -34,8 +34,14 @@ STEP 4 runtime verification does not prove distributed fencing, universal writer
 - The boundary distinguishes UNKNOWN from RECONCILE_REQUIRED and forbids evidence invention or SAFE_COMMIT synthesis.
 - No external-effect machinery, queues, retries, new identifiers, or hidden durable state introduced.
 
+## STEP 6 implementation state
+- Minimal reconciliation boundary implemented in `src/nexo/core/reconciliation.mjs`.
+- Focused contract tests saved in `tests/nexo/reconciliation.test.mjs`.
+- Dedicated GitHub Actions workflow saved in `.github/workflows/nexo-step-6-reconciliation.yml`.
+- Runtime verification is PENDING; no STEP 6 closure is claimed yet.
+
 ## Next action
-Implement and runtime-verify only the minimal deterministic Reconciliation boundary. If implementation requires a new mechanism not justified by the current contract, STOP and redesign rather than patch.
+Verify the STEP 6 workflow. If implementation reveals a structural requirement for hidden state, new identifiers, queues, retries, or external-effect machinery, STOP and redesign rather than patch.
 
 ## Do-not-repeat
 No V1–V20 code reuse as architecture. No AB105.117R. No historical TLC/Kafka rerun. No speculative transaction wrappers, run IDs, effect tombstones, deferred queues, compatibility layers, or external-effect machinery without a current construction contract requiring them.
