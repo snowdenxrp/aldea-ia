@@ -3,48 +3,72 @@
 Date: 2026-10-08
 
 ## Current phase
-CONSTRUCTION HANDOFF
+CONSTRUCTION — STEP 3C
 
 Research phase is intentionally exited. Do not reopen broad historical audits unless new implementation evidence contradicts an established invariant.
 
 ## Current architecture
 PROPOSAL → CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATION → CONDITIONAL COMMIT → OUTCOME → RECONCILIATION
 
-## Current build
+## Authoritative foundation
+- MASTER/final distillation remains authoritative for the protected-transition lifecycle and non-bypass invariants.
+- AB104/AB105/P112 evidence remains historical evidence for the established invariants; it is not being replayed.
+- P112 already established that existing persistState(expectedRevision) is the canonical conditional snapshot-commit primitive for cooperating writers.
+- No second generic transaction/commit wrapper is being invented.
+
+## Completed construction
 STEP 3A — isolation contract closure completed and runtime-verified.
-STEP 3B — smallest protected-transition composition implemented and runtime-verified.
+STEP 3B — smallest protected-transition composition completed and runtime-verified.
+
+STEP 3C — canonical persistence integration is now structurally wired at the ownership boundary.
 
 Implemented:
-- src/nexo/core/contracts.mjs
-- src/nexo/core/ownership.mjs
-- tests/nexo/core-contracts.test.mjs
-- NEXO_NCS/BUILD/STEP_3A_ISOLATION_CLOSURE_2026-10-08.md
-- NEXO_NCS/PROOF/STEP_3A_ISOLATION_RUNTIME_VERIFICATION_2026-10-08.md
+- src/nexo/core/protected-transition.mjs
+- src/nexo/adapters/conditional-commit-persist-state.mjs
+- tests/nexo/protected-transition.test.mjs
+- tests/nexo/conditional-commit-persist-state.test.mjs
+- .github/workflows/nexo-step-3a-isolation.yml
+- NEXO_NCS/BUILD/STEP_3C_INTEGRATION_GATE_2026-10-08.md
 
-Isolation closure:
-- claim-critical nested inputs are deep-detached and deeply immutable;
-- candidate state is deep-detached but remains mutable for CandidateExecutor;
-- adversarial alias tests were added in fae2e826c7b51dee3560b28fa8736414c4f55c98.
+## STEP 3C structural correction
+The real persistState(...) primitive is asynchronous while the first STEP 3B composition was synchronous.
 
-Runtime proof:
-- commit 6c06a6fee413a74aebc92ba41536c45120f18d97;
-- focused GitHub Actions job 113178605145;
-- command: node tests/nexo/core-contracts.test.mjs;
-- result: 🟢 PASS.
+This was detected before hiding it behind an adapter.
 
-This proves the focused STEP 3A contract tests execute successfully in a clean runtime. It does not prove the complete protected-transition pipeline, external-effect correctness, exactly-once, power-loss durability, or production safety.
+Decision:
+- protected-transition composition is now asynchronous;
+- the ConditionalCommit port is awaited;
+- no synchronous bridge, polling loop, second persistence primitive, or speculative transaction layer was introduced;
+- Core remains schema-independent; simulation-specific persistence details stay in the adapter.
 
-## Previous authoritative construction artifacts
-- Final distillation: NEXO_CONTINUITY/NEXO_CORE_FINAL_DISTILLATION_2026-10-08.md
-- Construction design: NEXO_CONTINUITY/NEXO_CORE_CONSTRUCTION_DESIGN_2026-10-08.md
-- STEP 1→3A cross-verification: NEXO_NCS/BUILD/STEP_1_TO_3A_CROSS_VERIFICATION_2026-10-08.md
-- STEP 3A isolation closure: NEXO_NCS/BUILD/STEP_3A_ISOLATION_CLOSURE_2026-10-08.md
-- STEP 3A runtime proof: NEXO_NCS/PROOF/STEP_3A_ISOLATION_RUNTIME_VERIFICATION_2026-10-08.md
+This is an architectural contract correction, not a patch around the persistence boundary.
+
+## STEP 3C commit semantics
+- STATE_REVISION_CONFLICT → CONDITIONAL_CONFLICT → STALE_CANDIDATE.
+- Non-conflict persistence exception → UNKNOWN conservatively.
+- Invalid/unknown commit result → UNKNOWN.
+- Final semantic validation remains mandatory before commit.
+- Terminal outcomes still pass through OutcomeClassifier.
+- Canonical persistence remains exclusively behind ConditionalCommit.
+- Revision conflict is NOT treated as proof of dependency validity, fencing, exactly-once, or external-effect absence.
+
+## Runtime proof state
+🟢 STEP 3A runtime verified.
+🟢 STEP 3B runtime verified: run 37737359129 / job 113179842110.
+🟢 STEP 3C source/integration tests have been added.
+🔵 STEP 3C GitHub Actions runtime verification is the immediate pending proof after the latest commits.
+🔵 This still does not prove power-loss durability, universal writer participation, external-effect correctness, exactly-once, distributed fencing, or reconciliation.
+
+## Next action
+1. Verify the STEP 3C GitHub Actions run.
+2. If PASS, save a dedicated STEP 3C runtime proof and advance the construction frontier.
+3. If FAIL, classify the concrete failure; do not patch around it.
+4. After 3C closure, proceed to the next smallest construction boundary only if the contracts remain coherent.
 
 ## Non-negotiables
 - New architecture; no V21 patch lineage.
 - V1–V20 are evidence, not implementation dependencies.
-- Structural contradiction = STOP and redesign, never patch around it.
+- Structural contradiction = STOP and redesign.
 - UNKNOWN never becomes success by inference.
 - Provider/model has no commit authority.
 - Candidate cannot mutate canonical state.
@@ -55,42 +79,9 @@ This proves the focused STEP 3A contract tests execute successfully in a clean r
 - Do not rerun TLC.
 - Do not create AB105.117R.
 - Do not replay AB104/AB105 sequentially.
-- Do not restart broad audits already closed by the research exit.
-- Do not patch the legacy orchestrator into Nexo Core.
+- Do not restart broad audits already closed by research exit.
+- Do not patch legacy orchestrator into Nexo Core.
+- Do not create a second generic conditional persistence primitive.
 
-## STEP 3B status
-Implemented:
-- src/nexo/core/protected-transition.mjs
-- tests/nexo/protected-transition.test.mjs
-- formal AuthorityResult contract in src/nexo/core/contracts.mjs
-- focused verification workflow
-
-Composition:
-CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATION → CONDITIONAL COMMIT → OUTCOME
-
-Architectural correction:
-- terminal outcomes now pass through the explicit OutcomeClassifier boundary;
-- classifier output is checked against the required terminal kind;
-- UNKNOWN/STOP cannot be silently reclassified as SAFE_COMMIT.
-
-Evidence:
-- 🟢 STEP 3A behavioral runtime PASS is proven.
-- 🟢 STEP 3B protected-transition source syntax checked with Node.js 22.
-- 🟢 STEP 3B behavioral runtime execution is verified by GitHub Actions run 37737359129, job 113179842110.
-- 🔵 This does not prove persistence wiring, distributed fencing, external-effect correctness, exactly-once, power-loss durability, or reconciliation.
-- 🔴 Production-safe Nexo Core is not claimed.
-
-## Next action
-Proceed to STEP 3C: wire the canonical conditional snapshot commit primitive behind the ConditionalCommit ownership port.
-
-STEP 3C must:
-1. map revision conflict to STALE_CANDIDATE;
-2. never infer dependency validity, fencing, exactly-once, or external-effect absence from revision alone;
-3. preserve the final-validation gate;
-4. preserve UNKNOWN on commit uncertainty/failure;
-5. keep persistence behind the ConditionalCommit boundary;
-6. stop and redesign if wiring reveals a structural contradiction.
-
-Runtime proof for STEP 3B is recorded in NEXO_NCS/PROOF/STEP_3B_RUNTIME_VERIFICATION_2026-10-08.md.
-
-Do not add speculative transaction wrappers, run IDs, effect tombstones, deferred queues, or compatibility layers unless the construction contract itself proves they are required.
+## Continuity
+All prior MASTER, AB104/AB105, P112, final distillation, construction design, STEP 3A, STEP 3B, and the new STEP 3C integration gate remain part of the continuity chain. They must be consulted as evidence/constraints when a later implementation boundary depends on them.
