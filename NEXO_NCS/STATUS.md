@@ -11,7 +11,14 @@ Research phase is intentionally exited. Do not reopen broad historical audits un
 PROPOSAL → CLAIM → AUTHORITY → ISOLATION → CANDIDATE → FINAL VALIDATION → CONDITIONAL COMMIT → OUTCOME → RECONCILIATION
 
 ## Current build
-STEP 3 — contract skeleton implementation.
+STEP 3A complete — protected-transition contract skeleton + ownership ports.
+
+Implemented:
+- src/nexo/core/contracts.mjs
+- src/nexo/core/ownership.mjs
+- tests/nexo/core-contracts.test.mjs
+
+Execution of the focused test is not verified in this environment because repository cloning/network resolution was unavailable; no test pass is claimed.
 
 First target:
 - immutable contract types;
@@ -43,4 +50,4 @@ First target:
 - Do not patch the legacy orchestrator into Nexo Core.
 
 ## Next action
-Create and review the clean contract skeleton for the protected transition, then prove the first ownership/isolation/validation invariants before adding higher-level capabilities.
+STEP 3B — compose the protected-transition pipeline while preserving ownership separation, then implement the first isolation and final-validation gates. Keep provider/model and legacy orchestration outside the Core commit path.
