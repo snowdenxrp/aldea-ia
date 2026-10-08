@@ -600,3 +600,11 @@ This separation exists specifically to prevent historical research volume from b
 - P112 conditional persistence revision is not a semantic authority fence. No global revision, generic wrapper, coordinator, or extra security layer was introduced.
 - No architecture selection changed. Initial verifier trust assumption remains NOT ACCEPTED; Trust Foundation, Constitution Authority Context, genesis activation and protected authority implementation remain BLOCKED; future-countereffects gate remains CLOSED.
 - **Next exact action:** P0 research only—continue mapping genuinely relevant MASTER/AB/P evidence about initial verifier/root legitimacy and currentness. Do not repeat AB104.446 or P112 persistence audits; do not select a device/provider/channel or implement protected authority without an explicit governance decision.
+
+
+## 2026-10-08 — MASTER PG-006 architectural closure reconciled with deployment root
+- 🟢 Saved and re-fetched/verified `NEXO_NCS/RESEARCH/STEP_7_MASTER_PG006_CLOSURE_VS_DEPLOYMENT_ROOT_2026-10-08.md`; commit `1b0b28114308caf91fdce130e1e3fdadda6a2e02`; read-back blob `0ba289cc2f0dd13f2c9042a7318e5ed439b6a306`.
+- MASTER already marks PG-006 Bootstrap Integrity / First Trust architecturally closed: Nexo cannot self-declare trustworthy; genesis requires external/independent authority or a deployment-justified threshold; bootstrap failure means NO_ACTIVATION/RECOVERY.
+- Reconciliation: no contradiction found. The architectural principle is closed; the concrete deployment verifier/root/channel and its enrollment, enforcement, recovery and currentness assumptions remain unselected/unproven.
+- This prevents both reopening solved architecture and falsely treating architecture closure as deployment/runtime proof. No new mechanism introduced.
+- **Next exact action:** continue P0 evidence mapping only where it can establish new deployment-specific evidence; if none exists, record no architectural change. Do not repeat the same bootstrap argument or select/implement a root by implication.
