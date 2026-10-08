@@ -86,3 +86,40 @@ Cross-check the candidate families against the intended local-first personal Nex
 ## Provenance and verification boundary
 Inputs: `docs/nexo/NEXO_MASTER_ARCHITECTURE_2026-09-23.md`; `docs/nexo/NEXO_MASTER_PRESERVATION_ADDENDUM_2026-09-23.md`; `docs/nexo/NEXO_AUTHORITY_UNAVAILABLE_BOUNDED_SAFETY_CONSTITUTIONAL_SUCCESSION_RELEASE_RESEARCH_V1_2026-09-24.md`; `docs/nexo/NEXO_AUTHORITY_ASSURANCE_EVIDENCE_CIRCULAR_COMPOSITION_RESEARCH_V1_2026-09-24.md`; NCS Step 7 Trust Function Root Role Map; Bootstrap Legitimacy Gap and Root Basis Decision.
 This document is a design synthesis. No implementation, runtime test, TLC/SANY run, or deployment verification is claimed.
+
+
+## Candidate-family elimination against the recorded Nexo deployment goals — 2026-10-08
+
+This section reuses the concrete commissioning threat model, initial-verifier options and the existing local-first/provider-independence requirements. It narrows the semantic choice without selecting hardware, vendor, channel, protocol, threshold or root.
+
+### Candidates that cannot stand alone
+- **Candidate verifies itself:** rejected. It directly violates non-circular genesis and cannot create its own legitimacy.
+- **Hardware/platform root alone:** insufficient as the governance model. It may support integrity, key protection or enforcement, but cannot decide who is legitimately entitled to establish Nexo's Constitution.
+- **Immutable/pre-protected local root alone:** insufficient for genesis unless a prior legitimate provisioning act is independently established. Immutability preserves a basis; it does not make an illegitimate basis legitimate.
+- **External provisioning authority alone:** not accepted as a default. It can be a candidate only if its own legitimacy, scope, governance, exit/migration and compromise handling are explicitly justified; otherwise it silently transfers constitutional control to the issuer.
+- **Threshold/multi-custodian ceremony as a default:** not justified by current evidence or the recorded personal-assistant goal. Threshold arithmetic does not establish legitimacy or failure-domain independence. It remains available only if the governance model explicitly requires multiple custodians.
+- **Universal hybrid root:** not a valid shortcut. A hybrid can combine role-specific supports only under an explicit composition rule and dependency closure; complexity or the number of components does not create independence.
+
+### Best-aligned semantic direction — proposal, not accepted decision
+The direction most consistent with the recorded goal of a personal, local-first, provider-independent Nexo is:
+
+1. **Legitimacy rule:** explicit owner-authorized commissioning under the intended Constitution, with the owner's authority defined normatively before technical authentication.
+2. **Independent recognition:** the initial approval must be recognized through a pre-existing basis outside the uncommissioned Nexo instance. The concrete channel and verifier are not selected.
+3. **Exact binding:** the ceremony must bind approval to the exact Constitution identity/content/version and commissioning context, using freshness/replay protections and meaningful presentation. This does not prove freedom from every form of coercion.
+4. **Bounded scope:** commissioning establishes the initial constitutional binding only; it does not grant arbitrary future action permissions, silently approve amendments, or appoint all future successors.
+5. **Succession:** later amendment and succession follow a rule established by the recognized Constitution. The technical recovery mechanism cannot choose its own legitimacy or become a second Constitution.
+6. **Failure semantics:** if the owner/legitimacy source cannot be authenticated or currentness is unresolved, keep dependent protected activation blocked. Preserve safe, non-dependent functions only where independently authorized. Do not silently substitute a provider, recovery key, threshold, or device.
+
+This is a recommendation at the semantic level because it best preserves the stated goals without granting a provider or model constitutional authority. It is **not** a decision that any particular channel, verifier, device, credential or platform is trustworthy, and it does not unblock implementation.
+
+### Remaining governance choice that cannot be inferred from technical research
+The material unresolved choice is whether the user wants **owner-authorized commissioning as the normative legitimacy rule** (with the technical method still open), or wants a different legitimate governance model such as multiple custodians or a pre-designated external authority. No security standard or cryptographic mechanism can answer that normative question for the owner.
+
+### Current decision state
+- 🟢 Self-verifying genesis and hardware-only governance are eliminated as standalone bases.
+- 🟢 Provider authority, threshold governance and hybrid composition remain conditional, not defaults.
+- 🔵 Owner-authorized commissioning is the best-aligned semantic proposal, **not yet accepted as a frozen governance decision**.
+- 🔴 No concrete verifier/root/channel selected; Trust Foundation and Constitution Authority Context remain blocked.
+- 🔴 No implementation authorized.
+
+The current NIST SP 800-63B-4 guidance is relevant to authenticator binding, invalidation and account recovery lifecycle, but it governs digital authentication practice; it does not determine Nexo's constitutional legitimacy rule. See https://csrc.nist.gov/pubs/sp/800/63/b/4/final.
