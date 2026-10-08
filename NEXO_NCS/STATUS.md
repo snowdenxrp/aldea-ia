@@ -193,6 +193,11 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🟠 Un scalar score sería fácil ahora, pero podría convertir restricciones de seguridad en pesos de optimización y crear un ranking API permanente para futuros proveedores.
 - 🔴 No se introduce score, priority ni ranking universal. STEP 7 continúa PENDING en la relación de selección protegida.
 
+- 🔵 Selection safety cross-check: historical Nexo evidence states conflicting observations produce CONFLICT/QUARANTINE rather than arbitrary winner selection; AB104.782R explicitly rejects using CONFLICTING as an implicit winner-selection mechanism.
+- 🔵 Therefore future STEP 7 selection must distinguish at least: eligible+comparable, eligible+incomparable, and conflicting. No arbitrary tie-break via array/input order, timestamp, provider order, or generic score.
+- 🟠 Input-order tie-break is deterministic today but makes upstream enumeration order a hidden authority boundary and can change with providers/concurrency/data sources; rejected.
+- 🔴 No selector introduced. Authoritative bounded selection remains PENDING.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
