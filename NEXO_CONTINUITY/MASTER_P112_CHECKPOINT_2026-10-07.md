@@ -686,3 +686,13 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - 🟢 `stateRevision` protects persisted state conflict but cannot establish semantic replay equivalence for random/time-dependent claims.
 - Exact next: audit policy/config/logic versions, environment/provider observations, clock/time, external callbacks and closures for replay-critical provenance.
 - Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
+
+
+## P112 mission binding audit — 2026-10-07
+- Saved P112_MISSION_BINDING_PROVENANCE_CARRYOVER_AUDIT_V1_2026-10-07.md; commit a76147b3016230d91d8c0f7a4b98f3ae86d23942.
+- Mission steps carry intent/plan metadata, but the execute_lumina_action context does not carry the full admission dependency/provenance set, random evidence, authority context, policy/config/logic version, incarnation or expected canonical revision.
+- beginNexoStep changes mission status only; executeNexoStep forwards the existing context; commitRuntimeOutcome records outcome but does not bind it to complete admission provenance or canonical stateRevision.
+- missionId:stepId is step identity, not a complete protected-transition identity.
+- Consequence: a concrete provenance-loss boundary exists between admission and execution. This corroborates earlier P112 work.
+- Next: trace whether existing admission inputs can be preserved or re-derived at execution without inventing a second identity system.
+- P112 remains open; AB105.116R protected; AB105.117R prohibited; TLC frozen; no implementation.
