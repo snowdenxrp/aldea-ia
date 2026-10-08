@@ -626,3 +626,18 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - 🟢 Decision: existing persistState(expectedRevision) remains the conditional whole-snapshot commit primitive; do not invent a second generic commit wrapper.
 - Exact next: identify the protected-transition owner’s isolated-snapshot → final semantic revalidation point, then hand the validated candidate to existing persistState(expectedRevision), while separately classifying external/provider and independent-memory artifacts.
 - Formal P112 closure remains NOT DECLARED; AB105.116R remains protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
+
+
+## P112 runtime protected-transition owner gap audit V2 — 2026-10-07
+- Saved `P112_RUNTIME_PROTECTED_TRANSITION_OWNER_GAP_AUDIT_V2_2026-10-07.md`.
+- Commit: `fdc301c62666a23b75b56c39549f2e62beec0124`.
+- Exact runtime sequence: `executeLuminaNexoStep` selects supplied/embedded `simulation.nexoMemory` → creates adapter over same simulation → `beginNexoStep` → adapter PREPARED/precondition/handler/postcondition → terminal in-memory journal update → `commitRuntimeOutcome` mission execution/outcome memory update.
+- 🟢 Runtime can operate on an isolated simulation supplied by caller; it does not itself load canonical state.
+- 🔵 Current precondition is immediately before handler, not a final canonical commit validator; postcondition checks after mutation, not admission-dependency validity for commit.
+- 🔴 Runtime has no `final semantic revalidation → persistState(expectedRevision)` path.
+- 🔴 Handler mutates supplied simulation before canonical conditional commit; if caller supplies a live/canonical object, mutation can occur before any revision conflict check. `persistState` cannot retroactively undo it.
+- 🟢 Existing architecture has a potential seam: isolated snapshot + expectedRevision → protected preparation → final claim validation → existing conditional snapshot commit.
+- 🔵 `commitRuntimeOutcome` is not the persistence owner; its WeakMap lock only serializes in-process memory commits.
+- Current research preference: when complete semantic dependency coverage cannot be proven, whole-snapshot expectedRevision is the conservative conflict domain for canonical persisted state.
+- Exact next: classify current Lumina handlers by mutation timing: candidate-local state preparation versus irreversible/external effect. Determine which can safely occur before final commit and which require a durable PREPARED/final decision boundary.
+- Formal P112 closure remains NOT DECLARED; AB105.116R protected; AB105.117R prohibited; TLC frozen; no AB104.185 backfill; no implementation.
