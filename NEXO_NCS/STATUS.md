@@ -504,3 +504,12 @@ This separation exists specifically to prevent historical research volume from b
 - 🟠 This is an experience principle only. No biometric/channel/vendor/root/protocol has been selected; no implementation or activation authorized.
 - Core distinction: recognition ≠ identity proof ≠ authority ≠ action-specific authorization. Voice/face alone cannot authorize consequential protected actions; risk policy must bind confirmation to the exact action/context and consider independent failure domains.
 - **Next exact action:** extend the comparative assessment across voice, face, platform fingerprint/biometrics, separate authenticator/device, and physical/cryptographic credentials; attack spoofing/replay, coercion, common-mode compromise, privacy, accessibility, offline revocation, recovery and portability. Reconcile MASTER + AB + P/P112; do not implement until the narrowest binding contract passes adversarial review and future-countereffects gate.
+
+
+## 2026-10-08 — Recognition and fallback failure matrix
+- 🟢 User confirmed that password/passphrase/keyword or another credential may be used when necessary, alongside natural recognition.
+- 🟢 Research matrix saved and re-fetched/verified: `NEXO_NCS/RESEARCH/STEP_7_RECOGNITION_FALLBACK_AND_AUTHENTICATOR_FAILURE_MATRIX_2026-10-08.md`; commit `dd59a90305c64a44fca4d79d3cb761c5ec61e8b5`.
+- 🟢 Standards cross-check: NIST distinguishes replay resistance and authentication intent; FIDO2/WebAuthn provides phishing-resistant public-key challenge-response when correctly deployed. Neither standard establishes Nexo genesis legitimacy or Constitution authority.
+- 🟠 Spoken keyword/password is not replay-resistant by itself; voice/face matching does not by itself prove intentional approval. Prefer local biometric activation of a cryptographic authenticator where supported, but do not assume platform trust or independence without evidence.
+- 🔴 No channel, protocol, threshold, root, or implementation selected; genesis commissioning and Trust Foundation/Constitution Authority Context remain blocked.
+- **Next exact action:** reconcile the failure matrix against MASTER + frozen AB + P/P112; define and adversarially attack a minimum action-bound confirmation contract covering exact action/target/context, user intent, verifier/UI trust, freshness/replay, independent failure domains, revocation/offline, recovery, portability and fail-closed UNKNOWN/STOP.
