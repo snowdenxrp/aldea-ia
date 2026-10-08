@@ -541,3 +541,12 @@ Do NOT start AB yet. Continue P112 from the exact saved next action: trace first
 - Composite tokens remain a possible optimization/reduction, not a proven semantic replacement. They do not automatically cover non-snapshot external/RNG/policy provenance.
 - 🟢 Current evidence favors isolated snapshot + expectedRevision as conservative protected conflict domain for repository state. 🔵 Exact revision coverage of every snapshot writer and non-snapshot provenance remain OPEN. 🔴 No runtime race/JMM-HB/exactly-once/performance claim.
 - Exact next: audit which writers actually advance canonical stateRevision and whether every snapshot-changing writer participates; separately classify external/provider/RNG/policy dependencies outside stateRevision.
+
+
+## P112 canonical revision participation / writer coverage V1 — 2026-10-07
+- Saved `P112_CANONICAL_REVISION_PARTICIPATION_WRITER_COVERAGE_AUDIT_V1_2026-10-07.md`, commit `fa66ede0254f3aa5ad82029bcbe4119988d561b9`.
+- `stateRevision` is assigned by canonical persistence callers, not incremented at each domain writer. `simulate.mjs` and `assistants.mjs` use the cooperating caller contract.
+- `runtime.js` executes Nexo steps and records mission outcome in memory but does not call canonical `persistState()`; `effect-adapter.js` has in-memory terminal persistence/optional prepared-intent hook. Thus revision participation is not universal across runtime/effect paths.
+- `assistants.mjs` writes separate `MEMORY_PATH` before world-state `persistState`; therefore world-state revision does not automatically cover that separate durable artifact.
+- 🟢 `stateRevision` remains valid as a persistence-level conflict token for cooperating canonical world-state writers. 🔵 Its coverage must not be promoted to universal semantic revision. 🔴 No runtime race/JMM-HB/exactly-once/power-loss claim.
+- Exact next: audit `MEMORY_PATH` + runtime/effect lifecycle for cross-artifact divergence across conflict/crash and define minimum provenance/linkage needed to identify authoritative durable state.
