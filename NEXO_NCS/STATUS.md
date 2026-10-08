@@ -9,6 +9,7 @@ CONSTRUCTION — STEP 6 RECONCILIATION BOUNDARY
 - STEP 3C canonical persistState conditional commit integration: runtime verified.
 - STEP 4 final semantic validation: runtime verified in GitHub Actions.
 - STEP 5 outcome classification: runtime verified in GitHub Actions (run 37785361553).
+- STEP 6 reconciliation boundary: runtime verified in GitHub Actions (run 37813930630).
 
 ## STEP 4 verified evidence
 - Workflow run: 37784767180
@@ -20,7 +21,7 @@ CONSTRUCTION — STEP 6 RECONCILIATION BOUNDARY
 Verified semantics include claim identity, target/incarnation binding, required authoritativeReads/dependencies/predicateDependencies/causalInputs, authoritative evidence boundaries, UNKNOWN for missing/non-authoritative evidence, FAIL for disproven conditions, and policyContext matching.
 
 ## Not claimed
-STEP 4 runtime verification does not prove distributed fencing, universal writer participation, external-effect correctness, exactly-once, power-loss durability, or production safety.
+Current NCS runtime verification does not prove distributed fencing, universal writer participation, external-effect correctness, exactly-once, power-loss durability, or production safety.
 
 ## STEP 5 verified evidence
 - Workflow run: 37785361553
@@ -29,19 +30,27 @@ STEP 4 runtime verification does not prove distributed fencing, universal writer
 - Conclusion: success.
 - Proof: NEXO_NCS/PROOF/STEP_5_RUNTIME_VERIFICATION_2026-10-08.md
 
-## STEP 6 boundary established
-- Contract design saved in NEXO_NCS/BUILD/STEP_6_RECONCILIATION_BOUNDARY_2026-10-08.md.
-- The boundary distinguishes UNKNOWN from RECONCILE_REQUIRED and forbids evidence invention or SAFE_COMMIT synthesis.
-- No external-effect machinery, queues, retries, new identifiers, or hidden durable state introduced.
+## STEP 6 verified evidence
+- Workflow run: 37813930630
+- Job: 113437564891
+- Head commit: 838d0538963be1735a57a744280ec842e848ae79
+- Node.js: 22.23.3
+- Conclusion: success.
+- Runtime command: `node tests/nexo/reconciliation.test.mjs`
+- Runtime output: `NEXO STEP 6 reconciliation contract tests: PASS`
+- Proof: NEXO_NCS/PROOF/STEP_6_RUNTIME_VERIFICATION_2026-10-08.md
 
-## STEP 6 implementation state
-- Minimal reconciliation boundary implemented in `src/nexo/core/reconciliation.mjs`.
-- Focused contract tests saved in `tests/nexo/reconciliation.test.mjs`.
-- Dedicated GitHub Actions workflow saved in `.github/workflows/nexo-step-6-reconciliation.yml`.
-- Runtime verification is PENDING; no STEP 6 closure is claimed yet.
+The verified boundary distinguishes UNKNOWN from RECONCILE_REQUIRED, resolves only from explicitly authoritative evidence, remains unresolved when evidence is insufficient, and has no commit, authorization, execution, retry, queue, or external-effect capability.
+
+The implementation accepts the authoritative evidence item's outcome as supplied by the owning caller. STEP 6 does not define a new canonical outcome vocabulary; this is recorded as a contract limit, not treated as a defect.
+
+## STEP 6 closure
+STEP 6 exit criterion is satisfied: deterministic reconciliation behavior is runtime-verified and its limits are recorded.
+
+No integration into protected-transition is manufactured because no concrete current outcome path requires reconciliation.
 
 ## Next action
-Verify the STEP 6 workflow. If implementation reveals a structural requirement for hidden state, new identifiers, queues, retries, or external-effect machinery, STOP and redesign rather than patch.
+Proceed to the next construction step only after reading the current BUILD/STATUS contract. Do not reopen closed STEP 3A/3B/3C/4/5 or historical AB/TLC/Kafka audits unless new implementation evidence directly contradicts a frozen invariant.
 
 ## Do-not-repeat
 No V1–V20 code reuse as architecture. No AB105.117R. No historical TLC/Kafka rerun. No speculative transaction wrappers, run IDs, effect tombstones, deferred queues, compatibility layers, or external-effect machinery without a current construction contract requiring them.
