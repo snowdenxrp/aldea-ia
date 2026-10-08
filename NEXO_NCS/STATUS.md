@@ -101,6 +101,15 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - 🔵 The GitHub connector cannot independently retrieve the manual workflow_dispatch run in this session; no run/job ID is invented.
 - Next exact action: inspect the actual legacy `buildNexoMission()` deduplication boundary against the frozen STEP 7 contract before any integration. Do not modify legacy orchestration yet. No invented observation IDs, queues, retries, tombstones, or external-effect machinery.
 
+## STEP 7 current semantic checkpoint — claim-specific equivalence
+- 🟢 Evidence checkpoint recorded: `NEXO_NCS/BUILD/STEP_7_CLAIM_SPECIFIC_EQUIVALENCE_MATRIX_2026-10-08.md`, commit `c684da2b5055e7a1926999daea6bf0bbdd936c63`.
+- 🟢 Universal observation equivalence is explicitly rejected.
+- 🟢 Equivalence must be claim-specific and require all claim-critical causal dimensions to be established as equivalent.
+- 🔵 Current production findings do not universally provide target/incarnation, freshness/version, temporal-window, aggregate-scope, or complete dependency identity.
+- Therefore missing dimensions remain UNKNOWN; no silent dedupe and no fabricated observation identity.
+- The 8-step bounded admission semantics are already CLOSED and must not be reopened.
+- Next exact action: select one concrete finding-to-claim mapping and define/test its smallest equivalence predicate from existing evidence. Do not generalize until that concrete contract is proven.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
