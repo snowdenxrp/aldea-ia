@@ -360,3 +360,11 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - Current topology has three separate boundaries: in-memory effect journal, runtime mission-memory commit, canonical world-state persistence; no common atomic boundary is demonstrated.
 - Correct owner target is therefore a local protected-transition/lifecycle boundary, not simply `simulate.mjs`, not merely the effect adapter callback, and not a global scheduler.
 - Exact next: test the feasibility of enclosing the audited Lúmina WriteSet and canonical persistence in one local protected-transition transaction, including all bypasses and crash cuts, before implementation.
+
+
+## P112 local transaction snapshot/commit feasibility V1 — 2026-10-07
+- `applyState()` deep-clones persisted world/agents into an isolated simulation; `persistState(expectedRevision)` conditionally commits the whole simulation under the state lock.
+- This makes conditional snapshot/commit a technically plausible local strategy without mutating the canonical live object before commit.
+- It does not make current JSON persistence a true in-place transaction: PREPARED and final commit remain separate durable states; no fsync/power-loss contract is demonstrated; all competing writers must honor the same conditional protocol; any live-state bypass breaks isolation.
+- Therefore current architecture is more compatible with a snapshot/conditional-commit protected transition than with an in-place atomic transaction. This is feasibility evidence, not implementation.
+- Exact next: trace whether all protected mutation branches can operate on the isolated snapshot without hidden live references, then map stale conditional-commit outcomes into existing UNKNOWN/reconciliation semantics.
