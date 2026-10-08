@@ -270,3 +270,23 @@ The strongest remaining risk is not the partial-order idea itself; it is **cross
 Therefore the relation must be scoped at least by the protected semantic context that establishes comparability. A relation between candidates from different claim classes cannot be inferred merely because both are eligible or because one has a larger numeric observation.
 
 No implementation authorized yet. The next question is whether the current architecture contains a protected owner for this cross-candidate relation. If not, the selector must remain PENDING rather than inventing one.
+
+
+## Protected owner identified — Policy/Admission boundary
+The MASTER architecture provides the missing owner/context. Its canonical chain is `Mission/Goal → Request/Effect Identity → Policy/Admission → Coordination/Fencing → Execution`, and it defines a `Policy Contract` with id/version/hash, scope, evidence requirements, freshness, independence, thresholds/reference values, assumptions, failure conditions, tests, owner/authority, expiry and dependencies. The minimum authoritative-core boundary separately identifies version/policy/invariant admission as protected Core responsibility.
+
+Therefore STEP 7 does not need to invent a new universal scheduler or selector authority. The **Policy/Admission boundary is the protected owner of the relation that determines whether eligible mission candidates are comparable/preferred for the bounded admission decision**, while Mission/Goal supplies objective and scope and Claim/Observation supplies evidence. This yields the semantic chain:
+
+`Mission/Goal context + Claim/Observation evidence + applicable Policy Contract -> eligibility/comparability/preference relation -> bounded admission decision`
+
+Important separation:
+- Policy/Admission owns the protected relation; it does not become a scalar priority API.
+- Mission/Goal defines what the mission is trying to accomplish; it does not by itself authorize candidate ordering.
+- Claim/Observation supplies evidence; it cannot define its own authority.
+- The fixed bound of 8 remains the already-closed admission constraint.
+- Selection still does not authorize execution or commit.
+
+This closes the previously unresolved **owner** question, but not the exact policy relation for current heterogeneous findings. A concrete relation still requires an applicable Policy Contract with explicit scope, precedence/comparability semantics, and failure behavior. If absent, the candidate relation remains UNKNOWN/PENDING rather than being inferred.
+
+### Future-countereffect check
+Creating a dedicated `SelectorAuthority` would duplicate the existing Policy/Admission boundary and create a second policy authority. Creating a universal `priority` field would leak one policy's semantics into future mission classes. Both are rejected. Reusing the protected Policy/Admission boundary preserves replaceability because different policy versions can define different claim-scoped relations without changing the Core transport contract.
