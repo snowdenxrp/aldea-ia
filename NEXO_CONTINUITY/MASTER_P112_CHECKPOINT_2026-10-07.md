@@ -386,3 +386,14 @@ No VersionSet implementation yet. No new executor/caller. No TLC rerun. No histo
 - `nexoEffectRevision` remains RAM-only and cannot replace canonical revision/dependency validation.
 - Strong narrowing: snapshot crossing is not the blocker; the missing canonical final-commit owner is.
 - Exact next: determine whether existing `persistState(expectedRevision)` can serve as final commit for a fully isolated working snapshot or requires a narrower transaction wrapper, without mutating canonical state first.
+
+
+## P112 persistState final-commit feasibility audit V1 — 2026-10-07
+- Saved `P112_PERSISTSTATE_FINAL_COMMIT_FEASIBILITY_AUDIT_V1_2026-10-07.md`, commit `5606527213abcd0b767c6d583c763ff32ca8a0cd`.
+- Direct source + tests confirm the existing `persistState(expectedRevision)` is already a viable conditional snapshot-commit primitive for cooperating writers: isolated `applyState()` snapshot → lock → canonical revision check → complete snapshot serialization including `nexoMemory` → temp write → rename → unlock.
+- The race test requires exactly one of two independent workers to commit revision 1 and the other to receive `STATE_REVISION_CONFLICT`.
+- Write/rename failure tests preserve the prior canonical state and clean temporary files; restart tests reconstruct persisted Nexo memory and PREPARED effectJournal evidence.
+- Therefore do NOT invent a second generic conditional-commit wrapper unless a concrete missing semantic is demonstrated.
+- This does not close the full protected-transition protocol: final authority/dependency/resource revalidation, complete writer/dependency coverage, durable PREPARED integration, conflict reconciliation, storage crash/power-loss durability, and external-effect capability boundaries remain separate.
+- Important distinction: `persistState` is a canonical conditional snapshot replacement primitive, not an execution/effect fence and not a universal durable-commit proof.
+- Exact next: audit the future protected-transition owner against this existing primitive: isolated snapshot → final revalidation → `persistState(expectedRevision)` → conflict classification/reconciliation. Add a narrower wrapper only if a concrete semantic gap is found.
