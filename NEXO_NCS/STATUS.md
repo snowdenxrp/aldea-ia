@@ -143,6 +143,10 @@ Rule commit: 565e26dc072145bc0db47edb197721af3cfa9b11
 - Finding: legacy `action|target|action.name` dedupe is not claim-specific equivalence and drops claim-critical observation dimensions; it remains evidence only and is not modified.
 - Next exact action: define the smallest Core handoff contract from ObservationEnvelope to MissionCandidate/admission for one concrete finding, without changing legacy orchestration.
 
+- 🟢 Minimal ObservationEnvelope → MissionCandidate handoff contract defined: `NEXO_NCS/BUILD/STEP_7_OBSERVATION_TO_MISSION_CANDIDATE_HANDOFF_2026-10-08.md`, commit `42bcc910ef6de4fc14e4dc0705a85317717e4c40`.
+- 🟢 Handoff test strengthened so UNKNOWN admission explicitly retains the complete ObservationEnvelope and exposes no authority, commit `0c75cd3d4aa84a0b5dd329e0b26b2b244f775550`.
+- The handoff is transport-only: observation evidence, claim proposal, admission state, and admission evidence remain separate; no legacy integration or new identity mechanism.
+
 ## NCS OPERATING STRUCTURE — PERMANENT
 NEXO_NCS is the continuity mechanism, not a replacement for the architecture itself.
 
