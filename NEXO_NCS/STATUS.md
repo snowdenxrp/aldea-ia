@@ -808,3 +808,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Scope guard: no drift into general device/Android research; current phone is candidate only. Existing generic root/recovery attacks are reused, not repeated.
 - Next action: identify the narrowest already-existing fact outside the candidate Nexo trust domain that could satisfy the precondition, if any. Do not infer a fact from account/device possession. If no such fact is available, explicitly retain UNKNOWN and decide the next design question without selecting or implementing a mechanism.
 - Genesis Trust Foundation / Constitution Authority Context / protected activation remain BLOCKED/UNKNOWN. No implementation, production effects, Lúmina changes, or frozen AB/TLC/Kafka reruns.
+
+
+## 2026-10-08 — Root-basis search boundary: no duplicate class research
+
+- Re-read the existing root-class matrix and its future-countereffects attack. The already-evaluated families are platform/hardware evidence, independent external authority, bounded human recovery, and multiple-root/threshold composition. The attack explicitly rejects promoting any one family to universal constitutional authority.
+- Reused the pre-existing root-basis audit and genesis recognition precondition. They agree that no deployment-specific prior recognition/enrollment basis is evidenced in the repository. Historical recovery and trust-anchor work provides constraints and candidate classes, not proof of an actual current root for this deployment.
+- **Decision:** do not create another root taxonomy, repeat generic self-root/common-mode/recovery attacks, or continue device-specific analysis. The remaining blocker is not missing abstract research: it is that no concrete pre-existing legitimacy basis or explicit environment assumption has been selected and evidenced.
+- Preserve mechanism-neutral design and the user's boundary: current phone is only a candidate; no mechanism is selected; no legitimacy claim is made.
+- Next valid move when continuing root work: assess a specifically named, pre-existing candidate against the existing gate and its exact claim/failure domain. If the owner does not want to select one yet, stop at the honest design boundary rather than simulate progress by writing more duplicate contracts.
+- Genesis root, Constitution Authority Context, protected commissioning and production effects remain BLOCKED/UNKNOWN. No implementation, Lúmina changes, or frozen AB/TLC/Kafka reruns.
