@@ -1003,3 +1003,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Core contracts provide reusable invariants and a delegated authority-gate seam, but not a mobile client, local inference, complete no-egress enforcement, or an independently recognized authority implementation. Existing tests do not establish those M1 properties.
 - No code or tests were run/changed; no model/provider/platform/client selected; no root, commissioning or external effect.
 - Next exact action unchanged: do not invent generic layers. Continue only with a specifically identified existing client/model artifact or a separately explicit decision to open an analysis-only M1 client-design slice. M1 feasibility and genesis authority remain separate UNKNOWN/BLOCKED claims.
+
+### Existing assistant and memory boundary for M1 — 2026-10-08
+- Added source inspection `NCS/STEP_7_EXISTING_ASSISTANTS_AND_MEMORY_BOUNDARY_M1_2026-10-08.md`, commit `210b732a238125c342eafaa10e1722c1fbc5ec8d`.
+- Inspected exact blobs for `src/assistants/index.js`, `src/assistants/squad.js`, `src/assistants/memory.js`, `scripts/assistants.mjs`, package manifest, and the MASTER-derived admission checkpoint.
+- Finding: the current assistant squad is deterministic Lúmina simulation diagnostics, not an existing general model/client or local inference runtime. Its execution path invokes the Lúmina-bound mission orchestrator and writes both separate assistant learning memory and canonical simulation state.
+- Existing P112/MASTER findings reinforce that assistant/mission memory is compressed/projection-based and loses claim-critical provenance; it must not be repurposed as Nexo identity, constitutional authority, or validated long-term memory.
+- No implementation/tests; no model/provider/platform chosen; no authority root or activation. M1 and Genesis/Path B remain independent.
+- Next bounded analysis: derive the minimal M1 request/response semantic boundary from audited Core contracts and MASTER invariants, without selecting a model runtime or adding implementation abstractions. Preserve UNKNOWN/PENDING where the evidence does not determine the contract.
