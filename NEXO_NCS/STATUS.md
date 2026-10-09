@@ -907,3 +907,12 @@ This entry supersedes older status wording in this file that said the initial ve
 - The earliest blocker remains C3: no concrete pre-existing recognition/enrollment basis and no independently justified protected verifier are evidenced. Currentness/recovery and protected enforcement remain separate downstream blockers.
 - This is a claim-relative comparison, not a new taxonomy or implementation. No device/provider/algorithm/key/verifier selected; no code, secrets, enrollment, commissioning, activation, production effect, Lúmina change, or frozen AB/TLC/Kafka rerun.
 - Next: seek concrete, independently grounded evidence for Path B, or obtain a separate explicit owner decision to accept/reject the exact Path A assumptions for further bounded design. Neither option alone authorizes implementation; verifier and enforcement obligations remain.
+
+
+## STEP 7 — Path B concrete evidence inventory
+- 🟢 Bounded repository inventory saved: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`.
+- Search scope: prior enrollment/credential, protected verifier, hardware/platform attestation, root provisioning, currentness/revocation, WebAuthn/FIDO, Android Keystore/BiometricPrompt, and independent-verifier implementation.
+- Result: no concrete Path B deployment basis surfaced in the inspected repository evidence; search findings were contracts/research/attack reports, not deployment evidence. This is bounded negative evidence, not a claim about external devices/accounts.
+- C3 protected recognition remains the earliest blocker; C4 currentness/lifecycle and C5 enforcement remain separately blocked.
+- Path A remains evaluation-only; assumptions have not been accepted. No implementation, enrollment, commissioning, activation, or production effect.
+- Next gate: explicit owner choice to accept/reject the exact Path A assumptions for further design only, or remain uncommissioned while a concrete Path B basis is evidenced.
