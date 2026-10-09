@@ -50,3 +50,12 @@ Do not write enrollment, root rotation, Constitution Authority Context, or commi
 - **Remain uncommissioned:** keep UNKNOWN/STOP until a concrete external/pre-existing basis and protected verifier can be evidenced.
 
 Neither choice by itself proves technical recognition, currentness, or enforcement. No implementation, key generation, enrollment, commissioning, activation, or production effect occurred in this inventory.
+
+## External mechanism check — standards are not pre-existing deployment evidence
+A focused check of official specifications clarifies why naming a standard does not close Path B:
+- W3C WebAuthn describes registration and authentication as ceremonies scoped to a Relying Party (RP ID), with the RP responsible for validating the challenge, origin, authenticator data and any attestation accepted by its policy. A WebAuthn credential could be a useful future mechanism only if a concrete RP, prior credential enrollment, trusted verification policy, lifecycle/currentness and relevant authority bindings are actually established. No such Nexo RP/credential/verifier was found in this inventory. Source: https://www.w3.org/TR/webauthn/
+- Android Keystore can constrain key use and may bind key material to secure hardware, but the guarantees depend on actual device support and configuration; Android documentation explicitly describes the app-process compromise and hardware-bound limitations. No Nexo app key, per-operation authentication policy, attestation result or verifier has been instantiated here. Source: https://developer.android.com/privacy-and-security/keystore
+- Android documentation for authentication distinguishes device-unlock authenticators from authenticators used to gate cryptographic key use. Therefore the existing phone screen lock is not evidence of a pre-enrolled Nexo-specific authority credential. Source: https://source.android.com/docs/security/features/authentication
+
+These standards establish viable design mechanisms and required verification responsibilities, not that Kevin's current phone/account is already a recognized Path B root. Do not infer enrollment, provenance, currentness, or constitutional authority from availability of Android/WebAuthn features.
+
