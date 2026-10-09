@@ -994,3 +994,12 @@ This entry supersedes older status wording in this file that said the initial ve
 - Variant L remains a semantic design candidate, not an evidenced deployment capability. No client, model/runtime, platform or no-egress enforcement was selected or implemented. Variant R remains separately blocked by its disclosure contract.
 - This does not resolve or weaken the genesis-root/verifier gate. No root, commissioning, private-device access, network path, persistent write, or external effect was enabled.
 - Next exact action: stop generic client taxonomy. Continue only if a specific existing client/model artifact is identified, or after an explicit decision to start a separate analysis-only client-design project. Do not infer implementation permission from “continue.”
+
+
+### Existing Nexo code reuse boundary for M1 — 2026-10-08
+- Source-level reuse audit created: `NCS/STEP_7_EXISTING_NEXO_CODE_REUSE_BOUNDARY_M1_2026-10-08.md`; commit `21e187316285a50a9e2801e87063112902e71d43`.
+- Inspected exact blobs for `orchestrator.js`, `runtime.js`, Core contracts/ownership/protected transition/policy resolver, and their existing tests.
+- Finding: the current mission orchestrator/runtime are tied to Lúmina simulation repairs/actions and persistent learning-memory/effect execution. They should not be repurposed as M1's local-only, no-tool, no-memory interaction path; doing so would couple Nexo to Lúmina and import excluded effects.
+- Core contracts provide reusable invariants and a delegated authority-gate seam, but not a mobile client, local inference, complete no-egress enforcement, or an independently recognized authority implementation. Existing tests do not establish those M1 properties.
+- No code or tests were run/changed; no model/provider/platform/client selected; no root, commissioning or external effect.
+- Next exact action unchanged: do not invent generic layers. Continue only with a specifically identified existing client/model artifact or a separately explicit decision to open an analysis-only M1 client-design slice. M1 feasibility and genesis authority remain separate UNKNOWN/BLOCKED claims.
