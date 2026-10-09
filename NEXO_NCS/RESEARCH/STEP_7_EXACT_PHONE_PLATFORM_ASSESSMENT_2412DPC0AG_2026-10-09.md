@@ -73,3 +73,24 @@ Do not change device settings or install diagnostic apps yet. First check offici
 If public documentation cannot settle a claim, mark it UNKNOWN rather than escalating to a sensitive device experiment. Any later read-only diagnostic must have a narrowly stated purpose, avoid collecting identifiers/secrets, and must not enroll credentials or commission Nexo.
 
 This assessment is research/design evidence only. It does not satisfy any of the six LCORE-1 blocking premises and does not authorize implementation of the Constitution Authority Context.
+
+## 7. Additional official-source cross-check: Android 16 and Xiaomi update policy
+
+Android 16's Compatibility Definition Document specifies Verified Boot requirements for compatible implementations, including verification on every boot, a chain beginning at an immutable hardware root of trust, and tamper-evident bootloader-unlock state. It also specifies hardware-protected key attestation under the secure-lock-screen requirements, but notes an exemption for devices launched on an earlier Android version that are later upgraded (with a stated fingerprint-feature exception). Therefore, the phone's reported Android 16 version alone does not establish which exact launch-time requirements applied to this product or prove that the handset's implementation passes them.
+
+Official reference: https://source.android.com/docs/compatibility/16/android-16-cdd?hl=en
+
+The CDD's general Verified Boot requirements are evidence of what a compatible implementation is expected to provide, not device-specific test evidence. They do not tell us the current bootloader state, actual verifiedBootState, the device's verifiedBootKey, whether its current build has been modified, or whether an independently verified attestation chain is available.
+
+Xiaomi's security-update policy says it generally maintains security updates for at least two years after first shipment, sometimes three years or longer, and that delivery timing can vary by region/model. This general policy is not a model-specific end-of-support date and does not verify the status of this exact build. The user-reported patch date 2026-08-01 is recorded as such; it is not independently validated as current for this SKU/region/build.
+
+Official reference: https://trust.mi.com/misrc/updates/phone?tab=aerdata
+
+### Result of this cross-check
+
+- 🔵 Documented platform expectation: Verified Boot is a core Android compatibility requirement; secure-lock-screen implementations have specified isolated-environment and key-attestation requirements, subject to the CDD's launch-version conditions.
+- 🔴 Not established for this exact handset/build: successful compliance testing, current boot state, hardware-backed attestation availability/chain validity, TEE/StrongBox identity, rollback-resistance configuration, model-specific security-update end date, or independent security validation.
+- StrongBox is not inferred. The Android CDD distinguishes a dedicated StrongBox secure processor from the broader isolated execution environment; no official POCO X7 Pro evidence located in this review establishes StrongBox support on this build.
+- No diagnostic application, developer setting, debugging mode, security configuration change, key generation, attestation request, or sensitive device experiment was performed.
+
+The next valid step is to preserve the boundary between specification and observation. Do not escalate into a sensitive on-device test merely to eliminate UNKNOWN. If a later claim genuinely requires device-observed evidence, first specify the exact claim, threat model, data exposure, independent verifier, and non-destructive test plan.
