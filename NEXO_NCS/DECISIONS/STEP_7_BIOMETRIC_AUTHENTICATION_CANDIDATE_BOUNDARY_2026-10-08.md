@@ -1,6 +1,6 @@
 # NEXO NCS — Biometric Authentication Candidate Boundary
 Date: 2026-10-08
-Status: DESIGN CANDIDATE ONLY — NOT SELECTED, NOT IMPLEMENTED
+Status: FIRST CANDIDATE PRIORITIZED FOR DESIGN EVALUATION — NOT IMPLEMENTED
 
 ## Owner proposal
 Kevin asked whether Nexo could recognize him through his unique fingerprint or facial recognition, potentially connected to the phone's screen-unlock mechanism.
@@ -41,5 +41,15 @@ Any candidate must define:
 - what evidence protected Core actually verifies and what it cannot claim;
 - UNKNOWN/STOP behavior whenever proof, freshness, binding, or enforcement is absent.
 
+## Design decision taken by the assistant under the owner's delegation
+- First evaluate a **fresh, app-level Class 3 / BIOMETRIC_STRONG authentication**, prioritizing fingerprint if the actual device exposes it at that strength.
+- Do not rely on the ordinary screen-unlock event as proof of a Nexo approval.
+- For a high-consequence commissioning/constitutional approval candidate, prefer an authentication-per-use cryptographic key and bind its operation to the exact action, Constitution version/hash, commissioning context, and fresh challenge.
+- Do not silently fall back to weak face recognition, a previously unlocked session, or device PIN/pattern/password as if it were the same biometric claim. Any fallback would need a separate explicit policy decision.
+- Face is not rejected categorically: a face modality may be considered only if the device's authenticator meets the required strength and the same app-bound proof requirements. Modality name alone does not establish security.
+- Never collect or transmit raw biometric data or templates; rely on the platform's authentication result and protected key operation.
+- If the device cannot provide the required authenticator class and key guarantees, stop and report the limitation. Do not weaken the contract to make it work.
+- This decision authorizes design evaluation only. It does not select the phone as a trust root, define enrollment, establish legitimacy, authorize code, or unblock activation.
+
 ## Decision
-No mechanism selected. No app, key, API, protocol, device property, or enrollment ceremony implemented or authorized. Biometrics are a candidate authentication factor, not proof by themselves that the genesis root exists. Genesis Trust Foundation, Constitution Authority Context, protected commissioning, and production effects remain BLOCKED/UNKNOWN. Do not reopen broad Android/device research; evaluate only this concrete candidate against existing gates if the owner chooses to continue.
+The first design candidate is now prioritized, but remains **NOT IMPLEMENTED** and **NOT A GENESIS ROOT**. No app, key, API integration, protocol, enrollment ceremony, protected activation, or production effect is authorized. Genesis Trust Foundation and Constitution Authority Context remain BLOCKED/UNKNOWN. Do not reopen broad Android/device research; the next work is a narrow contract attack on this candidate and its binding to the exact commissioning claim.
