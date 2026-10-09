@@ -103,3 +103,101 @@ Auditar la interacción entre desconexión, revocación, sucesión paralela y ef
 
 ## MENSAJE DE ARRANQUE SUGERIDO PARA EL SIGUIENTE CHAT
 “Bro, NCS recuperado. Leí el handoff completo y respetaré la regla de no parches. Continúo desde la interacción entre desconexión, revocación, sucesión paralela y efectos ya ejecutados. No reinicio el diseño ni repito AB/P/TLC/Kafka. Primero construyo la matriz temporal/causal y de estados, después audito huecos, luego especifico y pruebo; no implemento hasta cerrar contradicciones. Verificaré cualquier guardado antes de afirmarlo.”
+
+
+---
+
+# ACTUALIZACIÓN DE CONTINUIDAD — 2026-10-08 (autoridad del propietario + raíz de confianza)
+
+Esta sección amplía el handoff existente; no reemplaza ni invalida lo investigado anteriormente.
+
+## 1. Decisión explícita del propietario — NO volver a preguntar
+Kevin confirmó explícitamente:
+> “La autoridad soy yo y después de mi sería mi hija jaja pero aún es una bebé. Y si claro que debe ser todo solo sobre mi autorización”.
+
+Registrar e interpretar con precisión:
+- Kevin es la autoridad constitucional humana inicial y única para el commissioning inicial de Nexo.
+- La puesta en marcha constitucional, cambios protegidos de raíz/autoridad, enmiendas constitucionales y sucesión deben estar ligados a su autorización según la Constitución, con autenticación técnica separada.
+- Su hija es la sucesora futura prevista, pero es bebé y esta intención NO le concede autoridad actual ni delegación.
+- “Solo sobre mi autorización” no significa pedir aprobación humana nueva para cada interacción inocua o de bajo riesgo; las operaciones ordinarias deben quedar acotadas por Constitución, política y riesgo. La autorización del propietario nunca es un bypass.
+- NO inventar la condición de sucesión, prueba de muerte/incapacidad, edad/eligibilidad, ceremonia de aceptación, resolución de disputas, fallback ni corte/fencing de autoridad anterior. Esas reglas deben estar definidas por adelantado antes de cualquier transferencia.
+- No volver a preguntar quién tiene la autoridad inicial. Esa decisión normativa ya está cerrada.
+
+## 2. Decisiones/documentos canónicos revisados
+A) Decisión de commissioning/sucesión en rama `ncs-clean-architecture`:
+`NEXO_NCS/DECISIONS/STEP_7_COMMISSIONING_AND_SUCCESSION_SEMANTIC_RULE_2026-10-08.md`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/DECISIONS/STEP_7_COMMISSIONING_AND_SUCCESSION_SEMANTIC_RULE_2026-10-08.md
+Blob SHA observado: `283f302787bf4fe12f6b924bca1ac593264c84ef`.
+
+B) Revisión adversarial de autoridad y sucesión:
+`NEXO_NCS/RESEARCH/STEP_7_OWNER_AUTHORITY_AND_SUCCESSION_ADVERSARIAL_REVIEW_2026-10-08.md`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/STEP_7_OWNER_AUTHORITY_AND_SUCCESSION_ADVERSARIAL_REVIEW_2026-10-08.md
+Commit de creación observado: `8068f1d3bceff74b612290350564a974f084a416`.
+
+C) Cross-check de requisitos de autoridad, sucesión y enforcement:
+`NEXO_NCS/RESEARCH/STEP_7_OWNER_AUTHORITY_SUCCESSION_ENFORCEMENT_CROSSCHECK_2026-10-08.md`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/STEP_7_OWNER_AUTHORITY_SUCCESSION_ENFORCEMENT_CROSSCHECK_2026-10-08.md
+Blob SHA observado: `a7aec20a9b72281ff0b1517dbf01196d33a59b79`.
+
+D) Contrato de raíz de confianza y gate de reconocimiento independiente, actualmente verificado en la rama predeterminada `main`:
+`NEXO_NCS/BUILD/STEP_7_TRUST_FOUNDATION_ROOT_CONTRACT_AND_RECOGNITION_GATE_2026-10-08.md`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/main/NEXO_NCS/BUILD/STEP_7_TRUST_FOUNDATION_ROOT_CONTRACT_AND_RECOGNITION_GATE_2026-10-08.md
+Blob SHA observado: `551762a21132940ab9873027310c4457cf42a169`.
+**Importante:** este documento fue creado/verificado en `main`; no asumir que existe en `ncs-clean-architecture` hasta comprobarlo. No fusionar ramas silenciosamente.
+
+E) Estado de NCS en la rama predeterminada `main`:
+`NEXO_NCS/STATUS.md`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/main/NEXO_NCS/STATUS.md
+Blob SHA observado en última lectura: `b7573344abf58c702102a6428a7747a8f2210c0a`.
+El estado contiene otros pasos de construcción y pruebas; conservar su contexto y no sobrescribirlo con el resumen del track clean.
+
+## 3. Qué se hizo en el último tramo
+1. Se aceptó la elección normativa del propietario: Kevin como autoridad inicial única; su hija como sucesora futura prevista, sin autoridad actual.
+2. Se hizo revisión adversarial de replay de aprobación, sustitución entre Constitución/contextos, discrepancia entre presentación y acción comprometida, intención/coacción disputada, canal o verificador comprometido, aprobación obsoleta, clones/restauración de snapshots, transferencia prematura, ambigüedad de sucesión y falta de corte de autoridad anterior.
+3. Se contrastó con el mapa canónico de funciones/roles de confianza y con investigaciones históricas de ancla constitucional, sucesión y recuperación. Conclusión: no crear otra raíz, registro universal de confianza, quórum genérico ni subsistema soberano duplicado.
+4. Se especificó que todo cambio protegido requiere vínculo exacto a Constitución/política, acción, objetivo, alcance y contexto; frescura/consumo atómico; presentación confiable; comprobación en el último límite de enforcement; reválida de permisos descendientes; idempotencia; y UNKNOWN/STOP ante evidencia insuficiente.
+5. Se creó un contrato semántico de raíz de confianza: alcance de la afirmación, reconocimiento independiente, integridad, vigencia, actualización/revocación/recuperación, cierre de dependencias, seguridad durante transición, resistencia a rollback/clones y dominios de fallo.
+6. Se documentó que familias como raíz inmutable/provisionada externamente, raíz mutable protegida por una raíz previa, raíz hardware/plataforma y arreglos multi-raíz/umbral son alternativas; ninguna está elegida. Ninguna firma, hash, versión/epoch, snapshot, atestación ni declaración de proveedor basta por sí sola para establecer autoridad actual.
+7. Se preservó el gate: no hay todavía una raíz real, canal/verificador seleccionado ni reconocimiento independiente demostrado. P0 (diseño/investigación) continúa; P1 y activación/operaciones protegidas siguen bloqueados.
+8. Se consultó metodología TLA+ solo como posible herramienta para analizar concurrencia/transiciones. NO se ejecutó modelo TLA+/TLC/TLAPS ni runtime test en esta revisión.
+
+## 4. Invariantes de continuación
+- Legitimidad constitucional ≠ autenticación técnica ≠ protección/currentness ≠ recuperación/sucesión.
+- La raíz no puede ser su propio único reconocedor.
+- Hash identifica contenido; no demuestra autoridad. Firma válida no implica autorización vigente. Snapshot restaura estado, no autoridad actual.
+- Recuperación no se convierte automáticamente en autoridad normal ni puede nombrarse sucesora a sí misma.
+- Revocación emitida ≠ aplicada en todos los dispositivos. Ausencia de revocación observada ≠ ausencia real de revocación.
+- Una operación offline no conserva permiso indefinido por defecto. No inventar TTL universal.
+- Si no se demuestra actualidad, orden causal, fencing o enforcement, usar UNKNOWN/STOP en las operaciones dependientes y preservar historia.
+- Si una instancia offline no puede ser cercada, no declarar corte universal; mantener sus efectos protegidos bloqueados hasta revalidación.
+- No borrar efectos históricos por revocar: separar “ocurrió” de “estaba autorizado”.
+- No convertir la intención sobre la hija en una transferencia automática por edad, calendario, biometría, documento aislado o snapshot.
+- No reejecutar AB/TLC/Kafka ni probes históricos congelados salvo premisa nueva o riesgo material específico.
+- No afirmar que un documento fue guardado en la biblioteca ChatGPT `/NCS` si no hay confirmación de esa operación. GitHub no equivale a la biblioteca persistente.
+
+## 5. Próximo trabajo exacto
+**Primero:** comprobar en la rama correcta los contratos existentes y elaborar una matriz de trazabilidad, no otro diseño paralelo:
+- requisito;
+- dueño canónico actual (archivo/contrato);
+- evidencia disponible;
+- dependencia común;
+- estado (COVERED / PARTIAL / GAP / UNKNOWN);
+- acción mínima o razón para no actuar.
+
+La matriz debe cubrir: reconocimiento independiente de raíz, autoridad/procedencia, vínculo exacto de autorización, presentación confiable, replay/consumo, currentness/revocación offline, fencing de predecesor, enforcement final, revalidación de dependencias, recuperación no amplificadora, ramas en conflicto/evidencia tardía, idempotencia y resultado observado.
+
+**Segundo:** solo después de esa matriz, decidir si el modelo de transición mínimo (commissioning → root update → succession/fencing) agrega valor. Si sí, definir estados, invariantes, supuestos explícitos y contraejemplos; pedir/confirmar autorización separada antes de ejecutar herramientas formales si corresponde. No presentar modelo como prueba de despliegue.
+
+**Tercero:** comparar familias de reconocimiento independiente por necesidades reales y failure domains: compromiso común, modo offline, currentness/revocación, fallo durante reemplazo, recuperación y portabilidad. No elegir hardware, canal, proveedor, autenticador, umbral ni protocolo por el usuario.
+
+No implementar Constitución Authority Context, enrollment, root rotation, recuperación ni commissioning protegido mientras el mecanismo independiente no exista y no haya evidencia de su límite de enforcement.
+
+## 6. Mensaje de arranque para el próximo chat
+Al recibir exactamente `NCS`:
+1. Leer este handoff completo y el handoff persistente anterior.
+2. Consultar `NEXO_NCS/STATUS.md` en `main` y los archivos canónicos de `ncs-clean-architecture`; respetar las diferencias entre ramas y no fusionar silenciosamente.
+3. Leer el contrato Trust Foundation y la decisión de autoridad/sucesión.
+4. Continuar desde la matriz de trazabilidad de contratos, reutilizando los dueños canónicos.
+5. No preguntar de nuevo la autoridad inicial; no reabrir el principio bootstrap ya cerrado; no repetir auditorías/probes congelados.
+6. Registrar progreso significativo en el handoff/STATUS apropiado y volver a leer los archivos después de cada escritura.
+7. No decir “guardado en biblioteca NCS” sin resultado verificable.
