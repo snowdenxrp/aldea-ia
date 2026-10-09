@@ -1011,3 +1011,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Existing P112/MASTER findings reinforce that assistant/mission memory is compressed/projection-based and loses claim-critical provenance; it must not be repurposed as Nexo identity, constitutional authority, or validated long-term memory.
 - No implementation/tests; no model/provider/platform chosen; no authority root or activation. M1 and Genesis/Path B remain independent.
 - Next bounded analysis: derive the minimal M1 request/response semantic boundary from audited Core contracts and MASTER invariants, without selecting a model runtime or adding implementation abstractions. Preserve UNKNOWN/PENDING where the evidence does not determine the contract.
+
+### M1 read-only interaction boundary candidate — 2026-10-08
+- Added design-only candidate `NEXO_NCS/BUILD/STEP_7_M1_READ_ONLY_INTERACTION_BOUNDARY_CANDIDATE_2026-10-08.md`, commit `c018cea8f7e0d9cad9cd504bd262057f9c6894ee`.
+- It defines only semantic request/response boundaries for a first read-only local interaction slice: user content + explicitly permitted ephemeral context; generated response remains untrusted content, never authority or proof of truth.
+- Explicit exclusions: Lúmina simulation state, durable learning/memory, tools/effects, remote context/provider calls, credentials and authority-bearing capabilities. Local unavailability must not trigger silent remote fallback.
+- This is not an approved field schema and does not establish a working local runtime, no-egress enforcement, device enforcement, or Genesis authority. All remain UNKNOWN/BLOCKED where not evidenced.
+- Cross-check used current Core contracts and NEXO_CONTINUITY/NEXO_CORE_CONSTRUCTION_DESIGN_2026-10-08.md, plus NCS Step 6 handoff / MASTER constraints. No implementation/tests/dependencies/provider/platform selection.
+- Next: design-level contradiction review against MASTER/Core and the candidate's no-egress/fallback assumptions. Do not implement until separately authorized; keep Trust Foundation/Path B gate independent.
