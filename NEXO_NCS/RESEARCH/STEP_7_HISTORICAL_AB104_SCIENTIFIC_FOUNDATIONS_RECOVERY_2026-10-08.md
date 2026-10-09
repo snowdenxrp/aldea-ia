@@ -108,3 +108,15 @@ Continue with historical alias/lineage inspection of the actual Master and scien
 
 ### Next search
 Inspect the older research-continuity/index revisions around the original architecture baseline for additional science-adjacent artifact identifiers, then search those exact identifiers in Library/conversations. Do not re-run broad physics terms or re-open closed AB68/AB104 work.
+
+
+## Index and Library inventory delta — 2026-10-09
+
+- Completed the older `NEXO_INDEX.md` history pagination: the available path history has 69 commits total and no earlier page beyond those 69. Commit subjects center on architecture/PG-009 formal-state and recovery checkpoints; none identifies a physics/science theory artifact.
+- Checked the older research-continuity log history: its five oldest commits concern semantic equivalence, semantic refinement/migration, and opening PG-009. No science/physics artifact identifier surfaced.
+- Inspected the original consolidated architecture commit tree (`a771736ade0832ea9433fda5745a291551844e87`): 124 paths, complete tree, no path names matching physics, science, causal, epistemic, experiment, world model, energy, entropy, thermodynamics, or quantum.
+- Recursively inventoried the available Library (94 items; no next page/warnings). The text documents include the Master continuity file and NCS audit/checkpoint material, but no filename identifying a physics/science theory or raw AB104 archive. A current-conversation file search reports no uploaded files; this does not expose or exhaust every historical chat message.
+- This closes the current **repository/index/available-Library bounded sweep**, not the remembered artifact itself. The identity of the user's specific physics investigation remains 🔵 UNKNOWN; absence from these surfaces is not proof of nonexistence in unindexed or transient conversation history.
+
+### Next exact action
+Use any additional exact phrase, project label, equation, or subject the user remembers to target historical-chat recovery; otherwise continue through content-level aliases in the saved Master/continuity documents without repeating completed broad queries. Do not infer a physics theory from the Lúmina simulation branch or reopen closed AB68/AB104 experiments.
