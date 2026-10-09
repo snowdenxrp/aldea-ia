@@ -777,3 +777,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Phone-specific threat model: `NEXO_NCS/BUILD/STEP_7_CURRENT_PHONE_CANDIDATE_THREAT_MODEL_2026-10-08.md` (commit `632250e05c4fa6ad3117f0658b9679f87768a238`; read-back blob `d27cbac3698483c0c9cb7e70cf0ee271e9a38ae4`).
 - This supersedes the earlier “next interaction” request to choose between phone/other/not selected. The phone is now a candidate only; the trust claim remains UNKNOWN.
 - Next action: map the phone-specific requirements to the already-existing Genesis Trust Foundation, protected evidence-establishment, and Constitution Authority Context contracts. Determine the earliest property the phone cannot establish by itself. No implementation or mechanism selection; no protected activation; no Lúmina changes; no frozen AB/TLC/Kafka reruns.
+
+
+## 2026-10-08 — Phone branch bounded and reconciled; return to root architecture
+
+- Focused reconciliation: `NEXO_NCS/DECISIONS/STEP_7_PHONE_TO_GENESIS_ROOT_BOUNDARY_RECONCILIATION_2026-10-08.md` (commit `340e784f89f095e40334066e3d7157fbe20ba987`; read-back blob `9e312df835fa3cb7216c0ab759e83780a2e5857a`).
+- Finding: the phone can only remain a candidate human-interaction/presentation channel. It cannot establish its own enrollment legitimacy, constitutional authority, currentness/revocation, protected evidence provenance, or enforcement. A phone-generated key, app/session, Termux output, hash, or self-signed genesis bundle does not solve the missing root.
+- **Scope correction:** the phone-specific threat-model branch is closed for now. Do not expand into a general device/Android audit without claim-specific new evidence. This supersedes the prior action to keep exploring phone-specific threats.
+- Earliest unresolved architectural prerequisite: a non-circular, justified genesis trust basis whose evidence can be recognized by the protected Core. The protected evidence/context capabilities are downstream of that root and cannot manufacture it.
+- Next action: compare a small set of semantically distinct genesis-root classes against the existing attack matrix, only at design level. Assess pre-existing authority, provenance, currentness/revocation/recovery/succession, common-mode dependencies and compromise behavior. No class is selected yet.
+- Gate remains BLOCKED/UNKNOWN: no implementation, protected activation or production effects; no Lúmina changes; no frozen AB/TLC/Kafka reruns.
