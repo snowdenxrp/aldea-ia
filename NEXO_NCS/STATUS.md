@@ -1086,3 +1086,10 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - 🟢 Historical Lúmina simulation research branches were inspected; their research topics are agriculture/ecology/construction/economy, not a Nexo physics theory.
 - 🔵 The remembered physics/science artifact remains UNKNOWN; detailed branch/content delta is in `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`.
 - Next: trace historical Master/AB104 science-adjacent document aliases and commit ancestry; query Library only with newly surfaced identifiers. Do not repeat keyword sweeps or closed experiments.
+
+
+## Science-recovery path-lineage delta (2026-10-09)
+
+- Master and AB104.911R/.912R path histories were checked. They point to the existing architecture/causal-model documents and expose no earlier physics-specific rename.
+- Exact result and limits: `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`.
+- Next: inspect older research-index/continuity revisions for newly surfaced science-adjacent identifiers; do not repeat broad physics queries or closed research.
