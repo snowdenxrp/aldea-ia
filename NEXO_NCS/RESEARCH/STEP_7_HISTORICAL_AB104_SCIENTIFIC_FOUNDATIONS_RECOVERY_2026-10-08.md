@@ -49,3 +49,25 @@ The evidence supports that the user remembers a genuine science-oriented directi
 - The Master and research ledger contain substantial formal science: PTS/modal transition systems, 3-valued model checking, belief-state semantics, observer/state estimation, EventDAG/partial-order semantics, causal reasoning and controlled interventions, epistemic closure, decision sufficiency under uncertainty, and model uncertainty/validation. These are stronger candidates for the remembered "science/physics" work than a specific physics theory, but remain a hypothesis about the memory, not a confirmed identification.
 - The Master explicitly describes a physical actuation safety boundary (AI intent → Safety Gate → Independent Safety Controller → hard limits/interlocks → actuator → physical world) and sensor plausibility/freshness checks. This is physical control/safety architecture, not physics theory.
 - Next: continue archive recovery via the historical AB104 alias/commit lineage and Library conversations, especially science-adjacent terms that may not use the word physics (dynamics, energy, entropy, information theory, model theory, causal inference, simulation, scientific method). Do not redo closed AB68 semantics, sequential AB104 research, root taxonomy, AB105/TLC/Kafka probes, or create a new architecture layer. No implementation or commissioning.
+
+
+## NCS resumed-chat archive search delta — 2026-10-08
+
+### Scope of this pass
+- Re-read the handoff, current branch STATUS, prior archive sweep, and scientific-foundations recovery note before searching.
+- Re-ran GitHub repository code searches on the default-branch indexed corpus for: `physics thermodynamics entropy`, `scientist experiment energy dynamics`, `quantum cosmology physical model`, `entropy`, `thermodynamics`, `quantum`, `scientific method`, `experiment hypothesis`, `causal inference`, `world model`, and `NEXO_CONTINUITY/AB104`.
+- Queried commit search for `physics`, `science`, and `AB104.680`; no commit-message results for the first two. AB104.680 resolves to the known effect-header/Kafka identity line, not a physics artifact.
+- Searched Library and conversation surfaces for the remembered Nexo physics/science line and terms covering physical laws, energy, entropy, dynamics, thermodynamics, quantum/cosmology, and scientific discovery. The Library results surfaced the already-known Master and NCS documents; the conversation search returned no matching indexed result.
+
+### New result / classification
+- 🟢 The targeted search pass is recorded as performed.
+- 🔵 No exact physics-theory artifact or matching saved conversation was identified by this pass. This is still bounded UNKNOWN, not proof of absence.
+- 🟢 Energy/thermal references found in the Master are resource/energy management and physical/thermal capability intentions; they do not establish a physics theory.
+- 🟢 AB104.679–.680 and the .600–.711 duplicate-reconciliation chain are about effect identity/headers and Kafka-related evidence, not the remembered physics thread. Do not expand that line merely because it shares the AB104 numbering.
+- 🔵 GitHub code search is indexed against the default branch; it does not establish exhaustive coverage of all branches/commits. The saved conversation search surfaced no matching result, but that does not prove no older/transient conversation exists.
+
+### Queries and boundaries
+The exact query terms above should be treated as completed for this pass, not repeated unchanged. Remaining high-value work is to search actual repository history/branch trees and alternate AB104 artifact aliases by lineage/content, plus any Library item that has not been indexed by those terms. No generic external physics survey was started.
+
+### Current NCS sequencing remains unchanged
+Current `NEXO_NCS/STATUS.md` still governs construction. The active STEP 7 STOP remains the lack of an independently recognized implemented Trust Foundation/root. This science-artifact recovery is a separate historical-retrieval task; it does not authorize skipping the current STOP, implementing a root, or reopening closed construction steps.
