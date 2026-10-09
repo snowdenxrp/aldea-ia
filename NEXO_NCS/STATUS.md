@@ -1123,3 +1123,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - New research-only audit saved: `NEXO_NCS/RESEARCH/AB104_DUPLICATE_LINEAGE_AUDIT_DELTA_2026-10-09.md`.
 - Material findings: downstream AB104.680–691 selects the original .679 identity contract (key=value=effectId plus exactly-one UTF-8 identity header), but the alternate .679 `value=effectId+"|payload"` artifact is not explicitly superseded in the old reconciliation; .697 is actually persisted with exact commit `14bb73b747261076839a61ba2eb993a2c74e714c` despite two old reports calling it unsaved; .688 remains UNKNOWN/PENDING in the inspected scope; .711's two lifecycle states are explicitly retained by .712.
 - The new note includes exact SHAs, classifications, evidence boundaries, and the next bounded reconciliation action. No code, tests, frozen AB105/TLC/Kafka probes, or construction STOP state changed.
+
+
+## AB104.600–711 full path-inventory result (2026-10-09)
+
+- Recursive `main` and `ncs-clean-architecture` trees were complete; the AB104.600–711 extracted path inventory is identical: 120 paths, 111/112 numeric identifiers present, and .688 is the sole number without a matching path.
+- .697 is persisted and must not be labelled missing; its earlier “unsaved” classification is stale/contradicted by exact file + commit evidence.
+- The duplicate groups have different roles: .600/.698 include reconciliation documents; .679 is a conflicting identity-spec pair with downstream contract selecting the original form; .706/.711 have existing reconciliations; .666/.692 are refinements.
+- Detailed lineages, classifications, exact SHAs, and limitations: `NEXO_NCS/RESEARCH/AB104_DUPLICATE_LINEAGE_AUDIT_DELTA_2026-10-09.md`.
+- No old artifacts rewritten; no implementation/tests/frozen AB105/TLC/Kafka runs; current construction STOP unchanged.
