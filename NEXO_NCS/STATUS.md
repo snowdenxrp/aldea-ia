@@ -1184,3 +1184,10 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - This is a distinct attack beyond merely changing software after commissioning: a clean-looking host/display does not establish that the initial verifier/updater/artifact was legitimate, and the artifact cannot be the sole authority for its own legitimacy.
 - Updated `NEXO_NCS/DECISIONS/STEP_7_PATH_A_BOUNDED_COMMISSIONING_ASSUMPTION_PREFLIGHT_2026-10-09.md` to include assumption A9, a dedicated first-code/updater circularity attack, and an explicit acceptance-gate dependency.
 - No new architecture layer proposed. If resolving this requires a sovereign bootstrap core that validates itself, STOP and revisit the root design. Path A remains unaccepted and design-only; Path B remains UNKNOWN; STEP 7 remains STOP. No implementation, credentials, keys, activation, or frozen AB105/TLC/Kafka reruns.
+
+
+## 2026-10-09 — INE credential candidate-class assessment
+- Added `NEXO_NCS/RESEARCH/STEP_7_MEXICAN_INE_IDENTITY_CANDIDATE_ASSESSMENT_2026-10-09.md` (commit 0e4899af18096d7f5041c514b4b7305936b9adda) after evaluating the Mexican INE as a possible identity-evidence class.
+- Official INE sources describe model-appropriate status checks and QR validation routes. These can support credential authenticity/status claims only within their stated scope; they do not independently establish the current presenter, prior Nexo enrollment, constitutional authority, exact Constitution/context approval binding, current Nexo authority, first-code/updater legitimacy, or enforcement.
+- The assessment stores no personal credential data and does not claim the candidate credential was independently verified. A report of validity is not treated as an official check result.
+- Result: INE may be considered as one input to a future supervised identity-attribution procedure, but **is not a Genesis root and does not satisfy Path B by itself**. No root, ceremony, credential enrollment, code, activation or external effect authorized. Path A remains unaccepted; STEP 7 remains STOP/UNKNOWN. No frozen AB105/TLC/Kafka probes rerun; AB105.117R remains prohibited.
