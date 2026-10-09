@@ -1352,3 +1352,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - C-03 remains an unresolved MASTER wording ambiguity; no source provenance was found to safely resolve it. P1/P2 remain UNKNOWN/blocking; P3 partially inventoried; P4 UNKNOWN; P5 NOT ESTABLISHED; P6 UNKNOWN.
 - No trust root, governance option, ceremony, credential, implementation, commissioning or activation selected/authorized.
 - **Next exact action:** stop expanding Step 7 inventories unless new primary evidence can change a classification. Preserve C-03 as an explicit future owner decision. Continue only with a separate design requirement that does not depend on P1/P2, and keep design/runtime status distinct.
+
+
+## NCS working rule — continuation is not technical acceptance
+- Explicitly recorded after owner clarification: a request to continue authorizes continued investigation/work, but is not evidence that the next technical step is justified or correct.
+- Before each material step, establish a concrete requirement, canonical owner, MASTER + AB + P/P112 constraints, dependencies, failure modes, verification method and expected benefit.
+- Do not advance blocked work, repeat closed work, invent abstractions, or add structural patches merely to maintain momentum. Preserve UNKNOWN/PENDING/STOP when evidence is insufficient.
+- Parallel progress is allowed only when independence from the blocked boundary is demonstrated; it must not imply that the blocked authority/trust boundary is resolved.
+- Canonical rule: `NEXO_NCS/DECISIONS/MASTER_AB_P_FUTURE_COUNTEREFFECTS_RULE_2026-10-08.md`, amended in commit `f864f60dbad15246f67f74fb802224017f837eff`.
