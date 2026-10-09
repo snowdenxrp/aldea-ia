@@ -18,15 +18,19 @@ An INE credential may be useful as one input to an identity-attribution procedur
 
 Therefore: **INE = possible identity evidence, not a Genesis root and not sufficient commissioning authority.** The existing recognition-basis precondition remains unsatisfied unless a separate, justified procedure establishes every claim-specific relation.
 
-## Official INE verification routes (consulted 2026-10-09)
+## Official INE verification routes (cross-checked 2026-10-09)
 - INE, “¿Está vigente tu credencial?” / Lista Nominal: https://listanominal.ine.mx/scpln/index.html/resultado.html
-  The official service distinguishes credential models and supports checking status. The exact model matters; do not infer validity solely from an old printed year or from possession.
-- INE, “Conoce el nuevo modelo de tu Credencial para Votar”: https://portal.ine.mx/conoce-tu-credencial-para-votar/
-  The INE describes high-density QR technology for the new model and verification with the official Valida INE-QR app.
+  The official service lists credential models and status-check routes. Its current page identifies models E, F, G, H, I and J as models to check through the corresponding route, while older models A, B and C and model D are shown as not current. The exact model and current official result matter; do not infer validity solely from possession or a visual appearance.
+- INE, “Conoce el nuevo modelo de tu Credencial para Votar”: https://www.ine.mx/conoce-tu-credencial-para-votar/
+  The INE says production of the new model began in June 2026 and describes high-density QR technology verifiable with the official Valida INE-QR app. This does not mean every existing credential must be replaced.
+- INE, Central Electoral, “¿Tengo que renovar mi INE por el nuevo modelo?” (2026-08-07): https://centralelectoral.ine.mx/2026/08/07/nueva-credencial/
+  The INE states that a credential that remains within its validity period does not have to be renewed merely because a new design exists.
+- INE, “Avisos de la Credencial para Votar”: https://www.ine.mx/avisos-credencial-para-votar/
+  The INE clarifies that the Valida INE QR app is not itself a digital credential.
 - INE, “Valida los datos de la Constancia Digital del INE”: https://www.ine.mx/valida-los-datos-de-la-constancia-digital-del-ine/
-  For the digital constancia described on that page, the INE instructs the verifier to scan QR codes and compare the returned data and photograph with the credential and the person presenting it. This is not evidence that every physical credential model has identical validation behavior.
+  For the digital constancia described on that page, the INE instructs the verifier to scan QR codes and compare returned data and photograph with the credential and person presenting it. This is not evidence that every physical credential model has identical validation behavior.
 
-Use only the official service/app and instructions appropriate to the actual credential model. Do not upload a credential image or QR payload to Nexo, a chat, or an untrusted third-party verifier for this assessment.
+Use only the official service/app and instructions appropriate to the actual credential model. Do not upload a credential image or QR payload to Nexo, a chat, or an untrusted third-party verifier for this assessment. The user has reported that their credential is current, but this research has not independently checked the user's specific credential.
 
 ## Claim decomposition
 1. **Credential authenticity/status:** can be supported by the appropriate official INE verification path; current status must be checked at the time of use. A user's report that the card is vigente is not an independent verification result.
