@@ -86,3 +86,19 @@ Results:
 3. **C-12 remains a preference, not an authority transition.** These historical sources do not enact a specific successor or prove that any future person is presently authorized. The user's stated hope that his daughter may succeed him remains a future governance preference; eligibility, timing, capacity, proof, disputes, interim authority and recovery remain undecided.
 4. **No conflict found in this targeted cross-check.** This does not claim an exhaustive audit of every MASTER/AB/P source. The evidence supports preserving C-11 as a recovered safety constraint while leaving its concrete governance procedure UNKNOWN; C-12 remains a stated preference with no current authority effect.
 5. No succession, recovery, quorum, emergency root, credential, ceremony or implementation is selected or authorized.
+
+
+## Targeted primary-source cross-check — C-07 / C-09 / C-13 — 2026-10-09
+
+Primary canonical sources inspected:
+- `BUILD/STEP_7_CONSTITUTION_TO_POLICY_AUTHORITY_BINDING_CONTRACT_ATTACK_2026-10-08.md`
+- `BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_ATTACK_2026-10-08.md`
+- `docs/nexo/PG-009_SEMANTIC_DATA_MIGRATION_INTEGRITY_2026-09-23.md`
+- `RESEARCH/STEP_7_P1_P2_GOVERNANCE_READINESS_REVIEW_2026-10-09.md`
+
+Results:
+1. **C-07 design invariant evidence-closed for this bounded review.** The existing attack explicitly keeps Constitution version, Policy semanticVersion and content hash distinct; ordering does not imply authority; stale bindings require re-evaluation after material changes. This closes the semantic distinction, not the real amendment procedure or currentness policy.
+2. **C-09 identity/authentication/intent/content/scope distinctions remain supported.** The P1/P2 review already enumerates identity attribution, authentication, explicit intent, exact content, scope, freshness/anti-replay, protected recording and authority scope as separate claims. NIST guidance is used only for its bounded authentication/intent distinction, not as Nexo's governance authority.
+3. **C-13 remains an unresolved design extension at the presentation boundary.** PG-009 demonstrates that byte/schema compatibility is weaker than semantic/epistemic/policy/authority compatibility; the existing binding attack rejects version confusion and scope laundering. However, no current evidence establishes a trusted human-readable presentation that is bound to the exact content recorded for approval. A hash/signature alone does not close that gap.
+4. No contradiction was found in these inspected sources. No new schema, amendment protocol, display mechanism, ceremony, credential or protected boundary is justified.
+5. P1/P2 remain UNKNOWN/blocking. Semantic separation is better specified; commissioning and protected-context implementation remain blocked until the prerequisite governance/trust foundation is legitimately established.
