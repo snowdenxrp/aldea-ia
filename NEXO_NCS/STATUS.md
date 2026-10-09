@@ -1270,3 +1270,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - No official evidence found in this review establishes StrongBox on this specific POCO build. Do not infer StrongBox, current bootloader lock, verified-boot state, hardware-backed attestation or rollback resistance.
 - **Next exact action:** preserve UNKNOWN/STOP unless a specific claim needs a carefully scoped, non-destructive device observation. Before any such observation, define the claim, threat model, exposed data, independent verifier and test safety. No diagnostic app/settings changes, debugging, attestation request, key generation, enrollment, commissioning or activation authorized.
 - Path A remains NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. LCORE-1 remains UNKNOWN/STOP.
+
+## STEP 7 — Owner-authentication boundary cross-check — 2026-10-09
+- 🟢 Added a bounded authentication note to `NEXO_NCS/RESEARCH/STEP_7_EXACT_PHONE_PLATFORM_ASSESSMENT_2412DPC0AG_2026-10-09.md` (latest commit fc5fc364523c6abb46da03039d79cab5b353ba4d).
+- Xiaomi's official POCO X7 Pro FAQ warns AI face unlock is less secure than PIN/password/pattern and may be fooled by a photo or similar appearance.
+- Architectural consequence: system biometric acceptance cannot by itself prove that Kevin approved exact constitutional content, scope, freshness or an external effect. Authentication evidence must remain distinct from Genesis legitimacy and execution authority.
+- No biometric data was collected or tested. No settings, developer options, debugging, key creation, attestation, enrollment, commissioning or activation was performed.
+- The platform review does not justify selecting this phone as a Genesis root, nor does it prove the phone unusable for ordinary development. Current operational role remains development/research host only; Genesis trust-root role is unselected.
+- **Next exact action:** stop generic device research unless a specific architecture claim needs further evidence. Continue the semantic trust boundary work from the existing Genesis Trust Foundation and Core Constitution Authority Context contracts; preserve the six LCORE-1 blocking premises as UNKNOWN and do not implement the protected context while Genesis remains unresolved.
+- Path A remains NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. LCORE-1 remains UNKNOWN/STOP.
