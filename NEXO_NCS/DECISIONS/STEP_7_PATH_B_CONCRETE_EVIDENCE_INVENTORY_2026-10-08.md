@@ -59,3 +59,22 @@ A focused check of official specifications clarifies why naming a standard does 
 
 These standards establish viable design mechanisms and required verification responsibilities, not that Kevin's current phone/account is already a recognized Path B root. Do not infer enrollment, provenance, currentness, or constitutional authority from availability of Android/WebAuthn features.
 
+## Code-level verification — existing executable boundaries are not a Path B root
+A targeted inspection of current source files was added after the standards check:
+
+- `src/nexo/core/policy-context-resolver.mjs` (blob `024b385d928b6b95edee1a54de867f7193917c91`) resolves caller-supplied identity/applicability/dependency/temporal/provenance checks and returns VALID/FAIL/UNKNOWN. It does not create or verify a trust anchor, enrollment credential, signed attestation, protected verifier identity, or independently sourced currentness.
+  Source: https://github.com/snowdenxrp/aldea-ia/blob/main/src/nexo/core/policy-context-resolver.mjs
+- `src/nexo/core/contracts.mjs` (blob `294eb400e9685788f7dd084a28a838b69d0323c7`) validates ClaimEnvelope and AuthorityResult shapes. Shape validation does not authenticate the source of those values.
+  Source: https://github.com/snowdenxrp/aldea-ia/blob/main/src/nexo/core/contracts.mjs
+- `src/nexo/core/protected-transition.mjs` (blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`) delegates the authority decision to an injected `ports.authorityGate.check(claim)`. This is a useful control-flow seam, but this inspection did not establish a protected, independently recognized implementation of that authority gate.
+  Source: https://github.com/snowdenxrp/aldea-ia/blob/main/src/nexo/core/protected-transition.mjs
+- `NEXO_NCS/BUILD/STEP_7_EXISTING_PROTECTED_POLICY_AUTHORITY_OWNER_AUDIT_2026-10-08.md` explicitly records that no implemented protected policy-source authority owner was found.
+  Source: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_EXISTING_PROTECTED_POLICY_AUTHORITY_OWNER_AUDIT_2026-10-08.md
+- `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md` explicitly records that no implemented current Constitution Authority Context path was found.
+  Source: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md
+
+Interpretation: the repository contains useful execution/control-flow and data-contract code, but the reviewed code does not establish the prior recognized authority needed for Path B. An injected authority port is not itself an authority root. These are code-reading observations, not a runtime test or proof about external devices/accounts.
+
+## Updated disposition
+This code inspection strengthens the bounded repository finding but does not reveal a Path B candidate. Path B remains BLOCKED/UNKNOWN; commissioning remains prohibited. No code was changed in the runtime, no keys were generated, and no enrollment or activation was performed.
+
