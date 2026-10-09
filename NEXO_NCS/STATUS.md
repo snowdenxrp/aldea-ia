@@ -828,3 +828,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Three paths are recorded without selection: (A) a narrowly stated explicit commissioning-environment assumption, (B) evidence for a concrete pre-existing independent recognition basis, or (C) remain uncommissioned. Mere phone/account/app/repository/session possession is not proof of Path B.
 - No path, mechanism, credential, ceremony, verifier, or enforcement boundary is selected or implemented. Genesis Trust Foundation, Constitution Authority Context, protected commissioning, and production effects remain BLOCKED/UNKNOWN.
 - Next action: only proceed with new specific evidence for Path B or an explicit owner decision to examine Path A. Otherwise preserve the safe stop; do not generate duplicate root taxonomy or repeat generic attacks.
+
+
+## 2026-10-08 — Biometric authentication considered as a bounded candidate
+
+- Kevin proposed fingerprint/face recognition, potentially tied to phone unlock, as a way for Nexo to recognize his approval.
+- Decision record: `NEXO_NCS/DECISIONS/STEP_7_BIOMETRIC_AUTHENTICATION_CANDIDATE_BOUNDARY_2026-10-08.md`, commit `d013171297e0e6cc103a1d4028fb6ac73a5ec33e`.
+- Technical distinction: app-level Android BiometricPrompt plus an authentication-bound cryptographic key may provide stronger app-bound evidence than a plain “screen unlocked” signal. Platform capability and authenticator strength vary by device.
+- A biometric success alone does not establish genesis-root legitimacy, bind approval to the exact Constitution/commissioning action, prove currentness/revocation, or demonstrate protected enforcement.
+- Candidate only: no mechanism, device capability, key/API, enrollment ceremony, or implementation selected. Broad Android/device research remains closed.
+- Genesis Trust Foundation, Constitution Authority Context, protected commissioning, and production effects remain BLOCKED/UNKNOWN.
