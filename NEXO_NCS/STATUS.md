@@ -949,3 +949,15 @@ This entry supersedes older status wording in this file that said the initial ve
 - Provenance record extended and readback-verified: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_REPOSITORY_PROVENANCE_AND_GOVERNANCE_EVIDENCE_2026-10-08.md`, commit `80e57e977c8297350e741d3e8a0d6f03bc84a8d4`.
 - Disposition unchanged: no concrete Path B root/verifier found in inspected repository evidence; remain uncommissioned, BLOCKED/UNKNOWN. No workflows run, no implementation, keys, enrollment, commissioning, activation, or production effects.
 - Next evidence boundary: the repository-only avenue is exhausted for this claim. Further Path B progress requires an actually pre-existing external artifact or channel/credential whose provenance and independent recognition can be checked; do not invent or create one during this research phase.
+
+
+### Path B — conditional Mexican e.firma candidate checked against official sources — 2026-10-08
+- Evaluated the official SAT e.firma validity and certificate verification/authentication services, the SAT revocation procedure, and the Federal Advanced Electronic Signature Law:
+  - https://wwwmat.sat.gob.mx/tramites/19941/valida-la-vigencia-de-tu-e.firma-%28antes-firma-electronica%29
+  - https://wwwmat.sat.gob.mx/tramites/03180/como-innovar-en-tu-empresa-con-la-e.firma
+  - https://wwwmat.sat.gob.mx/tramites/16659/revoca-tu-certificado-de-e.firma
+  - https://www.diputados.gob.mx/LeyesBiblio/pdf/LFEA.pdf
+- Finding: an already-issued e.firma could potentially provide externally verifiable person-level signature evidence, but it does not itself establish Nexo-specific constitutional authority, prior Nexo enrollment, safe key control, verifier legitimacy, freshness/replay handling, lifecycle/recovery, or protected enforcement.
+- Kevin's possession of an existing e.firma has **not** been established. No certificate or secret was requested or inspected. Do not share private `.key` files, passwords, RFC, or certificate bundles in chat/repository.
+- Decision record extended and readback-verified: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`, commit `e236dd9bb8bce7f93f83793dd13e13716b2a63b9`, blob `6e30fb13c7f81907875e9b4a8d9e7bbd5b3693af`.
+- Status unchanged: Path B remains BLOCKED/UNKNOWN; Nexo remains uncommissioned. No key use/generation, enrollment, implementation, commissioning, activation, or production effects.
