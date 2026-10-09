@@ -738,3 +738,12 @@ This separation exists specifically to prevent historical research volume from b
 - MASTER, historical constitutional trust/succession/recovery research, AB104.446, P112 dependency/final-gate evidence, and current NCS trust contracts converge; no new root abstraction or mechanism is justified. No frozen probe was rerun and no implementation was made.
 - Kevin's sole initial authority is already accepted; his daughter is future successor only. The initial verifier assumption is NOT accepted: a pre-existing independent channel under Kevin's control remains a candidate, not a deployment fact.
 - Next: obtain explicit YES/NO on accepting that channel as a bounded trust assumption for initial commissioning. “Continue” is not consent. If YES, scope its claims/limits and attack enrollment/binding; if NO/unclear, preserve UNKNOWN and compare existing governance alternatives only. Trust Foundation, Constitution Authority Context, genesis activation, recovery/succession and production safety remain blocked.
+
+
+## 2026-10-08 — Owner accepts bounded initial trust assumption; Termux noted
+
+- Kevin explicitly accepted the *design assumption only*: a pre-existing channel independently recognized by him and already under his control may be considered as a bounded trust assumption for binding his approval to the exact Constitution and commissioning context.
+- This does not make a device the authority/root, and does not select a device, authenticator, protocol, platform, or implementation. Device possession/biometrics/signatures alone do not establish constitutional legitimacy.
+- Kevin noted that Termux is available on his phone. It is a possible local research/prototyping tool to assess later, not a trust root or proof of device integrity. No Termux implementation is authorized.
+- Next exact action: specify the claim scope and limits of the bounded assumption, then attack the minimum enrollment-and-binding contract. Keep trust-root details, enrollment/presentation integrity, independence, revocation, recovery, succession, protected activation and production safety BLOCKED/UNKNOWN until separately specified and evidenced. No frozen AB/TLC/Kafka probes rerun; no generic layer added.
+- Decision record update commit: 484682d19e218ee7d5e60a2d09606abf5ad1b990; blob: d2af9a87129da7c2a79bfa8f3db615862e5abac2.
