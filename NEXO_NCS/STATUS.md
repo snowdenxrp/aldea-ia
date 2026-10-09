@@ -1053,3 +1053,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Purpose: preserve today's recoverable research, what remains unidentified, strict NCS constraints, links to source artifacts, and ordered instructions for the next chat.
 - Next chat must start with exactly `NCS`, read the handoff and current STATUS first, then continue targeted recovery of the remembered science/physics thread across Library/conversations and AB104 aliases/commit lineage.
 - The exact physics artifact remains UNKNOWN; do not call the search complete. Do not repeat closed AB68/PTS work, broad trust-root taxonomy, frozen AB105/TLC/Kafka probes, or invent missing evidence. No implementation, key/root selection, enrollment, commissioning, activation, or production effects.
+
+
+### NCS resumed-chat search delta — science/physics artifact remains UNKNOWN
+- Additional Library/conversation and GitHub code/commit searches were performed for physics, thermodynamics, entropy, quantum/cosmology, scientific method, experiment/hypothesis, causal inference, world model, energy/dynamics, and AB104.680.
+- No exact physics-theory artifact or matching indexed conversation was identified. This is a bounded UNKNOWN, not an absence claim. Master energy/thermal references are capability intentions, not physics theory; AB104.679–.680 concerns effect identity/Kafka evidence.
+- Detailed query scope and limits recorded in NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md (search-delta section; commit 8a37474e6738d86ce996b656e2c7325ddce0cc76).
+- Next historical-recovery action: inspect actual branch trees and commit/blob lineage/aliases rather than repeat the same indexed queries. Search Library items by content/concept where indexed results may miss older conversation artifacts.
+- Operational construction checkpoint is unchanged: STEP 7 remains STOP at the missing independently recognized implemented Trust Foundation/root. Do not implement/activate a root or reopen closed steps as part of this search.
