@@ -867,3 +867,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Result: **BLOCKED/UNKNOWN**. The existing repository does not evidence a concrete pre-existing recognition/enrollment basis, independently justified protected verifier/root, actual device/key capability, or enforcement boundary. Strong biometrics can contribute a local re-authentication factor but cannot create the root/verifier legitimacy it depends on.
 - No code, key generation, enrollment ceremony, activation, production effect, Lúmina change, or frozen AB/TLC/Kafka rerun. Do not add more generic biometric/root layers.
 - Next gate remains unchanged: obtain specific verifiable evidence for a named pre-existing recognition/verifier basis, or have Kevin explicitly choose to examine the separately documented narrow commissioning-environment assumption (Path A), or keep Nexo uncommissioned. This update does not select Path A; “continue” is not consent to it.
+
+
+## 2026-10-08 — Path A bounded commissioning-environment assumption evaluated
+
+- Kevin explicitly authorized **evaluation** of Path A, with the constraint that it not be implemented and Nexo not be activated. This is not acceptance of the assumption as true and not consent to a commissioning ceremony.
+- Added `NEXO_NCS/DECISIONS/STEP_7_PATH_A_BOUNDED_COMMISSIONING_ENVIRONMENT_ASSUMPTION_EVALUATION_2026-10-08.md` (commit `35e451ce8a70d62b0239f167233b95edab1e9e8a`).
+- The candidate assumption set is narrow and explicit: owner-supervised one-time event; honest presentation/input path; no active device/app/OS compromise during the event; exact Constitution/context binding; freshness and single-use; no silent biometric/credential fallback; and clear separation between assumed properties and independently evidenced properties.
+- Focused countereffect review found Path A can only describe a conditional one-time commissioning claim under disclosed environmental assumptions. It cannot establish an independent root, prove the phone/app/OS trustworthy, solve verifier legitimacy/currentness/recovery, or prove protected enforcement.
+- **Result remains BLOCKED/UNKNOWN.** Evaluation is authorized; assumption acceptance, implementation, key generation, enrollment, commissioning ceremony, activation and production effects are not authorized. If resistance to a compromised commissioning device/OS is required, Path A alone is insufficient.
+- Next: reconcile this candidate against the existing Genesis Trust Foundation and Constitution Authority Context gates; do not implement or claim ESTABLISHED unless the remaining verifier, freshness, lifecycle, scope and enforcement obligations are independently justified. A separate explicit owner decision is required before accepting the assumption set itself.
