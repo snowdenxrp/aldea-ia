@@ -1078,3 +1078,11 @@ La regla correcta NO es prohibir todo parche. El objetivo es evitar que Nexo dep
 - No descartar una solución solo por llamarse parche ni justificar un mal diseño porque una solución rápida funcione hoy.
 
 Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohibición nominal de los parches. Esta aclaración refina las frases anteriores sobre evitar parches: “no ocultar contradicciones con parches” sigue vigente, pero no significa “nunca usar parches”.
+
+
+## Science-recovery follow-up — Lúmina branch candidate (2026-10-09)
+
+- 🟢 Master already contains the Intervention Contract and the invariant `Simulation/counterfactual ≠ world observation`.
+- 🟢 Historical Lúmina simulation research branches were inspected; their research topics are agriculture/ecology/construction/economy, not a Nexo physics theory.
+- 🔵 The remembered physics/science artifact remains UNKNOWN; detailed branch/content delta is in `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`.
+- Next: trace historical Master/AB104 science-adjacent document aliases and commit ancestry; query Library only with newly surfaced identifiers. Do not repeat keyword sweeps or closed experiments.
