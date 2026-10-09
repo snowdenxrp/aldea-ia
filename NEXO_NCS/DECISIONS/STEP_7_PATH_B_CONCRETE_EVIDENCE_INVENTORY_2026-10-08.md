@@ -97,3 +97,29 @@ Claim-relative assessment:
 - **Safety:** never upload or paste the private `.key` file, private-key password, RFC, certificate bundle, one-time code, or other secret into this conversation or repository. For candidate screening, a simple yes/no on whether a pre-existing e.firma exists is enough; if yes, the next step would be to assess a safe local verification design without transferring secrets.
 
 Disposition: e.firma is a **conditional external candidate worth checking for prior existence**, not a selected root and not sufficient by itself to close C3/C4/C5. Since possession has not been established, Path B remains BLOCKED/UNKNOWN. No certificate was inspected, no key used/generated, no credential enrolled, and no implementation or commissioning occurred.
+
+
+## Candidate-specific next contract — if a pre-existing e.firma is confirmed (design only)
+
+No certificate, private key, RFC, or user possession claim has been received. This section specifies a gate for later evaluation only; it does not instantiate an e.firma relying party or approve use of this credential.
+
+A candidate commissioning statement would need to bind, as exact canonical bytes:
+1. protocol/domain identifier (prevent cross-protocol signature reuse);
+2. unique Nexo instance / commissioning transaction identifier;
+3. exact Constitution identifier, version, and cryptographic digest;
+4. exact scope of the one-time act and explicitly excluded effects;
+5. fresh verifier-generated challenge, expiry, and one-time consumption state;
+6. the candidate credential/certificate identifier without exposing unnecessary personal data;
+7. the declared environmental assumptions and their explicit unverified status;
+8. a statement that this is only a request for a bounded commissioning decision, not authorization for ongoing autonomous actions.
+
+The verifier would need to validate signature and certificate chain according to a documented trust policy, check currentness/revocation using an authoritative source and define behavior when that source is unavailable, reject stale/replayed/substituted statements, and map the credential identity to the authorized constitutional principal under a separately approved policy. The protected transition must still enforce the resulting decision and reconcile uncertain outcomes. A valid signature must never be treated as proof that downstream effects were enforced.
+
+Safety and lifecycle requirements:
+- Keep private-key operations local to a trusted environment; never upload private key material or its password to ChatGPT, GitHub, or a third-party verifier.
+- Do not retain the RFC or full certificate unless strictly required; minimize and protect identity data.
+- Define revocation, key compromise, expiration, recovery, re-issuance, and root succession before any authority depends on the credential.
+- If certificate status cannot be established, signer-to-principal mapping is ambiguous, the challenge is not fresh, or enforcement cannot be demonstrated, return UNKNOWN/STOP.
+- The SAT's validity service and legal framework establish properties of the certificate and signature under their scope; they do not supply Nexo's constitutional authorization policy or its protected enforcement implementation.
+
+This contract is deliberately not code and not a new generic trust layer: it applies the existing Genesis Recognition Basis Precondition and Constitution Authority Context gates to one conditional candidate. It must not be implemented until prior possession is confirmed and a separate owner decision authorizes further design. Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only; no commissioning or activation.
