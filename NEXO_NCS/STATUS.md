@@ -642,3 +642,9 @@ This separation exists specifically to prevent historical research volume from b
 - Separated future owner-governance questions from testable mechanism properties. The daughter remains intended future successor only; no transfer trigger or ceremony has been invented.
 - No TLA+/TLC/TLAPS or runtime test executed. P0 only; protected activation/implementation remain blocked. Frozen AB/TLC/Kafka probes not rerun.
 - Next: inventory existing contracts against these requirements, reuse canonical owners rather than duplicating them, then decide whether a minimal formal transition model adds value before any separately authorized model run.
+
+
+## 2026-10-08 — Next-chat handoff extended
+- 🟢 Detailed handoff updated and committed: `NCS/NCS_NEXT_CHAT_HANDOFF_2026-10-08.md`; commit `8c718136e208e897900638fa2a63b7d0fa7c8723`; blob `4c888e57f26c827faa685ce373581e8dc474f5e8`.
+- Includes explicit owner decision (Kevin sole initial authority; daughter intended future successor only), links and identifiers for canonical decision/reviews, trust-foundation contract location in `main`, invariants, blockers, no-repeat constraints, branch separation, and exact next actions.
+- Next exact action: produce a requirement-to-canonical-owner traceability matrix before any formal transition model or mechanism selection. No implementation or protected activation authorized.
