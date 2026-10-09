@@ -1100,3 +1100,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The older index/continuity history and original architecture tree were checked; no physics-specific artifact or rename was identified.
 - Available Library inventory contains the Master and NCS research/checkpoints, but no named physics/science theory or raw AB104 archive. Historical/transient chat content is not thereby proven absent.
 - Specific artifact remains UNKNOWN; this bounded sweep is recorded in `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`.
+
+
+## User-reported chat disappearance — checkpoint saved (2026-10-09)
+
+- El usuario informa que desapareció parte de esta conversación y pide que no queden huecos.
+- Checkpoint persistente creado y leído de vuelta: `NEXO_NCS/HANDOFF/NCS_CHAT_RECOVERY_CHECKPOINT_2026-10-09.md`.
+- El checkpoint guarda la aclaración de parches, el trabajo científico verificable, el estado UNKNOWN, los límites de lo recuperable y las instrucciones para retomar sin repetir trabajo.
+- No afirmar que el texto borrado se recuperó literalmente si no hay copia verificable. En próximos cambios de chat, guardar decisiones/resultados, hacer commit y leer de vuelta antes de afirmar que están guardados.
