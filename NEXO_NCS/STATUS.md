@@ -798,7 +798,6 @@ This entry supersedes older status wording in this file that said the initial ve
 - Next architectural action: use the already-recorded root-class and trust-role findings to identify whether any previously researched, pre-existing legitimacy basis actually satisfies the Genesis Trust Foundation precondition. If none does, state the precise missing external/pre-established premise and keep implementation blocked; do not invent a synthetic root or promote the phone by assumption.
 - Gate remains BLOCKED/UNKNOWN. No code, protected activation, production effects, Lúmina changes, or frozen AB/TLC/Kafka reruns.
 
-
 ## 2026-10-08 — Existing root-basis research reconciled; recognition precondition clarified
 
 - Reuse audit: `NEXO_NCS/DECISIONS/STEP_7_PREEXISTING_ROOT_BASIS_REUSE_AUDIT_2026-10-08.md` (commit `a81c61efa6421f6693979934b8e005f0d824b2a0`; read-back blob `4a1563e098cdc0899a4b22c430ecd71360040a88`).
@@ -1254,3 +1253,14 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Hosted CI proves only its tested scope; it does not prove device security or Genesis legitimacy. Codespaces is optional and must not be presumed free/available or created as a paid environment without explicit choice.
 - No developer options, debugging, root, firmware changes, credential enrollment, Genesis commissioning, or activation authorized.
 - **Next exact action:** request only phone brand/model and Android version from Settings → About phone (text only; no identifiers/secrets). Research that exact device's documented and observable trust properties. Keep LCORE-1 UNKNOWN/STOP until the six blocking premises are addressed with evidence.
+
+## STEP 7 — Exact phone platform assessment — 2026-10-09
+- 🟢 User supplied read-only device facts: model 2412DPC0AG; Dimensity 8400-Ultra; displayed memory 8+8 GB; OS/build 3.0.302.0.WOJMIXM.C07; Android 16 build BP2A.250605.031.A3; security update 2026-08-01; baseband and kernel strings recorded in the exact-device assessment.
+- 🟢 Assessment saved: `NEXO_NCS/RESEARCH/STEP_7_EXACT_PHONE_PLATFORM_ASSESSMENT_2412DPC0AG_2026-10-09.md`, commit 91b052c81bd4044a5a0775b67fc8c2bed067c6c1.
+- 🟢 The SoC, maximum CPU frequency and memory class strongly match Xiaomi's official POCO X7 Pro specifications. Retail-name mapping for model code 2412DPC0AG is retained as provisional because an exact official model-code mapping was not independently established in this review.
+- 🟢 Xiaomi's official POCO X7 Pro FAQ says the product family supports bootloader locking. This does not prove this handset is currently locked or that verified boot is intact.
+- 🔵 Treat 8+8 GB as 8 GB reported physical-memory class plus a displayed memory-extension amount; do not claim 16 GB physical RAM.
+- 🔴 This handset's current bootloader state, verified-boot root/state, hardware-backed attestation, TEE/StrongBox, rollback resistance, dependency closure, offline revocation, bypass resistance, Genesis recognition, and recovery independence remain UNKNOWN.
+- No developer options, USB debugging, root, flashing, credential enrollment, key creation, commissioning, protected-Core deployment, or activation was performed or authorized. No sensitive identifiers or secrets requested/stored.
+- **Next exact action:** continue official-source review for this exact product family/build to identify documented support boundaries for hardware-backed key attestation, TEE/StrongBox, verified boot, rollback protection, and update support. Distinguish published capability from observed handset state and independently validated evidence. If unresolved, keep UNKNOWN/STOP; no sensitive device experiment merely to fill a documentation gap.
+- Path A remains NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. LCORE-1 remains UNKNOWN/STOP; no Genesis trust root or root family selected.
