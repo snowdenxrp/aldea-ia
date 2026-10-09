@@ -722,3 +722,11 @@ This separation exists specifically to prevent historical research volume from b
 - Result: the L/R distinction survives only as a semantic rule. It is not a runtime guarantee; all network-capable paths and platform dependencies must be included in a concrete claim-relative egress graph.
 - No generic egress-security layer, client code, provider, or platform was selected. No tests/exploit attempts were run.
 - **Next exact action:** P0 blocker is now explicit: determine whether a concrete Nexo client target exists outside the inspected repository or whether a new client-design project is desired. If neither is decided, preserve UNKNOWN and avoid generating more abstract layers. Do not infer implementation permission from “continue”; no root/commissioning/protected recovery/succession/external effect is authorized.
+
+
+## 2026-10-08 — STEP 7 M1 local-only read-only interaction trace
+- 🟢 Focused end-to-end M1/Variant L claim/effect trace created and re-fetched/verified: `NCS/STEP_7_M1_LOCAL_ONLY_READ_ONLY_INTERACTION_TRACE_2026-10-08.md`; commit `3015ac808ad2d319680b6f5c64af86c2ebf0cf7c`; read-back blob `cc32457054318839a49ce789724f9c6e57e90474`.
+- The trace narrows existing mobile/client design rather than adding a general framework: one explicit text request → scope normalization → least-context assembly → complete egress boundary → untrusted local inference → output check → local presentation → termination without queueing or persistent memory.
+- It explicitly excludes remote speech recognition, remote inference/moderation, analytics/SDK/OS egress, memory, tools, sensors/files, protected state and external effects. Local inference unavailable means HOLD, never silent cloud fallback.
+- Local-only feasibility and enforcement remain UNKNOWN; the document is P0 design only. No client code, tests, network/effect path, or exploit attempt was run.
+- **Next exact action remains:** resolve whether a concrete Nexo prototype exists outside the inspected repository or whether a new client-design project is explicitly desired. “Continue” authorizes continued analysis, not implementation or an implicit choice of platform/provider/Variant R/root/protected effects. Do not generate more generic layers while this blocker remains.
