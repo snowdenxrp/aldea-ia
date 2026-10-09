@@ -14,3 +14,11 @@ Status: ATTACK COMPLETE — ROOT CONTRACT SURVIVES
 10. Future coupling: storage/provider/retrieval can change behind the semantic boundary without changing Claim/Admission/Validation contracts.
 
 Result: no root contradiction found. Implementation is now permitted only for this minimum boundary, with focused tests designed to prove provider self-attestation cannot create protected policy evidence.
+
+## Clarification — implementation permission is subordinate to the root gate (2026-10-08)
+
+The phrase above, “Implementation is now permitted only for this minimum boundary,” means only that the contract's semantic attack found no contradiction in the *shape* of the minimum boundary. It does **not** override the separate Genesis Trust Foundation, Constitution Authority Context, or Protected Policy Evidence Capability implementation gates.
+
+**Controlling interpretation:** protected policy-source/evidence-establishment implementation remains STOP/BLOCKED until a legitimate, independently recognized trust basis and the required protected establishment/enforcement boundary are evidenced. A caller-provided status, provider assertion, hash/signature alone, local constructor, or unrooted Core class cannot be used to simulate that capability.
+
+The contract and attack may be reused; do not repeat the attack. No code or runtime claim is authorized by this clarification. This clarification supersedes any broader reading of the final sentence above.
