@@ -94,3 +94,13 @@ Official reference: https://trust.mi.com/misrc/updates/phone?tab=aerdata
 - No diagnostic application, developer setting, debugging mode, security configuration change, key generation, attestation request, or sensitive device experiment was performed.
 
 The next valid step is to preserve the boundary between specification and observation. Do not escalate into a sensitive on-device test merely to eliminate UNKNOWN. If a later claim genuinely requires device-observed evidence, first specify the exact claim, threat model, data exposure, independent verifier, and non-destructive test plan.
+
+## 8. Authentication factor warning for future owner-authority design
+
+Xiaomi's POCO X7 Pro FAQ confirms AI face unlock is supported and explicitly warns that it is less secure than a PIN, password, or pattern; it may be fooled by a photo or a person/object with a similar appearance.
+
+Official manufacturer source: https://www.mi.com/global/support/faq/details/KA-527959/
+
+Architectural consequence: availability of a face-unlock feature is not evidence that it meets Nexo's owner-presence or constitutional authorization requirements. Do not equate "the OS accepted biometric unlock" with "Kevin approved this exact constitutional change or external effect." A future authorization ceremony must bind the person/authority, exact content, scope, freshness, and requested effect under an independently justified policy. Authentication factors may contribute evidence, but cannot self-promote into Genesis legitimacy or broad execution authority.
+
+No biometric was requested, captured, inspected or tested. This is a design constraint based on the manufacturer's stated limitation, not a judgment about the user's enrolled biometric configuration.
