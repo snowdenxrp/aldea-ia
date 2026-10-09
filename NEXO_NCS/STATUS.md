@@ -1045,3 +1045,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Science-adjacent prior work confirmed: AB68 PTS/modal transition systems, belief-state epistemics, 3-valued model checking, observers/state estimation, causal experimentation, EventDAG/partial-order semantics and epistemic decision sufficiency. Master physical actuation boundary is safety/control architecture, not a physics theory.
 - Expanded recovery note: `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`, commit `c2b56e02828eaecf53350d8b5f709c1587eea1c8`, blob `ef755d71cd040c52890916037a7bd57ab68d63a8`; read-back verified.
 - Next: search AB104 artifact aliases/commit lineage and saved conversation material for science-adjacent terms beyond literal “physics.” Do not redo closed AB68 semantics, generic root taxonomy, or frozen AB105/TLC/Kafka work; no implementation/commissioning.
+
+
+### NCS next-chat handoff — 2026-10-08
+- Full handoff saved: `NEXO_NCS/HANDOFF/NCS_HANDOFF_NEXT_CHAT_2026-10-08_SCIENCE_AB104_RECOVERY.md`.
+- Commit: `fa5d6ebda4829b191534a673815dd7a3af10879a`.
+- Purpose: preserve today's recoverable research, what remains unidentified, strict NCS constraints, links to source artifacts, and ordered instructions for the next chat.
+- Next chat must start with exactly `NCS`, read the handoff and current STATUS first, then continue targeted recovery of the remembered science/physics thread across Library/conversations and AB104 aliases/commit lineage.
+- The exact physics artifact remains UNKNOWN; do not call the search complete. Do not repeat closed AB68/PTS work, broad trust-root taxonomy, frozen AB105/TLC/Kafka probes, or invent missing evidence. No implementation, key/root selection, enrollment, commissioning, activation, or production effects.
