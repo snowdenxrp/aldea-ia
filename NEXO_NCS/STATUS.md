@@ -760,3 +760,12 @@ This entry supersedes older status wording in this file that said the initial ve
 - Review result: the bounded assumption can support only a narrow candidate claim if later justified; it does not establish channel integrity, trusted presentation, enrollment legitimacy, independence, currentness/revocation, verifier legitimacy, or enforcement.
 - Earliest unresolved prerequisite remains the independently justified establishment path: the inspected repository has no implemented protected constitutional/policy authority owner that can establish provenance. A public constructor, caller flag, self-signed key, or provider-injected “protected source” would not solve it.
 - Next action: reconcile the new attack record with the existing Genesis Trust Foundation / protected-evidence boundary contracts and state the smallest missing prerequisite without introducing a new generic layer. No code, platform/provider/key/algorithm selection, protected activation, Lúmina changes, or frozen AB/TLC/Kafka reruns are authorized.
+
+
+## 2026-10-08 — Bounded channel gate reconciliation complete
+
+- 🟢 Cross-reconciled Kevin's bounded-assumption acceptance, the enrollment/binding attack, Genesis Trust Foundation, independence, protected evidence establishment and Constitution Authority Context gates. Record: `NEXO_NCS/DECISIONS/STEP_7_BOUNDED_CHANNEL_GATE_RECONCILIATION_2026-10-08.md`.
+- Finding: the earliest unresolved prerequisite is **the concrete pre-existing channel/enrollment basis and the independent property that makes its approval evidence trustworthy for the narrow claim**. The inspected repository has no implemented protected constitutional/policy authority owner. No new generic layer is justified.
+- Termux remains a possible local research/prototyping tool only; it is not selected as a trust channel or root.
+- Next interaction: clarify whether Kevin means the currently used phone/channel, a different already-recognized channel, or has not selected one. This does not authorize implementation. Until resolved, keep root establishment, protected activation and production effects BLOCKED/UNKNOWN.
+- Reconciliation commit: d8370fbf851ef2011fd60f35860f98467677777a; read-back blob: ec76dc8f8ffe73d5d9da8d3f4982b4b013d21143.
