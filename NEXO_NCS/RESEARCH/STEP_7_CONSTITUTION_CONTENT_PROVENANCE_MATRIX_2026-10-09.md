@@ -52,7 +52,7 @@ The existing Trust Function / Root Role Map is the closest broad trust inventory
 
 ## Conflict and uncertainty result
 
-- No direct contradiction was found in the reviewed canonical NCS trust documents that warrants changing an existing semantic contract.
+- No direct contradiction was found in the reviewed canonical NCS trust contracts that warrants changing their semantic definitions. A later targeted cross-check did identify an **unresolved wording conflict/ambiguity** between the generic MASTER bootstrap phrase “external/independent authority or threshold” and the user's owner-only constitutional-authority preference. See the C-03 addendum below; do not treat the inventory as conflict-free.
 - This does **not** prove the entire historical MASTER/AB/P corpus is conflict-free. The matrix is a first-pass, bounded inventory, not an exhaustive line-by-line historical audit.
 - P1 Genesis recognition, P2 owner-to-content/scope binding, P3 deployment/dependency closure, P4 offline currentness/revocation, P5 protected establishment/bypass enforcement, and P6 recovery/replacement remain as previously classified.
 - C-03 and C-12 are user-stated preferences, not live constitutional authority and not a substitute for the unresolved legitimate establishment path.
@@ -102,3 +102,31 @@ Results:
 3. **C-13 remains an unresolved design extension at the presentation boundary.** PG-009 demonstrates that byte/schema compatibility is weaker than semantic/epistemic/policy/authority compatibility; the existing binding attack rejects version confusion and scope laundering. However, no current evidence establishes a trusted human-readable presentation that is bound to the exact content recorded for approval. A hash/signature alone does not close that gap.
 4. No contradiction was found in these inspected sources. No new schema, amendment protocol, display mechanism, ceremony, credential or protected boundary is justified.
 5. P1/P2 remain UNKNOWN/blocking. Semantic separation is better specified; commissioning and protected-context implementation remain blocked until the prerequisite governance/trust foundation is legitimately established.
+
+
+## Targeted primary-source cross-check — C-03 / Genesis bootstrap wording — 2026-10-09
+
+Primary sources inspected:
+- `docs/nexo/NEXO_MASTER_ARCHITECTURE_2026-09-23.md`, section “Bootstrap / first trust”: “Genesis activation requiere autoridad externa/independiente o threshold según deployment.”
+- `NEXO_NCS/RESEARCH/STEP_7_P1_P2_GOVERNANCE_READINESS_REVIEW_2026-10-09.md`, “Authority constraint carried forward” and Class E.
+- `docs/nexo/NEXO_MASTER_PRESERVATION_ADDENDUM_2026-09-23.md`, governance/Constitution and human-authority sections.
+- User's explicit preference preserved in the current NCS handoff: Nexo's constitutional authority depends on Kevin's authorization; external actors do not become authority merely by supplying evidence.
+
+### Finding — wording ambiguity requiring reconciliation (do not resolve by assumption)
+
+The generic MASTER phrase is ambiguous about whether “external/independent authority” means:
+A. **Normative constitutional decision authority** external to Kevin, which would conflict with the owner's stated owner-only governance preference; or
+B. **An independently recognized technical/evidentiary provisioning basis** that supports verification of a Kevin-authorized genesis claim without becoming Nexo's constitutional governor, which may be compatible if the future Constitution explicitly defines that bounded role.
+
+The P1/P2 readiness review already rejects silently making a witness, issuer, manufacturer, provider, cloud service or threshold participants into additional constitutional governors. But it does not erase the need to clarify the MASTER phrase's intended meaning. A threshold arrangement that decides governance would change the stated authority model; a threshold arrangement that only corroborates evidence is a different semantic claim and still needs a governed basis.
+
+### Classification update
+
+- C-03 remains **RECOVERED as the user's expressed preference**, but the compatibility between that preference and the generic MASTER bootstrap sentence is now **CONFLICT/UNKNOWN at the wording/interpretation layer** until reconciled against the authoritative intended meaning of MASTER.
+- Do not reinterpret or silently rewrite the historical MASTER sentence. Preserve history and create a governed amendment only if the owner later approves one.
+- This is not proof that the architecture itself is irreconcilable; it is proof that the phrase cannot safely be used as a concrete P1 design rule without resolving what “authority” means in that sentence.
+- P1 remains UNKNOWN/blocking. No external governor, threshold/quorum, ceremony, credential, root family or initial trust assumption is selected. No commissioning, implementation or activation authorized.
+
+### Future-countereffect review
+
+Do not “solve” this by adding a generic authority type, another root abstraction, or a quorum mechanism. The next action is a semantic reconciliation of the existing wording: locate any original decision/provenance explaining the MASTER sentence; if none exists, preserve the ambiguity as an owner decision for later rather than inferring intent.
