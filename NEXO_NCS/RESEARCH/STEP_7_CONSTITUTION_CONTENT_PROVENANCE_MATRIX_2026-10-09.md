@@ -1,0 +1,74 @@
+# STEP 7 — Constitution Content Inventory and Provenance Matrix — 2026-10-09
+
+Status: FIRST-PASS DESIGN INVENTORY — PROPOSAL ONLY; NOT A GOVERNING CONSTITUTION.
+
+## Purpose and method
+
+Identify constitutional content that can be traced to existing MASTER/AB/P/P112/NCS evidence without rewriting the prior trust-role map or silently turning preferences/extensions into established law.
+
+This inventory is intentionally narrow. It is not a replacement Constitution, final schema, trust-root choice, commissioning procedure, or implementation contract. The classifications describe the provenance/readiness of a candidate rule, not whether a live constitutional authority has established it.
+
+Classification:
+- **RECOVERED** — explicitly supported by existing architecture or evidence; still not live governing authority merely because recorded here.
+- **EXTENSION** — a useful design question or candidate refinement not yet established as a settled rule.
+- **CONFLICT** — credible source/decision conflict requiring STOP and reconciliation.
+- **UNKNOWN** — evidence or a necessary decision is missing.
+
+## Reuse-first audit
+
+Reviewed/reused:
+- `BUILD/STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md` — consolidated semantic roles, invariants, role boundaries and attack cases.
+- `BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md` — no implemented current constitutional-authority path found.
+- `BUILD/STEP_7_MINIMUM_CORE_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_2026-10-08.md` — minimum semantic context, non-authority semantics and anti-self-attestation.
+- `BUILD/STEP_7_MINIMUM_CONSTITUTION_TO_POLICY_AUTHORITY_BINDING_CONTRACT_2026-10-08.md` — Constitution-to-Policy binding fields and limitations.
+- `BUILD/STEP_7_MINIMUM_BOOTSTRAP_COMPOSITION_CONTRACT_2026-10-08.md` — composition scope, independence, currentness and UNKNOWN/INVALID semantics.
+- `RESEARCH/STEP_7_LCORE_1_BLOCKING_PREMISES_RESOLUTION_MAP_2026-10-09.md` — six blocking premises.
+- `RESEARCH/STEP_7_P1_P2_GOVERNANCE_READINESS_REVIEW_2026-10-09.md` — P1/P2 candidate classes and countereffects.
+- `RESEARCH/STEP_7_PRECOMMISSIONING_DESIGN_FRONTIER_2026-10-09.md` — safe design frontier while uncommissioned.
+- MASTER + AB + P/P112 integration and future-countereffect rules referenced in canonical STATUS.
+
+The existing Trust Function / Root Role Map is the closest broad trust inventory. This matrix therefore records only constitutional-content provenance and unresolved decisions; it does not duplicate that map's role definitions or attack list.
+
+## Candidate constitutional content / provenance matrix
+
+| ID | Candidate content domain | Provenance and current classification | Authority domain / dependencies | Open question or owner decision | Pre-commissioning design status |
+|---|---|---|---|---|---|
+| C-01 | Cognition, identity, authority, capability, policy, execution, effect and verification are distinct | **RECOVERED** — MASTER invariant chain; Trust Function / Root Role Map | Cross-domain invariant; depends on preserving typed evidence and protected boundary distinctions | No open choice to collapse these concepts; any proposed exception would be a conflict requiring review | Can be preserved now as a design invariant |
+| C-02 | Constitutional regime is the root for authority domains, trust-root lifecycle, mandatory gates, amendment and recovery rules | **RECOVERED** — Constitution-to-Policy binding contract's MASTER basis; Constitution Authority Context reuse audit | Governance and all downstream authority; legitimacy of the first regime remains P1 UNKNOWN | How the initial regime is legitimately recognized remains unresolved | Content domain can be inventoried; governing status remains blocked |
+| C-03 | User-only constitutional authority preference | **RECOVERED as an expressed governance preference**, not as an established live Constitution — user's explicit instruction and P1/P2 readiness review | Constitutional governance; third-party evidence providers must not silently become authority | Exact initial recognition basis and what bounded evidence other parties/devices may contribute remain undecided | May be preserved as a constraint for future options; no ceremony selected |
+| C-04 | Trust, identity, authority, capability, policy, execution, effect and verification must not be substituted for one another | **RECOVERED** — Trust Function / Root Role Map and MASTER/AB/P/P112 synthesis | Every trust and authority transition; claim-specific dependencies and provenance | Physical sharing of roles is threat-model dependent; no universal independence rule | Can be preserved; concrete deployment analysis remains later |
+| C-05 | Policy authority must be bound to the governing Constitution, policy identity/semantics, authority domain, applicability, validity, dependencies and protected establishment provenance | **RECOVERED** — Minimum Constitution-to-Policy Authority Binding Contract | Constitution → Policy binding; requires an already-recognized constitutional basis and authoritative evidence | Exact protected source/establishment path remains unimplemented | Semantic contract exists; implementation remains blocked by Genesis prerequisite |
+| C-06 | Missing currentness, required dependency, scope, provenance, ordering or authority cannot silently become permission | **RECOVERED** — authority-context, bootstrap composition, role map, AB104.368 and GLOBAL-AUDIT-109 constraints | Any transition dependent on the unresolved property | Exact stale bounds and offline permissions are claim- and deployment-specific | Preserve UNKNOWN/HOLD/STOP now; no universal TTL invented |
+| C-07 | Constitutional amendment and policy evolution must not derive authority merely from version/hash/epoch ordering | **RECOVERED** — Constitution-to-Policy binding contract; AB104.563–565/recovery distinctions cited in reuse audit | Amendment, policy revalidation, currentness and revocation | Exact amendment approval, supersession and invalidation semantics need a future governed design | Questions can be inventoried; do not create an amendment protocol yet |
+| C-08 | Genesis support composition establishes only the exact trust claim/scope covered by an explicit governed rule | **RECOVERED** — Minimum Bootstrap Composition Contract | Genesis trust claims; depends on composition rule, dependency closure, independence and currentness | No root family, composition rule, quorum or support class selected | Preserve as semantic limit; concrete choice remains blocked |
+| C-09 | Owner approval must be attributable and bound to exact Constitution content, meaning, scope and a fresh commissioning request | **EXTENSION built from a known gap** — P1/P2 readiness review and NIST's bounded identity/authentication/intent distinction | Owner-to-content/scope binding; depends on an accepted P1 recognition basis and later protected presentation/recording path | Ceremony, credential, initial trust assumption, display/content equivalence and anti-replay design are not selected | Design questions may be enumerated; no ceremony or enrollment |
+| C-10 | Current authority, historical evidence, integrity of stored bytes and successful external enforcement are different claims | **RECOVERED** — role map, reuse audit, AB recovery/currentness findings and GLOBAL-AUDIT-109 | Currentness, recovery, persistence and final effect boundary | Concrete enforcement and bypass closure are deployment-specific | Preserve distinctions; no claim of production enforcement |
+| C-11 | Recovery/replacement and future succession must be governed independently of the root they may need to replace | **RECOVERED as a constraint; concrete rules UNKNOWN** — role map, prior recovery/succession research, P6 map | Recovery, root lifecycle, succession and conflict ordering | No recovery root, succession rule, replacement ceremony or authority for a future successor is established | Record as a mandatory unresolved domain; do not specify a successor procedure now |
+| C-12 | The owner's daughter may be a future successor | **RECOVERED as a stated future preference only**, not as current authority or a complete succession rule | Succession; would depend on a legitimate prior constitutional rule and appropriate future conditions | Eligibility, timing, capacity, proof, dispute handling, interim authority and recovery are not decided | Preserve the distinction; no present authority assigned |
+| C-13 | Human-readable constitutional meaning must correspond to the exact content whose identity/hash is approved | **EXTENSION** — derived from the P2 content-binding gap; cryptographic hash/signature alone is insufficient | Content review and approval; depends on a trusted presentation/recording boundary | Canonical format, rendering equivalence and how material scope is made understandable remain open | Can be threat-modeled; no schema or ceremony selected |
+| C-14 | Offline continuity must define what may continue and what must hold when currentness/revocation cannot be checked | **EXTENSION / UNKNOWN** — P4 resolution map and AB/GLOBAL-AUDIT constraints | Offline behavior, revocation and protected transitions | No stale interval, offline capability set or enforcement path established | Only failure questions can be recorded; do not choose bounds |
+| C-15 | Privacy and minimum disclosure during governance/identity evidence | **EXTENSION** — P1/P2 countereffect analysis; identity credentials may reveal data unrelated to authority | Owner attribution, identity evidence and auditability; depends on selected evidence class | Minimum data, retention, deletion, audit access and issuer dependency not settled here | Can be retained as a review requirement; no identity data requested or stored |
+| C-16 | Nexo must remain provider/model/device/OS independent and separate from Lúmina | **RECOVERED from MASTER vision and NCS continuity constraints** | Architecture and future migrations; authority remains outside provider/model | Exact portability and migration implementation is not designed by this matrix | Preserve as an architectural invariant; no implementation decision here |
+
+## Conflict and uncertainty result
+
+- No direct contradiction was found in the reviewed canonical NCS trust documents that warrants changing an existing semantic contract.
+- This does **not** prove the entire historical MASTER/AB/P corpus is conflict-free. The matrix is a first-pass, bounded inventory, not an exhaustive line-by-line historical audit.
+- P1 Genesis recognition, P2 owner-to-content/scope binding, P3 deployment/dependency closure, P4 offline currentness/revocation, P5 protected establishment/bypass enforcement, and P6 recovery/replacement remain as previously classified.
+- C-03 and C-12 are user-stated preferences, not live constitutional authority and not a substitute for the unresolved legitimate establishment path.
+- C-09, C-13, C-14 and C-15 are design extensions/questions; do not silently promote them into final constitutional text.
+- No root, credential, ceremony, stale window, quorum, recovery path, succession process or protected deployment is selected.
+
+## Future-countereffect review
+
+The inventory does not introduce a new registry, generic Constitution builder, universal ceremony API, quorum engine, policy engine, version selector, identity store or recovery mechanism. It reuses existing contracts and adds traceability labels only.
+
+Potential countereffect if this matrix is misused: treating a well-organized draft as a valid Constitution. Prevent this by preserving the explicit status “proposal only” and never deriving authority from file presence, commit, hash, version, branch, signature or test result alone.
+
+## Decision
+
+The content inventory can progress before commissioning, but it cannot establish which content currently governs Nexo. Existing semantic contracts remain canonical for the boundaries they already cover. The inventory is not authority, not a new trust root, and not permission to implement the protected Constitution Authority Context.
+
+## Next exact action
+
+Review this matrix against the full MASTER source and relevant AB/P/P112 primary evidence only for items where the exact source wording or epistemic classification could change a constitutional decision. Prioritize C-03, C-07, C-09, C-11/C-12 and C-13; do not repeat broad trust-role research. Record a specific source contradiction if found; otherwise mark the corresponding inventory row evidence-closed while leaving the actual governance/deployment decision UNKNOWN.
