@@ -1217,3 +1217,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Important distinction: a local protected-Core claim and a device-control effect claim require different evidence. No concrete target, host/platform, protected resource, or last effect boundary is established in current evidence.
 - Decision remains: target NOT SELECTED; root family and credential/ceremony NOT SELECTED; Path A NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. No implementation or commissioning authorized.
 - **Next exact action:** obtain/select the first concrete claim and target boundary, then instantiate the inventory against actual capabilities and evidence. Do not repeat generic trust research or implement Constitution Authority Context while Genesis remains unresolved.
+
+
+## STEP 7 — first design target selected: local protected Core — 2026-10-09
+- 🟢 User delegated the choice; the first design target is now the **local protected Core authority-establishment boundary**, ahead of device control.
+- 🟢 Decision record: `NEXO_NCS/DECISIONS/STEP_7_FIRST_DESIGN_TARGET_LOCAL_PROTECTED_CORE_2026-10-09.md`, commit `33e18b1d3092b223510c80b9ced721461015636f`.
+- Scope is deliberately only a design target/claim (LCORE-1): Core must not accept a proposed constitutional regime as current without a legitimate, independently recognized Genesis Trust Foundation plus claim-relevant currentness, provenance, dependency and lifecycle evidence.
+- Cross-check preserves the Genesis Trust Foundation and Constitution Authority Context contracts, the Trust Function / Root Role Map, the deployment/failure-domain inventory, MASTER + AB + P/P112 integration rule, and AB104.368's independent authority/target frontiers.
+- This does **not** select a concrete host/platform, credential, ceremony, root family, or device; Path A remains NOT ACCEPTED, Path B NOT ESTABLISHED, Path C remains valid. No implementation, enrollment, commissioning, or activation is authorized.
+- Adversarial gate enumerates self-rooting, trust recursion, stale/replayed snapshot, provider capture, revoked-but-intact state, recovery circularity, common-mode dependencies, scope mismatch, ceremony substitution, ungoverned fallback, authority-to-execution promotion, and log/legitimacy confusion.
+- **Next exact action:** attack LCORE-1 against the existing Genesis and Constitution Authority Context contracts; record only real contradictions/missing premises. No implementation while the recognition prerequisite is unresolved.
