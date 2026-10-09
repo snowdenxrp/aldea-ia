@@ -71,3 +71,11 @@ The exact query terms above should be treated as completed for this pass, not re
 
 ### Current NCS sequencing remains unchanged
 Current `NEXO_NCS/STATUS.md` still governs construction. The active STEP 7 STOP remains the lack of an independently recognized implemented Trust Foundation/root. This science-artifact recovery is a separate historical-retrieval task; it does not authorize skipping the current STOP, implementing a root, or reopening closed construction steps.
+
+
+### Repository tree / branch-name sweep — resumed NCS
+- Inspected the full recursive tree for `main` (2,477 paths) and `ncs-clean-architecture` (2,546 paths); neither tree was truncated. No path name matched physics, quantum, thermodynamics, entropy, or scientific-method terminology.
+- The `ncs-clean-architecture` tree contains 223 paths whose names match AB104 600–799. The previously recovered `.600–.711` reconciliation shows that the relevant `.600–.711` chain is Kafka/effect identity and evidence retention, not a dedicated physics theory. Filename/path evidence cannot rule out a concept hidden inside a generically named file.
+- Inspected tree path matches on `feature/research-experimentation`, `feature/research-causal-and-spatial-scale`, `feat/research-reproducibility-semantics`, and `feature/research-reproducibility`. These contain simulation/research code paths (`src/research.js`, related tests), but their tree names do not identify a Nexo physics-theory artifact; do not merge those branches or conflate them with Nexo/Lúmina architecture without a concrete lineage/contract reason.
+- Inspected the `nexo-ab104-599-sany-evidence` branch tree as a separate historical AB line; no physics-named artifact appeared in the sampled path matches. This branch's name indicates a boundary around AB104.599, so it cannot establish completeness of later AB104 history.
+- Classification remains 🔵 UNKNOWN: no exact remembered artifact located. Next useful step is not another keyword repeat; it is targeted ancestry/alias comparison for candidate files and a Library retrieval pass using any newly surfaced exact concept/name if available.
