@@ -847,3 +847,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Android's documented class model matters: Class 3 supports operation-bound Keystore keys; Class 2 does not. Device-specific capability is not yet established. Official references: https://developer.android.com/identity/sign-in/biometric-auth and https://source.android.com/docs/security/features/biometric
 - This is a design-evaluation choice only. No implementation, app/key/API integration, enrollment ceremony, root establishment, or activation authorized. If the device cannot meet the contract, STOP rather than weaken it.
 - Updated decision record commit: 040b7c493f257353b24a4c951710efa917506974.
+
+
+## 2026-10-08 — Focused attack on strong biometric approval binding
+
+- Focused review recorded: `NEXO_NCS/BUILD/STEP_7_STRONG_BIOMETRIC_APPROVAL_BINDING_FOCUSED_ATTACK_2026-10-08.md`, commit `d99808c2c2909471e04c84161db05ff5d4db1b4f`.
+- Attacked stale unlock reuse, action/Constitution substitution, replay, weak biometric class, silent credential fallback, biometric enrollment changes, multiple enrolled people, compromised presentation/app/OS, self-reported biometric booleans, stale/revoked authority, and confusion between authentication and enforcement.
+- Result: strong per-operation biometrics can be a local re-authentication factor, but cannot alone establish Kevin-specific attribution, trustworthy presentation, current authority, genesis-root legitimacy, or protected enforcement.
+- The actual phone's biometric class, key isolation/attestation, enrollment state, and app capabilities remain UNKNOWN; no device capability is inferred.
+- No code or key generated; no enrollment/commissioning ceremony or activation authorized. Trust Foundation and Constitution Authority Context remain BLOCKED/UNKNOWN.
+- Next: do not add more generic biometric threat layers. Reconcile the focused attack with the existing genesis recognition precondition and state the minimum evidence the protected verifier would need to accept this exact claim; if no verifier/root basis is evidenced, retain STOP rather than simulating implementation progress.
