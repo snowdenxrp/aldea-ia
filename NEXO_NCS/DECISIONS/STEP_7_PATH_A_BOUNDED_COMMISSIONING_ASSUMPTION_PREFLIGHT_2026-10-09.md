@@ -30,6 +30,8 @@ A7. **Separate lifecycle and enforcement:** later currentness, revocation, repla
 
 A8. **Fail-closed outcome:** any missing, conflicting, stale, interrupted, unbound or unverifiable required condition yields UNKNOWN/HOLD or INVALID according to the already-defined contract. No fallback, timestamp, newest snapshot, majority, model confidence, or convenience can convert it to ESTABLISHED.
 
+A9. **First-code/updater circularity:** an uncompromised display or host does not prove that the initial code, verifier, updater, or artifact channel is legitimate. If the initial software itself must be trusted, Path A must explicitly assume the relevant artifact and delivery path are not malicious; that assumption is not proven by the artifact's own signature, build provenance, or self-check. The candidate code/updater cannot be the sole authority for validating its own legitimacy.
+
 ## Focused attack preflight
 Before any future decision to accept the assumptions, evaluate these failure cases against the exact proposed deployment and claim. Reuse existing attacks where already covered; do not duplicate their full analyses.
 
@@ -43,6 +45,7 @@ Before any future decision to accept the assumptions, evaluate these failure cas
 8. **Lifecycle gap:** no justified way exists to establish currentness, revocation, replacement, recovery or succession after commissioning.
 9. **Enforcement bypass:** the approval is recorded but a privileged transition or target effect can bypass the required boundary.
 10. **Post-commissioning mutation:** a later update changes the recognition semantics, Constitution binding or authority path without the same governed transition rules.
+11. **First-code/updater bootstrap circularity:** the initial verifier/updater validates itself or the initial artifact channel, or the mechanism installing the protections can alter those protections without a separately justified authority basis. If the proposed solution requires a new sovereign bootstrap core to break this cycle, STOP and revisit the architecture rather than adding another core.
 
 ## Acceptance gate — all required; no implicit acceptance
 Path A may advance beyond design only after a separate, explicit owner decision accepts or rejects the precise assumption envelope and its stated risks. “Continue” is not acceptance.
@@ -52,7 +55,7 @@ Even after explicit acceptance, implementation remains blocked until the propose
 - an auditable binding between owner action, presented content, submitted content and commissioning context;
 - protected provenance that the candidate instance cannot self-assert;
 - one-time/replay and interruption semantics;
-- a justified verifier/recognition boundary and its dependency closure;
+- a justified verifier/recognition boundary and its dependency closure, including the first-code/updater trust basis;
 - lifecycle/currentness/revocation/recovery handling appropriate to the claim;
 - target-specific enforcement and bypass closure;
 - safe UNKNOWN/HOLD behavior for every missing or conflicting required fact.
@@ -65,4 +68,4 @@ If any requirement depends on the candidate Nexo instance trusting its own unsup
 - Neither path is currently established or selected. Path C — remain uncommissioned with UNKNOWN/STOP — remains the valid outcome if no path meets its gate.
 
 ## Result
-Path A has been prepared only as a bounded assumption envelope and attack checklist. No assumption was accepted; no ceremony, hardware, provider, key, credential, verifier, runtime, or root was selected. No code, enrollment, protected activation, production effect, or Lúmina change was authorized. STEP 7 remains STOP.
+Path A has been prepared only as a bounded assumption envelope and attack checklist. A focused cross-check against the recovered self-modification audit exposed a distinct bootstrap gap, now stated explicitly: trust in the first code/updater cannot be inferred from the code/updater validating itself. No assumption was accepted; no ceremony, hardware, provider, key, credential, verifier, runtime, or root was selected. No code, enrollment, protected activation, production effect, or Lúmina change was authorized. STEP 7 remains STOP.
