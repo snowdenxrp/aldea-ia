@@ -61,3 +61,29 @@ These findings do not justify rerunning the frozen AB105/TLC/Kafka probes.
 
 ## Next action
 Perform a bounded reconciliation of the remaining AB104.600–711 inventory against current tree + exact path commit history, concentrating on every claim labelled UNSAVED/UNKNOWN and every duplicate whose “resolved” status is only asserted by a summary. Do not repeat the already-resolved .706/.711 or .692 work; use new evidence only. Then reconcile those results with the corrected AB104.759R anchor and later continuity chain before deciding any active architectural task. Keep the NCS construction STOP and all frozen no-repeat constraints.
+
+
+## Full bounded path inventory for AB104.600–711
+
+### Complete recursive-tree comparison
+The recursive Git trees for `main` and `ncs-clean-architecture` were both complete (not truncated): 2,477 and 2,548 paths respectively. The extracted AB104.600–711 path inventory was identical on both branches.
+
+- 120 matching paths across the numeric range .600–.711.
+- 111 of the 112 numeric identifiers are present.
+- The only numeric identifier with no matching path in either tree is .688.
+- .697 is present in both trees and has a verified exact commit; the older “.697 unsaved” claim is therefore a stale/inaccurate audit statement, not a current gap.
+- Duplicate-number path groups in this range: .600, .666, .679, .692, .698, .706, .711. These are not all the same type:
+  - .600 has one VersionSet research artifact plus two audit/reconciliation documents;
+  - .698 has one poll-batching research artifact plus a continuity-reconciliation document;
+  - .666 and .692 are refinement pairs;
+  - .679 is the materially incompatible identity-spec pair described above;
+  - .706 has two setup-boundary formulations plus a reconciliation report;
+  - .711 has two complementary lifecycle states, explicitly retained by .712.
+- Thus the path-count difference from 112 possible IDs is explained by one missing identifier (.688), not by multiple missing research numbers. This is a current-tree inventory result only; it does not prove that no differently named or uncommitted historical .688 work existed.
+
+### Updated classification
+- 🟢 Range inventory is now complete at the current-tree path-presence level.
+- 🟢 .697 is recovered/present.
+- 🔵 .688 remains UNKNOWN/PENDING as a named persisted artifact in the inspected trees.
+- 🔴 Any statement that .697 is absent/unsaved in the inspected current tree conflicts with the verified path and commit.
+- Do not infer all 120 paths are independent research steps. Count artifacts by role and lineage, not by matching numeric token alone.
