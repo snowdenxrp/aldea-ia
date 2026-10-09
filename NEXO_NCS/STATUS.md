@@ -1028,3 +1028,10 @@ This entry supersedes older status wording in this file that said the initial ve
 - Reconciled apparent bootstrap status mismatch: old MASTER marks bootstrap/first trust architecturally closed and defines a Genesis Trust Bundle/first-boot chain; concrete root/recognition mechanism was explicitly left open in historical bootstrap/AB104.452 research. Architectural semantics are not deployment evidence.
 - No checked source confirms the user's remembered 'physics' artifact specifically; do not fabricate it. Continue targeted historical search rather than repeat generic science/root taxonomy.
 - Next: targeted recovery of an exact concrete Path B artifact/credential/recognition relationship; separately, M1 client/runtime feasibility. Do not assume SAT e.firma, do not implement/commission/activate.
+
+### Historical AB104 / scientific-foundations recovery — 2026-10-08
+- Saved bounded cross-repository research recovery: `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md` (commit `d3eaec47f12e3b0897f1a71f6198747af46c551b`).
+- Recovered existing Master concepts: World Model ≠ Memory; claim-scoped epistemic states; causal edges; Intervention Contract; model-omission/hidden-dependency closure; AB104.911R causal uniqueness and AB104.912R historical semantic version binding; AB104.999R/AB105.000R coverage boundaries.
+- No dedicated Nexo physics/quantum/thermodynamics artifact surfaced in the bounded repository search. This is NOT proof of absence from all Library/conversation files. The Master contains a physical safety boundary, not a demonstrated physics theory.
+- PG-009 remains historically OPEN and TLA+ not TLC-verified in the inspected Master index. Follow current NCS status for current construction checkpoint; do not use this as a substitute for current branch status.
+- Next: targeted Library/conversation search for conceptual science/physics terms and cross-reference results to Master; no sequential AB104 reruns or implementation.
