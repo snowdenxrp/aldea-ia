@@ -730,3 +730,11 @@ This separation exists specifically to prevent historical research volume from b
 - It explicitly excludes remote speech recognition, remote inference/moderation, analytics/SDK/OS egress, memory, tools, sensors/files, protected state and external effects. Local inference unavailable means HOLD, never silent cloud fallback.
 - Local-only feasibility and enforcement remain UNKNOWN; the document is P0 design only. No client code, tests, network/effect path, or exploit attempt was run.
 - **Next exact action remains:** resolve whether a concrete Nexo prototype exists outside the inspected repository or whether a new client-design project is explicitly desired. “Continue” authorizes continued analysis, not implementation or an implicit choice of platform/provider/Variant R/root/protected effects. Do not generate more generic layers while this blocker remains.
+
+
+## 2026-10-08 — STEP 7 MASTER / AB / P112 trust-basis reconciliation
+
+- Cross-check saved and read back: `NEXO_NCS/DECISIONS/STEP_7_MASTER_AB_P112_TRUST_BASIS_RECONCILIATION_2026-10-08.md`; commit `79b277f83b86eb231880aca70f67579fb3249aa7`; blob `262ae0bccd5431c4f988e0d12594d40de52331fa`.
+- MASTER, historical constitutional trust/succession/recovery research, AB104.446, P112 dependency/final-gate evidence, and current NCS trust contracts converge; no new root abstraction or mechanism is justified. No frozen probe was rerun and no implementation was made.
+- Kevin's sole initial authority is already accepted; his daughter is future successor only. The initial verifier assumption is NOT accepted: a pre-existing independent channel under Kevin's control remains a candidate, not a deployment fact.
+- Next: obtain explicit YES/NO on accepting that channel as a bounded trust assumption for initial commissioning. “Continue” is not consent. If YES, scope its claims/limits and attack enrollment/binding; if NO/unclear, preserve UNKNOWN and compare existing governance alternatives only. Trust Foundation, Constitution Authority Context, genesis activation, recovery/succession and production safety remain blocked.
