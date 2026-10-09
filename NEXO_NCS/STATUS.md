@@ -1360,3 +1360,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Do not advance blocked work, repeat closed work, invent abstractions, or add structural patches merely to maintain momentum. Preserve UNKNOWN/PENDING/STOP when evidence is insufficient.
 - Parallel progress is allowed only when independence from the blocked boundary is demonstrated; it must not imply that the blocked authority/trust boundary is resolved.
 - Canonical rule: `NEXO_NCS/DECISIONS/MASTER_AB_P_FUTURE_COUNTEREFFECTS_RULE_2026-10-08.md`, amended in commit `f864f60dbad15246f67f74fb802224017f837eff`.
+
+## 2026-10-09 — assurance/conflicting-verification reconciliation
+- 🟢 Research-only reconciliation saved and fetch-back verified: `NEXO_NCS/RESEARCH/STEP_7_ASSURANCE_CONFLICT_RECONCILIATION_2026-10-09.md`, commit `cb319388bfe7f4398ea45e61b74709be51ed3374`, blob `2b3638b18f7f537b22912f0a8928a47428e5ae6a`.
+- AB105.082R–.086R already close generic observation freshness, conflict/reconciliation, common-mode dependency and bounded-UNKNOWN semantics. Do not reopen that branch absent new primary evidence; no assurance score, majority/recency winner, quorum engine or new generic primitive justified.
+- Cross-check against current code and P112 confirmed the already-owned legacy provenance-loss boundary: current findings do not share a common durable observation/run/sample identity; legacy dedupe can erase distinct claim provenance; `recordNexoPlan()` persists only reduced step fields. The canonical STEP 7 evidence mapping, handoff, legacy dedupe inspection and P112 audits already own this gap.
+- Current NCS `ObservationEnvelope → MissionCandidate` is transport-only and preserves available evidence/UNKNOWN; it does not invent missing identity, promise durable raw observation recovery, or integrate the legacy orchestrator.
+- No code/tests, no memory subsystem/EventDAG/identity/persistence abstraction, no legacy integration, and no frozen AB105/TLC/Kafka probes were changed or rerun. P1/P2 and protected evidence establishment remain UNKNOWN/STOP.
+- **Next exact action:** select only a concrete unresolved NCS requirement independent of P1/P2 if MASTER + AB + P/P112 identify one and existing canonical contracts do not already cover it. State the claim/use case, canonical owner, required evidence, dependencies, failure behavior and verification method before proposing any change. If no such requirement is supported, hold rather than manufacture progress.
+
