@@ -72,3 +72,17 @@ The content inventory can progress before commissioning, but it cannot establish
 ## Next exact action
 
 Review this matrix against the full MASTER source and relevant AB/P/P112 primary evidence only for items where the exact source wording or epistemic classification could change a constitutional decision. Prioritize C-03, C-07, C-09, C-11/C-12 and C-13; do not repeat broad trust-role research. Record a specific source contradiction if found; otherwise mark the corresponding inventory row evidence-closed while leaving the actual governance/deployment decision UNKNOWN.
+
+## Targeted primary-source cross-check — C-11 / C-12 — 2026-10-09
+
+Primary historical documents inspected:
+- `docs/nexo/AB104.451_TOTAL_TRUST_DOMAIN_COMPROMISE_TERMINAL_UNKNOWN_2026-09-27.md`
+- `docs/nexo/AB104.452_EXTERNAL_RECOVERY_AUTHORITY_BOOTSTRAP_2026-09-27.md`
+- `docs/nexo/NEXO_AUTHORITY_UNAVAILABLE_BOUNDED_SAFETY_CONSTITUTIONAL_SUCCESSION_RELEASE_RESEARCH_V1_2026-09-24.md`
+
+Results:
+1. **C-11 evidence strengthened; governance decision remains UNKNOWN.** AB104.451 explicitly concludes that when all available authority/currentness sources are within the compromised dependency closure, current authority remains UNKNOWN. It distinguishes evidence preservation from authority recovery and rejects newest backup, new key, timestamp, hardware authenticity, or informal operator assertion as sufficient by themselves.
+2. **C-11 external recovery cannot be assumed to be legitimate just because it is external.** AB104.452 requires an explicit governed trust basis and bounded scope for any external recovery authority; it rejects self-appointment by compromised Nexo and circular validation. The succession research further separates bounded safety, succession candidate, ordered/current successor, predecessor cutoff, and explicit release.
+3. **C-12 remains a preference, not an authority transition.** These historical sources do not enact a specific successor or prove that any future person is presently authorized. The user's stated hope that his daughter may succeed him remains a future governance preference; eligibility, timing, capacity, proof, disputes, interim authority and recovery remain undecided.
+4. **No conflict found in this targeted cross-check.** This does not claim an exhaustive audit of every MASTER/AB/P source. The evidence supports preserving C-11 as a recovered safety constraint while leaving its concrete governance procedure UNKNOWN; C-12 remains a stated preference with no current authority effect.
+5. No succession, recovery, quorum, emergency root, credential, ceremony or implementation is selected or authorized.
