@@ -1108,3 +1108,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Checkpoint persistente creado y leído de vuelta: `NEXO_NCS/HANDOFF/NCS_CHAT_RECOVERY_CHECKPOINT_2026-10-09.md`.
 - El checkpoint guarda la aclaración de parches, el trabajo científico verificable, el estado UNKNOWN, los límites de lo recuperable y las instrucciones para retomar sin repetir trabajo.
 - No afirmar que el texto borrado se recuperó literalmente si no hay copia verificable. En próximos cambios de chat, guardar decisiones/resultados, hacer commit y leer de vuelta antes de afirmar que están guardados.
+
+
+## Conversation continuity incident (2026-10-09)
+
+- User reports earlier messages in this chat disappeared and explicitly wants to avoid continuity gaps.
+- Known project state and science-recovery findings remain recorded in this STATUS and `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`; prior handoff: `NEXO_NCS/HANDOFF/NCS_HANDOFF_NEXT_CHAT_2026-10-08_SCIENCE_AB104_RECOVERY.md`.
+- These files preserve known project decisions/results but do not prove every sentence of the disappeared transcript was saved. Full transcript recovery = UNKNOWN; never fabricate missing decisions.
+- Next session must read STATUS, the prior handoff, and the science-recovery note first. Persist material deltas and read back after writing. Existing STOP and no-repeat constraints remain in force.
