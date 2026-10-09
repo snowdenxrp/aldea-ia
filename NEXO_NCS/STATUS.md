@@ -887,3 +887,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Three distinct gates remain separate: (1) owner acceptance of the disclosed assumptions, not yet given; (2) technical evidence/recognition; and (3) protected enforcement. Evaluation authorization does not satisfy any of these by implication.
 - **Status remains BLOCKED/UNKNOWN.** No new runtime layer, root type, mechanism, code, key, enrollment, ceremony, activation, production effect, or Lúmina change. Do not reopen generic phone/Android research, repeat root/biometric taxonomies, or rerun frozen AB/TLC/Kafka probes without specific new evidence.
 - Next: a precise owner decision may accept or reject the disclosed Path A assumptions for further bounded design. Regardless, implementation remains blocked until verifier, freshness, lifecycle, scope, provenance, and enforcement obligations have a justified basis.
+
+
+## 2026-10-08 — Step 7 implementation-gate precedence reconciled
+
+- Re-read the existing Core Policy Authority/Policy Source contract and its completed attack against the separate Protected Policy Evidence Capability, Genesis Trust Foundation, and Constitution Authority Context implementation gates.
+- Found an ambiguity: the policy-source attack's final sentence said implementation was “now permitted,” while the controlling gates still require a legitimate, independently recognized trust basis and protected establishment/enforcement boundary.
+- Clarification appended to `NEXO_NCS/BUILD/STEP_7_MINIMUM_CORE_POLICY_AUTHORITY_SOURCE_CONTRACT_ATTACK_2026-10-08.md` (commit `17e3049badf77417bfc8796aaa64ce9c2c47efbe`): the contract's semantic shape survived attack, but that does not authorize protected evidence-establishment implementation. The separate root/enforcement gates control.
+- This is a documentation-level precedence correction, not a new architecture layer and not a runtime result. Existing attack is reused, not repeated.
+- **Current gate remains STOP/BLOCKED/UNKNOWN.** No code, key, enrollment, commissioning, activation, production effect, or Lúmina change. No frozen AB/TLC/Kafka reruns.
+- Next: do not implement a caller-fed “protected” result or a fake Core authority class. Resume only when the genesis recognition basis and protected verifier/enforcement prerequisite are concretely evidenced; otherwise continue bounded semantic work without claiming technical establishment.
