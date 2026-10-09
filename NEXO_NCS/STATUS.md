@@ -399,7 +399,6 @@ This separation exists specifically to prevent historical research volume from b
 - Provider/policy self-authorization, version confusion, scope laundering, authority-to-action leap, dependency laundering, stale binding, universal-policy-engine creep and future coupling rejected.
 - **Next exact action:** inspect how the repository can obtain/represent constitutional authority context without caller-supplied authority metadata; if no existing path exists, define the minimum Core Constitution Authority context contract before implementation.
 
-
 ## STEP 7 — Constitution Authority Context
 - 🟢 Research reuse audit closed: no implemented current constitutional-authority establishment path exists. Audit: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md`, commit `9ef86e1e2b2c2e3266803c9d2db0abc2f516738c`.
 - MASTER/AB/P cross-check used: Constitution root/gates; AB104.390 anti-self-attestation; AB104.451 UNKNOWN authority; AB104.563–565 and AB105 recovery distinctions; PG-009 trust closure/common-mode boundaries.
@@ -798,7 +797,6 @@ This entry supersedes older status wording in this file that said the initial ve
 - Next architectural action: use the already-recorded root-class and trust-role findings to identify whether any previously researched, pre-existing legitimacy basis actually satisfies the Genesis Trust Foundation precondition. If none does, state the precise missing external/pre-established premise and keep implementation blocked; do not invent a synthetic root or promote the phone by assumption.
 - Gate remains BLOCKED/UNKNOWN. No code, protected activation, production effects, Lúmina changes, or frozen AB/TLC/Kafka reruns.
 ## 2026-10-08 — Existing root-basis research reconciled; recognition precondition clarified
-
 - Reuse audit: `NEXO_NCS/DECISIONS/STEP_7_PREEXISTING_ROOT_BASIS_REUSE_AUDIT_2026-10-08.md` (commit `a81c61efa6421f6693979934b8e005f0d824b2a0`; read-back blob `4a1563e098cdc0899a4b22c430ecd71360040a88`).
 - Finding: MASTER/AB/P112/NCS already cover root-class attacks and governance constraints. They do not evidence a concrete pre-existing root, channel credential/enrollment, verifier authority, or currentness source for this deployment. Recovery-root options are prior research classes, not deployed trust facts. No frozen probes were rerun.
 - Clarified the missing input precondition in `NEXO_NCS/BUILD/STEP_7_GENESIS_RECOGNITION_BASIS_PRECONDITION_2026-10-08.md` (commit `79a831d0bd1afec561da81805a5daec837f42a79`; read-back blob `7ca923b25fabfd785200b27b69fe0af53c458262`): prior recognition/enrollment, attribution scope, exact-content binding, freshness, lifecycle/currentness, dependency closure, protected provenance, failure semantics and claim limitation must be evidenced by a governed basis; caller data cannot establish them.
@@ -1197,8 +1195,7 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The user's statement that their INE is vigente remains user-reported, not independently checked. No personal credential data was requested or stored. Official credential authenticity/status, presenter attribution, Nexo-specific prior recognition, constitutional authority, exact-content binding, currentness and enforcement remain separate claims.
 - Decision unchanged: INE is possible identity evidence only, not a Genesis root or sufficient Path B basis. Path A remains unaccepted; STEP 7 remains STOP/UNKNOWN. No implementation, credential enrollment, key creation, commissioning, activation, external effect, or frozen AB105/TLC/Kafka reruns; AB105.117R remains prohibited.
 
-## 2026-10-09 — Initial trust model family comparison
-- Added `NEXO_NCS/RESEARCH/STEP_7_INITIAL_TRUST_MODEL_FAMILY_COMPARISON_2026-10-09.md`, commit `f9493371763da91b96af9bc5224dee19a7079561`.
+## 2026-10-09 — Initial trust model family comparison- Added `NEXO_NCS/RESEARCH/STEP_7_INITIAL_TRUST_MODEL_FAMILY_COMPARISON_2026-10-09.md`, commit `f9493371763da91b96af9bc5224dee19a7079561`.
 - Compared externally provisioned/immutable roots, predecessor-authorized mutable roots, platform/hardware roots, and multi-root/threshold arrangements against Nexo's currently stated claim classes. Cross-check uses IETF RFC 9334 (RATS) and NIST SP 800-193; these support role-specific technical trust, not automatic constitutional legitimacy.
 - Finding: RATS-style separation of Attester evidence, Verifier appraisal and Relying Party decision is reusable as a conceptual model. Platform trust and human authentication can contribute only bounded evidence under their own assumptions. None supplies the entire Genesis relation or may promote its own evidence to constitutional authority.
 - Deployment inventory marks owner identity, constitutional Genesis, platform integrity, offline revocation, cross-device continuity, final effect boundary, and recovery/succession as UNKNOWN where no concrete target or independently established evidence exists. No root family selected; no new trust abstraction introduced.
@@ -1300,3 +1297,10 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Countereffect review found no basis for a new trust abstraction, universal ceremony API, quorum engine, credential flow or root mechanism.
 - **Next exact action:** before any ceremony, resolve the governance assumption for owner-initiated first commissioning when the only available device is not independently proven trustworthy. State what threats the assumption covers and excludes, and how exact Constitution/content/scope approval would be bound. Do not choose an answer on the user's behalf. If no acceptable initial assumption or independent basis exists, remain uncommissioned UNKNOWN/STOP.
 - No key generation, biometric collection, credential enrollment, commissioning, activation, protected-Core deployment or external effect authorized. Path A NOT ACCEPTED; Path B NOT ESTABLISHED; Path C remains valid; LCORE-1 remains UNKNOWN/STOP.
+
+## STEP 7 — Pre-commissioning design frontier — 2026-10-09
+- 🟢 Recorded a research-only work-order boundary: `NEXO_NCS/RESEARCH/STEP_7_PRECOMMISSIONING_DESIGN_FRONTIER_2026-10-09.md`.
+- The design track can continue without choosing P1 Genesis recognition or P2 commissioning ceremony: inventory existing constitutional content/provenance, authority domains, semantic separations, amendment questions, content-meaning binding questions and failure semantics as proposals only.
+- This is not a new trust contract or an implementation authorization. It does not establish a governing Constitution, select a trust root, resolve P1/P2, or weaken the existing implementation gate.
+- P1/P2 remain UNKNOWN/blocking; P3 partially inventoried; P4 UNKNOWN; P5 not established; P6 UNKNOWN. No key generation, enrollment, commissioning, activation, protected-Core deployment or external effect authorized.
+- **Next exact action:** search existing MASTER/AB/P/P112 and NCS inventories before creating a proposal-only Constitution Content Inventory and Provenance Matrix. Reuse existing evidence; classify each item RECOVERED / EXTENSION / CONFLICT / UNKNOWN; preserve contradictions; do not duplicate settled work or write a replacement Constitution.
