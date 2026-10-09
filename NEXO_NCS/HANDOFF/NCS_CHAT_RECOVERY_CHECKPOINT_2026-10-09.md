@@ -24,3 +24,7 @@ Leer este checkpoint, el handoff `NEXO_NCS/HANDOFF/NCS_HANDOFF_NEXT_CHAT_2026-10
 
 ## Prevención de huecos
 Antes de cambiar de chat: guardar las decisiones y resultados nuevos en el documento canónico y STATUS, hacer commit y leer de vuelta el archivo para verificarlo. Separar texto recuperado literalmente de resúmenes e inferencias; marcar UNKNOWN donde falte evidencia. Este checkpoint conserva el estado verificable, pero no finge que todo texto desaparecido haya sido recuperado.
+
+## Recordatorio explícito del usuario: preservar AB105 como fuente valiosa (2026-10-09)
+
+AB105 contiene información técnica valiosa y debe mantenerse dentro del corpus histórico de NCS junto con AB104. No descartarlo por tener pruebas congeladas ni confundir “no repetir pruebas” con “no reutilizar conocimiento”. Extraer y preservar sus invariantes, fallos, decisiones, límites, artefactos y evidencia ya obtenida para informar el diseño limpio de Nexo. Clasificar cada afirmación por evidencia y alcance; distinguir investigación/documento de implementación, ejecución y garantía real. Respetar estrictamente las restricciones históricas: no ejecutar de nuevo las pruebas congeladas de AB105/TLC/Kafka, no crear AB105.117R, y no repetir probes prohibidos. Reconciliar AB105 con el ancla corregida AB104.759R y la cadena AB104.999R → AB105.000R, sin duplicar ni migrar silenciosamente conclusiones.
