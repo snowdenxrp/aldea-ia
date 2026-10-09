@@ -857,3 +857,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - The actual phone's biometric class, key isolation/attestation, enrollment state, and app capabilities remain UNKNOWN; no device capability is inferred.
 - No code or key generated; no enrollment/commissioning ceremony or activation authorized. Trust Foundation and Constitution Authority Context remain BLOCKED/UNKNOWN.
 - Next: do not add more generic biometric threat layers. Reconcile the focused attack with the existing genesis recognition precondition and state the minimum evidence the protected verifier would need to accept this exact claim; if no verifier/root basis is evidenced, retain STOP rather than simulating implementation progress.
+
+
+## 2026-10-08 — Minimum verifier evidence for the biometric commissioning claim
+
+- Reconciled the existing Genesis Recognition Basis Precondition, Minimum Genesis Trust Foundation Contract, and focused strong-biometric approval attack. No new generic trust layer or repeated taxonomy was needed.
+- Added `NEXO_NCS/BUILD/STEP_7_MINIMUM_VERIFIER_EVIDENCE_BIOMETRIC_COMMISSIONING_CLAIM_2026-10-08.md` (commit `8186e2787bd0f4f1f03755735121838786fbbd5f`).
+- The verifier's minimum evidence is grouped by: prior independently grounded enrollment/legitimacy; actual authentication-bound key and authenticator properties; exact action + Constitution + commissioning-context binding; verifier-controlled freshness and one-time replay rejection; bounded identity attribution; lifecycle/currentness/revocation/recovery; dependency/provenance independence; and protected decision/enforcement evidence.
+- Result: **BLOCKED/UNKNOWN**. The existing repository does not evidence a concrete pre-existing recognition/enrollment basis, independently justified protected verifier/root, actual device/key capability, or enforcement boundary. Strong biometrics can contribute a local re-authentication factor but cannot create the root/verifier legitimacy it depends on.
+- No code, key generation, enrollment ceremony, activation, production effect, Lúmina change, or frozen AB/TLC/Kafka rerun. Do not add more generic biometric/root layers.
+- Next gate remains unchanged: obtain specific verifiable evidence for a named pre-existing recognition/verifier basis, or have Kevin explicitly choose to examine the separately documented narrow commissioning-environment assumption (Path A), or keep Nexo uncommissioned. This update does not select Path A; “continue” is not consent to it.
