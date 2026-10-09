@@ -130,3 +130,23 @@ The P1/P2 readiness review already rejects silently making a witness, issuer, ma
 ### Future-countereffect review
 
 Do not “solve” this by adding a generic authority type, another root abstraction, or a quorum mechanism. The next action is a semantic reconciliation of the existing wording: locate any original decision/provenance explaining the MASTER sentence; if none exists, preserve the ambiguity as an owner decision for later rather than inferring intent.
+
+## Provenance search result — C-03 ambiguity retained; C-16 source check — 2026-10-09
+
+### C-03 — original meaning of MASTER bootstrap sentence
+
+A targeted repository search covered the exact Genesis activation phrase, Genesis Trust Bundle, external/independent authority, threshold bootstrap, and related commit messages. It did not find a separate original decision record explaining the intended meaning of the MASTER sentence.
+
+The older sources found in this search—especially AB104.358 hybrid bootstrap and AB104.452 external recovery authority—address independence/circularity and **recovery** authority. They establish that technical trust/recovery bases need explicit scope and independent governance, but they do not define whether the generic MASTER phrase “external/independent authority or threshold” for Genesis means an external constitutional governor or an independently grounded evidentiary/provisioning basis.
+
+**Result:** C-03 ambiguity remains unresolved; do not choose an interpretation from absence of provenance. Keep the user's owner-only constitutional-authority preference intact as a stated preference and leave P1 UNKNOWN/STOP. A future explicit owner decision or governed revision may clarify the wording; do not rewrite the historical MASTER file now.
+
+### C-16 — Core independence / Lúmina separation
+
+Cross-check against `docs/nexo/NEXO_MASTER_ARCHITECTURE_2026-09-23.md` and `docs/nexo/NEXO_MASTER_PRESERVATION_ADDENDUM_2026-09-23.md` confirms the recovered architectural principle: Nexo Core is independent of OS, model provider and UI; adapters may vary; Lúmina is a separate simulation/laboratory environment, and simulated behavior is not world observation or execution authority. Models may reason/propose/plan but cannot grant themselves authority or produce protected effects directly.
+
+**Result:** C-16 is evidence-closed as an architectural invariant for this bounded source review. This does not mean provider independence or the Lúmina boundary has been implemented or runtime-verified in the new Core. No new module or abstraction is required by this cross-check.
+
+### Next exact action
+
+Continue the content/provenance matrix only where an existing primary source could materially alter a row's classification. The next useful review is a narrow canonical-owner traceability pass: for each existing constitutional requirement, point to its already-canonical contract and its implementation/proof status, without copying the contract or introducing a replacement. Keep the C-03 ambiguity explicitly unresolved; do not let it block unrelated proposal-only design, and do not use unrelated design progress to imply P1 is resolved.
