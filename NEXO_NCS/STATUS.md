@@ -1279,3 +1279,14 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The platform review does not justify selecting this phone as a Genesis root, nor does it prove the phone unusable for ordinary development. Current operational role remains development/research host only; Genesis trust-root role is unselected.
 - **Next exact action:** stop generic device research unless a specific architecture claim needs further evidence. Continue the semantic trust boundary work from the existing Genesis Trust Foundation and Core Constitution Authority Context contracts; preserve the six LCORE-1 blocking premises as UNKNOWN and do not implement the protected context while Genesis remains unresolved.
 - Path A remains NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. LCORE-1 remains UNKNOWN/STOP.
+
+## STEP 7 — LCORE-1 blocking-premise resolution map — 2026-10-09
+- 🟢 Research-only resolution map saved: `NEXO_NCS/RESEARCH/STEP_7_LCORE_1_BLOCKING_PREMISES_RESOLUTION_MAP_2026-10-09.md`, commit 91ee61632a2466202960bcd80fd574b7b4cace4a.
+- Classified the six existing blocking premises by what requires governance/provisioning choices, what can be narrowed by public/device evidence, and what depends on a concrete protected deployment. This is not a new trust contract or seventh premise.
+- Cross-check uses the canonical Trust Function / Root Role Map, Genesis Trust Foundation, Bootstrap Composition, Constitution Authority Context and its STOP gate, LCORE-1 cross-attack, deployment failure-domain inventory, exact phone assessment, MASTER/AB/P112 constraints.
+- P1 independent Genesis recognition cannot be derived from this phone's specifications, an identity credential, signature, hash or attestation alone.
+- P2 requires exact owner-to-content/scope/commissioning binding; the POCO manufacturer's warning about AI face unlock prevents treating OS biometric acceptance as sufficient proof of constitutional approval.
+- P3 remains only partially inventoried; P4 offline currentness, P5 deployed protected establishment/bypass closure, and P6 independent recovery/replacement remain UNKNOWN.
+- No contradiction warrants changing existing semantic contracts. No new abstraction, physical root, credential, ceremony, stale window, recovery path or implementation is justified.
+- **Next exact action:** conduct a governance-readiness review of P1/P2, comparing possible classes of pre-existing recognition/provisioning and exact owner-to-content/scope binding, including circular dependencies and future countereffects. Do not select a class/credential/ceremony on the user's behalf. No key generation, enrollment, commissioning, activation, protected-Core deployment or external effect authorized.
+- Path A remains NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. LCORE-1 remains UNKNOWN/STOP.
