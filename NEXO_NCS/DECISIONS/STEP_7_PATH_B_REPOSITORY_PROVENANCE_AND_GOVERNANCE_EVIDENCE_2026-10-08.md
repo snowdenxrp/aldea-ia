@@ -29,3 +29,13 @@ The earliest blocker remains C3 protected recognition: no concrete pre-existing 
 
 ## Next action
 Remain uncommissioned as explicitly directed. Do not generate signing keys, register a credential, add a branch rule, configure a verifier, or reinterpret this research commit as trust-root establishment. Continue only by examining a concrete, pre-existing external artifact/relationship if one is actually available and can be independently verified; otherwise keep the result UNKNOWN/STOP. No implementation, enrollment, commissioning, activation, or production effect occurred in this audit.
+
+
+## Additional bounded check — independent review and build attestation
+A second targeted pass checked the NCS branch's pull-request path and workflow/code evidence:
+- GitHub's pull-request query for head `snowdenxrp:ncs-clean-architecture` returned an empty list. Thus this branch has no PR-based review record surfaced by that query.
+- Repository code search for `attest provenance cosign sigstore` and `GPG signing commit signature` returned no matching files. This is a bounded search result, not proof that no external signing/attestation exists.
+- The visible workflow directory includes Nexo deterministic-test and legacy AB/TLC/Kafka workflows, alongside Lúmina workflows; the workflow filenames themselves do not constitute a provenance attestation or protected commissioning verifier. No workflow was run or changed during this check.
+- An unrelated draft AB105 diagnostic PR exists in the repository, but it is not an NCS trust-root or commissioning review and is not being reused as such.
+
+Interpretation: the available repository evidence has not surfaced a prior independent review or a signed build/attestation chain applicable to Nexo commissioning. This reinforces only the repository-scoped conclusion; it does not rule out an external credential or separately governed channel outside the inspected materials.
