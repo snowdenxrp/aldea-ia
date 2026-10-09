@@ -1116,3 +1116,10 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Known project state and science-recovery findings remain recorded in this STATUS and `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`; prior handoff: `NEXO_NCS/HANDOFF/NCS_HANDOFF_NEXT_CHAT_2026-10-08_SCIENCE_AB104_RECOVERY.md`.
 - These files preserve known project decisions/results but do not prove every sentence of the disappeared transcript was saved. Full transcript recovery = UNKNOWN; never fabricate missing decisions.
 - Next session must read STATUS, the prior handoff, and the science-recovery note first. Persist material deltas and read back after writing. Existing STOP and no-repeat constraints remain in force.
+
+
+## AB104 duplicate-lineage audit delta (2026-10-09)
+
+- New research-only audit saved: `NEXO_NCS/RESEARCH/AB104_DUPLICATE_LINEAGE_AUDIT_DELTA_2026-10-09.md`.
+- Material findings: downstream AB104.680–691 selects the original .679 identity contract (key=value=effectId plus exactly-one UTF-8 identity header), but the alternate .679 `value=effectId+"|payload"` artifact is not explicitly superseded in the old reconciliation; .697 is actually persisted with exact commit `14bb73b747261076839a61ba2eb993a2c74e714c` despite two old reports calling it unsaved; .688 remains UNKNOWN/PENDING in the inspected scope; .711's two lifecycle states are explicitly retained by .712.
+- The new note includes exact SHAs, classifications, evidence boundaries, and the next bounded reconciliation action. No code, tests, frozen AB105/TLC/Kafka probes, or construction STOP state changed.
