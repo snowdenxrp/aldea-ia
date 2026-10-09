@@ -38,3 +38,13 @@ Continue only non-authoritative architecture research and contract design. If a 
 
 ## 6. Next exact action
 No additional technical channel comparison is justified until the initial verifier trust assumption is explicitly accepted or rejected at the governance level. Meanwhile, continue mining already-recorded MASTER/AB/P constraints for new NCS invariants and countereffects without re-running old probes. Preserve the future-countereffects gate as CLOSED and all protected activation as BLOCKED.
+
+
+## Superseding owner decision — 2026-10-08
+The original “NOT ACCEPTED” status above describes the state before Kevin's explicit answer in the current NCS continuation. It is superseded for the *bounded design assumption only* by `NEXO_NCS/DECISIONS/STEP_7_MASTER_AB_P112_TRUST_BASIS_RECONCILIATION_2026-10-08.md` and its recorded owner-response addendum (commit `484682d19e218ee7d5e60a2d09606abf5ad1b990`).
+
+Current authoritative state:
+- Kevin accepts a pre-existing, independently recognized channel under his control as a bounded *candidate assumption* for design of initial approval-to-Constitution binding.
+- No actual channel, device, credential, protocol, enrollment process, verifier, or implementation is selected or proven.
+- The protected root, currentness/revocation, presentation integrity, independence, and enforcement gates remain UNKNOWN/BLOCKED.
+- The next design record is `NEXO_NCS/BUILD/STEP_7_BOUNDED_CHANNEL_CLAIM_SCOPE_AND_ENROLLMENT_BINDING_ATTACK_2026-10-08.md`; this is design/attack only and does not authorize implementation.
