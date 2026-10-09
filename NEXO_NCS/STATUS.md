@@ -1132,3 +1132,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The duplicate groups have different roles: .600/.698 include reconciliation documents; .679 is a conflicting identity-spec pair with downstream contract selecting the original form; .706/.711 have existing reconciliations; .666/.692 are refinements.
 - Detailed lineages, classifications, exact SHAs, and limitations: `NEXO_NCS/RESEARCH/AB104_DUPLICATE_LINEAGE_AUDIT_DELTA_2026-10-09.md`.
 - No old artifacts rewritten; no implementation/tests/frozen AB105/TLC/Kafka runs; current construction STOP unchanged.
+
+
+## User reminder — AB105 knowledge preservation (2026-10-09)
+
+- AB105 is a valuable historical knowledge source for NCS, not a disposable or excluded line. Preserve its technical findings, invariants, failures, decisions, evidence artifacts, limitations, and unresolved questions alongside AB104.
+- “Do not rerun frozen probes” means preserve/reuse existing evidence without re-executing prohibited work; it does not mean discard AB105's findings.
+- Keep epistemic boundaries explicit: document/research ≠ implementation ≠ runtime execution ≠ proven guarantee. Reconcile with corrected AB104.759R anchor and AB104.999R → AB105.000R lineage; no silent migration or duplicate work.
+- Hard constraints unchanged: no AB105.117R; no frozen TLC/Kafka/AB105 reruns or prohibited probes; STEP 7 remains STOP until its independent Trust Foundation/root condition is met.
+- Detailed durable instruction also recorded in `NEXO_NCS/HANDOFF/NCS_CHAT_RECOVERY_CHECKPOINT_2026-10-09.md`.
