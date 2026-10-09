@@ -897,3 +897,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - This is a documentation-level precedence correction, not a new architecture layer and not a runtime result. Existing attack is reused, not repeated.
 - **Current gate remains STOP/BLOCKED/UNKNOWN.** No code, key, enrollment, commissioning, activation, production effect, or Lúmina change. No frozen AB/TLC/Kafka reruns.
 - Next: do not implement a caller-fed “protected” result or a fake Core authority class. Resume only when the genesis recognition basis and protected verifier/enforcement prerequisite are concretely evidenced; otherwise continue bounded semantic work without claiming technical establishment.
+
+
+## 2026-10-08 — Claim-relative Genesis recognition-family comparison
+
+- Completed the existing root-contract next action in `NEXO_NCS/DECISIONS/STEP_7_CLAIM_RELATIVE_GENESIS_RECOGNITION_FAMILY_COMPARISON_2026-10-08.md`, commit `4a151af320d41646b65475db0edb0a67d6562195`.
+- Compared only already-identified families against Nexo claims: immutable/external provisioning, previously protected mutable-root chain, platform/hardware root, multiple/threshold roots, Path A bounded environmental assumption, and Path B pre-existing independently grounded recognition.
+- No family is selected. Path A has evaluation-only authorization; its assumptions have not been accepted and it does not establish independent recognition, verifier legitimacy, lifecycle/currentness, or enforcement. Path B remains ungrounded until a concrete prior basis is identified.
+- The earliest blocker remains C3: no concrete pre-existing recognition/enrollment basis and no independently justified protected verifier are evidenced. Currentness/recovery and protected enforcement remain separate downstream blockers.
+- This is a claim-relative comparison, not a new taxonomy or implementation. No device/provider/algorithm/key/verifier selected; no code, secrets, enrollment, commissioning, activation, production effect, Lúmina change, or frozen AB/TLC/Kafka rerun.
+- Next: seek concrete, independently grounded evidence for Path B, or obtain a separate explicit owner decision to accept/reject the exact Path A assumptions for further bounded design. Neither option alone authorizes implementation; verifier and enforcement obligations remain.
