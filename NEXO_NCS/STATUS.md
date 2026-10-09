@@ -1141,3 +1141,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Keep epistemic boundaries explicit: document/research ≠ implementation ≠ runtime execution ≠ proven guarantee. Reconcile with corrected AB104.759R anchor and AB104.999R → AB105.000R lineage; no silent migration or duplicate work.
 - Hard constraints unchanged: no AB105.117R; no frozen TLC/Kafka/AB105 reruns or prohibited probes; STEP 7 remains STOP until its independent Trust Foundation/root condition is met.
 - Detailed durable instruction also recorded in `NEXO_NCS/HANDOFF/NCS_CHAT_RECOVERY_CHECKPOINT_2026-10-09.md`.
+
+
+## STEP 7 — Claim-relative deployment / failure-domain inventory (2026-10-09)
+
+- 🟢 Created `NEXO_NCS/BUILD/STEP_7_CLAIM_RELATIVE_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_2026-10-09.md`, commit `feae197cf01722f3bd34d0b2838ddaa665f00953`.
+- Cross-check joins MASTER/NCS trust-root contracts with AB104.199 (root authority/rotation/rollback), AB104.451/.452 and .563–565 (UNKNOWN/current authority and recovery distinctions), AB104.571 (final recovery TOCTOU), AB105.000R (coverage-bounded claims), AB105.080R (STOP/revocation/in-flight/effect distinctions), and AB105.116R's unresolved reauthorization provenance. These are historical design findings, not production-root evidence.
+- **Fundamental result:** do not collapse (1) legitimacy/independent recognition of initial constitutional-owner authority and (2) claim-relative sufficiency/currentness/final enforcement into one “trusted” bit or universal GenesisRoot. Authenticity/integrity is not authority; a mechanism sufficient for one claim may be insufficient for another. AB105 additionally forbids widening a completed appraisal beyond its actual coverage and forbids inferring current authority/effect enforcement from prior authorization alone.
+- The inventory covers initial commissioning/owner recognition, future succession intent, hands-free perception, memory/device continuity, Vault, external device control, offline autonomy, update, recovery, and STOP/revocation. Each row names trust roles, failure-domain questions, and UNKNOWN/STOP boundaries.
+- No root mechanism or commissioning ceremony selected; no code or tests run; no frozen AB105/TLC/Kafka probes rerun; AB105.117R not created. STEP 7 STOP remains.
+- Next: compare candidate initial-recognition/commissioning families only against explicit deployment assumptions and claim scope. Do not select hardware/vendor/threshold/quorum or build a generic trust engine before the recognition basis and its independence can be stated.
