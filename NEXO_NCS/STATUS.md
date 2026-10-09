@@ -1245,3 +1245,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - 🔴 Exact device inventory, platform state, protected boundary, offline revocation/currentness, bypass closure, and recovery remain UNKNOWN. No credential material was collected; no commissioning or implementation authorized.
 - Future-countereffect review rejects convenience-based platform selection, hardware-root conflation, self-attested health flags, assumed device independence, indefinite offline freshness, and generic trust machinery.
 - **Next exact action:** inventory which host classes are actually available (without secrets), then inspect only observable trust properties of those exact candidates against LCORE-1 and the six blocking premises. Do not choose a root family before this evidence exists.
+
+
+## STEP 7 — Phone-only build / validation plan — 2026-10-09
+- 🟢 Plan saved: `NEXO_NCS/RESEARCH/STEP_7_PHONE_ONLY_BUILD_AND_VALIDATION_PLAN_2026-10-09.md`.
+- User reports the phone is the only currently available device. This does not block architecture or all construction; repository work and suitable hosted tests can continue from a phone.
+- 🔴 Exact make/model/build, boot state, TEE/StrongBox and attestation capabilities remain UNKNOWN. Generic Android availability does not establish platform trust.
+- Hosted CI proves only its tested scope; it does not prove device security or Genesis legitimacy. Codespaces is optional and must not be presumed free/available or created as a paid environment without explicit choice.
+- No developer options, debugging, root, firmware changes, credential enrollment, Genesis commissioning, or activation authorized.
+- **Next exact action:** request only phone brand/model and Android version from Settings → About phone (text only; no identifiers/secrets). Research that exact device's documented and observable trust properties. Keep LCORE-1 UNKNOWN/STOP until the six blocking premises are addressed with evidence.
