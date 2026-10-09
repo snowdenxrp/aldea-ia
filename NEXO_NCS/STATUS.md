@@ -769,3 +769,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Termux remains a possible local research/prototyping tool only; it is not selected as a trust channel or root.
 - Next interaction: clarify whether Kevin means the currently used phone/channel, a different already-recognized channel, or has not selected one. This does not authorize implementation. Until resolved, keep root establishment, protected activation and production effects BLOCKED/UNKNOWN.
 - Reconciliation commit: d8370fbf851ef2011fd60f35860f98467677777a; read-back blob: ec76dc8f8ffe73d5d9da8d3f4982b4b013d21143.
+
+
+## 2026-10-08 — Phone named as candidate; threat model recorded
+
+- Kevin selected his current phone/channel as the candidate to examine, without declaring it legitimate or selecting a mechanism.
+- Phone-specific threat model: `NEXO_NCS/BUILD/STEP_7_CURRENT_PHONE_CANDIDATE_THREAT_MODEL_2026-10-08.md` (commit `632250e05c4fa6ad3117f0658b9679f87768a238`; read-back blob `d27cbac3698483c0c9cb7e70cf0ee271e9a38ae4`).
+- This supersedes the earlier “next interaction” request to choose between phone/other/not selected. The phone is now a candidate only; the trust claim remains UNKNOWN.
+- Next action: map the phone-specific requirements to the already-existing Genesis Trust Foundation, protected evidence-establishment, and Constitution Authority Context contracts. Determine the earliest property the phone cannot establish by itself. No implementation or mechanism selection; no protected activation; no Lúmina changes; no frozen AB/TLC/Kafka reruns.
