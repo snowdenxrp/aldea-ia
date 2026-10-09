@@ -79,3 +79,21 @@ Current `NEXO_NCS/STATUS.md` still governs construction. The active STEP 7 STOP 
 - Inspected tree path matches on `feature/research-experimentation`, `feature/research-causal-and-spatial-scale`, `feat/research-reproducibility-semantics`, and `feature/research-reproducibility`. These contain simulation/research code paths (`src/research.js`, related tests), but their tree names do not identify a Nexo physics-theory artifact; do not merge those branches or conflate them with Nexo/Lúmina architecture without a concrete lineage/contract reason.
 - Inspected the `nexo-ab104-599-sany-evidence` branch tree as a separate historical AB line; no physics-named artifact appeared in the sampled path matches. This branch's name indicates a boundary around AB104.599, so it cannot establish completeness of later AB104 history.
 - Classification remains 🔵 UNKNOWN: no exact remembered artifact located. Next useful step is not another keyword repeat; it is targeted ancestry/alias comparison for candidate files and a Library retrieval pass using any newly surfaced exact concept/name if available.
+
+
+## Historical research branch / alias delta — 2026-10-09
+
+### Search path
+- Expanded the alias search beyond the already-run terms to classical mechanics, gravity, inertia, motion, relativity, conservation of energy, physical laws, and physics research. No matching commit messages were returned for gravity, relativity, mechanics, or entropy; Library semantic search surfaced the already-known NCS architecture/recovery documents rather than an identifiable physics artifact. This remains bounded UNKNOWN.
+- Retrieved the exact Master section `Causal reasoning / experimentation` from `docs/nexo/NEXO_MASTER_ARCHITECTURE_2026-09-23.md`. It already defines causal edge types, an Intervention Contract, E0 simulation through E5 irreversible/high-impact, external stop conditions, and `Simulation/counterfactual ≠ world observation`. This is a real prior scientific-method contract, not a physics theory.
+- Inspected the `feature/research-experimentation` line and sibling `feature/research-causal-and-spatial-scale` / `feature/research-reproducibility` variants. The branch tip is `feaca956f64f6c707130a8f00413d06e8a088ec1`; the research-layer integration commit is `1943268880ea95241b4a0512f804b1efcd0805ed`. The source explicitly labels the code “Investigación y experimentación de Lúmina” and covers simulated agriculture, construction, tool durability, resource regeneration, and scarcity/price—not Nexo physics, cosmology, or fundamental laws.
+- The initial branch computes `measureIntervention()` as `before.value * intervention.factor`, then classifies support from the expected direction. The causal/spatial-scale sibling replaces that with formulas over its modeled variables, but it is still simulation-internal. Therefore this code is evidence of a historical Lúmina research/experiment subsystem, not independent empirical confirmation of a physical law. Do not import it into Nexo or treat it as the user's remembered artifact without more lineage evidence.
+
+### Classification
+- 🟢 Recovered: Master already has an Intervention Contract and explicit separation between simulation/counterfactual and world observation.
+- 🟢 Recovered: Lúmina had a research/experimentation implementation in its own simulated society, with later branch variants addressing causal/spatial-scale/reproducibility semantics.
+- 🔵 UNKNOWN: whether this is the specific science/physics investigation the user remembers. Current evidence does not establish that identity.
+- 🔴 Conflict to avoid: treating simulated outputs or a confidence score as empirical physical-world evidence; treating Lúmina's research code as Nexo's architecture or authority.
+
+### Next exact action
+Continue with historical alias/lineage inspection of the actual Master and scientific/causal AB104 artifacts, including their old names and commit ancestry. Search only identifiers newly recovered from that history in Library/conversations. Do not repeat the same physics keyword sweep, restart AB68/AB104, or run AB105/TLC/Kafka.
