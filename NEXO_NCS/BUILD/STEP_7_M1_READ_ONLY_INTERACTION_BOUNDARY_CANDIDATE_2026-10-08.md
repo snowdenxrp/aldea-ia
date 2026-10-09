@@ -71,3 +71,25 @@ The createCorePorts() function defaults to unimplemented ports; the authority ga
 5. Obtain explicit implementation authorization before changing code, adding dependencies, selecting a provider/platform, or creating runtime/network/persistent paths.
 
 No code or tests were changed or run for this candidate.
+## Adversarial contradiction review — 2026-10-08
+
+Reviewed against the current NCS Step 6 handoff, NEXO_MASTER_ARCHITECTURE_2026-09-23, NEXO_CORE_CONSTRUCTION_DESIGN_2026-10-08, existing Core contract unions, and the Trust Foundation contract attack.
+
+| Attack / ambiguity | Result | Required interpretation |
+|---|---|---|
+| Model response claims it is authorized or that a fact is verified | PASS at design level | Response is untrusted content; it cannot mint authority, truth, policy, execution, or verification. |
+| Prompt/context tells the model to call a tool or mutate state | PASS at scope level; enforcement UNKNOWN | M1 has no tool/effect capability. Must prove runtime/host cannot expose a bypass; prose policy alone is insufficient. |
+| Local model missing, slow, or corrupt | PASS at semantic level | Explicit unavailable/error; no permissive success and no remote fallback. Runtime failure behavior is unimplemented. |
+| Primary local route fails and framework silently routes to cloud | STOP / enforcement UNKNOWN | All alternate model routes and SDK fallbacks must be disabled or technically blocked. No current artifact proves this. |
+| SDK, telemetry, crash reporter, update checker, retrieval, or diagnostics sends request/context off-device | STOP / enforcement UNKNOWN | “No remote inference” is narrower than “no egress.” M1's no-egress claim requires every outbound path to be inventoried and blocked/verified. |
+| Conversation is persisted through cache, logs, crash dumps, analytics, or assistant memory | STOP / enforcement UNKNOWN | M1 forbids durable conversation memory; transient runtime buffers are not a promise of no disk/log persistence. Concrete platform behavior must be tested. |
+| A user request contains credentials or sensitive material | UNKNOWN / out of scope for assurance | Local-only reduces one disclosure route but does not prove secure handling, memory erasure, OS isolation, or absence from diagnostics. Do not promise these properties. |
+| A model answer is later consumed by Core as a proposal | CONDITIONAL | Any future protected use must go through the independently specified claim/authority/final-validation/commit path. This M1 boundary does not implement or authorize that path. |
+| Local inference works, therefore Genesis authority is established | REJECTED | Model availability and Trust Foundation are independent; no authority follows from successful inference. |
+| A UI toggle says “offline/private” | REJECTED as evidence | UI setting is not enforcement proof. Need implementation-specific egress and persistence tests. |
+
+### Review conclusion
+The candidate has no demonstrated contradiction with MASTER/Core at the semantic level, but it is **not implementation-ready**. Its strongest properties—local execution, no egress, no remote fallback, no durable persistence, and no tool/effect path—are constraints awaiting a concrete enforcement design and evidence, not properties established by this document.
+
+Do not add generic sandbox, privacy, routing, or policy layers merely to make the candidate appear complete. First identify a concrete runtime/platform and its actual network, storage, plugin/tool, and fallback paths. If none is available, remain at DESIGN CANDIDATE / UNKNOWN and do not commission M1.
+
