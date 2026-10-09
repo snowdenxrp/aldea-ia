@@ -1336,3 +1336,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Matrix updated; existing MASTER history and semantic contracts were not rewritten. No new trust abstraction, quorum, root, ceremony, credential or governance rule created.
 - P1 remains UNKNOWN/blocking; commissioning, protected-context implementation and activation remain STOP.
 - **Next exact action:** search the original provenance/decision trail for the MASTER bootstrap sentence. If no evidence of intended meaning exists, preserve the ambiguity as an explicit future owner decision; do not infer, rewrite history or implement a trust mechanism to hide it.
+
+## STEP 7 — C-03 provenance search and C-16 source review — 2026-10-09
+- 🟢 Targeted search for the original intent of MASTER's Genesis bootstrap phrase found no separate source/decision record that resolves its meaning. AB104.358 concerns hybrid-bootstrap independence; AB104.452 concerns external recovery authority. Neither defines the disputed Genesis phrase.
+- 🔴 C-03 remains an unresolved wording/interpretation ambiguity: external normative constitutional governance would conflict with the owner's stated owner-only preference; an independently grounded technical/evidentiary provisioning basis may be compatible but cannot be assumed. Preserve the MASTER history; no interpretation selected. P1 remains UNKNOWN/STOP.
+- 🟢 C-16 Core/provider/OS/UI independence and Lúmina separation were cross-checked against MASTER and its preservation addendum. The architectural invariant is evidence-closed for this bounded review; this is not implementation/runtime proof and requires no new module.
+- Matrix updated at `NEXO_NCS/RESEARCH/STEP_7_CONSTITUTION_CONTENT_PROVENANCE_MATRIX_2026-10-09.md`.
+- No trust root, external governor, quorum, credential, ceremony, or implementation selected. No commissioning, protected-context implementation or activation authorized.
+- **Next exact action:** perform a narrow canonical-owner traceability pass from existing constitutional requirements to their already-canonical contracts and implementation/proof status. Reuse contracts; do not copy them into a replacement Constitution or add abstractions. Keep C-03 ambiguity open and P1/P2 blocked.
