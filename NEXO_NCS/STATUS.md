@@ -969,3 +969,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - This is a conditional design contract, not code. No e.firma possession/certificate was confirmed, no secrets were requested, no key used/generated, and no relying party/verifier/enrollment was implemented.
 - Inventory updated and readback-verified: commit `bb629538228ed5c20b4bba3b410b9f166a6850ec`, blob `e034336681aaa2a2b048c465561680991b7285d6`.
 - Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only. Nexo remains uncommissioned; no implementation, activation, or production effect.
+
+
+### Cryptographic research reconciliation — threshold rotation and authority generations — 2026-10-08
+- Reopened the existing AB104.447/.448/.449/.453/.454/.455 research chain instead of treating SAT e.firma as an architectural direction.
+- Reconciled the historic findings with RFC 9591 (FROST), NIST IR 8214C, RFC 9334 (RATS), and RFC 6024. Threshold signing is a cryptographic mechanism with explicit setup/corruption assumptions; it does not establish who is entitled to be a signer, current membership/policy, independent failure domains, constitutional authority, or effect enforcement.
+- Added and readback-verified `NEXO_NCS/DECISIONS/STEP_7_CRYPTOGRAPHIC_RESEARCH_RECONCILIATION_THRESHOLD_ROTATION_2026-10-08.md`, commit `91ed7c5f5c0899434ed02ab1232a2c67c25bdc57`, blob `9e46842986d4ea6ec9d0016396f4be8434715847`.
+- Correction: e.firma remains a conditional candidate only, not a selected root or Nexo dependency. No threshold scheme, hardware root, credential, verifier, or participant set selected.
+- Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only. No implementation, key use/generation, enrollment, commissioning, activation, or production effects.
