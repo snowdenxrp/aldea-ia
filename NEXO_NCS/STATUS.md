@@ -1236,3 +1236,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Six blocking premises remain UNKNOWN: (1) independently recognized first Genesis basis; (2) owner-to-exact-ceremony/content/scope binding; (3) actual platform and dependency/failure-domain closure; (4) currentness/revocation under offline conditions; (5) deployed protected establishment/bypass boundary; (6) independently governed recovery/replacement.
 - No new abstraction or patch is justified. No physical root, credential, ceremony, platform, or effect boundary is selected. Path A NOT ACCEPTED; Path B NOT ESTABLISHED; Path C remains valid. No implementation/enrollment/commissioning/activation authorized.
 - **Next exact action:** inventory concrete available deployment options and observable trust boundaries from facts, not assumptions; do not select a family without a real target and independently verifiable recognition basis. If none exists, retain uncommissioned UNKNOWN/STOP.
+
+
+## STEP 7 — Concrete deployment options / observable trust boundaries — 2026-10-09
+- 🟢 Research saved: `NEXO_NCS/RESEARCH/STEP_7_CONCRETE_DEPLOYMENT_OPTIONS_AND_OBSERVABLE_TRUST_BOUNDARIES_2026-10-09.md`.
+- Compared Android phone, Windows laptop/PC, and dedicated local node as candidate classes only; none is selected or claimed available.
+- Android Keystore/attestation and Windows Secure/Trusted/Measured Boot can provide bounded platform/key evidence only when supported by the exact device, configured, and independently validated. They do not establish owner legitimacy or Nexo's constitutional Genesis.
+- 🔴 Exact device inventory, platform state, protected boundary, offline revocation/currentness, bypass closure, and recovery remain UNKNOWN. No credential material was collected; no commissioning or implementation authorized.
+- Future-countereffect review rejects convenience-based platform selection, hardware-root conflation, self-attested health flags, assumed device independence, indefinite offline freshness, and generic trust machinery.
+- **Next exact action:** inventory which host classes are actually available (without secrets), then inspect only observable trust properties of those exact candidates against LCORE-1 and the six blocking premises. Do not choose a root family before this evidence exists.
