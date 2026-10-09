@@ -838,3 +838,12 @@ This entry supersedes older status wording in this file that said the initial ve
 - A biometric success alone does not establish genesis-root legitimacy, bind approval to the exact Constitution/commissioning action, prove currentness/revocation, or demonstrate protected enforcement.
 - Candidate only: no mechanism, device capability, key/API, enrollment ceremony, or implementation selected. Broad Android/device research remains closed.
 - Genesis Trust Foundation, Constitution Authority Context, protected commissioning, and production effects remain BLOCKED/UNKNOWN.
+
+
+## 2026-10-08 — Owner delegated biometric candidate selection to technical judgment
+
+- Assistant decision: prioritize evaluation of fresh app-level `BIOMETRIC_STRONG` (Class 3), preferring fingerprint if the device exposes that class. A strong face modality is not categorically excluded; modality name alone is insufficient.
+- Candidate design requires an authentication-per-use protected cryptographic operation bound to the exact action, Constitution version/hash, commissioning context, and freshness challenge. No plain screen-unlock signal, stale session, weak biometric, or silent device-credential fallback may be treated as equivalent approval.
+- Android's documented class model matters: Class 3 supports operation-bound Keystore keys; Class 2 does not. Device-specific capability is not yet established. Official references: https://developer.android.com/identity/sign-in/biometric-auth and https://source.android.com/docs/security/features/biometric
+- This is a design-evaluation choice only. No implementation, app/key/API integration, enrollment ceremony, root establishment, or activation authorized. If the device cannot meet the contract, STOP rather than weaken it.
+- Updated decision record commit: 040b7c493f257353b24a4c951710efa917506974.
