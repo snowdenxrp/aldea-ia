@@ -1344,3 +1344,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Matrix updated at `NEXO_NCS/RESEARCH/STEP_7_CONSTITUTION_CONTENT_PROVENANCE_MATRIX_2026-10-09.md`.
 - No trust root, external governor, quorum, credential, ceremony, or implementation selected. No commissioning, protected-context implementation or activation authorized.
 - **Next exact action:** perform a narrow canonical-owner traceability pass from existing constitutional requirements to their already-canonical contracts and implementation/proof status. Reuse contracts; do not copy them into a replacement Constitution or add abstractions. Keep C-03 ambiguity open and P1/P2 blocked.
+
+## STEP 7 — Requirement-to-canonical-owner traceability — 2026-10-09
+- 🟢 Saved `NEXO_NCS/RESEARCH/STEP_7_REQUIREMENT_TO_CANONICAL_OWNER_TRACEABILITY_2026-10-09.md`.
+- Mapped P1–P6 and adjacent Constitution→Policy/content-equivalence/provider-independence requirements to their existing canonical owner documents and stated whether each is design-specified, runtime-verified, or UNKNOWN/STOP.
+- Finding: existing contracts already own the semantics; no new GenesisRoot, registry, ceremony framework, generic trust engine or replacement contract is justified. Design/attack closure is not deployment proof.
+- C-03 remains an unresolved MASTER wording ambiguity; no source provenance was found to safely resolve it. P1/P2 remain UNKNOWN/blocking; P3 partially inventoried; P4 UNKNOWN; P5 NOT ESTABLISHED; P6 UNKNOWN.
+- No trust root, governance option, ceremony, credential, implementation, commissioning or activation selected/authorized.
+- **Next exact action:** stop expanding Step 7 inventories unless new primary evidence can change a classification. Preserve C-03 as an explicit future owner decision. Continue only with a separate design requirement that does not depend on P1/P2, and keep design/runtime status distinct.
