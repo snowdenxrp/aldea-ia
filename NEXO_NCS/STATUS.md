@@ -1227,3 +1227,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - This does **not** select a concrete host/platform, credential, ceremony, root family, or device; Path A remains NOT ACCEPTED, Path B NOT ESTABLISHED, Path C remains valid. No implementation, enrollment, commissioning, or activation is authorized.
 - Adversarial gate enumerates self-rooting, trust recursion, stale/replayed snapshot, provider capture, revoked-but-intact state, recovery circularity, common-mode dependencies, scope mismatch, ceremony substitution, ungoverned fallback, authority-to-execution promotion, and log/legitimacy confusion.
 - **Next exact action:** attack LCORE-1 against the existing Genesis and Constitution Authority Context contracts; record only real contradictions/missing premises. No implementation while the recognition prerequisite is unresolved.
+
+
+## STEP 7 — LCORE-1 Genesis / Constitution cross-attack — 2026-10-09
+- 🟢 Cross-attack saved: `NEXO_NCS/RESEARCH/STEP_7_LCORE_1_CONTRACT_CROSS_ATTACK_2026-10-09.md`, commit `248b8380657bd7589164725b95289b4061eda9be`.
+- Cross-checked LCORE-1 against the existing Genesis Trust Foundation, Bootstrap Composition, Core Constitution Authority Context, Trust Function / Root Role Map, future-countereffects gate, deployment inventory, and historical AB104.368 authority/target distinction.
+- Result: no contradiction found; LCORE-1 is a first-scope decision, not a new authority mechanism. Existing contracts already semantically reject self-rooting, provider-rooting, snapshot resurrection, implicit fallback, identity-to-authority promotion, recovery circularity, and Constitution-to-execution promotion.
+- Six blocking premises remain UNKNOWN: (1) independently recognized first Genesis basis; (2) owner-to-exact-ceremony/content/scope binding; (3) actual platform and dependency/failure-domain closure; (4) currentness/revocation under offline conditions; (5) deployed protected establishment/bypass boundary; (6) independently governed recovery/replacement.
+- No new abstraction or patch is justified. No physical root, credential, ceremony, platform, or effect boundary is selected. Path A NOT ACCEPTED; Path B NOT ESTABLISHED; Path C remains valid. No implementation/enrollment/commissioning/activation authorized.
+- **Next exact action:** inventory concrete available deployment options and observable trust boundaries from facts, not assumptions; do not select a family without a real target and independently verifiable recognition basis. If none exists, retain uncommissioned UNKNOWN/STOP.
