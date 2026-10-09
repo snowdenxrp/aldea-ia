@@ -97,3 +97,14 @@ Current `NEXO_NCS/STATUS.md` still governs construction. The active STEP 7 STOP 
 
 ### Next exact action
 Continue with historical alias/lineage inspection of the actual Master and scientific/causal AB104 artifacts, including their old names and commit ancestry. Search only identifiers newly recovered from that history in Library/conversations. Do not repeat the same physics keyword sweep, restart AB68/AB104, or run AB105/TLC/Kafka.
+
+
+## Historical path-lineage check — 2026-10-09
+
+- Checked GitHub path history for `docs/nexo/NEXO_MASTER_ARCHITECTURE_2026-09-23.md`: the returned path history has eight commits, beginning with the consolidated architecture / PG-008 baseline and later PG-009/global reconciliation updates. No separate physics-named path or rename appears in that path history.
+- Checked the exact history for `docs/nexo/AB104_911R_causal_uniqueness_hypothesis_audit_2026-09-29.md` and `docs/nexo/AB104_912R_historical_model_change_unknown_evidence_audit_2026-09-29.md`: each has one add-file commit only. Their documented subject is causal uniqueness under model assumptions and historical semantics under later model change; this path history does not expose an earlier renamed physics artifact.
+- Queried the Master index/continuity aliases for the already recovered `Intervention Contract`, `World Model`, and AB104.911R/.912R identifiers. They point back to the known epistemic/casual-method research; no distinct physical-law theory was surfaced.
+- Conclusion remains deliberately narrow: this is better coverage of candidate paths and ancestry, not proof that no transient chat or unindexed file ever existed.
+
+### Next search
+Inspect the older research-continuity/index revisions around the original architecture baseline for additional science-adjacent artifact identifiers, then search those exact identifiers in Library/conversations. Do not re-run broad physics terms or re-open closed AB68/AB104 work.
