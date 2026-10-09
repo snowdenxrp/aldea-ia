@@ -985,3 +985,12 @@ This entry supersedes older status wording in this file that said the initial ve
 - Added and readback-verified NEXO_NCS/DECISIONS/STEP_7_HISTORICAL_CRYPTO_ROOT_DECISION_RECOVERY_2026-10-08.md, commit f37f0bcf6dd343cc1a938377297d16917dfa9248, blob 38f16b9d3eb20ecc083aa99891568f9c7eaafe19.
 - This resolves the apparent loop: do not repeat root taxonomy; Path B still needs a specific pre-existing external artifact/relationship with independently verifiable provenance and recognition. Broad repository-only root searching is exhausted unless new evidence identifies a concrete record.
 - Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only and assumptions remain unaccepted. No implementation, key generation/use, enrollment, ceremony, commissioning, activation, or production effects.
+
+
+### Local-only inference feasibility check — 2026-10-08
+- Bounded source inventory created: `NCS/STEP_7_LOCAL_ONLY_INFERENCE_REPOSITORY_FEASIBILITY_CHECK_2026-10-08.md`; commit `be19ce76bd244c3adf78716d38d6f6987e41ea81`.
+- Inspected `package.json`, the branch's `index.html`, existing Nexo Core contracts, and targeted repository searches for common local-inference paths.
+- Result: no repository-grounded Nexo mobile client or local-inference runtime was found in the inspected branch. `index.html` is the Lúmina simulation UI; `package.json` declares no dependencies. This is bounded repository evidence, not a claim about external artifacts.
+- Variant L remains a semantic design candidate, not an evidenced deployment capability. No client, model/runtime, platform or no-egress enforcement was selected or implemented. Variant R remains separately blocked by its disclosure contract.
+- This does not resolve or weaken the genesis-root/verifier gate. No root, commissioning, private-device access, network path, persistent write, or external effect was enabled.
+- Next exact action: stop generic client taxonomy. Continue only if a specific existing client/model artifact is identified, or after an explicit decision to start a separate analysis-only client-design project. Do not infer implementation permission from “continue.”
