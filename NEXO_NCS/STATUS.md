@@ -1021,3 +1021,10 @@ This entry supersedes older status wording in this file that said the initial ve
 - Next: design-level contradiction review against MASTER/Core and the candidate's no-egress/fallback assumptions. Do not implement until separately authorized; keep Trust Foundation/Path B gate independent.
 
 - Adversarial contradiction review appended to the M1 candidate, commit `c537fcfeb6fbfe3cb71741fcf5079211e583a811`. Semantic separation passes review; enforcement remains UNKNOWN for all-egress blocking, silent provider fallback, durable logging/cache, and tool/effect bypass. This is not implementation-ready; no generic security layers are to be invented without a concrete runtime/platform.
+
+### Historical archive sweep / science + bootstrap reconciliation — 2026-10-08
+- Added `NEXO_NCS/DECISIONS/STEP_7_ARCHIVE_SWEEP_PRIOR_SCIENCE_AND_BOOTSTRAP_RECONCILIATION_2026-10-08.md`, commit `1116853fb7eeb22884c3b00d25207d93fe2821f6`; readback required.
+- Confirmed historical scientific/formal work in AB68 and the Research Ledger: PTS/modal transition systems, epistemic belief states, observers, three-valued semantics, bounded transition interpreters, and formal verification. MASTER/AB104 also cover causal experimentation, TLA+, Byzantine/quorum, threshold cryptography, root continuity and recovery.
+- Reconciled apparent bootstrap status mismatch: old MASTER marks bootstrap/first trust architecturally closed and defines a Genesis Trust Bundle/first-boot chain; concrete root/recognition mechanism was explicitly left open in historical bootstrap/AB104.452 research. Architectural semantics are not deployment evidence.
+- No checked source confirms the user's remembered 'physics' artifact specifically; do not fabricate it. Continue targeted historical search rather than repeat generic science/root taxonomy.
+- Next: targeted recovery of an exact concrete Path B artifact/credential/recognition relationship; separately, M1 client/runtime feasibility. Do not assume SAT e.firma, do not implement/commission/activate.
