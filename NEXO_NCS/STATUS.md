@@ -916,3 +916,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - C3 protected recognition remains the earliest blocker; C4 currentness/lifecycle and C5 enforcement remain separately blocked.
 - Path A remains evaluation-only; assumptions have not been accepted. No implementation, enrollment, commissioning, activation, or production effect.
 - Next gate: explicit owner choice to accept/reject the exact Path A assumptions for further design only, or remain uncommissioned while a concrete Path B basis is evidenced.
+
+
+### Path B standards reconciliation — 2026-10-08
+- Reconciled official WebAuthn and Android Keystore/authentication documentation against the Path B inventory.
+- Standards provide mechanisms, not evidence that Nexo already has a registered RP/credential, protected verifier, attestation policy, currentness source, or constitutional authority binding.
+- Existing device screen lock is not a pre-enrolled Nexo authority credential. Actual device capabilities remain unverified.
+- Inventory extended and readback-verified: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`, commit `48af9e2e61d43dbb485754b65370a5359fc02d50`.
+- Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only. No implementation, enrollment, commissioning, activation, or production effect.
