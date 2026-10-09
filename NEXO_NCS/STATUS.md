@@ -932,3 +932,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Reused the already-closed audits: no protected policy-source authority owner and no implemented current Constitution Authority Context path were found.
 - Evidence inventory extended and readback-verified: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`, commit `e45355bb91425f4a042b9df8572a711553ecdbc9`.
 - Path B remains BLOCKED/UNKNOWN. No runtime code changes, keys, enrollment, commissioning, activation, or production effects.
+
+
+### Path B repository provenance and governance check — 2026-10-08
+- Added `NEXO_NCS/DECISIONS/STEP_7_PATH_B_REPOSITORY_PROVENANCE_AND_GOVERNANCE_EVIDENCE_2026-10-08.md` (commit `ac78904124d2f2aa47137a0b9d220875d4369a71`; read-back blob `0f60a3515f76d73394f08a78bcf449345c59c8a9`).
+- Bounded GitHub API evidence: no releases returned; `ncs-clean-architecture` reports protection disabled and required status-check enforcement off; accessible rulesets query returned none; the latest five sampled `main` commits and current NCS head report unsigned commits. A recent successful Pages workflow is deployment evidence, not Nexo trust-root evidence.
+- These repository facts do not establish prior credential enrollment, Kevin-specific constitutional authority, an independently justified protected verifier, currentness/revocation, or enforcement. Commit hashes, account access, author strings, and workflow success are not promoted to trust roots.
+- Path B remains BLOCKED/UNKNOWN; remain uncommissioned. No signing key, credential registration, branch-rule change, verifier configuration, runtime implementation, enrollment, commissioning, activation, or production effect.
+- Next: consider only a concrete pre-existing external artifact/relationship if actually available and independently verifiable; otherwise preserve UNKNOWN/STOP. Do not repeat root taxonomy or closed device/biometric research.
