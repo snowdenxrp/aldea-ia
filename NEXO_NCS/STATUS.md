@@ -747,3 +747,16 @@ This separation exists specifically to prevent historical research volume from b
 - Kevin noted that Termux is available on his phone. It is a possible local research/prototyping tool to assess later, not a trust root or proof of device integrity. No Termux implementation is authorized.
 - Next exact action: specify the claim scope and limits of the bounded assumption, then attack the minimum enrollment-and-binding contract. Keep trust-root details, enrollment/presentation integrity, independence, revocation, recovery, succession, protected activation and production safety BLOCKED/UNKNOWN until separately specified and evidenced. No frozen AB/TLC/Kafka probes rerun; no generic layer added.
 - Decision record update commit: 484682d19e218ee7d5e60a2d09606abf5ad1b990; blob: d2af9a87129da7c2a79bfa8f3db615862e5abac2.
+
+
+## Authoritative current decision — bounded channel assumption accepted; implementation still blocked (2026-10-08)
+
+This entry supersedes older status wording in this file that said the initial verifier trust assumption was “NOT ACCEPTED.” Kevin has now explicitly accepted the bounded *design assumption only*: a pre-existing channel independently recognized by him and already under his control may be considered as a candidate for binding his approval to the exact Constitution and commissioning context. No concrete channel or implementation is selected or proven.
+
+- Owner decision record: `NEXO_NCS/DECISIONS/STEP_7_MASTER_AB_P112_TRUST_BASIS_RECONCILIATION_2026-10-08.md`
+- Supersession addendum: `NEXO_NCS/DECISIONS/STEP_7_INITIAL_VERIFIER_TRUST_ASSUMPTION_RECONCILIATION_2026-10-08.md`
+- New scope/attack record: `NEXO_NCS/BUILD/STEP_7_BOUNDED_CHANNEL_CLAIM_SCOPE_AND_ENROLLMENT_BINDING_ATTACK_2026-10-08.md`
+- Termux is recorded only as an available local research/prototyping tool to assess; not a trust root and not an implementation decision.
+- Review result: the bounded assumption can support only a narrow candidate claim if later justified; it does not establish channel integrity, trusted presentation, enrollment legitimacy, independence, currentness/revocation, verifier legitimacy, or enforcement.
+- Earliest unresolved prerequisite remains the independently justified establishment path: the inspected repository has no implemented protected constitutional/policy authority owner that can establish provenance. A public constructor, caller flag, self-signed key, or provider-injected “protected source” would not solve it.
+- Next action: reconcile the new attack record with the existing Genesis Trust Foundation / protected-evidence boundary contracts and state the smallest missing prerequisite without introducing a new generic layer. No code, platform/provider/key/algorithm selection, protected activation, Lúmina changes, or frozen AB/TLC/Kafka reruns are authorized.
