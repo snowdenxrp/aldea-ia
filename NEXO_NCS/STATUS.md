@@ -1061,3 +1061,5 @@ This entry supersedes older status wording in this file that said the initial ve
 - Detailed query scope and limits recorded in NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md (search-delta section; commit 8a37474e6738d86ce996b656e2c7325ddce0cc76).
 - Next historical-recovery action: inspect actual branch trees and commit/blob lineage/aliases rather than repeat the same indexed queries. Search Library items by content/concept where indexed results may miss older conversation artifacts.
 - Operational construction checkpoint is unchanged: STEP 7 remains STOP at the missing independently recognized implemented Trust Foundation/root. Do not implement/activate a root or reopen closed steps as part of this search.
+
+- Follow-up tree sweep recorded in scientific recovery note (commit 9d93282102da84a418093acd027574786ca09c28): recursive main/NCS trees were complete and yielded no physics-named path; several simulation/research feature branches were distinguished from the Nexo architecture. Exact physics artifact remains UNKNOWN; next search should use ancestry/alias comparison rather than repeat keyword queries.
