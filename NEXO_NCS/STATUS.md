@@ -818,3 +818,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Preserve mechanism-neutral design and the user's boundary: current phone is only a candidate; no mechanism is selected; no legitimacy claim is made.
 - Next valid move when continuing root work: assess a specifically named, pre-existing candidate against the existing gate and its exact claim/failure domain. If the owner does not want to select one yet, stop at the honest design boundary rather than simulate progress by writing more duplicate contracts.
 - Genesis root, Constitution Authority Context, protected commissioning and production effects remain BLOCKED/UNKNOWN. No implementation, Lúmina changes, or frozen AB/TLC/Kafka reruns.
+
+
+## 2026-10-08 — Genesis bootstrap decision gate: owner intent vs technical recognition
+
+- Reconciled AB104.446 enrollment governance and AB104.453 pre-established recovery-root constraints with the existing NCS Root Recognition Gate and Genesis Recognition Basis Precondition.
+- New decision record: `NEXO_NCS/DECISIONS/STEP_7_GENESIS_BOOTSTRAP_DECISION_GATE_OWNER_INTENT_VS_TECHNICAL_RECOGNITION_2026-10-08.md`.
+- Key separation: Kevin's normative authority establishes who may decide constitutionally; it does not by itself technically attribute a future message to him, establish that approval is current, or prove enforcement.
+- Three paths are recorded without selection: (A) a narrowly stated explicit commissioning-environment assumption, (B) evidence for a concrete pre-existing independent recognition basis, or (C) remain uncommissioned. Mere phone/account/app/repository/session possession is not proof of Path B.
+- No path, mechanism, credential, ceremony, verifier, or enforcement boundary is selected or implemented. Genesis Trust Foundation, Constitution Authority Context, protected commissioning, and production effects remain BLOCKED/UNKNOWN.
+- Next action: only proceed with new specific evidence for Path B or an explicit owner decision to examine Path A. Otherwise preserve the safe stop; do not generate duplicate root taxonomy or repeat generic attacks.
