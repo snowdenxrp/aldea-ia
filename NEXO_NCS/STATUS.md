@@ -1304,3 +1304,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - This is not a new trust contract or an implementation authorization. It does not establish a governing Constitution, select a trust root, resolve P1/P2, or weaken the existing implementation gate.
 - P1/P2 remain UNKNOWN/blocking; P3 partially inventoried; P4 UNKNOWN; P5 not established; P6 UNKNOWN. No key generation, enrollment, commissioning, activation, protected-Core deployment or external effect authorized.
 - **Next exact action:** search existing MASTER/AB/P/P112 and NCS inventories before creating a proposal-only Constitution Content Inventory and Provenance Matrix. Reuse existing evidence; classify each item RECOVERED / EXTENSION / CONFLICT / UNKNOWN; preserve contradictions; do not duplicate settled work or write a replacement Constitution.
+
+## STEP 7 — Constitution content/provenance inventory — 2026-10-09
+- 🟢 First-pass proposal-only matrix saved: `NEXO_NCS/RESEARCH/STEP_7_CONSTITUTION_CONTENT_PROVENANCE_MATRIX_2026-10-09.md`.
+- Reuse-first review confirmed the existing Trust Function / Root Role Map and Constitution Authority Context Reuse Audit already cover the broad trust-role inventory and the absence of a current implemented constitutional-authority path; the new matrix avoids duplicating those documents.
+- Classified 16 candidate constitutional-content domains with source provenance and readiness. It separates recovered invariants from extensions/questions and records user-stated governance/succession preferences as preferences, not live constitutional authority.
+- No new trust abstraction or governance decision introduced. No root family, ceremony, credential, stale window, recovery/succession procedure, implementation, commissioning or activation selected.
+- P1/P2 remain UNKNOWN/blocking; P3 partially inventoried; P4 UNKNOWN; P5 NOT ESTABLISHED; P6 UNKNOWN. Matrix is a draft inventory, not the governing Constitution.
+- **Next exact action:** inspect primary MASTER and relevant AB/P/P112 sources only for rows where source wording/classification could change a constitutional decision (prioritize C-03, C-07, C-09, C-11/C-12, C-13). Do not repeat broad trust-role research. Preserve any genuine contradiction explicitly; do not implement while authority prerequisites remain unresolved.
