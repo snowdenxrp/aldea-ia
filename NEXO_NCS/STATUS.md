@@ -1093,3 +1093,10 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Master and AB104.911R/.912R path histories were checked. They point to the existing architecture/causal-model documents and expose no earlier physics-specific rename.
 - Exact result and limits: `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`.
 - Next: inspect older research-index/continuity revisions for newly surfaced science-adjacent identifiers; do not repeat broad physics queries or closed research.
+
+
+## Science-recovery bounded inventory closure (2026-10-09)
+
+- The older index/continuity history and original architecture tree were checked; no physics-specific artifact or rename was identified.
+- Available Library inventory contains the Master and NCS research/checkpoints, but no named physics/science theory or raw AB104 archive. Historical/transient chat content is not thereby proven absent.
+- Specific artifact remains UNKNOWN; this bounded sweep is recorded in `NEXO_NCS/RESEARCH/STEP_7_HISTORICAL_AB104_SCIENTIFIC_FOUNDATIONS_RECOVERY_2026-10-08.md`.
