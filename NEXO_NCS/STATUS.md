@@ -797,7 +797,6 @@ This entry supersedes older status wording in this file that said the initial ve
 - **Scope guard:** current-phone threat-model branch stays closed. Do not start a general phone/Android security audit. Root-class/common-mode attacks are already recorded; do not repeat them without a concrete new candidate mechanism or evidence.
 - Next architectural action: use the already-recorded root-class and trust-role findings to identify whether any previously researched, pre-existing legitimacy basis actually satisfies the Genesis Trust Foundation precondition. If none does, state the precise missing external/pre-established premise and keep implementation blocked; do not invent a synthetic root or promote the phone by assumption.
 - Gate remains BLOCKED/UNKNOWN. No code, protected activation, production effects, Lúmina changes, or frozen AB/TLC/Kafka reruns.
-
 ## 2026-10-08 — Existing root-basis research reconciled; recognition precondition clarified
 
 - Reuse audit: `NEXO_NCS/DECISIONS/STEP_7_PREEXISTING_ROOT_BASIS_REUSE_AUDIT_2026-10-08.md` (commit `a81c61efa6421f6693979934b8e005f0d824b2a0`; read-back blob `4a1563e098cdc0899a4b22c430ecd71360040a88`).
@@ -1198,7 +1197,6 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The user's statement that their INE is vigente remains user-reported, not independently checked. No personal credential data was requested or stored. Official credential authenticity/status, presenter attribution, Nexo-specific prior recognition, constitutional authority, exact-content binding, currentness and enforcement remain separate claims.
 - Decision unchanged: INE is possible identity evidence only, not a Genesis root or sufficient Path B basis. Path A remains unaccepted; STEP 7 remains STOP/UNKNOWN. No implementation, credential enrollment, key creation, commissioning, activation, external effect, or frozen AB105/TLC/Kafka reruns; AB105.117R remains prohibited.
 
-
 ## 2026-10-09 — Initial trust model family comparison
 - Added `NEXO_NCS/RESEARCH/STEP_7_INITIAL_TRUST_MODEL_FAMILY_COMPARISON_2026-10-09.md`, commit `f9493371763da91b96af9bc5224dee19a7079561`.
 - Compared externally provisioned/immutable roots, predecessor-authorized mutable roots, platform/hardware roots, and multi-root/threshold arrangements against Nexo's currently stated claim classes. Cross-check uses IETF RFC 9334 (RATS) and NIST SP 800-193; these support role-specific technical trust, not automatic constitutional legitimacy.
@@ -1264,3 +1262,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - No developer options, USB debugging, root, flashing, credential enrollment, key creation, commissioning, protected-Core deployment, or activation was performed or authorized. No sensitive identifiers or secrets requested/stored.
 - **Next exact action:** continue official-source review for this exact product family/build to identify documented support boundaries for hardware-backed key attestation, TEE/StrongBox, verified boot, rollback protection, and update support. Distinguish published capability from observed handset state and independently validated evidence. If unresolved, keep UNKNOWN/STOP; no sensitive device experiment merely to fill a documentation gap.
 - Path A remains NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. LCORE-1 remains UNKNOWN/STOP; no Genesis trust root or root family selected.
+
+## STEP 7 — Exact-device official-source cross-check — 2026-10-09
+- 🟢 Extended `NEXO_NCS/RESEARCH/STEP_7_EXACT_PHONE_PLATFORM_ASSESSMENT_2412DPC0AG_2026-10-09.md` with the Android 16 Compatibility Definition Document and Xiaomi Security Center policy.
+- Android 16's CDD specifies Verified Boot requirements and secure-lock-screen/key-attestation requirements subject to stated conditions, including exemptions for some devices upgraded from earlier Android versions. These are compatibility requirements, not evidence that this handset's current state or attestation has been tested.
+- Xiaomi's general update policy describes typical support periods and region/model variation; it does not establish the exact model/build's end-of-support date or independently validate the reported patch level.
+- No official evidence found in this review establishes StrongBox on this specific POCO build. Do not infer StrongBox, current bootloader lock, verified-boot state, hardware-backed attestation or rollback resistance.
+- **Next exact action:** preserve UNKNOWN/STOP unless a specific claim needs a carefully scoped, non-destructive device observation. Before any such observation, define the claim, threat model, exposed data, independent verifier and test safety. No diagnostic app/settings changes, debugging, attestation request, key generation, enrollment, commissioning or activation authorized.
+- Path A remains NOT ACCEPTED; Path B NOT ESTABLISHED; Path C uncommissioned UNKNOWN/STOP remains valid. LCORE-1 remains UNKNOWN/STOP.
