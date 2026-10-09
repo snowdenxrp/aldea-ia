@@ -924,3 +924,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Existing device screen lock is not a pre-enrolled Nexo authority credential. Actual device capabilities remain unverified.
 - Inventory extended and readback-verified: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`, commit `48af9e2e61d43dbb485754b65370a5359fc02d50`.
 - Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only. No implementation, enrollment, commissioning, activation, or production effect.
+
+
+### Path B code-level evidence check — 2026-10-08
+- Inspected current `policy-context-resolver.mjs`, `contracts.mjs`, and `protected-transition.mjs` by exact source path and blob SHA.
+- They provide data validation and a delegated authority-gate seam; they do not themselves establish a trust root, prior enrollment, verifier legitimacy, or independently sourced currentness.
+- Reused the already-closed audits: no protected policy-source authority owner and no implemented current Constitution Authority Context path were found.
+- Evidence inventory extended and readback-verified: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`, commit `e45355bb91425f4a042b9df8572a711553ecdbc9`.
+- Path B remains BLOCKED/UNKNOWN. No runtime code changes, keys, enrollment, commissioning, activation, or production effects.
