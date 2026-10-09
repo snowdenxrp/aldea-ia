@@ -78,5 +78,22 @@ The current protected PolicyContext boundary already rejects provider self-attes
 - Protected source legitimacy, deployment closure and root authority: **UNKNOWN/STOP**.
 - No code, tests, frozen AB105/TLC/Kafka probes, authority decision, commissioning, credentials, protected activation or external effect was created or authorized.
 
+## Follow-up source reconciliation (2026-10-09)
+The proposed follow-up source check was completed against current branch code and existing P112/NCS evidence:
+- `src/assistants/squad.js` SHA `6d9b9bdfbabf79c8924033c72046f056806d9918`: current specialist findings carry claim-class-specific fields, but no common report/run/sample identity is attached to each finding. Examples include NEGATIVE_RESOURCE(resource type, amount), EXPLORER_STALLED(agent id, area/region counts), and render findings whose predicate originates in an external `renderProbe`.
+- `src/nexo/orchestrator.js` SHA `973d3d5406c5cab16fb49529d94e07a1557c3111`: producer source is injected; action/target/reason/source and selected metadata are carried live; dedupe uses `action|target|finding.action.name`, not claim equivalence.
+- `src/assistants/memory.js` SHA `c70f246a85e8c513b8f746d7de237f881b0de91c`: durable `recordNexoPlan` stores mission metadata plus step id/action/target/status/dependencies. It does not retain the original finding/provenance envelope. `reconstructNexoMission` cannot reconstruct fields never persisted.
+- `NEXO_CONTINUITY/P112_FINDING_EVIDENCE_PROVENANCE_CLASSIFICATION_AUDIT_V1_2026-10-07.md` SHA `037e28f6f9997955deee9cdf6f7d0d5d02e0646d`, `P112_MISSION_CLAIM_COMPRESSION_DEDUPLICATION_AUDIT_V1` SHA `0f257026f24fbf8da4880fb2f558ed99371aabad`, `P112_DEDUP_COLLISION_SEMANTICS_AUDIT_V2` SHA `d9675ca04c3e50d56e5071af619244b675d15ba6`, and current NCS evidence mapping already record this same two-stage provenance-loss boundary and its claim-specific distinctions.
+- Existing NCS `ObservationEnvelope → MissionCandidate` contract preserves the provenance actually available and explicitly retains UNKNOWN when required identity, incarnation, freshness, or dependencies are absent. It does not promise durable persistence or integrate the legacy orchestrator.
+
+Result: this check confirms an already-owned gap; it does not discover a new one. Do not duplicate the P112 audit, invent observation/run/sample IDs, change the legacy serializer, or claim the old path is integrated into NCS. The gap remains relevant historical evidence, while the new Core remains a separate design/implementation boundary.
+
+## Decision after follow-up
+- Generic assurance/conflict semantics: already closed at the AB105.082R–.086R research layer.
+- Observation-to-mission provenance loss in the legacy path: already documented and owned by the current NCS STEP 7 evidence mapping and P112 audits.
+- Current NCS transport contract: preserves available evidence, but does not establish missing producer identity or durable raw observation recovery.
+- No further generic contract, memory subsystem, EventDAG, identity primitive, persistence mechanism, or legacy integration is justified by this source pass.
+- STEP 7 Genesis trust-root P1/P2 and protected evidence-establishment gates remain UNKNOWN/STOP.
+
 ## Next exact action
-Do not repeat the evidence freshness/conflict/common-mode research and do not reopen AB105.082R–.086R absent new primary evidence. Return to the current NCS core dependency map and inspect one existing, concrete unresolved boundary from the canonical construction state—preferably persistence/reconstruction of claim-critical provenance across the current ObservationEnvelope → MissionCandidate → persisted mission path—against MASTER + AB + P/P112 and the existing STEP 7 contracts. This is not permission to add memory, event IDs, queues, retries, tombstones or a new EventDAG. First establish exactly what evidence is lost, whether that loss can affect a real claim/decision, and whether a current canonical contract already owns the remedy. If no concrete requirement supports a change, record no gap and stop.
+Do not repeat the now-closed generic evidence branch or the already-audited legacy provenance-loss path. The next action must be selected from a concrete unresolved NCS requirement that is independent of P1/P2 and has a canonical owner; if none is supported by current MASTER + AB + P/P112 evidence, hold rather than manufacture progress. Any future proposal must first state its claim/use case, canonical owner, required evidence, dependency/assurance conditions, failure behavior, verification method, and why existing contracts do not already cover it.
