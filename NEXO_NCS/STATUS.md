@@ -961,3 +961,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Kevin's possession of an existing e.firma has **not** been established. No certificate or secret was requested or inspected. Do not share private `.key` files, passwords, RFC, or certificate bundles in chat/repository.
 - Decision record extended and readback-verified: `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`, commit `e236dd9bb8bce7f93f83793dd13e13716b2a63b9`, blob `6e30fb13c7f81907875e9b4a8d9e7bbd5b3693af`.
 - Status unchanged: Path B remains BLOCKED/UNKNOWN; Nexo remains uncommissioned. No key use/generation, enrollment, implementation, commissioning, activation, or production effects.
+
+
+### Path B — conditional e.firma claim-binding gate specified, design only — 2026-10-08
+- Added a candidate-specific gate to `NEXO_NCS/DECISIONS/STEP_7_PATH_B_CONCRETE_EVIDENCE_INVENTORY_2026-10-08.md`: any future signed commissioning statement must bind the exact Constitution/version/digest, one-time scope, fresh verifier challenge, transaction identity, credential identity, and disclosed assumptions.
+- The verifier must independently validate signature/certificate status, reject replay/substitution, map the signer to the authorized constitutional principal under a separate policy, and keep decision enforcement separate from signature validity.
+- This is a conditional design contract, not code. No e.firma possession/certificate was confirmed, no secrets were requested, no key used/generated, and no relying party/verifier/enrollment was implemented.
+- Inventory updated and readback-verified: commit `bb629538228ed5c20b4bba3b410b9f166a6850ec`, blob `e034336681aaa2a2b048c465561680991b7285d6`.
+- Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only. Nexo remains uncommissioned; no implementation, activation, or production effect.
