@@ -433,3 +433,10 @@ This separation exists specifically to prevent historical research volume from b
 - 🔴 Still unresolved: concrete initial provisioning/independent-recognition ceremony; deployment-specific physical trust/failure assumptions; offline currentness and revocation bounds; independently enforceable recovery/succession; target-specific final effect boundaries and bypass closure; permitted physical role sharing.
 - Implementation STOP remains. The role map is a semantic synthesis, not runtime proof or owner-governance decision.
 - **Next exact action:** build a claim-relative deployment/failure-domain inventory from concrete Nexo target capabilities and protected-effect classes. For each claim, specify what must be trusted, what can be compromised together, how currentness/revocation is established offline, who enforces the last effect boundary, and which facts are verified versus environmental assumptions. Then compare recognition families against that inventory. Do not choose a family or create another contract until the inventory demonstrates a specific unresolved requirement.
+
+
+## 2026-10-08 — Next-chat continuity pointer
+- Detailed NCS handoff updated on `ncs-clean-architecture`: `NCS/NCS_NEXT_CHAT_HANDOFF_2026-10-08.md`, commit `8c718136e208e897900638fa2a63b7d0fa7c8723`.
+- The handoff records the owner-approved authority/succession choice, links to the adversarial review and enforcement cross-check, the Trust Foundation root contract on `main`, branch separation, all current gates, and the next exact action.
+- Next exact action for the clean architecture continuation: make a requirement-to-canonical-owner traceability matrix from existing contracts; do not duplicate abstractions or select a trust mechanism without a deployment/failure-domain inventory.
+- No claim that this GitHub handoff has been uploaded to the ChatGPT `/NCS` persistent library. No implementation or protected activation authorized.
