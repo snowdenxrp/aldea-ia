@@ -787,3 +787,13 @@ This entry supersedes older status wording in this file that said the initial ve
 - Earliest unresolved architectural prerequisite: a non-circular, justified genesis trust basis whose evidence can be recognized by the protected Core. The protected evidence/context capabilities are downstream of that root and cannot manufacture it.
 - Next action: compare a small set of semantically distinct genesis-root classes against the existing attack matrix, only at design level. Assess pre-existing authority, provenance, currentness/revocation/recovery/succession, common-mode dependencies and compromise behavior. No class is selected yet.
 - Gate remains BLOCKED/UNKNOWN: no implementation, protected activation or production effects; no Lúmina changes; no frozen AB/TLC/Kafka reruns.
+
+
+## 2026-10-08 — Bootstrap composition attack; no drift back into device research
+
+- Focused attack: `NEXO_NCS/BUILD/STEP_7_BOOTSTRAP_COMPOSITION_CONTRACT_ATTACK_CURRENT_PHONE_CANDIDATE_2026-10-08.md` (commit `96745583b4b7f4016fa7e33ec261a9eebebb5086`; read-back blob `044ab48125ff897e6a3f79044a4b03703b1e473d`).
+- Existing Bootstrap Composition Contract survives semantically: claim scope, governed composition, dependency closure, currentness, and UNKNOWN/INVALID are appropriate. But composition cannot authenticate its own inputs or manufacture authority from phone/app/Termux claims, hashes, signatures, or multiple ungrounded sources.
+- Cross-check against the existing Trust Function / Root Role Map found the same root gap already recorded: no current protected constitutional/policy source owner or real genesis root basis is implemented. No additional generic contract/registry/engine is justified merely to restate that absence.
+- **Scope guard:** current-phone threat-model branch stays closed. Do not start a general phone/Android security audit. Root-class/common-mode attacks are already recorded; do not repeat them without a concrete new candidate mechanism or evidence.
+- Next architectural action: use the already-recorded root-class and trust-role findings to identify whether any previously researched, pre-existing legitimacy basis actually satisfies the Genesis Trust Foundation precondition. If none does, state the precise missing external/pre-established premise and keep implementation blocked; do not invent a synthetic root or promote the phone by assumption.
+- Gate remains BLOCKED/UNKNOWN. No code, protected activation, production effects, Lúmina changes, or frozen AB/TLC/Kafka reruns.
