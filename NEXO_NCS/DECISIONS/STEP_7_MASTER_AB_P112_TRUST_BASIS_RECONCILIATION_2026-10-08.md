@@ -52,3 +52,19 @@ Ask one narrow governance question: may Nexo's initial commissioning design trea
 - Do not build a mobile client, select a platform/provider/root/authenticator, or enable protected effects as a side effect of "continue."
 - Do not create another abstraction to hide the missing verifier/legitimacy assumption.
 - Trust Foundation, Constitution Authority Context, genesis activation, protected recovery/succession, and production safety remain BLOCKED / NOT AUTHORIZED.
+
+
+## Owner response — bounded initial channel assumption accepted (2026-10-08)
+
+Kevin explicitly accepted the proposed assumption for DESIGN: Nexo may consider a pre-existing channel independently recognized by Kevin and already under his control as a **bounded trust assumption** for the initial commissioning claim, specifically to bind his approval to the exact Constitution and commissioning context.
+
+This acceptance does **not**:
+- make any device inherently legitimate or a constitutional authority;
+- select a device, Termux, key, authenticator, protocol, presentation path, or implementation;
+- establish that possession, biometrics, voice, a password, a signature, or a device identity alone proves Kevin's authority;
+- prove independence from shared OS, account, update, provider, recovery, or control-plane failure domains;
+- authorize genesis activation, protected effects, recovery, succession, production deployment, or implementation.
+
+The next design action is to define the precise claims this bounded assumption can and cannot support, then attack the minimum enrollment-and-binding contract. Keep unresolved properties UNKNOWN and activation BLOCKED until separately specified and evidenced.
+
+Kevin also noted that he has Termux on his phone. Record it only as a possible local research/prototyping tool to assess later; its presence is not evidence of device integrity, independent trust, or root legitimacy, and no Termux-based implementation is authorized by this note.
