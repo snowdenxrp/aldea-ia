@@ -78,3 +78,22 @@ Interpretation: the repository contains useful execution/control-flow and data-c
 ## Updated disposition
 This code inspection strengthens the bounded repository finding but does not reveal a Path B candidate. Path B remains BLOCKED/UNKNOWN; commissioning remains prohibited. No code was changed in the runtime, no keys were generated, and no enrollment or activation was performed.
 
+
+
+## External pre-existing credential candidate — Mexican e.firma (SAT) — 2026-10-08
+
+This is a standards/authority check of one concrete candidate family, **not a claim that Kevin possesses a certificate**, not a request to disclose one, and not selection of e.firma as Nexo's root.
+
+Official SAT material says its public service can verify/authenticate e.firma certificates and check their validity; the SAT also documents a separate certificate-revocation process. The Ley de Firma Electrónica Avanzada provides for certificate issuance, validity and revocation by the issuing authority. Sources:
+- SAT certificate-validity service: https://wwwmat.sat.gob.mx/tramites/19941/valida-la-vigencia-de-tu-e.firma-%28antes-firma-electronica%29
+- SAT e.firma certificate verification/authentication service: https://wwwmat.sat.gob.mx/tramites/03180/como-innovar-en-tu-empresa-con-la-e.firma
+- SAT revocation procedure: https://wwwmat.sat.gob.mx/tramites/16659/revoca-tu-certificado-de-e.firma
+- Federal law: https://www.diputados.gob.mx/LeyesBiblio/pdf/LFEA.pdf
+
+Claim-relative assessment:
+- **Potential contribution:** if an already-issued certificate exists, its chain/signature and status can be checked against the issuing authority's rules; a fresh signature over an exact Nexo commissioning statement could potentially bind a person-level credential to specific bytes.
+- **Not established:** possession by Kevin; current certificate status; safe control of its private key; a Nexo-specific relying/verifying policy; a prior Nexo enrollment; freshness and replay controls; a trustworthy presentation channel; constitutional scope/intent; lifecycle/recovery for Nexo; or protected enforcement.
+- **Important boundary:** SAT certificate validity is not the same as Nexo authorization. A tax/government identity certificate does not, by itself, declare the holder Nexo's constitutional authority. That mapping would require an explicit, separately justified policy and exact signed content.
+- **Safety:** never upload or paste the private `.key` file, private-key password, RFC, certificate bundle, one-time code, or other secret into this conversation or repository. For candidate screening, a simple yes/no on whether a pre-existing e.firma exists is enough; if yes, the next step would be to assess a safe local verification design without transferring secrets.
+
+Disposition: e.firma is a **conditional external candidate worth checking for prior existence**, not a selected root and not sufficient by itself to close C3/C4/C5. Since possession has not been established, Path B remains BLOCKED/UNKNOWN. No certificate was inspected, no key used/generated, no credential enrolled, and no implementation or commissioning occurred.
