@@ -1019,3 +1019,5 @@ This entry supersedes older status wording in this file that said the initial ve
 - This is not an approved field schema and does not establish a working local runtime, no-egress enforcement, device enforcement, or Genesis authority. All remain UNKNOWN/BLOCKED where not evidenced.
 - Cross-check used current Core contracts and NEXO_CONTINUITY/NEXO_CORE_CONSTRUCTION_DESIGN_2026-10-08.md, plus NCS Step 6 handoff / MASTER constraints. No implementation/tests/dependencies/provider/platform selection.
 - Next: design-level contradiction review against MASTER/Core and the candidate's no-egress/fallback assumptions. Do not implement until separately authorized; keep Trust Foundation/Path B gate independent.
+
+- Adversarial contradiction review appended to the M1 candidate, commit `c537fcfeb6fbfe3cb71741fcf5079211e583a811`. Semantic separation passes review; enforcement remains UNKNOWN for all-egress blocking, silent provider fallback, durable logging/cache, and tool/effect bypass. This is not implementation-ready; no generic security layers are to be invented without a concrete runtime/platform.
