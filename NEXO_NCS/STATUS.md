@@ -1328,3 +1328,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - No contradiction found in the bounded review. This closes the reviewed semantic distinctions only; amendment protocol, currentness policy, P1 recognition, P2 ceremony and deployment enforcement remain unresolved.
 - Matrix updated. No implementation, key generation, enrollment, commissioning or activation authorized.
 - **Next exact action:** stop broad constitutional research here; the next design pass should be a row-by-row evidence reconciliation of the matrix only where primary MASTER/AB/P112 source text can materially change a classification. Do not draft a replacement Constitution or reopen already-closed trust-role attacks.
+
+## STEP 7 — C-03 MASTER bootstrap wording ambiguity found — 2026-10-09
+- 🔴 Targeted source reconciliation found an unresolved semantic ambiguity in the canonical MASTER's generic phrase that Genesis activation requires “external/independent authority or threshold,” when read alongside the owner's stated owner-only constitutional-authority preference.
+- Two readings must not be conflated: external normative governance authority (conflicts with owner-only preference) versus an independently recognized technical/evidentiary provisioning basis that supports—but does not replace—Kevin's constitutional decision. The source wording alone does not safely choose between them.
+- P1/P2 readiness research already rejects silently promoting witnesses, issuers, manufacturers, providers, cloud services or threshold participants into additional constitutional governors, but this does not erase the need to reconcile the MASTER wording.
+- Matrix updated; existing MASTER history and semantic contracts were not rewritten. No new trust abstraction, quorum, root, ceremony, credential or governance rule created.
+- P1 remains UNKNOWN/blocking; commissioning, protected-context implementation and activation remain STOP.
+- **Next exact action:** search the original provenance/decision trail for the MASTER bootstrap sentence. If no evidence of intended meaning exists, preserve the ambiguity as an explicit future owner decision; do not infer, rewrite history or implement a trust mechanism to hide it.
