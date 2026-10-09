@@ -57,3 +57,13 @@ For meaningful architectural decisions, record:
 This rule applies to research-backed decisions across Core, observation/provenance, admission, authority, validation, commit, reconciliation, memory, missions, tools, providers, evolution, distributed continuity, and future external effects.
 
 It complements and does not replace the existing MASTER + AB + P evidence-integration rule.
+
+
+## Progress is not evidence of correctness
+A user request to continue authorizes continued work, not automatic acceptance of the next technical proposal.
+
+Before each material step, NCS must establish that the step is justified by the current evidence and construction state. It must identify the concrete requirement, canonical owner, relevant MASTER + AB + P/P112 constraints, dependencies, failure modes, verification method, and expected benefit. The request to continue is not evidence that these conditions are satisfied.
+
+If the next step is blocked, duplicates closed work, depends on an unresolved premise, lacks a concrete consumer, or requires an invented abstraction/patch, do not advance it merely to maintain momentum. State the reason, preserve UNKNOWN/PENDING/STOP, and select another step only if an independent requirement is demonstrably ready. Design, implementation, test PASS, and deployment assurance remain distinct claims.
+
+This rule does not require stopping all Nexo development while one boundary is blocked. It permits parallel progress only where the dependency analysis shows the work is genuinely independent and the result cannot be mistaken for closure of the blocked boundary.
