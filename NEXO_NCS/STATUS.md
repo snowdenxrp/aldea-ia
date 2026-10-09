@@ -977,3 +977,11 @@ This entry supersedes older status wording in this file that said the initial ve
 - Added and readback-verified `NEXO_NCS/DECISIONS/STEP_7_CRYPTOGRAPHIC_RESEARCH_RECONCILIATION_THRESHOLD_ROTATION_2026-10-08.md`, commit `91ed7c5f5c0899434ed02ab1232a2c67c25bdc57`, blob `9e46842986d4ea6ec9d0016396f4be8434715847`.
 - Correction: e.firma remains a conditional candidate only, not a selected root or Nexo dependency. No threshold scheme, hardware root, credential, verifier, or participant set selected.
 - Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only. No implementation, key use/generation, enrollment, commissioning, activation, or production effects.
+
+### Historical cryptographic root decision recovered — 2026-10-08
+- Re-read AB104.199, AB104.446, AB104.452–.455, AB104.457, the MASTER Genesis Trust Bundle section, and the no-root disaster-recovery research to answer whether an earlier concrete root had already been selected.
+- Result: the architectural answer was already established — current authority needs an independently/pre-established, non-circular trust basis; recovery is bounded, governed, anti-replay/currentness-aware, and must fence old authority. But the reviewed historical records explicitly leave the deployment's concrete physical/cryptographic root open.
+- AB104.457's source-level FROST DKG/refresh audit is evidence about the external library only; it does not evidence a pre-enrolled Nexo participant set or deployment recovery root.
+- Added and readback-verified NEXO_NCS/DECISIONS/STEP_7_HISTORICAL_CRYPTO_ROOT_DECISION_RECOVERY_2026-10-08.md, commit f37f0bcf6dd343cc1a938377297d16917dfa9248, blob 38f16b9d3eb20ecc083aa99891568f9c7eaafe19.
+- This resolves the apparent loop: do not repeat root taxonomy; Path B still needs a specific pre-existing external artifact/relationship with independently verifiable provenance and recognition. Broad repository-only root searching is exhausted unless new evidence identifies a concrete record.
+- Path B remains BLOCKED/UNKNOWN; Path A remains evaluation-only and assumptions remain unaccepted. No implementation, key generation/use, enrollment, ceremony, commissioning, activation, or production effects.
