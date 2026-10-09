@@ -1063,3 +1063,18 @@ This entry supersedes older status wording in this file that said the initial ve
 - Operational construction checkpoint is unchanged: STEP 7 remains STOP at the missing independently recognized implemented Trust Foundation/root. Do not implement/activate a root or reopen closed steps as part of this search.
 
 - Follow-up tree sweep recorded in scientific recovery note (commit 9d93282102da84a418093acd027574786ca09c28): recursive main/NCS trees were complete and yielded no physics-named path; several simulation/research feature branches were distinguished from the Nexo architecture. Exact physics artifact remains UNKNOWN; next search should use ancestry/alias comparison rather than repeat keyword queries.
+
+
+## Aclaración permanente del usuario — parches y evolución (2026-10-09)
+
+La regla correcta NO es prohibir todo parche. El objetivo es evitar que Nexo dependa de una acumulación de parches que oculten fallas de diseño.
+
+- Diagnosticar primero la causa: defecto estructural, limitación técnica real, nueva necesidad o condición externa.
+- Preferir una corrección de raíz cuando el problema revele que un contrato, límite de autoridad o fundamento arquitectónico está mal definido.
+- Permitir un parche/adaptador/mitigación cuando esté justificado para avanzar de forma segura, mantener compatibilidad o responder a una limitación real.
+- Cada parche material debe registrar motivo, alcance, riesgo, dependencias, pruebas, condición de retirada o mantenimiento y si es temporal o permanente.
+- No aceptar un parche que oculte una violación de Constitución/autoridad, debilite una invariante crítica o convierta UNKNOWN en permiso/éxito.
+- Si el parche es suficiente y coherente, continuar; si solo desplaza una falla estructural o genera complejidad peligrosa, STOP y rediseñar la raíz.
+- No descartar una solución solo por llamarse parche ni justificar un mal diseño porque una solución rápida funcione hoy.
+
+Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohibición nominal de los parches. Esta aclaración refina las frases anteriores sobre evitar parches: “no ocultar contradicciones con parches” sigue vigente, pero no significa “nunca usar parches”.
