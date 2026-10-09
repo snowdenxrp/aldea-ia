@@ -1320,3 +1320,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - No contradiction found in this targeted review; it is not an exhaustive MASTER/AB/P audit. Matrix records the result.
 - No recovery/succession mechanism or implementation selected. P1/P2 remain UNKNOWN; commissioning and activation remain unauthorized.
 - **Next:** targeted source review of C-07 and C-09/C-13 only, reusing existing AB/P112 research; no amendment or ceremony protocol while P1/P2 remain unresolved.
+
+## STEP 7 — Targeted amendment/content-binding provenance cross-check — 2026-10-09
+- 🟢 Cross-checked C-07/C-09/C-13 against the existing Constitution-to-Policy and Constitution Authority Context attacks, PG-009 semantic migration research, and the P1/P2 readiness review.
+- Existing attacks already reject version/hash/epoch confusion, stale binding reuse, caller/provider self-authorization and scope laundering. No new trust abstraction or schema is justified.
+- Exact-content review is still a design gap: byte/hash identity does not by itself prove that a trusted presentation showed the same understandable meaning and scope that was recorded for approval. No trusted presentation/ceremony is selected.
+- No contradiction found in the bounded review. This closes the reviewed semantic distinctions only; amendment protocol, currentness policy, P1 recognition, P2 ceremony and deployment enforcement remain unresolved.
+- Matrix updated. No implementation, key generation, enrollment, commissioning or activation authorized.
+- **Next exact action:** stop broad constitutional research here; the next design pass should be a row-by-row evidence reconciliation of the matrix only where primary MASTER/AB/P112 source text can materially change a classification. Do not draft a replacement Constitution or reopen already-closed trust-role attacks.
