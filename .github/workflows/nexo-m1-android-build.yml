@@ -63,6 +63,7 @@ jobs:
           grep -Fq 'LOGi("%s: Formatted and added %s message:' "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp"
           grep -Fq "aichat_last_error_text.assign" "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/logging.h"
           grep -Fq "Java_com_arm_aichat_internal_InferenceEngineImpl_lastError" "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp"
+          grep -Fq "llama_backend_init();" "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp"
           grep -Fq "private external fun lastError(): String" "$ROOT/llama.cpp/examples/llama.android/lib/src/main/java/com/arm/aichat/internal/InferenceEngineImpl.kt"
           grep -Fq "Native model load failed" "$ROOT/llama.cpp/examples/llama.android/lib/src/main/java/com/arm/aichat/internal/InferenceEngineImpl.kt"
           grep -Fq "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4" "$ROOT/app/src/main/kotlin/org/nexo/m1/MainActivity.kt"
