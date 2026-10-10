@@ -2,12 +2,6 @@ name: Nexo M1 Android shell build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - ncs-clean-architecture
-    paths:
-      - "NEXO_NCS/M1_ANDROID/**"
-      - ".github/workflows/nexo-m1-android-build.yml"
 
 permissions:
   contents: read
