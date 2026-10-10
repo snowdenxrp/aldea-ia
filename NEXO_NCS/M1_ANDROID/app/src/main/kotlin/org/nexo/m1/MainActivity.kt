@@ -214,7 +214,7 @@ class MainActivity : Activity() {
             }
         }
 
-        val actualHash = digest.digest().joinToString("") { "%02x".format(it) }
+        val actualHash = digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) }
         if (actualHash != EXPECTED_MODEL_SHA256) {
             temporary.delete()
             throw IOException("Model digest mismatch")
@@ -337,7 +337,7 @@ class MainActivity : Activity() {
                 digest.update(buffer, 0, count)
             }
         }
-        return digest.digest().joinToString("") { "%02x".format(it) }
+        return digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) }
     }
 
     private fun dp(value: Int): Int =
