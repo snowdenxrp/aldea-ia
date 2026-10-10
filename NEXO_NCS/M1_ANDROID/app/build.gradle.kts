@@ -8,12 +8,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        // Unique package for side-by-side diagnosis; preserves the currently installed reference app.
-        applicationId = "org.nexo.m1.safetest17"
+        // Fresh diagnostic package avoids signature conflicts with prior side-by-side test APKs.
+        applicationId = "org.nexo.m1.safetest18"
         minSdk = 33
         targetSdk = 36
         versionCode = 1
-        versionName = "0.2.5-safe-test17"
+        versionName = "0.2.6-safe-test18"
     }
 
     compileOptions {
