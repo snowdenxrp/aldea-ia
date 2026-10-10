@@ -106,7 +106,7 @@ jobs:
             echo "FAIL: packaged APK does not contain the GGML CPU backend shared library"
             exit 1
           fi
-          printf '%s\n' "GGML backend policy: static CPU backend; dynamic backend loading disabled" > "$ROOT/build-evidence/ggml-backend-policy.txt"
+          printf '%s\n' "GGML backend policy: linked CPU backend; dynamic backend-module loading disabled" > "$ROOT/build-evidence/ggml-backend-policy.txt"
           sha256sum "$APK" | tee "$ROOT/build-evidence/m1-apk.sha256"
 
       - name: Upload APK and build evidence
