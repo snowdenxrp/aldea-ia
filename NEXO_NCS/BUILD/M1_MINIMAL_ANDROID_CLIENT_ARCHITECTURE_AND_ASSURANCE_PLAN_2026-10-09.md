@@ -73,6 +73,6 @@ If the implementation requires any of these edges, it is no longer this M1 slice
 
 ## Recommendation and next gate
 
-Keep this as the minimum M1 design candidate. Before implementation, review whether Kevin wants the first prototype to prioritize (a) strict app-process network isolation, (b) ease of installation, or (c) broader hands-free capability; this design intentionally prioritizes a small, auditable read-only slice and strict network denial over convenience.
+Keep this as the minimum M1 design candidate. **Recommended first-prototype priority: strict app-process network isolation plus read-only text interaction.** Defer hands-free wake, convenience, persistent memory, tools and external control until this smallest boundary is independently reviewed and tested. This recommendation is technical; it is not implementation authorization.
 
 No code, dependency, model, platform installation, device inspection, runtime test, credential, trust root, commissioning, or protected effect was changed or authorized by this analysis.
