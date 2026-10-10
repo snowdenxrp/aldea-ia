@@ -23,5 +23,8 @@ fi
 # This is deterministic project configuration, not a floating-source patch.
 cp "$ROOT/llama-lib.build.gradle.kts" "$LLAMA_DIR/examples/llama.android/lib/build.gradle.kts"
 
+# Patch only the exact pinned source and fail closed if any expected anchor changes.
+python3 "$ROOT/apply-native-diagnostics.py"
+
 printf 'Pinned llama.cpp revision: %s\n' "$ACTUAL_SHA"
 printf 'Native log floor: ANDROID_LOG_ERROR\n'
