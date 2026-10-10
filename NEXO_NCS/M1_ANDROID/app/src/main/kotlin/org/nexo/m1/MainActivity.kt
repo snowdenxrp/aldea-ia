@@ -72,6 +72,17 @@ class MainActivity : Activity() {
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(20), dp(24), dp(20), dp(20))
+            // Android 15+ edge-to-edge can place app content underneath the status/navigation bars.
+            // Apply system-bar insets at the root so the import control stays fully visible and tappable.
+            setOnApplyWindowInsetsListener { view, insets ->
+                view.setPadding(
+                    dp(20) + insets.systemWindowInsetLeft,
+                    dp(24) + insets.systemWindowInsetTop,
+                    dp(20) + insets.systemWindowInsetRight,
+                    dp(20) + insets.systemWindowInsetBottom
+                )
+                insets
+            }
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -157,6 +168,7 @@ class MainActivity : Activity() {
             ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
         ))
         setContentView(root)
+        root.requestApplyInsets()
     }
 
     private fun chooseModelFile() {
