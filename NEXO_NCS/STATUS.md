@@ -1405,3 +1405,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - 🔴 No repository-grounded Nexo local inference client/model path or enforceable no-egress/remote-fallback boundary was found. Those properties remain unimplemented/unverified, not promises.
 - M1 semantic scope remains useful, but is not implementation-ready. It must not be implemented by retrofitting the current simulation runtime.
 - **Next exact action:** bounded analysis-only M1 client-design phase: compare a small number of concrete routes against actual constraints, dependencies, failure modes, enforcement evidence and test plan. No code changes, dependency/model/platform installation, private-device inspection, network/persistence path, or security/privacy claim. Any implementation choice must be separately authorized. P1/P2 and protected commissioning remain UNKNOWN/STOP.
+
+
+## 2026-10-09 — M1 analysis-only client route comparison
+- 🟢 Saved and fetch-back verified: `NEXO_NCS/RESEARCH/M1_ANALYSIS_ONLY_CLIENT_ROUTE_COMPARISON_2026-10-09.md`, commit `b574fa25a94cb870c22f6f733c6c2932337ceb42`.
+- Compared dedicated Android + `llama.cpp`, Android + LiteRT-LM, and browser/PWA + Transformers.js. **Dedicated Android + local `llama.cpp` is the preferred analysis candidate only**; not a platform/model implementation selection.
+- Rationale: the first M1 slice needs a controllable client boundary, no tool/effect path, no conversation persistence and an auditable no-network design. A browser/PWA makes those guarantees harder to establish; LiteRT-LM remains a bounded alternative.
+- No model, quantization, licensing choice, exact device compatibility, package, dependency, code change, installation, or runtime test is selected/performed.
+- **Next exact action:** define the minimal Android M1 architecture and assurance/test plan for the preferred candidate, explicitly separating UI, local inference, model provisioning, ephemeral request/response, network denial, and platform assumptions. Remain analysis-only; no code/dependencies/device access/install until a later implementation authorization. Protected commissioning remains UNKNOWN/STOP.
