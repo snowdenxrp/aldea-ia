@@ -34,6 +34,7 @@ android {
             isMinifyEnabled = false
         }
     }
+}
 
 dependencies {
     implementation(project(":llama-lib"))
