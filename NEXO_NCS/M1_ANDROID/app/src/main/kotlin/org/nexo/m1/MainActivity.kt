@@ -8,7 +8,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -96,24 +98,52 @@ class MainActivity : Activity() {
         }
         root.addView(chooseModelButton)
 
+        // Keep the send action beside the composer so the IME cannot cover it.
+        // The keyboard's Send action is also wired to the same guarded submit path.
         prompt = EditText(this).apply {
             hint = "Escribe una pregunta"
-            minLines = 2
-            maxLines = 5
-            gravity = Gravity.TOP or Gravity.START
+            minLines = 1
+            maxLines = 3
+            gravity = Gravity.CENTER_VERTICAL or Gravity.START
+            imeOptions = EditorInfo.IME_ACTION_SEND
             setSingleLine(false)
+            setOnEditorActionListener { _, actionId, event ->
+                val enterPressed = event?.keyCode == KeyEvent.KEYCODE_ENTER &&
+                    event.action == KeyEvent.ACTION_DOWN
+                if (actionId == EditorInfo.IME_ACTION_SEND || enterPressed) {
+                    sendPrompt()
+                    true
+                } else {
+                    false
+                }
+            }
         }
-        root.addView(prompt, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
 
         sendButton = Button(this).apply {
-            text = "Responder localmente"
+            text = "Enviar"
             isEnabled = false
             setOnClickListener { sendPrompt() }
         }
-        root.addView(sendButton)
+
+        val composer = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.BOTTOM
+        }
+        composer.addView(prompt, LinearLayout.LayoutParams(
+            0,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            1f
+        ))
+        composer.addView(sendButton, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
+            marginStart = dp(8)
+        })
+        root.addView(composer, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ))
 
         val scroll = ScrollView(this)
         output = TextView(this).apply {
