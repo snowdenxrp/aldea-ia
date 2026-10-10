@@ -8,11 +8,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "org.nexo.m1"
+        // Side-by-side validation build; never overwrites the installed reference app.
+        applicationId = "org.nexo.m1.safetest"
         minSdk = 33
         targetSdk = 36
         versionCode = 1
-        versionName = "0.2.0-prototype"
+        versionName = "0.2.0-safe-test"
     }
 
     compileOptions {
