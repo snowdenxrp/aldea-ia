@@ -131,8 +131,7 @@ chat_format_new = """static std::string chat_add_and_format(const std::string &r
     common_chat_templates_inputs inputs;
     inputs.use_jinja = true;
     inputs.enable_thinking = false;
-    inputs.add_bos = templates->add_bos;
-    inputs.add_eos = templates->add_eos;
+    // Keep common_chat_templates opaque; input defaults leave BOS/EOS policy to the template.
 
     std::string formatted_past;
     if (!chat_msgs.empty()) {
