@@ -9,11 +9,11 @@ android {
 
     defaultConfig {
         // Unique package for side-by-side diagnosis; preserves the currently installed reference app.
-        applicationId = "org.nexo.m1.safetest15"
+        applicationId = "org.nexo.m1.safetest16"
         minSdk = 33
         targetSdk = 36
         versionCode = 1
-        versionName = "0.2.3-safe-test15"
+        versionName = "0.2.4-safe-test16"
     }
 
     compileOptions {
