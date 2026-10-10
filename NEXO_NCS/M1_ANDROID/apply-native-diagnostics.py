@@ -108,12 +108,61 @@ load_error_new = '''                    if (it != 0) {
 '''
 replace_once(KOTLIN, load_error_old, load_error_new)
 
-# Fail closed if the diagnostic API or bounded capture was not applied.
+# Qwen3's embedded Jinja template supports enable_thinking=false. The previous
+# use_jinja=false call bypassed that control and let <think> reasoning into the UI.
+chat_format_old = """static std::string chat_add_and_format(const std::string &role, const std::string &content) {
+    common_chat_msg new_msg;
+    new_msg.role = role;
+    new_msg.content = content;
+    auto formatted = common_chat_format_single(
+            g_chat_templates.get(), chat_msgs, new_msg, role == ROLE_USER, /* use_jinja */ false);
+    chat_msgs.push_back(new_msg);
+    LOGi("%s: Formatted and added %s message: \\n%s\\n", __func__, role.c_str(), formatted.c_str());
+    return formatted;
+}
+"""
+chat_format_new = """static std::string chat_add_and_format(const std::string &role, const std::string &content) {
+    common_chat_msg new_msg;
+    new_msg.role = role;
+    new_msg.content = content;
+
+    // Apply the model's embedded template and explicitly disable Qwen3 thinking.
+    const auto * templates = g_chat_templates.get();
+    common_chat_templates_inputs inputs;
+    inputs.use_jinja = true;
+    inputs.enable_thinking = false;
+    inputs.add_bos = templates->add_bos;
+    inputs.add_eos = templates->add_eos;
+
+    std::string formatted_past;
+    if (!chat_msgs.empty()) {
+        inputs.messages = chat_msgs;
+        inputs.add_generation_prompt = false;
+        formatted_past = common_chat_templates_apply(templates, inputs).prompt;
+    }
+
+    if (role == ROLE_USER && !formatted_past.empty() && formatted_past.back() == '\\n') {
+        formatted_past += "\\n";
+    }
+    inputs.messages.push_back(new_msg);
+    inputs.add_generation_prompt = role == ROLE_USER;
+    const auto formatted_all = common_chat_templates_apply(templates, inputs).prompt;
+    const auto formatted = formatted_all.substr(formatted_past.size());
+    chat_msgs.push_back(new_msg);
+    LOGi("%s: Formatted and added %s message (thinking disabled)\\n", __func__, role.c_str());
+    return formatted;
+}
+"""
+replace_once(CPP, chat_format_old, chat_format_new)
+
+# Fail closed if the diagnostic API, bounded capture, and template policy were applied.
 checks = [
     (HEADER, "aichat_last_error_text.assign"),
     (CPP, "Java_com_arm_aichat_internal_InferenceEngineImpl_lastError"),
     (KOTLIN, "private external fun lastError(): String"),
     (KOTLIN, "Native model load failed"),
+    (CPP, "inputs.enable_thinking = false"),
+    (CPP, "inputs.use_jinja = true"),
 ]
 for path, needle in checks:
     if needle not in path.read_text(encoding="utf-8"):
