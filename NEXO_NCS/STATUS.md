@@ -1515,3 +1515,16 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 
 
 - 🟢 Follow-up source clarity correction: stale manifest comment corrected in commit `172f9fe2498be41f6111c142c5e3fc488432f972`. It now accurately states that the app uses local native inference while intentionally declaring no Internet permission. This is a comment-only change; the successful APK/artifact remains built from prior commit `cc8863b91255a77340463dbdf05c39e3dcc5c84a`, and no claim is made that the corrected source commit itself has been rebuilt.
+
+
+## 2026-10-10 — M1 on-screen composer defect reported; correction pending CI
+
+- 🟢 Device observation from Kevin: installed M1 opens and shows the question field, but no visible send action; pressing Enter only inserts a newline.
+- 🟢 Source inspection at the installed build head confirms a send button existed below the multiline EditText, but was placed on a separate vertical row. This is consistent with the action being hidden/obscured while the on-screen keyboard is open; actual layout behavior on the POCO is not yet independently observed.
+- 🟢 Root-oriented UI correction committed:
+  - NEXO_NCS/M1_ANDROID/app/src/main/kotlin/org/nexo/m1/MainActivity.kt, commit 8699ce606d4834b58ca84a2f4cefe445360c6025: place a visible Enviar button beside the input, reduce composer height, wire the keyboard IME Send action and Enter key to the same guarded sendPrompt() path.
+  - NEXO_NCS/M1_ANDROID/app/src/main/AndroidManifest.xml, commit 024d1cdc74ca642c23b3f20fc26b40f577e89fd9: set windowSoftInputMode=adjustResize.
+- 🟡 Rebuild triggered by commit 024d1cdc74ca642c23b3f20fc26b40f577e89fd9, workflow run 38029247207; status queued at checkpoint. The intermediate run for source-only commit 8699ce606d4834b58ca84a2f4cefe445360c6025 was cancelled by the next push; do not treat that as a code failure.
+- 🟡 Do not tell Kevin to reinstall yet. Wait for the final workflow run to pass, inspect the new APK hash and packaged permissions, then provide the new artifact URL and safe update/reinstall steps. Since CI debug APK signing keys may differ between runners, a signature conflict is possible; if so, uninstalling the old prototype before installing the new one is only acceptable before any model is imported and after explaining that app-private state would be erased.
+- 🔴 The currently installed APK is the earlier build and is not proven to have the corrected UI. No model has been confirmed imported, and no inference/device/offline/logcat test has yet passed.
+- Permanent NCS rule applied: no superficial instruction to press an invisible button; fix the composer layout/keyboard interaction in source and rebuild before proceeding with model tests.
