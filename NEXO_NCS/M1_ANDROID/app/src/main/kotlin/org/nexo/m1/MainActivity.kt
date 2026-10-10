@@ -1,6 +1,9 @@
 package org.nexo.m1
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Typeface
@@ -47,6 +50,7 @@ class MainActivity : Activity() {
     private lateinit var output: TextView
     private lateinit var chooseModelButton: Button
     private lateinit var sendButton: Button
+    private lateinit var copyButton: Button
 
     private var engine: InferenceEngine? = null
     private var modelReady = false
@@ -167,8 +171,27 @@ class MainActivity : Activity() {
         root.addView(scroll, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
         ))
+        copyButton = Button(this).apply {
+            text = "Copiar texto para compartir"
+            setOnClickListener { copyVisibleText() }
+        }
+        root.addView(copyButton, LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ))
         setContentView(root)
         root.requestApplyInsets()
+    }
+
+    private fun copyVisibleText() {
+        val textToCopy = output.text?.toString().orEmpty()
+        if (textToCopy.isBlank()) {
+            status.text = "Todavía no hay texto para copiar."
+            return
+        }
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("Nexo M1", textToCopy))
+        android.widget.Toast.makeText(this, "Texto copiado. Ya puedes pegarlo aquí.", android.widget.Toast.LENGTH_SHORT).show()
     }
 
     private fun chooseModelFile() {
