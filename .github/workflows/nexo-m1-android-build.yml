@@ -60,6 +60,9 @@ jobs:
           ACTUAL="$(git -C "$ROOT/llama.cpp" rev-parse HEAD)"
           test "$ACTUAL" = "$EXPECTED"
           grep -Fq -- "-DCMAKE_CXX_FLAGS=-DLOG_MIN_LEVEL=ANDROID_LOG_ERROR" "$ROOT/llama-lib.build.gradle.kts"
+          grep -Fq -- '"-DGGML_BACKEND_DL=OFF"' "$ROOT/llama-lib.build.gradle.kts"
+          grep -Fq -- '"-DGGML_CPU_ALL_VARIANTS=OFF"' "$ROOT/llama-lib.build.gradle.kts"
+          grep -Fq 'ggml_backend_load_all_from_path(path_to_backend);' "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp"
           grep -Fq 'LOGi("%s: Formatted and added %s message:' "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp"
           grep -Fq "aichat_last_error_text.assign" "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/logging.h"
           grep -Fq "Java_com_arm_aichat_internal_InferenceEngineImpl_lastError" "$ROOT/llama.cpp/examples/llama.android/lib/src/main/cpp/ai_chat.cpp"
@@ -97,6 +100,13 @@ jobs:
             echo "FAIL: INTERNET permission found in packaged APK"
             exit 1
           fi
+          # Fail if the CPU backend shared library is not present in the packaged APK.
+          unzip -l "$APK" | tee "$ROOT/build-evidence/m1-apk-native-libs.txt"
+          if ! grep -Eq 'lib/arm64-v8a/libggml-cpu([.]so([.]|$))' "$ROOT/build-evidence/m1-apk-native-libs.txt"; then
+            echo "FAIL: packaged APK does not contain the GGML CPU backend shared library"
+            exit 1
+          fi
+          printf '%s\n' "GGML backend policy: static CPU backend; dynamic backend loading disabled" > "$ROOT/build-evidence/ggml-backend-policy.txt"
           sha256sum "$APK" | tee "$ROOT/build-evidence/m1-apk.sha256"
 
       - name: Upload APK and build evidence
