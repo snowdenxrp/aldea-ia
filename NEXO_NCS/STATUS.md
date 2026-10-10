@@ -1422,3 +1422,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Recommended first slice: dedicated Android read-only text interaction + local inference candidate; no tools/effects, no durable conversation, no Vault, no Lúmina simulation, no remote fallback, no Genesis/authority path.
 - No code, dependencies, model, installation, runtime tests, trust root, credential or ceremony changed. M1 remains unimplemented and unverified.
 - **Next exact action:** present the bounded implementation scope and resource prerequisites for explicit implementation authorization. Do not infer code authorization from delegated technical analysis. Protected commissioning remains UNKNOWN/STOP.
+
+
+## 2026-10-09 — Owner clarification: phone modification is not a blocker
+- 🟢 Kevin explicitly said he is willing to modify his phone when the technical recommendation justifies it for Nexo/security. Recorded in `NEXO_NCS/DECISIONS/OWNER_AUTHORIZATION_BOUNDARY_PHONE_MODIFICATION_AND_M1_2026-10-09.md`, commit `5324d9e6a90e1399145bd53a79fdcb4315ad2f3b`.
+- Treat device modification as an available engineering option, not as an automatic security improvement. Any concrete material intervention must include purpose, exact changes, side effects/data-loss risk, reversibility/rollback and limits of what it proves. Read-only/reversible preparation first; no unapproved destructive/unlock/firmware action.
+- This clarification does not itself authorize repository code changes, model/runtime installation, credentials, Genesis-root selection or protected commissioning.
+- **Next exact action:** prepare a concrete staged M1 implementation plan and resource/prerequisite check; distinguish what this environment can actually inspect/build/install from steps that would require Kevin to execute. Do not repeat the abstract route survey or claim actions not performed.
+- M1 implementation remains not yet authorized; protected commissioning remains UNKNOWN/STOP.
