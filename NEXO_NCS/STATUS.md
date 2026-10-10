@@ -1396,3 +1396,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - P1/P2 remain UNKNOWN/blocking; Step 7 is not passed. No root family, ceremony, credential, key, commission, activation or protected-Core deployment selected or authorized.
 - Existing claim-relative inventory and M1 read-only candidate already exist: `NEXO_NCS/BUILD/STEP_7_CLAIM_RELATIVE_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_2026-10-09.md` and `NEXO_NCS/BUILD/STEP_7_M1_READ_ONLY_INTERACTION_BOUNDARY_CANDIDATE_2026-10-08.md`. Do not duplicate the inventory.
 - **Next exact action:** design-only readiness review of the existing M1 read-only slice against the inventory and MASTER/Core. Check current code/tests; separate semantic intent from unverified enforcement (no egress, no remote fallback, no persistence, no tools/effects); identify the smallest useful safe prototype if one exists. No code changes, dependency/model/platform selection, or runtime/network/persistence path without explicit implementation authorization. If no useful independent slice exists, state that honestly. Protected commissioning remains STOP.
+
+
+## 2026-10-09 — M1 read-only slice readiness review
+- 🟢 Review saved: `NEXO_NCS/RESEARCH/STEP_7_M1_READ_ONLY_SLICE_READINESS_REVIEW_2026-10-09.md`.
+- 🟢 Reused existing M1 candidate, claim-relative inventory, local-inference feasibility check, package manifest, and current source tree; no duplicate inventory/abstraction created.
+- 🔴 Current `src/nexo/runtime.js` imports the simulation adapter and assistant-memory/persistence path; it is not an acceptable M1 runtime because it crosses the explicit no-Lúmina-simulation/no-durable-memory boundary.
+- 🔴 No repository-grounded Nexo local inference client/model path or enforceable no-egress/remote-fallback boundary was found. Those properties remain unimplemented/unverified, not promises.
+- M1 semantic scope remains useful, but is not implementation-ready. It must not be implemented by retrofitting the current simulation runtime.
+- **Next exact action:** bounded analysis-only M1 client-design phase: compare a small number of concrete routes against actual constraints, dependencies, failure modes, enforcement evidence and test plan. No code changes, dependency/model/platform installation, private-device inspection, network/persistence path, or security/privacy claim. Any implementation choice must be separately authorized. P1/P2 and protected commissioning remain UNKNOWN/STOP.
