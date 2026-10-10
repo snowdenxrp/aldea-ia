@@ -195,10 +195,10 @@ class MainActivity : Activity() {
                 // Show a safe, actionable stage and exception type; never log prompts or model contents.
                 status.text = "Falló al $stage. Tipo: ${e.javaClass.simpleName}. No hubo fallback remoto."
                 output.text = when {
-                    stage.startsWith("copiar") -> "La importación no terminó. Comprueba que seleccionaste el archivo oficial completo "
-                        + "Qwen3-0.6B-Q4_0.gguf desde Descargas. No vuelvas a descargarlo todavía."
-                    else -> "El archivo pasó la verificación SHA-256, pero el motor no terminó de cargarlo. "
-                        + "No enviaste datos a un proveedor remoto."
+                    stage.startsWith("copiar") ->
+                        "La importación no terminó. Comprueba que seleccionaste el archivo oficial completo Qwen3-0.6B-Q4_0.gguf desde Descargas. No vuelvas a descargarlo todavía."
+                    else ->
+                        "El archivo pasó la verificación SHA-256, pero el motor no terminó de cargarlo. No enviaste datos a un proveedor remoto."
                 }
             } finally {
                 busy = false
