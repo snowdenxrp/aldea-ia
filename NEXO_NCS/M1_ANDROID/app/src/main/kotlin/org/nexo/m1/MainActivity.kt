@@ -172,13 +172,16 @@ class MainActivity : Activity() {
             ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
         ))
         copyButton = Button(this).apply {
-            text = "Copiar diagnóstico y respuesta"
+            text = "Copiar"
+            contentDescription = "Copiar diagnóstico y respuesta"
             setOnClickListener { copyVisibleText() }
         }
         root.addView(copyButton, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
-        ))
+        ).apply {
+            gravity = Gravity.END
+        })
         setContentView(root)
         root.requestApplyInsets()
     }
@@ -191,9 +194,19 @@ class MainActivity : Activity() {
             status.text = "Todavía no hay texto para copiar."
             return
         }
-        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("Nexo M1", textToCopy))
-        android.widget.Toast.makeText(this, "Texto copiado. Ya puedes pegarlo aquí.", android.widget.Toast.LENGTH_SHORT).show()
+
+        try {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText("Nexo M1", textToCopy))
+            status.text = "Texto copiado al portapapeles. Ya puedes pegarlo aquí."
+            android.widget.Toast.makeText(
+                this,
+                "Copiado. Ya puedes pegarlo aquí.",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        } catch (e: Exception) {
+            status.text = "No se pudo copiar (${e.javaClass.simpleName}). Mantén pulsado aquí e intenta pegar."
+        }
     }
 
     private fun chooseModelFile() {
