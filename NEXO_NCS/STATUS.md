@@ -1369,3 +1369,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - No code/tests, no memory subsystem/EventDAG/identity/persistence abstraction, no legacy integration, and no frozen AB105/TLC/Kafka probes were changed or rerun. P1/P2 and protected evidence establishment remain UNKNOWN/STOP.
 - **Next exact action:** select only a concrete unresolved NCS requirement independent of P1/P2 if MASTER + AB + P/P112 identify one and existing canonical contracts do not already cover it. State the claim/use case, canonical owner, required evidence, dependencies, failure behavior and verification method before proposing any change. If no such requirement is supported, hold rather than manufacture progress.
 
+
+
+## 2026-10-09 — Step 7 research exit / independent architecture boundary
+- 🟢 Added decision/work-boundary record: NEXO_NCS/DECISIONS/STEP_7_RESEARCH_EXIT_AND_INDEPENDENT_ARCHITECTURE_WORK_BOUNDARY_2026-10-09.md, commit d8b6bd7fe8e703886af7dd7fb83b07a0cb374784.
+- This closes the current broad/repetitive Step 7 research loop only; it does NOT mark the protected trust foundation technically complete or pass the commissioning gate.
+- P1/P2 remain UNKNOWN/blocking; P3 partial; P4 UNKNOWN; P5 NOT ESTABLISHED; P6 UNKNOWN. C-03 remains unresolved. No root family, ceremony, credential, commissioning, activation or protected-Core deployment selected or authorized.
+- Candidate independent design track: knowledge/learning state semantics, reuse-first and proposal-only. It may proceed only if MASTER + AB + P/P112 support a concrete unresolved requirement independent of P1/P2. No new engine or abstraction is authorized by the proposal.
+- **Next exact action:** search canonical MASTER, AB and P/P112 sources for knowledge/learning state semantics and identify one evidence-backed gap only if it is genuinely unresolved and independent of the blocked trust boundary. If no such gap exists, do not manufacture progress.
