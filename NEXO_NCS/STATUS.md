@@ -1386,3 +1386,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The concrete remaining Step 7 gate is still governance/deployment-specific: owner must explicitly accept or reject an initial owner-initiated commissioning trust assumption for a device/channel whose live integrity is not independently proven; exact Constitution/content/scope binding must then be designed around that declared assumption. This is a decision, not a new technical abstraction.
 - No implementation or runtime tests changed. P1/P2 remain UNKNOWN/blocking; P3 partial; P4 UNKNOWN; P5 NOT ESTABLISHED; P6 UNKNOWN; C-03 unresolved.
 - **Next exact action:** present the minimal bounded owner-only bootstrap assumption for explicit acceptance/rejection; do not infer consent, enroll credentials, generate keys, commission or activate.
+
+
+## 2026-10-09 — Delegated technical recommendation: bootstrap posture and safe parallel progress
+- 🟢 Owner delegated the technical recommendation rather than choosing between unfamiliar trust models. This authorizes analysis/recommendation only; it does not transfer constitutional authority or approve commissioning/risk acceptance.
+- 🟢 Recommendation recorded: `NEXO_NCS/DECISIONS/STEP_7_RECOMMENDED_BOOTSTRAP_POSTURE_AND_SAFE_PARALLEL_PROGRESS_2026-10-09.md`.
+- Default posture: do not treat the current unverified phone/local UI/local key/hash as an independently established root for protected commissioning. Do not freeze all development: allow only clearly untrusted, reversible, non-sensitive prototype work with no authority promotion or protected external effects.
+- The owner-initiated bootstrap assumption remains a study candidate, not an accepted commissioning basis. Requiring an independent recognition basis before protected commissioning remains the conservative recommendation without promoting a third party to constitutional authority.
+- P1/P2 remain UNKNOWN/blocking; Step 7 is not passed. No root family, ceremony, credential, key, commission, activation or protected-Core deployment selected or authorized.
+- **Next exact action:** construct a small, claim-relative inventory of actual intended Nexo v0 capabilities/effect classes. Map each to canonical owners, trust/failure assumptions, evidence vs. UNKNOWN, offline/recovery needs, final effect boundary, bypasses, safe prototype scope, and verification claim. Reuse MASTER/AB/P/P112/NCS; do not open another generic abstraction or repeat broad trust research. If no genuinely independent work is justified, state that plainly.
