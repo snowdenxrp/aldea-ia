@@ -13,4 +13,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "NexoM1"
-include(":app")
+include(":app", ":llama-lib")
+project(":llama-lib").projectDir = file("llama.cpp/examples/llama.android/lib")
