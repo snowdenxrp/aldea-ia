@@ -45,19 +45,18 @@ The owner-initiated bootstrap under a declared initial trust assumption remains 
 
 The more conservative alternative—requiring an independently established recognition basis before any protected commissioning—remains the default recommendation. It does not require a third party to become constitutional authority: an independent mechanism may provide bounded integrity/recognition evidence while Kevin remains the sole constitutional authority under the current governance preference.
 
-## Next concrete work (avoid another abstract research loop)
+## Next concrete work (reuse the existing inventory; do not duplicate it)
 
-Create a claim-relative first-deployment inventory from the actual initial Nexo capabilities and effect classes. For each capability, record:
-- intended user-visible outcome and whether it is read-only, reversible, sensitive, or externally consequential;
-- exact authority needed and canonical contract owner;
-- what must be trusted and what can fail together;
-- which evidence is observed, inferred, assumed, or UNKNOWN;
-- offline freshness/revocation and recovery needs;
-- final effect boundary and bypass paths;
-- what can be prototyped safely before commissioning and what must remain STOP;
-- the verification method and the precise claim that a successful test would support.
+The repository already contains `NEXO_NCS/BUILD/STEP_7_CLAIM_RELATIVE_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_2026-10-09.md` and the design candidate `NEXO_NCS/BUILD/STEP_7_M1_READ_ONLY_INTERACTION_BOUNDARY_CANDIDATE_2026-10-08.md`. Do not create a second inventory or reopen broad trust-family research.
 
-Start with a small, representative set of intended v0 capabilities rather than an exhaustive inventory of hypothetical features. Reuse MASTER, AB, P/P112, and existing NCS contracts; do not create another generic trust/knowledge engine. If the inventory reveals no genuinely independent implementation task, report that honestly rather than manufacturing progress.
+Next, perform a bounded **design-only readiness review** of that existing M1 read-only slice against the claim-relative inventory and MASTER/Core constraints:
+- confirm that it truly remains separate from commissioning and has no tools/effects, durable memory, credentials, network egress, or silent remote fallback;
+- distinguish semantic guarantees from runtime-enforced properties and explicitly list every unverified platform/runtime assumption;
+- identify the smallest useful read-only prototype that could be developed without claiming protected authority, privacy/no-egress, or production security;
+- check whether the existing repo already contains the relevant code/tests before proposing anything new;
+- do not change code, add dependencies, choose a model/platform, or create runtime/network/persistence paths without explicit implementation authorization.
+
+If M1 cannot be made meaningfully useful under those limits, report that rather than manufacturing a parallel workstream. Protected commissioning remains separately STOP.
 
 ## Explicit non-claims
 
