@@ -1,0 +1,187 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.kafka.metadata.authorizer;
+
+import org.apache.kafka.common.Endpoint;
+import org.apache.kafka.common.Uuid;
+import org.apache.kafka.common.metrics.Metrics;
+import org.apache.kafka.common.resource.ResourcePattern;
+import org.apache.kafka.common.security.auth.KafkaPrincipal;
+import org.apache.kafka.common.security.auth.SecurityProtocol;
+import org.apache.kafka.server.authorizer.Action;
+import org.apache.kafka.server.authorizer.AuthorizationResult;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.apache.kafka.common.acl.AclOperation.WRITE;
+import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+import static org.apache.kafka.common.resource.PatternType.LITERAL;
+import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Timeout(value = 120)
+public class NexoJmmCausalWindowTest {
+    private static final Endpoint PLAINTEXT =
+        new Endpoint("PLAINTEXT", SecurityProtocol.PLAINTEXT, "127.0.0.1", 9022);
+    private static final String USER = "nexo-jmm-causal";
+    private static final String TOPIC_NAME = "nexo-jmm-causal-topic";
+    private static final int ITERATIONS = 100;
+    private static final int READERS = 4;
+    private static final long PRE_REMOVE_NANOS = TimeUnit.MILLISECONDS.toNanos(5);
+    private static final long OBSERVATION_END_NANOS = TimeUnit.MILLISECONDS.toNanos(15);
+
+    private static StandardAuthorizer newAuthorizer() {
+        StandardAuthorizer authorizer = new StandardAuthorizer();
+        authorizer.configure(Map.of(StandardAuthorizer.SUPER_USERS_CONFIG, "User:superman"));
+        Metrics metrics = new Metrics();
+        authorizer.withPluginMetrics(new PluginMetricsImpl(metrics, Map.of()));
+        authorizer.start(new AuthorizerTestServerInfo(List.of(PLAINTEXT)));
+        authorizer.completeInitialLoad();
+        return authorizer;
+    }
+
+    private static StandardAcl acl() {
+        return new StandardAcl(
+            TOPIC, TOPIC_NAME, LITERAL, "User:" + USER, "*", WRITE, ALLOW);
+    }
+
+    private static org.apache.kafka.server.authorizer.AuthorizableRequestContext context() throws Exception {
+        return new MockAuthorizableRequestContext.Builder()
+            .setPrincipal(new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER))
+            .build();
+    }
+
+    private static Action writeAction() {
+        return new Action(
+            WRITE,
+            new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
+            0,
+            false,
+            false);
+    }
+
+    @Test
+    public void causalPostReturnWindowIsDiagnosticOnly() throws Exception {
+        AtomicInteger postReturnAllowed = new AtomicInteger();
+        AtomicInteger postReturnDenied = new AtomicInteger();
+        AtomicInteger overlapAllowed = new AtomicInteger();
+        AtomicInteger overlapDenied = new AtomicInteger();
+        AtomicInteger unexpected = new AtomicInteger();
+        AtomicLong observations = new AtomicLong();
+
+        for (int iteration = 0; iteration < ITERATIONS; iteration++) {
+            StandardAuthorizer authorizer = newAuthorizer();
+            Uuid id = new Uuid(iteration + 501L, iteration + 1501L);
+            authorizer.addAcl(id, acl());
+
+            List<AuthorizationResult> baseline =
+                authorizer.authorize(context(), List.of(writeAction()));
+            assertEquals(AuthorizationResult.ALLOWED, baseline.get(0),
+                "baseline authorization must be ALLOWED");
+
+            long raceStart = System.nanoTime();
+            long scheduledRemove = raceStart + PRE_REMOVE_NANOS;
+            long observationEnd = raceStart + OBSERVATION_END_NANOS;
+            AtomicLong removeEnter = new AtomicLong(Long.MAX_VALUE);
+            AtomicLong removeReturn = new AtomicLong(Long.MAX_VALUE);
+
+            Thread writer = new Thread(() -> {
+                try {
+                    while (System.nanoTime() < scheduledRemove) {
+                        Thread.onSpinWait();
+                    }
+                    removeEnter.set(System.nanoTime());
+                    authorizer.removeAcl(id);
+                    removeReturn.set(System.nanoTime());
+                } catch (Throwable t) {
+                    unexpected.incrementAndGet();
+                }
+            }, "nexo-jmm-causal-writer");
+
+            Thread[] readers = new Thread[READERS];
+            for (int r = 0; r < READERS; r++) {
+                readers[r] = new Thread(() -> {
+                    try {
+                        while (System.nanoTime() < observationEnd) {
+                            long enter = System.nanoTime();
+                            List<AuthorizationResult> result =
+                                authorizer.authorize(context(), List.of(writeAction()));
+                            long exit = System.nanoTime();
+                            observations.incrementAndGet();
+
+                            long writerEnter = removeEnter.get();
+                            long writerReturn = removeReturn.get();
+                            if (writerReturn != Long.MAX_VALUE) {
+                                if (enter > writerReturn) {
+                                    if (result.get(0) == AuthorizationResult.ALLOWED) {
+                                        postReturnAllowed.incrementAndGet();
+                                    } else if (result.get(0) == AuthorizationResult.DENIED) {
+                                        postReturnDenied.incrementAndGet();
+                                    } else {
+                                        unexpected.incrementAndGet();
+                                    }
+                                } else if (enter <= writerReturn && exit >= writerEnter) {
+                                    if (result.get(0) == AuthorizationResult.ALLOWED) {
+                                        overlapAllowed.incrementAndGet();
+                                    } else if (result.get(0) == AuthorizationResult.DENIED) {
+                                        overlapDenied.incrementAndGet();
+                                    } else {
+                                        unexpected.incrementAndGet();
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Throwable t) {
+                        unexpected.incrementAndGet();
+                    }
+                }, "nexo-jmm-causal-reader-" + r);
+            }
+
+            writer.start();
+            for (Thread reader : readers) {
+                reader.start();
+            }
+
+            writer.join(5000);
+            for (Thread reader : readers) {
+                reader.join(5000);
+                assertTrue(!reader.isAlive(), "reader did not finish");
+            }
+            assertTrue(!writer.isAlive(), "writer did not finish");
+        }
+
+        System.out.println(
+            "CAUSAL_JMM_RACE ITERATIONS=" + ITERATIONS +
+            " READERS=" + READERS +
+            " OBSERVATIONS=" + observations.get() +
+            " POST_RETURN_ALLOWED=" + postReturnAllowed.get() +
+            " POST_RETURN_DENIED=" + postReturnDenied.get() +
+            " OVERLAP_ALLOWED=" + overlapAllowed.get() +
+            " OVERLAP_DENIED=" + overlapDenied.get() +
+            " UNEXPECTED=" + unexpected.get());
+
+        assertEquals(0, unexpected.get(), "diagnostic encountered unexpected execution failures");
+    }
+}
