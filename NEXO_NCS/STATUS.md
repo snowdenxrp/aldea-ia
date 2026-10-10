@@ -1484,3 +1484,18 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - 🟡 Native build workflow run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38019155197, run ID `38019155197`, head `cc8863b91255a77340463dbdf05c39e3dcc5c84a`. At this status update, Gradle/CMake native APK compilation is still in progress; no successful native APK/artifact is claimed yet.
 - **Next:** inspect this run's actual failure/success and build logs. Fix only evidence-backed build defects, rerun, then inspect merged APK permissions and hashes. After a successful build, review dependencies/native packaging and obtain exact phone OS/API/ABI before proposing installation. Device install, model load, runtime no-egress and logcat tests remain NOT DONE.
 - Protected commissioning and Genesis legitimacy remain UNKNOWN/STOP.
+
+
+## 2026-10-10 — M1 native local-inference build VERIFIED in CI
+
+- 🟢 Workflow run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38019155197
+- 🟢 Run ID: `38019155197`; head commit: `cc8863b91255a77340463dbdf05c39e3dcc5c84a`; job ID: `114116057256`; conclusion: `success`.
+- 🟢 Build log confirms `BUILD SUCCESSFUL` in 5m 21s (72 actionable tasks).
+- 🟢 The compiled native build configuration includes `-DLOG_MIN_LEVEL=ANDROID_LOG_ERROR`; CI asserted this in the generated compile database. This is compile-time evidence only; actual device logcat testing remains pending.
+- 🟢 CI inspected packaged APK permissions. `aapt dump permissions` output was only `package: org.nexo.m1`; the workflow passed its assertion that the APK does not declare `android.permission.INTERNET`.
+- 🟢 APK SHA-256: `bb7d20d3c799360bdb44c91ff4759864813acee398627e1dfc2d762f109367bd`.
+- 🟢 Artifact: `nexo-m1-native-prototype-debug-apk`; artifact ID `11658150345`; archive SHA-256 `ef5e2c2af84fea33a658b361c1f9485db4e205b9c86e31776e663a596ef697f8`; expires 2026-10-24. Artifact link: https://github.com/snowdenxrp/aldea-ia/actions/runs/38019155197/artifacts/11658150345
+- 🟡 Build produced compiler warnings in pinned upstream native code and reported some native libraries could not be stripped and were packaged as-is. The APK built successfully; this is recorded for package/dependency review, not treated as a build failure.
+- This checkpoint supersedes the earlier sentence in the 2026-10-10 M1 integration entry that said the run was still in progress. That sentence accurately reflected the earlier checkpoint only.
+- Scope proven: reproducible CI build of debug APK, native compile, configured log floor, packaged manifest permission check, and artifact upload. Not proven: APK installed on Kevin's phone, model loaded, generated answers correct/useful, performance/memory/thermal suitability, actual runtime no-egress, absence of prompt traces in device logcat, or full-device privacy.
+- **Next exact action:** review APK dependency/native packaging and app configuration (minimum Android API, ABI, model-file flow and failure behavior); then obtain exact phone Android/API/ABI compatibility before recommending installation. Installation must be accompanied by clear reversible steps. After install, test with the network disabled and inspect attributable logcat for a unique prompt marker. Keep protected commissioning and Genesis legitimacy UNKNOWN/STOP.
