@@ -172,7 +172,7 @@ class MainActivity : Activity() {
             ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
         ))
         copyButton = Button(this).apply {
-            text = "Copiar texto para compartir"
+            text = "Copiar diagnóstico y respuesta"
             setOnClickListener { copyVisibleText() }
         }
         root.addView(copyButton, LinearLayout.LayoutParams(
@@ -184,8 +184,10 @@ class MainActivity : Activity() {
     }
 
     private fun copyVisibleText() {
-        val textToCopy = output.text?.toString().orEmpty()
-        if (textToCopy.isBlank()) {
+        val responseText = output.text?.toString().orEmpty()
+        val statusText = status.text?.toString().orEmpty()
+        val textToCopy = "Estado de Nexo M1: $statusText\\n\\nTexto mostrado:\\n$responseText"
+        if (responseText.isBlank() && statusText.isBlank()) {
             status.text = "Todavía no hay texto para copiar."
             return
         }
