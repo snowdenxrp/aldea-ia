@@ -1,0 +1,73 @@
+name: Nexo M1 Android shell build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - ncs-clean-architecture
+    paths:
+      - "NEXO_NCS/M1_ANDROID/**"
+      - ".github/workflows/nexo-m1-android-build.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexo-m1-android-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-shell:
+    name: Build and inspect M1 shell APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.13"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install pinned SDK platform and build tools
+        run: |
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+          yes | sdkmanager --licenses
+
+      - name: Build debug APK
+        working-directory: NEXO_NCS/M1_ANDROID
+        run: gradle --no-daemon --stacktrace assembleDebug
+
+      - name: Assert packaged APK does not declare INTERNET
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="NEXO_NCS/M1_ANDROID/app/build/outputs/apk/debug/app-debug.apk"
+          test -f "$APK"
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" | tee /tmp/m1-permissions.txt
+          if grep -q "android.permission.INTERNET" /tmp/m1-permissions.txt; then
+            echo "FAIL: INTERNET permission found in packaged APK"
+            exit 1
+          fi
+          sha256sum "$APK" | tee /tmp/m1-apk.sha256
+
+      - name: Upload APK and build evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexo-m1-stage1-debug-apk
+          path: |
+            NEXO_NCS/M1_ANDROID/app/build/outputs/apk/debug/app-debug.apk
+            /tmp/m1-permissions.txt
+            /tmp/m1-apk.sha256
+          if-no-files-found: error
+          retention-days: 14
