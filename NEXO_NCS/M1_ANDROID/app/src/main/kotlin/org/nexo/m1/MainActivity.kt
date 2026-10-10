@@ -210,7 +210,9 @@ class MainActivity : Activity() {
                     stage.startsWith("copiar") ->
                         "La importación no terminó. Comprueba que seleccionaste el archivo oficial completo Qwen3-0.6B-Q4_0.gguf desde Descargas. No vuelvas a descargarlo todavía."
                     else ->
-                        "El archivo pasó la verificación SHA-256, pero el motor no terminó de cargarlo. No enviaste datos a un proveedor remoto."
+                        "El archivo pasó la verificación SHA-256, pero el motor no terminó de cargarlo. " +
+                            "Detalle técnico: ${(e.message ?: e.javaClass.simpleName).take(512)}. " +
+                            "No enviaste datos a un proveedor remoto."
                 }
             } finally {
                 busy = false
@@ -302,8 +304,10 @@ class MainActivity : Activity() {
             loadVerifiedModel(model)
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
-            status.text = "Modelo local no disponible. Reinicia la app o importa el archivo oficial."
+        } catch (e: Exception) {
+            status.text = "Falló la carga del modelo local. Tipo: ${e.javaClass.simpleName}. No hubo fallback remoto."
+            output.text = "Detalle técnico: ${(e.message ?: "Sin detalle adicional").take(512)}. " +
+                "El archivo local no se ha vuelto a descargar ni se ha enviado a un proveedor remoto."
         } finally {
             busy = false
             chooseModelButton.isEnabled = !modelReady
