@@ -1442,3 +1442,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - **Next exact action:** create an isolated Android project subtree and pinned GitHub Actions build for M1. First validate a buildable shell and its manifest/permissions; then integrate reviewed local inference. Do not embed/download a model yet. Record exact CI run/artifact/hash and failures. Device/model installation waits until APK/dependencies/permissions and actual device compatibility are reviewed.
 - Phone modification remains an available engineering option, not a blanket authorization for bootloader unlock, root, firmware flash, data wipe or security downgrade. No device change/install is performed or claimed.
 - No Genesis root, credentials, ceremony, commissioning, or protected effect is selected or authorized. P1/P2/P4/P5/P6 and Step 7 remain UNKNOWN/STOP.
+
+
+## 2026-10-09 — M1 Stage 1 Android shell committed; CI build pending
+
+- 🟢 Isolated project created at `NEXO_NCS/M1_ANDROID/`; it does not import the existing simulation runtime.
+- 🟢 Initial shell has a single screen, no third-party app dependencies, no Android `INTERNET` permission, no designed conversation persistence, backup/data extraction disabled, and an explicit unavailable response rather than a fake model answer.
+- 🟢 Build workflow created: `.github/workflows/nexo-m1-android-build.yml`; run `38018734180`, head `ae84756a93b52fe1e5e30629485c02d1b9410be9`. It builds the debug APK, inspects packaged permissions for absence of `INTERNET`, and publishes APK + hash/permission evidence.
+- Workflow status at checkpoint: queued/in progress; no successful build or APK artifact claimed yet.
+- This is only Stage 1 UI/build plumbing, not a working local language model and not a device-verified prototype.
+- **Next:** inspect CI result and fix actual build failures; after shell build passes, review and pin upstream native runtime + dependency/license inventory before implementing local inference. No model download or device install yet.
