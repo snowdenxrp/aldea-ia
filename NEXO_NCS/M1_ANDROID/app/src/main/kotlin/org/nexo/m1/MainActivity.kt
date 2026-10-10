@@ -90,13 +90,13 @@ class MainActivity : Activity() {
             textSize = 14f
             setPadding(0, dp(10), 0, dp(12))
         }
-        root.addView(status)
-
         chooseModelButton = Button(this).apply {
             text = "Importar modelo local verificado (GGUF)"
             setOnClickListener { chooseModelFile() }
         }
         root.addView(chooseModelButton)
+        // Keep the complete diagnostic below the import action, away from the app bar.
+        root.addView(status)
 
         // Keep the send action beside the composer so the IME cannot cover it.
         // The keyboard's Send action is also wired to the same guarded submit path.
@@ -183,17 +183,23 @@ class MainActivity : Activity() {
             chooseModelButton.isEnabled = false
             sendButton.isEnabled = false
             status.text = "Copiando y verificando integridad del modelo…"
+            var stage = "copiar y verificar el archivo (nombre, lectura y SHA-256)"
             try {
                 val model = withContext(Dispatchers.IO) { importAndVerifyModel(uri) }
+                stage = "inicializar y cargar el motor local"
                 status.text = "SHA-256 correcto. Inicializando inferencia local…"
                 loadVerifiedModel(model)
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
-                status.text = "Modelo no disponible: archivo incorrecto, hash distinto o carga fallida. " +
-                    "No hubo fallback remoto."
-                output.text = "No se cargó el modelo. Verifica el archivo oficial y vuelve a intentarlo; " +
-                    "si el motor quedó en error, cierra y vuelve a abrir la aplicación."
+            } catch (e: Exception) {
+                // Show a safe, actionable stage and exception type; never log prompts or model contents.
+                status.text = "Falló al $stage. Tipo: ${e.javaClass.simpleName}. No hubo fallback remoto."
+                output.text = when {
+                    stage.startsWith("copiar") -> "La importación no terminó. Comprueba que seleccionaste el archivo oficial completo "
+                        + "Qwen3-0.6B-Q4_0.gguf desde Descargas. No vuelvas a descargarlo todavía."
+                    else -> "El archivo pasó la verificación SHA-256, pero el motor no terminó de cargarlo. "
+                        + "No enviaste datos a un proveedor remoto."
+                }
             } finally {
                 busy = false
                 chooseModelButton.isEnabled = !modelReady
