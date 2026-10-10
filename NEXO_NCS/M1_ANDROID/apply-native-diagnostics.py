@@ -56,6 +56,8 @@ load_old = '''Java_com_arm_aichat_internal_InferenceEngineImpl_load(JNIEnv *env,
 '''
 load_new = '''Java_com_arm_aichat_internal_InferenceEngineImpl_load(JNIEnv *env, jobject, jstring jmodel_path) {
     aichat_clear_last_error();
+    // Initialize/register GGML backends before any model load; the pinned wrapper omitted this.
+    llama_backend_init();
     llama_model_params model_params = llama_model_default_params();
 '''
 replace_once(CPP, load_old, load_new)
@@ -111,6 +113,7 @@ replace_once(KOTLIN, load_error_old, load_error_new)
 checks = [
     (HEADER, "aichat_last_error_text.assign"),
     (CPP, "Java_com_arm_aichat_internal_InferenceEngineImpl_lastError"),
+    (CPP, "llama_backend_init();"),
     (KOTLIN, "private external fun lastError(): String"),
     (KOTLIN, "Native model load failed"),
 ]
