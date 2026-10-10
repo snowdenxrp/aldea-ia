@@ -1472,3 +1472,15 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - 🔴 Upstream Android wrapper has prompt-bearing INFO log calls; it is not acceptable unchanged. Integration must explicitly enforce `LOG_MIN_LEVEL=ANDROID_LOG_ERROR`, inspect error logs and add static/runtime checks. Do not assume Release defaults alone protect prompts.
 - **Next exact action:** integrate the pinned native binding in a separate M1 module, omit unused sample persistence/settings dependencies, enforce the log-level contract in Gradle/CMake and CI, and test model-unavailable behavior. Only then evaluate candidate model license/provenance/resources against actual device details. No model download or device install yet.
 - M1 success does not pass Step 7; Genesis/constitutional authority and protected commissioning remain UNKNOWN/STOP.
+
+
+## 2026-10-10 — M1 native local-inference integration in CI
+
+- 🟢 The project has progressed beyond the Stage 1 shell: `NEXO_NCS/M1_ANDROID/` now has the pinned `llama.cpp` Android wrapper integration, an offline model-import flow, streaming SHA-256 validation, app-private model storage, and bounded text generation (256 tokens).
+- 🟢 Candidate runtime pin: `ggml-org/llama.cpp@10a60cf303566e10d6a7a2774c17d2085503d87b`. CI checks out the exact SHA and refuses mismatch.
+- 🟢 Candidate model: `ggml-org/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q4_0.gguf`, pinned repository revision `a41486f827d17edd055fe6b3b0ba3f8d427c0519`, expected SHA-256 `da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4`. The app does not download the model; user selects a separately obtained file. No model download/install on Kevin's phone is claimed.
+- 🟢 The model is copied into app-private storage only after digest verification; a saved copy is rehashed before load. Digest mismatch fails closed. Prompt/response are intended to remain in memory; no chat history, remote fallback, tools, Vault, Lúmina runtime, or protected-Core path is added.
+- 🟢 Native prompt-log floor is explicitly configured as `LOG_MIN_LEVEL=ANDROID_LOG_ERROR`; CI checks that configuration is in the compile database. This is a static/build claim; real-device logcat marker testing remains outstanding.
+- 🟡 Native build workflow run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38019155197, run ID `38019155197`, head `cc8863b91255a77340463dbdf05c39e3dcc5c84a`. At this status update, Gradle/CMake native APK compilation is still in progress; no successful native APK/artifact is claimed yet.
+- **Next:** inspect this run's actual failure/success and build logs. Fix only evidence-backed build defects, rerun, then inspect merged APK permissions and hashes. After a successful build, review dependencies/native packaging and obtain exact phone OS/API/ABI before proposing installation. Device install, model load, runtime no-egress and logcat tests remain NOT DONE.
+- Protected commissioning and Genesis legitimacy remain UNKNOWN/STOP.
