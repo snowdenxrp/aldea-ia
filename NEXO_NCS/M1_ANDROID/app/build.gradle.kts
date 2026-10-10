@@ -8,12 +8,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        // Side-by-side validation build; never overwrites the installed reference app.
-        applicationId = "org.nexo.m1.safetest13"
+        // Unique package for side-by-side diagnosis; preserves the currently installed reference app.
+        applicationId = "org.nexo.m1.safetest14"
         minSdk = 33
         targetSdk = 36
         versionCode = 1
-        versionName = "0.2.1-safe-test13"
+        versionName = "0.2.2-safe-test14"
     }
 
     compileOptions {
