@@ -141,16 +141,14 @@ chat_format_new = """static std::string chat_add_and_format(const std::string &r
         formatted_past = common_chat_templates_apply(templates, inputs).prompt;
     }
 
-    if (role == ROLE_USER && !formatted_past.empty() && formatted_past.back() == '\\n') {
-        formatted_past += "\\n";
-    }
+    const bool preserve_newline = role == ROLE_USER && !formatted_past.empty() && formatted_past.back() == '\\n';
     inputs.messages.push_back(new_msg);
     inputs.add_generation_prompt = role == ROLE_USER;
     const auto formatted_all = common_chat_templates_apply(templates, inputs).prompt;
     const auto formatted = formatted_all.substr(formatted_past.size());
     chat_msgs.push_back(new_msg);
     LOGi("%s: Formatted and added %s message (thinking disabled)\\n", __func__, role.c_str());
-    return formatted;
+    return preserve_newline ? "\\n" + formatted : formatted;
 }
 """
 replace_once(CPP, chat_format_old, chat_format_new)
