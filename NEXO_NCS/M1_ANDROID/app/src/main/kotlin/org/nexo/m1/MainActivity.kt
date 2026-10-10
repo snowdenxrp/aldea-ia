@@ -1,8 +1,6 @@
 package org.nexo.m1
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
@@ -50,7 +48,6 @@ class MainActivity : Activity() {
     private lateinit var output: TextView
     private lateinit var chooseModelButton: Button
     private lateinit var sendButton: Button
-    private lateinit var copyButton: Button
 
     private var engine: InferenceEngine? = null
     private var modelReady = false
@@ -165,48 +162,16 @@ class MainActivity : Activity() {
             text = "Este prototipo no tiene memoria persistente ni herramientas. " +
                 "Las respuestas del modelo son texto generado, no hechos verificados."
             textSize = 16f
+            // Enable Android text selection so the user can long-press a response and copy it.
+            setTextIsSelectable(true)
             setPadding(0, dp(18), 0, dp(8))
         }
         scroll.addView(output)
         root.addView(scroll, LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f
         ))
-        copyButton = Button(this).apply {
-            text = "Copiar"
-            contentDescription = "Copiar diagnóstico y respuesta"
-            setOnClickListener { copyVisibleText() }
-        }
-        root.addView(copyButton, LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            gravity = Gravity.END
-        })
         setContentView(root)
         root.requestApplyInsets()
-    }
-
-    private fun copyVisibleText() {
-        val responseText = output.text?.toString().orEmpty()
-        val statusText = status.text?.toString().orEmpty()
-        val textToCopy = "Estado de Nexo M1: $statusText\n\nTexto mostrado:\n$responseText"
-        if (responseText.isBlank() && statusText.isBlank()) {
-            status.text = "Todavía no hay texto para copiar."
-            return
-        }
-
-        try {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(ClipData.newPlainText("Nexo M1", textToCopy))
-            status.text = "Texto copiado al portapapeles. Ya puedes pegarlo aquí."
-            android.widget.Toast.makeText(
-                this,
-                "Copiado. Ya puedes pegarlo aquí.",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-        } catch (e: Exception) {
-            status.text = "No se pudo copiar (${e.javaClass.simpleName}). Mantén pulsado aquí e intenta pegar."
-        }
     }
 
     private fun chooseModelFile() {
