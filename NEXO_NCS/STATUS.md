@@ -1413,3 +1413,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Rationale: the first M1 slice needs a controllable client boundary, no tool/effect path, no conversation persistence and an auditable no-network design. A browser/PWA makes those guarantees harder to establish; LiteRT-LM remains a bounded alternative.
 - No model, quantization, licensing choice, exact device compatibility, package, dependency, code change, installation, or runtime test is selected/performed.
 - **Next exact action:** define the minimal Android M1 architecture and assurance/test plan for the preferred candidate, explicitly separating UI, local inference, model provisioning, ephemeral request/response, network denial, and platform assumptions. Remain analysis-only; no code/dependencies/device access/install until a later implementation authorization. Protected commissioning remains UNKNOWN/STOP.
+
+
+## 2026-10-09 — M1 minimal Android design and adversarial review
+- 🟢 Architecture candidate saved: `NEXO_NCS/BUILD/M1_MINIMAL_ANDROID_CLIENT_ARCHITECTURE_AND_ASSURANCE_PLAN_2026-10-09.md`, commit `a1001d34879d46b3555ca9654af5cdfb91d3c575`.
+- 🟢 Adversarial review saved: `NEXO_NCS/BUILD/M1_MINIMAL_ANDROID_CLIENT_ARCHITECTURE_ADVERSARIAL_REVIEW_2026-10-09.md`, commit `44670860a481bb37da48a010b997cfa5182901ad`.
+- Refined claim: target only the identified/tested app package's network capability and attributable traffic; do not claim device-wide no-egress or full privacy. Keyboard/IME, OS, accessibility, backup, diagnostics, model provenance and native parser risks remain distinct failure domains.
+- Recommended first slice: dedicated Android read-only text interaction + local inference candidate; no tools/effects, no durable conversation, no Vault, no Lúmina simulation, no remote fallback, no Genesis/authority path.
+- No code, dependencies, model, installation, runtime tests, trust root, credential or ceremony changed. M1 remains unimplemented and unverified.
+- **Next exact action:** present the bounded implementation scope and resource prerequisites for explicit implementation authorization. Do not infer code authorization from delegated technical analysis. Protected commissioning remains UNKNOWN/STOP.
