@@ -186,7 +186,7 @@ class MainActivity : Activity() {
     private fun copyVisibleText() {
         val responseText = output.text?.toString().orEmpty()
         val statusText = status.text?.toString().orEmpty()
-        val textToCopy = "Estado de Nexo M1: $statusText\\n\\nTexto mostrado:\\n$responseText"
+        val textToCopy = "Estado de Nexo M1: $statusText\n\nTexto mostrado:\n$responseText"
         if (responseText.isBlank() && statusText.isBlank()) {
             status.text = "Todavía no hay texto para copiar."
             return
