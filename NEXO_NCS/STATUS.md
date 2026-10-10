@@ -1430,3 +1430,15 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - This clarification does not itself authorize repository code changes, model/runtime installation, credentials, Genesis-root selection or protected commissioning.
 - **Next exact action:** prepare a concrete staged M1 implementation plan and resource/prerequisite check; distinguish what this environment can actually inspect/build/install from steps that would require Kevin to execute. Do not repeat the abstract route survey or claim actions not performed.
 - M1 implementation remains not yet authorized; protected commissioning remains UNKNOWN/STOP.
+
+
+## 2026-10-09 — M1 route selected; staged implementation authorized
+
+- Kevin delegated the technical choice and said to proceed with the prototype if recommended. This is treated as authorization to develop the bounded M1 prototype in NCS, superseding earlier analysis-only status for code development **within that scope**.
+- 🟢 Route selected: isolated Android client + pinned local `llama.cpp` runtime, text-only/read-only, no tools/effects, no Lúmina simulation, no Vault, no durable conversation, no remote fallback, no Genesis/authority path.
+- 🟢 Staged plan saved: `NEXO_NCS/BUILD/M1_STAGED_IMPLEMENTATION_PLAN_AND_BUILD_PREREQUISITES_2026-10-09.md`, commit `accfb36965eb1a4395e2913ebc2404a11b8233e2`.
+- 🟢 Build environment inspected: OpenJDK 21.0.12.1, CMake 3.31.6, Ninja 1.12.1, Node 22.16.0 and Git 2.47.3 available; no Gradle, Android SDK/NDK, adb, Android environment variables, or local repository checkout found. This environment cannot yet claim to have built/installed/tested an APK on the phone.
+- Upstream official `llama.cpp` Android docs and sample were inspected. The sample is a reference only; its enabled backup and extra DataStore dependency are not to be copied blindly. Pin upstream SHA/toolchain before building; do not use floating `master`.
+- **Next exact action:** create an isolated Android project subtree and pinned GitHub Actions build for M1. First validate a buildable shell and its manifest/permissions; then integrate reviewed local inference. Do not embed/download a model yet. Record exact CI run/artifact/hash and failures. Device/model installation waits until APK/dependencies/permissions and actual device compatibility are reviewed.
+- Phone modification remains an available engineering option, not a blanket authorization for bootloader unlock, root, firmware flash, data wipe or security downgrade. No device change/install is performed or claimed.
+- No Genesis root, credentials, ceremony, commissioning, or protected effect is selected or authorized. P1/P2/P4/P5/P6 and Step 7 remain UNKNOWN/STOP.
