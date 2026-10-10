@@ -1452,3 +1452,23 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Workflow status at checkpoint: queued/in progress; no successful build or APK artifact claimed yet.
 - This is only Stage 1 UI/build plumbing, not a working local language model and not a device-verified prototype.
 - **Next:** inspect CI result and fix actual build failures; after shell build passes, review and pin upstream native runtime + dependency/license inventory before implementing local inference. No model download or device install yet.
+
+
+## 2026-10-09 — M1 Stage 1 shell CI runtime evidence
+
+- 🟢 CI run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38018826661
+- Run ID `38018826661`; head commit `5e04c219451ca94df748deda115ca132b899e7b3`; conclusion `success`.
+- Gradle build: `BUILD SUCCESSFUL` (35 tasks).
+- Packaged APK permission inspection: output was only `package: org.nexo.m1`; the workflow assertion found no `android.permission.INTERNET`.
+- Debug APK SHA-256: `30d36c7ce7f47126c92aac85286f75504ccbce84a89b94e8766897c7477aa261`.
+- CI artifact: `nexo-m1-stage1-debug-apk`, artifact ID `11656539754`, artifact archive SHA-256 `fc908c5e15fa9edbc65b824bb7fee88ac5db21fada8fa78e61a47bc04c4f503a`, expires 2026-10-24. Artifact contains APK plus permission/hash evidence.
+- First CI attempts exposed two setup faults (obsolete SDK package installation and missing sdkmanager on PATH). They were corrected based on observed job logs; the successful run above includes the corrected setup. This is a useful toolchain fix, not a reason to add compatibility layers to Nexo runtime.
+- Scope remains Stage 1 shell only: no local inference/model, no device install, no prompt-persistence/logcat runtime test. The APK hash is build evidence, not proof of device behavior or whole-phone privacy.
+
+## 2026-10-09 — Native binding privacy review
+
+- 🟢 Candidate upstream revision inspected: `ggml-org/llama.cpp@10a60cf303566e10d6a7a2774c17d2085503d87b`.
+- 🟢 Review saved: `NEXO_NCS/RESEARCH/M1_PINNED_LLAMA_ANDROID_BINDING_PRIVACY_REVIEW_2026-10-09.md`, commit `df7c8a6c863f9d4744e7f96a5582d3d1a27aa325`.
+- 🔴 Upstream Android wrapper has prompt-bearing INFO log calls; it is not acceptable unchanged. Integration must explicitly enforce `LOG_MIN_LEVEL=ANDROID_LOG_ERROR`, inspect error logs and add static/runtime checks. Do not assume Release defaults alone protect prompts.
+- **Next exact action:** integrate the pinned native binding in a separate M1 module, omit unused sample persistence/settings dependencies, enforce the log-level contract in Gradle/CMake and CI, and test model-unavailable behavior. Only then evaluate candidate model license/provenance/resources against actual device details. No model download or device install yet.
+- M1 success does not pass Step 7; Genesis/constitutional authority and protected commissioning remain UNKNOWN/STOP.
