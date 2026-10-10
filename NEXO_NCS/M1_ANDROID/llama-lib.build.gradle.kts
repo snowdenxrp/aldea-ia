@@ -22,8 +22,11 @@ android {
                     "-DLLAMA_BUILD_COMMON=ON",
                     "-DLLAMA_OPENSSL=OFF",
                     "-DGGML_NATIVE=OFF",
-                    "-DGGML_BACKEND_DL=ON",
-                    "-DGGML_CPU_ALL_VARIANTS=ON",
+                    // This app ships one ABI (arm64-v8a). Link the CPU backend into the
+                    // native dependency graph instead of relying on dlopen modules that
+                    // were not available to GGML in the packaged Android app.
+                    "-DGGML_BACKEND_DL=OFF",
+                    "-DGGML_CPU_ALL_VARIANTS=OFF",
                     "-DGGML_LLAMAFILE=OFF",
                     "-DCMAKE_CXX_FLAGS=-DLOG_MIN_LEVEL=ANDROID_LOG_ERROR"
                 )
