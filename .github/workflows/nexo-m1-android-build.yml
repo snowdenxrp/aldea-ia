@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - ncs-clean-architecture
+      - ncs-safe-install-test
     paths:
       - "NEXO_NCS/M1_ANDROID/**"
       - ".github/workflows/nexo-m1-android-build.yml"
