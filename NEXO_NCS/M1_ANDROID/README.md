@@ -12,7 +12,7 @@ This is an isolated Android project subtree. It does not import the existing Nod
 
 ## Build
 
-The pinned CI workflow builds this project with Gradle 8.13, Android Gradle Plugin 8.13.2, Kotlin 2.3.0, compile/target SDK 36, min SDK 33 and Java 21 on GitHub Actions. The environment used for the initial repository inspection does not have the Android SDK/NDK, Gradle, or adb installed, so local APK/device claims are not available yet.
+The pinned CI workflow builds this project with Gradle 8.14.3, Android Gradle Plugin 8.13.2, Kotlin 2.3.0, compile/target SDK 36, min SDK 33 and Java 21 on GitHub Actions. The environment used for the initial repository inspection does not have the Android SDK/NDK, Gradle, or adb installed, so local APK/device claims are not available yet.
 
 ## Important
 
