@@ -95,3 +95,28 @@ The later Android/M1 matrix and read-only collection contract are compatible wit
 ### Current next action
 
 Ask one focused deployment-scope question: **Is the POCO/Android phone intended to be the actual first device that commissions Nexo's Constitution, or is it only the M1 prototype/test device while commissioning is still a separate, undecided deployment?** Keep all mechanism choices open. No commands, code, APK changes, root selection, or protected commissioning before that answer and a claim-specific reason for any further evidence collection.
+
+
+## Decision-gap map — 2026-10-11 (after owner confirms M1-only device scope)
+
+This section supersedes the old deployment-scope question in the preceding reconciliation addendum. Kevin confirmed that the POCO remains an M1 test device; it is **not designated as the initial Constitution-commissioning device**. The actual commissioning deployment remains undecided. This resolves the scope ambiguity, not the trust gap.
+
+### What is already fixed vs still open
+
+| Order | Question / condition | What canonical records establish | What remains UNKNOWN / next design obligation |
+|---|---|---|---|
+| 0 — normative authority | Who may authorize initial commissioning? | Closed owner decision: Kevin is the sole initial human constitutional authority. His daughter is a future intended successor, with no current authority. | Do not reopen this governance choice. Technical evidence must not silently replace it. |
+| 1 — independent recognition | How can an uncommissioned candidate recognize Kevin's act without asking that same candidate to certify itself? | Trust-role map: evidence cannot establish its own trust anchor/appraisal policy; no implemented Policy authority owner or Constitution Authority Context establishment path has been demonstrated. | **Primary blocker.** Specify the minimum property of a pre-existing recognition basis, its legitimacy source and independence claim. Do not choose a device, vendor, key type or ceremony before this claim is testable. |
+| 2 — informed authorization / exact binding | What exactly did Kevin approve? | Existing inventory requires binding approval to exact Constitution content/version and commissioning context, with trusted presentation. | No actual presentation/commit design or substitution/equivocation evidence exists. Define the claim and adversarial cases; approval of a hash alone or a generic “approve” signal is insufficient without a trusted content/context binding. |
+| 3 — currentness and replay | Can an old, copied, revoked or context-mismatched approval be reused? | Existing contracts require freshness/replay handling and distinguish REQUESTED, AUTHORIZED, ENFORCED and UNKNOWN. | No currentness source, replay bound, revocation path or offline limit selected. Define when authorization is current enough and when the safe result must be UNKNOWN/STOP. |
+| 4 — enforcement | What component makes the constitutional transition real, and blocks all bypasses? | Trust-role map separates authority from execution/effect; inventory says the final protected-effect boundary is not demonstrated. | No identified final effect-capable boundary or bypass closure. Must be named and evidenced before any mechanism can be called enforcing. |
+| 5 — interruption, loss, recovery, migration | What happens if commissioning crashes, the authenticator is lost, or the device is replaced? | Semantic rule: preserve evidence, remain blocked after ambiguous/partial completion; recovery must not silently gain constitutional authority. M1 JKS backup is only a reported APK-signing backup. | No deployed rollback/quarantine, independent revocation, safety-only recovery, or migration protocol. These remain later mandatory gates; do not let recovery become a substitute governance root. |
+| 6 — failure-domain closure | Are the recognition, presentation, verifier, storage, update, evidence and effect roles genuinely independent for the claim? | Trust-role map says physical separation is conditional; separate processes/keys/providers alone do not prove independence. | No actual deployment topology exists yet. Once a candidate is proposed, map common-mode dependencies and state exactly which compromises invalidate which claims. |
+
+### Recommended next design action
+
+Work only on **Gate 1: the independent-recognition claim** using the existing trust-role map and commissioning contracts. Write a short candidate-neutral statement of what must already be true before the first Nexo instance can accept Kevin's authorization, what evidence could support that statement, and what remains UNKNOWN if the verifier or evidence source shares the candidate's own authority. Then adversarially test that statement against self-bootstrap, circular validation and silent transfer of governance to an external provider.
+
+Do not draft a new generic root/registry/schema; do not select a physical root, verifier, channel, vendor, quorum or authenticator; do not run Android Stage A; do not modify M1 or commission protected state. If the candidate-neutral claim cannot be stated without choosing a genuinely normative governance rule, stop and ask one focused question. Otherwise continue with the existing recorded constraints.
+
+**Disposition remains: STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
