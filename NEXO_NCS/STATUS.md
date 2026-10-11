@@ -1654,3 +1654,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - This candidate-neutral claim can be stated without reopening a normative governance decision. No new question to Kevin is required at this point.
 - M1 repeated generic-response issue remains deferred until this bounded STEP 7 family stress test reaches a natural stopping point.
 - No Android Stage A, phone commands, APK/signing changes, root/verifier/channel/vendor/quorum selection or protected commissioning. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
+
+
+## 2026-10-11 — Path A cannot replace the accepted independent-recognition requirement
+
+- Reconciled the existing Path A preflight/evaluation with the already accepted independent commissioning recognition requirement. Path A relies on assumed honest/uncompromised owner-supervised presentation and explicitly cannot claim resistance to a compromised commissioning host; it supplies no independently justified verifier or enforcement boundary.
+- **Conclusion:** Path A is evaluation-only and is not eligible to substitute for the accepted independent-recognition requirement. Path B remains required, but no concrete owner-controlled channel, independently justified verifier, or pre-existing recognition basis is evidenced.
+- **Current next action:** obtain the one missing deployment fact needed to evaluate real candidates: whether Kevin currently has a separate device or physical medium available to reserve as an independent recognition channel. These are candidate resources only, not a security conclusion; any actual candidate still needs threat-model, provenance, lifecycle and enforcement review. If none is available, keep commissioning blocked and continue only non-protected development.
+- M1 repeated generic-response issue remains deferred until this STEP 7 decision point is resolved.
+- No device commands, Android Stage A, APK/signing changes, root/verifier/channel/vendor/quorum selection, or protected commissioning. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
