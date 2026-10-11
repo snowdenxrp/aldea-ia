@@ -204,3 +204,24 @@ The stress test was reconciled against the already-existing records below; this 
 ### Next bounded action
 
 Produce a short *decision-readiness comparison* only between the already-recorded accepted requirement (independent recognition channel under Kevin's control) and the existing Path A bounded-assumption candidate. Determine whether Path A can satisfy the accepted independent-recognition requirement without weakening it; use its recorded assumptions and attack results, and do not add a new family or presume owner acceptance. If Path A cannot satisfy the requirement, record it as evaluation-only/ineligible for protected commissioning under the current requirement and keep the independent-channel path as the unresolved design track. No new governance question is needed unless the comparison demonstrates an actual conflict between previously accepted requirements.
+
+
+## Path A vs accepted independent-recognition requirement — decision-readiness result (2026-10-11)
+
+### Requirement comparison
+
+The accepted requirement in `STEP_7_INDEPENDENT_COMMISSIONING_RECOGNITION_REQUIREMENT_2026-10-08.md` requires an independent recognition channel under Kevin's control and permits activation to remain blocked when that channel is unavailable or unverifiable. The Path A preflight/evaluation explicitly assumes an owner-supervised event and an honest, uncompromised presentation environment; it does not prove those assumptions and explicitly cannot claim resistance to a compromised commissioning host.
+
+| Test | Accepted independent-recognition requirement | Path A bounded assumption | Result |
+|---|---|---|---|
+| Recognition basis exists before candidate Nexo self-asserts | Required | Path A cannot let candidate Nexo create its own prior-recognition fact; the proposed environmental assumptions do not themselves provide a separate basis | **Not satisfied by Path A alone** |
+| Candidate host/presentation may be compromised | The recognition claim must be independently justified under its threat model; if not, remain blocked | Path A explicitly assumes no active compromise and says it cannot resist a compromised host/presentation path | **Materially weaker; cannot substitute for the accepted requirement** |
+| Exact Constitution/context binding, replay, currentness, revocation | Required | Still separately required and not implemented; assumptions do not create enforcement | **UNKNOWN / not satisfied** |
+| Protected verifier and final effect boundary | Required | No independently justified verifier or enforcement boundary is established by Path A | **UNKNOWN / not satisfied** |
+| Owner acceptance | Independent recognition requirement already accepted; mechanism not selected | Path A assumptions have not been explicitly accepted | **Path A remains evaluation-only** |
+
+### Disposition
+
+**Path A is not eligible as a substitute for the accepted independent-recognition requirement.** It may remain a bounded research comparator, but it must not be used to weaken the accepted requirement or justify protected commissioning. Path B—an actually identified, independently grounded recognition basis—remains the required design direction, but no concrete channel, verifier or basis is evidenced yet.
+
+This is not a selection of a second device, physical medium, hardware root or external provider. The next necessary input is a concrete, owner-controlled channel candidate that can be evaluated against the already-accepted threat model. If no suitable channel is currently available, the safe result is to leave commissioning unestablished and continue only non-protected development. No change to the Constitution's normative authority is needed to reach this conclusion.
