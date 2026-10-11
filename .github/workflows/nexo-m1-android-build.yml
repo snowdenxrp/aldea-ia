@@ -6,6 +6,7 @@ on:
     branches:
       - ncs-clean-architecture
       - ncs-safe-install-test
+      - ncs-m1-stable-signing
     paths:
       - "NEXO_NCS/M1_ANDROID/**"
       - ".github/workflows/nexo-m1-android-build.yml"
