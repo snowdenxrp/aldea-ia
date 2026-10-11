@@ -1598,3 +1598,10 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Strict separation recorded: M1 package identity, local inference, Termux and APK-signing JKS are not proof of constitutional authority or hardware-backed trust. No exact phone build, bootloader/Verified Boot state, KeyMint/StrongBox/attestation result, independent verifier or final protected-effect boundary is documented. All remain UNKNOWN.
 - Added official Android references for hardware-backed Keystore and key attestation. Their technical claims cannot be promoted into constitutional legitimacy; attestation has not been run/validated here.
 - No M1 APK installation or signing changes performed. **STEP 7 remains OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.** Next action: use canonical records to specify the smallest read-only device evidence collection needed to resolve only material platform claims, without making M1 the trust root or treating local self-report as independent attestation.
+
+
+## 2026-10-11 — Minimal read-only Android evidence collection contract
+- Contract saved: `NEXO_NCS/BUILD/STEP_7_MINIMAL_READ_ONLY_ANDROID_EVIDENCE_COLLECTION_CONTRACT_2026-10-11.md`, commit `f3ce6a486a4dca91408ceb73059f3248bf55796b`, read-back blob SHA `b5cb4b2f8a60f69ac6b57221fab8bb510370cb14`, 4,568 characters.
+- Defines a read-only Stage A command set for build/security-property inventory, explicitly treating outputs as local OS reports rather than independent attestation; Stage B separates APK/JKS signer continuity from authority; Stage C keeps actual Android key attestation behind a separate gate requiring a challenge, chain validation, trust anchor, revocation/status and justified verifier.
+- No commands run on the user's phone, no new APK created/installed, no signing changes, no hardware/root assumption. Empty or unavailable properties remain UNKNOWN.
+- This contract narrows what evidence to collect next without promoting M1 or Termux to a Genesis trust root. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
