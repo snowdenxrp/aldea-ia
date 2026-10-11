@@ -1728,3 +1728,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Next action: evaluate whether Path O has a feasible, owner-verifiable non-circular establishment event and genuinely independent enforcement using existing resources. If not, state the exact unavailable guarantee, then ask Kevin only for the bounded governance decision whether to accept a specific Path H assumption set for a limited transition or keep protected commissioning blocked while non-protected work continues.
 - No device commands, installations, credential enrollment, APK/signing changes, physical root/verifier/channel/provider/quorum selection, or protected commissioning.
 - Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**. M1 generic-response debugging remains deferred until this bounded design reaches a natural stopping point.
+
+
+## 2026-10-11 — Existing resources checked against the genesis recognition claim
+
+- Bounded resource check saved: `NEXO_NCS/BUILD/STEP_7_EXISTING_RESOURCE_GENESIS_BASIS_CHECK_2026-10-11.md`, commit `82f0b72a46213ca5ad2c0e609892fc15ceb45d03`.
+- Evaluated the currently evidenced resources: Kevin's direct intent, POCO, Moto G52, both phones together, Termux/Java, M1 signing material, GitHub history/hashes, a newly created local artifact, and a hypothetical new token/device.
+- Finding: none currently establishes the complete IR-1 claim. Kevin remains the recorded sole initial human constitutional authority; the independent technical recognition and final enforcement path remain unproven. These are separate facts.
+- No existing out-of-band basis is evidenced as ready to use. A human-supervised genesis path would require a later explicit owner decision on a narrow, written environmental assumption set; that decision would not replace technical proof of exact-context binding, verifier, lifecycle/currentness and final enforcement.
+- **Next action:** derive a minimal, reviewable assumption statement for one limited first-boot transition, including precisely what host-compromise cases it cannot resist and what evidence/enforcement still must be demonstrated. Do not ask Kevin to accept it until the threat boundary and residual risks are stated plainly.
+- No device commands, installs, credential enrollment, APK/signing changes, purchases, root/verifier/channel/provider/quorum selection, or protected commissioning. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
