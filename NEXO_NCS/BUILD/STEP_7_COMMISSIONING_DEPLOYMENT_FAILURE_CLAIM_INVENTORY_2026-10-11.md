@@ -295,3 +295,28 @@ One device may physically support more than one role only if the claim-specific 
 ### Next decision-ready step
 
 Before any implementation, identify whether an actually **pre-existing, independently recognized** owner-controlled basis already exists that can verify the exact approval context and survive candidate-app self-assertion. The current evidence does not identify one. Do not assume one exists and do not ask Kevin to re-confirm device ownership or whether the POCO may be evaluated. If the prior basis remains absent, the correct result is still OPEN / STOP / UNKNOWN; continue only non-protected design work. No device commands, installations, APK/signing changes, credential enrollment, or protected commissioning.
+
+
+## Existing-basis evidence check after phone comparison (2026-10-11)
+
+### Records checked
+
+The current branch's canonical records were cross-checked against the question “is there already an owner-controlled recognition basis that exists before Nexo commissioning and can bind Kevin's approval to exact Constitution/context?” The relevant evidence includes:
+- `STEP_7_INDEPENDENT_COMMISSIONING_RECOGNITION_REQUIREMENT_2026-10-08.md` — accepted requirement, explicitly not a selected channel or implementation.
+- `STEP_7_BOOTSTRAP_LEGITIMACY_GAP_AND_ROOT_BASIS_DECISION_2026-10-08.md` — explicitly records the missing initial/ongoing legitimacy basis and no selected root.
+- `STEP_7_TRUST_FOUNDATION_ROOT_CONTRACT_AND_RECOGNITION_GATE_2026-10-08.md` — semantic obligations only; no implemented independent-recognition mechanism.
+- `STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md` — maps functions and gaps; no physical root/verifier selected.
+- `STEP_7_CURRENT_PHONE_CANDIDATE_THREAT_MODEL_2026-10-08.md` — phone is only a candidate interaction channel; the concrete enrollment basis and verifier remain unselected.
+- The newest dated `STATUS.md` and this inventory's owner-expanded POCO/Moto comparison.
+
+### Result and epistemic boundary
+
+**No pre-existing owner-controlled recognition basis, independently justified verifier, or protected enforcement boundary is evidenced in the reviewed repository records.** This is a bounded finding about available evidence, not proof that Kevin possesses no other pre-existing credential or medium outside the repository.
+
+The following do not fill that gap by themselves: knowing a device PIN; ownership of a phone; running M1/Termux or another app; using two phones; a screen-lock event; a hash/signature without a separately justified recognition basis; a provider/account session; or a UI message saying approved/verified. None establishes all of owner attribution, exact Constitution/context binding, freshness/currentness, revocation/recovery, verifier independence and final enforcement.
+
+### Disposition
+
+The unresolved premise is now precisely scoped: identify a legitimate, pre-existing owner-controlled recognition basis (or an explicitly accepted and adversarially bounded human-recognition ceremony) and show how its authority is enforced without the uncommissioned Nexo candidate certifying itself. No such basis is currently evidenced, and no candidate mechanism should be invented to conceal that absence.
+
+Until that premise is resolved, **constitutional commissioning remains OPEN / STOP / UNKNOWN**. Continue only non-protected design work. No device commands, installs, credential enrollment, APK/signing changes, or protected commissioning.
