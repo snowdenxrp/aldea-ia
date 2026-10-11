@@ -108,14 +108,16 @@ Do not create another APK merely to keep busy. Fix only a demonstrated root caus
 
 **Owner decision recorded:** Kevin confirmed the POCO remains the M1 prototype/test device; it is not designated as the initial Constitution-commissioning device. The actual commissioning deployment remains undecided. The old deployment-scope question is closed and must not be repeated.
 
+**Design result already recorded:** candidate-neutral claim **IR-1** and its circularity/governance-transfer adversarial checks are in the final section of `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`. Do not redo that formulation.
+
 **Do not run device commands, code, select a physical root, or commission yet.**
 
-1. Read the latest dated decision in `NEXO_NCS/STATUS.md` and the `Decision-gap map` at the end of `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`.
-2. The primary work is **Gate 1 — independent recognition**: formulate the candidate-neutral claim that must be true before an uncommissioned Nexo instance can accept Kevin's initial authorization. Specify what evidence could support the claim and what remains UNKNOWN if the recognition/verifier/evidence source shares the candidate's own authority.
-3. Adversarially check for self-bootstrap, circular validation, and silent transfer of constitutional governance to an external provider. Reuse the existing trust-role map and commissioning/bootstrap contracts; do not invent a generic root/registry/schema.
-4. Do not select a device, hardware root, verifier, channel, vendor, quorum, authenticator or implementation. If the claim cannot be stated without a genuinely normative governance decision, ask one focused question; otherwise proceed from the already-recorded rules.
+1. Read the latest dated decision in `NEXO_NCS/STATUS.md`, then read the inventory's IR-1 section and the existing candidate-family comparison.
+2. Current primary work: **stress-test the already-recorded candidate families against IR-1**. For each family, state whether it could in principle provide a pre-established recognition basis without self-bootstrap or governance transfer, and name the claim-specific evidence/failure-domain closure still missing.
+3. Do not rank candidates by convenience or choose a device, hardware root, verifier, channel, vendor, quorum, authenticator or implementation. Where legitimacy, independence, currentness or enforcement depends on absent evidence, mark UNKNOWN.
+4. No further normative question to Kevin is required unless this stress test uncovers a genuine governance choice that cannot be resolved from existing rules.
 5. Keep **STEP 7 OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN**. No Android Stage A commands, APK/signing changes, or protected commissioning.
-6. M1's repeated generic-response symptom is a deferred issue, not the current workstream. Resume it only after this STEP 7 design task reaches a natural stopping point; first establish the exact installed `safetest18` source/build/artifact identity.
+6. M1's repeated generic-response symptom is a deferred issue. Resume it only after this STEP 7 candidate-family stress test reaches a natural stopping point; first establish the exact installed `safetest18` source/build/artifact identity.
 
 ### Continuity rule
 
