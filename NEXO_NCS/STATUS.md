@@ -1674,3 +1674,14 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Next action: produce a bounded POCO-vs-Moto G52 candidate comparison using existing contracts and threat model; do not repeat the already-closed family stress test or Path A comparison. If neither can meet the recognition claim without unsupported assumptions, keep commissioning blocked and continue non-protected development.
 - No device commands, Android Stage A, installation, APK/signing changes, root/verifier/channel/vendor/quorum selection, or protected commissioning. M1's repeated generic-response issue remains deferred until this STEP 7 design decision reaches a natural stopping point.
 - Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**.
+
+
+## 2026-10-11 — Concrete POCO/Moto interaction-boundary comparison completed
+
+- Reused the existing phone threat model, Root Recognition Gate, Trust Function / Root Role Map and IR-1; no repeat of the closed candidate-family stress test or Path A comparison.
+- Added a bounded POCO-vs-Moto G52 comparison of the distinct roles: human presentation/review, explicit owner approval, recognition/provenance, freshness/currentness/lifecycle, and final protected-effect enforcement.
+- Finding: neither device presently establishes IR-1. POCO is not disqualified merely because it runs M1, but shared app/UI/OS/storage failure domains need explicit closure. Moto G52's physical separation reduces some same-device common modes, but does not create a prior recognition basis; its reported damaged display can also impair exact-context inspection. A two-phone arrangement alone would not close the gap.
+- No concrete pre-existing independently recognized owner-controlled basis, verifier or protected enforcement boundary is evidenced. Do not invent one, infer it from screen lock/signature/hash, or select a root/channel by convenience.
+- **Next bounded action:** examine existing canonical records for any actually pre-existing owner-controlled recognition basis and evidence that could bind approval to exact Constitution/context. If none is evidenced, explicitly record that this is the unresolved premise and keep commissioning blocked; proceed only with non-protected design work. Do not ask again whether the POCO can be considered or whether Kevin owns/unlocks the Moto.
+- No device commands, installation, Android Stage A, APK/signing changes, credential enrollment or protected commissioning. M1 generic-response issue remains deferred until this STEP 7 decision point reaches a natural stopping point.
+- Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**.
