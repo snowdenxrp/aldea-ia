@@ -168,3 +168,14 @@ The newest `STATUS.md` entry supersedes prior next-action wording. The POCO/Moto
 - Next bounded action: inspect existing canonical evidence specifically for an already-existing owner-controlled recognition basis and evidence capable of binding approval to exact Constitution/context. Do not reopen general mechanism-family or Path A work, and do not ask Kevin again whether POCO can be considered or whether he owns/unlocks the Moto.
 - If no such basis is evidenced, record the premise as unresolved and keep protected commissioning OPEN / STOP / UNKNOWN; continue only non-protected design work.
 - No device commands, installation, Android Stage A, APK/signing changes, credential enrollment or protected commissioning. M1's repeated generic-response issue remains deferred until this STEP 7 decision point reaches a natural stopping point.
+
+
+## Canonical resume update — recognition-basis evidence check completed (2026-10-11)
+
+The newest dated `STATUS.md` entry supersedes prior next-action wording. The latest section of `BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md` records a bounded check of the canonical recognition requirement, legitimacy-gap decision, root-recognition contract, trust-role map, current-phone threat model, and POCO/Moto comparison.
+
+- No pre-existing owner-controlled recognition basis, independently justified verifier, or protected enforcement boundary is evidenced in the reviewed repository records. This is not proof that Kevin has no credential/medium outside those records.
+- A PIN, phone ownership, app/shell, second phone, provider session, hash/signature alone, or UI approval label does not satisfy the full claim.
+- The unresolved premise is a legitimate pre-existing recognition basis (or an explicitly accepted and adversarially bounded human-recognition ceremony), exact Constitution/context binding, and enforcement independent of uncommissioned Nexo self-assertion.
+- Do not invent a root or ask again whether POCO may be considered. If a concrete pre-existing credential/medium is later identified, evaluate it against the existing IR-1/threat model before selecting a mechanism.
+- For now, constitutional commissioning remains OPEN / STOP / UNKNOWN; continue only non-protected design work. No device commands, installs, credential enrollment, Android Stage A, APK/signing changes or commissioning. M1's generic-response issue remains deferred until this STEP 7 design point reaches a natural stopping point.
