@@ -1645,3 +1645,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - M1's repeated “¿Quieres hablar de algo?” symptom is preserved as deferred. Do not start M1 debugging/building until this STEP 7 design task reaches a natural stopping point. When resumed, first establish the exact installed safetest18 source/build/artifact identity.
 - No Android Stage A commands, device changes, APK/signing changes, physical root/verifier/channel/vendor/quorum selection, or protected commissioning.
 - Disposition: **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
+
+
+## 2026-10-11 — Gate 1 claim drafted; next action is candidate-family stress test
+
+- Added **IR-1**, a candidate-neutral independent-recognition claim, plus adversarial checks for self-bootstrap, circular validation, bare-signature/hash overclaim, external-provider governance transfer, same-component approval/commit compromise, revoked-authenticator replay, and the distinction between authorization and enforcement. It is a semantic design result only; no protocol, root, verifier, device or implementation is selected.
+- **Current next action:** stress-test the already-recorded candidate families against IR-1 using the existing comparison table. For each family, identify whether it can in principle supply a pre-established recognition basis and what claim-specific proof/failure-domain evidence is missing. Do not rank by convenience or choose a mechanism; unsupported independence or legitimacy remains UNKNOWN.
+- This candidate-neutral claim can be stated without reopening a normative governance decision. No new question to Kevin is required at this point.
+- M1 repeated generic-response issue remains deferred until this bounded STEP 7 family stress test reaches a natural stopping point.
+- No Android Stage A, phone commands, APK/signing changes, root/verifier/channel/vendor/quorum selection or protected commissioning. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
