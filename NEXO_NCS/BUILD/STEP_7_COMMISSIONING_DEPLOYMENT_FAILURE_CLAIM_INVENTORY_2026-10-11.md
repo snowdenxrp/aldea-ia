@@ -225,3 +225,32 @@ The accepted requirement in `STEP_7_INDEPENDENT_COMMISSIONING_RECOGNITION_REQUIR
 **Path A is not eligible as a substitute for the accepted independent-recognition requirement.** It may remain a bounded research comparator, but it must not be used to weaken the accepted requirement or justify protected commissioning. Path B—an actually identified, independently grounded recognition basis—remains the required design direction, but no concrete channel, verifier or basis is evidenced yet.
 
 This is not a selection of a second device, physical medium, hardware root or external provider. The next necessary input is a concrete, owner-controlled channel candidate that can be evaluated against the already-accepted threat model. If no suitable channel is currently available, the safe result is to leave commissioning unestablished and continue only non-protected development. No change to the Constitution's normative authority is needed to reach this conclusion.
+
+
+## Owner expands candidate scope — POCO and Moto G52 comparison (2026-10-11)
+
+### Owner decision and boundary
+
+Kevin explicitly states he is comfortable evaluating the POCO for both M1 and a possible role in constitutional-authorization recognition. This supersedes the earlier POCO-M1-only scope decision. It does **not** select the POCO, establish a root of trust, or authorize device operations. The candidate set for bounded design comparison is now:
+- **POCO:** already used for M1; candidate use is permitted by Kevin, but shared-device and common-mode compromise must be evaluated.
+- **Moto G52:** Kevin owns it and can unlock it; about one quarter of its display is not visible. It is physically separate from the POCO, but usability and reliable presentation/review may be impaired.
+
+### Same-claim comparison
+
+| Requirement / risk | POCO used for M1 + possible recognition | Moto G52 as separate candidate | Current evidence |
+|---|---|---|---|
+| Pre-existing recognition basis before Nexo self-asserts | Not established by sharing the device with M1 | Not established merely by being another physical device | **UNKNOWN for both** |
+| Kevin can review and approve exact Constitution/version/context | Potentially possible, but actual review path and content binding are not designed or tested | Potentially impaired by the invisible display area; exact usable interaction is not assessed | **UNKNOWN for both** |
+| Independent verifier/provenance not rewritable by candidate Nexo | Not established; M1/Nexo components may share device/platform/developer-controlled state | Not established; separate hardware alone does not identify a trustworthy verifier or prior key/basis | **UNKNOWN for both** |
+| Cross-component/common-mode compromise | Shared device with M1 increases the need to analyze whether candidate app, OS, storage, UI or credentials can influence the recognition path | Physical separation reduces some same-device common modes but leaves platform, owner, supply-chain, credential and process risks to analyze | **Unclosed for both; different risk profiles** |
+| Freshness, replay, currentness and revocation | No recognition protocol or lifecycle evidence supplied | No recognition protocol or lifecycle evidence supplied | **UNKNOWN for both** |
+| Recovery, loss, replacement and migration | No lifecycle design selected | No lifecycle design selected; damaged display adds a practical availability concern | **UNKNOWN for both** |
+| Final protected-effect enforcement | No protected verifier/boundary implementation evidenced | No protected verifier/boundary implementation evidenced | **UNKNOWN for both** |
+
+### Decision
+
+Neither candidate can currently satisfy IR-1 on the evidence available. The POCO is not disqualified solely because it runs M1; the Moto G52 is not preferred solely because it is separate. The decision must follow the concrete recognition protocol, independent provenance/verifier, failure-domain analysis and proof of enforcement—not device ownership or convenience.
+
+### Next bounded step
+
+Compare the concrete interaction and trust boundaries each candidate could actually support using existing canonical contracts. Identify whether either provides a **pre-existing, independently justified recognition basis** and how Kevin can inspect and approve the exact authorization context. Do not invent a new root or select a technology to fill the gap. If neither candidate can supply that basis, keep protected commissioning **OPEN / STOP / UNKNOWN** and continue only non-protected work. No device commands, installation, APK/signing changes or commissioning are authorized by this candidate-scope decision.
