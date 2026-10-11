@@ -1716,3 +1716,15 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Kevin's commitment to do the necessary work is recorded as project commitment, not as acceptance of any specific threat assumption, governance transfer, purchase, enrollment, or device operation.
 - **Next bounded action:** derive the minimum explicit threat/assumption set for human-supervised genesis and compare it with the strongest feasible out-of-band establishment path. Only ask for a resource or owner decision if this analysis demonstrates it is necessary. No device commands, installs, credential enrollment, APK/signing changes, root/verifier/channel/vendor/quorum selection, or protected commissioning.
 - Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**. M1's repeated generic-response symptom remains deferred until this design reaches a natural stopping point.
+
+
+## 2026-10-11 — Genesis threat assumptions and establishment paths compared
+
+- New bounded design record: `NEXO_NCS/BUILD/STEP_7_INITIAL_GENESIS_THREAT_ASSUMPTIONS_AND_ESTABLISHMENT_PATH_COMPARISON_2026-10-11.md`, commit `1f7bdf4090f21dfd848709b39dc65b3b026dd89d`.
+- Reused existing Genesis Trust Foundation, root-recognition gate, bootstrap composition, Constitution Authority Context STOP gate, Trust Function / Root Role Map, and commissioning failure-claim inventory. No new generic trust abstraction introduced.
+- Derived minimum threat rows for candidate self-bootstrap, presentation substitution, approval forgery/replay, verifier compromise, currentness/revocation, common-mode failure, recovery/replacement, final-effect enforcement, human factors, and lifecycle/loss.
+- Compared (H) human-supervised genesis under explicit bounded environmental assumptions with (O) out-of-band establishment of a pre-recognized owner-controlled basis. H cannot claim resistance to a compromised host controlling both presentation and submission. O may reduce that dependency only if its own genesis and enforcement are non-circular; no such basis is currently evidenced.
+- **No path selected.** Kevin's general commitment to build Nexo is not treated as blanket acceptance of assumptions, provider governance, purchases, custodians, enrollment or device changes.
+- Next action: evaluate whether Path O has a feasible, owner-verifiable non-circular establishment event and genuinely independent enforcement using existing resources. If not, state the exact unavailable guarantee, then ask Kevin only for the bounded governance decision whether to accept a specific Path H assumption set for a limited transition or keep protected commissioning blocked while non-protected work continues.
+- No device commands, installations, credential enrollment, APK/signing changes, physical root/verifier/channel/provider/quorum selection, or protected commissioning.
+- Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**. M1 generic-response debugging remains deferred until this bounded design reaches a natural stopping point.
