@@ -1748,3 +1748,11 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Feasibility check: the assumptions are not verified or accepted; exact presentation/approval binding, verifier and final protected-effect boundary remain absent. The document therefore does not permit Genesis ESTABLISHED.
 - **Next action:** review the concrete transition/data/authority path against these assumptions and the existing contracts. Only if a real verifier and final effect boundary can be identified should Kevin be asked to consider the narrow assumption set. Otherwise keep commissioning blocked without asking for premature acceptance.
 - No device commands, installs, credential enrollment, APK/signing changes, purchases, root/verifier/channel/provider/quorum selection, or protected commissioning. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
+
+
+## 2026-10-11 — Genesis boundary source review
+
+- Review record: `NEXO_NCS/BUILD/STEP_7_GENESIS_TO_PROTECTED_TRANSITION_BOUNDARY_GAP_2026-10-11.md`, commit `2b0d91c8ef8a6df9e864b68e2f0cc0c1ad1728b3`.
+- Source review found that the generic protected-transition path consumes an injected AuthorityGate; it does not itself establish the gate's independent legitimacy or a Genesis Trust Foundation. Application-state commit is not proof of final constitutional/effect enforcement.
+- Next: map the existing AuthorityGate port to the Genesis Trust Foundation and the actual last enforcement boundary; mark missing links UNKNOWN. No implementation until those links are justified.
+- STEP 7 remains OPEN / STOP / UNKNOWN.
