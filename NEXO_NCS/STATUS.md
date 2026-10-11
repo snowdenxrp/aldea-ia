@@ -1696,3 +1696,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Next action: do not invent a mechanism. Keep constitutional commissioning OPEN / STOP / UNKNOWN and continue only non-protected design work. If a concrete pre-existing credential/medium is later identified, evaluate it against the already-accepted claim and threat model before selecting anything.
 - No device commands, installation, credential enrollment, Android Stage A, APK/signing changes or protected commissioning. M1 generic-response issue remains deferred until this STEP 7 design point reaches a natural stopping point.
 - Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**.
+
+
+## 2026-10-11 — Owner reports no remembered pre-existing recognition medium; authorizes necessary work
+
+- Kevin says he does not recall having a pre-existing credential or recognition medium, and explicitly authorizes doing everything reasonably within our control to build Nexo. This is not proof that no such medium exists; record only that none is currently identified.
+- Construction commitment: do not treat the missing prior basis as a reason to abandon Nexo. Continue the non-protected architecture and evaluate a bounded initial owner-recognition ceremony as a design candidate, while preserving IR-1, exact Constitution/context binding, informed approval, freshness/replay resistance, revocation/recovery, verifier independence, and final protected-effect enforcement.
+- The ceremony must not manufacture legitimacy by having uncommissioned Nexo declare Kevin authoritative, by treating a hash/signature/PIN/UI event as sufficient, or by quietly transferring governance to a provider. Before any selection or implementation, compare feasible paths against the existing threat model and explicitly state which compromise/failure claims each can and cannot satisfy. If a required guarantee is unattainable with available means, label it honestly and keep only that protected transition blocked; continue safe, non-protected work.
+- No credentials/secrets requested or disclosed. No device commands, installation, credential enrollment, APK/signing changes, root/verifier/channel/vendor/quorum selection, or protected commissioning.
+- Current next action: produce a bounded design comparison of feasible initial human-recognition/commissioning paths, reusing the existing IR-1 and failure-domain inventory rather than creating a new generic trust abstraction. Ask Kevin for a concrete resource only if the comparison proves that fact necessary.
+- Disposition: **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.** M1's repeated generic-response symptom remains deferred until this design reaches a natural stopping point.
