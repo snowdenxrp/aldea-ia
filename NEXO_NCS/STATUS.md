@@ -1635,3 +1635,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Owner priority decision for this session: finish the existing NCS STEP 7 commissioning-design work first. Keep the M1 symptom as a deferred, concrete issue; do not start a second implementation/build/debug branch now.
 - Deferred M1 next action, when the current STEP 7 work reaches a natural stopping point: identify the exact source commit/workflow run/artifact/package for installed `safetest18`; then trace prompt → native inference → displayed output and establish the cause before changing code or producing another APK.
 - Current primary NCS next action remains: build the evidence-backed decision-gap map for the initial authorization claim from existing canonical commissioning contracts and the 12-row failure-domain inventory. No Android Stage A commands, root/verifier/channel selection, APK change, or protected commissioning.
+
+
+## 2026-10-11 — STEP 7 scope resolved; next action narrowed to independent recognition
+
+- Kevin confirmed the recommended separation: POCO remains an M1 prototype/test device and is not designated as the initial Constitution-commissioning device. The actual commissioning deployment remains undecided. This is a scope decision, not a root or verifier selection.
+- The previous deployment-scope question is CLOSED; do not ask it again. The inventory's new **Decision-gap map** supersedes the older “Current next action” question in that document.
+- **Current primary next action:** address Gate 1 only: state the candidate-neutral independent-recognition claim required before an uncommissioned Nexo instance can accept Kevin's initial authorization; identify what would count as supporting evidence and how self-bootstrap/circular validation/external governance transfer fail. Reuse the existing trust-role map, bootstrap contracts and decision-gap map; do not create a generic root/registry/schema.
+- M1's repeated “¿Quieres hablar de algo?” symptom is preserved as deferred. Do not start M1 debugging/building until this STEP 7 design task reaches a natural stopping point. When resumed, first establish the exact installed safetest18 source/build/artifact identity.
+- No Android Stage A commands, device changes, APK/signing changes, physical root/verifier/channel/vendor/quorum selection, or protected commissioning.
+- Disposition: **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
