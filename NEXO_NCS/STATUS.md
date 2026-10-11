@@ -1756,3 +1756,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Source review found that the generic protected-transition path consumes an injected AuthorityGate; it does not itself establish the gate's independent legitimacy or a Genesis Trust Foundation. Application-state commit is not proof of final constitutional/effect enforcement.
 - Next: map the existing AuthorityGate port to the Genesis Trust Foundation and the actual last enforcement boundary; mark missing links UNKNOWN. No implementation until those links are justified.
 - STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## 2026-10-11 — Genesis AuthorityGate control path mapped from source
+
+- Control-path map saved: `NEXO_NCS/BUILD/STEP_7_GENESIS_AUTHORITY_GATE_CONTROL_PATH_MAP_2026-10-11.md`, commit `c13bd7e1066f78cd0e9e2b34addbf19c0cbc995a`.
+- Inspected `src/nexo/core/ownership.mjs`, `src/nexo/core/protected-transition.mjs`, `src/nexo/core/contracts.mjs`, `tests/nexo/protected-transition.test.mjs`, and the conditional persistence adapter.
+- Confirmed the AuthorityGate is an injected port whose default is NOT_IMPLEMENTED; current tests inject mock authority results. The generic transition fails closed for supplied STOP/UNKNOWN, but does not independently ground an AUTHORIZED result in Genesis Trust Foundation evidence.
+- The existing conditional commit is an application-state persistence boundary; no deployment-specific final commissioning effect boundary or bypass closure is identified. Genesis-specific AuthorityGate and final boundary remain UNKNOWN.
+- **Next action:** identify the first concrete Nexo effect that initial commissioning must control and its last controllable boundary. If that deployment target is not yet defined, record the scope gap; do not invent a generic enforcement layer or ask Kevin to accept assumptions before this is clear.
+- No implementation or device changes. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
