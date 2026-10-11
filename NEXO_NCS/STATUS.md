@@ -1738,3 +1738,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - No existing out-of-band basis is evidenced as ready to use. A human-supervised genesis path would require a later explicit owner decision on a narrow, written environmental assumption set; that decision would not replace technical proof of exact-context binding, verifier, lifecycle/currentness and final enforcement.
 - **Next action:** derive a minimal, reviewable assumption statement for one limited first-boot transition, including precisely what host-compromise cases it cannot resist and what evidence/enforcement still must be demonstrated. Do not ask Kevin to accept it until the threat boundary and residual risks are stated plainly.
 - No device commands, installs, credential enrollment, APK/signing changes, purchases, root/verifier/channel/provider/quorum selection, or protected commissioning. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
+
+
+## 2026-10-11 — Draft bounded human-genesis assumptions prepared for review
+
+- Draft recorded: `NEXO_NCS/BUILD/STEP_7_DRAFT_BOUNDED_HUMAN_GENESIS_ASSUMPTION_SET_2026-10-11.md`, commit `c1875755503fa56f6b03744b023c0c7083f18f20`.
+- Defines seven candidate assumptions/conditions: owner presence, controlled setup environment, honest presentation path, exact-content review, narrow informed approval, separately justified verifier/final enforcement, and UNKNOWN/STOP on mismatch or missing evidence.
+- Explicitly states that accepting environmental assumptions cannot substitute for an independently justified verifier, exact-context binding, lifecycle/currentness, provenance or final-effect enforcement. The draft excludes any claim of resistance to a compromised host that controls both presentation and submission.
+- Feasibility check: the assumptions are not verified or accepted; exact presentation/approval binding, verifier and final protected-effect boundary remain absent. The document therefore does not permit Genesis ESTABLISHED.
+- **Next action:** review the concrete transition/data/authority path against these assumptions and the existing contracts. Only if a real verifier and final effect boundary can be identified should Kevin be asked to consider the narrow assumption set. Otherwise keep commissioning blocked without asking for premature acceptance.
+- No device commands, installs, credential enrollment, APK/signing changes, purchases, root/verifier/channel/provider/quorum selection, or protected commissioning. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
