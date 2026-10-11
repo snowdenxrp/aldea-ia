@@ -108,16 +108,18 @@ Do not create another APK merely to keep busy. Fix only a demonstrated root caus
 
 **Owner decision recorded:** Kevin confirmed the POCO remains the M1 prototype/test device; it is not designated as the initial Constitution-commissioning device. The actual commissioning deployment remains undecided. The old deployment-scope question is closed and must not be repeated.
 
-**Design result already recorded:** candidate-neutral claim **IR-1** and its circularity/governance-transfer adversarial checks are in the final section of `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`. Do not redo that formulation.
+**Design results already recorded:** candidate-neutral claim IR-1, the family stress test, existing-contract reconciliation, and the Path A comparison are in the final sections of `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`. Do not redo these analyses.
+
+**Key conclusion:** Path A's assumed honest/uncompromised commissioning environment does not satisfy the accepted independent-recognition requirement and cannot substitute for Path B. No concrete independent channel, independently justified verifier, or pre-existing recognition basis is currently evidenced.
 
 **Do not run device commands, code, select a physical root, or commission yet.**
 
-1. Read the latest dated decision in `NEXO_NCS/STATUS.md`, then read the inventory's IR-1 section and the existing candidate-family comparison.
-2. Current primary work: **stress-test the already-recorded candidate families against IR-1**. For each family, state whether it could in principle provide a pre-established recognition basis without self-bootstrap or governance transfer, and name the claim-specific evidence/failure-domain closure still missing.
-3. Do not rank candidates by convenience or choose a device, hardware root, verifier, channel, vendor, quorum, authenticator or implementation. Where legitimacy, independence, currentness or enforcement depends on absent evidence, mark UNKNOWN.
-4. No further normative question to Kevin is required unless this stress test uncovers a genuine governance choice that cannot be resolved from existing rules.
+1. Read the newest dated entry in `NEXO_NCS/STATUS.md` and the inventory's final Path A comparison.
+2. The one missing deployment fact is whether Kevin currently has a separate device or physical medium available to reserve as an independent recognition-channel candidate. Ask one focused question if this information is not already in the conversation. These are only candidate resources, not proof of independence.
+3. Evaluate any actual candidate against the already-accepted threat model: prior recognition/provenance, Kevin's bounded authority, exact Constitution/context presentation and binding, freshness/replay, currentness/revocation, recovery/migration, shared dependencies, and final protected-effect enforcement.
+4. If no suitable candidate is available, do not weaken the requirement or accept Path A by default. Leave commissioning unestablished and continue only non-protected development.
 5. Keep **STEP 7 OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN**. No Android Stage A commands, APK/signing changes, or protected commissioning.
-6. M1's repeated generic-response symptom is a deferred issue. Resume it only after this STEP 7 candidate-family stress test reaches a natural stopping point; first establish the exact installed `safetest18` source/build/artifact identity.
+6. M1's repeated generic-response symptom remains deferred until this STEP 7 decision point is resolved. When resumed, first establish the exact installed `safetest18` source/build/artifact identity.
 
 ### Continuity rule
 
