@@ -120,3 +120,43 @@ Work only on **Gate 1: the independent-recognition claim** using the existing tr
 Do not draft a new generic root/registry/schema; do not select a physical root, verifier, channel, vendor, quorum or authenticator; do not run Android Stage A; do not modify M1 or commission protected state. If the candidate-neutral claim cannot be stated without choosing a genuinely normative governance rule, stop and ask one focused question. Otherwise continue with the existing recorded constraints.
 
 **Disposition remains: STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
+
+
+## Gate 1 design result — candidate-neutral independent-recognition claim (2026-10-11)
+
+### Claim IR-1
+
+Before any initial constitutional transition is accepted, there must be a **pre-established, claim-scoped basis for recognizing Kevin's authorization** whose legitimacy and verification rules do not derive solely from the uncommissioned Nexo instance, the Constitution bytes that instance proposes, or evidence that the same candidate instance can fabricate or redefine.
+
+For one commissioning attempt, the accepted evidence must bind together all of the following as one bounded authorization:
+- Kevin as the authorized human under the already-closed owner governance decision;
+- the exact Constitution content/version and commissioning context being approved;
+- an informed approval presented in a way that exposes relevant content/context substitution, rather than a bare generic approval signal;
+- the initial-commissioning scope and a fresh, non-replayable attempt/context;
+- current authority status under a pre-established revocation/offline rule;
+- a verification decision made under rules the candidate instance cannot self-authorize or silently rewrite;
+- the exact transition that the final protected-effect boundary will permit.
+
+**Failure rule:** if the identity-to-authorization link, exact content/context binding, recognition basis, freshness/currentness, or final enforcement condition is UNKNOWN, invalid, conflicting or unverifiable, do not accept the constitutional transition. Preserve available proposal/evidence, report the unresolved state, and remain blocked; do not silently fall back to the candidate's own assertion.
+
+This is a semantic claim, not a proposed cryptographic protocol or new runtime schema. It does not require all roles to be on separate physical devices. Any shared component must instead be evaluated against the specific compromise that could let it both counterfeit recognition and alter the approved transition.
+
+### Circularity and governance-transfer attack results
+
+| Attack | Required rejection condition | What the current evidence establishes |
+|---|---|---|
+| Self-bootstrap: candidate Nexo declares its own verifier/root trusted | The candidate's own claim, generated key, local flag, package signature, model output, hash, or self-reported platform state cannot alone establish the pre-existing legitimacy of its recognition basis. | Trust-role map explicitly rejects evidence establishing its own trust anchor/appraisal policy. No concrete recognition basis is implemented. |
+| Circular validation: verifier trusts policy supplied by the candidate whose authorization is being checked | The rule that validates the evidence must itself have an independently justified prior authority/provenance; if it is merely accepted because the candidate says so, the chain is circular and the result remains UNKNOWN. | No implemented Policy authority owner or Constitution Authority Context establishment path has been demonstrated. |
+| Bare cryptographic proof: signature/hash is treated as constitutional legitimacy | A valid signature/hash can support a bounded key-statement or byte-equality claim only; it does not independently prove Kevin's informed approval, currentness, scope, legitimacy or enforcement. | Existing trust-role map records this invariant. No protocol or signer is selected. |
+| External-provider substitution: provider's account/root becomes constitutional authority | An external service may only be considered for a narrowly specified support role; it must not gain unrecorded power to choose/amend the Constitution, replace Kevin, define succession, or unilaterally revoke/transfer constitutional authority. Its own legitimacy, scope, compromise and exit must be justified. | Provider independence is a project constraint; no external authority is selected or assumed legitimate. |
+| Same-component approval/commit compromise | If one component can mispresent what Kevin approves and commit different bytes, that component's evidence alone cannot establish informed exact binding. Either show the claim survives the stated compromise model or keep it UNKNOWN. | Actual presentation, verifier, commit boundary and bypass closure remain unimplemented/UNKNOWN. |
+| Lost/revoked authenticator replay | Approval evidence cannot remain accepted beyond its pre-established currentness/revocation conditions; inability to determine status must block the dependent transition. | No deployment-specific revocation path, freshness source or offline bound is selected. |
+| “Authorized” confused with “enforced” | Recognition/approval evidence is not proof the final effect boundary applied the transition. Enforcement requires separate evidence from the actual last effect-capable boundary and bypass analysis. | Final protected-effect boundary is NOT DEMONSTRATED. |
+
+### Gate 1 conclusion and next bounded step
+
+IR-1 is sufficiently defined at the semantic level to continue without asking Kevin to choose a normative governance rule. It does **not** select a device, verifier, key, ceremony, vendor, quorum, physical root or implementation.
+
+Next, use the existing candidate-family comparison to evaluate only whether each family can in principle supply IR-1's pre-established recognition basis without self-bootstrap or governance transfer. Keep the evaluation at claim/failure-domain level; do not rank convenience or choose a mechanism. For any family whose legitimacy, independence or enforcement depends on a fact not in canonical evidence, mark it UNKNOWN and state the missing proof.
+
+Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**.
