@@ -320,3 +320,38 @@ The following do not fill that gap by themselves: knowing a device PIN; ownershi
 The unresolved premise is now precisely scoped: identify a legitimate, pre-existing owner-controlled recognition basis (or an explicitly accepted and adversarially bounded human-recognition ceremony) and show how its authority is enforced without the uncommissioned Nexo candidate certifying itself. No such basis is currently evidenced, and no candidate mechanism should be invented to conceal that absence.
 
 Until that premise is resolved, **constitutional commissioning remains OPEN / STOP / UNKNOWN**. Continue only non-protected design work. No device commands, installs, credential enrollment, APK/signing changes, or protected commissioning.
+
+
+## Initial owner-recognition path comparison — 2026-10-11
+
+### Purpose
+
+Respond to Kevin's statement that he does not recall having a pre-existing credential/medium, but authorizes doing the necessary work to build Nexo. This compares bounded design paths; it does not treat that commitment as acceptance of a specific risk assumption or as permission to activate protected authority.
+
+### Candidate paths
+
+| Path | What it can contribute | Hard limit / unresolved proof | Current disposition |
+|---|---|---|---|
+| **A. Explicit human-supervised genesis ceremony under stated environmental assumptions** | Kevin can knowingly approve an exact, versioned Constitution and narrowly scoped first-boot transition; assumptions can be made visible and tested. | Human intent alone does not prove the presentation channel is uncompromised. If the host can substitute the Constitution, falsify what was shown, or forge/alter the approval submitted to the consumer, IR-1 is not met against that threat. Any accepted assumption set needs a separate, explicit owner decision. | Design candidate only; not accepted, implemented, or selected. |
+| **B. Independently recognized, owner-controlled basis established out of band** | Could provide prior recognition, provenance and repeatable verification if its establishment itself has a justified basis and the verifier/enforcement path is independently grounded. | No such existing basis is currently identified. Creating a key, hash, QR code, file or signature inside the same untrusted commissioning path would merely relocate the circularity. Establishment, custody, verifier trust, exact-context binding, currentness/revocation, recovery and effect enforcement all need evidence. | Preferred class to investigate only if a defensible non-circular establishment path can be stated; no technology selected. |
+| **C. External provider/third party acts as genesis authority** | Could supply an externally maintained recognition service or verifier. | Transfers or delegates constitutional power and introduces provider, account, policy, availability, revocation and lock-in dependencies. A technical signature does not decide whether that governance transfer is legitimate. | Not eligible without a separate explicit governance decision; no provider selected. |
+| **D. Threshold/multiple custodians** | Can reduce dependence on one custodian when independent custodians, threshold policy and recovery rules are legitimate and operationally independent. | Kevin is the current sole initial human constitutional authority; no other initial custodian or quorum has been authorized. Adding signers would silently change governance and succession rules. | Not selected; cannot be assumed as a technical fix. |
+| **E. Two-device split (POCO + Moto G52)** | May reduce particular same-device compromise paths if presentation, approval, verification and enforcement are actually separated and bound to the same context. | Two devices do not create prior legitimacy; shared accounts, human review error, OS/supply chain, replay and final enforcement remain. Moto's damaged display also leaves exact-context inspection UNKNOWN. | Candidate topology only; insufficient by itself and not selected. |
+| **F. Acquire a new physical security token/device** | May add a protected key or separate interaction surface if the specific platform, enrollment, attestation and verifier are justified. | Purchase/possession does not establish genesis legitimacy. Enrollment still needs a non-circular initial recognition ceremony; device and key lifecycle and final enforcement remain to prove. | Do not buy or enroll anything yet; not selected. |
+
+### Cross-path invariants
+
+Every viable path must, at minimum:
+
+1. Bind Kevin's deliberate approval to the **exact Constitution content/version, commissioning context, initial scope and one protected transition**; no broad or implicit delegation.
+2. Establish why the approval basis and verifier are legitimate independently of the uncommissioned Nexo candidate's own assertions.
+3. Preserve provenance and distinguish presentation, approval, recognition, decision, and enforcement. A display, log, signature or success label alone is not proof that the final protected boundary enforced the decision.
+4. Reject stale/replayed/conflicting approvals and define currentness, revocation, recovery, loss/replacement, and offline behavior before protected use.
+5. Treat missing, unverifiable, conflicting or stale inputs as UNKNOWN/STOP; never silently promote a candidate or substitute a convenient default.
+6. State its threat boundary honestly: no path can claim resistance to a compromised component that controls both the trusted presentation/approval and the verifier/effect path unless a genuinely independent boundary is evidenced.
+
+### Decision-ready conclusion
+
+There is no justified basis to select A–F yet. Path B is the only class that might satisfy the already accepted independent-recognition claim without asking Kevin to accept a compromised-host assumption, but its genesis problem must be solved rather than renamed: what concrete, non-circular event makes the first recognition basis trustworthy, and what independent component enforces it? If no defensible answer is available with present resources, keep protected commissioning blocked while continuing non-protected architecture and M1 work at the appropriate point.
+
+**Next bounded action:** derive the minimum explicit threat/assumption set for a human-supervised genesis ceremony and compare it with the strongest feasible out-of-band establishment path. Do not ask Kevin to choose a device or buy equipment until that comparison identifies a genuine required capability and its trade-off. No commands, installs, credential enrollment, APK/signing changes, root/verifier/channel/vendor/quorum selection, or protected commissioning.
