@@ -254,3 +254,44 @@ Neither candidate can currently satisfy IR-1 on the evidence available. The POCO
 ### Next bounded step
 
 Compare the concrete interaction and trust boundaries each candidate could actually support using existing canonical contracts. Identify whether either provides a **pre-existing, independently justified recognition basis** and how Kevin can inspect and approve the exact authorization context. Do not invent a new root or select a technology to fill the gap. If neither candidate can supply that basis, keep protected commissioning **OPEN / STOP / UNKNOWN** and continue only non-protected work. No device commands, installation, APK/signing changes or commissioning are authorized by this candidate-scope decision.
+
+
+## Concrete interaction/trust-boundary comparison — POCO vs Moto G52 (2026-10-11)
+
+### Purpose and scope
+
+This is the bounded next step after Kevin expanded the candidate scope to allow the POCO to be considered for both M1 and constitutional-recognition interaction. It reuses the existing phone threat model, Root Recognition Gate, Trust Function / Root Role Map and accepted IR-1 requirement. It does not repeat the general family comparison and does not select or implement a mechanism.
+
+### Separate roles before comparing devices
+
+For this commissioning claim, keep these functions semantically distinct:
+1. **Human presentation/review:** show Kevin the exact Constitution bytes/identity, version and commissioning scope in a form he can meaningfully inspect.
+2. **Owner approval input:** capture a deliberate, explicit approval of that exact context; silence, a generic unlock, or ordinary conversation is not approval.
+3. **Recognition/provenance:** establish why the approval channel and verifier were recognized before the uncommissioned candidate asks for trust, without candidate self-certification.
+4. **Freshness/currentness/lifecycle:** reject replay and establish relevant current authorization/revocation/recovery state.
+5. **Protected decision/effect enforcement:** prove the last boundary that can authorize the constitutional transition actually enforced the exact decision, rather than merely displaying or logging it.
+
+One device may physically support more than one role only if the claim-specific common-mode risks are justified. Physical separation is neither universally mandatory nor proof of independence.
+
+### Candidate interaction and trust-boundary result
+
+| Function / boundary | POCO (M1 + possible recognition interaction) | Moto G52 (separate physical candidate) |
+|---|---|---|
+| Human presentation/review | In principle usable as an interaction surface, but no commissioning screen or verified exact-content presentation exists in evidence. If the same candidate-controlled app can show one context and submit another, approval must remain UNKNOWN. | In principle a separate interaction surface, but the reported invisible quarter of the display may prevent reliable inspection of some exact content or context. No usable layout or verified presentation exists in evidence. |
+| Explicit owner approval | Kevin permits evaluating it; that permission is not itself a designed or tested approval protocol. Device unlock/ordinary app use must not be equated with constitutional approval. | Ownership and unlockability are reported, but neither establishes an explicit, content-bound approval protocol. |
+| Prior recognition / provenance | No pre-existing basis or independent verifier is evidenced. Same-device M1/OS/storage/UI may share a failure domain with the candidate that consumes the approval. | Physical separation from POCO reduces some same-device common modes, but there is still no evidenced prior recognition basis, protected verifier or proof of provenance. Shared accounts, recovery, provider, network or administration remain unassessed. |
+| Exact Constitution/context binding | No authenticated presentation-to-submission binding is implemented or evidenced. A digest can identify content but cannot establish who authorized it. | Same missing binding. The display defect adds a usability/inspection uncertainty rather than solving or changing the legitimacy problem. |
+| Freshness, revocation, recovery | No selected protocol or currentness enforcement evidence. | No selected protocol or currentness enforcement evidence. |
+| Final protected enforcement | No Nexo protected commissioning boundary or bypass-closure evidence is established by using the POCO for M1. | No Nexo protected commissioning boundary or bypass-closure evidence is established by having another physical device. |
+
+### Findings
+
+- **Neither candidate presently establishes IR-1.** This is an evidence/design gap, not a verdict that either phone is unusable.
+- The POCO is not disqualified solely because M1 uses it. But if M1/candidate Nexo, its UI, local state or OS can control both the approval request and the decision that consumes it, the resulting common-mode risk must be explicitly bounded; a separate app or shell on the same phone does not automatically create independence.
+- The Moto G52's physical separation is a possible reduction of some shared-device risks, not an independent recognition basis. The damaged display can prevent reliable human verification of exact content and cannot be hand-waved away.
+- A hybrid in which one phone displays and another approves does not automatically close the gap: both must bind to the same exact Constitution/context and the verifier must have a pre-established legitimacy basis. Do not add a two-phone ceremony merely to create the appearance of independence.
+- Neither candidate can currently be selected as root, verifier, channel, or final effect boundary. The missing basis cannot be replaced with a hash, signature, screen lock, app name, successful gesture, or extra device.
+
+### Next decision-ready step
+
+Before any implementation, identify whether an actually **pre-existing, independently recognized** owner-controlled basis already exists that can verify the exact approval context and survive candidate-app self-assertion. The current evidence does not identify one. Do not assume one exists and do not ask Kevin to re-confirm device ownership or whether the POCO may be evaluated. If the prior basis remains absent, the correct result is still OPEN / STOP / UNKNOWN; continue only non-protected design work. No device commands, installations, APK/signing changes, credential enrollment, or protected commissioning.
