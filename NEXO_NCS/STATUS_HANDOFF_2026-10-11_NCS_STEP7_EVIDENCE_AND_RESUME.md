@@ -144,3 +144,15 @@ Do not say:
 ## Deferred issue — M1 repeated generic response (2026-10-11)
 
 Kevin reports that the installed latest M1 returns “¿Quieres hablar de algo?” regardless of the question. Do not debug or rebuild M1 while STEP 7 commissioning design is the active priority. When resumed, first establish the exact installed `safetest18` source/build/artifact identity; the inspected generic `org.nexo.m1` source is not proven to be that installed APK. Then trace the prompt-to-inference-to-output path and establish root cause before code changes. See the newest dated entry in `STATUS.md` for the canonical priority order.
+
+
+## Canonical resume update — owner expands device candidate scope (2026-10-11)
+
+The latest dated `STATUS.md` entry supersedes the earlier statement in this handoff that the POCO is M1-only and the old instruction to ask whether Kevin has another device. Kevin has explicitly said he is comfortable evaluating the POCO for both M1 and possible constitutional-authorization recognition.
+
+- Compare the **POCO (already used for M1)** and **Moto G52 (owner-controlled, unlockable, with roughly one quarter of the display not visible)** against the same existing IR-1 claim and threat model.
+- Do not treat ownership, screen lock, separate hardware, Android platform capabilities, or an M1 installation as proof of legitimacy or independent recognition.
+- The inventory's section **“Owner expands candidate scope — POCO and Moto G52 comparison (2026-10-11)”** records the current candidate facts, unknowns, and bounded next step. Do not repeat the already-completed family stress test or Path A comparison.
+- Next action: assess what concrete interaction/trust boundary each device could support, especially exact Constitution/context review and binding, a pre-existing independent recognition basis, provenance/verifier independence, lifecycle/revocation/recovery, common-mode risks, and final protected-effect enforcement.
+- No device commands, installation, Android Stage A, APK/signing changes, technology/root/verifier selection, or protected commissioning. M1's repeated generic-response symptom remains deferred until this STEP 7 design point reaches a natural stopping point.
+- STEP 7 remains **OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**. If neither candidate can provide the required independently justified basis, keep commissioning blocked and continue only non-protected development.
