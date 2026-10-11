@@ -160,3 +160,31 @@ IR-1 is sufficiently defined at the semantic level to continue without asking Ke
 Next, use the existing candidate-family comparison to evaluate only whether each family can in principle supply IR-1's pre-established recognition basis without self-bootstrap or governance transfer. Keep the evaluation at claim/failure-domain level; do not rank convenience or choose a mechanism. For any family whose legitimacy, independence or enforcement depends on a fact not in canonical evidence, mark it UNKNOWN and state the missing proof.
 
 Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**.
+
+
+## Gate 1 — candidate-family stress test against IR-1 (2026-10-11)
+
+This is a claim-capability comparison, **not a ranking or selection**. “Can in principle” means the family is not semantically disqualified by IR-1; it does not mean a concrete deployment satisfies the claim.
+
+| Existing candidate family | IR-1 stress-test result | Minimum evidence / closure still missing | Safe disposition now |
+|---|---|---|---|
+| Owner-authorized ceremony plus a pre-existing protected recognition path | **Can in principle satisfy IR-1; closest semantic fit.** The ceremony can carry Kevin's bounded authorization only if its recognition basis predates and is not self-authorized by the candidate Nexo instance. A ceremony by itself does not solve recognition. | Identify the pre-existing basis and its legitimate establishment; show how Kevin is recognized; bind informed approval to exact Constitution/context; freshness/replay and currentness/revocation semantics; independent verification rules; final effect boundary and bypass closure; interruption/recovery behavior. | **UNKNOWN / not implemented.** Keep as a semantic pattern, not a selected protocol. |
+| Pre-provisioned external genesis authority | **Can supply a recognition basis in principle, but carries governance-transfer risk.** It fails IR-1 if the external issuer can silently redefine the Constitution, replace Kevin, set succession, or make itself the constitutional authority without a prior rule. | Independent justification of issuer legitimacy and bounded scope; proof that issuer only supports recognition and cannot amend/replace owner authority; compromise, revocation, migration and exit rules; verification and enforcement evidence. | **Conditional / UNKNOWN.** Not default; no external issuer selected. |
+| Multi-custodian / threshold commissioning | **Not justified by current governance input.** Cryptographic or organizational threshold strength cannot invent a constitutional requirement for additional custodians. It could be considered only if a prior legitimate rule defines the role and threshold. | A prior rule authorizing custodians and threshold; legitimate membership and changes; independently justified failure domains; conflict/ordering and revocation rules; proof the threshold cannot transfer or dilute Kevin's initial authority. | **Do not assume or introduce a quorum.** Current status UNKNOWN and not selected. |
+| Hardware/platform-assisted root | **Insufficient alone for IR-1.** It may protect a key or support platform-integrity evidence, but hardware integrity does not establish Kevin's informed approval or constitutional legitimacy. | Actual challenge-bound attestation or key-protection evidence if that claim is material; trusted independent verifier and appraisal basis; binding from Kevin's approval to exact Constitution/context; separate governance rule and effect-boundary evidence. | **Supporting role only.** POCO properties are not currently material; no Stage A collection. |
+| Hybrid / role-separated composition | **Can in principle satisfy IR-1 if composition is explicit and no role self-authorizes another.** It is not inherently independent merely because it uses multiple components, keys or providers. | Explicit role/scope composition rule; per-role provenance/currentness/revocation; common-mode dependency closure; exact-content/presentation binding; final effect-boundary and bypass proof; safe failure and migration. | **Potential design space only.** Not selected; do not create a universal composition engine. |
+
+### What the stress test rules out now
+
+1. **A bare ceremony** without a prior recognition basis is not enough.
+2. **A vendor or external issuer by convenience** is not enough and cannot silently acquire constitutional governance.
+3. **A quorum** cannot be introduced without a prior legitimate governance rule.
+4. **Hardware attestation or a signed APK** cannot substitute for owner authorization, exact-content approval, or enforcement.
+5. **Multiple components** do not prove independence until their claim-specific common-mode failures are closed.
+6. **Any successful signature, UI confirmation, local state flag or recorded approval** remains weaker than evidence that the actual final protected boundary enforced the exact authorized transition.
+
+### Next bounded step
+
+The family-level analysis leaves the same decisive unknown: what pre-existing recognition basis is legitimate and available **before** the first Nexo instance is commissioned, without delegating constitutional governance to an external provider? Existing records define the semantic constraints but do not establish such a basis. Do not invent a default. Review the already-recorded bootstrap contracts for any concrete pre-existing mechanism or owner decision that supplies this basis; if none exists, report the gap plainly and ask Kevin one focused question only if choosing among governance options is genuinely necessary.
+
+No candidate is selected. STEP 7 remains **OPEN / STOP / UNKNOWN**.
