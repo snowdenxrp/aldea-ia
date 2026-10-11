@@ -1706,3 +1706,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - No credentials/secrets requested or disclosed. No device commands, installation, credential enrollment, APK/signing changes, root/verifier/channel/vendor/quorum selection, or protected commissioning.
 - Current next action: produce a bounded design comparison of feasible initial human-recognition/commissioning paths, reusing the existing IR-1 and failure-domain inventory rather than creating a new generic trust abstraction. Ask Kevin for a concrete resource only if the comparison proves that fact necessary.
 - Disposition: **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.** M1's repeated generic-response symptom remains deferred until this design reaches a natural stopping point.
+
+
+## 2026-10-11 — Initial owner-recognition path comparison recorded
+
+- Bounded comparison added to `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`, commit `72039624ed535b05f3a9546d9eb798c9b1b710d4`.
+- Compared explicit human-supervised genesis under bounded assumptions, an out-of-band owner-controlled recognition basis, external-provider authority, threshold/multiple custodians, two-device separation, and acquiring a new token/device.
+- Result: no path selected. Human ceremony requires explicit acceptance of its threat assumptions; external authority or additional custodians would alter governance; multiple devices or new hardware do not solve genesis by themselves. A non-circular basis must not be fabricated inside the same untrusted commissioning path.
+- Kevin's commitment to do the necessary work is recorded as project commitment, not as acceptance of any specific threat assumption, governance transfer, purchase, enrollment, or device operation.
+- **Next bounded action:** derive the minimum explicit threat/assumption set for human-supervised genesis and compare it with the strongest feasible out-of-band establishment path. Only ask for a resource or owner decision if this analysis demonstrates it is necessary. No device commands, installs, credential enrollment, APK/signing changes, root/verifier/channel/vendor/quorum selection, or protected commissioning.
+- Disposition remains **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN**. M1's repeated generic-response symptom remains deferred until this design reaches a natural stopping point.
