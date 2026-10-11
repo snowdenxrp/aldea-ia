@@ -65,3 +65,33 @@ No candidate family is selected. No root or verifier is commissioned. No Constit
 
 ## Exact next action
 Using the user's actual intended first deployment only when that deployment is described in canonical project records, complete the failure-domain rows from existing repository evidence. Mark unavailable details UNKNOWN rather than guessing. If a material deployment choice is absent from canonical records and cannot be inferred without governance, ask one focused question only after the evidence-backed candidates and trade-offs are reduced to that choice.
+
+
+## Continuity reconciliation addendum — 2026-10-11 (supersedes the earlier next-action line above)
+
+This addendum resolves the apparent conflict between the inventory's next action and the later Android/M1 evidence documents. It does not select a mechanism or change the original findings.
+
+### Failure-domain rows populated only from canonical records already present
+
+| # | Claim / failure domain | Evidence-backed record | Current disposition |
+|---|---|---|---|
+| 1 | Initial commissioning device and trust state | The Android/M1 matrix records a user-reported POCO Android phone used for M1. No canonical record says this phone is the actual initial Constitution-commissioning device or establishes its trust state at that moment. | **UNKNOWN** whether POCO is the commissioning device; do not equate M1 target with Genesis target. |
+| 2 | Approval presentation vs protected commit boundary | No deployment record identifies the actual approval UI, verifier, commit process, OS/device separation, or administrators. | **UNKNOWN**; no independence claim. |
+| 3 | Components able to change Constitution, verifier, roots, credentials, policy | MASTER first-boot note and trust-role map distinguish integrity from legitimacy but select no concrete deployment components. | **UNKNOWN** for the actual deployment; no mechanism selected. |
+| 4 | Loss of primary device / backup and recovery | Matrix records a user-reported JKS backup under `Download/Nexo-Backup`; it is an M1 signing-key backup, not an authorized constitutional recovery path. | Backup existence does not establish recovery semantics; **UNKNOWN** for constitutional continuity. |
+| 5 | Revocation path independent of lost authenticator | No canonical deployment-specific revocation channel or independently controlled revoker is identified. | **UNKNOWN**; no offline revocation guarantee. |
+| 6 | Offline currentness and bounded protected claims | No deployment-specific freshness source, revocation window, or offline authorization bound is selected. | **UNKNOWN**; dependent protected activation must remain blocked when currentness is unestablished. |
+| 7 | Final protected-effect boundary and bypass closure | Existing contracts require a real protected boundary, but no concrete effect-capable component or bypass test is demonstrated. | **NOT DEMONSTRATED**; do not claim enforcement. |
+| 8 | Common-mode dependencies among UI, OS, verifier, storage, updates, evidence | Android/M1 matrix identifies reported platform/app/tooling facts only; no component/dependency topology is recorded. | **UNKNOWN**; apparent role separation cannot be treated as independence. |
+| 9 | Interrupted or partial commissioning | The inventory's safe semantic rule says remain blocked and reconcile evidence after interruption; no deployment implementation is demonstrated. | Semantic disposition documented; actual rollback/quarantine behavior **UNKNOWN**. |
+| 10 | Crash-surviving evidence and its limits | No commissioning run, raw runtime log, or crash-recovery artifact exists in the inspected canonical records. | **UNKNOWN**; no claim of durable evidence or enforced state. |
+| 11 | Migration / device replacement | Provider independence is a project constraint, but no actual migration protocol or tested replacement path is selected. | **UNKNOWN**; preserve authority binding without assuming exportability or continuity. |
+| 12 | Safety-only recovery vs constitutional governance | Canonical governance rules prohibit recovery from silently becoming unrestricted constitutional authority; no deployed recovery path is selected. | Semantic constraint established; deployed separation **UNKNOWN**. |
+
+### Android collection gate
+
+The later Android/M1 matrix and read-only collection contract are compatible with this inventory, but they do not supersede it. Stage A commands only report local platform properties. They do not resolve the higher-priority unknown of whether the POCO is intended to be the commissioning device, nor establish independent authority, revocation, or final-boundary enforcement. Therefore **do not run Stage A yet**. First resolve the deployment-intent ambiguity; collect platform properties only if the chosen, still-uncommissioned deployment makes a specific platform claim material.
+
+### Current next action
+
+Ask one focused deployment-scope question: **Is the POCO/Android phone intended to be the actual first device that commissions Nexo's Constitution, or is it only the M1 prototype/test device while commissioning is still a separate, undecided deployment?** Keep all mechanism choices open. No commands, code, APK changes, root selection, or protected commissioning before that answer and a claim-specific reason for any further evidence collection.
