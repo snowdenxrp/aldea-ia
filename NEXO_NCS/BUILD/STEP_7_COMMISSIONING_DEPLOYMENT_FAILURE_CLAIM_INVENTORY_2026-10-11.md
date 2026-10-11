@@ -188,3 +188,19 @@ This is a claim-capability comparison, **not a ranking or selection**. “Can in
 The family-level analysis leaves the same decisive unknown: what pre-existing recognition basis is legitimate and available **before** the first Nexo instance is commissioned, without delegating constitutional governance to an external provider? Existing records define the semantic constraints but do not establish such a basis. Do not invent a default. Review the already-recorded bootstrap contracts for any concrete pre-existing mechanism or owner decision that supplies this basis; if none exists, report the gap plainly and ask Kevin one focused question only if choosing among governance options is genuinely necessary.
 
 No candidate is selected. STEP 7 remains **OPEN / STOP / UNKNOWN**.
+
+
+## Existing-contract check after family stress test — 2026-10-11
+
+The stress test was reconciled against the already-existing records below; this is a cross-reference check, not a repeat of their full attacks:
+- `NEXO_NCS/DECISIONS/STEP_7_INDEPENDENT_COMMISSIONING_RECOGNITION_REQUIREMENT_2026-10-08.md` — the independent recognition channel under Kevin's control is an accepted requirement; “another device” and “physical medium” are examples only, not a selected channel.
+- `NEXO_NCS/DECISIONS/STEP_7_BOOTSTRAP_LEGITIMACY_GAP_AND_ROOT_BASIS_DECISION_2026-10-08.md` — the missing premise is an independently recognized basis; no root mechanism selected.
+- `NEXO_NCS/DECISIONS/STEP_7_CLAIM_RELATIVE_GENESIS_RECOGNITION_FAMILY_COMPARISON_2026-10-08.md` — prior family comparison is already complete; it records no family selected and C3 (protected recognition) as the earliest hard blocker.
+- `NEXO_NCS/BUILD/STEP_7_BOOTSTRAP_BOUNDARY_ADVERSARIAL_RECONCILIATION_2026-10-11.md` — C0 and cross-contract circularity gaps are already isolated; semantic contracts do not demonstrate a concrete implemented independent source.
+- `NEXO_NCS/DECISIONS/STEP_7_RECOMMENDED_BOOTSTRAP_POSTURE_AND_SAFE_PARALLEL_PROGRESS_2026-10-09.md` — independent recognition remains the conservative recommendation; Path A was authorized for evaluation only, not accepted as the trust basis or as permission to commission.
+
+**Result:** canonical records contain no concrete pre-existing recognition mechanism/channel, independently justified verifier, or implemented enforcement boundary. The requirement is known; the mechanism and deployment remain unresolved. Do not reopen generic family research or repeat these documents' attacks.
+
+### Next bounded action
+
+Produce a short *decision-readiness comparison* only between the already-recorded accepted requirement (independent recognition channel under Kevin's control) and the existing Path A bounded-assumption candidate. Determine whether Path A can satisfy the accepted independent-recognition requirement without weakening it; use its recorded assumptions and attack results, and do not add a new family or presume owner acceptance. If Path A cannot satisfy the requirement, record it as evaluation-only/ineligible for protected commissioning under the current requirement and keep the independent-channel path as the unresolved design track. No new governance question is needed unless the comparison demonstrates an actual conflict between previously accepted requirements.
