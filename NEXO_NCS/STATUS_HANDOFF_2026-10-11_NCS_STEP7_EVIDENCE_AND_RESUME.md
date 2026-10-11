@@ -135,3 +135,8 @@ Do not say:
 
 ## Canonical resume phrase
 **NCS — Resume from `NEXO_NCS/STATUS_HANDOFF_2026-10-11_NCS_STEP7_EVIDENCE_AND_RESUME.md`. First read the latest dated canonical resume reconciliation in `NEXO_NCS/STATUS.md` and the inventory reconciliation addendum. Ask whether POCO/Android is the actual initial Constitution-commissioning device or only the M1 test device. Do not run device commands, code, select a root, alter APK/signing, or commission before that deployment scope is answered. STEP 7 remains OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN. Do not repeat closed research or AB105/TLC/Kafka work.**
+
+
+## Deferred issue — M1 repeated generic response (2026-10-11)
+
+Kevin reports that the installed latest M1 returns “¿Quieres hablar de algo?” regardless of the question. Do not debug or rebuild M1 while STEP 7 commissioning design is the active priority. When resumed, first establish the exact installed `safetest18` source/build/artifact identity; the inspected generic `org.nexo.m1` source is not proven to be that installed APK. Then trace the prompt-to-inference-to-output path and establish root cause before code changes. See the newest dated entry in `STATUS.md` for the canonical priority order.
