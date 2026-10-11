@@ -104,22 +104,22 @@ M1 has its own build/device status in later sections of NEXO_NCS/STATUS.md. Keep
 
 Do not create another APK merely to keep busy. Fix only a demonstrated root cause, and keep any M1 test bounded and evidence-labelled.
 
-## 6. Canonical next action for the next NCS chat (reconciled 2026-10-11)
+## 6. Canonical next action for the next NCS chat (updated 2026-10-11)
 
-**Do not code. Do not choose a physical root. Do not run device commands yet.**
+**Owner decision recorded:** Kevin chose to keep the POCO as the M1 prototype/test device. It is **not designated as the initial Constitution-commissioning device**. Commissioning remains a separate deployment-design decision; the POCO may be evaluated later only if a concrete claim makes its properties material.
 
-The older checklist below this heading was stale: its broad source reconciliation and semantic-contract work is recorded as done in newer STATUS entries. The deployment/failure-claim inventory has now been populated from existing canonical records. Its read-only Android collection plan is not permission to run commands before the intended commissioning deployment is identified.
+**Do not run device commands, code, select a physical root, or commission yet.**
 
-1. Read the latest entry in `NEXO_NCS/STATUS.md` titled **“Canonical resume reconciliation: stale handoff and conflicting next actions”** and the reconciliation addendum in `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`.
-2. Ask Kevin one focused question: **Is the POCO/Android phone intended to be the actual first device that commissions Nexo's Constitution, or is it only the M1 prototype/test device while commissioning is still a separate, undecided deployment?**
-3. Do not infer the answer from M1 being installed or from the user's phone ownership. Do not ask again who the initial human authority is: that decision is already closed (Kevin; daughter is intended future successor with no present authority).
-4. If the phone is only an M1 test device, do not collect Android trust properties for STEP 7 unless a specific claim makes them material. If it is the intended commissioning device, state the exact platform claim that matters and decide whether the read-only Stage A collection can inform that claim; its output is local OS self-report, not independent attestation.
-5. Keep all 12 failure-domain gaps labelled as established, unknown, or not demonstrated according to the inventory. If a required deployment fact is absent, do not invent it; ask one further focused question only if needed after the answer to step 2.
-6. Preserve **STEP 7 OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN**. No root selection, verifier/channel selection, implementation, APK changes, commissioning, or protected activation.
+1. Read the latest owner-decision and resume entries in `NEXO_NCS/STATUS.md`, plus the reconciliation addendum in `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`.
+2. Do **not** run Android Stage A for STEP 7 now. The POCO is only the M1 test device for this phase; its local OS properties do not resolve the independent initial-authority claim.
+3. Resume the already-bounded design question: how can Nexo recognize Kevin's initial authorization bound to the exact Constitution content and commissioning context, using a legitimate recognition basis independent of the uncommissioned Nexo instance?
+4. From canonical records already read, produce a concise evidence-backed decision-gap map covering independent recognition, trusted presentation/content binding, freshness/replay, currentness/revocation/offline bounds, recovery/loss, shared failure domains, and the final protected-effect boundary. Reuse existing contracts and the completed 12-row inventory; do not redo source reconciliation or create another generic trust abstraction.
+5. If a genuinely essential deployment/governance choice remains absent after that map, ask one focused question with evidence-backed options. Do not assume an external provider, quorum, hardware root, or phone-based root.
+6. Keep **STEP 7 OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN**. No root/verifier/channel selection, implementation, APK changes, or protected commissioning.
 
 ### Continuity rule
 
-The newest dated reconciliation in `STATUS.md` is the canonical current-state pointer and supersedes older “exact next action” text in this handoff or other documents. At every new chat, compare dates and recorded closures before executing any next action. A completed research task must not be restarted merely because an older handoff still lists it.
+The newest dated reconciliation/decision in `STATUS.md` is the canonical current-state pointer and supersedes older “exact next action” text in this handoff or other documents. At every new chat, compare dates and recorded closures before acting; do not restart completed work because an older handoff lists it.
 
 ### Definition of done for STEP 7 overall
 Do not close STEP 7 until there is evidence of a legitimate protected authority/policy establishment path bound to exact Constitution/policy content and scope, currentness/revocation/succession rules, dependency/failure-domain analysis, and enforcement at the actual protected boundary. Design documents and typed carriers alone do not satisfy this. Device installation or M1 behavior alone does not satisfy this. If no legitimate bootstrap basis can be demonstrated, retain OPEN / STOP / UNKNOWN and record why.
