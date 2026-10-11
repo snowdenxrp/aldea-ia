@@ -106,16 +106,16 @@ Do not create another APK merely to keep busy. Fix only a demonstrated root caus
 
 ## 6. Canonical next action for the next NCS chat (updated 2026-10-11)
 
-**Owner decision recorded:** Kevin chose to keep the POCO as the M1 prototype/test device. It is **not designated as the initial Constitution-commissioning device**. Commissioning remains a separate deployment-design decision; the POCO may be evaluated later only if a concrete claim makes its properties material.
+**Owner decision recorded:** Kevin confirmed the POCO remains the M1 prototype/test device; it is not designated as the initial Constitution-commissioning device. The actual commissioning deployment remains undecided. The old deployment-scope question is closed and must not be repeated.
 
 **Do not run device commands, code, select a physical root, or commission yet.**
 
-1. Read the latest owner-decision and resume entries in `NEXO_NCS/STATUS.md`, plus the reconciliation addendum in `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`.
-2. Do **not** run Android Stage A for STEP 7 now. The POCO is only the M1 test device for this phase; its local OS properties do not resolve the independent initial-authority claim.
-3. Resume the already-bounded design question: how can Nexo recognize Kevin's initial authorization bound to the exact Constitution content and commissioning context, using a legitimate recognition basis independent of the uncommissioned Nexo instance?
-4. From canonical records already read, produce a concise evidence-backed decision-gap map covering independent recognition, trusted presentation/content binding, freshness/replay, currentness/revocation/offline bounds, recovery/loss, shared failure domains, and the final protected-effect boundary. Reuse existing contracts and the completed 12-row inventory; do not redo source reconciliation or create another generic trust abstraction.
-5. If a genuinely essential deployment/governance choice remains absent after that map, ask one focused question with evidence-backed options. Do not assume an external provider, quorum, hardware root, or phone-based root.
-6. Keep **STEP 7 OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN**. No root/verifier/channel selection, implementation, APK changes, or protected commissioning.
+1. Read the latest dated decision in `NEXO_NCS/STATUS.md` and the `Decision-gap map` at the end of `NEXO_NCS/BUILD/STEP_7_COMMISSIONING_DEPLOYMENT_FAILURE_CLAIM_INVENTORY_2026-10-11.md`.
+2. The primary work is **Gate 1 — independent recognition**: formulate the candidate-neutral claim that must be true before an uncommissioned Nexo instance can accept Kevin's initial authorization. Specify what evidence could support the claim and what remains UNKNOWN if the recognition/verifier/evidence source shares the candidate's own authority.
+3. Adversarially check for self-bootstrap, circular validation, and silent transfer of constitutional governance to an external provider. Reuse the existing trust-role map and commissioning/bootstrap contracts; do not invent a generic root/registry/schema.
+4. Do not select a device, hardware root, verifier, channel, vendor, quorum, authenticator or implementation. If the claim cannot be stated without a genuinely normative governance decision, ask one focused question; otherwise proceed from the already-recorded rules.
+5. Keep **STEP 7 OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN**. No Android Stage A commands, APK/signing changes, or protected commissioning.
+6. M1's repeated generic-response symptom is a deferred issue, not the current workstream. Resume it only after this STEP 7 design task reaches a natural stopping point; first establish the exact installed `safetest18` source/build/artifact identity.
 
 ### Continuity rule
 
