@@ -1528,3 +1528,17 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - 🟡 Do not tell Kevin to reinstall yet. Wait for the final workflow run to pass, inspect the new APK hash and packaged permissions, then provide the new artifact URL and safe update/reinstall steps. Since CI debug APK signing keys may differ between runners, a signature conflict is possible; if so, uninstalling the old prototype before installing the new one is only acceptable before any model is imported and after explaining that app-private state would be erased.
 - 🔴 The currently installed APK is the earlier build and is not proven to have the corrected UI. No model has been confirmed imported, and no inference/device/offline/logcat test has yet passed.
 - Permanent NCS rule applied: no superficial instruction to press an invisible button; fix the composer layout/keyboard interaction in source and rebuild before proceeding with model tests.
+
+
+## 2026-10-11 — Strict STEP 7 evidence checkpoint and cross-chat resume
+
+- 🟢 Detailed cross-chat handoff created: `NEXO_NCS/STATUS_HANDOFF_2026-10-11_NCS_STEP7_EVIDENCE_AND_RESUME.md`.
+- Handoff commit: `d3fb0c510a2124da777b91442d0b2d1d751e3e4b`.
+- Canonical disposition: **STEP 7 overall remains OPEN; Core trust / Policy Authority bootstrap = STOP / UNKNOWN.** Do not report global completion.
+- The handoff reconciles the narrow STEP 1–6 closures and their limits; STEP 7 ObservationEnvelope/MissionCandidate and NEGATIVE_RESOURCE claim-specific equivalence/handoff results; user-reported manual PASS evidence where no run/job ID could be independently retrieved; and the unresolved protected Constitution/Policy authority establishment path.
+- Existing role-map research is already recorded at `NEXO_NCS/BUILD/STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md`. It is semantic design/research, not proof of an implemented trust root. No physical root/Genesis mechanism is selected or authorized.
+- Frozen: the device is not a legitimate authority merely because Kevin owns or possesses it; caller-provided PASS/provenance, hashes, signatures, versions, epochs, or durable storage do not self-authenticate authority; missing legitimacy/currentness/dependencies remain UNKNOWN/STOP.
+- Next exact action: reconcile STATUS + this handoff + MASTER + frozen AB + P/P112 + existing STEP 7 threat models/contracts; identify the smallest concrete claim and independent legitimate basis for initial Constitution/Policy authority; adversarially test circular bootstrap, replay/currentness, succession conflicts, recovery scope, and shared failure domains. Produce one consolidated semantic contract before considering implementation. **No code or physical root selection yet.**
+- M1 is a separate bounded prototype. Copy/paste, UI, APK success, or an on-device response does not close STEP 7 and must not displace the authority-bootstrap work. Do not create another APK without a demonstrated root cause.
+- No closed STEP 1–6 work, bounded 8-step admission semantics, AB105/TLC/Kafka ordering audits, or AB105.117R may be reopened absent direct contradictory evidence.
+- Canonical resume phrase: “NCS — Resume from `NEXO_NCS/STATUS_HANDOFF_2026-10-11_NCS_STEP7_EVIDENCE_AND_RESUME.md`. STEP 7 overall remains OPEN / CORE TRUST-POLICY AUTHORITY BOOTSTRAP STOP/UNKNOWN. Read STATUS + MASTER + AB + P/P112 + Trust Function / Root Role Map. No code, root selection, commissioning, repeat of closed admission/AB105/TLC/Kafka work, or M1-driven diversion before the exact next contract is established.”
