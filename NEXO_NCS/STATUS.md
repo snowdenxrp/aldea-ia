@@ -1,5 +1,16 @@
 # NEXO NCS — STATUS
 
+## Latest continuation pointer — 2026-10-12
+
+**Next-chat handoff:** [NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md](BUILD/NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md). Read this first after STATUS.md; it preserves the latest run reference, E22i context, project separation, Lúmina capture containment, no-repeat instructions, and the next bounded Step 7 action.
+
+**Current Step 7:** OPEN / STOP / UNKNOWN. The reported GitHub Pages success is for `main` (run 38297516329; commit begins `7706f514`; artifact SHA-256 begins `5d16f327`) and does not prove that `ncs-clean-architecture` is deployed or that constitutional commissioning is safe. Recover full identifiers from the existing run record rather than repeating broad searches.
+
+**Device context:** user has another device including an E22i, likely Moto E22i; treat as a possible human-comparison/presentation aid only, not as an automatically trusted root or verifier.
+
+**Project separation:** Vercel was intended for Lúmina only; account creation was not completed. User does not recall creating a Cloudflare account. No Cloudflare project or `GITHUB_TOKEN` secret is confirmed. Lúmina capture UI/endpoint source is now disabled on both `main` and `ncs-clean-architecture`, but deployment and secret status remain UNKNOWN. Do not connect Lúmina to Nexo.
+
+
 ## Current phase
 CONSTRUCTION — STEP 7 POLICY CONTEXT RESOLVER TRUST BOUNDARY STOP
 
