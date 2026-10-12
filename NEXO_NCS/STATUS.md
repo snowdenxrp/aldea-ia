@@ -1862,3 +1862,13 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - No retrieved evidence joins exact source commit → successful run/job → APK digest → installed package/version/signer. Correspondence remains UNKNOWN. No build, artifact download, installation, or device command was performed.
 - Record updated: `NEXO_NCS/BUILD/STEP_7_ANDROID_M1_SOURCE_ARTIFACT_CORRESPONDENCE_GAP_2026-10-11.md`, commit `50e0e5049faa80b0fe7b3292f6cccb48e22eb5b7`.
 - Provenance subtask stops here because existing records do not ground the lineage. Resume Step 7 first-boot deployment boundary; do not rebuild M1 or switch objectives. **STEP 7 OPEN / STOP / UNKNOWN.**
+
+
+### STEP 7 — Deployment/failure-domain inventory added (2026-10-11)
+
+- Read the existing requirement-to-canonical-owner matrix before adding artifacts; it already covers owner authority, Genesis, constitutional context, succession, and enforcement. No duplicate traceability matrix was created.
+- Added bounded inventory: `NEXO_NCS/BUILD/STEP_7_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_2026-10-11.md`, commit `035b2b36a4312b77c332e2aa1ea7a06612bfcb97`.
+- The inventory separates repository-grounded behavior from owner-stated goals and unverified deployment assumptions. It classifies effect scope E0–E5 and compares the existing recognition families F1–F4, with the phone retained only as a candidate approval channel (F5), not a root.
+- No physical trust family was selected. No new runtime component, resolver, store, wrapper, root, key, or approval mechanism was implemented. P112 and frozen AB/TLC/Kafka evidence were not rerun.
+- Current exact gate: ground the actual first deployment profile and first-boot entrypoint from source or explicit owner-approved deployment assumptions; enumerate every in-scope effect route, owner, shared failure domain and bypass. If no deployable entrypoint exists, record that construction gap directly. Only then compare candidate recognition families against the concrete claims.
+- Current source still does not evidence a production composition connecting the generic protected Core to a commissioned Genesis basis and every in-scope final effect boundary. **STEP 7 remains OPEN / STOP / UNKNOWN for protected constitutional commissioning.** M1 and device actions remain deferred.
