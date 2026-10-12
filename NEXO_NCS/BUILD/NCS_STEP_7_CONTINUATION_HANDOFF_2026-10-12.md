@@ -12,6 +12,7 @@ When the user starts the next chat with `NCS`, first read:
 1. `NEXO_NCS/STATUS.md` (canonical current state; reconcile any stale conflicting notes against this and this handoff).
 2. This handoff.
 3. `NEXO_NCS/BUILD/STEP_7_GENESIS_TO_CORE_TRUST_PATH_MAP_AND_EVIDENCE_GATE_2026-10-12.md`.
+3b. `NEXO_NCS/BUILD/STEP_7_GITHUB_CI_NOT_INDEPENDENT_GENESIS_VERIFIER_2026-10-12.md` (bounded check: branch currently reports protection disabled and inspected head commit unsigned; CI is evidence, not an independent constitutional root).
 3a. `NEXO_NCS/BUILD/STEP_7_REPOSITORY_IMPLEMENTATION_AND_CI_SCOPE_RECONCILIATION_2026-10-12.md` (latest bounded recursive-tree and CI-scope inventory; no named Genesis/Constitution implementation or end-to-end commissioning workflow found at commit `e40d740efcd193741465330e8bc850e22ae50b4a`).
 4. `NEXO_NCS/BUILD/STEP_7_GENESIS_TRUST_FOUNDATION_ATTACK_REVIEW_2026-10-12.md`.
 5. `NEXO_NCS/BUILD/STEP_7_BOUNDED_HUMAN_COMPARISON_PROTOCOL_CANDIDATE_2026-10-12.md`.
