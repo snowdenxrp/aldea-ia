@@ -150,3 +150,25 @@ These conditions are not equivalent. Path H can support a limited commissioning 
 Continue non-circular source and adversarial analysis; do not create actual commissioning keys, hashes, challenges, signatures, or final Constitution bytes while the canonical content/scope and recognition premise are unresolved. The next decisive evidence must be an actual recognized reference/deployment basis or an explicit owner decision on a bounded Path H assumption. No repository-only algorithm can supply that missing real-world premise.
 
 **Disposition remains:** Genesis UNKNOWN; initial recognition NOT ESTABLISHED; canonical active-Constitution owner NOT ESTABLISHED; production final enforcement/bypass closure UNKNOWN; protected commissioning STOP.
+
+
+## 2026-10-12 targeted Android confirmation research — conditional Path H only
+
+Android Protected Confirmation is a possible bounded human-presentation component, not a Genesis root. On supported devices, its hardware-protected Trusted UI can confirm a specific displayed prompt. Support is device-dependent: the Android API exposes `ConfirmationPrompt.isSupported(context)`, and a prompt can still be unavailable at runtime.
+
+The relying verifier must validate the key attestation chain, the `TRUSTED_CONFIRMATION_REQUIRED` authorization, the signature, the exact returned `promptText`, and a fresh single-use nonce. The user's approval applies only to the displayed prompt text. `extraData` is included in the signed response but is not shown to the user, so Constitution bytes, digest, revision, or scope placed only in `extraData` must not be treated as approved. Android also warns that Protected Confirmation is not a general secure confidentiality channel.
+
+Sources:
+- AOSP Protected Confirmation: https://source.android.google.cn/docs/security/features/protected-confirmation?hl=en
+- Android ConfirmationPrompt API: https://developer.android.com/reference/android/security/ConfirmationPrompt
+- Android guide (Spanish): https://developer.android.google.cn/privacy-and-security/security-android-protected-confirmation?hl=es
+
+Implications:
+1. It may reduce a narrowly defined presentation-integrity assumption if Kevin later explicitly accepts bounded Path H and a legitimate relying verifier is independently recognized.
+2. It does not select the first legitimate Genesis root, authenticate the relying verifier by itself, establish canonical active-Constitution ownership, or close any bypass path to the actual activation sink.
+3. Current phone support is UNKNOWN / NOT TESTED. No app/device probe or APK change was made.
+4. Do not implement this as a new layer before proving the exact prompt-to-Constitution-byte/scope binding and identifying the actual verifier and activation target.
+
+Research record: [STEP_7_ANDROID_PROTECTED_CONFIRMATION_CONDITIONAL_PATH_H_RESEARCH_2026-10-12.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_ANDROID_PROTECTED_CONFIRMATION_CONDITIONAL_PATH_H_RESEARCH_2026-10-12.md).
+
+Disposition unchanged: Genesis basis/verifier legitimacy UNKNOWN; canonical active-Constitution owner absent; final enforcement/bypass closure UNKNOWN; protected commissioning STOP. No production code or tests changed.
