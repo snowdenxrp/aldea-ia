@@ -2198,3 +2198,10 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Fresh GitHub Actions run `38297516329` succeeded for `pages build and deployment` on `main` head `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`; deploy job `114972395717` succeeded. Artifact `11768759460`, SHA-256 `5d16f3276a25b1746734e11f3ca141fc16933a76744ab6440526d6686013e869`. Evidence added to [deployment reconciliation](BUILD/STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md), commit `4b7f2cf7bfc6bf80614a003a6a76e7bcd82023eb`.
 - This is a static GitHub Pages site deployment for `main`, not deployment of the NCS branch (branch HEAD `5224c095ccea31245d50e8e254d07a4f3ca5d55a`) and not evidence of a protected Nexo effect runtime. Cloudflare Pages Function deployment remains UNKNOWN.
 - STEP 7 remains OPEN / STOP / UNKNOWN; no code/test/device/authority changes.
+
+
+### STEP 7 — Pages runtime boundary / conditional public writer risk (2026-10-12)
+- Added [Pages runtime boundary and public-writer audit](BUILD/STEP_7_PAGES_RUNTIME_BOUNDARY_AND_PUBLIC_WRITER_AUDIT_2026-10-12.md), commit `ef7d3de795f8b13ffe20173d8cf3fda62262fe30`.
+- Confirmed static GitHub Pages deployment for `main` commit `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`; this does not execute Cloudflare Pages Functions or deploy NCS branch.
+- Source-level conditional risk: if `functions/api/capture.js` is deployed with write-capable `GITHUB_TOKEN`, its POST endpoint has no caller auth/rate limit and can write four repo objects/commits per accepted PNG request. Cloudflare deployment, reachability, secret configuration and abuse are UNKNOWN; no claim of live exploitation.
+- The endpoint is a Lúmina audit writer, not Nexo authority or protected effect enforcement. No code/tests/deployments/device/authority changes. STEP 7 remains OPEN / STOP / UNKNOWN.
