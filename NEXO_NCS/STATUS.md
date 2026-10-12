@@ -2222,3 +2222,12 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Review record: [STEP_7_FINAL_EFFECT_ADMISSION_ADVERSARIAL_REVIEW_2026-10-12.md](BUILD/STEP_7_FINAL_EFFECT_ADMISSION_ADVERSARIAL_REVIEW_2026-10-12.md), commit `b0ed5927f4db3968efcbf2d877c17e854bb6f609`, blob `fa81b5770a64a934c0fada1d92c82edadd8d1818`.
 - Current source still has an early injected authority check and a separate state-revision commit; no deployed target/sink topology or canonical active-Constitution owner has been established. This refinement is a contract requirement, not implementation evidence.
 - No code, tests, workflows, keys, Constitution, APK, device, deployment, or runtime state changed. No tests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Genesis recognition-channel decision matrix — 2026-10-12
+
+- Narrowed the previously accepted *category* of human-recognized out-of-band comparison without converting it into consent to trust the current phone, GitHub, ChatGPT, Termux, or a generated key.
+- New decision matrix: [STEP_7_GENESIS_RECOGNITION_CHANNEL_DECISION_MATRIX_2026-10-12.md](BUILD/STEP_7_GENESIS_RECOGNITION_CHANNEL_DECISION_MATRIX_2026-10-12.md), commit `e97acd60bd0d6a5f6b5428780c87a581ef0f4922`, blob `380848890b3a016b50273056ffd78055974e9d06`.
+- Clarifies four independent predicates: owner intent; presentation/exact-content binding; verifier provenance; canonical currentness/final enforcement. Hashes establish byte identity only, and platform attestation is scoped evidence, not constitutional legitimacy.
+- Smallest unresolved owner choice: name the pre-existing recognition channel/reference Kevin already recognizes independently of the candidate Nexo approval flow, and define how it will compare the exact frozen Constitution and scope. If no such basis exists under the threat model, C0 stays UNKNOWN; do not fabricate one.
+- Exact Constitution artifact remains unfrozen; verifier provenance, canonical current-Constitution owner, deployed target/sink, and bypass closure remain UNKNOWN. No code/tests/device/deployment/authority changes; no tests run. STEP 7 remains OPEN / STOP / UNKNOWN.
