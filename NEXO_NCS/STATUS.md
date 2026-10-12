@@ -2141,3 +2141,17 @@ The direct runtime/sink trace intersects an existing unresolved architectural bo
 **Current synthesis:** the repository has (a) a mission runtime and injected effect-adapter framework, (b) a simulation mutation adapter, (c) a separate canonical simulation persistence owner, and (d) a separate protected-transition Core. The reviewed branch does not demonstrate one legitimate production owner/composition joining Genesis authority, canonical Constitution Authority Context, prepared-before-effect durability, final protected admission, actual sink enforcement, and state/recovery reconciliation. This is not fixed by adding a callback or invoking the simulation executor from `simulate.mjs`.
 
 **Next bounded research action:** trace the existing mission lifecycle and enumerate all non-test call sites/handlers, then classify candidate operations as (1) reversible local candidate-state preparation, (2) irreversible/external effects, or (3) unknown. Use that classification to determine whether a real target exists for STEP 7. If only local simulation actions exist, record the target limitation and return to the unresolved owner-recognized Constitution reference/deployment identity; do not invent a new executor.
+
+
+## Current STEP 7 commissioning state — deployment/sink evidence recheck — 2026-10-12
+
+Status: OPEN / STOP / UNKNOWN. This section supersedes no closed STEP 3–6 verification; it clarifies what those tests and the M1 artifact do not prove.
+
+- Re-read the current branch tree and current M1 build workflow. The latest listed M1 workflow run is GitHub Actions run `38204426310`, job/workflow conclusion SUCCESS, head `bc16c05f599761968e89a2d175b4e87093963504`. It uploaded one artifact, `nexo-m1-native-prototype-debug-apk` (artifact ID `11726378906`, created 2026-10-12, expires 2026-10-26). This proves a prototype debug build artifact was produced by that workflow, not that it is the installed APK or a commissioned Nexo runtime.
+- The M1 workflow builds `assembleDebug` and uploads the APK/build evidence. It is not a deployment/commissioning workflow. The inspected M1 manifest has no `INTERNET` permission; the app source explicitly describes local text-only inference and no Nexo runtime import, tools, Vault, or effects.
+- The repository's GitHub Releases endpoint currently returns zero releases. The workflow inventory reviewed on `ncs-clean-architecture` shows test/build/simulation workflows, including M1 build, but no named production commissioning/deployment workflow. The deployment endpoint was not accessible through this inspection route; do not convert that tool limitation into a claim that no external deployment exists.
+- The legacy simulation code and the newer generic protected Core remain distinct. No source/deployment evidence currently binds Genesis → canonical current Constitution Authority Context → production AuthorityGate → actual final effect sink.
+- Related current research: `NEXO_NCS/BUILD/STEP_7_FINAL_EFFECT_ADMISSION_REVOCATION_LINEARIZATION_CONTRACT_2026-10-12.md` and `NEXO_NCS/BUILD/STEP_7_ANDROID_M1_FIRST_DEPLOYMENT_EVIDENCE_MATRIX_2026-10-11.md`.
+- No tests were run in this read-only evidence pass. No code, workflow, signing key, Constitution, APK, device, or runtime state was changed by this pass.
+
+Decision: M1's successful build is prototype/build evidence only; it cannot close STEP 7 Genesis or final-effect enforcement. Continue commissioning STOP/UNKNOWN until the concrete deployable target, authority owner, and sink enforcement path are evidenced.
