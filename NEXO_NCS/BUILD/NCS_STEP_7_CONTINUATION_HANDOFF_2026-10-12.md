@@ -467,3 +467,10 @@ Added [STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md
 Concrete repository execution found: scheduled Lúmina simulation workflow writes simulation files and commits to main. Cloudflare Pages visual-audit Function source can write captures to GitHub if configured, but current deployment/reachability was not established; it is not an Nexo authority/effect gate. M1 is debug APK build evidence only. No reviewed evidence identifies a concrete external effect sink joined to Genesis/current Constitution/final enforcement; external deployment remains UNKNOWN rather than disproven.
 
 Next: request/inspect concrete deployment identity/receipt for any live service claimed to perform protected effects; trace exact deployed commit/build, target, configuration owner and final enforcement. No code/tests/device/authority changes in this pass. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## 9.19 — Confirmed GitHub Pages deployment (2026-10-12)
+
+Addendum in [deployment evidence reconciliation](STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md), commit `4b7f2cf7bfc6bf80614a003a6a76e7bcd82023eb`.
+
+Confirmed GitHub Actions run `38297516329`: Jekyll build/upload and GitHub Pages deploy job `114972395717` succeeded for `main` commit `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`; artifact `11768759460`, SHA-256 `5d16f3276a25b1746734e11f3ca141fc16933a76744ab6440526d6686013e869`. NCS branch HEAD differs, so do not call this an NCS-branch deployment. This is static site publication, not evidence of a protected Nexo effect runtime. Cloudflare Pages Function deployment/reachability remains UNKNOWN; release list empty at inspection, but that does not exclude external artifacts/deployments. No code/test/device/authority changes. STEP 7 remains OPEN / STOP / UNKNOWN.
