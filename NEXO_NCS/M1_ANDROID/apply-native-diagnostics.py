@@ -152,6 +152,57 @@ chat_format_new = """static std::string chat_add_and_format(const std::string &r
 """
 replace_once(CPP, chat_format_old, chat_format_new)
 
+# Correct the native conversation contract as well as the output template.
+# Templated text already contains the model's special-token spellings; adding BOS
+# again on every incremental user suffix corrupts multi-turn context.
+system_tokenize_old = """    const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
+                                               has_chat_template, has_chat_template);"""
+system_tokenize_new = """    const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
+                                               !has_chat_template, has_chat_template);"""
+replace_once(CPP, system_tokenize_old, system_tokenize_new)
+
+user_tokenize_old = """    auto user_tokens = common_tokenize(g_context, formatted_user_prompt, has_chat_template, has_chat_template);"""
+user_tokenize_new = """    auto user_tokens = common_tokenize(g_context, formatted_user_prompt,
+                                       !has_chat_template, has_chat_template);"""
+replace_once(CPP, user_tokenize_old, user_tokenize_new)
+
+limit_old = """    const int user_prompt_size = (int) user_tokens.size();
+    const int max_batch_size = DEFAULT_CONTEXT_SIZE - OVERFLOW_HEADROOM;
+    if (user_prompt_size > max_batch_size) {
+        const int skipped_tokens = user_prompt_size - max_batch_size;
+        user_tokens.resize(max_batch_size);
+        LOGw("%s: User prompt too long! Skipped %d tokens!", __func__, skipped_tokens);
+    }
+
+    // Decode user tokens in batches
+    if (decode_tokens_in_batches(g_context, g_batch, user_tokens, current_position, true)) {
+        LOGe("%s: llama_decode() failed!", __func__);
+        return 2;
+    }
+
+    // Update position
+    current_position += user_prompt_size;
+    stop_generation_position = current_position + user_prompt_size + n_predict;"""
+limit_new = """    const int max_batch_size = DEFAULT_CONTEXT_SIZE - OVERFLOW_HEADROOM;
+    if ((int) user_tokens.size() > max_batch_size) {
+        const int skipped_tokens = (int) user_tokens.size() - max_batch_size;
+        user_tokens.resize(max_batch_size);
+        LOGw("%s: User prompt too long! Skipped %d tokens!", __func__, skipped_tokens);
+    }
+    // Count only tokens that will actually be decoded after truncation.
+    const int decoded_user_prompt_size = (int) user_tokens.size();
+
+    // Decode user tokens in batches
+    if (decode_tokens_in_batches(g_context, g_batch, user_tokens, current_position, true)) {
+        LOGe("%s: llama_decode() failed!", __func__);
+        return 2;
+    }
+
+    // n_predict is the maximum number of newly generated tokens.
+    current_position += decoded_user_prompt_size;
+    stop_generation_position = current_position + std::max(0, (int) n_predict);"""
+replace_once(CPP, limit_old, limit_new)
+
 # Fail closed if the diagnostic API, bounded capture, and template policy were applied.
 checks = [
     (HEADER, "aichat_last_error_text.assign"),
