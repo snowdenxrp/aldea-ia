@@ -102,3 +102,15 @@ A focused review of the in-toto specification and ITE-2 clarifies the boundary b
 **STEP 7 consequence:** TUF + in-toto could later help prove that a selected Nexo artifact followed a defined build/release process and that its metadata/keys have not been silently substituted, provided the bootstrap keys and expected layout are already recognized. They do not by themselves prove Kevin's approval of exact constitutional content/scope, create a Core-owned active-Constitution state, or demonstrate complete mediation at a final protected boundary. The in-toto project-owner assumption must not be silently reused as Nexo's constitutional governance rule.
 
 This closes a research comparison, not STEP 7 itself. No trust root, key, approval, Constitution, deployment target, code, or runtime state was created or changed.
+
+
+### Additional primary-source cross-check — SUIT trust-anchor provisioning and key authenticity (2026-10-12)
+
+Reviewed IETF RFC 9019, *A Firmware Update Architecture for Internet of Things*, against NIST SP 800-57 Part 1 Rev. 5:
+
+- RFC 9019 explicitly places installation of device trust anchors via a Trust Provisioning Authority (TPA) out-of-band and before the firmware-update process. It separates firmware authors from device operators where update authorization requires both parties, and defines the TPA as distributing trust anchors and authorization policies. Source: https://www.rfc-editor.org/rfc/rfc9019.html (sections 2.2, 6, 7).
+- NIST SP 800-57 explains that a trust anchor public key need not be secret, but its authenticity is the crucial assumption. Embedding a trust anchor in an application relies on the authenticity of the software-distribution mechanism used to install or replace it; accepting an unknown CA can accidentally create a permanent trust anchor. Source: https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final and https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57pt1r5.pdf (section 8.1.5.1.1.1).
+
+**STEP 7 consequence:** this supports a separation between (a) who provisions a device/platform trust anchor, (b) who authored a build, (c) who operates/accepts a deployment update, and (d) who approves Nexo's Constitution and succession. These roles can be combined only through an explicit owner-approved governance rule and threat model; they are not interchangeable by default. If a phone/OEM/OS provisioning chain is used in a future Nexo deployment, its assurance would be bounded to the claims that chain actually covers. It would not automatically prove Kevin's constitutional approval or the complete mediation of Nexo's protected effects.
+
+This is a standards cross-check, not selection of an OEM, TPA, key, platform, or deployment. No trust anchor, Constitution, code, device, or runtime state was created or changed.
