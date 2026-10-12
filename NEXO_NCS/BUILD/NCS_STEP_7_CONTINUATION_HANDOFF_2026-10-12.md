@@ -181,3 +181,47 @@ All must be evidenced, not assumed:
 - Adversarial tests include invalid, unknown, stale, replayed, revoked, scope-mismatched, substitution, rollback, crash/recovery, and bypass cases; raw evidence is retained.
 - Analyzer errors, unsupported syntax, unbounded dynamic sinks, and missing deployment topology yield UNKNOWN/STOP.
 - Independent audit verifies results; a test fixture alone cannot grant authority.
+
+
+## 9. Recovery supplement — additional work after the three pasted responses
+
+This section preserves the later source-tracing conclusions that are present in the latest canonical STATUS/path-map context but are not fully represented in the three user-pasted chat texts. It is a faithful technical reconstruction, not a verbatim transcript of the deleted chat. Exact original wording cannot be recovered from the available GitHub source files.
+
+### 9.1 Corrected scope: a simulation runtime exists
+
+Do not state that the repository has no Nexo runtime at all. The bounded source review identified:
+- `src/nexo/runtime.js` (recorded blob `1b4096bd6868fd9086ba6740f07d6a104a258651`) as a mission runtime executing steps through an injected adapter and recording execution/outcomes in learning memory.
+- `executeLuminaNexoStep` uses a Lúmina simulation adapter; `tests/nexo/runtime.test.mjs` exercises simulated agents/world/resources.
+- `scripts/simulate.mjs` launches the world simulation; `package.json` provides simulation/audit/test scripts.
+- This establishes simulation/runtime code, not a demonstrated deployed Genesis → current Constitution Authority Context → protected sink composition.
+
+### 9.2 Effect-adapter and simulation-adapter classification
+
+- `src/nexo/effect-adapter.js` (recorded blob `e2095c52282865699e4de107c75a6792bcf5dac3`) is a typed adapter framework with an injected handler map, precondition/result/postcondition handling, and prepared-intent journal/reconciliation machinery. The framework alone does not prove all production sinks are registered, that handlers are constitutional sinks, or that callers have legitimate Genesis authority.
+- `src/nexo/simulation-adapter.js` (recorded blob `291ef4d43ca1af2dad29503d8c15f5cdd05aa114`) requires a simulation object with agents and world and defines Lúmina world/resource/agent handlers. The inspected adapter is simulation-scoped, not a demonstrated real-device/external-provider constitutional boundary.
+- Prepared intent, idempotency, and reconciliation help execution safety but do not create initial authority. A journal marked PREPARED does not prove whether an external effect occurred.
+- Bounded searches for `executeProtectedTransition`, `createCorePorts`, and related composition symbols did not identify a production composition. Treat this as bounded search evidence, not proof against every external/unindexed deployment.
+
+### 9.3 Reuse prior P112 work; do not repeat it
+
+The current source trace intersects already-recorded P112 findings, which should be reused:
+- `NEXO_CONTINUITY/P112_RUNTIME_PROTECTED_TRANSITION_OWNER_GAP_AUDIT_V2_2026-10-07.md` (blob `91be9e7568f6a9c0046e304f378af149550f8b3d`): the current runtime mutates supplied simulation state in its handler before a canonical conditional commit; `commitRuntimeOutcome()` is an in-memory mission/outcome commit, not the canonical state owner. No final semantic revalidation → `persistState(expectedRevision)` protected path exists in that runtime.
+- `NEXO_CONTINUITY/P112_EXECUTION_OWNER_FEASIBILITY_AUDIT_V1_2026-10-07.md` (blob `e04bb74c7388ec168c2539f9b166f348425060e8`): `scripts/simulate.mjs` owns simulation persistence/revision/lock but does not execute missions; `scripts/assistants.mjs` plans and persists a mission but does not execute it. Making either the effect executor would add an architectural responsibility.
+- `NEXO_CONTINUITY/P112_PREPARED_CHECKPOINT_OWNER_AUDIT_V1_2026-10-07.md` (blob `94a67e64f55b1313279a7a0d6025ccae10ee8be1`): `persistPreparedIntent` is test-covered but has no identified production caller; in-memory terminal journal updates do not imply durable `world-state.json` persistence.
+- `NEXO_CONTINUITY/AB104.150.md` (blob `1798950e9943d8420b13d42434780f6e7257c96a`) and bounded repository searches corroborate no current caller for `executeLuminaNexoStep()` or `persistPreparedIntent`. `scripts/assistants.mjs` records a mission plan without calling the runtime execution API.
+- `docs/nexo/NEXO_CURRENT_EFFECT_PATH_CAPABILITY_MAP_V1_2026-09-25.md` (blob `b197e906edf09ee3198854fc45a268d2cff69bb6`) already documents direct simulation handlers and separate persistence as bypass/transaction-scope limitations. Reuse it; do not repeat old P112 experiments or implement V21.
+
+### 9.4 Reconciled current model and exact next action
+
+The reviewed branch currently contains four separate pieces: (a) mission runtime and injected effect-adapter framework, (b) simulation mutation adapter, (c) separate canonical simulation persistence owner, and (d) protected-transition Core. The reviewed source does not demonstrate one legitimate production owner/composition joining Genesis authority, canonical current Constitution Authority Context, prepared-before-effect durability, final protected admission, actual sink enforcement, and state/recovery reconciliation. This is not fixed by adding a callback or invoking the simulation executor from `simulate.mjs`.
+
+Next bounded action:
+1. Inspect all imports and call sites for `createEffectAdapter`, `createLuminaEffectAdapter`, `executeNexoStep`, `executeLuminaNexoStep`, and `executeProtectedTransition`.
+2. Inventory every non-test handler/provider and classify candidate operations as (i) reversible local candidate-state preparation, (ii) irreversible/external effects, or (iii) UNKNOWN.
+3. If only local simulation actions exist, record the absence of a demonstrated real target as a bounded blocker and return to the unresolved owner-recognized Constitution reference/deployment identity; do not invent a new executor or fake sink.
+4. Do not modify production code, rebuild/install M1, repeat frozen AB/TLC/Kafka/P112 work, or claim complete mediation from injected-authority tests.
+5. Re-fetch latest STATUS/path map before relying on any historical SHA. Update canonical STATUS/path map only for meaningful findings; verify every write by re-fetching the exact section and checking commit/blob SHA.
+
+### 9.5 Recovery integrity note
+
+The exact deleted chat transcript is not present in the available conversation context, and GitHub stores architectural records/source findings rather than a guaranteed verbatim copy of that ChatGPT message. Therefore exact word-for-word recovery cannot be certified. The visible three pasted responses are preserved in Sections 2–3; the additional technical substance available from canonical STATUS/path-map and prior P112 evidence is consolidated above. Do not claim literal transcript recovery or that no words were lost; claim only that the recoverable technical findings and next actions are now recorded.
