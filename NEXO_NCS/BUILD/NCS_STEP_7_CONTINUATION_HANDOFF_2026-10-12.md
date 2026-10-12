@@ -520,3 +520,13 @@ This is a contract refinement, not a selected deployment design or implementatio
 - If sink/revocation ordering, currentness, or external outcome is unknown, classify UNKNOWN/STOP; do not claim cancellation or global enforcement without evidence.
 - No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran.
 - Next non-duplicative action: if a concrete deployment/sink is identified, map its canonical authority owner and amendment/recovery/effect paths. Otherwise do not invent a target to make the design pass.
+
+
+## 9.23 — Commissioning acceptance evidence matrix (2026-10-12)
+
+- New record: NEXO_NCS/BUILD/STEP_7_COMMISSIONING_ACCEPTANCE_TEST_MATRIX_2026-10-12.md
+- Commit: 0025ce1083c83cddc1c7ba6327c4c42c4d5e1e51.
+- Test-design only: 13 target-neutral gates with required observable outcomes and evidence requirements. All remain UNKNOWN; no tests were run.
+- Research cross-check: RFC 9334 role separation, TUF 1.0.36 root continuity within an already trusted root model, and NIST authentication-intent definition. These do not choose Nexo's first trust basis or prove a trusted presentation path.
+- No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed.
+- Next action only after a concrete target is identified: adapt the target-neutral gates to that target, enumerate all effect routes, then run controlled tests with pinned artifacts and raw logs. Do not label a gate PASS from source review alone.
