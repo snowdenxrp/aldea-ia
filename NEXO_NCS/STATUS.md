@@ -1930,3 +1930,14 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - Result: the semantic contract already rejects self-authentication and naive source multiplicity, but the deployment-specific first-contact trust source, verifier provenance, threat-model boundary, currentness/conflict rule, active-Constitution state owner, and bypass-closed activation boundary remain UNKNOWN or STOP.
 - Closure evidence is stated explicitly in the review. No code, tests, workflow, root, verifier, store, UI, APK, or device state was changed. No implementation is authorized by this review.
 - **Disposition:** design candidate attacked; gaps sharpened; no trust mechanism selected. Step 7 remains **OPEN / STOP / UNKNOWN** for protected constitutional commissioning.
+
+
+### STEP 7 — Cross-check against existing phone-candidate threat model (2026-10-12)
+
+- Reused (did not duplicate) `NEXO_NCS/BUILD/STEP_7_CURRENT_PHONE_CANDIDATE_THREAT_MODEL_2026-10-08.md` against the Genesis attack review.
+- The existing record already bounds Kevin's phone/channel as a **candidate approval/presentation channel only**. It explicitly does not establish the phone, OS, account, ChatGPT session, Termux, app, or credential as legitimate or secure.
+- The existing record also already captures the key missing enrollment facts: what pre-existing fact makes the owner recognize the channel; how enrollment avoids channel self-certification; how approval is bound to exact Constitution content/scope; and how replay, revocation, recovery, compromise, and shared dependencies are handled.
+- Cross-check result: the Genesis review's A3 (pre-first-boot host/channel compromise) and A5 (human recognition mistaken for cryptographic proof) are constrained by existing threat-model evidence; neither can be closed by merely naming the phone. No new phone scan or root-family comparison is needed.
+- No owner decision selecting a trust mechanism is present in the reviewed contract. The bounded phone-channel assumption is **not** a mechanism selection and does not establish C0.
+- **Next dependency:** either an explicit, bounded owner choice to use a human-recognized out-of-band comparison as an initial commissioning assumption (with its limitations preserved), or concrete evidence for a separate independently recognized mechanism. Even if such an assumption is chosen, verifier provenance, canonical active-Constitution state ownership, and bypass-closed activation remain separate required gates.
+- No source code, tests, workflow, keys, Constitution, APK, or device state changed. Protected commissioning remains **STOP / UNKNOWN**.
