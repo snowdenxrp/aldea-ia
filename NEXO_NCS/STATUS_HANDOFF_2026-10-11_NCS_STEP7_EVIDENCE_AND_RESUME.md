@@ -192,3 +192,12 @@ Evidence class: user-pasted read-only terminal output. The capture records repor
 The accidental initial command fragment does not invalidate the later individually executed commands and returned values. Working directory `~/downloads` is incidental.
 
 **Next gate:** continue concrete first-boot boundary mapping: identify the actual display, approval, verification, currentness/revocation, and last protected-effect components plus shared failure domains. If no justified verifier and final enforcement boundary can be identified, retain STEP 7 OPEN / STOP / UNKNOWN. This capture does not authorize commissioning or a root implementation.
+
+
+## 2026-10-11 — First-boot boundary source review
+
+Added `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md` (commit `76fd2dc243f8047fe3e3d987951c1dd5b9937897`). It maps the reviewed generic code path `proposal → claimBuilder → injected authorityGate → isolate → candidate → validate → conditional persist → outcome` and distinguishes that path from a legitimate Genesis/constitutional activation path.
+
+Key source-grounded limits: the AuthorityGate is injected and defaults to NOT_IMPLEMENTED; structural validation/freezing of AuthorityResult is not authentication; the reviewed protected-transition function does not invoke the declared `effectBoundary.prepare` port; and the persistState adapter is application persistence, not constitutional commissioning. Display, exact-content approval, justified Genesis verification, currentness/revocation, and the last protected-effect boundary remain UNKNOWN / STOP.
+
+**Next action:** keep Step 7 open. Map the actual deployable first-boot roles and shared failure domains against MASTER + frozen AB + P/P112 before any root selection or implementation. Do not create a substitute resolver/registry/key/hash/UI ceremony to paper over missing legitimacy or enforcement.
