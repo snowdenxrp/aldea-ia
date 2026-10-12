@@ -2078,3 +2078,12 @@ A fresh search/fetch against branch `ncs-clean-architecture` revalidated the sou
 - Interpretation is deliberately bounded: the reviewed branch does not demonstrate a production consumer or final protected effect boundary. This does not prove that no external or unindexed deployment exists. The `effectBoundary` port's presence is not evidence of enforcement.
 
 **Engineering consequence:** do not wire a placeholder `effectBoundary.prepare` into the generic transition just to make the interface appear complete. First identify the actual target effect and ownership path; then specify what `prepare` means, where its authority originates, and what irreversible/externally visible operation it must mediate. Until then, STEP 7 remains ACTIVE, Genesis trust UNKNOWN / NOT ESTABLISHED, Core Constitution Authority Context NOT ESTABLISHED, and protected commissioning STOP / UNKNOWN.
+
+
+### STEP 7 — durable NCS continuation handoff verified (2026-10-12)
+
+- 🟢 Expanded the existing future-chat continuation rule with detailed current disposition, inspected source findings, canonical G-A14 reuse pointers, primary-source cross-checks, next actions, do-not-repeat constraints, and exact verification requirements: [NCS_STEP_7_FUTURE_CHAT_CONTINUATION_RULE_2026-10-12.md](BUILD/NCS_STEP_7_FUTURE_CHAT_CONTINUATION_RULE_2026-10-12.md).
+- Verified write commit `a686ca721cd9273613c0afc5c35cf2962affbc24`, resulting blob `1a0107b61cdbe7df6f4c4551bd5b6f8699de697c`; re-fetched the file and confirmed the new handoff section is present.
+- Reused existing G-A14 closure research; no duplicate registry/document or production code/test was added. The attempted update to the path-map file in the preceding pass was blocked and is not claimed as saved.
+- Disposition remains: STEP 7 research ACTIVE; Genesis trust UNKNOWN / NOT ESTABLISHED; canonical current Constitution Authority Context NOT ESTABLISHED; production AuthorityGate composition NOT ESTABLISHED in reviewed branch; final protected boundary UNKNOWN; protected commissioning STOP.
+- Next action: verify current branch entrypoints, production composition/build/deployment artifacts and all executeProtectedTransition callers; determine whether a named auditable protected target exists. Continue primary-source analysis of independent Genesis bootstrap without presuming a phone, OEM, CA, second device, person, paper, Git, or self-generated hash is a legitimate root. Then apply existing G-A14 C0–C5 contract to that actual target. See the continuation rule for detailed steps and evidence requirements.
