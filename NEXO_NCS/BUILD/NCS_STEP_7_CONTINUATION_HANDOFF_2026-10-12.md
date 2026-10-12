@@ -499,3 +499,13 @@ A focused adversarial review was added after re-reading the existing final-effec
 New adversarial cases: central revocation commits while sink fence propagation is delayed; one of multiple sinks is offline; a request is in flight at revocation; scope/policy changes without generation change; authority/sink recovery rolls back a generation; and a proposed gateway can be bypassed. The key refinement is a **per-sink effective revocation point**. Do not report global STOP as enforced until every in-scope sink has crossed its enforceable barrier or all remaining paths/capabilities are proven disabled. Unknown sink state remains UNKNOWN/STOP. Effects admitted before that point are not retroactively erased; reconcile in-flight outcomes honestly.
 
 This is a contract refinement, not a selected deployment design or implementation. The real target/sink topology, canonical active-Constitution owner, Genesis basis, and final enforcement path remain UNKNOWN/NOT ESTABLISHED. No tests were run and no code, workflow, key, Constitution, APK, device, deployment, or runtime state changed. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+### 9.21 STEP 7 — Genesis recognition-channel decision matrix — 2026-10-12
+
+- Added `NEXO_NCS/BUILD/STEP_7_GENESIS_RECOGNITION_CHANNEL_DECISION_MATRIX_2026-10-12.md`.
+- Commit: `e97acd60bd0d6a5f6b5428780c87a581ef0f4922`; verified blob: `380848890b3a016b50273056ffd78055974e9d06`.
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_GENESIS_RECOGNITION_CHANNEL_DECISION_MATRIX_2026-10-12.md
+- Distinguishes owner intent, exact-content/presentation binding, verifier provenance, and canonical currentness/final enforcement. Compares pre-existing recognized channel, offline reference, current phone/app/Termux, repository/CI, Android attestation, and apparently separate channels with shared dependencies.
+- Minimal next owner choice: identify the pre-existing recognition channel/reference Kevin already recognizes independently of the candidate Nexo flow, and define the comparison of the exact frozen Constitution and scope. No channel was selected; no consent to trust a phone/app/account/repository/key was inferred.
+- The exact Constitution is not frozen; verifier provenance, active-Constitution owner, actual sink, and bypass closure remain UNKNOWN. No code/tests/device/deployment/authority changes; no tests run. STEP 7 remains OPEN / STOP / UNKNOWN.
