@@ -2265,3 +2265,11 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Public route reachability, Cloudflare project linkage, deployed commit, and secret configuration were not established. GitHub Pages static deployment does not execute Cloudflare Pages Functions; those require a Cloudflare Pages deployment configured for Functions.
 - This Lúmina route is a separate external-write surface, not proof of a Nexo production sink. Do not wire it into Nexo authority/runtime. If a write-capable deployment is intended, keep it disabled until caller authentication/authorization, request controls, storage isolation, and non-production adversarial tests are designed and evidenced.
 - No code/workflow/secrets/keys/Constitution/APK/device/deployment/runtime state changed; no tests or live attack/write tests ran. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Lúmina capture boundary review — 2026-10-12
+
+- Read-only review record: [STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md](BUILD/STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md), commit `a256bfb98244525e35a03a32d63c89bfd6caec81`.
+- The reviewed source defines a server route that can write uploaded audit files to the repository when deployed with its configured server token. Its public deployment and token configuration remain UNKNOWN, so this is a conditional source finding, not a confirmed live exposure.
+- GitHub Pages static hosting does not execute Cloudflare Pages Functions; a separate configured Cloudflare deployment would be required. This Lúmina route is not evidence of a Nexo production sink and must not be wired into Nexo authority/runtime.
+- No code, workflows, secrets, keys, Constitution, APK, device or deployment changed; no tests or live requests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
