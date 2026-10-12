@@ -509,3 +509,14 @@ This is a contract refinement, not a selected deployment design or implementatio
 - Distinguishes owner intent, exact-content/presentation binding, verifier provenance, and canonical currentness/final enforcement. Compares pre-existing recognized channel, offline reference, current phone/app/Termux, repository/CI, Android attestation, and apparently separate channels with shared dependencies.
 - Minimal next owner choice: identify the pre-existing recognition channel/reference Kevin already recognizes independently of the candidate Nexo flow, and define the comparison of the exact frozen Constitution and scope. No channel was selected; no consent to trust a phone/app/account/repository/key was inferred.
 - The exact Constitution is not frozen; verifier provenance, active-Constitution owner, actual sink, and bypass closure remain UNKNOWN. No code/tests/device/deployment/authority changes; no tests run. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## 9.22 — Recovery / succession / currentness crosswalk (2026-10-12)
+
+- New record: `NEXO_NCS/BUILD/STEP_7_RECOVERY_SUCCESSION_CURRENTNESS_CROSSWALK_2026-10-12.md`
+- Created commit: `8405243774afbf8965ca0befb2b34021747ca43b`.
+- Reconciles existing MASTER/AB recovery research with Genesis, Constitution Authority Context, and final sink-admission gaps. Recovery/succession semantics are constraints, not proof of first trust or runtime enforcement.
+- Keep separate: owner intent; verifier provenance; constitutional ordering/currentness; final effect admission. Recovery cannot self-authorize. Bounded safety cannot amplify authority. Conflicting succession branches need a pre-existing ordering rule; where exclusivity is required, successor activation needs enforceable predecessor fencing.
+- If sink/revocation ordering, currentness, or external outcome is unknown, classify UNKNOWN/STOP; do not claim cancellation or global enforcement without evidence.
+- No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran.
+- Next non-duplicative action: if a concrete deployment/sink is identified, map its canonical authority owner and amendment/recovery/effect paths. Otherwise do not invent a target to make the design pass.
