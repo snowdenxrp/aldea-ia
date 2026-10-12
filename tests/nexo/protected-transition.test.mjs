@@ -191,4 +191,34 @@ function makePorts(overrides = {}) {
   assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
 }
 
-console.log("NEXO STEP 3B/3C protected-transition composition tests: PASS");
+
+
+
+{
+  const calls = { isolate: 0, execute: 0, validate: 0, commit: 0 };
+  const ports = createCorePorts({
+    claimBuilder: { build: () => claim },
+    snapshotIsolator: {
+      isolate: ({ state }) => { calls.isolate += 1; return structuredClone(state); }
+    },
+    candidateExecutor: {
+      execute: () => { calls.execute += 1; throw new Error("must not execute without authority"); }
+    },
+    finalSemanticValidator: {
+      validate: () => { calls.validate += 1; throw new Error("must not validate without authority"); }
+    },
+    conditionalCommit: {
+      commit: () => { calls.commit += 1; throw new Error("must not commit without authority"); }
+    },
+    outcomeClassifier: createOutcomeClassifier()
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /NEXO_CORE_CONTRACT_NOT_IMPLEMENTED: authorityGate\\.check/
+  );
+  assert.deepEqual(calls, { isolate: 0, execute: 0, validate: 0, commit: 0 });
+}
+
+console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
