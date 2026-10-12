@@ -96,3 +96,23 @@ The gap is not “Nexo has no runtime.” The narrower, evidence-grounded gap is
 Do not wire the two together merely to close the diagram. Before any integration, establish which effects are in the intended commissioning threat model, the real deployment target/entrypoint, who owns each writer/effect sink, and how every protected route is forced through the constitutional decision. If those cannot be grounded, keep OPEN / STOP / UNKNOWN and make no implementation change.
 
 This distinction reconciles the source evidence with MASTER + frozen AB + P/P112: existing execution code is not proof of authority, and a generic protected contract is not enforcement until all relevant effect paths are shown to consume it.
+
+
+## Existing P112 evidence reconciled — simulation mutation sink is known, not a Genesis boundary (2026-10-11)
+
+The current repository already contains the relevant P112 mapping; this pass does not reopen its closed work:
+
+- `NEXO_CONTINUITY/P112_EXECUTEACTION_FINAL_GATE_BOUNDARY_AUDIT_V1_2026-10-07.md` records the shared mutation sink `executeAction(simulation, agent, intent)` and the Nexo route `executeLuminaNexoStep → createLuminaEffectAdapter(simulation) → effect handler → executeAction → local postcondition → runtime outcome commit`. It records that the normal simulation decision path and Nexo adapter converge on the same mutation primitive without a demonstrated semantic final gate immediately before mutation.
+- `NEXO_CONTINUITY/P112_RUNTIME_ADAPTER_SNAPSHOT_CROSSING_AUDIT_V1_2026-10-07.md` records that the adapter operates on the supplied simulation object and that canonical final revalidation/conditional commit/recovery are missing from that path. It explicitly says snapshot crossing is not the blocker.
+- These are existing simulation-world mutation paths, not evidence of physical Android/TV/device effects. Their existence also does not make them constitutional: the new `executeProtectedTransition` is not evidenced as mediating those mutations.
+
+### Reconciled boundary map
+
+1. **Simulation execution sink:** known (`executeAction` mutates simulation/world state); prior P112 audit owns detailed dependency/WriteSet analysis. Do not repeat it here.
+2. **Legacy Nexo simulation route:** known and snapshot-compatible, but not shown connected to the new protected Core or a Genesis trust foundation.
+3. **New protected Core route:** generic contract exists and is tested with injected ports; production composition and a final constitutional activation/effect boundary remain unevidenced.
+4. **Physical deployment/effect sink for first boot:** UNKNOWN. The current evidence does not identify a deployed Android app/host component that owns initial-Constitution activation and all in-scope protected effects.
+
+The important unresolved item is therefore not to rediscover the simulation mutation graph. It is to establish the actual deployment profile/entrypoint and the authority-enforcement relationship that must hold there. Until the intended deployed effect scope and its owner are grounded, connecting the generic Core to the legacy simulation path would be an unapproved architecture choice, not a proven fix.
+
+No code changed. This is an evidence reconciliation only; Step 7 remains OPEN / STOP / UNKNOWN.
