@@ -75,3 +75,24 @@ Bounded interpretation:
 - This indexed search is not proof that no dynamic or unindexed call site exists. It is sufficient to say a production activation integration point is **not evidenced by the available source search**.
 
 This sharpens the next gate: before designing an initial-Constitution store or changing the transition function, locate an actual production entrypoint/runtime composition and establish its complete callers and effect routes. If there is no production composition yet, record that as the current construction gap rather than manufacturing one just to connect the abstractions. Keep OPEN / STOP / UNKNOWN; no protected activation or device action.
+
+
+## Follow-up: distinguish the legacy simulation executor from the new protected Core — 2026-10-11
+
+A second source pass inspected `package.json`, `scripts/assistants.mjs`, and `src/nexo/runtime.js` on the same branch. This reveals an important qualification: the repository does have an older simulation-oriented Nexo execution path, so the claim must not be phrased as “there is no execution code.”
+
+### What exists
+
+- `package.json` exposes `simulate`, `assistants`, and `test` scripts; it does not define a dedicated production/first-boot commissioning entrypoint for the new protected Core.
+- `scripts/assistants.mjs` loads simulation state, runs assistant analysis, builds a mission with `buildNexoMission`, records the plan, and persists state. The inspected flow does not call `executeProtectedTransition`.
+- `src/nexo/runtime.js` exports the older `executeNexoStep` / `executeLuminaNexoStep` path. It begins a mission step, invokes an adapter, maps the adapter result to mission status, and records execution/outcome. This is concrete simulation/effect-execution code, not an absent subsystem.
+- The newer `src/nexo/core/protected-transition.mjs` path is separately tested and receives injected ports. The indexed search for `executeProtectedTransition` did not find a production composition connecting it to the older runtime or a first-boot constitutional flow.
+- The legacy runtime's adapter/postcondition/effect-journal behavior cannot be promoted by inference into a Genesis verifier, initial-Constitution activation mechanism, or universal final constitutional enforcement boundary.
+
+### Architectural finding
+
+The gap is not “Nexo has no runtime.” The narrower, evidence-grounded gap is **the repository currently shows two distinct concerns without an evidenced composition between them**: (1) a simulation-oriented mission/effect runtime and (2) the newer generic protected-transition contract. Neither inspected path demonstrates a commissioned Genesis trust basis or a bypass-closed constitutional activation boundary.
+
+Do not wire the two together merely to close the diagram. Before any integration, establish which effects are in the intended commissioning threat model, the real deployment target/entrypoint, who owns each writer/effect sink, and how every protected route is forced through the constitutional decision. If those cannot be grounded, keep OPEN / STOP / UNKNOWN and make no implementation change.
+
+This distinction reconciles the source evidence with MASTER + frozen AB + P/P112: existing execution code is not proof of authority, and a generic protected contract is not enforcement until all relevant effect paths are shown to consume it.
