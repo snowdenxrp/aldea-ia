@@ -439,3 +439,13 @@ A current branch-tree/workflow/artifact pass was performed after 9.14; this is n
 - No tests were run; no source/runtime/device/key/Constitution changes were made by the evidence pass. Commissioning remains OPEN / STOP / UNKNOWN.
 
 Next: only if an actual production/deployed target is found in repository records or a concrete deployment record, trace its entrypoints and all reachable sinks. Otherwise record that the repository presently evidences a prototype build and generic Core contracts, not a deployable commissioned effect path; do not manufacture a production composition just to connect abstractions.
+
+
+## 9.16 — Mission lifecycle / mutation-entrypoint trace (2026-10-12)
+
+Added read-only trace: [STEP_7_MISSION_LIFECYCLE_AND_MUTATION_ENTRYPOINT_TRACE_2026-10-12.md](STEP_7_MISSION_LIFECYCLE_AND_MUTATION_ENTRYPOINT_TRACE_2026-10-12.md).
+Commit: `fd17169db7d01167302db92d8f2934a0b00ff3da`.
+
+The current repository flows inspected do not compose the generic Nexo execution primitive into a demonstrated production protected owner: `assistants.mjs` plans/persists; `simulate.mjs` advances local simulation and persists; the Lúmina adapter mutates its supplied simulation. No external effect sink was identified. Do not wire a caller solely to fill the gap. Next, if a concrete deployed target/sink is found in repository or deployment records, trace its entrypoints and final enforcement; otherwise preserve the bounded conclusion that the inspected repo evidences prototype/simulation paths only, without inferring no external deployment exists.
+
+No source/runtime/device/key/Constitution changes and no tests in this pass. Status remains OPEN / STOP / UNKNOWN.
