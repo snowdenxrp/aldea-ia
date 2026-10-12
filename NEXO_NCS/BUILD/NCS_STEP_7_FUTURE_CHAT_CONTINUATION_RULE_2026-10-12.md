@@ -111,3 +111,16 @@ A fresh bounded repository search/fetch was completed after saving the continuat
 - Re-fetched src/nexo/core/protected-transition.mjs (blob 00a4fa069f3ef0b843ecc5d280bb686f21be1bcd): after injected authorityGate.check and final semantic PASS, the function calls conditionalCommit.commit(candidate); no effectBoundary.prepare invocation appears in this function.
 - Re-fetched src/nexo/core/ownership.mjs (blob c7f9e2671e5735bd6cf85c86bf283bec58aeea7f): effectBoundary.prepare exists as a port and defaults to throwing NOT_IMPLEMENTED. The port's existence is not an enforcement proof.
 - Interpretation: this branch provides executable Core contract/test components and simulation-oriented scripts, but this pass still cannot name a deployed Nexo protected effect target. The next action remains targeted inspection of package/workflows/callers and artifact composition; if no such target exists in-repo, mark the target itself as missing and do not fabricate one.
+
+
+### Recovery handoff pointer — 2026-10-12
+
+Before continuing STEP 7 in a new NCS chat, read the canonical recovery record:
+`NEXO_NCS/BUILD/NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md`
+https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md
+
+That handoff preserves the three user-pasted responses, the additional recoverable runtime/effect-adapter/P112 findings, the exact bounded next action, and an explicit note that the deleted chat cannot be recovered word-for-word from the available records. Re-fetch the handoff, STATUS, and path map before relying on recorded SHAs. Do not ask the user to repeat the material already captured there.
+
+Latest verified handoff write at the time this pointer was added:
+- Commit: `98d8472de23867f08c044514579dfd6cf0bcf38a`
+- Handoff blob SHA: `51678fa156f3a5db735cd0476f673b5f86429c73`
