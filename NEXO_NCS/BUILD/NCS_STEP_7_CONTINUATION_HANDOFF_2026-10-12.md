@@ -540,3 +540,11 @@ This is a contract refinement, not a selected deployment design or implementatio
 - This does not authorize code. No new registry, duplicate epoch, second check, callback or synthetic caller is justified. The protected establishment path and actual deployed target/sink remain unidentified/unproven.
 - No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. STEP 7 remains OPEN / STOP / UNKNOWN.
 - Next: continue read-only evidence tracing for a concrete deployment/sink and its actual configuration/owner. If none is evidenced, preserve UNKNOWN and do not invent a target or close the gate.
+
+
+## 9.25 — Lúmina capture boundary review (2026-10-12)
+
+- Record: `NEXO_NCS/BUILD/STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md`, commit `a256bfb98244525e35a03a32d63c89bfd6caec81`.
+- Source review found a server route that writes uploaded audit files to the repository when deployed with its server token. Actual deployment and token configuration are UNKNOWN; this is not a confirmed live exposure.
+- GitHub Pages static hosting does not execute Cloudflare Pages Functions. The route is part of a separate Lúmina path, not evidence of a Nexo production sink; do not connect it to Nexo authority/runtime.
+- No code, workflow, secret, key, Constitution, APK, device or deployment changed; no tests or live requests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
