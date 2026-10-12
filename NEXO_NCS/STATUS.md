@@ -2231,3 +2231,11 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Clarifies four independent predicates: owner intent; presentation/exact-content binding; verifier provenance; canonical currentness/final enforcement. Hashes establish byte identity only, and platform attestation is scoped evidence, not constitutional legitimacy.
 - Smallest unresolved owner choice: name the pre-existing recognition channel/reference Kevin already recognizes independently of the candidate Nexo approval flow, and define how it will compare the exact frozen Constitution and scope. If no such basis exists under the threat model, C0 stays UNKNOWN; do not fabricate one.
 - Exact Constitution artifact remains unfrozen; verifier provenance, canonical current-Constitution owner, deployed target/sink, and bypass closure remain UNKNOWN. No code/tests/device/deployment/authority changes; no tests run. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Recovery / succession / currentness crosswalk — 2026-10-12
+- Crosswalk: [STEP_7_RECOVERY_SUCCESSION_CURRENTNESS_CROSSWALK_2026-10-12.md](BUILD/STEP_7_RECOVERY_SUCCESSION_CURRENTNESS_CROSSWALK_2026-10-12.md), commit `8405243774afbf8965ca0befb2b34021747ca43b`.
+- Existing MASTER/AB recovery research is reusable as a constraint set, but it does not establish Genesis, verifier provenance, canonical current-Constitution ownership, or a production sink.
+- Owner intent, verifier provenance, constitutional ordering/currentness, and final effect admission remain separate. Recovery cannot self-authorize; bounded-safety mode cannot increase authority; conflicting successor histories require a pre-existing ordering rule and may require enforceable predecessor fencing.
+- If sink/revocation ordering or currentness is uncertain, result remains UNKNOWN/STOP; do not claim cancellation or global revocation enforcement without evidence.
+- No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. Genesis and canonical state owner remain UNKNOWN; actual sink/bypass closure remains UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
