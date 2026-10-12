@@ -1843,3 +1843,13 @@ The existing P112 audits already map the legacy simulation mutation sink and run
 Review update: `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md`, commit `58ff971cc1a0e379545a591cc97714bdf9dd645b`.
 
 Next action remains bounded: ground the actual deployment profile/entrypoint and its authority-enforcement relationship. Do not wire the protected Core into the legacy simulation path just to complete the diagram. No P112 rerun, phone action, M1 switch, implementation, or commissioning. Status remains OPEN / STOP / UNKNOWN.
+
+
+### STEP 7 — Android M1 source / installed-artifact correspondence gap (2026-10-11)
+
+- Read-only inspection compared `NEXO_NCS/M1_ANDROID/app/build.gradle.kts`, `README.md`, `AndroidManifest.xml` and `MainActivity.kt` against the existing deployment matrix.
+- The repository source declares package `org.nexo.m1`, version `0.2.0-prototype`, and a local text-only prototype with no Genesis/authority path. The deployment matrix records the installed package as user-reported `org.nexo.m1.safetest18`, version `0.2.6-safe-test18`.
+- These identities do not match. The inspected source therefore cannot be attributed to the installed APK; the exact source-commit/build/artifact/signer/digest provenance chain remains UNKNOWN. This discrepancy alone does not establish a defect or compromise in the installed APK.
+- New bounded record: `NEXO_NCS/BUILD/STEP_7_ANDROID_M1_SOURCE_ARTIFACT_CORRESPONDENCE_GAP_2026-10-11.md`, commit `4be04695582cf4acbd730f6e7010bcb1c17559d6`.
+- **Next exact action:** inspect existing M1 build workflow and artifact provenance records for a source-to-installed-artifact linkage, read-only only. Do not build/install an APK or switch away from Step 7. If the linkage cannot be established from existing records, preserve UNKNOWN and continue the first-boot deployment boundary investigation.
+- Genesis verifier, protected active-Constitution establishment, and final enforcement remain unproven. **STEP 7 OPEN / STOP / UNKNOWN.**
