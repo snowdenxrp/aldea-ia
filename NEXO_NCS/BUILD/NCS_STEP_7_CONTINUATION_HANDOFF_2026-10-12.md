@@ -288,3 +288,28 @@ Blob: `350b73254baf8edd04dea8d8235dea3d9263c923`
 URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_MINIMAL_CONDITIONAL_SOLUTION_AND_IMPLEMENTATION_GATES_2026-10-12.md
 
 This is an evidence-backed narrowing of the real decision boundary, not a claim that STEP 7 is solved. Next work can continue with synthetic component/adversarial analysis, but the real-world premise must eventually be grounded: an independent recognized basis, or an explicit bounded owner assumption. Commissioning remains UNKNOWN/STOP; no production code/tests/APK/keys/Constitution artifact/phone state changed.
+
+
+### 9.9 Targeted research — Android Protected Confirmation (2026-10-12)
+
+Official Android documentation was inspected after the bootstrap research. Result: Protected Confirmation is a possible *bounded Path H presentation/transaction-confirmation component*, not a Genesis root or complete STEP 7 solution.
+
+- Android says the Trusted UI is hardware-protected and can confirm the exact displayed prompt with high confidence on supported devices; the API exposes `ConfirmationPrompt.isSupported(context)`, and a prompt may still fail (including under some accessibility-service conditions).
+- The relying verifier must validate the signature and attestation chain, check the `TRUSTED_CONFIRMATION_REQUIRED` property, enforce nonce freshness/one-time use, and compare the returned `promptText` to the exact expected prompt.
+- Crucial constraint: only `promptText` is approved by the user. `extraData` is carried in the signed response but is not displayed; data placed only there cannot be treated as user-approved.
+- Android also warns this is not a general secure confidentiality channel.
+- This may improve display integrity for a short, deterministic, exact-scope approval prompt. It does not select Nexo's first legitimate root, establish an independent relying verifier, create the canonical active-Constitution owner, or prove complete mediation/bypass closure.
+- If the Constitution is too long to review meaningfully in the prompt, a short summary/hash is not automatically approval of every underlying clause. The binding between prompt, exact Constitution bytes, version, and scope must be justified and verified.
+- Device support is UNKNOWN / NOT TESTED for the current phone. No APK/device probe or runtime test was performed.
+
+Official sources:
+- AOSP Protected Confirmation: https://source.android.google.cn/docs/security/features/protected-confirmation?hl=en
+- Android ConfirmationPrompt API: https://developer.android.com/reference/android/security/ConfirmationPrompt
+- Android guide on the signed response and relying-party checks: https://developer.android.google.cn/privacy-and-security/security-android-protected-confirmation?hl=es
+
+A new focused research record was created:
+`NEXO_NCS/BUILD/STEP_7_ANDROID_PROTECTED_CONFIRMATION_CONDITIONAL_PATH_H_RESEARCH_2026-10-12.md`
+Commit: `4573687107e32a7b011b2eb1128ba7c52993bb95`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_ANDROID_PROTECTED_CONFIRMATION_CONDITIONAL_PATH_H_RESEARCH_2026-10-12.md
+
+This is a conditional option, not a selected mechanism. Do not implement it or assume support without an independently recognized relying verifier, a grounded threat model, and an actual capability check. No production code/tests/workflows/APK/keys/Constitution bytes/phone state changed. STEP 7 remains UNKNOWN/STOP.
