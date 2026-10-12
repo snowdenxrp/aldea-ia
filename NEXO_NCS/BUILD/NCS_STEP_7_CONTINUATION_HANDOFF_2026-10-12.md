@@ -382,3 +382,21 @@ Architecture consequence (not an implementation patch):
 Bounded caller inventory was also rechecked: code search for `executeProtectedTransition`, `createCorePorts`, and `effectBoundary.prepare` returns the Core definition and test fixtures, not a demonstrated production composition. GitHub code search is indexed against the default branch, so this search is corroborative rather than a complete proof for every branch or external deployment. The exact NCS branch head remains `1be854cc724bcbb820a6594de98c7701e4ff1021`; branch protection reports disabled and the head commit is unsigned. Those repository facts affect source-integrity assurance but do not solve Genesis trust.
 
 Evidence class: exact source inspection + bounded code search + architectural inference. No tests executed. No production code, tests, workflow, repository settings, keys, Constitution artifact, APK, or phone/runtime state changed. Commissioning remains UNKNOWN / STOP.
+
+
+### 9.13 Conditional-commit adapter narrows what the TOCTOU finding means — 2026-10-12
+
+Re-fetched:
+- `src/nexo/adapters/conditional-commit-persist-state.mjs` blob `9a707677c99d226f87f9b8b0d9e7673e7a1a100e`.
+- `tests/nexo/conditional-commit-persist-state.test.mjs` blob `9486d39eafc794d6a4ffe42ece4e288fbe2cb01d`.
+- `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_FUTURE_COUNTEREFFECTS_GATE_2026-10-08.md` blob `d5ebabcb05566593e32f3e1f9bf1047f6b99e0c0`.
+
+This provides a more precise distinction:
+1. The adapter does correctly await the existing `persistState` primitive and maps `STATE_REVISION_CONFLICT` to `CONDITIONAL_CONFLICT`; other persistence errors become `UNKNOWN`. It is not a fake synchronous bridge.
+2. The test named “real persistState integration” injects `authorityGate.check: () => createAuthorityResult(AUTHORITY.AUTHORIZED)`, validates the ordinary conditional state-revision behavior, and uses a temporary local JSON state file. It is useful integration evidence for persistence semantics only.
+3. The conditional commit contract passes `expectedRevision` and `stateRevision = expectedRevision + 1`; it does not pass or atomically compare an authority/Constitution generation, revocation epoch, or verifier decision ID. Thus the revision guard prevents a stale state snapshot from overwriting a newer state under the persistence primitive's concurrency assumptions; it does not by itself prevent a constitutionally revoked action from committing.
+4. The implementation gate explicitly warns that a context established once cannot be treated as timeless and that a constructor/schema cannot manufacture trust. The new TOCTOU requirement is therefore consistent with the existing design constraint, not a reason to create another generic wrapper.
+
+Safe conclusion: keep the existing adapter for its narrow state-persistence role; do not relabel its tests as Genesis or authority-currentness proof. The missing architectural contract is atomic linkage between the canonical current-authority generation and the actual protected admission/commit. If the eventual external sink cannot participate in such a check/fence, Nexo must not claim revocation-enforced effects at that sink; use bounded/non-effectful behavior or remain STOP according to the Constitution.
+
+No tests were run in this review. This was source and test-source inspection only. No production code or settings changed. Commissioning remains UNKNOWN / STOP.
