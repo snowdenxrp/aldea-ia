@@ -2180,3 +2180,15 @@ Read-only decision recorded in [STEP_7_LUMINA_SCOPE_SEPARATION_AND_MUTATION_FOOT
 - This is not a claim that no external deployment exists. No external sink was identified in this pass; that question remains UNKNOWN.
 
 No code or tests changed or ran. Commissioning remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Build/publication/deployment evidence reconciliation — 2026-10-12
+
+Read-only reconciliation recorded in [STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md](BUILD/STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md), commit `578c5409122f1c8fb57e3cfbe107fcb1f42bb08f`.
+
+- `.github/workflows/lumina-simulation.yml` is a concrete scheduled repository/simulation writer that commits simulation state; it is not a protected external-effect sink.
+- `functions/api/capture.js` implements a Cloudflare Pages visual-audit receiver with GitHub write capability if configured. Setup docs describe deployment steps, but this pass did not establish current deployment/reachability. It is not Nexo constitutional authority or a protected effect sink.
+- M1 run/artifact remains debug-build evidence only, not device-install or commissioning evidence.
+- No reviewed evidence identifies an external effect sink joined to Genesis/current Constitution authority/final enforcement. This is bounded to inspected evidence; external deployments remain UNKNOWN, not disproven.
+
+No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / STOP / UNKNOWN.
