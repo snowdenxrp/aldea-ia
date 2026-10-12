@@ -121,17 +121,23 @@ chat_format_old = """static std::string chat_add_and_format(const std::string &r
     return formatted;
 }
 """
-chat_format_new = """static std::string chat_add_and_format(const std::string &role, const std::string &content) {
+chat_format_new = """static bool chat_format_error = false;
+
+static std::string chat_add_and_format(const std::string &role, const std::string &content) {
+    chat_format_error = false;
     common_chat_msg new_msg;
     new_msg.role = role;
     new_msg.content = content;
 
-    // Apply the model's embedded template and explicitly disable Qwen3 thinking.
+    // Render the complete conversation with the model's embedded template and
+    // explicitly disable Qwen3 thinking. Only append the not-yet-cached suffix.
     const auto * templates = g_chat_templates.get();
     common_chat_templates_inputs inputs;
     inputs.use_jinja = true;
     inputs.enable_thinking = false;
-    // Keep common_chat_templates opaque; input defaults leave BOS/EOS policy to the template.
+    // Match common_chat_format_single(): preserve the model template's BOS/EOS policy.
+    inputs.add_bos = templates->add_bos;
+    inputs.add_eos = templates->add_eos;
 
     std::string formatted_past;
     if (!chat_msgs.empty()) {
@@ -140,17 +146,88 @@ chat_format_new = """static std::string chat_add_and_format(const std::string &r
         formatted_past = common_chat_templates_apply(templates, inputs).prompt;
     }
 
-    const bool preserve_newline = role == ROLE_USER && !formatted_past.empty() && formatted_past.back() == '\\n';
     inputs.messages.push_back(new_msg);
     inputs.add_generation_prompt = role == ROLE_USER;
     const auto formatted_all = common_chat_templates_apply(templates, inputs).prompt;
+
+    // A length-only substring can silently feed the wrong tokens to the KV cache.
+    if (formatted_all.size() < formatted_past.size() ||
+        formatted_all.compare(0, formatted_past.size(), formatted_past) != 0) {
+        LOGe("%s: Chat template history is not an exact prefix; refusing inconsistent context", __func__);
+        chat_format_error = true;
+        return {};
+    }
+
     const auto formatted = formatted_all.substr(formatted_past.size());
+    // Preserve the upstream formatter's newline boundary when the previous
+    // rendered history ends in a newline and a user turn opens an assistant turn.
+    const bool preserve_newline = role == ROLE_USER &&
+        !formatted_past.empty() && formatted_past.back() == '\\n';
     chat_msgs.push_back(new_msg);
     LOGi("%s: Formatted and added %s message (thinking disabled)\\n", __func__, role.c_str());
     return preserve_newline ? "\\n" + formatted : formatted;
 }
 """
 replace_once(CPP, chat_format_old, chat_format_new)
+
+# Correct the native conversation contract as well as the output template.
+# Templated text already contains the model's special-token spellings; adding BOS
+# again on every incremental user suffix corrupts multi-turn context.
+system_tokenize_old = """    const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
+                                               has_chat_template, has_chat_template);"""
+system_tokenize_new = """    if (chat_format_error) {
+        LOGe("%s: Refusing inconsistent system chat template", __func__);
+        return 3;
+    }
+    const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
+                                               !has_chat_template, has_chat_template);"""
+replace_once(CPP, system_tokenize_old, system_tokenize_new)
+
+user_tokenize_old = """    auto user_tokens = common_tokenize(g_context, formatted_user_prompt, has_chat_template, has_chat_template);"""
+user_tokenize_new = """    if (chat_format_error) {
+        LOGe("%s: Refusing inconsistent user chat template", __func__);
+        return 3;
+    }
+    auto user_tokens = common_tokenize(g_context, formatted_user_prompt,
+                                       !has_chat_template, has_chat_template);"""
+replace_once(CPP, user_tokenize_old, user_tokenize_new)
+
+limit_old = """    const int user_prompt_size = (int) user_tokens.size();
+    const int max_batch_size = DEFAULT_CONTEXT_SIZE - OVERFLOW_HEADROOM;
+    if (user_prompt_size > max_batch_size) {
+        const int skipped_tokens = user_prompt_size - max_batch_size;
+        user_tokens.resize(max_batch_size);
+        LOGw("%s: User prompt too long! Skipped %d tokens!", __func__, skipped_tokens);
+    }
+
+    // Decode user tokens in batches
+    if (decode_tokens_in_batches(g_context, g_batch, user_tokens, current_position, true)) {
+        LOGe("%s: llama_decode() failed!", __func__);
+        return 2;
+    }
+
+    // Update position
+    current_position += user_prompt_size;
+    stop_generation_position = current_position + user_prompt_size + n_predict;"""
+limit_new = """    const int max_batch_size = DEFAULT_CONTEXT_SIZE - OVERFLOW_HEADROOM;
+    if ((int) user_tokens.size() > max_batch_size) {
+        const int skipped_tokens = (int) user_tokens.size() - max_batch_size;
+        user_tokens.resize(max_batch_size);
+        LOGw("%s: User prompt too long! Skipped %d tokens!", __func__, skipped_tokens);
+    }
+    // Count only tokens that will actually be decoded after truncation.
+    const int decoded_user_prompt_size = (int) user_tokens.size();
+
+    // Decode user tokens in batches
+    if (decode_tokens_in_batches(g_context, g_batch, user_tokens, current_position, true)) {
+        LOGe("%s: llama_decode() failed!", __func__);
+        return 2;
+    }
+
+    // n_predict is the maximum number of newly generated tokens.
+    current_position += decoded_user_prompt_size;
+    stop_generation_position = current_position + std::max(0, (int) n_predict);"""
+replace_once(CPP, limit_old, limit_new)
 
 # Fail closed if the diagnostic API, bounded capture, and template policy were applied.
 checks = [
@@ -160,6 +237,13 @@ checks = [
     (KOTLIN, "Native model load failed"),
     (CPP, "inputs.enable_thinking = false"),
     (CPP, "inputs.use_jinja = true"),
+    (CPP, "inputs.add_bos = templates->add_bos;"),
+    (CPP, "inputs.add_eos = templates->add_eos;"),
+    (CPP, "preserve_newline ? \"\\n\" + formatted : formatted"),
+    (CPP, "formatted_all.compare(0, formatted_past.size(), formatted_past) != 0"),
+    (CPP, "chat_format_error = true;"),
+    (CPP, "const int decoded_user_prompt_size = (int) user_tokens.size();"),
+    (CPP, "stop_generation_position = current_position + std::max(0, (int) n_predict);"),
 ]
 for path, needle in checks:
     if needle not in path.read_text(encoding="utf-8"):
