@@ -2066,3 +2066,15 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - Consequence: a valid signature/key is not enough; authority must cover the exact operation, scope, current state and target. A build/update credential must not silently authorize Constitution/root changes. These standards do not decide Nexo's constitutional governance or prove a production final boundary.
 - Research detail saved and verified in `NEXO_NCS/RESEARCH/STEP_7_DEEP_TRUST_RATS_RECOVERY_CONSOLIDATION_2026-10-08.md`, blob SHA `859aaac55432003ec7669fc98e7692916e4acf33`, commit `e9ba13b0e307b2a4e0308cc5f9c4aabd5cd1a0bf`.
 - No X.509/CA/OEM/phone mechanism selected; no keys, code, Constitution or runtime state changed. STEP 7 remains ACTIVE; Genesis trust UNKNOWN / NOT ESTABLISHED; protected commissioning STOP / UNKNOWN.
+
+
+### STEP 7 — bounded source call-site revalidation (2026-10-12)
+
+A fresh search/fetch against branch `ncs-clean-architecture` revalidated the source-level blocker:
+
+- `src/nexo/core/contracts.mjs` exposes `createAuthorityResult(status, ...)` as a shape/result constructor; it carries status/reasons/evidence and does not authenticate provenance or establish current constitutional authority (blob `294eb400e9685788f7dd084a28a838b69d0323c7`).
+- `src/nexo/core/ownership.mjs` defines `effectBoundary.prepare`, defaulting to `NOT_IMPLEMENTED` (blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`), but `src/nexo/core/protected-transition.mjs` never invokes it; after final semantic PASS, the transition directly calls `conditionalCommit.commit(candidate)` (blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`).
+- Repository code search for `executeProtectedTransition` surfaced the implementation and focused tests (`tests/nexo/protected-transition.test.mjs`, `tests/nexo/conditional-commit-persist-state.test.mjs`), but no production composition/call site. Search for `createConstitutionAuthorityContext` found the design gate only, not an implementation.
+- Interpretation is deliberately bounded: the reviewed branch does not demonstrate a production consumer or final protected effect boundary. This does not prove that no external or unindexed deployment exists. The `effectBoundary` port's presence is not evidence of enforcement.
+
+**Engineering consequence:** do not wire a placeholder `effectBoundary.prepare` into the generic transition just to make the interface appear complete. First identify the actual target effect and ownership path; then specify what `prepare` means, where its authority originates, and what irreversible/externally visible operation it must mediate. Until then, STEP 7 remains ACTIVE, Genesis trust UNKNOWN / NOT ESTABLISHED, Core Constitution Authority Context NOT ESTABLISHED, and protected commissioning STOP / UNKNOWN.
