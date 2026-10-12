@@ -1950,3 +1950,13 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - This corrects a potential provenance confusion: repository-wide latest commit ≠ NCS branch head. No new protected-Core production entrypoint, deployment artifact, Genesis verifier, active-Constitution owner, or final activation/effect boundary was established.
 - No source, workflow, APK, device, root, verifier, or Constitution changed. No build or installation was run.
 - **Disposition:** this reconciliation adds no closure evidence. Do not repeat source sweeps or transplant Lúmina state commits into NCS. Step 7 remains **OPEN / STOP / UNKNOWN**. The next meaningful transition requires either genuinely new, independently inspectable deployment/source evidence or an explicit bounded owner decision about the initial commissioning trust assumption; that decision alone would not close the separate verifier, state-owner, and final-enforcement gates.
+
+
+### STEP 7 — Owner accepts bounded initial-commissioning assumption (2026-10-12)
+
+- Kevin accepted the proposed direction: a human-recognized out-of-band comparison may be used as a **limited initial-commissioning trust assumption**. The decision is recorded in `NEXO_NCS/BUILD/STEP_7_CURRENT_PHONE_CANDIDATE_THREAT_MODEL_2026-10-08.md`.
+- This accepts the category of assumption, not a concrete channel or mechanism. The exact comparison procedure, recognition/enrollment basis, verifier provenance, and binding of owner intent to exact Constitution content/scope remain unselected or unproven. The current phone, ChatGPT, Termux, an account, or two apps on one phone must not be presumed independent or trusted by name alone.
+- Failure to establish exact content, scope, provenance, or comparison means UNKNOWN/HOLD and no protected commissioning/effects.
+- The remaining independent gates are unchanged: (1) non-circular verifier provenance; (2) a canonical active-Constitution state owner with revision/conflict/currentness semantics; and (3) a bypass-closed final protected activation/effect boundary. Replay, revocation, recovery, replacement, and shared dependencies also require defined handling.
+- No source, tests, workflow, keys, Constitution content, APK, or device state changed. No protected implementation or effect was authorized.
+- **Disposition:** owner decision narrows the trust-assumption design question but does not close commissioning. **STEP 7 remains OPEN / STOP / UNKNOWN.** Next work: specify a concrete comparison procedure and its failure semantics against the existing contracts, then audit the procedure before considering implementation.
