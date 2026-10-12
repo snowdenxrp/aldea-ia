@@ -1960,3 +1960,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - The remaining independent gates are unchanged: (1) non-circular verifier provenance; (2) a canonical active-Constitution state owner with revision/conflict/currentness semantics; and (3) a bypass-closed final protected activation/effect boundary. Replay, revocation, recovery, replacement, and shared dependencies also require defined handling.
 - No source, tests, workflow, keys, Constitution content, APK, or device state changed. No protected implementation or effect was authorized.
 - **Disposition:** owner decision narrows the trust-assumption design question but does not close commissioning. **STEP 7 remains OPEN / STOP / UNKNOWN.** Next work: specify a concrete comparison procedure and its failure semantics against the existing contracts, then audit the procedure before considering implementation.
+
+
+### STEP 7 — Bounded human-comparison protocol candidate (2026-10-12)
+
+- Added `NEXO_NCS/BUILD/STEP_7_BOUNDED_HUMAN_COMPARISON_PROTOCOL_CANDIDATE_2026-10-12.md` to turn the accepted assumption category into a reviewable sequence, required artifacts, failure semantics, candidate reference forms, and adversarial tests.
+- The document explicitly leaves the actual reference channel unselected. It distinguishes a digest's byte-binding role from legitimacy, and owner intent from verifier legitimacy, active-Constitution currentness, and final effect enforcement.
+- No real Constitution bytes/digest/challenge/key were fabricated. No source, tests, workflows, keys, Constitution, APK, or device state changed; no protected implementation was authorized.
+- **Next required owner input:** identify which concrete independently recognized reference is actually available to Kevin (for example, retained physical paper or a genuinely separate device/channel). Availability must not be assumed. Once identified, review shared dependencies and exact-content binding before implementation.
+- **Disposition:** design has advanced to a concrete protocol candidate; the trust channel and separate engineering gates remain unproven. **STEP 7 remains OPEN / STOP / UNKNOWN** for protected constitutional commissioning.
