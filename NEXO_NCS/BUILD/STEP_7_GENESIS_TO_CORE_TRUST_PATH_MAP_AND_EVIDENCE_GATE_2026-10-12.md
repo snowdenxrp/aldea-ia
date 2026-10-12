@@ -102,3 +102,25 @@ Continue from the existing Genesis and human-comparison contracts without creati
 ## Disposition
 
 Step 7 safe engineering continues. Genesis Trust Foundation = UNKNOWN. Core Constitution Authority Context = NOT ESTABLISHED. Legitimate AuthorityGate composition = NOT ESTABLISHED. Final protected effect boundary = UNKNOWN. Protected constitutional commissioning = STOP.
+
+
+## Additional source-backed composition trace — complete mediation gate (2026-10-12)
+
+### Primary-source principle
+Saltzer and Schroeder's classic protection-design principles include **complete mediation**: access to protected objects must be checked rather than trusting an earlier decision indefinitely. The principle supports requiring enforcement at the actual protected boundary; it does not specify Nexo's Genesis root or choose a deployment. Source: https://www.cs.virginia.edu/~evans/cs551/saltzer/ . NIST SP 800-53A likewise treats enforcement as something to examine and test in the system, including mechanisms that prevent access to security-relevant information, not merely as a declared interface: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53Ar5.pdf (AC-3 assessment methods).
+
+### Revalidated source observations
+- `src/nexo/core/contracts.mjs` (`294eb400e9685788f7dd084a28a838b69d0323c7`): `createAuthorityResult` validates an enum and packages caller-supplied reasons/evidence; it does not verify who produced the result or whether authority is current.
+- `src/nexo/core/ownership.mjs` (`c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`): the `effectBoundary.prepare` port defaults to `NOT_IMPLEMENTED`.
+- `src/nexo/core/protected-transition.mjs` (`00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`): the transition invokes `authorityGate.check`, then semantic validation, then `conditionalCommit.commit`; it does not invoke `effectBoundary.prepare`.
+- `src/nexo/adapters/conditional-commit-persist-state.mjs` (`9a707677c99d226f87f9b8b0d9e7673e7a1a100e`): the adapter forwards candidate state to the supplied `persistState` and maps commit outcomes. It does not establish that the persisted object is a canonical Constitution Authority Context or mediate external effects.
+- GitHub code search for `createCorePorts`, `createPersistStateConditionalCommit`, `authorityGate check`, and `effectBoundary prepare` surfaced the core source, tests, and architecture notes; it did not surface a production composition wiring a recognized Genesis root to a current Constitution Authority Context and protected effect sink. This is bounded search evidence, not proof about unindexed/external deployments.
+- The focused integration test uses a fixture that returns `createAuthorityResult(AUTHORITY.AUTHORIZED)` and verifies simulated `persistState` behavior. It demonstrates transition/adapter behavior under injected test authority; it is not evidence of real Genesis authorization or complete mediation.
+
+### Required consequence — no interface-only fix
+Do not simply add `await effectBoundary.prepare(...)` to `executeProtectedTransition` while the effect target, linearization point, and authority source remain unidentified. Doing so could create a ceremonial call that does not mediate the real effect. First trace one named deployment from entrypoint through active-state owner and every protected sink; then define the enforcement point against that actual sink and test bypasses across all relevant paths. If the target is absent, retain UNKNOWN rather than inventing a simulated sink as the production target.
+
+### Evidence gate
+A future claim of complete mediation must include: (1) named deployment/build identity; (2) reachable entrypoints and sink inventory; (3) current Authority Context source and freshness/revocation semantics; (4) source/build-to-deployed-artifact linkage; (5) tests showing unauthorized, stale, replayed, revoked, UNKNOWN and bypass attempts cannot reach the sink; and (6) evidence of the deployed test target and raw results. Unit tests with injected authority are necessary but insufficient.
+
+**Disposition unchanged:** Genesis Trust Foundation UNKNOWN; canonical current Constitution Authority Context NOT ESTABLISHED; legitimate AuthorityGate composition NOT ESTABLISHED; final protected effect boundary UNKNOWN; commissioning STOP. No code, keys, Constitution, or runtime state changed.
