@@ -238,3 +238,12 @@ Updated review: `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REV
 Canonical status clarification: `NEXO_NCS/STATUS.md` commit `d5718db8ad1344e28825cafef9fdad53f945b512`.
 
 Next exact action: map the intended deployment target and all effect sinks/routes in scope, then establish whether/how the protected Core must mediate each route. Do not wire old and new paths together merely to complete a diagram. Keep OPEN / STOP / UNKNOWN; no commissioning or device changes.
+
+
+## 2026-10-11 — P112 mutation sink reconciled without reopening its audit
+
+The latest first-boot source review incorporates the already-existing P112 results. `executeAction(simulation, agent, intent)` is a known simulation/world mutation sink, and the legacy Nexo simulation route reaches it through `executeLuminaNexoStep` and `createLuminaEffectAdapter`. P112 already owns the detailed dependency/WriteSet and snapshot-crossing analysis; do not repeat those audits.
+
+This does not establish physical Android/TV effects or constitutional enforcement. The generic protected Core is not evidenced as mediating the legacy simulation route, and no deployed first-boot component owning constitutional activation/all in-scope protected routes has been identified. Updated review commit: `58ff971cc1a0e379545a591cc97714bdf9dd645b`; canonical status update commit: `025587542ac1b808f3f6367ec0d59cdc5107b37f`.
+
+Next exact action remains to ground the intended deployment profile/entrypoint and its authority-enforcement relationship. Do not wire paths together merely to make the architecture diagram complete. No P112 rerun, device action, M1 switch, implementation, or commissioning. OPEN / STOP / UNKNOWN.
