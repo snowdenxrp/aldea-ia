@@ -1921,3 +1921,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - The GitHub connector did not allow the repository deployments API endpoint, so deployment records remain **UNKNOWN / not checked**; do not interpret that limitation as proof that no deployment exists. The Actions run-history scan above remains bounded to returned branch-scoped runs.
 - No PR, release, workflow, source, build, APK, or device state was changed. No artifacts were downloaded.
 - **Disposition:** this cross-check found no new artifact that changes the Step 7 conclusion. Do not repeat source sweeps or repurpose M1 work. Continue only on genuinely new deployment evidence or a separately reviewed scope decision. **STEP 7 remains OPEN / STOP / UNKNOWN for protected constitutional commissioning.**
+
+
+### STEP 7 — Genesis Trust Foundation focused attack review (2026-10-12)
+
+- Added a focused adversarial review of the existing Genesis Trust Foundation and Bootstrap Composition design candidates: `NEXO_NCS/BUILD/STEP_7_GENESIS_TRUST_FOUNDATION_ATTACK_REVIEW_2026-10-12.md`.
+- The review does not repeat the root-family comparison or select a root. It tests the already-defined contract against first-contact substitution, circular verifier trust, pre-first-boot host/channel compromise, rollback/replay/forks, mistaken promotion of a human UI click, false independence, and activation bypass.
+- Result: the semantic contract already rejects self-authentication and naive source multiplicity, but the deployment-specific first-contact trust source, verifier provenance, threat-model boundary, currentness/conflict rule, active-Constitution state owner, and bypass-closed activation boundary remain UNKNOWN or STOP.
+- Closure evidence is stated explicitly in the review. No code, tests, workflow, root, verifier, store, UI, APK, or device state was changed. No implementation is authorized by this review.
+- **Disposition:** design candidate attacked; gaps sharpened; no trust mechanism selected. Step 7 remains **OPEN / STOP / UNKNOWN** for protected constitutional commissioning.
