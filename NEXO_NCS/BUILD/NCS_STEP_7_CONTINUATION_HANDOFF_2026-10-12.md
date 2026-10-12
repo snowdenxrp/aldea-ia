@@ -313,3 +313,25 @@ Commit: `4573687107e32a7b011b2eb1128ba7c52993bb95`
 URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_ANDROID_PROTECTED_CONFIRMATION_CONDITIONAL_PATH_H_RESEARCH_2026-10-12.md
 
 This is a conditional option, not a selected mechanism. Do not implement it or assume support without an independently recognized relying verifier, a grounded threat model, and an actual capability check. No production code/tests/workflows/APK/keys/Constitution bytes/phone state changed. STEP 7 remains UNKNOWN/STOP.
+
+### 9.10 Follow-up source verification — off-device attestation and full prompt (2026-10-12)
+
+Official Android sources add two material constraints to the possible Path H presentation component:
+
+- AOSP implementation requirements say the protected prompt must be rendered in full. The body has a 6144-byte hard limit including extra data/CBOR overhead and a soft screen-fit limit; if the entire message cannot fit, the confirmation must abort. A short hash/summary is not equivalent to user approval of every underlying clause unless the exact semantic binding is justified.
+- Android Key Attestation documentation explicitly directs sending the certificate chain to a separate trusted server for validation, warning against validating on the same device whose Android system may be compromised.
+- A separate server is not automatically independent: its identity/trust anchor must already be recognized, and the candidate under evaluation must not control its verifier code, policy, deployment or final activation sink.
+- Protected Confirmation must fail closed on unsupported device, unavailable prompt, cancellation, interruption, incomplete display or invalid response. isSupported() alone does not establish deployment correctness.
+- A valid signed confirmation response still does not establish Nexo Genesis legitimacy, canonical active-Constitution ownership or final-sink complete mediation.
+
+Official sources:
+- AOSP implementation constraints: https://source.android.com/docs/security/features/protected-confirmation/implementation
+- Android Key Attestation (off-device verification): https://developer.android.com/privacy-and-security/security-key-attestation
+- Android ConfirmationPrompt API: https://developer.android.com/reference/android/security/ConfirmationPrompt
+
+New research note:
+NEXO_NCS/BUILD/STEP_7_OFF_DEVICE_ATTESTATION_AND_FULL_CONTENT_CONFIRMATION_CONSTRAINTS_2026-10-12.md
+Commit: bd54aaeb764a1bfb5664327afe72b0600a77d55c
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_OFF_DEVICE_ATTESTATION_AND_FULL_CONTENT_CONFIRMATION_CONSTRAINTS_2026-10-12.md
+
+This narrows the conditional path but does not solve bootstrap. Device support UNKNOWN; separate recognized verifier NOT IDENTIFIED; Genesis basis UNKNOWN; canonical state owner and final sink UNKNOWN; commissioning STOP. No production source/tests/workflow/APK/keys/Constitution artifact/phone state changed.
