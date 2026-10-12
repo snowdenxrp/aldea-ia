@@ -234,3 +234,31 @@ The latest canonical STATUS contains this explicit decision: **Kevin remains the
 The saved personal-context summary also records the intended future-succession distinction: Kevin's daughter is a possible future successor, not a current co-authority or automatic successor. Any future succession must be explicitly governed and independently enforced; family relationship, age, possession of a device/key, certificate, timestamp, or recovery procedure cannot silently transfer constitutional authority. Do not treat future succession as active or resolved.
 
 This is an owner/governance decision, not technical proof that the present implementation enforces it. It must not be replaced by a generic external authority, OEM, platform root, model, verifier, or trust threshold.
+
+
+### 9.7 STEP 7 bounded source trace continuation — 2026-10-12
+
+Re-fetched current source on `ncs-clean-architecture` and traced the runtime/effect adapters rather than treating the declared ports as production wiring.
+
+- `src/nexo/effect-adapter.js` registers only the handler map injected by its creator. It performs precondition/state-version checks and postcondition handling, but does not consult Genesis, a Constitution Authority Context, a canonical authority owner, or a protected final admission gate.
+- `src/nexo/simulation-adapter.js` exposes Lúmina simulation handlers that directly mutate the supplied `simulation` object: agent state, agent needs, resource state, and `executeAction(simulation, agent, action)`. The revision is an in-memory simulation revision, not a durable external fence.
+- `src/nexo/runtime.js` calls the adapter and records mission/outcome memory afterward. Its `persistPreparedIntent` callback is optional and is not itself a persistence owner.
+- `scripts/assistants.mjs` builds and persists plans/reports but does not invoke `executeNexoStep()` or `executeLuminaNexoStep()`.
+- `scripts/simulate.mjs` owns the JSON simulation-state lock/revision/temp-write/rename path, but its simulation loop does not execute Nexo effect steps through the runtime. Its persistence is not an external-effect boundary.
+- Bounded code search found `createEffectAdapter`, `createLuminaEffectAdapter`, `executeNexoStep`, `executeLuminaNexoStep`, and `executeProtectedTransition` in definitions/tests and historical documentation; no demonstrated production composition joins them to a Genesis verifier and protected target. This is a bounded repository finding, not proof about every external consumer.
+
+Classification:
+1. Current concrete mutation handlers: **local simulation effects**.
+2. Current durable state owner: **simulation JSON persistence**, separate from runtime handler execution.
+3. Actual Android/TV/provider/physical target behind STEP 7: **not demonstrated in this branch**.
+4. Genesis-authorized protected activation target: **not yet implemented**; the canonical active-Constitution state owner itself remains missing.
+
+This confirms that inserting a call to `effectBoundary.prepare`, connecting the simulation runner to the runtime, or adding a callback would be a structural patch, not a closure of STEP 7. Reuse existing P112 and effect-path audits; do not rerun those investigations or implement a new executor.
+
+New synthesis document created and re-fetched:
+`NEXO_NCS/BUILD/STEP_7_MINIMAL_CONDITIONAL_SOLUTION_AND_IMPLEMENTATION_GATES_2026-10-12.md`
+Commit: `6eeafdd20d819012b3084eea557701e81a632cd6`
+Blob: `330f3c335c999a73b2917d146a1317b3abf49e38`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_MINIMAL_CONDITIONAL_SOLUTION_AND_IMPLEMENTATION_GATES_2026-10-12.md
+
+Current gate remains: independently recognized exact Constitution/scope and verifier basis UNKNOWN; canonical active-Constitution owner and production composition absent; final target and bypass closure UNKNOWN; protected commissioning STOP. Next work should investigate a feasible, independently recognizable establishment path and deployment identity without selecting hardware/provider or claiming the current M1 phone is a trust root. No production code, tests, workflows, APK, keys, Constitution artifact, or phone/runtime state changed.
