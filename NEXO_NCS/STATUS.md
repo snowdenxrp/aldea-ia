@@ -2097,3 +2097,12 @@ A fresh search/fetch against branch `ncs-clean-architecture` revalidated the sou
 - Durable continuation rule updated and re-fetched: blob `eabd327375d6ab9b63dac0e2ed04e2b018c2957b`; commit `67d1cf485117f2e9b2b803ff04eb11d5f40fa31c`. It includes the exact follow-up source observations and next steps.
 - Next: inspect workflow/build/deployment files and every actual caller; if no named target exists in-repo, record that as the precise missing prerequisite. Do not invent a simulated sink or wire a ceremonial effectBoundary call.
 - Disposition unchanged: STEP 7 ACTIVE; Genesis trust UNKNOWN / NOT ESTABLISHED; Constitution Authority Context NOT ESTABLISHED; final protected boundary UNKNOWN; commissioning STOP.
+
+
+### NCS STEP 7 — full continuation handoff recovered (2026-10-12)
+
+- Created and re-fetched/verified the detailed recovery handoff: [NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md](BUILD/NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md).
+- Commit: `e9a773fbfc4da8d3d7d893eeab0e7596ad68bb6c`; verified content blob SHA: `bd0f75a2cecd036616a962830cdc44a991d0feda`; verified content length: 22,035 characters. Includes the three latest user-pasted chat summaries, source findings, historical evidence refs, research links, epistemic limits, exact next work queue, and closure acceptance criteria. Re-fetch before relying on any hash in a future session.
+- This is a handoff/recovery record, not proof STEP 7 is closed. Genesis Trust Foundation remains UNKNOWN / NOT ESTABLISHED; canonical current Constitution Authority Context NOT ESTABLISHED; final protected boundary UNKNOWN / NOT DEMONSTRATED; deployment closure C0-C5 UNASSESSED; commissioning STOP / UNKNOWN.
+- The previous attempt to append the G-A14 reuse audit directly to the path map was blocked; no claim that that proposed append succeeded. The relevant G-A14 research references and proposed next action are preserved in the handoff.
+- Next chat: read STATUS, then the handoff, then the canonical Genesis→Core path map and trust-foundation attack review. Continue repository/deployment/source tracing and reuse G-A14 closure levels. Do not re-open frozen P112/TLC/Kafka/old AB work, do not rebuild M1 absent a direct dependency, do not add a decorative effectBoundary call, and do not invent a target/root/key/Constitution.
