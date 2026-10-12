@@ -90,3 +90,15 @@ The current TUF specification (v1.0.36, last modified 2026-08-05) makes the boot
 **STEP 7 consequence:** adopting TUF-shaped metadata, signatures, thresholds, expiration or rotation can protect a later trust lifecycle only after Nexo has independently accepted its initial reference and verifier. Shipping a self-generated root inside the same candidate app/build would not satisfy that premise. Conversely, TUF's out-of-band bootstrap assumption does not prescribe which reference Kevin should recognize or which deployment boundary Nexo should protect; those remain explicit owner/deployment inputs, not facts a protocol can infer.
 
 This is a primary-source clarification of the existing bootstrap conclusion, not a new mechanism or implementation. No code, root, key, Constitution, device, or runtime state was changed.
+
+
+### Additional primary-source cross-check — in-toto and ITE-2 bootstrap assumptions (2026-10-12)
+
+A focused review of the in-toto specification and ITE-2 clarifies the boundary between supply-chain verification and constitutional legitimacy:
+
+- **in-toto** verifies a software supply chain against a project-owner-defined layout and previously acquired project-owner public key(s). The spec describes signatures as checked using keys acquired beforehand; therefore it relies on an existing trust decision about the owner key and layout. It also explicitly assumes project owners and functionaries are not acting maliciously in its defender threat model. That is a reasonable supply-chain assumption for some deployments, but cannot itself settle Nexo's question of who may establish or amend the Constitution. Source: https://github.com/in-toto/specification/blob/master/in-toto-spec.md (sections 1.5.2 and 5.2).
+- **ITE-2** describes using TUF to distribute the root layout, supply-chain metadata and verification keys in a compromise-resilient way. Its own explanation calls offline bootstrap of trust with TUF the basis for meaningful in-toto security guarantees. It also discusses offline key handling and rotation ceremonies as deployment concerns, not an automatic proof of who has legitimate constitutional authority. Source: https://github.com/in-toto/ITE/blob/master/ITE/2/README.adoc.
+
+**STEP 7 consequence:** TUF + in-toto could later help prove that a selected Nexo artifact followed a defined build/release process and that its metadata/keys have not been silently substituted, provided the bootstrap keys and expected layout are already recognized. They do not by themselves prove Kevin's approval of exact constitutional content/scope, create a Core-owned active-Constitution state, or demonstrate complete mediation at a final protected boundary. The in-toto project-owner assumption must not be silently reused as Nexo's constitutional governance rule.
+
+This closes a research comparison, not STEP 7 itself. No trust root, key, approval, Constitution, deployment target, code, or runtime state was created or changed.
