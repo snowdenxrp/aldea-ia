@@ -66,3 +66,9 @@ Ask Kevin one focused availability question only after this comparison: does he 
 
 ## Disposition
 No reference option is selected. No keys, hashes, signatures, Constitution artifacts, tests, workflows, device state, or APKs are changed by this document. STEP 7 investigation/construction remains ACTIVE; protected constitutional commissioning remains OPEN / STOP / UNKNOWN.
+
+## Owner workflow preference — PDF now, print later (2026-10-12)
+
+Kevin prefers not to delay STEP 7 while waiting for a printer. The intended workflow is to prepare the exact Constitution PDF only after its content/scope is frozen, keep a copy on another device or medium under his control if one is available, and print it later. This is a scheduling preference, not evidence that the second medium is independent or that the Constitution has already been approved.
+
+Do not generate a purported final Constitution, digest, key, challenge, or approval record before the actual content and commissioning scope are frozen and explicitly recognized by Kevin. If the PDF is created and verified only within the same unverified phone/client path, it is a useful draft/reference copy but not an independent Genesis root. Printing later may provide a separate human-readable reference; it does not prove verifier provenance, active-state ownership, currentness/revocation, or final effect enforcement. Continue bounded source review and synthetic adversarial work in parallel; protected commissioning remains UNKNOWN/STOP.
