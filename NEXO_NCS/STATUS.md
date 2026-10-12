@@ -2205,3 +2205,10 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Confirmed static GitHub Pages deployment for `main` commit `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`; this does not execute Cloudflare Pages Functions or deploy NCS branch.
 - Source-level conditional risk: if `functions/api/capture.js` is deployed with write-capable `GITHUB_TOKEN`, its POST endpoint has no caller auth/rate limit and can write four repo objects/commits per accepted PNG request. Cloudflare deployment, reachability, secret configuration and abuse are UNKNOWN; no claim of live exploitation.
 - The endpoint is a Lúmina audit writer, not Nexo authority or protected effect enforcement. No code/tests/deployments/device/authority changes. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+### STEP 7 — Static Pages capture-route mismatch (2026-10-12)
+- Confirmed from `main` source: `index.html` blob `97fa1954d0838d09f4a286ea189c2661207f5aa2` hardcodes `window.__LUMINA_CAPTURE_ENDPOINT="/api/capture"`; `src/main-stable.js` POSTs there and falls back to local PNG download on failure.
+- GitHub Pages workflow builds/deploys a static Jekyll artifact; it does not deploy `functions/api/capture.js`. Therefore direct GitHub Pages hosting without separate proxy/override lacks the server-side route; expected client behavior is fallback, but live HTTP response/URL not verified. Cloudflare or proxy deployment remains UNKNOWN.
+- Recorded in [Pages runtime boundary audit](BUILD/STEP_7_PAGES_RUNTIME_BOUNDARY_AND_PUBLIC_WRITER_AUDIT_2026-10-12.md), audit update commit `3ac2472ef507ae239587a146777ac3c334c881bb`.
+- No code or deployment changed. Nexo STEP 7 remains OPEN / STOP / UNKNOWN.
