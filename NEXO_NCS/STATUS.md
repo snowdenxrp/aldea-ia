@@ -2256,3 +2256,12 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - The new finding is a composition clarification, not a new mechanism: downstream typed/immutable objects cannot establish the legitimacy of their own producer. Correct hash, signature, state revision, recovery integrity, or a valid local conditional commit does not independently prove current constitutional authority or an external effect.
 - No contract contradiction found in this bounded review. The missing prerequisite remains a legitimate protected establishment path plus concrete deployment/sink binding; no extra registry, duplicate epoch, second authority check, callback, or synthetic production caller is justified.
 - No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. Genesis/recognition channel UNKNOWN, Constitution not frozen, canonical authority owner not established, actual sink/bypass closure UNKNOWN. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Lúmina capture external-write boundary review — 2026-10-12
+
+- Added [STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md](BUILD/STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md), commit `a256bfb98244525e35a03a32d63c89bfd6caec81`.
+- Read-only source review pinned `functions/api/capture.js` (`83afd34b8d32840dd8944cb35b406076f2b9fd5c`), docs, frontend and simulation workflow. If deployed and reachable with a write-capable `GITHUB_TOKEN`, the unauthenticated POST route appears able to create repository commits from accepted PNGs and caller-supplied JSON metadata. This is a CONDITIONAL source-level finding, not a confirmed live exposure or incident.
+- Public route reachability, Cloudflare project linkage, deployed commit, and secret configuration were not established. GitHub Pages static deployment does not execute Cloudflare Pages Functions; those require a Cloudflare Pages deployment configured for Functions.
+- This Lúmina route is a separate external-write surface, not proof of a Nexo production sink. Do not wire it into Nexo authority/runtime. If a write-capable deployment is intended, keep it disabled until caller authentication/authorization, request controls, storage isolation, and non-production adversarial tests are designed and evidenced.
+- No code/workflow/secrets/keys/Constitution/APK/device/deployment/runtime state changed; no tests or live attack/write tests ran. STEP 7 remains OPEN / STOP / UNKNOWN.
