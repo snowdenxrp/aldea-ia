@@ -449,3 +449,12 @@ Commit: `fd17169db7d01167302db92d8f2934a0b00ff3da`.
 The current repository flows inspected do not compose the generic Nexo execution primitive into a demonstrated production protected owner: `assistants.mjs` plans/persists; `simulate.mjs` advances local simulation and persists; the Lúmina adapter mutates its supplied simulation. No external effect sink was identified. Do not wire a caller solely to fill the gap. Next, if a concrete deployed target/sink is found in repository or deployment records, trace its entrypoints and final enforcement; otherwise preserve the bounded conclusion that the inspected repo evidences prototype/simulation paths only, without inferring no external deployment exists.
 
 No source/runtime/device/key/Constitution changes and no tests in this pass. Status remains OPEN / STOP / UNKNOWN.
+
+
+## 9.17 — Lúmina scope separation and mutation-footprint decision (2026-10-12)
+
+Added [STEP_7_LUMINA_SCOPE_SEPARATION_AND_MUTATION_FOOTPRINT_DECISION_2026-10-12.md](STEP_7_LUMINA_SCOPE_SEPARATION_AND_MUTATION_FOOTPRINT_DECISION_2026-10-12.md), commit `f94b958204e97f2bd1ed249796ba35baee09082d`.
+
+Decision: treat current Lúmina as a local experimental simulation, not a production Nexo effect sink. Do not wire the runtime into tick/performDecision/assistants/simulate merely to fill the call-site gap. If Lúmina is ever brought into protected scope, a gate only inside executeAction is insufficient: performDecision has direct mutation branches outside it, while tick/advanceWorldDay/advanceSocietyDay are broad shared writers. First define canonical state/effect ownership and scope, then enumerate all entrypoints/dependencies/writers. External deployment remains UNKNOWN; this is not evidence that none exists.
+
+No implementation or tests in this pass; STEP 7 remains OPEN / STOP / UNKNOWN.
