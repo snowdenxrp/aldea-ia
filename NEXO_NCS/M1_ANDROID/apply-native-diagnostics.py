@@ -168,13 +168,21 @@ replace_once(CPP, chat_format_old, chat_format_new)
 # again on every incremental user suffix corrupts multi-turn context.
 system_tokenize_old = """    const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
                                                has_chat_template, has_chat_template);"""
-system_tokenize_new = """    const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
-                                               !has_chat_template, has_chat_template);"""
+system_tokenize_new = """    if (chat_format_error) {
+        LOGe("%s: Refusing inconsistent system chat template", __func__);
+        return 3;
+    }
+    const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
+                                               !has_chat_template, has_chat_template);"
 replace_once(CPP, system_tokenize_old, system_tokenize_new)
 
 user_tokenize_old = """    auto user_tokens = common_tokenize(g_context, formatted_user_prompt, has_chat_template, has_chat_template);"""
-user_tokenize_new = """    auto user_tokens = common_tokenize(g_context, formatted_user_prompt,
-                                       !has_chat_template, has_chat_template);"""
+user_tokenize_new = """    if (chat_format_error) {
+        LOGe("%s: Refusing inconsistent user chat template", __func__);
+        return 3;
+    }
+    auto user_tokens = common_tokenize(g_context, formatted_user_prompt,
+                                       !has_chat_template, has_chat_template);"
 replace_once(CPP, user_tokenize_old, user_tokenize_new)
 
 limit_old = """    const int user_prompt_size = (int) user_tokens.size();
@@ -222,6 +230,10 @@ checks = [
     (KOTLIN, "Native model load failed"),
     (CPP, "inputs.enable_thinking = false"),
     (CPP, "inputs.use_jinja = true"),
+    (CPP, "formatted_all.compare(0, formatted_past.size(), formatted_past) != 0"),
+    (CPP, "chat_format_error = true;"),
+    (CPP, "const int decoded_user_prompt_size = (int) user_tokens.size();"),
+    (CPP, "stop_generation_position = current_position + std::max(0, (int) n_predict);"),
 ]
 for path, needle in checks:
     if needle not in path.read_text(encoding="utf-8"):
