@@ -2273,3 +2273,8 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - The reviewed source defines a server route that can write uploaded audit files to the repository when deployed with its configured server token. Its public deployment and token configuration remain UNKNOWN, so this is a conditional source finding, not a confirmed live exposure.
 - GitHub Pages static hosting does not execute Cloudflare Pages Functions; a separate configured Cloudflare deployment would be required. This Lúmina route is not evidence of a Nexo production sink and must not be wired into Nexo authority/runtime.
 - No code, workflows, secrets, keys, Constitution, APK, device or deployment changed; no tests or live requests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+## 2026-10-12 continuation — Lúmina capture consistency
+- Additional source-only finding recorded in `NEXO_NCS/BUILD/STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md`: multipart parsing precedes the PNG size check; metadata is not explicitly bounded/schema-validated; capture IDs have one-second resolution; four sequential GitHub writes are not atomic and can interleave under concurrent captures.
+- Conditional impact: request/resource abuse, same-second history overwrite, partial capture records, or `latest.png` / `latest.json` mismatch if the function is deployed and reachable with a write-capable token.
+- No live deployment/exposure/exploitation is established. No code, tests, token, workflow, deployment or runtime changed. Nexo STEP 7 remains OPEN / STOP / UNKNOWN.
