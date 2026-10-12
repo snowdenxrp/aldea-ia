@@ -2192,3 +2192,9 @@ Read-only reconciliation recorded in [STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDEN
 - No reviewed evidence identifies an external effect sink joined to Genesis/current Constitution authority/final enforcement. This is bounded to inspected evidence; external deployments remain UNKNOWN, not disproven.
 
 No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+### STEP 7 deployment follow-up — confirmed static GitHub Pages deploy (2026-10-12)
+- Fresh GitHub Actions run `38297516329` succeeded for `pages build and deployment` on `main` head `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`; deploy job `114972395717` succeeded. Artifact `11768759460`, SHA-256 `5d16f3276a25b1746734e11f3ca141fc16933a76744ab6440526d6686013e869`. Evidence added to [deployment reconciliation](BUILD/STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md), commit `4b7f2cf7bfc6bf80614a003a6a76e7bcd82023eb`.
+- This is a static GitHub Pages site deployment for `main`, not deployment of the NCS branch (branch HEAD `5224c095ccea31245d50e8e254d07a4f3ca5d55a`) and not evidence of a protected Nexo effect runtime. Cloudflare Pages Function deployment remains UNKNOWN.
+- STEP 7 remains OPEN / STOP / UNKNOWN; no code/test/device/authority changes.
