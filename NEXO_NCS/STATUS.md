@@ -2155,3 +2155,16 @@ Status: OPEN / STOP / UNKNOWN. This section supersedes no closed STEP 3–6 veri
 - No tests were run in this read-only evidence pass. No code, workflow, signing key, Constitution, APK, device, or runtime state was changed by this pass.
 
 Decision: M1's successful build is prototype/build evidence only; it cannot close STEP 7 Genesis or final-effect enforcement. Continue commissioning STOP/UNKNOWN until the concrete deployable target, authority owner, and sink enforcement path are evidenced.
+
+
+## STEP 7 — Mission lifecycle / mutation-entrypoint trace — 2026-10-12
+
+Read-only source trace recorded in [STEP_7_MISSION_LIFECYCLE_AND_MUTATION_ENTRYPOINT_TRACE_2026-10-12.md](BUILD/STEP_7_MISSION_LIFECYCLE_AND_MUTATION_ENTRYPOINT_TRACE_2026-10-12.md), commit `fd17169db7d01167302db92d8f2934a0b00ff3da`.
+
+- `scripts/assistants.mjs` plans and persists missions but does not invoke `executeNexoStep()` / `executeLuminaNexoStep()`.
+- `scripts/simulate.mjs` advances and persists local simulation state but does not invoke those Nexo execution functions.
+- The Lúmina simulation adapter mutates the supplied in-memory simulation; its local revision is not an external authority fence.
+- A generic injected-handler execution primitive exists, but no production composition from Genesis/current Constitution authority through final sink was demonstrated.
+- Do not invent a caller/executor to close the call-site gap. First identify a concrete deployed target/sink, if one exists outside the inspected repository evidence, and then trace all entrypoints and enforcement at that sink.
+
+No code or tests changed or ran in this pass. Commissioning remains OPEN / STOP / UNKNOWN.
