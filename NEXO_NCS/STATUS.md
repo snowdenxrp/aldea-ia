@@ -1912,3 +1912,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - The branch tip remains `522ad79d8f63d480f4ebdcdc646fc2200a03bc83`; the inspected run history does not provide a newer source/deployment artifact that changes the existing Step 7 conclusion. This is bounded evidence from the returned branch-scoped Actions history, not proof that no external or historical deployment exists.
 - No workflow was triggered, no artifact was downloaded, and no build/device action was performed. No duplicate inventory was created.
 - **Disposition:** no genuinely new deployment evidence found. Repository-only work remains at the documented construction gap; do not invent a production entrypoint, connect the protected Core to simulation, or implement a speculative wrapper. Resume only if a concrete deployment/source artifact is supplied or discovered. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+### STEP 7 — Release and open-PR evidence cross-check (2026-10-12)
+
+- Read the repository's GitHub Releases collection: it returned an empty list. This means no published GitHub Release was available there as a new constitutional commissioning artifact.
+- Reviewed open pull requests. The only currently open PR relevant to the recent Nexo app work is #98, an isolated M1 chat-context/generation-limit fix; its stated scope is M1 tokenization/generation behavior and build/source assertions, not Genesis verification, initial-Constitution ownership, protected-Core production composition, or final effect enforcement. It is not Step 7 closure evidence and must not be merged or installed as a substitute for that evidence.
+- The GitHub connector did not allow the repository deployments API endpoint, so deployment records remain **UNKNOWN / not checked**; do not interpret that limitation as proof that no deployment exists. The Actions run-history scan above remains bounded to returned branch-scoped runs.
+- No PR, release, workflow, source, build, APK, or device state was changed. No artifacts were downloaded.
+- **Disposition:** this cross-check found no new artifact that changes the Step 7 conclusion. Do not repeat source sweeps or repurpose M1 work. Continue only on genuinely new deployment evidence or a separately reviewed scope decision. **STEP 7 remains OPEN / STOP / UNKNOWN for protected constitutional commissioning.**
