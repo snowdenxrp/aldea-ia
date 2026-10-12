@@ -2247,3 +2247,12 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Each gate remains UNKNOWN; the matrix specifies evidence required and expected STOP/UNKNOWN behavior. It is a test plan, not test evidence.
 - Research cross-check: RFC 9334 separates Attester, Verifier and Relying Party; TUF 1.0.36 secures update continuity within an already trusted root model and does not select the first root; NIST authentication-intent guidance requires user intervention but does not alone establish trusted display/content binding. Sources: https://www.rfc-editor.org/rfc/rfc9334.html ; https://theupdateframework.github.io/specification/v1.0.36/ ; https://csrc.nist.gov/glossary/term/authentication_intent
 - No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Core authority-source composition gate — 2026-10-12
+
+- Added [STEP_7_CORE_AUTHORITY_SOURCE_COMPOSITION_GATE_2026-10-12.md](BUILD/STEP_7_CORE_AUTHORITY_SOURCE_COMPOSITION_GATE_2026-10-12.md), commit `fd1c5115200098dcc4f163f8e866e7358b8b124b`.
+- Cross-checked the existing Genesis Trust Foundation, Constitution Authority Context gate, Constitution-to-Policy binding, Core Policy Source contract/attack, role map, and current Core source. The contracts compose coherently as a semantic order: Genesis basis → current Constitution authority context → governed Constitution-to-Policy binding → exact policy source/applicability → separate admission and final sink enforcement.
+- The new finding is a composition clarification, not a new mechanism: downstream typed/immutable objects cannot establish the legitimacy of their own producer. Correct hash, signature, state revision, recovery integrity, or a valid local conditional commit does not independently prove current constitutional authority or an external effect.
+- No contract contradiction found in this bounded review. The missing prerequisite remains a legitimate protected establishment path plus concrete deployment/sink binding; no extra registry, duplicate epoch, second authority check, callback, or synthetic production caller is justified.
+- No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. Genesis/recognition channel UNKNOWN, Constitution not frozen, canonical authority owner not established, actual sink/bypass closure UNKNOWN. STEP 7 remains OPEN / STOP / UNKNOWN.
