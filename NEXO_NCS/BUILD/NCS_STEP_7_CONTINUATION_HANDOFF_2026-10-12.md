@@ -554,3 +554,8 @@ This is a contract refinement, not a selected deployment design or implementatio
 - New source-only findings: the multipart form is parsed before the PNG size check; metadata has no explicit size/schema bound; capture IDs have one-second resolution; and the four sequential GitHub writes are not atomic, allowing partial records or a `latest.png` / `latest.json` mismatch under failures/concurrency.
 - These findings are conditional on the function being deployed and reachable with a write-capable token. Public reachability, token configuration, exploitation and actual impact remain UNKNOWN.
 - Record updated in `NEXO_NCS/BUILD/STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md`. No code, workflow, secret, deployment or runtime changed; no tests/live requests ran. Keep Lúmina separate from Nexo protected authority. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+### 9.27 — user-requested removal of visual capture (2026-10-12)
+- Removed the capture UI/client upload block from `src/main-stable.js`; removed the endpoint declaration from `index.html`; replaced `functions/api/capture.js` with an all-method HTTP 410 rejection that does not parse request bodies or call GitHub; replaced `docs/visual-audit-github.md` with a disabled-state notice.
+- Scope: source commits on `ncs-clean-architecture` only. No deployment triggered or verified; external Cloudflare settings and any existing `GITHUB_TOKEN` remain UNKNOWN. Code changes do not revoke secrets or update a separate deployment. Existing audit history was not deleted. No live requests/tests ran.
+- Do not reactivate without separate security review and explicit approval.
