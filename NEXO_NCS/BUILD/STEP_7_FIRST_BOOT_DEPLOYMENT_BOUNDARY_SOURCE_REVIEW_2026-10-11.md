@@ -63,3 +63,15 @@ A follow-up search on the repository's indexed source was run for `effectBoundar
 - `activeConstitution currentConstitution` and `constitutionRef policyContext`: no indexed matches returned.
 
 Search-index absence is not a mathematical proof that no string or dynamic call exists anywhere; it is corroborating repository evidence consistent with the direct source review. It does not establish an actual deployment consumer or bypass-closed activation path. The result therefore reinforces the bounded conclusion: no evidenced final constitutional activation/effect boundary is currently available to map or test. Do not implement a new one until the trust basis and real deployment integration point are grounded.
+
+
+## Follow-up deployment-consumer search — 2026-10-11
+
+A focused indexed-source search for `executeProtectedTransition` returned the function definition in `src/nexo/core/protected-transition.mjs`, its references in `tests/nexo/protected-transition.test.mjs` and `tests/nexo/conditional-commit-persist-state.test.mjs`, plus a design document. It did not return a production call site or a runtime/bootstrap composition that supplies production ports.
+
+Bounded interpretation:
+- The generic transition function exists and has test coverage, but the indexed evidence does not show it wired into a production/deployable first-boot path.
+- The tests inject an `authorityGate.check` result (including mocked AUTHORIZED results); that proves the generic control-flow contract under supplied ports, not that a Genesis verifier exists or is used in deployment.
+- This indexed search is not proof that no dynamic or unindexed call site exists. It is sufficient to say a production activation integration point is **not evidenced by the available source search**.
+
+This sharpens the next gate: before designing an initial-Constitution store or changing the transition function, locate an actual production entrypoint/runtime composition and establish its complete callers and effect routes. If there is no production composition yet, record that as the current construction gap rather than manufacturing one just to connect the abstractions. Keep OPEN / STOP / UNKNOWN; no protected activation or device action.
