@@ -69,3 +69,38 @@ Each test needs a named claim, reproducible input/artifact, expected STOP/UNKNOW
 ## 8. Disposition
 
 Use this document to review a concrete reference choice; do not implement from this candidate alone. Step 7 remains **OPEN / STOP / UNKNOWN** for protected constitutional commissioning. No source code, tests, workflows, keys, Constitution, APK, or device state changed.
+
+
+## 9. Independent research delta — trusted presentation and exact-intent binding (2026-10-12)
+
+This review adds a missing threat distinction to the candidate protocol: an independently recognized reference does not by itself prove that the candidate commissioning client presents the same complete Constitution and scope to the owner before approval.
+
+### Primary-source cross-check
+
+- NIST's trusted-path definition requires a path through which the user communicates directly with system security functions, activated by the user or security functions and not imitable by untrusted software: https://csrc.nist.gov/glossary/term/trusted_path .
+- IETF Internet-Draft `draft-jiang-intent-security-03` (informational work in progress, not an IETF standard) analyzes multi-hop intent drift, directive tampering, boundary expansion, and missing checks; it recommends verifiable binding across intent, derived directives, authorization boundaries, and execution/invocation checks: https://datatracker.ietf.org/doc/draft-jiang-intent-security/ .
+- NIST's authentication-intent guidance distinguishes a user's explicit intervention from an endpoint or application merely claiming that the user approved: https://csrc.nist.gov/glossary/term/authentication_intent .
+
+### Consequence for STEP 7
+
+Owner approval cannot be accepted solely because a signature, click, key event, or matching digest exists. Before the human comparison protocol could support an approval claim, evidence must bind all of the following to the same frozen commissioning instance:
+
+1. Exact Constitution bytes and the complete readable rendering actually presented to Kevin, including revision and scope.
+2. The recognized independent reference and the comparison result.
+3. The specific approval act and a fresh, single-use commissioning context.
+4. Any derived authorization/Authority Context and the precise operation or transition it permits.
+5. The final protected boundary that rechecks this binding against current authority and rejects replay, stale state, substituted scope, omitted checks, and bypass paths.
+
+If the UI/display/input path cannot be shown trustworthy for the threat model, the system cannot claim that the owner reviewed the exact content merely because the bytes were hashed or signed. Treat the presentation/approval link as UNKNOWN/HOLD; do not compensate by adding another signature or wrapper that trusts the same client.
+
+This does **not** require a second device by default and does not select a hardware trusted UI. The suitable mechanism depends on the actual target and threat model, which remain unselected. The NIST definition is a security requirement concept, not evidence that Android or the current Nexo client implements such a path. The IETF draft is work in progress and is used as threat-analysis material only.
+
+### New review gate (candidate; not implementation authorization)
+
+- PRESENTATION_BINDING: prove that displayed bytes/rendering/revision/scope are the approved artifact; otherwise UNKNOWN.
+- APPROVAL_BINDING: prove explicit owner intent is bound to that exact artifact, scope, and fresh context; otherwise UNKNOWN.
+- DERIVATION_BINDING: prove any downstream authority/derived directives preserve the same scope without expansion; otherwise STOP/UNKNOWN.
+- EXECUTION_BINDING: prove the final effect boundary checks current authority and the exact operation, not just a prior UI approval; otherwise STOP.
+- PATH_INDEPENDENCE: establish that the owner-recognized reference and presentation/approval mechanism are not circularly trusted through the same unverified client or recovery path; otherwise UNKNOWN.
+
+**Disposition unchanged:** this is a design/research delta only. No root, key, Constitution, code, test, APK, or runtime authority changed. Genesis trust remains UNKNOWN; active Constitution Authority Context and final protected boundary remain NOT ESTABLISHED; commissioning remains STOP.
