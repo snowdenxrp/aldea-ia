@@ -102,3 +102,12 @@ These sources corroborate the existing design; they do not resolve the missing o
 
 ### Continuation principle
 Research should converge toward a concrete root and protected boundary, not accumulate papers. Every pass should either (a) produce new primary-source/source/runtime evidence, (b) eliminate a candidate with a documented reason, (c) narrow a specific unknown, or (d) identify the exact owner input that cannot be derived technically. If a pass does none of these, do not create another document for it.
+
+
+### Follow-up source pass after handoff write (2026-10-12)
+A fresh bounded repository search/fetch was completed after saving the continuation record:
+- Search for executeProtectedTransition returned the Core definition, focused tests, and STEP 3C integration note; it did not surface a production application composition. This remains bounded search evidence, not proof that no external deployment exists.
+- package.json (blob a9bc2306543d34808f3b5f6ac1ec2d588f77ca14) defines simulate/assistants and a test script. The test script runs a long simulation/audit suite and ends with tests/nexo/protected-transition.test.mjs; it does not identify a Nexo production build, deploy target, or effect-serving entrypoint.
+- Re-fetched src/nexo/core/protected-transition.mjs (blob 00a4fa069f3ef0b843ecc5d280bb686f21be1bcd): after injected authorityGate.check and final semantic PASS, the function calls conditionalCommit.commit(candidate); no effectBoundary.prepare invocation appears in this function.
+- Re-fetched src/nexo/core/ownership.mjs (blob c7f9e2671e5735bd6cf85c86bf283bec58aeea7f): effectBoundary.prepare exists as a port and defaults to throwing NOT_IMPLEMENTED. The port's existence is not an enforcement proof.
+- Interpretation: this branch provides executable Core contract/test components and simulation-oriented scripts, but this pass still cannot name a deployed Nexo protected effect target. The next action remains targeted inspection of package/workflows/callers and artifact composition; if no such target exists in-repo, mark the target itself as missing and do not fabricate one.
