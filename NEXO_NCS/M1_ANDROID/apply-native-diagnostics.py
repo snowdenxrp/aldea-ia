@@ -121,17 +121,20 @@ chat_format_old = """static std::string chat_add_and_format(const std::string &r
     return formatted;
 }
 """
-chat_format_new = """static std::string chat_add_and_format(const std::string &role, const std::string &content) {
+chat_format_new = """static bool chat_format_error = false;
+
+static std::string chat_add_and_format(const std::string &role, const std::string &content) {
+    chat_format_error = false;
     common_chat_msg new_msg;
     new_msg.role = role;
     new_msg.content = content;
 
-    // Apply the model's embedded template and explicitly disable Qwen3 thinking.
+    // Render the complete conversation with the model's embedded template and
+    // explicitly disable Qwen3 thinking. Only append the not-yet-cached suffix.
     const auto * templates = g_chat_templates.get();
     common_chat_templates_inputs inputs;
     inputs.use_jinja = true;
     inputs.enable_thinking = false;
-    // Keep common_chat_templates opaque; input defaults leave BOS/EOS policy to the template.
 
     std::string formatted_past;
     if (!chat_msgs.empty()) {
@@ -140,14 +143,22 @@ chat_format_new = """static std::string chat_add_and_format(const std::string &r
         formatted_past = common_chat_templates_apply(templates, inputs).prompt;
     }
 
-    const bool preserve_newline = role == ROLE_USER && !formatted_past.empty() && formatted_past.back() == '\\n';
     inputs.messages.push_back(new_msg);
     inputs.add_generation_prompt = role == ROLE_USER;
     const auto formatted_all = common_chat_templates_apply(templates, inputs).prompt;
+
+    // A length-only substring can silently feed the wrong tokens to the KV cache.
+    if (formatted_all.size() < formatted_past.size() ||
+        formatted_all.compare(0, formatted_past.size(), formatted_past) != 0) {
+        LOGe("%s: Chat template history is not an exact prefix; refusing inconsistent context", __func__);
+        chat_format_error = true;
+        return {};
+    }
+
     const auto formatted = formatted_all.substr(formatted_past.size());
     chat_msgs.push_back(new_msg);
     LOGi("%s: Formatted and added %s message (thinking disabled)\\n", __func__, role.c_str());
-    return preserve_newline ? "\\n" + formatted : formatted;
+    return formatted;
 }
 """
 replace_once(CPP, chat_format_old, chat_format_new)
