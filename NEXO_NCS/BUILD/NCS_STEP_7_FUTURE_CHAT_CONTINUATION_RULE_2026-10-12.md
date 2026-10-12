@@ -124,3 +124,9 @@ That handoff preserves the three user-pasted responses, the additional recoverab
 Latest verified handoff write at the time this pointer was added:
 - Commit: `98d8472de23867f08c044514579dfd6cf0bcf38a`
 - Handoff blob SHA: `51678fa156f3a5db735cd0476f673b5f86429c73`
+
+
+Latest recovery-handoff verification after preserving the owner-authority/succession distinction:
+- Handoff commit: `db1869182bd580c09d9338825b8c69fa2b0ff20e`
+- Verified handoff blob SHA: `38111ac51098bc3bc148eda53b994f1a7b04d403`
+- The handoff was re-fetched after the write; the owner-authority decision and future-succession distinction were confirmed present.
