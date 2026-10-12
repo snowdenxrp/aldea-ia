@@ -458,3 +458,12 @@ Added [STEP_7_LUMINA_SCOPE_SEPARATION_AND_MUTATION_FOOTPRINT_DECISION_2026-10-12
 Decision: treat current Lúmina as a local experimental simulation, not a production Nexo effect sink. Do not wire the runtime into tick/performDecision/assistants/simulate merely to fill the call-site gap. If Lúmina is ever brought into protected scope, a gate only inside executeAction is insufficient: performDecision has direct mutation branches outside it, while tick/advanceWorldDay/advanceSocietyDay are broad shared writers. First define canonical state/effect ownership and scope, then enumerate all entrypoints/dependencies/writers. External deployment remains UNKNOWN; this is not evidence that none exists.
 
 No implementation or tests in this pass; STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## 9.18 — Build/publication/deployment evidence reconciliation (2026-10-12)
+
+Added [STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md](STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md), commit `578c5409122f1c8fb57e3cfbe107fcb1f42bb08f`.
+
+Concrete repository execution found: scheduled Lúmina simulation workflow writes simulation files and commits to main. Cloudflare Pages visual-audit Function source can write captures to GitHub if configured, but current deployment/reachability was not established; it is not an Nexo authority/effect gate. M1 is debug APK build evidence only. No reviewed evidence identifies a concrete external effect sink joined to Genesis/current Constitution/final enforcement; external deployment remains UNKNOWN rather than disproven.
+
+Next: request/inspect concrete deployment identity/receipt for any live service claimed to perform protected effects; trace exact deployed commit/build, target, configuration owner and final enforcement. No code/tests/device/authority changes in this pass. STEP 7 remains OPEN / STOP / UNKNOWN.
