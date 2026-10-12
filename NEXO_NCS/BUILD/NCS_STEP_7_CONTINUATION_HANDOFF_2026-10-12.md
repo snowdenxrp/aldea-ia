@@ -225,3 +225,12 @@ Next bounded action:
 ### 9.5 Recovery integrity note
 
 The exact deleted chat transcript is not present in the available conversation context, and GitHub stores architectural records/source findings rather than a guaranteed verbatim copy of that ChatGPT message. Therefore exact word-for-word recovery cannot be certified. The visible three pasted responses are preserved in Sections 2–3; the additional technical substance available from canonical STATUS/path-map and prior P112 evidence is consolidated above. Do not claim literal transcript recovery or that no words were lost; claim only that the recoverable technical findings and next actions are now recorded.
+
+
+### 9.6 Recovered owner-authority decision — preserve precisely
+
+The latest canonical STATUS contains this explicit decision: **Kevin remains the recorded sole initial human constitutional authority.** This is distinct from the still-unproven independent technical recognition path, Genesis bootstrap, canonical active-Constitution state, and final enforcement path.
+
+The saved personal-context summary also records the intended future-succession distinction: Kevin's daughter is a possible future successor, not a current co-authority or automatic successor. Any future succession must be explicitly governed and independently enforced; family relationship, age, possession of a device/key, certificate, timestamp, or recovery procedure cannot silently transfer constitutional authority. Do not treat future succession as active or resolved.
+
+This is an owner/governance decision, not technical proof that the present implementation enforces it. It must not be replaced by a generic external authority, OEM, platform root, model, verifier, or trust threshold.
