@@ -179,3 +179,16 @@ The newest dated `STATUS.md` entry supersedes prior next-action wording. The lat
 - The unresolved premise is a legitimate pre-existing recognition basis (or an explicitly accepted and adversarially bounded human-recognition ceremony), exact Constitution/context binding, and enforcement independent of uncommissioned Nexo self-assertion.
 - Do not invent a root or ask again whether POCO may be considered. If a concrete pre-existing credential/medium is later identified, evaluate it against the existing IR-1/threat model before selecting a mechanism.
 - For now, constitutional commissioning remains OPEN / STOP / UNKNOWN; continue only non-protected design work. No device commands, installs, credential enrollment, Android Stage A, APK/signing changes or commissioning. M1's generic-response issue remains deferred until this STEP 7 design point reaches a natural stopping point.
+
+
+## 2026-10-11 — Android Stage A capture received
+
+Kevin supplied the output of the read-only `getprop` inventory from Termux. Durable capture: `NEXO_NCS/PROOF/STEP_7_ANDROID_STAGE_A_USER_REPORTED_CAPTURE_2026-10-11.md` (commit `2a50caa1f0ff3c3db18d1ae5ddf45b3fb7ebb428`).
+
+Reported environment: Xiaomi / POCO, model `2412DPC0AG`, device `rodin`, Android 16 / SDK 36, security patch `2026-08-01`; properties report `verifiedbootstate=green`, `flash.locked=1`, `vbmeta.device_state=locked`, `veritymode=enforcing`.
+
+Evidence class: user-pasted read-only terminal output. The capture records reported values, not independently authenticated platform measurements. No raw file hash, hardware-backed attestation, trusted attestation-chain validation, or independent verifier result was supplied. These values do not establish a constitutional trust root, exact-content approval, current revocation, or final protected-effect enforcement.
+
+The accidental initial command fragment does not invalidate the later individually executed commands and returned values. Working directory `~/downloads` is incidental.
+
+**Next gate:** continue concrete first-boot boundary mapping: identify the actual display, approval, verification, currentness/revocation, and last protected-effect components plus shared failure domains. If no justified verifier and final enforcement boundary can be identified, retain STEP 7 OPEN / STOP / UNKNOWN. This capture does not authorize commissioning or a root implementation.
