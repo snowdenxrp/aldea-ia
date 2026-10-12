@@ -1814,3 +1814,18 @@ This section supersedes earlier STEP 7 next-action wording above where it confli
 - Do not create a new Constitution store/registry/resolver/wrapper, key/hash/signature ceremony, UI approval label, or adapter merely to make the architecture appear connected. No implementation is justified until the legitimate recognition basis and actual production entrypoint are grounded.
 - Next exact action: locate whether NCS has a real production entrypoint/runtime composition and enumerate its callers and effect routes. If none exists, record that as the construction gap; then reconcile with MASTER + frozen AB + P/P112 without reopening closed phone/root-family or AB/TLC/Kafka work.
 - M1 remains deferred. No new APK, install, signing change, device modification, or protected activation.
+
+
+### STEP 7 source clarification — legacy runtime exists, constitutional composition remains UNKNOWN (2026-10-11)
+
+The latest source pass qualifies the prior “no production call site” wording; do not interpret it as “Nexo has no runtime or execution code.”
+
+- `src/nexo/runtime.js` contains the older simulation-oriented `executeNexoStep` / `executeLuminaNexoStep` path and adapter execution/outcome recording.
+- `scripts/assistants.mjs` builds and persists a mission plan but does not call the newer `executeProtectedTransition` in the inspected flow.
+- `package.json` exposes simulation, assistant and test scripts; no dedicated first-boot constitutional commissioning entrypoint is evidenced there.
+- The newer `src/nexo/core/protected-transition.mjs` is a separate generic contract using injected ports. Search did not evidence a production composition connecting it to the legacy execution/effect path or a constitutional activation path.
+- Legacy simulation execution is real code, but is not evidence of a Genesis verifier, active-Constitution establishment, or bypass-closed constitutional enforcement. Conversely, the generic protected-transition contract is not enforcement until every in-scope protected effect route is shown to consume it.
+
+The updated bounded review is `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md`, commit `a86ce0f513783006e51afca087f8a6280bf36f40`.
+
+**Next exact action:** map the intended deployment target and all effect sinks/routes in scope, then establish whether and how the protected Core must mediate each route. Do not connect the paths merely to make the diagram complete. First-boot legitimacy, activation/currentness/revocation and final enforcement remain UNKNOWN; state remains OPEN / STOP / UNKNOWN. No device changes, installs, M1 switch, or protected activation.
