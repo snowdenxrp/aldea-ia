@@ -2278,3 +2278,8 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Additional source-only finding recorded in `NEXO_NCS/BUILD/STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md`: multipart parsing precedes the PNG size check; metadata is not explicitly bounded/schema-validated; capture IDs have one-second resolution; four sequential GitHub writes are not atomic and can interleave under concurrent captures.
 - Conditional impact: request/resource abuse, same-second history overwrite, partial capture records, or `latest.png` / `latest.json` mismatch if the function is deployed and reachable with a write-capable token.
 - No live deployment/exposure/exploitation is established. No code, tests, token, workflow, deployment or runtime changed. Nexo STEP 7 remains OPEN / STOP / UNKNOWN.
+
+## 2026-10-12 — visual capture disabled
+- At user request, removed the capture button/client upload block from `src/main-stable.js`, removed `window.__LUMINA_CAPTURE_ENDPOINT` from `index.html`, replaced `functions/api/capture.js` with an HTTP 410 rejection that does not parse request bodies or call GitHub, and replaced the setup guide with a disabled-state notice.
+- Source changes are on `ncs-clean-architecture` only. No production deployment was triggered or verified. Cloudflare project settings and any previously configured `GITHUB_TOKEN` remain UNKNOWN; source changes do not revoke an existing secret or update an independently hosted deployment.
+- No existing audit files deleted. No runtime tests or live endpoint requests performed. Keep visual capture disabled until a separate reviewed design and explicit approval.
