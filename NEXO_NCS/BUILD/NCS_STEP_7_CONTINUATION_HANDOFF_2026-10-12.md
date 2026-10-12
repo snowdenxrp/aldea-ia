@@ -400,3 +400,25 @@ This provides a more precise distinction:
 Safe conclusion: keep the existing adapter for its narrow state-persistence role; do not relabel its tests as Genesis or authority-currentness proof. The missing architectural contract is atomic linkage between the canonical current-authority generation and the actual protected admission/commit. If the eventual external sink cannot participate in such a check/fence, Nexo must not claim revocation-enforced effects at that sink; use bounded/non-effectful behavior or remain STOP according to the Constitution.
 
 No tests were run in this review. This was source and test-source inspection only. No production code or settings changed. Commissioning remains UNKNOWN / STOP.
+
+
+## 9.14 — Final effect admission / revocation linearization contract (2026-10-12)
+
+New focused research document:
+- `NEXO_NCS/BUILD/STEP_7_FINAL_EFFECT_ADMISSION_REVOCATION_LINEARIZATION_CONTRACT_2026-10-12.md`
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_FINAL_EFFECT_ADMISSION_REVOCATION_LINEARIZATION_CONTRACT_2026-10-12.md
+- Verified blob SHA: `57db9e4167553c37a965ad5a89c5351b65d08bdd`
+- Created in commit: `ac995345c441ed4db3cc69154891c20bfc018094`.
+
+New conclusion, not a commissioning pass:
+- The missing semantic property is **sink-level linearizable final effect admission ordered against active-Constitution replacement/revocation**.
+- A second pre-commit `authorityGate.check()`, a caller-supplied epoch, or a ceremonial `effectBoundary.prepare()` call does not close the race.
+- If revocation linearizes before sink admission, the sink must reject the stale generation. If admission linearizes first, later revocation cannot truthfully assert the effect never happened; it must block later admissions and reconcile any in-flight effect. If order cannot be established, outcome is `UNKNOWN`.
+- The inspected `scripts/simulate.mjs` lock/revision/temp-write/rename path is local simulation persistence, not demonstrated as canonical Constitution owner or actual external sink.
+- Required before implementation: (1) independently established Genesis basis and threat assumptions, (2) canonical Constitution/revocation owner and serialization rule, (3) identified deployment/sinks/all routes, (4) sink-enforced atomic admission/fencing and recovery semantics.
+- External sinks that cannot enforce current fencing cannot be advertised as revocation-enforced. Keep those effects bounded/non-effectful or STOP.
+- The document lists 12 adversarial obligations; none were executed in this pass.
+- No production code, tests, workflows, keys, Constitution, APK, or runtime state changed. No tests ran.
+- Commissioning remains OPEN / STOP / UNKNOWN.
+
+Continue from this contract without reopening old AB/TLC/Kafka work. Next non-duplicative task: inspect the actual deployment/sink evidence, if any exists in the repository or connected workflow records, and distinguish it from simulation/test fixtures. Do not infer that a production sink exists from the generic Core port.
