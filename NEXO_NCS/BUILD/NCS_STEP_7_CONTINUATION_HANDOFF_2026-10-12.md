@@ -337,3 +337,22 @@ Commit: bd54aaeb764a1bfb5664327afe72b0600a77d55c
 URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_OFF_DEVICE_ATTESTATION_AND_FULL_CONTENT_CONFIRMATION_CONSTRAINTS_2026-10-12.md
 
 This narrows the conditional path but does not solve bootstrap. Device support UNKNOWN; separate recognized verifier NOT IDENTIFIED; Genesis basis UNKNOWN; canonical state owner and final sink UNKNOWN; commissioning STOP. No production source/tests/workflow/APK/keys/Constitution artifact/phone state changed.
+
+### 9.11 Focused adversarial interpretation of existing protected-transition tests — 2026-10-12
+
+Re-inspected current branch source and test files:
+- `src/nexo/core/protected-transition.mjs` blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`.
+- `src/nexo/core/ownership.mjs` blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`.
+- `tests/nexo/protected-transition.test.mjs` blob `b40caf831523c231a45959885d4890f245a43d76`.
+
+Precise finding: the existing test suite contains a useful fail-closed probe when the authority gate is absent; the default `NOT_IMPLEMENTED` error occurs before state isolation, execution, validation or commit. However, the normal-path test explicitly injects `authorityGate.check: () => createAuthorityResult(AUTHORITY.AUTHORIZED)`. The generic transition trusts that injected dependency result; it does not authenticate the producer or establish freshness/current constitutional authority. This is valid component testing, not Genesis or commissioning evidence.
+
+The transition also does not call `effectBoundary.prepare`; adding a call without a real target, canonical state owner and linearization point would not establish complete mediation. The existing conditional-commit fixture is not proof of a production Constitution owner or external protected sink.
+
+Updated path map:
+`NEXO_NCS/BUILD/STEP_7_GENESIS_TO_CORE_TRUST_PATH_MAP_AND_EVIDENCE_GATE_2026-10-12.md`
+Commit: `b0c6af7171b5a2380ba7209a92829bd77ee26cb9`
+Blob: `290ae6c0402993978b543564f263c8be7e634a18`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_GENESIS_TO_CORE_TRUST_PATH_MAP_AND_EVIDENCE_GATE_2026-10-12.md
+
+No tests were executed in this review. No production source/tests/workflows/settings/keys/Constitution/APK/device state changed. The gate remains UNKNOWN/STOP.
