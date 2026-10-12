@@ -2239,3 +2239,11 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - Owner intent, verifier provenance, constitutional ordering/currentness, and final effect admission remain separate. Recovery cannot self-authorize; bounded-safety mode cannot increase authority; conflicting successor histories require a pre-existing ordering rule and may require enforceable predecessor fencing.
 - If sink/revocation ordering or currentness is uncertain, result remains UNKNOWN/STOP; do not claim cancellation or global revocation enforcement without evidence.
 - No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. Genesis and canonical state owner remain UNKNOWN; actual sink/bypass closure remains UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Commissioning acceptance evidence matrix — 2026-10-12
+- New test-design record: [STEP_7_COMMISSIONING_ACCEPTANCE_TEST_MATRIX_2026-10-12.md](BUILD/STEP_7_COMMISSIONING_ACCEPTANCE_TEST_MATRIX_2026-10-12.md), commit 0025ce1083c83cddc1c7ba6327c4c42c4d5e1e51.
+- Defines 13 target-neutral gates spanning Genesis non-circularity, owner intent, presentation binding, verifier provenance, canonical current Constitution, final-sink race, predecessor cutoff, multi-sink revocation, hidden continuations, recovery non-amplification, external outcome, deployment identity and scope closure.
+- Each gate remains UNKNOWN; the matrix specifies evidence required and expected STOP/UNKNOWN behavior. It is a test plan, not test evidence.
+- Research cross-check: RFC 9334 separates Attester, Verifier and Relying Party; TUF 1.0.36 secures update continuity within an already trusted root model and does not select the first root; NIST authentication-intent guidance requires user intervention but does not alone establish trusted display/content binding. Sources: https://www.rfc-editor.org/rfc/rfc9334.html ; https://theupdateframework.github.io/specification/v1.0.36/ ; https://csrc.nist.gov/glossary/term/authentication_intent
+- No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. STEP 7 remains OPEN / STOP / UNKNOWN.
