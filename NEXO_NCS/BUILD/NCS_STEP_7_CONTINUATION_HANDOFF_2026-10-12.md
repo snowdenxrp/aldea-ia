@@ -486,3 +486,16 @@ GitHub Pages static deploy confirmed for `main` commit `7706f51470b7a34cbe5c27c4
 ## 9.21 — Static Pages capture-route mismatch (2026-10-12)
 
 Added evidence to [STEP 7 Pages runtime boundary audit](STEP_7_PAGES_RUNTIME_BOUNDARY_AND_PUBLIC_WRITER_AUDIT_2026-10-12.md), commit `3ac2472ef507ae239587a146777ac3c334c881bb`. `main/index.html` blob `97fa1954d0838d09f4a286ea189c2661207f5aa2` hardcodes `/api/capture`; `main/src/main-stable.js` POSTs there and downloads locally if the request fails. Successful GitHub Pages workflow deploys static Jekyll output, not the Cloudflare Function. If served directly with no proxy/override, the route is absent and capture falls back locally. Live HTTP response was not observed; Cloudflare/proxy deployment remains UNKNOWN. No code/deploy changed; STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+### 9.20 STEP 7 — final-effect admission adversarial review — 2026-10-12
+
+A focused adversarial review was added after re-reading the existing final-effect admission contract and reusing AB104.369/AB104.370 (no duplicate TOCTOU research):
+- New record: `NEXO_NCS/BUILD/STEP_7_FINAL_EFFECT_ADMISSION_ADVERSARIAL_REVIEW_2026-10-12.md`
+- Commit: `b0ed5927f4db3968efcbf2d877c17e854bb6f609`
+- Blob SHA after verification: `fa81b5770a64a934c0fada1d92c82edadd8d1818`
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_FINAL_EFFECT_ADMISSION_ADVERSARIAL_REVIEW_2026-10-12.md
+
+New adversarial cases: central revocation commits while sink fence propagation is delayed; one of multiple sinks is offline; a request is in flight at revocation; scope/policy changes without generation change; authority/sink recovery rolls back a generation; and a proposed gateway can be bypassed. The key refinement is a **per-sink effective revocation point**. Do not report global STOP as enforced until every in-scope sink has crossed its enforceable barrier or all remaining paths/capabilities are proven disabled. Unknown sink state remains UNKNOWN/STOP. Effects admitted before that point are not retroactively erased; reconcile in-flight outcomes honestly.
+
+This is a contract refinement, not a selected deployment design or implementation. The real target/sink topology, canonical active-Constitution owner, Genesis basis, and final enforcement path remain UNKNOWN/NOT ESTABLISHED. No tests were run and no code, workflow, key, Constitution, APK, device, deployment, or runtime state changed. STEP 7 remains OPEN / STOP / UNKNOWN.
