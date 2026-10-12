@@ -474,3 +474,10 @@ Next: request/inspect concrete deployment identity/receipt for any live service 
 Addendum in [deployment evidence reconciliation](STEP_7_BUILD_PUBLICATION_DEPLOYMENT_EVIDENCE_RECONCILIATION_2026-10-12.md), commit `4b7f2cf7bfc6bf80614a003a6a76e7bcd82023eb`.
 
 Confirmed GitHub Actions run `38297516329`: Jekyll build/upload and GitHub Pages deploy job `114972395717` succeeded for `main` commit `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`; artifact `11768759460`, SHA-256 `5d16f3276a25b1746734e11f3ca141fc16933a76744ab6440526d6686013e869`. NCS branch HEAD differs, so do not call this an NCS-branch deployment. This is static site publication, not evidence of a protected Nexo effect runtime. Cloudflare Pages Function deployment/reachability remains UNKNOWN; release list empty at inspection, but that does not exclude external artifacts/deployments. No code/test/device/authority changes. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## 9.20 — Pages runtime boundary and conditional public-writer risk (2026-10-12)
+
+Read-only audit added: [STEP_7_PAGES_RUNTIME_BOUNDARY_AND_PUBLIC_WRITER_AUDIT_2026-10-12.md](STEP_7_PAGES_RUNTIME_BOUNDARY_AND_PUBLIC_WRITER_AUDIT_2026-10-12.md), commit `ef7d3de795f8b13ffe20173d8cf3fda62262fe30`.
+
+GitHub Pages static deploy confirmed for `main` commit `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`; it does not execute Cloudflare Pages Functions. Source `functions/api/capture.js` has unauthenticated POST and four GitHub writes per accepted PNG if deployed/configured with `GITHUB_TOKEN`; this is a conditional code-level risk only. Cloudflare deployment/reachability/secret configuration and abuse remain UNKNOWN. Function is a Lúmina visual-audit writer, not Nexo AuthorityGate/final sink. Next: obtain Cloudflare deployment receipt/project ID/URL/commit/uses_functions and configuration presence without exposing token; continue separate Nexo sink/authority-owner identification. No code/test/deploy/device/authority changes; STEP 7 remains OPEN / STOP / UNKNOWN.
