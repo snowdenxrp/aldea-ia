@@ -2040,3 +2040,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - Do not add Android attestation/Play Integrity as mandatory dependencies, assume this phone supports hardware-backed attestation, or treat APK provenance as commissioning evidence without a concrete target requirement.
 - No implementation, device, key, Constitution, APK, policy, or protected state changed. STEP 7 investigation remains ACTIVE; protected commissioning remains OPEN / STOP / UNKNOWN.
 - Next work remains targeted: seek a real owner-recognized reference without assuming one exists, and only name a target deployment when its actual protected activation boundary can be traced. No new wrapper/store or M1 rebuild is justified by this research.
+
+
+### STEP 7 — TUF + in-toto bootstrap assumption cross-check (2026-10-12)
+
+- Reviewed the official TUF v1.0.36 non-goals and workflow, plus the in-toto v1.0.0 specification and ITE-2. TUF explicitly does not bootstrap security for arbitrary manual software installation; its client assumes a trusted root was delivered out-of-band. ITE-2 uses TUF to distribute in-toto layouts/keys robustly, but this protects continuity only after that initial trust has been established. Sources: https://theupdateframework.github.io/specification/v1.0.36/ ; https://github.com/in-toto/specification/blob/master/in-toto-spec.md ; https://github.com/in-toto/ITE/blob/master/ITE/2/README.adoc.
+- Additional limitation: in-toto verifies a project-owner-defined supply-chain layout under previously acquired owner keys and its stated threat model assumes project owners/functionaries are not malicious. It cannot be silently treated as a definition of Nexo's constitutional governance or proof that a Constitution revision was approved by Kevin.
+- Saved the detailed cross-check in the existing research file NEXO_NCS/RESEARCH/STEP_7_DEEP_TRUST_RATS_RECOVERY_CONSOLIDATION_2026-10-08.md, verified blob SHA 55e2e10402f5b42359b1447a93ae1dc742bec1d1, commit b570512e35ab8ebf4689becbb6b39632f96c283c.
+- Consequence: TUF/in-toto may later support artifact provenance, distribution, and key lifecycle after a recognized bootstrap; neither establishes initial owner recognition, Core-owned active-Constitution state, or final-boundary bypass closure. No code or trust mechanism was added.
+- STEP 7 remains ACTIVE; Genesis Trust Foundation UNKNOWN / NOT ESTABLISHED; protected commissioning OPEN / STOP / UNKNOWN. Continue safe source/test analysis without inventing the reference or target deployment.
