@@ -1766,3 +1766,13 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The existing conditional commit is an application-state persistence boundary; no deployment-specific final commissioning effect boundary or bypass closure is identified. Genesis-specific AuthorityGate and final boundary remain UNKNOWN.
 - **Next action:** identify the first concrete Nexo effect that initial commissioning must control and its last controllable boundary. If that deployment target is not yet defined, record the scope gap; do not invent a generic enforcement layer or ask Kevin to accept assumptions before this is clear.
 - No implementation or device changes. **STEP 7 OPEN; CORE TRUST / POLICY AUTHORITY BOOTSTRAP STOP / UNKNOWN.**
+
+
+## 2026-10-11 — Initial Constitution activation scope bounded; real boundary remains unknown
+
+- Added `NEXO_NCS/BUILD/STEP_7_INITIAL_CONSTITUTION_ACTIVATION_SCOPE_AND_BOUNDARY_DECISION_2026-10-11.md`, commit `a04113d5d443bc7cc02273e4b7eda51881f3b6b0`.
+- Reused the existing MASTER + AB + P/P112 integration and future-countereffects rules, Genesis Trust Foundation/attack, Constitution Authority Context contract/gate, Trust Function / Root Role Map, and current AuthorityGate source map. Did not repeat the completed root-family, device, resource, or genesis-path comparisons.
+- Bounded the first-transition design candidate to recognizing exactly one initial Constitution/version/context as the current regime. Explicitly excluded missions, policies, admission, tools, execution, external effects, amendment, root lifecycle, recovery, succession, and autonomous authority.
+- Source-based result: no canonical Core-owned active-Constitution state/store, genesis-specific verifier, or final activation boundary with bypass closure is evidenced. Generic application persistence, injected AuthorityGate, hash, or UI approval cannot be relabeled as that boundary.
+- Current state remains IR-1 / Genesis Trust Foundation NOT ESTABLISHED; constitutional context and protected commissioning STOP. No implementation or device changes.
+- **Next exact action:** inspect the actual NCS Core source inventory and integration boundaries for an existing canonical state owner for this transition. If none exists, record the concrete source-level absence and move to a genuinely independent non-protected construction task instead of repeating the genesis analysis.
