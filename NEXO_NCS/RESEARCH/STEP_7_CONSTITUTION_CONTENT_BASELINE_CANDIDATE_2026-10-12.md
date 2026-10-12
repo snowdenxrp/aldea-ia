@@ -76,7 +76,11 @@ Traceability: MASTER preservation addendum; AB104.451/.452 and existing recovery
 
 ### U1 — Meaning of “external/independent authority or threshold” in MASTER
 
-The historical MASTER bootstrap sentence can be read as requiring either an external constitutional decision-maker or an independently grounded technical/evidentiary provisioning basis. The former appears to conflict with the recorded owner-only constitutional-authority preference; the latter may support evidence without becoming a constitutional governor, but its legitimate establishment is not defined. No interpretation is selected here. Preserve the conflict/UNKNOWN until its meaning is explicitly reconciled; do not rewrite historical MASTER text silently.
+The historical MASTER bootstrap sentence can be read as requiring either (A) an external constitutional decision-maker or (B) an independently grounded technical/evidentiary mechanism that supplies evidence for verifying the owner's authorization without becoming constitutional authority.
+
+**Owner's current interpretation (2026-10-12; tentative):** Kevin believes the intended meaning was likely option B. This is consistent with the prior NCS trust-role discussion: evidence/attestation/appraisal is separate from verifier, relying party, and authorization; appraisal can yield a scoped verification result but does not itself grant constitutional authority. The existing trust-role map also states that evidence cannot establish the trust anchor or appraisal policy used to validate that same evidence.
+
+This narrows the likely intended meaning but does not prove the historical author's intent or define a valid mechanism. Do not silently rewrite the historical MASTER sentence. Treat option B as the working interpretation for further design, while preserving the original wording and marking the formal reconciliation as **PROVISIONAL / OWNER-REVIEW**, not as a commissioned trust basis. The mechanism must still have claim-specific scope, independently recognized provenance, dependency closure, currentness, and fail-closed semantics; it may verify evidence of Kevin's authorization but may not replace Kevin as constitutional authority.
 
 ### U2 — Actual canonical Constitution content and approval
 
