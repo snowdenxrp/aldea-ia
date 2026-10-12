@@ -1853,3 +1853,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - New bounded record: `NEXO_NCS/BUILD/STEP_7_ANDROID_M1_SOURCE_ARTIFACT_CORRESPONDENCE_GAP_2026-10-11.md`, commit `4be04695582cf4acbd730f6e7010bcb1c17559d6`.
 - **Next exact action:** inspect existing M1 build workflow and artifact provenance records for a source-to-installed-artifact linkage, read-only only. Do not build/install an APK or switch away from Step 7. If the linkage cannot be established from existing records, preserve UNKNOWN and continue the first-boot deployment boundary investigation.
 - Genesis verifier, protected active-Constitution establishment, and final enforcement remain unproven. **STEP 7 OPEN / STOP / UNKNOWN.**
+
+
+### STEP 7 — M1 build-workflow provenance cross-check completed (2026-10-11)
+
+- Inspected `.github/workflows/nexo-m1-android-build.yml`: it builds the checked-in `NEXO_NCS/M1_ANDROID` project, whose Gradle config declares `org.nexo.m1` / `0.2.0-prototype`; it uploads a debug APK and SHA-256 evidence with 14-day retention.
+- Current branch tree and a commit search for `safetest18` did not establish a source lineage for the user-reported installed `org.nexo.m1.safetest18` / `0.2.6-safe-test18` package. These searches are bounded; they do not prove no historical or external source exists.
+- No retrieved evidence joins exact source commit → successful run/job → APK digest → installed package/version/signer. Correspondence remains UNKNOWN. No build, artifact download, installation, or device command was performed.
+- Record updated: `NEXO_NCS/BUILD/STEP_7_ANDROID_M1_SOURCE_ARTIFACT_CORRESPONDENCE_GAP_2026-10-11.md`, commit `50e0e5049faa80b0fe7b3292f6cccb48e22eb5b7`.
+- Provenance subtask stops here because existing records do not ground the lineage. Resume Step 7 first-boot deployment boundary; do not rebuild M1 or switch objectives. **STEP 7 OPEN / STOP / UNKNOWN.**
