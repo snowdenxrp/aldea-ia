@@ -50,3 +50,19 @@ Classification: debug APK build/artifact evidence only. It does not establish in
 ## Next admissible step
 
 Continue from the deployment boundary: obtain concrete deployment evidence for any claimed live service (provider/project/domain or deployment ID, deployed commit/build identity, environment configuration ownership) and map whether it can cause any protected effect. If no such record is available, retain UNKNOWN and keep protected effect execution unimplemented. No code/tests/device actions or authority changes occurred in this pass.
+
+
+## Addendum — confirmed GitHub Pages deployment run (2026-10-12)
+
+Fresh live GitHub Actions record retrieved after the initial note:
+- Run `38297516329`, workflow `pages build and deployment`, event `dynamic`, branch `main`, head commit `7706f51470b7a34cbe5c27c4ab55bbfd42e3c24f`, conclusion SUCCESS. Run URL: https://github.com/snowdenxrp/aldea-ia/actions/runs/38297516329
+- Build job `114972080936`: Jekyll build and upload artifact succeeded.
+- Deploy job `114972395717`: `Deploy to GitHub Pages` succeeded.
+- Artifact `github-pages`, ID `11768759460`, SHA-256 `5d16f3276a25b1746734e11f3ca141fc16933a76744ab6440526d6686013e869`; associated with the same `main` head commit. The artifact is a static Pages site package, not a Nexo protected runtime.
+- The NCS branch HEAD at the time of this check is `5224c095ccea31245d50e8e254d07a4f3ca5d55a`, distinct from the deployed `main` head. Thus this successful Pages run is not evidence that the current NCS branch itself was deployed.
+- Repository releases endpoint returned an empty list (`[]`) at inspection time. This is only a release-list observation, not proof that no external artifacts/deployments exist.
+- GitHub's official docs explain that a successful `deploy-pages` job publishes the uploaded artifact to GitHub Pages; this supports classifying this run as a successful static-site deployment, not a protected Nexo effect deployment. Reference: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
+
+## Revised bounded conclusion
+
+GitHub Pages deployment is now CONFIRMED for the `main` commit above. Cloudflare Pages Functions deployment/reachability remains UNKNOWN; the GitHub Pages deployment does not execute Cloudflare Pages Functions. No reviewed evidence ties this static-site deployment to Genesis, canonical current Constitution authority, or a final protected external-effect sink. STEP 7 remains OPEN / STOP / UNKNOWN.
