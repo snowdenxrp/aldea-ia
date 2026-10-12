@@ -213,3 +213,12 @@ Before any owner decision about draft human-genesis assumptions, identify a real
 
 
 Follow-up search was recorded in `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md`, commit `c113323c048cc029c7ea26ecc09d585ad6cba978`: repository search found no invocation of `effectBoundary.prepare`; only its port declaration/default was returned. The search corroborates, but does not mathematically prove, the source-review finding that no final constitutional activation/effect boundary is evidenced. No new implementation or device action is justified by this result.
+
+
+## 2026-10-11 — Production call-site gap confirmed by bounded source search
+
+A focused indexed-source search for `executeProtectedTransition` returned the implementation, two test files, and a design document, but no production call site/runtime composition. The source review was extended in `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md` (commit `220c06d3e586c68d896460da917988d3eaeaa660`).
+
+**Interpretation:** current evidence supports that the generic transition contract is implemented/tested, but not that it is connected to a production first-boot path. Mocked AUTHORIZED test ports do not establish a Genesis verifier. Search-index absence is bounded evidence, not proof that dynamic/unindexed callers are impossible.
+
+**Next exact action:** identify whether NCS has a real production entrypoint/runtime composition and enumerate all callers/effect routes from it. If no such composition exists, treat that as the current construction boundary gap; do not add an initial-Constitution store, resolver, adapter, or wrapper merely to create a caller. Reconcile this finding with MASTER + frozen AB + P/P112. Protected commissioning remains OPEN / STOP / UNKNOWN; no phone commands, installs, M1 switch, or activation.
