@@ -530,3 +530,13 @@ This is a contract refinement, not a selected deployment design or implementatio
 - Research cross-check: RFC 9334 role separation, TUF 1.0.36 root continuity within an already trusted root model, and NIST authentication-intent definition. These do not choose Nexo's first trust basis or prove a trusted presentation path.
 - No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed.
 - Next action only after a concrete target is identified: adapt the target-neutral gates to that target, enumerate all effect routes, then run controlled tests with pinned artifacts and raw logs. Do not label a gate PASS from source review alone.
+
+
+## 9.24 — Core authority-source composition gate (2026-10-12)
+
+- Added `NEXO_NCS/BUILD/STEP_7_CORE_AUTHORITY_SOURCE_COMPOSITION_GATE_2026-10-12.md`, commit `fd1c5115200098dcc4f163f8e866e7358b8b124b`.
+- Cross-checked existing Genesis, Constitution Authority Context, Constitution-to-Policy binding, Core Policy Source contract/attack and source-level transition boundary. The semantic order is coherent; no contradiction found in the bounded review.
+- Core clarification: a downstream typed result cannot establish the legitimacy of its own producer. Correct hashes/signatures, recovery integrity, a local state revision or a conditional state commit do not prove current constitutional authority or external-effect correctness.
+- This does not authorize code. No new registry, duplicate epoch, second check, callback or synthetic caller is justified. The protected establishment path and actual deployed target/sink remain unidentified/unproven.
+- No code/tests/workflows/keys/Constitution/APK/device/deployment/runtime state changed; no tests ran. STEP 7 remains OPEN / STOP / UNKNOWN.
+- Next: continue read-only evidence tracing for a concrete deployment/sink and its actual configuration/owner. If none is evidenced, preserve UNKNOWN and do not invent a target or close the gate.
