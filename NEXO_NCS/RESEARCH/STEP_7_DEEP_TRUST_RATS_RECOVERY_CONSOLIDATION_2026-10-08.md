@@ -81,3 +81,12 @@ This bounded follow-up asks whether existing Android attestation and software-su
 **Result:** these mechanisms may contribute evidence to separate claims if a real target deployment later consumes and verifies them. None independently closes the current STEP 7 Genesis bootstrap, owner-recognition, canonical active-Constitution ownership, or final anti-bypass boundary. Do not add them as mandatory dependencies, assume this phone supports hardware-backed attestation, or treat an APK build attestation as commissioning evidence before a concrete need and target are established.
 
 This is a research addition only. No device, key, Constitution, APK, policy, or runtime behavior was changed.
+
+
+### Additional TUF bootstrap non-goal cross-check (2026-10-12)
+
+The current TUF specification (v1.0.36, last modified 2026-08-05) makes the bootstrap limit more explicit than simply saying that root rotation preserves continuity: TUF's non-goals state that it does not bootstrap security for arbitrary software installation, and that manually downloaded files still require other means of checking integrity and authenticity. Its client workflow assumes a good, trusted root copy was delivered through an out-of-band process; the root role then delegates trust and governs later rotation, threshold signatures, rollback and expiry behavior. Sources: https://theupdateframework.github.io/specification/v1.0.36/ (sections 1.4, 2.1.1, 5.2–5.3) and https://theupdateframework.github.io/specification/v1.0.36/.
+
+**STEP 7 consequence:** adopting TUF-shaped metadata, signatures, thresholds, expiration or rotation can protect a later trust lifecycle only after Nexo has independently accepted its initial reference and verifier. Shipping a self-generated root inside the same candidate app/build would not satisfy that premise. Conversely, TUF's out-of-band bootstrap assumption does not prescribe which reference Kevin should recognize or which deployment boundary Nexo should protect; those remain explicit owner/deployment inputs, not facts a protocol can infer.
+
+This is a primary-source clarification of the existing bootstrap conclusion, not a new mechanism or implementation. No code, root, key, Constitution, device, or runtime state was changed.
