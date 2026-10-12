@@ -28,3 +28,20 @@ The source project inspected here is not identity-matched to the installed APK d
 Continue Step 7 using source/build provenance already available in the repository: inspect the M1 build workflow and artifact provenance records to determine whether the installed package's source lineage can be established without building or installing anything. If the linkage cannot be grounded from existing records, record it as UNKNOWN and do not claim source correspondence. This is evidence collection only; it does not authorize M1 debugging or switching the main objective away from Step 7.
 
 No new root, verifier, credential, channel, authority, runtime layer, or integration is selected. No code or device state was changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+## Build-workflow provenance cross-check
+
+The existing `.github/workflows/nexo-m1-android-build.yml`:
+- checks out the triggering source ref, builds `NEXO_NCS/M1_ANDROID` with `assembleDebug`, and uploads `app-debug.apk` plus build evidence;
+- derives its expected package from the checked-in Gradle configuration, which declares `applicationId = "org.nexo.m1"` and `versionName = "0.2.0-prototype"`;
+- names the uploaded artifact `nexo-m1-native-prototype-debug-apk` and retains it for 14 days;
+- records the APK SHA-256 in the artifact's build evidence, but the workflow itself does not prove which artifact was installed on Kevin's phone.
+
+A repository-tree inspection of the current branch found no `safetest18` source/project path. A commit search for `safetest18` also returned no matching commits. These bounded searches do not prove the code never existed in another branch, historical artifact, or external build; they show only that the inspected current branch and searched commit index do not establish the required lineage.
+
+### Result after workflow inspection
+
+No existing record retrieved in this pass joins all of the following: exact source commit → successful workflow run/job → retained APK SHA-256 → package/version and signer of the installed `org.nexo.m1.safetest18` artifact. The source/artifact relation therefore remains **UNKNOWN**, not “mismatch proven malicious” and not “same source proven.” The current workflow's 14-day artifact retention also means the present workflow file alone is not a durable record of a particular historical artifact.
+
+No new workflow was run, no artifact was downloaded or installed, and no device command was requested. Since existing records do not ground the installed APK's lineage, stop this provenance subtask here rather than rebuilding. Return to the Step 7 first-boot deployment boundary; M1 remains a lab/client and not the constitutional root.
