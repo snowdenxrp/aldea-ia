@@ -30,6 +30,12 @@ The existing `src/nexo/adapters/conditional-commit-persist-state.mjs` adapter de
 
 Therefore, the current concrete persistence target is a simulation/world-state snapshot. It is useful for verifying the application-state commit contract, but it is not an Android system/device control boundary and does not establish constitutional commissioning. This review has not identified a separate deployed Android or physical-effect target in the protected-transition call path.
 
+## M1 Android source located (2026-10-12)
+
+The isolated client exists at `NEXO_NCS/M1_ANDROID/`. Its source uses application ID `org.nexo.m1`, version `0.2.0-prototype`, native local inference, a pinned model SHA-256, and an Android manifest without `INTERNET`. The build workflow `.github/workflows/nexo-m1-android-build.yml` checks the native source pin and packaged permissions and uploads an APK plus evidence. This source is not connected to Genesis, `executeProtectedTransition()`, or `effectBoundary.prepare`; it is a text-only inference/presentation client, not a protected authority or device-control boundary.
+
+This corrects the source-location finding only. No current workflow pass, artifact-to-installed-APK match, or Moto G52 runtime behavior has been verified. The installed package was previously identified as `org.nexo.m1.safetest18`, which differs from this source's application ID. The M1 README was updated to reflect the current source and this evidence limit; no app code, APK, phone state, Constitution, or authority artifact was changed.
+
 ## Current proof boundary
 
 Verified in this review:
@@ -52,7 +58,7 @@ Continue safe work by treating the gaps as separate proof obligations. Before im
 
 ## Next bounded action
 
-Inspect the exact production call graph and existing consumers of `executeProtectedTransition()`, `resolvePolicyContext()`, and `effectBoundary.prepare` only as needed to establish whether a real protected effect target already exists. If none is present in source, record the deployment target as an explicit unresolved decision; do not manufacture one. Do not rerun frozen AB/TLC/Kafka/P112 investigations.
+Reconcile M1 build provenance: identify a successful workflow run for the current source, bind its commit to the uploaded APK and SHA-256 evidence, and compare that identity with the installed package/build on the Moto G52. If run/artifact access or installed identity cannot be established, keep it UNKNOWN and request only the missing evidence. Do not connect M1 to the Core authority path or add an effect wrapper without a separately reviewed design. Do not rerun frozen AB/TLC/Kafka/P112 investigations.
 
 ## Disposition
 
