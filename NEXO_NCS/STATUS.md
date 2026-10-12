@@ -2057,3 +2057,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - STEP 7 implication: platform/OEM trust provisioning, software author/build provenance, deployment operator approval, and Nexo constitutional owner approval are separate authority claims. No role should be silently promoted into another. A future platform chain may support scoped integrity/provisioning claims, not automatically Kevin's approval or complete mediation of protected Nexo effects.
 - Detailed analysis saved and verified in the existing deep-trust research file, blob SHA `d6c014c6104d940c0a933accabed7b79b96d5667`, commit `02b649d2547ba25d917b49792b91cf612f112190`.
 - No platform, OEM, TPA, key, Constitution, code, device, or runtime state was selected or changed. STEP 7 remains ACTIVE; Genesis trust is UNKNOWN / NOT ESTABLISHED; protected commissioning remains STOP / UNKNOWN.
+
+
+### STEP 7 — trust-anchor management and purpose-specific authorization cross-check (2026-10-12)
+
+- IETF RFC 6024 adds explicit requirements for source authentication plus authorization, authenticated reports of trust-store contents, replay detection, and compromise/loss recovery. Its initial-configuration section still requires at least one trust-anchor manager to be established; it does not magically remove the initial bootstrap assumption. Source: https://www.rfc-editor.org/rfc/rfc6024.html.
+- IETF RFC 9809 distinguishes configuration-signing, trust-anchor-configuration-signing, and update-package-signing purposes; the verifier/application must enforce purpose-specific authorization and the deployment policy must define disallowed purpose combinations. Source: https://www.rfc-editor.org/rfc/rfc9809.html.
+- Consequence: a valid signature/key is not enough; authority must cover the exact operation, scope, current state and target. A build/update credential must not silently authorize Constitution/root changes. These standards do not decide Nexo's constitutional governance or prove a production final boundary.
+- Research detail saved and verified in `NEXO_NCS/RESEARCH/STEP_7_DEEP_TRUST_RATS_RECOVERY_CONSOLIDATION_2026-10-08.md`, blob SHA `859aaac55432003ec7669fc98e7692916e4acf33`, commit `e9ba13b0e307b2a4e0308cc5f9c4aabd5cd1a0bf`.
+- No X.509/CA/OEM/phone mechanism selected; no keys, code, Constitution or runtime state changed. STEP 7 remains ACTIVE; Genesis trust UNKNOWN / NOT ESTABLISHED; protected commissioning STOP / UNKNOWN.
