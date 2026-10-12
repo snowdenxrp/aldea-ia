@@ -1776,3 +1776,12 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - Source-based result: no canonical Core-owned active-Constitution state/store, genesis-specific verifier, or final activation boundary with bypass closure is evidenced. Generic application persistence, injected AuthorityGate, hash, or UI approval cannot be relabeled as that boundary.
 - Current state remains IR-1 / Genesis Trust Foundation NOT ESTABLISHED; constitutional context and protected commissioning STOP. No implementation or device changes.
 - **Next exact action:** inspect the actual NCS Core source inventory and integration boundaries for an existing canonical state owner for this transition. If none exists, record the concrete source-level absence and move to a genuinely independent non-protected construction task instead of repeating the genesis analysis.
+
+
+## 2026-10-11 — Core source inventory confirms no canonical initial-Constitution state owner
+
+- Added `NEXO_NCS/BUILD/STEP_7_CORE_SOURCE_INVENTORY_INITIAL_CONSTITUTION_STATE_OWNER_2026-10-11.md`, commit `f4998690c672895f6e06544968389716151ab56b`.
+- Inspected the existing Core contracts, injected AuthorityGate port, protected-transition composition, conditional application-state persistence, simulation persistence, and existing observation boundary. Source search for active/current Constitution state and `createConstitutionAuthorityContext` found design contracts/gates but no wired production Core implementation.
+- Conclusion: do not create a Constitution store, registry, constructor or wrapper before the independent genesis basis and actual final boundary exist. The existing application persistence and AuthorityGate port are not that boundary.
+- This completes the bounded source-owner investigation; constitutional commissioning remains OPEN / STOP / UNKNOWN. No code, device, signing or installation changes.
+- To avoid circling the same genesis analysis, the next independent non-protected task is to establish exact source/build/artifact identity for the installed M1 `safetest18` package, then trace the repeated generic response from prompt entry through local inference to displayed output. No APK rebuild/install or code changes until correspondence is established.
