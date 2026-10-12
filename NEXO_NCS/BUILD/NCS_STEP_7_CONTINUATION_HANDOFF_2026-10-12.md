@@ -356,3 +356,29 @@ Blob: `290ae6c0402993978b543564f263c8be7e634a18`
 URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_GENESIS_TO_CORE_TRUST_PATH_MAP_AND_EVIDENCE_GATE_2026-10-12.md
 
 No tests were executed in this review. No production source/tests/workflows/settings/keys/Constitution/APK/device state changed. The gate remains UNKNOWN/STOP.
+
+
+### 9.12 Fresh source-level TOCTOU/revocation finding — 2026-10-12
+
+Re-fetched the exact current branch sources:
+- `src/nexo/core/protected-transition.mjs` blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`.
+- `src/nexo/core/contracts.mjs` blob `294eb400e9685788f7dd084a28a838b69d0323c7`.
+- `src/nexo/core/ownership.mjs` blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`.
+
+New precise observation:
+1. `executeProtectedTransition()` checks `authorityGate.check(claim)` once, before snapshot isolation, candidate execution, final semantic validation and conditional commit.
+2. The candidate contract preserves `claim`, isolated `state`, and `expectedRevision`; it does not bind an authority epoch, active-Constitution revision/hash, revocation generation, or verifier decision identity.
+3. The transition does not revalidate authority after candidate construction or bind authority currentness to the conditional commit's linearization point.
+4. Therefore, even if a future composition supplied a genuine AuthorityGate, this Core contract by itself would not demonstrate that a revocation or Constitution activation occurring between the initial check and final commit prevents the protected transition. A fresh authority decision can become stale during the operation.
+5. This is a source-level TOCTOU/revocation gap in the current generic composition contract, not proof of an exploitable production vulnerability: no production composition or real protected sink has been demonstrated.
+
+Architecture consequence (not an implementation patch):
+- The future authority decision must be bound to the exact claim/scope and a monotonic active-Constitution/authority generation.
+- The final protected admission/commit must atomically reject if that generation is no longer current, or use an equivalent independently enforced fencing/linearization mechanism at the real sink.
+- A second check alone is not enough if revocation can race between that check and the effect. The final check and protected admission need a shared serialization/fencing boundary that the candidate cannot bypass.
+- Do not add an authorityEpoch field merely as caller-supplied metadata, and do not add a second check outside the final enforcement point; either would be ceremonial unless the canonical owner and final sink enforce it.
+- Adversarial tests must force revocation/Constitution-generation change after initial authorization and before final admission, plus replay/stale generation and direct-sink bypass attempts.
+
+Bounded caller inventory was also rechecked: code search for `executeProtectedTransition`, `createCorePorts`, and `effectBoundary.prepare` returns the Core definition and test fixtures, not a demonstrated production composition. GitHub code search is indexed against the default branch, so this search is corroborative rather than a complete proof for every branch or external deployment. The exact NCS branch head remains `1be854cc724bcbb820a6594de98c7701e4ff1021`; branch protection reports disabled and the head commit is unsigned. Those repository facts affect source-integrity assurance but do not solve Genesis trust.
+
+Evidence class: exact source inspection + bounded code search + architectural inference. No tests executed. No production code, tests, workflow, repository settings, keys, Constitution artifact, APK, or phone/runtime state changed. Commissioning remains UNKNOWN / STOP.
