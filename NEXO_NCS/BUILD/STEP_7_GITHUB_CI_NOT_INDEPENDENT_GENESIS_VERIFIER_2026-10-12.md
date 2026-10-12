@@ -24,3 +24,17 @@ This is not a claim that GitHub itself is insecure, nor that signed commits or b
 
 ## Disposition
 Genesis trust basis and verifier legitimacy remain UNKNOWN; canonical active-Constitution ownership and final enforcement/bypass closure remain UNKNOWN; protected commissioning remains STOP.
+
+
+## Follow-up — current repository context and owner decision boundary (2026-10-12)
+
+A fresh repository metadata read confirms:
+- Repository: `snowdenxrp/aldea-ia`, public, personal-user owner `snowdenxrp`; default branch is `main`.
+- The connected GitHub identity has repository admin permission. This describes repository control, not constitutional authority for Nexo.
+- The branch search returned `ncs-clean-architecture`; no repository setting was changed during this check.
+
+Decision-state clarification from the owner: Path H is accepted only as a conditional possibility that would require explicit acceptance of a trusted presentation/approval environment. That is **not** acceptance of Path H's threat assumption and does not authorize commissioning or Protected Confirmation implementation. Do not translate “continue investigating” into consent to trust the current phone, GitHub, an unsigned repository commit, or any external verifier.
+
+What this changes: it sharpens the owner-decision boundary, but does not create a new trust basis. The technical work can continue against synthetic/adversarial contracts; real commissioning still requires an evidenced recognition premise, canonical current-Constitution state owner, identified deployment/target, and complete mediation at its actual final sink.
+
+No production source, tests, workflows, repository settings, keys, Constitution artifact, APK, or device/runtime state were changed by this follow-up.
