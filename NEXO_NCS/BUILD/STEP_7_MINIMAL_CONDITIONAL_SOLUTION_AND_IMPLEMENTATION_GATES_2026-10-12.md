@@ -110,3 +110,43 @@ No proof of the final target or all entry points means complete mediation remain
 - Protected commissioning: STOP.
 - Safe work that can continue: source review, design refinement, and synthetic adversarial tests that do not claim Genesis trust.
 - No production code, tests, workflow, APK, key, Constitution artifact, or phone/runtime state is changed by this design synthesis.
+
+
+## 2026-10-12 research result — the bootstrap boundary cannot be removed by choosing a format
+
+### Finding
+
+The initial trust problem is not solved by choosing PDF versus paper, a hash versus a signature, a local key versus a QR code, or TUF versus another update framework. Those mechanisms can bind bytes, authenticate a signer relative to a recognized key, preserve continuity, or detect rollback. None can derive the legitimacy of the first authority solely from data supplied by the authority candidate itself when that candidate is allowed to control all inputs and the verifier.
+
+This is the bootstrap constraint for STEP 7: under a threat model where the commissioning host may be compromised, at least one premise must sit outside that host's control. It can be (a) a previously recognized external basis plus an enforcement path that trusts it, or (b) an explicitly accepted assumption that the relevant presentation/approval environment is honest for the bounded ceremony. If neither premise is available, the honest result is STOP, not a more elaborate local protocol.
+
+### What established standards contribute — and what they do not
+
+- RFC 6024 says that at least one trust-anchor manager must be established for each trust-anchor store during initial configuration; traditionally the initial anchor is checked out-of-band. It also recognizes the operational problem of relying on out-of-band checks. That means out-of-band establishment can later be reduced, but not waved away at initial setup. https://www.rfc-editor.org/rfc/rfc6024.html
+- RFC 9334 distinguishes the Attester, Verifier and Relying Party. The Relying Party needs a trust relationship with the Verifier; a signed appraisal is not self-authenticating authorization. https://www.rfc-editor.org/rfc/rfc9334.html
+- TUF's client begins with trusted root keys already provisioned, then uses threshold signatures, sequential root rotation, expiry and rollback/freeze checks to preserve the established trust chain. It is an excellent model for later root continuity, not a solution for selecting Nexo's first legitimate root. https://theupdateframework.github.io/specification/v1.0.36/
+- Android Verified Boot establishes integrity properties for covered platform components under the device's boot trust chain. It does not prove that a user-approved Nexo Constitution is the one the app consumes, nor does it enforce authorization at arbitrary app-level effect sinks. https://source.android.com/docs/security/features/verifiedboot/verified-boot
+
+### Concrete implications for the current owner workflow
+
+1. A PDF created on the current unverified client is a draft/content artifact, not an independent trust root.
+2. Printing that same PDF later adds a physical copy and improves human inspection, but it does not retroactively make its origin independent. It can serve as an external comparison reference only if Kevin can establish what exact bytes/content it represents and why the reference path is trustworthy for the threat model.
+3. A second device is not automatically independent. Its provisioning, account/cloud sync, recovery, admin, update and display/submission paths must be considered.
+4. A generated key/signature only proves control of that key and integrity of signed bytes relative to a recognized public key. It does not itself prove that Kevin selected the key, saw the same content, intended the scope, or that authority has not been revoked.
+5. The existing Android Verified Boot state is useful platform evidence but cannot replace the missing Nexo-specific recognition and enforcement chain.
+6. TUF-like continuity can be a later subsystem only after a legitimate initial root has been recognized; importing TUF now would not close Genesis.
+
+### Smallest defensible decision boundary
+
+No hardware purchase or provider choice is justified yet. The engineering can continue without one by specifying contracts and testing synthetic attack cases, but the real protected activation cannot be implemented honestly until one of two conditions is grounded:
+
+- **Independent basis available:** identify an already-recognized external reference/authority and a verifier/final boundary that the commissioning candidate cannot rewrite or bypass; then bind the exact Constitution and narrow scope to it.
+- **No independent basis available:** keep protected commissioning STOP, and only later consider Path H if Kevin explicitly accepts a narrowly described environmental assumption for a limited initial ceremony. General desire to build Nexo is not consent to assume a potentially compromised presentation host is honest.
+
+These conditions are not equivalent. Path H can support a limited commissioning claim under its accepted assumptions; it must not be described as resistant to compromise of the assumed-honest host. Path O can offer stronger independence only when the external basis and enforcement are demonstrated, not merely named.
+
+### Current next action
+
+Continue non-circular source and adversarial analysis; do not create actual commissioning keys, hashes, challenges, signatures, or final Constitution bytes while the canonical content/scope and recognition premise are unresolved. The next decisive evidence must be an actual recognized reference/deployment basis or an explicit owner decision on a bounded Path H assumption. No repository-only algorithm can supply that missing real-world premise.
+
+**Disposition remains:** Genesis UNKNOWN; initial recognition NOT ESTABLISHED; canonical active-Constitution owner NOT ESTABLISHED; production final enforcement/bypass closure UNKNOWN; protected commissioning STOP.
