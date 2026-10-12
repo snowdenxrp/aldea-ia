@@ -1903,3 +1903,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - The older runtime's actual execution remains simulation-oriented and is not evidence of constitutional commissioning. The current M1 Android entrypoint is not a production composition for the protected Core. No new production activation boundary or effect-route consumer was discovered.
 - This is new, bounded source evidence—not a reason to create another inventory. Keep the existing canonical first-boot source review as owner and use this result to strengthen its conclusion there if further source evidence is added. No source code, tests, workflow, device, APK, key, or deployment was changed.
 - **Disposition:** repository-source avenue for locating an already-existing protected-Core production composition is exhausted for the inspected branch. The blocker now requires genuinely new deployment/source evidence or an explicit, separately reviewed scope decision; it cannot be resolved by repeating symbol searches or adding a speculative wrapper. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+### STEP 7 — Existing GitHub Actions deployment-evidence scan (2026-10-12)
+
+- Read the branch-scoped GitHub Actions run history for `ncs-clean-architecture` (12 returned runs; newest run created 2026-10-10). All returned runs are M1 Android build workflows; no run in this returned history exercises or deploys the initial-Constitution/Genesis protected Core boundary.
+- The successful M1 build run `38048340598` targets source commit `0a8b5a0d8bde2d91b78e3eb1ea5a1d563dbdc852`; it is not evidence of a commissioned Genesis verifier, active-Constitution owner, or final effect enforcement. A successful APK build cannot close those claims.
+- The branch tip remains `522ad79d8f63d480f4ebdcdc646fc2200a03bc83`; the inspected run history does not provide a newer source/deployment artifact that changes the existing Step 7 conclusion. This is bounded evidence from the returned branch-scoped Actions history, not proof that no external or historical deployment exists.
+- No workflow was triggered, no artifact was downloaded, and no build/device action was performed. No duplicate inventory was created.
+- **Disposition:** no genuinely new deployment evidence found. Repository-only work remains at the documented construction gap; do not invent a production entrypoint, connect the protected Core to simulation, or implement a speculative wrapper. Resume only if a concrete deployment/source artifact is supplied or discovered. **STEP 7 remains OPEN / STOP / UNKNOWN.**
