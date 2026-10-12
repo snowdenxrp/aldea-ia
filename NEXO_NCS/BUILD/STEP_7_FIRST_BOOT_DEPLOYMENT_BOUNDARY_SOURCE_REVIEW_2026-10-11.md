@@ -51,3 +51,15 @@ No new key, hash, file, signature, resolver, registry, UI prompt, or host assump
 Before selecting or implementing a Genesis path, map a concrete deployable first-boot transition and its components/dependencies end to end. Identify which component is trusted to show the exact bytes, which independently justified basis validates approval, how freshness/revocation is checked, and where activation is irrevocably blocked or allowed at the final protected boundary. Document failure-domain overlaps and all assumptions; reconcile with MASTER + frozen AB + P/P112. If those roles cannot be grounded, remain STOP / UNKNOWN and continue only non-protected construction.
 
 No commissioning, root selection, new APK, device modification, or protected activation is authorized.
+
+
+## Follow-up repository-wide symbol search — 2026-10-11
+
+A follow-up search on the repository's indexed source was run for `effectBoundary.prepare`, `authorityGate.check`, `createConstitutionAuthorityContext`, `activeConstitution currentConstitution`, and `constitutionRef policyContext`.
+
+- `effectBoundary.prepare`: only the port declaration/default in `src/nexo/core/ownership.mjs` was returned; no invocation site was found by this search.
+- `authorityGate.check`: returned the injected-port default in `src/nexo/core/ownership.mjs` and the generic call in `src/nexo/core/protected-transition.mjs`.
+- `createConstitutionAuthorityContext`: the returned match was the existing future-countereffects gate warning against implementing a constructor before a protected trust foundation exists.
+- `activeConstitution currentConstitution` and `constitutionRef policyContext`: no indexed matches returned.
+
+Search-index absence is not a mathematical proof that no string or dynamic call exists anywhere; it is corroborating repository evidence consistent with the direct source review. It does not establish an actual deployment consumer or bypass-closed activation path. The result therefore reinforces the bounded conclusion: no evidenced final constitutional activation/effect boundary is currently available to map or test. Do not implement a new one until the trust basis and real deployment integration point are grounded.
