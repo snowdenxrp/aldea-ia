@@ -8,6 +8,14 @@ import { createFinalSemanticValidator } from "../../src/nexo/core/final-semantic
 
 const validator = createFinalSemanticValidator();
 
+const validPolicyContext = {
+  policyRef: { id: "policy-1", semanticVersion: "1.0.0", hash: "fixture-policy-hash" },
+  scope: { kind: "test" },
+  resolved: { dependencies: [] },
+  validity: { status: "VALID" },
+  resolutionProvenance: []
+};
+
 function candidate(overrides = {}) {
   const claim = createClaimEnvelope({
     claimId: "step4-1",
@@ -139,23 +147,26 @@ const baseContext = {
 }
 
 {
-  const result = validator.validate(candidate({claim: {policyContext: {policyVersion: 2}}},), {
+  const result = validator.validate(candidate({claim: {policyContext: validPolicyContext}}), {
     ...baseContext,
-    policyContext: {policyVersion: 2}
+    policyContext: validPolicyContext
   });
   assert.equal(result.status, VALIDATION.PASS);
 }
 
 {
-  const result = validator.validate(candidate({claim: {policyContext: {policyVersion: 2}}},), {
+  const result = validator.validate(candidate({claim: {policyContext: validPolicyContext}}), {
     ...baseContext,
-    policyContext: {policyVersion: 3}
+    policyContext: {
+      ...validPolicyContext,
+      policyRef: { ...validPolicyContext.policyRef, hash: "different-policy-hash" }
+    }
   });
   assert.equal(result.status, VALIDATION.FAIL);
 }
 
 {
-  const result = validator.validate(candidate({claim: {policyContext: {policyVersion: 2}}},), baseContext);
+  const result = validator.validate(candidate({claim: {policyContext: validPolicyContext}}), baseContext);
   assert.equal(result.status, VALIDATION.UNKNOWN);
 }
 
