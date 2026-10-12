@@ -104,3 +104,23 @@ This does **not** require a second device by default and does not select a hardw
 - PATH_INDEPENDENCE: establish that the owner-recognized reference and presentation/approval mechanism are not circularly trusted through the same unverified client or recovery path; otherwise UNKNOWN.
 
 **Disposition unchanged:** this is a design/research delta only. No root, key, Constitution, code, test, APK, or runtime authority changed. Genesis trust remains UNKNOWN; active Constitution Authority Context and final protected boundary remain NOT ESTABLISHED; commissioning remains STOP.
+
+## 10. Candidate second device offered by owner — physical validation pending (2026-10-12)
+
+Kevin reports that he has a second phone with roughly half the screen damaged (the central area around the lock display is affected), but it still powered on, could be unlocked, and was used previously. He believes it may have Wi-Fi and may support Termux, but the device is not currently at hand. Kevin also says he can factory-reset it if later shown necessary.
+
+**Classification: candidate only; all device properties and independence are UNVERIFIED.** No reset or installation is requested or authorized by this note.
+
+### Permitted next validation when physically available
+
+1. Do not factory-reset first. Preserve current access and any potentially useful recovery information until inspection shows reset is necessary.
+2. Confirm make/model, Android version, ability to unlock, network access, usable touch/display areas, and whether Termux can be opened/installed without relying on the damaged region.
+3. Inspect whether the proposed reference would share the primary phone's Google/account recovery, cloud sync, administrator, backup, or same-origin file-transfer path. Two physical devices do not establish independence if the reference is created or controlled by the same unverified commissioning path.
+4. If practical, evaluate it only as a reference/presentation comparison aid. Do not store secrets or grant it constitutional authority merely because it is a second phone.
+5. Any reset decision must follow a separate, explicit need assessment and account/recovery check. A factory reset does not itself establish trust or independent provenance.
+
+### Evidence gate
+
+Until the physical checks and provenance/dependency review are recorded, the device contributes no Genesis trust evidence. It may become a usable comparison channel under an explicitly accepted bounded human-recognition assumption, but it cannot by itself authenticate the first Constitution, prove trusted presentation, establish a verifier, own current constitutional state, or enforce effects/revocation.
+
+**Status unchanged:** Genesis UNKNOWN / NOT ESTABLISHED; protected commissioning OPEN / STOP / UNKNOWN. This is a record of a possible future test, not implementation authorization or a claim that the phone is available/verified.
