@@ -2031,3 +2031,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - External standards cross-check already recorded in `NEXO_NCS/RESEARCH/STEP_7_DEEP_TRUST_RATS_RECOVERY_CONSOLIDATION_2026-10-08.md` and the Genesis-to-Core path map: RATS separates verifier appraisal from relying-party policy; TUF secures updates only from an already trusted root; Android Verified Boot is scoped to its platform chain. None selects Nexo's initial trust basis.
 - **Disposition:** STEP 7 remains OPEN; Genesis Trust Foundation UNKNOWN / NOT ESTABLISHED; protected commissioning STOP / UNKNOWN. No code, test, APK, key, Constitution, device, or protected state changed.
 - **Next action:** obtain the two owner/deployment-specific inputs already required by the existing contracts: (a) a concrete independently recognized reference for an exact owner-reviewed Constitution revision and scope, and (b) a named target deployment whose startup, active-state owner, create/replace/restore/consume paths, and final protected boundary can be traced. Until then, continue research without fabricating either choice.
+
+
+### STEP 7 — Android attestation and build-provenance scope check (2026-10-12)
+
+- Added a primary-source research subsection to `NEXO_NCS/RESEARCH/STEP_7_DEEP_TRUST_RATS_RECOVERY_CONSOLIDATION_2026-10-08.md` covering Android Key Attestation, Play Integrity, and SLSA provenance; research blob SHA `b2d2f255b46a2214a3f0b81548d6fe186c5e1edd`.
+- Result: these mechanisms can support narrowly scoped platform/key or build-artifact claims only when their actual trust chain and target integration are verified. They do not establish Kevin's constitutional approval, the legitimacy of Nexo's first Genesis root, canonical active-Constitution ownership, or complete mediation at a final protected boundary.
+- Do not add Android attestation/Play Integrity as mandatory dependencies, assume this phone supports hardware-backed attestation, or treat APK provenance as commissioning evidence without a concrete target requirement.
+- No implementation, device, key, Constitution, APK, policy, or protected state changed. STEP 7 investigation remains ACTIVE; protected commissioning remains OPEN / STOP / UNKNOWN.
+- Next work remains targeted: seek a real owner-recognized reference without assuming one exists, and only name a target deployment when its actual protected activation boundary can be traced. No new wrapper/store or M1 rebuild is justified by this research.
