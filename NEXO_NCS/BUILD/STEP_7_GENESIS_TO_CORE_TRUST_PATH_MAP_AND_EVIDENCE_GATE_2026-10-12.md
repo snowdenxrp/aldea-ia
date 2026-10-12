@@ -18,6 +18,12 @@ Record the smallest current trust/control path from a recognized Genesis basis t
 | 6. Transition commit → actual final effect boundary | The transition uses `conditionalCommit.commit(candidate)`; `createCorePorts()` exposes `effectBoundary.prepare`, but the inspected transition does not call it. | APP-STATE COMMIT ONLY; FINAL EFFECT UNKNOWN | No demonstrated last boundary for constitutional commissioning or external/physical effects; no bypass-closure evidence. |
 | 7. Missing/invalid/unknown trust → enforced no-transition | Focused tests pass for absent gate implementation and STOP/UNKNOWN outcomes at this generic composition boundary. | COMPONENT TEST EVIDENCE ONLY | Does not establish production composition, deployed-device behavior, or that every protected effect is mediated. |
 
+## Bounded call-graph check (2026-10-12)
+
+Repository code search for `executeProtectedTransition` returned the function definition and references in the focused composition and conditional-commit integration tests; no production call site was identified in the inspected results. Search for `resolvePolicyContext` returned its definition and focused test, with no production consumer identified. Search for `effectBoundary.prepare` returned only the default port declaration in `src/nexo/core/ownership.mjs`.
+
+This is a bounded source-search finding, not proof against every dynamic import, external consumer, generated build, or runtime path. It is sufficient to say that this review has not identified an existing production protected-effect target to wire. Therefore do not invent one during this step; the deployment/effect target remains an explicit unresolved decision.
+
 ## Current proof boundary
 
 Verified in this review:
