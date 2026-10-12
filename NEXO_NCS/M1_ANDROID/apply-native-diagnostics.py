@@ -135,6 +135,9 @@ static std::string chat_add_and_format(const std::string &role, const std::strin
     common_chat_templates_inputs inputs;
     inputs.use_jinja = true;
     inputs.enable_thinking = false;
+    // Match common_chat_format_single(): preserve the model template's BOS/EOS policy.
+    inputs.add_bos = templates->add_bos;
+    inputs.add_eos = templates->add_eos;
 
     std::string formatted_past;
     if (!chat_msgs.empty()) {
@@ -156,9 +159,13 @@ static std::string chat_add_and_format(const std::string &role, const std::strin
     }
 
     const auto formatted = formatted_all.substr(formatted_past.size());
+    // Preserve the upstream formatter's newline boundary when the previous
+    // rendered history ends in a newline and a user turn opens an assistant turn.
+    const bool preserve_newline = role == ROLE_USER &&
+        !formatted_past.empty() && formatted_past.back() == '\\n';
     chat_msgs.push_back(new_msg);
     LOGi("%s: Formatted and added %s message (thinking disabled)\\n", __func__, role.c_str());
-    return formatted;
+    return preserve_newline ? "\\n" + formatted : formatted;
 }
 """
 replace_once(CPP, chat_format_old, chat_format_new)
@@ -230,6 +237,9 @@ checks = [
     (KOTLIN, "Native model load failed"),
     (CPP, "inputs.enable_thinking = false"),
     (CPP, "inputs.use_jinja = true"),
+    (CPP, "inputs.add_bos = templates->add_bos;"),
+    (CPP, "inputs.add_eos = templates->add_eos;"),
+    (CPP, "preserve_newline ? \"\\n\" + formatted : formatted"),
     (CPP, "formatted_all.compare(0, formatted_past.size(), formatted_past) != 0"),
     (CPP, "chat_format_error = true;"),
     (CPP, "const int decoded_user_prompt_size = (int) user_tokens.size();"),
