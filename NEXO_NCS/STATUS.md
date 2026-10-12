@@ -2106,3 +2106,14 @@ A fresh search/fetch against branch `ncs-clean-architecture` revalidated the sou
 - This is a handoff/recovery record, not proof STEP 7 is closed. Genesis Trust Foundation remains UNKNOWN / NOT ESTABLISHED; canonical current Constitution Authority Context NOT ESTABLISHED; final protected boundary UNKNOWN / NOT DEMONSTRATED; deployment closure C0-C5 UNASSESSED; commissioning STOP / UNKNOWN.
 - The previous attempt to append the G-A14 reuse audit directly to the path map was blocked; no claim that that proposed append succeeded. The relevant G-A14 research references and proposed next action are preserved in the handoff.
 - Next chat: read STATUS, then the handoff, then the canonical Genesis→Core path map and trust-foundation attack review. Continue repository/deployment/source tracing and reuse G-A14 closure levels. Do not re-open frozen P112/TLC/Kafka/old AB work, do not rebuild M1 absent a direct dependency, do not add a decorative effectBoundary call, and do not invent a target/root/key/Constitution.
+
+
+### STEP 7 — runtime vs constitutional boundary precision update (2026-10-12)
+
+A fresh source fetch clarifies that the repository **does contain a real Nexo mission/simulation runtime**; the blocker is not “no Nexo runtime exists.” `src/nexo/runtime.js` (blob `1b4096bd6868fd9086ba6740f07d6a104a258651`) executes mission steps through an injected adapter, records execution/outcome in learning memory, and `executeLuminaNexoStep` uses a Lúmina simulation adapter. `tests/nexo/runtime.test.mjs` (blob `4dcb4ce2ad5ac09caa6b52dd37b93ed4be1bd615`) tests simulated agents/world/resources. `scripts/simulate.mjs` (blob `4dafebec265cc490ee17b388c75c04bb48869ac8`) launches the world simulation. `package.json` (blob `a9bc2306543d34808f3b5f6ac1ec2d588f77ca14`) defines simulation and audit/test scripts, but no demonstrated Genesis-to-constitutional-sink production composition.
+
+This runtime must not be conflated with STEP 7 constitutional enforcement: `src/nexo/core/protected-transition.mjs` (blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`) still does not call `effectBoundary.prepare`; `src/nexo/core/ownership.mjs` (blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`) defaults that port to `NOT_IMPLEMENTED`. The persistence adapter forwards candidate state but does not prove canonical Constitution Authority Context or complete mediation.
+
+**Next targeted action:** inspect `src/nexo/effect-adapter.js`, `src/nexo/simulation-adapter.js`, all imports/call sites/composition of the mission runtime and protected-transition Core, and classify each provider/sink as simulation-only, generic injected port, or actual deployed protected effect. Do not invent a target. Genesis trust UNKNOWN; current Constitution Authority Context NOT ESTABLISHED; final constitutional boundary UNKNOWN; commissioning STOP.
+
+Full recovery context and work queue: [NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md](BUILD/NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md).
