@@ -29,6 +29,35 @@ If we create one universal 'GenesisRoot' now, we risk coupling Constitution, pla
 
 Therefore the next research target is not 'which root wins?', but **which trust functions must be independent and which may safely share a root under explicit common-mode assumptions**.
 
+## External standards cross-check — Genesis is a trust decision, not a primitive (2026-10-12)
+
+Reviewed against primary-source specifications and platform documentation:
+
+- **IETF RATS, RFC 9334:** the Verifier consumes Evidence, Reference Values, Endorsements, and an appraisal policy to produce Attestation Results. A separate Relying Party consumes those results under its own appraisal policy for application-specific decisions. Therefore a verifier's result is not itself constitutional authorization; trust in the verifier and its policy remains a prerequisite. Source: https://www.rfc-editor.org/rfc/rfc9334.html
+- **The Update Framework (TUF):** Root metadata delegates trust to named roles and thresholds. Root rotation is validated through continuity from an already trusted root, with old/new threshold signatures and rollback checks. This gives a strong pattern for later updates but does not identify who legitimately selected the initial trusted root. Sources: https://theupdateframework.github.io/specification/v1.0.36/ and https://theupdateframework.github.io/specification/draft/
+- **Android Verified Boot (AVB):** Android verifies boot-critical partitions through a chain rooted in a platform key and supports rollback protection. Its claims concern the platform code/data covered by that chain. They do not automatically cover Nexo Constitution approval, Nexo verifier provenance, or Core's protected activation/effect path. User-settable roots are an optional platform feature with their own requirements; do not assume the current phone supports or exposes an appropriate authenticated signal to Nexo. Sources: https://source.android.com/docs/security/features/verifiedboot/verified-boot and https://source.android.com/docs/security/features/verifiedboot/device-state
+- **NIST SP 800-193:** platform resiliency separates protection against unauthorized change, detection of changes, and secure recovery. These are distinct security functions; recovery ability must not be interpreted as constitutional succession authority. Source: https://csrc.nist.gov/pubs/sp/800/193/final
+
+### Cross-source conclusion
+
+These sources strengthen the role-separation model but do not remove the initial-recognition problem. Cryptography can authenticate data relative to a key; attestation can support a scoped integrity claim; update frameworks can preserve trust continuity from a previously trusted root. None can derive the legitimacy of the first root solely from a bundle whose legitimacy depends on that same root.
+
+For STEP 7, do not conflate four separate propositions:
+1. Kevin recognized and approved the exact Constitution bytes/rendering and commissioning scope.
+2. The verifier, appraisal policy, reference values and provenance are independently trustworthy for the claim.
+3. A named Core-owned state and governed transition establish which Constitution is canonically current.
+4. Every protected decision/effect that relies on this state is mediated by a demonstrated final boundary.
+
+A human comparison can support proposition 1 only under its explicitly accepted recognition assumption. Platform attestation may support a platform-integrity subclaim only if an authenticated, independently appraised signal is actually integrated. Neither substitutes for propositions 2–4.
+
+### Implementation gate clarified
+
+Before implementation, two independent choices/evidence packages must exist:
+- **Recognition input:** a concrete, owner-recognized reference/channel for one exact Constitution revision and scope, with substitution and replay behavior defined.
+- **Target boundary:** a named deployment whose canonical active-Constitution state owner, verifier composition, create/replace/restore/consume paths, and final protected activation boundary can be traced and attacked.
+
+If either is absent, the correct engineering result is STOP/UNKNOWN, not a generic trust registry, a simulated “production” boundary, a self-generated root, or an M1-only proof. This is a bounded prerequisite, not a claim that the whole STEP 7 program is solved or permanently blocked.
+
 ## Frozen strict rules
 - No implementation from this research checkpoint alone.
 - No generic quorum engine.
