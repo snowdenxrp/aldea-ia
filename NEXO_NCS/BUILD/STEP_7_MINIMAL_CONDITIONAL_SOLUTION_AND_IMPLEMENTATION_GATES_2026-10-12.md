@@ -172,3 +172,15 @@ Implications:
 Research record: [STEP_7_ANDROID_PROTECTED_CONFIRMATION_CONDITIONAL_PATH_H_RESEARCH_2026-10-12.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_ANDROID_PROTECTED_CONFIRMATION_CONDITIONAL_PATH_H_RESEARCH_2026-10-12.md).
 
 Disposition unchanged: Genesis basis/verifier legitimacy UNKNOWN; canonical active-Constitution owner absent; final enforcement/bypass closure UNKNOWN; protected commissioning STOP. No production code or tests changed.
+
+## 2026-10-12 additional hard constraints for conditional Android confirmation
+
+AOSP implementation guidance specifies that the full protected-confirmation body must be displayed; the hard limit is 6144 bytes including nondisplayed data/CBOR framing, and if the message does not fit the rendered screen, the confirmation must abort. Android Key Attestation guidance explicitly requires sending the certificate chain to a separate trusted server for validation rather than validating on the device being evaluated, because a compromised Android system could make local verification trust untrustworthy data.
+
+Consequences:
+- Do not assume the full Constitution can fit one prompt; measure encoded size and actual rendering, and fail closed if any approval-critical content is omitted.
+- A summary/hash is not blanket human approval of the full document without a defensible exact-content/scope binding.
+- A remote server is not automatically independent. Its identity/trust anchor must already be recognized, and the candidate must not control its verifier policy/code/deployment or the final activation sink.
+- Device support, separate verifier identity, canonical state ownership and final-sink enforcement remain unproven.
+
+See [STEP_7_OFF_DEVICE_ATTESTATION_AND_FULL_CONTENT_CONFIRMATION_CONSTRAINTS_2026-10-12.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_OFF_DEVICE_ATTESTATION_AND_FULL_CONTENT_CONFIRMATION_CONSTRAINTS_2026-10-12.md). Disposition remains UNKNOWN/STOP; no production code or tests changed.
