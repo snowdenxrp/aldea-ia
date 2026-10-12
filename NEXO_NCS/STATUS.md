@@ -2049,3 +2049,11 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - Saved the detailed cross-check in the existing research file NEXO_NCS/RESEARCH/STEP_7_DEEP_TRUST_RATS_RECOVERY_CONSOLIDATION_2026-10-08.md, verified blob SHA 55e2e10402f5b42359b1447a93ae1dc742bec1d1, commit b570512e35ab8ebf4689becbb6b39632f96c283c.
 - Consequence: TUF/in-toto may later support artifact provenance, distribution, and key lifecycle after a recognized bootstrap; neither establishes initial owner recognition, Core-owned active-Constitution state, or final-boundary bypass closure. No code or trust mechanism was added.
 - STEP 7 remains ACTIVE; Genesis Trust Foundation UNKNOWN / NOT ESTABLISHED; protected commissioning OPEN / STOP / UNKNOWN. Continue safe source/test analysis without inventing the reference or target deployment.
+
+
+### STEP 7 — SUIT / NIST trust-anchor provisioning role separation (2026-10-12)
+
+- Cross-checked IETF RFC 9019 with NIST SP 800-57 Part 1 Rev. 5. SUIT requires trust anchors to be provisioned through an out-of-band Trust Provisioning Authority before firmware updates; NIST emphasizes that authenticity of the initial trust-anchor public key is the crucial assumption and that embedding it relies on authentic software distribution. Sources: https://www.rfc-editor.org/rfc/rfc9019.html ; https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final.
+- STEP 7 implication: platform/OEM trust provisioning, software author/build provenance, deployment operator approval, and Nexo constitutional owner approval are separate authority claims. No role should be silently promoted into another. A future platform chain may support scoped integrity/provisioning claims, not automatically Kevin's approval or complete mediation of protected Nexo effects.
+- Detailed analysis saved and verified in the existing deep-trust research file, blob SHA `d6c014c6104d940c0a933accabed7b79b96d5667`, commit `02b649d2547ba25d917b49792b91cf612f112190`.
+- No platform, OEM, TPA, key, Constitution, code, device, or runtime state was selected or changed. STEP 7 remains ACTIVE; Genesis trust is UNKNOWN / NOT ESTABLISHED; protected commissioning remains STOP / UNKNOWN.
