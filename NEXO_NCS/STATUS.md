@@ -2212,3 +2212,13 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - GitHub Pages workflow builds/deploys a static Jekyll artifact; it does not deploy `functions/api/capture.js`. Therefore direct GitHub Pages hosting without separate proxy/override lacks the server-side route; expected client behavior is fallback, but live HTTP response/URL not verified. Cloudflare or proxy deployment remains UNKNOWN.
 - Recorded in [Pages runtime boundary audit](BUILD/STEP_7_PAGES_RUNTIME_BOUNDARY_AND_PUBLIC_WRITER_AUDIT_2026-10-12.md), audit update commit `3ac2472ef507ae239587a146777ac3c334c881bb`.
 - No code or deployment changed. Nexo STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Final-effect admission adversarial review — 2026-10-12
+
+- Reused existing AB104.369/AB104.370 and the current final-effect admission contract; did not repeat the earlier TOCTOU research.
+- New attack surface: a central revocation write does not prove every sink has enforced the new generation. Delayed propagation, stale caches, multiple sinks, unavailable sinks, generation rollback, or scope/policy changes without generation advancement can make a global “STOP enforced” claim false.
+- Refined requirement: define an effective revocation point per sink. Global revocation is ENFORCED only when every in-scope sink is past that point or all remaining routes/capabilities are independently proven disabled. Otherwise global status remains UNKNOWN/STOP. An effect admitted first is not retroactively erased; in-flight outcome requires honest reconciliation.
+- Review record: [STEP_7_FINAL_EFFECT_ADMISSION_ADVERSARIAL_REVIEW_2026-10-12.md](BUILD/STEP_7_FINAL_EFFECT_ADMISSION_ADVERSARIAL_REVIEW_2026-10-12.md), commit `b0ed5927f4db3968efcbf2d877c17e854bb6f609`, blob `fa81b5770a64a934c0fada1d92c82edadd8d1818`.
+- Current source still has an early injected authority check and a separate state-revision commit; no deployed target/sink topology or canonical active-Constitution owner has been established. This refinement is a contract requirement, not implementation evidence.
+- No code, tests, workflows, keys, Constitution, APK, device, deployment, or runtime state changed. No tests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
