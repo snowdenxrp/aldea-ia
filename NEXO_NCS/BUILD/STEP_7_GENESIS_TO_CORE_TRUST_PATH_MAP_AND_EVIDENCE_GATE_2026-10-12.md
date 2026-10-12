@@ -46,6 +46,29 @@ It also says Genesis activation requires an external/independent authority or th
 
 The historical MASTER labels PG-005 (Verifier/Policy/Reference Integrity) and PG-006 (Bootstrap / First Trust) “closed architecturally.” Read together with its explicit “NOT implemented/TLC-verified” notes and the current source evidence, this means the semantic research direction was consolidated; it does not mean a deployable trust path or runtime enforcement was established. No historical text found in this bounded review resolves the actual verifier's provenance or names the active-Constitution state owner.
 
+## External standards cross-check — trust roles vs constitutional authority (2026-10-12)
+
+This bounded research cross-check used the IETF RATS architecture (RFC 9334), the current TUF specification, Android Verified Boot documentation, and NIST SP 800-193:
+
+- **RATS (RFC 9334):** an Attester produces Evidence; a Verifier appraises it using Reference Values/Endorsements and an appraisal policy; a Relying Party separately appraises the Attestation Result for its own decision. The verifier's result supports a decision but does not automatically supply the relying party's authorization policy or governance legitimacy. Source: https://www.rfc-editor.org/rfc/rfc9334.html
+- **TUF:** root metadata delegates trust to named roles and thresholds; clients must begin with a trusted root and validate root rotation through continuity from the previously trusted version. It provides robust update/rollback/freeze defenses within that trust model, but does not establish who legitimately chose the first root. Sources: https://theupdateframework.github.io/specification/v1.0.36/ and https://theupdateframework.io/docs/metadata/
+- **Android Verified Boot:** verified boot can establish a chain from a platform root to the Android images protected by that boot process. The evidence is scoped to that platform chain; it does not by itself prove that Nexo's Constitution was owner-approved, that a Nexo verifier/appraisal policy is legitimate, or that a Nexo protected-effect path is mediated. The current repository does not show Nexo consuming authenticated platform attestation to establish Genesis. Source: https://source.android.com/docs/security/features/verifiedboot/verified-boot
+- **NIST SP 800-193:** platform resiliency separates protection, detection, and recovery mechanisms; these mechanisms are not interchangeable. Recovery capability does not automatically confer constitutional succession authority. Source: https://csrc.nist.gov/pubs/sp/800/193/final
+
+### Consequence for STEP 7
+
+No protocol, hash, signature threshold, attestation result, secure-storage flag, or boot measurement can derive the legitimacy of its own initial trust configuration without an already accepted trust assumption. The missing item is not another cryptographic primitive: it is an explicit, bounded decision about the independently recognized initial reference and the deployment boundary that will consume it.
+
+For Nexo, keep four predicates independent:
+1. **Owner intent:** the owner reviewed and approved exact constitutional bytes/rendering, version, and scope through a recognized reference channel.
+2. **Verifier trust:** the verifier implementation, appraisal policy, reference data, and provenance are grounded independently of the candidate Constitution being verified.
+3. **Canonical currentness:** a named Core-owned state owner and transition rule establish which Constitution is active, including revocation, rollback, conflict, recovery, and succession.
+4. **Enforcement:** every protected decision/effect that relies on that state passes through a demonstrated final boundary, with bypass closure tested.
+
+Passing one predicate must not imply another. A human comparison can support predicate 1 only under its stated recognition assumption. Android boot evidence, if later authenticated and integrated, may support a narrowly scoped platform-integrity claim; it cannot replace predicates 1, 2, 3, or 4.
+
+**Engineering disposition:** keep implementation STOP until both (a) the concrete recognized reference/owner-approval channel and (b) the actual target deployment boundary are identified. These are different choices. Do not choose a phone, M1, manufacturer root, key, threshold, or simulated persistence target by inference. No code or protected state is authorized by this research.
+
 ## Current proof boundary
 
 Verified in this review:
