@@ -24,6 +24,12 @@ Repository code search for `executeProtectedTransition` returned the function de
 
 This is a bounded source-search finding, not proof against every dynamic import, external consumer, generated build, or runtime path. It is sufficient to say that this review has not identified an existing production protected-effect target to wire. Therefore do not invent one during this step; the deployment/effect target remains an explicit unresolved decision.
 
+## Concrete persistence target check (2026-10-12)
+
+The existing `src/nexo/adapters/conditional-commit-persist-state.mjs` adapter delegates to the `persistState` primitive. The focused integration test `tests/nexo/conditional-commit-persist-state.test.mjs` imports `loadState`, `applyState`, and `persistState` from `scripts/simulate.mjs`, writes a temporary `world-state.json`, and verifies state revision advancement and stale revision conflict. The Step 3C integration gate explicitly says that no external effect is implemented by this step.
+
+Therefore, the current concrete persistence target is a simulation/world-state snapshot. It is useful for verifying the application-state commit contract, but it is not an Android system/device control boundary and does not establish constitutional commissioning. This review has not identified a separate deployed Android or physical-effect target in the protected-transition call path.
+
 ## Current proof boundary
 
 Verified in this review:
