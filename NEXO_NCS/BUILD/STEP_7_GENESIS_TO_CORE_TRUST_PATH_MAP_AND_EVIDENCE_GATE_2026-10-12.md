@@ -36,6 +36,16 @@ The isolated client exists at `NEXO_NCS/M1_ANDROID/`. Its source uses applicatio
 
 This corrects the source-location finding only. No current workflow pass, artifact-to-installed-APK match, or Moto G52 runtime behavior has been verified. The installed package was previously identified as `org.nexo.m1.safetest18`, which differs from this source's application ID. The M1 README was updated to reflect the current source and this evidence limit; no app code, APK, phone state, Constitution, or authority artifact was changed.
 
+## Historical MASTER reconciliation (bounded, 2026-10-12)
+
+The canonical MASTER's bootstrap section gives a conceptual Genesis Trust Bundle containing Constitution hash, trust anchors, recovery authorities, policy/reference hashes, admitted artifacts/dependencies, platform measurements, initial epoch, and approval evidence. It sketches the chain:
+
+`HARDWARE/PLATFORM ROOT → VERIFIED BOOT → MEASURED BOOT → BOOTSTRAP RUNTIME → CONSTITUTION → POLICY/REFERENCES → GATE/PEP → IDENTITY → NEXO → CAPABILITIES`
+
+It also says Genesis activation requires an external/independent authority or threshold according to deployment. This supports the provisional reading that bootstrap needs an independently grounded trust/evidence basis outside cognition, but it does **not** select a concrete root, verifier, threshold, platform, or approval mechanism. The hardware/platform-root chain is a deployment-dependent conceptual path, not evidence that the current Android phone or M1 supplies verified/measured boot for Nexo.
+
+The historical MASTER labels PG-005 (Verifier/Policy/Reference Integrity) and PG-006 (Bootstrap / First Trust) “closed architecturally.” Read together with its explicit “NOT implemented/TLC-verified” notes and the current source evidence, this means the semantic research direction was consolidated; it does not mean a deployable trust path or runtime enforcement was established. No historical text found in this bounded review resolves the actual verifier's provenance or names the active-Constitution state owner.
+
 ## Current proof boundary
 
 Verified in this review:
