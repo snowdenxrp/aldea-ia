@@ -2117,3 +2117,13 @@ This runtime must not be conflated with STEP 7 constitutional enforcement: `src/
 **Next targeted action:** inspect `src/nexo/effect-adapter.js`, `src/nexo/simulation-adapter.js`, all imports/call sites/composition of the mission runtime and protected-transition Core, and classify each provider/sink as simulation-only, generic injected port, or actual deployed protected effect. Do not invent a target. Genesis trust UNKNOWN; current Constitution Authority Context NOT ESTABLISHED; final constitutional boundary UNKNOWN; commissioning STOP.
 
 Full recovery context and work queue: [NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md](BUILD/NCS_STEP_7_CONTINUATION_HANDOFF_2026-10-12.md).
+
+
+### STEP 7 — adapter/sink classification refinement (2026-10-12)
+
+Further bounded inspection:
+- `src/nexo/effect-adapter.js` blob `e2095c52282865699e4de107c75a6792bcf5dac3` is a typed adapter framework with an explicitly injected handler map. It requires precondition/result/postcondition handling and has a prepared-intent journal/reconciliation path; this is valuable effect-execution machinery but the framework itself does not prove that every production sink is registered, that handlers are constitutional sinks, or that the caller is authorized by Genesis.
+- `src/nexo/simulation-adapter.js` blob `291ef4d43ca1af2dad29503d8c15f5cdd05aa114` requires a `simulation` object containing agents and world and defines Lúmina world/resource/agent action handlers. This classifies the inspected Lúmina adapter as simulation-scoped, not as a demonstrated real-device/external-provider constitutional boundary.
+- Code search for `executeProtectedTransition` surfaced its definition and focused tests, not a production call site; `createCorePorts` surfaced its port factory and tests, not a verified Genesis-to-Core-to-sink composition. Search is bounded evidence only.
+- Important distinction: effect adapter preconditions/postconditions and an idempotency journal can improve execution/reconciliation, but they do not create initial constitutional authority, and a journal entry marked prepared does not itself prove whether an external effect occurred. Complete mediation must still be enforced at the real sink.
+- Next: inspect all imports and call sites for `createEffectAdapter`, `createLuminaEffectAdapter`, `executeNexoStep`, `executeLuminaNexoStep`, and `executeProtectedTransition`; inventory any handlers/providers beyond the simulation adapter. If no non-simulation sink is present in the branch, record that as the scope limit and leave the deployment/target input UNKNOWN rather than synthesizing one.
