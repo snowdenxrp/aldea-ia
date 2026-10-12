@@ -548,3 +548,9 @@ This is a contract refinement, not a selected deployment design or implementatio
 - Source review found a server route that writes uploaded audit files to the repository when deployed with its server token. Actual deployment and token configuration are UNKNOWN; this is not a confirmed live exposure.
 - GitHub Pages static hosting does not execute Cloudflare Pages Functions. The route is part of a separate Lúmina path, not evidence of a Nexo production sink; do not connect it to Nexo authority/runtime.
 - No code, workflow, secret, key, Constitution, APK, device or deployment changed; no tests or live requests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+### 9.26 — Lúmina capture request-boundary / concurrency review (2026-10-12)
+- Re-read `functions/api/capture.js` at blob `83afd34b8d32840dd8944cb35b406076f2b9fd5c`.
+- New source-only findings: the multipart form is parsed before the PNG size check; metadata has no explicit size/schema bound; capture IDs have one-second resolution; and the four sequential GitHub writes are not atomic, allowing partial records or a `latest.png` / `latest.json` mismatch under failures/concurrency.
+- These findings are conditional on the function being deployed and reachable with a write-capable token. Public reachability, token configuration, exploitation and actual impact remain UNKNOWN.
+- Record updated in `NEXO_NCS/BUILD/STEP_7_LUMINA_CAPTURE_EXTERNAL_WRITE_BOUNDARY_REVIEW_2026-10-12.md`. No code, workflow, secret, deployment or runtime changed; no tests/live requests ran. Keep Lúmina separate from Nexo protected authority. STEP 7 remains OPEN / STOP / UNKNOWN.
