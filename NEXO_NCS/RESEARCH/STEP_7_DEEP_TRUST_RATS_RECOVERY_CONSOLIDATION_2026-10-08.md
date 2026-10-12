@@ -68,3 +68,16 @@ If either is absent, the correct engineering result is STOP/UNKNOWN, not a gener
 - No provider-selected root.
 - No claim that current repository runtime supports any of this until an actual protected mechanism exists.
 - UNKNOWN remains UNKNOWN.
+
+
+### Additional primary-source cross-check — Android key attestation, Play Integrity, and SLSA (2026-10-12)
+
+This bounded follow-up asks whether existing Android attestation and software-supply-chain provenance mechanisms could fill STEP 7's initial trust or final-enforcement gap.
+
+- **Android Key Attestation:** the Android security documentation says a relying verifier must validate the attestation certificate chain and inspect the security level; hardware-backed claims depend on actual device support and a trusted attestation chain. This can support a narrowly scoped claim about a key's hardware/security properties when properly verified. It does not prove that Kevin approved a Constitution, that a Nexo verifier/policy is legitimate, or that every protected Core path is mediated. Device capability must be established, not assumed. Source: https://source.android.com/docs/security/features/keystore/attestation
+- **Play Integrity API:** Google's documented scope concerns whether important actions come from an unmodified app binary installed by Google Play and running on a genuine Android device, with a backend deciding what to do. It is a platform/app integrity signal, not a constitutional owner-approval mechanism; using it would also introduce Google Play/service availability and policy dependencies into the threat model. Source: https://developer.android.com/google/play/integrity
+- **SLSA provenance:** build provenance can bind an artifact to claimed build inputs and builder identity, but verification depends on preconfigured trusted builder identities/root-of-trust expectations and trust in the builder's provenance. It is useful for source-to-artifact correspondence (for example, future APK evidence), not for selecting Nexo's first constitutional trust root or proving that an installed artifact is the intended production activation boundary. Sources: https://slsa.dev/spec/v1.2/provenance and https://slsa.dev/spec/v1.0-rc1/verifying-artifacts
+
+**Result:** these mechanisms may contribute evidence to separate claims if a real target deployment later consumes and verifies them. None independently closes the current STEP 7 Genesis bootstrap, owner-recognition, canonical active-Constitution ownership, or final anti-bypass boundary. Do not add them as mandatory dependencies, assume this phone supports hardware-backed attestation, or treat an APK build attestation as commissioning evidence before a concrete need and target are established.
+
+This is a research addition only. No device, key, Constitution, APK, policy, or runtime behavior was changed.
