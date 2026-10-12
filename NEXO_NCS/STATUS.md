@@ -1941,3 +1941,12 @@ Next action remains bounded: ground the actual deployment profile/entrypoint and
 - No owner decision selecting a trust mechanism is present in the reviewed contract. The bounded phone-channel assumption is **not** a mechanism selection and does not establish C0.
 - **Next dependency:** either an explicit, bounded owner choice to use a human-recognized out-of-band comparison as an initial commissioning assumption (with its limitations preserved), or concrete evidence for a separate independently recognized mechanism. Even if such an assumption is chosen, verifier provenance, canonical active-Constitution state ownership, and bypass-closed activation remain separate required gates.
 - No source code, tests, workflow, keys, Constitution, APK, or device state changed. Protected commissioning remains **STOP / UNKNOWN**.
+
+
+### STEP 7 — Branch identity / post-checkpoint evidence reconciliation (2026-10-12)
+
+- Rechecked the exact `ncs-clean-architecture` ref before continuing. Its STATUS blob remains the one committed by `83a53a4343133a0c995621471cbf2adcf4428040`; the branch has not advanced to the newer repository-wide commits returned by global recent-commit search.
+- Compared the branch ref against the latest repository-wide commit `1b815fd5ef03130ce8aef45b4e7cc7b745b63afb`. GitHub reports the refs as diverged. The inspected newer commits are Lúmina simulation state updates touching only `.lumina-assistant-memory.json` and `world-state.json`; they are not Step 7 commissioning or deployment evidence and must not be treated as if they landed on `ncs-clean-architecture`.
+- This corrects a potential provenance confusion: repository-wide latest commit ≠ NCS branch head. No new protected-Core production entrypoint, deployment artifact, Genesis verifier, active-Constitution owner, or final activation/effect boundary was established.
+- No source, workflow, APK, device, root, verifier, or Constitution changed. No build or installation was run.
+- **Disposition:** this reconciliation adds no closure evidence. Do not repeat source sweeps or transplant Lúmina state commits into NCS. Step 7 remains **OPEN / STOP / UNKNOWN**. The next meaningful transition requires either genuinely new, independently inspectable deployment/source evidence or an explicit bounded owner decision about the initial commissioning trust assumption; that decision alone would not close the separate verifier, state-owner, and final-enforcement gates.
