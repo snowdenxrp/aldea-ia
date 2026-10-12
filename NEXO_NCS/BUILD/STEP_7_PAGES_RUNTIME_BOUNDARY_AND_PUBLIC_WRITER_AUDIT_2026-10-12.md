@@ -50,3 +50,16 @@ Read-only next step: establish whether Cloudflare Pages has an actual project/de
 For Nexo STEP 7, continue separately to identify a real protected effect sink and canonical authority owner. If none is evidenced, keep effect execution blocked.
 
 No code/tests/deployments/devices/authority were changed in this audit.
+
+
+## 6. Additional confirmed client/static-site mismatch (2026-10-12)
+
+Fresh inspection of the `main` tree found:
+- Repository metadata reports `has_pages: true` and the default branch is `main`.
+- `index.html`, blob `97fa1954d0838d09f4a286ea189c2661207f5aa2`, explicitly sets `window.__LUMINA_CAPTURE_ENDPOINT="/api/capture"` and loads `src/main-stable.js`.
+- `src/main-stable.js`, blob `b48d7fd9f51baee4cd1e9b319de56bb31eedb772`, POSTs the capture to that endpoint and falls back to downloading a local PNG on any failed response.
+- The observed successful GitHub Pages workflow builds with Jekyll and deploys the static Pages artifact. It does not deploy the Cloudflare Function source.
+
+Conclusion: if this `main` site is served directly by GitHub Pages without an independently configured proxy/override, `/api/capture` is not implemented by that static deployment and the button should enter its local-download fallback. The exact live URL/request response was not verified because direct public-host access was unavailable from this inspection environment; do not claim a live 404 as observed. A separate Cloudflare deployment or routing layer remains possible but unverified.
+
+This is a concrete deployment-integration gap to verify, not a Nexo authority finding. No source code or deployment was changed.
