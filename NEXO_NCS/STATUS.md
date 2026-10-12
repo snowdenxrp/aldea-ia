@@ -2087,3 +2087,13 @@ A fresh search/fetch against branch `ncs-clean-architecture` revalidated the sou
 - Reused existing G-A14 closure research; no duplicate registry/document or production code/test was added. The attempted update to the path-map file in the preceding pass was blocked and is not claimed as saved.
 - Disposition remains: STEP 7 research ACTIVE; Genesis trust UNKNOWN / NOT ESTABLISHED; canonical current Constitution Authority Context NOT ESTABLISHED; production AuthorityGate composition NOT ESTABLISHED in reviewed branch; final protected boundary UNKNOWN; protected commissioning STOP.
 - Next action: verify current branch entrypoints, production composition/build/deployment artifacts and all executeProtectedTransition callers; determine whether a named auditable protected target exists. Continue primary-source analysis of independent Genesis bootstrap without presuming a phone, OEM, CA, second device, person, paper, Git, or self-generated hash is a legitimate root. Then apply existing G-A14 C0–C5 contract to that actual target. See the continuation rule for detailed steps and evidence requirements.
+
+
+### STEP 7 — follow-up deployment-source search (2026-10-12)
+
+- 🟢 Re-fetched package.json (blob `a9bc2306543d34808f3b5f6ac1ec2d588f77ca14`): the scripts expose simulation/assistant tasks and a long audit/test suite ending in the Nexo protected-transition test; no Nexo production build/deploy target is identified there.
+- 🟢 Re-fetched protected-transition source (blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`) and ownership ports (blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`): the transition commits after injected authority and semantic PASS; effectBoundary.prepare remains an uninvoked NOT_IMPLEMENTED port in the reviewed function.
+- 🔵 Bounded search for executeProtectedTransition surfaces implementation, tests, and integration documentation but no production composition. This is not proof about external/unindexed deployments.
+- Durable continuation rule updated and re-fetched: blob `eabd327375d6ab9b63dac0e2ed04e2b018c2957b`; commit `67d1cf485117f2e9b2b803ff04eb11d5f40fa31c`. It includes the exact follow-up source observations and next steps.
+- Next: inspect workflow/build/deployment files and every actual caller; if no named target exists in-repo, record that as the precise missing prerequisite. Do not invent a simulated sink or wire a ceremonial effectBoundary call.
+- Disposition unchanged: STEP 7 ACTIVE; Genesis trust UNKNOWN / NOT ESTABLISHED; Constitution Authority Context NOT ESTABLISHED; final protected boundary UNKNOWN; commissioning STOP.
