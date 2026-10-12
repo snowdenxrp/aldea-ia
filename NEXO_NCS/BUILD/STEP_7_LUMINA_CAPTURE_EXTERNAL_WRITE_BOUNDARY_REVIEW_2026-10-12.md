@@ -42,3 +42,17 @@ This is a concrete source-level external-write boundary in the separate Lúmina 
 
 ## Actions performed
 Read-only source/config review and public documentation research only. No code, workflow, secret, token, Constitution, APK, device, deployment, or runtime state changed. No tests ran. Deployment status remains UNKNOWN.
+
+## Additional source finding — request bounds and concurrent capture consistency (2026-10-12)
+
+Further read-only inspection of the same pinned `functions/api/capture.js` found three independent integrity/availability concerns. These are source-level findings conditional on deployment; no live endpoint was tested.
+
+1. **The PNG limit is checked after multipart parsing.** `request.formData()` completes before the code checks `image.size <= 12 MiB`. The metadata part has no explicit byte limit or schema/depth/key-count bound. Therefore the image check alone does not bound the entire request or the memory/work consumed while parsing it.
+2. **History identifiers have one-second resolution.** `stamp()` removes milliseconds. Two captures in the same second derive the same history image and history-metadata paths, so a later request can replace the earlier entry instead of creating two distinct history records. The `GET existing SHA → PUT` sequence also has a race under concurrent updates.
+3. **One logical capture is four independent GitHub writes.** The image history, latest image, metadata history and latest metadata are committed sequentially, without an atomic multi-file transaction or a capture-level consistency check. A failure partway through can leave partial records; concurrent requests can interleave latest-image and latest-metadata updates, so the two `latest` files may describe different captures.
+
+### Consequence and disposition
+- Treat the endpoint as a conditional write/availability/integrity risk if publicly deployed with a write-capable token.
+- Before enabling it, bound the whole request before/while parsing, validate a strict metadata schema and size, use collision-resistant capture identity, and define a concurrency-safe persistence design that cannot silently pair an image with another capture's metadata. If atomic consistency is required, store one immutable capture bundle or manifest as the commit unit, then update a pointer with explicit concurrency control.
+- Keep this Lúmina audit-storage issue separate from Nexo's Genesis/Constitution authority path. It is not a Nexo sink and does not authorize integration.
+- Deployment, token scope, public reachability, actual exploitation and production impact remain UNKNOWN. No code, workflow, secret, deployment, or runtime state changed; no tests or live requests ran.
