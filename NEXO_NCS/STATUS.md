@@ -2168,3 +2168,15 @@ Read-only source trace recorded in [STEP_7_MISSION_LIFECYCLE_AND_MUTATION_ENTRYP
 - Do not invent a caller/executor to close the call-site gap. First identify a concrete deployed target/sink, if one exists outside the inspected repository evidence, and then trace all entrypoints and enforcement at that sink.
 
 No code or tests changed or ran in this pass. Commissioning remains OPEN / STOP / UNKNOWN.
+
+
+## STEP 7 — Lúmina scope separation / mutation footprint — 2026-10-12
+
+Read-only decision recorded in [STEP_7_LUMINA_SCOPE_SEPARATION_AND_MUTATION_FOOTPRINT_DECISION_2026-10-12.md](BUILD/STEP_7_LUMINA_SCOPE_SEPARATION_AND_MUTATION_FOOTPRINT_DECISION_2026-10-12.md), commit `f94b958204e97f2bd1ed249796ba35baee09082d`.
+
+- Current Lúmina is treated as a local experimental simulation, not evidence of a production Nexo effect sink.
+- Do not wire `executeLuminaNexoStep()` into `tick()`, `performDecision()`, `assistants.mjs`, or `simulate.mjs) just to fill a missing caller.
+- If Lúmina itself is ever declared a protected target, enumerate the complete mutation footprint: `performDecision()` has direct mutation branches outside `executeAction()`; `tick()`, `advanceWorldDay()`, and `advanceSocietyDay()` are broad shared writers. A gate only inside `executeAction()` is insufficient.
+- This is not a claim that no external deployment exists. No external sink was identified in this pass; that question remains UNKNOWN.
+
+No code or tests changed or ran. Commissioning remains OPEN / STOP / UNKNOWN.
