@@ -222,3 +222,19 @@ A focused indexed-source search for `executeProtectedTransition` returned the im
 **Interpretation:** current evidence supports that the generic transition contract is implemented/tested, but not that it is connected to a production first-boot path. Mocked AUTHORIZED test ports do not establish a Genesis verifier. Search-index absence is bounded evidence, not proof that dynamic/unindexed callers are impossible.
 
 **Next exact action:** identify whether NCS has a real production entrypoint/runtime composition and enumerate all callers/effect routes from it. If no such composition exists, treat that as the current construction boundary gap; do not add an initial-Constitution store, resolver, adapter, or wrapper merely to create a caller. Reconcile this finding with MASTER + frozen AB + P/P112. Protected commissioning remains OPEN / STOP / UNKNOWN; no phone commands, installs, M1 switch, or activation.
+
+
+## 2026-10-11 — Qualification: existing simulation runtime is not constitutional enforcement
+
+The source pass now distinguishes two code paths:
+
+- Existing legacy simulation runtime: `src/nexo/runtime.js` exposes `executeNexoStep` / `executeLuminaNexoStep`, invokes an adapter, and records mission execution/outcome.
+- New protected Core: `src/nexo/core/protected-transition.mjs` composes injected ports and is covered by focused tests, but no production composition connecting it to the legacy runtime or a first-boot constitutional activation path was evidenced in the bounded indexed search.
+- `scripts/assistants.mjs` builds and persists mission plans; the inspected flow does not call `executeProtectedTransition`. `package.json` has simulation/assistant/test scripts, not a dedicated constitutional commissioning entrypoint.
+
+This corrects any overly broad wording that could imply Nexo has no runtime/effect code. There is execution code; what remains unproven is the **constitutional trust and enforcement relationship** across the intended deployed effect routes. Neither legacy execution nor a mocked AUTHORIZED port result establishes Genesis legitimacy or closes bypasses.
+
+Updated review: `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md` commit `a86ce0f513783006e51afca087f8a6280bf36f40`.
+Canonical status clarification: `NEXO_NCS/STATUS.md` commit `d5718db8ad1344e28825cafef9fdad53f945b512`.
+
+Next exact action: map the intended deployment target and all effect sinks/routes in scope, then establish whether/how the protected Core must mediate each route. Do not wire old and new paths together merely to complete a diagram. Keep OPEN / STOP / UNKNOWN; no commissioning or device changes.
