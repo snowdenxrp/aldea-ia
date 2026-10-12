@@ -422,3 +422,20 @@ New conclusion, not a commissioning pass:
 - Commissioning remains OPEN / STOP / UNKNOWN.
 
 Continue from this contract without reopening old AB/TLC/Kafka work. Next non-duplicative task: inspect the actual deployment/sink evidence, if any exists in the repository or connected workflow records, and distinguish it from simulation/test fixtures. Do not infer that a production sink exists from the generic Core port.
+
+
+## 9.15 — Current deployment/build evidence recheck (2026-10-12)
+
+A current branch-tree/workflow/artifact pass was performed after 9.14; this is new evidence, not a repeat of the earlier source-only search.
+
+- GitHub Actions M1 build run: `38204426310`
+- URL: https://github.com/snowdenxrp/aldea-ia/actions/runs/38204426310
+- Conclusion: `success`; event `push`; head `bc16c05f599761968e89a2d175b4e87093963504`; run number 45.
+- Artifact: `nexo-m1-native-prototype-debug-apk`, artifact ID `11726378906`, 49,800,669 bytes, created 2026-10-12 and expires 2026-10-26.
+- The workflow executes `assembleDebug` and uploads a debug APK plus build evidence. It does not install the APK on the user's phone, commission a Constitution, or prove runtime authority/sink enforcement.
+- Current M1 manifest has no `INTERNET` permission. `MainActivity.kt` describes local text-only inference and explicitly says there are no tools, effects, Vault, durable chat history, or Nexo runtime import. This supports treating M1 as an experimental local inference prototype, not as the production STEP 7 effect boundary.
+- GitHub Releases currently returns zero releases. The reviewed workflow inventory contains test/build/simulation workflows and the M1 debug-build workflow, but no named production commissioning/deployment workflow. The deployment API endpoint was not available through the inspected route; do not infer from that limitation that no external deployment exists.
+- `NEXO_NCS/STATUS.md` was updated with this bounded evidence and links the final-effect admission contract.
+- No tests were run; no source/runtime/device/key/Constitution changes were made by the evidence pass. Commissioning remains OPEN / STOP / UNKNOWN.
+
+Next: only if an actual production/deployed target is found in repository records or a concrete deployment record, trace its entrypoints and all reachable sinks. Otherwise record that the repository presently evidences a prototype build and generic Core contracts, not a deployable commissioned effect path; do not manufacture a production composition just to connect abstractions.
