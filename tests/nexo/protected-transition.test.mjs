@@ -216,7 +216,7 @@ function makePorts(overrides = {}) {
     () => executeProtectedTransition({
       ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
     }),
-    /NEXO_CORE_CONTRACT_NOT_IMPLEMENTED: authorityGate\\.check/
+    /NEXO_CORE_CONTRACT_NOT_IMPLEMENTED: authorityGate\.check/
   );
   assert.deepEqual(calls, { isolate: 0, execute: 0, validate: 0, commit: 0 });
 }
