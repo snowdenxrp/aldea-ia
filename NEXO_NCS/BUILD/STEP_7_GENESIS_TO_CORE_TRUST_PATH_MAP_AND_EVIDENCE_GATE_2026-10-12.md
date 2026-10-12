@@ -124,3 +124,28 @@ Do not simply add `await effectBoundary.prepare(...)` to `executeProtectedTransi
 A future claim of complete mediation must include: (1) named deployment/build identity; (2) reachable entrypoints and sink inventory; (3) current Authority Context source and freshness/revocation semantics; (4) source/build-to-deployed-artifact linkage; (5) tests showing unauthorized, stale, replayed, revoked, UNKNOWN and bypass attempts cannot reach the sink; and (6) evidence of the deployed test target and raw results. Unit tests with injected authority are necessary but insufficient.
 
 **Disposition unchanged:** Genesis Trust Foundation UNKNOWN; canonical current Constitution Authority Context NOT ESTABLISHED; legitimate AuthorityGate composition NOT ESTABLISHED; final protected effect boundary UNKNOWN; commissioning STOP. No code, keys, Constitution, or runtime state changed.
+
+
+## 2026-10-12 focused adversarial interpretation of the existing protected-transition tests
+
+### Re-inspected exact source and test
+- `src/nexo/core/protected-transition.mjs` blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`.
+- `src/nexo/core/ownership.mjs` blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`.
+- `tests/nexo/protected-transition.test.mjs` blob `b40caf831523c231a45959885d4890f245a43d76`.
+- Existing Constitution Authority Context future-countereffects gate: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_FUTURE_COUNTEREFFECTS_GATE_2026-10-08.md`, blob `d5ebabcb05566593e32f3e1f9bf1047f6b99e0c0`.
+
+### New precision about what the tests prove
+1. The test suite includes a useful fail-closed probe: when `authorityGate.check` is not supplied, the default `NOT_IMPLEMENTED` throws before isolation, candidate execution, validation, or commit. This is valid component evidence that an absent gate does not silently proceed in this test harness.
+2. The normal-path fixture explicitly injects `authorityGate.check: () => createAuthorityResult(AUTHORITY.AUTHORIZED)`. The transition accepts that returned enum result and proceeds. This is expected dependency injection for a component test, not proof that an actual production gate can authenticate the producer or determine current constitutional authority.
+3. The transition has no provenance/currentness verification for the authority result itself. The port contract cannot distinguish a genuine verifier from a caller-supplied function that returns AUTHORIZED. That distinction belongs to the still-missing composition and independently recognized trust boundary, not to another shape check in the generic transition.
+4. `effectBoundary.prepare` is present as a port in `createCorePorts`, defaulting to `NOT_IMPLEMENTED`, but the inspected transition does not call it. Adding a call without a named real sink, canonical state owner, and linearization point would not prove complete mediation.
+5. The test's conditional commit is a fixture. It does not demonstrate a production Constitution state owner or actual external protected effect.
+
+### Disposition and safe next engineering boundary
+- Retain these component tests as component-level evidence only; do not relabel them Genesis, commissioning, or final-sink evidence.
+- Do not weaken/remove the missing-gate fail-closed behavior.
+- Do not add a second authority wrapper, local constructor, registry, or caller-declared provenance field. Such additions would reproduce the circularity identified in the existing future-countereffects gate.
+- A future implementation may start only after one concrete deployment/activation target and an independently recognized bootstrap premise are identified. At that point, define the owner of the canonical current-Constitution state and wire the verifier to the last effect-capable boundary; then add substitution, replay, stale/revoked, UNKNOWN, interruption, recovery, and bypass tests against that target.
+- Until those prerequisites exist, no repository-only test can honestly turn the injected AUTHORIZED fixture into legitimate Genesis authority.
+
+Evidence class: source observation + test-source inspection; no tests were executed in this review. No production code, tests, workflows, repository settings, keys, Constitution artifact, APK, or device/runtime state changed.
