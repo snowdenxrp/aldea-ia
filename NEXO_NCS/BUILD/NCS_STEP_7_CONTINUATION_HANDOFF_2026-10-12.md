@@ -262,3 +262,29 @@ Blob: `330f3c335c999a73b2917d146a1317b3abf49e38`
 URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_MINIMAL_CONDITIONAL_SOLUTION_AND_IMPLEMENTATION_GATES_2026-10-12.md
 
 Current gate remains: independently recognized exact Constitution/scope and verifier basis UNKNOWN; canonical active-Constitution owner and production composition absent; final target and bypass closure UNKNOWN; protected commissioning STOP. Next work should investigate a feasible, independently recognizable establishment path and deployment identity without selecting hardware/provider or claiming the current M1 phone is a trust root. No production code, tests, workflows, APK, keys, Constitution artifact, or phone/runtime state changed.
+
+
+### 9.8 Research result — initial trust bootstrap constraint (2026-10-12)
+
+Reviewed current official sources for trust-anchor management, RATS, and TUF, and reconciled them with the existing NCS Path H/Path O comparison:
+- RFC 6024 requires at least one trust-anchor manager to be established during initial configuration of a trust-anchor store; traditional initial trust is checked out-of-band. https://www.rfc-editor.org/rfc/rfc6024.html
+- RFC 9334 separates Attester, Verifier and Relying Party; the Relying Party needs an established trust relationship with the Verifier. A signed result is not self-authenticating application authorization. https://www.rfc-editor.org/rfc/rfc9334.html
+- TUF's client begins with trusted root keys already provisioned, then preserves the chain using threshold signatures, sequential root rotation, expiry and rollback/freeze checks. It does not select Nexo's first legitimate root. https://theupdateframework.github.io/specification/v1.0.36/
+- Android Verified Boot protects the integrity of covered platform components under the device boot trust model, but does not prove Nexo Constitution approval or enforce every app-level sink. https://source.android.com/docs/security/features/verifiedboot/verified-boot
+
+New conclusion: the missing bootstrap premise cannot be created by switching file format or crypto primitive. If the threat model permits the commissioning host to control every input and the verifier, no self-contained protocol running wholly under that host can independently prove its first authority legitimate. STEP 7 needs either (a) a genuinely independent, already-recognized basis plus an enforcement path that the candidate cannot rewrite/bypass, or (b) Kevin's explicit later acceptance of a narrowly bounded Path H assumption that the relevant presentation/approval environment is honest for the initial ceremony. If neither exists, protected commissioning must remain STOP. This is a trust-model constraint, not a reason to add a registry/wrapper.
+
+Owner-workflow implications:
+- A PDF from the current unverified client is useful draft/reference content, not an independent root.
+- Printing it later does not retroactively establish origin; it can be a comparison reference only under an evidenced provenance/recognition assumption.
+- A second device, local key, digest, QR, signature, or Verified Boot state is not independently sufficient by itself.
+- TUF-style lifecycle/rollback controls are relevant after a legitimate initial root is established; they do not solve Genesis.
+- No hardware/provider purchase is justified from current evidence. Do not generate real commissioning keys, hashes, challenges, signatures, or final Constitution bytes until content/scope and recognition premise are resolved.
+
+Canonical solution document updated and re-fetched:
+`NEXO_NCS/BUILD/STEP_7_MINIMAL_CONDITIONAL_SOLUTION_AND_IMPLEMENTATION_GATES_2026-10-12.md`
+Commit: `7d01bd6eac53c7dc1fb0f4a3398a4cb4a0937758`
+Blob: `350b73254baf8edd04dea8d8235dea3d9263c923`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_MINIMAL_CONDITIONAL_SOLUTION_AND_IMPLEMENTATION_GATES_2026-10-12.md
+
+This is an evidence-backed narrowing of the real decision boundary, not a claim that STEP 7 is solved. Next work can continue with synthetic component/adversarial analysis, but the real-world premise must eventually be grounded: an independent recognized basis, or an explicit bounded owner assumption. Commissioning remains UNKNOWN/STOP; no production code/tests/APK/keys/Constitution artifact/phone state changed.
