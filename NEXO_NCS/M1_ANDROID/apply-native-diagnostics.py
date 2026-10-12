@@ -173,7 +173,7 @@ system_tokenize_new = """    if (chat_format_error) {
         return 3;
     }
     const auto system_tokens = common_tokenize(g_context, formatted_system_prompt,
-                                               !has_chat_template, has_chat_template);"
+                                               !has_chat_template, has_chat_template);"""
 replace_once(CPP, system_tokenize_old, system_tokenize_new)
 
 user_tokenize_old = """    auto user_tokens = common_tokenize(g_context, formatted_user_prompt, has_chat_template, has_chat_template);"""
@@ -182,7 +182,7 @@ user_tokenize_new = """    if (chat_format_error) {
         return 3;
     }
     auto user_tokens = common_tokenize(g_context, formatted_user_prompt,
-                                       !has_chat_template, has_chat_template);"
+                                       !has_chat_template, has_chat_template);"""
 replace_once(CPP, user_tokenize_old, user_tokenize_new)
 
 limit_old = """    const int user_prompt_size = (int) user_tokens.size();
