@@ -1797,3 +1797,20 @@ Criterio: coherencia, seguridad, evidencia y evolución mantenible; no una prohi
 - The initial protected transition remains narrowly scoped to recognizing one exact initial Constitution/version/context as the current regime. No canonical Core-owned active-Constitution state owner, genesis verifier, or final activation boundary with bypass closure is evidenced in the reviewed source.
 - **Next exact action:** do not ask Kevin to accept the draft H1-H7 environmental assumptions yet. First, the existing deployment/source map must identify a real verifier and the last component that can activate or consume the constitutional regime, including all bypass paths and shared failure domains. If no such deployed boundary exists, preserve STOP/UNKNOWN and do not invent a resolver/store/wrapper to fill the gap. M1 work remains deferred; continue STEP 7 only where new source evidence or a genuinely unresolved boundary can be examined without repeating closed analyses.
 - No installs, device modifications, key/signing changes, root/channel/provider/quorum selection, or protected commissioning. **STEP 7 OPEN / STOP / UNKNOWN.**
+
+
+---
+
+## Canonical current continuation — STEP 7 first-boot constitutional commissioning (2026-10-11)
+
+This section supersedes earlier STEP 7 next-action wording above where it conflicts with the current first-boot commissioning track. Historical observation-provenance and policyContext checkpoints remain historical evidence; they do not establish a Genesis verifier or constitutional activation boundary.
+
+- Current state: **OPEN / STOP / UNKNOWN**. No protected constitutional commissioning, root selection, or activation is authorized.
+- Android Stage A is recorded at `NEXO_NCS/PROOF/STEP_7_ANDROID_STAGE_A_USER_REPORTED_CAPTURE_2026-10-11.md`. The reported POCO `green / locked / enforcing` values are observations from the running OS, not independent attestation or constitutional authority. No more Android/Termux commands are required for this stage.
+- Direct source review: `src/nexo/core/ownership.mjs` exposes injected ports; `authorityGate.check` defaults to `NOT_IMPLEMENTED`. `executeProtectedTransition` stops on STOP/UNKNOWN, but it consumes an injected AUTHORIZED result without independently establishing Genesis legitimacy. `createAuthorityResult` performs structural checks/freezing only. `effectBoundary.prepare` is declared but not invoked in that transition function. `persistState` is application persistence, not Genesis commissioning.
+- Focused indexed-source search for `executeProtectedTransition` returned its implementation, two test files, and a design document, but no production call site/runtime composition. This is bounded search evidence, not proof that dynamic/unindexed calls are impossible. It means a deployable first-boot integration point is not yet evidenced.
+- Source review and bounded call-site search are recorded in `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md`, latest review commit `220c06d3e586c68d896460da917988d3eaeaa660`.
+- H1–H7 human-genesis assumptions remain draft / NOT ACCEPTED. Do not ask the user to accept them before the real verifier and final activation/effect boundary are identified.
+- Do not create a new Constitution store/registry/resolver/wrapper, key/hash/signature ceremony, UI approval label, or adapter merely to make the architecture appear connected. No implementation is justified until the legitimate recognition basis and actual production entrypoint are grounded.
+- Next exact action: locate whether NCS has a real production entrypoint/runtime composition and enumerate its callers and effect routes. If none exists, record that as the construction gap; then reconcile with MASTER + frozen AB + P/P112 without reopening closed phone/root-family or AB/TLC/Kafka work.
+- M1 remains deferred. No new APK, install, signing change, device modification, or protected activation.
