@@ -201,3 +201,12 @@ Added `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-1
 Key source-grounded limits: the AuthorityGate is injected and defaults to NOT_IMPLEMENTED; structural validation/freezing of AuthorityResult is not authentication; the reviewed protected-transition function does not invoke the declared `effectBoundary.prepare` port; and the persistState adapter is application persistence, not constitutional commissioning. Display, exact-content approval, justified Genesis verification, currentness/revocation, and the last protected-effect boundary remain UNKNOWN / STOP.
 
 **Next action:** keep Step 7 open. Map the actual deployable first-boot roles and shared failure domains against MASTER + frozen AB + P/P112 before any root selection or implementation. Do not create a substitute resolver/registry/key/hash/UI ceremony to paper over missing legitimacy or enforcement.
+
+
+## Priority reconciliation after Android Stage A capture (2026-10-11)
+
+The user explicitly asked to continue STEP 7; do not switch to M1 debugging. Android Stage A output and the source boundary review are recorded in `NEXO_NCS/PROOF/STEP_7_ANDROID_STAGE_A_USER_REPORTED_CAPTURE_2026-10-11.md` and `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md`.
+
+The reported `green / locked / enforcing` properties do not alter the existing phone/root-family/resource conclusions. They are observations from the running OS, not independent attestation or constitutional authority. No further Termux commands are needed for this evidence stage.
+
+Before any owner decision about draft human-genesis assumptions, identify a real verifier and the last component that can activate/consume the initial Constitution, including bypass routes and shared failure domains. The reviewed source still shows no canonical Core-owned active-Constitution state owner, no genesis-specific verifier, and no final activation boundary with bypass closure. If no such deployable boundary can be identified, keep STOP/UNKNOWN; do not invent a resolver/store/wrapper or repeat the closed root-family/device/resource comparisons. M1 remains deferred under the user's explicit priority.
