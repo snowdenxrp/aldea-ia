@@ -1829,3 +1829,17 @@ The latest source pass qualifies the prior “no production call site” wording
 The updated bounded review is `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md`, commit `a86ce0f513783006e51afca087f8a6280bf36f40`.
 
 **Next exact action:** map the intended deployment target and all effect sinks/routes in scope, then establish whether and how the protected Core must mediate each route. Do not connect the paths merely to make the diagram complete. First-boot legitimacy, activation/currentness/revocation and final enforcement remain UNKNOWN; state remains OPEN / STOP / UNKNOWN. No device changes, installs, M1 switch, or protected activation.
+
+
+### STEP 7 — P112 mutation-sink evidence reconciled (2026-10-11)
+
+The existing P112 audits already map the legacy simulation mutation sink and runtime snapshot crossing; this work is not repeated. The updated first-boot review records the distinction:
+
+- Simulation sink is known: `executeAction(simulation, agent, intent)` mutates simulation/world state. Existing P112 documents own its detailed dependency/WriteSet analysis.
+- Legacy Nexo simulation route is known but is not evidenced as mediated by the newer protected Core or a Genesis trust foundation.
+- The generic protected Core exists and has tests, but its production composition and final constitutional activation/effect boundary remain unevidenced.
+- A physical deployment/effect sink for constitutional first boot remains UNKNOWN; current records do not establish a deployed Android/host component owning initial-Constitution activation and all protected routes.
+
+Review update: `NEXO_NCS/BUILD/STEP_7_FIRST_BOOT_DEPLOYMENT_BOUNDARY_SOURCE_REVIEW_2026-10-11.md`, commit `58ff971cc1a0e379545a591cc97714bdf9dd645b`.
+
+Next action remains bounded: ground the actual deployment profile/entrypoint and its authority-enforcement relationship. Do not wire the protected Core into the legacy simulation path just to complete the diagram. No P112 rerun, phone action, M1 switch, implementation, or commissioning. Status remains OPEN / STOP / UNKNOWN.
