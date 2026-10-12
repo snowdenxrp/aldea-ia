@@ -56,9 +56,15 @@ Do not add a wrapper, root registry, alternate authority constructor, self-gener
 
 Continue safe work by treating the gaps as separate proof obligations. Before implementation of a new authority mechanism, identify an existing concrete consumer and its intended protected effect target; otherwise keep the item as UNKNOWN rather than inventing a new abstraction.
 
-## Next bounded action
+## Next bounded action (reconciled 2026-10-12)
 
-Reconcile M1 build provenance: identify a successful workflow run for the current source, bind its commit to the uploaded APK and SHA-256 evidence, and compare that identity with the installed package/build on the Moto G52. If run/artifact access or installed identity cannot be established, keep it UNKNOWN and request only the missing evidence. Do not connect M1 to the Core authority path or add an effect wrapper without a separately reviewed design. Do not rerun frozen AB/TLC/Kafka/P112 investigations.
+The immediate Step 7 blocker is not M1 build provenance. The M1 source inspected here is a text-only inference/presentation client and is not connected to Genesis, the protected-transition path, or a final effect boundary; proving which APK is installed would not establish the Genesis trust basis, verifier provenance, active-Constitution state owner, or bypass closure.
+
+Continue from the existing Genesis and human-comparison contracts without creating another abstraction:
+1. Keep separate the claims that (a) Kevin's intent was conveyed for exact content/scope, (b) the verifier and its appraisal policy are independently trustworthy, (c) the Constitution is current and canonically active, and (d) the final protected boundary enforces that state.
+2. Use the bounded human-comparison candidate only for claim (a), under its explicit recognition assumption. No concrete reference channel or owner-approved canonical Constitution is currently evidenced, so this claim cannot yet be operationally exercised.
+3. Do not implement or wire a mechanism until the concrete reference/target boundary and its claim are identified. If a later Step 7 test specifically requires M1 as a presentation channel, use M1 only for that scoped test and do not treat it as the trust root or enforcement boundary.
+4. Do not rerun frozen AB/TLC/Kafka/P112 investigations or resume unrelated M1 provenance work without a concrete Step 7 dependency.
 
 ## Disposition
 
