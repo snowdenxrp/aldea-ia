@@ -1,17 +1,17 @@
 {
   "version": 5,
-  "stateRevision": 3053,
-  "savedAt": 1791904459076,
+  "stateRevision": 3055,
+  "savedAt": 1791905989342,
   "day": 681,
-  "hour": 18.172960000229928,
+  "hour": 18.18848000022993,
   "world": {
     "day": 681,
-    "timeOfDay": 18.172960000229928,
+    "timeOfDay": 18.18848000022993,
     "speed": 1,
     "resources": {
       "water": {
         "type": "renewable",
-        "amount": 940,
+        "amount": 930,
         "quality": 1,
         "location": "river",
         "position": {
@@ -29093,7 +29093,7 @@
           "key": "2:4",
           "x": 2,
           "z": 4,
-          "visits": 71134,
+          "visits": 71136,
           "discovered": true,
           "biome": "plains",
           "population": 0,
@@ -29177,7 +29177,7 @@
           "key": "2:3",
           "x": 2,
           "z": 3,
-          "visits": 11232,
+          "visits": 11234,
           "discovered": true,
           "biome": "plains",
           "population": 0,
@@ -30805,16 +30805,16 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 46.76962133332815,
-        "thirst": 20.440661333337843,
-        "energy": 96.45653333333283,
+        "hunger": 46.735477333328156,
+        "thirst": 20.390997333337843,
+        "energy": 96.41773333333282,
         "social": 0,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": -16.665065487247027,
-        "z": -2.087921671544744
+        "x": -16.865774441611673,
+        "z": -1.7740002233481456
       },
       "currentActivity": "moving",
       "inventory": [
@@ -70794,33 +70794,33 @@
       },
       "lastPerception": {
         "position": {
-          "x": -16.510897739691572,
-          "z": -2.3290497404493777
+          "x": -16.665065487247027,
+          "z": -2.087921671544744
         },
         "visibleAgents": [
           {
             "id": "bruno",
             "name": "Bruno",
-            "distance": 1.8185190159011386
+            "distance": 1.568647670732364
           }
         ],
         "nearbyResources": [
           {
             "type": "water",
             "location": "river",
-            "distance": 2.7643983495768087
+            "distance": 2.4781983495768083
           },
           {
             "type": "fish",
             "location": "river",
-            "distance": 10.435837009187765
+            "distance": 10.175864278013988
           }
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 46.76962133332815,
-          "thirst": 20.440661333337843,
-          "energy": 96.45653333333283,
+          "hunger": 46.735477333328156,
+          "thirst": 20.390997333337843,
+          "energy": 96.41773333333282,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -70890,7 +70890,7 @@
         },
         "speed": 1.8,
         "moving": true,
-        "distanceTravelled": 157773.99034155766
+        "distanceTravelled": 157774.36294155766
       },
       "decisionCooldownHours": 0,
       "knownResources": {
@@ -73787,9 +73787,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 46.76962133332815,
+        "hunger": 46.735477333328156,
         "thirst": 100,
-        "energy": 96.45653333333283,
+        "energy": 96.41773333333282,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -90225,26 +90225,6 @@
           "importance": 0.5
         },
         {
-          "id": "event-10093",
-          "day": 666,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-10095",
-          "day": 666,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
           "id": "event-640",
           "day": 666,
           "type": "exploration",
@@ -106023,6 +106003,26 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-501",
+          "day": 681,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-501",
+          "day": 681,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -115351,7 +115351,7 @@
           {
             "id": "alex",
             "name": "Alex",
-            "distance": 1.8185190159011386
+            "distance": 1.568647670732364
           }
         ],
         "nearbyResources": [
@@ -115368,9 +115368,9 @@
         ],
         "currentActivity": "drinking",
         "needs": {
-          "hunger": 46.76962133332815,
-          "thirst": 99.986432,
-          "energy": 96.45653333333283,
+          "hunger": 46.735477333328156,
+          "thirst": 99.982336,
+          "energy": 96.41773333333282,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -118421,6 +118421,8 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -118429,26 +118431,6 @@
     }
   ],
   "events": [
-    {
-      "id": "event-501",
-      "day": 681,
-      "hour": 14.831973333563079,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 681,
-      "hour": 14.831973333563079,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
     {
       "id": "event-501",
       "day": 681,
@@ -123428,6 +123410,26 @@
       "participants": [
         "bruno"
       ]
+    },
+    {
+      "id": "event-501",
+      "day": 681,
+      "hour": 18.18296000022993,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 681,
+      "hour": 18.18848000022993,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
     }
   ],
   "nexoMemory": {
@@ -123437,24 +123439,6 @@
     "patterns": [],
     "nexo": {
       "missions": [
-        {
-          "missionId": "lumina-1791840045538-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_social_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-10-12T21:20:45.538Z"
-        },
         {
           "missionId": "lumina-1791841172402-1",
           "version": 4,
@@ -124336,6 +124320,24 @@
             }
           ],
           "at": "2026-10-13T15:14:18.917Z"
+        },
+        {
+          "missionId": "lumina-1791905989134-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_social_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-13T15:39:49.134Z"
         }
       ],
       "attempts": [],
