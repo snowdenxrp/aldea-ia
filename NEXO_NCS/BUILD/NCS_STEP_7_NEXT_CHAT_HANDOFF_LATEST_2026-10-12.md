@@ -87,3 +87,11 @@ At the start of the next chat, summarize only the newest delta and then perform 
 - Evidence basis remains the 2026-10-12 source inspection: M1 is a local inference/presentation debug prototype; no production caller composes Genesis → canonical current Constitution Authority Context → protected transition → actual final sink. M1 is not yet Nexo Core.
 - Do not resume unrelated M1 iteration or install another APK. The next bounded task is to inspect the Android source/build boundary for what would genuinely host Nexo Core, while leaving the owner-recognized comparison channel UNKNOWN until a concrete channel's provenance and dependencies can be evaluated.
 - No code, tests, keys, Constitution, APK, device, deployment or runtime authority changed; no tests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## 2026-10-13 delta — Android M1 source boundary inspected
+- Read-only source inspection recorded in `NEXO_NCS/BUILD/STEP_7_ANDROID_M1_SOURCE_BOUNDARY_INSPECTION_2026-10-13.md`.
+- Exact pins: README `70cf0abc5b8902035da7ed67de823ba39c03937b`; manifest `b4bc8281df05460724d775b8a97da924c6a4ea0d`; `MainActivity.kt` `ce22225a8661a4afa2e7eb1f6b65dfb1b3db26b0`; app Gradle `5b9006127bfb890431a0cc8cb3e7abd489ad0fdf`.
+- M1 is a local inference client: it verifies/imports the GGUF model, keeps prompt/response in memory, has no INTERNET permission, and contains no Genesis, Constitution Authority Context, protected-transition or effect-sink composition. Its Activity currently owns UI/model workflow, so it must not become the constitutional Core by adding approval flags or extra callbacks.
+- The Android workflow builds/uploads a debug APK; this is not commissioning evidence. No code/tests/APK/device/deployment/authority changed.
+- Next bounded architecture task: define the smallest Android host boundary for canonical Constitution state and protected transition, without duplicating authority or inventing an effect sink. This remains design-only until a concrete trust/comparison basis and protected scope exist. STEP 7 remains OPEN / STOP / UNKNOWN.
