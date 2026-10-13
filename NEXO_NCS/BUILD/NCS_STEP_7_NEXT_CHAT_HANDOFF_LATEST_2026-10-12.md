@@ -79,3 +79,11 @@ Continue from the existing trust-path map and source inventory. Pick a single bo
 4. Once the concrete target and basis exist, derive tests from G0–G12; do not rerun them before a real target exists.
 
 At the start of the next chat, summarize only the newest delta and then perform the next non-duplicative action. Do not make the user restate the E22i, Vercel, Cloudflare, branch, run, or previous research details.
+
+
+## 2026-10-13 delta — provisional Android local engineering target
+- Owner authorized the assistant to make the engineering choice. Android local is now selected as the **provisional engineering target only**; this is not Genesis/root selection, commissioning, or permission for protected effects.
+- Decision record: `NEXO_NCS/BUILD/STEP_7_ANDROID_LOCAL_TARGET_CANDIDATE_DECISION_2026-10-13.md`.
+- Evidence basis remains the 2026-10-12 source inspection: M1 is a local inference/presentation debug prototype; no production caller composes Genesis → canonical current Constitution Authority Context → protected transition → actual final sink. M1 is not yet Nexo Core.
+- Do not resume unrelated M1 iteration or install another APK. The next bounded task is to inspect the Android source/build boundary for what would genuinely host Nexo Core, while leaving the owner-recognized comparison channel UNKNOWN until a concrete channel's provenance and dependencies can be evaluated.
+- No code, tests, keys, Constitution, APK, device, deployment or runtime authority changed; no tests were run. STEP 7 remains OPEN / STOP / UNKNOWN.
