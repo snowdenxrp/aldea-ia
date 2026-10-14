@@ -1,5 +1,17 @@
 # NEXO NCS — STATUS
 
+## Latest continuation delta — 2026-10-14 constitutional draft coverage reconciliation
+
+Continued the bounded clause-by-clause review and updated the draft, traceability map, and adversarial review.
+
+- **Recovered currentness invariant made explicit:** traceability clause C-11 was marked RECOVERED / OPEN. The human-readable draft now states directly that a once-valid or correctly signed Constitution is not necessarily current, and that revocation, rollback, competing revisions and offline uncertainty need governed resolution. The canonical state owner and enforceable ordering remain OPEN. Draft commit: `6f60ea8fbec35359d9cdd8d29c89c95c9a2fbe6f`.
+- **Stale traceability label reconciled:** C-19 now records `RECOVERED / BOUNDED ASSUMPTION ACCEPTED`, consistent with the explicit owner decision and the existing STATUS reconciliation. The assumption remains limited to faithful POCO presentation during the first recognition ceremony only. Map commit: `ed01187616b1f27c0c30f6886969e48d08efa1b3`.
+- Extended [STEP_7_CONSTITUTION_DRAFT_ADVERSARIAL_REVIEW_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_DRAFT_ADVERSARIAL_REVIEW_2026-10-14.md), commit `ef87463d945084c6846e000c020e00634dba7df3`.
+- No source code or tests changed or ran. No keys/signatures/digest/Constitution freeze/APK/device/deployment/runtime authority changed.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+
 ## Latest continuation delta — 2026-10-14 adversarial review of constitutional draft
 
 Recorded [STEP_7_CONSTITUTION_DRAFT_ADVERSARIAL_REVIEW_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_DRAFT_ADVERSARIAL_REVIEW_2026-10-14.md), commit `c8404bddced06a3aeb9038b73dda4fe5b29619c5`.
