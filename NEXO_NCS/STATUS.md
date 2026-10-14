@@ -2583,3 +2583,11 @@ Extended [STEP_7_SCOPE_A_TARGET_AND_STORAGE_BOUNDARY_AUDIT_2026-10-14.md](BUILD/
 
 No source code/tests changed or ran. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
 
+## Android Core host options — Javet is a lead candidate only (2026-10-14)
+
+Extended [STEP_7_ANDROID_CORE_HOST_RUNTIME_FEASIBILITY_GATE_2026-10-14.md](BUILD/STEP_7_ANDROID_CORE_HOST_RUNTIME_FEASIBILITY_GATE_2026-10-14.md), commit `7ce005a62eb50221e5ac1d0cf597364560f49872`, with a source-backed comparison of Javet Node mode, Javet V8 mode, QuickJS Android and GraalJS.
+
+Recommendation: carry **Javet Node.js mode** forward as the lead candidate because it most closely matches the existing Node ESM Core and documents Android arm64 support, ESM and a Node Permission Model. It is **not selected or integrated**. Before any Android/APK work, run a CI-only parity prototype that pins the runtime, verifies `structuredClone`/async/ESM semantics, and proves filesystem/child-process/worker/WASI permissions are restricted. Javet V8 mode remains an alternative if the Core's exact semantics can be preserved without broad host capabilities; QuickJS/GraalJS have larger compatibility/support gaps in the evidence reviewed.
+
+This host research does not establish a local candidate-reference store, canonical constitutional currentness owner, or protected final sink. No Gradle dependency, source code, tests, APK, device or runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
