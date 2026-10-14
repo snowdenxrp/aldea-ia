@@ -27,7 +27,7 @@ Recognize one owner-originated approval of one exact, canonical initial Constitu
 
 | Premise | Benefit | Residual risk / condition | Decision now |
 |---|---|---|---|
-| Owner approves exact content on POCO under an honest-device/presentation assumption | No-cost, human-originated bounded intent record | Cannot detect active deception of screen/input/verifier; requires explicit owner acceptance of this limitation | NOT RATIFIED |
+| Owner approves exact content on POCO under an honest-device/presentation assumption | No-cost, human-originated bounded intent record | Cannot detect active deception of screen/input/verifier; requires explicit owner acceptance of this limitation | OWNER-ACCEPTED FOR FIRST CEREMONY ONLY; see dated reconciliation below |
 | Handwritten offline record copied from POCO | Helps later identify the intended artifact/version if the original review was honest | Not independent evidence of the original screen/content; may preserve a bad decision accurately | Supplement only |
 | Moto G52 or E22i comparison | May expose accidental mismatch or improve readability | Not an independent root merely because it is another device; dependency chain must be evaluated | Optional comparison aid only |
 | YubiKey or other hardware authenticator | Protects a private key and can sign fresh scoped challenges after enrollment | Does not decide which initial public key is Nexo's owner key; does not prove displayed Constitution or verifier is authentic | Defer purchase/integration |
@@ -56,3 +56,14 @@ TUF explicitly requires a trusted root to be supplied or otherwise established o
 These are analogies and supporting standards, not proof that Nexo has an implemented trust anchor.
 
 No code, tests, keys, signatures, Constitution freeze, APK, device, deployment, or runtime authority changed.
+
+
+## Dated reconciliation — 2026-10-14 owner decision
+
+The earlier decision-table row above originally recorded NOT RATIFIED. After that text was authored, the owner explicitly accepted the bounded premise in NEXO_NCS/DECISIONS/STEP_7_BOUNDED_INITIAL_HONEST_DEVICE_PREMISE_2026-10-14.md:
+
+> For the initial ceremony, provisionally assume that the owner's POCO phone and its screen faithfully present the exact content the owner is asked to approve.
+
+This decision supersedes the prior NOT RATIFIED status only for that narrow first-ceremony premise. It does not prove the device honest, establish a trust root, approve the handwritten recovery reference, freeze/commission the Constitution, select a YubiKey, or satisfy the other commissioning gates. The original status is preserved here as historical context; this addendum reconciles the current status without broadening the owner's decision.
+
+Current disposition remains DESIGN ONLY / OPEN / STOP / UNKNOWN. No ceremony, key creation, digest/signature, code change, tests, deployment, or protected effect is authorized by this addendum.
