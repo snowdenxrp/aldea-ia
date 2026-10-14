@@ -2560,3 +2560,13 @@ This authorizes continued design/evidence work for A only. It does **not** autho
 
 No source code/tests changed or ran in this continuation. **STEP 7 remains OPEN / STOP / UNKNOWN. No protected effects authorized.**
 
+## Scope A target/storage audit — implementation remains blocked (2026-10-14)
+
+Added [STEP_7_SCOPE_A_TARGET_AND_STORAGE_BOUNDARY_AUDIT_2026-10-14.md](BUILD/STEP_7_SCOPE_A_TARGET_AND_STORAGE_BOUNDARY_AUDIT_2026-10-14.md), commit `2d7a14412f4303232d7a615dc24987375822203d`.
+
+Finding: the human-readable constitutional draft can be identified as a **candidate document only**; it is explicitly DRAFT / NOT FROZEN / NOT COMMISSIONED and has no approved ID/version/scope or canonical byte rules. The inspected Core transition skeleton does not implement a local constitutional reference operation. `scripts/simulate.mjs::persistState()` owns simulation snapshot persistence, not constitutional-reference authority; its fallback-to-default load behavior cannot prove canonical reference recovery.
+
+No existing local Nexo runtime target/storage owner has yet been evidenced for recording/reporting this non-authoritative reference with correct absence/corruption/conflict semantics and a proven no-effect boundary. Therefore **do not implement yet**: do not repurpose `world-state.json`, create a second generic store/commit primitive, wire the uncalled `effectBoundary.prepare` port as a superficial fix, or modify `executeAction()`/`tick()`.
+
+Next bounded action: inspect only the remaining existing Nexo-local persistence/state owners and their callers for a suitable already-existing boundary. If none exists, stop and present the minimal architecture choice before implementation. No source code/tests changed or ran. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
+
