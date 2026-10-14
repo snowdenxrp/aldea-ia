@@ -1,3 +1,13 @@
+## Latest continuation delta — 2026-10-14 bootstrap premise comparison
+
+New design comparison: `NEXO_NCS/BUILD/STEP_7_BOOTSTRAP_PREMISE_COMPARISON_2026-10-14.md`, commit `9cff95b1b1de1f80826944b555e2ec6968f7025d`.
+
+- Compared eight bootstrap premises: owner-reviewed bounded TOFU, handwritten record, second phone, hardware authenticator, repository/CI, Android/manufacturer attestation, pre-existing independent reference, and no acceptable premise.
+- Result: cryptography cannot create its own initial trust. TUF's trusted-root continuity and Android key attestation are supporting mechanisms, not proof of Nexo owner intent.
+- Paper and a second phone are supplementary only unless their source/dependency independence is demonstrated. No existing source/reference has been selected.
+- Recommendation: defer YubiKey purchase and M1 integration. The only legitimate next owner-level premise is either explicitly bounded honest-device TOFU, a specifically named already-recognized out-of-band reference, or retaining STOP/UNKNOWN.
+- No owner ratification, keys, signatures, commissioning digest, Constitution freeze, code/tests/APK/device/deployment/runtime authority changed. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## Latest continuation delta — 2026-10-14 bootstrap adversarial review
 
 A targeted review was recorded in `NEXO_NCS/BUILD/STEP_7_OWNER_RECOGNITION_PROPOSAL_ADVERSARIAL_REVIEW_2026-10-14.md` (commit `4afb3d966accd209de9ca8f6389f65db738480e5`).
