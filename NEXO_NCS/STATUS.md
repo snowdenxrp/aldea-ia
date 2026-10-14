@@ -2602,3 +2602,17 @@ Added [STEP_7_SCOPE_A_CONSTITUTION_CANDIDATE_REVIEW_PACKET_2026-10-14.md](BUILD/
 
 No source code/tests changed or ran. No key/signature/digest/Constitution freeze/ceremony/APK/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
 
+
+
+## Latest continuation — Constitution draft vs MASTER review matrix (2026-10-14)
+
+Added [STEP_7_DRAFT_TO_MASTER_REVIEW_MATRIX_2026-10-14.md](BUILD/STEP_7_DRAFT_TO_MASTER_REVIEW_MATRIX_2026-10-14.md), commit `1060e7aa4b5e81128f443c8753a09d73d1ed2be9`.
+
+- Cross-checked the current human-readable draft against recovered MASTER invariants, the existing adversarial review, traceability map, Scope A review packet, owner’s Scope A decision and the target/storage audit.
+- Confirmed at document level that the draft preserves the major recovered separations and fail-closed rules, including dual control as non-optional and the distinction between a valid signature and current constitutional authority. No new direct contradiction was established in this bounded review; this is not proof all AB/P/P112 semantics are exhausted and is not runtime evidence.
+- Explicitly separated unresolved constitutional decisions from Scope A. Scope A acceptance does not ratify the draft or authorize implementation.
+- Added the minimum semantic questions for any future non-authoritative review/reference record: exact candidate locator, honest review-event state, complete-content/scope binding, narrow decision meaning, non-authority label, corruption/conflict/uncertain-commit semantics, no-effect boundary and evidence.
+- Critical status: the packet identifies the candidate but the complete draft has not yet been presented in the conversation for owner review. Do not report it as reviewed or create a completed review record until the complete exact content has actually been shown and bound to the review event.
+- The Scope A runtime target/write owner and no-effect boundary remain unestablished. No generic store, simulation-state reuse, Android/Javet selection or source implementation is authorized.
+
+No source code/tests changed or ran. No key/signature/digest/Constitution freeze/ceremony/APK/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
