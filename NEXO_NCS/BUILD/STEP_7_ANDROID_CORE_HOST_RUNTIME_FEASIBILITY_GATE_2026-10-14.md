@@ -107,3 +107,16 @@ Only after that evidence should a separately reviewed Android host/storage desig
 
 Host choice remains **UNSELECTED / UNKNOWN**. Javet Node mode is a research lead only. No Gradle dependency, JavaScript runtime, Android service, code, tests, APK, keys, Constitution, deployment or runtime authority changed. STEP 7 remains **OPEN / STOP / UNKNOWN**.
 
+## Security correction from current official Javet/Node documentation — 2026-10-14
+
+Current official Javet 5.0.11 documentation confirms Android artifacts for Node and V8 modes, but it also states that the V8 sandbox is disabled on Android and that Node mode does not enable that sandbox. The Node Permission Model is a defense-in-depth “seat belt” for trusted code, not a security boundary against malicious code; official Node documentation explicitly warns that malicious code may bypass it. See:
+- Javet Android dependencies and ABI support: https://www.caoccao.com/Javet/tutorial/basic/installation.html
+- Javet build/platform matrix (Android sandbox disabled): https://www.caoccao.com/Javet/development/build.html
+- Node Permission Model limitations: https://nodejs.org/api/permissions.html
+
+This materially narrows the earlier lead-candidate recommendation. Javet Node mode may preserve runtime semantics, but its Permission Model must **not** be represented as the security boundary that protects constitutional authority from hostile or substituted code. The app must trust and pin the entire packaged Core/runtime, expose no general Java/native capabilities to it, and separately prove the actual enforcement sink. If the threat model requires isolation from malicious Core code or a compromised runtime, Javet Node mode does not meet that requirement merely by enabling permissions; another isolation design or retained STOP is needed.
+
+The CI-only compatibility prototype remains a possible *semantics experiment*, not a security validation. Before any APK work, document which code is trusted, which attack classes are in scope, and what independent boundary contains failures. No runtime is selected by this addendum.
+
+**Status: host unresolved; no implementation authorized. STEP 7 remains OPEN / STOP / UNKNOWN.**
+
