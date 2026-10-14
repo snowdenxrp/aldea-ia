@@ -2503,3 +2503,14 @@ Created [STEP_7_CLAIM_RELATIVE_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_2026-10-14.md
 - The next bounded design frontier is the claim-specific activation lifecycle and its authoritative linearization point; no implementation until the recognized current-branch rule and governed protected effect are identified.
 - No code/tests/keys/signatures/digest/frozen Constitution/ceremony/physical root/verifier/device/deployment/runtime authority changed. No tests ran; no recovery reference ratified; no protected effects authorized.
 - **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+## Latest continuation — protected activation lifecycle / linearization obligations (2026-10-14)
+
+Created [STEP_7_PROTECTED_ACTIVATION_LIFECYCLE_LINEARIZATION_OBLIGATIONS_2026-10-14.md](BUILD/STEP_7_PROTECTED_ACTIVATION_LIFECYCLE_LINEARIZATION_OBLIGATIONS_2026-10-14.md), commit `a31d4438a40a27e4faff83153507473a0b09b0b9`.
+
+- Narrowed the next design frontier to the minimum lifecycle obligations: canonical load provenance; protected establishment of authority context; full mutable-graph detachment; exact activation scope; final authority/currentness revalidation at the authoritative linearization point; reuse of existing `persistState(expectedRevision)`; honest terminal outcome classification.
+- Explicitly distinguished early checking from atomic final enforcement. A second check outside the commit boundary does not close TOCTOU; `stateRevision` is sufficient only if the actual authority owner atomically covers every dependency that can invalidate the claim. That binding is not evidenced in current source.
+- Added adversarial traces for self-bootstrap, stale signed Constitution, load fallback, revocation race, nested alias mutation, authority dependencies outside the persistence revision, revision conflict, unknown external effect, conflicting branches and recovery without current authority.
+- The document is a design candidate, not an implementation. No source code/tests changed or ran; no keys/signatures/digest/frozen Constitution/ceremony/root/verifier/device/deployment/runtime authority changed; no recovery reference ratified; no protected effects authorized.
+- **STEP 7 remains OPEN / STOP / UNKNOWN.**
