@@ -95,3 +95,12 @@ At the start of the next chat, summarize only the newest delta and then perform 
 - M1 is a local inference client: it verifies/imports the GGUF model, keeps prompt/response in memory, has no INTERNET permission, and contains no Genesis, Constitution Authority Context, protected-transition or effect-sink composition. Its Activity currently owns UI/model workflow, so it must not become the constitutional Core by adding approval flags or extra callbacks.
 - The Android workflow builds/uploads a debug APK; this is not commissioning evidence. No code/tests/APK/device/deployment/authority changed.
 - Next bounded architecture task: define the smallest Android host boundary for canonical Constitution state and protected transition, without duplicating authority or inventing an effect sink. This remains design-only until a concrete trust/comparison basis and protected scope exist. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## 2026-10-14 delta — owner credential / Android trust-channel research
+- Added `NEXO_NCS/RESEARCH/STEP_7_OWNER_CREDENTIAL_AND_ANDROID_TRUST_CHANNEL_COMPARISON_2026-10-14.md`.
+- Research conclusion: Android Keystore and a token such as YubiKey 5 NFC can provide non-exportable key operations / possession-bound signatures under scoped platform assumptions; YubiKit supports Android NFC/USB. Neither proves initial owner enrollment, approves the Constitution by itself, establishes verifier provenance, chooses canonical current Constitution, or proves complete mediation.
+- Keep any owner-held token as an optional possession factor, not Nexo's root. Do not add YubiKey support to M1 now; M1 is a local inference/presentation client, not Nexo Core.
+- Next decision gates: (1) owner-review/freeze exact constitutional text and its rendering; (2) state the recognized initial enrollment-reference assumption and recovery limits; (3) identify verifier provenance and canonical state owner; (4) identify actual protected sink/boundary; only then design minimal implementation and adversarial tests.
+- Important impossibility boundary: if all credentials and all previously recognized recovery references are lost, a purely cryptographic system cannot identify the original owner without another surviving trust source or previously governed recovery process.
+- No code/tests/keys/Constitution/APK/device/deployment/runtime authority changed. Step 7 remains OPEN / STOP / UNKNOWN.
