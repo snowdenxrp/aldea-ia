@@ -2414,3 +2414,16 @@ The source cross-check otherwise supports the clause-map boundaries: Genesis can
 No code/tests/keys/signatures/digest/Constitution freeze/ceremony/APK/device/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
 
 **Next bounded action:** assemble a separate human-readable constitutional DRAFT from only RECOVERED clauses, clearly segregating EXTENSION and OPEN material; do not canonically serialize or hash it yet. Before any approval ceremony, the complete draft must be reviewed and all unresolved governance choices must remain visibly unresolved rather than disguised as operative rules.
+
+
+## Latest continuation delta — 2026-10-14 human-readable constitutional draft
+
+Created [STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md), commit `be7cc04a0f26c178e52a92cb2c2b62d9ba0d7d87`.
+
+- Assembled a readable working draft from recovered MASTER/NCS principles: authority separation, no self-bootstrap, fail-closed uncertainty, non-amplification, protected policy establishment, effect/sink boundaries, verification, history, bounded recovery/succession/emergency and evidence discipline.
+- Segregated OPEN constitutional decisions and proposed EXTENSIONS into non-operative sections. No amendment threshold, initial scope, recovery authority, succession procedure, verifier, canonical state owner or production sink was invented.
+- The owner-accepted POCO presentation premise is described only as a first-ceremony assumption, not permanent device trust.
+- This is not the canonical Constitution and is not frozen or commissioned. No canonicalization/digest/signature/key/ceremony, code, tests, APK, device, deployment or runtime authority changed. No tests ran.
+- **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+**Next bounded action:** perform a clause-by-clause adversarial review of this readable draft against MASTER, Genesis attack, authority-source composition, AB anchors and P/P112 conclusions; identify any overstatement, source conflict, duplicated mechanism or misleadingly operative wording. Only after that review should the draft be revised for owner reading. Do not hash or sign it while it is changing.
