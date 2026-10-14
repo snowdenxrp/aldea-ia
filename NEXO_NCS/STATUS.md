@@ -2385,3 +2385,16 @@ No code/tests/device actions/authority changes occurred. STEP 7 remains OPEN / S
 - At user request, removed the capture button/client upload block from `src/main-stable.js`, removed `window.__LUMINA_CAPTURE_ENDPOINT` from `index.html`, replaced `functions/api/capture.js` with an HTTP 410 rejection that does not parse request bodies or call GitHub, and replaced the setup guide with a disabled-state notice.
 - Source changes are on `ncs-clean-architecture` only. No production deployment was triggered or verified. Cloudflare project settings and any previously configured `GITHUB_TOKEN` remain UNKNOWN; source changes do not revoke an existing secret or update an independently hosted deployment.
 - No existing audit files deleted. No runtime tests or live endpoint requests performed. Keep visual capture disabled until a separate reviewed design and explicit approval.
+
+
+## Latest continuation delta — 2026-10-14 constitutional clause traceability map
+
+Added [STEP_7_CONSTITUTION_CLAUSE_TRACEABILITY_MAP_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_CLAUSE_TRACEABILITY_MAP_2026-10-14.md), commit `1cb87889e3ff04ca0b926f2a54f7945b59e03a76`.
+
+- Converted MASTER + existing Genesis/Constitution Authority Context contracts + AB anchors and P/P112/root-role evidence into a 24-clause traceability map.
+- Each clause is labeled RECOVERED, EXTENSION, OPEN, or RECOVERED/OPEN; no conflict is invented from missing evidence.
+- Explicit unresolved owner/governance and engineering items remain visible: exact scope/canonicalization, amendment procedure, canonical currentness/revocation owner, succession, recovery, emergency limits, verifier provenance, and actual protected sink/bypass closure.
+- The map is a traceability aid only, not a Constitution and not an authority source. No digest/signature/key/commissioning transcript, Constitution freeze, code, tests, APK, device, deployment, or runtime authority changed. No tests were run.
+- **STEP 7 remains OPEN / STOP / UNKNOWN.** No commissioning or protected effects.
+
+**Next bounded action:** adversarially cross-check the clause map against the existing Genesis attack, trust-role map, commissioning matrix and prior AB/P112 conclusions; record only specific traceability errors or actual contradictions, then assemble a separate DRAFT constitutional text only if the source mapping survives. Do not create a commissioning digest while content is changing.
