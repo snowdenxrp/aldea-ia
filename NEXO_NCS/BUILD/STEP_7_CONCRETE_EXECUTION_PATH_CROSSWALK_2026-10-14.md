@@ -84,3 +84,31 @@ Add this to the blocked proof obligations for any future protected activation pa
 
 No code or tests changed or ran. No new authority, transaction wrapper, retry, queue, epoch, or generic fence was introduced.
 
+## Precision correction — reuse the existing conditional snapshot commit (2026-10-14)
+
+The preceding authority/currentness race finding must be read together with the existing P112 persistence evidence, not as a claim that the persistence primitive itself is inadequate.
+
+### Existing evidence reused; no audit rerun
+
+- `NEXO_CONTINUITY/P112_PERSISTSTATE_FINAL_COMMIT_FEASIBILITY_AUDIT_V1_2026-10-07.md` (blob `65ab4c7d34d1d36df30adc6dd53c3287203d9237`) already establishes that `persistState(expectedRevision)` is structurally sufficient as a conditional **whole-snapshot commit primitive for cooperating writers**. It locks, reloads canonical state, checks `stateRevision`, serializes the whole supplied snapshot (including `nexoMemory`), writes a sibling temporary file and renames it over `world-state.json`.
+- `NEXO_CONTINUITY/P112_PERSISTSTATE_PHYSICAL_BOUNDARY_CRASH_CUT_AUDIT_V2_2026-10-07.md` (blob `4b7639185411593f49f9ba4bef43e9d6f7745012`) records the tested boundaries and explicitly excludes power-loss durability and complete semantic admission binding.
+- `NEXO_CONTINUITY/P112_FINAL_REVALIDATION_INPUTS_CONFLICT_SEMANTICS_AUDIT_V1_2026-10-07.md` (blob `7d3ee2efab9e25eb7245c3e7e36bfa58d0bf4e25`) records that `stateRevision` is only the persistence conflict token, not the complete claim-specific DependencySet, authority/fence context, freshness, resource incarnation or operation provenance.
+- `NEXO_CONTINUITY/P112_PROTECTED_OWNER_AGAINST_EXISTING_PERSISTENCE_PRIMITIVE_V1_2026-10-07.md` (blob `66d16d01d5961135f06e1bf270c9a5b02420e63f`) found known canonical writers converging on the existing primitive; that does not prove every future writer cooperates.
+
+### Exact correction and remaining gap
+
+Do **not** create a second generic conditional-commit primitive. The existing one is reusable.
+
+The unclosed condition is higher-level: a real protected-transition owner must start from authoritative state (never silently accept `loadState()` fallback as canonical), preserve a genuinely detached working graph, establish and carry the exact authority/currentness/dependency evidence used by the claim, perform final semantic revalidation, then call the existing `persistState(expectedRevision)` for conditional snapshot replacement and classify conflicts as stale/UNKNOWN with reconciliation as needed.
+
+The current Core `executeProtectedTransition` path is not wired to this canonical owner and does not prove that constitutional authority/currentness is represented in the persisted snapshot revision. Until a legitimate canonical Constitution state owner exists, the earlier gate/commit race cannot be claimed closed by the generic state revision alone. Conversely, do not describe this as a demonstrated defect in the already-tested lock/revision serialization among cooperating writers.
+
+A further known constraint from existing P112 work is that a shallow copy of `nexoMemory` can retain mutable entry aliases. Isolation must detach the full mutable graph before a handler runs; a top-level snapshot or the later persistence lock cannot retroactively prevent pre-commit alias mutation.
+
+### Narrow next frontier
+
+The next design-only question is the **protected owner lifecycle**, not another persistence audit:
+`authoritative load + provenance` → `detached whole working graph` → `claim-specific dependency capture` → `protected handler on working graph` → `final semantic revalidation` → `existing persistState(expectedRevision)` → `STALE/UNKNOWN/reconciliation classification`.
+
+This lifecycle remains unimplemented/unproven for STEP 7. No new wrapper, registry, retry, fence, queue, or transaction state machine is introduced by this correction. No code or tests changed or ran.
+
