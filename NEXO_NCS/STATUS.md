@@ -2632,3 +2632,17 @@ The decision-frontier doc distinguishes:
 Do not implement yet. The next technical step is a bounded host threat-model decision, not another broad source search or an APK iteration. If the required threat boundary cannot be demonstrated, retain STOP. The complete draft was presented in the conversation, but no owner confirmation of having reviewed it has been recorded; do not fabricate a review event.
 
 No source code/tests changed or ran. No key/signature/digest/Constitution freeze/ceremony/APK/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
+
+
+## Scope A host threat model — trust boundary remains unestablished (2026-10-14)
+
+Added [STEP_7_SCOPE_A_HOST_THREAT_MODEL_AND_TRUST_BOUNDARY_2026-10-14.md](BUILD/STEP_7_SCOPE_A_HOST_THREAT_MODEL_AND_TRUST_BOUNDARY_2026-10-14.md), commit `f4efe968402b1ff8221d11cfff842a9f7c6173bf`.
+
+- Explicitly constrained the accepted POCO-screen assumption to the first recognition ceremony only; it does not establish trust in the current/future app, Core/runtime, local storage, display/input, or verifier.
+- Compared accidental corruption, malformed/partial writes, restore/reinstall/rollback, candidate substitution, concurrent/uncertain commits, malicious/substituted Core/runtime, OS compromise, replay and accidental mission/effect coupling.
+- Official Android docs establish that per-app sandboxing and app signing are platform controls; they do not prove the live device uncompromised, the Nexo build honest, the displayed content truthful in all contexts, or a stored record constitutionally authoritative. Android Keystore is not a solution to owner intent/currentness.
+- Javet remains a semantics-research lead only. The Android sandbox is disabled in its documented platform matrix, and Node Permission Model is not a boundary against malicious Core code.
+- Current honest assurance is Level 0 only: repository metadata locates the candidate. A future local app's self-reported review record would be Level 1 convenience unless exact presentation, build/runtime trust and an independent verification boundary are evidenced.
+- Decision: host trust boundary is NOT ESTABLISHED; do not select a runtime/store or implement Scope A yet. If the threat model requires resistance to malicious/substituted Core or compromised OS and no independent boundary is demonstrated, retain STOP.
+
+No source code/tests changed or ran. No Android runtime/APK/key/signature/digest/Constitution freeze/review event/ceremony/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
