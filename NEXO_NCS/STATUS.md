@@ -2527,3 +2527,16 @@ Verified on branch `ncs-clean-architecture`:
 Targeted cross-check of MASTER, Trust Function / Root Role Map, owner-recognition proposal, execution-path crosswalk and mutation-boundary trace found no existing approved record that selects an exact initial activation claim/target, and no evidenced canonical current-Constitution owner or production final protected sink. `executeAction()` is an observed shared mutation primitive, not an owner-approved STEP 7 target; do not add a gate there or wrap all of `tick()` by inference. `persistState(expectedRevision)` remains reusable persistence, not constitutional authority. This is absence of repository evidence, not proof of a deployed exploit or that no future design can supply the missing boundary.
 
 Next action remains bounded and decision-aware: preserve the exact activation scope and canonical currentness/sink owner as unresolved; do not generate more alternative contracts, modify code, rerun closed P112 audits, or commission. No code/tests/keys/signatures/digest/Constitution freeze/ceremony/device/deployment/runtime authority changed in this continuation. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+## Latest continuation — activation scope / gate applicability matrix (2026-10-14)
+
+Added [STEP_7_ACTIVATION_SCOPE_GATE_APPLICABILITY_MATRIX_2026-10-14.md](BUILD/STEP_7_ACTIVATION_SCOPE_GATE_APPLICABILITY_MATRIX_2026-10-14.md), commit `6715d65c851d99dc49a0aba52cafbe001dfd4918`.
+
+This is a decision-impact synthesis of existing gate/lifecycle/source-boundary evidence, not a new authority contract and not an owner scope selection. It compares three distinct possible claims: (A) register a local constitutional reference, (B) establish a Constitution Authority Context, or (C) authorize one exact mission/protected effect. It maps existing G0–G12 obligations by applicability and lists the hard exclusions each scope would need to preserve.
+
+Finding: choosing a narrower scope can reduce the in-scope effect footprint, but does not waive applicable recognition, currentness, verifier, final-boundary, or deployment evidence. In particular, option A must not be described as constitutional authority; option B must not imply mission permission; option C requires an exact action/target and bypass-closed final enforcement. The observed shared `executeAction()` path remains undesignated, and `persistState(expectedRevision)` remains persistence rather than constitutional authority.
+
+Owner decision remains OPEN: choose/revise/reject A, B, or C as the initial activation claim. Silence is not consent. After a scope decision, record intent only, then inspect only newly relevant evidence; no code before canonical authority ownership and the applicable final boundary are concretely identified.
+
+No closed audit rerun; no source/tests changed or ran; no keys/signatures/digest/Constitution freeze/ceremony/device/deployment/runtime authority changed; no protected effects authorized. **STEP 7 remains OPEN / STOP / UNKNOWN.**
