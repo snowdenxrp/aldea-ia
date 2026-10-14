@@ -1,3 +1,14 @@
+## Latest continuation delta — 2026-10-14 owner-accepted bounded bootstrap premise
+
+Owner decision recorded: [STEP_7_BOUNDED_INITIAL_HONEST_DEVICE_PREMISE_2026-10-14.md](DECISIONS/STEP_7_BOUNDED_INITIAL_HONEST_DEVICE_PREMISE_2026-10-14.md), commit `a3e644ffb360907e7f011bc77fa4da452f0b697b`.
+
+- The owner accepts, **only for the first recognition ceremony**, the provisional assumption that the POCO and its screen faithfully present the content being approved.
+- This is an explicit bounded risk acceptance, not technical proof and not permanent trust in Android, the device, or an app.
+- It does not authorize protected effects, freeze the Constitution, select/integrate a YubiKey, or complete commissioning.
+- Remaining gates: exact canonical artifact/version/scope; fresh approval binding; verifier provenance; canonical currentness/revocation; complete sink/bypass enforcement; governed recovery; actual runtime composition evidence.
+- No keys/signatures/commissioning digest/Constitution freeze/code/tests/APK/device/deployment/runtime authority changed; no ceremony occurred.
+- **STEP 7 remains OPEN / STOP / UNKNOWN.** Maintain STOP for commissioning and protected effects until remaining gates are evidenced.
+
 ## Latest continuation delta — 2026-10-14 concrete execution-path crosswalk
 
 New source-pinned crosswalk: [STEP_7_CONCRETE_EXECUTION_PATH_CROSSWALK_2026-10-14.md](BUILD/STEP_7_CONCRETE_EXECUTION_PATH_CROSSWALK_2026-10-14.md), commit `292e103dfa3cd27779c7584ba4fc9fca5cbf4922`.
