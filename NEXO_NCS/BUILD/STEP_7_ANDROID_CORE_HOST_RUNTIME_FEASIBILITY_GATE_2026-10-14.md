@@ -44,3 +44,66 @@ Read-only source inspection only. No code, tests, keys, Constitution, APK, devic
 
 ## Disposition
 STEP 7 remains **OPEN / STOP / UNKNOWN**. This record advances the Android host feasibility investigation only; it does not authorize commissioning or implementation.
+
+## Targeted Android host-option comparison — 2026-10-14
+
+This addendum completes the bounded option comparison using vendor/project documentation. It is a research result, not an owner-approved host selection or implementation authorization.
+
+### Option 1 — Javet with embedded Node.js mode: lead candidate, not selected
+
+Official Javet 5.0.11 documentation lists Android artifacts for Node.js mode and V8 mode, supports Android arm64, documents Node.js ESM module execution, and notes 16 KB page-size support from v4.1.4. Its Node.js API exposes a Permission Model with explicit filesystem read/write allowlists and restrictions for child processes, workers and WASI.
+
+Sources:
+- Android installation and ABI support: https://www.caoccao.com/Javet/tutorial/basic/installation.html
+- ESM/module behavior: https://www.caoccao.com/Javet/reference/resource_management/modularization.html
+- Node permission flags: https://www.caoccao.com/Javet/reference/javadoc/com/caoccao/javet/interop/options/NodeFlags.html
+
+Why it is promising: the existing Core is Node.js ESM and relies on JavaScript runtime semantics including `structuredClone`; Node mode offers the closest compatibility path without rewriting the Core in Kotlin.
+
+Risks/conditions:
+- Node mode adds a larger capability surface than pure ECMAScript. Permission Model must be enabled and verified; filesystem read access must be limited to the packaged Core module tree, filesystem writes must not be broadly enabled, and child process/worker/WASI permissions must remain unavailable unless a separately reviewed requirement exists.
+- Native libraries and runtime version must be pinned; APK size, memory, startup, arm64 loading, 16 KB page compatibility and Android lifecycle must be tested on CI and the target device.
+- A permission model is defense in depth, not a constitutional authority root or proof that the final protected sink is mediated.
+- No authority-bearing decision may be placed in UI callbacks; only narrow host ports should cross the JavaScript/native boundary.
+
+### Option 2 — Javet V8 mode: narrower engine surface, higher parity burden
+
+Javet documents V8 mode as distinct from Node.js mode and supports ESM with a custom module resolver. Its security guidance recommends V8 mode for malicious scripts and notes that Java interop proxies should only be enabled for trusted scripts.
+
+Sources:
+- Node.js mode vs V8 mode: https://www.caoccao.com/Javet/tutorial/basic/node_js_mode_and_v8_mode.html
+- ESM/module resolver: https://www.caoccao.com/Javet/reference/resource_management/modularization.html
+- Security guidance: https://www.caoccao.com/Javet/reference/tips/best_practices.html
+
+Why it is not selected yet: the current Core contract evidence includes `structuredClone`; the bare V8 mode's availability/semantics for this global and the exact module graph must be verified, not assumed. A hand-written clone shim would be unacceptable unless parity is proved. Custom ESM resolution also becomes part of the trusted host boundary.
+
+### Option 3 — QuickJS Android bindings: not the lead candidate
+
+The OpenQuickJS Android repository documents a self-maintained JNI binding and script evaluation, but the reviewed material does not establish drop-in parity for the current Core's ESM graph, `structuredClone` semantics and async contracts. Selecting it would require a larger compatibility proof before it could host the existing Core.
+
+Source: https://github.com/OpenQuickJS/quickjs-android
+
+### Option 4 — GraalJS on Android ART: not supported by current evidence
+
+GraalJS documents embedding on compatible JVMs and lists officially supported standalone platforms as Linux, macOS and Windows. The reviewed official material does not establish Android ART as a supported deployment target. An older Android issue also reports integration problems; that issue alone is not decisive, but there is no basis to select GraalJS for this target now.
+
+Sources:
+- Official GraalJS project/platform information: https://github.com/oracle/graaljs
+- Historical Android integration issue (context only): https://github.com/oracle/graaljs/issues/514
+
+## Recommendation and next gate
+
+**Carry Javet Node.js mode forward as the lead candidate for a controlled feasibility prototype, but do not select or integrate it yet.** It appears to minimize semantic divergence from the existing Node ESM Core. The next proof must be a CI-only, non-APK parity experiment that:
+1. pins the exact Javet Android artifact/runtime versions and verifies supply-chain provenance;
+2. loads the exact current Core ESM modules and runs the existing Core contract tests or an explicitly mapped parity subset;
+3. verifies `structuredClone`, Promise/async behavior, module resolution and error semantics against Node.js;
+4. enables the Node Permission Model and proves filesystem read is confined to the packaged Core directory, with writes/child process/workers/WASI unavailable;
+5. confirms no Java/Kotlin reflection or general-purpose host capability is exposed to Core;
+6. produces reproducible logs and records failures as UNKNOWN/STOP rather than adapting semantics to force a pass.
+
+Only after that evidence should a separately reviewed Android host/storage design be proposed. This does not identify the constitutional current-state owner or protected final sink, and it does not unblock scope A implementation by itself.
+
+## Disposition
+
+Host choice remains **UNSELECTED / UNKNOWN**. Javet Node mode is a research lead only. No Gradle dependency, JavaScript runtime, Android service, code, tests, APK, keys, Constitution, deployment or runtime authority changed. STEP 7 remains **OPEN / STOP / UNKNOWN**.
+
