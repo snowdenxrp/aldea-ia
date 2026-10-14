@@ -2616,3 +2616,19 @@ Added [STEP_7_DRAFT_TO_MASTER_REVIEW_MATRIX_2026-10-14.md](BUILD/STEP_7_DRAFT_TO
 - The Scope A runtime target/write owner and no-effect boundary remain unestablished. No generic store, simulation-state reuse, Android/Javet selection or source implementation is authorized.
 
 No source code/tests changed or ran. No key/signature/digest/Constitution freeze/ceremony/APK/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
+
+
+## Scope A minimum architecture decision frontier (2026-10-14)
+
+Added [STEP_7_SCOPE_A_MINIMUM_ARCHITECTURE_DECISION_FRONTIER_2026-10-14.md](BUILD/STEP_7_SCOPE_A_MINIMUM_ARCHITECTURE_DECISION_FRONTIER_2026-10-14.md), commit `56c17bb8874aca84c7049809c1a6b813b4a9774d`.
+
+The bounded source inspection remains decisive: no suitable existing local Nexo persistence owner was evidenced. The simulation snapshot and mission/effect memory are semantically wrong; the uncalled `effectBoundary.prepare` port is not an implementation target. Javet Node mode remains only a runtime-semantics lead and cannot be described as an Android sandbox against malicious Core code.
+
+The decision-frontier doc distinguishes:
+- **Option 0 (permitted now):** repository-only candidate locator/review preparation; not a claim of local Nexo functionality.
+- **Option 1 (conditional future shape):** a dedicated, narrowly scoped non-authoritative local reference owner, only after a host security boundary, concrete write path, exact-review binding, failure semantics and no-effect call graph are demonstrated.
+- **Rejected:** attaching the reference to simulation snapshots, mission memory, effect journals, orchestrator or `executeAction()`.
+
+Do not implement yet. The next technical step is a bounded host threat-model decision, not another broad source search or an APK iteration. If the required threat boundary cannot be demonstrated, retain STOP. The complete draft was presented in the conversation, but no owner confirmation of having reviewed it has been recorded; do not fabricate a review event.
+
+No source code/tests changed or ran. No key/signature/digest/Constitution freeze/ceremony/APK/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
