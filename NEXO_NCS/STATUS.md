@@ -1,3 +1,13 @@
+## Latest continuation delta — 2026-10-14 bootstrap adversarial review
+
+A targeted review was recorded in `NEXO_NCS/BUILD/STEP_7_OWNER_RECOGNITION_PROPOSAL_ADVERSARIAL_REVIEW_2026-10-14.md` (commit `4afb3d966accd209de9ca8f6389f65db738480e5`).
+
+- Finding: the existing owner-recognition proposal does not independently break bootstrap circularity against a deceptive device/app/display path. It only supports a bounded human decision if the honest-device assumption is explicitly accepted; no owner ratification has occurred.
+- Repeated hashing on the same phone and a handwritten note copied from that phone are not independent trust evidence. A second phone is not automatically an independent trust root.
+- TUF preserves continuity from an already recognized root; it does not create the first trust anchor.
+- The review separates owner intent, presentation integrity, initial recognition reference, transcript binding, verifier provenance, canonical currentness, and complete sink/bypass enforcement.
+- No keys, commissioning digest/signature, code, tests, APK, device, deployment, or runtime authority changed. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 # NEXO NCS — STATUS
 ## Latest continuation delta — 2026-10-14 concrete owner-recognition proposal
 
