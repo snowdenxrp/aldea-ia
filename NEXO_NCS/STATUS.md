@@ -2491,3 +2491,15 @@ This was a documentation precision correction, not commissioning or implementati
 - Exact remaining architecture question: which independently established rule and enforcement owner determines the current constitutional branch, and how is final protected admission made conditional on that branch? No legitimate owner is evidenced yet.
 - Status remains `OPEN / STOP / UNKNOWN`; no source code/tests changed or ran, no Constitution frozen, and no protected effects authorized.
 
+
+
+## Latest continuation — claim-relative deployment / failure-domain inventory (2026-10-14)
+
+Created [STEP_7_CLAIM_RELATIVE_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_2026-10-14.md](BUILD/STEP_7_CLAIM_RELATIVE_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_2026-10-14.md), commit `c9af7eba2e4d9851229dd94714fa9507833597f4`.
+
+- Converted the existing Trust Function / Root Role Map into a target-specific inventory of actual Nexo claims: owner intent and first-ceremony presentation, candidate Constitution, bootstrap recognition, current-branch selection, simulation persistence/load provenance, Core transition, local runtime mutation, offline revocation, recovery/succession, verifier evidence and final enforcement.
+- Compared recognition families against these gaps without selecting a hardware root, external provider, mutable-root update, multi-root threshold, or repository hash as constitutional authority.
+- Result: no candidate currently closes the full chain from owner intent through recognized initial basis, exact artifact, current-branch rule, protected authority context and final effect boundary. The existing `persistState(expectedRevision)` remains a reusable persistence primitive, not a constitutional authority owner.
+- The next bounded design frontier is the claim-specific activation lifecycle and its authoritative linearization point; no implementation until the recognized current-branch rule and governed protected effect are identified.
+- No code/tests/keys/signatures/digest/frozen Constitution/ceremony/physical root/verifier/device/deployment/runtime authority changed. No tests ran; no recovery reference ratified; no protected effects authorized.
+- **STEP 7 remains OPEN / STOP / UNKNOWN.**
