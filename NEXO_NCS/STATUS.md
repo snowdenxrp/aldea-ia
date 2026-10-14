@@ -13,6 +13,11 @@ No code/tests ran or changed; no keys, signatures, digest, Constitution freeze, 
 **STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
 
 
+### Follow-up source finding — authority/currentness race (2026-10-14)
+
+The concrete execution-path crosswalk now records a source-level TOCTOU gap: `authorityGate.check(claim)` runs before candidate execution and semantic validation, while the commit path does not itself prove that Constitution/currentness/revocation dependencies are bound to the same canonical expected revision at the authoritative commit point. A successful state-revision conditional commit only closes this race if that revision atomically covers every relevant authority dependency; the inspected contract does not establish that. This is an unproven closure, not a demonstrated deployed exploit. No extra check, wrapper, fence, or code patch was added.
+
+
 ## Latest continuation delta — 2026-10-14 constitutional draft coverage reconciliation
 
 Continued the bounded clause-by-clause review and updated the draft, traceability map, and adversarial review.
