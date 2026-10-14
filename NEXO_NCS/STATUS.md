@@ -1,3 +1,14 @@
+## Latest continuation delta — 2026-10-14 bootstrap threat model
+
+New bounded threat model and decision table: [STEP_7_BOOTSTRAP_THREAT_MODEL_DECISION_TABLE_2026-10-14.md](BUILD/STEP_7_BOOTSTRAP_THREAT_MODEL_DECISION_TABLE_2026-10-14.md), commit `42b6cca02791541d79d6a35ba14911a50ad38c82`.
+
+- Separates accidental corruption, malicious source/app, deceptive OS/display/input, impersonation/stolen device, replay/rollback, sink bypass, and total loss of trust references.
+- Defines seven independent gates: accepted initial-trust premise; canonical artifact identity; fresh approval binding; verifier provenance; canonical currentness/revocation; complete sink enforcement; governed recovery.
+- Explicitly limits a handwritten record, second phone, YubiKey, GitHub/CI, and Android attestation to supporting roles; none creates initial constitutional trust by itself.
+- TUF's current specification states it does not bootstrap trust for arbitrary manually obtained software; a trusted root must already be supplied/established. NIST's trust-anchor definition likewise assumes trust a priori or secure out-of-band provisioning. Sources are recorded in the design document.
+- Decision: no key creation, YubiKey purchase/integration, M1 change, Constitution freeze, commissioning digest, or ceremony until the premise and remaining gates are resolved.
+- No code/tests/keys/Constitution/APK/device/deployment/runtime authority changed. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## Latest continuation delta — 2026-10-14 bootstrap premise comparison
 
 New design comparison: `NEXO_NCS/BUILD/STEP_7_BOOTSTRAP_PREMISE_COMPARISON_2026-10-14.md`, commit `9cff95b1b1de1f80826944b555e2ec6968f7025d`.
