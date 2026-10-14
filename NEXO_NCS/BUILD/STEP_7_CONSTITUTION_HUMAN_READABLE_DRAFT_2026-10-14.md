@@ -57,6 +57,10 @@ When legitimacy, currentness or ordering between competing revisions cannot be e
 
 An ordinary transition must not increase authority, capability, scope or autonomy unless a separately governed constitutional transition explicitly permits that increase. Evidence of lower assurance cannot elevate itself.
 
+### 3.4 Currentness, revocation and rollback
+
+A Constitution revision that was once valid, or whose signature and bytes verify correctly, is not thereby the current governing revision. Revocation, rollback, competing revisions and offline uncertainty require a governed currentness decision; technical recency, timestamp, epoch or majority alone cannot establish constitutional legitimacy. The canonical current-state owner and enforceable ordering mechanism remain OPEN, so no currentness claim may be inferred from this draft.
+
 ## 4. Policy and decision boundaries
 
 ### 4.1 Protected policy establishment
