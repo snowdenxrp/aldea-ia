@@ -1,5 +1,17 @@
 # NEXO NCS — STATUS
 
+## Latest continuation delta — 2026-10-14 Android Core host feasibility
+
+**New bounded evidence:** [STEP_7_ANDROID_CORE_HOST_RUNTIME_FEASIBILITY_GATE_2026-10-14.md](BUILD/STEP_7_ANDROID_CORE_HOST_RUNTIME_FEASIBILITY_GATE_2026-10-14.md), commit `64e1fe34eccdb6902f446405826962e80101317d`.
+
+- Existing Core semantics are JavaScript ESM under Node.js; current Android M1 Gradle dependencies do not declare an embedded JavaScript runtime.
+- No demonstrated Android host composes the existing Core with a legitimate authority source, canonical Constitution state owner, and actual protected sink.
+- Keep the existing JS Core as the only semantic source for now. No Kotlin rewrite, new JS runtime, M1 modification, Termux production assumption, or synthetic sink.
+- Next bounded task: compare Android hosting options against ESM/standard-library compatibility, pinned reproducibility, UI/Core separation, canonical state ownership, actual sink mediation, and parity tests.
+- This was read-only inspection plus documentation only. No code/tests/keys/Constitution/APK/device/deployment/runtime authority changed.
+- **STEP 7 remains OPEN / STOP / UNKNOWN.** Do not claim commissioning.
+
+
 ## Latest continuation pointer — 2026-10-14
 
 **Next-chat handoff:** [NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md](BUILD/NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md). Read this first after STATUS.md; it now includes the 2026-10-13 Android target/source-boundary findings and the 2026-10-14 owner-credential trust-channel research.
