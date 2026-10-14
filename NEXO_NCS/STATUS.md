@@ -2591,3 +2591,14 @@ Recommendation: carry **Javet Node.js mode** forward as the lead candidate becau
 
 This host research does not establish a local candidate-reference store, canonical constitutional currentness owner, or protected final sink. No Gradle dependency, source code, tests, APK, device or runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
 
+## Scope A candidate review packet prepared; no approval inferred (2026-10-14)
+
+Added [STEP_7_SCOPE_A_CONSTITUTION_CANDIDATE_REVIEW_PACKET_2026-10-14.md](BUILD/STEP_7_SCOPE_A_CONSTITUTION_CANDIDATE_REVIEW_PACKET_2026-10-14.md), commit `7bb3f745ed52397c62f0156c4d8587f64ae7325f`.
+
+- The packet identifies the exact current candidate locator for review only: `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md`, current Git blob SHA `33f70d1d2936cc077e0630b15991aa7603bb04ed`. The blob is a content identifier, not authority/currentness.
+- It separates the accepted A objective (“record/report the reviewed candidate reference”) from Constitution ratification, B Authority Context, and C mission/effect authorization.
+- It enumerates the candidate's open decisions and states that the complete content—not this summary or a digest—must be presented for any future review. No owner approval of the constitutional draft is inferred.
+- Updated [Android Core host feasibility gate](BUILD/STEP_7_ANDROID_CORE_HOST_RUNTIME_FEASIBILITY_GATE_2026-10-14.md), commit `a8ca23b97bc0b37cdbd07a7ab6586d6cf123d545`, with an important security correction from official Javet/Node docs: Javet documents Android Node/V8 artifacts, but its Android sandbox is disabled, and Node's Permission Model is a defense-in-depth seat belt, not a boundary against malicious code. Javet remains a semantics research lead only, not a selected security host.
+
+No source code/tests changed or ran. No key/signature/digest/Constitution freeze/ceremony/APK/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
+
