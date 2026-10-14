@@ -112,3 +112,36 @@ The next design-only question is the **protected owner lifecycle**, not another 
 
 This lifecycle remains unimplemented/unproven for STEP 7. No new wrapper, registry, retry, fence, queue, or transaction state machine is introduced by this correction. No code or tests changed or ran.
 
+## Canonical state-owner distinction — simulation persistence is not constitutional authority (2026-10-14)
+
+This closes a naming ambiguity in the current crosswalk.
+
+### Existing owner that is evidenced
+
+`scripts/simulate.mjs::persistState()` is the existing canonical **simulation snapshot persistence owner** for `world-state.json`. It serializes world, agents, events and `nexoMemory` in one snapshot and coordinates cooperating writers through its lock/revision protocol. Existing P112 evidence covers that bounded persistence role.
+
+### Owner that is not evidenced
+
+No inspected contract or runtime path establishes `world-state.json` or `stateRevision` as the canonical owner of constitutional legitimacy, active-Constitution selection, root succession, revocation/currentness or Genesis recognition. Therefore the file is a persistence substrate, not a constitutional trust root. Putting a Constitution record into its JSON payload, hashing it, or incrementing `stateRevision` would not by itself confer authority.
+
+A related hard stop: `loadState()` catches read/parse/schema failures and returns a fresh default state. That behavior can be useful for ordinary simulation recovery, but a protected authority path must distinguish a verified canonical load from a fallback/default result. If that provenance cannot be established, it must return UNKNOWN/HOLD and must not treat the default state or its revision as a new canonical branch. Do not change generic simulation recovery behavior as part of this research-only correction.
+
+### Ownership map
+
+| Concern | Existing evidence | STEP 7 disposition |
+|---|---|---|
+| Persist simulation snapshot / serialize Nexo memory | `persistState()` and existing tests | Existing bounded owner; reusable |
+| Coordinate cooperating snapshot writers | Filesystem lock + `expectedRevision` | Existing bounded mechanism; all writers must cooperate |
+| Prove state load is canonical rather than fallback | Current `loadState()` fallback behavior | Not established for protected authority; gate required |
+| Select current Constitution / prove Genesis legitimacy | No protected establishment owner demonstrated | OPEN / UNKNOWN |
+| Order revocation, amendment, recovery and succession against final admission | No demonstrated constitutional owner at the actual protected sink | OPEN / UNKNOWN |
+| Enforce the final protected effect and prove bypass closure | Core/runtime path not wired to a production protected sink | OPEN / STOP |
+
+### Architectural consequence
+
+Do not solve this by declaring `world-state.json` the Constitution store or by adding a second generic persistence mechanism. The existing persistence primitive can carry a future governed snapshot after legitimate authority semantics and ownership are established, but storage cannot supply those semantics itself.
+
+The minimum remaining decision is not "which file stores the Constitution?" It is: **which independently established rule and enforcement owner determines the current constitutional branch, and how does the final protected admission become conditional on that current branch?** The current evidence does not identify a legitimate answer, so commissioning remains blocked.
+
+No implementation or tests were run; no code, authority, keys, Constitution, or deployment changed.
+
