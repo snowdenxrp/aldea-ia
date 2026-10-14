@@ -2551,3 +2551,12 @@ Recommendation offered to owner: start with a narrowly bounded local constitutio
 The proposal defines the intended claim, prohibited implications, and proof obligations for exact target/representation, review binding, fallback/default behavior, commit/no-effect evidence and exclusion of any causal route to mission/effect execution. It reuses existing persistence semantics where applicable and does not create a new authority contract or storage mechanism.
 
 No source/tests changed or ran; no keys/signatures/digest/Constitution freeze/ceremony/deployment/runtime authority changed; no protected effects authorized. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+## Owner confirmation — initial scope A accepted as design-only (2026-10-14)
+
+The owner accepted A as the initial work objective: record/report a local reference to a reviewed constitutional candidate while continuing to treat its legitimacy and currentness as unestablished. Decision record: [STEP_7_OWNER_CONFIRMATION_SCOPE_A_DESIGN_ONLY_2026-10-14.md](DECISIONS/STEP_7_OWNER_CONFIRMATION_SCOPE_A_DESIGN_ONLY_2026-10-14.md), commit `485abeaba205fd3870a2c071f5f8ac06ba560e03`.
+
+This authorizes continued design/evidence work for A only. It does **not** authorize implementation before the actual target, write boundary, failure semantics and no-effect boundary are evidenced; it does not authorize Constitution freeze/commissioning, keys/signatures/digest/ceremony, Constitution Authority Context, missions, or protected effects. If the real boundary cannot be established from source without a superficial patch, STOP and redesign the root architecture.
+
+No source code/tests changed or ran in this continuation. **STEP 7 remains OPEN / STOP / UNKNOWN. No protected effects authorized.**
+
