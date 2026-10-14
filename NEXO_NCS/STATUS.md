@@ -1,3 +1,13 @@
+## Latest continuation delta — 2026-10-14 concrete execution-path crosswalk
+
+New source-pinned crosswalk: [STEP_7_CONCRETE_EXECUTION_PATH_CROSSWALK_2026-10-14.md](BUILD/STEP_7_CONCRETE_EXECUTION_PATH_CROSSWALK_2026-10-14.md), commit `292e103dfa3cd27779c7584ba4fc9fca5cbf4922`.
+
+- Re-read Core protected transition/ports, policy-context resolver, persistence adapter, Nexo runtime, Lúmina simulation adapter, and simulation persistence source.
+- Core path remains injected authority gate → semantic validation → conditional state commit; no demonstrated canonical Constitution owner or production Genesis activation path.
+- Current Nexo/Lúmina runtime mutates supplied simulation state via effect handlers and records outcomes in memory; this is not the Constitution activation sink. Existing P112 audits already mapped the simulation mutation boundary; they were reused, not rerun.
+- Decision: no existing suitable STEP 7 sink/state owner was evidenced. Do not wire Constitution to world-state.json, simulation adapter, or the uncalled effectBoundary hook; do not invent a store/wrapper to disguise the gap.
+- No code/tests/keys/signatures/Constitution/APK/device/deployment/runtime authority changed; this source-only crosswalk did not run tests. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## Latest continuation delta — 2026-10-14 bootstrap threat model
 
 New bounded threat model and decision table: [STEP_7_BOOTSTRAP_THREAT_MODEL_DECISION_TABLE_2026-10-14.md](BUILD/STEP_7_BOOTSTRAP_THREAT_MODEL_DECISION_TABLE_2026-10-14.md), commit `42b6cca02791541d79d6a35ba14911a50ad38c82`.
