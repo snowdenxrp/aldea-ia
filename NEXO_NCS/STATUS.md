@@ -13,9 +13,9 @@ No code/tests ran or changed; no keys, signatures, digest, Constitution freeze, 
 **STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
 
 
-### Follow-up source finding — authority/currentness race (2026-10-14)
+### Precision correction — reuse existing conditional snapshot commit (2026-10-14)
 
-The concrete execution-path crosswalk now records a source-level TOCTOU gap: `authorityGate.check(claim)` runs before candidate execution and semantic validation, while the commit path does not itself prove that Constitution/currentness/revocation dependencies are bound to the same canonical expected revision at the authoritative commit point. A successful state-revision conditional commit only closes this race if that revision atomically covers every relevant authority dependency; the inspected contract does not establish that. This is an unproven closure, not a demonstrated deployed exploit. No extra check, wrapper, fence, or code patch was added.
+The concrete execution-path crosswalk now integrates existing P112 evidence: `persistState(expectedRevision)` is already a structurally adequate conditional whole-snapshot commit for cooperating writers; do not create a second generic commit primitive. The open gap is the missing protected owner that connects authoritative load/provenance, fully detached working state, claim-specific dependency/currentness evidence, final semantic revalidation, this existing commit, and conflict/reconciliation classification. `stateRevision` alone does not prove that Constitution authority/revocation dependencies are part of its revision domain, and a shallow Nexo-memory clone may retain mutable aliases. This corrects the interpretation of the earlier race note: the generic persistence lock/revision path has existing tests; STEP 7's authority-to-commit closure remains unproven. No code/tests changed or ran.
 
 
 ## Latest continuation delta — 2026-10-14 constitutional draft coverage reconciliation
