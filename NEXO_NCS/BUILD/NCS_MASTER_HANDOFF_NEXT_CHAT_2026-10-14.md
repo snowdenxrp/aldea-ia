@@ -89,3 +89,17 @@ Decisión: NEXO_NCS/DECISIONS/STEP_7_BOUNDED_INITIAL_HONEST_DEVICE_PREMISE_2026-
 
 ## 9. Frase de reanudación
 Retoma NCS desde el handoff maestro del 2026-10-14. Primero verifica STATUS y registra el nuevo artefacto de orden de compuertas si falta. Después cruza MASTER + mapa de roles + AB104.446/.429/.401/.571 + P112 para confirmar si existe un alcance de activación aprobado y dueño canónico de currentness/sink final. No repitas auditorías cerradas ni cambies código. STEP 7 sigue OPEN / STOP / UNKNOWN.
+
+## Addendum — STATUS repair and bounded scope cross-check (2026-10-14)
+
+This addendum supersedes the earlier operational note in section 2 / section 7 that the STATUS update was blocked and still needed to be attempted. That note was accurate at the time of the original handoff, but the follow-up was completed and verified:
+- `NEXO_NCS/STATUS.md` now includes the master handoff, minimum gate-dependency frontier, existing-authority cross-check, concrete mutation-boundary trace, and the unresolved-scope/currentness/sink finding.
+- STATUS update commit: `7498f5de42f94431804c285eb5cb12138b1d8745`.
+- Read-back content SHA: `98da5c63c657887125c694ae03b835005eac83be`.
+- Read-back confirmed all four document references, the no-approved-scope finding, and the unchanged `OPEN / STOP / UNKNOWN` status.
+
+A targeted follow-up cross-check compared MASTER, the Trust Function / Root Role Map, the owner-recognition proposal, the execution-path crosswalk, the mutation-boundary trace, the human-readable Constitution draft/readiness audit, and GitHub search for an explicit approved initial activation scope. No existing approved record was found that selects the exact initial activation claim/target or names a canonical current-Constitution owner and production final protected sink. Search absence is only a bounded repository finding, not proof that no such decision exists outside these records. Existing records explicitly prohibit inferring approval from silence.
+
+The scope choices remain materially distinct: (a) recognize/register a local constitutional reference, (b) establish a protected Constitution Authority Context, and (c) authorize a mission or protected effect. Do not silently substitute one for another. Engineering can specify their distinct proof obligations, but cannot ratify the owner's scope decision. Do not create more alternative contracts; if no approved scope is found in existing records, preserve the decision as unresolved and stop before implementation.
+
+No code/tests/keys/signatures/digest/frozen Constitution/ceremony/device/deployment/runtime authority changed in this continuation. No protected effects were authorized. **STEP 7 remains OPEN / STOP / UNKNOWN.**
