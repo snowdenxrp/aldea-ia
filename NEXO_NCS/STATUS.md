@@ -2540,3 +2540,14 @@ Finding: choosing a narrower scope can reduce the in-scope effect footprint, but
 Owner decision remains OPEN: choose/revise/reject A, B, or C as the initial activation claim. Silence is not consent. After a scope decision, record intent only, then inspect only newly relevant evidence; no code before canonical authority ownership and the applicable final boundary are concretely identified.
 
 No closed audit rerun; no source/tests changed or ran; no keys/signatures/digest/Constitution freeze/ceremony/device/deployment/runtime authority changed; no protected effects authorized. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+## Latest continuation — recommended initial scope A (proposal only, 2026-10-14)
+
+Added [STEP_7_INITIAL_ACTIVATION_SCOPE_A_LOCAL_REFERENCE_2026-10-14.md](DECISIONS/STEP_7_INITIAL_ACTIVATION_SCOPE_A_LOCAL_REFERENCE_2026-10-14.md), commit `9c628bba4fdd3bba9c793cceacbb469193c26003`.
+
+Recommendation offered to owner: start with a narrowly bounded local constitutional reference record. This remains a PROPOSAL, not an accepted decision. The reference must not be represented as legitimate/current authority, must not establish Constitution Authority Context, and must not authorize missions or protected effects. Explicit owner confirmation is required before this is recorded as accepted scope.
+
+The proposal defines the intended claim, prohibited implications, and proof obligations for exact target/representation, review binding, fallback/default behavior, commit/no-effect evidence and exclusion of any causal route to mission/effect execution. It reuses existing persistence semantics where applicable and does not create a new authority contract or storage mechanism.
+
+No source/tests changed or ran; no keys/signatures/digest/Constitution freeze/ceremony/deployment/runtime authority changed; no protected effects authorized. **STEP 7 remains OPEN / STOP / UNKNOWN.**
