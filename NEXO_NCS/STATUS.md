@@ -1,4 +1,18 @@
-## Latest continuation delta — 2026-10-14 Constitution artifact readiness audit
+# NEXO NCS — STATUS
+
+## Latest continuation delta — 2026-10-14 adversarial review of constitutional draft
+
+Recorded [STEP_7_CONSTITUTION_DRAFT_ADVERSARIAL_REVIEW_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_DRAFT_ADVERSARIAL_REVIEW_2026-10-14.md), commit `c8404bddced06a3aeb9038b73dda4fe5b29619c5`.
+
+- Cross-checked the human-readable draft against the MASTER's constitutional requirements and the existing Genesis, authority-composition, readiness, and execution-path evidence.
+- Found a precision gap: the draft left dual-control implementation open but did not explicitly preserve the MASTER's dual-control requirement for constitutional changes as a non-optional invariant.
+- Corrected section 7.1 in [STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md), commit `bcba741ae25cc76467b95c4ba79e4b567035b0b5`. The invariant is now explicit; concrete roles, failure-domain separation, threshold, key arrangement and implementation remain OPEN. Different keys/devices/processes are not assumed independent automatically.
+- Other reviewed boundaries remain explicitly unresolved where evidence is missing: canonical review binding, amendment/currentness, recovery/succession, verifier provenance, canonical Constitution state owner, final sink and bypass closure.
+- No code/tests/keys/signatures/digest/Constitution freeze/APK/device/deployment/runtime authority changed. No tests ran.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+on delta — 2026-10-14 Constitution artifact readiness audit
 
 Added [STEP_7_CONSTITUTION_ARTIFACT_READINESS_AUDIT_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_ARTIFACT_READINESS_AUDIT_2026-10-14.md), commit `52107e7691790190749a883d205fd8f16a72329c`.
 
