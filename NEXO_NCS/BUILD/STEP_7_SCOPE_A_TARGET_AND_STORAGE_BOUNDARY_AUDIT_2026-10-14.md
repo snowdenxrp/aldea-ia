@@ -63,3 +63,28 @@ The next step is a targeted source map—not another broad audit—to establish 
 - No tests claimed; no source code changed.
 
 **Result:** scope A is owner-accepted as design intent; target/storage boundary is NOT ESTABLISHED. Maintain OPEN / STOP / UNKNOWN.
+
+## Follow-up source inspection — remaining Nexo-local state owners (2026-10-14)
+
+Additional source pins inspected after the initial audit:
+
+- `src/nexo/runtime.js`, blob `1b4096bd6868fd9086ba6740f07d6a104a258651`.
+- `src/nexo/effect-adapter.js`, blob `e2095c52282865699e4de107c75a6792bcf5dac3`.
+- `src/nexo/simulation-adapter.js`, blob `291ef4d43ca1af2dad29503d8c15f5cdd05aa114`.
+- `src/nexo/orchestrator.js`, blob `973d3d5406c5cab16fb49529d94e07a1557c3111`.
+- `src/assistants/memory.js`, blob `c70f246a85e8c513b8f746d7de237f881b0de91c`.
+
+### Additional findings
+
+- `src/assistants/memory.js` constructs a bounded in-memory learning/missions record and exposes record/reconstruction functions; the inspected file does not own durable local persistence.
+- `src/nexo/runtime.js` commits mission execution/outcome data into a caller-supplied memory object and serializes concurrent in-process outcome commits with a `WeakMap` lock. That is not a durable canonical constitutional-reference store.
+- `src/nexo/effect-adapter.js` keeps an in-memory execution map/journal. Its optional `persistPreparedIntent` is a callback supplied by the caller, not an existing storage owner or authority boundary. The journal's `prepared` state is explicitly not proof of no effect.
+- `src/nexo/simulation-adapter.js` mutates simulation state and tracks `nexoEffectRevision` in memory; this is not a constitutional-reference persistence owner and is outside the approved scope A target.
+- `src/nexo/orchestrator.js` plans/advances mission steps. It is not a candidate-reference store and must not be modified to imply authority.
+
+### Updated conclusion
+
+The targeted inspection found no suitable already-existing local Nexo persistence/state owner for scope A. The known durable file boundary is the simulation snapshot path, which is semantically wrong for constitutional-reference ownership and has fallback semantics that cannot establish canonical recovery.
+
+Therefore the next step is **not another source search and not implementation**. The minimum unresolved architecture choice is whether Nexo will have a separately owned, explicitly non-authoritative local reference record and which existing runtime/persistence host may own it without conflating it with simulation state or protected authority. No such owner is currently evidenced. This choice must be designed and reviewed before code; do not silently invent a generic store or graft the record onto simulation memory.
+
