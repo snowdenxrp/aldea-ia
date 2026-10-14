@@ -1,3 +1,15 @@
+## Latest continuation — device modification decision gate (2026-10-14)
+
+Added [STEP_7_DEVICE_MODIFICATION_DECISION_GATE_2026-10-14.md](BUILD/STEP_7_DEVICE_MODIFICATION_DECISION_GATE_2026-10-14.md), commit `53083c5a6dc0f48dd920a220212536293d42b8dd`.
+
+- Recorded the owner's permission to modify any available handset, while distinguishing permission to evaluate from evidence that modification improves security.
+- Recommendation: keep the POCO X7 Pro stock/locked for now; evaluate the Moto G52 as a possible spare only after exact variant, unlock eligibility, supported build, recovery/unbrick path and boot-verification consequences are evidenced. Keep the low-memory Moto E22i out of the primary trust-boundary role absent a concrete reason.
+- Android bootloader unlocking changes the security posture and normally erases data; a custom ROM is not automatically more trusted. The owner currently has no PC, so PC-based flashing procedures cannot be assumed feasible.
+- No device, OS, host, hardware key or storage backend selected. No wipe/unlock/root/flash/APK install/key generation performed.
+- Next: keep host unresolved; use the existing Javet Node mode comparison only for a bounded semantics experiment after trust assumptions are explicit. Scope A negative tests remain specifications, NOT RUN.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest continuation — Scope A negative acceptance tests (2026-10-14)
 
 Added [STEP_7_SCOPE_A_NEGATIVE_ACCEPTANCE_TESTS_AND_PROOF_GATES_2026-10-14.md](BUILD/STEP_7_SCOPE_A_NEGATIVE_ACCEPTANCE_TESTS_AND_PROOF_GATES_2026-10-14.md), commit `c323b716752808910ef8aeccf4ba7c22bd6039c7`.
