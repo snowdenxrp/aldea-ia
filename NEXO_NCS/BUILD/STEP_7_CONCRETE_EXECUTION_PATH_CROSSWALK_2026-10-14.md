@@ -51,3 +51,36 @@ Inspect the already-existing MASTER/AB/P112 source requirements only for a previ
 ## Status and non-actions
 STEP 7 remains `OPEN / STOP / UNKNOWN`.
 No source code, tests, keys, signatures, Constitution, APK, device, deployment, or runtime authority changed. No tests were run in this source-only crosswalk.
+
+## Additional source-level adversarial finding — authority check / commit race
+
+Date: 2026-10-14 (follow-up inspection of the pinned source above)
+
+### Observed ordering
+
+`executeProtectedTransition` invokes `authorityGate.check(claim)` before snapshot isolation, candidate execution, and final semantic validation. If validation returns PASS, it calls `conditionalCommit.commit(candidate)`. The inspected function does not invoke `effectBoundary.prepare()` and does not itself revalidate the authority result at the commit boundary.
+
+The candidate carries `expectedRevision`, but the core transition does not establish that this revision is the canonical revision for the Constitution, authority root, revocation/fence state, policy dependencies, and protected target together. The persistence adapter forwards the candidate state plus expected revision to `persistState`; that alone does not prove that authority-currentness participates in the same protected conditional transition.
+
+### Attack trace
+
+1. The early authority gate returns an apparently valid result.
+2. A governing authority, Constitution revision, revocation state, or relevant dependency changes before final commit.
+3. Candidate execution and semantic validation still finish using the earlier authority evidence.
+4. The conditional commit succeeds unless the actual canonical persistence primitive independently fences that exact authority/dependency change.
+5. The inspected Core path provides no evidence that this race is closed.
+
+### Required interpretation
+
+- This is a **source-level gap / unproven closure**, not a demonstrated exploit against a deployed target.
+- A state-revision conflict closes the race only if that revision is canonically and atomically bound to every authority/currentness dependency whose change must invalidate this transition. That binding is not established by the inspected adapter contract.
+- A second arbitrary check would not by itself solve the issue; it can create another check-then-commit window. The semantic currentness/fencing condition must be enforced at the authoritative linearization point.
+- Do not wire `effectBoundary.prepare()` as a superficial fix: first define which exact state/effect it protects, who owns its canonical currentness, and how its decision is bound to commit.
+- Existing P112 findings on the real `executeAction()` mutation path remain separate and still prevent claiming a bypass-closed final sink.
+
+### Disposition
+
+Add this to the blocked proof obligations for any future protected activation path: **authority/currentness change between early appraisal and commit must either order before the transition and force rejection/UNKNOWN, or order after a provably committed transition under an explicit linearization rule.** No ambiguous middle state may be labeled authorized.
+
+No code or tests changed or ran. No new authority, transaction wrapper, retry, queue, epoch, or generic fence was introduced.
+
