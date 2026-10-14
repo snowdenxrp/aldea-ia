@@ -20,6 +20,22 @@ Updated section 7.1 of `STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md`:
 
 Draft update commit: `bcba741ae25cc76467b95c4ba79e4b567035b0b5`.
 
+## Finding 2 — currentness/revocation invariant needed a direct clause
+
+The traceability map labels C-11 `RECOVERED / OPEN`: the principle that a once-valid or correctly signed Constitution is not necessarily current is recovered, while the canonical current-state owner and enforcement mechanism remain OPEN. The draft covered related ideas across technical-metadata and conflict clauses, but did not state this principle directly in its operative section.
+
+### Correction applied
+
+Added section 3.4, “Currentness, revocation and rollback,” to the human-readable draft. It explicitly preserves the recovered invariant while keeping the current-state owner and ordering mechanism OPEN. No currentness implementation or active Constitution is inferred.
+
+Draft update commit: `6f60ea8fbec35359d9cdd8d29c89c95c9a2fbe6f`.
+
+## Finding 3 — traceability label lagged behind a recorded decision reconciliation
+
+The clause map still labeled C-19 as a source-status conflict even though STATUS and the bounded-premise decision record had already reconciled the earlier threat-model wording as stale. Updated C-19 to `RECOVERED / BOUNDED ASSUMPTION ACCEPTED`, retaining the strict limit to the first recognition ceremony and the requirement for a new explicit decision before any expansion.
+
+Traceability-map update commit: `ed01187616b1f27c0c30f6886969e48d08efa1b3`.
+
 ## Cross-check of other major boundaries
 
 - **Genesis vs Constitution vs identity/policy/recovery/execution:** separation is preserved; the draft does not let a candidate bootstrap itself.
