@@ -1,4 +1,14 @@
 # NEXO NCS — STATUS
+## Latest continuation delta — 2026-10-14 concrete owner-recognition proposal
+
+Proposal added: [STEP_7_CONCRETE_OWNER_RECOGNITION_PATH_PROPOSAL_2026-10-14.md](BUILD/STEP_7_CONCRETE_OWNER_RECOGNITION_PATH_PROPOSAL_2026-10-14.md), commit `97af44a67559c9e149aadb6b3f783c06b127d379`.
+
+- Converts the unresolved initial-recognition channel into a reviewable bounded proposal: owner-reviewed exact content under an explicit honest-device/presentation assumption, plus a handwritten offline artifact-identity/recovery reference.
+- This is **not selected or ratified**. Human intent remains the source of owner recognition; the paper record, phone, OS, Android attestation, GitHub, digest, and key do not become constitutional authority.
+- Explicit owner ratification is required for the honest-device assumption and the recovery/reference limitations before any ceremony. No keys, signatures, commissioning digest, or approval were created.
+- Verifier provenance, canonical current-Constitution state ownership, actual protected sink, and bypass closure remain separate gates.
+- No code/tests/APK/device/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
 
 ## Latest continuation delta — 2026-10-14 Android Core host feasibility
 
