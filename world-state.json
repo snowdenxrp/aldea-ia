@@ -1,17 +1,17 @@
 {
   "version": 5,
-  "stateRevision": 3123,
-  "savedAt": 1791967530736,
+  "stateRevision": 3125,
+  "savedAt": 1791969383659,
   "day": 681,
-  "hour": 18.73424000022999,
+  "hour": 18.748666666896657,
   "world": {
     "day": 681,
-    "timeOfDay": 18.73424000022999,
+    "timeOfDay": 18.748666666896657,
     "speed": 1,
     "resources": {
       "water": {
         "type": "renewable",
-        "amount": 270,
+        "amount": 250,
         "quality": 1,
         "location": "river",
         "position": {
@@ -29090,7 +29090,7 @@
           "key": "2:4",
           "x": 2,
           "z": 4,
-          "visits": 71272,
+          "visits": 71276,
           "discovered": true,
           "biome": "plains",
           "population": 0,
@@ -30802,9 +30802,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 45.53480533332821,
+        "hunger": 45.503066666661546,
         "thirst": 100,
-        "energy": 95.05333333333267,
+        "energy": 95.017266666666,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -46046,26 +46046,6 @@
         },
         {
           "id": "event-507",
-          "day": 667,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-509",
-          "day": 667,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Alex bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-511",
           "day": 667,
           "type": "experience",
           "topic": "action:drink",
@@ -61483,6 +61463,26 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-501",
+          "day": 681,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-501",
+          "day": 681,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Alex bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -70813,9 +70813,9 @@
         ],
         "currentActivity": "drinking",
         "needs": {
-          "hunger": 45.53480533332821,
-          "thirst": 99.98592,
-          "energy": 95.05333333333267,
+          "hunger": 45.503066666661546,
+          "thirst": 99.98583466666666,
+          "energy": 95.017266666666,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -73831,6 +73831,8 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -73843,9 +73845,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 45.53480533332821,
+        "hunger": 45.503066666661546,
         "thirst": 100,
-        "energy": 95.05333333333267,
+        "energy": 95.017266666666,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -90641,26 +90643,6 @@
           "importance": 0.5
         },
         {
-          "id": "event-548",
-          "day": 667,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
-          "id": "event-550",
-          "day": 667,
-          "type": "experience",
-          "topic": "action:drink",
-          "description": "Bruno bebió agua (5).",
-          "participants": [],
-          "emotionalWeight": 0.1,
-          "importance": 0.5
-        },
-        {
           "id": "event-652",
           "day": 667,
           "type": "exploration",
@@ -106079,6 +106061,26 @@
           "participants": [],
           "emotionalWeight": 0.1,
           "importance": 0.5
+        },
+        {
+          "id": "event-502",
+          "day": 681,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
+        },
+        {
+          "id": "event-502",
+          "day": 681,
+          "type": "experience",
+          "topic": "action:drink",
+          "description": "Bruno bebió agua (5).",
+          "participants": [],
+          "emotionalWeight": 0.1,
+          "importance": 0.5
         }
       ],
       "relationships": [
@@ -115424,9 +115426,9 @@
         ],
         "currentActivity": "drinking",
         "needs": {
-          "hunger": 45.53480533332821,
-          "thirst": 99.98592,
-          "energy": 95.05333333333267,
+          "hunger": 45.503066666661546,
+          "thirst": 99.98583466666666,
+          "energy": 95.017266666666,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -118547,6 +118549,8 @@
           "discover",
           "discover",
           "discover",
+          "discover",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -118555,46 +118559,6 @@
     }
   ],
   "events": [
-    {
-      "id": "event-501",
-      "day": 681,
-      "hour": 15.357333333563064,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 681,
-      "hour": 15.357333333563064,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
-    {
-      "id": "event-501",
-      "day": 681,
-      "hour": 15.367333333563064,
-      "type": "action",
-      "description": "Alex descansó.",
-      "participants": [
-        "alex"
-      ]
-    },
-    {
-      "id": "event-502",
-      "day": 681,
-      "hour": 15.367333333563064,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
     {
       "id": "event-501",
       "day": 681,
@@ -123554,6 +123518,46 @@
       "participants": [
         "bruno"
       ]
+    },
+    {
+      "id": "event-501",
+      "day": 681,
+      "hour": 18.74424000022999,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 681,
+      "hour": 18.74424000022999,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
+    },
+    {
+      "id": "event-501",
+      "day": 681,
+      "hour": 18.748666666896657,
+      "type": "action",
+      "description": "Alex bebió agua (5).",
+      "participants": [
+        "alex"
+      ]
+    },
+    {
+      "id": "event-502",
+      "day": 681,
+      "hour": 18.748666666896657,
+      "type": "action",
+      "description": "Bruno bebió agua (5).",
+      "participants": [
+        "bruno"
+      ]
     }
   ],
   "nexoMemory": {
@@ -123563,24 +123567,6 @@
     "patterns": [],
     "nexo": {
       "missions": [
-        {
-          "missionId": "lumina-1791884843730-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_social_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-10-13T09:47:23.730Z"
-        },
         {
           "missionId": "lumina-1791885853110-1",
           "version": 4,
@@ -124686,6 +124672,31 @@
             }
           ],
           "at": "2026-10-14T08:45:30.570Z"
+        },
+        {
+          "missionId": "lumina-1791969383493-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_social_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            },
+            {
+              "id": "step-2",
+              "action": "inspect_and_collect_evidence",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-14T09:16:23.493Z"
         }
       ],
       "attempts": [],
