@@ -2398,3 +2398,19 @@ Added [STEP_7_CONSTITUTION_CLAUSE_TRACEABILITY_MAP_2026-10-14.md](BUILD/STEP_7_C
 - **STEP 7 remains OPEN / STOP / UNKNOWN.** No commissioning or protected effects.
 
 **Next bounded action:** adversarially cross-check the clause map against the existing Genesis attack, trust-role map, commissioning matrix and prior AB/P112 conclusions; record only specific traceability errors or actual contradictions, then assemble a separate DRAFT constitutional text only if the source mapping survives. Do not create a commissioning digest while content is changing.
+
+
+## Latest continuation delta — 2026-10-14 clause-map adversarial cross-check
+
+Cross-checked the new clause map against the Genesis attack, authority-source composition gate, bootstrap threat model, and explicit owner decision. Two documentation commits record the result:
+
+- Clause-map update: [STEP_7_CONSTITUTION_CLAUSE_TRACEABILITY_MAP_2026-10-14.md](BUILD/STEP_7_CONSTITUTION_CLAUSE_TRACEABILITY_MAP_2026-10-14.md), commit `11b565ee375905cc5532db017719e769ddd1ff4b`.
+- Transparent reconciliation of the stale premise status: [STEP_7_BOOTSTRAP_THREAT_MODEL_DECISION_TABLE_2026-10-14.md](BUILD/STEP_7_BOOTSTRAP_THREAT_MODEL_DECISION_TABLE_2026-10-14.md), commit `55ea9c1d2d59a4c0c5c3d63cfc88dfb95998d392`.
+
+**Finding:** the decision record says the owner accepted the honest-device/presentation premise for the first ceremony, while the earlier threat-model table still said NOT RATIFIED. That was a real documentation status inconsistency. It is now reconciled with a dated addendum preserving the historical text and the exact narrow scope of the owner decision. This is not a new owner decision and does not broaden the premise.
+
+The source cross-check otherwise supports the clause-map boundaries: Genesis cannot self-bootstrap; typed Constitution context and Policy data do not establish their own legitimacy; verifier/currentness and the actual protected sink remain unproven; amendment, succession, recovery and emergency details remain OPEN rather than invented. No further broad audit was repeated.
+
+No code/tests/keys/signatures/digest/Constitution freeze/ceremony/APK/device/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+**Next bounded action:** assemble a separate human-readable constitutional DRAFT from only RECOVERED clauses, clearly segregating EXTENSION and OPEN material; do not canonically serialize or hash it yet. Before any approval ceremony, the complete draft must be reviewed and all unresolved governance choices must remain visibly unresolved rather than disguised as operative rules.
