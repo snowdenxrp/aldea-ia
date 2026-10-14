@@ -41,7 +41,7 @@ A hash identifies bytes; a signature relates a statement to a key; a timestamp o
 
 ### 2.4 Human intent and presentation assumptions
 
-Any initial owner recognition must bind deliberate human review to one exact artifact and scope under an explicitly declared threat model. The separately recorded owner decision provisionally accepts the POCO and its screen as faithfully presenting the content for the first recognition ceremony only. That is a bounded risk assumption, not technical proof, permanent trust in the device, or an authorization for subsequent operation.
+An initial owner-recognition process must make the reviewed content, intended scope and threat assumptions explicit. The exact binding mechanism between human review and the artifact remains an OPEN commissioning requirement, not an implemented guarantee in this draft. The separately recorded owner decision provisionally accepts the POCO and its screen as faithfully presenting the content for the first recognition ceremony only. That is a bounded risk assumption, not technical proof, permanent trust in the device, or an authorization for subsequent operation.
 
 ## 3. Fail-closed decision rules
 
@@ -107,7 +107,7 @@ Emergency containment must remain within a pre-authorized bounded role. It canno
 
 ### 7.1 Amendment cannot be inferred
 
-A change to constitutional content, scope, canonicalization, authority domain, amendment procedure, succession, recovery or emergency powers is material unless a governed rule explicitly establishes otherwise. A previously reviewed or approved revision cannot be treated as approval of changed bytes or scope.
+The exact rule for determining material change and binding a review to bytes/scope remains an EXTENSION candidate to be specified against the canonicalization and amendment contracts. Until a governed rule exists, do not assume a prior review applies to changed content or scope.
 
 The complete amendment procedure and activation/currentness semantics remain OPEN. This draft does not invent an approval threshold, quorum, key arrangement or dual-control implementation.
 
@@ -140,8 +140,8 @@ The following are intentionally unresolved and cannot be filled by inference:
 
 These are useful candidate refinements but are not silently elevated into recovered constitutional rules:
 - A deterministic canonicalization and human-readable rendering specification.
-- An explicit end-to-end binding from reviewed content and scope to a fresh one-use approval context.
-- A complete amendment and currentness state-transition procedure.
+- The exact mechanism binding reviewed content and scope to a fresh one-use approval context; the need to bind these is a gate, but this mechanism is not specified here.
+- A precise definition of material change and a complete amendment/currentness state-transition procedure.
 - A claim-specific final-sink enforcement and bypass-evidence requirement.
 - A machine-checkable traceability link from each clause to its normative source and acceptance evidence.
 
