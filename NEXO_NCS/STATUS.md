@@ -2427,3 +2427,13 @@ Created [STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md](BUILD/STEP_7_CO
 - **STEP 7 remains OPEN / STOP / UNKNOWN.**
 
 **Next bounded action:** perform a clause-by-clause adversarial review of this readable draft against MASTER, Genesis attack, authority-source composition, AB anchors and P/P112 conclusions; identify any overstatement, source conflict, duplicated mechanism or misleadingly operative wording. Only after that review should the draft be revised for owner reading. Do not hash or sign it while it is changing.
+
+
+## Draft wording review — 2026-10-14
+
+Refined the human-readable draft in commit `bc2973a77ea0f0bfa81b462e591015b9efbea683`:
+- Clarified that the need for review-to-artifact binding is a gate, while the exact binding mechanism remains OPEN.
+- Moved the material-change/canonicalization procedure into explicit EXTENSION territory rather than presenting an unfinished mechanism as recovered operative law.
+- Kept amendment threshold, canonical currentness, recovery/succession details and sink enforcement unresolved.
+
+This was a documentation precision correction, not commissioning or implementation. No code/tests/keys/signatures/digest/Constitution freeze/ceremony/device/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
