@@ -109,7 +109,7 @@ Emergency containment must remain within a pre-authorized bounded role. It canno
 
 The exact rule for determining material change and binding a review to bytes/scope remains an EXTENSION candidate to be specified against the canonicalization and amendment contracts. Until a governed rule exists, do not assume a prior review applies to changed content or scope.
 
-The complete amendment procedure and activation/currentness semantics remain OPEN. This draft does not invent an approval threshold, quorum, key arrangement or dual-control implementation.
+The MASTER's requirement for dual control over constitutional changes is preserved as a design invariant; it is not optional. The concrete roles, separation of failure domains, approval threshold, key arrangement and implementation are still OPEN and must be specified without assuming that two keys, devices or processes are independent merely because they differ. The complete amendment procedure and activation/currentness semantics remain OPEN.
 
 ### 7.2 Evidence discipline
 
