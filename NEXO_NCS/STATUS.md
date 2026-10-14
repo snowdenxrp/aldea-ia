@@ -2570,3 +2570,16 @@ No existing local Nexo runtime target/storage owner has yet been evidenced for r
 
 Next bounded action: inspect only the remaining existing Nexo-local persistence/state owners and their callers for a suitable already-existing boundary. If none exists, stop and present the minimal architecture choice before implementation. No source code/tests changed or ran. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
 
+## Scope A follow-up — no suitable existing local reference owner found (2026-10-14)
+
+Extended [STEP_7_SCOPE_A_TARGET_AND_STORAGE_BOUNDARY_AUDIT_2026-10-14.md](BUILD/STEP_7_SCOPE_A_TARGET_AND_STORAGE_BOUNDARY_AUDIT_2026-10-14.md), commit `ddba4f65564960c2030201f8778975e25c83d00d`, after inspecting the remaining known Nexo-local state owners.
+
+- `src/assistants/memory.js` and `src/nexo/runtime.js` maintain bounded in-memory mission/outcome data; they do not provide durable constitutional-reference ownership.
+- `src/nexo/effect-adapter.js` has an optional caller-supplied `persistPreparedIntent` callback, not an existing persistence owner.
+- `src/nexo/simulation-adapter.js` owns simulation-local mutation/revision, not constitutional reference.
+- No suitable existing local Nexo persistence owner was evidenced. The known durable simulation snapshot is semantically the wrong owner and must not be repurposed.
+
+**Decision frontier:** before implementation, explicitly design a narrowly scoped, non-authoritative candidate-reference record and identify its real runtime/persistence host. Do not invent a generic store, attach it to simulation memory, or use it as authority. The earlier Android Core host feasibility gate remains relevant; no Android/Core integration is evidenced here.
+
+No source code/tests changed or ran. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
+
