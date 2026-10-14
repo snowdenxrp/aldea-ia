@@ -1,6 +1,12 @@
 # NEXO NCS — STATUS
 
-## Latest continuation pointer — 2026-10-12
+## Latest continuation pointer — 2026-10-14
+
+**Next-chat handoff:** [NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md](BUILD/NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md). Read this first after STATUS.md; it now includes the 2026-10-13 Android target/source-boundary findings and the 2026-10-14 owner-credential trust-channel research.
+
+**Latest research:** [STEP_7_OWNER_CREDENTIAL_AND_ANDROID_TRUST_CHANNEL_COMPARISON_2026-10-14.md](RESEARCH/STEP_7_OWNER_CREDENTIAL_AND_ANDROID_TRUST_CHANNEL_COMPARISON_2026-10-14.md). Hardware keys may provide possession-bound signing, but do not solve initial enrollment trust or canonical authority.
+
+**Current Step 7:** OPEN / STOP / UNKNOWN. Android local is the provisional engineering target only; M1 remains an inference/presentation prototype, not Nexo Core. No code/tests/keys/Constitution/APK/device/deployment/runtime authority changed in the latest research pass.
 
 **Next-chat handoff:** [NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md](BUILD/NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-12.md). Read this first after STATUS.md; it preserves the latest run reference, E22i context, project separation, Lúmina capture containment, no-repeat instructions, and the next bounded Step 7 action.
 
