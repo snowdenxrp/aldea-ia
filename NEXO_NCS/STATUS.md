@@ -2481,3 +2481,13 @@ Refined the human-readable draft in commit `bc2973a77ea0f0bfa81b462e591015b9efbe
 - Kept amendment threshold, canonical currentness, recovery/succession details and sink enforcement unresolved.
 
 This was a documentation precision correction, not commissioning or implementation. No code/tests/keys/signatures/digest/Constitution freeze/ceremony/device/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+### STEP 7 — canonical state-owner distinction (2026-10-14)
+
+- Existing `scripts/simulate.mjs::persistState()` is a bounded canonical **simulation snapshot persistence owner**, not an established constitutional authority/currentness owner.
+- `world-state.json` + `stateRevision` do not independently establish Genesis legitimacy, active-Constitution selection, revocation/succession ordering or enforcement at the protected sink.
+- `loadState()` fallback-to-default on read/parse/schema failure is a separate provenance hazard for protected use. A future authority path must not treat fallback/default state as canonical; if canonical load provenance is unknown, remain UNKNOWN/HOLD. No change to ordinary simulation recovery is authorized by this finding.
+- Crosswalk updated and read back: [STEP 7 concrete execution-path crosswalk](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_CONCRETE_EXECUTION_PATH_CROSSWALK_2026-10-14.md), commit `45f1870b2a6c3a3f5a2a2c111ba41b793ce76951`.
+- Exact remaining architecture question: which independently established rule and enforcement owner determines the current constitutional branch, and how is final protected admission made conditional on that branch? No legitimate owner is evidenced yet.
+- Status remains `OPEN / STOP / UNKNOWN`; no source code/tests changed or ran, no Constitution frozen, and no protected effects authorized.
+
