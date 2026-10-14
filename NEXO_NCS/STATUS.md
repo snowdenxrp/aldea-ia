@@ -1,3 +1,16 @@
+## Latest continuation — Scope A negative acceptance tests (2026-10-14)
+
+Added [STEP_7_SCOPE_A_NEGATIVE_ACCEPTANCE_TESTS_AND_PROOF_GATES_2026-10-14.md](BUILD/STEP_7_SCOPE_A_NEGATIVE_ACCEPTANCE_TESTS_AND_PROOF_GATES_2026-10-14.md), commit `c323b716752808910ef8aeccf4ba7c22bd6039c7`.
+
+- Specified 15 mandatory negative acceptance cases covering candidate substitution, corruption/truncation, partial/uncertain writes, stale restore/rollback, concurrent/replayed review, missing records, unauthorized mutation paths, substituted Core/app/runtime, compromised OS/display, fallback coercion, migration and noninterference from Scope A into mission/protected/external effects.
+- Each case states required UNKNOWN/STOP behavior and the raw evidence needed before calling it passed. All cases remain NOT RUN because no host/runtime has been selected; this is a specification, not test evidence.
+- Recorded the owner's clarification that any available device may be modified if justified. This expands evaluation options only; it does not select a device or authorize purchase, wipe, unlock, root, flash, APK installation or key generation.
+- Device options must be assessed by a concrete security property and failure-domain independence. A second handset, hardware key, Android sandbox/Keystore, or Termux is not automatically an independent trust boundary.
+- Next: map candidate data flow and actual sinks against MASTER + AB + P/P112, then assess a specific host proposal before implementation. Do not create a new generic commit primitive; the existing `persistState(expectedRevision)` path must be evaluated in its documented scope.
+- No code/tests ran or changed. No keys/signatures/digest/Constitution freeze/device configuration/deployment/runtime authority changed.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 # NEXO NCS — STATUS
 
 ## Latest continuation — recovery/succession crosswalk (2026-10-14)
