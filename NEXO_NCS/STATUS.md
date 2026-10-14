@@ -1,5 +1,18 @@
 # NEXO NCS — STATUS
 
+## Latest continuation — recovery/succession crosswalk (2026-10-14)
+
+Added [STEP_7_RECOVERY_SUCCESSION_GOVERNANCE_CROSSWALK_2026-10-14.md](BUILD/STEP_7_RECOVERY_SUCCESSION_GOVERNANCE_CROSSWALK_2026-10-14.md), commit `044f2ae2967b0df88b4cfbd81c937a0d38608a78`.
+
+This consolidates existing MASTER, STEP 7 trust contracts, AB104.446, AB104.429, AB104.563–565, AB104.571, AB105.111R/112R/116R and GLOBAL-AUDIT-109 findings. No closed historical audit was rerun.
+
+Key distinction: recovery, reconciliation, reauthorization and succession are separate. Existing historical work explicitly leaves reauthorization provenance unresolved; no recovery root, handwritten reference, successor, quorum, or offline staleness window has been selected. Conditional final recovery activation must bind current dependencies/fence; ambiguous commit outcomes require authoritative reconciliation.
+
+No code/tests ran or changed; no keys, signatures, digest, Constitution freeze, device, deployment or runtime authority changed.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+
 ## Latest continuation delta — 2026-10-14 constitutional draft coverage reconciliation
 
 Continued the bounded clause-by-clause review and updated the draft, traceability map, and adversarial review.
