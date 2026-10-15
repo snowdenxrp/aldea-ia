@@ -141,3 +141,28 @@ Do not silently downgrade L2 to a self-reported record. Do not treat the accepte
 
 Status remains **OPEN / STOP / UNKNOWN**. The next useful work is to turn the threat-model boundary into an explicit claim-to-assumption table for Direction A versus Direction B, using the already completed research; no additional broad device/root search is warranted at this stage.
 
+
+
+## 11. Claim-to-assumption comparison — no direction selected
+
+| Claim / property | Direction A: bounded ceremony assumption | Direction B: preserve L2 |
+|---|---|---|
+| Owner is the normative source of the decision | Constitutional premise; must be explicitly recorded, not inferred from device possession | Same |
+| Exact artifact reviewed equals artifact endorsed | Must be an explicit assumption or independently checked binding for the ceremony; screen-only premise does not cover it | Must be demonstrated by a trusted presentation/approval path and evidence verifier |
+| Resistance to malicious Nexo Core/app | Not claimed if Core/app participates in the assumed trusted ceremony path; any excluded component must be named | Required by the declared threat objective |
+| Resistance to compromised Android OS | Not claimed if the OS/input/approval path is included in the environmental assumption | Required by the declared threat objective |
+| Verifier/policy provenance | Still needs a justified, bounded basis; an assumption cannot be disguised as verification | Must have a separately grounded provenance/recognition path |
+| Freshness/replay/revocation | Still required for any later claim of currentness; ceremony evidence alone is not timeless authority | Still required, with verifier and enforcement basis included |
+| Recovery/succession | Existing AB104.452/453 constraints apply; recovery cannot self-appoint or become unrestricted authority | Same, plus recovery must preserve the L2 trust objective |
+| Protected effects | Not authorized by Scope A; separate Scope B/C and final-sink proof remain mandatory | Same |
+| Current evidence status | **NOT ESTABLISHED** | **NOT ESTABLISHED** |
+| What would make the direction honest | Explicitly state and accept the narrower failure model before the ceremony; do not advertise resistance to excluded compromises | Identify and prove the concrete independent channel and its initial recognition basis before implementation |
+
+### Interpretation
+
+Direction A is not a weaker cryptographic algorithm or a convenience setting. It changes the claim being made about the adversary. It may be operationally simpler, but any component trusted during the ceremony becomes part of the explicit trusted computing/environmental base for that claim. It must not be presented as L2.
+
+Direction B retains the stronger objective but cannot proceed merely by declaring that a separate verifier exists. The verifier's trust anchor, policy, evidence channel, freshness, revocation and recovery must themselves have justified provenance. RFC 9334's Attester/Verifier/Relying Party separation supports this role separation, but does not select or bootstrap Nexo's first verifier.
+
+**No automatic recommendation to choose A:** the project has not accepted this broader environmental assumption. **No false promise for B:** no concrete path currently demonstrates it. Therefore the safe project action is to preserve both as unresolved design boundaries and keep STOP until the required assumption or capability is explicitly selected and supported.
+
