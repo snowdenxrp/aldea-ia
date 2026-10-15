@@ -1,3 +1,14 @@
+## Latest design gate — Scope A review-evidence acceptance contract (2026-10-15)
+
+Added [STEP_7_SCOPE_A_REVIEW_EVIDENCE_MINIMUM_ACCEPTANCE_CONTRACT_2026-10-15.md](BUILD/STEP_7_SCOPE_A_REVIEW_EVIDENCE_MINIMUM_ACCEPTANCE_CONTRACT_2026-10-15.md), commit `feeeb4fb61ac2b85850e80cc903bb0ba8d1ae64c`.
+
+- Defined claim separation among candidate locator, exact content binding, owner decision evidence, persistence, independent verification, constitutional currentness and protected-effect admission.
+- Specified minimum fail-closed semantics and a threat-relative verifier requirement without authorizing a new generic framework, store, ID, signer, or trust root.
+- Gate assessment: candidate locator only is partially established; owner review, exact content/decision binding, signer/provenance, independent verifier, freshness/replay, local persistence owner and no-effect boundary remain NOT ESTABLISHED.
+- The next bounded task is a trust-domain independence inventory: determine whether any already available domain can verify the required assertions without self-verification or creating an authority above the owner. If not, explicitly record the missing capability and keep STOP.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest reassessment — Android confirmation assurance (2026-10-15)
 
 Added [STEP_7_ANDROID_CONFIRMATION_ASSURANCE_REASSESSMENT_2026-10-15.md](BUILD/STEP_7_ANDROID_CONFIRMATION_ASSURANCE_REASSESSMENT_2026-10-15.md), commit `dbe91448aa9d2ca48f346ee1de9edb7c328ffea9`.
