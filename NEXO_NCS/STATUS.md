@@ -1,3 +1,16 @@
+## STEP 7 continuation — adversarial check of constitutional boot (2026-10-15)
+
+Extended [STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md](BUILD/STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md), commit `dc78c0d1c2dcb2a4f800d6aaa909ebc25547f9fb`.
+
+- Attacked the proposed boot pattern against circular first trust, compromised same-host UI/Core, content substitution after review, stale/revoked/offline revisions, alternate entry paths, and caller-supplied PASS/AUTHORIZED assertions.
+- Result: the idea remains useful only as two distinct stages: Genesis recognition using a separately justified initial trust premise; then routine restart revalidation of that already-established basis before capability admission. Stage 2 cannot repair Stage 1.
+- The existing Scope A contract is the least expansive candidate for progress, but it is not selected/implemented by this recommendation. Actual owner review, exact content/scope binding, verifier provenance, persistence semantics, and a no-effect proof remain unestablished.
+- No code/tests/runtime/device/key/ceremony changes. Do not infer a review event or select a protected effect target.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+---
+
 ## Latest STEP 7 continuation — constitutional boot composition source review (2026-10-15)
 
 Added [STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md](BUILD/STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md), commit `b201d3d3538d318582e0a4bf90e500b788bac52a`.
