@@ -1,3 +1,15 @@
+## Latest continuation — owner approval trust-path comparison (2026-10-15)
+
+Added [STEP_7_OWNER_APPROVAL_TRUST_PATH_COMPARISON_2026-10-15.md](BUILD/STEP_7_OWNER_APPROVAL_TRUST_PATH_COMPARISON_2026-10-15.md), commit `39e1740820fa8009addc5c0b2a7cb3dda55191b0`.
+
+- Distinguished the exact signed byte stream from the human-readable content the owner sees. NIST's signed-data report explains that electronic context and visual context must be reconciled; a valid signature alone does not establish that the owner reviewed the same content.
+- Compared POCO + YubiKey, Moto G52 offline signer, POCO-only local review record, human review, and paper review. None is being treated as an established trust root.
+- Finding: the YubiKey may protect key custody after enrollment, but lacks its own human-readable display for the Constitution artifact. An offline second phone reduces some network exposure but does not automatically prove OS/app/display integrity or independence.
+- Recommendation: no hardware purchase or handset modification yet. First define the ceremony contract, exact artifact/scope binding, signer intent, verifier provenance, currentness/revocation, replay/fencing and final effect sink against MASTER + AB/P/P112. If any required trust claim remains unproven, keep STOP.
+- No key/signature/digest/review event/Constitution freeze/Scope A implementation/code/tests/workflows/dependencies/APK/device/deployment/runtime authority changed.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest continuation — YubiKey 5 NFC role and bootstrap limits (2026-10-15)
 
 Added [STEP_7_YUBIKEY_5_NFC_BOOTSTRAP_LIMITS_2026-10-15.md](BUILD/STEP_7_YUBIKEY_5_NFC_BOOTSTRAP_LIMITS_2026-10-15.md), commit `0c76fc4adf4fb24987c53a03493c98aa654e12e1`.
