@@ -2697,3 +2697,18 @@ Added [STEP_7_SCOPE_A_HOST_THREAT_MODEL_AND_TRUST_BOUNDARY_2026-10-14.md](BUILD/
 - Decision: host trust boundary is NOT ESTABLISHED; do not select a runtime/store or implement Scope A yet. If the threat model requires resistance to malicious/substituted Core or compromised OS and no independent boundary is demonstrated, retain STOP.
 
 No source code/tests changed or ran. No Android runtime/APK/key/signature/digest/Constitution freeze/review event/ceremony/deployment/runtime authority changed. **STEP 7 remains OPEN / STOP / UNKNOWN; no protected effects authorized.**
+
+
+## Latest continuation — baseline CI workflows executed on exact NCS head (2026-10-14)
+
+All three manually dispatched GitHub Actions workflows completed successfully on branch `ncs-clean-architecture`, exact head SHA `d147c60192e41fcef009b114c3e3ea01c5efe4f1`:
+
+- [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/38688762656) — run `38688762656`; job `tests`; install and `npm test` step succeeded.
+- [STEP 7 negative-resource equivalence](https://github.com/snowdenxrp/aldea-ia/actions/runs/38688789343) — run `38688789343`; `tests/nexo/step-7-negative-resource-equivalence.test.mjs` succeeded.
+- [STEP 7 observation contract](https://github.com/snowdenxrp/aldea-ia/actions/runs/38688813707) — run `38688813707`; `tests/nexo/observation.test.mjs` succeeded.
+
+All jobs and reported steps concluded `success`; all three runs refer to the same exact commit. This closes the prior gap for these three CI executions on that SHA only. It does not establish Android/Javet semantic parity, run the 15 Scope A negative acceptance cases, prove constitutional authority/currentness, prove the production protected sink or bypass closure, or authorize commissioning/effects. No source code, workflow, dependency, APK, device, key or Constitution was changed by these runs.
+
+Next: preserve these run IDs/SHA as CI evidence, then continue only with the unresolved trust-boundary and final-sink proof obligations; do not infer broader security from green CI.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
