@@ -84,3 +84,25 @@ No source/test/workflow/device/key/ceremony changes were made. No commissioning 
 ## Status
 
 STEP 7 remains **OPEN / STOP / UNKNOWN**.
+
+
+## Adversarial check — what can make a constitutional boot lie?
+
+| Failure case | Why a naive boot sequence fails | Required treatment under existing contracts |
+|---|---|---|
+| First boot has no prior root | The verifier cannot derive legitimate Genesis from the candidate it is checking. A successful initialization would be circular. | Keep Genesis UNKNOWN; do not create authority from prompt, hash, local config, or self-reported PASS. |
+| Core/app or Android host is compromised | The same environment can alter the displayed Constitution, supply fake PASS inputs, or skip the gate. | State the threat boundary explicitly; require a justified independent owner-intent/verifier basis and a final enforcement boundary. The current POCO screen premise is narrower than this threat. |
+| Constitution changes after review | Startup may validate one revision while a later consumer reads changed bytes or a different scope. | Bind exact reviewed content and scope; revalidate the exact reference consumed. No digest/freeze is authorized while the draft remains open. |
+| Offline, stale, revoked, or competing revision | A cached prior success can be mistaken for current authority. | Currentness/revocation/order must be governed; unresolved dependencies remain UNKNOWN. A timestamp or epoch alone is not constitutional authority. |
+| Startup gate is bypassed by another entry path | The boot sequence can pass while an alternate route reaches an effect sink directly. | Prove the selected scope's reachable paths and final sink; boot-time checks alone do not establish sink enforcement. |
+| Caller supplies `AUTHORIZED`, `PASS`, or provenance fields | Semantic validation can accept well-shaped but unauthenticated assertions. | Establish provenance/authority through a protected boundary; `resolvePolicyContext()` and typed contracts do not authenticate their own inputs. |
+
+These are attacks against the proposed pattern, not claims that each attack has been experimentally demonstrated against a deployed Nexo instance.
+
+## Consequence for the next step
+
+The proposal survives only as a **two-stage composition**: (1) Genesis recognition through a separately justified initial trust premise; (2) routine boot revalidation of that already-established basis before capability admission. Stage 2 cannot repair Stage 1.
+
+Scope A (non-authoritative review acknowledgement) remains the least expansive candidate for useful progress, but it is not automatically implemented or approved by this recommendation. Its existing acceptance contract still requires actual owner review, exact content/scope binding, a justified verifier/provenance basis, persistence semantics, and proof that recording/retrieving the acknowledgement cannot trigger effects. The present repository evidence does not establish those requirements. Do not infer a completed review from this research, and do not select an effect target by inference.
+
+No code or tests were changed or run. STEP 7 remains OPEN / STOP / UNKNOWN.
