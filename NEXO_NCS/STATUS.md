@@ -1,3 +1,17 @@
+## Latest STEP 7 continuation — constitutional boot composition source review (2026-10-15)
+
+Added [STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md](BUILD/STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md), commit `b201d3d3538d318582e0a4bf90e500b788bac52a`.
+
+- Grounded the proposed “constitutional boot” in existing bootstrap-composition, authority-context, protected-transition, and runtime source. No new generic boot abstraction or implementation was added.
+- Key distinction: Genesis/first provisioning must remain separate from routine restart validation. A boot sequence can revalidate an already justified root, but cannot create or retroactively legitimize its own initial trust anchor.
+- Confirmed in the inspected files: `src/nexo/runtime.js` does not invoke `executeProtectedTransition()` before the adapter effect path; the separate protected-transition function also does not invoke `effectBoundary.prepare`. The latter port defaults to `NOT_IMPLEMENTED`.
+- These are bounded findings for inspected routes, not proof every route or deployed artifact has been exhaustively audited. Do not patch by guesswork: first determine the owner-approved constitutional effect scope, final sink, reachable paths, and enforcement owner; ordinary Lúmina simulation must not be conflated with protected Nexo effects.
+- Genesis, exact owner-content binding, verifier provenance/currentness, initial protected scope, and effective final-boundary enforcement remain NOT ESTABLISHED. No code/test/workflow/device/key/ceremony changes; no commissioning or protected effects.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+---
+
 ## STEP 7 continuation — Constitution artifact and approval state located (2026-10-15)
 
 Closed the prior locate-and-inspect action using the existing records; no new draft or duplicate audit was created.
