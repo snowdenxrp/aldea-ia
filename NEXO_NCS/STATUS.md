@@ -1,3 +1,17 @@
+## STEP 7 continuation — Constitution artifact and approval state located (2026-10-15)
+
+Closed the prior locate-and-inspect action using the existing records; no new draft or duplicate audit was created.
+
+- Inspected `BUILD/STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md` (blob `33f70d1d2936cc077e0630b15991aa7603bb04ed`), `BUILD/STEP_7_CONSTITUTION_ARTIFACT_READINESS_AUDIT_2026-10-14.md` (blob `e9347096c9b5810eda6fde1148f8b9cb721e76cc`), and `BUILD/STEP_7_CONSTITUTION_DRAFT_ADVERSARIAL_REVIEW_2026-10-14.md` (blob `394e34bc3e77240593cbd5acac520a620797773b`).
+- The human-readable Constitution is explicitly **DRAFT / NOT FROZEN / NOT COMMISSIONED / OWNER REVIEW REQUIRED**. Its section 8 leaves initial scope, canonical identity/currentness, amendment governance, succession, recovery and other prerequisites unresolved. No approval/ratification event is recorded.
+- This confirms that no concrete initial protected-effect scope can be inferred from the draft. Do not select `executeAction()`, Nexo missions, outcome recording, or snapshot persistence by inference.
+- Existing bounded POCO presentation premise remains accepted only for the first recognition ceremony; it does not imply review/ratification of the full draft or exact content-to-approval binding.
+- Next: do not duplicate the existing readiness/adversarial audits or create a new constitutional abstraction. Keep implementation STOP. The remaining blocker is explicit owner review/selection of constitutional initial scope and the trust-assurance direction; after that, only the selected claim can define the relevant effect-boundary proof obligations.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+---
+
 ## STEP 7 continuation — activation-scope authorization cross-check (2026-10-15)
 
 Added [STEP_7_ACTIVATION_SCOPE_AUTHORIZATION_CROSSCHECK_2026-10-15.md](BUILD/STEP_7_ACTIVATION_SCOPE_AUTHORIZATION_CROSSCHECK_2026-10-15.md), commit `f0b1b72329b6adb87cb760ab780928b67303078e`.
