@@ -1,3 +1,15 @@
+## Latest targeted research — Android Protected Confirmation candidate (2026-10-15)
+
+Added [STEP_7_ANDROID_PROTECTED_CONFIRMATION_CANDIDATE_RESEARCH_2026-10-15.md](BUILD/STEP_7_ANDROID_PROTECTED_CONFIRMATION_CANDIDATE_RESEARCH_2026-10-15.md), commit `20fc2127245524d8e040434c26079af58ea8ea8f`.
+
+- New official-platform lead: Android Protected Confirmation can, on supported hardware, show and cryptographically bind a short user-confirmed statement through a Trusted UI designed to resist a compromised Android framework/kernel.
+- It may improve the owner-intent portion of Scope A, but only the visible prompt text is confirmed; extra data is not rendered. The complete Constitution still must be reviewed separately, and exact candidate/scope binding plus independent verification remain necessary.
+- Support on the POCO X7 Pro is UNKNOWN; Android 16 alone does not establish support. No diagnostic app, key, signature, digest, device test or APK was created or installed.
+- It does not establish Genesis legitimacy, canonical currentness, a local reference persistence owner, or a final protected-effect boundary. Candidate only; not selected.
+- Next: keep the host unresolved and specify whether this bounded protected prompt is worth a single justified support check after the ceremony/verifier contract is explicit. If unsupported or unverified, no fallback may claim equivalent assurance.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest continuation — claim-relative failure-domain and effect-class inventory (2026-10-15)
 
 Added [STEP_7_CLAIM_RELATIVE_FAILURE_DOMAIN_AND_EFFECT_CLASS_INVENTORY_2026-10-15.md](BUILD/STEP_7_CLAIM_RELATIVE_FAILURE_DOMAIN_AND_EFFECT_CLASS_INVENTORY_2026-10-15.md), commit `350f629278026f6ab73050cfa01abc5278da21fe`.
