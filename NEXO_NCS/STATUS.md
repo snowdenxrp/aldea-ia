@@ -2712,3 +2712,18 @@ All jobs and reported steps concluded `success`; all three runs refer to the sam
 Next: preserve these run IDs/SHA as CI evidence, then continue only with the unresolved trust-boundary and final-sink proof obligations; do not infer broader security from green CI.
 
 **STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+
+## Latest continuation — CI result scope audit (2026-10-14)
+
+Added [STEP_7_CI_RESULT_SCOPE_AUDIT_2026-10-14.md](BUILD/STEP_7_CI_RESULT_SCOPE_AUDIT_2026-10-14.md), commit `fb9ee473cb9cf3a7229e3f8a622ac215a1d9b511`.
+
+- Inspected the actual test source after the three successful runs. The observation and negative-resource workflows test their narrow data-contract semantics; `npm test` includes `tests/nexo/protected-transition.test.mjs`, whose authority gate is injected in fixtures.
+- Clarified that the passing injected-port transition tests do not prove legitimate Genesis/Constitution authority or production wiring to a canonical authority owner/final protected sink.
+- The 15 Scope A negative acceptance cases remain specification-only / NOT RUN; no selected host or executable Scope A implementation exists. The CI runs do not prove hostile Core/OS resistance, complete storage-fault behavior, review-to-bytes binding, or reference-to-effect noninterference.
+- Preserved run IDs `38688762656`, `38688789343`, `38688813707` and their exact tested SHA `d147c60192e41fcef009b114c3e3ea01c5efe4f1`. The branch subsequently advanced through documentation-only commits; do not claim those runs tested the later docs head.
+- No source/tests/workflows/dependencies/APK/device/key/Constitution/runtime authority changed and no additional tests ran.
+
+Next: no code patch. Continue the unresolved architectural proof: identify whether a real, inspectable trust boundary and final protected sink can be evidenced without self-authentication. If not, retain STOP and redesign the root architecture.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
