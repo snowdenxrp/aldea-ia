@@ -1,3 +1,15 @@
+## Latest continuation — YubiKey 5 NFC role and bootstrap limits (2026-10-15)
+
+Added [STEP_7_YUBIKEY_5_NFC_BOOTSTRAP_LIMITS_2026-10-15.md](BUILD/STEP_7_YUBIKEY_5_NFC_BOOTSTRAP_LIMITS_2026-10-15.md), commit `0c76fc4adf4fb24987c53a03493c98aa654e12e1`.
+
+- Official Yubico Android SDK documentation confirms that PIV and OpenPGP modules can perform signing operations on supported YubiKeys; a mobile NFC integration is technically plausible, but no exact app/build/ceremony has been selected or tested.
+- FIDO2/WebAuthn is relying-party authentication, not a generic signature over arbitrary constitutional bytes.
+- A YubiKey could improve private-key custody after enrollment, but cannot independently establish legitimate initial enrollment, exact reviewed-content binding, constitutional currentness, verifier provenance, or a bypass-closed final effect boundary.
+- No PC is available; do not assume desktop enrollment tools or middleware. No purchase, key setup/generation/signing, digest, Constitution freeze, device modification, code or tests occurred.
+- Disposition: candidate hardware-held signer for later evaluation only; not a bootstrap solution by itself. If the phone/Core both control presentation and define what gets signed, the initial-recognition circularity remains.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest continuation — baseline CI execution evidence audit (2026-10-14)
 
 Added [STEP_7_BASELINE_CI_EXECUTION_EVIDENCE_AUDIT_2026-10-14.md](BUILD/STEP_7_BASELINE_CI_EXECUTION_EVIDENCE_AUDIT_2026-10-14.md), commit `35893105a773e54b49ff101c61777b72700c9989`.
