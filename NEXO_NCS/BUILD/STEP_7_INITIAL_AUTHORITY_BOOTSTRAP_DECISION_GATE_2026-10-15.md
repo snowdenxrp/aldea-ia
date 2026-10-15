@@ -166,3 +166,24 @@ Direction B retains the stronger objective but cannot proceed merely by declarin
 
 **No automatic recommendation to choose A:** the project has not accepted this broader environmental assumption. **No false promise for B:** no concrete path currently demonstrates it. Therefore the safe project action is to preserve both as unresolved design boundaries and keep STOP until the required assumption or capability is explicitly selected and supported.
 
+
+
+## 12. Existing-contract inspection — exact binding primitive
+
+Reviewed the existing Scope A review-evidence contract, Owner Approval Trust Path Comparison, and Constitution Authority Context contract. This was a bounded contract check, not a repeat of platform/device research.
+
+**What already exists:** the semantic requirements are explicit: identify the full candidate and scope; preserve recoverable content evidence; distinguish review from ratification; bind the human-visible presentation to the electronic object under a stated threat model; require verifier provenance/freshness; and establish Constitution Authority Context only from an already recognized trust foundation.
+
+**What does not exist as established evidence:** no selected concrete mechanism currently demonstrates that the exact human-reviewed content and narrow decision are bound to the bytes received by an approval/signing path under the declared threat model. No trusted presentation/input component, independent verifier policy provenance, or production ceremony has been selected or demonstrated. The contracts specify the obligation; they do not implement or satisfy it.
+
+The constitution reference/version/hash fields in the Authority Context contract are downstream semantic context, not a bootstrap mechanism. A content digest can identify bytes once canonicalization is defined, but cannot prove those bytes were what the owner saw. A signature can authenticate a statement relative to a key, but cannot establish the first key's legitimacy or current authority. These distinctions are already aligned with the Owner Approval Trust Path Comparison and NIST's electronic-versus-visual context distinction.
+
+### Result
+
+- Exact content/decision binding: **REQUIREMENT SPECIFIED; MECHANISM NOT ESTABLISHED**.
+- First verifier/policy provenance: **NOT ESTABLISHED**.
+- Initial owner-intent evidence under L2: **NOT ESTABLISHED**.
+- Any protected-effect authorization derived from Scope A: **PROHIBITED / NOT AUTHORIZED**.
+
+No additional abstraction or code field is warranted. The gap is a missing trust path/assumption, not a missing schema label. Preserve STOP until Direction A's narrower assumption is explicitly accepted or Direction B's concrete independent path is evidenced.
+
