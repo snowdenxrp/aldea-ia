@@ -2,7 +2,7 @@
 
 Added [STEP_7_BASELINE_CI_EXECUTION_EVIDENCE_AUDIT_2026-10-14.md](BUILD/STEP_7_BASELINE_CI_EXECUTION_EVIDENCE_AUDIT_2026-10-14.md), commit `35893105a773e54b49ff101c61777b72700c9989`.
 
-- Inspected the exact `ncs-clean-architecture` head `bf9a31fa65265339a63c803c9dbed271bb3c0e1d): GitHub returned zero check runs, zero combined statuses, and zero Actions runs for that exact SHA.
+- Inspected the exact `ncs-clean-architecture` head `bf9a31fa65265339a63c803c9dbed271bb3c0e1d`:  GitHub returned zero check runs, zero combined statuses, and zero Actions runs for that exact SHA.
 - Confirmed the general Node 22 `npm test` workflow is triggered by pushes to `main` or manual dispatch; STEP 7 negative-resource and observation workflows are manual-dispatch only.
 - Historical STEP 4/5 runs exist for older SHAs and include both successes and failures; they are not current-head `npm test` evidence and do not prove constitutional authority or runtime security.
 - The available GitHub connector exposes read-only workflow retrieval in this session; no dispatch action was available. No tests were run, no workflows changed, and no PASS/FAIL is claimed for the current head.
