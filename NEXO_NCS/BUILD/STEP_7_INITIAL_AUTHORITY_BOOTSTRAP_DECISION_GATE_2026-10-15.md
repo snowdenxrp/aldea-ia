@@ -90,3 +90,24 @@ If these questions expose a circular trust dependency, record the missing premis
 - [Owner approval trust-path comparison](STEP_7_OWNER_APPROVAL_TRUST_PATH_COMPARISON_2026-10-15.md)
 - [Claim-relative failure-domain and effect-class inventory](STEP_7_CLAIM_RELATIVE_FAILURE_DOMAIN_AND_EFFECT_CLASS_INVENTORY_2026-10-15.md)
 - [Scope A review-evidence minimum acceptance contract](STEP_7_SCOPE_A_REVIEW_EVIDENCE_MINIMUM_ACCEPTANCE_CONTRACT_2026-10-15.md)
+
+
+## 9. Reconciliation with the existing Genesis contracts
+
+The pre-existing contracts already say that the Genesis basis must be independent of the Nexo state it establishes, and that the Constitution Authority Context must come from an already recognized foundation. They do **not** require that a third party outrank the owner constitutionally.
+
+The terms “external” and “independent” must be read relative to the **claim and failure domain**, not as automatic delegation of constitutional sovereignty:
+
+- An independent verifier may check whether evidence satisfies a policy the owner has deliberately designated. It is a technical witness/relying component, not the source of the Constitution's legitimacy.
+- The owner remains the normative source of the initial constitutional decision and may define the verifier's permitted scope. But that owner decision alone does not magically prove which bytes were displayed, which bytes were signed, or that the evidence channel was uncompromised.
+- The verifier's own software, policy, key material and provenance must have a stated prior basis. If only the verifier itself claims that basis is trustworthy, the bootstrap remains circular.
+- Therefore, “no authority above the owner” does not remove the need for an independently grounded evidence channel. It prevents that channel from silently becoming a superior constitutional authority.
+
+This reconciliation leaves one irreducible distinction:
+
+**Normative genesis:** the owner is the origin of the decision.  
+**Technical evidence of genesis:** the system must justify the ceremony assumptions and show what the evidence actually binds.  
+**Later authority/enforcement:** must derive from the recognized Genesis/Constitution context and be enforced separately at the protected sink.
+
+The existing contracts provide the semantic shape for these separations; they do not currently supply a real ceremony, verifier provenance, or runtime boundary. No contract conflict justifies adding a new generic root or allowing Nexo to self-authorize.
+
