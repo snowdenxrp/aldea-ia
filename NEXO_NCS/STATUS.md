@@ -2884,3 +2884,15 @@ Added [STEP_7_CI_RESULT_SCOPE_AUDIT_2026-10-14.md](BUILD/STEP_7_CI_RESULT_SCOPE_
 Next: no code patch. Continue the unresolved architectural proof: identify whether a real, inspectable trust boundary and final protected sink can be evidenced without self-authentication. If not, retain STOP and redesign the root architecture.
 
 **STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+## Owner decision — preserve L2 / Direction B (2026-10-15)
+
+The owner explicitly accepted the recommendation to preserve L2 and keep STOP until a concrete independent owner-intent/content-binding and verifier-provenance path is grounded. See [Initial Authority Bootstrap Decision Gate](BUILD/STEP_7_INITIAL_AUTHORITY_BOOTSTRAP_DECISION_GATE_2026-10-15.md), section 13.
+
+- **Direction B is selected as the security objective.** This does not mean an implementation path has been found or that L2 is satisfied.
+- The prior POCO screen-only premise remains narrowly bounded to faithful screen presentation during a possible first ceremony; it is not expanded to trust in Android, the app/Core, input path, or exact content-to-approval binding.
+- No downgrade to L1 is accepted. Scope A remains design-only and non-authoritative.
+- No key, signature, digest/freeze, ceremony, verifier, host, APK, code/test/workflow change, commissioning, or protected effect is authorized by this decision.
+- Next work: reuse existing contracts to pursue only evidence that can ground a concrete non-circular L2 path; if none is evidenced, name the exact missing capability and retain STOP. Do not repeat broad device research or create another abstraction.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. L2 NOT ESTABLISHED. No commissioning and no protected effects.**
