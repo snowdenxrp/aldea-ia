@@ -1,3 +1,16 @@
+## Latest continuation — claim-relative failure-domain and effect-class inventory (2026-10-15)
+
+Added [STEP_7_CLAIM_RELATIVE_FAILURE_DOMAIN_AND_EFFECT_CLASS_INVENTORY_2026-10-15.md](BUILD/STEP_7_CLAIM_RELATIVE_FAILURE_DOMAIN_AND_EFFECT_CLASS_INVENTORY_2026-10-15.md), commit `350f629278026f6ab73050cfa01abc5278da21fe`.
+
+- Reused the existing trust-role map's explicit next action: inventory concrete target capabilities and protected-effect classes before choosing a recognition mechanism. Reused the current phone threat model, Genesis Trust Foundation contract, approval-path comparison, and concrete mutation-boundary source trace; no closed historical audit was rerun.
+- Distinguished owner presentation, owner intent, key identity/custody, integrity evidence, Genesis basis, Constitution Authority Context, effect admission, and recovery/continuity as separate claims.
+- Inventory finding: POCO presentation is a bounded first-ceremony assumption only; YubiKey protects possible key custody but not bootstrap; Moto G52 offline does not establish independent trust; Termux/GitHub/CI are tools or evidence sources, not constitutional roots.
+- Reconciled effect classes already found in source: shared simulation mutation via `executeAction`, Nexo adapter effects, outcome/history recording, prepared journal/reconciliation, and conditional snapshot persistence. No single final constitutional sink is established; do not insert an arbitrary gate into the shared action primitive.
+- Next decision gates are explicitly separated: review record vs constitutional ratification; threat model for malicious Core/OS; exact independent presentation/approval path; first protected-effect class; currentness/revocation/succession basis.
+- No device, host, verifier, signer, trust anchor, artifact version, ceremony, or effect target selected. No review/ratification event, code/test/workflow/dependency/APK/device/deployment change.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest continuation — owner approval trust-path comparison (2026-10-15)
 
 Added [STEP_7_OWNER_APPROVAL_TRUST_PATH_COMPARISON_2026-10-15.md](BUILD/STEP_7_OWNER_APPROVAL_TRUST_PATH_COMPARISON_2026-10-15.md), commit `39e1740820fa8009addc5c0b2a7cb3dda55191b0`.
