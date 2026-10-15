@@ -111,3 +111,33 @@ This reconciliation leaves one irreducible distinction:
 
 The existing contracts provide the semantic shape for these separations; they do not currently supply a real ceremony, verifier provenance, or runtime boundary. No contract conflict justifies adding a new generic root or allowing Nexo to self-authorize.
 
+
+
+## 10. Feasibility boundary after cross-checking existing recovery/succession evidence
+
+The existing AB104.452/AB104.453 research already covers pre-established recovery roots, recovery governance, custody/loss/compromise, succession, revocation, replay, and the risk of a hidden permanent super-root. It is reused here; it is not being rerun. Its governing conclusion is that recovery authority must be pre-established, bounded, independently grounded, and unable to appoint itself or turn into normal operational authority.
+
+The remaining blocker for the *initial owner-intent claim* is earlier than root rotation or recovery:
+
+- The current accepted POCO premise covers only faithful presentation of the screen during a possible ceremony.
+- It does not establish that the software requesting approval binds the presented content to the exact bytes being endorsed, that the OS/input path cannot substitute the decision, or that the verifier/policy is independently grounded.
+- A signature/hash can preserve a binding after those inputs are established; neither can supply the missing premise.
+- An independent verifier can check evidence under a policy, but cannot bootstrap its own policy/provenance merely by declaring them trusted.
+- A future recovery rule can preserve or replace an already justified root; it cannot retroactively manufacture legitimacy for the first one.
+
+Accordingly, the current deployment has no demonstrated path satisfying L2 against malicious Core/app **and** compromised OS. This is a bounded finding about the evidence and capabilities currently selected, not a proof that all possible systems are incapable of satisfying L2.
+
+### Only two honest future directions are currently visible
+
+**Direction A — explicitly narrow the ceremony threat model.** Accept a clearly written environmental assumption for the initial ceremony that covers the presentation, input/approval path, and binding of the exact canonical artifact to the owner's decision. Record that the resulting evidence does not resist compromise of the components included in that assumption. This is not yet authorized or proven; the previously accepted screen-only assumption is insufficient as written.
+
+**Direction B — retain the full L2 threat objective.** Introduce no mechanism by assumption: first identify a concrete independent presentation/approval and verifier-provenance path, plus its initial recognition basis and failure/recovery model. No such path is presently selected or evidenced. It may require resources or capabilities not currently available on the user's phones.
+
+These are not choices about who has constitutional sovereignty. In either direction, the owner remains the normative source of the initial decision. They are choices about which technical/environmental assumptions the system can honestly claim to withstand.
+
+### Decision
+
+Do not silently downgrade L2 to a self-reported record. Do not treat the accepted POCO screen premise as broader OS or application trust. Do not proceed to root creation, key enrollment, approval ceremony, or implementation while this gap remains.
+
+Status remains **OPEN / STOP / UNKNOWN**. The next useful work is to turn the threat-model boundary into an explicit claim-to-assumption table for Direction A versus Direction B, using the already completed research; no additional broad device/root search is warranted at this stage.
+
