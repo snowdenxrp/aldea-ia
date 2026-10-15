@@ -1,0 +1,92 @@
+# STEP 7 — Initial authority bootstrap decision gate — 2026-10-15
+
+Branch: `ncs-clean-architecture`  
+Status: ARCHITECTURE DECISION SUPPORT / NO TRUST PATH SELECTED / NO IMPLEMENTATION
+
+## 1. Purpose
+
+Continue from the existing trust-domain independence inventory without repeating Android, key, device, CI, or Scope A contract research. Determine what must be true for Nexo's initial constitutional authority to be legitimate without placing an external authority above the owner.
+
+This document is a synthesis and decision gate, not a ratification, ceremony, or implementation authorization.
+
+## 2. Core result: initial trust cannot be derived from zero
+
+Cryptography can establish that a statement is bound to a key and that later statements chain to a previously trusted key. It cannot, by itself, prove that the first key was legitimately selected by the intended owner, that the owner saw the exact content, or that the first selection was constitutionally legitimate. Those are bootstrap premises that must be explicitly accepted and evidenced; they cannot be manufactured by adding another signature, app, device, verifier, or CI run.
+
+Therefore, “no authority above the owner” is compatible with a technical verifier, but only if their roles stay distinct:
+
+- **Owner:** the normative source of the initial constitutional decision and its scope.
+- **Genesis trust basis:** the explicitly stated premise by which that initial decision is accepted as the starting point. It is not an authority that outranks the owner.
+- **Verifier:** a technical role that checks specified evidence against an already justified key/policy basis. It does not decide who should be owner or make the Constitution legitimate by itself.
+- **Relying/enforcement boundary:** separately checks that a current, properly verified authority context is allowed for a specific protected effect.
+
+If the verifier's identity, policy, or trusted inputs are established only by the same component being checked, the chain is circular. Naming a second app, phone, key, server, or CI job does not break that circle by itself.
+
+## 3. Assurance levels already implied by prior evidence
+
+| Level | Honest claim | Current status | Can it authorize protected effects? |
+|---|---|---|---|
+| L0 — candidate locator | A repository revision identifies a candidate artifact | Partially available | No |
+| L1 — self-reported convenience record | A selected app/runtime records that a review/decision allegedly occurred | Not implemented; would be self-reported unless its boundary is established | No |
+| L2 — independent owner-intent evidence | Evidence binds the exact reviewed content and narrow decision to the owner's intent, with justified verifier provenance and freshness, even against the declared malicious-Core/compromised-OS threats | NOT ESTABLISHED | No, not by Scope A alone |
+| L3 — constitutional authority/effect admission | A current authority context is legitimately derived from Genesis/Constitution and enforced at every applicable protected sink | NOT ESTABLISHED | Only after separate construction and proof |
+
+The current project goal is not satisfied by L0 or L1. Quietly relabelling L1 as L2 would be a security downgrade, not progress.
+
+## 4. What the accepted POCO premise does and does not buy
+
+The previously accepted premise is narrowly limited to the POCO screen faithfully presenting content during a possible first recognition ceremony. It is not a finding that the Android OS, app/Core, signing request, local storage, verifier, or later runtime is trustworthy.
+
+Even with an honest presentation premise, the ceremony must still bind the exact reviewed artifact and narrow decision to the evidence that is verified. Otherwise, the owner may see one thing while the key signs another. A key protects key custody; it does not automatically establish this visual-to-electronic binding.
+
+No ceremony has occurred, and no owner review or ratification event may be inferred from the prior display of a draft.
+
+## 5. Minimal missing capability
+
+The unresolved capability is not “a stronger device” in the abstract. It is a **non-circular path from the owner's deliberate initial decision to independently checkable evidence**, with all of the following grounded:
+
+1. A canonical, complete Constitution/candidate and explicit scope/version identity.
+2. A presentation/approval path whose trust assumptions are stated and adequate for the selected threat model.
+3. Binding between what the owner reviewed, the exact bytes or canonical representation endorsed, and the narrow meaning of the endorsement.
+4. A verifier identity, implementation/policy provenance, and trusted input basis that do not derive solely from the untrusted producer.
+5. Freshness, replay, stale-version, revocation, and recovery rules grounded in an already justified source of truth.
+6. A strict separation between candidate review/endorsement and constitutional ratification or permission to execute effects.
+7. A separately demonstrated enforcement boundary and bypass analysis for any future protected effect.
+
+Items 1–7 are acceptance obligations, not permission to invent a new registry, generic trust framework, signer, external service, ID scheme, or transaction layer.
+
+## 6. Constrained decision
+
+**Recommended default: preserve the L2 threat objective and keep STOP rather than silently accepting L1.** This follows the stated project goal of a verifiable constitutional authority and the current inventory finding that no existing domain satisfies the complete chain under the declared threat model.
+
+A weaker L1 record may be useful for ordinary operations someday, but it would not solve the initial-authority problem and must not be allowed to flow into Scope B/C. It is not a substitute for L2.
+
+This recommendation does not claim L2 is impossible in principle. It says that no currently selected or evidenced path in the present setup demonstrates it. A future path must identify how its verifier and presentation basis are first trusted without granting that verifier constitutional authority over the owner.
+
+## 7. Next work — narrow, no implementation
+
+Do not repeat broad product/device research. The next useful analysis is to formalize the **Genesis premise itself** as an explicit trust assumption and test it against the existing Genesis Trust Foundation, owner-approval, succession/recovery, and effect-boundary contracts:
+
+- Which initial facts are accepted by direct owner decision, rather than purportedly “proved” by cryptography?
+- What exact evidence can record that decision without claiming more than the ceremony actually establishes?
+- Which verifier/policy is trusted before it verifies the first evidence, and what is the provenance of that trust?
+- What happens if that verifier or its policy is later lost, replaced, revoked, or disputed?
+- How is the initial record prevented from authorizing effects until Scope B/C independently passes?
+
+If these questions expose a circular trust dependency, record the missing premise and retain STOP. Do not create keys, signatures, hashes, a ceremony, an APK, a host, or code to simulate progress.
+
+## 8. Status
+
+- STEP 7: **OPEN / STOP / UNKNOWN**.
+- Initial owner-intent evidence path: **NOT ESTABLISHED**.
+- Verifier provenance/currentness: **NOT ESTABLISHED**.
+- Constitutional ratification: **NOT RECORDED**.
+- Protected-effect sink/bypass closure: **NOT ESTABLISHED**.
+- No implementation, source/test/workflow change, key, signature, artifact freeze, device operation, or commissioning was performed or authorized by this analysis.
+
+## Related evidence
+
+- [Existing trust-domain independence inventory](STEP_7_EXISTING_TRUST_DOMAIN_INDEPENDENCE_INVENTORY_2026-10-15.md)
+- [Owner approval trust-path comparison](STEP_7_OWNER_APPROVAL_TRUST_PATH_COMPARISON_2026-10-15.md)
+- [Claim-relative failure-domain and effect-class inventory](STEP_7_CLAIM_RELATIVE_FAILURE_DOMAIN_AND_EFFECT_CLASS_INVENTORY_2026-10-15.md)
+- [Scope A review-evidence minimum acceptance contract](STEP_7_SCOPE_A_REVIEW_EVIDENCE_MINIMUM_ACCEPTANCE_CONTRACT_2026-10-15.md)
