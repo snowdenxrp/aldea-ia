@@ -1,3 +1,15 @@
+## Latest STEP 7 continuation — initial authority bootstrap decision gate (2026-10-15)
+
+Added [STEP_7_INITIAL_AUTHORITY_BOOTSTRAP_DECISION_GATE_2026-10-15.md](BUILD/STEP_7_INITIAL_AUTHORITY_BOOTSTRAP_DECISION_GATE_2026-10-15.md), commit `5445ab118cd6b64cb1123eed74e9abb8fc8d92e9`.
+
+- Synthesized the existing trust-domain, owner-approval, and effect-class inventories without repeating device/key/CI research.
+- Core result: cryptography can bind later statements to an already trusted key, but cannot prove from zero that the initial key was legitimately selected by the intended owner or that the owner saw the exact endorsed content. The initial Genesis premise must be explicit; adding another app/device/key/verifier does not remove the bootstrap dependency by itself.
+- Distinguished L0 candidate locator, L1 self-reported convenience record, L2 independent owner-intent evidence, and L3 constitutional authority/effect admission. Current project goal is not met by L0/L1.
+- Recommendation: preserve the L2 threat objective and keep STOP rather than silently downgrade to L1. This does not claim L2 is impossible in principle; no currently selected path demonstrates it.
+- Next bounded task: formalize the Genesis premise against existing Genesis Trust Foundation, owner-approval, succession/recovery, and effect-boundary contracts; identify the pre-existing basis for trusting the first verifier/policy and the non-circular recovery rule. No implementation or ceremony authorized.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. Initial owner-intent evidence, verifier provenance/currentness, constitutional ratification, and protected-effect sink/bypass closure remain NOT ESTABLISHED. No commissioning and no protected effects.**
+
 ## Latest trust-domain gate — independence inventory (2026-10-15)
 
 Added [STEP_7_EXISTING_TRUST_DOMAIN_INDEPENDENCE_INVENTORY_2026-10-15.md](BUILD/STEP_7_EXISTING_TRUST_DOMAIN_INDEPENDENCE_INVENTORY_2026-10-15.md), commit `015db18fee973306f10dcffec9cfc76862547968`.
