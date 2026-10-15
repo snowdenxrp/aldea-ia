@@ -1,3 +1,16 @@
+## Latest continuation — baseline CI execution evidence audit (2026-10-14)
+
+Added [STEP_7_BASELINE_CI_EXECUTION_EVIDENCE_AUDIT_2026-10-14.md](BUILD/STEP_7_BASELINE_CI_EXECUTION_EVIDENCE_AUDIT_2026-10-14.md), commit `35893105a773e54b49ff101c61777b72700c9989`.
+
+- Inspected the exact `ncs-clean-architecture` head `bf9a31fa65265339a63c803c9dbed271bb3c0e1d): GitHub returned zero check runs, zero combined statuses, and zero Actions runs for that exact SHA.
+- Confirmed the general Node 22 `npm test` workflow is triggered by pushes to `main` or manual dispatch; STEP 7 negative-resource and observation workflows are manual-dispatch only.
+- Historical STEP 4/5 runs exist for older SHAs and include both successes and failures; they are not current-head `npm test` evidence and do not prove constitutional authority or runtime security.
+- The available GitHub connector exposes read-only workflow retrieval in this session; no dispatch action was available. No tests were run, no workflows changed, and no PASS/FAIL is claimed for the current head.
+- Finding: **BASELINE CI EVIDENCE FOR CURRENT HEAD = NOT AVAILABLE / UNKNOWN**. This is missing evidence, not evidence of failing tests.
+- Next: obtain authorized runs of the existing deterministic suite and both STEP 7 manual workflows against the same exact head; preserve run ID, head SHA, job/step summaries, logs and conclusion. Do not change triggers merely to manufacture green checks.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest continuation — Javet/Node semantic parity gate (2026-10-14)
 
 Added [STEP_7_JAVET_NODE_CORE_SEMANTIC_PARITY_GATE_2026-10-14.md](BUILD/STEP_7_JAVET_NODE_CORE_SEMANTIC_PARITY_GATE_2026-10-14.md), commit `7f0c1a84dc015ed566682654f7f4006df11d3976`.
