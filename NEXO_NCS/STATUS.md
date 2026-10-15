@@ -2896,3 +2896,20 @@ The owner explicitly accepted the recommendation to preserve L2 and keep STOP un
 - Next work: reuse existing contracts to pursue only evidence that can ground a concrete non-circular L2 path; if none is evidenced, name the exact missing capability and retain STOP. Do not repeat broad device research or create another abstraction.
 
 **STEP 7 remains OPEN / STOP / UNKNOWN. L2 NOT ESTABLISHED. No commissioning and no protected effects.**
+
+
+## Latest continuation — Genesis premise / L2 feasibility adjudication (2026-10-15)
+
+Added [STEP_7_GENESIS_PREMISE_L2_FEASIBILITY_ADJUDICATION_2026-10-15.md](BUILD/STEP_7_GENESIS_PREMISE_L2_FEASIBILITY_ADJUDICATION_2026-10-15.md), commit `c5fef4e7a316c333e432a5e1523398282a108391`.
+
+This was a bounded synthesis of the existing Genesis, owner-approval, Scope A and trust-root contracts, not another broad device search or an implementation change.
+
+- Clarified the unresolved distinction: the owner is the normative source of the initial decision, but that does not by itself machine-prove which bytes were reviewed, whether those exact bytes were endorsed, or whether the verifier/policy is the intended and current one.
+- The accepted POCO screen-only premise is insufficient for L2: faithful display does not prove that the host sent the same content to the signing mechanism or that the verifier is independently grounded.
+- Identified the minimum capability as a complete trusted approval path: human-readable semantic presentation, content-to-approval binding, deliberate input, independently justified verifier provenance, freshness/currentness, role separation, and a separate final-effect enforcement boundary.
+- Rejected POCO + ordinary app + content-blind key, the screen premise alone, and YubiKey 5 NFC alone as complete L2 solutions. The Moto G52 remains unproven, not automatically independent. An external trusted-display/input signer plus independently provisioned verifier remains a research family, not a selected solution.
+- The Genesis premise can be an explicit, bounded owner-accepted assumption; it cannot be described as cryptographic proof. If it trusts the same host against a compromise included in L2, it weakens the threat model and is not accepted as satisfying L2.
+
+Decision unchanged: L2 remains the objective; initial owner-intent/content binding and verifier provenance/currentness remain NOT ESTABLISHED; final sink/bypass closure remains NOT ESTABLISHED. No key, signature, digest/freeze, ceremony, device operation, APK, source/test/workflow change, commissioning or protected effect occurred.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
