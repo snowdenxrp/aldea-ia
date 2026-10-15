@@ -187,3 +187,17 @@ The constitution reference/version/hash fields in the Authority Context contract
 
 No additional abstraction or code field is warranted. The gap is a missing trust path/assumption, not a missing schema label. Preserve STOP until Direction A's narrower assumption is explicitly accepted or Direction B's concrete independent path is evidenced.
 
+## 13. Owner decision — preserve L2 and STOP (2026-10-15)
+
+The owner explicitly accepted the recommendation to retain Direction B: preserve the L2 threat objective and keep STEP 7 at STOP until a concrete independent owner-intent/presentation and verifier-provenance path is grounded. This is a project-governance decision recorded from the owner's direct response in the NCS conversation; this Markdown entry is not itself cryptographic proof of that decision and does not satisfy L2.
+
+Consequences:
+
+- Do not downgrade the target to an L1 self-reported convenience record or relabel it as L2.
+- Do not reinterpret the previously accepted POCO screen-only premise as trust in Android, the app/Core, the input path, or exact content-to-approval binding.
+- Do not create/enroll a key, initiate a ceremony, freeze/hash/sign the Constitution, select a verifier/host, install an APK, or implement a trust path merely to show activity.
+- Keep existing Scope A acceptance design-only and non-authoritative; it does not ratify the Constitution, establish currentness, create Constitution Authority Context, or authorize any protected effect.
+- Continue only with evidence-led analysis that can identify a concrete, non-circular L2 path or precisely demonstrate which required capability is missing. Reuse existing contracts and evidence; no duplicate abstraction or broad device research.
+- Before any future implementation, require explicit evidence for exact reviewed-content/decision binding, verifier/policy provenance, freshness/revocation/recovery, and a separately proven protected-effect boundary and bypass closure.
+
+Decision status: **Direction B selected as the security objective; implementation path NOT ESTABLISHED; STEP 7 OPEN / STOP / UNKNOWN.** No Constitution ratification, commissioning, key operation, ceremony, source/test/workflow change, or protected effect is authorized by this decision.
