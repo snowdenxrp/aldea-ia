@@ -1,3 +1,16 @@
+## Latest continuation — Javet/Node semantic parity gate (2026-10-14)
+
+Added [STEP_7_JAVET_NODE_CORE_SEMANTIC_PARITY_GATE_2026-10-14.md](BUILD/STEP_7_JAVET_NODE_CORE_SEMANTIC_PARITY_GATE_2026-10-14.md), commit `7f0c1a84dc015ed566682654f7f4006df11d3976`.
+
+- Re-pinned existing Core contracts, ownership ports, protected transition, policy resolver and conditional persistence adapter.
+- Inspected existing workflow definitions: the general deterministic suite uses Node 22; separate manual workflows cover negative-resource equivalence and observation contracts. Workflow definitions are not proof that these workflows ran on this branch/commit; no run was triggered or claimed.
+- Defined 10 parity gates for exact ESM graph loading, `structuredClone`, immutability, async ordering, error taxonomy, negative transition outcomes, policy resolution, host capabilities, artifact provenance and eventual target-device behavior.
+- Node.js official docs confirm the Permission Model is not a security boundary against malicious same-process code. A Javet parity PASS cannot satisfy hostile-Core isolation or prove the final protected sink.
+- JP-01 through JP-10 remain NOT RUN; no runtime artifact pinned and no Javet harness created. No source/test/workflow/dependency/APK/device/key/Constitution/deployment change.
+- Next: obtain real baseline run evidence and exact runtime artifact provenance before deciding whether any compatibility experiment is justified. Do not infer test results from YAML.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest continuation — device modification decision gate (2026-10-14)
 
 Added [STEP_7_DEVICE_MODIFICATION_DECISION_GATE_2026-10-14.md](BUILD/STEP_7_DEVICE_MODIFICATION_DECISION_GATE_2026-10-14.md), commit `53083c5a6dc0f48dd920a220212536293d42b8dd`.
