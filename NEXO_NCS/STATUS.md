@@ -1,3 +1,17 @@
+## STEP 7 continuation — activation-scope authorization cross-check (2026-10-15)
+
+Added [STEP_7_ACTIVATION_SCOPE_AUTHORIZATION_CROSSCHECK_2026-10-15.md](BUILD/STEP_7_ACTIVATION_SCOPE_AUTHORIZATION_CROSSCHECK_2026-10-15.md), commit `f0b1b72329b6adb87cb760ab780928b67303078e`.
+
+- Reused the existing concrete mutation source trace and cross-checked MASTER, Genesis Trust Foundation, bootstrap composition, root-role map, and effect-class inventory.
+- Bounded finding: **no explicit owner-approved initial activation target was found in the reviewed records**. MASTER states general gate principles but does not designate `executeAction()`, Nexo mission effects, outcome recording, or snapshot persistence as the initial STEP 7 claim.
+- `executeAction()` is shared with ordinary simulation; runtime outcome recording occurs after mutation; `persistState(expectedRevision)` is not demonstrated as the Nexo runtime's final commit. Choosing any one by inference would be an unjustified scope expansion.
+- Existing source wiring gap remains: `executeProtectedTransition()` does not call the available `effectBoundary.prepare` port before conditional commit. This is not being patched until protected target/scope and Genesis basis are justified.
+- Next: locate and inspect the actual human-readable Constitution artifact and any recorded approval state in repository evidence. If no approved scope exists, preserve owner-governance prerequisite and STOP. No source/test/workflow change or runtime/device/key/ceremony action.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+---
+
 ## Latest STEP 7 continuation — runtime authority-to-effect source trace (2026-10-15)
 
 Added [STEP_7_RUNTIME_AUTHORITY_TO_EFFECT_PATH_SOURCE_TRACE_2026-10-15.md](BUILD/STEP_7_RUNTIME_AUTHORITY_TO_EFFECT_PATH_SOURCE_TRACE_2026-10-15.md), commit `fda281f4946a1542ef3fb6b1734cde43d1e95ddb`.
