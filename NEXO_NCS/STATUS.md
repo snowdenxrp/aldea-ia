@@ -1,3 +1,17 @@
+## Latest STEP 7 continuation — Genesis premise and owner-decision boundary (2026-10-15)
+
+Added [STEP_7_GENESIS_PREMISE_OWNER_DECISION_BOUNDARY_2026-10-15.md](BUILD/STEP_7_GENESIS_PREMISE_OWNER_DECISION_BOUNDARY_2026-10-15.md), commit `a539229a8ea2f741c269dade275f51e63fa143b0`.
+
+- Separated normative owner decision, technical evidence of that decision, and later authority/effect admission.
+- Finding: the owner can be the normative origin of Genesis without granting constitutional supremacy to a verifier; however, a direct statement or durable record does not prove exact reviewed-content binding, verifier provenance, currentness, or enforcement.
+- The accepted POCO screen-only premise remains insufficient for L2 against malicious Core/app and compromised OS. Direction A (broaden the explicit ceremony assumption) and Direction B (concrete independent L2 path) remain unresolved.
+- No owner review/ratification event was inferred. No key, signature, hash freeze, ceremony, verifier, host, APK, code, schema, or device change was performed or authorized.
+- Next: do not create another conceptual layer. Unless new evidence identifies a concrete already-grounded trust premise/path, the next advancement requires an explicit trust-direction decision; preserve STOP rather than restating the same gap or inventing a mechanism.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+---
+
 ## Latest STEP 7 continuation — initial authority bootstrap decision gate (2026-10-15)
 
 Added [STEP_7_INITIAL_AUTHORITY_BOOTSTRAP_DECISION_GATE_2026-10-15.md](BUILD/STEP_7_INITIAL_AUTHORITY_BOOTSTRAP_DECISION_GATE_2026-10-15.md), commit `5445ab118cd6b64cb1123eed74e9abb8fc8d92e9`.
