@@ -1,3 +1,15 @@
+## Latest reassessment — Android confirmation assurance (2026-10-15)
+
+Added [STEP_7_ANDROID_CONFIRMATION_ASSURANCE_REASSESSMENT_2026-10-15.md](BUILD/STEP_7_ANDROID_CONFIRMATION_ASSURANCE_REASSESSMENT_2026-10-15.md), commit `dbe91448aa9d2ca48f346ee1de9edb7c328ffea9`.
+
+- Corrected priority of the previously identified Protected Confirmation lead: current AOSP source marks the API deprecated due to low adoption/few supported devices. Its design remains relevant, but it must not be the assumed primary path.
+- Separated three properties: user authentication (P1), key custody/attestation (P2), and trusted confirmation of exact visible content (P3). BiometricPrompt + auth-bound Keystore can help P1/P2 but is not equivalent to P3.
+- Android key attestation must be verified by a separate relying verifier with trust-chain and revocation checks; on-device self-verification is insufficient against a compromised device.
+- No device check, app, key, signature, attestation, review event, code, test or deployment was created. No Android host or local reference owner is selected.
+- Next: specify the minimal reviewed-object → owner-decision → evidence → independent verifier contract; only then decide whether any concrete host or confirmation technology merits a bounded feasibility test.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest targeted research — Android Protected Confirmation candidate (2026-10-15)
 
 Added [STEP_7_ANDROID_PROTECTED_CONFIRMATION_CANDIDATE_RESEARCH_2026-10-15.md](BUILD/STEP_7_ANDROID_PROTECTED_CONFIRMATION_CANDIDATE_RESEARCH_2026-10-15.md), commit `20fc2127245524d8e040434c26079af58ea8ea8f`.
