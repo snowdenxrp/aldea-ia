@@ -1,3 +1,14 @@
+## Latest trust-domain gate — independence inventory (2026-10-15)
+
+Added [STEP_7_EXISTING_TRUST_DOMAIN_INDEPENDENCE_INVENTORY_2026-10-15.md](BUILD/STEP_7_EXISTING_TRUST_DOMAIN_INDEPENDENCE_INVENTORY_2026-10-15.md), commit `015db18fee973306f10dcffec9cfc76862547968`.
+
+- Evaluated already-available domains: owner review, POCO, Moto G52, YubiKey, Android Keystore/biometrics, Protected Confirmation, Termux, GitHub repository/CI, current Core, paper/PDF, and hypothetical external service.
+- Result: each offers only partial properties; none is evidenced as an independent verifier for the complete Scope A chain under the malicious Core/app or compromised Android OS threat model.
+- Smallest missing capability: a pre-established, independently verifiable owner-intent evidence path bound to exact reviewed content and narrow decision, with justified verifier provenance and freshness. No new service/signer/root is assumed.
+- Next decision boundary: distinguish (i) an explicitly low-assurance self-reported convenience record from (ii) evidence intended to resist malicious Core/app or compromised OS. Scope A remains non-authoritative in either case; no host/implementation selected.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
 ## Latest design gate — Scope A review-evidence acceptance contract (2026-10-15)
 
 Added [STEP_7_SCOPE_A_REVIEW_EVIDENCE_MINIMUM_ACCEPTANCE_CONTRACT_2026-10-15.md](BUILD/STEP_7_SCOPE_A_REVIEW_EVIDENCE_MINIMUM_ACCEPTANCE_CONTRACT_2026-10-15.md), commit `feeeb4fb61ac2b85850e80cc903bb0ba8d1ae64c`.
