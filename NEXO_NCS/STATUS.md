@@ -1,3 +1,18 @@
+## Latest STEP 7 continuation — runtime authority-to-effect source trace (2026-10-15)
+
+Added [STEP_7_RUNTIME_AUTHORITY_TO_EFFECT_PATH_SOURCE_TRACE_2026-10-15.md](BUILD/STEP_7_RUNTIME_AUTHORITY_TO_EFFECT_PATH_SOURCE_TRACE_2026-10-15.md), commit `fda281f4946a1542ef3fb6b1734cde43d1e95ddb`.
+
+- Source-traced the inspected runtime path `executeLuminaNexoStep → executeNexoStep → adapter.execute → registered handler → postcondition → runtime memory outcome`.
+- Concrete finding: the inspected `src/nexo/runtime.js` does not import or invoke `executeProtectedTransition()` before reaching the effect adapter. Passing tests for the separate protected-transition module therefore do not prove this runtime path is protected.
+- The separate `executeProtectedTransition()` also does not invoke `ports.effectBoundary.prepare`; after semantic PASS it calls conditional state commit. The port's default remains `NOT_IMPLEMENTED`.
+- This is a bounded source trace, not a claim that every repo callsite or deployed artifact has been exhaustively verified. Ordinary Lúmina simulation must not be conflated with a protected Nexo constitutional effect.
+- No code was changed. Next exact gate: establish whether this runtime effect class is in the protected constitutional scope; if yes, identify the actual final sink and all reachable entry paths before designing any enforcement owner. Do not patch `executeAction()` or the adapter by guesswork.
+- Genesis bootstrap, initial owner-intent evidence, verifier provenance/currentness, and constitutional ratification remain NOT ESTABLISHED.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. No implementation, commissioning, or protected effects authorized.**
+
+---
+
 ## Latest STEP 7 continuation — Genesis premise and owner-decision boundary (2026-10-15)
 
 Added [STEP_7_GENESIS_PREMISE_OWNER_DECISION_BOUNDARY_2026-10-15.md](BUILD/STEP_7_GENESIS_PREMISE_OWNER_DECISION_BOUNDARY_2026-10-15.md), commit `a539229a8ea2f741c269dade275f51e63fa143b0`.
