@@ -68,6 +68,14 @@ Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_
 - Relevance to Nexo: a credible capability lead, not an L2 solution. POCO support is unverified; no evidence shows full Constitution content/scope can be faithfully reviewed and bound; verifier provenance/currentness and final sink remain unresolved.
 - No device capability check, APK, key, test, workflow, Constitution, review event, commissioning, or protected effect occurred. Research record created at `31e886a1d4fa70949f17c6b5a5400637724e9ce0`, amended at `937858dbd09a3836f568f3e4ffd98ba3bab07e43`.
 
+### M0.22 — POCO X7 Pro Protected Confirmation public-evidence gate
+Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_POCO_X7_PROTECTED_CONFIRMATION_PUBLIC_EVIDENCE_GATE_M0_22_2026-10-16.md
+- Reviewed the official Android `ConfirmationPrompt` API, Android developer guidance, AOSP implementation page, and POCO/Xiaomi official product FAQ.
+- Android says support requires dedicated hardware and may be absent; `ConfirmationPrompt.isSupported(context)` is the direct runtime capability check, and prompt presentation can still fail under relevant conditions.
+- No authoritative public evidence was found that establishes Protected Confirmation support on the user's POCO X7 Pro. This is UNKNOWN, not proof that the device lacks it. Xiaomi's public FAQ does not document the feature.
+- A positive capability result alone would not establish attestation verification, full Constitution review, Genesis/verifier legitimacy, currentness/revocation, final sink, or bypass closure.
+- No device command, APK, key, challenge, prompt, signature, test, or CI run. No device test is inferred from “continúa.” Report commit: `6a57f085d2126f712d3660fac0f881b2b8fc0770`.
+
 ## Previous M0 work to reuse, not repeat
 
 The same branch contains M0.1–M0.14 and their test/evidence records, including:
@@ -95,11 +103,11 @@ Do not rerun closed AB/TLC/P112 research. Reuse the existing STEP 7 authority-so
 
 ## Next bounded action
 
-Do not repeat broad phone/product searches or re-audit M0.18/M0.19. The latest new research lead is Android Protected Confirmation plus deterministic presentation binding, but it is **not** a selected or complete L2 path.
+M0.21/M0.22 exhausted what public product documentation can establish about Protected Confirmation support on the POCO X7 Pro. Do not repeat broad searches or infer support from Android 16, verified boot, SoC, or generic hardware-key attestation.
 
-Next, seek authoritative device-specific evidence for whether the POCO X7 Pro supports Android Protected Confirmation and what attestation properties a relying party can verify. Prefer public vendor/platform evidence; do not infer support from Android 16 or model name. If no authoritative evidence is available, keep this UNKNOWN. Do not install an APK, generate/enroll a key, or operate the device without explicit authorization.
+The only direct way to settle this narrow device capability is an explicitly authorized minimal runtime capability test on the actual device using `ConfirmationPrompt.isSupported(context)`, without generating/enrolling a key, signing an approval, or binding any Constitution decision. “Continúa” is not treated as permission to install an APK or operate the device. If the user does not authorize a device test, leave the device capability UNKNOWN and continue independent canonical-scope/verifier work.
 
-Even if support is confirmed, the result only permits proposing a bounded capability experiment. It does not establish full Constitution review, Genesis/verifier provenance, canonical currentness/revocation, constitutional ratification, Authority Context, final protected sink, or bypass closure. Keep Direction B/L2; do not downgrade to L1. Scope A remains a work objective only; no owner-review event has occurred.
+Even a positive runtime result would be only a capability indicator, not L2 completion. Do not downgrade to L1, commission Constitution, connect runtime, or activate protected effects.
 
 ## Evidence discipline
 
