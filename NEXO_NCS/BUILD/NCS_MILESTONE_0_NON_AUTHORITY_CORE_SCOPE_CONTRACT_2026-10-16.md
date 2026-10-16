@@ -126,3 +126,29 @@ This is a targeted source read, not a full call-graph or bypass audit. No source
 Before editing, the implementation pass must inspect the full existing module/test and any direct importers relevant to this boundary. Acceptance should cover: missing/empty source and code; default `UNKNOWN`; rejection of invalid admission; nested input detachment after caller mutation; deep immutability of returned data; and confirmation that this module cannot invoke mission execution or external effects. Reuse current APIs and file structure; do not introduce a new generic framework.
 
 **Execution limitation:** this source inventory was performed through repository file reads; the test suite was not run. No PASS claim is made. The next implementation must be followed by actual test execution in the repository environment and raw-output capture before acceptance.
+
+
+## 11. M0.1 implementation result — qualified local evidence (2026-10-16)
+
+Implementation landed in the branch:
+- Source change commit: `c69dded51be1a8cf934393de96a3707fc0283670`.
+- Test change commit: `b53b8d91b3c847f5d7c46f48dd19d8db95b70ccd`.
+- STATUS evidence update commit: `843e3bcf560512d1491f0bef250ccd89b46da9c1`.
+
+Behavior changed:
+- Candidate creation now validates `observation.source` and `observation.code` as non-empty strings.
+- Candidate creation snapshots the supplied observation with structured clone and deep-freezes that snapshot. It no longer retains the caller's observation object by reference.
+- Tests cover empty fields, nested mutation after candidate construction, candidate immutability, preservation of the caller object's mutability, invalid admission, and default `UNKNOWN`.
+
+Test command and raw result:
+```text
+Node.js v22.16.0
+node tests/nexo/observation.test.mjs
+NEXO STEP 7 observation contract tests: PASS
+```
+
+Evidence qualification: the test was run in a temporary local directory containing the exact source and test text fetched from this branch. A fresh repository clone could not be obtained in the execution environment because `github.com` DNS resolution failed. Therefore this is a useful isolated behavior check, **not** repository-checkout/CI integration proof. Repository integration remains PENDING.
+
+Security limits: this does not establish that the observation is truthful, fresh, authenticated, authorized, or used safely by every caller. It does not connect or close the runtime-to-protected-effect path. Step 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+Next: obtain repository-connected execution and run the test against the actual checkout/CI, then inspect current-branch callers before widening this data contract.
