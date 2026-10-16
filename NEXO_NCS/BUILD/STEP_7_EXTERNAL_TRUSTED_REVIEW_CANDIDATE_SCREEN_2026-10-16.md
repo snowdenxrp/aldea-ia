@@ -50,3 +50,35 @@ A concrete candidate would need inspectable evidence for all of the following in
 If the device cannot render the whole artifact, it must not replace the review with an opaque hash or rely on an untrusted host's description. Chunking/pages are acceptable only if completeness, ordering, omissions, and the exact signed representation are cryptographically and semantically bound.
 
 **Result:** a new candidate family was screened and rejected as an available solution on its documented scope/maturity, while preserving one reusable requirement: trusted-device semantic review plus digest-bound approval. The actual L2 path remains NOT ESTABLISHED. STEP 7 stays OPEN / STOP / UNKNOWN.
+
+
+## Addendum — air-gapped semantic signer and deterministic-presentation evidence (2026-10-16)
+
+This addendum records a second, narrower source screen. It does not replace the findings above or select hardware.
+
+### Faraday: stronger presentation pattern, wrong semantic domain
+
+Public source: https://github.com/Faraday-signer/faraday
+
+The repository describes an open-source, air-gapped signer whose offline device parses supported Solana transactions and shows transaction details before approval. It also describes a Raspberry Pi Zero 1.3 target with no radio silicon, and a simulator for development. These are useful architectural properties against a compromised online coordinator: the signer reconstructs and reviews a transaction locally instead of trusting the coordinator's summary.
+
+The scope is still Solana wallet transactions and supported program parsers. Open source and air-gapping do not establish a Nexo Constitution parser, a trusted build/provisioning root, legitimate first verifier, governed revocation/currentness, or Nexo final-effect enforcement. The README's claims are project documentation, not an independent security audit. **Disposition: design reference only; not an L2 solution for Nexo.**
+
+### Deterministic rendering and display attestations: useful new formal distinction, not proof of perception
+
+Public working draft: https://mirrors.aliyun.com/ietf/draft-schrock-ep-presentation-binding-01.html (Internet-Draft dated 2026-09-11; informational/work in progress, expires 2027-03-15).
+
+The draft distinguishes an authorization receipt from presentation evidence. It proposes a deterministic renderer that a verifier can re-derive from signed canonical action bytes, plus a signed client claim binding a rendering digest to an action digest. Critically, the draft explicitly says this does **not** prove that the physical display actually showed those bytes or that the human perceived them; verifier trust inputs and residual compromised-client/display risk remain.
+
+Transferable Nexo requirement: define a canonical, closed schema for the exact constitutional decision; deterministic, locale-independent rendering with explicit refusal on truncation/unsupported fields; and independent re-derivation of the rendering from the endorsed bytes. Treat any display attestation as a separate claim requiring its own client provenance—not as self-authenticating proof of honest display.
+
+The draft is not an IETF standard, and its reference implementation/status and security claims have not been independently audited here. It cannot serve as Nexo's trust root or be imported as an authority decision.
+
+## Updated disposition
+
+- Faraday: **RESEARCH REFERENCE ONLY**; transaction domain is not arbitrary constitutional review.
+- Presentation-binding draft: **DESIGN REFERENCE ONLY**; improves detectability of render/action mismatch but explicitly does not prove actual human-facing display or perception.
+- New reusable constraints: independently re-derive deterministic rendering from exact endorsed bytes; reject unknown/truncated/ambiguous fields; keep receipt verification, presentation evidence, owner authority, and effect admission as distinct results.
+- No hardware selected or bought, no firmware run/build/test, no key/signature/digest/freeze, no ceremony, owner-review event, code/test/workflow change, commissioning, or protected effect occurred.
+
+**L2 remains NOT ESTABLISHED. STEP 7 remains OPEN / STOP / UNKNOWN.**
