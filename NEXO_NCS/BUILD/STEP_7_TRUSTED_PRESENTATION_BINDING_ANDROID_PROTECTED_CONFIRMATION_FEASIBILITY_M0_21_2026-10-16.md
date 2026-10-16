@@ -21,6 +21,14 @@ Official source: https://developer.android.com/reference/android/security/Confir
 
 The documented relying-party flow is meaningful: provision/attest a key with the confirmation property, verify its attestation chain and expected root, issue a nonce, bind that nonce through `extraData`, receive the confirmation response, and verify the signature, expected prompt text and nonce. The documentation explicitly says the prompt text is the only part the user approved; `extraData` is returned but is not displayed.
 
+### 1a. Hard content-size and display-fit constraint
+
+The official Android Open Source Project implementation guide documents a hard 6,144-byte boundary for the prompt body, including non-displayed extra data and CBOR header information. It also requires that the entire rendered message fit the available screen; if it cannot fit completely, the confirmation must abort rather than truncate. This is a critical constraint for a long Constitution: a short prompt cannot be treated as proof that the complete draft was reviewed, and putting a digest in non-displayed `extraData` does not make that digest human-approved.
+
+Implementation source: https://source.android.com/docs/security/features/protected-confirmation/implementation
+
+A search surfaced a third-party device list that mentions POCO X7 Pro for Android hardware attestation, but that is not authoritative evidence of `ConfirmationPrompt.isSupported()` or of the Protected Confirmation path. No model-specific official confirmation-support evidence was found in this bounded search. Generic hardware key attestation and Protected Confirmation are distinct claims.
+
 ### 2. Deterministic presentation binding is a complementary, not equivalent, mechanism
 
 The September 2026 individual Internet-Draft *Binding Deterministic Rendering and Display Attestations to Human-Authorization Receipts*, version -01, defines:
