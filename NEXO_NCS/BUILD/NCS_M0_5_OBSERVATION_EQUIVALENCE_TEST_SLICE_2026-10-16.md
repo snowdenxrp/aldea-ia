@@ -1,7 +1,7 @@
 # NCS M0.5 — Observation-equivalence test slice
 Date: 2026-10-16
 Branch: `ncs-clean-architecture`
-Status: TEST ADDED / CI RESULT NOT YET CONFIRMED
+Status: TEST ADDED / CI PASS CONFIRMED
 
 ## Why this slice
 The claim-identity mapping is blocked, so no conversion to ClaimEnvelope is being implemented. To continue safe M0 progress without widening the architecture, this slice adds focused regression tests for the already-existing pure function `evaluateNegativeResourceEquivalence()`. No production source was changed.
@@ -28,7 +28,16 @@ The existing CI workflow was changed to execute:
 1. `node tests/nexo/observation.test.mjs`
 2. `node tests/nexo/observation-equivalence.test.mjs`
 
-At the time this note was written, no successful Actions run for the updated workflow had been confirmed. Therefore the new test is **not yet reported as passing CI**. Do not treat a created test file or workflow commit as test execution evidence.
+Confirmed GitHub Actions evidence:
+- Run ID: `38977786284`
+- Run URL: https://github.com/snowdenxrp/aldea-ia/actions/runs/38977786284
+- Tested commit: `2f0ac5b4debd2d1f36038f6ae6b6b2fdce65107b`
+- Event: `push`; workflow: `Nexo — STEP 7 observation contract`
+- Job `observation-contract`: `success`
+- Step `node tests/nexo/observation.test.mjs`: `success`
+- Step `node tests/nexo/observation-equivalence.test.mjs`: `success`
+
+This confirms both listed test commands passed on that repository commit. It does not establish full-suite success, production integration, authentic observations, or constitutional/protected-effect enforcement.
 
 ## Safety boundary
 - No runtime/orchestrator integration.
@@ -38,4 +47,4 @@ At the time this note was written, no successful Actions run for the updated wor
 - STEP 7 remains OPEN / STOP / UNKNOWN; Direction B / L2 remains the objective.
 
 ## Next
-Verify the Actions run for commit `2f0ac5b4debd2d1f36038f6ae6b6b2fdce65107b` and inspect the exact job steps/logs. If CI fails, diagnose only this bounded test/workflow slice. If CI succeeds, record the run ID and exact step conclusions before selecting any further slice.
+CI evidence is now verified above. Next: choose another already-existing pure Core contract and inspect its tests before changing source. Keep this work non-authoritative; do not connect it to the runtime/effect path.
