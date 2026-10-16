@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {
-  COMMIT, OUTCOMES, VALIDATION,
-  createCandidate, createClaimEnvelope, createCommitResult,
+  AUTHORITY, COMMIT, OUTCOMES, VALIDATION,
+  createAuthorityResult, createCandidate, createClaimEnvelope, createCommitResult,
   createOutcome, createValidationResult
 } from "../../src/nexo/core/contracts.mjs";
 import { createCorePorts } from "../../src/nexo/core/ownership.mjs";
@@ -17,6 +17,16 @@ assert.equal(claim.claimId, "claim-1");
 assert.equal(claim.action, "example");
 assert.throws(() => { claim.claimId = "mutated"; }, TypeError);
 assert.throws(() => createClaimEnvelope({ action: "missing-id" }), /claimId/);
+
+// Collection fields are lists by contract; strings and object-shaped values
+// must not be silently spread into character arrays or accepted as evidence.
+assert.throws(() => createClaimEnvelope({ claimId: "bad-reads", action: "x", authoritativeReads: "revision" }), /authoritativeReads must be an array/);
+assert.throws(() => createClaimEnvelope({ claimId: "bad-deps", action: "x", dependencies: { target: "x" } }), /dependencies must be an array/);
+assert.throws(() => createClaimEnvelope({ claimId: "bad-provenance", action: "x", sourceProvenance: "source" }), /sourceProvenance must be an array/);
+assert.throws(() => createValidationResult(VALIDATION.UNKNOWN, { reasons: "missing" }), /validation reasons must be an array/);
+assert.throws(() => createValidationResult(VALIDATION.UNKNOWN, { evidence: { source: "x" } }), /validation evidence must be an array/);
+assert.throws(() => createOutcome(OUTCOMES.UNKNOWN, { reasons: "unknown" }), /outcome reasons must be an array/);
+assert.throws(() => createAuthorityResult(AUTHORITY.UNKNOWN, { evidence: "unverified" }), /authority evidence must be an array/);
 
 const target = { id: "target-1", meta: { version: 1 } };
 const claimWithTarget = createClaimEnvelope({ claimId: "claim-target", action: "example", target });
@@ -75,7 +85,6 @@ assert.equal(typeof ports.finalSemanticValidator.validate, "function");
 assert.throws(() => ports.conditionalCommit.commit(), /NOT_IMPLEMENTED/);
 assert.equal("commit" in { action: "example" }, false);
 assert.equal("conditionalCommit" in ports.proposal, false);
-
 
 const completePolicyContext = {
   policyRef: { id: "policy-1", semanticVersion: "1.0.0", hash: "sha256:test" },
