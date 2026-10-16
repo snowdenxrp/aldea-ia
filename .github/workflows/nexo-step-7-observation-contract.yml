@@ -8,6 +8,8 @@ on:
     paths:
       - "src/nexo/core/observation.mjs"
       - "tests/nexo/observation.test.mjs"
+      - "src/nexo/core/observation-equivalence.mjs"
+      - "tests/nexo/observation-equivalence.test.mjs"
       - ".github/workflows/nexo-step-7-observation-contract.yml"
   pull_request:
     branches:
@@ -15,6 +17,8 @@ on:
     paths:
       - "src/nexo/core/observation.mjs"
       - "tests/nexo/observation.test.mjs"
+      - "src/nexo/core/observation-equivalence.mjs"
+      - "tests/nexo/observation-equivalence.test.mjs"
       - ".github/workflows/nexo-step-7-observation-contract.yml"
 
 jobs:
@@ -26,3 +30,4 @@ jobs:
         with:
           node-version: 22
       - run: node tests/nexo/observation.test.mjs
+      - run: node tests/nexo/observation-equivalence.test.mjs
