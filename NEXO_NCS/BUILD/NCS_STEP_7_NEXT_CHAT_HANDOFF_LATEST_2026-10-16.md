@@ -62,9 +62,11 @@ Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_
 Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_TRUSTED_PRESENTATION_BINDING_ANDROID_PROTECTED_CONFIRMATION_FEASIBILITY_M0_21_2026-10-16.md
 - Targeted new research found official Android Protected Confirmation documentation: on hardware-supported devices, a protected prompt can provide high confidence the user saw the prompt even if the Android framework/kernel is compromised. Support is conditional and must be checked; model/OS version alone is not proof.
 - The documented relying-party flow requires verification of the confirmation key's attestation chain, expected root, exact prompt text, and a relying-party nonce. The nonce/extraData is not displayed; only prompt text is what the user approved.
+- Android's official implementation guide sets a hard 6,144-byte prompt-body boundary including extraData/CBOR overhead and requires the whole message to fit; if it cannot fit, confirmation must abort, not truncate. This constrains any claim that a long Constitution was reviewed.
+- A third-party device list mentions POCO X7 Pro for generic hardware attestation, but that is not proof of Protected Confirmation support. No authoritative model-specific confirmation-support evidence was found in the bounded search.
 - The September 2026 presentation-binding Internet-Draft adds deterministic rendering from exact canonical action bytes and a separately trusted display-attestation claim, but is an individual Internet-Draft, not an endorsed standard, and explicitly retains malicious-client/display residual risk.
 - Relevance to Nexo: a credible capability lead, not an L2 solution. POCO support is unverified; no evidence shows full Constitution content/scope can be faithfully reviewed and bound; verifier provenance/currentness and final sink remain unresolved.
-- No device capability check, APK, key, test, workflow, Constitution, review event, commissioning, or protected effect occurred. Research record commit: `31e886a1d4fa70949f17c6b5a5400637724e9ce0`.
+- No device capability check, APK, key, test, workflow, Constitution, review event, commissioning, or protected effect occurred. Research record created at `31e886a1d4fa70949f17c6b5a5400637724e9ce0`, amended at `937858dbd09a3836f568f3e4ffd98ba3bab07e43`.
 
 ## Previous M0 work to reuse, not repeat
 
