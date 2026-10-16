@@ -221,4 +221,40 @@ function makePorts(overrides = {}) {
   assert.deepEqual(calls, { isolate: 0, execute: 0, validate: 0, commit: 0 });
 }
 
+
+{
+  let commitCalls = 0;
+  const { ports } = makePorts({
+    finalSemanticValidator: {
+      validate: () => ({ status: VALIDATION.PASS })
+    },
+    conditionalCommit: {
+      commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); }
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+  assert.deepEqual(outcome.reasons, ["final semantic validator returned a malformed result shape"]);
+  assert.equal(commitCalls, 0);
+}
+
+{
+  let commitCalls = 0;
+  const { ports } = makePorts({
+    finalSemanticValidator: {
+      validate: () => ({ status: VALIDATION.FAIL, reasons: "not-an-array", evidence: [] })
+    },
+    conditionalCommit: {
+      commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); }
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+  assert.equal(commitCalls, 0);
+}
+
 console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
