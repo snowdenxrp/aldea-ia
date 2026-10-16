@@ -1,3 +1,14 @@
+## NCS start — Milestone 0 non-authoritative Core scope (2026-10-16)
+
+Added [NCS_MILESTONE_0_NON_AUTHORITY_CORE_SCOPE_CONTRACT_2026-10-16.md](BUILD/NCS_MILESTONE_0_NON_AUTHORITY_CORE_SCOPE_CONTRACT_2026-10-16.md), commit `d8f3bb43846032014d59e349182318a1469a0536`.
+
+- Proposed a small development boundary: build and test one bounded local Core behavior without implying Constitution approval, Genesis legitimacy, independent verification, or permission for protected effects.
+- M0 explicitly excludes Constitution freeze/commissioning, keys/ceremonies, real-world effects, speculative generic abstractions, and runtime bypass patches before effect scope/sink ownership is defined.
+- The next action is source-and-test inventory only: identify the smallest coherent behavior slice, its callers, mutations, external dependencies, existing tests, and negative-test gaps. No source implementation or tests were changed by creating this contract.
+- M0 behavior slice: NOT SELECTED. Constitution remains DRAFT / NOT FROZEN / NOT COMMISSIONED. **STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.**
+
+---
+
 ## STEP 7 continuation — adversarial check of constitutional boot (2026-10-15)
 
 Extended [STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md](BUILD/STEP_7_CONSTITUTIONAL_BOOT_COMPOSITION_SOURCE_REVIEW_2026-10-15.md), commit `dc78c0d1c2dcb2a4f800d6aaa909ebc25547f9fb`.
