@@ -19,6 +19,8 @@ on:
       - "tests/nexo/protected-transition.test.mjs"
       - "src/nexo/core/reconciliation.mjs"
       - "tests/nexo/reconciliation.test.mjs"
+      - "src/nexo/orchestrator.js"
+      - "tests/nexo/orchestrator.test.mjs"
       - ".github/workflows/nexo-step-7-observation-contract.yml"
   pull_request:
     branches:
@@ -53,3 +55,5 @@ jobs:
       - run: node tests/nexo/core-contracts.test.mjs
       - run: node tests/nexo/protected-transition.test.mjs
       - run: node tests/nexo/reconciliation.test.mjs
+      - name: Legacy simulation planner regression guard (non-authoritative)
+        run: node tests/nexo/orchestrator.test.mjs
