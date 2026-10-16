@@ -2940,3 +2940,16 @@ This was a bounded synthesis of the existing Genesis, owner-approval, Scope A an
 Decision unchanged: L2 remains the objective; initial owner-intent/content binding and verifier provenance/currentness remain NOT ESTABLISHED; final sink/bypass closure remains NOT ESTABLISHED. No key, signature, digest/freeze, ceremony, device operation, APK, source/test/workflow change, commissioning or protected effect occurred.
 
 **STEP 7 remains OPEN / STOP / UNKNOWN. No commissioning and no protected effects.**
+
+
+## STEP 7 continuation — Scope A persistence/verifier feasibility (2026-10-15)
+
+Added [STEP_7_SCOPE_A_EXISTING_PERSISTENCE_AND_VERIFIER_FEASIBILITY_REVIEW_2026-10-15.md](BUILD/STEP_7_SCOPE_A_EXISTING_PERSISTENCE_AND_VERIFIER_FEASIBILITY_REVIEW_2026-10-15.md), commit `8157553b72032f09811894875d673a467714f242`.
+
+- Reused the existing Scope A contract and inspected the concrete persistence adapter, Core ownership ports, protected-transition composition, Nexo runtime and Lúmina simulation adapter.
+- Finding: no inspected existing candidate satisfies the Scope A contract. `persistState()` is simulation-state persistence, not a constitutional review-evidence owner; runtime outcome memory is not automatically persisted by the inspected runtime path; effect-journal state is operational evidence, not constitutional authority.
+- The existing persistence primitive's revision/lock behavior does not establish owner intent, exact reviewed-content binding, independent verifier provenance, or a constitutional no-effect boundary. Existing P112 evidence also precludes claiming a universal power-loss durability barrier.
+- Minimum missing capability is a justified review-evidence boundary under an explicit threat model, not a new generic database/boot framework. If no existing trust domain can verify the content-to-decision binding independently, record that missing capability and keep L2/STOP.
+- No code, tests, workflows, host, store, key, owner-review event, commissioning, or protected effects were created or changed.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN.**
