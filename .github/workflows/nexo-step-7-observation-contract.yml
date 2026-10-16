@@ -2,6 +2,20 @@ name: Nexo — STEP 7 observation contract
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - ncs-clean-architecture
+    paths:
+      - "src/nexo/core/observation.mjs"
+      - "tests/nexo/observation.test.mjs"
+      - ".github/workflows/nexo-step-7-observation-contract.yml"
+  pull_request:
+    branches:
+      - ncs-clean-architecture
+    paths:
+      - "src/nexo/core/observation.mjs"
+      - "tests/nexo/observation.test.mjs"
+      - ".github/workflows/nexo-step-7-observation-contract.yml"
 
 jobs:
   observation-contract:
