@@ -26,3 +26,16 @@ Wait for a normal branch push / pull request matching the paths, or manually dis
 - It does not authenticate observations, establish Genesis/owner authority, or close any effect bypass.
 - Constitution remains DRAFT / NOT FROZEN / NOT COMMISSIONED.
 - **STEP 7 remains OPEN / STOP / UNKNOWN; Direction B / L2 remains the objective. No protected effects.**
+
+
+## Follow-up execution evidence — 2026-10-16
+
+The branch workflow did run after the workflow-trigger commit:
+- Run: [Nexo — STEP 7 observation contract](https://github.com/snowdenxrp/aldea-ia/actions/runs/38975253568)
+- Run ID: `38975253568`
+- Tested commit: `b705a71ce0527c689f169351468c364828a7e9f1`
+- Job: `observation-contract`, conclusion `success`
+- Exact test step: `node tests/nexo/observation.test.mjs`, conclusion `success`
+- The job records successful checkout and Node setup before that command.
+
+This is now repository CI evidence for the observation-contract test at the tested commit. The subsequent proof-note commit does not change the tested source or test. This evidence does not establish planner/runtime integration, observation authenticity, authority legitimacy, protected-sink enforcement, or bypass closure.
