@@ -4,11 +4,12 @@
 
 BOUNDED TRACE COMPLETE / REPOSITORY-WIDE CALLER ENUMERATION PENDING.
 
-This note records a targeted read of current-branch files. It is not a full import graph, bypass audit, CI run, or security acceptance.
+This note records a targeted read of current-branch files. It is not a full import graph, bypass audit, or security acceptance.
 
 ## Current-branch sources inspected
 
 - `src/nexo/core/observation.mjs` — blob `a7400912e0b55887a5120d059f7c1a598b9d9cd4`.
+- `tests/nexo/observation.test.mjs` — blob `abe4e94f685406c3e879b38650a20e3393d6fe67`.
 - `tests/nexo/step-7-provenance.test.mjs` — blob `0538b6c03b260cf492544a5986bace9959c07eec`.
 - `tests/nexo/step-7-negative-resource-handoff.test.mjs` — blob `f5a8f0fd63abc9622ade9e4c514a90be990ddf53`.
 - `src/nexo/core/observation-equivalence.mjs` — blob `c598023334948c3709c162eb3a4b44d8782496f5`.
@@ -20,23 +21,26 @@ This note records a targeted read of current-branch files. It is not a full impo
 
 ## Findings
 
-1. The two inspected handoff tests construct `ObservationEnvelope` and `MissionCandidate` directly. They test the contract in isolation; they do not demonstrate a runtime path from producer findings into these types.
-2. `buildNexoMission()` in `src/nexo/orchestrator.js` currently consumes report findings directly, maps finding codes to actions, and builds steps. In the inspected function, no `createObservationEnvelope()` or `createMissionCandidate()` call occurs.
+1. The handoff tests construct `ObservationEnvelope` and `MissionCandidate` directly. They test the contract in isolation; they do not demonstrate a runtime path from producer findings into these types.
+2. `buildNexoMission()` in `src/nexo/orchestrator.js` consumes report findings directly, maps finding codes to actions, and builds legacy mission steps. The inspected function does not call `createObservationEnvelope()` or `createMissionCandidate()`.
 3. `executeNexoStep()` in `src/nexo/runtime.js` calls `beginNexoStep()`, invokes `adapter.execute(...)`, then records the outcome. The inspected function does not invoke `executeProtectedTransition()` or a constitutional authority gate before the adapter.
 4. `executeProtectedTransition()` in `src/nexo/core/protected-transition.mjs` checks the injected authority result and semantic validation, then calls `conditionalCommit.commit(candidate)`; the inspected composition still does not call `effectBoundary.prepare`.
-5. `evaluateNegativeResourceEquivalence()` conservatively returns `UNKNOWN` when claim-critical dimensions are absent. The existing negative-resource test confirms that UNKNOWN is carried forward rather than silently admitted. This is contract-level behavior, not proof that the production planner consumes this evidence.
-6. `package.json` defines a long `npm test` chain, but the current execution environment has not run that chain against a repository checkout. The prior isolated observation test remains qualified evidence only.
+5. `evaluateNegativeResourceEquivalence()` conservatively returns `UNKNOWN` when claim-critical dimensions are absent. Its test confirms UNKNOWN is carried forward rather than silently admitted. This is contract-level behavior, not proof that the production planner consumes the evidence.
+6. The observation test is now confirmed by GitHub Actions run `38975253568`, tested commit `b705a71ce0527c689f169351468c364828a7e9f1`, workflow `Nexo — STEP 7 observation contract`, job `observation-contract`, exact step `node tests/nexo/observation.test.mjs`: conclusion `success`. Run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38975253568
+7. This CI result replaces the earlier qualified statement that no repository CI proof existed for this specific observation test. It does not prove the full `npm test` chain or any planner/runtime/security property.
 
 ## Architectural consequence
 
-The current observation/candidate work is a useful local data-contract slice, but it is not connected to the main planner/runtime path in the inspected sources. Do not treat M0.1 as integrated, and do not connect it to runtime effects as a quick patch.
+The current observation/candidate work is a useful local data-contract slice, but it is not connected to the main planner/runtime path in the inspected sources. Do not treat M0.1 as integrated.
 
-The next safe step is to establish a repository-wide current-branch caller/import inventory and identify the intended single seam between producer findings, the typed observation/candidate contract, and planning. Before any integration, specify whether this is a non-authoritative simulation-only path and what legacy behavior must remain unchanged. Do not add adapters, IDs, queues, retries, persistence, or authority semantics unless the inventory proves they are necessary.
+Do not patch the legacy orchestrator into the new Core merely to make the types appear connected. The saved P112 checkpoint explicitly warns against beginning by patching the old orchestrator into becoming the new Core, and the repository-wide caller inventory remains incomplete. First establish existing planner-related test coverage and enumerate current imports/callers on this branch; then choose a seam that preserves legacy simulation behavior and remains explicitly non-authoritative.
+
+No adapters, IDs, queues, retries, persistence, or authority semantics should be added unless that inventory demonstrates a concrete need. Do not connect this slice to runtime effects as a quick patch.
 
 ## Explicit non-claims
 
 - No exhaustive call graph or repository-wide bypass closure.
-- No repository checkout test or CI proof.
+- No full repository test-suite result; only the exact observation contract CI step is confirmed.
 - No proof that observations are authentic, fresh, or truthful.
 - No constitutional owner authority, commissioning, or protected-effect authorization.
 - No protected effects enabled.
