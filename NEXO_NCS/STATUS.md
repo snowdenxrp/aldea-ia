@@ -2953,3 +2953,15 @@ Added [STEP_7_SCOPE_A_EXISTING_PERSISTENCE_AND_VERIFIER_FEASIBILITY_REVIEW_2026-
 - No code, tests, workflows, host, store, key, owner-review event, commissioning, or protected effects were created or changed.
 
 **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+## STEP 7 continuation — FIDO transaction-confirmation assurance check (2026-10-15)
+
+Added a standards-level constraint to [Owner approval trust-path comparison](BUILD/STEP_7_OWNER_APPROVAL_TRUST_PATH_COMPARISON_2026-10-15.md), commit `6c373db7af68df3604ab1407d1813dbefbefbd01`.
+
+- FIDO's 2025 metadata specification and 2026 registry distinguish software, TEE, hardware and remote transaction-confirmation displays; display protection is not implied by a generic security-key/FIDO label.
+- Even a verified transaction-confirmation display binds only the protocol's displayed/signed transaction content. It does not prove review of the complete Constitution or establish Genesis, first-verifier provenance, canonical currentness, or final-effect enforcement.
+- Therefore no new product search or device test is justified from this result. Keep existing candidate-device research closed; require authoritative per-model display metadata and a justified verifier only if a concrete candidate later becomes relevant.
+- No device, key, signature, ceremony, code, test, workflow, APK, Constitution or protected effect changed.
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. L2 remains the objective; no commissioning or protected effects.**
