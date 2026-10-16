@@ -50,6 +50,14 @@ Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_
 - No source/test/workflow change or test run; no patch was justified because a shallow reference check would not prove deep graph isolation and would not repair missing runtime composition.
 - Review commit: `54ab3ba875a3d6910ba970bce2ec9d0140283d94`.
 
+### M0.20 — Claim-relative deployment/failure-domain inventory
+Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/STEP_7_CLAIM_RELATIVE_DEPLOYMENT_FAILURE_DOMAIN_INVENTORY_M0_20_2026-10-16.md
+- Converted the existing trust-role map's next action into an explicit inventory without creating a new trust contract or choosing a device/key/verifier/recognition family.
+- Separated unestablished Genesis and Constitution Authority Context claims from ordinary simulation, local persistence, external effects, and the non-authoritative review-acknowledgement candidate.
+- Listed common-mode/failure domains, offline currentness/revocation unknowns, and the missing final effect-enforcement owner.
+- No code/tests/workflows/device/key/Constitution changes and no tests run.
+- Inventory commit: `457720c3080c3879677008cb0dfa30e0e1dbefd4`.
+
 ## Previous M0 work to reuse, not repeat
 
 The same branch contains M0.1–M0.14 and their test/evidence records, including:
