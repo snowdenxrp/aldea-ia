@@ -38,8 +38,8 @@ const baseContext = {
   target: { id: "target-1" },
   targetIncarnation: { epoch: 4 },
   requirements: [
-    { id: "dep-a", status: "SATISFIED", authoritative: true },
-    { id: "pred-a", status: "SATISFIED", authoritative: true }
+    { id: "dep-a", status: "SATISFIED", authoritative: true, source: "test-authority" },
+    { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
   ]
 };
 
@@ -53,8 +53,31 @@ const baseContext = {
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
-      { id: "dep-a", status: "FAILED", authoritative: true },
-      { id: "pred-a", status: "SATISFIED", authoritative: true }
+      { id: "dep-a", status: "SATISFIED", authoritative: true },
+      { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
+    ]
+  });
+  assert.equal(result.status, VALIDATION.UNKNOWN);
+  assert.match(result.reasons[0], /not authoritative/);
+}
+
+{
+  const result = validator.validate(candidate(), {
+    ...baseContext,
+    requirements: [
+      { id: "dep-a", status: "SATISFIED", authoritative: true, source: "   " },
+      { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
+    ]
+  });
+  assert.equal(result.status, VALIDATION.UNKNOWN);
+}
+
+{
+  const result = validator.validate(candidate(), {
+    ...baseContext,
+    requirements: [
+      { id: "dep-a", status: "FAILED", authoritative: true, source: "test-authority" },
+      { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
     ]
   });
   assert.equal(result.status, VALIDATION.FAIL);
@@ -64,8 +87,8 @@ const baseContext = {
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
-      { id: "dep-a", status: "UNKNOWN", authoritative: true },
-      { id: "pred-a", status: "SATISFIED", authoritative: true }
+      { id: "dep-a", status: "UNKNOWN", authoritative: true, source: "test-authority" },
+      { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
     ]
   });
   assert.equal(result.status, VALIDATION.UNKNOWN);
@@ -75,7 +98,7 @@ const baseContext = {
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
-      { id: "dep-a", status: "SATISFIED", authoritative: true }
+      { id: "dep-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
     ]
   });
   assert.equal(result.status, VALIDATION.UNKNOWN);
@@ -85,8 +108,8 @@ const baseContext = {
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
-      { id: "dep-a", status: "SATISFIED", authoritative: false },
-      { id: "pred-a", status: "SATISFIED", authoritative: true }
+      { id: "dep-a", status: "SATISFIED", authoritative: false, source: "test-authority" },
+      { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
     ]
   });
   assert.equal(result.status, VALIDATION.UNKNOWN);
@@ -128,7 +151,7 @@ const baseContext = {
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
-      { id: "dep-a", status: "SATISFIED", authoritative: true },
+      { id: "dep-a", status: "SATISFIED", authoritative: true, source: "test-authority" },
       { id: "pred-a", status: "SATISFIED", authoritative: true, source: "cache" }
     ]
   });
@@ -140,7 +163,7 @@ const baseContext = {
     ...baseContext,
     requirements: [
       ...baseContext.requirements,
-      { id: "read-a", status: "SATISFIED", authoritative: true }
+      { id: "read-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
     ]
   });
   assert.equal(result.status, VALIDATION.PASS);
