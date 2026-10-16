@@ -41,6 +41,8 @@ on:
       - "tests/nexo/protected-transition.test.mjs"
       - "src/nexo/core/reconciliation.mjs"
       - "tests/nexo/reconciliation.test.mjs"
+      - "src/nexo/orchestrator.js"
+      - "tests/nexo/orchestrator.test.mjs"
       - ".github/workflows/nexo-step-7-observation-contract.yml"
 
 jobs:
