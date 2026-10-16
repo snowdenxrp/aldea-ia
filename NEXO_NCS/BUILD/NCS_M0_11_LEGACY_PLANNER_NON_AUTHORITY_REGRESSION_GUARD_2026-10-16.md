@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-16  
 **Branch:** `ncs-clean-architecture`  
-**Status:** Focused CI PASS for seven commands on the recorded test commit; final path-filter revision has its own CI run pending at time of note.  
+**Status:** Focused CI PASS for seven commands on both the test commit and the final path-filter revision.  
 **Production source changes:** none.
 
 ## Rationale
@@ -41,7 +41,7 @@ All seven commands passed:
 6. `node tests/nexo/reconciliation.test.mjs`
 7. `node tests/nexo/orchestrator.test.mjs` — legacy simulation planner regression guard.
 
-A subsequent workflow-only change aligned the pull-request path filters. Its run is tracked separately: https://github.com/snowdenxrp/aldea-ia/actions/runs/38979159431. Do not describe that later run as passed until its own conclusion is `success`.
+The final workflow-only revision aligned the pull-request path filters. Its independent run also passed: https://github.com/snowdenxrp/aldea-ia/actions/runs/38979159431 (head `57aeefc7112c37c265daacc1ae10d0d285de13d8`, job `observation-contract` = `success`; all seven commands succeeded).
 
 ## Interpretation and non-claims
 
