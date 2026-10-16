@@ -20,6 +20,22 @@ assert.throws(() => { observation.inputs.probe.frame = 99; }, TypeError);
 assert.throws(() => createObservationEnvelope({ source: "", code: "X" }), /source/);
 assert.throws(() => createObservationEnvelope({ source: "VisualAgent", code: "" }), /code/);
 
+// Frozen Map/Set/Date instances still have mutable internal state. The envelope
+// accepts plain data only so its immutability guarantee is enforceable.
+assert.throws(() => createObservationEnvelope({
+  source: "VisualAgent", code: "MESH_MISSING", inputs: new Map([["frame", 12]])
+}), /arrays and plain objects/);
+assert.throws(() => createObservationEnvelope({
+  source: "VisualAgent", code: "MESH_MISSING", freshness: new Date("2026-10-16T00:00:00Z")
+}), /arrays and plain objects/);
+assert.throws(() => createObservationEnvelope({
+  source: "VisualAgent", code: "MESH_MISSING", inputs: { nested: new Set(["x"]) }
+}), /arrays and plain objects/);
+assert.throws(() => createMissionCandidate({
+  observation: { source: "VisualAgent", code: "MESH_MISSING" },
+  claim: { details: new Map() }
+}), /arrays and plain objects/);
+
 const candidateInputObservation = {
   source: "VisualAgent",
   code: "MESH_MISSING",
