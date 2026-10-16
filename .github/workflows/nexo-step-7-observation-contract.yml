@@ -24,6 +24,8 @@ on:
       - "tests/nexo/observation.test.mjs"
       - "src/nexo/core/observation-equivalence.mjs"
       - "tests/nexo/observation-equivalence.test.mjs"
+      - "src/nexo/core/ownership.mjs"
+      - "tests/nexo/core-contracts.test.mjs"
       - "src/nexo/core/contracts.mjs"
       - "src/nexo/core/outcome-classifier.mjs"
       - "tests/nexo/outcome-classifier.test.mjs"
