@@ -5,12 +5,15 @@ import {
   VALIDATION
 } from "./contracts.mjs";
 
-function assertCandidate(candidate, claim) {
+function assertCandidate(candidate, claim, expectedRevision) {
   if (!candidate || !candidate.claim || candidate.claim.claimId !== claim.claimId) {
     throw new TypeError("candidate must preserve the claimed transition identity");
   }
   if (!Number.isInteger(candidate.expectedRevision) || candidate.expectedRevision < 0) {
     throw new TypeError("candidate must carry a valid expectedRevision");
+  }
+  if (candidate.expectedRevision !== expectedRevision) {
+    throw new TypeError("candidate must preserve the requested expectedRevision");
   }
   if (candidate.state === undefined) {
     throw new TypeError("candidate must carry isolated state");
@@ -85,7 +88,7 @@ export async function executeProtectedTransition({
     state: isolatedState,
     expectedRevision
   });
-  assertCandidate(candidate, claim);
+  assertCandidate(candidate, claim, expectedRevision);
 
   const validation = await ports.finalSemanticValidator.validate(candidate);
   if (!validation || !Object.values(VALIDATION).includes(validation.status)) {
