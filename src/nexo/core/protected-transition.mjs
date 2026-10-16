@@ -94,6 +94,12 @@ export async function executeProtectedTransition({
     });
   }
 
+  if (!Array.isArray(validation.reasons) || !Array.isArray(validation.evidence)) {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: ["final semantic validator returned a malformed result shape"]
+    });
+  }
+
   if (validation.status !== VALIDATION.PASS) {
     return outcomeFromValidation(ports, validation);
   }
