@@ -48,3 +48,17 @@ This confirms both listed test commands passed on that repository commit. It doe
 
 ## Next
 CI evidence is now verified above. Next: choose another already-existing pure Core contract and inspect its tests before changing source. Keep this work non-authoritative; do not connect it to the runtime/effect path.
+
+
+## Follow-up CI run after expanding the bounded contract workflow
+
+A later workflow run also passed and includes the two observation tests plus the existing outcome-classifier contract test:
+- Run ID: `38978170086`
+- URL: https://github.com/snowdenxrp/aldea-ia/actions/runs/38978170086
+- Tested commit: `1fbc509c8e97545960097043a93380672d846961`
+- Job `observation-contract`: `success`
+- `node tests/nexo/observation.test.mjs`: `success`
+- `node tests/nexo/observation-equivalence.test.mjs`: `success`
+- `node tests/nexo/outcome-classifier.test.mjs`: `success`
+
+The workflow was then adjusted once more to align pull-request path filters with the same test dependencies; that final filter-only commit is `f12454ed7f537aff90a0bbd62c53ca955eef34de`. The successful run above proves the three commands at its tested commit, not the final filter-only revision specifically.
