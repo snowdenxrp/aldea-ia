@@ -1,3 +1,15 @@
+## M0.1 source inventory — first bounded Core slice selected (2026-10-16)
+
+Extended [M0 non-authoritative Core scope contract](BUILD/NCS_MILESTONE_0_NON_AUTHORITY_CORE_SCOPE_CONTRACT_2026-10-16.md), commit `57e80da2da04f01eb1f86dd446e9db84d39776c7`.
+
+- Selected for bounded implementation planning: existing `src/nexo/core/observation.mjs` + `tests/nexo/observation.test.mjs`. The module builds immutable observation envelopes and mission candidates with `UNKNOWN` as the default admission; the inspected module contains no persistence, network, device, adapter, or execution calls.
+- This is a deliberately small first slice, not a claim that observations are true, fresh, authenticated, or authorized. Direct callers were not exhaustively enumerated in this pass.
+- Rejected for M0.1: runtime/effect path (authority/final-sink gap unresolved), protected-transition composition (test injects AUTHORIZED and composition omits effectBoundary.prepare), and broad contracts expansion (too much semantic surface for first slice).
+- No source/test changes and no tests executed in this inventory. Next implementation pass must inspect relevant importers, strengthen only the existing contract/tests, run them in a real repository environment, and record raw output. No PASS claim.
+- **STEP 7 remains OPEN / STOP / UNKNOWN.** Constitution uncommissioned; protected effects remain STOP.
+
+---
+
 ## NCS start — Milestone 0 non-authoritative Core scope (2026-10-16)
 
 Added [NCS_MILESTONE_0_NON_AUTHORITY_CORE_SCOPE_CONTRACT_2026-10-16.md](BUILD/NCS_MILESTONE_0_NON_AUTHORITY_CORE_SCOPE_CONTRACT_2026-10-16.md), commit `d8f3bb43846032014d59e349182318a1469a0536`.
