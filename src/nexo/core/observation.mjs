@@ -46,15 +46,17 @@ export function createObservationEnvelope(input = {}) {
 }
 
 export function createMissionCandidate({ observation, claim, admission = "UNKNOWN", admissionEvidence = [] } = {}) {
-  if (!observation || typeof observation.source !== "string" || typeof observation.code !== "string") {
+  if (!observation || typeof observation !== "object") {
     throw new TypeError("candidate requires an ObservationEnvelope");
   }
+  requiredString(observation.source, "observation.source");
+  requiredString(observation.code, "observation.code");
   if (!ADMISSION_STATES.includes(admission)) {
     throw new TypeError(`invalid admission state: ${admission}`);
   }
 
   return immutable({
-    observation,
+    observation: detachedImmutable(observation),
     claim: detachedImmutable(claim ?? null),
     admission,
     admissionEvidence: detachedImmutable([...admissionEvidence])
