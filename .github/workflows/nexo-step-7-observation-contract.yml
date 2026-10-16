@@ -21,6 +21,8 @@ on:
       - "tests/nexo/reconciliation.test.mjs"
       - "src/nexo/orchestrator.js"
       - "tests/nexo/orchestrator.test.mjs"
+      - "src/nexo/orchestrator.js"
+      - "tests/nexo/orchestrator.test.mjs"
       - ".github/workflows/nexo-step-7-observation-contract.yml"
   pull_request:
     branches:
