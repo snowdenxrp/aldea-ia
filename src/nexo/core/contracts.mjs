@@ -35,7 +35,12 @@ function requiredString(value, field) {
   return value;
 }
 
-
+function requiredArray(value, field) {
+  if (!Array.isArray(value)) {
+    throw new TypeError(`${field} must be an array`);
+  }
+  return value;
+}
 
 const POLICY_CONTEXT_STATUS = Object.freeze(["VALID", "FAIL", "UNKNOWN"]);
 
@@ -57,12 +62,8 @@ function createPolicyContext(input = {}) {
   if (input.resolved === undefined || input.resolved === null || typeof input.resolved !== "object") {
     throw new TypeError("policyContext.resolved is required");
   }
-  if (!Array.isArray(input.resolved.dependencies)) {
-    throw new TypeError("policyContext.resolved.dependencies must be an array");
-  }
-  if (!Array.isArray(input.resolutionProvenance)) {
-    throw new TypeError("policyContext.resolutionProvenance must be an array");
-  }
+  requiredArray(input.resolved.dependencies, "policyContext.resolved.dependencies");
+  requiredArray(input.resolutionProvenance, "policyContext.resolutionProvenance");
   return immutable({
     policyRef: detachedImmutable(policyRef),
     scope: detachedImmutable(input.scope),
@@ -80,13 +81,13 @@ export function createClaimEnvelope(input = {}) {
     action,
     target: detachedImmutable(input.target ?? null),
     targetIncarnation: detachedImmutable(input.targetIncarnation ?? null),
-    authoritativeReads: detachedImmutable([...(input.authoritativeReads ?? [])]),
-    dependencies: detachedImmutable([...(input.dependencies ?? [])]),
-    predicateDependencies: detachedImmutable([...(input.predicateDependencies ?? [])]),
-    derivedProvenance: detachedImmutable([...(input.derivedProvenance ?? [])]),
+    authoritativeReads: detachedImmutable([...requiredArray(input.authoritativeReads ?? [], "authoritativeReads")]),
+    dependencies: detachedImmutable([...requiredArray(input.dependencies ?? [], "dependencies")]),
+    predicateDependencies: detachedImmutable([...requiredArray(input.predicateDependencies ?? [], "predicateDependencies")]),
+    derivedProvenance: detachedImmutable([...requiredArray(input.derivedProvenance ?? [], "derivedProvenance")]),
     policyContext: input.policyContext == null ? null : createPolicyContext(input.policyContext),
-    causalInputs: detachedImmutable([...(input.causalInputs ?? [])]),
-    sourceProvenance: detachedImmutable([...(input.sourceProvenance ?? [])])
+    causalInputs: detachedImmutable([...requiredArray(input.causalInputs ?? [], "causalInputs")]),
+    sourceProvenance: detachedImmutable([...requiredArray(input.sourceProvenance ?? [], "sourceProvenance")])
   });
 }
 
@@ -101,6 +102,8 @@ export function createCandidate({ claim, state, expectedRevision } = {}) {
 
 export function createValidationResult(status, { reasons = [], evidence = [] } = {}) {
   if (!VALIDATION_STATES.includes(status)) throw new TypeError(`invalid validation status: ${status}`);
+  requiredArray(reasons, "validation reasons");
+  requiredArray(evidence, "validation evidence");
   return immutable({
     status,
     reasons: immutable([...reasons]),
@@ -115,6 +118,8 @@ export function createCommitResult(status, { errorCode = null } = {}) {
 
 export function createOutcome(kind, { reasons = [], evidence = [] } = {}) {
   if (!TERMINAL_OUTCOMES.includes(kind)) throw new TypeError(`invalid outcome: ${kind}`);
+  requiredArray(reasons, "outcome reasons");
+  requiredArray(evidence, "outcome evidence");
   return immutable({
     kind,
     reasons: immutable([...reasons]),
@@ -122,11 +127,12 @@ export function createOutcome(kind, { reasons = [], evidence = [] } = {}) {
   });
 }
 
-
 const AUTHORITY_STATES = Object.freeze(["AUTHORIZED", "STOP", "UNKNOWN"]);
 
 export function createAuthorityResult(status, { reasons = [], evidence = [] } = {}) {
   if (!AUTHORITY_STATES.includes(status)) throw new TypeError(`invalid authority status: ${status}`);
+  requiredArray(reasons, "authority reasons");
+  requiredArray(evidence, "authority evidence");
   return immutable({
     status,
     reasons: immutable([...reasons]),
