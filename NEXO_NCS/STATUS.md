@@ -1,3 +1,28 @@
+## M0.1 — observation/candidate boundary hardening (2026-10-16)
+
+Source changes pushed to `ncs-clean-architecture`:
+- `src/nexo/core/observation.mjs`, commit `c69dded51be1a8cf934393de96a3707fc0283670`, blob `a7400912e0b55887a5120d059f7c1a598b9d9cd4`.
+- `tests/nexo/observation.test.mjs`, commit `b53b8d91b3c847f5d7c46f48dd19d8db95b70ccd`, blob `abe4e94f685406c3e879b38650a20e3393d6fe67`.
+
+Change:
+- Mission-candidate construction now requires non-empty observation source/code, matching the observation-envelope contract.
+- It clones and freezes the observation rather than retaining/freezing a caller-owned object by reference.
+- Tests added for empty source/code, detached nested data, deep immutability, caller object remains unfrozen, and default `UNKNOWN` admission.
+
+Test evidence:
+- Node.js `v22.16.0` ran `node tests/nexo/observation.test.mjs` against a temporary isolated copy of the exact source/test contents fetched from this branch.
+- Raw output: `NEXO STEP 7 observation contract tests: PASS`.
+- **Qualification:** this is a local isolated-copy test, not a run from a fresh repository checkout or CI. Attempting to clone the repository in the current execution environment failed because `github.com` could not be resolved. Therefore repository/CI integration remains PENDING, not PASS.
+
+Limitations:
+- This only proves the bounded data-contract behavior in the isolated test. It does not prove observation truth, source authentication, freshness, authority, runtime reachability, all callers, or bypass closure.
+- No protected effects, Constitution freeze/commissioning, keys, ceremony, APK/device changes, or authority changes.
+- **STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.**
+
+Next action: inspect direct importers/callers of `createMissionCandidate` and `createObservationEnvelope` and run this test in repository/CI when a repository-connected execution environment is available. Do not widen scope or start runtime authority wiring in this step.
+
+---
+
 ## M0.1 source inventory — first bounded Core slice selected (2026-10-16)
 
 Extended [M0 non-authoritative Core scope contract](BUILD/NCS_MILESTONE_0_NON_AUTHORITY_CORE_SCOPE_CONTRACT_2026-10-16.md), commit `57e80da2da04f01eb1f86dd446e9db84d39776c7`.
