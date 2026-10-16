@@ -95,3 +95,34 @@ Perform one source-and-test inventory limited to identifying the smallest safe M
 - Constitution: DRAFT / NOT FROZEN / NOT COMMISSIONED.
 - Genesis/owner authority and independent verifier: NOT ESTABLISHED.
 - Protected effects: STOP.
+
+
+## 10. First source-and-test inventory — bounded candidate selection (2026-10-16)
+
+This is a targeted source read, not a full call-graph or bypass audit. No source or tests were changed and no tests were executed in this pass.
+
+### Selected candidate for M0.1: immutable observation/candidate data contract
+
+- Source: `src/nexo/core/observation.mjs`, blob `bff04910f471772df1dc26d7f2c72097dfc7434b`.
+- Existing test: `tests/nexo/observation.test.mjs`, blob `aeda948630f2217cf475b4cd502532e4137716db`.
+- Observed behavior: constructs an immutable observation envelope requiring non-empty `source` and `code`; detaches/freezes nested input data; constructs a mission candidate with admission restricted to `ADMITTED`, `NOT_ADMITTED`, or `UNKNOWN`, defaulting to `UNKNOWN`.
+- Side-effect boundary in inspected module: data construction and validation only; no filesystem, network, device, adapter, mission execution, or persistence calls are present in the file inspected.
+- Existing test covers basic required fields, nested immutability, a valid `NOT_ADMITTED` candidate, invalid admission, and default `UNKNOWN`.
+- Why this is the first candidate: it is small, deterministic, already has a dedicated test, and does not itself authorize or execute a mission. It provides a useful typed boundary between observation and proposed action without pretending to prove observation truth or admission legitimacy.
+- Limitations: this contract does not authenticate the observation source, prove freshness, establish provenance truth, authorize a mission, or prove every caller preserves the boundary. The limited pass did not exhaustively enumerate all importers/callers. Those claims remain outside M0.1.
+
+### Candidates rejected for the first slice
+
+- `src/nexo/core/outcome-classifier.mjs` + `tests/nexo/outcome-classifier.test.mjs`: smaller but primarily classifies terminal outcomes; less useful as the first data boundary than the existing observation/candidate contract.
+- `src/nexo/core/contracts.mjs` + `tests/nexo/core-contracts.test.mjs`: broader set of claim, policy, validation, commit, authority, and outcome structures. Some names can be mistaken for established authority despite being structural contracts; widening this first slice would increase semantic surface.
+- `src/nexo/core/protected-transition.mjs` + `tests/nexo/protected-transition.test.mjs`: not selected for M0.1 because the existing test injects an `AUTHORIZED` result and a commit port, while the source trace already records that the composition does not invoke `effectBoundary.prepare`. This is not a safe initial implementation target until the owner-approved effect scope, enforcement owner, and final sink are defined.
+- `src/nexo/runtime.js` + `tests/nexo/runtime.test.mjs`: not selected because the documented source trace shows a reachable adapter path that does not invoke `executeProtectedTransition()`; runtime changes would cross the unresolved authority/effect boundary.
+- `src/nexo/core/observation-equivalence.mjs`: not selected yet; equivalence semantics require a separate precise claim about which observations may be treated as equivalent. It is not needed to validate the first envelope boundary.
+
+### M0.1 selection and acceptance target
+
+**Selected for bounded implementation planning:** harden/verify the existing observation-envelope and mission-candidate contract using its existing test file, without adding authority, persistence, or execution semantics.
+
+Before editing, the implementation pass must inspect the full existing module/test and any direct importers relevant to this boundary. Acceptance should cover: missing/empty source and code; default `UNKNOWN`; rejection of invalid admission; nested input detachment after caller mutation; deep immutability of returned data; and confirmation that this module cannot invoke mission execution or external effects. Reuse current APIs and file structure; do not introduce a new generic framework.
+
+**Execution limitation:** this source inventory was performed through repository file reads; the test suite was not run. No PASS claim is made. The next implementation must be followed by actual test execution in the repository environment and raw-output capture before acceptance.
