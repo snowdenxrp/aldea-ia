@@ -2965,3 +2965,17 @@ Added a standards-level constraint to [Owner approval trust-path comparison](BUI
 - No device, key, signature, ceremony, code, test, workflow, APK, Constitution or protected effect changed.
 
 **STEP 7 remains OPEN / STOP / UNKNOWN. L2 remains the objective; no commissioning or protected effects.**
+
+
+## STEP 7 continuation — external trusted-review candidate screen (2026-10-16)
+
+Added [External Trusted-Review Candidate Screen](BUILD/STEP_7_EXTERNAL_TRUSTED_REVIEW_CANDIDATE_SCREEN_2026-10-16.md), commit `9ac2882d771e429b2b3882e1db6875dca0450009`.
+
+- Screened newly surfaced public-source candidate families rather than repeating the existing POCO/Moto/YubiKey comparison.
+- nSealr documents useful design patterns (device-side semantic review, page traversal, request-bound `approval_digest`, and a multi-gate signing-disabled posture), but its documented scope is Nostr events; production signing remains disabled and concrete target drivers are future work. It is not evidence of a production-ready general constitutional-document review path.
+- nSealr's display-less smartcard signs a Nostr event ID and requires external review acknowledgement; it is not a trusted review surface by itself.
+- RS-Key's experimental trusted display is documented for FIDO relying-party-ID approval, not arbitrary constitutional content. Trezor clear signing is a bounded transaction-decoding analogy, not evidence of general Constitution support.
+- Reusable acceptance requirement: trusted-device semantic rendering must be complete and bound to the exact signed representation; opaque hashes or host-authored descriptions are insufficient.
+- No product/device selected, purchase, key, signature, digest/freeze, ceremony, owner-review event, code/test/workflow change, commissioning, or protected effect occurred.
+
+The initial L2 owner-intent/content-binding path, verifier provenance/currentness, and final protected-sink/bypass closure remain NOT ESTABLISHED. **STEP 7 remains OPEN / STOP / UNKNOWN.**
