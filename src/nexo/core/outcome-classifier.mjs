@@ -6,6 +6,12 @@ export function createOutcomeClassifier() {
       if (!Object.values(OUTCOMES).includes(kind)) {
         throw new TypeError(`invalid terminal outcome: ${kind}`);
       }
+      if (!Array.isArray(reasons)) {
+        throw new TypeError("outcome reasons must be an array");
+      }
+      if (!Array.isArray(evidence)) {
+        throw new TypeError("outcome evidence must be an array");
+      }
       return createOutcome(kind, { reasons, evidence });
     }
   });
