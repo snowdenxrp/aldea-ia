@@ -2,7 +2,7 @@
 
 ## Status
 
-BOUNDED TRACE COMPLETE / REPOSITORY-WIDE CALLER ENUMERATION PENDING. The semantic boundary comparison below is now grounded in the current branch and prior STEP 7 contracts. No source code changed in this pass.
+BOUNDED TRACE COMPLETE / REPOSITORY-WIDE CALLER ENUMERATION PENDING. Current source/test comparison and the protected-transition handoff are inspected. No source code changed in this pass.
 
 This is a targeted source-and-test trace, not a full import graph, bypass audit, or security acceptance.
 
@@ -13,14 +13,15 @@ This is a targeted source-and-test trace, not a full import graph, bypass audit,
 - `tests/nexo/step-7-provenance.test.mjs` — blob `0538b6c03b260cf492544a5986bace9959c07eec`.
 - `src/nexo/core/contracts.mjs` — blob `294eb400e9685788f7dd084a28a838b69d0323c7`.
 - `tests/nexo/core-contracts.test.mjs` — blob `bf9453c4c3c675e8269b1c5038e3c11f8e789063`.
+- `src/nexo/core/ownership.mjs` — blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`.
+- `src/nexo/core/protected-transition.mjs` — blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`.
+- `tests/nexo/protected-transition.test.mjs` — blob `b40caf831523c231a45959885d4890f245a43d76`.
 - `src/nexo/core/observation-equivalence.mjs` — blob `c598023334948c3709c162eb3a4b44d8782496f5`.
 - `src/nexo/orchestrator.js` — blob `973d3d5406c5cab16fb49529d94e07a1557c3111`.
 - `tests/nexo/orchestrator.test.mjs` — blob `32faa8ac519bed97003b00ea9a2ed013b64cba84`.
 - `scripts/assistants.mjs` — blob `ecacf579d401e13f8602e396b87a1b7a89495fa7`.
 - `src/assistants/squad.js` — blob `6d9b9bdfbabf79c8924033c72046f056806d9918`.
 - `src/nexo/runtime.js` — blob `1b4096bd6868fd9086ba6740f07d6a104a258651`.
-- `src/nexo/core/protected-transition.mjs` — blob `00a4fa069f3ef0b843ecc5d280bb686f21be1bcd`.
-- `src/nexo/core/ownership.mjs` — blob `c7f9e2671e5735bd6cf85c86bf283bec58aeea7f`.
 - `package.json` — blob `a9bc2306543d34808f3b5f6ac1ec2d588f77ca14`.
 
 ## Findings
@@ -31,12 +32,13 @@ This is a targeted source-and-test trace, not a full import graph, bypass audit,
 4. `src/assistants/squad.js` produces report findings as plain objects (e.g. code, severity, agent/resource, message). It does not construct observation/candidate types. This confirms a potential producer side, but not a complete repository-wide caller inventory.
 5. `tests/nexo/orchestrator.test.mjs` protects legacy planner behavior: severity ordering, dependency construction and blocking, verified-evidence requirements for completion, replan linkage, allowlisting of known Lúmina actions, and rejection of unsupported actions. Any future seam must preserve these behaviors unless an explicitly reviewed design changes them.
 6. `createObservationEnvelope()` and `createClaimEnvelope()` share some field names (target, targetIncarnation, derivedProvenance), but their semantic roles differ. ObservationEnvelope holds producer observation/proposal context (source, code, inputs, freshness, explanatory text, optional existing identity); ClaimEnvelope holds a protected claim's action, authoritative reads, dependencies, predicate dependencies, causal inputs, source provenance, and policy context.
-7. Therefore the types should remain distinct. The prior `STEP_7_MINIMUM_OBSERVATION_ENVELOPE_CONTRACT_2026-10-08.md` explicitly defines `ObservationEnvelope -> MissionCandidate -> ClaimEnvelope`. A conversion must be claim-specific and evidence-preserving; it must not blindly copy a mission candidate into a ClaimEnvelope or imply authorization. Missing causal/provenance data remains missing/UNKNOWN as applicable; no identity is fabricated.
-8. `executeNexoStep()` in `src/nexo/runtime.js` calls `beginNexoStep()`, invokes `adapter.execute(...)`, then records the outcome. The inspected function does not invoke `executeProtectedTransition()` or a constitutional authority gate before the adapter.
-9. `executeProtectedTransition()` in `src/nexo/core/protected-transition.mjs` checks the injected authority result and semantic validation, then calls `conditionalCommit.commit(candidate)`; the inspected composition still does not call `effectBoundary.prepare`.
-10. `evaluateNegativeResourceEquivalence()` conservatively returns `UNKNOWN` when claim-critical dimensions are absent. Its test confirms UNKNOWN is carried forward rather than silently admitted. This is contract-level behavior, not proof that the production planner consumes the evidence.
-11. The observation test is confirmed by GitHub Actions run `38975253568`, tested commit `b705a71ce0527c689f169351468c364828a7e9f1`, workflow `Nexo — STEP 7 observation contract`, job `observation-contract`, exact step `node tests/nexo/observation.test.mjs`: conclusion `success`. Run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38975253568
-12. This CI result confirms that exact test command on that tested commit. It does not prove the full `npm test` chain or any planner/runtime/security property.
+7. Prior contract `NEXO_NCS/BUILD/STEP_7_MINIMUM_OBSERVATION_ENVELOPE_CONTRACT_2026-10-08.md` defines `ObservationEnvelope -> MissionCandidate -> ClaimEnvelope`. The objects should remain distinct. Mapping must be claim-specific and evidence-preserving; it must not blindly copy a mission candidate into a ClaimEnvelope or imply authorization.
+8. A concrete mapping blocker is visible in current contracts: `createClaimEnvelope()` requires `claimId` and `action`; `MissionCandidate` permits a nullable claim and does not define a canonical claim identity. The legacy mission's `missionId` identifies a mission, not necessarily one protected claim; action+target is explicitly insufficient identity. No existing mapping from a candidate to a legitimate `claimId` has been demonstrated. Do not invent an ID or substitute `missionId`; if the actual claim identity cannot be established from existing evidence, the mapping must remain blocked/UNKNOWN pending a root contract decision.
+9. `executeProtectedTransition()` receives a `proposal`, calls `ports.claimBuilder.build(proposal)`, then checks authority, isolates state, executes a candidate, validates and conditionally commits. The default `claimBuilder` and `effectBoundary.prepare` ports are NOT_IMPLEMENTED. Its tests inject a prebuilt ClaimEnvelope and an AUTHORIZED result; they test composition logic, not the legitimacy of the claim ID or authority source.
+10. `executeNexoStep()` in `src/nexo/runtime.js` calls `beginNexoStep()`, invokes `adapter.execute(...)`, then records the outcome. The inspected function does not invoke `executeProtectedTransition()` or a constitutional authority gate before the adapter.
+11. `evaluateNegativeResourceEquivalence()` conservatively returns `UNKNOWN` when claim-critical dimensions are absent. Its test confirms UNKNOWN is carried forward rather than silently admitted. This is contract-level behavior, not proof that the production planner consumes the evidence.
+12. The observation test is confirmed by GitHub Actions run `38975253568`, tested commit `b705a71ce0527c689f169351468c364828a7e9f1`, workflow `Nexo — STEP 7 observation contract`, job `observation-contract`, exact step `node tests/nexo/observation.test.mjs`: conclusion `success`. Run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38975253568
+13. This CI result confirms that exact test command on that tested commit. It does not prove the full `npm test` chain or any planner/runtime/security property.
 
 ## Reuse of existing research — no repeated audit
 
@@ -44,11 +46,11 @@ The earlier `NEXO_CONTINUITY/P112_ASSISTANT_RUN_OBSERVATION_LIFECYCLE_AUDIT_V1_2
 
 The earlier `NEXO_NCS/BUILD/STEP_7_OBSERVATION_TO_MISSION_CANDIDATE_HANDOFF_2026-10-08.md`, `STEP_7_MISSION_OBSERVATION_PROVENANCE_BOUNDARY_2026-10-08.md`, and `STEP_7_MINIMUM_OBSERVATION_ENVELOPE_CONTRACT_2026-10-08.md` already establish the transport-only boundary and non-goals. They remain applicable; this pass does not reopen AB/TLC/Kafka work.
 
-## Architectural consequence
+## Decision for the next seam
 
-The observation/candidate contract is a local data-contract slice, not an integrated planner/runtime path. Do not treat M0.1 as integrated.
+Do not integrate observation/candidate types into the legacy orchestrator or runtime as a quick patch. The confirmed operational caller has simulation and filesystem side effects, and the prior contract explicitly rejects legacy-orchestrator integration.
 
-Do not patch the legacy orchestrator into the new Core merely to make the types appear connected. The confirmed operational caller has simulation and filesystem side effects, and the prior contract explicitly rejects legacy-orchestrator integration. The next useful design task is not another broad caller summary: it is a narrowly specified, claim-specific mapping contract from an admitted MissionCandidate to the existing ClaimEnvelope, including which fields can be mapped from evidence actually present and which omissions force UNKNOWN/STOP. That mapping must not authorize, validate, commit, or execute anything. Before implementation, verify this mapping against existing protected-transition inputs and tests.
+The next bounded design decision is whether a legitimate claim identity already exists at the proposed candidate boundary and, if so, what exact evidence binds it to the claim. If no such identity exists, stop at the semantic boundary and document the missing contract; do not manufacture one. Only after this is resolved can a pure mapping function be specified and tested. It must not authorize, final-validate, commit, persist, or execute. The protected-transition path remains separate and not production-wired.
 
 ## Explicit non-claims
 
@@ -56,6 +58,7 @@ Do not patch the legacy orchestrator into the new Core merely to make the types 
 - No full repository test-suite result; only the exact observation contract CI step is confirmed.
 - No proof that observations are authentic, fresh, or truthful.
 - No proof of durable raw observation recovery or unique observation identity.
+- No legitimate MissionCandidate-to-ClaimEnvelope identity mapping demonstrated.
 - No constitutional owner authority, commissioning, or protected-effect authorization.
 - No protected effects enabled.
 
