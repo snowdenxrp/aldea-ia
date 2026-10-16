@@ -17,7 +17,14 @@ assert.equal(observation.code, "MESH_MISSING");
 assert.equal(observation.target, "agent-1");
 assert.equal(observation.inputs.probe.frame, 12);
 assert.throws(() => { observation.inputs.probe.frame = 99; }, TypeError);
+assert.throws(() => createObservationEnvelope({ source: "", code: "X" }), /source/);
+assert.throws(() => createObservationEnvelope({ source: "VisualAgent", code: "" }), /code/);
 
+const candidateInputObservation = {
+  source: "VisualAgent",
+  code: "MESH_MISSING",
+  inputs: { probe: { frame: 12 } }
+};
 const candidate = createMissionCandidate({
   observation,
   claim: { action: "repair_visual_mesh", target: "agent-1" },
@@ -26,6 +33,22 @@ const candidate = createMissionCandidate({
 assert.equal(candidate.admission, "NOT_ADMITTED");
 assert.equal(candidate.claim.action, "repair_visual_mesh");
 assert.equal(candidate.observation.code, "MESH_MISSING");
+assert.notEqual(candidate.observation, observation);
+assert.throws(() => { candidate.observation.inputs.probe.frame = 99; }, TypeError);
+
+// Candidate construction detaches and freezes the supplied observation instead of
+// freezing the caller's object or retaining caller-owned nested references.
+const detachedCandidate = createMissionCandidate({ observation: candidateInputObservation });
+candidateInputObservation.inputs.probe.frame = 77;
+assert.equal(detachedCandidate.observation.inputs.probe.frame, 12);
+assert.equal(Object.isFrozen(candidateInputObservation), false);
+assert.equal(detachedCandidate.admission, "UNKNOWN");
+assert.throws(() => createMissionCandidate({
+  observation: { source: "", code: "MESH_MISSING" }
+}), /observation.source/);
+assert.throws(() => createMissionCandidate({
+  observation: { source: "VisualAgent", code: "" }
+}), /observation.code/);
 
 assert.throws(() => createObservationEnvelope({ source: "VisualAgent" }), /code/);
 assert.throws(() => createMissionCandidate({ observation, admission: "FAILED" }), /invalid admission state/);
