@@ -2979,3 +2979,15 @@ Added [External Trusted-Review Candidate Screen](BUILD/STEP_7_EXTERNAL_TRUSTED_R
 - No product/device selected, purchase, key, signature, digest/freeze, ceremony, owner-review event, code/test/workflow change, commissioning, or protected effect occurred.
 
 The initial L2 owner-intent/content-binding path, verifier provenance/currentness, and final protected-sink/bypass closure remain NOT ESTABLISHED. **STEP 7 remains OPEN / STOP / UNKNOWN.**
+
+
+## STEP 7 continuation — semantic signing and deterministic presentation screen (2026-10-16)
+
+Extended [External Trusted-Review Candidate Screen](BUILD/STEP_7_EXTERNAL_TRUSTED_REVIEW_CANDIDATE_SCREEN_2026-10-16.md), commit `461f26e5b84873c946642f118daf0700dd11dc40`.
+
+- Faraday's air-gapped signer reconstructs and semantically displays supported Solana transactions locally before approval. This is a useful pattern against an untrusted coordinator, but its parser/domain is Solana-specific; its public README is not an independent audit and provides no Nexo constitutional parser, first-verifier root, governance currentness, or final-effect enforcement.
+- Reviewed the September 2026 informational Internet-Draft on deterministic rendering and display attestations. It proposes verifier-side re-derivation of a deterministic rendering from signed action bytes, while explicitly retaining the residual risk that a compromised client/physical display can show something else. It is a work-in-progress draft, not a standard or trust root.
+- Reusable constraints: canonical closed decision schema; deterministic locale-independent rendering; fail closed on unknown/truncated/ambiguous fields; independently re-derive presentation from exact endorsed bytes; treat display attestation as a separate claim whose client provenance must be justified.
+- No device selected or bought, no firmware build/run/test, key/signature/digest/freeze, ceremony, owner-review event, code/test/workflow change, commissioning, or protected effect occurred.
+
+L2 remains NOT ESTABLISHED. Initial owner-intent/content binding, verifier provenance/currentness, and final protected-sink/bypass closure remain unresolved. **STEP 7 remains OPEN / STOP / UNKNOWN.**
