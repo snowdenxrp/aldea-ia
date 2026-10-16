@@ -83,72 +83,52 @@ Reuse, rather than duplicate:
 
 M0 does not replace or close any of these obligations.
 
-## 8. Next action
+## 8. Current selected slice: M0.1 observation/candidate contract
 
-Perform one source-and-test inventory limited to identifying the smallest safe M0 behavior slice. Report candidate module(s), existing tests, reachable callers, state mutation, external dependencies, and the reason for selecting or rejecting each candidate. Do not modify source in that inventory. Once a slice is selected and its boundaries are understood, implement only that slice and its acceptance tests.
+Selected source: `src/nexo/core/observation.mjs`. Dedicated test: `tests/nexo/observation.test.mjs`.
 
-## 9. Current result
+The slice validates non-empty observation `source` and `code`, limits admission to `ADMITTED`, `NOT_ADMITTED`, or `UNKNOWN` (default `UNKNOWN`), and detaches/deep-freezes the observation snapshot inside a candidate. It is a data contract only: it does not authenticate source, prove freshness or truth, authorize execution, or establish constitutional authority.
 
-- M0 scope contract: documented as a proposed working boundary.
-- M0 source slice: NOT SELECTED.
-- M0 implementation/tests: NOT STARTED by this contract.
+Implementation commits:
+- source: `c69dded51be1a8cf934393de96a3707fc0283670`;
+- tests: `b53b8d91b3c847f5d7c46f48dd19d8db95b70ccd`.
+
+### CI evidence
+
+GitHub Actions run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38975253568  
+Run ID: `38975253568`  
+Tested commit: `b705a71ce0527c689f169351468c364828a7e9f1`  
+Workflow: `Nexo — STEP 7 observation contract`  
+Job: `observation-contract` — `success`  
+Exact step: `node tests/nexo/observation.test.mjs` — `success`.
+
+This replaces the earlier qualified temporary-directory result as evidence for this exact test command on the tested repository commit. It does not prove the full `npm test` chain, planner/runtime reachability, authentic observations, constitutional authority, protected-sink enforcement, or bypass closure.
+
+## 9. Bounded caller trace and non-regression constraints
+
+The targeted current-branch trace is recorded in `NEXO_NCS/BUILD/NCS_M0_2_BOUNDED_OBSERVATION_CANDIDATE_CALLER_TRACE_2026-10-16.md` (updated commit `9b56e4e772cadbdea329111428ebbd96ecdba7c5`).
+
+Findings that constrain the next step:
+- `buildNexoMission()` in `src/nexo/orchestrator.js` consumes legacy report findings directly; the inspected function does not call the observation/candidate constructors.
+- Existing `tests/nexo/orchestrator.test.mjs` protects legacy mission behavior including severity ordering, dependencies, dependency blocking, verified-evidence requirements, replanning, bounded Lúmina action allowlisting, and rejection of an unsupported action.
+- `executeNexoStep()` does not invoke `executeProtectedTransition()` or a constitutional gate before the adapter in the inspected path.
+- `executeProtectedTransition()` still does not call `effectBoundary.prepare` in the inspected composition.
+- The saved P112 checkpoint explicitly says not to begin by patching the old orchestrator into becoming the new Core.
+
+Therefore **do not wire the observation/candidate contract into the legacy orchestrator as a quick integration**. Before any source change, enumerate current-branch callers/imports relevant to this contract and review existing planner tests. Any proposed seam must preserve the legacy simulation behavior and remain non-authoritative. No new adapter, ID scheme, queue, retry, persistence, or authority semantics without concrete evidence of necessity.
+
+## 10. Next action
+
+Perform a bounded current-branch caller/import and test inventory, centered on the observation/candidate contract and its intended producer boundary. Identify existing callers, tests, legacy behavior that must remain stable, and whether an integration seam is actually needed. Do not modify runtime/effect wiring. After that inventory, propose the smallest testable change and its explicit non-claims before implementing it.
+
+## 11. Current result
+
+- M0.1 observation/candidate contract: implemented.
+- Dedicated observation contract CI step: **PASS** on commit `b705a71ce0527c689f169351468c364828a7e9f1`.
+- Legacy planner behavior: existing focused test identified; no changes made to it in this pass.
+- Repository-wide caller/import inventory: **PENDING**.
+- Full `npm test` chain: **NOT VERIFIED**.
 - Constitution: DRAFT / NOT FROZEN / NOT COMMISSIONED.
 - Genesis/owner authority and independent verifier: NOT ESTABLISHED.
 - Protected effects: STOP.
-
-
-## 10. First source-and-test inventory — bounded candidate selection (2026-10-16)
-
-This is a targeted source read, not a full call-graph or bypass audit. No source or tests were changed and no tests were executed in this pass.
-
-### Selected candidate for M0.1: immutable observation/candidate data contract
-
-- Source: `src/nexo/core/observation.mjs`, blob `bff04910f471772df1dc26d7f2c72097dfc7434b`.
-- Existing test: `tests/nexo/observation.test.mjs`, blob `aeda948630f2217cf475b4cd502532e4137716db`.
-- Observed behavior: constructs an immutable observation envelope requiring non-empty `source` and `code`; detaches/freezes nested input data; constructs a mission candidate with admission restricted to `ADMITTED`, `NOT_ADMITTED`, or `UNKNOWN`, defaulting to `UNKNOWN`.
-- Side-effect boundary in inspected module: data construction and validation only; no filesystem, network, device, adapter, mission execution, or persistence calls are present in the file inspected.
-- Existing test covers basic required fields, nested immutability, a valid `NOT_ADMITTED` candidate, invalid admission, and default `UNKNOWN`.
-- Why this is the first candidate: it is small, deterministic, already has a dedicated test, and does not itself authorize or execute a mission. It provides a useful typed boundary between observation and proposed action without pretending to prove observation truth or admission legitimacy.
-- Limitations: this contract does not authenticate the observation source, prove freshness, establish provenance truth, authorize a mission, or prove every caller preserves the boundary. The limited pass did not exhaustively enumerate all importers/callers. Those claims remain outside M0.1.
-
-### Candidates rejected for the first slice
-
-- `src/nexo/core/outcome-classifier.mjs` + `tests/nexo/outcome-classifier.test.mjs`: smaller but primarily classifies terminal outcomes; less useful as the first data boundary than the existing observation/candidate contract.
-- `src/nexo/core/contracts.mjs` + `tests/nexo/core-contracts.test.mjs`: broader set of claim, policy, validation, commit, authority, and outcome structures. Some names can be mistaken for established authority despite being structural contracts; widening this first slice would increase semantic surface.
-- `src/nexo/core/protected-transition.mjs` + `tests/nexo/protected-transition.test.mjs`: not selected for M0.1 because the existing test injects an `AUTHORIZED` result and a commit port, while the source trace already records that the composition does not invoke `effectBoundary.prepare`. This is not a safe initial implementation target until the owner-approved effect scope, enforcement owner, and final sink are defined.
-- `src/nexo/runtime.js` + `tests/nexo/runtime.test.mjs`: not selected because the documented source trace shows a reachable adapter path that does not invoke `executeProtectedTransition()`; runtime changes would cross the unresolved authority/effect boundary.
-- `src/nexo/core/observation-equivalence.mjs`: not selected yet; equivalence semantics require a separate precise claim about which observations may be treated as equivalent. It is not needed to validate the first envelope boundary.
-
-### M0.1 selection and acceptance target
-
-**Selected for bounded implementation planning:** harden/verify the existing observation-envelope and mission-candidate contract using its existing test file, without adding authority, persistence, or execution semantics.
-
-Before editing, the implementation pass must inspect the full existing module/test and any direct importers relevant to this boundary. Acceptance should cover: missing/empty source and code; default `UNKNOWN`; rejection of invalid admission; nested input detachment after caller mutation; deep immutability of returned data; and confirmation that this module cannot invoke mission execution or external effects. Reuse current APIs and file structure; do not introduce a new generic framework.
-
-**Execution limitation:** this source inventory was performed through repository file reads; the test suite was not run. No PASS claim is made. The next implementation must be followed by actual test execution in the repository environment and raw-output capture before acceptance.
-
-
-## 11. M0.1 implementation result — qualified local evidence (2026-10-16)
-
-Implementation landed in the branch:
-- Source change commit: `c69dded51be1a8cf934393de96a3707fc0283670`.
-- Test change commit: `b53b8d91b3c847f5d7c46f48dd19d8db95b70ccd`.
-- STATUS evidence update commit: `843e3bcf560512d1491f0bef250ccd89b46da9c1`.
-
-Behavior changed:
-- Candidate creation now validates `observation.source` and `observation.code` as non-empty strings.
-- Candidate creation snapshots the supplied observation with structured clone and deep-freezes that snapshot. It no longer retains the caller's observation object by reference.
-- Tests cover empty fields, nested mutation after candidate construction, candidate immutability, preservation of the caller object's mutability, invalid admission, and default `UNKNOWN`.
-
-Test command and raw result:
-```text
-Node.js v22.16.0
-node tests/nexo/observation.test.mjs
-NEXO STEP 7 observation contract tests: PASS
-```
-
-Evidence qualification: the test was run in a temporary local directory containing the exact source and test text fetched from this branch. A fresh repository clone could not be obtained in the execution environment because `github.com` DNS resolution failed. Therefore this is a useful isolated behavior check, **not** repository-checkout/CI integration proof. Repository integration remains PENDING.
-
-Security limits: this does not establish that the observation is truthful, fresh, authenticated, authorized, or used safely by every caller. It does not connect or close the runtime-to-protected-effect path. Step 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
-
-Next: obtain repository-connected execution and run the test against the actual checkout/CI, then inspect current-branch callers before widening this data contract.
+- STEP 7: **OPEN / STOP / UNKNOWN**. Direction B / L2 remains the objective.
