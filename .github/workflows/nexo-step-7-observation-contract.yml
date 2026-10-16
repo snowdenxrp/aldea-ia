@@ -13,7 +13,13 @@ on:
       - "tests/nexo/core-contracts.test.mjs"
       - "src/nexo/core/contracts.mjs"
       - "src/nexo/core/outcome-classifier.mjs"
+      - "src/nexo/core/protected-transition.mjs"
+      - "tests/nexo/protected-transition.test.mjs"
+      - "src/nexo/core/protected-transition.mjs"
+      - "tests/nexo/protected-transition.test.mjs"
       - "tests/nexo/outcome-classifier.test.mjs"
+      - "src/nexo/core/reconciliation.mjs"
+      - "tests/nexo/reconciliation.test.mjs"
       - "tests/nexo/observation-equivalence.test.mjs"
       - ".github/workflows/nexo-step-7-observation-contract.yml"
   pull_request:
@@ -43,3 +49,5 @@ jobs:
       - run: node tests/nexo/observation-equivalence.test.mjs
       - run: node tests/nexo/outcome-classifier.test.mjs
       - run: node tests/nexo/core-contracts.test.mjs
+      - run: node tests/nexo/protected-transition.test.mjs
+      - run: node tests/nexo/reconciliation.test.mjs
