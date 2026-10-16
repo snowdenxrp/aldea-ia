@@ -33,6 +33,15 @@ Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_
 - CI: STEP 4 run 38980210565, STEP 5 run 38980210484, M0 workflow run 38980210530 succeeded.
 - Source commit: `c1dd1cfc230bf26fbbb109b7db5ef172dd50d982`; tests/head: `d0794939196db91fd380aa133e74805a1e135401`.
 
+### M0.18 — Conditional-commit boundary source audit
+Record: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_18_CONDITIONAL_COMMIT_BOUNDARY_SOURCE_AUDIT_2026-10-16.md
+- Reviewed current protected-transition, conditional-commit adapter, canonical `persistState`, and focused integration-test source.
+- Confirmed candidate.expectedRevision flows to `persistState`; the persistence primitive acquires its sibling lock, reloads canonical state while holding the lock, and rejects revision mismatch before writing.
+- Adapter maps `STATE_REVISION_CONFLICT` to `CONDITIONAL_CONFLICT`; other persistence errors map to `UNKNOWN`.
+- No new test/CI run was performed in M0.18. Existing P112 records remain the evidence for cooperating-writer races and write/rename failure tests; no power-loss durability is claimed.
+- This does not prove all writers cooperate, production runtime reachability, legitimate authority, or bypass closure.
+- Audit commit: `805bf055f0bf70b64b54ff49fafdf0160a516d1c`.
+
 ## Previous M0 work to reuse, not repeat
 
 The same branch contains M0.1–M0.14 and their test/evidence records, including:
@@ -55,7 +64,7 @@ Do not rerun closed AB/TLC/P112 research. Reuse the existing STEP 7 authority-so
 3. `executeProtectedTransition()` still trusts the authority-gate port. Tests injecting `AUTHORIZED` prove only composition under that injection, not legitimate authority.
 4. `effectBoundary.prepare` defaults to `NOT_IMPLEMENTED` and is not invoked by the protected transition.
 5. No proven production runtime → constitutional gate → final protected sink → canonical commit path; runtime wiring and bypass closure remain unproven.
-6. M0.17 checks candidate revision preservation inside the transition composition; it does not prove the commit adapter atomically checks that same revision.
+6. M0.17 plus M0.18 establish candidate revision preservation and a cooperating-writer canonical revision check; all-writer protocol coverage, production runtime reachability, power-loss durability, and complete mediation remain unproven.
 7. Reconciliation's `authoritative: true` marker remains caller-trust, already documented in M0.8/STEP 6. Do not reframe this as a new finding or reopen STEP 6.
 
 ## Next bounded action
