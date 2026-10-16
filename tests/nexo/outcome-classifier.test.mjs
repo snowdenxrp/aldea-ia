@@ -32,6 +32,21 @@ assert.throws(
   /invalid terminal outcome/
 );
 
+// Reject malformed collection shapes instead of accepting strings as iterable
+// character arrays or passing non-array evidence through to the Core contract.
+assert.throws(
+  () => classifier.classify({ kind: OUTCOMES.UNKNOWN, reasons: "not-an-array" }),
+  /reasons must be an array/
+);
+assert.throws(
+  () => classifier.classify({ kind: OUTCOMES.UNKNOWN, evidence: { source: "x" } }),
+  /evidence must be an array/
+);
+assert.throws(
+  () => classifier.classify({ kind: OUTCOMES.UNKNOWN, reasons: null }),
+  /reasons must be an array/
+);
+
 assert.equal(typeof classifier.commit, "undefined");
 assert.equal(typeof classifier.reconcile, "undefined");
 
