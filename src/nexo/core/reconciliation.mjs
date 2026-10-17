@@ -8,6 +8,23 @@ const RESOLVABLE_OUTCOMES = Object.freeze([
   OUTCOMES.AUTHORITY_STOP
 ]);
 
+function assertPlainRecordShape(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError("reconciliation input must be a record");
+  }
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("reconciliation input must be a plain record");
+  }
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key === "symbol") throw new TypeError("reconciliation input must not contain symbol-keyed properties");
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      throw new TypeError("reconciliation input must contain only enumerable data properties");
+    }
+  }
+}
+
 function assertPlainData(value, seen = new WeakSet()) {
   if (value === null || typeof value !== "object") return;
   if (seen.has(value)) return;
@@ -53,14 +70,11 @@ export function createReconciliationCase({ boundary, claimId = null } = {}) {
 export function createReconciler() {
   return Object.freeze({
     reconcile(input = {}) {
-      // Validate the entire call record before destructuring; parameter
-      // destructuring would invoke caller-owned getters before this boundary.
+      // Validate only the outer envelope descriptors before destructuring;
+      // nested case/evidence graphs keep their own INVALID/UNRESOLVED semantics.
       try {
-        assertPlainData(input);
+        assertPlainRecordShape(input);
       } catch {
-        return Object.freeze({ status: "INVALID", outcome: null, evidence: Object.freeze([]) });
-      }
-      if (!input || typeof input !== "object" || Array.isArray(input)) {
         return Object.freeze({ status: "INVALID", outcome: null, evidence: Object.freeze([]) });
       }
       const { reconciliationCase, evidence = [] } = input;
