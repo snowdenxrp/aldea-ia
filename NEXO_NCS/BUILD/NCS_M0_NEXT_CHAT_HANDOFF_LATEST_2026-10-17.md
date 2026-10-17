@@ -3,6 +3,18 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
+## Latest increment: M0.31 — cyclic semantic comparison returns UNKNOWN
+
+Record: [M0.31 — Cyclic semantic comparison returns UNKNOWN](NCS_M0_31_CYCLIC_SEMANTIC_COMPARISON_UNKNOWN_2026-10-17.md)
+- Source commit: `ade3552a7c8f1345deb5e91ebf446415b1d2f8b0`
+- Test commit / CI head: `2efa8631e41cf32691a2b74fdfb51240cc6d36c9`
+- STEP 4 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38988852975
+- STEP 5 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38988852849
+
+The semantic validator now maps cyclic/non-JSON-comparable target, target-incarnation, or policy-context comparisons to typed UNKNOWN rather than letting JSON serialization throw out of the validator. Ordinary comparable mismatches remain FAIL. This is bounded contract hardening, not source authentication or production-path proof.
+
+## Previous latest increment: M0.30 — normalize known non-authoritative source labels
+
 ## Active lane
 
 Continue non-authoritative Nexo Core M0. Do not restart M0.1–M0.30 research and do not pivot into STEP 7. STEP 7 remains a separate activation blocker: OPEN / STOP / UNKNOWN; bounded non-activated core construction may continue.
