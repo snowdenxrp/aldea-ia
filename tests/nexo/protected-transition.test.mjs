@@ -90,6 +90,85 @@ function makePorts(overrides = {}) {
 }
 
 {
+  let statusGetterCalls = 0;
+  const { ports, calls } = makePorts({
+    authorityGate: {
+      check: () => {
+        const result = { reasons: [], evidence: [] };
+        Object.defineProperty(result, "status", {
+          enumerable: true,
+          get() { statusGetterCalls += 1; return AUTHORITY.AUTHORIZED; }
+        });
+        return result;
+      }
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+  assert.equal(statusGetterCalls, 0, "authority result getters must be rejected before field reads");
+  assert.equal(calls.isolate, 0);
+  assert.equal(calls.execute, 0);
+  assert.equal(calls.validate, 0);
+  assert.equal(calls.commit, 0);
+}
+
+{
+  let statusGetterCalls = 0;
+  const { ports, calls } = makePorts({
+    conditionalCommit: {
+      commit: () => {
+        calls.commit += 1;
+        const result = { errorCode: null };
+        Object.defineProperty(result, "status", {
+          enumerable: true,
+          get() { statusGetterCalls += 1; return COMMIT.COMMITTED; }
+        });
+        return result;
+      }
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.RECONCILE_REQUIRED);
+  assert.equal(statusGetterCalls, 0, "commit result getters must be rejected before interpretation");
+  assert.equal(calls.commit, 1);
+}
+
+{
+  let kindGetterCalls = 0;
+  let commitCalls = 0;
+  const { ports } = makePorts({
+    outcomeClassifier: {
+      classify: () => {
+        const result = { reasons: [], evidence: [] };
+        Object.defineProperty(result, "kind", {
+          enumerable: true,
+          get() { kindGetterCalls += 1; return OUTCOMES.UNKNOWN; }
+        });
+        return result;
+      }
+    },
+    finalSemanticValidator: {
+      validate: () => createValidationResult(VALIDATION.UNKNOWN)
+    },
+    conditionalCommit: {
+      commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); }
+    }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /enumerable data properties/
+  );
+  assert.equal(kindGetterCalls, 0, "outcome classifier getters must be rejected before field reads");
+  assert.equal(commitCalls, 0);
+}
+
+{
   const { ports, calls, canonical } = makePorts();
   const outcome = await executeProtectedTransition({
     ports, proposal: { action: "set-value" }, state: canonical, expectedRevision: 7
