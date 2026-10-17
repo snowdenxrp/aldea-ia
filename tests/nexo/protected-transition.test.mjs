@@ -17,6 +17,27 @@ import { createOutcomeClassifier } from "../../src/nexo/core/outcome-classifier.
 
 const claim = createClaimEnvelope({ claimId: "protected-1", action: "set-value" });
 
+{
+  let authorityCalls = 0;
+  const ports = createCorePorts({
+    claimBuilder: { build: () => ({ claimId: "   ", action: "set-value" }) },
+    authorityGate: {
+      check: () => {
+        authorityCalls += 1;
+        return createAuthorityResult(AUTHORITY.AUTHORIZED);
+      }
+    },
+    outcomeClassifier: createOutcomeClassifier()
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /claimId must be a non-empty, non-blank string/
+  );
+  assert.equal(authorityCalls, 0);
+}
+
 function makePorts(overrides = {}) {
   const calls = { isolate: 0, execute: 0, validate: 0, commit: 0 };
   const canonical = { value: 1, nested: { stable: true } };
