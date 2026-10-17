@@ -137,6 +137,7 @@ export function createValidationResult(status, { reasons = [], evidence = [] } =
 
 export function createCommitResult(status, { errorCode = null } = {}) {
   if (!COMMIT_STATES.includes(status)) throw new TypeError(`invalid commit status: ${status}`);
+  if (errorCode !== null) requiredString(errorCode, "commit errorCode");
   return immutable({ status, errorCode });
 }
 
