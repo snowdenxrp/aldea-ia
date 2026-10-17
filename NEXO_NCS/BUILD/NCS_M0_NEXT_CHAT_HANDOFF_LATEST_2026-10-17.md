@@ -3,7 +3,23 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.47 — reject indeterminate/invalid reconciliation outcomes
+## Latest increment: M0.48 — detach and deeply freeze reconciliation evidence
+
+Report: [M0.48 — Detach and freeze reconciliation evidence](NCS_M0_48_DETACH_AND_FREEZE_RECONCILIATION_EVIDENCE_2026-10-17.md)
+- Source commit: `aff3d102cc43fe464f05c030bf69af9e4508b133`
+- Regression-test commit: `a6e3f688964435500a9602654692b76fe033a489`
+- STEP 6 source CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755140 — success
+- M0 core source CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755038 — success
+- STEP 5 source CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755081 — success
+- STEP 4 source CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755318 — success
+- STEP 6 regression CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762772 — success
+- M0 core regression CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762735 — success
+- STEP 5 regression CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762756 — success
+- STEP 4 regression CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762759 — success
+
+The reconciler now returns a detached, recursively frozen copy of accepted evidence and fails closed on exotic mutable data. The remaining `authoritative: true` self-assertion is still unauthenticated and must not be treated as authority proof.
+
+## Previous increment: M0.47 — reject indeterminate/invalid reconciliation outcomes
 
 Report: [M0.47 — Reject indeterminate reconciliation outcomes](NCS_M0_47_REJECT_INDETERMINATE_RECONCILIATION_OUTCOMES_2026-10-17.md)
 - Source commit: `fb91418aa7902f4ffd48d4269a91ae583e98e5d8`; explicit-list cleanup: `9292973699a69c5166980ee6a69700acf4184b89`
