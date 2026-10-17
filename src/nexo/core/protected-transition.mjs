@@ -2,7 +2,8 @@ import {
   AUTHORITY,
   COMMIT,
   OUTCOMES,
-  VALIDATION
+  VALIDATION,
+  createClaimEnvelope
 } from "./contracts.mjs";
 
 function assertCandidate(candidate, claim, expectedRevision) {
@@ -52,10 +53,13 @@ export async function executeProtectedTransition({
     throw new TypeError("expectedRevision must be a non-negative integer");
   }
 
-  const claim = await ports.claimBuilder.build(proposal);
-  if (!claim || typeof claim.claimId !== "string") {
+  const builtClaim = await ports.claimBuilder.build(proposal);
+  if (!builtClaim || typeof builtClaim !== "object" || Array.isArray(builtClaim)) {
     throw new TypeError("claimBuilder must return a ClaimEnvelope");
   }
+  // Validate and detach the builder output before authority sees it. A
+  // claimId-only look-alike must not reach the authority gate as a valid claim.
+  const claim = createClaimEnvelope(builtClaim);
 
   const authority = await ports.authorityGate.check(claim);
   if (!authority || !Object.values(AUTHORITY).includes(authority.status)) {
