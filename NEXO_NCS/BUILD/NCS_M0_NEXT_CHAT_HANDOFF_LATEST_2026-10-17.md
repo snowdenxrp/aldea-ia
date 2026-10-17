@@ -3,7 +3,20 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.31 — cyclic semantic comparison returns UNKNOWN
+## Latest increment: M0.32 — reject blank required strings
+
+Record: [M0.32 — Reject blank required strings in core contracts](NCS_M0_32_REJECT_BLANK_REQUIRED_STRINGS_2026-10-17.md)
+- Source commit: `d2354fab87163210b3c9ffae82bfe9afc7d9a689`
+- Test commit / CI head: `930c038484fdd70ff7cc38ee56d34484850fa745`
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989062031
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989062021
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989062023
+- policyContext contract CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989062010
+
+Shared `requiredString()` rejects whitespace-only values but preserves accepted original strings. Regression tests cover claimId, action, and policyRef hash. This is syntax validation only, not proof of identifier uniqueness, authenticity, or authority.
+
+## Previous increment: M0.31 — cyclic semantic comparison returns UNKNOWN
+
 
 Record: [M0.31 — Cyclic semantic comparison returns UNKNOWN](NCS_M0_31_CYCLIC_SEMANTIC_COMPARISON_UNKNOWN_2026-10-17.md)
 - Source commit: `ade3552a7c8f1345deb5e91ebf446415b1d2f8b0`
