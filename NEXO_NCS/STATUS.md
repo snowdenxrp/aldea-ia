@@ -1,21 +1,23 @@
 # NEXO NCS — STATUS
 
-## Current entry: M0.58 — Preflight protected-transition input
+## Current entry: M0.59 — Preflight candidate before field reads
 
-The runtime entry `executeProtectedTransition()` now validates its request record before reading fields, so a caller-supplied getter cannot run during parameter destructuring. Regression test and focused CI passed on final test commit `01d32296cc85075b9842e4587d5ffe8c9e18bc4d`.
+The candidate returned by `candidateExecutor.execute()` is now structurally preflighted before `assertCandidate()` reads its fields. A regression candidate with an enumerable `expectedRevision` getter is rejected without executing the getter and without reaching semantic validation or commit.
 
-- Report: [M0.58 — Preflight protected-transition input](BUILD/NCS_M0_58_PREFLIGHT_PROTECTED_TRANSITION_INPUT_2026-10-17.md)
-- Shared validator export: `0022f17cfd69501f9282132cadabafe8b1a36efa`
-- Transition entry change: `5a47d9698c650e80dfc250d2ef4a940b540e875a`
-- Final regression-test commit: `01d32296cc85075b9842e4587d5ffe8c9e18bc4d`
-- M0 Core: [run 39044459878](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459878) — success
-- STEP 4: [run 39044459855](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459855) — success
-- STEP 5: [run 39044459893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459893) — success
-- STEP 3A/3B/3C: [run 39044459955](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459955) — success
+- Report: [M0.59 — Preflight candidate before field reads](BUILD/NCS_M0_59_PREFLIGHT_CANDIDATE_BEFORE_FIELD_READS_2026-10-17.md)
+- Source change: `eccc1fc200a41e5ec3a3f70243658e39d4a39e13`
+- Regression-test commit: `85da2fdcdfeaf8f0eed2585024a7e85c82b62a63`
+- Report commit: `0cba03d7bce13bc4877c5ea9652cf49c9a6549cd`
+- M0 Core: [run 39075400456](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400456) — success
+- STEP 4: [run 39075400447](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400447) — success
+- STEP 5: [run 39075400437](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400437) — success
+- STEP 3A/3B/3C: [run 39075400440](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400440) — success
 
 ## Activation gate — unchanged
 
-**STEP 7 = OPEN / STOP / UNKNOWN. Protected effects remain STOP.** M0.56 is a bounded Core data-shape fix, not proof of constitutional authority or runtime reachability.
+**STEP 7 = OPEN / STOP / UNKNOWN. Protected effects remain STOP.** M0.59 is a bounded Core data-shape fix, not proof of constitutional authority, production runtime reachability, durable canonical commit, or bypass closure.
+
+---
 
 ---
 
