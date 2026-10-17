@@ -109,6 +109,18 @@ export function createFinalSemanticValidator() {
         });
       }
 
+      const claimCriticalCollections = [
+        ["authoritativeReads", claim.authoritativeReads],
+        ["dependencies", claim.dependencies],
+        ["predicateDependencies", claim.predicateDependencies],
+        ["causalInputs", claim.causalInputs]
+      ];
+      if (claimCriticalCollections.some(([, items]) => !Array.isArray(items))) {
+        return createValidationResult(VALIDATION.UNKNOWN, {
+          reasons: ["candidate claim-critical collections are malformed"]
+        });
+      }
+
       const claimCriticalItems = [
         ...claim.authoritativeReads,
         ...claim.dependencies,
