@@ -175,6 +175,17 @@ const baseContext = {
 }
 
 {
+  const orderIndependentCandidate = candidate({
+    claim: { target: { id: "target-1", metadata: { alpha: 1, beta: 2 } } }
+  });
+  const result = validator.validate(orderIndependentCandidate, {
+    ...baseContext,
+    target: { metadata: { beta: 2, alpha: 1 }, id: "target-1" }
+  });
+  assert.equal(result.status, VALIDATION.PASS);
+}
+
+{
   const cyclicTarget = { id: "target-1" };
   cyclicTarget.self = cyclicTarget;
   const cyclicCandidate = candidate({ claim: { target: cyclicTarget } });
