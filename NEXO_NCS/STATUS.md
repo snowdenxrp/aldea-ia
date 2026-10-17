@@ -1,17 +1,17 @@
 # NEXO NCS — STATUS
 
-## Current entry: M0.56 — Reject lossy hidden Core contract properties
+## Current entry: M0.57 — Preflight Core constructor inputs before field access
 
-The Core immutable-contract boundary now validates caller-owned records before cloning. Symbol-keyed properties, non-enumerable properties, and accessors are rejected so cloning cannot silently discard fields or execute getters. Regression tests and focused CI passed on final test commit `274ea45e0f2745ca08d131dd690ac68cb2894be3`.
+Core constructors now validate input/options records before reading caller-controlled fields, preventing top-level getters from executing before the M0.56 data-property guard. Regression tests and focused CI passed on final test commit `5980f45d22eb0ef3f9ee2bdab9da35075d4ed94f`.
 
-- Report: [M0.56 — Reject lossy hidden Core contract properties](BUILD/NCS_M0_56_REJECT_LOSSY_HIDDEN_CORE_CONTRACT_PROPERTIES_2026-10-17.md)
-- Source: `ce8f3a8b83f728b20657d03966448b2fb7788d76`
-- Core tests: `0aad968ec751e39fd21388bac68ea32de8bc080f`
-- Final test adjustment: `274ea45e0f2745ca08d131dd690ac68cb2894be3`
-- M0 Core: [run 39043286261](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286261) — success
-- STEP 4: [run 39043286260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286260) — success
-- STEP 5: [run 39043286270](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286270) — success
-- STEP 3A/3B/3C: [run 39043286210](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286210) — success
+- Report: [M0.57 — Preflight Core constructor inputs](BUILD/NCS_M0_57_PREFLIGHT_CORE_CONSTRUCTOR_INPUTS_2026-10-17.md)
+- Source: `c10e241c7dbd5830c9d084d02190878c5b1ac68b`
+- Tests: `5980f45d22eb0ef3f9ee2bdab9da35075d4ed94f`
+- M0 Core: [run 39044318251](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318251) — success
+- STEP 4: [run 39044318273](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318273) — success
+- STEP 5: [run 39044318250](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318250) — success
+- STEP 7 policyContext: [run 39044318249](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318249) — success
+- STEP 3A/3B/3C: [run 39044318372](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318372) — success
 
 ## Activation gate — unchanged
 
