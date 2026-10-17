@@ -247,7 +247,7 @@ function makePorts(overrides = {}) {
     () => executeProtectedTransition({
       ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
     }),
-    /preserve the claimed transition identity/
+    /candidate must preserve the complete authorized claim/
   );
 }
 
