@@ -3,7 +3,19 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.41 — require reconciliation after uncertain commit
+## Latest increment: M0.42 — order-independent semantic JSON comparison
+
+Report: [M0.42 — Order-independent semantic JSON comparison](NCS_M0_42_ORDER_INDEPENDENT_SEMANTIC_JSON_COMPARISON_2026-10-17.md)
+- Source commit: `afccee600a8732cd1bbc1559892e740905fa283f`
+- Test commit / CI head: `76cf6baf6e0bb1dcd11a3f3b0c0f1272dd74a7b8`
+- STEP 4 CI at source commit: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994420693 — success
+- STEP 5 CI at source commit: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994420695 — success
+- STEP 4 CI at test commit: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994423653 — success
+- STEP 5 CI at test commit: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994423616 — success
+
+STEP 4 now canonicalizes JSON object key order before semantic comparison, so equivalent nested target values no longer fail merely because object keys were inserted in a different order. Array order remains significant; cyclic/non-JSON-comparable values remain UNKNOWN. This does not authenticate the validation context or source labels.
+
+## Previous increment: M0.41 — require reconciliation after uncertain commit
 
 Report: [M0.41 — Require reconciliation after uncertain commit](NCS_M0_41_RECONCILE_UNCERTAIN_COMMIT_OUTCOME_2026-10-17.md)
 - Source commit: `b162c0375fa29e795d915a318e1b83b81554fbef`
