@@ -651,3 +651,33 @@ console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
   const ports = createCorePorts({ authorityGate: new Adapter() });
   assert.equal(ports.authorityGate.check(), "adapter-method", "port adapters may be class instances");
 }
+
+
+{
+  const classifierResult = {
+    kind: OUTCOMES.UNKNOWN,
+    reasons: ["original reason"],
+    evidence: [{ source: "original source" }]
+  };
+  const { ports } = makePorts({
+    outcomeClassifier: {
+      classify: ({ kind }) => ({ ...classifierResult, kind })
+    },
+    finalSemanticValidator: {
+      validate: () => createValidationResult(VALIDATION.UNKNOWN, {
+        reasons: ["validator unknown"], evidence: [{ source: "validator" }]
+      })
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  classifierResult.reasons[0] = "mutated after return";
+  classifierResult.evidence[0].source = "mutated after return";
+  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+  assert.equal(Object.isFrozen(outcome), true, "returned outcomes must be immutable");
+  assert.equal(Object.isFrozen(outcome.reasons), true, "returned reasons must be immutable");
+  assert.equal(Object.isFrozen(outcome.evidence[0]), true, "nested returned evidence must be immutable");
+  assert.deepEqual(outcome.reasons, ["validator unknown"]);
+  assert.deepEqual(outcome.evidence, [{ source: "validator" }]);
+}

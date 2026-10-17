@@ -5,6 +5,7 @@ import {
   OUTCOMES,
   VALIDATION,
   createClaimEnvelope,
+  createOutcome,
   assertContractInput
 } from "./contracts.mjs";
 
@@ -37,7 +38,12 @@ function classify(ports, kind, { reasons = [], evidence = [] } = {}) {
   if (!Array.isArray(outcome.reasons) || !Array.isArray(outcome.evidence)) {
     throw new TypeError("outcomeClassifier must return a complete Outcome with reasons and evidence arrays");
   }
-  return outcome;
+  // A port result is untrusted: rebuild it through the canonical contract so
+  // callers never receive the classifier's mutable object by reference.
+  return createOutcome(outcome.kind, {
+    reasons: outcome.reasons,
+    evidence: outcome.evidence
+  });
 }
 
 function outcomeFromValidation(ports, result) {
