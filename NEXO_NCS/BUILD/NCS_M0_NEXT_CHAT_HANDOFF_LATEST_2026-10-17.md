@@ -3,6 +3,16 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
+## Latest increment: M0.35 — reject duplicate required evidence IDs
+
+Record: [M0.35 — Reject duplicate required evidence identifiers](NCS_M0_35_REJECT_DUPLICATE_REQUIRED_EVIDENCE_IDS_2026-10-17.md)
+- Source commit: `e891a20a8971fa9df3b6b7d04def5a9c09bd93e3`
+- Test commit / CI head: `4a605acd7cc4087261db45d8bab012a7c227c5a4`
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989570129 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989570134 — success
+
+STEP 4 now returns `UNKNOWN` if a required claim-critical evidence ID is duplicated in the validation requirements, rather than allowing a non-unique identifier to support PASS. Regression covers duplicate `dep-a` entries. This does not authenticate authority or source labels.
+
 ## Latest increment: M0.34 — validate builder claim before authority gate
 
 Record: [M0.34 — Validate claim-builder output before authority gate](NCS_M0_34_VALIDATE_BUILDER_CLAIM_BEFORE_AUTHORITY_GATE_2026-10-17.md)
