@@ -6,7 +6,7 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.61. Do not repeat M0.1–M0.61 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.62. Do not repeat M0.1–M0.62 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
 
 ## Latest STEP 7 design-only reconciliation — first-scope ownership boundary
 
@@ -17,6 +17,25 @@ The post-M0.58 source recheck found the runtime/orchestrator/effect-adapter sour
 A design-only boundary table now keeps four classes separate: planning-only, local Lúmina/simulation mutation, canonical persisted-state acceptance, and external/protected effects. No production execution model is selected. Direction B remains the security objective; no weaker self-reported path, trust ceremony, freeze/signature, APK, or wiring is authorized.
 
 **Next action:** the owner must explicitly name the intended first deployment target and which of those ownership classes belongs in the first constitutional scope. Do not infer the target or wire code before that decision. Then trace only that target's canonical state owner and final effect-capable sink. If scope remains undefined, remain design-only / STOP.
+
+---
+
+## Latest verified increment: M0.62 — require complete outcome-classifier results
+
+Report: [NCS M0.62 — Require complete outcome-classifier results](NCS_M0_62_REQUIRE_COMPLETE_OUTCOME_CLASSIFIER_RESULT_2026-10-17.md)
+
+- Source commit: `ecadcd8dfe7afe6f6f9f72d331d622044dda2b64`
+- Regression-test commit: `87d89694696d3b723053a9d038cb9df2741306e1`
+- Report commit: `7c788a039ed5bc5831ecf2d40f8402961a37050c`
+- STATUS update: `5eab1d82413c25482644e0755b24922392d39c11`
+- M0 Core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076179928 — success
+- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076179931 — success
+- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076179919 — success
+- STEP 3A/3B/3C: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076179968 — success
+
+The outcome classifier must now return the expected terminal kind and both `reasons` and `evidence` arrays. Regression tests cover omitted evidence and non-array reasons. This does not prove classifier trust or production protected-path safety.
+
+**Next:** start from STATUS, do not repeat M0.1–M0.62 or closed audits. Continue only with a distinct, demonstrable Core contract defect. Do not infer deployment target or constitutional ownership class; do not wire production protected execution. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
 
 ---
 
