@@ -3,7 +3,19 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.46 — reject mutable exotic policy-context data
+## Latest increment: M0.47 — reject indeterminate/invalid reconciliation outcomes
+
+Report: [M0.47 — Reject indeterminate reconciliation outcomes](NCS_M0_47_REJECT_INDETERMINATE_RECONCILIATION_OUTCOMES_2026-10-17.md)
+- Source commit: `fb91418aa7902f4ffd48d4269a91ae583e98e5d8`; explicit-list cleanup: `9292973699a69c5166980ee6a69700acf4184b89`
+- Regression-test commit: `d041ef859073622956a68a51e16d9a3c537710dd`
+- STEP 6 reconciliation CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626477 — success
+- M0 core CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626469 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626467 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626495 — success
+
+Only known determinate outcomes may resolve reconciliation. UNKNOWN, RECONCILE_REQUIRED and arbitrary strings remain UNRESOLVED; whitespace-only case identifiers are rejected. Critical limitation retained explicitly: caller-supplied `authoritative: true` is still not authenticated. Do not treat this as reconciliation authority proof.
+
+## Previous increment: M0.46 — reject mutable exotic policy-context data
 
 Report: [M0.46 — Reject mutable exotic policy-context data](NCS_M0_46_REJECT_MUTABLE_EXOTIC_POLICY_CONTEXT_DATA_2026-10-17.md)
 - Source commit: `232359375b5fe457a8920454c09ea40fb481bd61`
