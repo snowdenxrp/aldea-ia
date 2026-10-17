@@ -10,7 +10,7 @@
 
 # NEXO NCS — STATUS
 
-## Current entry: M0.62 — Require complete outcome-classifier results
+## Current entry: M0.63 — Preflight Core port options and validate commit result errorCode
 
 The protected transition now requires the outcome classifier to return a structurally valid record with the expected terminal `kind` and both `reasons` and `evidence` arrays. Regression tests cover missing evidence and non-array reasons.
 
