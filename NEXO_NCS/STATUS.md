@@ -1,3 +1,13 @@
+## M0.65 — Reject snapshot graphs that alias canonical state
+
+- State: implemented and focused-CI verified on `fe110e94dafde031f832bd19efe203b930dee1e7`.
+- Defect: a shallow-copy snapshot isolator could return a new root object while retaining references to nested canonical state; candidate execution could mutate canonical state before commit.
+- Correction: the protected-transition boundary checks the isolated record and rejects any object identity shared anywhere in the input/isolated state graphs before candidate execution.
+- Regression: shallow-copy isolator shares nested object; outcome is UNKNOWN; canonical state remains unchanged; executor and commit are not called.
+- Evidence report: [M0.65 — Reject aliased snapshot state graphs](BUILD/NCS_M0_65_REJECT_ALIASED_SNAPSHOT_STATE_GRAPH_2026-10-17.md).
+- Focused CI success: M0 `39076971359`; STEP 4 `39076971377`; STEP 5 `39076971375`; STEP 3A/3B/3C `39076971406`.
+- This is a bounded non-authoritative Core fix. It does not establish legitimate authority, production protected-effect reachability, or bypass closure. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## M0.64 — Detach and freeze outcome-classifier results
 
 - State: implemented and focused-CI verified on `60337cdc7cfa0078932b0cce7450e10af1c82f75`.
@@ -19,7 +29,7 @@
 
 # NEXO NCS — STATUS
 
-## Current entry: M0.63 — Preflight Core port options and validate commit result errorCode
+## Historical entry: M0.63 — Preflight Core port options and validate commit result errorCode
 
 The protected transition now requires the outcome classifier to return a structurally valid record with the expected terminal `kind` and both `reasons` and `evidence` arrays. Regression tests cover missing evidence and non-array reasons.
 

@@ -1,3 +1,11 @@
+## Current resume point — M0.65 (2026-10-17)
+
+M0.65 is implemented and focused-CI verified on `fe110e94dafde031f832bd19efe203b930dee1e7`. It rejects snapshot isolator output whose object graph shares any object identity with the canonical input state. The regression supplies a shallow copy sharing a nested object and proves the original state remains unchanged, with candidate execution and commit never called.
+
+Report: [NCS M0.65](NCS_M0_65_REJECT_ALIASED_SNAPSHOT_STATE_GRAPH_2026-10-17.md). Final focused CI: M0 `39076971359`, STEP 4 `39076971377`, STEP 5 `39076971375`, STEP 3A/3B/3C `39076971406`, all success.
+
+Continue from M0.65 without repeating M0.1–M0.65. Inspect only a distinct, contract-grounded defect and add regression evidence. STEP 7 remains OPEN / STOP / UNKNOWN; protected activation remains blocked.
+
 ## Current resume point — M0.64 (2026-10-17)
 
 M0.64 is implemented and focused-CI verified on `60337cdc7cfa0078932b0cce7450e10af1c82f75`. Outcome-classifier results are reconstructed through `createOutcome()` before returning, detaching/freezing reasons and nested evidence. Report: [NCS M0.64](NCS_M0_64_DETACH_FREEZE_OUTCOME_CLASSIFIER_RESULTS_2026-10-17.md). Final focused CI: M0 `39076742989`, STEP 4 `39076742913`, STEP 5 `39076742921`, STEP 3A/3B/3C `39076742904`, all success.
