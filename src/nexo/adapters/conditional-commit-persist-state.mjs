@@ -24,8 +24,8 @@ export function createPersistStateConditionalCommit({
       }
 
       const expectedRevision = candidate.expectedRevision;
-      if (!Number.isInteger(expectedRevision) || expectedRevision < 0) {
-        throw new TypeError("candidate expectedRevision must be a non-negative integer");
+      if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0 || expectedRevision >= Number.MAX_SAFE_INTEGER) {
+        throw new TypeError("candidate expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER");
       }
 
       try {
