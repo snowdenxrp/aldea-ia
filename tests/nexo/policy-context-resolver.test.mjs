@@ -18,6 +18,15 @@ assert.equal(resolvePolicyContext({ ...base, dependencies: { status: "UNKNOWN", 
 assert.equal(resolvePolicyContext({ ...base, temporal: { status: "FAIL", evidence: ["expired"] } }).status, "FAIL");
 assert.equal(resolvePolicyContext({ ...base, provenance: { status: "UNKNOWN", evidence: ["provider-asserted"] } }).status, "UNKNOWN");
 assert.throws(() => resolvePolicyContext({ ...base, applicability: { status: "AUTHORIZED", evidence: [] } }), /invalid status/);
+assert.throws(() => resolvePolicyContext({
+  ...base, identity: { status: "PASS", reasons: "not-an-array", evidence: [] }
+}), /identity.reasons must be an array/);
+assert.throws(() => resolvePolicyContext({
+  ...base, provenance: { status: "UNKNOWN", evidence: { source: "provider-asserted" } }
+}), /provenance.evidence must be an array/);
+assert.throws(() => resolvePolicyContext({
+  ...base, dependencies: ["PASS"]
+}), /invalid status for dependencies/);
 
 const result = resolvePolicyContext(base);
 assert.equal("authorize" in result, false);
