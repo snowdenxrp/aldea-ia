@@ -714,3 +714,24 @@ console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
   assert.equal(executeCalls, 0, "candidate executor must not receive shallow-aliased state");
   assert.equal(commitCalls, 0, "aliased snapshot must never reach commit");
 }
+
+
+{
+  for (const invalidState of [undefined, null, [], "not-a-state"]) {
+    let portCalls = 0;
+    const ports = createCorePorts({
+      claimBuilder: { build: () => { portCalls += 1; return claim; } },
+      authorityGate: { check: () => { portCalls += 1; return createAuthorityResult(AUTHORITY.AUTHORIZED); } },
+      snapshotIsolator: { isolate: () => { portCalls += 1; return {}; } },
+      candidateExecutor: { execute: () => { portCalls += 1; throw new Error("must not execute"); } },
+      finalSemanticValidator: { validate: () => { portCalls += 1; return createValidationResult(VALIDATION.PASS); } },
+      conditionalCommit: { commit: () => { portCalls += 1; return createCommitResult(COMMIT.COMMITTED); } },
+      outcomeClassifier: createOutcomeClassifier()
+    });
+    await assert.rejects(
+      () => executeProtectedTransition({ ports, proposal: {}, state: invalidState, expectedRevision: 1 }),
+      /state must be a record/
+    );
+    assert.equal(portCalls, 0, "invalid canonical state must be rejected before any port runs");
+  }
+}
