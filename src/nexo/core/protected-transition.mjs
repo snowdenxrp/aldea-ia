@@ -9,7 +9,8 @@ import {
 } from "./contracts.mjs";
 
 function assertCandidate(candidate, claim, expectedRevision) {
-  if (!candidate || !candidate.claim || typeof candidate.claim !== "object" || Array.isArray(candidate.claim)) {
+  assertContractInput(candidate, "candidate");
+  if (!candidate.claim || typeof candidate.claim !== "object" || Array.isArray(candidate.claim)) {
     throw new TypeError("candidate must preserve the claimed transition identity");
   }
   const candidateClaim = createClaimEnvelope(candidate.claim);
