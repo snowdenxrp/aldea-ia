@@ -63,6 +63,31 @@ assert.throws(() => createValidationResult(VALIDATION.PASS, {
   evidence: [{ observedAt: new Date("2026-10-17T00:00:00Z") }]
 }), /arrays and plain objects/);
 
+ // Structured cloning can silently discard symbol-keyed/non-enumerable fields,
+ // and may execute getters. Reject these shapes before cloning at the contract boundary.
+const symbolTarget = { id: "visible" };
+symbolTarget[Symbol("hidden-authority")] = "unexpected";
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-symbol-property", action: "example", target: symbolTarget
+}), /symbol-keyed properties/);
+
+const hiddenTarget = { id: "visible" };
+Object.defineProperty(hiddenTarget, "hidden", { value: "unexpected", enumerable: false });
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-nonenumerable-property", action: "example", target: hiddenTarget
+}), /enumerable data properties/);
+
+let getterCalls = 0;
+const accessorTarget = {};
+Object.defineProperty(accessorTarget, "computed", {
+  enumerable: true,
+  get() { getterCalls += 1; return "unexpected"; }
+});
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-accessor-property", action: "example", target: accessorTarget
+}), /enumerable data properties/);
+assert.equal(getterCalls, 0, "contract validation must not execute caller getters");
+
 const inputs = {
   authoritativeReads: [{ revision: { value: 1 } }],
   dependencies: [{ meta: { version: 1 } }],
