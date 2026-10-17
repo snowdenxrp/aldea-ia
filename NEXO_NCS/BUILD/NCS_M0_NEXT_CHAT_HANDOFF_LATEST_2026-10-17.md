@@ -3,7 +3,18 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.44 — validate policy-resolution reasons/evidence shapes
+## Latest increment: M0.45 — reject blank Observation source/code
+
+Report: [M0.45 — Reject blank Observation source/code](NCS_M0_45_REJECT_BLANK_OBSERVATION_SOURCE_CODE_2026-10-17.md)
+- Source commit: `7d7f4210426358c7eb9ea867c20312f3bf5951d4`
+- Test commit / CI head: `d1cd6f126c7067f32d9ae604da4e21df855e9abb`
+- M0 observation/core contract workflow: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994815429 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994815408 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994815407 — success
+
+Observation required strings now reject whitespace-only `source` and `code`, matching the nonblank contract rule. Original nonblank values are preserved. This does not authenticate source labels.
+
+## Previous increment: M0.44 — validate policy-resolution reasons/evidence shapes
 
 Report: [M0.44 — Validate policy-resolution reasons/evidence shapes](NCS_M0_44_VALIDATE_POLICY_RESOLUTION_REASON_EVIDENCE_SHAPES_2026-10-17.md)
 - Source commit: `6cf588982a1b809b54820bb0c96362975f697867`
