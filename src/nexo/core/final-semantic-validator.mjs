@@ -75,12 +75,24 @@ export function createFinalSemanticValidator() {
         });
       }
 
-      const requiredIds = [
+      const claimCriticalItems = [
         ...claim.authoritativeReads,
         ...claim.dependencies,
         ...claim.predicateDependencies,
         ...claim.causalInputs
-      ]
+      ];
+      const malformedRequiredItems = claimCriticalItems.filter(item =>
+        item?.required !== false &&
+        (!item || typeof item.id !== "string" || item.id.trim().length === 0)
+      );
+      if (malformedRequiredItems.length > 0) {
+        return createValidationResult(VALIDATION.UNKNOWN, {
+          reasons: ["required claim-critical item has no valid identifier"],
+          evidence: malformedRequiredItems.map((_, index) => `malformed-claim-item[${index}]`)
+        });
+      }
+
+      const requiredIds = claimCriticalItems
         .filter(item => item && typeof item.id === "string" && item.required !== false)
         .map(item => item.id);
 
