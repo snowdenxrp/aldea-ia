@@ -1,5 +1,24 @@
 # NEXO NCS — STATUS
 
+## Current entry: M0.56 — Reject lossy hidden Core contract properties
+
+The Core immutable-contract boundary now validates caller-owned records before cloning. Symbol-keyed properties, non-enumerable properties, and accessors are rejected so cloning cannot silently discard fields or execute getters. Regression tests and focused CI passed on final test commit `274ea45e0f2745ca08d131dd690ac68cb2894be3`.
+
+- Report: [M0.56 — Reject lossy hidden Core contract properties](BUILD/NCS_M0_56_REJECT_LOSSY_HIDDEN_CORE_CONTRACT_PROPERTIES_2026-10-17.md)
+- Source: `ce8f3a8b83f728b20657d03966448b2fb7788d76`
+- Core tests: `0aad968ec751e39fd21388bac68ea32de8bc080f`
+- Final test adjustment: `274ea45e0f2745ca08d131dd690ac68cb2894be3`
+- M0 Core: [run 39043286261](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286261) — success
+- STEP 4: [run 39043286260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286260) — success
+- STEP 5: [run 39043286270](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286270) — success
+- STEP 3A/3B/3C: [run 39043286210](https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286210) — success
+
+## Activation gate — unchanged
+
+**STEP 7 = OPEN / STOP / UNKNOWN. Protected effects remain STOP.** M0.56 is a bounded Core data-shape fix, not proof of constitutional authority or runtime reachability.
+
+---
+
 ## CURRENT ENTRY POINT — M0.55 (2026-10-17)
 
 **Continue from M0.55; do not repeat investigations M0.1–M0.55. Focused CI passed.**
@@ -63,7 +82,7 @@ No legitimate initial authority, exhaustive protected-path reachability, or bypa
 
 ## Continuation rule
 
-Continue from the latest handoff; do not repeat M0.1–M0.50 investigations or closed historical audits. Inspect a distinct Core boundary, fix only a concrete contract-grounded defect, add regression tests, run focused CI, and record raw evidence. A missing evidence link remains PENDING/UNKNOWN; never infer runtime proof from unit tests.
+Continue from the latest handoff; do not repeat M0.1–M0.56 investigations or closed historical audits. Inspect a distinct Core boundary, fix only a concrete contract-grounded defect, add regression tests, run focused CI, and record raw evidence. A missing evidence link remains PENDING/UNKNOWN; never infer runtime proof from unit tests.
 
 ## Recent M0 reports
 
