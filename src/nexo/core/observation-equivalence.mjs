@@ -35,7 +35,7 @@ function isPlainJsonData(value, ancestors = new WeakSet()) {
       if (!Object.prototype.hasOwnProperty.call(value, index) ||
           !isPlainJsonData(value[index], ancestors)) valid = false;
     }
-    if (valid && keys.some(key => !/^(0|[1-9]\\d*)$/.test(key) || Number(key) >= value.length)) {
+    if (valid && keys.some(key => !/^(0|[1-9]\d*)$/.test(key) || Number(key) >= value.length)) {
       valid = false;
     }
   } else {
