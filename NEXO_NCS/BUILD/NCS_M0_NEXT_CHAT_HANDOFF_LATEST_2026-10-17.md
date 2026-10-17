@@ -6,7 +6,7 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.53. Do not repeat M0.1–M0.53 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.54. Do not repeat M0.1–M0.54 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
 
 ## Latest verified increment: M0.53 — multi-entry JSON array validation
 
@@ -21,6 +21,22 @@ Report: [NCS_M0_53_FIX_MULTI_ENTRY_JSON_ARRAY_VALIDATION_2026-10-17.md](NCS_M0_5
 The array-index regex was over-escaped and rejected valid JSON arrays with multiple entries, incorrectly producing UNKNOWN. The corrected digit class and a two-entry provenance regression are focused-CI verified. This is input validation only; it does not prove provenance authenticity, constitutional authority, or protected-path closure. STEP 7 remains OPEN / STOP / UNKNOWN.
 
 **Next:** inspect one distinct Core boundary, check existing reports/tests before calling anything new, demonstrate a contract-level defect, then add regression coverage and run focused CI. No M1 detour, no protected effects, no invented PASS.
+
+## Latest verified increment: M0.54 — commit-result errorCode shape
+
+Report: [NCS_M0_54_COMMIT_RESULT_ERROR_CODE_SHAPE_2026-10-17.md](NCS_M0_54_COMMIT_RESULT_ERROR_CODE_SHAPE_2026-10-17.md)
+
+- Source commit: `65f9430a66822e07098d40aa2ff0731e273bdfd6`
+- Regression-test commit: `6b9fa321c6fdce3a15ca1ff8a3767e4ef8aa0205`
+- Report commit: `eb79aecec5abc87cb76cdb686e6aab1ec3ca1c8e`
+- STATUS commit: `72acfea387c2f39be4ecdbedbcecf3e582ed4723`
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551827 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551943 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551753 — success
+- STEP 7 policyContext CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551767 — success
+- STEP 3A/3B/3C CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551824 — success
+
+`createCommitResult()` previously accepted any `errorCode` value and only shallow-froze the containing result. It now accepts `null` or a non-blank string, with regression cases for blank and object-shaped values. This fixes contract shape only; no commit or authority semantics changed. Focused CI passed on the regression-test commit. STEP 7 remains OPEN / STOP / UNKNOWN.
 
 ## What Nexo is for — the goal
 
