@@ -21,11 +21,11 @@ Branch: `ncs-clean-architecture`
 
 ## Focused CI for corrected test head
 
-- M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100974 — pending at report creation
-- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100979 — pending at report creation
-- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100978 — pending at report creation
+- M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100974 — success
+- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100979 — success
+- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100978 — success
 
-The source-head M0 workflow at `e3893502f80f4be207918b47fd91203341e34fb2` failed because the existing test expected an error message prefixed with `observation.source`; the constructor now correctly reports its own `source` validation. The test was corrected to assert the new constructor-level error and a fresh CI run was triggered.
+The source-head M0 workflow at `e3893502f80f4be207918b47fd91203341e34fb2` failed because an existing assertion expected an error message prefixed with `observation.source`; the constructor now reports its own `source` validation. The assertion was corrected, and all three focused workflows on test head `e43f19c4373ec642a75a1d436f4625d05e3765a4` completed successfully.
 
 ## Limits
 
