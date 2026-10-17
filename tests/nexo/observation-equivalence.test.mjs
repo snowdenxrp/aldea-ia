@@ -103,4 +103,41 @@ function observation(overrides = {}) {
   assert.deepEqual(result.reasons, ["unsupported_or_missing_observation"]);
 }
 
+
+{
+  // Maps can stringify identically despite carrying different internal state.
+  // They are not admissible observation data and must never prove equivalence.
+  const left = observation({ targetIncarnation: new Map([["generation", 1]]) });
+  const right = observation({ targetIncarnation: new Map([["generation", 2]]) });
+  const result = evaluateNegativeResourceEquivalence(left, right);
+  assert.equal(result.status, EQUIVALENCE.UNKNOWN);
+  assert.deepEqual(result.reasons, ["malformed_observation_data"]);
+}
+
+{
+  const result = evaluateNegativeResourceEquivalence(
+    observation({ freshness: new Date("2026-10-17T00:00:00Z") }),
+    observation()
+  );
+  assert.equal(result.status, EQUIVALENCE.UNKNOWN);
+  assert.deepEqual(result.reasons, ["malformed_observation_data"]);
+}
+
+{
+  const cyclic = observation();
+  cyclic.inputs.loop = cyclic;
+  const result = evaluateNegativeResourceEquivalence(cyclic, observation());
+  assert.equal(result.status, EQUIVALENCE.UNKNOWN);
+  assert.deepEqual(result.reasons, ["malformed_observation_data"]);
+}
+
+{
+  // Plain-record key order is representational, not semantic.
+  const result = evaluateNegativeResourceEquivalence(
+    observation({ targetIncarnation: { resourceId: "well-1", generation: 3 } }),
+    observation({ targetIncarnation: { generation: 3, resourceId: "well-1" } })
+  );
+  assert.equal(result.status, EQUIVALENCE.EQUIVALENT);
+}
+
 console.log("NEXO M0 observation-equivalence contract tests: PASS");
