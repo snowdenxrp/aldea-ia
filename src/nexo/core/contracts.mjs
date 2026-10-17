@@ -117,8 +117,8 @@ export function createCandidate({ claim, state, expectedRevision } = {}) {
   // Revalidate and detach the claim at this public boundary; callers must not
   // bypass createClaimEnvelope() by supplying a look-alike object.
   const validatedClaim = createClaimEnvelope(claim);
-  if (!Number.isInteger(expectedRevision) || expectedRevision < 0) {
-    throw new TypeError("expectedRevision must be a non-negative integer");
+  if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0 || expectedRevision >= Number.MAX_SAFE_INTEGER) {
+    throw new TypeError("expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER");
   }
   if (state === undefined) throw new TypeError("candidate requires isolated state");
   return { claim: validatedClaim, state: detachedMutable(state), expectedRevision };
