@@ -162,6 +162,20 @@ assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-ref", a
 assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-scope", action: "example", policyContext: { ...completePolicyContext, scope: undefined } }), /scope/);
 assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-deps", action: "example", policyContext: { ...completePolicyContext, resolved: { semanticFacts: {} } } }), /dependencies/);
 assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-invalid-status", action: "example", policyContext: { ...completePolicyContext, validity: { status: "AUTHORIZED" } } }), /validity.status/);
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-policy-array-ref", action: "example",
+  policyContext: { ...completePolicyContext, policyRef: Object.assign([], {
+    id: "policy-1", semanticVersion: "1.0.0", hash: "sha256:test"
+  }) }
+}), /policyRef must be a record/);
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-policy-array-validity", action: "example",
+  policyContext: { ...completePolicyContext, validity: Object.assign([], { status: "VALID" }) }
+}), /validity must be a record/);
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-policy-array-resolved", action: "example",
+  policyContext: { ...completePolicyContext, resolved: Object.assign([], { dependencies: [] }) }
+}), /resolved must be a record/);
 assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-provenance", action: "example", policyContext: { ...completePolicyContext, resolutionProvenance: undefined } }), /resolutionProvenance/);
 assert.throws(() => { policyClaim.policyContext.policyRef.id = "attacker"; }, TypeError);
 assert.equal("authorize" in policyClaim.policyContext, false);
