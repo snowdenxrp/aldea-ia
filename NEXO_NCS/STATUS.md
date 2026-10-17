@@ -1,3 +1,13 @@
+## M0.69 — Fail closed on malformed reconciliation evidence envelope
+
+- State: implemented; focused CI verified on source/test commit `3ba751da5792f5534c7af6b6c2485f8e4c1ae364`.
+- Defect: non-array evidence (including `null` and plain objects) escaped the reconciler as a thrown `TypeError`, unlike malformed nested evidence which returns `UNRESOLVED`.
+- Correction: malformed evidence values return frozen `UNRESOLVED` with null outcome and empty evidence; malformed reconciliation cases remain `INVALID`.
+- Regression: `null`, object, string, and numeric evidence all return `UNRESOLVED` without throwing.
+- Report: [M0.69 — Fail closed on malformed reconciliation evidence](BUILD/NCS_M0_69_FAIL_CLOSED_MALFORMED_RECONCILIATION_EVIDENCE_2026-10-17.md).
+- Focused CI success: STEP 6 [39077886855](https://github.com/snowdenxrp/aldea-ia/actions/runs/39077886855); M0 [39077886864](https://github.com/snowdenxrp/aldea-ia/actions/runs/39077886864); STEP 4 [39077886857](https://github.com/snowdenxrp/aldea-ia/actions/runs/39077886857); STEP 5 [39077886871](https://github.com/snowdenxrp/aldea-ia/actions/runs/39077886871).
+- Limit: this does not authenticate `authoritative: true`, establish provenance/currentness, or prove protected-path closure. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## M0.68 — Preflight the outer reconciliation call before destructuring
 
 - State: implemented; focused CI pending at documentation time on source/test commit `2891397fe57f1fd894033b43017c506c9fd7c13a`.
