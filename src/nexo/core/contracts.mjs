@@ -10,6 +10,19 @@ const TERMINAL_OUTCOMES = Object.freeze([
 const VALIDATION_STATES = Object.freeze(["PASS", "FAIL", "UNKNOWN"]);
 const COMMIT_STATES = Object.freeze(["COMMITTED", "CONDITIONAL_CONFLICT", "FAILED", "UNKNOWN"]);
 
+function assertDeepFreezable(value, seen = new WeakSet()) {
+  if (value === null || typeof value !== "object") return;
+  if (seen.has(value)) return;
+  seen.add(value);
+
+  const prototype = Object.getPrototypeOf(value);
+  if (!Array.isArray(value) && prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("contract data must contain only arrays and plain objects");
+  }
+
+  for (const child of Object.values(value)) assertDeepFreezable(child, seen);
+}
+
 function immutable(value, seen = new WeakSet()) {
   if (value === null || typeof value !== "object") return value;
   if (seen.has(value)) return value;
@@ -20,7 +33,9 @@ function immutable(value, seen = new WeakSet()) {
 
 function detachedImmutable(value) {
   if (value === undefined) return value;
-  return immutable(structuredClone(value));
+  const clone = structuredClone(value);
+  assertDeepFreezable(clone);
+  return immutable(clone);
 }
 
 function detachedMutable(value) {
