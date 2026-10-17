@@ -57,4 +57,29 @@ const rejectedAction=buildNexoMission({
 assert.equal(rejectedAction.steps[0].action,"inspect_and_collect_evidence");
 assert.equal(rejectedAction.steps[0].context,undefined);
 
+
+const boundedAdmissionReports = [{
+  assistant: "AdmissionBoundaryTest",
+  findings: [
+    { severity: "error", code: "MESH_MISSING", message: "mesh ausente", agent: "alex" },
+    ...Array.from({ length: 7 }, (_, i) => ({
+      severity: "error", code: "UNMAPPED_" + i, message: "hallazgo independiente " + i, agent: "other-" + i
+    })),
+    { severity: "warning", code: "AGENT_POSITION", message: "posición de alex inválida", agent: "alex" }
+  ]
+}];
+const boundedAdmission = buildNexoMission({ reports: boundedAdmissionReports });
+assert.equal(boundedAdmission.steps.length, 8);
+assert.deepEqual(boundedAdmission.admission, {
+  candidateStepCount: 9, admittedStepCount: 8, omittedStepCount: 1, truncated: true
+});
+// The admitted mesh-repair step depends on a state-repair step that did not fit
+// in the eight-step admission bound, so it must not remain executable.
+assert.equal(boundedAdmission.steps[0].action, "repair_visual_mesh");
+assert.equal(boundedAdmission.steps[0].status, "blocked");
+assert.equal(boundedAdmission.steps[0].blockReason, "DEPENDENCY_NOT_ADMITTED");
+assert.equal(planNexoExecution(boundedAdmission).actions.some(a => a.action === "repair_visual_mesh"), false);
+// Omitted candidates are explicitly not admitted; they are not recorded as failed or resolved.
+assert.equal(boundedAdmission.steps.some(s => s.action === "repair_agent_state"), false);
+
 console.log("Nexo: auditoría profunda de contratos, dependencias, evidencia, memoria y replanificación OK.");

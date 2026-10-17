@@ -95,4 +95,17 @@ assert.equal(reconstructedContextual.observedAgentCount, 2);
 contextualMission.steps[0].context.action.amount = 99;
 assert.equal(reconstructNexoMission(contextualMemory, contextualMission.missionId).steps[0].context.action.amount, 2);
 
+
+const boundedAdmissionMission = {
+  version: 4, missionId: "bounded-admission-restart", parentMissionId: null, replanReason: null,
+  objective: "inspect_and_collect_evidence", status: "planned", generatedAt: "2026-10-17T13:00:00.000Z",
+  admission: { candidateStepCount: 9, admittedStepCount: 8, omittedStepCount: 1, truncated: true },
+  steps: [{ id: "step-1", action: "inspect_and_collect_evidence", target: "other-0", status: "planned", dependsOn: [] }]
+};
+const boundedAdmissionMemory = recordNexoPlan(createLearningMemory(), boundedAdmissionMission);
+assert.deepEqual(
+  reconstructNexoMission(boundedAdmissionMemory, boundedAdmissionMission.missionId).admission,
+  boundedAdmissionMission.admission
+);
+
 console.log("Nexo: durable mission restart reconstruction + execution/outcome crash-window semantics OK.");

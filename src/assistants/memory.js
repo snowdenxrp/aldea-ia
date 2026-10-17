@@ -63,7 +63,7 @@ export function recordNexoPlan(memory, mission) {
     ...(step.requiresVerification !== undefined ? { requiresVerification: step.requiresVerification } : {}),
     ...(step.context !== undefined ? { context: structuredClone(step.context) } : {})
   }));
-  next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,parentMissionId:mission.parentMissionId??null,replanReason:mission.replanReason??null,uncertainty:mission.uncertainty??null,evidenceCount:mission.evidenceCount??null,observedAgentCount:mission.observedAgentCount??null,steps:persistedSteps,at:mission.generatedAt??new Date().toISOString()});
+  next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,parentMissionId:mission.parentMissionId??null,replanReason:mission.replanReason??null,uncertainty:mission.uncertainty??null,evidenceCount:mission.evidenceCount??null,observedAgentCount:mission.observedAgentCount??null,admission:mission.admission?structuredClone(mission.admission):null,steps:persistedSteps,at:mission.generatedAt??new Date().toISOString()});
   next.nexo.missions=next.nexo.missions.slice(-50);
   return next;
 }
@@ -82,6 +82,7 @@ export function reconstructNexoMission(memory, missionId) {
     uncertainty:plan.uncertainty??null,
     evidenceCount:plan.evidenceCount??null,
     observedAgentCount:plan.observedAgentCount??null,
+    admission:plan.admission?structuredClone(plan.admission):null,
     steps:Array.isArray(plan.steps)?structuredClone(plan.steps):[],
     memorySignals:{
       patterns:source.patterns.length,
