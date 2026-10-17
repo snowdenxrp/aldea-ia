@@ -22,7 +22,7 @@ Report: [M0.50 — Revalidate ObservationEnvelope at MissionCandidate boundary](
 - STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100979 — success
 - STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100978 — success
 
-`createMissionCandidate()` now rebuilds a caller-supplied observation through `createObservationEnvelope()`; look-alike objects cannot bypass required-field, array-shape, plain-data, detachment, and freezing rules. The first M0 run exposed an outdated assertion about error wording; the test was corrected and a fresh CI set is pending. This is structural validation only, not source/authority authentication.
+`createMissionCandidate()` now rebuilds a caller-supplied observation through `createObservationEnvelope()`; look-alike objects cannot bypass required-field, array-shape, plain-data, detachment, and freezing rules. The first M0 run exposed an outdated assertion about error wording; the test was corrected and focused CI passed on the regression commit. This is structural validation only, not source/authority authentication.
 
 ---
 
