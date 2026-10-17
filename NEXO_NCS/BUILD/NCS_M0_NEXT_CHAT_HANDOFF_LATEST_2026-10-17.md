@@ -6,7 +6,25 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.57. Do not repeat M0.1–M0.57 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.58. Do not repeat M0.1–M0.58 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+
+## Latest verified increment: M0.58 — preflight protected-transition input
+
+Report: [NCS_M0_58_PREFLIGHT_PROTECTED_TRANSITION_INPUT_2026-10-17.md](NCS_M0_58_PREFLIGHT_PROTECTED_TRANSITION_INPUT_2026-10-17.md)
+
+- Shared validator export: `0022f17cfd69501f9282132cadabafe8b1a36efa`
+- Transition entry change: `5a47d9698c650e80dfc250d2ef4a940b540e875a`
+- Regression-test commit: `01d32296cc85075b9842e4587d5ffe8c9e18bc4d`
+- M0 Core CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459878 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459855 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459893 — success
+- STEP 3A/3B/3C CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459955 — success
+
+M0.57 guarded Core constructor inputs, but `executeProtectedTransition()` destructured its request before validation. M0.58 reuses the shared preflight at this runtime entry; a getter on the request's `ports` field is rejected without execution. This still does not prove the ports are legitimate, production startup reaches this path exclusively, or bypasses are closed.
+
+**Next:** begin at STATUS, read the M0.58 report, then investigate whether the production composition/root invokes this transition through a uniquely enforced path. Do not repeat M0.1–M0.58. If the composition or protected-effect boundary is structurally missing, record STOP and design the root fix rather than adding speculative guards. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
 
 ## Latest verified increment: M0.57 — preflight Core constructor inputs
 
