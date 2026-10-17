@@ -63,10 +63,10 @@ assert.equal(Object.isFrozen(candidateInputObservation), false);
 assert.equal(detachedCandidate.admission, "UNKNOWN");
 assert.throws(() => createMissionCandidate({
   observation: { source: "", code: "MESH_MISSING" }
-}), /source/);
+}), /source must be a non-empty, non-blank string/);
 assert.throws(() => createMissionCandidate({
   observation: { source: "VisualAgent", code: "" }
-}), /code/);
+}), /code must be a non-empty, non-blank string/);
 
 assert.throws(() => createObservationEnvelope({ source: "VisualAgent" }), /code/);
 assert.throws(() => createMissionCandidate({ observation, admission: "FAILED" }), /invalid admission state/);
