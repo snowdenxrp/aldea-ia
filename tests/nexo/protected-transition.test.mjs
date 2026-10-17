@@ -103,6 +103,23 @@ function makePorts(overrides = {}) {
 }
 
 {
+  const { ports, calls } = makePorts({
+    authorityGate: {
+      check: () => ({ status: AUTHORITY.AUTHORIZED, reasons: "not-an-array", evidence: [] })
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+  assert.deepEqual(outcome.reasons, ["authority gate returned a malformed result shape"]);
+  assert.equal(calls.isolate, 0);
+  assert.equal(calls.execute, 0);
+  assert.equal(calls.validate, 0);
+  assert.equal(calls.commit, 0);
+}
+
+{
   let commitCalls = 0;
   const { ports, calls } = makePorts({
     authorityGate: {
