@@ -1,3 +1,11 @@
+## Current architectural blocker — Proxy traps at the Core input boundary (2026-10-17)
+
+M0.70 is complete and focused CI passed, but source review found a deeper trust-boundary limitation: `contracts.mjs` and `reconciliation.mjs` use reflective operations on caller-owned objects. A Proxy can run caller-supplied traps during `Object.getPrototypeOf`, `Reflect.ownKeys`, and `Object.getOwnPropertyDescriptor`. This is source-level analysis; no CI reproduction or deployed exploit is claimed.
+
+Report: [NCS Core Proxy-trap boundary STOP](NCS_CORE_BOUNDARY_PROXY_TRAPS_DESIGN_STOP_2026-10-17.md).
+
+**Do not patch around this by trying to detect every Proxy.** Inspect MASTER/Core and the actual input call sites to determine the intended trust boundary. Candidate designs are (1) canonical serialized data parsed inside Core with explicit encoding/size/depth/duplicate-key semantics, (2) an explicit trusted in-process caller boundary with no hostile-object isolation claim, or another owner-approved root design. None is selected yet. Map callers and compatibility first; if the trust boundary is not established, document unresolved and stop before refactoring. Keep INVALID/UNRESOLVED/UNKNOWN semantics honest. No authority or protected-effect activation follows from this work.
+
 ## Current resume point — M0.70 (2026-10-17)
 
 M0.70 removes caller-controlled array method dispatch from reconciliation. `evidence.find(...)` could invoke an own hostile `find` property; the implementation now selects by own numeric-index descriptors. The regression verifies a valid indexed candidate resolves while the hostile custom method's call count stays zero.

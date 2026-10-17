@@ -1,3 +1,11 @@
+## Core boundary design STOP — caller-controlled Proxy traps (2026-10-17)
+
+- Finding: reflection-based validators inspect caller-owned objects via `Object.getPrototypeOf`, `Reflect.ownKeys`, and `Object.getOwnPropertyDescriptor`; Proxy traps can execute during those operations.
+- This is source-level analysis, not a claimed CI reproduction or deployed exploit.
+- Do not add a proxy-detection patch that relies on the same reflective operations. Decide the root trust boundary first: serialized data parsed inside Core, explicitly trusted in-process callers, or another owner-approved design.
+- Report: [Core Proxy-trap boundary STOP](BUILD/NCS_CORE_BOUNDARY_PROXY_TRAPS_DESIGN_STOP_2026-10-17.md).
+- No code change was made for this finding. M0.70 remains the latest completed focused-CI increment; STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## M0.70 — Avoid caller-controlled array method dispatch in reconciliation
 
 - State: implemented; focused CI verified on corrected test head `d55e87f0d429fecd471b6f04257cca147c587243`.
