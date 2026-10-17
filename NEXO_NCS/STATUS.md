@@ -1,22 +1,25 @@
 # NEXO NCS — STATUS
 
-## CURRENT ENTRY POINT — M0.53 (2026-10-17)
+## CURRENT ENTRY POINT — M0.54 (2026-10-17)
 
-**Continue from M0.53; do not repeat investigations M0.1–M0.52. Focused CI passed.**
+**Continue from M0.54; do not repeat investigations M0.1–M0.54. Focused CI passed.**
 
-- Latest report: BUILD/NCS_M0_53_FIX_MULTI_ENTRY_JSON_ARRAY_VALIDATION_2026-10-17.md
+- Latest report: BUILD/NCS_M0_54_COMMIT_RESULT_ERROR_CODE_SHAPE_2026-10-17.md
 - Full next-chat continuity / project goals / exact instructions: BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md
 - Branch: ncs-clean-architecture
-- Source fix commit: f0a6cd8608c79dcfcc2a24ddc09210510bd6f431
-- Regression-test commit: 5def9ecaea02a47b7180008b972fd61d4cfe0cf7
+- Source commit: 65f9430a66822e07098d40aa2ff0731e273bdfd6
+- Regression-test commit / focused CI head: 6b9fa321c6fdce3a15ca1ff8a3767e4ef8aa0205
+- Report CI-evidence commit: eb79aecec5abc87cb76cdb686e6aab1ec3ca1c8e
 
-### M0.53 focused CI evidence — PASS
+### M0.54 focused CI evidence — PASS
 
-- M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363190
-- STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363167
-- STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363186
+- M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551827
+- STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551943
+- STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551753
+- STEP 7 policyContext contract: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551767
+- STEP 3A/3B/3C verification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551824
 
-M0.53 fixes over-escaped digit matching in JSON array-index validation and adds a multi-entry provenance regression test. All three focused runs completed successfully on the regression-test commit. This is bounded input validation only, not provenance truth or authorization proof.
+All five focused workflows completed successfully on the regression-test commit. This is bounded contract validation only, not full-repository verification or authority/runtime proof.
 
 ## Project goal
 
