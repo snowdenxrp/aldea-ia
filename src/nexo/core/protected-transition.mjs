@@ -15,8 +15,8 @@ function assertCandidate(candidate, claim, expectedRevision) {
   if (!isDeepStrictEqual(candidateClaim, claim)) {
     throw new TypeError("candidate must preserve the complete authorized claim");
   }
-  if (!Number.isInteger(candidate.expectedRevision) || candidate.expectedRevision < 0) {
-    throw new TypeError("candidate must carry a valid expectedRevision");
+  if (!Number.isSafeInteger(candidate.expectedRevision) || candidate.expectedRevision < 0 || candidate.expectedRevision >= Number.MAX_SAFE_INTEGER) {
+    throw new TypeError("candidate must carry a valid expectedRevision below MAX_SAFE_INTEGER");
   }
   if (candidate.expectedRevision !== expectedRevision) {
     throw new TypeError("candidate must preserve the requested expectedRevision");
