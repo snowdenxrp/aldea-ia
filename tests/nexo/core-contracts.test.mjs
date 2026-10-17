@@ -47,6 +47,22 @@ target.meta.version = 2;
 assert.equal(claimWithTarget.target.meta.version, 1);
 assert.throws(() => { claimWithTarget.target.meta.version = 3; }, TypeError);
 
+// Object.freeze does not freeze Map/Set internal slots or Date's time value.
+// Core immutable contracts accept plain data only, so these values must reject.
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-map-target",
+  action: "example",
+  target: new Map([["id", "target-1"]])
+}), /arrays and plain objects/);
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-nested-set",
+  action: "example",
+  dependencies: [{ nested: new Set(["dependency"]) }]
+}), /arrays and plain objects/);
+assert.throws(() => createValidationResult(VALIDATION.PASS, {
+  evidence: [{ observedAt: new Date("2026-10-17T00:00:00Z") }]
+}), /arrays and plain objects/);
+
 const inputs = {
   authoritativeReads: [{ revision: { value: 1 } }],
   dependencies: [{ meta: { version: 1 } }],
