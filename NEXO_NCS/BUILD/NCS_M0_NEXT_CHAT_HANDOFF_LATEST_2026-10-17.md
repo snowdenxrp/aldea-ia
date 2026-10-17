@@ -3,7 +3,18 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.45 — reject blank Observation source/code
+## Latest increment: M0.46 — reject mutable exotic policy-context data
+
+Report: [M0.46 — Reject mutable exotic policy-context data](NCS_M0_46_REJECT_MUTABLE_EXOTIC_POLICY_CONTEXT_DATA_2026-10-17.md)
+- Source commit: `232359375b5fe457a8920454c09ea40fb481bd61`
+- Regression-test commit: `d89c45fdc8c1925937c3c4d40bbe3cd8df49fe7d`
+- STEP 7 policyContext CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996552925 — success
+- STEP 4 semantic validation CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996552902 — success
+- STEP 5 outcome classification CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996552905 — success
+
+Policy-context output data is now restricted to arrays/plain objects before freezing, and whitespace-only policy reference identifiers are rejected. These guards do not authenticate policy refs or evidence.
+
+## Previous increment: M0.45 — reject blank Observation source/code
 
 Report: [M0.45 — Reject blank Observation source/code](NCS_M0_45_REJECT_BLANK_OBSERVATION_SOURCE_CODE_2026-10-17.md)
 - Source commit: `7d7f4210426358c7eb9ea867c20312f3bf5951d4`
