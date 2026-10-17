@@ -81,6 +81,16 @@ Report: [M0.37 — Report only claim-critical semantic evidence](NCS_M0_37_REPOR
 
 The PASS evidence list now derives from unique required claim IDs, not all context requirements; unrelated requirements cannot be listed as evidence for this claim.
 
+## Latest increment: M0.38 — fail closed on malformed raw claim collections
+
+Report: [M0.38 — Fail closed on malformed raw claim collections](NCS_M0_38_FAIL_CLOSED_MALFORMED_RAW_CLAIM_COLLECTIONS_2026-10-17.md)
+- Source commit: `a6a1086adac72063c6c99eae36f15d7432ff1f79`
+- Test commit: `d31a230d0f40918b71ddc0580210ae06139391d9`
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993208161 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993208176 — success
+
+The semantic validator now returns UNKNOWN rather than throwing when raw candidate claim-critical collections are missing or malformed. M0.37's separate evidence-payload correction is also focused-CI verified (runs 38993161177 and 38993161104).
+
 ## Active lane
 
 Continue non-authoritative Nexo Core M0. Do not restart M0.1–M0.30 research and do not pivot into STEP 7. STEP 7 remains a separate activation blocker: OPEN / STOP / UNKNOWN; bounded non-activated core construction may continue.
