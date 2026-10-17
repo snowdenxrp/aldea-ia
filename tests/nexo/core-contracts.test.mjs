@@ -72,6 +72,28 @@ assert.equal(candidate.state.value, 3);
 
 assert.equal(createValidationResult(VALIDATION.PASS, { evidence: ["e1"] }).status, "PASS");
 assert.equal(createValidationResult(VALIDATION.UNKNOWN, { reasons: ["missing evidence"] }).status, "UNKNOWN");
+
+// Result constructors must not freeze or retain caller-owned nested evidence.
+const validationEvidenceInput = [{ record: { revision: 1 } }];
+const validationResult = createValidationResult(VALIDATION.PASS, { evidence: validationEvidenceInput });
+validationEvidenceInput[0].record.revision = 2;
+assert.equal(validationResult.evidence[0].record.revision, 1);
+assert.equal(Object.isFrozen(validationEvidenceInput[0]), false);
+assert.equal(Object.isFrozen(validationEvidenceInput[0].record), false);
+
+const outcomeEvidenceInput = [{ record: { revision: 3 } }];
+const outcomeResult = createOutcome(OUTCOMES.SAFE_COMMIT, { evidence: outcomeEvidenceInput });
+outcomeEvidenceInput[0].record.revision = 4;
+assert.equal(outcomeResult.evidence[0].record.revision, 3);
+assert.equal(Object.isFrozen(outcomeEvidenceInput[0]), false);
+assert.equal(Object.isFrozen(outcomeEvidenceInput[0].record), false);
+
+const authorityEvidenceInput = [{ record: { issuer: "test" } }];
+const authorityResult = createAuthorityResult(AUTHORITY.UNKNOWN, { evidence: authorityEvidenceInput });
+authorityEvidenceInput[0].record.issuer = "changed";
+assert.equal(authorityResult.evidence[0].record.issuer, "test");
+assert.equal(Object.isFrozen(authorityEvidenceInput[0]), false);
+assert.equal(Object.isFrozen(authorityEvidenceInput[0].record), false);
 assert.equal(createCommitResult(COMMIT.COMMITTED).status, "COMMITTED");
 assert.equal(createCommitResult(COMMIT.CONDITIONAL_CONFLICT, { errorCode: "STATE_REVISION_CONFLICT" }).errorCode, "STATE_REVISION_CONFLICT");
 assert.equal(createOutcome(OUTCOMES.SAFE_COMMIT).kind, "SAFE_COMMIT");
