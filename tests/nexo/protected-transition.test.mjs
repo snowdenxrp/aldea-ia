@@ -18,6 +18,20 @@ import { createOutcomeClassifier } from "../../src/nexo/core/outcome-classifier.
 const claim = createClaimEnvelope({ claimId: "protected-1", action: "set-value" });
 
 {
+  let portsGetterCalls = 0;
+  const transitionInput = { proposal: {}, state: { value: 1 }, expectedRevision: 1 };
+  Object.defineProperty(transitionInput, "ports", {
+    enumerable: true,
+    get() { portsGetterCalls += 1; return createCorePorts(); }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition(transitionInput),
+    /enumerable data properties/
+  );
+  assert.equal(portsGetterCalls, 0, "transition input getters must be rejected before field access");
+}
+
+{
   let authorityCalls = 0;
   const ports = createCorePorts({
     claimBuilder: { build: () => ({ claimId: "   ", action: "set-value" }) },
