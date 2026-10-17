@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import {
   AUTHORITY,
   COMMIT,
@@ -7,8 +8,12 @@ import {
 } from "./contracts.mjs";
 
 function assertCandidate(candidate, claim, expectedRevision) {
-  if (!candidate || !candidate.claim || candidate.claim.claimId !== claim.claimId) {
+  if (!candidate || !candidate.claim || typeof candidate.claim !== "object" || Array.isArray(candidate.claim)) {
     throw new TypeError("candidate must preserve the claimed transition identity");
+  }
+  const candidateClaim = createClaimEnvelope(candidate.claim);
+  if (!isDeepStrictEqual(candidateClaim, claim)) {
+    throw new TypeError("candidate must preserve the complete authorized claim");
   }
   if (!Number.isInteger(candidate.expectedRevision) || candidate.expectedRevision < 0) {
     throw new TypeError("candidate must carry a valid expectedRevision");
