@@ -1,3 +1,13 @@
+## M0.67 — Reject unsafe reconciliation evidence before reading or cloning
+
+- State: implemented and focused-CI verified on `37d0f12649a9ffe3c93344dc7d77d2156742bd79`.
+- Defect: reconciliation read caller-owned fields and cloned evidence before validating original graph; getters could execute and symbol-keyed evidence could be omitted.
+- Correction: preflight reconciliation case and evidence using descriptor-based recursive validation before field reads/cloning; reject accessors, symbol keys, and non-enumerable properties.
+- Regression: evidence getter and case getter remain uncalled; symbol-keyed evidence returns UNRESOLVED.
+- Evidence report: [M0.67 — Reject unsafe reconciliation evidence](BUILD/NCS_M0_67_REJECT_UNSAFE_RECONCILIATION_EVIDENCE_2026-10-17.md).
+- Focused CI success: STEP 6 `39077316684`; STEP 4 `39077316662`; M0 `39077316636`; STEP 5 `39077316629`.
+- This does not authenticate `authoritative: true` or establish evidence provenance/freshness. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## M0.66 — Require canonical state record before protected transition
 
 - State: implemented and focused-CI verified on `921f6dfaf269a80effbcdaaf12b64d64dc398355`.

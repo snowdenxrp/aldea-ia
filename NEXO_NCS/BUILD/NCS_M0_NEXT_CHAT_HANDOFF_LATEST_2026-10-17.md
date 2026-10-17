@@ -1,3 +1,11 @@
+## Current resume point — M0.67 (2026-10-17)
+
+M0.67 is implemented and focused-CI verified on `37d0f12649a9ffe3c93344dc7d77d2156742bd79`. Reconciliation now validates the caller-owned reconciliation case and evidence graph before reading fields or cloning. Accessors, symbol keys, and non-enumerable properties are rejected without invoking getters. Regression proves getter call counts remain zero and symbol-keyed evidence cannot be silently omitted.
+
+Report: [NCS M0.67](NCS_M0_67_REJECT_UNSAFE_RECONCILIATION_EVIDENCE_2026-10-17.md). Focused CI: STEP 6 `39077316684`, STEP 4 `39077316662`, M0 `39077316636`, STEP 5 `39077316629`, all success.
+
+Continue from M0.67 without repeating M0.1–M0.67. Next inspect a distinct contract-grounded issue. Keep STEP 7 `OPEN / STOP / UNKNOWN`: reconciliation's `authoritative: true` remains a self-asserted field, not proof of legitimate authority or provenance. Protected activation remains blocked.
+
 ## Current resume point — M0.66 (2026-10-17)
 
 M0.66 is implemented and focused-CI verified on `921f6dfaf269a80effbcdaaf12b64d64dc398355`. `executeProtectedTransition()` now requires canonical state to be a record before invoking any port. Regression covers undefined, null, array and primitive state; each rejects and the port-call count remains zero.
