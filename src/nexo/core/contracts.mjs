@@ -29,8 +29,8 @@ function detachedMutable(value) {
 }
 
 function requiredString(value, field) {
-  if (typeof value !== "string" || value.length === 0) {
-    throw new TypeError(`${field} must be a non-empty string`);
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new TypeError(`${field} must be a non-empty, non-blank string`);
   }
   return value;
 }
