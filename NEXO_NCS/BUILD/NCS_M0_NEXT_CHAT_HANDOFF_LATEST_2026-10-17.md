@@ -1,3 +1,7 @@
+## Current resume point — M0.63 (2026-10-17)
+
+The current increment preflights `createCorePorts()` options before destructuring and rejects malformed conditional-commit `errorCode` results. Regression coverage was added. Verify focused CI runs and finish updating this handoff/STATUS before claiming M0.63 complete. Do not repeat M0.1–M0.62. STEP 7 remains STOP for protected activation; no legitimate authority or production protected-effect route has been proven.
+
 # NCS — CONTINUITY HANDOFF FOR NEXT CHAT (2026-10-17)
 
 ## Entry instructions — read this first

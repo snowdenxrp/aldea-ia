@@ -617,3 +617,28 @@ console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
   );
   assert.equal(commitCalls, 0);
 }
+
+
+{
+  let getterCalls = 0;
+  const options = {};
+  Object.defineProperty(options, "authorityGate", {
+    enumerable: true,
+    get() { getterCalls += 1; return {}; }
+  });
+  assert.throws(() => createCorePorts(options), /enumerable data properties/);
+  assert.equal(getterCalls, 0, "core port option getters must be rejected before option reads");
+}
+
+{
+  const { ports } = makePorts({
+    conditionalCommit: {
+      commit: () => ({ status: COMMIT.CONDITIONAL_CONFLICT })
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.RECONCILE_REQUIRED, "missing errorCode must not be treated as a valid conflict");
+  assert.deepEqual(outcome.reasons, ["conditional commit returned a malformed errorCode"]);
+}

@@ -1,3 +1,11 @@
+## M0.63 — Preflight Core port options and validate commit result errorCode
+
+- State: implementation committed; focused CI pending verification.
+- Corrected `createCorePorts()` to validate its original options record before destructuring, rejecting getters/accessors before they execute.
+- Protected-transition boundary now requires `errorCode` to be present and either `null` or a nonblank string before interpreting any conditional-commit result. Malformed results become `RECONCILE_REQUIRED`.
+- Regression tests: port-option getter must remain uncalled; conditional conflict without `errorCode` must reconcile.
+- This is contract-shape hardening only. It does not establish legitimate authority, trusted port composition, or protected-effect closure. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 # NEXO NCS — STATUS
 
 ## Current entry: M0.62 — Require complete outcome-classifier results

@@ -1,3 +1,5 @@
+import { assertContractInput } from "./contracts.mjs";
+
 const NOT_IMPLEMENTED = (name) => {
   throw new Error(`NEXO_CORE_CONTRACT_NOT_IMPLEMENTED: ${name}`);
 };
@@ -7,7 +9,9 @@ const NOT_IMPLEMENTED = (name) => {
  * These are intentionally capability-separated. No provider-facing port exposes commit.
  */
 
-export function createCorePorts({
+export function createCorePorts(input = {}) {
+  assertContractInput(input, "corePorts options");
+  const {
   proposal = {},
   claimBuilder = {},
   authorityGate = {},
@@ -18,7 +22,7 @@ export function createCorePorts({
   outcomeClassifier = {},
   reconciliation = {},
   effectBoundary = {}
-} = {}) {
+} = input;
   return Object.freeze({
     proposal: Object.freeze({
       propose: proposal.propose ?? (() => NOT_IMPLEMENTED("proposal.propose"))

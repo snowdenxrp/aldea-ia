@@ -179,6 +179,11 @@ export async function executeProtectedTransition(input = {}) {
       reasons: ["conditional commit returned no valid result"]
     });
   }
+  if (!Object.prototype.hasOwnProperty.call(commit, "errorCode") || (commit.errorCode !== null && (typeof commit.errorCode !== "string" || commit.errorCode.trim().length === 0))) {
+    return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
+      reasons: ["conditional commit returned a malformed errorCode"]
+    });
+  }
 
   if (commit.status === COMMIT.COMMITTED) {
     return safeCommitOutcome;
