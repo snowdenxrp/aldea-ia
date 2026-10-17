@@ -1,21 +1,21 @@
 # NEXO NCS — STATUS
 
-## Current entry: M0.60 — Preflight semantic validator result before field reads
+## Current entry: M0.61 — Preflight authority, commit, and outcome port results
 
-The result returned by `finalSemanticValidator.validate()` is now structurally preflighted before reading `status`, `reasons`, or `evidence`. A regression result with an enumerable `status` getter is rejected without executing the getter and without reaching commit.
+Three remaining protected-transition port outputs are now structurally preflighted before their fields are read: authority result, conditional-commit result, and outcome-classifier result. Regression tests confirm their getters are not executed. Malformed authority output maps to UNKNOWN; malformed commit output maps to RECONCILE_REQUIRED; malformed classifier output fails closed.
 
-- Report: [M0.60 — Preflight semantic validator result before field reads](BUILD/NCS_M0_60_PREFLIGHT_SEMANTIC_VALIDATOR_RESULT_2026-10-17.md)
-- Source change: `49e36675b2c2e71cb63da4e676c7cca7a9e1fa97`
-- Regression-test commit: `80325047c8a3c49bad0499ce9dfeb93d578eeeec`
-- Report commit: `4217ab618cd06892e4aa6be8e1d0ab31cefc01d2`
-- M0 Core: [run 39075993667](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075993667) — success
-- STEP 4: [run 39075993617](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075993617) — success
-- STEP 5: [run 39075993672](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075993672) — success
-- STEP 3A/3B/3C: [run 39075993553](https://github.com/snowdenxrp/aldea-ia/actions/runs/39075993553) — success
+- Report: [M0.61 — Preflight authority, commit, and outcome port results](BUILD/NCS_M0_61_PREFLIGHT_AUTHORITY_COMMIT_OUTCOME_RESULTS_2026-10-17.md)
+- Source changes: `5e9dbf0774414027d0fca39c96bf94e63eecb359`, `3fe72ccf5fa31f472511ae738e9c97a70297dab9`
+- Regression-test commit: `a6e9a5ea8484d26b4de53631ec97956e50a050c9`
+- Report commit: `496666e94e84b41957bd825bb6eec35c7f04ad60`
+- M0 Core: [run 39076084005](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084005) — success
+- STEP 4: [run 39076084057](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084057) — success
+- STEP 5: [run 39076084097](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084097) — success
+- STEP 3A/3B/3C: [run 39076084035](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084035) — success
 
 ## Activation gate — unchanged
 
-**STEP 7 = OPEN / STOP / UNKNOWN. Protected effects remain STOP.** M0.60 is a bounded Core data-shape fix, not proof of constitutional authority, production runtime reachability, durable canonical commit, or bypass closure.
+**STEP 7 = OPEN / STOP / UNKNOWN. Protected effects remain STOP.** M0.61 is a bounded data-contract hardening increment, not proof of constitutional authority, production runtime reachability, durable canonical commit, or bypass closure.
 
 ---
 
