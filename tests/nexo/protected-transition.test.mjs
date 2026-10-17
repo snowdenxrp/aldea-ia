@@ -425,7 +425,7 @@ console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
     () => executeProtectedTransition({
       ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
     }),
-    /evidence getter failure/
+    /enumerable data properties/
   );
   assert.equal(commitCalls, 0);
 }
