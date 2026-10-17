@@ -1,3 +1,16 @@
+## Latest increment: M0.50 — revalidate observation at MissionCandidate boundary
+
+Report: [M0.50 — Revalidate ObservationEnvelope at MissionCandidate boundary](NCS_M0_50_REVALIDATE_OBSERVATION_AT_MISSION_CANDIDATE_BOUNDARY_2026-10-17.md)
+- Source commit: `e3893502f80f4be207918b47fd91203341e34fb2`
+- Regression-test commit: `e43f19c4373ec642a75a1d436f4625d05e3765a4`
+- M0 core CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100974 — pending at handoff update
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100979 — pending at handoff update
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997100978 — pending at handoff update
+
+`createMissionCandidate()` now rebuilds a caller-supplied observation through `createObservationEnvelope()`; look-alike objects cannot bypass required-field, array-shape, plain-data, detachment, and freezing rules. The first M0 run exposed an outdated assertion about error wording; the test was corrected and a fresh CI set is pending. This is structural validation only, not source/authority authentication.
+
+---
+
 # NCS M0 — latest continuation handoff
 
 Date: 2026-10-17
