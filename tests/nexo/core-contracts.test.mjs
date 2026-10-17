@@ -89,6 +89,9 @@ assert.throws(() => { detached.dependencies[0].meta.version = 2; }, TypeError);
 const state = { value: 1, nested: { count: 1 } };
 const candidate = createCandidate({ claim, state, expectedRevision: 7 });
 assert.equal(candidate.expectedRevision, 7);
+assert.throws(() => createCandidate({ claim, state, expectedRevision: Number.MAX_SAFE_INTEGER }), /expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER/);
+assert.throws(() => createCandidate({ claim, state, expectedRevision: Number.MAX_SAFE_INTEGER + 1 }), /expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER/);
+assert.throws(() => createCandidate({ claim, state, expectedRevision: 1e100 }), /expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER/);
 assert.notEqual(candidate.claim, claim);
 assert.throws(() => createCandidate({
   claim: { claimId: "   ", action: "example" },
