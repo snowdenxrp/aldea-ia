@@ -260,7 +260,31 @@ function makePorts(overrides = {}) {
   const outcome = await executeProtectedTransition({
     ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
   });
-  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+  assert.equal(outcome.kind, OUTCOMES.RECONCILE_REQUIRED);
+}
+
+{
+  const { ports } = makePorts({
+    conditionalCommit: {
+      commit: () => createCommitResult(COMMIT.UNKNOWN)
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.RECONCILE_REQUIRED);
+}
+
+{
+  const { ports } = makePorts({
+    conditionalCommit: {
+      commit: () => ({ status: "MALFORMED" })
+    }
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.RECONCILE_REQUIRED);
 }
 
 
