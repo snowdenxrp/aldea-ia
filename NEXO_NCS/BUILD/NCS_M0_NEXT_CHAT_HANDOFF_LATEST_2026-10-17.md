@@ -59,6 +59,17 @@ The semantic validator now maps cyclic/non-JSON-comparable target, target-incarn
 
 ## Previous latest increment: M0.30 — normalize known non-authoritative source labels
 
+## Latest increment: M0.36 — scope semantic decision to claim-critical requirements
+
+Record: [M0.36 — Scope semantic decision to claim-critical requirements](NCS_M0_36_SCOPE_SEMANTIC_DECISION_TO_REQUIRED_EVIDENCE_2026-10-17.md)
+- Source commit: `17431cff0bc9e1c13fb74dd0bb7741f4fe416ba3`
+- Regression test commit: `eea37c61c75a725bec28e0c9331d37e53f3ef66f`
+- STEP 4 source-head run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993022847 — success
+- STEP 4 test-head run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993025244 — pending at handoff update
+- STEP 5 test-head run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993025169 — pending at handoff update
+
+Fixed a decision-scope defect: unrelated context requirements with FAILED/invalid status no longer change a claim's decision. Only IDs required by the claim are classified for authority/status; missing required evidence remains UNKNOWN and a required FAILED item remains FAIL. Confirm the test-head CI runs before treating M0.36 as fully verified.
+
 ## Active lane
 
 Continue non-authoritative Nexo Core M0. Do not restart M0.1–M0.30 research and do not pivot into STEP 7. STEP 7 remains a separate activation blocker: OPEN / STOP / UNKNOWN; bounded non-activated core construction may continue.
