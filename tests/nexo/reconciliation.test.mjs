@@ -133,6 +133,6 @@ console.log("NEXO STEP 6 reconciliation contract tests: PASS");
     }
   });
   const result = r.reconcile({ reconciliationCase: c, evidence: hostileEvidence });
-  assert.equal(result.status, "UNRESOLVED", "custom array methods must not control reconciliation selection");
+  assert.equal(result.status, "RESOLVED", "own data candidate should be evaluated without dispatching through its custom array method");
   assert.equal(findCalls, 0, "reconciliation must not invoke caller-controlled array methods");
 }
