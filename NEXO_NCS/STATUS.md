@@ -1,3 +1,14 @@
+## M0.70 — Avoid caller-controlled array method dispatch in reconciliation
+
+- State: implemented; focused CI verified on corrected test head `d55e87f0d429fecd471b6f04257cca147c587243`.
+- Defect: caller-controlled array `.find` could shadow the built-in method and execute arbitrary caller code during evidence selection.
+- Correction: reconciliation uses own numeric-index data descriptors, never dispatches through the array's `.find`; malformed/holey/accessor entries fail closed.
+- Regression: custom `.find` returns a plausible candidate but its call counter remains zero; valid indexed candidate yields `RESOLVED`.
+- Report: [M0.70 — Avoid caller-controlled array method dispatch](BUILD/NCS_M0_70_AVOID_CALLER_CONTROLLED_ARRAY_METHODS_2026-10-17.md).
+- Source commit: [`30c5f2d`](https://github.com/snowdenxrp/aldea-ia/commit/30c5f2dbe2d8a6631cf7b9c7632a1b5a785c9ee7); corrected test commit: [`d55e87f`](https://github.com/snowdenxrp/aldea-ia/commit/d55e87f0d429fecd471b6f04257cca147c587243).
+- Focused CI success: STEP 4 [39078527864](https://github.com/snowdenxrp/aldea-ia/actions/runs/39078527864); STEP 5 [39078527811](https://github.com/snowdenxrp/aldea-ia/actions/runs/39078527811); STEP 6 [39078527808](https://github.com/snowdenxrp/aldea-ia/actions/runs/39078527808); M0 [39078527855](https://github.com/snowdenxrp/aldea-ia/actions/runs/39078527855).
+- Limit: does not authenticate `authoritative: true`, establish provenance/currentness, or prove production protected-path closure. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
 ## M0.69 — Fail closed on malformed reconciliation evidence envelope
 
 - State: implemented; focused CI verified on source/test commit `3ba751da5792f5534c7af6b6c2485f8e4c1ae364`.

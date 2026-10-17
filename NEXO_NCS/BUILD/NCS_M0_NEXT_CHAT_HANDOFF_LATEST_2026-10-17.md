@@ -1,3 +1,14 @@
+## Current resume point — M0.70 (2026-10-17)
+
+M0.70 removes caller-controlled array method dispatch from reconciliation. `evidence.find(...)` could invoke an own hostile `find` property; the implementation now selects by own numeric-index descriptors. The regression verifies a valid indexed candidate resolves while the hostile custom method's call count stays zero.
+
+- Source commit: `30c5f2dbe2d8a6631cf7b9c7632a1b5a785c9ee7`
+- Corrected regression-test commit / CI head: `d55e87f0d429fecd471b6f04257cca147c587243`
+- Report: [NCS M0.70](NCS_M0_70_AVOID_CALLER_CONTROLLED_ARRAY_METHODS_2026-10-17.md)
+- Focused CI all success: STEP 4 `39078527864`, STEP 5 `39078527811`, STEP 6 `39078527808`, M0 `39078527855`.
+
+**Continue from M0.70. Do not repeat M0.1–M0.70 or closed historical audits.** Next inspect a distinct contract boundary only if a concrete defect is demonstrable. Record the regression, focused CI evidence, and limitations. Do not manufacture increments. `authoritative: true` remains a self-asserted field, not authenticated authority; provenance/currentness and protected production path remain unproven. STEP 7 = OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## Current resume point — M0.69 (2026-10-17)
 
 M0.69 corrects a contract inconsistency in `src/nexo/core/reconciliation.mjs`: malformed non-array `evidence` previously threw a `TypeError`, while malformed nested evidence returned `UNRESOLVED`. Non-array evidence now returns a frozen `UNRESOLVED` result with null outcome and empty evidence. Regression cases cover null, object, string, and number.
