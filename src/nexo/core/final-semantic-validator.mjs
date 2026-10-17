@@ -8,7 +8,15 @@ function validState(value) {
 
 function sameValue(a, b) {
   try {
-    return JSON.stringify(a) === JSON.stringify(b);
+    const canonicalJson = value => JSON.stringify(value, (_, item) => {
+      if (item && typeof item === "object" && !Array.isArray(item)) {
+        return Object.fromEntries(
+          Object.keys(item).sort().map(key => [key, item[key]])
+        );
+      }
+      return item;
+    });
+    return canonicalJson(a) === canonicalJson(b);
   } catch {
     // Cyclic or otherwise non-JSON-comparable inputs are not proof of equality.
     return null;
