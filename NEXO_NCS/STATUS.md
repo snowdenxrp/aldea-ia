@@ -1,4 +1,17 @@
-## CURRENT M0 CONTINUATION — M0.31 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.42 (2026-10-17)
+
+Latest M0 evidence: [M0.42 order-independent semantic JSON comparison](BUILD/NCS_M0_42_ORDER_INDEPENDENT_SEMANTIC_JSON_COMPARISON_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- STEP 4 now canonicalizes JSON object key order during semantic comparison. Equivalent nested target objects no longer become FAIL solely because their keys were inserted in different orders.
+- Arrays retain order; cyclic/non-JSON-comparable inputs still map to UNKNOWN.
+- Source commit: `afccee600a8732cd1bbc1559892e740905fa283f`; test/CI head: `76cf6baf6e0bb1dcd11a3f3b0c0f1272dd74a7b8`.
+- Focused CI PASS: STEP 4 source https://github.com/snowdenxrp/aldea-ia/actions/runs/38994420693 ; STEP 5 source https://github.com/snowdenxrp/aldea-ia/actions/runs/38994420695 ; STEP 4 test https://github.com/snowdenxrp/aldea-ia/actions/runs/38994423653 ; STEP 5 test https://github.com/snowdenxrp/aldea-ia/actions/runs/38994423616.
+- Scope qualification: no full-repository test run, source authentication, production-runtime/bypass proof, or device test is claimed. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.31 (2026-10-17)
 
 Latest M0 evidence: [M0.31 cyclic semantic comparison returns UNKNOWN](BUILD/NCS_M0_31_CYCLIC_SEMANTIC_COMPARISON_UNKNOWN_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
