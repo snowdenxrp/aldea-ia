@@ -60,7 +60,9 @@ function requiredArray(value, field) {
 const POLICY_CONTEXT_STATUS = Object.freeze(["VALID", "FAIL", "UNKNOWN"]);
 
 function requiredPolicyRef(value) {
-  if (!value || typeof value !== "object") throw new TypeError("policyContext.policyRef is required");
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError("policyContext.policyRef must be a record");
+  }
   requiredString(value.id, "policyContext.policyRef.id");
   requiredString(value.semanticVersion, "policyContext.policyRef.semanticVersion");
   requiredString(value.hash, "policyContext.policyRef.hash");
@@ -70,12 +72,14 @@ function requiredPolicyRef(value) {
 function createPolicyContext(input = {}) {
   const policyRef = requiredPolicyRef(input.policyRef);
   if (input.scope === undefined) throw new TypeError("policyContext.scope is required");
-  if (!input.validity || typeof input.validity !== "object") throw new TypeError("policyContext.validity is required");
+  if (!input.validity || typeof input.validity !== "object" || Array.isArray(input.validity)) {
+    throw new TypeError("policyContext.validity must be a record");
+  }
   if (!POLICY_CONTEXT_STATUS.includes(input.validity.status)) {
     throw new TypeError("policyContext.validity.status must be VALID, FAIL, or UNKNOWN");
   }
-  if (input.resolved === undefined || input.resolved === null || typeof input.resolved !== "object") {
-    throw new TypeError("policyContext.resolved is required");
+  if (!input.resolved || typeof input.resolved !== "object" || Array.isArray(input.resolved)) {
+    throw new TypeError("policyContext.resolved must be a record");
   }
   requiredArray(input.resolved.dependencies, "policyContext.resolved.dependencies");
   requiredArray(input.resolutionProvenance, "policyContext.resolutionProvenance");
