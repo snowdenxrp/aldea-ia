@@ -681,3 +681,36 @@ console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
   assert.deepEqual(outcome.reasons, ["original reason"]);
   assert.deepEqual(outcome.evidence, [{ source: "original source" }]);
 }
+
+
+{
+  const canonical = { value: 1, nested: { stable: true } };
+  let executeCalls = 0;
+  let commitCalls = 0;
+  const ports = createCorePorts({
+    claimBuilder: { build: () => claim },
+    authorityGate: { check: () => createAuthorityResult(AUTHORITY.AUTHORIZED) },
+    snapshotIsolator: { isolate: ({ state }) => ({ ...state }) },
+    candidateExecutor: {
+      execute: ({ claim: candidateClaim, state, expectedRevision }) => {
+        executeCalls += 1;
+        state.nested.stable = false;
+        return createCandidate({ claim: candidateClaim, state, expectedRevision });
+      }
+    },
+    finalSemanticValidator: {
+      validate: () => createValidationResult(VALIDATION.PASS)
+    },
+    conditionalCommit: {
+      commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); }
+    },
+    outcomeClassifier: createOutcomeClassifier()
+  });
+  const outcome = await executeProtectedTransition({
+    ports, proposal: {}, state: canonical, expectedRevision: 1
+  });
+  assert.equal(outcome.kind, OUTCOMES.UNKNOWN);
+  assert.deepEqual(canonical, { value: 1, nested: { stable: true } });
+  assert.equal(executeCalls, 0, "candidate executor must not receive shallow-aliased state");
+  assert.equal(commitCalls, 0, "aliased snapshot must never reach commit");
+}

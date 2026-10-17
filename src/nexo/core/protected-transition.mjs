@@ -29,6 +29,23 @@ function assertCandidate(candidate, claim, expectedRevision) {
   }
 }
 
+function hasAliasedObjectGraph(original, isolated) {
+  const originalNodes = new WeakSet();
+  const walk = (value, visit, seen = new WeakSet()) => {
+    if (value === null || typeof value !== "object" || seen.has(value)) return;
+    seen.add(value);
+    visit(value);
+    for (const key of Reflect.ownKeys(value)) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (descriptor && "value" in descriptor) walk(descriptor.value, visit, seen);
+    }
+  };
+  walk(original, value => originalNodes.add(value));
+  let aliased = false;
+  walk(isolated, value => { if (originalNodes.has(value)) aliased = true; });
+  return aliased;
+}
+
 function classify(ports, kind, { reasons = [], evidence = [] } = {}) {
   const outcome = ports.outcomeClassifier.classify({ kind, reasons, evidence });
   assertContractInput(outcome, "outcome classifier result");
@@ -117,6 +134,16 @@ export async function executeProtectedTransition(input = {}) {
   if (isolatedState === undefined) {
     return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["snapshot isolation did not establish isolated state"]
+    });
+  }
+  try {
+    assertContractInput(isolatedState, "isolated state");
+    if (hasAliasedObjectGraph(state, isolatedState)) {
+      throw new TypeError("snapshot state graph aliases canonical input state");
+    }
+  } catch {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: ["snapshot isolation returned malformed or aliased state"]
     });
   }
 
