@@ -47,7 +47,23 @@ export function recordNexoPlan(memory, mission) {
   const next=createLearningMemory(memory);
   if(!mission?.missionId) return next;
   if(next.nexo.missions.some(item=>item?.missionId===mission.missionId)) return next;
-  next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,parentMissionId:mission.parentMissionId??null,replanReason:mission.replanReason??null,steps:mission.steps.map(s=>({id:s.id,action:s.action,target:s.target,status:s.status,dependsOn:s.dependsOn??[]})),at:mission.generatedAt??new Date().toISOString()});
+  // Persist the mission-step context needed to reconstruct the same plan after restart.
+  // This is continuity data, not authorization or proof that an effect was executed.
+  const persistedSteps = mission.steps.map(step => ({
+    id: step.id,
+    action: step.action,
+    target: step.target ?? null,
+    status: step.status,
+    dependsOn: step.dependsOn ?? [],
+    ...(step.priority !== undefined ? { priority: step.priority } : {}),
+    ...(step.reason !== undefined ? { reason: step.reason } : {}),
+    ...(step.source !== undefined ? { source: step.source } : {}),
+    ...(step.reversible !== undefined ? { reversible: step.reversible } : {}),
+    ...(step.requiresEvidence !== undefined ? { requiresEvidence: step.requiresEvidence } : {}),
+    ...(step.requiresVerification !== undefined ? { requiresVerification: step.requiresVerification } : {}),
+    ...(step.context !== undefined ? { context: structuredClone(step.context) } : {})
+  }));
+  next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,parentMissionId:mission.parentMissionId??null,replanReason:mission.replanReason??null,uncertainty:mission.uncertainty??null,evidenceCount:mission.evidenceCount??null,observedAgentCount:mission.observedAgentCount??null,steps:persistedSteps,at:mission.generatedAt??new Date().toISOString()});
   next.nexo.missions=next.nexo.missions.slice(-50);
   return next;
 }

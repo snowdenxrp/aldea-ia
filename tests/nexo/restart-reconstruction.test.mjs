@@ -67,4 +67,32 @@ const failedReconstruction=reconstructNexoMission(failedMemory,mission.missionId
 assert.equal(failedReconstruction.status,"needs_replan");
 assert.equal(failedReconstruction.objective,"replan_after_failure");
 
+
+// Mission continuity: reconstruction must retain admission-time step context, not just action/target.
+const contextualMission = {
+  version: 4, missionId: "contextual-restart-mission", parentMissionId: null, replanReason: null,
+  objective: "execute_lumina_action", status: "planned", uncertainty: "present",
+  evidenceCount: 3, observedAgentCount: 2, generatedAt: "2026-10-17T12:00:00.000Z",
+  steps: [{
+    id: "step-context", action: "execute_lumina_action", target: "alex", status: "planned",
+    dependsOn: [], priority: 2, reason: "acción propuesta por evidencia", source: "BehaviorAgent",
+    reversible: false, requiresEvidence: true, requiresVerification: true,
+    context: { action: { name: "drink", amount: 2 }, observationId: "obs-17" }
+  }]
+};
+const contextualMemory = recordNexoPlan(createLearningMemory(), contextualMission);
+const reconstructedContextual = reconstructNexoMission(contextualMemory, contextualMission.missionId);
+assert.equal(reconstructedContextual.steps[0].reason, "acción propuesta por evidencia");
+assert.equal(reconstructedContextual.steps[0].source, "BehaviorAgent");
+assert.equal(reconstructedContextual.steps[0].reversible, false);
+assert.equal(reconstructedContextual.steps[0].requiresEvidence, true);
+assert.equal(reconstructedContextual.steps[0].requiresVerification, true);
+assert.deepEqual(reconstructedContextual.steps[0].context, contextualMission.steps[0].context);
+assert.equal(reconstructedContextual.uncertainty, "present");
+assert.equal(reconstructedContextual.evidenceCount, 3);
+assert.equal(reconstructedContextual.observedAgentCount, 2);
+// Stored continuity must be detached from subsequent mutation of the live mission.
+contextualMission.steps[0].context.action.amount = 99;
+assert.equal(reconstructNexoMission(contextualMemory, contextualMission.missionId).steps[0].context.action.amount, 2);
+
 console.log("Nexo: durable mission restart reconstruction + execution/outcome crash-window semantics OK.");
