@@ -101,6 +101,7 @@ const baseContext = {
     ]
   });
   assert.equal(result.status, VALIDATION.PASS);
+  assert.deepEqual(result.evidence, ["dep-a", "pred-a"]);
 }
 
 {
