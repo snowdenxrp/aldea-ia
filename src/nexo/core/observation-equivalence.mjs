@@ -16,13 +16,64 @@ export const EQUIVALENCE = Object.freeze({
   UNKNOWN: "UNKNOWN"
 });
 
+function isPlainJsonData(value, ancestors = new WeakSet()) {
+  if (value === null || typeof value === "string" || typeof value === "boolean") return true;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value !== "object") return false;
+  if (ancestors.has(value)) return false;
+
+  const prototype = Object.getPrototypeOf(value);
+  const isArray = Array.isArray(value);
+  if (!isArray && prototype !== Object.prototype && prototype !== null) return false;
+
+  ancestors.add(value);
+  let valid = true;
+  if (isArray) {
+    const keys = Object.keys(value);
+    if (keys.length !== value.length) valid = false;
+    for (let index = 0; valid && index < value.length; index += 1) {
+      if (!Object.prototype.hasOwnProperty.call(value, index) ||
+          !isPlainJsonData(value[index], ancestors)) valid = false;
+    }
+    if (valid && keys.some(key => !/^(0|[1-9]\\d*)$/.test(key) || Number(key) >= value.length)) {
+      valid = false;
+    }
+  } else {
+    for (const key of Object.keys(value)) {
+      if (!isPlainJsonData(value[key], ancestors)) {
+        valid = false;
+        break;
+      }
+    }
+  }
+  ancestors.delete(value);
+  return valid;
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value).sort().map(key =>
+      `${JSON.stringify(key)}:${canonicalJson(value[key])}`
+    ).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
 function sameSerialized(left, right) {
-  return JSON.stringify(left) === JSON.stringify(right);
+  return canonicalJson(left) === canonicalJson(right);
 }
 
 export function evaluateNegativeResourceEquivalence(a, b) {
   if (!a || !b || a.code !== "NEGATIVE_RESOURCE" || b.code !== "NEGATIVE_RESOURCE") {
     return result(EQUIVALENCE.UNKNOWN, ["unsupported_or_missing_observation"]);
+  }
+
+  // This API is a public boundary: arbitrary objects can stringify to the same
+  // empty JSON representation (e.g. distinct Maps), which is not evidence of
+  // equivalent resource state. Malformed/non-JSON observations fail closed.
+  if (!isPlainJsonData(a) || !isPlainJsonData(b)) {
+    return result(EQUIVALENCE.UNKNOWN, ["malformed_observation_data"]);
   }
 
   if (a.source !== b.source || a.code !== b.code) {
