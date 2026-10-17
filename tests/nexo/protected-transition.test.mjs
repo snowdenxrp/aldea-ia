@@ -138,6 +138,40 @@ function makePorts(overrides = {}) {
 }
 
 {
+  const { ports } = makePorts({
+    outcomeClassifier: {
+      classify: ({ kind }) => ({ kind, reasons: [] })
+    },
+    finalSemanticValidator: {
+      validate: () => createValidationResult(VALIDATION.UNKNOWN)
+    }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /complete Outcome with reasons and evidence arrays/
+  );
+}
+
+{
+  const { ports } = makePorts({
+    outcomeClassifier: {
+      classify: ({ kind }) => ({ kind, reasons: "not-an-array", evidence: [] })
+    },
+    finalSemanticValidator: {
+      validate: () => createValidationResult(VALIDATION.UNKNOWN)
+    }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /complete Outcome with reasons and evidence arrays/
+  );
+}
+
+{
   let kindGetterCalls = 0;
   let commitCalls = 0;
   const { ports } = makePorts({
