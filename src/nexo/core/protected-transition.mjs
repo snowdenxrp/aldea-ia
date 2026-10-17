@@ -72,7 +72,13 @@ export async function executeProtectedTransition(input = {}) {
       reasons: ["authority gate returned a malformed result shape"]
     });
   }
-  assertContractInput(authority, "authority gate result");
+  try {
+    assertContractInput(authority, "authority gate result");
+  } catch {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: ["authority gate returned a malformed result shape"]
+    });
+  }
   if (!Object.values(AUTHORITY).includes(authority.status)) {
     return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["authority gate returned a malformed result shape"]
@@ -158,7 +164,13 @@ export async function executeProtectedTransition(input = {}) {
       reasons: ["conditional commit returned no valid result"]
     });
   }
-  assertContractInput(commit, "conditional commit result");
+  try {
+    assertContractInput(commit, "conditional commit result");
+  } catch {
+    return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
+      reasons: ["conditional commit returned a malformed result shape"]
+    });
+  }
   if (!Object.values(COMMIT).includes(commit.status)) {
     return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
       reasons: ["conditional commit returned no valid result"]
