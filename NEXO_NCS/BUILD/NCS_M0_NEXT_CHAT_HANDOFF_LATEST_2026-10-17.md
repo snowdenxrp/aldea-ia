@@ -1,3 +1,18 @@
+## Latest increment: M0.51 — reject array-shaped policy-context records
+
+Report: [M0.51 — Reject array-shaped policy-context records](NCS_M0_51_REJECT_ARRAY_POLICY_CONTEXT_RECORDS_2026-10-17.md)
+- Source commit: `fbc7ede58e7ed397f39b66d2b94f506ebcfed801`
+- Regression-test commit: `349dddb5143f71e3a550be92bd499e7297118c81`
+- M0 core CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227742 — pending at handoff update
+- STEP 7 policy-context CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227754 — pending at handoff update
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227792 — pending at handoff update
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227880 — pending at handoff update
+- STEP 3A/3B/3C CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227744 — pending at handoff update
+
+Policy-context record fields `policyRef`, `validity`, and `resolved` now reject arrays, which can carry named properties before clone but lose those properties in cloned output. Structural shape only; policy-reference authenticity and constitutional authority remain unproven.
+
+---
+
 ## Latest increment: M0.50 — revalidate observation at MissionCandidate boundary
 
 Report: [M0.50 — Revalidate ObservationEnvelope at MissionCandidate boundary](NCS_M0_50_REVALIDATE_OBSERVATION_AT_MISSION_CANDIDATE_BOUNDARY_2026-10-17.md)
