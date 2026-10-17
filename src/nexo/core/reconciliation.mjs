@@ -87,7 +87,10 @@ export function createReconciler() {
           typeof reconciliationCase.boundary !== "string" || reconciliationCase.boundary.trim().length === 0) {
         return Object.freeze({ status: "INVALID", outcome: null, evidence: Object.freeze([]) });
       }
-      if (!Array.isArray(evidence)) throw new TypeError("evidence must be an array");
+      // Malformed evidence is unresolved, not an exception that escapes the boundary.
+      if (!Array.isArray(evidence)) {
+        return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
+      }
       try {
         assertPlainData(evidence);
       } catch {

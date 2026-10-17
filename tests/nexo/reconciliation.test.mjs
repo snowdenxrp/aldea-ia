@@ -109,3 +109,13 @@ console.log("NEXO STEP 6 reconciliation contract tests: PASS");
   assert.equal(result.status, "INVALID");
   assert.equal(getterCalls, 0, "outer reconciliation case getter must remain uncalled");
 }
+
+
+{
+  for (const malformedEvidence of [null, {}, "not-an-array", 42]) {
+    const result = r.reconcile({ reconciliationCase: c, evidence: malformedEvidence });
+    assert.equal(result.status, "UNRESOLVED", "malformed non-array evidence must fail closed without throwing");
+    assert.equal(result.outcome, null);
+    assert.deepEqual(result.evidence, []);
+  }
+}
