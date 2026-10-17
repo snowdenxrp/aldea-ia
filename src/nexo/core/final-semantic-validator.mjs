@@ -130,6 +130,23 @@ export function createFinalSemanticValidator() {
         .filter(item => item && typeof item.id === "string" && item.required !== false)
         .map(item => item.id);
 
+      const requiredIdSet = new Set(requiredIds);
+      const seenRequiredIds = new Set();
+      const duplicateRequiredIds = new Set();
+      for (const requirement of context.requirements) {
+        if (!requirement || typeof requirement.id !== "string" || !requiredIdSet.has(requirement.id)) {
+          continue;
+        }
+        if (seenRequiredIds.has(requirement.id)) duplicateRequiredIds.add(requirement.id);
+        seenRequiredIds.add(requirement.id);
+      }
+      if (duplicateRequiredIds.size > 0) {
+        return createValidationResult(VALIDATION.UNKNOWN, {
+          reasons: ["required validation evidence contains duplicate identifiers"],
+          evidence: [...duplicateRequiredIds]
+        });
+      }
+
       const byId = new Map(
         context.requirements
           .filter(item => item && typeof item.id === "string")
