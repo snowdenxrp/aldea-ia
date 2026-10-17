@@ -3,30 +3,30 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Current working lane
+## Active lane
 
-Continue non-authoritative Nexo Core M0. Do not pivot into STEP 7 research or repeat M0.1–M0.29 findings. STEP 7 remains a separate activation blocker: OPEN / STOP / UNKNOWN. Bounded, non-activated core work may continue.
+Continue non-authoritative Nexo Core M0. Do not restart M0.1–M0.30 research and do not pivot into STEP 7. STEP 7 remains a separate activation blocker: OPEN / STOP / UNKNOWN; bounded non-activated core construction may continue.
 
-## Latest increment: M0.29 — malformed required claim items
+## Latest increment: M0.30 — normalize known non-authoritative source labels
 
-Record: [NCS M0.29 — Fail closed on malformed required claim items](NCS_M0_29_MALFORMED_REQUIRED_CLAIM_ITEM_FAIL_CLOSED_2026-10-17.md)
-
-- Source commit: `6635b8b2015a00ec749c037b5e5dd92175b627b1`
-- Test commit / CI head: `5cfcdd06c7f3866c82eaea37ef0789447bac1d0b`
+Record: [M0.30 — Normalize known non-authoritative source labels](NCS_M0_30_NORMALIZE_NONAUTHORITATIVE_SOURCE_LABELS_2026-10-17.md)
+- Source commit: `0976fcf7a8c825c86a371a1cf7d0259acc263acc`
+- Test commit / CI head: `ca3e025ee106d4051e20aa9a24f49163fd854be8`
 - Source: `src/nexo/core/final-semantic-validator.mjs`
 - Test: `tests/nexo/final-semantic-validator.test.mjs`
-- Focused CI:
-  - STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/38988318369 — success.
-  - STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/38988318355 — success.
+- Focused CI passed:
+  - STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/38988396835
+  - STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/38988396800
 
-Required entries from authoritativeReads, dependencies, predicateDependencies, and causalInputs without a non-empty string ID now produce UNKNOWN rather than being silently excluded from the required-ID set. Entries explicitly marked `required: false` remain optional.
+Known non-authoritative labels are normalized by trim + lowercase before matching `cache/helper/derived`. This closes a case/whitespace inconsistency but does not authenticate any source label.
 
 ## Previous increments
 
+- M0.29 — [malformed required claim items fail closed](NCS_M0_29_MALFORMED_REQUIRED_CLAIM_ITEM_FAIL_CLOSED_2026-10-17.md), source `6635b8b2015a00ec749c037b5e5dd92175b627b1`, test/CI head `5cfcdd06c7f3866c82eaea37ef0789447bac1d0b`. STEP 4/STEP 5 focused CI passed.
 - M0.28 — [detached result evidence](NCS_M0_28_DETACHED_RESULT_EVIDENCE_2026-10-17.md), source `eb5e50c3bf5ca2cddec4e46e63531b6a1c72890e`, test/CI head `6ef02115c86c259363d28e363c8d0468f3c35b9f`. Focused M0/STEP4/STEP5/policy-context CI passed.
 - M0.27 — [preconstruct success outcome before commit](NCS_M0_27_PRECOMMIT_SUCCESS_OUTCOME_CONSTRUCTION_2026-10-17.md), source `aafe369082dec64599558ed7769c2e6e1988a846`, test/CI head `dcee4a5e5dd2b5d80ab6163cd6137eb51c882aa4`. Focused M0/STEP4/STEP5 CI passed.
 
-## Limits that remain
+## Remaining limits
 
 - No full-repository test run is claimed.
 - No production runtime → protected transition → final sink path is proven.
@@ -36,11 +36,11 @@ Required entries from authoritativeReads, dependencies, predicateDependencies, a
 
 ## Next action
 
-Continue auditing remaining non-STEP-7 core contract boundaries and tests. Check existing M0.1–M0.29 and AB/P records before selecting another issue. Fix only a concrete, contract-grounded gap; add a regression and focused CI. Do not overengineer hypothetical cases without meaningful architectural support.
+Continue only where there is a concrete, contract-grounded gap in the remaining non-STEP-7 core. Cross-check M0.1–M0.30 and AB/P records first. Prefer a narrow regression and coherent fix, then focused CI. Avoid broad speculative audits and avoid repeating completed work.
 
 ## Continuity references
 
 - Current status: [NEXO_NCS/STATUS.md](../STATUS.md)
+- M0.30 report: [NCS_M0_30_NORMALIZE_NONAUTHORITATIVE_SOURCE_LABELS_2026-10-17.md](NCS_M0_30_NORMALIZE_NONAUTHORITATIVE_SOURCE_LABELS_2026-10-17.md)
 - M0.29 report: [NCS_M0_29_MALFORMED_REQUIRED_CLAIM_ITEM_FAIL_CLOSED_2026-10-17.md](NCS_M0_29_MALFORMED_REQUIRED_CLAIM_ITEM_FAIL_CLOSED_2026-10-17.md)
-- M0.28 report: [NCS_M0_28_DETACHED_RESULT_EVIDENCE_2026-10-17.md](NCS_M0_28_DETACHED_RESULT_EVIDENCE_2026-10-17.md)
-- STEP 7 handoff remains preserved but is not the active work lane: [NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-16.md](NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-16.md)
+- STEP 7 handoff preserved separately: [NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-16.md](NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-16.md)
