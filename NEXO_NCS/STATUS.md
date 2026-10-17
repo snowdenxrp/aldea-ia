@@ -1,4 +1,21 @@
-## CURRENT M0 CONTINUATION — M0.48 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.49 (2026-10-17)
+
+Latest M0 evidence: [M0.49 — Reject malformed observation collections](BUILD/NCS_M0_49_REJECT_MALFORMED_OBSERVATION_COLLECTIONS_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- `derivedProvenance` in ObservationEnvelope and `admissionEvidence` in MissionCandidate now require arrays.
+- Source commit: `64f74c975d6748d288d093db24ca0563301f895e`; regression-test commit: `a55d0f54158efa7a8c6588eae3424cff6c931a9d`.
+- M0 source CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996819776
+- STEP 5 source CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996819811
+- STEP 4 source CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996819850
+- M0 regression CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996829032
+- STEP 5 regression CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996828956
+- STEP 4 regression CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996828937
+- Scope: collection-shape validation only. Observation/source/admission/constitutional authority remain unproven.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.48 (2026-10-17)
 
 Latest M0 evidence: [M0.48 — Detach and freeze reconciliation evidence](BUILD/NCS_M0_48_DETACH_AND_FREEZE_RECONCILIATION_EVIDENCE_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
