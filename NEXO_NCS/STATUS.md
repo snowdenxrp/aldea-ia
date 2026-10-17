@@ -1,3 +1,16 @@
+## CURRENT M0 CONTINUATION — M0.27 (2026-10-17)
+
+Latest M0 evidence: [M0.27 pre-commit success outcome construction](BUILD/NCS_M0_27_PRECOMMIT_SUCCESS_OUTCOME_CONSTRUCTION_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- `executeProtectedTransition()` now constructs the candidate `SAFE_COMMIT` outcome before calling conditional commit, preventing an outcome-construction exception from occurring only after the mutation has been confirmed.
+- Regression covers PASS evidence with a throwing enumerable getter and asserts zero conditional-commit calls.
+- Source commit: `aafe369082dec64599558ed7769c2e6e1988a846`; test/CI head: `dcee4a5e5dd2b5d80ab6163cd6137eb51c882aa4`.
+- Focused CI PASS: M0 https://github.com/snowdenxrp/aldea-ia/actions/runs/38987864543 ; STEP 5 https://github.com/snowdenxrp/aldea-ia/actions/runs/38987864473 ; STEP 4 https://github.com/snowdenxrp/aldea-ia/actions/runs/38987864490.
+- Scope qualification: no full-repository test run or production-runtime/bypass proof claimed. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
 ## M0.1 — observation/candidate boundary hardening (2026-10-16)
 
 Source changes pushed to `ncs-clean-architecture`:
