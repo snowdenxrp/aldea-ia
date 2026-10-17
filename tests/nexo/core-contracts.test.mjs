@@ -88,6 +88,27 @@ assert.throws(() => createClaimEnvelope({
 }), /enumerable data properties/);
 assert.equal(getterCalls, 0, "contract validation must not execute caller getters");
 
+let topLevelGetterCalls = 0;
+const getterClaim = { action: "example" };
+Object.defineProperty(getterClaim, "claimId", {
+  enumerable: true,
+  get() { topLevelGetterCalls += 1; return "claim-from-getter"; }
+});
+assert.throws(() => createClaimEnvelope(getterClaim), /enumerable data properties/);
+assert.equal(topLevelGetterCalls, 0, "top-level claim getters must be rejected before field reads");
+
+let optionsGetterCalls = 0;
+const getterOptions = {};
+Object.defineProperty(getterOptions, "evidence", {
+  enumerable: true,
+  get() { optionsGetterCalls += 1; return []; }
+});
+assert.throws(() => createValidationResult(VALIDATION.PASS, getterOptions), /enumerable data properties/);
+assert.equal(optionsGetterCalls, 0, "result option getters must be rejected before destructuring");
+
+assert.throws(() => createCandidate(null), /candidate must be a record/);
+assert.throws(() => createClaimEnvelope([]), /claimEnvelope must be a record/);
+
 const inputs = {
   authoritativeReads: [{ revision: { value: 1 } }],
   dependencies: [{ meta: { version: 1 } }],
