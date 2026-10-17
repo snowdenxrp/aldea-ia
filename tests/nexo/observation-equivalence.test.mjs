@@ -132,6 +132,21 @@ function observation(overrides = {}) {
 }
 
 {
+  // Valid JSON arrays with multiple entries must remain admissible.
+  const left = observation({ derivedProvenance: [
+    { field: "amount", source: "scan-1" },
+    { field: "resourceType", source: "scan-2" }
+  ] });
+  const right = observation({ derivedProvenance: [
+    { field: "amount", source: "scan-1" },
+    { field: "resourceType", source: "scan-2" }
+  ] });
+  const result = evaluateNegativeResourceEquivalence(left, right);
+  assert.equal(result.status, EQUIVALENCE.EQUIVALENT);
+  assert.deepEqual(result.reasons, []);
+}
+
+{
   // Plain-record key order is representational, not semantic.
   const result = evaluateNegativeResourceEquivalence(
     observation({ targetIncarnation: { resourceId: "well-1", generation: 3 } }),
