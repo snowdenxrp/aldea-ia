@@ -1,3 +1,17 @@
+## CURRENT M0 CONTINUATION — M0.28 (2026-10-17)
+
+Latest M0 evidence: [M0.28 detached result evidence](BUILD/NCS_M0_28_DETACHED_RESULT_EVIDENCE_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- `createValidationResult()`, `createOutcome()`, and `createAuthorityResult()` now detach nested reason/evidence data before recursively freezing it, matching the established clone-then-freeze ownership pattern.
+- Regression tests prove source objects remain unfrozen and source mutation does not alter returned results.
+- Source commit: `eb5e50c3bf5ca2cddec4e46e63531b6a1c72890e`; test/CI head: `6ef02115c86c259363d28e363c8d0468f3c35b9f`.
+- Focused CI PASS: M0 https://github.com/snowdenxrp/aldea-ia/actions/runs/38987977314 ; STEP 5 https://github.com/snowdenxrp/aldea-ia/actions/runs/38987977285 ; STEP 4 https://github.com/snowdenxrp/aldea-ia/actions/runs/38987977316 ; policy-context contract https://github.com/snowdenxrp/aldea-ia/actions/runs/38987977369.
+- Previous M0.27 evidence: [pre-commit success outcome construction](BUILD/NCS_M0_27_PRECOMMIT_SUCCESS_OUTCOME_CONSTRUCTION_2026-10-17.md).
+- Scope qualification: no full-repository test run or production-runtime/bypass proof claimed. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
 ## CURRENT M0 CONTINUATION — M0.27 (2026-10-17)
 
 Latest M0 evidence: [M0.27 pre-commit success outcome construction](BUILD/NCS_M0_27_PRECOMMIT_SUCCESS_OUTCOME_CONSTRUCTION_2026-10-17.md).
