@@ -1,3 +1,12 @@
+## M0.68 — Preflight the outer reconciliation call before destructuring
+
+- State: implemented; focused CI pending at documentation time on source/test commit `2891397fe57f1fd894033b43017c506c9fd7c13a`.
+- Defect: `reconcile({ reconciliationCase, evidence = [] } = {})` destructured the caller's input before the function could validate it. Getters on the outer input could execute before M0.67's nested-record checks; passing `null` threw rather than returning a fail-closed status.
+- Correction: accept an opaque `input`, validate its full own-property graph before any field read, reject null/non-record inputs as `INVALID`, then destructure only the validated record.
+- Regression: outer `evidence` and `reconciliationCase` getters remain uncalled; null input returns `INVALID`.
+- Source + regression commit: `2891397fe57f1fd894033b43017c506c9fd7c13a`.
+- This does not authenticate `authoritative: true`, establish provenance/currentness, or prove protected-path closure. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## M0.67 — Reject unsafe reconciliation evidence before reading or cloning
 
 - State: implemented and focused-CI verified on `37d0f12649a9ffe3c93344dc7d77d2156742bd79`.

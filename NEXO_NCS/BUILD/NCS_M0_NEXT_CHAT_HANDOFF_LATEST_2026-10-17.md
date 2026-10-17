@@ -1,3 +1,9 @@
+## Current resume point — M0.68 (2026-10-17)
+
+M0.68 preflights the outer reconciliation call record before destructuring, preventing accessors on `input.evidence` or `input.reconciliationCase` from executing before M0.67's checks. Null input now returns INVALID instead of throwing. Source + regression commit: `2891397fe57f1fd894033b43017c506c9fd7c13a`. Focused CI was queued when this handoff update was prepared; verify exact conclusions before claiming PASS.
+
+Report: [NCS M0.68](NCS_M0_68_PREFLIGHT_OUTER_RECONCILIATION_INPUT_2026-10-17.md). STEP 7 remains OPEN / STOP / UNKNOWN; `authoritative: true` is still self-asserted, not authenticated proof.
+
 ## Current resume point — M0.67 (2026-10-17)
 
 M0.67 is implemented and focused-CI verified on `37d0f12649a9ffe3c93344dc7d77d2156742bd79`. Reconciliation now validates the caller-owned reconciliation case and evidence graph before reading fields or cloning. Accessors, symbol keys, and non-enumerable properties are rejected without invoking getters. Regression proves getter call counts remain zero and symbol-keyed evidence cannot be silently omitted.
