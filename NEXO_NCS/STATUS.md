@@ -1,4 +1,21 @@
-## CURRENT M0 CONTINUATION — M0.47 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.48 (2026-10-17)
+
+Latest M0 evidence: [M0.48 — Detach and freeze reconciliation evidence](BUILD/NCS_M0_48_DETACH_AND_FREEZE_RECONCILIATION_EVIDENCE_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- Reconciliation now clones, validates, and recursively freezes accepted evidence before returning RESOLVED.
+- Caller mutation cannot alter returned nested evidence; exotic mutable evidence fails closed to UNRESOLVED.
+- Source commit: `aff3d102cc43fe464f05c030bf69af9e4508b133`; regression-test commit: `a6e3f688964435500a9602654692b76fe033a489`.
+- STEP 6 source CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755140
+- M0 core source CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755038
+- STEP 5 source CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755081
+- STEP 4 source CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996755318
+- Regression CI PASS: STEP 6 https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762772 ; M0 https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762735 ; STEP 5 https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762756 ; STEP 4 https://github.com/snowdenxrp/aldea-ia/actions/runs/38996762759
+- Critical limit: `authoritative: true` remains caller-supplied and unauthenticated. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.47 (2026-10-17)
 
 Latest M0 evidence: [M0.47 — Reject indeterminate reconciliation outcomes](BUILD/NCS_M0_47_REJECT_INDETERMINATE_RECONCILIATION_OUTCOMES_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
