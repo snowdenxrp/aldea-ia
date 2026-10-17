@@ -1,3 +1,12 @@
+## M0.64 — Detach and freeze outcome-classifier results
+
+- State: implemented and focused-CI verified on `60337cdc7cfa0078932b0cce7450e10af1c82f75`.
+- `classify()` now rebuilds the validated outcome through `createOutcome()`, so adapter-owned mutable results cannot escape by reference.
+- Regression mutates the classifier-owned result after return and verifies the returned outcome and nested evidence remain unchanged and frozen.
+- Evidence report: [M0.64 — Detach and freeze outcome-classifier results](BUILD/NCS_M0_64_DETACH_FREEZE_OUTCOME_CLASSIFIER_RESULTS_2026-10-17.md).
+- Focused CI success: M0 `39076742989`; STEP 4 `39076742913`; STEP 5 `39076742921`; STEP 3A/3B/3C `39076742904`.
+- This does not authenticate classifier/authority ports or prove protected runtime closure. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## M0.63 — Preflight Core port options and validate commit result errorCode
 
 - State: implemented and focused-CI verified on `8c8f64b5c2f459194856800e1593a52104a8d57c`.

@@ -1,3 +1,9 @@
+## Current resume point — M0.64 (2026-10-17)
+
+M0.64 is implemented and focused-CI verified on `60337cdc7cfa0078932b0cce7450e10af1c82f75`. Outcome-classifier results are reconstructed through `createOutcome()` before returning, detaching/freezing reasons and nested evidence. Report: [NCS M0.64](NCS_M0_64_DETACH_FREEZE_OUTCOME_CLASSIFIER_RESULTS_2026-10-17.md). Final focused CI: M0 `39076742989`, STEP 4 `39076742913`, STEP 5 `39076742921`, STEP 3A/3B/3C `39076742904`, all success.
+
+Do not repeat M0.1–M0.64. Continue only with a distinct, contract-grounded defect and regression. STEP 7 remains STOP for protected activation; no legitimate authority or production protected-effect path has been proven.
+
 ## Current resume point — M0.63 (2026-10-17)
 
 The current increment preflights `createCorePorts()` options before destructuring and rejects malformed conditional-commit `errorCode` results. Regression coverage was added. Final focused CI passed on commit `8c8f64b5c2f459194856800e1593a52104a8d57c`: M0 `39076550293`, STEP 4 `39076550200`, STEP 5 `39076550208`, STEP 3A/3B/3C `39076550220`. Evidence report: [M0.63](NCS_M0_63_PREFLIGHT_CORE_PORT_OPTIONS_AND_COMMIT_ERRORCODE_2026-10-17.md). Do not repeat M0.1–M0.62. STEP 7 remains STOP for protected activation; no legitimate authority or production protected-effect route has been proven.
