@@ -6,7 +6,7 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.60. Do not repeat M0.1–M0.60 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.61. Do not repeat M0.1–M0.61 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
 
 ## Latest STEP 7 design-only reconciliation — first-scope ownership boundary
 
@@ -17,6 +17,25 @@ The post-M0.58 source recheck found the runtime/orchestrator/effect-adapter sour
 A design-only boundary table now keeps four classes separate: planning-only, local Lúmina/simulation mutation, canonical persisted-state acceptance, and external/protected effects. No production execution model is selected. Direction B remains the security objective; no weaker self-reported path, trust ceremony, freeze/signature, APK, or wiring is authorized.
 
 **Next action:** the owner must explicitly name the intended first deployment target and which of those ownership classes belongs in the first constitutional scope. Do not infer the target or wire code before that decision. Then trace only that target's canonical state owner and final effect-capable sink. If scope remains undefined, remain design-only / STOP.
+
+---
+
+## Latest verified increment: M0.61 — preflight authority, commit, and outcome port results
+
+Report: [NCS M0.61 — Preflight authority, commit, and outcome port results](NCS_M0_61_PREFLIGHT_AUTHORITY_COMMIT_OUTCOME_RESULTS_2026-10-17.md)
+
+- Source commits: `5e9dbf0774414027d0fca39c96bf94e63eecb359`, `3fe72ccf5fa31f472511ae738e9c97a70297dab9`
+- Regression-test commit: `a6e9a5ea8484d26b4de53631ec97956e50a050c9`
+- Report commit: `496666e94e84b41957bd825bb6eec35c7f04ad60`
+- STATUS update: `97d94cc3d2268a3b4c41ecb15b060ebd249ce65b`
+- M0 Core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084005 — success
+- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084057 — success
+- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084097 — success
+- STEP 3A/3B/3C: https://github.com/snowdenxrp/aldea-ia/actions/runs/39076084035 — success
+
+Authority, conditional-commit, and outcome-classifier port results are now preflighted before reading their fields. Getter regressions prove the accessors are not executed; malformed authority maps to UNKNOWN, malformed commit output to RECONCILE_REQUIRED, and malformed classifier output rejects the transition. This is bounded data-shape hardening, not proof that any port is trusted or that production protected execution is safely wired.
+
+**Next:** start at STATUS and do not repeat M0.1–M0.61. Continue only if a distinct contract-grounded defect is demonstrated. Do not infer the first deployment target or constitutional ownership class, and do not wire production protected execution. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
 
 ---
 
