@@ -63,10 +63,10 @@ assert.equal(Object.isFrozen(candidateInputObservation), false);
 assert.equal(detachedCandidate.admission, "UNKNOWN");
 assert.throws(() => createMissionCandidate({
   observation: { source: "", code: "MESH_MISSING" }
-}), /observation.source/);
+}), /source/);
 assert.throws(() => createMissionCandidate({
   observation: { source: "VisualAgent", code: "" }
-}), /observation.code/);
+}), /code/);
 
 assert.throws(() => createObservationEnvelope({ source: "VisualAgent" }), /code/);
 assert.throws(() => createMissionCandidate({ observation, admission: "FAILED" }), /invalid admission state/);
@@ -82,6 +82,21 @@ assert.throws(() => createMissionCandidate({
 assert.throws(() => createMissionCandidate({
   observation, admissionEvidence: { source: "x" }
 }), /admissionEvidence must be an array/);
+
+// Regression: a caller-created look-alike ObservationEnvelope must be rebuilt
+// and validated at the MissionCandidate boundary, not merely frozen as-is.
+assert.throws(() => createMissionCandidate({
+  observation: { source: "VisualAgent", code: "MESH_MISSING", derivedProvenance: "not-an-array" }
+}), /derivedProvenance must be an array/);
+assert.throws(() => createMissionCandidate({
+  observation: { source: "VisualAgent", code: "MESH_MISSING", inputs: new Map([["x", 1]]) }
+}), /arrays and plain objects/);
+assert.throws(() => createMissionCandidate({
+  observation: { source: "VisualAgent", code: "MESH_MISSING", freshness: new Date("2026-10-16T00:00:00Z") }
+}), /arrays and plain objects/);
+assert.throws(() => createMissionCandidate({
+  observation: { source: "VisualAgent", code: "MESH_MISSING", derivedProvenance: { id: "p1" } }
+}), /derivedProvenance must be an array/);
 
 const unknownCandidate = createMissionCandidate({ observation });
 assert.equal(unknownCandidate.admission, "UNKNOWN");
