@@ -1,3 +1,16 @@
+## CURRENT M0 CONTINUATION — M0.31 (2026-10-17)
+
+Latest M0 evidence: [M0.31 cyclic semantic comparison returns UNKNOWN](BUILD/NCS_M0_31_CYCLIC_SEMANTIC_COMPARISON_UNKNOWN_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- STEP 4 now maps cyclic/non-JSON-comparable target, target-incarnation, and policy-context comparisons to typed UNKNOWN rather than allowing JSON serialization to throw out of the validator; comparable mismatches remain FAIL.
+- Regression covers a cyclic claim target and cyclic validation target.
+- Source commit: `ade3552a7c8f1345deb5e91ebf446415b1d2f8b0`; test/CI head: `2efa8631e41cf32691a2b74fdfb51240cc6d36c9`.
+- Focused CI PASS: STEP 4 https://github.com/snowdenxrp/aldea-ia/actions/runs/38988852975 ; STEP 5 https://github.com/snowdenxrp/aldea-ia/actions/runs/38988852849.
+- Scope qualification: no full-repository test run or production-runtime/bypass proof claimed. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
 ## CURRENT M0 CONTINUATION — M0.30 (2026-10-17)
 
 Latest M0 evidence: [M0.30 normalized non-authoritative source labels](BUILD/NCS_M0_30_NORMALIZE_NONAUTHORITATIVE_SOURCE_LABELS_2026-10-17.md).
