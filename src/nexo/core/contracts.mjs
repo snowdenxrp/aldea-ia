@@ -57,6 +57,13 @@ function detachedMutable(value) {
   return structuredClone(value);
 }
 
+function assertContractInput(value, field) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError(`${field} must be a record`);
+  }
+  assertDeepFreezable(value);
+}
+
 function requiredString(value, field) {
   if (typeof value !== "string" || value.trim().length === 0) {
     throw new TypeError(`${field} must be a non-empty, non-blank string`);
@@ -84,6 +91,7 @@ function requiredPolicyRef(value) {
 }
 
 function createPolicyContext(input = {}) {
+  assertContractInput(input, "policyContext");
   const policyRef = requiredPolicyRef(input.policyRef);
   if (input.scope === undefined) throw new TypeError("policyContext.scope is required");
   if (!input.validity || typeof input.validity !== "object" || Array.isArray(input.validity)) {
@@ -107,6 +115,7 @@ function createPolicyContext(input = {}) {
 }
 
 export function createClaimEnvelope(input = {}) {
+  assertContractInput(input, "claimEnvelope");
   const claimId = requiredString(input.claimId, "claimId");
   const action = requiredString(input.action, "action");
   return immutable({
@@ -124,7 +133,9 @@ export function createClaimEnvelope(input = {}) {
   });
 }
 
-export function createCandidate({ claim, state, expectedRevision } = {}) {
+export function createCandidate(input = {}) {
+  assertContractInput(input, "candidate");
+  const { claim, state, expectedRevision } = input;
   if (!claim || typeof claim !== "object" || Array.isArray(claim)) {
     throw new TypeError("candidate requires a ClaimEnvelope");
   }
@@ -138,7 +149,9 @@ export function createCandidate({ claim, state, expectedRevision } = {}) {
   return { claim: validatedClaim, state: detachedMutable(state), expectedRevision };
 }
 
-export function createValidationResult(status, { reasons = [], evidence = [] } = {}) {
+export function createValidationResult(status, options = {}) {
+  assertContractInput(options, "validationResult options");
+  const { reasons = [], evidence = [] } = options;
   if (!VALIDATION_STATES.includes(status)) throw new TypeError(`invalid validation status: ${status}`);
   requiredArray(reasons, "validation reasons");
   requiredArray(evidence, "validation evidence");
@@ -149,13 +162,17 @@ export function createValidationResult(status, { reasons = [], evidence = [] } =
   });
 }
 
-export function createCommitResult(status, { errorCode = null } = {}) {
+export function createCommitResult(status, options = {}) {
+  assertContractInput(options, "commitResult options");
+  const { errorCode = null } = options;
   if (!COMMIT_STATES.includes(status)) throw new TypeError(`invalid commit status: ${status}`);
   if (errorCode !== null) requiredString(errorCode, "commit errorCode");
   return immutable({ status, errorCode });
 }
 
-export function createOutcome(kind, { reasons = [], evidence = [] } = {}) {
+export function createOutcome(kind, options = {}) {
+  assertContractInput(options, "outcome options");
+  const { reasons = [], evidence = [] } = options;
   if (!TERMINAL_OUTCOMES.includes(kind)) throw new TypeError(`invalid outcome: ${kind}`);
   requiredArray(reasons, "outcome reasons");
   requiredArray(evidence, "outcome evidence");
@@ -168,7 +185,9 @@ export function createOutcome(kind, { reasons = [], evidence = [] } = {}) {
 
 const AUTHORITY_STATES = Object.freeze(["AUTHORIZED", "STOP", "UNKNOWN"]);
 
-export function createAuthorityResult(status, { reasons = [], evidence = [] } = {}) {
+export function createAuthorityResult(status, options = {}) {
+  assertContractInput(options, "authorityResult options");
+  const { reasons = [], evidence = [] } = options;
   if (!AUTHORITY_STATES.includes(status)) throw new TypeError(`invalid authority status: ${status}`);
   requiredArray(reasons, "authority reasons");
   requiredArray(evidence, "authority evidence");
