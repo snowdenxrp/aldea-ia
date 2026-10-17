@@ -30,7 +30,8 @@ function assertCandidate(candidate, claim, expectedRevision) {
 
 function classify(ports, kind, { reasons = [], evidence = [] } = {}) {
   const outcome = ports.outcomeClassifier.classify({ kind, reasons, evidence });
-  if (!outcome || outcome.kind !== kind) {
+  assertContractInput(outcome, "outcome classifier result");
+  if (outcome.kind !== kind) {
     throw new Error("outcomeClassifier violated the required terminal classification");
   }
   return outcome;
@@ -66,8 +67,16 @@ export async function executeProtectedTransition(input = {}) {
   const claim = createClaimEnvelope(builtClaim);
 
   const authority = await ports.authorityGate.check(claim);
-  if (!authority || !Object.values(AUTHORITY).includes(authority.status)) {
-    throw new TypeError("authorityGate must return an AuthorityResult");
+  if (!authority || typeof authority !== "object" || Array.isArray(authority)) {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: ["authority gate returned a malformed result shape"]
+    });
+  }
+  assertContractInput(authority, "authority gate result");
+  if (!Object.values(AUTHORITY).includes(authority.status)) {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: ["authority gate returned a malformed result shape"]
+    });
   }
   if (!Array.isArray(authority.reasons) || !Array.isArray(authority.evidence)) {
     return classify(ports, OUTCOMES.UNKNOWN, {
@@ -144,7 +153,13 @@ export async function executeProtectedTransition(input = {}) {
     });
   }
 
-  if (!commit || !Object.values(COMMIT).includes(commit.status)) {
+  if (!commit || typeof commit !== "object" || Array.isArray(commit)) {
+    return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
+      reasons: ["conditional commit returned no valid result"]
+    });
+  }
+  assertContractInput(commit, "conditional commit result");
+  if (!Object.values(COMMIT).includes(commit.status)) {
     return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
       reasons: ["conditional commit returned no valid result"]
     });
