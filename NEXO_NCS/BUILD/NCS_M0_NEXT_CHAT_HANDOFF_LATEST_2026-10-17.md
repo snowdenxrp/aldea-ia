@@ -3,7 +3,18 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.43 — reject mutable exotic values in immutable Core contracts
+## Latest increment: M0.44 — validate policy-resolution reasons/evidence shapes
+
+Report: [M0.44 — Validate policy-resolution reasons/evidence shapes](NCS_M0_44_VALIDATE_POLICY_RESOLUTION_REASON_EVIDENCE_SHAPES_2026-10-17.md)
+- Source commit: `6cf588982a1b809b54820bb0c96362975f697867`
+- Regression-test commit: `c856d19472ca55755f5655678f01151754b865e1`
+- STEP 7 policyContext resolver CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994767198 — success
+- STEP 4 semantic validation CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994767241 — success
+- STEP 5 outcome classification CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994767183 — success
+
+Resolver check results now must be plain non-array objects with a recognized status; optional `reasons` and `evidence` must be arrays when present. This prevents malformed strings from being spread into character lists and rejects malformed diagnostic shapes before output construction. Does not authenticate evidence.
+
+## Previous increment: M0.43 — reject mutable exotic values in immutable Core contracts
 
 Report: [M0.43 — Reject mutable exotic values in immutable Core contracts](NCS_M0_43_REJECT_MUTABLE_EXOTIC_VALUES_IN_CORE_CONTRACTS_2026-10-17.md)
 - Source commit: `4bdc7767105d6241e8c004bfc284389e723fca2a`
