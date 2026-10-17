@@ -3,7 +3,7 @@
 Date: 2026-10-17  
 Branch: `ncs-clean-architecture`  
 Implementation commit: `f7828d1e0f11f81e03106af9a50f914d99c87b1c`  
-Status: implemented; STEP 4 and STEP 5 focused CI successful. Runtime test coverage should still be distinguished from the workflow checks listed below.
+Status: implemented; focused regression and STEP 5 workflow passed.
 
 ## Why this change
 
@@ -31,8 +31,9 @@ It also preserves plan-level `uncertainty`, `evidenceCount`, and `observedAgentC
 
 - Source/test commit: [`f7828d1`](https://github.com/snowdenxrp/aldea-ia/commit/f7828d1e0f11f81e03106af9a50f914d99c87b1c)
 - STEP 4 semantic validation CI: [run 39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) — success.
-- STEP 5 outcome classification CI: [run 39079693214](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693214) — success.
+- STEP 5 outcome classification CI: [run 39079779219](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079779219) — success. The job log confirms `tests/nexo/restart-reconstruction.test.mjs` ran and passed, alongside the outcome-classifier and protected-transition tests.
+- Prior STEP 4 semantic validation CI: [run 39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) — success.
 
-The two workflow successes do not by themselves prove that every restart scenario or the entire repository test suite passed. The added regression is committed; a workflow explicitly executing `tests/nexo/restart-reconstruction.test.mjs` must be checked before claiming that exact test ran in CI.
+This is focused evidence for the listed tests, not proof that the entire repository test suite or every restart scenario passed.
 
 This is mission continuity data, not authority evidence. It does not authenticate the plan source, prove that an action occurred, close the external effect boundary, or change STEP 7. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.

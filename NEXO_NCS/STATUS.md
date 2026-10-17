@@ -1,9 +1,9 @@
 ## M0 functional continuity — preserve mission context across restart (2026-10-17)
 
-- Implemented in `src/assistants/memory.js`: durable mission plans now retain optional step `priority`, `reason`, `source`, `reversible`, `requiresEvidence`, `requiresVerification`, and detached `context`, plus plan-level uncertainty/evidence counts.
-- Regression added to `tests/nexo/restart-reconstruction.test.mjs` for reconstruction and detachment.
-- Source/test commit: [`f7828d1`](https://github.com/snowdenxrp/aldea-ia/commit/f7828d1e0f11f81e03106af9a50f914d99c87b1c).
-- STEP 4 CI [39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) and STEP 5 CI [39079693214](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693214) succeeded. These workflow results do not establish that the new restart test itself ran; do not overclaim.
+- Implemented in `src/assistants/memory.js`: durable mission plans retain optional step `priority`, `reason`, `source`, `reversible`, `requiresEvidence`, `requiresVerification`, and detached `context`, plus plan-level uncertainty/evidence counts.
+- Regression in `tests/nexo/restart-reconstruction.test.mjs` verifies reconstruction and detachment.
+- Source/test commit: [`f7828d1`](https://github.com/snowdenxrp/aldea-ia/commit/f7828d1e0f11f81e03106af9a50f914d99c87b1c); focused workflow commit [`3dfb34b`](https://github.com/snowdenxrp/aldea-ia/commit/3dfb34b7879e1b580f77ec96d1788b28bd55dfe2).
+- STEP 5 CI [39079779219](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079779219) passed and explicitly ran `tests/nexo/restart-reconstruction.test.mjs`, `tests/nexo/outcome-classifier.test.mjs`, and `tests/nexo/protected-transition.test.mjs`. Prior STEP 4 CI [39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) also succeeded.
 - This improves continuity only; it does not authenticate authority or authorize effects. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
 - Report: [M0 functional continuity report](BUILD/NCS_M0_FUNCTIONAL_CONTINUITY_PRESERVE_MISSION_CONTEXT_2026-10-17.md).
 

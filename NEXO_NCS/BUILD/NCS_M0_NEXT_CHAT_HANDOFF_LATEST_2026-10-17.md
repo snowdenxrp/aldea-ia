@@ -1,8 +1,8 @@
 ## Latest functional progress — preserve mission context across restart (2026-10-17)
 
-A bounded functional improvement was committed at `f7828d1e0f11f81e03106af9a50f914d99c87b1c`. `recordNexoPlan()` now retains the optional mission-step fields needed to reconstruct action context and verification requirements after restart, plus plan-level uncertainty/evidence counts. A regression was added to `tests/nexo/restart-reconstruction.test.mjs` for reconstruction and detachment.
+A bounded functional improvement was committed at `f7828d1e0f11f81e03106af9a50f914d99c87b1c`. `recordNexoPlan()` now retains optional mission-step metadata/context needed to reconstruct the same plan after restart, plus plan-level uncertainty/evidence counts. A regression in `tests/nexo/restart-reconstruction.test.mjs` verifies round-trip preservation and detached context.
 
-Focused STEP 4 CI run `39079693260` and STEP 5 CI run `39079693214` succeeded. Do not claim those runs necessarily executed the new restart regression; check workflow contents or add a workflow that runs it explicitly. This is useful continuity data, not authority proof. STEP 7 stays OPEN / STOP / UNKNOWN; protected effects remain STOP.
+Focused STEP 5 CI run `39079779219` passed and explicitly executed the restart regression, outcome-classifier test, and protected-transition test. Prior STEP 4 CI run `39079693260` also succeeded. This is useful continuity data, not authority proof. STEP 7 stays OPEN / STOP / UNKNOWN; protected effects remain STOP.
 
 Report: [NCS M0 functional continuity report](NCS_M0_FUNCTIONAL_CONTINUITY_PRESERVE_MISSION_CONTEXT_2026-10-17.md).
 
