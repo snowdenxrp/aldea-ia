@@ -117,7 +117,7 @@ export function createFinalSemanticValidator() {
             (requirement.authoritative !== true ||
              typeof requirement.source !== "string" ||
              requirement.source.trim().length === 0 ||
-             ["cache", "helper", "derived"].includes(requirement.source))) {
+             ["cache", "helper", "derived"].includes(requirement.source.trim().toLowerCase()))) {
           nonAuthoritative.push(requirement.id);
           continue;
         }
