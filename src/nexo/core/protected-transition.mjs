@@ -107,6 +107,13 @@ export async function executeProtectedTransition({
     return outcomeFromValidation(ports, validation);
   }
 
+  // Construct the success outcome before mutation. If outcome construction
+  // fails (for example, malformed evidence), do not commit and then lose the
+  // ability to report the committed transition.
+  const safeCommitOutcome = classify(ports, OUTCOMES.SAFE_COMMIT, {
+    evidence: validation.evidence
+  });
+
   let commit;
   try {
     commit = await ports.conditionalCommit.commit(candidate);
@@ -123,9 +130,7 @@ export async function executeProtectedTransition({
   }
 
   if (commit.status === COMMIT.COMMITTED) {
-    return classify(ports, OUTCOMES.SAFE_COMMIT, {
-      evidence: validation.evidence
-    });
+    return safeCommitOutcome;
   }
 
   if (commit.status === COMMIT.CONDITIONAL_CONFLICT) {
