@@ -385,6 +385,21 @@ function makePorts(overrides = {}) {
   assert.equal(commitCalls, 0);
 }
 
+{
+  let authorityCalls = 0;
+  let commitCalls = 0;
+  const { ports } = makePorts({
+    authorityGate: { check: () => { authorityCalls += 1; return createAuthorityResult(AUTHORITY.AUTHORIZED); } },
+    conditionalCommit: { commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); } }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({ ports, proposal: {}, state: { value: 1 }, expectedRevision: Number.MAX_SAFE_INTEGER }),
+    /expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER/
+  );
+  assert.equal(authorityCalls, 0);
+  assert.equal(commitCalls, 0);
+}
+
 console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
 
 
