@@ -1,4 +1,18 @@
-## CURRENT M0 CONTINUATION — M0.45 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.46 (2026-10-17)
+
+Latest M0 evidence: [M0.46 — Reject mutable exotic policy-context data](BUILD/NCS_M0_46_REJECT_MUTABLE_EXOTIC_POLICY_CONTEXT_DATA_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- Policy context output data rejects Map/Set/Date and other non-plain objects before freezing; policy reference identifiers reject whitespace-only strings.
+- Source commit: `232359375b5fe457a8920454c09ea40fb481bd61`; regression-test commit: `d89c45fdc8c1925937c3c4d40bbe3cd8df49fe7d`.
+- STEP 7 policyContext CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996552925
+- STEP 4 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996552902
+- STEP 5 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996552905
+- Scope: shape/immutability checks only; policy-reference authenticity, evidence provenance and constitutional authority remain unproven. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.45 (2026-10-17)
 
 Latest M0 evidence: [M0.45 blank Observation source/code guard](BUILD/NCS_M0_45_REJECT_BLANK_OBSERVATION_SOURCE_CODE_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
