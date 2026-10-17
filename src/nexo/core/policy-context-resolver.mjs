@@ -9,7 +9,22 @@ function immutable(value, seen = new WeakSet()) {
   return Object.freeze(value);
 }
 
-function detached(value) { return immutable(structuredClone(value)); }
+function assertPlainData(value, seen = new WeakSet()) {
+  if (value === null || typeof value !== "object") return;
+  if (seen.has(value)) return;
+  seen.add(value);
+  const prototype = Object.getPrototypeOf(value);
+  if (!Array.isArray(value) && prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("policy context data must contain only arrays and plain objects");
+  }
+  for (const child of Object.values(value)) assertPlainData(child, seen);
+}
+
+function detached(value) {
+  const clone = structuredClone(value);
+  assertPlainData(clone);
+  return immutable(clone);
+}
 
 function check(name, value) {
   if (!value || typeof value !== "object" || Array.isArray(value) || !RESOLUTION_INPUT_STATES.includes(value.status)) {
@@ -26,7 +41,7 @@ function check(name, value) {
 export function resolvePolicyContext(input = {}) {
   if (!input.policyRef || typeof input.policyRef !== "object") throw new TypeError("policyRef is required");
   for (const field of ["id", "semanticVersion", "hash"]) {
-    if (typeof input.policyRef[field] !== "string" || input.policyRef[field].length === 0) {
+    if (typeof input.policyRef[field] !== "string" || input.policyRef[field].trim().length === 0) {
       throw new TypeError(`policyRef.${field} is required`);
     }
   }
