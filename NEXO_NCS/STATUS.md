@@ -1,5 +1,39 @@
 # NEXO NCS — STATUS
 
+## CURRENT ENTRY POINT — M0.52 (2026-10-17)
+
+**Continue from M0.52; do not repeat investigations M0.1–M0.52.**
+
+- Latest report: BUILD/NCS_M0_52_FAIL_CLOSED_MALFORMED_OBSERVATION_EQUIVALENCE_2026-10-17.md
+- Full next-chat continuity / project goals / exact instructions: BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md
+- Branch: ncs-clean-architecture
+- Source commit: 798f14f238a59be5b1e38e7f6a87917e29c4b53c
+- Regression tests commit: 65583e7d0ea1683cd35e362173b2557bddf59ebe
+
+### M0.52 focused CI evidence — all six successful
+
+- Source M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040894029
+- Source STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040893918
+- Source STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040893891
+- Regression M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904776
+- Regression STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904730
+- Regression STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904738
+
+M0.52 rejects malformed/non-JSON observation-equivalence data as UNKNOWN, preventing serialization collisions from implying equivalence. This is bounded contract validation only, not provenance truth or authorization proof.
+
+## Project goal
+
+Build Nexo as a private personal AI with durable identity, memory, principles and continuity across models/providers, OSes, devices and environments under a user-controlled Constitution. Nexo ≠ model ≠ OS ≠ device ≠ Lúmina. Establish constitutional authority and safety before activation. The user is the owner; the daughter is a possible future successor, not a current authority. No device/biometric/file copy may silently become constitutional authority. Avoid GenesisRoot monolith; separate trust anchor, endorser, attester, verifier and relying party.
+
+## Hard gate
+
+**STEP 7 = OPEN / STOP / UNKNOWN. Protected effects remain STOP.** No demonstrated legitimate initial authority, complete authority binding, exhaustive protected-path reachability, or bypass closure. Do not commission the Constitution or activate protected effects. Continue bounded non-authoritative Core work only.
+
+## Next action
+
+Read the full handoff, verify latest repository state, then inspect a distinct Core boundary for a demonstrable contract defect. Add regression tests, run relevant CI and wait for completion, record exact evidence, and update both BUILD report and STATUS/handoff. Do not repeat closed research or use M0/APK work as a side quest. Missing proof = PENDING/UNKNOWN, never PASS.
+
+---
 ## Current entry point
 
 **Current non-authoritative Core increment: M0.51 — focused CI passed.**
