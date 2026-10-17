@@ -1,4 +1,18 @@
-## CURRENT M0 CONTINUATION — M0.43 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.44 (2026-10-17)
+
+Latest M0 evidence: [M0.44 policy-resolution diagnostic shape guard](BUILD/NCS_M0_44_VALIDATE_POLICY_RESOLUTION_REASON_EVIDENCE_SHAPES_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- Policy context resolver now validates each check result as a non-array object with recognized status and requires optional reasons/evidence fields to be arrays.
+- Source commit: `6cf588982a1b809b54820bb0c96362975f697867`; regression test commit: `c856d19472ca55755f5655678f01151754b865e1`.
+- STEP 7 policyContext resolver CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994767198
+- STEP 4 semantic validation CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994767241
+- STEP 5 outcome classification CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994767183
+- Scope: shape validation only; evidence authenticity, constitutional authority, production runtime reachability, and bypass closure remain unproven. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.43 (2026-10-17)
 
 Latest M0 evidence: [M0.43 immutable Core contract data guard](BUILD/NCS_M0_43_REJECT_MUTABLE_EXOTIC_VALUES_IN_CORE_CONTRACTS_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
