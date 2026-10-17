@@ -50,6 +50,22 @@ const baseContext = {
 }
 
 {
+  const result = validator.validate({
+    claim: {
+      claimId: "step4-1",
+      target: null,
+      targetIncarnation: null,
+      policyContext: null
+    }
+  }, {
+    claimId: "step4-1",
+    requirements: []
+  });
+  assert.equal(result.status, VALIDATION.UNKNOWN);
+  assert.match(result.reasons[0], /collections are malformed/);
+}
+
+{
   const malformed = candidate({
     claim: { dependencies: [{ required: true, descriptor: "dependency-without-id" }] }
   });
