@@ -95,6 +95,18 @@ try {
   const afterConflict = await loadState(statePath);
   assert.equal(afterConflict.stateRevision, initial.stateRevision + 1);
 
+  let persistCallsForUnsafeRevision = 0;
+  const unsafeRevisionCommit = createPersistStateConditionalCommit({
+    persistState: async () => { persistCallsForUnsafeRevision += 1; },
+    statePath,
+    clock: () => 1234567892000
+  });
+  await assert.rejects(
+    () => unsafeRevisionCommit.commit({ state: {}, expectedRevision: Number.MAX_SAFE_INTEGER }),
+    /candidate expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER/
+  );
+  assert.equal(persistCallsForUnsafeRevision, 0);
+
   console.log("NEXO STEP 3C real persistState integration tests: PASS");
 } finally {
   await fs.rm(tempDir, { recursive: true, force: true });
