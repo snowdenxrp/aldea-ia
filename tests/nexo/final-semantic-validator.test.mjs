@@ -50,6 +50,15 @@ const baseContext = {
 }
 
 {
+  const malformed = candidate({
+    claim: { dependencies: [{ required: true, descriptor: "dependency-without-id" }] }
+  });
+  const result = validator.validate(malformed, baseContext);
+  assert.equal(result.status, VALIDATION.UNKNOWN);
+  assert.match(result.reasons[0], /no valid identifier/);
+}
+
+{
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
