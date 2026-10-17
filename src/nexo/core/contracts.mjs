@@ -57,7 +57,7 @@ function detachedMutable(value) {
   return structuredClone(value);
 }
 
-function assertContractInput(value, field) {
+export function assertContractInput(value, field) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${field} must be a record`);
   }
