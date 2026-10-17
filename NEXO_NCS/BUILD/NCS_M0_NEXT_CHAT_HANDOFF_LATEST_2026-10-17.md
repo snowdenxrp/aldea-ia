@@ -3,7 +3,19 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.32 — reject blank required strings
+## Latest increment: M0.33 — revalidate ClaimEnvelope at candidate boundary
+
+Record: [M0.33 — Revalidate ClaimEnvelope at candidate boundary](NCS_M0_33_REVALIDATE_CLAIM_ENVELOPE_AT_CANDIDATE_BOUNDARY_2026-10-17.md)
+- Source commit: `e409a27fa43d8778ce12b2af7f5a488022d158e5`
+- Test commit / CI head: `1155acd9c7ffa9b9fdb96a6ab32fa7a2adf6c8a7`
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989354196 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989354182 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989354194 — success
+- policyContext contract CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989354155 — success
+
+`createCandidate()` now rebuilds the supplied claim through `createClaimEnvelope()`, rejecting look-alike objects that bypass required-string/collection checks and detaching the validated claim. Regression coverage includes blank claim ID, malformed string collection, and detachment. This is contract validation only, not content authenticity or constitutional authority.
+
+## Previous increment: M0.32 — reject blank required strings
 
 Record: [M0.32 — Reject blank required strings in core contracts](NCS_M0_32_REJECT_BLANK_REQUIRED_STRINGS_2026-10-17.md)
 - Source commit: `d2354fab87163210b3c9ffae82bfe9afc7d9a689`
@@ -12,8 +24,6 @@ Record: [M0.32 — Reject blank required strings in core contracts](NCS_M0_32_RE
 - STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989062021
 - STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989062023
 - policyContext contract CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989062010
-
-Shared `requiredString()` rejects whitespace-only values but preserves accepted original strings. Regression tests cover claimId, action, and policyRef hash. This is syntax validation only, not proof of identifier uniqueness, authenticity, or authority.
 
 ## Previous increment: M0.31 — cyclic semantic comparison returns UNKNOWN
 
