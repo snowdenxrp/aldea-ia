@@ -117,6 +117,20 @@ const baseContext = {
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
+      { id: "dep-a", status: "SATISFIED", authoritative: true, source: "authority-a" },
+      { id: "dep-a", status: "SATISFIED", authoritative: true, source: "authority-b" },
+      { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
+    ]
+  });
+  assert.equal(result.status, VALIDATION.UNKNOWN);
+  assert.match(result.reasons[0], /duplicate identifiers/);
+  assert.deepEqual(result.evidence, ["dep-a"]);
+}
+
+{
+  const result = validator.validate(candidate(), {
+    ...baseContext,
+    requirements: [
       { id: "dep-a", status: "SATISFIED", authoritative: false, source: "test-authority" },
       { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
     ]
