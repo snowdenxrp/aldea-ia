@@ -642,3 +642,12 @@ console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
   assert.equal(outcome.kind, OUTCOMES.RECONCILE_REQUIRED, "missing errorCode must not be treated as a valid conflict");
   assert.deepEqual(outcome.reasons, ["conditional commit returned a malformed errorCode"]);
 }
+
+
+{
+  class Adapter {
+    check() { return "adapter-method"; }
+  }
+  const ports = createCorePorts({ authorityGate: new Adapter() });
+  assert.equal(ports.authorityGate.check(), "adapter-method", "port adapters may be class instances");
+}
