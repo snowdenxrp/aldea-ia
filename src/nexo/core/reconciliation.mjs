@@ -1,9 +1,12 @@
 import { OUTCOMES } from "./contracts.mjs";
 
 export const RECONCILIATION_STATES = Object.freeze(["RESOLVED", "UNRESOLVED", "INVALID"]);
-const RESOLVABLE_OUTCOMES = Object.freeze(OUTCOMES.SAFE_COMMIT === "SAFE_COMMIT"
-  ? [OUTCOMES.SAFE_COMMIT, OUTCOMES.STALE_CANDIDATE, OUTCOMES.SEMANTIC_CONFLICT, OUTCOMES.AUTHORITY_STOP]
-  : []);
+const RESOLVABLE_OUTCOMES = Object.freeze([
+  OUTCOMES.SAFE_COMMIT,
+  OUTCOMES.STALE_CANDIDATE,
+  OUTCOMES.SEMANTIC_CONFLICT,
+  OUTCOMES.AUTHORITY_STOP
+]);
 
 export function createReconciliationCase({ boundary, claimId = null } = {}) {
   if (typeof boundary !== "string" || boundary.trim().length === 0) throw new TypeError("boundary is required");
