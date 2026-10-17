@@ -104,7 +104,15 @@ export async function executeProtectedTransition(input = {}) {
   assertCandidate(candidate, claim, expectedRevision);
 
   const validation = await ports.finalSemanticValidator.validate(candidate);
-  if (!validation || !Object.values(VALIDATION).includes(validation.status)) {
+  if (!validation || typeof validation !== "object" || Array.isArray(validation)) {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: ["final semantic validator returned no valid result"]
+    });
+  }
+  // Port output is an untrusted boundary too: reject accessors and exotic
+  // shapes before reading status/reasons/evidence.
+  assertContractInput(validation, "final semantic validator result");
+  if (!Object.values(VALIDATION).includes(validation.status)) {
     return classify(ports, OUTCOMES.UNKNOWN, {
       reasons: ["final semantic validator returned no valid result"]
     });
