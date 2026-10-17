@@ -3,6 +3,17 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
+## Latest increment: M0.41 — require reconciliation after uncertain commit
+
+Report: [M0.41 — Require reconciliation after uncertain commit](NCS_M0_41_RECONCILE_UNCERTAIN_COMMIT_OUTCOME_2026-10-17.md)
+- Source commit: `b162c0375fa29e795d915a318e1b83b81554fbef`
+- Regression-test commit / CI head: `9d471755e65b0de5cd4cc266eb6c5b9ecd67c279`
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993658355 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993658376 — success
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993658044 — success
+
+Thrown, malformed, or explicitly UNKNOWN commit results now return `RECONCILE_REQUIRED`, because mutation state is ambiguous. This outcome does not itself execute reconciliation or prove authoritative state.
+
 ## Latest increment: M0.40 — preserve the complete authorized claim
 
 Report: [M0.40 — Preserve the complete authorized claim in the candidate](NCS_M0_40_PRESERVE_COMPLETE_AUTHORIZED_CLAIM_2026-10-17.md)
