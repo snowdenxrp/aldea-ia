@@ -3,7 +3,18 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.33 — revalidate ClaimEnvelope at candidate boundary
+## Latest increment: M0.34 — validate builder claim before authority gate
+
+Record: [M0.34 — Validate claim-builder output before authority gate](NCS_M0_34_VALIDATE_BUILDER_CLAIM_BEFORE_AUTHORITY_GATE_2026-10-17.md)
+- Source commit: `8a793eabfe4fd2c09ec49fc465ab69612443b0e9`
+- Test commit / CI head: `2cdee9f5ec0ab45667b2dcee0fb5ac633091bf42`
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989443967 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989443881 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989443922 — success
+
+The transition now validates/detaches the claim-builder output through `createClaimEnvelope()` before calling the authority gate. Regression confirms malformed blank claim ID is rejected and authority gate call count remains zero. This validates structure only, not truth or authority provenance.
+
+## Previous increment: M0.33 — revalidate ClaimEnvelope at candidate boundary
 
 Record: [M0.33 — Revalidate ClaimEnvelope at candidate boundary](NCS_M0_33_REVALIDATE_CLAIM_ENVELOPE_AT_CANDIDATE_BOUNDARY_2026-10-17.md)
 - Source commit: `e409a27fa43d8778ce12b2af7f5a488022d158e5`
@@ -13,7 +24,7 @@ Record: [M0.33 — Revalidate ClaimEnvelope at candidate boundary](NCS_M0_33_REV
 - STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989354194 — success
 - policyContext contract CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38989354155 — success
 
-`createCandidate()` now rebuilds the supplied claim through `createClaimEnvelope()`, rejecting look-alike objects that bypass required-string/collection checks and detaching the validated claim. Regression coverage includes blank claim ID, malformed string collection, and detachment. This is contract validation only, not content authenticity or constitutional authority.
+`createCandidate()` rebuilds the supplied claim through `createClaimEnvelope()`, rejecting look-alike objects that bypass required-string/collection checks and detaching the validated claim. Regression covers blank claim ID, malformed string collection, and detachment.
 
 ## Previous increment: M0.32 — reject blank required strings
 
