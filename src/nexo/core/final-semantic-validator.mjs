@@ -159,16 +159,19 @@ export function createFinalSemanticValidator() {
       const nonAuthoritative = [];
 
       for (const [index, requirement] of context.requirements.entries()) {
+        // Only claim-critical requirements can change this claim's decision.
+        // Unrelated requirements may be present in a wider validation context.
+        if (!requirement || !requiredIds.includes(requirement.id)) continue;
+
         if (!validState(requirement.status)) {
           unknown.push(requirementFailure(requirement, index));
           continue;
         }
 
-        if (requiredIds.includes(requirement.id) &&
-            (requirement.authoritative !== true ||
-             typeof requirement.source !== "string" ||
-             requirement.source.trim().length === 0 ||
-             ["cache", "helper", "derived"].includes(requirement.source.trim().toLowerCase()))) {
+        if (requirement.authoritative !== true ||
+            typeof requirement.source !== "string" ||
+            requirement.source.trim().length === 0 ||
+            ["cache", "helper", "derived"].includes(requirement.source.trim().toLowerCase())) {
           nonAuthoritative.push(requirement.id);
           continue;
         }
