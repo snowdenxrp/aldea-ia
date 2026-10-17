@@ -66,17 +66,19 @@ export function createObservationEnvelope(input = {}) {
 }
 
 export function createMissionCandidate({ observation, claim, admission = "UNKNOWN", admissionEvidence = [] } = {}) {
-  if (!observation || typeof observation !== "object") {
+  if (!observation || typeof observation !== "object" || Array.isArray(observation)) {
     throw new TypeError("candidate requires an ObservationEnvelope");
   }
-  requiredString(observation.source, "observation.source");
-  requiredString(observation.code, "observation.code");
   if (!ADMISSION_STATES.includes(admission)) {
     throw new TypeError(`invalid admission state: ${admission}`);
   }
 
+  // Rebuild through the public constructor: a look-alike object must not bypass
+  // required fields, collection-shape checks, or plain-data immutability rules.
+  const validatedObservation = createObservationEnvelope(observation);
+
   return immutable({
-    observation: detachedImmutable(observation),
+    observation: validatedObservation,
     claim: detachedImmutable(claim ?? null),
     admission,
     admissionEvidence: detachedImmutable([...requiredArray(admissionEvidence, "admissionEvidence")])
