@@ -18,7 +18,7 @@ The PASS evidence list now derives from the claim's required IDs, preserving the
 - STEP 4 run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993158799
 - STEP 5 run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993158792
 
-CI status must be checked before marking this increment fully verified.
+Both listed CI runs on the test commit completed successfully. M0.37 has focused STEP 4/STEP 5 CI verification.
 
 ## Limits
 
