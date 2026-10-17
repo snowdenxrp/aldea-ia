@@ -6,7 +6,25 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.55. Do not repeat M0.1–M0.55 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.56. Do not repeat M0.1–M0.56 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+
+## Latest verified increment: M0.56 — reject lossy hidden Core contract properties
+
+Report: [NCS_M0_56_REJECT_LOSSY_HIDDEN_CORE_CONTRACT_PROPERTIES_2026-10-17.md](NCS_M0_56_REJECT_LOSSY_HIDDEN_CORE_CONTRACT_PROPERTIES_2026-10-17.md)
+
+- Source: `ce8f3a8b83f728b20657d03966448b2fb7788d76`
+- Core contract regression tests: `0aad968ec751e39fd21388bac68ea32de8bc080f`
+- Protected-transition regression expectation update: `274ea45e0f2745ca08d131dd690ac68cb2894be3`
+- M0 Core CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286261 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286260 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286270 — success
+- STEP 3A/3B/3C CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39043286210 — success
+
+The shared immutable-contract helper now validates caller-owned object graphs before structured cloning, rejecting symbol keys, non-enumerable properties, and accessors. This prevents silent field loss and getter execution during contract construction. Scope is limited to data-shape integrity; it does not prove evidence authenticity, constitutional authority, production reachability, or bypass closure.
+
+**Next:** inspect current source/tests and M0.56 report, then examine a distinct remaining Core boundary only if reports show it is not already covered. No speculative defect, no repeat investigation, no M1 detour. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
 
 ## Latest verified increment: M0.53 — multi-entry JSON array validation
 
