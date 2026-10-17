@@ -15,12 +15,23 @@ function assertDeepFreezable(value, seen = new WeakSet()) {
   if (seen.has(value)) return;
   seen.add(value);
 
+  const isArray = Array.isArray(value);
   const prototype = Object.getPrototypeOf(value);
-  if (!Array.isArray(value) && prototype !== Object.prototype && prototype !== null) {
+  if (!isArray && prototype !== Object.prototype && prototype !== null) {
     throw new TypeError("contract data must contain only arrays and plain objects");
   }
 
-  for (const child of Object.values(value)) assertDeepFreezable(child, seen);
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key === "symbol") {
+      throw new TypeError("contract data must not contain symbol-keyed properties");
+    }
+    if (isArray && key === "length") continue;
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor.enumerable || !("value" in descriptor)) {
+      throw new TypeError("contract data must contain only enumerable data properties");
+    }
+    assertDeepFreezable(descriptor.value, seen);
+  }
 }
 
 function immutable(value, seen = new WeakSet()) {
@@ -33,6 +44,9 @@ function immutable(value, seen = new WeakSet()) {
 
 function detachedImmutable(value) {
   if (value === undefined) return value;
+  // Validate the caller-owned graph before structuredClone: cloning can silently
+  // omit symbol/non-enumerable properties and can execute getters.
+  assertDeepFreezable(value);
   const clone = structuredClone(value);
   assertDeepFreezable(clone);
   return immutable(clone);
