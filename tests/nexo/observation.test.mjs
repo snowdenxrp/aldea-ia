@@ -19,6 +19,8 @@ assert.equal(observation.inputs.probe.frame, 12);
 assert.throws(() => { observation.inputs.probe.frame = 99; }, TypeError);
 assert.throws(() => createObservationEnvelope({ source: "", code: "X" }), /source/);
 assert.throws(() => createObservationEnvelope({ source: "VisualAgent", code: "" }), /code/);
+assert.throws(() => createObservationEnvelope({ source: "   ", code: "X" }), /source must be a non-empty, non-blank string/);
+assert.throws(() => createObservationEnvelope({ source: "VisualAgent", code: " \t " }), /code must be a non-empty, non-blank string/);
 
 // Frozen Map/Set/Date instances still have mutable internal state. The envelope
 // accepts plain data only so its immutability guarantee is enforceable.
