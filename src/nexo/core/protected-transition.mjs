@@ -4,7 +4,8 @@ import {
   COMMIT,
   OUTCOMES,
   VALIDATION,
-  createClaimEnvelope
+  createClaimEnvelope,
+  assertContractInput
 } from "./contracts.mjs";
 
 function assertCandidate(candidate, claim, expectedRevision) {
@@ -47,12 +48,9 @@ function outcomeFromValidation(ports, result) {
   });
 }
 
-export async function executeProtectedTransition({
-  ports,
-  proposal,
-  state,
-  expectedRevision
-} = {}) {
+export async function executeProtectedTransition(input = {}) {
+  assertContractInput(input, "protectedTransition input");
+  const { ports, proposal, state, expectedRevision } = input;
   if (!ports) throw new TypeError("ports are required");
   if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0 || expectedRevision >= Number.MAX_SAFE_INTEGER) {
     throw new TypeError("expectedRevision must be a non-negative safe integer below MAX_SAFE_INTEGER");
