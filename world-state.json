@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "stateRevision": 3359,
-  "savedAt": 1792198085676,
+  "stateRevision": 3361,
+  "savedAt": 1792200067480,
   "day": 681,
-  "hour": 20.600533333563497,
+  "hour": 20.61466666689683,
   "world": {
     "day": 681,
-    "timeOfDay": 20.600533333563497,
+    "timeOfDay": 20.61466666689683,
     "speed": 1,
     "resources": {
       "water": {
@@ -29085,7 +29085,7 @@
           "key": "2:5",
           "x": 2,
           "z": 5,
-          "visits": 14381,
+          "visits": 14383,
           "discovered": true,
           "biome": "plains",
           "population": 0,
@@ -29699,7 +29699,7 @@
         },
         "3:0": {
           "key": "3:0",
-          "visits": 19067,
+          "visits": 19069,
           "discovered": true,
           "lastVisitDay": 681,
           "population": 0,
@@ -30811,9 +30811,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 98.01114133333303,
-        "thirst": 94.7236693333337,
-        "energy": 90.38759999999864,
+        "hunger": 97.98004799999968,
+        "thirst": 94.67844266666704,
+        "energy": 90.3522666666653,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -70812,9 +70812,9 @@
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 98.01114133333303,
-          "thirst": 94.7236693333337,
-          "energy": 90.38759999999864,
+          "hunger": 97.98004799999968,
+          "thirst": 94.67844266666704,
+          "energy": 90.3522666666653,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -71091,7 +71091,7 @@
         "intentName": "explore_area",
         "phaseIndex": 1,
         "phase": "inspect",
-        "remainingHours": 0.07453333333333334,
+        "remainingHours": 0.06040000000000001,
         "completedPhases": [
           "approach"
         ]
@@ -71104,16 +71104,16 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 98.01114133333303,
-        "thirst": 94.7236693333337,
-        "energy": 90.38759999999864,
+        "hunger": 97.98004799999968,
+        "thirst": 94.67844266666704,
+        "energy": 90.3522666666653,
         "social": 0,
         "safety": 100,
         "health": 100
       },
       "position": {
-        "x": -9.936707972312824,
-        "z": -26.707048890324444
+        "x": -10.047059941098937,
+        "z": -26.963297681511893
       },
       "currentActivity": "moving",
       "inventory": [
@@ -112660,32 +112660,32 @@
       },
       "lastPerception": {
         "position": {
-          "x": -9.79289443879802,
-          "z": -26.37309885277693
+          "x": -9.936707972312824,
+          "z": -26.707048890324444
         },
         "visibleAgents": [],
         "nearbyResources": [
           {
             "type": "water",
             "location": "river",
-            "distance": 27.620588784293798
+            "distance": 27.8977264083284
           },
           {
             "type": "fertile_land",
             "location": "fertile_zone",
-            "distance": 12.577613160722992
+            "distance": 12.831262855704464
           },
           {
             "type": "clay",
             "location": "riverbank",
-            "distance": 10.6053050294544
+            "distance": 10.904039156721483
           }
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 98.01114133333303,
-          "thirst": 94.7236693333337,
-          "energy": 90.38759999999864,
+          "hunger": 97.98004799999968,
+          "thirst": 94.67844266666704,
+          "energy": 90.3522666666653,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -112768,7 +112768,7 @@
         },
         "speed": 1.8,
         "moving": true,
-        "distanceTravelled": 158284.2389809617
+        "distanceTravelled": 158284.5179809617
       },
       "decisionCooldownHours": 0,
       "knownResources": {
@@ -118015,24 +118015,6 @@
     "nexo": {
       "missions": [
         {
-          "missionId": "lumina-1792105599809-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_social_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-10-15T23:06:39.809Z"
-        },
-        {
           "missionId": "lumina-1792107139861-1",
           "version": 4,
           "status": "planned",
@@ -118913,6 +118895,24 @@
             }
           ],
           "at": "2026-10-17T00:48:05.474Z"
+        },
+        {
+          "missionId": "lumina-1792200067325-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_social_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-17T01:21:07.325Z"
         }
       ],
       "attempts": [],
