@@ -21,11 +21,11 @@ The policy-context contract checked several record-shaped fields with `typeof va
 
 ## Focused CI
 
-- M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227742 — pending at report creation
-- STEP 7 policy-context contract: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227754 — pending at report creation
-- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227792 — pending at report creation
-- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227880 — pending at report creation
-- STEP 3A/3B/3C: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227744 — pending at report creation
+- M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227742 — success
+- STEP 7 policy-context contract: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227754 — success
+- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227792 — success
+- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227880 — success
+- STEP 3A/3B/3C: https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227744 — success
 
 ## Limits
 
