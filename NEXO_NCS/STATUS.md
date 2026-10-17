@@ -1,3 +1,12 @@
+## M0 functional continuity — preserve mission context across restart (2026-10-17)
+
+- Implemented in `src/assistants/memory.js`: durable mission plans now retain optional step `priority`, `reason`, `source`, `reversible`, `requiresEvidence`, `requiresVerification`, and detached `context`, plus plan-level uncertainty/evidence counts.
+- Regression added to `tests/nexo/restart-reconstruction.test.mjs` for reconstruction and detachment.
+- Source/test commit: [`f7828d1`](https://github.com/snowdenxrp/aldea-ia/commit/f7828d1e0f11f81e03106af9a50f914d99c87b1c).
+- STEP 4 CI [39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) and STEP 5 CI [39079693214](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693214) succeeded. These workflow results do not establish that the new restart test itself ran; do not overclaim.
+- This improves continuity only; it does not authenticate authority or authorize effects. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+- Report: [M0 functional continuity report](BUILD/NCS_M0_FUNCTIONAL_CONTINUITY_PRESERVE_MISSION_CONTEXT_2026-10-17.md).
+
 ## Core boundary design STOP — caller-controlled Proxy traps (2026-10-17)
 
 - Finding: reflection-based validators inspect caller-owned objects via `Object.getPrototypeOf`, `Reflect.ownKeys`, and `Object.getOwnPropertyDescriptor`; Proxy traps can execute during those operations.
