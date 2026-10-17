@@ -213,7 +213,7 @@ export function createFinalSemanticValidator() {
         });
       }
 
-      const evidence = context.requirements.map(requirement => requirement.id);
+      const evidence = [...new Set(requiredIds)];
 
       return createValidationResult(VALIDATION.PASS, { evidence });
     }
