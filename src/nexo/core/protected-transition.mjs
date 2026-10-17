@@ -34,6 +34,9 @@ function classify(ports, kind, { reasons = [], evidence = [] } = {}) {
   if (outcome.kind !== kind) {
     throw new Error("outcomeClassifier violated the required terminal classification");
   }
+  if (!Array.isArray(outcome.reasons) || !Array.isArray(outcome.evidence)) {
+    throw new TypeError("outcomeClassifier must return a complete Outcome with reasons and evidence arrays");
+  }
   return outcome;
 }
 
