@@ -92,12 +92,17 @@ export function createClaimEnvelope(input = {}) {
 }
 
 export function createCandidate({ claim, state, expectedRevision } = {}) {
-  if (!claim || typeof claim.claimId !== "string") throw new TypeError("candidate requires a ClaimEnvelope");
+  if (!claim || typeof claim !== "object" || Array.isArray(claim)) {
+    throw new TypeError("candidate requires a ClaimEnvelope");
+  }
+  // Revalidate and detach the claim at this public boundary; callers must not
+  // bypass createClaimEnvelope() by supplying a look-alike object.
+  const validatedClaim = createClaimEnvelope(claim);
   if (!Number.isInteger(expectedRevision) || expectedRevision < 0) {
     throw new TypeError("expectedRevision must be a non-negative integer");
   }
   if (state === undefined) throw new TypeError("candidate requires isolated state");
-  return { claim, state: detachedMutable(state), expectedRevision };
+  return { claim: validatedClaim, state: detachedMutable(state), expectedRevision };
 }
 
 export function createValidationResult(status, { reasons = [], evidence = [] } = {}) {
