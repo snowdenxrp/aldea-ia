@@ -1,3 +1,13 @@
+## M0 mission admission — make the eight-step bound explicit (2026-10-17)
+
+- Mission planning still admits at most eight steps, but now exposes candidate/admitted/omitted counts and a truncation flag; omitted candidates are not treated as failed or resolved.
+- An admitted step whose prerequisite fell outside the admission bound is blocked as `DEPENDENCY_NOT_ADMITTED` rather than appearing executable.
+- Admission metadata survives durable plan reconstruction.
+- Source/test commit: [`10067f1`](https://github.com/snowdenxrp/aldea-ia/commit/10067f1eaa626500c803bb6d3504fc5816eb7239).
+- Focused CI: mission admission/continuity [39080272772](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272772), STEP 4 [39080272763](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272763), STEP 5 [39080272752](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272752), M0 Core [39080272843](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272843) — all success.
+- Report: [M0 bounded mission admission](BUILD/NCS_M0_MISSION_ADMISSION_BOUNDARY_2026-10-17.md).
+- This remains non-authoritative planning metadata. The Core Proxy-trap boundary remains unresolved; STEP 7 stays OPEN / STOP / UNKNOWN and protected effects remain STOP.
+
 ## M0 functional continuity — preserve mission context across restart (2026-10-17)
 
 - Implemented in `src/assistants/memory.js`: durable mission plans retain optional step `priority`, `reason`, `source`, `reversible`, `requiresEvidence`, `requiresVerification`, and detached `context`, plus plan-level uncertainty/evidence counts.

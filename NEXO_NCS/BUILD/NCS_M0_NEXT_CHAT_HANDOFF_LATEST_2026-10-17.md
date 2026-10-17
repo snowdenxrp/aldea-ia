@@ -1,3 +1,9 @@
+## Latest functional increment — bounded mission admission across restart (2026-10-17)
+
+Implemented at `10067f1eaa626500c803bb6d3504fc5816eb7239`. The mission planner now reports candidate/admitted/omitted step counts and `truncated`, keeps the historical eight-step cap, blocks an admitted step whose prerequisite was omitted, and persists the admission summary across restart. Regression tests in `tests/nexo/orchestrator.test.mjs` and `tests/nexo/restart-reconstruction.test.mjs` passed in focused CI [39080272772](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272772). STEP 4, STEP 5 and M0 Core workflows also passed: [39080272763](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272763), [39080272752](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272752), [39080272843](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272843).
+
+Report: [NCS M0 bounded mission admission](NCS_M0_MISSION_ADMISSION_BOUNDARY_2026-10-17.md). This does not claim omitted candidates failed/resolved or implement an overflow queue.
+
 ## Latest functional progress — preserve mission context across restart (2026-10-17)
 
 A bounded functional improvement was committed at `f7828d1e0f11f81e03106af9a50f914d99c87b1c`. `recordNexoPlan()` now retains optional mission-step metadata/context needed to reconstruct the same plan after restart, plus plan-level uncertainty/evidence counts. A regression in `tests/nexo/restart-reconstruction.test.mjs` verifies round-trip preservation and detached context.
