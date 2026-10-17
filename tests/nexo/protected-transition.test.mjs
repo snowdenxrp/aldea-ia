@@ -678,6 +678,6 @@ console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
   assert.equal(Object.isFrozen(outcome), true, "returned outcomes must be immutable");
   assert.equal(Object.isFrozen(outcome.reasons), true, "returned reasons must be immutable");
   assert.equal(Object.isFrozen(outcome.evidence[0]), true, "nested returned evidence must be immutable");
-  assert.deepEqual(outcome.reasons, ["validator unknown"]);
-  assert.deepEqual(outcome.evidence, [{ source: "validator" }]);
+  assert.deepEqual(outcome.reasons, ["original reason"]);
+  assert.deepEqual(outcome.evidence, [{ source: "original source" }]);
 }
