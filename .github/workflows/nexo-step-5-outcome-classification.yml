@@ -18,4 +18,5 @@ jobs:
         with:
           node-version: 22
       - run: node tests/nexo/outcome-classifier.test.mjs
+      - run: node tests/nexo/restart-reconstruction.test.mjs
       - run: node tests/nexo/protected-transition.test.mjs
