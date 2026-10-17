@@ -2,7 +2,7 @@
 
 ## CURRENT ENTRY POINT — M0.53 (2026-10-17)
 
-**Continue from M0.53; do not repeat investigations M0.1–M0.52. Focused CI is pending.**
+**Continue from M0.53; do not repeat investigations M0.1–M0.52. Focused CI passed.**
 
 - Latest report: BUILD/NCS_M0_53_FIX_MULTI_ENTRY_JSON_ARRAY_VALIDATION_2026-10-17.md
 - Full next-chat continuity / project goals / exact instructions: BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md
@@ -10,13 +10,13 @@
 - Source fix commit: f0a6cd8608c79dcfcc2a24ddc09210510bd6f431
 - Regression-test commit: 5def9ecaea02a47b7180008b972fd61d4cfe0cf7
 
-### M0.53 focused CI evidence — PENDING
+### M0.53 focused CI evidence — PASS
 
 - M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363190
 - STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363167
 - STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363186
 
-M0.53 fixes over-escaped digit matching in JSON array-index validation and adds a multi-entry provenance regression test. Do not mark PASS until all focused runs complete successfully. This is bounded input validation only, not provenance truth or authorization proof.
+M0.53 fixes over-escaped digit matching in JSON array-index validation and adds a multi-entry provenance regression test. All three focused runs completed successfully on the regression-test commit. This is bounded input validation only, not provenance truth or authorization proof.
 
 ## Project goal
 
