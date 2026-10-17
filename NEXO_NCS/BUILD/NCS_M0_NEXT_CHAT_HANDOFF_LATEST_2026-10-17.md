@@ -3,6 +3,17 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
+## Latest increment: M0.39 — fail closed on malformed authority-gate result
+
+Report: [M0.39 — Fail closed on malformed authority-gate result](NCS_M0_39_FAIL_CLOSED_MALFORMED_AUTHORITY_RESULT_2026-10-17.md)
+- Source commit: `4f8eec4e7e92adc1d992ce327af405bd0bcb6d8c`
+- Regression-test commit: `fecf86260feaf9f75c275ad954ae99365ce0f2c9`
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993378610 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993378537 — success
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993378595 — success
+
+Malformed authority-gate result shape now yields controlled UNKNOWN before snapshot isolation, candidate execution, semantic validation, or commit. This is shape validation only, not authority authentication.
+
 ## Latest increment: M0.35 — reject duplicate required evidence IDs
 
 Record: [M0.35 — Reject duplicate required evidence identifiers](NCS_M0_35_REJECT_DUPLICATE_REQUIRED_EVIDENCE_IDS_2026-10-17.md)
