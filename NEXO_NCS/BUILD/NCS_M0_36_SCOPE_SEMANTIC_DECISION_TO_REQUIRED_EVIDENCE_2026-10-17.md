@@ -22,7 +22,7 @@ Regression added: a valid claim with its required evidence satisfied plus an unr
 - STEP 4 run including regression test: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993025244
 - STEP 5 run including regression test: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993025169
 
-The source-commit STEP 4 run passed. The test-head runs were still in progress at time of recording; verify their final result before calling this increment fully CI-verified.
+All four listed STEP 4/STEP 5 runs completed successfully, including both runs on the regression-test head.
 
 ## Limits
 
