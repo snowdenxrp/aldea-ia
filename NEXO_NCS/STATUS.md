@@ -1,4 +1,18 @@
-## CURRENT M0 CONTINUATION — M0.44 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.45 (2026-10-17)
+
+Latest M0 evidence: [M0.45 blank Observation source/code guard](BUILD/NCS_M0_45_REJECT_BLANK_OBSERVATION_SOURCE_CODE_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- Observation envelope now rejects whitespace-only required `source` and `code` values.
+- Source commit: `7d7f4210426358c7eb9ea867c20312f3bf5951d4`; test/CI head: `d1cd6f126c7067f32d9ae604da4e21df855e9abb`.
+- M0 observation/core contract CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994815429
+- STEP 4 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994815408
+- STEP 5 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994815407
+- Scope: required-label shape only; source authenticity, constitutional authority, production runtime reachability, and bypass closure remain unproven. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.44 (2026-10-17)
 
 Latest M0 evidence: [M0.44 policy-resolution diagnostic shape guard](BUILD/NCS_M0_44_VALIDATE_POLICY_RESOLUTION_REASON_EVIDENCE_SHAPES_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
