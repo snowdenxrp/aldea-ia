@@ -1,3 +1,13 @@
+## M0.66 — Require canonical state record before protected transition
+
+- State: implemented and focused-CI verified on `921f6dfaf269a80effbcdaaf12b64d64dc398355`.
+- Defect: transition input did not require `state` itself to be a record; missing/null/array/primitive state could reach adapters.
+- Correction: `executeProtectedTransition()` validates canonical state before invoking any port.
+- Regression: undefined, null, array, and string states are rejected; zero port calls in every case.
+- Evidence report: [M0.66 — Require canonical state record](BUILD/NCS_M0_66_REQUIRE_CANONICAL_STATE_RECORD_2026-10-17.md).
+- Focused CI success: M0 `39077156247`; STEP 4 `39077156238`; STEP 5 `39077156250`; STEP 3A/3B/3C `39077156258`.
+- This does not prove state authority/currentness or production protected-path closure. STEP 7 remains OPEN / STOP / UNKNOWN.
+
 ## M0.65 — Reject snapshot graphs that alias canonical state
 
 - State: implemented and focused-CI verified on `fe110e94dafde031f832bd19efe203b930dee1e7`.

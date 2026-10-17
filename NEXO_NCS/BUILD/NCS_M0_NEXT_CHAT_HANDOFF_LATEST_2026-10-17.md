@@ -1,3 +1,11 @@
+## Current resume point — M0.66 (2026-10-17)
+
+M0.66 is implemented and focused-CI verified on `921f6dfaf269a80effbcdaaf12b64d64dc398355`. `executeProtectedTransition()` now requires canonical state to be a record before invoking any port. Regression covers undefined, null, array and primitive state; each rejects and the port-call count remains zero.
+
+Report: [NCS M0.66](NCS_M0_66_REQUIRE_CANONICAL_STATE_RECORD_2026-10-17.md). Final focused CI: M0 `39077156247`, STEP 4 `39077156238`, STEP 5 `39077156250`, STEP 3A/3B/3C `39077156258`, all success.
+
+Continue from M0.66 without repeating M0.1–M0.66. Find a distinct contract-grounded defect and prove it with a regression before changing code. STEP 7 remains OPEN / STOP / UNKNOWN; protected activation remains blocked.
+
 ## Current resume point — M0.65 (2026-10-17)
 
 M0.65 is implemented and focused-CI verified on `fe110e94dafde031f832bd19efe203b930dee1e7`. It rejects snapshot isolator output whose object graph shares any object identity with the canonical input state. The regression supplies a shallow copy sharing a nested object and proves the original state remains unchanged, with candidate execution and commit never called.
