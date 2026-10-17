@@ -30,9 +30,8 @@ It also preserves plan-level `uncertainty`, `evidenceCount`, and `observedAgentC
 ## Evidence and limits
 
 - Source/test commit: [`f7828d1`](https://github.com/snowdenxrp/aldea-ia/commit/f7828d1e0f11f81e03106af9a50f914d99c87b1c)
-- STEP 4 semantic validation CI: [run 39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) — success.
 - STEP 5 outcome classification CI: [run 39079779219](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079779219) — success. The job log confirms `tests/nexo/restart-reconstruction.test.mjs` ran and passed, alongside the outcome-classifier and protected-transition tests.
-- Prior STEP 4 semantic validation CI: [run 39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) — success.
+- STEP 4 semantic validation CI: [run 39079693260](https://github.com/snowdenxrp/aldea-ia/actions/runs/39079693260) — success.
 
 This is focused evidence for the listed tests, not proof that the entire repository test suite or every restart scenario passed.
 
