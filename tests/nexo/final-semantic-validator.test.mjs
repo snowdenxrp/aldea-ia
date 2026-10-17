@@ -133,6 +133,20 @@ const baseContext = {
 }
 
 {
+  const cyclicTarget = { id: "target-1" };
+  cyclicTarget.self = cyclicTarget;
+  const cyclicCandidate = candidate({ claim: { target: cyclicTarget } });
+  const contextTarget = { id: "target-1" };
+  contextTarget.self = contextTarget;
+  const result = validator.validate(cyclicCandidate, {
+    ...baseContext,
+    target: contextTarget
+  });
+  assert.equal(result.status, VALIDATION.UNKNOWN);
+  assert.match(result.reasons[0], /cannot be safely compared/);
+}
+
+{
   const result = validator.validate(candidate(), {
     ...baseContext,
     target: undefined
