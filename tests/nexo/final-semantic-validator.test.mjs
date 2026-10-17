@@ -167,6 +167,17 @@ const baseContext = {
   assert.equal(result.status, VALIDATION.UNKNOWN);
 }
 
+for (const source of ["Cache", " CACHE ", "Helper", " DERIVED "]) {
+  const result = validator.validate(candidate(), {
+    ...baseContext,
+    requirements: [
+      { id: "dep-a", status: "SATISFIED", authoritative: true, source },
+      { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
+    ]
+  });
+  assert.equal(result.status, VALIDATION.UNKNOWN, `source label must be normalized: ${source}`);
+}
+
 {
   const result = validator.validate(candidate({claim: {authoritativeReads: [{id: "read-a", required: true}]}}), {
     ...baseContext,
