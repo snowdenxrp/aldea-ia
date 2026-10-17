@@ -1,3 +1,88 @@
+# NCS — CONTINUITY HANDOFF FOR NEXT CHAT (2026-10-17)
+
+## Entry instructions — read this first
+
+Repository: https://github.com/snowdenxrp/aldea-ia
+Branch: ncs-clean-architecture
+Start here: STATUS → this handoff → relevant BUILD report.
+
+**Resume at M0.52. Do not repeat M0.1–M0.52 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+
+## What Nexo is for — the goal
+
+Build Nexo as a private personal AI with durable identity, memory, principles, and continuity across model/provider, operating system, device, and environment, under a user-controlled Constitution and explicit permissions. Nexo must remain distinct from the model, OS, device, and Lúmina. The wake phrase is “Nexo…”. Establish authority and safety architecture before UI/visuals or broad activation.
+
+The constitutional owner is the user. A daughter is a possible future successor, not a current authority. A phone is only a candidate communication channel/device; it must never become constitutional authority merely because it is the current phone, has biometrics, or contains a copy of a file. No authority external to the user is to be silently elevated above the user.
+
+The intended architecture includes well-separated trust anchor, endorser, attester, verifier, and relying party; Vault/UCAN/RATS concepts; UNKNOWN-STOP behavior; epochs/fencing; claim-decision contracts; event sourcing; revocation; idempotency; and reconciliation. Do not create a GenesisRoot monolith. Research must distinguish standards and evidence from assumptions.
+
+## Why the current work is happening
+
+The M0 Core track is contract hardening: verify that malformed, mutable, ambiguous, or caller-controlled inputs cannot accidentally become a trusted PASS, false equivalence, resolved reconciliation, or altered candidate. These are necessary foundations, not proof that Nexo is authorized or safe at runtime. Every change must close a real boundary defect and include regression coverage.
+
+Recent distinct increments:
+- **M0.43:** immutable Core contracts reject exotic mutable values (Map, Set, Date) that Object.freeze() cannot make deeply immutable.
+- **M0.44:** validate policy-resolution status/reason/evidence shapes before building output.
+- **M0.45:** reject blank Observation source / code.
+- **M0.46:** reject exotic mutable policy-context data and blank policy reference identifiers.
+- **M0.47:** only known determinate outcomes may resolve reconciliation; unknown/arbitrary outcomes remain unresolved.
+- **M0.48:** detach and recursively freeze reconciliation evidence; exotic evidence fails closed. Caller-supplied authoritative=true remains unauthenticated.
+- **M0.49:** require actual arrays for derivedProvenance and admissionEvidence.
+- **M0.50:** revalidate/rebuild ObservationEnvelope at MissionCandidate boundary, preventing look-alike object bypass of constructor checks.
+- **M0.51:** reject arrays masquerading as policy-context records; named array properties can disappear during structured cloning.
+- **M0.52:** reject malformed/non-JSON observation-equivalence inputs as UNKNOWN; avoid JSON serialization collisions (e.g. distinct Maps serializing as {}) and compare plain-record keys canonically.
+
+The M0.43–M0.52 reports are stored under NEXO_NCS/BUILD/. M0.52 report: NCS_M0_52_FAIL_CLOSED_MALFORMED_OBSERVATION_EQUIVALENCE_2026-10-17.md
+
+## M0.52 latest evidence
+
+- Source commit: 798f14f238a59be5b1e38e7f6a87917e29c4b53c
+- Regression tests: 65583e7d0ea1683cd35e362173b2557bddf59ebe
+- Source M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040894029 — success
+- Source STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040893918 — success
+- Source STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040893891 — success
+- Regression M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904776 — success
+- Regression STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904730 — success
+- Regression STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904738 — success
+
+This is focused CI evidence for the bounded workflows only. It is not proof of production runtime reachability, provenance truth, legitimate initial authority, or absence of bypasses.
+
+## Hard activation gate — STEP 7
+
+**STEP 7 remains OPEN / STOP / UNKNOWN. Protected effects remain STOP.**
+
+Known unresolved architectural gaps:
+1. No demonstrated independent, verifiable initial reference establishing accepted Nexo authority.
+2. No demonstrated legitimate binding from recognized authority to constitutional owner and protected transitions.
+3. No demonstrated fail-closed handling of invalid, unknown, expired, or revoked authority across all protected routes.
+4. No exhaustive proof that production startup/effect paths cannot bypass the protected transition boundary.
+
+Existing code includes executeProtectedTransition, tests and a design document, but the production runtime path previously inspected appeared to use executeNexoStep() / executeLuminaNexoStep() and an effect adapter without a demonstrated call to executeProtectedTransition(). Treat this as a bounded trace, not exhaustive proof. src/nexo/core/ownership.mjs has effectBoundary.prepare defaulting to NOT_IMPLEMENTED; src/nexo/core/protected-transition.mjs was observed to commit after semantic validation without calling that boundary. Tests can inject AUTHORIZED; that is not legitimate Genesis authority. Re-check only if a proposed change directly requires it; do not repeatedly reopen the same audit without new evidence.
+
+The reconciliation field authoritative=true remains caller-controlled/unauthenticated. Do not fix this by adding another self-asserted flag or hidden trust layer. Design the root trust relationship coherently before implementation.
+
+## Next-chat work protocol
+
+1. Read STATUS and this handoff. Use GitHub current branch state; do not rely on chat memory alone.
+2. Confirm latest commit and tests; do not assume this note supersedes newer repository state.
+3. Inspect one distinct Core boundary not already covered by M0.43–M0.52 (e.g. outcome/decision mapping, observation-equivalence callers, policy-context consumption, reconciliation call path). Trace caller → callee → downstream use before modifying code.
+4. State the exact invariant and failure mode; change only if a concrete defect is proven. Prefer root-cause architectural correction over a local patch.
+5. Add regression tests for adversarial/boundary cases. Run relevant GitHub Actions; only report success after completed successful runs. Queued/in-progress is not a pass.
+6. Save a dated BUILD report with finding, change, test cases, exact commit SHAs, CI run URLs/status, and limitations.
+7. Update this handoff and STATUS, then verify those commits/files are actually present on the branch.
+8. If evidence is missing, record PENDING/UNKNOWN. Keep trigger → run → job → head/pin → raw artifact/log → interpretation intact. Unit tests do not prove production runtime behavior.
+9. Never activate protected effects or commission the Constitution while STEP 7 remains blocked. Do not divert to APK/M1 unless strictly required by a demonstrated dependency.
+10. User has no PC confirmed in the latest saved context; if giving device instructions, distinguish Termux terminal, separate Termux:API Android app, and Android Settings. Do not confuse the Android app with the termux-api package.
+
+## Project principles and boundaries
+
+- Clean coherent architecture; no invented IDs, queues, retries, tombstones, transaction wrappers, or self-authenticating layers.
+- If construction reveals a root-level architectural flaw, pause and redesign it before continuing.
+- Keep Nexo and Lúmina separate.
+- User asked for no repeated research and for proactive next steps, but do not accept proposed mechanisms without independent evaluation and contraindications.
+- Existing historical evidence is extensive; do not rerun closed audits merely to fill space. Relevant older anchors include AB104.759R (not .862R), AB104.999R→AB105.000R, AB104.151 boundary, P112 active, AB105.116R protected, TLC frozen, G0 W1/D1 UNKNOWN (not a vulnerability), P34 closed and P35 load-failure/fallback/persistState. Consult saved artifacts only when a new dependency makes them relevant.
+
+---
 ## Latest increment: M0.51 — reject array-shaped policy-context records
 
 Report: [M0.51 — Reject array-shaped policy-context records](NCS_M0_51_REJECT_ARRAY_POLICY_CONTEXT_RECORDS_2026-10-17.md)
