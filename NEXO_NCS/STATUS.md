@@ -1,25 +1,22 @@
 # NEXO NCS — STATUS
 
-## CURRENT ENTRY POINT — M0.52 (2026-10-17)
+## CURRENT ENTRY POINT — M0.53 (2026-10-17)
 
-**Continue from M0.52; do not repeat investigations M0.1–M0.52.**
+**Continue from M0.53; do not repeat investigations M0.1–M0.52. Focused CI is pending.**
 
-- Latest report: BUILD/NCS_M0_52_FAIL_CLOSED_MALFORMED_OBSERVATION_EQUIVALENCE_2026-10-17.md
+- Latest report: BUILD/NCS_M0_53_FIX_MULTI_ENTRY_JSON_ARRAY_VALIDATION_2026-10-17.md
 - Full next-chat continuity / project goals / exact instructions: BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md
 - Branch: ncs-clean-architecture
-- Source commit: 798f14f238a59be5b1e38e7f6a87917e29c4b53c
-- Regression tests commit: 65583e7d0ea1683cd35e362173b2557bddf59ebe
+- Source fix commit: f0a6cd8608c79dcfcc2a24ddc09210510bd6f431
+- Regression-test commit: 5def9ecaea02a47b7180008b972fd61d4cfe0cf7
 
-### M0.52 focused CI evidence — all six successful
+### M0.53 focused CI evidence — PENDING
 
-- Source M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040894029
-- Source STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040893918
-- Source STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040893891
-- Regression M0 core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904776
-- Regression STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904730
-- Regression STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39040904738
+- M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363190
+- STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363167
+- STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363186
 
-M0.52 rejects malformed/non-JSON observation-equivalence data as UNKNOWN, preventing serialization collisions from implying equivalence. This is bounded contract validation only, not provenance truth or authorization proof.
+M0.53 fixes over-escaped digit matching in JSON array-index validation and adds a multi-entry provenance regression test. Do not mark PASS until all focused runs complete successfully. This is bounded input validation only, not provenance truth or authorization proof.
 
 ## Project goal
 
