@@ -6,7 +6,21 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.52. Do not repeat M0.1–M0.52 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.53. Do not repeat M0.1–M0.53 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+
+## Latest verified increment: M0.53 — multi-entry JSON array validation
+
+Report: [NCS_M0_53_FIX_MULTI_ENTRY_JSON_ARRAY_VALIDATION_2026-10-17.md](NCS_M0_53_FIX_MULTI_ENTRY_JSON_ARRAY_VALIDATION_2026-10-17.md)
+
+- Source fix: `f0a6cd8608c79dcfcc2a24ddc09210510bd6f431`
+- Regression test: `5def9ecaea02a47b7180008b972fd61d4cfe0cf7`
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363190 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363167 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363186 — success
+
+The array-index regex was over-escaped and rejected valid JSON arrays with multiple entries, incorrectly producing UNKNOWN. The corrected digit class and a two-entry provenance regression are focused-CI verified. This is input validation only; it does not prove provenance authenticity, constitutional authority, or protected-path closure. STEP 7 remains OPEN / STOP / UNKNOWN.
+
+**Next:** inspect one distinct Core boundary, check existing reports/tests before calling anything new, demonstrate a contract-level defect, then add regression coverage and run focused CI. No M1 detour, no protected effects, no invented PASS.
 
 ## What Nexo is for — the goal
 
