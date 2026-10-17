@@ -8,6 +8,8 @@ assert.equal(r.reconcile({ reconciliationCase: c, evidence: [] }).status, "UNRES
 assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "SEMANTIC_CONFLICT" }] }).status, "RESOLVED");
 assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: false, outcome: "SEMANTIC_CONFLICT" }] }).status, "UNRESOLVED");
 assert.equal(r.reconcile({ reconciliationCase: null, evidence: [] }).status, "INVALID");
+assert.equal(r.reconcile({ reconciliationCase: { boundary: " " }, evidence: [] }).status, "INVALID");
+assert.equal(r.reconcile({ reconciliationCase: ["recovery-boundary"], evidence: [] }).status, "INVALID");
 
 const result = r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "UNKNOWN" }] });
 assert.equal(result.status, "UNRESOLVED");
@@ -15,6 +17,23 @@ assert.equal(result.outcome, null);
 assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "MADE_UP_OUTCOME" }] }).status, "UNRESOLVED");
 assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "RECONCILE_REQUIRED" }] }).status, "UNRESOLVED");
 assert.throws(() => result.evidence.push("x"), TypeError);
+
+const suppliedEvidence = {
+  authoritative: true,
+  outcome: "SAFE_COMMIT",
+  details: { receipt: { digest: "abc" } }
+};
+const detachedResult = r.reconcile({ reconciliationCase: c, evidence: [suppliedEvidence] });
+assert.equal(detachedResult.status, "RESOLVED");
+suppliedEvidence.details.receipt.digest = "changed";
+assert.equal(detachedResult.evidence[0].details.receipt.digest, "abc");
+assert.notEqual(detachedResult.evidence[0], suppliedEvidence);
+assert.throws(() => { detachedResult.evidence[0].details.receipt.digest = "mutated"; }, TypeError);
+assert.throws(() => { detachedResult.evidence[0].details.receipt = {}; }, TypeError);
+assert.equal(r.reconcile({
+  reconciliationCase: c,
+  evidence: [{ authoritative: true, outcome: "SAFE_COMMIT", details: new Map([["k", "v"]]) }]
+}).status, "UNRESOLVED");
 assert.throws(() => createReconciliationCase({ boundary: "   " }), /boundary/);
 assert.throws(() => createReconciliationCase({ boundary: "recovery", claimId: "  " }), /claimId/);
 assert.equal(typeof r.commit, "undefined");
