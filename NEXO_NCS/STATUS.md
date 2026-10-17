@@ -86,6 +86,7 @@ Continue from the latest handoff; do not repeat M0.1–M0.56 investigations or c
 
 ## Recent M0 reports
 
+- [STEP 7 — First-scope ownership boundary reconciliation](BUILD/STEP_7_FIRST_SCOPE_OWNERSHIP_BOUNDARY_RECONCILIATION_2026-10-17.md)
 - [M0.50 — Revalidate ObservationEnvelope at MissionCandidate boundary](BUILD/NCS_M0_50_REVALIDATE_OBSERVATION_AT_MISSION_CANDIDATE_BOUNDARY_2026-10-17.md)
 - [M0.49 — Reject malformed observation collections](BUILD/NCS_M0_49_REJECT_MALFORMED_OBSERVATION_COLLECTIONS_2026-10-17.md)
 - [M0.48 — Detach and freeze reconciliation evidence](BUILD/NCS_M0_48_DETACH_AND_FREEZE_RECONCILIATION_EVIDENCE_2026-10-17.md)
