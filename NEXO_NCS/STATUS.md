@@ -2,7 +2,7 @@
 
 ## Current entry point
 
-**Current non-authoritative Core increment: M0.51 — focused CI in progress.**
+**Current non-authoritative Core increment: M0.51 — focused CI passed.**
 
 - Latest report: [M0.51 — Reject array-shaped policy-context records](BUILD/NCS_M0_51_REJECT_ARRAY_POLICY_CONTEXT_RECORDS_2026-10-17.md)
 - Latest handoff / next-chat instructions: [NCS M0 latest continuation handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md)
@@ -12,11 +12,11 @@
 
 ### Focused CI evidence
 
-- M0 Core: [run 38997227742](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227742) — pending at status update
-- STEP 7 policy-context contract: [run 38997227754](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227754) — pending at status update
-- STEP 4 semantic validation: [run 38997227792](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227792) — pending at status update
-- STEP 5 outcome classification: [run 38997227880](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227880) — pending at status update
-- STEP 3A/3B/3C: [run 38997227744](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227744) — pending at status update
+- M0 Core: [run 38997227742](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227742) — success
+- STEP 7 policy-context contract: [run 38997227754](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227754) — success
+- STEP 4 semantic validation: [run 38997227792](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227792) — success
+- STEP 5 outcome classification: [run 38997227880](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227880) — success
+- STEP 3A/3B/3C: [run 38997227744](https://github.com/snowdenxrp/aldea-ia/actions/runs/38997227744) — success
 
 ## M0.51 result
 
