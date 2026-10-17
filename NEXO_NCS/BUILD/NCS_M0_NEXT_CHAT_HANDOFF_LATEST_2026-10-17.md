@@ -3,7 +3,21 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.42 — order-independent semantic JSON comparison
+## Latest increment: M0.43 — reject mutable exotic values in immutable Core contracts
+
+Report: [M0.43 — Reject mutable exotic values in immutable Core contracts](NCS_M0_43_REJECT_MUTABLE_EXOTIC_VALUES_IN_CORE_CONTRACTS_2026-10-17.md)
+- Source commit: `4bdc7767105d6241e8c004bfc284389e723fca2a`
+- Regression-test commit: `376e32753c897b394e0333831380dcd16dc443b8`
+- M0 Core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569863 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569750 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569763 — success
+- STEP 7 policy-context contract CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569738 — success
+- Core isolation workflow trigger update commit: `06f8a2b36da6d37826f413dd0f5e2a16d48ff753`
+- Focused STEP 3A/3B/3C workflow: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994594903 — pending when recorded; recheck before claiming success.
+
+Core contract `detachedImmutable()` now validates cloned data before freezing, allowing arrays and plain objects only. This rejects `Map`, `Set`, `Date`, and other exotic instances whose internal state is not made immutable by `Object.freeze()`. Regression tests cover Map target, nested Set, and Date in validation evidence. This does not authenticate the data or authority.
+
+## Previous increment: M0.42 — order-independent semantic JSON comparison
 
 Report: [M0.42 — Order-independent semantic JSON comparison](NCS_M0_42_ORDER_INDEPENDENT_SEMANTIC_JSON_COMPARISON_2026-10-17.md)
 - Source commit: `afccee600a8732cd1bbc1559892e740905fa283f`
