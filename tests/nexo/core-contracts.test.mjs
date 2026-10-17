@@ -17,6 +17,19 @@ assert.equal(claim.claimId, "claim-1");
 assert.equal(claim.action, "example");
 assert.throws(() => { claim.claimId = "mutated"; }, TypeError);
 assert.throws(() => createClaimEnvelope({ action: "missing-id" }), /claimId/);
+assert.throws(() => createClaimEnvelope({ claimId: "   ", action: "example" }), /claimId must be a non-empty, non-blank string/);
+assert.throws(() => createClaimEnvelope({ claimId: "claim-blank-action", action: " \t " }), /action must be a non-empty, non-blank string/);
+assert.throws(() => createClaimEnvelope({
+  claimId: "claim-blank-policy-ref",
+  action: "example",
+  policyContext: {
+    policyRef: { id: "policy-1", semanticVersion: "1.0.0", hash: "   " },
+    scope: { kind: "test" },
+    resolved: { dependencies: [] },
+    validity: { status: "VALID" },
+    resolutionProvenance: []
+  }
+}), /policyContext.policyRef.hash must be a non-empty, non-blank string/);
 
 // Collection fields are lists by contract; strings and object-shaped values
 // must not be silently spread into character arrays or accepted as evidence.
