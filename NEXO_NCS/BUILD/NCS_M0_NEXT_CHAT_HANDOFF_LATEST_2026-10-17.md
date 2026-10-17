@@ -70,6 +70,17 @@ Record: [M0.36 — Scope semantic decision to claim-critical requirements](NCS_M
 
 Fixed a decision-scope defect: unrelated context requirements with FAILED/invalid status no longer change a claim's decision. Only IDs required by the claim are classified for authority/status; missing required evidence remains UNKNOWN and a required FAILED item remains FAIL. Both STEP 4 and STEP 5 test-head runs completed successfully; M0.36 is focused-CI verified.
 
+## Latest increment: M0.37 — report only claim-critical semantic evidence
+
+Report: [M0.37 — Report only claim-critical semantic evidence](NCS_M0_37_REPORT_ONLY_CLAIM_CRITICAL_SEMANTIC_EVIDENCE_2026-10-17.md)
+- Source commit: `fc552cb6d520f75781df042047daa119991c6fa6`
+- Test commit: `15e9ad14f284af88c161a92410a4cc9d9e9bc8b1`
+- STEP 4 run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993158799
+- STEP 5 run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993158792
+- At handoff edit: CI status pending; verify before claiming full focused-CI pass.
+
+The PASS evidence list now derives from unique required claim IDs, not all context requirements; unrelated requirements cannot be listed as evidence for this claim.
+
 ## Active lane
 
 Continue non-authoritative Nexo Core M0. Do not restart M0.1–M0.30 research and do not pivot into STEP 7. STEP 7 remains a separate activation blocker: OPEN / STOP / UNKNOWN; bounded non-activated core construction may continue.
