@@ -106,8 +106,8 @@ export function createValidationResult(status, { reasons = [], evidence = [] } =
   requiredArray(evidence, "validation evidence");
   return immutable({
     status,
-    reasons: immutable([...reasons]),
-    evidence: immutable([...evidence])
+    reasons: detachedImmutable(reasons),
+    evidence: detachedImmutable(evidence)
   });
 }
 
@@ -122,8 +122,8 @@ export function createOutcome(kind, { reasons = [], evidence = [] } = {}) {
   requiredArray(evidence, "outcome evidence");
   return immutable({
     kind,
-    reasons: immutable([...reasons]),
-    evidence: immutable([...evidence])
+    reasons: detachedImmutable(reasons),
+    evidence: detachedImmutable(evidence)
   });
 }
 
@@ -135,8 +135,8 @@ export function createAuthorityResult(status, { reasons = [], evidence = [] } = 
   requiredArray(evidence, "authority evidence");
   return immutable({
     status,
-    reasons: immutable([...reasons]),
-    evidence: immutable([...evidence])
+    reasons: detachedImmutable(reasons),
+    evidence: detachedImmutable(evidence)
   });
 }
 
