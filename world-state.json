@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "stateRevision": 3409,
-  "savedAt": 1792242673284,
+  "stateRevision": 3411,
+  "savedAt": 1792244405413,
   "day": 681,
-  "hour": 21.004986666896876,
+  "hour": 21.018853333563545,
   "world": {
     "day": 681,
-    "timeOfDay": 21.004986666896876,
+    "timeOfDay": 21.018853333563545,
     "speed": 1,
     "resources": {
       "water": {
@@ -29085,7 +29085,7 @@
           "key": "2:5",
           "x": 2,
           "z": 5,
-          "visits": 14431,
+          "visits": 14433,
           "discovered": true,
           "biome": "plains",
           "population": 0,
@@ -29657,7 +29657,7 @@
         },
         "2:0": {
           "key": "2:0",
-          "visits": 20218,
+          "visits": 20220,
           "discovered": true,
           "lastVisitDay": 681,
           "population": 0,
@@ -30811,9 +30811,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 97.12134399999954,
-        "thirst": 93.42941866666713,
-        "energy": 89.37646666666515,
+        "hunger": 97.09083733333287,
+        "thirst": 93.3850453333338,
+        "energy": 89.34179999999849,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -70808,9 +70808,9 @@
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 97.12134399999954,
-          "thirst": 93.42941866666713,
-          "energy": 89.37646666666515,
+          "hunger": 97.09083733333287,
+          "thirst": 93.3850453333338,
+          "energy": 89.34179999999849,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -70879,7 +70879,7 @@
         "moving": false,
         "distanceTravelled": 157809.72754155754
       },
-      "decisionCooldownHours": 0.04354666666666667,
+      "decisionCooldownHours": 0.02968,
       "knownResources": {
         "water": {
           "x": -18,
@@ -71100,9 +71100,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 97.12134399999954,
-        "thirst": 93.42941866666713,
-        "energy": 89.37646666666515,
+        "hunger": 97.09083733333287,
+        "thirst": 93.3850453333338,
+        "energy": 89.34179999999849,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -112666,9 +112666,9 @@
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 97.12134399999954,
-          "thirst": 93.42941866666713,
-          "energy": 89.37646666666515,
+          "hunger": 97.09083733333287,
+          "thirst": 93.3850453333338,
+          "energy": 89.34179999999849,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -112979,7 +112979,7 @@
         "intentName": "explore_area",
         "phaseIndex": 1,
         "phase": "inspect",
-        "remainingHours": 0.0939733333333333,
+        "remainingHours": 0.08010666666666663,
         "completedPhases": [
           "approach"
         ]
@@ -117997,24 +117997,6 @@
     "nexo": {
       "missions": [
         {
-          "missionId": "lumina-1792154144019-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_social_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-10-16T12:35:44.019Z"
-        },
-        {
           "missionId": "lumina-1792156702621-1",
           "version": 4,
           "status": "planned",
@@ -118951,6 +118933,31 @@
             }
           ],
           "at": "2026-10-17T13:11:13.040Z"
+        },
+        {
+          "missionId": "lumina-1792244405267-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_social_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            },
+            {
+              "id": "step-2",
+              "action": "inspect_and_collect_evidence",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-17T13:40:05.267Z"
         }
       ],
       "attempts": [],
