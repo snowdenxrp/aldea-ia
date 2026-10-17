@@ -1,12 +1,12 @@
 {
   "version": 5,
-  "stateRevision": 3413,
-  "savedAt": 1792245838265,
+  "stateRevision": 3415,
+  "savedAt": 1792247404717,
   "day": 681,
-  "hour": 21.03562666689688,
+  "hour": 21.049386666896883,
   "world": {
     "day": 681,
-    "timeOfDay": 21.03562666689688,
+    "timeOfDay": 21.049386666896883,
     "speed": 1,
     "resources": {
       "water": {
@@ -29085,7 +29085,7 @@
           "key": "2:5",
           "x": 2,
           "z": 5,
-          "visits": 14435,
+          "visits": 14437,
           "discovered": true,
           "biome": "plains",
           "population": 0,
@@ -29657,7 +29657,7 @@
         },
         "2:0": {
           "key": "2:0",
-          "visits": 20222,
+          "visits": 20224,
           "discovered": true,
           "lastVisitDay": 681,
           "population": 0,
@@ -30811,9 +30811,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 97.05393599999954,
-        "thirst": 93.33137066666714,
-        "energy": 89.29986666666515,
+        "hunger": 97.02366399999953,
+        "thirst": 93.28733866666714,
+        "energy": 96.26546666666515,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -30822,7 +30822,7 @@
         "x": -11.519211077036637,
         "z": 7.296077127733847
       },
-      "currentActivity": "moving",
+      "currentActivity": "resting",
       "inventory": [
         {
           "type": "stone",
@@ -70780,13 +70780,19 @@
         }
       ],
       "experiences": [],
-      "currentIntent": null,
-      "lastActionName": "explore_area",
+      "currentIntent": {
+        "name": "rest",
+        "baseValue": 0,
+        "effects": {
+          "energy": 1.2
+        },
+        "distance": 0,
+        "score": 6.5353384706144535
+      },
+      "lastActionName": "rest",
       "lastActionResult": {
         "success": true,
-        "effect": "area_explored",
-        "areaId": "area-51",
-        "regionKey": "2:5"
+        "effect": "energy_recovered"
       },
       "lastPerception": {
         "position": {
@@ -70808,9 +70814,9 @@
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 97.05393599999954,
-          "thirst": 93.33137066666714,
-          "energy": 89.29986666666515,
+          "hunger": 97.02366399999953,
+          "thirst": 93.28733866666714,
+          "energy": 89.26546666666515,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -70826,9 +70832,18 @@
           "distance": 0
         },
         {
+          "name": "drink",
+          "amount": 5,
+          "baseValue": 0.5,
+          "effects": {
+            "thirst": 1.8
+          },
+          "distance": 9.758758451660007
+        },
+        {
           "name": "catch_fish",
           "baseValue": 0.8577500147558526,
-          "distance": 25,
+          "distance": 6.518905772758497,
           "effects": {
             "hunger": 1.6
           },
@@ -70854,22 +70869,30 @@
           "baseValue": 0.38,
           "explorationValue": 0.9,
           "novelty": 0.35,
-          "distance": 30.725643990978927,
+          "distance": 19.013580830438382,
           "target": {
-            "x": -27.821443910652423,
-            "z": -34
+            "x": -21.259604277721273,
+            "z": 23.625222735868718
           }
         }
       ],
       "decisionSnapshot": {
         "chosen": {
-          "name": "explore_area",
-          "score": 1.5
+          "name": "rest",
+          "score": 6.5353384706144535
         },
         "considered": [
           {
-            "name": "explore_area",
-            "score": 1.5
+            "name": "rest",
+            "score": 6.5353384706144535
+          },
+          {
+            "name": "drink",
+            "score": 5.204527932068499
+          },
+          {
+            "name": "catch_fish",
+            "score": 3.997167477524467
           }
         ]
       },
@@ -70879,7 +70902,7 @@
         "moving": false,
         "distanceTravelled": 157809.72754155754
       },
-      "decisionCooldownHours": 0.01290666666666667,
+      "decisionCooldownHours": 0,
       "knownResources": {
         "water": {
           "x": -18,
@@ -70917,7 +70940,7 @@
           "learnedDay": 672
         }
       },
-      "lastAttemptedAction": "eat_plant",
+      "lastAttemptedAction": "rest",
       "actionFailures": {
         "catch_fish": 1,
         "drink": 1,
@@ -71072,7 +71095,7 @@
       ],
       "researchExperiments": 523,
       "socialRole": "Recolector",
-      "activityRemainingHours": 0,
+      "activityRemainingHours": 0.35,
       "explorationState": {
         "lastDay": 681,
         "regionsVisited": 409,
@@ -71088,6 +71111,7 @@
         "completedPhases": [
           "approach",
           "inspect",
+          "discover",
           "discover"
         ],
         "activityComplete": true
@@ -71100,9 +71124,9 @@
       "age": 16.539726027396817,
       "alive": true,
       "needs": {
-        "hunger": 97.05393599999954,
-        "thirst": 93.33137066666714,
-        "energy": 89.29986666666515,
+        "hunger": 97.02366399999953,
+        "thirst": 93.28733866666714,
+        "energy": 89.26546666666515,
         "social": 0,
         "safety": 100,
         "health": 100
@@ -112666,9 +112690,9 @@
         ],
         "currentActivity": "moving",
         "needs": {
-          "hunger": 97.05393599999954,
-          "thirst": 93.33137066666714,
-          "energy": 89.29986666666515,
+          "hunger": 97.02366399999953,
+          "thirst": 93.28733866666714,
+          "energy": 89.26546666666515,
           "social": 0,
           "safety": 100,
           "health": 100
@@ -112979,7 +113003,7 @@
         "intentName": "explore_area",
         "phaseIndex": 1,
         "phase": "inspect",
-        "remainingHours": 0.0633333333333333,
+        "remainingHours": 0.049573333333333296,
         "completedPhases": [
           "approach"
         ]
@@ -112988,16 +113012,6 @@
     }
   ],
   "events": [
-    {
-      "id": "event-502",
-      "day": 681,
-      "hour": 15.69962666689639,
-      "type": "action",
-      "description": "Bruno descansó.",
-      "participants": [
-        "bruno"
-      ]
-    },
     {
       "id": "event-501",
       "day": 681,
@@ -117987,6 +118001,16 @@
       "participants": [
         "alex"
       ]
+    },
+    {
+      "id": "event-501",
+      "day": 681,
+      "hour": 21.049386666896883,
+      "type": "action",
+      "description": "Alex descansó.",
+      "participants": [
+        "alex"
+      ]
     }
   ],
   "nexoMemory": {
@@ -117996,24 +118020,6 @@
     "patterns": [],
     "nexo": {
       "missions": [
-        {
-          "missionId": "lumina-1792159070553-1",
-          "version": 4,
-          "status": "planned",
-          "objective": "collect_social_window",
-          "parentMissionId": null,
-          "replanReason": null,
-          "steps": [
-            {
-              "id": "step-1",
-              "action": "collect_social_window",
-              "target": null,
-              "status": "planned",
-              "dependsOn": []
-            }
-          ],
-          "at": "2026-10-16T13:57:50.553Z"
-        },
         {
           "missionId": "lumina-1792161065423-1",
           "version": 4,
@@ -118965,6 +118971,31 @@
             }
           ],
           "at": "2026-10-17T14:03:58.010Z"
+        },
+        {
+          "missionId": "lumina-1792247404575-1",
+          "version": 4,
+          "status": "planned",
+          "objective": "collect_social_window",
+          "parentMissionId": null,
+          "replanReason": null,
+          "steps": [
+            {
+              "id": "step-1",
+              "action": "collect_social_window",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            },
+            {
+              "id": "step-2",
+              "action": "inspect_and_collect_evidence",
+              "target": null,
+              "status": "planned",
+              "dependsOn": []
+            }
+          ],
+          "at": "2026-10-17T14:30:04.575Z"
         }
       ],
       "attempts": [],
