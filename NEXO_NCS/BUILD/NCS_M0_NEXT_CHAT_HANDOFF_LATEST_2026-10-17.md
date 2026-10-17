@@ -8,6 +8,18 @@ Start here: STATUS → this handoff → relevant BUILD report.
 
 **Resume at M0.58. Do not repeat M0.1–M0.58 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
 
+## Latest STEP 7 design-only reconciliation — first-scope ownership boundary
+
+Report: [STEP_7_FIRST_SCOPE_OWNERSHIP_BOUNDARY_RECONCILIATION_2026-10-17.md](STEP_7_FIRST_SCOPE_OWNERSHIP_BOUNDARY_RECONCILIATION_2026-10-17.md)
+
+The post-M0.58 source recheck found the runtime/orchestrator/effect-adapter source pins unchanged from the prior M0.26 and October 15 traces. The inspected production runtime path still does not invoke `executeProtectedTransition()`; canonical planning/persistence scripts do not connect that protected transition either. This is the same bounded finding, not a new broad audit.
+
+A design-only boundary table now keeps four classes separate: planning-only, local Lúmina/simulation mutation, canonical persisted-state acceptance, and external/protected effects. No production execution model is selected. Direction B remains the security objective; no weaker self-reported path, trust ceremony, freeze/signature, APK, or wiring is authorized.
+
+**Next action:** the owner must explicitly name the intended first deployment target and which of those ownership classes belongs in the first constitutional scope. Do not infer the target or wire code before that decision. Then trace only that target's canonical state owner and final effect-capable sink. If scope remains undefined, remain design-only / STOP.
+
+---
+
 ## Latest verified increment: M0.58 — preflight protected-transition input
 
 Report: [NCS_M0_58_PREFLIGHT_PROTECTED_TRANSITION_INPUT_2026-10-17.md](NCS_M0_58_PREFLIGHT_PROTECTED_TRANSITION_INPUT_2026-10-17.md)
