@@ -2,7 +2,16 @@ name: Nexo — STEP 3A/3B/3C verification
 
 on:
   push:
-    branches: [main]
+    branches: [main, ncs-clean-architecture]
+    paths:
+      - 'src/nexo/core/contracts.mjs'
+      - 'src/nexo/core/ownership.mjs'
+      - 'src/nexo/core/protected-transition.mjs'
+      - 'src/nexo/core/conditional-commit-persist-state.mjs'
+      - 'tests/nexo/core-contracts.test.mjs'
+      - 'tests/nexo/protected-transition.test.mjs'
+      - 'tests/nexo/conditional-commit-persist-state.test.mjs'
+      - '.github/workflows/nexo-step-3a-isolation.yml'
   workflow_dispatch:
 
 concurrency:
