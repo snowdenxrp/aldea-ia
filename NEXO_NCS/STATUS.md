@@ -1,25 +1,24 @@
 # NEXO NCS — STATUS
 
-## CURRENT ENTRY POINT — M0.54 (2026-10-17)
+## CURRENT ENTRY POINT — M0.55 (2026-10-17)
 
-**Continue from M0.54; do not repeat investigations M0.1–M0.54. Focused CI passed.**
+**Continue from M0.55; do not repeat investigations M0.1–M0.55. Focused CI passed.**
 
-- Latest report: BUILD/NCS_M0_54_COMMIT_RESULT_ERROR_CODE_SHAPE_2026-10-17.md
+- Latest report: BUILD/NCS_M0_55_SAFE_REVISION_FENCING_2026-10-17.md
 - Full next-chat continuity / project goals / exact instructions: BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md
 - Branch: ncs-clean-architecture
-- Source commit: 65f9430a66822e07098d40aa2ff0731e273bdfd6
-- Regression-test commit / focused CI head: 6b9fa321c6fdce3a15ca1ff8a3767e4ef8aa0205
-- Report CI-evidence commit: eb79aecec5abc87cb76cdb686e6aab1ec3ca1c8e
+- Source commits: 977a5ef64dfbf7999cdeefbf54282c137b83dea0; 7ab078d9bb8742386b74f1030d70b662188d10a4; 116ae15d0e9fc6eea1de1764c0b6efb8de855f21
+- Final regression-test commit: f9bab5aac075f81bd28e04bf1a2692c9deb103d6
+- Report commit: 1569215e18b5b3eae08a7ae4d05a8026006c254d
 
-### M0.54 focused CI evidence — PASS
+### M0.55 focused CI evidence — PASS
 
-- M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551827
-- STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551943
-- STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551753
-- STEP 7 policyContext contract: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551767
-- STEP 3A/3B/3C verification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551824
+- M0 Core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042995723 — success
+- STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042998648 — success
+- STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042998646 — success
+- STEP 3A/3B/3C verification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042998600 — success
 
-All five focused workflows completed successfully on the regression-test commit. This is bounded contract validation only, not full-repository verification or authority/runtime proof.
+M0.55 rejects revisions that cannot safely support an exact increment, before authority/commit/persistence side effects. CI is focused; no full-repository test or runtime authority proof is claimed.
 
 ## Project goal
 
