@@ -1,3 +1,17 @@
+## CURRENT M0 CONTINUATION — M0.29 (2026-10-17)
+
+Latest M0 evidence: [M0.29 malformed required claim item fail-closed](BUILD/NCS_M0_29_MALFORMED_REQUIRED_CLAIM_ITEM_FAIL_CLOSED_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- Final semantic validation now returns UNKNOWN when a required entry in authoritativeReads, dependencies, predicateDependencies, or causalInputs lacks a non-empty string ID; explicit `required: false` remains optional.
+- Regression test: required dependency object without ID cannot be silently ignored.
+- Source commit: `6635b8b2015a00ec749c037b5e5dd92175b627b1`; test/CI head: `5cfcdd06c7f3866c82eaea37ef0789447bac1d0b`.
+- Focused CI PASS: STEP 4 https://github.com/snowdenxrp/aldea-ia/actions/runs/38988318369 ; STEP 5 https://github.com/snowdenxrp/aldea-ia/actions/runs/38988318355.
+- M0.28 and M0.27 reports remain linked from the handoff.
+- Scope qualification: no full-repository test run or production-runtime/bypass proof claimed. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
 ## CURRENT M0 CONTINUATION — M0.28 (2026-10-17)
 
 Latest M0 evidence: [M0.28 detached result evidence](BUILD/NCS_M0_28_DETACHED_RESULT_EVIDENCE_2026-10-17.md).
