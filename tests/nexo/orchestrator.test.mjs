@@ -33,6 +33,19 @@ const failed=advanceNexoMission(beginNexoStep(completed,completed.steps[0].id),{
 assert.equal(failed.status,"needs_replan");
 assert.equal(failed.objective,"replan_after_failure");
 
+const missingEvidenceStart = beginNexoStep(mission, mission.steps[1].id);
+const missingEvidence = advanceNexoMission(missingEvidenceStart, {
+  stepId: mission.steps[1].id,
+  outcome: "completed",
+  evidence: null
+});
+assert.equal(missingEvidence.status, "blocked");
+assert.equal(missingEvidence.objective, "replan_from_constraints");
+assert.equal(missingEvidence.blockReason, "MISSING_VERIFIED_EVIDENCE");
+assert.equal(missingEvidence.steps[1].status, "blocked");
+assert.equal(missingEvidence.steps[1].blockReason, "MISSING_VERIFIED_EVIDENCE");
+assert.equal(planNexoExecution(missingEvidence).actions.length, 0);
+
 const replan=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports:[{findings:[{severity:"error",code:"MESH_MISSING",agent:"alex",message:"mesh sigue ausente"}]}],memory:createLearningMemory(),parentMissionId:failed.missionId,replanReason:"MESH_REPAIR_FAILED"});
 assert.equal(replan.parentMissionId,failed.missionId);
 assert.equal(replan.replanReason,"MESH_REPAIR_FAILED");
