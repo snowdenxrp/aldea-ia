@@ -10,8 +10,13 @@ assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: fa
 assert.equal(r.reconcile({ reconciliationCase: null, evidence: [] }).status, "INVALID");
 
 const result = r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "UNKNOWN" }] });
-assert.equal(result.outcome, "UNKNOWN");
+assert.equal(result.status, "UNRESOLVED");
+assert.equal(result.outcome, null);
+assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "MADE_UP_OUTCOME" }] }).status, "UNRESOLVED");
+assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "RECONCILE_REQUIRED" }] }).status, "UNRESOLVED");
 assert.throws(() => result.evidence.push("x"), TypeError);
+assert.throws(() => createReconciliationCase({ boundary: "   " }), /boundary/);
+assert.throws(() => createReconciliationCase({ boundary: "recovery", claimId: "  " }), /claimId/);
 assert.equal(typeof r.commit, "undefined");
 assert.equal(typeof r.execute, "undefined");
 assert.equal(typeof r.authorize, "undefined");
