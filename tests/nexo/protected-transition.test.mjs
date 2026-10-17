@@ -290,3 +290,31 @@ function makePorts(overrides = {}) {
 }
 
 console.log("NEXO STEP 7 missing-authority-gate fail-closed probe: PASS");
+
+
+{
+  let commitCalls = 0;
+  const hostileEvidence = [];
+  hostileEvidence.push(Object.defineProperty({}, "unsafe", {
+    enumerable: true,
+    get() { throw new Error("evidence getter failure"); }
+  }));
+  const { ports } = makePorts({
+    finalSemanticValidator: {
+      validate: () => ({ status: VALIDATION.PASS, reasons: [], evidence: hostileEvidence })
+    },
+    conditionalCommit: {
+      commit: () => {
+        commitCalls += 1;
+        return createCommitResult(COMMIT.COMMITTED);
+      }
+    }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /evidence getter failure/
+  );
+  assert.equal(commitCalls, 0);
+}
