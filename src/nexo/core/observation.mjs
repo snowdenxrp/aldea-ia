@@ -35,6 +35,11 @@ function requiredString(value, field) {
   return value;
 }
 
+function requiredArray(value, field) {
+  if (!Array.isArray(value)) throw new TypeError(`${field} must be an array`);
+  return value;
+}
+
 export const ADMISSION = Object.freeze({
   ADMITTED: "ADMITTED",
   NOT_ADMITTED: "NOT_ADMITTED",
@@ -53,7 +58,7 @@ export function createObservationEnvelope(input = {}) {
     targetIncarnation: detachedImmutable(input.targetIncarnation ?? null),
     inputs: detachedImmutable(input.inputs ?? null),
     freshness: detachedImmutable(input.freshness ?? null),
-    derivedProvenance: detachedImmutable([...(input.derivedProvenance ?? [])]),
+    derivedProvenance: detachedImmutable([...requiredArray(input.derivedProvenance ?? [], "derivedProvenance")]),
     proposedAction: detachedImmutable(input.proposedAction ?? null),
     explanatory: detachedImmutable(input.explanatory ?? null),
     existingIdentity: detachedImmutable(input.existingIdentity ?? null)
@@ -74,6 +79,6 @@ export function createMissionCandidate({ observation, claim, admission = "UNKNOW
     observation: detachedImmutable(observation),
     claim: detachedImmutable(claim ?? null),
     admission,
-    admissionEvidence: detachedImmutable([...admissionEvidence])
+    admissionEvidence: detachedImmutable([...requiredArray(admissionEvidence, "admissionEvidence")])
   });
 }
