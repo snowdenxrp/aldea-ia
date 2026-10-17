@@ -1,4 +1,20 @@
-## CURRENT M0 CONTINUATION — M0.42 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.43 (2026-10-17)
+
+Latest M0 evidence: [M0.43 immutable Core contract data guard](BUILD/NCS_M0_43_REJECT_MUTABLE_EXOTIC_VALUES_IN_CORE_CONTRACTS_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- Core contract immutable-data helper validates detached values before freezing and rejects exotic mutable objects such as Map, Set, and Date.
+- Regression-test commit: `376e32753c897b394e0333831380dcd16dc443b8`.
+- M0 Core contracts CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569863
+- STEP 4 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569750
+- STEP 5 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569763
+- Policy-context contract CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38994569738
+- Core isolation STEP 3A/3B/3C workflow was triggered by commit `06f8a2b36da6d37826f413dd0f5e2a16d48ff753`; check https://github.com/snowdenxrp/aldea-ia/actions/runs/38994594903 before relying on its result.
+- Scope: this does not prove authority provenance, production runtime reachability, bypass closure, or device behavior. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.42 (2026-10-17)
 
 Latest M0 evidence: [M0.42 order-independent semantic JSON comparison](BUILD/NCS_M0_42_ORDER_INDEPENDENT_SEMANTIC_JSON_COMPARISON_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
