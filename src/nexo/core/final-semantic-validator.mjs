@@ -7,7 +7,12 @@ function validState(value) {
 }
 
 function sameValue(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b);
+  try {
+    return JSON.stringify(a) === JSON.stringify(b);
+  } catch {
+    // Cyclic or otherwise non-JSON-comparable inputs are not proof of equality.
+    return null;
+  }
 }
 
 function requirementFailure(requirement, index) {
@@ -41,19 +46,42 @@ export function createFinalSemanticValidator() {
         });
       }
 
-      if (claim.target !== null &&
-          (context.target === undefined || !sameValue(claim.target, context.target))) {
-        return createValidationResult(VALIDATION.FAIL, {
-          reasons: ["claim target does not match authoritative validation target"]
-        });
+      if (claim.target !== null) {
+        if (context.target === undefined) {
+          return createValidationResult(VALIDATION.FAIL, {
+            reasons: ["claim target does not match authoritative validation target"]
+          });
+        }
+        const targetMatches = sameValue(claim.target, context.target);
+        if (targetMatches === null) {
+          return createValidationResult(VALIDATION.UNKNOWN, {
+            reasons: ["claim target cannot be safely compared with validation target"]
+          });
+        }
+        if (!targetMatches) {
+          return createValidationResult(VALIDATION.FAIL, {
+            reasons: ["claim target does not match authoritative validation target"]
+          });
+        }
       }
 
-      if (claim.targetIncarnation !== null &&
-          (context.targetIncarnation === undefined ||
-           !sameValue(claim.targetIncarnation, context.targetIncarnation))) {
-        return createValidationResult(VALIDATION.FAIL, {
-          reasons: ["claim target incarnation does not match authoritative validation incarnation"]
-        });
+      if (claim.targetIncarnation !== null) {
+        if (context.targetIncarnation === undefined) {
+          return createValidationResult(VALIDATION.FAIL, {
+            reasons: ["claim target incarnation does not match authoritative validation incarnation"]
+          });
+        }
+        const incarnationMatches = sameValue(claim.targetIncarnation, context.targetIncarnation);
+        if (incarnationMatches === null) {
+          return createValidationResult(VALIDATION.UNKNOWN, {
+            reasons: ["claim target incarnation cannot be safely compared with validation incarnation"]
+          });
+        }
+        if (!incarnationMatches) {
+          return createValidationResult(VALIDATION.FAIL, {
+            reasons: ["claim target incarnation does not match authoritative validation incarnation"]
+          });
+        }
       }
 
       if (claim.policyContext !== null) {
@@ -62,7 +90,13 @@ export function createFinalSemanticValidator() {
             reasons: ["claim policy/config context is unavailable"]
           });
         }
-        if (!sameValue(claim.policyContext, context.policyContext)) {
+        const policyContextMatches = sameValue(claim.policyContext, context.policyContext);
+        if (policyContextMatches === null) {
+          return createValidationResult(VALIDATION.UNKNOWN, {
+            reasons: ["claim policy/config context cannot be safely compared with validation context"]
+          });
+        }
+        if (!policyContextMatches) {
           return createValidationResult(VALIDATION.FAIL, {
             reasons: ["claim policy/config context does not match authoritative validation context"]
           });
