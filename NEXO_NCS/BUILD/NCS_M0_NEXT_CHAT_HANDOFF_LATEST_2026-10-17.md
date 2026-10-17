@@ -6,7 +6,7 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.54. Do not repeat M0.1–M0.54 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.55. Do not repeat M0.1–M0.55 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
 
 ## Latest verified increment: M0.53 — multi-entry JSON array validation
 
@@ -21,6 +21,19 @@ Report: [NCS_M0_53_FIX_MULTI_ENTRY_JSON_ARRAY_VALIDATION_2026-10-17.md](NCS_M0_5
 The array-index regex was over-escaped and rejected valid JSON arrays with multiple entries, incorrectly producing UNKNOWN. The corrected digit class and a two-entry provenance regression are focused-CI verified. This is input validation only; it does not prove provenance authenticity, constitutional authority, or protected-path closure. STEP 7 remains OPEN / STOP / UNKNOWN.
 
 **Next:** inspect one distinct Core boundary, check existing reports/tests before calling anything new, demonstrate a contract-level defect, then add regression coverage and run focused CI. No M1 detour, no protected effects, no invented PASS.
+
+## Latest verified increment: M0.55 — safe revision fencing
+
+Report: [NCS_M0_55_SAFE_REVISION_FENCING_2026-10-17.md](NCS_M0_55_SAFE_REVISION_FENCING_2026-10-17.md)
+
+- Final regression-test commit: `f9bab5aac075f81bd28e04bf1a2692c9deb103d6`
+- STATUS commit: `66111f6d935765df62432d1bfe542ecaf97950c8`
+- M0 Core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042995723 — success
+- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042998648 — success
+- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042998646 — success
+- STEP 3A/3B/3C: https://github.com/snowdenxrp/aldea-ia/actions/runs/39042998600 — success
+
+M0.55 rejects revision values that cannot safely support an exact increment. Candidate creation, protected-transition checks and persistence adapter reject exhausted/unsafe revisions before commit/persistence side effects. This is not a rollover/epoch design and does not prove authority or durable monotonicity. STEP 7 remains OPEN / STOP / UNKNOWN.
 
 ## Latest verified increment: M0.54 — commit-result errorCode shape
 
