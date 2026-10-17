@@ -3,6 +3,17 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
+## Latest increment: M0.40 — preserve the complete authorized claim
+
+Report: [M0.40 — Preserve the complete authorized claim in the candidate](NCS_M0_40_PRESERVE_COMPLETE_AUTHORIZED_CLAIM_2026-10-17.md)
+- Source commit: `7a453037c731cb26bca1d1bbc6ed02df47d32f45`
+- Regression-test commit / CI head: `1c0493708cf11874a46e73e25920bb45c1e885d3`
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993603206 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993603150 — success
+- M0 core contracts CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993603226 — success
+
+The candidate boundary now compares the complete normalized claim, not only `claimId`. A candidate that preserves the ID but substitutes `action` is rejected before semantic validation and commit. This does not authenticate authority or prove production runtime reachability.
+
 ## Latest increment: M0.39 — fail closed on malformed authority-gate result
 
 Report: [M0.39 — Fail closed on malformed authority-gate result](NCS_M0_39_FAIL_CLOSED_MALFORMED_AUTHORITY_RESULT_2026-10-17.md)
