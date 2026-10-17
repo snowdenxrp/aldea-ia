@@ -132,13 +132,13 @@ export async function executeProtectedTransition({
   try {
     commit = await ports.conditionalCommit.commit(candidate);
   } catch (error) {
-    return classify(ports, OUTCOMES.UNKNOWN, {
+    return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
       reasons: [error?.code ?? "conditional commit raised an exception"]
     });
   }
 
   if (!commit || !Object.values(COMMIT).includes(commit.status)) {
-    return classify(ports, OUTCOMES.UNKNOWN, {
+    return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
       reasons: ["conditional commit returned no valid result"]
     });
   }
@@ -153,11 +153,13 @@ export async function executeProtectedTransition({
     });
   }
 
+  if (commit.status === COMMIT.UNKNOWN) {
+    return classify(ports, OUTCOMES.RECONCILE_REQUIRED, {
+      reasons: ["conditional commit outcome is UNKNOWN"]
+    });
+  }
+
   return classify(ports, OUTCOMES.UNKNOWN, {
-    reasons: [
-      commit.status === COMMIT.UNKNOWN
-        ? "conditional commit outcome is UNKNOWN"
-        : "conditional commit failed without a proven safe commit"
-    ]
+    reasons: ["conditional commit failed without a proven safe commit"]
   });
 }
