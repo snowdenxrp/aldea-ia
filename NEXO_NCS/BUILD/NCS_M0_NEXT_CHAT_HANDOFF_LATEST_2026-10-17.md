@@ -6,7 +6,25 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.56. Do not repeat M0.1–M0.56 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.57. Do not repeat M0.1–M0.57 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+
+## Latest verified increment: M0.57 — preflight Core constructor inputs
+
+Report: [NCS_M0_57_PREFLIGHT_CORE_CONSTRUCTOR_INPUTS_2026-10-17.md](NCS_M0_57_PREFLIGHT_CORE_CONSTRUCTOR_INPUTS_2026-10-17.md)
+
+- Source: `c10e241c7dbd5830c9d084d02190878c5b1ac68b`
+- Regression tests: `5980f45d22eb0ef3f9ee2bdab9da35075d4ed94f`
+- M0 Core CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318251 — success
+- STEP 4 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318273 — success
+- STEP 5 CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318250 — success
+- STEP 7 policyContext CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318249 — success
+- STEP 3A/3B/3C CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318372 — success
+
+M0.56 guarded immutable cloning, but constructor input fields/options could be read before that guard. M0.57 now preflights input/options records before field access across claim, policy context, candidate, validation, commit, outcome, and authority constructors. Regression tests verify getters are rejected without execution. This remains a bounded data-contract fix, not proof of authority or production runtime safety.
+
+**Next:** start at STATUS, inspect the latest M0.57 report, then examine a distinct Core boundary only if prior reports/tests show it is uncovered. Do not repeat M0.1–M0.57. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
 
 ## Latest verified increment: M0.56 — reject lossy hidden Core contract properties
 
