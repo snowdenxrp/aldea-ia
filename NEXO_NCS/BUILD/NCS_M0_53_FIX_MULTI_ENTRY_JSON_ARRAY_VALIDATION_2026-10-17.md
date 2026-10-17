@@ -20,13 +20,13 @@ The JavaScript regex behavior is consistent with MDN's documentation that `\\d` 
 - Source fix: `f0a6cd8608c79dcfcc2a24ddc09210510bd6f431`
 - Regression test: `5def9ecaea02a47b7180008b972fd61d4cfe0cf7`
 
-## Focused CI evidence — pending at report creation
+## Focused CI evidence — all three successful
 
 - M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363190
 - STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363167
 - STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041363186
 
-Do not mark M0.53 CI PASS until all relevant runs complete successfully.
+M0.53 focused CI is verified PASS on the regression-test commit.
 
 ## Scope and limitations
 
@@ -34,4 +34,4 @@ This is a bounded input-validation/availability correction only. It does not est
 
 ## Next step
 
-Verify all three focused CI runs. If successful, update STATUS and this report with final evidence. Then inspect a distinct, not-yet-closed Core boundary, cross-checking prior M0 reports before treating anything as new. Missing proof remains `PENDING` or `UNKNOWN`, never PASS.
+Focused CI is complete. Inspect a distinct, not-yet-closed Core boundary, cross-checking prior M0 reports before treating anything as new. Do not repeat M0.1–M0.53. Missing proof remains `PENDING` or `UNKNOWN`, never PASS.
