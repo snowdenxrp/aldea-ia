@@ -1,11 +1,12 @@
 # NCS M0.63 — Preflight Core port options and validate commit result errorCode
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
-Implementation commit: `ea41ea9c156826a02a78319bce701bd679569023`
+Initial implementation commit: `ea41ea9c156826a02a78319bce701bd679569023`
+Boundary refinement commit: `8c8f64b5c2f459194856800e1593a52104a8d57c`
 
 ## Finding A — Core port options were destructured before validation
 
-`createCorePorts()` previously destructured its argument in the parameter list. Accessor properties could execute before any input-contract check. It now accepts the original record as `input`, calls `assertContractInput(input, "corePorts options")`, and only then reads its fields.
+`createCorePorts()` previously destructured its argument in the parameter list. Accessor properties could execute before any input-contract check. It now validates only the top-level options record (plain/null-prototype record; enumerable data properties; no symbol keys) before reading fields. It intentionally does not recursively validate adapter instances, preserving support for class-based port implementations.
 
 Regression test: a getter on `authorityGate` must throw a contract-shape error and its getter call count must remain zero.
 
@@ -17,12 +18,12 @@ Regression test: a conflict result missing `errorCode` yields `RECONCILE_REQUIRE
 
 ## Focused CI evidence
 
-All four workflows completed successfully on implementation commit `ea41ea9c156826a02a78319bce701bd679569023`:
+All four workflows completed successfully on final refinement commit `8c8f64b5c2f459194856800e1593a52104a8d57c`:
 
-- [M0 non-authority core contracts — run 39076466188](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076466188)
-- [STEP 4 semantic validation — run 39076466214](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076466214)
-- [STEP 5 outcome classification — run 39076466274](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076466274)
-- [STEP 3A/3B/3C verification — run 39076466189](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076466189)
+- [M0 non-authority core contracts — run 39076550293](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076550293)
+- [STEP 4 semantic validation — run 39076550200](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076550200)
+- [STEP 5 outcome classification — run 39076550208](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076550208)
+- [STEP 3A/3B/3C verification — run 39076550220](https://github.com/snowdenxrp/aldea-ia/actions/runs/39076550220)
 
 This is focused CI evidence only, not a full repository test claim.
 

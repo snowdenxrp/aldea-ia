@@ -1,6 +1,6 @@
 ## Current resume point — M0.63 (2026-10-17)
 
-The current increment preflights `createCorePorts()` options before destructuring and rejects malformed conditional-commit `errorCode` results. Regression coverage was added. Focused CI passed: M0 `39076466188`, STEP 4 `39076466214`, STEP 5 `39076466274`, STEP 3A/3B/3C `39076466189`. Evidence report: [M0.63](NCS_M0_63_PREFLIGHT_CORE_PORT_OPTIONS_AND_COMMIT_ERRORCODE_2026-10-17.md). Do not repeat M0.1–M0.62. STEP 7 remains STOP for protected activation; no legitimate authority or production protected-effect route has been proven.
+The current increment preflights `createCorePorts()` options before destructuring and rejects malformed conditional-commit `errorCode` results. Regression coverage was added. Final focused CI passed on commit `8c8f64b5c2f459194856800e1593a52104a8d57c`: M0 `39076550293`, STEP 4 `39076550200`, STEP 5 `39076550208`, STEP 3A/3B/3C `39076550220`. Evidence report: [M0.63](NCS_M0_63_PREFLIGHT_CORE_PORT_OPTIONS_AND_COMMIT_ERRORCODE_2026-10-17.md). Do not repeat M0.1–M0.62. STEP 7 remains STOP for protected activation; no legitimate authority or production protected-effect route has been proven.
 
 # NCS — CONTINUITY HANDOFF FOR NEXT CHAT (2026-10-17)
 
