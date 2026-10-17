@@ -1,4 +1,20 @@
-## CURRENT M0 CONTINUATION — M0.46 (2026-10-17)
+## CURRENT M0 CONTINUATION — M0.47 (2026-10-17)
+
+Latest M0 evidence: [M0.47 — Reject indeterminate reconciliation outcomes](BUILD/NCS_M0_47_REJECT_INDETERMINATE_RECONCILIATION_OUTCOMES_2026-10-17.md).
+Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
+
+- Reconciliation only resolves on recognized determinate terminal outcomes; UNKNOWN, RECONCILE_REQUIRED, and arbitrary strings remain UNRESOLVED.
+- Whitespace-only reconciliation boundary/claim identifiers are rejected.
+- Regression-test commit: `d041ef859073622956a68a51e16d9a3c537710dd`.
+- STEP 6 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626477
+- M0 core CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626469
+- STEP 5 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626467
+- STEP 4 CI PASS: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996626495
+- Critical unresolved boundary: the reconciler still trusts caller-supplied `authoritative: true`; authenticity of reconciliation evidence is not established. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
+## PREVIOUS M0 CONTINUATION — M0.46 (2026-10-17)
 
 Latest M0 evidence: [M0.46 — Reject mutable exotic policy-context data](BUILD/NCS_M0_46_REJECT_MUTABLE_EXOTIC_POLICY_CONTEXT_DATA_2026-10-17.md).
 Latest M0 handoff: [NCS M0 next-chat handoff](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_LATEST_2026-10-17.md).
