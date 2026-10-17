@@ -200,6 +200,40 @@ function makePorts(overrides = {}) {
 }
 
 {
+  let validateCalls = 0;
+  let commitCalls = 0;
+  const { ports } = makePorts({
+    candidateExecutor: {
+      execute: ({ state, expectedRevision }) => createCandidate({
+        claim: createClaimEnvelope({ claimId: "protected-1", action: "different-action" }),
+        state,
+        expectedRevision
+      })
+    },
+    finalSemanticValidator: {
+      validate: () => {
+        validateCalls += 1;
+        return createValidationResult(VALIDATION.PASS, { evidence: ["must-not-run"] });
+      }
+    },
+    conditionalCommit: {
+      commit: () => {
+        commitCalls += 1;
+        return createCommitResult(COMMIT.COMMITTED);
+      }
+    }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /candidate must preserve the complete authorized claim/
+  );
+  assert.equal(validateCalls, 0);
+  assert.equal(commitCalls, 0);
+}
+
+{
   const { ports } = makePorts({
     candidateExecutor: {
       execute: ({ state, expectedRevision }) => createCandidate({
