@@ -41,3 +41,40 @@ assert.equal(typeof r.execute, "undefined");
 assert.equal(typeof r.authorize, "undefined");
 
 console.log("NEXO STEP 6 reconciliation contract tests: PASS");
+
+
+{
+  let getterCalls = 0;
+  const hostileEvidence = {
+    outcome: "SAFE_COMMIT",
+    get authoritative() {
+      getterCalls += 1;
+      return true;
+    }
+  };
+  const result = r.reconcile({ reconciliationCase: c, evidence: [hostileEvidence] });
+  assert.equal(result.status, "UNRESOLVED");
+  assert.equal(getterCalls, 0, "reconciliation must reject evidence accessors before reading them");
+}
+
+{
+  let getterCalls = 0;
+  const hostileCase = {};
+  Object.defineProperty(hostileCase, "boundary", {
+    enumerable: true,
+    get() {
+      getterCalls += 1;
+      return "recovery-boundary";
+    }
+  });
+  const result = r.reconcile({ reconciliationCase: hostileCase, evidence: [] });
+  assert.equal(result.status, "INVALID");
+  assert.equal(getterCalls, 0, "reconciliation case accessors must be rejected before reading them");
+}
+
+{
+  const hostileEvidence = { authoritative: true, outcome: "SAFE_COMMIT" };
+  Object.defineProperty(hostileEvidence, Symbol("hidden"), { value: "omitted by structuredClone" });
+  const result = r.reconcile({ reconciliationCase: c, evidence: [hostileEvidence] });
+  assert.equal(result.status, "UNRESOLVED", "symbol-keyed evidence must not be silently accepted after cloning");
+}

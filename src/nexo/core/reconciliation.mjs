@@ -12,14 +12,27 @@ function assertPlainData(value, seen = new WeakSet()) {
   if (value === null || typeof value !== "object") return;
   if (seen.has(value)) return;
   seen.add(value);
+  const isArray = Array.isArray(value);
   const prototype = Object.getPrototypeOf(value);
-  if (!Array.isArray(value) && prototype !== Object.prototype && prototype !== null) {
+  if (!isArray && prototype !== Object.prototype && prototype !== null) {
     throw new TypeError("reconciliation evidence must contain only arrays and plain objects");
   }
-  for (const child of Object.values(value)) assertPlainData(child, seen);
+  for (const key of Reflect.ownKeys(value)) {
+    if (typeof key === "symbol") {
+      throw new TypeError("reconciliation evidence must not contain symbol-keyed properties");
+    }
+    if (isArray && key === "length") continue;
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      throw new TypeError("reconciliation evidence must contain only enumerable data properties");
+    }
+    assertPlainData(descriptor.value, seen);
+  }
 }
 
 function detachedImmutable(value) {
+  // Inspect caller-owned data before cloning; cloning may invoke getters or omit properties.
+  assertPlainData(value);
   const clone = structuredClone(value);
   assertPlainData(clone);
   function freeze(item, seen = new WeakSet()) {
@@ -40,11 +53,21 @@ export function createReconciliationCase({ boundary, claimId = null } = {}) {
 export function createReconciler() {
   return Object.freeze({
     reconcile({ reconciliationCase, evidence = [] } = {}) {
+      try {
+        assertPlainData(reconciliationCase);
+      } catch {
+        return Object.freeze({ status: "INVALID", outcome: null, evidence: Object.freeze([]) });
+      }
       if (!reconciliationCase || typeof reconciliationCase !== "object" || Array.isArray(reconciliationCase) ||
           typeof reconciliationCase.boundary !== "string" || reconciliationCase.boundary.trim().length === 0) {
         return Object.freeze({ status: "INVALID", outcome: null, evidence: Object.freeze([]) });
       }
       if (!Array.isArray(evidence)) throw new TypeError("evidence must be an array");
+      try {
+        assertPlainData(evidence);
+      } catch {
+        return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
+      }
       const item = evidence.find(x =>
         x && typeof x === "object" && !Array.isArray(x) &&
         x.authoritative === true &&
