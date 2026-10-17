@@ -73,6 +73,17 @@ assert.throws(() => { detached.dependencies[0].meta.version = 2; }, TypeError);
 const state = { value: 1, nested: { count: 1 } };
 const candidate = createCandidate({ claim, state, expectedRevision: 7 });
 assert.equal(candidate.expectedRevision, 7);
+assert.notEqual(candidate.claim, claim);
+assert.throws(() => createCandidate({
+  claim: { claimId: "   ", action: "example" },
+  state: {},
+  expectedRevision: 1
+}), /claimId must be a non-empty, non-blank string/);
+assert.throws(() => createCandidate({
+  claim: { claimId: "claim-malformed-arrays", action: "example", dependencies: "target" },
+  state: {},
+  expectedRevision: 1
+}), /dependencies must be an array/);
 assert.notEqual(candidate.state, state);
 candidate.state.nested.count = 2;
 candidate.state.value = 3;
