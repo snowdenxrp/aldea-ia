@@ -70,6 +70,18 @@ assert.throws(() => createMissionCandidate({
 
 assert.throws(() => createObservationEnvelope({ source: "VisualAgent" }), /code/);
 assert.throws(() => createMissionCandidate({ observation, admission: "FAILED" }), /invalid admission state/);
+assert.throws(() => createObservationEnvelope({
+  source: "VisualAgent", code: "MESH_MISSING", derivedProvenance: "not-an-array"
+}), /derivedProvenance must be an array/);
+assert.throws(() => createObservationEnvelope({
+  source: "VisualAgent", code: "MESH_MISSING", derivedProvenance: { id: "p1" }
+}), /derivedProvenance must be an array/);
+assert.throws(() => createMissionCandidate({
+  observation, admissionEvidence: "not-an-array"
+}), /admissionEvidence must be an array/);
+assert.throws(() => createMissionCandidate({
+  observation, admissionEvidence: { source: "x" }
+}), /admissionEvidence must be an array/);
 
 const unknownCandidate = createMissionCandidate({ observation });
 assert.equal(unknownCandidate.admission, "UNKNOWN");
