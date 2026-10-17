@@ -6,7 +6,7 @@ Repository: https://github.com/snowdenxrp/aldea-ia
 Branch: ncs-clean-architecture
 Start here: STATUS → this handoff → relevant BUILD report.
 
-**Resume at M0.58. Do not repeat M0.1–M0.58 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
+**Resume at M0.59. Do not repeat M0.1–M0.59 investigations or closed historical audits.** First inspect the current source/test/workflow state for a genuinely distinct defect; proceed only if a contract-grounded failure is demonstrable. Do not manufacture increments or use cosmetic changes to inflate progress.
 
 ## Latest STEP 7 design-only reconciliation — first-scope ownership boundary
 
@@ -17,6 +17,25 @@ The post-M0.58 source recheck found the runtime/orchestrator/effect-adapter sour
 A design-only boundary table now keeps four classes separate: planning-only, local Lúmina/simulation mutation, canonical persisted-state acceptance, and external/protected effects. No production execution model is selected. Direction B remains the security objective; no weaker self-reported path, trust ceremony, freeze/signature, APK, or wiring is authorized.
 
 **Next action:** the owner must explicitly name the intended first deployment target and which of those ownership classes belongs in the first constitutional scope. Do not infer the target or wire code before that decision. Then trace only that target's canonical state owner and final effect-capable sink. If scope remains undefined, remain design-only / STOP.
+
+---
+
+## Latest verified increment: M0.59 — preflight candidate before field reads
+
+Report: [NCS M0.59 — Preflight candidate before field reads](NCS_M0_59_PREFLIGHT_CANDIDATE_BEFORE_FIELD_READS_2026-10-17.md)
+
+- Source change: `eccc1fc200a41e5ec3a3f70243658e39d4a39e13`
+- Regression-test commit: `85da2fdcdfeaf8f0eed2585024a7e85c82b62a63`
+- Report commit: `0cba03d7bce13bc4877c5ea9652cf49c9a6549cd`
+- STATUS update: `5898431ee219f607fbe8486ddaca3f4d125293ab`
+- M0 Core: https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400456 — success
+- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400447 — success
+- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400437 — success
+- STEP 3A/3B/3C: https://github.com/snowdenxrp/aldea-ia/actions/runs/39075400440 — success
+
+The candidate returned by `candidateExecutor.execute()` is now preflighted with the shared structural validator before `assertCandidate()` reads any field. Regression confirms an `expectedRevision` getter is rejected without executing, and semantic validation/commit are not reached. This is only a data-shape boundary fix, not proof that candidate ports are trusted or that authority/runtime wiring is safe.
+
+**Next:** begin at STATUS and do not repeat M0.1–M0.59. Continue only if a distinct, concrete Core contract defect can be demonstrated from current source/tests. For STEP 7, the first deployment target and first constitutional ownership class remain unselected; do not infer them or wire production execution. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
 
 ---
 
