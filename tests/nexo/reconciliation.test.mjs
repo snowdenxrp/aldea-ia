@@ -78,3 +78,34 @@ console.log("NEXO STEP 6 reconciliation contract tests: PASS");
   const result = r.reconcile({ reconciliationCase: c, evidence: [hostileEvidence] });
   assert.equal(result.status, "UNRESOLVED", "symbol-keyed evidence must not be silently accepted after cloning");
 }
+
+
+{
+  let getterCalls = 0;
+  const hostileInput = {
+    reconciliationCase: c,
+    get evidence() {
+      getterCalls += 1;
+      return [{ authoritative: true, outcome: "SAFE_COMMIT" }];
+    }
+  };
+  const result = r.reconcile(hostileInput);
+  assert.equal(result.status, "INVALID");
+  assert.equal(getterCalls, 0, "outer reconciliation input accessors must be rejected before destructuring");
+  assert.equal(r.reconcile(null).status, "INVALID", "null call input must fail closed instead of throwing");
+}
+
+{
+  let getterCalls = 0;
+  const hostileInput = {};
+  Object.defineProperty(hostileInput, "reconciliationCase", {
+    enumerable: true,
+    get() {
+      getterCalls += 1;
+      return c;
+    }
+  });
+  const result = r.reconcile(hostileInput);
+  assert.equal(result.status, "INVALID");
+  assert.equal(getterCalls, 0, "outer reconciliation case getter must remain uncalled");
+}

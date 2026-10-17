@@ -52,7 +52,18 @@ export function createReconciliationCase({ boundary, claimId = null } = {}) {
 
 export function createReconciler() {
   return Object.freeze({
-    reconcile({ reconciliationCase, evidence = [] } = {}) {
+    reconcile(input = {}) {
+      // Validate the entire call record before destructuring; parameter
+      // destructuring would invoke caller-owned getters before this boundary.
+      try {
+        assertPlainData(input);
+      } catch {
+        return Object.freeze({ status: "INVALID", outcome: null, evidence: Object.freeze([]) });
+      }
+      if (!input || typeof input !== "object" || Array.isArray(input)) {
+        return Object.freeze({ status: "INVALID", outcome: null, evidence: Object.freeze([]) });
+      }
+      const { reconciliationCase, evidence = [] } = input;
       try {
         assertPlainData(reconciliationCase);
       } catch {
