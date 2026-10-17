@@ -96,6 +96,17 @@ const baseContext = {
   const result = validator.validate(candidate(), {
     ...baseContext,
     requirements: [
+      ...baseContext.requirements,
+      { id: "unrelated-a", status: "FAILED", authoritative: true, source: "test-authority" }
+    ]
+  });
+  assert.equal(result.status, VALIDATION.PASS);
+}
+
+{
+  const result = validator.validate(candidate(), {
+    ...baseContext,
+    requirements: [
       { id: "dep-a", status: "UNKNOWN", authoritative: true, source: "test-authority" },
       { id: "pred-a", status: "SATISFIED", authoritative: true, source: "test-authority" }
     ]
