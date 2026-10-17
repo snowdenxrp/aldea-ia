@@ -12,8 +12,13 @@ function immutable(value, seen = new WeakSet()) {
 function detached(value) { return immutable(structuredClone(value)); }
 
 function check(name, value) {
-  if (!value || typeof value !== "object" || !RESOLUTION_INPUT_STATES.includes(value.status)) {
+  if (!value || typeof value !== "object" || Array.isArray(value) || !RESOLUTION_INPUT_STATES.includes(value.status)) {
     throw new TypeError(`invalid status for ${name}`);
+  }
+  for (const field of ["reasons", "evidence"]) {
+    if (value[field] !== undefined && !Array.isArray(value[field])) {
+      throw new TypeError(`${name}.${field} must be an array`);
+    }
   }
   return value;
 }
