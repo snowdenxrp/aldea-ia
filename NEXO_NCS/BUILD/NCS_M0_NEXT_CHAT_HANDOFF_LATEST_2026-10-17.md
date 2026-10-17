@@ -65,10 +65,10 @@ Record: [M0.36 — Scope semantic decision to claim-critical requirements](NCS_M
 - Source commit: `17431cff0bc9e1c13fb74dd0bb7741f4fe416ba3`
 - Regression test commit: `eea37c61c75a725bec28e0c9331d37e53f3ef66f`
 - STEP 4 source-head run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993022847 — success
-- STEP 4 test-head run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993025244 — pending at handoff update
+- STEP 4 test-head run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993025244 — success
 - STEP 5 test-head run: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993025169 — pending at handoff update
 
-Fixed a decision-scope defect: unrelated context requirements with FAILED/invalid status no longer change a claim's decision. Only IDs required by the claim are classified for authority/status; missing required evidence remains UNKNOWN and a required FAILED item remains FAIL. Confirm the test-head CI runs before treating M0.36 as fully verified.
+Fixed a decision-scope defect: unrelated context requirements with FAILED/invalid status no longer change a claim's decision. Only IDs required by the claim are classified for authority/status; missing required evidence remains UNKNOWN and a required FAILED item remains FAIL. Both STEP 4 and STEP 5 test-head runs completed successfully; M0.36 is focused-CI verified.
 
 ## Active lane
 
