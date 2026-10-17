@@ -366,6 +366,34 @@ function makePorts(overrides = {}) {
 
 
 {
+  let statusGetterCalls = 0;
+  let commitCalls = 0;
+  const { ports } = makePorts({
+    finalSemanticValidator: {
+      validate: () => {
+        const result = { reasons: [], evidence: [] };
+        Object.defineProperty(result, "status", {
+          enumerable: true,
+          get() { statusGetterCalls += 1; return VALIDATION.PASS; }
+        });
+        return result;
+      }
+    },
+    conditionalCommit: {
+      commit: () => { commitCalls += 1; return createCommitResult(COMMIT.COMMITTED); }
+    }
+  });
+  await assert.rejects(
+    () => executeProtectedTransition({
+      ports, proposal: {}, state: { value: 1 }, expectedRevision: 1
+    }),
+    /enumerable data properties/
+  );
+  assert.equal(statusGetterCalls, 0, "validator result getters must be rejected before field reads");
+  assert.equal(commitCalls, 0, "invalid validator result must not reach commit");
+}
+
+{
   let commitCalls = 0;
   const { ports } = makePorts({
     finalSemanticValidator: {
