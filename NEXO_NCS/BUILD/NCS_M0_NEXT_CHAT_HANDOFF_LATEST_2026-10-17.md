@@ -3,7 +3,21 @@
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
 
-## Latest increment: M0.48 — detach and deeply freeze reconciliation evidence
+## Latest increment: M0.49 — reject malformed observation evidence collections
+
+Report: [M0.49 — Reject malformed observation collections](NCS_M0_49_REJECT_MALFORMED_OBSERVATION_COLLECTIONS_2026-10-17.md)
+- Source commit: `64f74c975d6748d288d093db24ca0563301f895e`
+- Regression-test commit: `a55d0f54158efa7a8c6588eae3424cff6c931a9d`
+- M0 source CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996819776 — success
+- STEP 5 source CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996819811 — success
+- STEP 4 source CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996819850 — success
+- M0 regression CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996829032 — success
+- STEP 5 regression CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996828956 — success
+- STEP 4 regression CI: https://github.com/snowdenxrp/aldea-ia/actions/runs/38996828937 — success
+
+Observation `derivedProvenance` and mission-candidate `admissionEvidence` now require arrays instead of spreading arbitrary iterable/object inputs. Shape validation only; no truth/source/authority proof.
+
+## Previous increment: M0.48 — detach and deeply freeze reconciliation evidence
 
 Report: [M0.48 — Detach and freeze reconciliation evidence](NCS_M0_48_DETACH_AND_FREEZE_RECONCILIATION_EVIDENCE_2026-10-17.md)
 - Source commit: `aff3d102cc43fe464f05c030bf69af9e4508b133`
