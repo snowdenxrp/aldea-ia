@@ -65,6 +65,11 @@ export async function executeProtectedTransition({
   if (!authority || !Object.values(AUTHORITY).includes(authority.status)) {
     throw new TypeError("authorityGate must return an AuthorityResult");
   }
+  if (!Array.isArray(authority.reasons) || !Array.isArray(authority.evidence)) {
+    return classify(ports, OUTCOMES.UNKNOWN, {
+      reasons: ["authority gate returned a malformed result shape"]
+    });
+  }
 
   if (authority.status === AUTHORITY.STOP) {
     return classify(ports, OUTCOMES.AUTHORITY_STOP, {
