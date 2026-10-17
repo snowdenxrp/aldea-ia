@@ -2,7 +2,7 @@
 
 Date: 2026-10-17
 Branch: `ncs-clean-architecture`
-Status: IMPLEMENTED / FOCUSED CI PENDING AT REPORT CREATION
+Status: IMPLEMENTED / FOCUSED CI PASS
 
 ## Defect demonstrated
 
@@ -23,7 +23,7 @@ This is distinct from M0.28: that report covered detachment of nested `reasons` 
 
 ## Focused CI
 
-Runs were triggered on the regression-test commit `6b9fa321c6fdce3a15ca1ff8a3767e4ef8aa0205`. At report creation, runs were still queued/in progress; no PASS is claimed yet.
+All five focused workflows completed successfully on regression-test commit `6b9fa321c6fdce3a15ca1ff8a3767e4ef8aa0205`:
 
 - M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551827
 - STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551943
@@ -31,7 +31,7 @@ Runs were triggered on the regression-test commit `6b9fa321c6fdce3a15ca1ff8a3767
 - STEP 7 policyContext contract: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551767
 - STEP 3A/3B/3C verification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39041551824
 
-## Scope and limitations
+Result: focused CI PASS for the bounded workflows above. This is not a full-repository test run.\n\n## Scope and limitations
 
 This is a bounded Core contract-shape correction. It does not establish commit correctness, caller identity, provenance authenticity, constitutional authority, runtime reachability, or bypass closure. STEP 7 remains `OPEN / STOP / UNKNOWN`; protected effects remain STOP. No full repository test run is claimed.
 
