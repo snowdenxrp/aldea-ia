@@ -1,17 +1,17 @@
 # NEXO NCS — STATUS
 
-## Current entry: M0.57 — Preflight Core constructor inputs before field access
+## Current entry: M0.58 — Preflight protected-transition input
 
-Core constructors now validate input/options records before reading caller-controlled fields, preventing top-level getters from executing before the M0.56 data-property guard. Regression tests and focused CI passed on final test commit `5980f45d22eb0ef3f9ee2bdab9da35075d4ed94f`.
+The runtime entry `executeProtectedTransition()` now validates its request record before reading fields, so a caller-supplied getter cannot run during parameter destructuring. Regression test and focused CI passed on final test commit `01d32296cc85075b9842e4587d5ffe8c9e18bc4d`.
 
-- Report: [M0.57 — Preflight Core constructor inputs](BUILD/NCS_M0_57_PREFLIGHT_CORE_CONSTRUCTOR_INPUTS_2026-10-17.md)
-- Source: `c10e241c7dbd5830c9d084d02190878c5b1ac68b`
-- Tests: `5980f45d22eb0ef3f9ee2bdab9da35075d4ed94f`
-- M0 Core: [run 39044318251](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318251) — success
-- STEP 4: [run 39044318273](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318273) — success
-- STEP 5: [run 39044318250](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318250) — success
-- STEP 7 policyContext: [run 39044318249](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318249) — success
-- STEP 3A/3B/3C: [run 39044318372](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044318372) — success
+- Report: [M0.58 — Preflight protected-transition input](BUILD/NCS_M0_58_PREFLIGHT_PROTECTED_TRANSITION_INPUT_2026-10-17.md)
+- Shared validator export: `0022f17cfd69501f9282132cadabafe8b1a36efa`
+- Transition entry change: `5a47d9698c650e80dfc250d2ef4a940b540e875a`
+- Final regression-test commit: `01d32296cc85075b9842e4587d5ffe8c9e18bc4d`
+- M0 Core: [run 39044459878](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459878) — success
+- STEP 4: [run 39044459855](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459855) — success
+- STEP 5: [run 39044459893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459893) — success
+- STEP 3A/3B/3C: [run 39044459955](https://github.com/snowdenxrp/aldea-ia/actions/runs/39044459955) — success
 
 ## Activation gate — unchanged
 
