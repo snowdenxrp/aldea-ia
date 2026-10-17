@@ -96,11 +96,21 @@ export function createReconciler() {
       } catch {
         return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
       }
-      const item = evidence.find(x =>
-        x && typeof x === "object" && !Array.isArray(x) &&
-        x.authoritative === true &&
-        RESOLVABLE_OUTCOMES.includes(x.outcome)
-      );
+      // Avoid dispatching through caller-controlled array methods.
+      let item;
+      for (let index = 0; index < evidence.length; index += 1) {
+        const descriptor = Object.getOwnPropertyDescriptor(evidence, String(index));
+        if (!descriptor || !("value" in descriptor)) {
+          return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
+        }
+        const candidate = descriptor.value;
+        if (candidate && typeof candidate === "object" && !Array.isArray(candidate) &&
+            candidate.authoritative === true &&
+            RESOLVABLE_OUTCOMES.includes(candidate.outcome)) {
+          item = candidate;
+          break;
+        }
+      }
       if (!item) return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
       try {
         return Object.freeze({

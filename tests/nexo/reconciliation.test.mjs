@@ -119,3 +119,20 @@ console.log("NEXO STEP 6 reconciliation contract tests: PASS");
     assert.deepEqual(result.evidence, []);
   }
 }
+
+
+{
+  let findCalls = 0;
+  const hostileEvidence = [{ authoritative: true, outcome: "SAFE_COMMIT" }];
+  Object.defineProperty(hostileEvidence, "find", {
+    enumerable: true,
+    configurable: true,
+    value() {
+      findCalls += 1;
+      return { authoritative: true, outcome: "SAFE_COMMIT" };
+    }
+  });
+  const result = r.reconcile({ reconciliationCase: c, evidence: hostileEvidence });
+  assert.equal(result.status, "UNRESOLVED", "custom array methods must not control reconciliation selection");
+  assert.equal(findCalls, 0, "reconciliation must not invoke caller-controlled array methods");
+}
