@@ -28,6 +28,19 @@ assert.throws(() => resolvePolicyContext({
   ...base, dependencies: ["PASS"]
 }), /invalid status for dependencies/);
 
+assert.throws(() => resolvePolicyContext({
+  ...base, policyRef: { ...base.policyRef, id: "   " }
+}), /policyRef.id is required/);
+assert.throws(() => resolvePolicyContext({
+  ...base, scope: new Map([["mission", "mission-1"]])
+}), /policy context data must contain only arrays and plain objects/);
+assert.throws(() => resolvePolicyContext({
+  ...base, policyRef: { ...base.policyRef, metadata: new Date("2026-10-17T00:00:00Z") }
+}), /policy context data must contain only arrays and plain objects/);
+assert.throws(() => resolvePolicyContext({
+  ...base, provenance: { status: "PASS", evidence: [{ receipt: new Set(["receipt-1"]) }] }
+}), /policy context data must contain only arrays and plain objects/);
+
 const result = resolvePolicyContext(base);
 assert.equal("authorize" in result, false);
 assert.equal("commit" in result, false);
