@@ -19,7 +19,7 @@ The transition now checks the authority result's `reasons` and `evidence` arrays
 - STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993378537
 - M0 core contracts: https://github.com/snowdenxrp/aldea-ia/actions/runs/38993378595
 
-CI status must be verified on the source commit before this increment is considered complete.
+All three listed CI runs completed successfully on source commit `4f8eec4e7e92adc1d992ce327af405bd0bcb6d8c`.
 
 ## Limits
 
