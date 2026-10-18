@@ -4,11 +4,16 @@ on:
   push:
     branches: [ncs-clean-architecture]
     paths:
+      - "scripts/nexo-repair-preparation.mjs"
+      - "scripts/nexo-repair-dispatch.mjs"
       - "scripts/nexo-repair-settlement.mjs"
+      - "scripts/nexo-repair-mission-verification.mjs"
       - "scripts/nexo-continuity.mjs"
       - "src/nexo/core/**"
       - "src/nexo/adapters/persisted-repair-observation.mjs"
       - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
+      - "tests/nexo/continuity-migration.test.mjs"
+      - "tests/nexo/repair-owner-lifecycle.test.mjs"
       - ".github/workflows/nexo-m0-repair-crash-cuts.yml"
   workflow_dispatch:
 
