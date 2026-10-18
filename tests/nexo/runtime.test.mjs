@@ -527,3 +527,27 @@ assert.equal(uncertainPrepareResult.code,"NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN")
 assert.equal(uncertainPrepareResult.dispatchAttempted,false);
 assert.equal(uncertainPrepareResult.preparedCommitted,"UNKNOWN");
 assert.equal(uncertainPrepareDispatches,0);
+
+
+// The adapter must independently advertise a trusted reconciliation contract
+// before the owner is allowed to commit PREPARED for this operation.
+let adapterVerifierPrepareCalls=0;
+let adapterVerifierDispatchCalls=0;
+const noAdapterVerifierOwner={
+  ...canonicalOwner,
+  supportsReconciliation:()=>true,
+  recordPrepared:async()=>{adapterVerifierPrepareCalls++;return {status:"committed",preparedCommitted:true,storeRevision:1};}
+};
+const noAdapterVerifier={
+  ...canonicalAdapter,
+  supportsReconciliation:()=>false,
+  executePrepared:async()=>{adapterVerifierDispatchCalls++;return {status:"completed",verified:true};}
+};
+const noAdapterVerifierResult=await executeNexoStepWithContinuityOwner({
+  missionId:"canonical-mission",stepId:"step-1",owner:noAdapterVerifierOwner,adapter:noAdapterVerifier
+});
+assert.equal(noAdapterVerifierResult.status,"blocked");
+assert.equal(noAdapterVerifierResult.code,"NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE");
+assert.equal(noAdapterVerifierResult.dispatchAttempted,false);
+assert.equal(adapterVerifierPrepareCalls,0,"missing adapter verifier must block before PREPARED");
+assert.equal(adapterVerifierDispatchCalls,0,"missing adapter verifier must block before dispatch");
