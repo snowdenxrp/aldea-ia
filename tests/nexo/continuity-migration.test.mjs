@@ -225,4 +225,112 @@ try {
   await fs.rm(observedSettlementDir, { recursive: true, force: true });
 }
 
-console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation, PREPARED admission guard and observed-settlement no-redispatch OK.");
+
+const outcomeDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-outcome-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(outcomeDir, "nexo.json"),
+    allowEmptyInitialization: true
+  });
+  const mission = {
+    missionId: "owner-outcome-mission",
+    status: "planned",
+    objective: "verify owner-backed outcome persistence",
+    steps: [{ id: "step-1", action: "local_analysis", target: { item: "alpha" }, status: "planned", dependsOn: [] }]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 0, mission })).status, "committed");
+
+  const incompleteEvidence = await opened.owner.recordOutcome({
+    expectedRevision: 1,
+    outcome: {
+      missionId: mission.missionId, stepId: "step-1", action: "local_analysis",
+      target: { item: "alpha" }, status: "completed",
+      evidence: { verified: true, kind: "test-result" }
+    }
+  });
+  assert.equal(incompleteEvidence.status, "failed");
+  assert.equal(incompleteEvidence.code, "NEXO_COMPLETION_EVIDENCE_UNVERIFIED");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 1);
+
+  const completed = await opened.owner.recordOutcome({
+    expectedRevision: 1,
+    outcome: {
+      missionId: mission.missionId, stepId: "step-1", action: "local_analysis",
+      target: { item: "alpha" }, status: "completed",
+      evidence: { verified: true, kind: "test-result", source: "continuity-migration-regression" }
+    }
+  });
+  assert.equal(completed.status, "committed");
+  assert.equal(completed.journalSettled, false);
+  assert.equal(completed.authorization, "NOT_EVALUATED");
+  assert.equal(completed.storeRevision, 2);
+  assert.equal((await opened.owner.reconstructMission(mission.missionId)).mission.steps[0].status, "completed");
+
+  const replay = await opened.owner.recordOutcome({
+    expectedRevision: 2,
+    outcome: {
+      missionId: mission.missionId, stepId: "step-1", action: "local_analysis",
+      target: { item: "alpha" }, status: "failed",
+      evidence: { verified: false, kind: "late-replay", source: "regression" }
+    }
+  });
+  assert.equal(replay.status, "already_recorded");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 2);
+  assert.equal((await opened.owner.reconstructMission(mission.missionId)).mission.steps[0].status, "completed");
+} finally {
+  await fs.rm(outcomeDir, { recursive: true, force: true });
+}
+
+const unresolvedOutcomeDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-outcome-prepared-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(unresolvedOutcomeDir, "nexo.json"),
+    allowEmptyInitialization: true
+  });
+  const mission = {
+    missionId: "owner-outcome-prepared",
+    status: "planned",
+    objective: "preserve unresolved effect",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 0, mission })).status, "committed");
+  const operation = {
+    idempotencyKey: "owner-outcome-prepared:step-1",
+    missionId: mission.missionId, stepId: "step-1",
+    action: "repair_agent_state", target: "alex", environmentStateRevision: 0
+  };
+  assert.equal((await opened.owner.recordPrepared({ expectedRevision: 1, operation })).status, "committed");
+
+  const falseCompletion = await opened.owner.recordOutcome({
+    expectedRevision: 2,
+    outcome: {
+      missionId: mission.missionId, stepId: "step-1", action: "repair_agent_state",
+      target: "alex", status: "completed",
+      evidence: { verified: true, kind: "adapter-result", source: "caller" }
+    }
+  });
+  assert.equal(falseCompletion.status, "blocked");
+  assert.equal(falseCompletion.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 2);
+
+  const blocked = await opened.owner.recordOutcome({
+    expectedRevision: 2,
+    outcome: {
+      missionId: mission.missionId, stepId: "step-1", action: "repair_agent_state",
+      target: "alex", status: "blocked",
+      evidence: { verified: false, kind: "runtime-outcome", source: "continuity-migration-regression" }
+    }
+  });
+  assert.equal(blocked.status, "committed");
+  assert.equal(blocked.journalSettled, false);
+  const current = await opened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 3);
+  assert.equal(current.snapshot.effectJournal[0].status, "prepared");
+  const recovered = await opened.owner.reconstructMission(mission.missionId);
+  assert.equal(recovered.mission.status, "blocked");
+  assert.equal(recovered.mission.objective, "reconcile_prepared_effect");
+} finally {
+  await fs.rm(unresolvedOutcomeDir, { recursive: true, force: true });
+}
+
+console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation, durable owner outcome recording, PREPARED admission guard and observed-settlement no-redispatch OK.");
