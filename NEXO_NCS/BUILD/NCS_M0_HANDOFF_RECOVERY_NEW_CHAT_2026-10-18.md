@@ -230,3 +230,10 @@ Archivos nuevos:
 Commits: `aa9a3a34fd955edc19759aa8996416de7f938c7f`, `ef104bd8f2395449cc68fcaf374c136e17a367cb`, `8535c3a4df301d94b4f5d2bee3bf4b041e8402c5`, `9c759110dc2ac76b20030c2d9fac2a8feb18fa0e`. El workflow acaba de agregarse: resultado PENDING/UNKNOWN hasta inspeccionar la ejecución. No afirmar que el test pasó.
 
 No está conectado al runtime ni al owner verifier registry; todavía no cierra el ciclo PREPARED → dispatch → lineage → observación → settlement → outcome. Siguiente: observar CI, arreglar fallos concretos, probar respuesta perdida/crash cuts y solo entonces diseñar la conexión al CAS del owner para esta operación. No habilitar runtime default ni otras acciones. M0 INCOMPLETO.
+
+
+## Actualización — CI inicial de Chronicle verde; crash cuts ampliados pendientes
+
+- CI confirmada para la versión inicial: [run 39173007733](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173007733), SUCCESS, SHA `9c759110dc2ac76b20030c2d9fac2a8feb18fa0e`.
+- Se añadieron pruebas para escrituras concurrentes con claves distintas y respuesta perdida después del rename: commit `bf3ded518216a9556118b36f6f6135a7baa3fa93`. Run [39173111447](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173111447) estaba QUEUED al guardar esta actualización; el resultado de la ampliación permanece PENDING.
+- Próximo: comprobar run 39173111447 y corregir únicamente fallos observados. Después, implementar el enlace al owner de forma que el verificador no pueda liquidar una PREPARED distinta y el resultado solo se acepte bajo CAS; todavía no conectar dispatch real ni cambiar runtime default.
