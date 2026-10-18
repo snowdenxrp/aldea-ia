@@ -295,3 +295,10 @@ El entrypoint es independiente de Lúmina y los tests incluyen: stores ausentes/
 - Se identificó que la clave canónica heredada `missionId:stepId` es ambigua si alguno de los IDs contiene `:`. Para no cambiar el contrato de continuidad ni reinterpretar datos existentes, el entrypoint Chronicle ahora rechaza IDs con ese separador y los IDs con espacios periféricos; pruebas explícitas cubren ambos lados de la colisión.
 - CI verde en SHA `de89e228ca5b46becd17ef2e3159ab2e47c25f8e`: [Chronicle run 39174610849](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610849) y [continuity/runtime run 39174610848](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610848), ambos SUCCESS.
 - Próximo: endurecer parsing CLI sin aceptar argumentos desconocidos/duplicados silenciosamente; probar errores de entrada y asegurar que los mensajes de salida no filtren contenido. No activar runtime por defecto ni ampliar la vertical.
+
+
+## Último corte — parser estricto de CLI
+
+- El parser exportado rechaza opciones desconocidas, duplicadas, flags repetidos y valores ausentes; el ejecutable captura fallos y emite solo estado/código/IDs, sin cuerpo Chronicle, stack ni rutas.
+- Se corrigió una aserción desfasada detectada por [run 39174663488 FAILURE](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174663488); no se ocultó el fallo. Tras alinear la expectativa con `NEXO_CHRONICLE_ID_INVALID`, ambos workflows quedaron verdes en SHA `d7af2db2150ab6be57683ad1e15977f29c613081`: [39174722540](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722540) y [39174722491](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722491).
+- Siguiente: prueba de proceso CLI real para garantizar no-mutación con argumentos inválidos y ausencia de contenido privado en stdout/stderr; auditar bootstrap/rutas. Mantener runtime por defecto intacto.
