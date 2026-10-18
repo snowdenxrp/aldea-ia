@@ -327,6 +327,23 @@ assert.equal(missingRepairRevision.status, "blocked");
 assert.equal(missingRepairRevision.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_REQUIRED");
 assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
+const mismatchedRepairRevision = await restartedRepairContinuity.owner.recordPrepared({
+  expectedRevision: persistedRepairJournal.storeRevision,
+  operation: {
+    missionId: "repair-crash-cut",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    idempotencyKey: "repair-crash-cut:step-1",
+    environmentStateRevision: 1
+  }
+});
+assert.equal(mismatchedRepairRevision.status, "blocked");
+assert.equal(mismatchedRepairRevision.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_MISMATCH");
+assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal[0].environmentStateRevision, 0,
+  "an existing PREPARED repair must never be rebound to a different environment revision");
+
+
 await fs.rm(repairDir, { recursive: true, force: true });
 
 
