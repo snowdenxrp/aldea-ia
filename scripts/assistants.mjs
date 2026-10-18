@@ -87,7 +87,6 @@ if (!["committed", "already_recorded"].includes(missionCommit.status)) {
   error.code = missionCommit.code ?? "NEXO_MISSION_PERSISTENCE_UNKNOWN";
   throw error;
 }
-simulation.nexoMemory = null;
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
