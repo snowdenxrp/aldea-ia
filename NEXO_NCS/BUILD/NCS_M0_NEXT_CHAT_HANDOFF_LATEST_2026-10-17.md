@@ -1,3 +1,11 @@
+## Verified owner layer — mission admission and PREPARED gate (2026-10-18)
+
+- New module: `src/nexo/core/continuity-owner.mjs`, commit `773fdb612be248e235ccd3d8af156d7c84d82e38`.
+- It adds `recordMission()`, `recordPrepared()`, and fail-closed `reconcilePrepared()` over the independent store. PREPARED binds the existing operation identity to a persisted mission/step/action/target. A successful store commit is the only result that returns `dispatchAllowed: true`; a prior unresolved PREPARED record explicitly forbids redispatch.
+- Tests are part of continuity CI at exact head `5f7f9b5a88ea120abb7df8af065d96cf129715d5`: mission/restart [39099113776](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113776), STEP 4 [39099113793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113793), STEP 5 [39099113804](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113804).
+- It intentionally cannot resolve PREPARED or accept terminal result claims; independent operation-specific reconciliation is still absent.
+- Runtime is not yet wired to this owner; legacy `nexoMemory` in `world-state.json` remains. Next: work through dual-store crash cuts and migration/commit ordering before connecting runtime. Never claim two file commits are atomic, never erase old prepared history, never redispatch on unknown outcome.
+
 ## Verified follow-up — Nexo-owned continuity store (2026-10-18)
 
 - Exact source/test head `a8a24db72be49427315a2386542c54ec1d3d9691` passed:
