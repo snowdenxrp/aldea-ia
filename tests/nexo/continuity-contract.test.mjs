@@ -30,6 +30,25 @@ const validMemory = {
 assert.equal(assertNexoContinuityMemoryShape(null), true);
 assert.equal(assertNexoContinuityMemoryShape(validMemory), true);
 
+let getterCalls = 0;
+const accessorMemory = {};
+Object.defineProperty(accessorMemory, "nexo", {
+  enumerable: true,
+  get() { getterCalls += 1; return validMemory.nexo; }
+});
+assert.throws(
+  () => assertNexoContinuityMemoryShape(accessorMemory),
+  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN"
+);
+assert.equal(getterCalls, 0, "continuity validation must reject accessors without invoking them");
+
+const sparseMemory = structuredClone(validMemory);
+sparseMemory.nexo.effectJournal = new Array(1);
+assert.throws(
+  () => assertNexoContinuityMemoryShape(sparseMemory),
+  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN"
+);
+
 assert.throws(
   () => assertNexoContinuityMemoryShape({version:4,nexo:{missions:[]}}),
   error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN"
