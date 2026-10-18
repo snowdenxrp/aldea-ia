@@ -383,6 +383,23 @@ try {
     initializeChronicle: false
   });
   assert.equal(noInitialization.status, "blocked");
+
+  // Opt-in initialization never overwrites an existing corrupt store.
+  const corruptChroniclePath = path.join(entryRoot, "corrupt-chronicle.json");
+  await fs.writeFile(corruptChroniclePath, "{broken", "utf8");
+  const corruptChronicle = await runNexoChronicleAppend({
+    ...args, chroniclePath: corruptChroniclePath, initializeChronicle: true
+  });
+  assert.equal(corruptChronicle.status, "blocked");
+  assert.equal(await fs.readFile(corruptChroniclePath, "utf8"), "{broken");
+
+  const corruptContinuityPath = path.join(entryRoot, "corrupt-continuity.json");
+  await fs.writeFile(corruptContinuityPath, "{broken", "utf8");
+  const corruptContinuity = await runNexoChronicleAppend({
+    ...args, continuityPath: corruptContinuityPath, initializeContinuity: true
+  });
+  assert.equal(corruptContinuity.status, "blocked");
+  assert.equal(await fs.readFile(corruptContinuityPath, "utf8"), "{broken");
 } finally {
   await fs.rm(entryRoot, { recursive: true, force: true });
 }
