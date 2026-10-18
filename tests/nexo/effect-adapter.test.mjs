@@ -337,3 +337,33 @@ capabilityAdapter.register("later_registered_effect",async()=>({status:"complete
 assert.equal(capabilityAdapter.supports("later_registered_effect"),true);
 assert.equal(capabilityAdapter.supports("missing_effect"),false);
 assert.equal(capabilityCalls,0,"capability discovery must not dispatch a handler");
+
+const trustedProbeJournal=[{idempotencyKey:"probe-m1:s1",missionId:"probe-m1",stepId:"s1",action:"persisted_write",target:"alpha",status:"prepared"}];
+let trustedProbeCalls=0, trustedDispatchCalls=0;
+const trustedProbeAdapter=createEffectAdapter({
+ executionJournal:trustedProbeJournal,
+ handlers:{persisted_write:async()=>{trustedDispatchCalls++;return {status:"completed"};}},
+ verifiers:{persisted_write:async op=>{trustedProbeCalls++;return {status:"applied",action:op.action,target:op.target,idempotencyKey:op.idempotencyKey,observedRevision:7,source:"persisted-state-reader",evidence:{invariantPresent:true}};}}
+});
+assert.equal(trustedProbeAdapter.supportsReconciliation("persisted_write"),true);
+assert.equal(trustedProbeAdapter.supportsReconciliation("other"),false);
+const trustedProbe=await trustedProbeAdapter.verifyPrepared({idempotencyKey:"probe-m1:s1",missionId:"probe-m1",stepId:"s1",action:"persisted_write",target:"alpha"});
+assert.equal(trustedProbe.status,"applied");
+assert.equal(trustedProbe.observedRevision,7);
+assert.equal(trustedProbe.journalSettled,false);
+assert.equal(trustedProbe.redispatchAuthorized,false);
+assert.equal(trustedProbeJournal[0].status,"prepared");
+assert.equal(trustedDispatchCalls,0);
+assert.equal(trustedProbeCalls,1);
+const badIdentityProbe=await trustedProbeAdapter.verifyPrepared({idempotencyKey:"probe-m1:s1",missionId:"probe-m1",stepId:"s1",action:"persisted_write",target:"beta"});
+assert.equal(badIdentityProbe.status,"unknown");
+assert.equal(badIdentityProbe.code,"EFFECT_IDENTITY_MISMATCH");
+assert.equal(trustedProbeCalls,1);
+const noVerifierProbe=await createEffectAdapter({executionJournal:trustedProbeJournal}).verifyPrepared({idempotencyKey:"probe-m1:s1",missionId:"probe-m1",stepId:"s1",action:"persisted_write",target:"alpha"});
+assert.equal(noVerifierProbe.status,"unknown");
+assert.equal(noVerifierProbe.code,"EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE");
+const invalidProbeAdapter=createEffectAdapter({executionJournal:[{idempotencyKey:"probe-m2:s1",missionId:"probe-m2",stepId:"s1",action:"persisted_write",target:"gamma",status:"prepared"}],verifiers:{persisted_write:async op=>({status:"applied",action:op.action,target:op.target,idempotencyKey:"wrong",observedRevision:7,source:"reader"})}});
+const invalidProbe=await invalidProbeAdapter.verifyPrepared({idempotencyKey:"probe-m2:s1",missionId:"probe-m2",stepId:"s1",action:"persisted_write",target:"gamma"});
+assert.equal(invalidProbe.status,"unknown");
+assert.equal(invalidProbe.code,"EFFECT_RECONCILIATION_EVIDENCE_INVALID");
+console.log("Nexo: trusted per-action verifier probe remains read-only and never dispatches.");
