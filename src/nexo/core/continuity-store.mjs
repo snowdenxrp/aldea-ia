@@ -85,7 +85,7 @@ async function readEnvelope(fsModule, filePath) {
 async function writeEnvelope(fsModule, filePath, envelope) {
   const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
   try {
-    await fsModule.writeFile(tempPath, JSON.stringify(envelope, null, 2) + "\\n", "utf8");
+    await fsModule.writeFile(tempPath, JSON.stringify(envelope, null, 2) + "\n", "utf8");
     await fsModule.rename(tempPath, filePath);
   } catch (error) {
     await fsModule.rm(tempPath, { force: true }).catch(() => {});
