@@ -1,3 +1,13 @@
+## Latest M0 execution-owner boundary gate (2026-10-18)
+
+- Recovered and reused existing AB104.150 / AB104.151, P112 effect-journal lifecycle + eviction audits, GLOBAL-AUDIT-109, AB104.999R and AB105.000R. No closed probes rerun.
+- Report: `NCS_M0_EXECUTION_OWNER_BOUNDARY_GATE_2026-10-18.md`. It captures the existing evidence that no production caller invokes `executeLuminaNexoStep()` or provides a canonical durable prepare callback. The missing link is the execution-owner boundary, not a forgotten callback.
+- Required contract: permission/admission first; owner-controlled canonical snapshot; durable PREPARED before handler; final local world + mission outcome + terminal journal in one canonical snapshot; revision-conflict/crash leaves UNKNOWN; reconciliation is operation-specific. No executor implemented until the owner/permission contract is grounded.
+- Runtime verification guard exact source+test head `23f2f5c24b9c8f9c5927513dedae1b20a4e40502` CI PASS: mission/restart [39096709481](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709481), STEP 4 [39096709477](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709477), STEP 5 [39096709519](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709519).
+- Exact next: design the narrow owner using the existing `persistState` primitive, specify legitimate permitted-action input, then implement fault-injection tests. If permission source is absent, keep execution stopped; do not invent a trust root, epoch, queue, tombstone, or transaction wrapper.
+
+---
+
 ## Latest M0 runtime completion-verification guard — 2026-10-18
 
 - Runtime commits: `97e9deb8410af9bd9f9afb5dc876102741c202c5` (initial guard), `b23823e1d9613f850d0a7f71466ce7c529e271d8` (reason/scope evidence).
