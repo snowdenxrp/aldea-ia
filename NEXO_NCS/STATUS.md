@@ -1,3 +1,16 @@
+## M0 — Explicit architecture breach: Nexo continuity is still hosted by Lúmina prototype persistence (2026-10-18)
+
+**Classification: confirmed prototype coupling; not acceptable as the final Nexo architecture.**
+
+- The current implementation serializes `nexoMemory` in `world-state.json`, the simulation/Lúmina state file. The in-memory Nexo mission collections also originate in the legacy `createLearningMemory().nexo` shape.
+- This contradicts the intended boundary `NEXO ≠ LÚMINA`. The standalone `NEXO_OPERATIONAL_CONTINUITY` snapshot schema is only a detached projection/contract; it does **not** yet create storage independence or make Nexo the persistence owner.
+- Scope must be stated precisely: this proves coupling in the current prototype persistence path, not that every Nexo module or all prior architecture is mixed with Lúmina. Existing continuity data/tests are not discarded; they are evidence and migration inputs, not proof that the final boundary is implemented.
+- **Do not extend this coupling.** Do not add new Nexo operational state to `world-state.json` or make the Nexo owner call Lúmina's persistence API. Do not silently migrate/delete legacy data or claim a canonical store before a migration/recovery plan and crash semantics are proven.
+- Required correction for M0: a Nexo-owned operational-continuity persistence boundary, loaded and committed independently of Lúmina's world-state lifecycle. Simulation may consume Nexo decisions through an explicit port, but must not own Nexo's mission history, prepared-effect journal, recovery authority, or canonical persistence.
+- Keep the owner contract's conditional-commit/linearization requirements. A file split alone is insufficient: test process interruption, stale writers, commit-result uncertainty, restart reconstruction, and prepared-effect UNKNOWN without redispatch or successor replanning. Do not invent a global authority revision or imply local store revision proves authority.
+- Next implementation gate: inspect the actual persistence primitives and existing commit/race tests; choose the narrowest viable Nexo-owned store only after its atomicity/durability assumptions are explicit. Add an integration regression proving Nexo state survives independently of Lúmina state initialization/reset and that missing/corrupt Nexo state fails closed rather than being regenerated from simulation defaults.
+- Current safety state remains unchanged: canonical Nexo store/owner not implemented; prepared external outcomes UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN; M0 incomplete.
+
 ## M0 — Standalone Nexo operational continuity snapshot schema candidate (2026-10-18)
 
 - Added `src/nexo/core/continuity-snapshot.mjs` with `NEXO_OPERATIONAL_CONTINUITY` schema version 1, a detached projection from the prototype memory shape, and strict validation.
