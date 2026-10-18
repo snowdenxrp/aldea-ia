@@ -465,3 +465,11 @@ Al abrir un nuevo chat con `NCS`, leer este STATUS y después el handoff maestro
 ## New-chat handoff (2026-10-18)
 
 For the next chat, read `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEW_CHAT_2026-10-18.md` first, then this STATUS. Entry keyword is exactly `NCS`. Mission: complete M0 and build Nexo's own continuity/runtime; keep Nexo separate from Lumina; do not restart M1 or closed historical audits. The handoff contains exact verified CI runs, current limits, and the ordered next steps.
+
+## M0 — replay tras reinicio del owner (2026-10-18)
+
+Se amplió `tests/nexo/assistants-runtime-cli.test.mjs`: tras ejecutar el entrypoint real en un subproceso y observar `settled_observed`, la prueba reabre el owner desde el archivo de continuidad y vuelve a solicitar la misma misión. El replay falla cerrado; la revisión del entorno no cambia y el journal conserva una sola obligación. La prueba no exige que el replay sea `skipped`: `blocked` es aceptable y más conservador si el selector no puede confirmar elegibilidad.
+
+**CI exacto:** [Nexo M0 — repair settlement crash cuts, run 39144863235](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144863235) — SUCCESS, SHA de código/pruebas `1cd8dfd914fad7848df51eca0f4e0f75cff22264`. El job `repair-crash-cuts` y el paso `Run isolated assistants runtime CLI regression` finalizaron SUCCESS.
+
+Límite: prueba aislada con archivos temporales y owner reabierto; no es cutover del runtime genérico `src/nexo/runtime.js`, no prueba atomicidad cross-store ni efectos protegidos. M0 continúa INCOMPLETO. Siguiente frontera: definir el contrato mínimo de resultados/lineage owner-backed antes de migrar las escrituras legacy; `recordExecutionLineage()` no liquida PREPARED y `recordOutcome()` no puede usar etiquetas `verified` del caller como autenticación.
