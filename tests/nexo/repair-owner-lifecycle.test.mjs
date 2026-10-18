@@ -355,6 +355,98 @@ try {
     await fs.rm(beforeDispatchRoot, { recursive: true, force: true });
   }
 
+  // Crash cut: the environment write and owner-backed execution lineage
+  // are durable, but the independent settlement commit has not happened yet.
+  const lineageCrashRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-lineage-before-settlement-"));
+  try {
+    const lineageNexoPath = path.join(lineageCrashRoot, "nexo-continuity.json");
+    const lineageStatePath = path.join(lineageCrashRoot, "world-state.json");
+    const firstOwner = await openNexoContinuityOwner({
+      filePath: lineageNexoPath,
+      legacyMemory: legacyMemory()
+    });
+    await fs.writeFile(lineageStatePath, JSON.stringify(environment(70)), "utf8");
+    const prepared = await prepareRepairAgainstPersistedState({
+      owner: firstOwner.owner,
+      statePath: lineageStatePath,
+      expectedContinuityRevision: 0,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      }
+    });
+    assert.equal(prepared.status, "committed");
+    const dispatch = await dispatchPreparedRepair({
+      owner: firstOwner.owner,
+      statePath: lineageStatePath,
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      savedAt: 9
+    });
+    assert.equal(dispatch.status, "completed");
+    assert.equal(dispatch.persisted, true);
+    assert.equal(dispatch.environmentStateRevision, 71);
+
+    // Simulate crash after lineage commit but before settlement commit.
+    const reopened = await openNexoContinuityOwner({
+      filePath: lineageNexoPath,
+      legacyMemory: null
+    });
+    const beforeLineage = await reopened.owner.loadCurrent();
+    assert.equal(beforeLineage.storeRevision, 1);
+    const lineage = await reopened.owner.recordExecutionLineage({
+      expectedRevision: beforeLineage.storeRevision,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex",
+        environmentStateRevision: 70
+      },
+      result: {
+        status: dispatch.status,
+        persisted: dispatch.persisted,
+        stateChanged: dispatch.stateChanged,
+        environmentStateRevision: dispatch.environmentStateRevision
+      }
+    });
+    assert.equal(lineage.status, "committed");
+    const beforeRecovery = await reopened.owner.loadCurrent();
+    assert.equal(beforeRecovery.storeRevision, 2);
+    assert.equal(beforeRecovery.snapshot.executions.length, 1);
+    assert.equal(beforeRecovery.snapshot.effectJournal[0].status, "prepared",
+      "lineage must not settle the PREPARED obligation");
+
+    const recovered = await runNexoRepairOnce({
+      owner: reopened.owner,
+      store: reopened.store,
+      statePath: lineageStatePath,
+      expectedContinuityRevision: beforeRecovery.storeRevision,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      },
+      savedAt: 10
+    });
+    assert.equal(recovered.status, "recovered");
+    assert.equal(recovered.dispatched, false);
+    assert.equal(recovered.settlement.status, "settled_observed");
+    assert.equal((await loadStateStrict(lineageStatePath)).stateRevision, 71,
+      "recovery after lineage must not rewrite the environment");
+    const afterRecovery = await reopened.owner.loadCurrent();
+    assert.equal(afterRecovery.snapshot.executions.length, 1);
+    assert.equal(afterRecovery.snapshot.effectJournal[0].status, "settled_observed");
+    assert.equal(afterRecovery.storeRevision, 3);
+  } finally {
+    await fs.rm(lineageCrashRoot, { recursive: true, force: true });
+  }
+
   // Desired invariant already holds: the entrypoint may observe and settle it,
   // but must not invent an environment write or advance its revision.
   const alreadySatisfiedRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-already-satisfied-"));
