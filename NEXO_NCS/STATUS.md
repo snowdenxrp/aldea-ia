@@ -279,7 +279,7 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Change: pruning evicts terminal entries first and preserves every `prepared` entry, allowing the journal to exceed its soft cap if unresolved entries alone exceed 200.
 - Regression: 200 terminal entries plus an older prepared record; a new operation triggers pruning and verifies the prepared record survives.
 - Report: [M0 — Preserve prepared effects during journal pruning](BUILD/NCS_M0_PRESERVE_PREPARED_EFFECTS_DURING_JOURNAL_PRUNING_2026-10-18.md).
-- Adapter-level retention commit: `a1022c535c8b64cb966e1d547f2c07563aba2913`. Follow-up trace found memory normalization also truncated the journal; memory-layer retention and runtime regressions are now staged for the next commit. Focused CI still pending for this follow-up. Do not treat either layer as end-to-end recovery proof.
+- Adapter-level retention commit: `a1022c535c8b64cb966e1d547f2c07563aba2913`. Follow-up trace found memory normalization also truncated the journal; the second correction is on `dd4e8fd88e8d22040b2593af82bbe7f724fa04bf`. Focused CI PASS: mission continuity [39087886377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886377), STEP 4 [39087886365](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886365), STEP 5 [39087886450](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886450). This verifies bounded retention behavior, not end-to-end recovery proof.
 - STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
 
 
@@ -289,3 +289,12 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Added terminal-first eviction in memory normalization, detached journal records, and regressions for prepared retention and soft-cap behavior.
 - Report: [M0 — Preserve prepared effects through memory normalization](BUILD/NCS_M0_PRESERVE_PREPARED_EFFECTS_THROUGH_MEMORY_NORMALIZATION_2026-10-18.md).
 - This preserves unresolved records; it does not implement integrated restart reconciliation. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+
+## M0 — Prepared-effect retention CI verified (2026-10-18)
+
+- Exact source/test head: `dd4e8fd88e8d22040b2593af82bbe7f724fa04bf`.
+- Mission admission/restart continuity [39087886377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886377) — PASS.
+- STEP 4 [39087886365](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886365) — PASS.
+- STEP 5 [39087886450](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886450) — PASS.
+- The runtime test run includes the new memory-normalization regressions. Scope remains journal retention; integrated reconciliation is still unimplemented.

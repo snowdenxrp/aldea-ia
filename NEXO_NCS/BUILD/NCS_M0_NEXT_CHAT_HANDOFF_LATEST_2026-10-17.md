@@ -748,3 +748,8 @@ The latest source-level finding is that `src/nexo/effect-adapter.js` previously 
 ## Continuation — memory-layer prepared journal retention (2026-10-18)
 
 Follow-up tracing found that the adapter's terminal-first pruning alone was insufficient: `src/assistants/memory.js:createLearningMemory()` still applied `effectJournal.slice(-200)`. Runtime memory normalization could therefore erase an old prepared record. The staged follow-up adds `retainEffectJournal()` at this boundary, detaches journal records, removes terminal entries first, and allows unresolved prepared records to exceed the soft cap. Regression coverage is added to `tests/nexo/runtime.test.mjs`. Report: `NEXO_NCS/BUILD/NCS_M0_PRESERVE_PREPARED_EFFECTS_THROUGH_MEMORY_NORMALIZATION_2026-10-18.md`. Verify exact-head CI after commit. Then implement a narrow recovery path for the original operation key; do not just forward a callback, because terminal blocked step admission and commit logic also need to support reconciliation without rewriting history. STEP 7 stays OPEN / STOP / UNKNOWN; protected effects stay STOP.
+
+
+## CI evidence — prepared-effect memory retention
+
+Source/test commit `dd4e8fd88e8d22040b2593af82bbe7f724fa04bf` passed mission admission/restart continuity [39087886377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886377), STEP 4 [39087886365](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886365), and STEP 5 [39087886450](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886450). Runtime workflow explicitly executes `tests/nexo/runtime.test.mjs`; it passed. Do not claim this proves cross-restart reconciliation.

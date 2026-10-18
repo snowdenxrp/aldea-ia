@@ -18,5 +18,11 @@ PG-009 recovery/restart fencing requires original effect identity to survive rec
 ## Remaining gap
 Runtime does not yet provide an integrated recovery operation that can reconcile the exact original prepared key after a terminal blocked step has been persisted. The complete cross-restart recovery seam remains OPEN / STOP / UNKNOWN.
 
+## Verification
+Focused CI passed on exact source/test commit `dd4e8fd88e8d22040b2593af82bbe7f724fa04bf`:
+- Mission admission/restart continuity [39087886377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886377) — PASS; includes `tests/nexo/runtime.test.mjs`.
+- STEP 4 semantic validation [39087886365](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886365) — PASS.
+- STEP 5 outcome classification [39087886450](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886450) — PASS.
+
 ## Gate
 STEP 7 remains OPEN / STOP / UNKNOWN. Protected effects remain STOP.
