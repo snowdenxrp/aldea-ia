@@ -50,8 +50,9 @@ async function acquireLock(fsModule, filePath) {
         ? age > LOCK_STALE_MS && !processIsAlive(Number(current.pid))
         : age > LOCK_STALE_MS;
       if (stale) {
-        await fsModule.rm(lockPath, { recursive: true, force: true }).catch(() => {});
-        continue;
+        // Check-then-rm can delete a newer lock created by a competing reaper.
+        // Do not reclaim automatically; fail closed for explicit recovery.
+        throw storeError("NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED");
       }
       await new Promise(resolve => setTimeout(resolve, LOCK_RETRY_MS));
     }
