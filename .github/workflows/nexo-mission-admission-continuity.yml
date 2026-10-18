@@ -19,6 +19,13 @@ on:
       - 'src/nexo/core/continuity-owner.mjs'
       - 'src/nexo/core/continuity-operations.mjs'
       - 'scripts/nexo-continuity.mjs'
+      - 'scripts/nexo-chronicle-session.mjs'
+      - 'src/nexo/core/chronicle-store.mjs'
+      - 'src/nexo/adapters/chronicle-observation.mjs'
+      - 'src/nexo/adapters/chronicle-effect.mjs'
+      - 'tests/nexo/chronicle-store.test.mjs'
+      - 'tests/nexo/chronicle-runtime.test.mjs'
+      - 'package.json'
       - 'scripts/assistants.mjs'
       - 'tests/nexo/continuity-store.test.mjs'
       - 'tests/nexo/continuity-migration.test.mjs'
@@ -42,3 +49,5 @@ jobs:
       - run: node tests/nexo/continuity-contract.test.mjs
       - run: node tests/nexo/continuity-store.test.mjs
       - run: node tests/nexo/continuity-migration.test.mjs
+      - run: node tests/nexo/chronicle-store.test.mjs
+      - run: node tests/nexo/chronicle-runtime.test.mjs
