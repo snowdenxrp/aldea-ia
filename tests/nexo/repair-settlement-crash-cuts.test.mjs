@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
+import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
 
 function legacyMemory({ existingCompletedAttempt = false } = {}) {
   return {
@@ -262,6 +263,104 @@ try {
   assert.equal(uncertainReplay.recovered, true);
   assert.equal(uncertainReplay.causalAttribution, "not_claimed");
   assert.equal(uncertainReplay.storeRevision, 1);
+
+  // Generic owner verifier contract: trusted bootstrap verifier is queried and
+  // its observation is persisted with CAS; it does not claim causal attribution
+  // or authorize redispatch.
+  const genericDir = path.join(root, "generic-owner-observation");
+  await fs.mkdir(genericDir);
+  const genericOpened = await openNexoContinuityOwner({
+    filePath: path.join(genericDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  let genericVerifierCalls = 0;
+  const genericOwner = createNexoContinuityOwner({
+    store: genericOpened.store,
+    effectVerifiers: {
+      repair_agent_state: async operation => {
+        genericVerifierCalls++;
+        return {
+          status: "applied",
+          idempotencyKey: operation.idempotencyKey,
+          action: operation.action,
+          target: operation.target,
+          observedRevision: 11,
+          source: "test-persisted-state-reader",
+          evidence: { invariantPresent: true }
+        };
+      }
+    }
+  });
+  const genericObserved = await genericOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    }
+  });
+  assert.equal(genericObserved.status, "observed");
+  assert.equal(genericObserved.observation, "applied");
+  assert.equal(genericObserved.preparedCommitted, true);
+  assert.equal(genericObserved.journalSettled, false);
+  assert.equal(genericObserved.causalAttribution, "NOT_ESTABLISHED");
+  assert.equal(genericObserved.redispatchAuthorized, false);
+  assert.equal(genericVerifierCalls, 1);
+  const genericAfter = await genericOpened.owner.loadCurrent();
+  assert.equal(genericAfter.snapshot.effectJournal[0].status, "settled_observed");
+  assert.equal(genericAfter.snapshot.effectJournal[0].reconciliation.status, "applied");
+  assert.equal(genericAfter.snapshot.effectJournal[0].reconciliation.source, "test-persisted-state-reader");
+
+  // Unknown observations and absent verifier configuration must preserve PREPARED.
+  const unknownDir = path.join(root, "generic-owner-unknown");
+  await fs.mkdir(unknownDir);
+  const unknownOpened = await openNexoContinuityOwner({
+    filePath: path.join(unknownDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  const unknownOwner = createNexoContinuityOwner({
+    store: unknownOpened.store,
+    effectVerifiers: {
+      repair_agent_state: async operation => ({
+        status: "unknown",
+        idempotencyKey: operation.idempotencyKey,
+        action: operation.action,
+        target: operation.target,
+        observedRevision: 10,
+        source: "test-uncertain-reader"
+      })
+    }
+  });
+  const genericUnknown = await unknownOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    }
+  });
+  assert.equal(genericUnknown.status, "blocked");
+  assert.equal(genericUnknown.code, "NEXO_EFFECT_RECONCILIATION_UNKNOWN");
+  assert.equal((await unknownOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+  const noVerifierOwner = createNexoContinuityOwner({store: unknownOpened.store});
+  const noVerifierResult = await noVerifierOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    }
+  });
+  assert.equal(noVerifierResult.status, "blocked");
+  assert.equal(noVerifierResult.code, "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE");
+  assert.equal((await unknownOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
