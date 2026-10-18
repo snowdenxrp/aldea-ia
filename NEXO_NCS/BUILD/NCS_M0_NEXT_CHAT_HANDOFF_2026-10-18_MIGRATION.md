@@ -493,3 +493,8 @@ Checkpoint: [NCS_M0_EXECUTION_LINEAGE_OWNER_SEAM_2026-10-18.md](NCS_M0_EXECUTION
 - Next: identify one convergent repair action whose result can be reconciled from durable environment state after restart, then implement crash-cut tests. Do not wire runtime or remove legacy memory until this evidence and an independent settlement contract exist.
 
 M0 incomplete; protected effects STOP; PREPARED UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+## Latest owner guard — 2026-10-18
+
+`recordExecutionLineage()` now requires a single matching persisted PREPARED entry before recording a new execution row. Exact identity match: idempotency key, mission, step, action and target. Owner change: `71b2db0b83e190f9f6d13c765a4e1bc85857903d`. Regression: `9971058e2477aa458e6afebdb240f4a52b3b2401`, verifies a mission without PREPARED is rejected and continuity remains unchanged. Exact-head CI is NOT VERIFIED; no local run is claimed. This remains lineage-only: no effect settlement, runtime cutover or independent proof.
