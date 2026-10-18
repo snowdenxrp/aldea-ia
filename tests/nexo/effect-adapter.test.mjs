@@ -66,13 +66,15 @@ assert.equal(partial.code,"PARTIAL_EFFECT_DETECTED");
 assert.equal(partial.verified,false);
 assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s4")?.status,"prepared");
 assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s4")?.result,undefined);
+const versionAfterPartial=version;
 
 const partialRetry=await adapter.execute({
   missionId:"m1",stepId:"s3",action:"partial_repair",target:"alex",idempotencyKey:"m1:s4"
 });
 assert.equal(partialRetry.status,"blocked");
 assert.equal(partialRetry.code,"EFFECT_RECONCILIATION_REQUIRED");
-assert.equal(calls,2, "unresolved partial effect must not be redispatched");
+assert.equal(calls,2, "unresolved partial effect must not re-enter other handler");
+assert.equal(version,versionAfterPartial, "unresolved partial effect handler must not be redispatched");
 let exceptionCalls=0;
 const exceptionJournal=[];
 const exceptionAdapter=createEffectAdapter({executionJournal:exceptionJournal,handlers:{ambiguous_effect:async()=>{exceptionCalls++;throw new Error("provider timeout after send");}}});
