@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { buildNexoMission } from "../../src/nexo/orchestrator.js";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
-import { executeNexoStep, executeLuminaNexoStep, replanPersistedNexoMission } from "../../src/nexo/runtime.js";
+import { executeNexoStep, executeNexoStepWithContinuityOwner, executeLuminaNexoStep, replanPersistedNexoMission } from "../../src/nexo/runtime.js";
 import { createLearningMemory, recordNexoPlan } from "../../src/assistants/memory.js";
 
 const mission=buildNexoMission({reports:[{assistant:"Debugger",findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"posición inválida"}]}]});
@@ -387,3 +387,88 @@ assert.equal(observedSettlementReplan.status, "not_replanned");
 assert.equal(observedSettlementReplan.code, "NEXO_REPAIR_GOAL_VERIFICATION_REQUIRED");
 assert.equal(observedSettlementMemory.nexo.missions.length, 1);
 assert.equal(observedSettlementMemory.nexo.effectJournal[0].status, "settled_observed");
+
+
+const canonicalCalls=[];
+let canonicalRevision=0;
+const canonicalOwner={
+  supportsReconciliation: action=>action==="write_file",
+  loadCurrent: async()=>({
+    storeRevision:canonicalRevision,
+    snapshot:{missions:[{missionId:"canonical-mission",status:"planned",steps:[{id:"step-1",action:"write_file",target:"alpha",status:"planned"}]}]}
+  }),
+  recordPrepared: async({expectedRevision,operation})=>{
+    canonicalCalls.push("prepare");
+    assert.equal(expectedRevision,canonicalRevision);
+    assert.equal(operation.idempotencyKey,"canonical-mission:step-1");
+    canonicalRevision++;
+    return {status:"committed",preparedCommitted:true,storeRevision:canonicalRevision};
+  },
+  recordExecutionLineage: async({expectedRevision})=>{
+    canonicalCalls.push("lineage");
+    assert.equal(expectedRevision,canonicalRevision);
+    canonicalRevision++;
+    return {status:"committed",storeRevision:canonicalRevision};
+  },
+  reconcilePrepared: async({expectedRevision})=>{
+    canonicalCalls.push("reconcile");
+    assert.equal(expectedRevision,canonicalRevision);
+    return {status:"observed",observation:"applied",redispatchAuthorized:false};
+  }
+};
+const canonicalAdapter={
+  supports: action=>action==="write_file",
+  supportsReconciliation: action=>action==="write_file",
+  execute: async request=>{
+    canonicalCalls.push("dispatch");
+    assert.equal(canonicalCalls[0],"prepare");
+    assert.equal(request.idempotencyKey,"canonical-mission:step-1");
+    return {status:"completed",verified:true,evidence:{verified:true}};
+  }
+};
+const canonicalResult=await executeNexoStepWithContinuityOwner({
+  missionId:"canonical-mission",stepId:"step-1",owner:canonicalOwner,adapter:canonicalAdapter
+});
+assert.deepEqual(canonicalCalls,["prepare","dispatch","lineage","reconcile"]);
+assert.equal(canonicalResult.status,"observed");
+assert.equal(canonicalResult.preparedCommitted,true);
+assert.equal(canonicalResult.journalSettled,false);
+assert.equal(canonicalResult.terminalOutcomeRecorded,false);
+assert.equal(canonicalResult.redispatchAuthorized,false);
+
+let unsupportedDispatches=0;
+let unsupportedPrepares=0;
+const noVerifierOwner={
+  ...canonicalOwner,
+  supportsReconciliation:()=>false,
+  recordPrepared:async()=>{unsupportedPrepares++;return {status:"committed",preparedCommitted:true,storeRevision:1};}
+};
+const noVerifierAdapter={
+  ...canonicalAdapter,
+  execute:async()=>{unsupportedDispatches++;return {status:"completed"};}
+};
+const noVerifierRuntime=await executeNexoStepWithContinuityOwner({
+  missionId:"canonical-mission",stepId:"step-1",owner:noVerifierOwner,adapter:noVerifierAdapter
+});
+assert.equal(noVerifierRuntime.status,"blocked");
+assert.equal(noVerifierRuntime.code,"NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE");
+assert.equal(noVerifierRuntime.dispatchAttempted,false);
+assert.equal(unsupportedPrepares,0);
+assert.equal(unsupportedDispatches,0);
+
+let throwingLineageCalls=0;
+const throwingAdapter={...canonicalAdapter,execute:async()=>{throw new Error("dispatch response lost");}};
+const throwingOwner={
+  ...canonicalOwner,
+  loadCurrent:async()=>({storeRevision:0,snapshot:{missions:[{missionId:"canonical-mission",status:"planned",steps:[{id:"step-1",action:"write_file",target:"alpha",status:"planned"}]}]}}),
+  recordPrepared:async()=>({status:"committed",preparedCommitted:true,storeRevision:1}),
+  recordExecutionLineage:async()=>{throwingLineageCalls++;return {status:"committed",storeRevision:2};},
+  reconcilePrepared:async()=>{throw new Error("must not reconcile after ambiguous dispatch");}
+};
+const thrownDispatch=await executeNexoStepWithContinuityOwner({
+  missionId:"canonical-mission",stepId:"step-1",owner:throwingOwner,adapter:throwingAdapter
+});
+assert.equal(thrownDispatch.status,"unknown");
+assert.equal(thrownDispatch.code,"NEXO_EFFECT_DISPATCH_OUTCOME_UNKNOWN");
+assert.equal(thrownDispatch.preparedCommitted,true);
+assert.equal(throwingLineageCalls,0);
