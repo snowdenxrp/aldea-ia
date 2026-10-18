@@ -1,3 +1,15 @@
+## Último avance verificado — replay contradictorio de execution lineage (2026-10-18)
+
+Se cerró una brecha concreta en `src/nexo/core/continuity-owner.mjs`: `recordExecutionLineage()` ya no devuelve `already_recorded` si la misma identidad de operación se repite con un `result` diferente. Ahora devuelve `blocked / NEXO_EXECUTION_RESULT_MISMATCH` sin mutar continuidad. Se añadieron/actualizaron regresiones en `tests/nexo/repair-owner-lifecycle.test.mjs` y `tests/nexo/continuity-migration.test.mjs`.
+
+CI exacto verde sobre SHA de código/pruebas `0653d7216c49dd6a9b0ea7a182333ff18ee07bc3`: repair settlement crash cuts [39150332075](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150332075), STEP 4 [39150332148](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150332148), STEP 5 [39150331964](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150331964), bounded mission admission/restart [39150331921](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150331921); los cuatro terminaron SUCCESS. Los commits documentales posteriores no deben atribuirse a ese CI como si fueran el mismo SHA de código.
+
+Los fallos intermedios fueron explícitos: el test-first falló porque el código viejo aceptaba el replay; el primer fix CI reveló una expectativa heredada que también esperaba `already_recorded` para un resultado distinto. Esa prueba se alineó con el nuevo contrato y el SHA siguiente pasó. No borrar este historial.
+
+**Continuar desde aquí:** no añadir `goalObservations`; no promover `settled_observed` ni `goal_observed` a completion; no cortar aún `src/nexo/runtime.js`; mantener Nexo separado de Lúmina, sin atomicidad cross-store ficticia, efectos protegidos STOP y STEP 7 OPEN / STOP / UNKNOWN. Inspeccionar el siguiente hueco mínimo después de PREPARED → lineage → settlement y luego avanzar hacia una integración canónica runtime con crash/restart/replay verificables.
+
+---
+
 ## Incremento M0 — entrada repair-only owner-backed (2026-10-18)
 
 Se añadió `scripts/nexo-repair-entrypoint.mjs` (`runNexoRepairOnce`) para reunir los helpers existentes en un flujo limitado a reparaciones convergentes. Para una obligación PREPARED previa, intenta observar la invariante persistida primero; solo considera dispatch si el estado sigue en la revisión base y la observación demuestra que la invariante no está presente. Rechaza target/context discrepante y revisiones nuevas. Settlement se mantiene separado y solo registra `settled_observed`.
