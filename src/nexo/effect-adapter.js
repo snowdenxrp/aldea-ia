@@ -206,6 +206,14 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
   async function execute(request={}) {
     const key=request?.idempotencyKey;
     if(!Array.isArray(executionJournal)||!key) return executeFresh(request);
+    const existingEntry=journalEntry(key);
+    // This wrapper's fast paths must enforce the same operation identity as executeFresh.
+    if(existingEntry && (request.missionId!==existingEntry.missionId || request.stepId!==existingEntry.stepId ||
+      request.action!==existingEntry.action || !isDeepStrictEqual(request.target??null,existingEntry.target??null))) {
+      return {status:"blocked",code:"EFFECT_IDENTITY_MISMATCH",verified:false,
+        idempotencyKey:key,expected:{missionId:existingEntry.missionId,stepId:existingEntry.stepId,
+          action:existingEntry.action,target:structuredClone(existingEntry.target??null)}};
+    }
     const persisted=executionJournal.find(x=>x?.idempotencyKey===key&&x?.result);
     if(persisted) { executed.set(key,persisted.result); return structuredClone(persisted.result); }
     let inFlight=sharedInFlight.get(executionJournal);
