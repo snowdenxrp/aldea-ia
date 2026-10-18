@@ -434,6 +434,24 @@ assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effe
   entry => entry.idempotencyKey === "repair-negative-settlement:step-negative"
 ).status, "prepared");
 
+const revisionTwoSnapshot = await loadStateStrict(repairStatePath);
+const laterSnapshot = applyState(revisionTwoSnapshot);
+await persistState(repairStatePath, laterSnapshot, 6000, {
+  expectedRevision: 2,
+  stateRevision: 4
+});
+const unrelatedRevisionSettlement = await settlePreparedRepairFromPersistedState({
+  store: restartedRepairContinuity.store,
+  statePath: repairStatePath,
+  idempotencyKey: "repair-negative-settlement:step-negative",
+  expectedContinuityRevision: negativePrepared.storeRevision
+});
+assert.equal(unrelatedRevisionSettlement.status, "blocked");
+assert.equal(unrelatedRevisionSettlement.code, "NEXO_REPAIR_SETTLEMENT_ENVIRONMENT_REVISION_UNRELATED");
+assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal.find(
+  entry => entry.idempotencyKey === "repair-negative-settlement:step-negative"
+).status, "prepared");
+
 const currentNegativeEnvironment = await loadStateStrict(repairStatePath);
 const normalizedForCommitAmbiguity = applyState(currentNegativeEnvironment);
 normalizedForCommitAmbiguity.agents[0].position = { x: 0, z: 4 };
@@ -487,23 +505,7 @@ assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effe
 ).status, "prepared");
 
 
-const revisionTwoSnapshot = await loadStateStrict(repairStatePath);
-const laterSnapshot = applyState(revisionTwoSnapshot);
-await persistState(repairStatePath, laterSnapshot, 6000, {
-  expectedRevision: 2,
-  stateRevision: 4
-});
-const unrelatedRevisionSettlement = await settlePreparedRepairFromPersistedState({
-  store: restartedRepairContinuity.store,
-  statePath: repairStatePath,
-  idempotencyKey: "repair-negative-settlement:step-negative",
-  expectedContinuityRevision: negativePrepared.storeRevision
-});
-assert.equal(unrelatedRevisionSettlement.status, "blocked");
-assert.equal(unrelatedRevisionSettlement.code, "NEXO_REPAIR_SETTLEMENT_ENVIRONMENT_REVISION_UNRELATED");
-assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal.find(
-  entry => entry.idempotencyKey === "repair-negative-settlement:step-negative"
-).status, "prepared");
+
 
 
 
