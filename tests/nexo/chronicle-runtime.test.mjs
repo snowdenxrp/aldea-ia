@@ -398,6 +398,26 @@ try {
   assert.equal(cli.stderr.includes(privateContent), false);
   await assert.rejects(fs.access(cliContinuity), { code: "ENOENT" });
   await assert.rejects(fs.access(cliChronicle), { code: "ENOENT" });
+
+  // Valid invocation receives content over stdin; payload is not an argv value
+  // and is not echoed to the terminal.
+  const successfulCli = spawnSync(process.execPath, [
+    "scripts/nexo-chronicle-session.mjs",
+    "--continuity", path.join(cliRoot, "valid-continuity.json"),
+    "--chronicle", path.join(cliRoot, "valid-chronicle.json"),
+    "--mission", "cli-valid-mission",
+    "--step", "cli-valid-step",
+    "--content-stdin",
+    "--initialize-continuity",
+    "--initialize-chronicle"
+  ], { cwd: process.cwd(), encoding: "utf8", input: privateContent });
+  assert.equal(successfulCli.status, 0, successfulCli.stderr);
+  assert.equal(successfulCli.args?.includes(privateContent), false);
+  assert.equal(successfulCli.stderr, "");
+  assert.equal(successfulCli.stdout.includes(privateContent), false);
+  assert.equal(JSON.parse(successfulCli.stdout.trim()).status, "completed");
+  const persistedCliChronicle = JSON.parse(await fs.readFile(path.join(cliRoot, "valid-chronicle.json"), "utf8"));
+  assert.equal(persistedCliChronicle.entries[0].content, privateContent);
 } finally {
   await fs.rm(cliRoot, { recursive: true, force: true });
 }
