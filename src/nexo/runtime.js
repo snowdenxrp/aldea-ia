@@ -11,6 +11,13 @@ export function replanPersistedNexoMission({memory,previousMissionId,simulation=
     return {mission:null,memory,status:"invalid"};
   const previousMission=reconstructNexoMission(memory,previousMissionId);
   if(!previousMission) return {mission:null,memory,status:"not_found"};
+  // The durable effect journal is the recovery boundary across a crash window.
+  // A stale/partial mission record must not authorize a successor while any
+  // effect from that mission remains prepared and therefore outcome-unknown.
+  const unresolvedPreparedEffect=Array.isArray(memory?.nexo?.effectJournal)
+    && memory.nexo.effectJournal.some(entry=>entry?.missionId===previousMissionId&&entry?.status==="prepared");
+  if(unresolvedPreparedEffect)
+    return {mission:null,memory,status:"not_replanned",code:"EFFECT_RECONCILIATION_REQUIRED"};
   const mission=replanNexoMission({previousMission,simulation,reports,memory,reason});
   if(!mission) return {mission:null,memory,status:"not_replanned"};
   const nextMemory=recordNexoPlan(memory,mission);
