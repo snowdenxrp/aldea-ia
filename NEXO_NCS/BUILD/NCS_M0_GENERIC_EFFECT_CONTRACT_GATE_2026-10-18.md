@@ -38,3 +38,12 @@ No hacer cutover mediante callback aislado ni registrar el PREPARED después del
 
 ## Criterio de salida
 Una acción con contrato explícito debe demostrar PREPARED → dispatch → lineage → reconciliación → settlement → outcome tras interrupciones, sin doble ejecución ni finalización inventada. Tests aislados de métodos no bastan. M0 sigue INCOMPLETO.
+
+
+## Persistencia local y contrato de rutas (actualización 2026-10-18)
+
+- Ambos stores reciben `filePath` como configuración confiable. El path no es un sandbox ni una frontera de autorización; quien configura el CLI/runtime debe seleccionar un directorio local de confianza y evitar que procesos no confiables modifiquen archivos, directorios padre o locks.
+- No se afirma resistencia a symlink/path attacks ni se aceptan rutas de filesystem distribuido como soporte validado. No se debe interpretar la ruta proporcionada por un caller no confiable como segura por estar validada como string.
+- La recuperación automática de locks obsoletos fue retirada: el patrón check-then-remove podía borrar un lock nuevo. Ante lock obsoleto se devuelve un código `*_LOCK_STALE_RECOVERY_REQUIRED`; el operador solo debe retirarlo tras verificar que no queda proceso propietario activo. No eliminar locks en caliente ni reintroducir reaper automático por antigüedad/PID.
+- El test multiproceso de Chronicle demuestra que dos escritores cooperantes conservan ambas entradas en filesystem local normal de CI. No demuestra seguridad frente a actores hostiles, eliminación manual concurrente, todos los interleavings ni durabilidad ante pérdida de energía.
+- Siguiente: decidir si el despliegue aceptará explícitamente el modelo de directorio local privado/cooperación confiable, o si necesita una capa de locking del sistema operativo con garantías más fuertes. No fingir que canonicalizar una ruta por sí solo resuelve las carreras de filesystem.
