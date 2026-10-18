@@ -470,14 +470,18 @@ await fs.rm(changedGoalDir, { recursive: true, force: true });
 
 
 
+// A replay after the settlement commit must recover the journaled result,
+ // even when the caller retained the pre-commit continuity revision.
 const staleSettlement = await settlePreparedRepairFromPersistedState({
   store: restartedRepairContinuity.store,
   statePath: repairStatePath,
   idempotencyKey: "repair-crash-cut:step-1",
   expectedContinuityRevision: persistedRepairJournal.storeRevision
 });
-assert.equal(staleSettlement.status, "conflict");
-assert.equal(staleSettlement.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+assert.equal(staleSettlement.status, "settled_observed");
+assert.equal(staleSettlement.code, "NEXO_REPAIR_SETTLEMENT_ALREADY_JOURNALED");
+assert.equal(staleSettlement.recovered, true);
+assert.equal(staleSettlement.causalAttribution, "not_claimed");
 
 const revisionOneSnapshot = await loadStateStrict(repairStatePath);
 const malformedForNegativeTest = applyState(revisionOneSnapshot);
