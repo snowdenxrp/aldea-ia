@@ -270,3 +270,12 @@ La vertical Chronicle ya está conectada a `executeNexoStepWithContinuityOwner` 
 - `package.json` ejecuta las dos suites Chronicle dentro del test estándar; `.github/workflows/nexo-m0-chronicle.yml` también corre cuando cambia ese script.
 - CI final [39174162150](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174162150) SUCCESS en SHA `1ef9a4745d31d324b56733e43e250d36bb3908b7`, con store, runtime owner-backed, crash cuts y entrada real. El test del entrypoint también pasó en [39174097465](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174097465).
 - Siguiente frontera: auditar la ruta de CLI y sus supuestos de almacenamiento, revisar el resultado de las suites amplias y decidir explícitamente si/ cuándo esta ruta se integra a la aplicación. No tocar runtime default ni ampliar a otras acciones hasta que el corte actual esté auditado. M0 INCOMPLETO.
+
+
+## Evidencia final de suites para la vertical Chronicle
+
+En SHA `4626afbb1220feb0784c020288de697608b9276b`:
+- [Run 39174272574](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272574) SUCCESS — suite focal de Chronicle.
+- [Run 39174272526](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272526) SUCCESS — suite acotada de continuidad/runtime, ahora incluyendo las dos suites Chronicle.
+
+El entrypoint es independiente de Lúmina y los tests incluyen: stores ausentes/corruptos no se recrean silenciosamente, IDs de misión/step suministrados, misma identidad con contenido diferente bloqueada, append con lectura independiente, recovery sin redispatch y replay del outcome. M0 permanece INCOMPLETO; no habilitar otras acciones ni cambiar runtime default.
