@@ -204,7 +204,8 @@ const operation = {
   missionId: "owner-mission",
   stepId: "step-1",
   action: "repair_agent_state",
-  target: "alex"
+  target: "alex",
+  environmentStateRevision: 0
 };
 const preparedCommit = await owner.recordPrepared({ expectedRevision: 1, operation });
 assert.equal(preparedCommit.status, "committed");
