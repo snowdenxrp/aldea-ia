@@ -1,3 +1,9 @@
+## Nexo-only continuity operations — verified core extraction (2026-10-18)
+
+- Added `src/nexo/core/continuity-operations.mjs` at `b3a5aa2643a19a203c0db70c504e01c5900a2cb9`. It records mission/attempt/execution lineage and reconstructs from the standalone Nexo snapshot without learning analytics. `continuity-owner.mjs` now uses this path for mission admission.
+- Exact-head CI PASS at `da990d548c36fac0fbb589f6372159c9b9539d79`: mission/restart [39099364565](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099364565), STEP 4 [39099364571](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099364571), STEP 5 [39099364647](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099364647).
+- Important limitation: this is not yet the canonical runtime path. Legacy memory remains in use, and a stored `evidence.verified` flag is not independent provenance or authority. Operation-specific reconciliation and migration/commit ordering are still open.
+
 ## Semantic correction — PREPARED is not authorization (2026-10-18)
 
 - `continuity-owner.mjs` now returns `preparedCommitted: true` and `authorization: "NOT_EVALUATED"` after a durable PREPARED commit. It does not return a dispatch permission. Existing PREPARED still blocks repeat dispatch.
