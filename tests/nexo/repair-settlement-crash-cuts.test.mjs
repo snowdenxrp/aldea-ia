@@ -390,6 +390,40 @@ try {
   assert.equal((await unknownOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
 
+  const invalidEvidenceDir = path.join(root, "generic-owner-invalid-evidence");
+  await fs.mkdir(invalidEvidenceDir);
+  const invalidEvidenceOpened = await openNexoContinuityOwner({
+    filePath: path.join(invalidEvidenceDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  const invalidEvidenceOwner = createNexoContinuityOwner({
+    store: invalidEvidenceOpened.store,
+    effectVerifiers: {
+      generic_write: async operation => ({
+        status: "applied",
+        idempotencyKey: operation.idempotencyKey,
+        action: operation.action,
+        target: operation.target,
+        observedRevision: 11,
+        source: "test-invalid-evidence",
+        evidence: { nonSerializable: () => true }
+      })
+    }
+  });
+  const invalidEvidenceResult = await invalidEvidenceOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(invalidEvidenceResult.status, "blocked");
+  assert.equal(invalidEvidenceResult.code, "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID");
+  assert.equal((await invalidEvidenceOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
   // Repair actions cannot bypass their revision-bound repair-specific
   // settlement contract through the generic observation API.
   const repairContractDir = path.join(root, "generic-repair-route-rejected");
