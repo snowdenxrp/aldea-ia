@@ -1,3 +1,15 @@
+## M0 — Continuity migration recovered after app interruption (2026-10-18)
+
+- Recovery checkpoint: [continuity migration checkpoint](BUILD/NCS_M0_CONTINUITY_MIGRATION_RECOVERY_CHECKPOINT_2026-10-18.md).
+- The migration path is partially implemented: `scripts/nexo-continuity.mjs` bootstraps a standalone Nexo store from validated legacy memory only when the store is absent; existing store is canonical; corrupt store fails closed; empty bootstrap requires explicit opt-in.
+- `scripts/assistants.mjs` now records mission admission through the Nexo owner; `scripts/simulate.mjs` no longer serializes Nexo operational memory inside `world-state.json`.
+- Added migration regression `tests/nexo/continuity-migration.test.mjs`; workflow now triggers on continuity owner/store/operations and migration scripts and runs dedicated store + migration tests.
+- Exact source/test/workflow head `8b45736b92d6510ed5ccdb3d151b969210b2c66b` CI PASS [39099935315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099935315).
+- **Still not migrated end-to-end:** `src/nexo/runtime.js` continues to use the legacy memory functions for execution/outcomes; PREPARED/terminal commits and restart reconstruction are not yet wired through the Nexo owner. No real user/local dataset was migrated during this chat; CI used temporary files.
+- Cross-store mission-plan commit versus Lúmina world-state commit is not atomic. A plan committed before a world-state revision conflict must not be treated as executable without fresh admission.
+- Next: integrate execution and terminal outcome recording through the owner only after ordering/crash cuts are defined. Preserve PREPARED as UNKNOWN, never redispatch or replan around it. No new authority root, global revision, queue, retry, tombstone, or transaction wrapper.
+- M0 incomplete; protected effects STOP; prepared external outcomes UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Completion evidence requires a source label (2026-10-18)
 
 - Updated `src/nexo/core/continuity-operations.mjs` to require a non-empty `evidence.source` label for completion claims and to require that label during reconstruction. This follows M0.15's established rule.
