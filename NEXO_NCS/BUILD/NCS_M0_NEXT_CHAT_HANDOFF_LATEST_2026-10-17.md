@@ -719,4 +719,4 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 
 - A workflow commit was built from a stale base tree and unintentionally reverted the snapshot-isolation source/test changes. The prior CI success therefore did not validate the new regression.
 - Source + regression have been restored against the actual current branch HEAD; workflow explicitly runs `tests/nexo/runtime.test.mjs`.
-- Treat CI as pending until a run on the new exact HEAD passes with the snapshot assertions present. Do not rely on the earlier run IDs for this correction.
+- Verified on exact head `0a964abdc0a8f39465e484fd8f531a6a3d079caf`: continuity/runtime [39085110783](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110783), STEP 4 [39085110788](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110788), STEP 5 [39085110864](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110864) — all success; the runtime step ran and passed with snapshot assertions present. Do not rely on earlier run IDs for this correction.

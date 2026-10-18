@@ -251,7 +251,7 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 
 - Defect: `replanPersistedNexoMission()` mutated its input memory snapshot after calling `recordNexoPlan()`.
 - Correction + regression restored on current branch: return a new snapshot; assert the prior snapshot stays unchanged.
-- Workflow audit: a prior update used a stale base tree, so the run did not verify this regression despite the runtime command passing against older source/test content. New exact-head CI is pending.
+- Workflow audit: an earlier update used a stale base tree and did not verify this regression; source/test restored on exact head `0a964abdc0a8f39465e484fd8f531a6a3d079caf`. CI now explicitly runs runtime regression: mission continuity [39085110783](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110783), STEP 4 [39085110788](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110788), STEP 5 [39085110864](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110864) — all success.
 - Report: [M0 replan snapshot isolation](BUILD/NCS_M0_REPLAN_SNAPSHOT_ISOLATION_2026-10-18.md).
 - Scope: memory snapshot correctness only. Proxy boundary design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
 

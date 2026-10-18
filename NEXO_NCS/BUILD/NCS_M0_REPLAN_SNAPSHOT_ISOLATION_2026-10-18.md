@@ -2,7 +2,7 @@
 
 Date: 2026-10-18  
 Branch: `ncs-clean-architecture`  
-Status: SOURCE + REGRESSION RESTORED; CI pending
+Status: IMPLEMENTED / FOCUSED CI PASS
 
 ## Defect
 
@@ -15,7 +15,10 @@ Status: SOURCE + REGRESSION RESTORED; CI pending
 
 ## Verification qualification
 
-A previous workflow update accidentally used a stale base tree and reverted the runtime/test changes while retaining the workflow change. The workflow run therefore did **not** verify this snapshot-isolation regression, even though the runtime test command passed for the older test file. The code and assertions have now been restored on the current branch head. Treat CI as pending until the new exact-head run confirms these assertions are present and passing.
+A previous workflow update accidentally used a stale base tree and reverted the runtime/test changes while retaining the workflow change. The workflow run therefore did **not** verify this snapshot-isolation regression, even though the runtime test command passed for the older test file. The code and assertions were restored on head `0a964abdc0a8f39465e484fd8f531a6a3d079caf`; the runtime test step passed on that exact SHA. Focused CI:
+- Mission continuity / runtime regression [39085110783](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110783) — success; explicitly ran `tests/nexo/runtime.test.mjs` with the new snapshot assertions.
+- STEP 4 semantic validation [39085110788](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110788) — success.
+- STEP 5 outcome classification [39085110864](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110864) — success.
 
 ## Limits
 
