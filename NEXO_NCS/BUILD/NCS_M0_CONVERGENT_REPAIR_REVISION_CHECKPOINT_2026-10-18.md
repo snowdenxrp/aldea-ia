@@ -29,8 +29,8 @@ Test that repair never resurrects: [`0846597665e72de65917101c9206c3d26c11bf1b`](
 
 Final test head: `0846597665e72de65917101c9206c3d26c11bf1b`.
 
-- Semantic validation: [run 39106552699](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552699) — pending at the time this checkpoint was written; inspect final conclusion before calling it PASS.
-- Outcome classification: [run 39106552701](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552701) — pending at the time this checkpoint was written; inspect final conclusion before calling it PASS.
+- Semantic validation: [run 39106552699](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552699) — **success**.
+- Outcome classification: [run 39106552701](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552701) — **success**.
 - The prior head `575d01789250bb26800d66146da18321ffad32ab` passed semantic validation [39106460906](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106460906) and outcome classification [39106460938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106460938).
 - A separate mission/restart continuity run for the final test head has not been observed; do not carry forward the earlier head's result as if it covered this one.
 
