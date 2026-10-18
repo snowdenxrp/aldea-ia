@@ -97,3 +97,12 @@ El verificador ahora realiza una segunda lectura de `storeRevision` antes de dev
 Commit probado `57f3bffb52989a924bdbc5fb4fc626d803e6988f`; CI exacto: repair 39146959705, STEP 4 39146959738, STEP 5 39146959691, todos SUCCESS. El job repair ejecutó y pasó la regresión de verificación de objetivo.
 
 El corte del runtime genérico permanece bloqueado hasta tener un contrato explícito de outcome/evidencia y pruebas integradas de PREPARED durable, CAS, recuperación y replay. No se agregó colección `goalObservations`; no se confunde observación con causalidad o completion.
+
+
+## Decisión posterior — observación de objetivo y cutover (2026-10-18)
+
+Véase `NEXO_NCS/BUILD/NCS_M0_GOAL_OBSERVATION_AND_RUNTIME_CUTOVER_DECISION_2026-10-18.md` para el contrato formal. Decisión: no añadir `goalObservations` sin requisito explícito de auditoría; mantener el verificador read-only, no causal y sin completion. El guard de cambio de revisión de continuidad se conserva y está cubierto por regresión determinista. No se retiene un guard de cambio ambiental durante la verificación porque el experimento de regresión no reprodujo de manera fiable el orden que pretendía cubrir; se retiraron ese test y el guard experimental antes de declarar CI verde.
+
+La lectura del settlement actual confirma que `settlePreparedRepairFromPersistedState()` exige un PREPARED único, acción de reparación admitida, revisión ambiental enlazada, revisión actual igual a la base o base+1, invariante persistida presente y CAS de continuidad. El entrypoint persiste lineage aparte antes de settlement y no declara misión completa. Esto es una ruta repair-only; no demuestra que el runtime genérico legacy haya sido migrado ni permite generalizar el bridge a acciones protegidas.
+
+Último código/pruebas con CI verde tras retirar el experimento ambiental: `fe9fe3b656fceff67be31722d7729ff6637a428b` (repair 39149853015, STEP 4 39149852997, STEP 5 39149853023; todos SUCCESS). Commits posteriores son documentación. M0 continúa INCOMPLETO.
