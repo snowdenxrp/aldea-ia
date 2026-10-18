@@ -964,3 +964,11 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Pruebas de parser agregadas a `tests/nexo/chronicle-runtime.test.mjs`; la identidad de operación también se valida contra colisiones del separador heredado.
 - Un run intermedio [39174663488](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174663488) falló por una aserción que aún esperaba el código previo para IDs inválidos; la aserción ya reflejaba el contrato explícito y se volvió a ejecutar. SHA final de esta iteración: `d7af2db2150ab6be57683ad1e15977f29c613081`. [Chronicle run 39174722540 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722540) y [continuity/runtime run 39174722491 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722491).
 - Siguiente corte: validar con ejecución CLI real (subproceso) que argumentos inválidos no toquen stores y que la salida no contenga el contenido privado; revisar el bootstrap explícito y el contrato de almacenamiento. No cambiar runtime default ni ampliar acciones. M0 INCOMPLETO.
+
+
+## M0 — frontera CLI real probada; stores intactos ante argumentos inválidos (2026-10-18)
+
+- La suite ahora lanza `scripts/nexo-chronicle-session.mjs` como subproceso real, no solo llama al parser exportado. Con argumento desconocido y contenido centinela, confirma salida no cero, código estructurado `NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID`, stderr vacío, sin filtrar el contenido y sin crear ninguno de los dos stores.
+- SHA validado: `429fc980427c04f8db286e28ee9887333941acb8`. [Chronicle run 39174861087 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861087); [bounded continuity/runtime run 39174861039 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861039).
+- Con esto queda cubierto el límite CLI para errores de gramática. No equivale a validar todos los escenarios del SO/filesystem, durabilidad ante pérdida de energía ni rollback. Bootstrap sigue explícito; archivos faltantes/corruptos no se regeneran sin el flag, y corrupción existente no se sobrescribe.
+- Siguiente: revisar el contrato de persistencia local (directorios padres, archivos temporales/locks, symlinks y límite de concurrencia soportado), decidir qué garantías se pueden afirmar y documentar los límites sin prometer fsync. Mantener runtime default sin cambios; M0 INCOMPLETO.
