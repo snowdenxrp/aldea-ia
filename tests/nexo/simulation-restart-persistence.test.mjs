@@ -162,7 +162,7 @@ await persistState(racePath, baseSimulation, 1000, { stateRevision: 0 });
 const workerScript = path.join(path.dirname(new URL(import.meta.url).pathname), "persistence-lock-worker.mjs");
 function runWorker(savedAt) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [workerScript, racePath.pathname, String(savedAt)], { stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(process.execPath, [workerScript, racePath.pathname, String(savedAt), raceDir], { stdio: ["ignore", "pipe", "pipe"] });
     let stdout = ""; let stderr = "";
     child.stdout.on("data", chunk => { stdout += chunk; });
     child.stderr.on("data", chunk => { stderr += chunk; });
@@ -170,7 +170,21 @@ function runWorker(savedAt) {
     child.once("error", reject);
   });
 }
-const [workerA, workerB] = await Promise.all([runWorker(1001), runWorker(1002)]);
+const workerPromises = [runWorker(1001), runWorker(1002)];
+const readyFiles = [path.join(raceDir, "ready-1001"), path.join(raceDir, "ready-1002")];
+let bothWorkersReady = false;
+for (let attempt = 0; attempt < 1000; attempt += 1) {
+  try {
+    await Promise.all(readyFiles.map(file => fs.access(file)));
+    bothWorkersReady = true;
+    break;
+  } catch {
+    await new Promise(resolve => setTimeout(resolve, 5));
+  }
+}
+assert.equal(bothWorkersReady, true, "both workers must load the same starting revision before competing");
+await fs.writeFile(path.join(raceDir, "release"), "go", "utf8");
+const [workerA, workerB] = await Promise.all(workerPromises);
 assert.equal([workerA.status, workerB.status].filter(status => status === "committed").length, 1);
 assert.equal([workerA.status, workerB.status].filter(status => status === "conflict").length, 1);
 const raceFinal = await loadState(racePath);
