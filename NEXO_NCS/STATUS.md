@@ -298,3 +298,11 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - STEP 4 [39087886365](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886365) — PASS.
 - STEP 5 [39087886450](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886450) — PASS.
 - The runtime test run includes the new memory-normalization regressions. Scope remains journal retention; integrated reconciliation is still unimplemented.
+
+
+## M0 — Recovery contract gate (2026-10-18)
+
+- Decision: do not add callback-only reconciliation to `executeNexoStep()`; terminal blocked admission/commit semantics and immutable attempt history must be addressed as one explicit recovery transition.
+- Existing PG-009 recovery/restart fencing is the source contract; required exact effect identity, recovery owner/generation/fence, authority epoch, fresh evidence/provenance, target/precondition and policy-version binding must not be invented or silently omitted.
+- Design report: [M0 — Recovery contract required before runtime re-entry](BUILD/NCS_M0_RECOVERY_CONTRACT_BEFORE_RUNTIME_REENTRY_2026-10-18.md).
+- Journal retention regressions are CI-verified, but integrated recovery remains not implemented. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.

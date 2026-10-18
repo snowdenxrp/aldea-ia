@@ -753,3 +753,8 @@ Follow-up tracing found that the adapter's terminal-first pruning alone was insu
 ## CI evidence — prepared-effect memory retention
 
 Source/test commit `dd4e8fd88e8d22040b2593af82bbe7f724fa04bf` passed mission admission/restart continuity [39087886377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886377), STEP 4 [39087886365](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886365), and STEP 5 [39087886450](https://github.com/snowdenxrp/aldea-ia/actions/runs/39087886450). Runtime workflow explicitly executes `tests/nexo/runtime.test.mjs`; it passed. Do not claim this proves cross-restart reconciliation.
+
+
+## Next structural gate — runtime reconciliation, not callback forwarding
+
+Latest design report: `NEXO_NCS/BUILD/NCS_M0_RECOVERY_CONTRACT_BEFORE_RUNTIME_REENTRY_2026-10-18.md`. Do not merely forward a reconcile callback: `beginNexoStep()` rejects terminal blocked steps, `commitRuntimeOutcome()` will not transition them, and original attempt history must remain immutable. Reuse PG-009's existing recovery/restart-fencing fields. The next implementation must bind reconciliation to the original persisted effect key and distinguish verified completed, verified absent, and unresolved/stale evidence; preserve original attempt history; and prevent a fresh key while outcome is unresolved. If required authority/fence/provenance inputs do not exist, fail closed and leave protected effects STOP rather than faking a successful reconciliation. Journal-retention code/test CI passed on `dd4e8fd88e8d22040b2593af82bbe7f724fa04bf` (mission continuity run 39087886377; STEP 4 run 39087886365; STEP 5 run 39087886450). This is not end-to-end recovery proof.
