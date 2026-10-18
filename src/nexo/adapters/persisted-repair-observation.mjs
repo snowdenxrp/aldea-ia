@@ -70,8 +70,10 @@ export function observePersistedRepairInvariant({ snapshot, action, target } = {
   }
 
   if (action === "repair_agent_state") {
-    const agent = snapshot.agents.find(item => item?.id === target);
-    if (!agent) return unknown("REPAIR_TARGET_AGENT_UNKNOWN", action, target, revision);
+    const matches = snapshot.agents.filter(item => item?.id === target);
+    if (matches.length === 0) return unknown("REPAIR_TARGET_AGENT_UNKNOWN", action, target, revision);
+    if (matches.length !== 1) return unknown("REPAIR_TARGET_AGENT_AMBIGUOUS", action, target, revision);
+    const agent = matches[0];
     if (typeof agent.alive !== "boolean") {
       return unknown("REPAIR_AGENT_ALIVE_STATE_UNKNOWN", action, target, revision);
     }
@@ -108,6 +110,7 @@ export function observePersistedRepairInvariant({ snapshot, action, target } = {
   if (!resources || typeof resources !== "object" || Array.isArray(resources)) {
     return unknown("REPAIR_RESOURCE_COLLECTION_SCHEMA_UNKNOWN", action, target, revision);
   }
+  if (!Object.hasOwn(resources, target)) return unknown("REPAIR_TARGET_RESOURCE_UNKNOWN", action, target, revision);
   const resource = resources[target];
   if (!resource || typeof resource !== "object" || Array.isArray(resource)) {
     return unknown("REPAIR_TARGET_RESOURCE_UNKNOWN", action, target, revision);
