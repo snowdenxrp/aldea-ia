@@ -266,6 +266,7 @@ const preparedIntent = await repairContinuity.owner.recordPrepared({
     action: "repair_agent_state",
     target: "alex",
     idempotencyKey: "repair-crash-cut:step-1",
+    environmentStateRevision: 0,
     at: "2026-10-18T00:00:00.000Z"
   }
 });
@@ -311,6 +312,21 @@ assert.equal(unresolvedRepair.verified, false);
 const persistedRepairJournal = await restartedRepairContinuity.owner.loadCurrent();
 assert.equal(persistedRepairJournal.snapshot.effectJournal[0].status, "prepared",
   "durable desired state must not be silently treated as owner settlement");
+
+const missingRepairRevision = await restartedRepairContinuity.owner.recordPrepared({
+  expectedRevision: persistedRepairJournal.storeRevision,
+  operation: {
+    missionId: "repair-crash-cut",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    idempotencyKey: "repair-crash-cut:step-1"
+  }
+});
+assert.equal(missingRepairRevision.status, "blocked");
+assert.equal(missingRepairRevision.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_REQUIRED");
+assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
 await fs.rm(repairDir, { recursive: true, force: true });
 
 
