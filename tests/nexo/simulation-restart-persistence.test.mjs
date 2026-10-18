@@ -393,6 +393,20 @@ assert.equal(observedMissionGoal.missionCompleted, false);
 assert.equal(observedMissionGoal.causalAttribution, "not_claimed");
 assert.equal(observedMissionGoal.stepObservations.length, 1);
 
+const cyclicMissionSnapshot = structuredClone(settledJournal.snapshot);
+cyclicMissionSnapshot.missions[0].steps = [
+  { id: "cycle-a", action: "repair_agent_state", target: "alex", status: "blocked", dependsOn: ["cycle-b"] },
+  { id: "cycle-b", action: "repair_agent_needs", target: "alex", status: "blocked", dependsOn: ["cycle-a"] }
+];
+const cyclicMissionGoal = await verifyRepairMissionGoalFromPersistedState({
+  store: { loadCurrent: async () => ({ storeRevision: settledJournal.storeRevision, snapshot: cyclicMissionSnapshot }) },
+  statePath: repairStatePath,
+  missionId: "repair-crash-cut"
+});
+assert.equal(cyclicMissionGoal.status, "unknown");
+assert.equal(cyclicMissionGoal.code, "NEXO_REPAIR_MISSION_DEPENDENCY_CYCLE");
+
+
 
 
 const staleSettlement = await settlePreparedRepairFromPersistedState({
