@@ -101,6 +101,28 @@ try {
   assert.equal(replayed.status, "goal_observed");
   assert.equal(afterReplay.storeRevision, beforeReplay.storeRevision);
 
+  // A continuity change between the initial journal read and final positive
+  // result makes this cross-store observation UNKNOWN rather than stale PASS.
+  let continuityReads = 0;
+  const changingStore = {
+    async loadCurrent() {
+      const current = await reopened.store.loadCurrent();
+      continuityReads += 1;
+      return continuityReads === 1
+        ? current
+        : { ...current, storeRevision: current.storeRevision + 1 };
+    }
+  };
+  const changedDuringVerification = await verifyRepairMissionGoalFromPersistedState({
+    store: changingStore,
+    statePath,
+    missionId: "mission-verification"
+  });
+  assert.equal(changedDuringVerification.status, "unknown");
+  assert.equal(changedDuringVerification.code, "NEXO_CONTINUITY_CHANGED_DURING_MISSION_VERIFICATION");
+  assert.equal(changedDuringVerification.verified, false);
+  assert.equal(continuityReads, 2);
+
   // Goal observation is deliberately not a durable mission completion. The
   // canonical reconstruction keeps the settled step blocked against redispatch.
   const reconstructed = await reopened.owner.reconstructMission("mission-verification");
