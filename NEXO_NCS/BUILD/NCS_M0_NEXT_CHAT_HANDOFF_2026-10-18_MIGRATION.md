@@ -503,3 +503,18 @@ M0 incomplete; protected effects STOP; PREPARED UNKNOWN; STEP 7 OPEN / STOP / UN
 ### Additional recovery regression (2026-10-18)
 
 Test commit `98caddd0edd81908c2f07b199391e9fe85dbeeae` adds a reconstruction case for an existing `settled_observed` repair entry. Expected behavior: mission remains blocked with objective `verify_observed_repair_goal`; the step is blocked with `NEXO_REPAIR_SETTLED_BY_OBSERVATION` and directs to `verify_mission_goal_without_redispatch`. This prevents an observation-only journal state from being treated as completed or executable. Exact-head CI NOT VERIFIED; no local test run claimed.
+
+## Continuación — crash cuts de liquidación observada (2026-10-18)
+Se añadió `tests/nexo/repair-settlement-crash-cuts.test.mjs` y se incorporó a `npm test`.
+
+Casos cubiertos por la prueba:
+1. **Lúmina persistió; Nexo quedó PREPARED.** El helper puede registrar solo `settled_observed`, `causalAttribution: not_claimed`; al reconstruir, la misión/step siguen bloqueados y no se redispatcha.
+2. **La revisión del entorno avanzó más allá de la revisión PREPARED + 1.** No se liquida; el journal conserva PREPARED.
+3. **Revisión adyacente pero la invariante no está presente.** No se liquida; el journal conserva PREPARED.
+
+Commits: test `59f3501f1d96358ad8f59649e06e00af00e219c3`; inclusión en `npm test` `8c08f82792915c444ec9c0acc9decd0acd6b19e5`.
+
+**Verificación honesta:** la prueba aún no se ha ejecutado localmente ni se ha confirmado CI del head exacto. La prueba escrita no es un PASS. El helper sigue fuera del runtime y no demuestra causalidad ni atomicidad entre archivos.
+
+### Próximo paso
+Obtener ejecución real de esta prueba en CI y revisar el log. Si falla, corregir antes de ampliar. Si pasa, usarla como evidencia de los tres cortes y después definir el contrato mínimo del propietario; no integrar el runtime hasta que exista una fuente de reconciliación apropiada para la acción y la frontera de persistencia. Mantener Nexo y Lúmina separados; no reabrir P112 ni STEP 7.
