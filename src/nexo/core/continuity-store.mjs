@@ -103,6 +103,9 @@ async function writeEnvelope(fsModule, filePath, envelope) {
  *
  * This implementation does not claim fsync/power-loss durability or support
  * network/distributed filesystems. Missing/corrupt state is never regenerated.
+ * filePath is trusted configuration, not a sandbox boundary: callers must use a
+ * trusted local directory and prevent untrusted processes from mutating paths or
+ * lock entries. Symlink/path-attack resistance is not claimed.
  */
 export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
   if (typeof filePath !== "string" || !filePath.trim()) {
