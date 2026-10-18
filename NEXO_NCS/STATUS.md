@@ -1,3 +1,12 @@
+## M0 — lineage debe conservar también la revisión PREPARED (2026-10-18)
+
+- **Segundo hueco concreto:** incluso después de comprobar que un replay de lineage repetía exactamente el mismo resultado, `recordExecutionLineage()` podía aceptar una llamada con una revisión ambiental base distinta de la que estaba ligada al journal PREPARED. El resultado guardado por sí solo no bastaba para verificar ese contexto.
+- **Cambio:** para acciones de reparación, el replay de una lineage existente ahora revalida que exista exactamente una entrada de journal con revisión ambiental base conocida y que coincida con `operation.environmentStateRevision`. Un baseline distinto devuelve `blocked / NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH`; una base ausente/ambigua devuelve `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN`. No escribe ni avanza `storeRevision`.
+- **Regresión test-first:** [CI 39150495080](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150495080) falló primero porque el código anterior aceptaba el replay con baseline contradictorio. Tras el guard, la suite de crash cuts [39150515026](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515026), STEP 4 [39150514997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150514997), STEP 5 [39150515080](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515080) y bounded mission admission/restart [39150515015](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515015) terminaron SUCCESS sobre SHA `3bfbad268ac1a9b5ea9492e8db0a90b5972f22d9`.
+- **Siguiente frontera:** el contrato de lineage tiene ahora dos checks explícitos de replay: resultado idéntico y baseline PREPARED idéntico. Continuar la integración runtime canónica con pruebas; no crear `goalObservations`, no declarar completion por settlement, no mezclar Nexo/Lúmina, efectos protegidos STOP y STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — rechazo de replay de lineage con resultado contradictorio (2026-10-18)
 
 - **Hueco demostrado:** `recordExecutionLineage()` devolvía `already_recorded` para una clave/identidad ya existente sin comparar el resultado de adaptador persistido con el resultado del replay. No sobrescribía el primer registro, pero ocultaba un conflicto semántico.
