@@ -1,4 +1,5 @@
 import { pathToFileURL } from "node:url";
+import fs from "node:fs/promises";
 import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
 import { createNexoContinuityStore } from "../src/nexo/core/continuity-store.mjs";
 import { createNexoChronicleStore } from "../src/nexo/core/chronicle-store.mjs";
@@ -117,8 +118,8 @@ export async function runNexoChronicleAppend({
 
 export function parseNexoChronicleArguments(argv) {
   const values = Object.create(null);
-  const valueOptions = new Set(["--continuity", "--chronicle", "--mission", "--step", "--content"]);
-  const flags = new Set(["--initialize-continuity", "--initialize-chronicle"]);
+  const valueOptions = new Set(["--continuity", "--chronicle", "--mission", "--step"]);
+  const flags = new Set(["--initialize-continuity", "--initialize-chronicle", "--content-stdin"]);
   function invalid() {
     const error = new Error("NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID");
     error.code = "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID";
@@ -140,7 +141,7 @@ export function parseNexoChronicleArguments(argv) {
     chroniclePath: values["--chronicle"],
     missionId: values["--mission"],
     stepId: values["--step"],
-    content: values["--content"],
+    contentFromStdin: values["--content-stdin"] === true,
     initializeContinuity: values["--initialize-continuity"] === true,
     initializeChronicle: values["--initialize-chronicle"] === true
   };
@@ -149,7 +150,14 @@ export function parseNexoChronicleArguments(argv) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   let result;
   try {
-    result = await runNexoChronicleAppend(parseNexoChronicleArguments(process.argv.slice(2)));
+    const args = parseNexoChronicleArguments(process.argv.slice(2));
+    if (!args.contentFromStdin) {
+      const error = new Error("NEXO_CHRONICLE_CLI_CONTENT_SOURCE_REQUIRED");
+      error.code = "NEXO_CHRONICLE_CLI_CONTENT_SOURCE_REQUIRED";
+      throw error;
+    }
+    const content = await fs.readFile(0, "utf8");
+    result = await runNexoChronicleAppend({ ...args, content });
   } catch (error) {
     result = blocked(error?.code ?? "NEXO_CHRONICLE_SESSION_FAILED");
   }
