@@ -4,7 +4,7 @@
 - Same-identity replays preserve the first execution result; a late result does not overwrite the original lineage.
 - Added regression assertions in `tests/nexo/continuity-contract.test.mjs` for both same-identity replay preservation and mismatched-identity rejection.
 - Commits: implementation [6250c73](https://github.com/snowdenxrp/aldea-ia/commit/6250c73bef0691454a9830794ac7fdb8352968ac); regression [94fa6a1](https://github.com/snowdenxrp/aldea-ia/commit/94fa6a117a7b0d87e98640b920ccbfeaf80086b7).
-- **Verification pending:** the workflow-run lookup returned no run associated with the latest commit, and local execution is unavailable in this environment. Do not label this change tested until CI or an equivalent Node test run confirms it.
+- **CI verified:** GitHub Actions run [39103905804](https://github.com/snowdenxrp/aldea-ia/actions/runs/39103905804) completed successfully on commit `94fa6a117a7b0d87e98640b920ccbfeaf80086b7`. Its `mission-admission-continuity` job passed `orchestrator.test.mjs`, `runtime.test.mjs`, `effect-adapter.test.mjs`, `restart-reconstruction.test.mjs`, `simulation-restart-persistence.test.mjs`, `continuity-contract.test.mjs` (including the new idempotency cases), `continuity-store.test.mjs`, and `continuity-migration.test.mjs`. This verifies those repository tests at that commit; it does not prove the runtime migration is complete or validate a real device's data.
 - This hardening is limited to the snapshot operation function. It does not complete runtime migration, settle PREPARED effects, or grant authority. M0 remains incomplete; protected effects STOP; unresolved prepared outcomes UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
 
 ---
