@@ -457,3 +457,25 @@ Analysis checkpoint: [NCS_M0_CROSS_STORE_REVISION_FENCE_ANALYSIS_2026-10-18.md](
 4. Preserve legacy runtime memory until end-to-end migration and rollback evidence exists.
 
 M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+---
+
+## Continuation update — goal-observation consumer decision (2026-10-18)
+
+Decision checkpoint: [NCS_M0_GOAL_OBSERVATION_CONSUMER_DECISION_2026-10-18.md](NCS_M0_GOAL_OBSERVATION_CONSUMER_DECISION_2026-10-18.md), commit [5a3922413ff8702aafe12b05bc69b09f8b0fc864](https://github.com/snowdenxrp/aldea-ia/commit/5a3922413ff8702aafe12b05bc69b09f8b0fc864).
+
+### Closed narrow question
+
+The read-only verifier in `scripts/nexo-repair-mission-verification.mjs` has no demonstrated production consumer requiring a durable terminal `goal_observed` record; `src/nexo/runtime.js` does not call it. Do not implement a cross-store fence just for this unused durable status. Keep verification diagnostic/read-only and re-check current state when a consumer uses it. This decision applies to the current code path, not every possible future feature.
+
+### Next concrete work
+
+1. Continue runtime migration toward `createNexoContinuityOwner()`; do not repeat broad P112 writer/persistence audits.
+2. Specify the exact owner-backed API boundary for mission reconstruction and execution/outcome lineage.
+3. Keep lineage recording separate from effect settlement. A result record must not clear or replace unresolved PREPARED.
+4. Do not treat caller-provided `verified: true` or a non-empty evidence source label as independent proof.
+5. Preserve the legacy memory path until the owner-backed path has crash-cut, restart, migration, and rollback evidence.
+6. Keep Lúmina environment persistence and Nexo continuity commits distinct; if a crash/conflict makes the result ambiguous, retain UNKNOWN/PREPARED and do not redispatch.
+
+Do not introduce a generic transaction wrapper, new global ID/queue/retry/tombstone scheme, protected-effect authorization, or device-migration claim. M0 remains incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
