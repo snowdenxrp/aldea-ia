@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { assertNexoContinuityMemoryShape } from "../../src/nexo/core/continuity-contract.mjs";
 import { assertNexoContinuitySnapshot, projectNexoContinuitySnapshot, NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
+import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 const plan = {
   missionId: "mission-a",
@@ -122,3 +126,56 @@ assert.throws(
 );
 
 console.log("Nexo continuity shape, snapshot separation, and prepared-operation context contract OK.");
+
+
+const storeDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owned-continuity-"));
+const storePath = path.join(storeDirectory, "nexo-continuity.json");
+const store = createNexoContinuityStore({ filePath: storePath });
+const emptySnapshot = {
+  schema: NEXO_CONTINUITY_SCHEMA,
+  schemaVersion: 1,
+  missions: [],
+  attempts: [],
+  doNotRepeat: [],
+  executions: [],
+  effectJournal: []
+};
+await assert.rejects(
+  () => store.loadCurrent(),
+  error => error?.code === "NEXO_CONTINUITY_STORE_NOT_FOUND",
+  "missing Nexo state must not be normalized into an empty store"
+);
+const initialized = await store.initialize(emptySnapshot);
+assert.equal(initialized.status, "committed");
+assert.equal(initialized.storeRevision, 0);
+assert.equal((await store.loadCurrent()).storeRevision, 0);
+assert.equal((await store.initialize(emptySnapshot)).status, "conflict");
+
+const candidateA = { ...emptySnapshot, doNotRepeat: [{ action: "repair_agent_state", target: "alex" }] };
+const candidateB = { ...emptySnapshot, doNotRepeat: [{ action: "repair_agent_needs", target: "bruno" }] };
+const outcomes = await Promise.all([
+  store.commitIfCurrent(0, candidateA),
+  store.commitIfCurrent(0, candidateB)
+]);
+assert.equal(outcomes.filter(result => result.status === "committed").length, 1);
+assert.equal(outcomes.filter(result => result.status === "conflict").length, 1);
+assert.equal((await store.loadCurrent()).storeRevision, 1);
+
+const stored = (await store.loadCurrent()).snapshot;
+assert.equal("world" in stored, false, "Nexo continuity store must not own Lúmina world state");
+assert.equal("agents" in stored, false, "Nexo continuity store must not own Lúmina agents");
+assert.equal("runs" in stored, false, "Nexo continuity store must not own learning analytics");
+assert.equal("authority" in stored, false, "continuity persistence must not mint authority");
+assert.deepEqual(
+  await store.commitIfCurrent(1, { ...emptySnapshot, authority: { status: "AUTHORIZED" } }),
+  { status: "failed", code: "NEXO_CONTINUITY_SNAPSHOT_SCHEMA_UNKNOWN" }
+);
+await fs.writeFile(storePath, "{broken", "utf8");
+await assert.rejects(
+  () => store.loadCurrent(),
+  error => error?.code === "NEXO_CONTINUITY_STORE_INVALID_JSON",
+  "corrupt Nexo continuity must fail closed"
+);
+await fs.rm(storeDirectory, { recursive: true, force: true });
+
+console.log("Nexo-owned continuity store: independent file boundary, strict load, conditional commit and stale-writer conflict OK.");
