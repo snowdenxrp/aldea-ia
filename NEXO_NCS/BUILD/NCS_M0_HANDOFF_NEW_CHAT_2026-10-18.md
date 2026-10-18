@@ -115,3 +115,9 @@ Estado de entrega: M0 EN PROGRESO / NO COMPLETO; store separation diseñada pero
 Resultado semántico importante: `goal_observed` es una observación actual y read-only; no implica causalidad, autorización ni `missionCompleted:true`. Si la invariante desaparece en una revisión posterior, el verificador bloquea. No se añadió estado de misión nuevo ni se migró el runtime genérico.
 
 Siguiente tarea: auditar si hace falta persistir una observación de objetivo separada, sin convertir una observación histórica en verdad actual; definir vínculo con revisión de entorno, CAS, restart y replay. No cambiar a completion ni retirar legacy hasta tener ese contrato y regresiones. Nexo/Lúmina separados; efectos protegidos STOP; M0 abierto.
+
+## CI más reciente confirmado — 2026-10-18
+
+[CI 39144434201](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144434201) terminó SUCCESS en SHA `ec36dd7df7cccf57f372d2cf252444ce28292e84`. La regresión adicional confirma que después de `goal_observed` la reconstrucción owner-backed mantiene misión/paso bloqueados con `NEXO_REPAIR_SETTLED_BY_OBSERVATION`, no marca completion ni permite redispatch. La verificación es read-only y no persiste una transición de misión.
+
+Continuar evaluando una observación durable separada y ligada a la revisión del entorno; nunca promover automáticamente `settled_observed` a completion. Exigir CAS/restart/replay e invalidación al desaparecer la invariante. HEAD de este CI es el SHA de código/pruebas indicado; los commits documentales posteriores no quedan cubiertos automáticamente.
