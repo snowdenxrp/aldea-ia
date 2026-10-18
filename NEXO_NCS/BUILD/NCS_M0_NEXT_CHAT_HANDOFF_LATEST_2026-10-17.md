@@ -1,3 +1,16 @@
+## Latest M0 recovery continuity guard — prepared effect blocks successor replanning (2026-10-18)
+
+- Source commit: `57ccbe1bd3a6070c69f67e321b9432c0c188a755`.
+- Regression test commit: `db8e6259a172d556f9311329df6942770938d04a`.
+- `replanPersistedNexoMission()` now checks the existing durable `memory.nexo.effectJournal` before creating a successor. A matching `missionId` with `status: "prepared"` forces `not_replanned / EFFECT_RECONCILIATION_REQUIRED`, leaves memory unchanged, and prevents a caller-provided reason from creating a new operation identity over the unresolved effect.
+- Regression simulates stale/generic mission outcome state while the original prepared journal entry survives. It asserts no child mission is persisted.
+- Research basis reviewed before changing code: `NCS_CHECKPOINT_2026-10-08.md`, `NCS_EFFECT_VERIFICATION_2026-10-08.md`, `NCS_RECOVERY_COMMON_MODE_AUDIT_2026-10-08.md`, historical AB104.197 / AB104.212 and P/P112 evidence/freshness constraints. No closed audit was rerun.
+- Report: `NEXO_NCS/BUILD/NCS_M0_PREVENT_REPLAN_WITH_PREPARED_EFFECT_2026-10-18.md`.
+- CI exact-head verification is pending. Do not call it PASS until the run actually completes.
+- This blocks unsafe successor planning; it does not resolve the external effect or invent a verifier. PG-009 remains incomplete until an existing, contract-grounded independent verifier/fence/provenance source is found or a documented architecture decision establishes one. Keep prepared effect UNKNOWN; never redispatch. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
+---
+
 ## Latest M0.72 — adapter no longer trusts caller reconciliation callbacks (2026-10-18)
 
 - Source/test head: `0fc54a0cbc25a70f9cfbc0b8dfae98254eb6d642`.
