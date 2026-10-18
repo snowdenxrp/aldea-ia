@@ -26,7 +26,12 @@ Commits:
 
 ## Verification status
 
-CI for this exact code-and-test head has not yet been confirmed. Do not mark it PASS without checking the corresponding Actions runs.
+**Exact-head CI PASS** for code/test commit `431978730f3b2be300fa51d3a35938ef6702e607`:
+- Mission/restart continuity: [39105986623](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986623) — success.
+- Semantic validation: [39105986616](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986616) — success.
+- Outcome classification: [39105986625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986625) — success.
+
+These runs verify the repository workflows on that exact source/test head. The subsequent checkpoint document is documentation-only and was not the code/test head used by those runs.
 
 ## Boundary / next step
 
