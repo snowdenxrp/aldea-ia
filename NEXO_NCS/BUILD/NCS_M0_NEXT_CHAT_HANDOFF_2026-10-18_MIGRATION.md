@@ -479,3 +479,17 @@ The read-only verifier in `scripts/nexo-repair-mission-verification.mjs` has no 
 6. Keep Lúmina environment persistence and Nexo continuity commits distinct; if a crash/conflict makes the result ambiguous, retain UNKNOWN/PREPARED and do not redispatch.
 
 Do not introduce a generic transaction wrapper, new global ID/queue/retry/tombstone scheme, protected-effect authorization, or device-migration claim. M0 remains incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+---
+
+## Continuation update — execution-lineage owner seam (2026-10-18)
+
+Checkpoint: [NCS_M0_EXECUTION_LINEAGE_OWNER_SEAM_2026-10-18.md](NCS_M0_EXECUTION_LINEAGE_OWNER_SEAM_2026-10-18.md), commit [5acefe5](https://github.com/snowdenxrp/aldea-ia/commit/5acefe5ed04b93c3a6d12a56f8aa14c759dc7301).
+
+- `createNexoContinuityOwner()` now exposes `recordExecutionLineage()`: persisted mission/step/action/target identity check, Nexo store expected-revision CAS, replay preserves first record, stale revisions conflict.
+- This records lineage only. It never changes `effectJournal`; caller-provided `completed`/`verified: true` does not settle PREPARED. Regression tests authored in `tests/nexo/continuity-migration.test.mjs` for PREPARED preservation, blocked reconstruction, duplicate identity and stale revision.
+- Owner code commit `f5e9e20c9911f75b66624aa62c4af020e185a326`; test commit `014b589ff84e1bdae5d7f4ef44068264b70cf363`. Status/workflow lookups returned no records; exact-head CI NOT VERIFIED, tests not run locally.
+- Next: identify one convergent repair action whose result can be reconciled from durable environment state after restart, then implement crash-cut tests. Do not wire runtime or remove legacy memory until this evidence and an independent settlement contract exist.
+
+M0 incomplete; protected effects STOP; PREPARED UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
