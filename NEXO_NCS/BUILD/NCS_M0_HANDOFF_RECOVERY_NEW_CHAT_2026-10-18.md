@@ -208,3 +208,12 @@ Esto significa que todavía no hay en el repositorio una acción genérica no-re
 - Commit `2088417a482fefc0128f024c8c63fa212e87d64f` agrega una regresión: si el owner indica reconciliación disponible pero el adaptador no, el runtime bloquea antes de guardar PREPARED y no despacha. Así se prueba que ambos extremos anuncien el contrato, sin tratar la declaración de uno como sustituto del otro.
 - CI: [run 39172525158](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525158) SUCCESS; `runtime.test.mjs`, `effect-adapter.test.mjs`, restart reconstruction y suites de store/contrato/migración SUCCESS. [STEP 4 run 39172525106](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525106) y [STEP 5 run 39172525094](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525094) también SUCCESS.
 - No declara M0 completo. El siguiente paso es arquitectónico: elegir y diseñar una capacidad nativa de Nexo con un estado canónico persistido, writer y reader independiente tras reinicio; solo entonces implementar el verificador por acción. No añadir más preflights como sustituto de esa vertical y no reutilizar Lúmina.
+
+
+## Actualización 2026-10-18 — decisión de primera vertical M0
+
+Se eligió Chronicle como primera vertical nativa no-repair candidata, porque el Master Preservation Addendum ya lo define como historia durable de Nexo, distinta de memoria ordinaria y no equivalente a verdad universal. Documento normativo de este corte: `NEXO_NCS/BUILD/NCS_M0_FIRST_NATIVE_VERTICAL_CHRONICLE_2026-10-18.md`.
+
+Alcance exacto: una operación estrecha de escritura Chronicle con contenido validado; writer único; reader creado de nuevo desde almacenamiento tras cerrar/reabrir; idempotency key existente, sin ID paralelo; verificador que compruebe como máximo una entrada y contenido exacto. El owner mantiene PREPARED/lineage/settlement; Chronicle no se convierte en otro journal de efectos. No se usa Lúmina.
+
+Esto no es implementación terminada. El documento deja abierto el formato de almacenamiento hasta inspeccionar convenciones reales, prohíbe atomicidad cross-store inventada y enumera crash cuts obligatorios. Siguiente acción: implementar el writer/reader mínimo con pruebas de persistencia visible tras reapertura, conflicto por misma clave/contenido distinto, concurrencia y respuesta perdida; conectar verificador específico solo tras esas pruebas. Runtime default sigue sin cambiar; M0 INCOMPLETO.
