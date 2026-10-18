@@ -289,3 +289,27 @@ La misión es M0. Todo lo que no desbloquee M0 debe esperar.
 - No interpretar `settled_observed` como completion o causalidad.
 - No afirmar atomicidad entre el store Nexo y el estado persistido de Lúmina.
 - M0 sigue incompleto; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+---
+
+## Actualización posterior — primera sesión repair-only owner-backed (2026-10-18)
+
+### Implementación
+- Nuevo `scripts/nexo-repair-session.mjs`: exporta `runNexoRepairSession()`. El caller selecciona solo `missionId` y `stepId`; acción y target se obtienen de la misión/paso del snapshot canónico de Nexo. Se rechazan identidades de misión/paso ausentes o duplicadas, pasos terminales y acciones fuera de la allowlist de reparación.
+- La sesión llama al entrypoint existente `runNexoRepairOnce()`; por tanto conserva PREPARED durable antes del dispatch, revisión condicional de entorno, settlement observado separado y recovery fail-closed.
+- Nuevo `tests/nexo/repair-session.test.mjs`: prueba la sesión real para reparación normal, rechazo de `execute_lumina_action` sin PREPARED ni escritura, y recuperación tras el crash cut entorno-persistido/settlement-pendiente con owner reabierto desde disco. La recuperación no redispatcha ni incrementa otra vez la revisión del entorno. Confirma separación física de `world-state.json`.
+- Workflow `.github/workflows/nexo-m0-repair-crash-cuts.yml` actualizado para incluir sesión y prueba.
+
+### Evidencia
+- Un primer CI falló por imports relativos incorrectos del test en commit `e7eb93294de02951a988b6770c19507f11cf9e91`; el log señaló exactamente que buscaba `tests/nexo/nexo-continuity.mjs`. Se corrigieron los imports en `a04483f34cd54dda9ee346bd1980ffacf8aff7a9`; CI [39142614805](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142614805) pasó.
+- Después se añadió crash-recovery a través de la API de sesión, no solo a través de helpers. El commit exacto de código/pruebas `b011a8078f9f0562a61a3bafb9c260810147ea84` pasó en [CI 39142674734](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142674734): job `repair-crash-cuts` y sus cuatro pasos de prueba SUCCESS.
+- STATUS actualizado en commit [db9de499677c184c02a71bedfe07cede51b5d2d9](https://github.com/snowdenxrp/aldea-ia/commit/db9de499677c184c02a71bedfe07cede51b5d2d9).
+
+### Próxima frontera (no declarar M0 completo)
+1. Auditar qué contrato mínimo hace falta para que esta sesión sea invocada por el runtime real sin entregar acción/target desde un caller no confiable. No cambiar `executeNexoStep()` genérico para que invoque el dispatcher de reparación.
+2. Diseñar prueba de arranque/entrada real del runtime que abra continuidad canónica y ejecute solo un paso repair-only elegible; mantener la ruta legacy disponible para rollback hasta que esa prueba y sus crash cuts pasen.
+3. Incorporar línea de ejecución solo si puede registrarse de forma coherente sin presentar `settled_observed` como causalidad/completion. `recordExecutionLineage()` exige PREPARED y conserva el journal sin liquidar; no usarlo para simular prueba independiente.
+4. Actualizar docs tras pruebas, verificando siempre SHA/run/job exactos.
+
+**Límite:** esto ya no es solo un conjunto de helpers; existe una sesión owner-backed y probada para reparación convergente. Aun así no está conectada a `src/nexo/runtime.js`, no representa todo el runtime productivo y no cierra M0. No hay atomicidad cross-store ni permiso para efectos protegidos.
