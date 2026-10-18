@@ -1,3 +1,15 @@
+## Latest M0 continuity integrity changes — 2026-10-18
+
+- Strict load guard: `scripts/simulate.mjs::loadStateStrict()` rejects missing/invalid snapshot, invalid revision, malformed Nexo memory, and orphaned/mismatched `prepared` journal context. It never fabricates default state/revision for a safety-sensitive caller.
+- Retention guard: `src/assistants/memory.js` now preserves mission plans, attempts and execution records for any mission with an unresolved prepared effect. Soft caps remain for ordinary history; unresolved causal context can exceed them.
+- Regression coverage: `tests/nexo/simulation-restart-persistence.test.mjs` and `tests/nexo/restart-reconstruction.test.mjs`.
+- Reports: `NCS_M0_STRICT_STATE_LOAD_2026-10-18.md`; `NCS_M0_PRESERVE_PREPARED_MISSION_CONTEXT_2026-10-18.md`.
+- Final exact source+test head `9c5b38f9ecc2710ee1d7036f3b391a8cd3f85246` CI PASS: mission/restart [39097573478](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573478), STEP 4 [39097573456](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573456), STEP 5 [39097573552](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573552).
+- A prior intermediate head failed because a fixture had an orphan prepared entry after the strict contract was introduced. The fixture now supplies matching persisted mission/step/action/target context, and the final exact-head workflows all pass.
+- Limits: structural integrity is not authority or external-world truth; no executor or protected external-effect path has been implemented. M0 incomplete, external prepared effects UNKNOWN, protected effects STOP.
+
+---
+
 ## Latest M0 guard — strict state loading (2026-10-18)
 
 - Source: `scripts/simulate.mjs::loadStateStrict()`; source commit `c527c252edd3d44566f567ebf06745d81c437339`.
