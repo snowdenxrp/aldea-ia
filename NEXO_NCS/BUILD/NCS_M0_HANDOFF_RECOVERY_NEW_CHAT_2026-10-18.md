@@ -1,3 +1,9 @@
+## 1D. Outcome directo bloqueado mientras PREPARED siga abierto (CI pendiente)
+
+- Commit `d2d96e66e1870c24af31a8b78273d4b33909e999` amplía `tests/nexo/repair-settlement-crash-cuts.test.mjs`: `recordOutcome(... status: completed)` contra un paso cuyo efecto sigue `prepared` debe responder `blocked / NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`; el journal sigue `prepared` y no se crea un attempt.
+- La protección cubre el bypass directo además de `reconcilePrepared()` con observación del caller. No implementa settlement genérico.
+- Checks del SHA: `statuses: []`; el resultado de CI permanece PENDING/UNKNOWN.
+
 ## 1C. Guard adicional: observación del caller no liquida PREPARED (CI pendiente)
 
 - Commit `df10a6466f23903d5b9a1c7ed2992be5a635bb59` añade una regresión en `tests/nexo/repair-settlement-crash-cuts.test.mjs`: se llama `owner.reconcilePrepared()` con una observación inventada por el caller (`desired_state_present`) y se exige `blocked / NEXO_EFFECT_RECONCILIATION_REQUIRED`, `verified: false` y journal todavía `prepared`.
