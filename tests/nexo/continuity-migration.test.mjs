@@ -333,11 +333,13 @@ try {
       evidence: { verified: false, kind: "runtime-outcome", source: "continuity-migration-regression" }
     }
   });
-  assert.equal(blocked.status, "committed");
+  assert.equal(blocked.status, "blocked");
+  assert.equal(blocked.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
   assert.equal(blocked.journalSettled, false);
   const current = await opened.owner.loadCurrent();
-  assert.equal(current.storeRevision, 3);
+  assert.equal(current.storeRevision, 2, "terminal outcomes must not be committed while PREPARED is unresolved");
   assert.equal(current.snapshot.effectJournal[0].status, "prepared");
+  assert.equal(current.snapshot.attempts.some(item => item.missionId === mission.missionId && item.stepId === "step-1"), false);
   const recovered = await opened.owner.reconstructMission(mission.missionId);
   assert.equal(recovered.mission.status, "blocked");
   assert.equal(recovered.mission.objective, "reconcile_prepared_effect");
