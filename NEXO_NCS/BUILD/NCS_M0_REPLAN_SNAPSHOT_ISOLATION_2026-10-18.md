@@ -16,7 +16,10 @@ Status: IMPLEMENTED; focused CI pending
 
 ## Verification
 
-The first CI inspection found that the continuity workflow watched runtime files but did not execute `tests/nexo/runtime.test.mjs`. That meant the new regression was not actually run by that workflow. The workflow has now been corrected to execute the runtime test explicitly. CI for this correction is pending; do not claim the snapshot-isolation regression passes until the resulting run shows the runtime test step completed successfully.
+The first CI inspection found that the continuity workflow watched runtime files but did not execute `tests/nexo/runtime.test.mjs`. That meant the new regression was not actually run by that workflow. The workflow was corrected and the runtime test step completed successfully. On exact head `77c4184ce5931a1d4ef0f90b3bee00f8e6fc7b0a`:
+- Mission continuity / runtime regression [39085019303](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085019303) — success; explicitly ran `tests/nexo/runtime.test.mjs`.
+- STEP 4 semantic validation [39085019318](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085019318) — success.
+- STEP 5 outcome classification [39085019335](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085019335) — success.
 
 ## Limits
 
