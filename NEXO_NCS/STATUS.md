@@ -243,5 +243,5 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Added `replanPersistedNexoMission()`: reconstruct prior mission from persisted memory, derive the successor reason from stored failure/block evidence, preserve parent lineage, and persist the successor plan without executing it.
 - Runtime regression covers failure → durable reconstruction → successor plan persistence → execution, while retaining the prior failed attempt.
 - Report: [M0 replan from durable mission state](BUILD/NCS_M0_REPLAN_FROM_DURABLE_MISSION_STATE_2026-10-18.md).
-- Focused CI status: pending until the new workflow run is checked.
+- Focused CI PASS on head `a7f60d90303fcbd24f4918f4b05730c6967527c8`: mission continuity [39084825665](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825665), STEP 4 [39084825686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825686), STEP 5 [39084825638](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825638) — all success.
 - This remains non-authoritative planning. STEP 7 = OPEN / STOP / UNKNOWN; protected effects remain STOP.

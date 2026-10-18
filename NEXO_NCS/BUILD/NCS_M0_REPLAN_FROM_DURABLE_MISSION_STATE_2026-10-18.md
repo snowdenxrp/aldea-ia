@@ -2,7 +2,7 @@
 
 Date: 2026-10-18  
 Branch: `ncs-clean-architecture`  
-Status: IMPLEMENTED; focused CI pending
+Status: IMPLEMENTED / FOCUSED CI PASS
 
 ## Functional gap
 
@@ -19,7 +19,10 @@ The previous increment created successor plans from a supplied mission object, b
 
 ## Verification
 
-Focused workflow is triggered by changes to the runtime and its integration test. Record its exact run and final status here after completion; until then CI is pending.
+Focused CI PASS on exact head `a7f60d90303fcbd24f4918f4b05730c6967527c8`:
+- Mission admission / restart continuity: [39084825665](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825665) — success.
+- STEP 4 semantic validation: [39084825686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825686) — success.
+- STEP 5 outcome classification: [39084825638](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825638) — success.
 
 ## Limits
 

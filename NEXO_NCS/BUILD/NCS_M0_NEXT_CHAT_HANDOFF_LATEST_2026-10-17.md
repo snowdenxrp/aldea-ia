@@ -703,5 +703,5 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - Current change: `replanPersistedNexoMission()` in `src/nexo/runtime.js` connects durable reconstruction to successor planning and persistence.
 - Regression exercises failure → reconstruct → replan → persist successor → execute successor; original failed attempt remains in memory.
 - Report: `NEXO_NCS/BUILD/NCS_M0_REPLAN_FROM_DURABLE_MISSION_STATE_2026-10-18.md`.
-- Verify focused CI before claiming PASS; then continue toward integrated observation/report → mission → permitted execution → verified outcome → durable restart/replan cycle.
+- Focused CI PASS on head `a7f60d90303fcbd24f4918f4b05730c6967527c8`: mission continuity [39084825665](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825665), STEP 4 [39084825686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825686), STEP 5 [39084825638](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825638) — all success. Continue toward integrated observation/report → mission → permitted execution → verified outcome → durable restart/replan cycle.
 - Do not reopen completed M0 increments. Do not activate protected effects. Proxy boundary remains design STOP; STEP 7 remains OPEN / STOP / UNKNOWN.
