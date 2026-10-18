@@ -366,6 +366,16 @@ try {
     initializeContinuity: true,
     initializeChronicle: true
   };
+  const separatorCollision = await runNexoChronicleAppend({ ...args, missionId: "caller:provided-mission" });
+  assert.equal(separatorCollision.status, "blocked");
+  assert.equal(separatorCollision.code, "NEXO_CHRONICLE_ID_INVALID");
+  const stepSeparatorCollision = await runNexoChronicleAppend({ ...args, stepId: "caller:provided-step" });
+  assert.equal(stepSeparatorCollision.status, "blocked");
+  assert.equal(stepSeparatorCollision.code, "NEXO_CHRONICLE_ID_INVALID");
+  const paddedIdentity = await runNexoChronicleAppend({ ...args, missionId: " caller-provided-mission " });
+  assert.equal(paddedIdentity.status, "blocked");
+  assert.equal(paddedIdentity.code, "NEXO_CHRONICLE_ID_INVALID");
+
   const entryResult = await runNexoChronicleAppend(args);
   assert.equal(entryResult.status, "completed");
   assert.equal(entryResult.dispatchAttempted, true);
