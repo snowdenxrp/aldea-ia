@@ -324,3 +324,11 @@ Exact source/test commit: `3258f980ffb30cfc03b3e293c510054f54b518a7`.
 - STEP 5 [39088109363](https://github.com/snowdenxrp/aldea-ia/actions/runs/39088109363) — PASS.
 
 The mission continuity workflow runs `tests/nexo/runtime.test.mjs`; this verifies the regression through the current test harness. It does not prove a real external provider or protected execution boundary.
+
+
+## M0 — Reject mismatched identity during prepared-effect reconciliation (2026-10-18)
+
+- Adapter now requires request mission, step, action, and target to match the original persisted prepared operation before invoking the reconciliation callback.
+- Regression reuses the same idempotency key with a different action and a callback claiming verified completion; callback is not invoked and the journal remains prepared.
+- Report: [M0 — Reject mismatched identity during prepared-effect reconciliation](BUILD/NCS_M0_REJECT_MISMATCHED_RECONCILIATION_IDENTITY_2026-10-18.md).
+- CI evidence pending. This binds identity only; it does not authenticate reconciliation evidence or establish PG-009 authority/fence/provenance. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.

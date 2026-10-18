@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 // Adaptador tipado de efectos de Nexo.
 // Separa decisión de mutación real y exige precondición, resultado y postcondición.
 // Por defecto no ejecuta nada: cada efecto debe registrarse explícitamente.
@@ -128,6 +129,14 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
       return structuredClone(existingEntry.result);
     }
     if(existingEntry?.status==="prepared") {
+      // The idempotency key selects an operation; it does not make mismatched
+      // caller-supplied metadata equivalent to that operation's identity.
+      if(request.missionId!==existingEntry.missionId || request.stepId!==existingEntry.stepId ||
+        request.action!==existingEntry.action || !isDeepStrictEqual(request.target??null,existingEntry.target??null)) {
+        return {status:"blocked",code:"EFFECT_IDENTITY_MISMATCH",verified:false,
+          idempotencyKey,expected:{missionId:existingEntry.missionId,stepId:existingEntry.stepId,
+            action:existingEntry.action,target:structuredClone(existingEntry.target??null)}};
+      }
       const reconciled=await reconcilePrepared(existingEntry,request);
       // A blocked reconciliation is not a terminal fact about the external effect.
       // Keep the journal in `prepared` so a later, stronger reconciliation attempt

@@ -172,6 +172,18 @@ assert.equal(unresolved.code,"EFFECT_RECONCILIATION_REQUIRED");
 assert.equal(recoveryCalls,0);
 assert.equal(preparedOnlyJournal[0].status,"prepared");
 
+const mismatchedReconcileJournal=[{idempotencyKey:"m5x:s1",missionId:"m5x",stepId:"s1",action:"prepared_effect",target:{resource:"alex"},status:"prepared"}];
+let mismatchedReconcileCalls=0;
+const mismatchedReconcileAdapter=createEffectAdapter({executionJournal:mismatchedReconcileJournal,handlers:{prepared_effect:async()=>{throw new Error("must not execute");}}});
+const mismatchedReconcile=await mismatchedReconcileAdapter.execute({
+  missionId:"m5x",stepId:"s1",action:"different_effect",target:{resource:"alex"},idempotencyKey:"m5x:s1",
+  reconcile:()=>{mismatchedReconcileCalls++;return {status:"completed",verified:true,evidence:{verified:true,kind:"forged"}};}
+});
+assert.equal(mismatchedReconcile.status,"blocked");
+assert.equal(mismatchedReconcile.code,"EFFECT_IDENTITY_MISMATCH");
+assert.equal(mismatchedReconcileCalls,0,"identity mismatch must be rejected before reconciliation evidence is requested");
+assert.equal(mismatchedReconcileJournal[0].status,"prepared");
+
 const reconcileResult=await recoveryAdapter.execute({
   missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m5:s1",
   reconcile:async({journalEntry})=>({status:"completed",verified:true,evidence:{verified:true,kind:"external-effect-reconciled",details:"already observed"},source:journalEntry.status})

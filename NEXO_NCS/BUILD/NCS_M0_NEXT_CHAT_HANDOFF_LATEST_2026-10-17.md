@@ -1,3 +1,10 @@
+## Latest increment — prepared-effect reconciliation identity binding (2026-10-18)
+
+- Current source/test change: `EFFECT_IDENTITY_MISMATCH` rejects a reconciliation request when mission ID, step ID, action, or target differs from the persisted prepared entry selected by the idempotency key.
+- Regression asserts a mismatched action cannot call the reconciliation callback even when it claims `verified:true`; the original prepared entry remains unresolved.
+- Report: `BUILD/NCS_M0_REJECT_MISMATCHED_RECONCILIATION_IDENTITY_2026-10-18.md`.
+- CI must be checked against the exact source/test commit. This does not authenticate reconciliation or close PG-009 recovery. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
 ## Latest functional M0 change — outcome-driven successor mission (2026-10-18)
 
 - Added `replanNexoMission()` to turn an existing `needs_replan` / `blocked` mission into a successor plan candidate from newly supplied reports and a reason grounded in existing failure/block evidence. Non-replan states or missing reasons return `null`.
