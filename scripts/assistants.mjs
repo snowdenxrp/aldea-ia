@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { resolve } from "node:path";
 import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { createSimulation } from "../src/simulation.js";
@@ -13,9 +14,15 @@ import { createLearningMemory, learnFromReports } from "../src/assistants/memory
 import { runAssistantSquad } from "../src/assistants/squad.js";
 import { buildNexoMission } from "../src/nexo/orchestrator.js";
 
-const STATE_PATH = new URL("../world-state.json", import.meta.url);
-const MEMORY_PATH = new URL("../.lumina-assistant-memory.json", import.meta.url);
-const NEXO_CONTINUITY_PATH = fileURLToPath(new URL("../.nexo-continuity.json", import.meta.url));
+const STATE_PATH = process.env.NEXO_STATE_PATH
+  ? pathToFileURL(resolve(process.env.NEXO_STATE_PATH))
+  : new URL("../world-state.json", import.meta.url);
+const MEMORY_PATH = process.env.NEXO_LUMINA_MEMORY_PATH
+  ? pathToFileURL(resolve(process.env.NEXO_LUMINA_MEMORY_PATH))
+  : new URL("../.lumina-assistant-memory.json", import.meta.url);
+const NEXO_CONTINUITY_PATH = process.env.NEXO_CONTINUITY_PATH
+  ? resolve(process.env.NEXO_CONTINUITY_PATH)
+  : fileURLToPath(new URL("../.nexo-continuity.json", import.meta.url));
 
 async function readJson(path, fallback) {
   try { return JSON.parse(await fs.readFile(path, "utf8")); } catch { return fallback; }
