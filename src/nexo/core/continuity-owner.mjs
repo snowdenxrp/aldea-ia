@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
-import { recordNexoMissionInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
+import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
 
 function ownerError(code) {
   const error = new Error(code);
@@ -149,9 +149,65 @@ export function createNexoContinuityOwner({ store } = {}) {
     return { ...committed, prepared: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
+  /**
+   * Persist adapter-result lineage in Nexo's own store without settling the
+   * effect journal or asserting that the external effect is terminal.
+   * PREPARED remains an unresolved obligation until an independent,
+   * operation-specific reconciliation contract exists.
+   */
+  async function recordExecutionLineage({ expectedRevision, operation, result } = {}) {
+    try { validateOperation(operation); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID" }; }
+    if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
+      return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
+    }
+    if (!result || typeof result !== "object" || Array.isArray(result)) {
+      return { status: "failed", code: "NEXO_EXECUTION_RESULT_INVALID" };
+    }
+
+    const current = await store.loadCurrent();
+    if (current.storeRevision !== expectedRevision) {
+      return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
+    }
+    const mission = current.snapshot.missions.find(item => item?.missionId === operation.missionId);
+    const step = mission?.steps?.find(item => item?.id === operation.stepId);
+    if (!step) return { status: "blocked", code: "NEXO_EXECUTION_MISSION_CONTEXT_MISSING", storeRevision: current.storeRevision };
+    if (step.action !== operation.action || !isDeepStrictEqual(step.target ?? null, operation.target ?? null)) {
+      return { status: "blocked", code: "NEXO_EXECUTION_OPERATION_CONTEXT_MISMATCH", storeRevision: current.storeRevision };
+    }
+
+    const existing = current.snapshot.executions.find(item => item?.idempotencyKey === operation.idempotencyKey);
+    if (existing) {
+      const sameIdentity = existing.missionId === operation.missionId &&
+        existing.stepId === operation.stepId &&
+        existing.action === operation.action &&
+        isDeepStrictEqual(existing.target ?? null, operation.target ?? null);
+      if (!sameIdentity) return { status: "blocked", code: "NEXO_EXECUTION_IDENTITY_MISMATCH", storeRevision: current.storeRevision };
+      return { status: "already_recorded", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+
+    let candidate;
+    try {
+      candidate = recordNexoExecutionInSnapshot(current.snapshot, {
+        idempotencyKey: operation.idempotencyKey,
+        missionId: operation.missionId,
+        stepId: operation.stepId,
+        action: operation.action,
+        target: operation.target ?? null,
+        result
+      });
+    } catch (error) {
+      return { status: "failed", code: error?.code ?? "NEXO_EXECUTION_CONTEXT_INVALID", storeRevision: current.storeRevision };
+    }
+    // This deliberately records lineage only. In particular, it does not alter
+    // effectJournal even if result.status says "completed" or "failed".
+    const committed = await store.commitIfCurrent(expectedRevision, candidate);
+    return { ...committed, journalSettled: false, authorization: "NOT_EVALUATED" };
+  }
+
   async function reconcilePrepared() {
     return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
-  return Object.freeze({ loadCurrent, reconstructMission, recordMission, recordPrepared, reconcilePrepared });
+  return Object.freeze({ loadCurrent, reconstructMission, recordMission, recordPrepared, recordExecutionLineage, reconcilePrepared });
 }
