@@ -376,6 +376,11 @@ try {
   assert.equal(paddedIdentity.status, "blocked");
   assert.equal(paddedIdentity.code, "NEXO_CHRONICLE_ID_INVALID");
 
+  const delimiterCollision = await runNexoChronicleAppend({
+    ...args, missionId: "caller-provided-mission:caller-provided", stepId: "step"
+  });
+  assert.equal(delimiterCollision.status, "blocked");
+  assert.equal(delimiterCollision.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
   const entryResult = await runNexoChronicleAppend(args);
   assert.equal(entryResult.status, "completed");
   assert.equal(entryResult.dispatchAttempted, true);
