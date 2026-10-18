@@ -25,6 +25,15 @@ Se endureció la recuperación de `settlePreparedRepairFromPersistedState()`:
 
 **No confundir este cambio con el settlement genérico de M0.** Es un arreglo de idempotencia/recuperación en el reconciliador repair-only existente. El siguiente trabajo sigue siendo el contrato genérico por acción, guiado por pruebas, sin callback de reconciliación libre ni evidencia que el caller pueda autoafirmar.
 
+## 1B. Workflow focal de CI añadido; run aún no verificado
+
+- Workflow: `.github/workflows/nexo-m0-settlement-replay.yml`.
+- En push a `ncs-clean-architecture` cuando cambian el reconciliador, el test o el workflow; también admite `workflow_dispatch`.
+- Ejecuta Node 22 y `node tests/nexo/repair-settlement-crash-cuts.test.mjs`.
+- Commit de creación: `cd8daa099f6778ef80d19cbdde51a8fbf010cda5`. El workflow y la sección de regresión fueron recuperados desde GitHub y confirmados en la rama.
+- La consulta inmediata de checks no mostró estados; la vista de Actions no pudo consultarse desde la herramienta web. Por eso, **run/resultado CI siguen UNKNOWN/PENDING**, no PASS. No se inventa run ID.
+- STATUS ya registra esta frontera. El commit posterior que actualiza documentación no está incluido en el SHA de la ejecución que se espera del trigger.
+
 ## 1. Estado real al detenerse
 
 - **M0: INCOMPLETO.** Hay un owner/store canónico de continuidad, admisión PREPARED, lineage, settlement separado y una ruta limitada de reparación con pruebas de reinicio/crash.
