@@ -222,3 +222,17 @@ const afterUnrelatedAttempt = recordNexoOutcome(longPreparedMemory,{
 assert.ok(afterUnrelatedAttempt.nexo.attempts.some(item=>item.missionId===longMissionId&&item.stepId==="step-1"));
 assert.equal(reconstructNexoMission(afterUnrelatedAttempt,longMissionId).steps[0].status,"completed");
 
+// Even after the prepared journal becomes terminal/empty, the retained mission
+// still needs all of its attempts to reconstruct completed dependencies safely.
+const longCompletedMemory = createLearningMemory({
+  nexo: {
+    missions: longPreparedMemory.nexo.missions,
+    attempts: longMissionAttempts,
+    executions: longMissionExecutions,
+    effectJournal: []
+  }
+});
+assert.equal(longCompletedMemory.nexo.attempts.length, 120);
+assert.equal(longCompletedMemory.nexo.executions.length, 220);
+assert.equal(reconstructNexoMission(longCompletedMemory,longMissionId).steps[0].status,"completed");
+
