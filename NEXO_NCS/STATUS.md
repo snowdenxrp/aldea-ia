@@ -1,3 +1,15 @@
+## M0 — First Nexo-owned operational continuity store implemented (2026-10-18)
+
+**State: store module and regression tests committed; runtime migration/integration and exact-head CI still pending. Do not call Nexo/Lúmina separation complete.**
+
+- Added `src/nexo/core/continuity-store.mjs`: a standalone file-backed Nexo operational-continuity store, physically separate from `world-state.json`. Its envelope contains only the store schema/version, store-local revision, and a validated `NEXO_OPERATIONAL_CONTINUITY` snapshot.
+- Public operations: `loadCurrent()` (strict; missing/corrupt state returns explicit errors, no defaults), explicit `initialize(snapshot)` (only if absent), and `commitIfCurrent(expectedRevision, candidate)` (cooperating local writers serialized with a sibling lock; stale revision returns conflict).
+- Store revision is only a local concurrency primitive. It does not prove authority/currentness, protect against rollback, authenticate a snapshot, or verify an external effect. No fsync/power-loss durability or network/distributed filesystem guarantee is claimed.
+- Added `tests/nexo/continuity-store.test.mjs`; the store regressions were also added to the existing `tests/nexo/continuity-contract.test.mjs` so the already-configured mission/restart CI path should execute them without changing workflow definitions. Exact-head CI result has not yet been verified in this update.
+- Existing `createLearningMemory().nexo` and `world-state.json::nexoMemory` remain legacy/prototype paths. They have **not** been migrated or removed; the new store is not yet wired into runtime. Avoid dual-write or declaring canonical ownership until migration and crash behavior are proven.
+- Immediate next: obtain exact-head CI evidence; then integrate Nexo runtime through the new owner/store contract while preserving prepared-effect obligations and conflict handling. Add restart/isolation tests showing Nexo can load without Lúmina state, and Lúmina reset cannot erase Nexo continuity. No external/protected effects.
+- M0 incomplete; prepared external effects UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Explicit architecture breach: Nexo continuity is still hosted by Lúmina prototype persistence (2026-10-18)
 
 **Classification: confirmed prototype coupling; not acceptable as the final Nexo architecture.**
