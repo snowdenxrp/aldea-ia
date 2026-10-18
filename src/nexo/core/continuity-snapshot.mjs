@@ -28,7 +28,9 @@ export function assertNexoContinuitySnapshot(snapshot) {
   } catch {
     throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_INVALID");
   }
-  if (snapshot.schema !== NEXO_CONTINUITY_SCHEMA ||
+  const allowedKeys = new Set(["schema", "schemaVersion", ...COLLECTIONS]);
+  if (Reflect.ownKeys(snapshot).some(key => typeof key !== "string" || !allowedKeys.has(key)) ||
+      snapshot.schema !== NEXO_CONTINUITY_SCHEMA ||
       snapshot.schemaVersion !== NEXO_CONTINUITY_SCHEMA_VERSION ||
       COLLECTIONS.some(key => !Array.isArray(snapshot[key]))) {
     throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_SCHEMA_UNKNOWN");
