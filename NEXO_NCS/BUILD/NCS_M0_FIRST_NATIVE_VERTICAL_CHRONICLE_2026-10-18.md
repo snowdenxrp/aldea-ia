@@ -85,3 +85,12 @@ En SHA `4626afbb1220feb0784c020288de697608b9276b` quedaron verdes dos workflows:
 - Bounded mission admission and restart continuity: [39174272526 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272526), incluyendo suites Chronicle, runtime y continuidad existentes.
 
 Esto valida la vertical en la ruta explícita y las suites de regresión afectadas; no es validación de todo el producto ni permiso para cambiar el runtime por defecto. El siguiente corte sigue siendo auditar bootstrap y almacenamiento del CLI y decidir una integración principal sin dependencia de Lúmina.
+
+
+## Auditoría de identidad — colisión de claves resuelta en la frontera Chronicle
+
+La clave canónica actual de continuidad concatena `missionId` y `stepId` con `:`. Cambiar globalmente esa representación sin migración sería riesgoso; por tanto, la entrada Chronicle restringe esos IDs (sin `:`, sin espacios periféricos). Pruebas en ambos campos evitan que pares distintos aliasen la misma clave. No se cambió el contrato global ni se migró el journal.
+
+Validación CI en SHA `de89e228ca5b46becd17ef2e3159ab2e47c25f8e`: [39174610849 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610849) y [39174610848 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610848).
+
+Siguiente corte: endurecer el parser de argumentos del CLI (argumentos desconocidos, repetidos y valores ausentes) y probar que no filtre el contenido del Chronicle por salida de error. No hacer cutover ni ampliar acciones.
