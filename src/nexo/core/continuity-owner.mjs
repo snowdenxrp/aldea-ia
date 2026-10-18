@@ -124,6 +124,19 @@ export function createNexoContinuityOwner({ store } = {}) {
       const sameIdentity = existing.action === outcome.action &&
         isDeepStrictEqual(existing.target ?? null, outcome.target ?? null);
       if (!sameIdentity) return { status: "blocked", code: "NEXO_OUTCOME_IDENTITY_MISMATCH", storeRevision: current.storeRevision };
+      const sameOutcome = existing.status === outcome.status &&
+        isDeepStrictEqual(existing.evidence ?? null, outcome.evidence ?? null) &&
+        (existing.parentMissionId ?? null) === (outcome.parentMissionId ?? null) &&
+        (existing.replanReason ?? null) === (outcome.replanReason ?? null);
+      if (!sameOutcome) {
+        return {
+          status: "blocked",
+          code: "NEXO_OUTCOME_RESULT_MISMATCH",
+          storeRevision: current.storeRevision,
+          journalSettled: false,
+          authorization: "NOT_EVALUATED"
+        };
+      }
       return { status: "already_recorded", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
 
