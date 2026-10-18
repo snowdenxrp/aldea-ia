@@ -62,3 +62,14 @@ Regression: `tests/nexo/repair-session.test.mjs` covers normal owner-backed repa
 The session is still not called by `src/nexo/runtime.js` or a production startup path. Next, test the narrowest real runtime/startup invocation without allowing a caller to override the stored action/target, and preserve legacy rollback until restart/crash-cut tests pass through that real entrypoint. Do not route generic `executeNexoStep()` through the repair dispatcher. Keep `settled_observed` separate from outcome, causal attribution, and mission completion; protected effects remain blocked.
 
 Current status: M0 incomplete; production runtime cutover not done; protected effects STOP; unresolved PREPARED/settled_observed UNKNOWN; Nexo and Lúmina separate.
+
+
+## Follow-up — opt-in assistants runtime seam (2026-10-18)
+
+The runtime seam is no longer purely hypothetical: `scripts/nexo-runtime-session.mjs` selects one canonical planned repair step with satisfied dependencies and delegates to the owner-backed repair session. `scripts/assistants.mjs` calls it only under explicit `--nexo-repair-once`, after persisting the current environment snapshot; it then reloads state to report the final revision. Default assistant behavior remains unchanged.
+
+The session now enforces `status === "planned"` and canonical dependency completion itself, not only in the wrapper. Tests cover the runtime bridge and dependency bypass rejection. CI [39143194694](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143194694) passed on exact SHA `3c414ff2d0b8ebd8f880e8a37e83602138924395`, including four regression scripts and syntax checks for both runtime bridge and assistant entrypoint.
+
+Next, add a process-level CLI test using temporary fixtures and configurable paths so neither default nor opt-in test execution can touch the repository's real `world-state.json`. Verify default mode does not dispatch, opt-in mode reports the post-repair revision, and restart/replay stays blocked. Do not broaden beyond repair-only or cut over the generic runtime before this passes.
+
+Current status remains: M0 incomplete; repair integration opt-in only; production runtime default/canonical memory cutover not done; protected effects STOP; unresolved PREPARED/`settled_observed` UNKNOWN; Nexo and Lúmina separate.
