@@ -55,4 +55,4 @@ The owner must be the one explicit component that coordinates a mission step wit
 2. Design the owner as a narrow integration of the existing mission runtime and that Nexo-owned boundary; do not add a parallel execution engine.
 3. Specify the permitted-action/authority input that the owner must receive. If no legitimate source exists, keep the owner non-executing rather than manufacture authorization.
 4. Add fault-injection tests for: prepare persistence failure (handler count 0), revision conflict before dispatch (handler count 0), crash after durable PREPARED, local mutation before terminal snapshot, terminal snapshot conflict, restart reconstruction, and unresolved effect blocking redispatch/replan.
-4. Run CI at the exact source+test head and preserve run IDs.
+5. Run CI at the exact source+test head and preserve run IDs.
