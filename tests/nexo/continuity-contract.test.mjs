@@ -223,6 +223,10 @@ assert.equal(recoveredMission.storeRevision, 2);
 assert.equal(recoveredMission.mission.missionId, "owner-mission");
 assert.equal(recoveredMission.mission.steps[0].action, "repair_agent_state");
 assert.equal(recoveredMission.mission.steps[0].target, "alex");
+assert.equal(recoveredMission.mission.status, "blocked", "a mission with unresolved PREPARED must not reconstruct as executable");
+assert.equal(recoveredMission.mission.steps[0].status, "blocked");
+assert.equal(recoveredMission.mission.steps[0].blockReason.code, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
+assert.equal(recoveredMission.mission.steps[0].blockReason.idempotencyKey, "owner-mission:step-1");
 assert.equal((await owner.reconstructMission("missing-mission")).status, "not_found");
 assert.equal((await owner.reconstructMission("")).code, "NEXO_MISSION_ID_INVALID");
 assert.equal(
