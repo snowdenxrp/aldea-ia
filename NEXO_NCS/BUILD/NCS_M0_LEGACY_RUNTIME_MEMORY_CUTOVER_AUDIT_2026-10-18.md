@@ -79,3 +79,12 @@ La prueba en commit `fd2331e8d71afbbf0f19ea978d552a89087c1dc6` añade un caso co
 CI exacto sobre ese SHA: [repair crash cuts 39145754425](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754425) SUCCESS; [STEP 4 39145754371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754371) SUCCESS; [STEP 5 39145754375](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754375) SUCCESS. Estos resultados reemplazan la nota de “sin CI exacto” para esta regresión específica; no cambian la evaluación del resto de esta auditoría.
 
 El contrato aún carece de una transición basada en verificación independiente de objetivo que pueda representar completion sin atribuir causalidad al repair. No usar `settled_observed` como prueba de completion y no cortar el runtime genérico hasta resolver este contrato y probar el primer caller migrado.
+
+
+## Nueva evidencia de verificación de objetivo (2026-10-18)
+
+El test de lifecycle ahora verifica que el objetivo no queda observado si la invariante desaparece en una revisión posterior, y que una revisión ambiental inferior a la registrada en settlement produce UNKNOWN por posible rollback/replay. CI verde en commit de prueba `d01384083368d1b9f52ad5c327dc4b1985e5573a`: repair 39146476081, STEP 4 39146476199, STEP 5 39146476145.
+
+También queda registrada una decisión de diseño negativa: no aceptar el intento incompleto de agregar `goalObservations` como una colección más. El cambio solo actualizaba la lista del snapshot, sin compatibilidad de store ni contrato de observación; falló CI (39146494871, 39146494887) y fue revertido en `16c51fc994de1ca8a6471fa30f9060068b998da8`. Si la persistencia de observación independiente resulta necesaria, debe diseñarse como contrato completo con procedencia verificable, compatibilidad de snapshots antiguos, CAS/replay y una semántica que no confunda observación con completion.
+
+El HEAD actual es `864ab85d38bf67040ef5a662dd8769cad3ea4c9f`; el último CI verde registrado es de su padre. No declarar HEAD exacto validado hasta que los workflows lo confirmen.
