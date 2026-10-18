@@ -1,3 +1,13 @@
+## Latest update — unknown life-state is not inferred
+
+- `repair_agent_state` now refuses to run if `alive` is missing or non-boolean, returning `AGENT_ALIVE_STATE_UNKNOWN` before any coordinate mutation. A valid explicit `alive:false` remains false while coordinates can be normalized.
+- Regression test: an agent with unknown life-state remains unchanged; the operation is `blocked / EFFECT_OUTCOME_UNKNOWN`.
+- Exact code/test head: [`508a76a13384e282b812fcc91cbf4fb17222341f`](https://github.com/snowdenxrp/aldea-ia/commit/508a76a13384e282b812fcc91cbf4fb17222341f).
+- Exact-head CI PASS: semantic [39106685371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106685371); outcome classification [39106685361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106685361). Mission/restart continuity was not confirmed on this exact head.
+- This is a fail-closed normalization improvement, not settlement or persistence migration. The next gate remains authoritative persisted-state crash-cut tests; no terminal settlement API or runtime cutover yet.
+
+---
+
 ## Latest update — dead-agent-safe repair and exact-head CI PASS
 
 - `repair_agent_state` now normalizes coordinates while preserving `alive:false`; the postcondition checks finite coordinates and a boolean alive flag instead of requiring a living agent.
