@@ -363,3 +363,46 @@ Definir el contrato de ruta y filesystem para ambos stores: canonicalización de
 - `scripts/assistants.mjs` importa mundo/simulación, persistencia de simulación, memoria de asistentes y genera misiones desde reportes de simulación. No usarlo como host para una sesión Nexo-only: eso reintroduciría el acoplamiento Nexo/Lúmina.
 - Próximo corte exacto: inspeccionar el punto de entrada del producto y definir una entrada independiente de aplicación Nexo que invoque la vertical sin inicializar mundo/simulación. Mantener Chronicle CLI para pruebas; no construir una app completa por adelantado, no tocar runtime default y no habilitar otras acciones.
 - El contrato de rutas/FS y los riesgos de locking siguen siendo los límites descritos en las secciones 7–8. El runtime genérico sigue sin cutover; M0 INCOMPLETO.
+
+
+## 10. Handoff de cierre para el siguiente chat — estado verificado al 2026-10-18
+
+### Punto exacto de continuidad
+
+**La misión sigue siendo M0.** No reiniciar auditorías cerradas. El siguiente trabajo no es M1, STEP 7, ni ampliar Chronicle: es definir el seam mínimo de una **entrada principal de Nexo independiente de Lúmina** y continuar desde allí hacia el runtime canónico owner-backed.
+
+- Rama: `ncs-clean-architecture`.
+- HEAD documental observado al preparar este handoff: `1a5a6c90382d040b8214e1f5e2ea1f3507e8bea7` — “Handoff: document no-Lumina entrypoint integration boundary”.
+- Commit anterior: `8290736e26d38eaa5742a62ecce570c85e244b26` — STATUS registra la frontera de entrada independiente.
+- Commit de contrato confiable: `dd3de2b4e694f6872e6aae1caff84d7d5ee37aec` y `9f0b0e7f729781375d3fd262a610cdab0bfdceb5`.
+- Último SHA de código/locks con CI de suites amplias observado: `b32b1307f7aedf1a0b39d78f58cde6f1c87776b0`: continuidad/restart [39178015348 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178015348), STEP 4 [39178015299 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178015299), STEP 5 [39178015376 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178015376). Chronicle y suites asociadas pasaron en el commit de su regresión `8cb919e182de9ff0b36b7d0827e6e479e6cf9de5`: [39178005072](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178005072), [39178005085](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178005085), [39178005091](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178005091).
+- Los commits documentales posteriores no son cambios de código y no implican por sí mismos una nueva ejecución de CI.
+
+### Qué ya quedó hecho; no repetir
+
+1. Chronicle es la primera vertical nativa no-repair de Nexo, en `src/nexo/core/chronicle-store.mjs`, `src/nexo/adapters/chronicle-effect.mjs`, `src/nexo/adapters/chronicle-observation.mjs`, y CLI explícita `scripts/nexo-chronicle-session.mjs`. Es independiente de Lúmina y valida escritura, lectura persistida independiente, idempotencia/conflicto, recuperación y replay sin redispatch.
+2. El CLI usa `--content-stdin`, no argumentos argv para el contenido; hay pruebas del proceso real, validación estricta de argumentos, ausencia de filtración del contenido y no-mutación con entrada inválida.
+3. Dos procesos Node cooperantes anexaron entradas distintas y un lector nuevo observó ambas. Esto no demuestra locking adversarial ni soporte de filesystem distribuido.
+4. La reclamación automática de locks obsoletos fue retirada de ambos stores porque check-then-remove podía borrar un lock recién adquirido. Ahora falla cerrado con `NEXO_CHRONICLE_LOCK_STALE_RECOVERY_REQUIRED` o `NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED`; las pruebas comprueban que el estado y el lock se conservan.
+5. El contrato de rutas declara `filePath` configuración confiable, no sandbox. No se afirma protección contra symlinks/path attacks, fsync, power-loss ni filesystem distribuido.
+6. `scripts/assistants.mjs` no es el host apropiado para alojar Chronicle: importa mundo/simulación de Lúmina. No mezclar ahí la vertical ni modificar el runtime default por comodidad.
+7. Las suites de repair crash cuts y guards PREPARED/outcome previos siguen siendo repair-only. No son settlement genérico ni prueban un runtime genérico integrado.
+
+### Siguiente trabajo exacto — iniciar desde aquí
+
+1. Releer solo `NEXO_NCS/STATUS.md`, este handoff y, si hace falta, el documento de contrato `NEXO_NCS/BUILD/NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md`. Verificar HEAD y los checks actuales; no repetir auditorías anteriores.
+2. Inspeccionar el punto de entrada real del producto y sus imports/configuración. Identificar qué existe hoy para arrancar Nexo sin cargar `world.js`, `simulation.js`, `simulate.mjs` ni memoria de asistentes de Lúmina. No inventar que ya existe un shell independiente: demostrarlo desde archivos.
+3. Proponer/implementar el cambio mínimo que dé una entrada Nexo-only invocable y comprobable. Mantener `scripts/nexo-chronicle-session.mjs` como CLI focal de validación. No construir una aplicación completa antes de probar el seam.
+4. Antes de conectar otras acciones, definir la ruta owner-backed genérica: selección de misión/paso canónico → admisión → PREPARED confirmado por CAS antes del dispatch → dispatch → execution lineage → observación confiable del estado ambiental persistido → settlement CAS → outcome terminal. La única acción no-repair con contrato demostrado en este punto es `chronicle_append`; las demás deben bloquearse antes del adapter si no hay reconciliación verificable.
+5. Contrato de filesystem aún limitado: para despliegue inicial usar directorio local privado/de confianza y evitar mutaciones por procesos no confiables; los locks obsoletos requieren recuperación explícita. No reintroducir reaper automático ni afirmar garantías no probadas.
+6. Añadir prueba antes de cada límite nuevo, ejecutar CI y registrar SHA + run IDs exactos. CI sin evidencia visible = PENDING/UNKNOWN.
+7. **No hacer cutover del runtime default, no habilitar efectos protegidos, no usar Lúmina como memoria/estado de Nexo y no declarar M0 completo** hasta tener evidencia end-to-end de continuidad canónica, crash/restart/replay y dispatch seguro.
+
+### Estado de cierre
+
+- M0: **INCOMPLETO**.
+- Chronicle: vertical opt-in implementada; no equivale a integración del runtime general.
+- Runtime default: sin cutover.
+- Efectos protegidos: STOP; STEP 7 permanece OPEN / STOP / UNKNOWN y fuera del alcance actual.
+- Nexo/Lúmina: separación obligatoria.
+- Frase de entrada del chat nuevo: **NCS**.
