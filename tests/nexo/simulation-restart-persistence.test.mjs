@@ -11,6 +11,7 @@ import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
 import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
+import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
 import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
 import { observePersistedRepairInvariant, comparePersistedRepairRevision } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
 
@@ -380,6 +381,18 @@ assert.equal(reconstructedAfterObservedSettlement.mission.status, "blocked");
 assert.equal(reconstructedAfterObservedSettlement.mission.objective, "verify_observed_repair_goal");
 assert.equal(reconstructedAfterObservedSettlement.mission.steps[0].status, "blocked");
 assert.equal(reconstructedAfterObservedSettlement.mission.steps[0].blockReason.code, "NEXO_REPAIR_SETTLED_BY_OBSERVATION");
+
+const observedMissionGoal = await verifyRepairMissionGoalFromPersistedState({
+  store: restartedRepairContinuity.store,
+  statePath: repairStatePath,
+  missionId: "repair-crash-cut"
+});
+assert.equal(observedMissionGoal.status, "goal_observed");
+assert.equal(observedMissionGoal.verified, true);
+assert.equal(observedMissionGoal.missionCompleted, false);
+assert.equal(observedMissionGoal.causalAttribution, "not_claimed");
+assert.equal(observedMissionGoal.stepObservations.length, 1);
+
 
 
 const staleSettlement = await settlePreparedRepairFromPersistedState({
