@@ -280,15 +280,9 @@ assert.equal(preparedIntent.environmentRevisionSource, "strict-persisted-world-s
 
 const repairedEffect = await dispatchPreparedRepair({
   statePath: repairStatePath,
-  savedAt: 2000,
-  preparedOperation: {
-    missionId: "repair-crash-cut",
-    stepId: "step-1",
-    action: "repair_agent_state",
-    target: "alex",
-    idempotencyKey: "repair-crash-cut:step-1",
-    environmentStateRevision: preparedIntent.environmentStateRevision
-  }
+  owner: repairContinuity.owner,
+  idempotencyKey: "repair-crash-cut:step-1",
+  savedAt: 2000
 });
 assert.equal(repairedEffect.status, "completed");
 assert.equal(repairedEffect.persisted, true);
@@ -300,15 +294,9 @@ assert.equal(durableRepairSnapshot.agents[0].alive, true);
 
 const staleDispatch = await dispatchPreparedRepair({
   statePath: repairStatePath,
-  savedAt: 3000,
-  preparedOperation: {
-    missionId: "repair-crash-cut",
-    stepId: "step-1",
-    action: "repair_agent_state",
-    target: "alex",
-    idempotencyKey: "repair-crash-cut:stale-attempt",
-    environmentStateRevision: 0
-  }
+  owner: restartedRepairContinuity.owner,
+  idempotencyKey: "repair-crash-cut:step-1",
+  savedAt: 3000
 });
 assert.equal(staleDispatch.status, "blocked");
 assert.equal(staleDispatch.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_STALE");
