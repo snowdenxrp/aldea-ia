@@ -334,3 +334,17 @@ Siguiente corte: auditar explícitamente el modelo de filesystem y concurrencia 
 La suite Chronicle inicia dos procesos Node separados que anexan entradas distintas al mismo archivo y verifica, con un reader recién creado, que ambas entradas sobreviven. Validado en SHA `6940f9524773b36a97d8c6eb44d7c2bd81146d62`: [Chronicle 39176214934 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214934), [continuidad/runtime 39176214965 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214965), [STEP 4 39176214931 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214931) y [STEP 5 39176214932 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214932).
 
 Alcance: dos escritores cooperantes en el filesystem local de CI. No es evidencia de seguridad bajo carreras adversariales de recuperación de locks obsoletos, rutas con symlink o pérdida de energía. Mantener runtime default sin cambios.
+
+
+## 7. Actualización posterior — lock obsoleto ya no se elimina automáticamente (2026-10-18)
+
+- Código: `src/nexo/core/chronicle-store.mjs` y `src/nexo/core/continuity-store.mjs` ahora fallan de forma cerrada si detectan un lock obsoleto. La eliminación automática anterior era un check-then-remove vulnerable a que un proceso eliminara el lock recién adquirido por otro proceso.
+- Códigos: `NEXO_CHRONICLE_LOCK_STALE_RECOVERY_REQUIRED` y `NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED`. La operación no borra el lock y no modifica el estado protegido. La recuperación es manual/operativa; no hay reaper automático.
+- Tests: `tests/nexo/chronicle-store.test.mjs` y `tests/nexo/continuity-store.test.mjs` simulan lock viejo con PID muerto y verifican error explícito, datos sin cambio y lock conservado.
+- Commits de código/tests: `1ea054a341705f60e4c20bae1849a508134948a8`, `0ecd243c35352ec58eba81a71b42ded68ddb7e57`, `8cb919e182de9ff0b36b7d0827e6e479e6cf9de5`, `b32b1307f7aedf1a0b39d78f58cde6f1c87776b0`.
+- CI observada en el SHA final de código/tests `b32b1307f7aedf1a0b39d78f58cde6f1c87776b0`: continuidad/restart [39178015348 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178015348), STEP 4 [39178015299 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178015299), STEP 5 [39178015376 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178015376). Chronicle y STEP 4/5 también pasaron en el commit de prueba Chronicle `8cb919e182de9ff0b36b7d0827e6e479e6cf9de5`: [39178005072](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178005072), [39178005085](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178005085), [39178005091](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178005091).
+- Límite restante: no se ha cerrado el contrato de rutas/symlinks/permisos ni se ha demostrado resistencia a todos los interleavings multiproceso. El test de dos escritores solo prueba concurrencia cooperante normal, no lock recovery adversarial. No reclamar durabilidad ante power loss o soporte de filesystem distribuido.
+
+### Próximo paso exacto
+
+Definir el contrato de ruta y filesystem para ambos stores: canonicalización de ruta, tratamiento de symlinks y permisos/ámbito local. Luego tomar la decisión arquitectónica explícita entre (a) documentar y hacer cumplir un único proceso cooperante con exclusión externa, o (b) diseñar y probar locking multiproceso sin eliminación racy. No reintroducir auto-reaping por edad/PID, no añadir queues/ledgers/retries y no cambiar runtime default. M0 permanece INCOMPLETO.
