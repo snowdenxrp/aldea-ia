@@ -1,3 +1,12 @@
+## M0 — Recovery context and prepared-mission retention hardening (2026-10-18)
+
+- Strict snapshot loader now rejects malformed/missing state, unknown revision, malformed Nexo memory, and any prepared effect whose persisted mission/step context is missing or conflicts with action/target. It does not infer authority or an effect result from a valid snapshot.
+- Mission retention now preserves the mission plan, all attempts and execution records associated with any mission that has a prepared effect; retention caps are soft for those unresolved causal records. This prevents completed dependencies from reverting to planned when older attempts are truncated.
+- Reports: [strict state load + recovery context](BUILD/NCS_M0_STRICT_STATE_LOAD_2026-10-18.md); [prepared mission context retention](BUILD/NCS_M0_PRESERVE_PREPARED_MISSION_CONTEXT_2026-10-18.md).
+- Exact source+test head `9c5b38f9ecc2710ee1d7036f3b391a8cd3f85246` CI PASS: mission/restart [39097573478](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573478), STEP 4 [39097573456](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573456), STEP 5 [39097573552](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573552).
+- An earlier intermediate source-only head failed because its fixture lacked the newly required prepared-mission context; the fixture was corrected, and all three workflows passed on the final exact source+test head above.
+- M0 remains incomplete: this is continuity integrity, not a canonical Nexo authority/store or an independent external-effect verifier. Prepared external effects remain UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Strict persisted-state loading guard (2026-10-18)
 
 - Added `loadStateStrict(statePath)` in `scripts/simulate.mjs` for safety-sensitive recovery callers. Unlike ordinary simulation `loadState()`, it refuses missing files, invalid JSON/schema, and missing/invalid revision instead of silently manufacturing a default state at revision 0.
