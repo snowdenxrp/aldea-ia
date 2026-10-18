@@ -9,8 +9,11 @@ const sharedInFlight = new WeakMap();
 const sharedQueue = new WeakMap();
 function validStatus(status){ return TERMINAL.has(status); }
 
-export function createEffectAdapter({handlers={}, getStateVersion=()=>null, executionJournal=null, persistPreparedIntent=null}={}) {
+export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=()=>null, executionJournal=null, persistPreparedIntent=null}={}) {
   const registry = new Map(Object.entries(handlers));
+  // Verifiers are trusted bootstrap configuration, deliberately separate from
+  // handlers and from caller-supplied request callbacks.
+  const verifierRegistry = new Map(Object.entries(verifiers));
   const executed = new Map(Array.isArray(executionJournal)
     ? executionJournal.filter(x=>x?.idempotencyKey&&x?.result).map(x=>[x.idempotencyKey,x.result]) : []);
 
@@ -59,6 +62,50 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
   function register(action, handler){
     if(typeof action!=="string" || !action.trim() || typeof handler!=="function") throw new TypeError("action y handler son obligatorios");
     registry.set(action, handler);
+  }
+
+  function registerVerifier(action, verifier){
+    if(typeof action!=="string" || !action.trim() || typeof verifier!=="function") throw new TypeError("action y verifier confiable son obligatorios");
+    verifierRegistry.set(action, verifier);
+  }
+
+  // Read-only reconciliation probe. The verifier must be installed by trusted
+  // bootstrap configuration; operation callers cannot supply or replace it.
+  // This method never settles the journal and never authorizes redispatch.
+  async function verifyPrepared({idempotencyKey, missionId, stepId, action, target=null}={}) {
+    if(!idempotencyKey || !missionId || !stepId || !action) {
+      return {status:"unknown",code:"EFFECT_RECONCILIATION_CONTEXT_INVALID"};
+    }
+    const entry=journalEntry(idempotencyKey);
+    if(!entry || entry.status!=="prepared") {
+      return {status:"unknown",code:"EFFECT_PREPARED_OBLIGATION_REQUIRED",idempotencyKey};
+    }
+    if(entry.missionId!==missionId || entry.stepId!==stepId || entry.action!==action ||
+       !isDeepStrictEqual(entry.target??null,target??null)) {
+      return {status:"unknown",code:"EFFECT_IDENTITY_MISMATCH",idempotencyKey};
+    }
+    const verifier=verifierRegistry.get(action);
+    if(typeof verifier!=="function") {
+      return {status:"unknown",code:"EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE",idempotencyKey,action,target};
+    }
+    let observation;
+    try {
+      observation=await verifier(structuredClone({idempotencyKey,missionId,stepId,action,target:target??null}));
+    } catch(error) {
+      return {status:"unknown",code:"EFFECT_RECONCILIATION_VERIFIER_FAILED",idempotencyKey,action,target,
+        error:String(error?.message??error)};
+    }
+    if(!observation || typeof observation!=="object" || Array.isArray(observation) ||
+       !["applied","not_applied","unknown"].includes(observation.status) ||
+       observation.action!==action || observation.idempotencyKey!==idempotencyKey ||
+       !isDeepStrictEqual(observation.target??null,target??null) ||
+       !Number.isSafeInteger(observation.observedRevision) || observation.observedRevision<0 ||
+       typeof observation.source!=="string" || !observation.source.trim()) {
+      return {status:"unknown",code:"EFFECT_RECONCILIATION_EVIDENCE_INVALID",idempotencyKey,action,target};
+    }
+    return {status:observation.status,code:"EFFECT_RECONCILIATION_OBSERVED",idempotencyKey,missionId,stepId,action,target:target??null,
+      observedRevision:observation.observedRevision,source:observation.source,
+      evidence:observation.evidence??null,journalSettled:false,redispatchAuthorized:false};
   }
 
   async function reconcilePrepared(entry, request) {
@@ -209,6 +256,7 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
   // Capability discovery lets a canonical runtime reject an unregistered action before PREPARED/dispatch.
   // This reports handler presence only; it is not a reconciliation or authorization contract.
   function supports(action){ return typeof action === "string" && registry.has(action); }
+  function supportsReconciliation(action){ return typeof action === "string" && verifierRegistry.has(action); }
 
-  return {register,execute,supports,hasExecuted:key=>executed.has(key)};
+  return {register,registerVerifier,execute,supports,supportsReconciliation,verifyPrepared,hasExecuted:key=>executed.has(key)};
 }
