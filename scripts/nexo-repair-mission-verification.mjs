@@ -50,6 +50,23 @@ export async function verifyRepairMissionGoalFromPersistedState({
     }
   }
 
+  const dependencyMarks = new Map(mission.steps.map(step => [step.id, 0]));
+  const visitDependency = id => {
+    const mark = dependencyMarks.get(id);
+    if (mark === 1) return true;
+    if (mark === 2) return false;
+    dependencyMarks.set(id, 1);
+    const step = mission.steps.find(candidate => candidate.id === id);
+    for (const dependency of step?.dependsOn ?? []) {
+      if (visitDependency(dependency)) return true;
+    }
+    dependencyMarks.set(id, 2);
+    return false;
+  };
+  if (mission.steps.some(step => visitDependency(step.id))) {
+    return { status: "unknown", code: "NEXO_REPAIR_MISSION_DEPENDENCY_CYCLE", verified: false, storeRevision: current.storeRevision };
+  }
+
   const journal = current.snapshot.effectJournal.filter(entry => entry?.missionId === missionId);
   if (journal.some(entry => entry.status === "prepared")) {
     return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, storeRevision: current.storeRevision };
