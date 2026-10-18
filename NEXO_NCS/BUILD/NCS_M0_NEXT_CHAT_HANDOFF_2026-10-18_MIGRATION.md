@@ -1,3 +1,13 @@
+## Latest update — repair normalization convergence (2026-10-18)
+
+- See [convergent repair revision checkpoint](NCS_M0_CONVERGENT_REPAIR_REVISION_CHECKPOINT_2026-10-18.md).
+- Normalization handlers now increment the in-memory effect revision only when normalized fields change; missing resource amount becomes zero. Regression tests exercise repeated normalization and absent amount.
+- Exact test head `575d01789250bb26800d66146da18321ffad32ab`: semantic validation [39106460906](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106460906) PASS; outcome classification [39106460938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106460938) PASS. Mission/restart workflow on this exact head not confirmed.
+- Important limitation: in-memory revision is not durable world-state revision; desired normalized state does not prove attribution to a particular prepared operation. `repair_agent_state` preserves dead status, while its current postcondition rejects dead agents; do not treat this action as universally settleable until that semantic edge is defined.
+- Next: resolve the dead-agent repair contract without resurrection, then test candidate repairs against the authoritative persisted snapshot and crash cuts. Do not add settlement API or runtime cutover before durable evidence exists. All non-idempotent unresolved effects remain UNKNOWN.
+
+---
+
 ## Continuity index updated
 
 - `NEXO_NCS/STATUS.md` is now a concise entry point with the current state, exact-head CI links, and ordered next reads.
