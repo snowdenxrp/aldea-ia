@@ -271,3 +271,13 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 
 
 - CI verification on exact code head `7f8e2e67f552e64a14adc2e64b41f77a90e0558d`: mission admission/restart continuity [39086881703](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881703) PASS (includes orchestrator and runtime tests); M0 core contracts [39086881700](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881700) PASS; STEP 4 [39086881778](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881778) PASS; STEP 5 [39086881723](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881723) PASS. This verifies the narrow replan guard regression, not end-to-end reconciliation.
+
+
+## M0 — Preserve prepared effects during journal pruning (2026-10-18)
+
+- Source inspection found that effect-journal trimming could discard an unresolved `prepared` record after enough later entries, removing the adapter's local reconciliation pointer while uncertainty remained.
+- Change: pruning evicts terminal entries first and preserves every `prepared` entry, allowing the journal to exceed its soft cap if unresolved entries alone exceed 200.
+- Regression: 200 terminal entries plus an older prepared record; a new operation triggers pruning and verifies the prepared record survives.
+- Report: [M0 — Preserve prepared effects during journal pruning](BUILD/NCS_M0_PRESERVE_PREPARED_EFFECTS_DURING_JOURNAL_PRUNING_2026-10-18.md).
+- Source/test/report staged for commit; focused CI evidence pending. Do not treat this as end-to-end recovery proof.
+- STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.

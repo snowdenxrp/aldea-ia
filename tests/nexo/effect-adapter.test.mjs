@@ -206,4 +206,25 @@ const laterReconcile=await failedReconcileAdapter.execute({
 assert.equal(laterReconcile.status,"completed");
 assert.equal(failedReconcileJournal[0].status,"completed");
 
+
+const retentionJournal=Array.from({length:200},(_,i)=>({
+  idempotencyKey:`terminal:${i}`,status:"completed",result:{status:"completed"}
+}));
+retentionJournal.push({
+  idempotencyKey:"must-survive:prepared",missionId:"old-mission",stepId:"old-step",
+  action:"retention_probe",target:"alex",status:"prepared"
+});
+const retentionAdapter=createEffectAdapter({
+  executionJournal:retentionJournal,
+  handlers:{retention_probe:async()=>({status:"completed",details:"new operation"})}
+});
+const retentionResult=await retentionAdapter.execute({
+  missionId:"new-mission",stepId:"new-step",action:"retention_probe",target:"bruno",
+  idempotencyKey:"new-mission:new-step",precondition:()=>true,postcondition:()=>true
+});
+assert.equal(retentionResult.status,"completed");
+assert.ok(retentionJournal.some(entry=>entry.idempotencyKey==="must-survive:prepared"),
+  "journal pruning must preserve unresolved prepared operations");
+assert.ok(retentionJournal.length<=200);
+
 console.log("Nexo: adaptador tipado con concurrencia, idempotencia, detección de efecto parcial y evidencia estricta OK.");

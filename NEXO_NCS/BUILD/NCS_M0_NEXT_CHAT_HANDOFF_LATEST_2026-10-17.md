@@ -738,3 +738,8 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - This is not end-to-end reconciliation. The runtime still needs a defined path to reconcile the original prepared operation after restart and to classify completed/absent/still-unknown outcomes. Do not mark the whole gap closed.
 
 - Exact code head `7f8e2e67f552e64a14adc2e64b41f77a90e0558d` CI: mission continuity [39086881703](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881703) PASS including `orchestrator.test.mjs` and `runtime.test.mjs`; M0 contracts [39086881700](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881700) PASS; STEP 4 [39086881778](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881778) PASS; STEP 5 [39086881723](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881723) PASS. The guard is regression-tested; cross-mission recovery remains open.
+
+
+## Immediate continuation — prepared-effect journal retention
+
+The latest source-level finding is that `src/nexo/effect-adapter.js` previously truncated `executionJournal` blindly at 200 entries. Because `prepared` means an external effect may or may not have happened, dropping such an entry can erase the adapter's local recovery pointer. A bounded correction and regression are now staged: terminal entries are pruned first; unresolved prepared entries are retained even if this makes the journal exceed 200. Report: `NEXO_NCS/BUILD/NCS_M0_PRESERVE_PREPARED_EFFECTS_DURING_JOURNAL_PRUNING_2026-10-18.md`. After commit, verify focused CI on the exact source/test head, then return to the larger runtime reconciliation seam. This does not establish durability, authority, or protected-path closure. Keep STEP 7 OPEN / STOP / UNKNOWN and protected effects STOP.

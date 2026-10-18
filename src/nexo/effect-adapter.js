@@ -18,6 +18,16 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     return executionJournal.find(x=>x?.idempotencyKey===key) ?? null;
   }
 
+  function pruneJournal() {
+    // Unresolved prepared entries are recovery obligations, not disposable history.
+    // Bound terminal history first; if every entry is unresolved, exceed the soft cap.
+    while(executionJournal.length>200) {
+      const terminalIndex=executionJournal.findIndex(entry=>entry?.status!=="prepared");
+      if(terminalIndex<0) return;
+      executionJournal.splice(terminalIndex,1);
+    }
+  }
+
   function recordIntent(request) {
     if(!Array.isArray(executionJournal)) return;
     const {missionId,stepId,action,target=null,idempotencyKey}=request;
@@ -26,7 +36,7 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
         idempotencyKey, missionId, stepId, action, target,
         status:"prepared", at:new Date().toISOString()
       });
-      if(executionJournal.length>200) executionJournal.splice(0,executionJournal.length-200);
+      pruneJournal();
     }
   }
 
@@ -41,7 +51,7 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
       } else {
         executionJournal.push({idempotencyKey:key,result:structuredClone(result),status:result.status,at:new Date().toISOString()});
       }
-      if(executionJournal.length>200) executionJournal.splice(0,executionJournal.length-200);
+      pruneJournal();
     }
   }
 
