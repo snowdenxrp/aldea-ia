@@ -199,6 +199,31 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     return mission;
   }
 
+  // Generic reconciliation observations are intentionally distinct from
+  // repair settlement records. They keep the operation non-executable until a
+  // separate goal/authorization decision; an observation never authorizes retry.
+  const genericObservations = source.effectJournal.filter(entry =>
+    entry?.missionId === missionId && entry?.status === "reconciled_observed"
+  );
+  if (genericObservations.length > 0) {
+    for (const entry of genericObservations) {
+      const step = mission.steps.find(candidate => candidate.id === entry.stepId);
+      if (!step) continue;
+      step.status = "blocked";
+      step.blockReason = {
+        code: "NEXO_EFFECT_RECONCILIATION_OBSERVED",
+        idempotencyKey: entry.idempotencyKey,
+        observation: entry.reconciliation?.status ?? "unknown",
+        causalAttribution: "not_established",
+        next: "verify_mission_goal_without_redispatch"
+      };
+    }
+    mission.status = "blocked";
+    mission.objective = "verify_reconciled_effect";
+    mission.uncertainty = "effect_observed_causality_not_established";
+    return mission;
+  }
+
   const failed = mission.steps.some(step => step.status === "failed");
   const blocked = mission.steps.some(step => step.status === "blocked");
   const unresolved = mission.steps.some(step => !["completed", "failed", "blocked"].includes(step.status));
