@@ -114,6 +114,22 @@ try {
   assert.equal(afterSettlement.storeRevision, 2);
   assert.equal(afterSettlement.snapshot.effectJournal[0].status, "settled_observed");
 
+  // Replay after settlement must fail closed before the repair adapter runs.
+  // The journal is terminal for dispatch even though settlement makes no causal claim.
+  const replay = await dispatchPreparedRepair({
+    owner: opened.owner,
+    statePath,
+    idempotencyKey: "mission-owner-lifecycle:step-repair",
+    savedAt: 3
+  });
+  assert.equal(replay.status, "blocked");
+  assert.equal(replay.code, "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN");
+  assert.equal(replay.persisted, false);
+  assert.equal((await loadStateStrict(statePath)).stateRevision, 11,
+    "settled repair replay must not write the environment again");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 2,
+    "blocked replay must not mutate Nexo continuity");
+
   // Phase 4: goal verification remains a read-only observation. It must not
   // promote the mission to completed or claim causal attribution.
   const goal = await verifyRepairMissionGoalFromPersistedState({
