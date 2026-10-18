@@ -53,7 +53,14 @@ export async function runNexoRepairOnce({
       operation
     });
     if (preparation.status !== "committed" || preparation.preparedCommitted !== true) {
-      return { status: "blocked", code: preparation.code ?? "NEXO_REPAIR_PREPARATION_NOT_COMMITTED", preparation, persisted: false };
+      return {
+        status: "blocked",
+        code: preparation.code ?? "NEXO_REPAIR_PREPARATION_NOT_COMMITTED",
+        preparation,
+        persisted: false,
+        dispatched: false,
+        ...(preparation.uncertainty ? { uncertainty: preparation.uncertainty } : {})
+      };
     }
     preparedNew = true;
     try {
