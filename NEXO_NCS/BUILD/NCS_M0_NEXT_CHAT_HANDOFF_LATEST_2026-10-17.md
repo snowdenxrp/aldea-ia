@@ -1,3 +1,13 @@
+## Master continuity — M0.1 onward (read first next chat)
+
+Consolidated dossier: [NCS M0.1 onward — full continuity and next instructions](NCS_M0_1_ONWARD_CONSOLIDATED_CONTINUITY_2026-10-17.md). This dossier is the navigation point for the M0.1 observation contract through latest mission lifecycle increments, historical CI evidence, current trust-boundary issues, and the next work order. Start with it and `NEXO_NCS/STATUS.md`; do not re-run old audits.
+
+**M0's actual goal:** build the minimum coherent functional Nexo Core — observation → interpretation/reasoning → planning → continuity/memory → outcome verification → learning/replanning. M0 is not an endless sequence of security patches, not just unit-tested abstractions, and not STEP 7 authority. Make real capability progress, fix demonstrated blockers, preserve uncertainty and evidence boundaries. Do not claim full Core complete until the functional loop is coherently tested.
+
+Next chat: verify branch HEAD and CI, read the dossier, then find one new functional gap in the mission lifecycle; avoid repeating M0.1/M0.2, M0.63–M0.70 or closed AB/P/TLC research. Document every real change in report + STATUS + handoff. Keep observation/claim identity unresolved rather than inventing IDs; Proxy-trap boundary is a design STOP; STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+---
+
 ## Latest functional M0 correction — missing evidence blocks the step (2026-10-17)
 
 A concrete state-consistency defect was fixed in `advanceNexoMission()`: an attempted completion without acceptable evidence previously blocked only the mission while leaving the step `executing`. It now marks both mission and step `blocked`, records `MISSING_VERIFIED_EVIDENCE`, and sets `replan_from_constraints`. Regression verifies no executable action is emitted.
