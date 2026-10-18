@@ -103,9 +103,11 @@ const evidenceMismatch=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"safe_repair",target:"alex",idempotencyKey:"m1:s7",
   precondition:()=>true,postcondition:()=>({verified:true,kind:"fake"})
 });
-assert.equal(evidenceMismatch.status,"failed");
+assert.equal(evidenceMismatch.status,"blocked");
 assert.equal(evidenceMismatch.code,"POSTCONDITION_FAILED");
 assert.equal(evidenceMismatch.verified,false);
+assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s7")?.status,"prepared");
+assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s7")?.result,undefined);
 
 const unsupported=await adapter.execute({
   missionId:"m1",stepId:"s5",action:"unknown_action",idempotencyKey:"m1:s5"
