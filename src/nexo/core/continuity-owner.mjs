@@ -127,13 +127,19 @@ export function createNexoContinuityOwner({ store } = {}) {
       return { status: "already_recorded", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
 
-    const prepared = current.snapshot.effectJournal.some(item =>
+    const unresolvedEffect = current.snapshot.effectJournal.some(item =>
       item?.missionId === outcome.missionId &&
       item?.stepId === outcome.stepId &&
-      item?.status === "prepared"
+      ["prepared", "settled_observed"].includes(item?.status)
     );
-    if (prepared && outcome.status === "completed") {
-      return { status: "blocked", code: "NEXO_OUTCOME_PREPARED_OBLIGATION_UNRESOLVED", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+    if (unresolvedEffect && outcome.status === "completed") {
+      return {
+        status: "blocked",
+        code: "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED",
+        storeRevision: current.storeRevision,
+        journalSettled: false,
+        authorization: "NOT_EVALUATED"
+      };
     }
 
     let candidate;
