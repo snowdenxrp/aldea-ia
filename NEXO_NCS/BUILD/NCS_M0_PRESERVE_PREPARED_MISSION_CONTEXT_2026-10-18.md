@@ -30,7 +30,7 @@ Status: IMPLEMENTED; EXACT-HEAD CI PASS
 
 - Source commit: `d9ccf449f401bdedf5efad7017b67befb983014c`
 - Test commit / exact source+test head: `ff6c6d26c03d7bd9908a82805b67af9bb96bfeb2`
-- Exact source+test head `a054e817a9305c11a226a81b480b6276635c6e6d` CI PASS: mission/restart [39097516115](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097516115), STEP 4 [39097516106](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097516106), STEP 5 [39097516122](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097516122). The mission/restart workflow ran `restart-reconstruction.test.mjs` successfully, including the new retention regressions.
+- Final exact source+test head `9c5b38f9ecc2710ee1d7036f3b391a8cd3f85246` CI PASS: mission/restart [39097573478](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573478), STEP 4 [39097573456](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573456), STEP 5 [39097573552](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573552). The mission/restart workflow ran `restart-reconstruction.test.mjs` successfully, including retention of the oldest mission, all 120 attempts and 220 execution records for a mission with a prepared effect.
 - [Source](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/src/assistants/memory.js)
 - [Regression](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/restart-reconstruction.test.mjs)
 
