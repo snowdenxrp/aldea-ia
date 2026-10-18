@@ -1,3 +1,15 @@
+## Continuidad más reciente (2026-10-18, después del estado base)
+
+Último incremento de código/pruebas validado: `0653d7216c49dd6a9b0ea7a182333ff18ee07bc3`. `recordExecutionLineage()` compara ahora el resultado ya persistido con el resultado propuesto en un replay de la misma identidad. Si son distintos: `blocked / NEXO_EXECUTION_RESULT_MISMATCH`; no cambia `storeRevision` ni el registro inicial. Regresiones en `tests/nexo/repair-owner-lifecycle.test.mjs` y `tests/nexo/continuity-migration.test.mjs`.
+
+CI SUCCESS para ese SHA: [repair settlement crash cuts 39150332075](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150332075), [STEP 4 39150332148](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150332148), [STEP 5 39150331964](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150331964), [bounded mission admission/restart 39150331921](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150331921). `STATUS.md` y el handoff maestro incluyen el detalle. HEAD puede ser posterior por documentación; no afirmar que los documentos mismos se ejecutaron en CI.
+
+Los intentos intermedios fallaron primero en la regresión nueva y luego en una expectativa antigua de `already_recorded` con resultado distinto. Se documentó y corrigió el contrato; no ocultar esos fallos.
+
+**Siguiente tarea:** continuar M0 desde el siguiente hueco mínimo de continuidad; no reauditar goal-observation ni crear `goalObservations` sin requisito. No migrar aún runtime genérico, no mezclar Nexo/Lúmina, no declarar completion por `settled_observed`, no activar efectos protegidos ni retomar STEP 7/M1. Mantener STOP donde la evidencia no alcance.
+
+---
+
 # NCS — HANDOFF PARA NUEVO CHAT — MISIÓN M0
 Fecha: 2026-10-18
 Repo: https://github.com/snowdenxrp/aldea-ia
