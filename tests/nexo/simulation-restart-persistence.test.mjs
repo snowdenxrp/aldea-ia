@@ -7,10 +7,34 @@ import { pathToFileURL } from "node:url";
 import { world as defaultWorld } from "../../src/world.js";
 import { createInitialAgents } from "../../src/agents.js";
 import { createLearningMemory, recordNexoPlan, recordNexoOutcome, reconstructNexoMission } from "../../src/assistants/memory.js";
-import { persistState, loadState, applyState } from "../../scripts/simulate.mjs";
+import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
 
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
 const statePath = pathToFileURL(path.join(dir, "world-state.json"));
+
+await assert.rejects(
+  () => loadStateStrict(statePath),
+  error => error?.code === "NEXO_STATE_NOT_FOUND"
+);
+await fs.writeFile(statePath, "{invalid-json", "utf8");
+await assert.rejects(
+  () => loadStateStrict(statePath),
+  error => error?.code === "NEXO_STATE_INVALID_JSON"
+);
+await fs.writeFile(statePath, JSON.stringify({
+  version: 5, day: 1, hour: 8, world: structuredClone(defaultWorld), agents: createInitialAgents()
+}), "utf8");
+await assert.rejects(
+  () => loadStateStrict(statePath),
+  error => error?.code === "NEXO_STATE_REVISION_UNKNOWN"
+);
+await fs.writeFile(statePath, JSON.stringify({ version: 5, stateRevision: 0, world: [], agents: [] }), "utf8");
+await assert.rejects(
+  () => loadStateStrict(statePath),
+  error => error?.code === "NEXO_STATE_SCHEMA_INVALID"
+);
+await fs.rm(statePath);
+
 const mission = {
   version: 4,
   missionId: "persisted-restart-mission",
@@ -47,6 +71,10 @@ const simulation = applyState({
   nexoMemory: memory
 });
 await persistState(statePath, simulation, 1234567890);
+
+const strictLoadedState = await loadStateStrict(statePath);
+assert.equal(strictLoadedState.stateRevision, 0);
+assert.equal(strictLoadedState.version, 5);
 
 const raw = JSON.parse(await fs.readFile(statePath, "utf8"));
 assert.equal(raw.version, 5);
