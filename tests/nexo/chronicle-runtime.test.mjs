@@ -6,6 +6,7 @@ import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
+import { runNexoChronicleAppend } from "../../scripts/nexo-chronicle-session.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 
 function chronicleMission() {
@@ -351,6 +352,39 @@ try {
 
 } finally {
   await fs.rm(root, { recursive: true, force: true });
+}
+
+// The real Nexo entrypoint is explicitly initialized and remains independent of Lúmina.
+const entryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-entry-"));
+try {
+  const args = {
+    continuityPath: path.join(entryRoot, "continuity.json"),
+    chroniclePath: path.join(entryRoot, "chronicle.json"),
+    missionId: "caller-provided-mission",
+    stepId: "caller-provided-step",
+    content: "Nexo owns this history",
+    initializeContinuity: true,
+    initializeChronicle: true
+  };
+  const entryResult = await runNexoChronicleAppend(args);
+  assert.equal(entryResult.status, "completed");
+  assert.equal(entryResult.dispatchAttempted, true);
+  const replay = await runNexoChronicleAppend(args);
+  assert.equal(replay.status, "completed");
+  assert.equal(replay.dispatchAttempted, false);
+  const changedPayload = await runNexoChronicleAppend({ ...args, content: "attempt to change same mission" });
+  assert.equal(changedPayload.status, "blocked");
+  assert.equal(changedPayload.code, "NEXO_CHRONICLE_MISSION_CONTENT_MISMATCH");
+  const noInitialization = await runNexoChronicleAppend({
+    ...args,
+    continuityPath: path.join(entryRoot, "missing-continuity.json"),
+    chroniclePath: path.join(entryRoot, "missing-chronicle.json"),
+    initializeContinuity: false,
+    initializeChronicle: false
+  });
+  assert.equal(noInitialization.status, "blocked");
+} finally {
+  await fs.rm(entryRoot, { recursive: true, force: true });
 }
 
 console.log("Nexo Chronicle owner-backed runtime tests passed");
