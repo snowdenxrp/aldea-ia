@@ -147,6 +147,55 @@ try {
   // Physical separation: Lúmina's world-state file must not embed Nexo memory.
   const rawWorldState = JSON.parse(await fs.readFile(statePath, "utf8"));
   assert.equal("nexoMemory" in rawWorldState, false);
+
+  // Independent stale-revision case: environment changes after PREPARED.
+  // Dispatch must preserve the newer writer's state and leave the obligation unresolved.
+  const staleRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-stale-revision-"));
+  try {
+    const staleNexoPath = path.join(staleRoot, "nexo-continuity.json");
+    const staleStatePath = path.join(staleRoot, "world-state.json");
+    const staleOpened = await openNexoContinuityOwner({
+      filePath: staleNexoPath,
+      legacyMemory: legacyMemory()
+    });
+    await fs.writeFile(staleStatePath, JSON.stringify(environment(20)), "utf8");
+    const stalePrepared = await prepareRepairAgainstPersistedState({
+      owner: staleOpened.owner,
+      statePath: staleStatePath,
+      expectedContinuityRevision: 0,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      }
+    });
+    assert.equal(stalePrepared.status, "committed");
+    assert.equal(stalePrepared.environmentStateRevision, 20);
+
+    // Simulate another writer committing revision 21 after PREPARED.
+    await fs.writeFile(staleStatePath, JSON.stringify(environment(21)), "utf8");
+    const staleDispatch = await dispatchPreparedRepair({
+      owner: staleOpened.owner,
+      statePath: staleStatePath,
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      savedAt: 4
+    });
+    assert.equal(staleDispatch.status, "blocked");
+    assert.equal(staleDispatch.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_STALE");
+    assert.equal(staleDispatch.expectedStateRevision, 20);
+    assert.equal(staleDispatch.currentStateRevision, 21);
+    assert.equal(staleDispatch.persisted, false);
+    assert.equal((await loadStateStrict(staleStatePath)).stateRevision, 21,
+      "stale dispatch must not overwrite a newer environment revision");
+    const staleCurrent = await staleOpened.owner.loadCurrent();
+    assert.equal(staleCurrent.storeRevision, 1);
+    assert.equal(staleCurrent.snapshot.effectJournal[0].status, "prepared",
+      "stale dispatch must leave PREPARED unresolved for reconciliation");
+  } finally {
+    await fs.rm(staleRoot, { recursive: true, force: true });
+  }
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
