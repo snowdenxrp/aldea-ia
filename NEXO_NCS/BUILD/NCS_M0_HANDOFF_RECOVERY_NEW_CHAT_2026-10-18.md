@@ -244,3 +244,14 @@ No está conectado al runtime ni al owner verifier registry; todavía no cierra 
 La ejecución [39173111447](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173111447) terminó SUCCESS para el commit `bf3ded518216a9556118b36f6f6135a7baa3fa93`. Pasaron las pruebas focales de concurrencia con claves distintas, idempotencia, conflicto de contenido, reader reabierto, estado corrupto y respuesta perdida después de persistencia visible. Alcance limitado al store/verifier; no demuestra durabilidad ante pérdida de energía ni integración de runtime/owner.
 
 Siguiente tarea exacta: revisar la API del owner y el binding de PREPARED → verificador → CAS, y cubrir con pruebas que una observación solo puede liquidar la misma operación/revisión. No cambiar runtime default ni activar otras acciones.
+
+
+## Actualización M0 — vertical Chronicle integrada en runtime explícito
+
+La vertical Chronicle ya está conectada a `executeNexoStepWithContinuityOwner` sin cambiar el runtime por defecto:
+- `src/nexo/adapters/chronicle-effect.mjs`: handler + postcondition + verifier para la acción única `chronicle_append`.
+- El owner registra `settled_observed` únicamente con `applied` de `nexo-chronicle-store`, y solo permite outcome completed si la misma operación/acción/target tiene ese settlement persistido.
+- El runtime recupera PREPARED ya existente por lectura y no vuelve a despachar; si la entrada no está, deja el estado bloqueado/observado, sin retry automático. El replay tras settlement repite solo el outcome.
+- Prueba real `tests/nexo/chronicle-runtime.test.mjs` usa continuidad store, Chronicle store, owner y adapter reales; cubre el ciclo completo, crash tras append antes de lineage, no-apply sin redispatch y respuesta perdida tras commit de outcome.
+- CI verde de esa integración: [run 39173898535](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173898535), SHA `5e076ac31bd0c74432f104e54699918984520103`. El guard adicional que bloquea completion sin settlement aún espera CI: run `39173941624` PENDING; run `39173935254` del owner IN_PROGRESS al momento de escribir.
+- Revisar esos dos runs primero. Luego validar las suites amplias afectadas y registrar el SHA final. M0 sigue INCOMPLETO; runtime default sin cambios; no ampliar a otras acciones ni usar Lúmina.
