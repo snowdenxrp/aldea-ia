@@ -1,3 +1,14 @@
+## Latest M0 guard — continuity contract enforced at runtime (2026-10-18)
+
+- Runtime source `src/nexo/runtime.js` validates supplied memory before `executeNexoStep()` dispatch and before `replanPersistedNexoMission()` reconstructs or creates a successor.
+- Malformed/orphan prepared context returns blocked/not_replanned with the contract error code; no handler invocation, no successor, no memory mutation.
+- Regression in `tests/nexo/runtime.test.mjs`; report `NCS_M0_RUNTIME_FAIL_CLOSED_INVALID_CONTINUITY_2026-10-18.md`.
+- Exact source+test head `e237469a4e17ea4687a7b5fa9a84d9005d7938b6` CI PASS: mission/restart [39097980956](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980956), STEP 4 [39097980918](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980918), STEP 5 [39097980960](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980960).
+- This only prevents normalization of invalid supplied continuity; it does not supply Nexo's canonical store, authority owner, or external-effect verifier.
+- Next: design Nexo-owned canonical continuity/persistence boundary independently from Lúmina's simulation store. Do not build a protected external executor before authority, effect identity, prepare/commit/recovery contracts are grounded.
+
+---
+
 ## Latest M0 core continuity contract (2026-10-18)
 
 - New Nexo-owned structural contract: `src/nexo/core/continuity-contract.mjs::assertNexoContinuityMemoryShape()`. It validates required collections and every prepared journal entry's mission/step/action/target link. It does not authenticate provenance or establish authority.
