@@ -90,8 +90,10 @@ export function observePersistedRepairInvariant({ snapshot, action, target } = {
   }
 
   if (action === "repair_agent_needs") {
-    const agent = snapshot.agents.find(item => item?.id === target);
-    if (!agent) return unknown("REPAIR_TARGET_AGENT_UNKNOWN", action, target, revision);
+    const matches = snapshot.agents.filter(item => item?.id === target);
+    if (matches.length === 0) return unknown("REPAIR_TARGET_AGENT_UNKNOWN", action, target, revision);
+    if (matches.length !== 1) return unknown("REPAIR_TARGET_AGENT_AMBIGUOUS", action, target, revision);
+    const agent = matches[0];
     if (agent.needs != null &&
         (typeof agent.needs !== "object" || Array.isArray(agent.needs))) {
       return unknown("REPAIR_AGENT_NEEDS_SCHEMA_UNKNOWN", action, target, revision);
