@@ -28,13 +28,16 @@ try {
   assert.equal(loaded.entries.length, 1);
   assert.deepEqual(loaded.entries[0], { operationKey: "mission-1:step-1", content: "record" });
   assert.deepEqual(await observeChronicleOperation({
-    store: reopened, operationKey: "mission-1:step-1", expectedContent: "record"
+    store: reopened, idempotencyKey: "mission-1:step-1", missionId: "mission-1",
+    stepId: "step-1", action: "chronicle_append", target: { content: "record" }
   }), {
-    status: "applied", operationKey: "mission-1:step-1",
-    source: "nexo-chronicle-store", causalAttribution: "not_established"
+    status: "applied", idempotencyKey: "mission-1:step-1", missionId: "mission-1",
+    stepId: "step-1", action: "chronicle_append", target: { content: "record" },
+    observedRevision: 1, source: "nexo-chronicle-store", causalAttribution: "not_established"
   });
   assert.equal((await observeChronicleOperation({
-    store: reopened, operationKey: "mission-1:step-2", expectedContent: "missing"
+    store: reopened, idempotencyKey: "mission-1:step-2", missionId: "mission-1",
+    stepId: "step-2", action: "chronicle_append", target: { content: "missing" }
   })).status, "not_applied");
 
   // Independent operations written concurrently must not overwrite each other.
@@ -65,13 +68,15 @@ try {
   assert.equal(recoveredWrite.recoveredAfterWriteError, true);
   const lostResponseReader = createNexoChronicleStore({ filePath: lostPath });
   assert.equal((await observeChronicleOperation({
-    store: lostResponseReader, operationKey: "mission-2:step-1", expectedContent: "survived"
+    store: lostResponseReader, idempotencyKey: "mission-2:step-1", missionId: "mission-2",
+    stepId: "step-1", action: "chronicle_append", target: { content: "survived" }
   })).status, "applied");
 
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
   assert.equal((await observeChronicleOperation({
-    store: reopened, operationKey: "mission-1:step-1", expectedContent: "record"
+    store: reopened, idempotencyKey: "mission-1:step-1", missionId: "mission-1",
+    stepId: "step-1", action: "chronicle_append", target: { content: "record" }
   })).status, "unknown");
 } finally {
   await fs.rm(root, { recursive: true, force: true });
