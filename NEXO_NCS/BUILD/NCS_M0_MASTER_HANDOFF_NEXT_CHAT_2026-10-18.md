@@ -181,7 +181,7 @@ Commits:
 - Workflow: `d3bce60a5d53df8ffa5caf1fb987fccfe0116620`
 - STATUS: `42af7045279ddc494abc8c2b4f984a5506781596`
 
-CI enfocado [39140959531](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140959531) estaba en progreso al escribir esta nota. Confirmar resultado y los pasos de test antes de marcar PASS. Esta prueba todavía **no** integra `runtime.js`; valida el flujo repair-only de los helpers ya existentes.
+CI enfocado [39140959531](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140959531) completó **SUCCESS** en el SHA exacto del workflow `d3bce60a5d53df8ffa5caf1fb987fccfe0116620`. El job `repair-crash-cuts` y los pasos de crash-cut, migración y lifecycle integrado finalizaron `success`. Esta prueba todavía **no** integra `runtime.js`; valida el flujo repair-only de los helpers ya existentes. Los commits documentales posteriores no cambian el SHA al que aplica esta evidencia.
 
 ## 7. Siguiente tarea concreta
 
