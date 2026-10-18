@@ -9,6 +9,7 @@ import { createInitialAgents } from "../../src/agents.js";
 import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
+import { observePersistedRepairInvariant } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
 
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
 const statePath = pathToFileURL(path.join(dir, "world-state.json"));
@@ -312,6 +313,60 @@ assert.equal(persistedRepairJournal.snapshot.effectJournal[0].status, "prepared"
   "durable desired state must not be silently treated as owner settlement");
 await fs.rm(repairDir, { recursive: true, force: true });
 
+
+/*
+ * Read-only repair observation contract: classify durable desired state without
+ * settling PREPARED, authorizing redispatch, or mutating the supplied snapshot.
+ */
+const observationSnapshot = {
+  version: 5,
+  stateRevision: 7,
+  world: { resources: { wood: { amount: -2 }, water: { amount: 0 } } },
+  agents: [
+    { id: "normalized", alive: true, position: { x: 1, z: 2 }, needs: { hunger: 100, thirst: 0, energy: 50, social: 50, safety: 50, health: 100 } },
+    { id: "needs-repair", alive: true, position: { x: 1, z: 2 }, needs: { hunger: 120, thirst: 0, energy: 50, social: 50, safety: 50, health: 100 } },
+    { id: "unknown-life", position: { x: 1, z: 2 }, needs: {} }
+  ]
+};
+const observationSnapshotBefore = structuredClone(observationSnapshot);
+assert.deepEqual(
+  observePersistedRepairInvariant({ snapshot: observationSnapshot, action: "repair_agent_state", target: "normalized" }),
+  {
+    status: "observed",
+    outcome: "desired_state_present",
+    reason: "repair_invariant_holds_in_persisted_snapshot",
+    evidence: {
+      kind: "persisted-repair-invariant-observation",
+      source: "world-state.json",
+      action: "repair_agent_state",
+      target: "normalized",
+      stateRevision: 7
+    }
+  }
+);
+assert.equal(
+  observePersistedRepairInvariant({ snapshot: observationSnapshot, action: "repair_agent_needs", target: "needs-repair" }).outcome,
+  "desired_state_absent"
+);
+assert.equal(
+  observePersistedRepairInvariant({ snapshot: observationSnapshot, action: "repair_resource_state", target: "wood" }).outcome,
+  "desired_state_absent"
+);
+assert.equal(
+  observePersistedRepairInvariant({ snapshot: observationSnapshot, action: "repair_agent_state", target: "unknown-life" }).reason,
+  "REPAIR_AGENT_ALIVE_STATE_UNKNOWN"
+);
+assert.equal(
+  observePersistedRepairInvariant({ snapshot: observationSnapshot, action: "repair_resource_state", target: "missing" }).outcome,
+  "unknown"
+);
+assert.deepEqual(observationSnapshot, observationSnapshotBefore, "repair observation must not mutate persisted state");
+assert.equal(
+  observePersistedRepairInvariant({ snapshot: { ...observationSnapshot, stateRevision: -1 }, action: "repair_agent_state", target: "normalized" }).outcome,
+  "unknown"
+);
+
 await fs.rm(dir, { recursive: true, force: true });
-console.log("Nexo: real file save -> restart -> reconstruct preserves mission memory and simulation state; repair crash-cut remains explicitly unsettled.");
+console.log("Nexo: real file save -> restart -> reconstruct preserves mission memory and simulation state; repair crash-cut remains explicitly unsettled; read-only repair observations are non-mutating.");
+
 
