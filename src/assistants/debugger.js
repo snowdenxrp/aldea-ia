@@ -1,6 +1,6 @@
 export function runDebugger({ files = {}, simulation = null } = {}) {
   const findings = [];
-  const add = (severity, code, message, evidence = null) => findings.push({ severity, code, message, evidence });
+  const add = (severity, code, message, evidence = null, details = {}) => findings.push({ severity, code, message, evidence, ...details });
 
   for (const [path, content] of Object.entries(files)) {
     if (typeof content !== "string") continue;
@@ -28,12 +28,12 @@ export function runDebugger({ files = {}, simulation = null } = {}) {
     for (const agent of agents) {
       if (!agent?.id) add("error", "AGENT_ID", "Se encontró un habitante sin id.");
       if (!agent?.position || !Number.isFinite(Number(agent.position.x)) || !Number.isFinite(Number(agent.position.z))) {
-        add("error", "AGENT_POSITION", `Posición inválida para ${agent?.name ?? agent?.id ?? "habitante"}.`);
+        add("error", "AGENT_POSITION", `Posición inválida para ${agent?.name ?? agent?.id ?? "habitante"}.`, null, { agent: agent?.id ?? null });
       }
       if (agent?.alive !== true) add("warning", "AGENT_DEAD", `${agent?.name ?? agent?.id ?? "Habitante"} no está marcado como vivo.`);
       for (const key of ["hunger","thirst","energy","social","safety","health"]) {
         const value = Number(agent?.needs?.[key]);
-        if (!Number.isFinite(value) || value < 0 || value > 100) add("error", "INVALID_NEED", `Necesidad inválida ${key} en ${agent?.name ?? agent?.id ?? "habitante"}.`, value);
+        if (!Number.isFinite(value) || value < 0 || value > 100) add("error", "INVALID_NEED", `Necesidad inválida ${key} en ${agent?.name ?? agent?.id ?? "habitante"}.`, value, { agent: agent?.id ?? null });
       }
       if (Array.isArray(agent?.memories) && agent.memories.length > 5000) add("warning", "MEMORY_GROWTH", `${agent.name ?? agent.id} tiene ${agent.memories.length} recuerdos.`);
       if (Array.isArray(agent?.experiences) && agent.experiences.length > 5000) add("warning", "EXPERIENCE_GROWTH", `${agent.name ?? agent.id} tiene ${agent.experiences.length} experiencias.`);
