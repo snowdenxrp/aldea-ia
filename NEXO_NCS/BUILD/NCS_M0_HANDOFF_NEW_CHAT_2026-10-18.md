@@ -160,3 +160,12 @@ This closes one crash boundary for the repair-only lifecycle; it does not prove 
 - La prueba no autentica fuentes externas ni cierra M0. Mantener efectos protegidos STOP, STEP 7 OPEN / STOP / UNKNOWN, no repetir M1 ni auditorías históricas.
 
 **Siguiente acción:** trabajar el contrato de outcome para una verificación independiente de objetivo; definir su evidencia/procedencia y transición sin conflar `settled_observed`, causalidad y completion. Luego migrar solo una operación legacy tras demostrar PREPARED durable, CAS, crash recovery y replay en la entrada real. No sustituir los imports de `src/nexo/runtime.js` por owner calls de forma mecánica.
+
+
+## Actualización de continuidad — 2026-10-18
+
+- El verificador independiente ahora tiene regresiones para pérdida de la invariante y revisión ambiental regresiva. La primera debe devolver `blocked / NEXO_REPAIR_MISSION_GOAL_INVARIANT_NOT_PRESENT`; la segunda `unknown / NEXO_REPAIR_MISSION_ENVIRONMENT_REVISION_ROLLBACK_OR_REPLAY`. Ninguna escribe en el store Nexo.
+- Prueba commit `d01384083368d1b9f52ad5c327dc4b1985e5573a`; CI verde: [repair 39146476081](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146476081), [STEP 4 39146476199](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146476199), [STEP 5 39146476145](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146476145).
+- Un cambio incompleto de esquema `goalObservations` produjo CI fallido en runs 39146494871/39146494887; se revirtió en `16c51fc994de1ca8a6471fa30f9060068b998da8`. No ocultar este fallo ni reintroducir el campo sin contrato/migración completa.
+- HEAD actual `864ab85d38bf67040ef5a662dd8769cad3ea4c9f`; el último CI verde explícito es sobre su padre `16c51fc994de1ca8a6471fa30f9060068b998da8`. Revalidar el HEAD antes de afirmar cobertura exacta.
+- Próximo: definir si y cómo persistir una observación de objetivo con procedencia que no dependa de etiquetas del caller. No promover misión a completed; no afirmar causalidad; no tocar el corte del runtime genérico aún.
