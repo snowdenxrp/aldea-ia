@@ -255,3 +255,10 @@ La vertical Chronicle ya está conectada a `executeNexoStepWithContinuityOwner` 
 - Prueba real `tests/nexo/chronicle-runtime.test.mjs` usa continuidad store, Chronicle store, owner y adapter reales; cubre el ciclo completo, crash tras append antes de lineage, no-apply sin redispatch y respuesta perdida tras commit de outcome.
 - CI verde de esa integración: [run 39173898535](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173898535), SHA `5e076ac31bd0c74432f104e54699918984520103`. El guard adicional que bloquea completion sin settlement aún espera CI: run `39173941624` PENDING; run `39173935254` del owner IN_PROGRESS al momento de escribir.
 - Revisar esos dos runs primero. Luego validar las suites amplias afectadas y registrar el SHA final. M0 sigue INCOMPLETO; runtime default sin cambios; no ampliar a otras acciones ni usar Lúmina.
+
+
+## Estado validado del owner-backed Chronicle (actualización posterior)
+
+- [Run 39173941624](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173941624) SUCCESS en SHA `47790c4014581c42fc5f85f9ba609e3a0678b53b`; store y runtime Chronicle pasaron incluyendo el bloqueo de outcome fabricado sin settlement.
+- STEP 4 [39173941657](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173941657) y STEP 5 [39173941656](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173941656) también SUCCESS en el SHA final. El workflow bounded continuity/runtime pasó en el SHA previo del owner, `4657c36ca3eb1311f9593f1777636da57088581d`, run [39173935284](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173935284).
+- Siguiente frontera: entrada mínima propia de Nexo para invocar solo `chronicle_append`, con rutas explícitas, IDs de misión/paso suministrados y creación inicial opt-in. Debe validar contra el snapshot existente y no importar ni leer Lúmina. Esta entrada no se ha implementado aún; no cambiar runtime default. M0 INCOMPLETO.
