@@ -1,3 +1,15 @@
+## Latest M0 continuity work — strict recovery + retained mission history (2026-10-18)
+
+- Strict loader: `scripts/simulate.mjs::loadStateStrict()` rejects fallback state, invalid/missing revision, malformed Nexo memory, and prepared entries whose mission/step/action/target context is missing or inconsistent.
+- Retention: `src/assistants/memory.js` preserves mission plans, attempts, and execution records for every retained mission; prepared-effect missions are protected from plan eviction. Ordinary history caps remain soft for causal records required by retained missions.
+- Regression: 120-step mission with 120 completed attempts and 220 execution records remains reconstructable; prior completed dependency stays completed after retention and after journal clears.
+- Test reliability: a race test occasionally allowed worker B to load after worker A committed, so both commits were valid sequentially. Added ready/release barrier so both workers start from the same revision and the test actually exercises conflict.
+- Reports: `NCS_M0_STRICT_STATE_LOAD_2026-10-18.md`; `NCS_M0_PRESERVE_PREPARED_MISSION_CONTEXT_2026-10-18.md`.
+- Final exact source+test head `0b55842258c9c9457837f5bc801f94a5c31b425c` CI PASS: mission/restart [39097716822](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716822), STEP 4 [39097716845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716845), STEP 5 [39097716821](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716821).
+- No executor or protected external-effect path implemented. M0 remains incomplete; external prepared effects UNKNOWN; protected effects STOP.
+
+---
+
 ## Latest M0 continuity integrity changes — 2026-10-18
 
 - Strict load guard: `scripts/simulate.mjs::loadStateStrict()` rejects missing/invalid snapshot, invalid revision, malformed Nexo memory, and orphaned/mismatched `prepared` journal context. It never fabricates default state/revision for a safety-sensitive caller.
