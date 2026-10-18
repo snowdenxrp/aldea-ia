@@ -1,3 +1,9 @@
+## 1C. Guard adicional: observación del caller no liquida PREPARED (CI pendiente)
+
+- Commit `df10a6466f23903d5b9a1c7ed2992be5a635bb59` añade una regresión en `tests/nexo/repair-settlement-crash-cuts.test.mjs`: se llama `owner.reconcilePrepared()` con una observación inventada por el caller (`desired_state_present`) y se exige `blocked / NEXO_EFFECT_RECONCILIATION_REQUIRED`, `verified: false` y journal todavía `prepared`.
+- Esto congela la frontera fail-closed del owner; no implementa settlement genérico. La implementación real requiere un contrato de reconciliación/verificador confiable por acción, ligado al estado ambiental persistido tras reinicio.
+- Checks consultados para el SHA nuevo: `statuses: []`. Run y resultado CI siguen PENDING/UNKNOWN. No afirmar PASS hasta observar el run/log.
+
 # NCS / M0 — Handoff de recuperación para el siguiente chat
 Fecha: 2026-10-18
 Repositorio: `snowdenxrp/aldea-ia`
