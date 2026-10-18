@@ -853,3 +853,11 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Por tanto, el repositorio todavía no ofrece una acción genérica no-repair propia de Nexo con writer + reader persistido independiente. Reusar `execute_lumina_action` como si fuera esa acción mantendría la dependencia que la arquitectura prohíbe.
 
 **Decisión de trabajo:** no implementar todavía un verificador genérico ni cambiar el runtime por defecto. El siguiente diseño debe definir la primera capacidad/efecto nativo de Nexo y su estado persistido canónico (fuera de la simulación de Lúmina), incluyendo quién escribe, quién lo lee después de reinicio y qué invariante observable permite reconciliarlo. Solo entonces se añade un verificador por acción y se prueba el ciclo PREPARED → dispatch → lineage → observación/settlement sin redispatch. No construir otro monolito ni inventar infraestructura general antes de tener una acción concreta. M0 sigue INCOMPLETO.
+
+
+## M0 — preflight doble de verificador confirmado en CI (2026-10-18)
+
+- Prueba añadida en `tests/nexo/runtime.test.mjs`, commit [2088417a482fefc0128f024c8c63fa212e87d64f](https://github.com/snowdenxrp/aldea-ia/commit/2088417a482fefc0128f024c8c63fa212e87d64f): aunque el owner anuncie un verificador, si el adaptador no anuncia su propio contrato de reconciliación, el runtime bloquea antes de PREPARED y antes de dispatch.
+- CI observable: [run 39172525158 — bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525158) SUCCESS. Incluye `runtime.test.mjs`, `effect-adapter.test.mjs`, reconstrucción tras reinicio, store y contrato de continuidad.
+- STEP 4 y STEP 5 también SUCCESS para este SHA: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525106), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525094). No extrapolar estas suites a M0 completo.
+- El bloqueo arquitectónico sigue igual: no hay aún una acción no-repair nativa de Nexo con writer persistente + lector independiente post-restart. La ruta simulada de Lúmina no sirve como sustituto. La siguiente tarea no es agregar más preflights, sino definir la primera vertical nativa y su fuente persistida concreta antes de conectar un verificador específico.
