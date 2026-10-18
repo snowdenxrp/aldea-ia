@@ -138,6 +138,16 @@ try {
   assert.equal(reconstructed.mission.status, "blocked");
   assert.equal(reconstructed.mission.objective, "reconcile_prepared_effect");
 
+  const replayWithWrongBaseline = await opened.owner.recordExecutionLineage({
+    expectedRevision: 1,
+    operation: { ...operation, environmentStateRevision: 11 },
+    result: { status: "completed", verified: true, evidence: { source: "caller" } }
+  });
+  assert.equal(replayWithWrongBaseline.status, "blocked");
+  assert.equal(replayWithWrongBaseline.code, "NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 1,
+    "lineage replay with a different PREPARED baseline must not mutate continuity");
+
   const duplicate = await opened.owner.recordExecutionLineage({
     expectedRevision: 1,
     operation,
