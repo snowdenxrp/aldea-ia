@@ -611,3 +611,11 @@ Esta nota registra límites detectados al contrastar el checkpoint con el códig
 - A detected partial state change or failed postcondition now returns BLOCKED and leaves the journal PREPARED, rather than caching a terminal failure. Same-key replay is tested not to dispatch the handler again.
 - Exact-head CI PASS at `d3ebb7738ba29a3e1ffdbd93f29e35e0c692093a`: [mission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138229), [semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138224), [outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138205).
 - Details: [partial-effect checkpoint](BUILD/NCS_M0_PARTIAL_EFFECT_FAIL_CLOSED_CHECKPOINT_2026-10-18.md). This does not provide independent reconciliation and does not complete runtime cutover. M0 remains INCOMPLETE; unresolved PREPARED UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+## M0 update — failed Lúmina action can mutate state (2026-10-18)
+
+- Fixed `src/nexo/simulation-adapter.js` to compare Lúmina agents/world before and after an action even when the action returns failure; observed mutation now advances the simulation effect revision. Code commit: `ed64bec0ad8b8741b7da6f8bcccf65f5af5d2742`.
+- Regression test forces `catch_fish` to fail with `fish_escaped` while energy/activity mutate. Nexo now blocks with `PARTIAL_EFFECT_DETECTED`, leaves PREPARED unresolved, and refuses replanning. Test commit: `08681d908a3231e0b45700fd09bd35207d7069ae`.
+- Exact-head CI PASS: [mission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105229917), [semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105229991), [outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105229910).
+- Details: [failed-action mutation checkpoint](BUILD/NCS_M0_LUMINA_FAILED_ACTION_MUTATION_CHECKPOINT_2026-10-18.md). This is a simulation-specific fix, not independent crash reconciliation. Generic handler failure without observed version change is still not universal proof of no effect. Runtime cutover remains blocked; M0 incomplete; unresolved PREPARED UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
