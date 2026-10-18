@@ -100,6 +100,22 @@ Límites comprobados:
 ### C. Corrección del test de revisión persistida
 `applyState()` crea simulación en memoria y no conserva `stateRevision` del snapshot persistido. La prueba había calculado la revisión siguiente desde el objeto de simulación y fallaba. Se corrigió para conservar el snapshot estrictamente cargado (`changedGoalSource`) y calcular `changedGoalSource.stateRevision + 1`. No se cambió la persistencia de Lúmina para acomodar el test.
 
+### D. Owner-backed durable outcome recording — latest increment
+
+Added `recordOutcome({ expectedRevision, outcome })` to `src/nexo/core/continuity-owner.mjs`. It persists step outcomes through Nexo's own store CAS, binds them to the stored mission/step/action/target, preserves the first attempt, and refuses completed outcomes while the matching effect journal remains `prepared` or `settled_observed`. The method does not settle the journal and reports authorization as `NOT_EVALUATED`.
+
+Regression coverage was added to `tests/nexo/continuity-migration.test.mjs` for required completion evidence, durable reconstruction, replay immutability, and the unresolved-effect guard. The focused M0 workflow now runs both continuity migration and repair crash-cut tests.
+
+Evidence:
+- Owner implementation: `cd559da754ca407da25095f689e434e314597e42`
+- Unresolved-effect completion guard: `d6eed85aadcb106eeed7cfb44c0e47d215c4b5af`
+- Exact source + test head: `c7a8852b791dec8a2bee64cda6126aa1658af198`
+- Focused workflow: [39140292963](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140292963) — SUCCESS; crash-cut and continuity-migration test steps passed.
+- Mission/restart [39140282526](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140282526), STEP 4 [39140282510](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140282510), STEP 5 [39140282488](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140282488) — SUCCESS on the source/test head.
+- Detailed checkpoint: `NEXO_NCS/BUILD/NCS_M0_OWNER_DURABLE_OUTCOME_RECORDING_2026-10-18.md`.
+
+This is a persistence primitive, not runtime cutover. Runtime still uses legacy memory. No independent evidence authentication, cross-store atomicity, authority, or protected-effect authorization is claimed.
+
 ## 4. Commits de referencia y evidencia
 
 Los SHAs siguientes identifican cambios concretos; consultar GitHub para HEAD real antes de hacer más cambios.
