@@ -1,0 +1,33 @@
+name: Nexo M0 — settlement replay regression
+
+on:
+  push:
+    branches:
+      - ncs-clean-architecture
+    paths:
+      - "scripts/nexo-repair-settlement.mjs"
+      - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
+      - ".github/workflows/nexo-m0-settlement-replay.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexo-m0-settlement-replay-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  settlement-replay:
+    name: Repair settlement crash cuts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run focused M0 crash-cut regression
+        run: node tests/nexo/repair-settlement-crash-cuts.test.mjs
