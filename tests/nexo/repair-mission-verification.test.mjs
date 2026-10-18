@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import fsSync from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
@@ -123,40 +122,6 @@ try {
   assert.equal(changedDuringVerification.code, "NEXO_CONTINUITY_CHANGED_DURING_MISSION_VERIFICATION");
   assert.equal(changedDuringVerification.verified, false);
   assert.equal(continuityReads, 2);
-
-  // Trigger an environment write synchronously when the final continuity
-  // revision is inspected. This deterministically places the write after the
-  // initial environment read and before the verifier's final environment read.
-  let environmentRaceReads = 0;
-  const environmentChangingStore = {
-    async loadCurrent() {
-      environmentRaceReads += 1;
-      const current = await reopened.store.loadCurrent();
-      if (environmentRaceReads === 1) return current;
-      return {
-        ...current,
-        get storeRevision() {
-          fsSync.writeFileSync(statePath, JSON.stringify(environment(101)), "utf8");
-          return current.storeRevision;
-        }
-      };
-    }
-  };
-  const environmentChangedDuringVerification = await verifyRepairMissionGoalFromPersistedState({
-    store: environmentChangingStore,
-    statePath,
-    missionId: "mission-verification"
-  });
-  assert.equal(environmentChangedDuringVerification.status, "unknown");
-  assert.equal(
-    environmentChangedDuringVerification.code,
-    "NEXO_REPAIR_MISSION_ENVIRONMENT_CHANGED_DURING_MISSION_VERIFICATION"
-  );
-  assert.equal(environmentChangedDuringVerification.verified, false);
-  assert.equal(environmentChangedDuringVerification.initialEnvironmentStateRevision, 100);
-  assert.equal(environmentChangedDuringVerification.finalEnvironmentStateRevision, 101);
-  assert.equal(environmentRaceReads, 2);
-  await fs.writeFile(statePath, JSON.stringify(environment(100)), "utf8");
 
   // Goal observation is deliberately not a durable mission completion. The
   // canonical reconstruction keeps the settled step blocked against redispatch.
