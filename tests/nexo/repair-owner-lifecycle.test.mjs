@@ -5,6 +5,7 @@ import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
+import { runNexoRepairOnce } from "../../scripts/nexo-repair-entrypoint.mjs";
 import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
 import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
@@ -240,14 +241,25 @@ try {
     const beforeRecoverySettlement = await recovered.owner.loadCurrent();
     assert.equal(beforeRecoverySettlement.storeRevision, 1);
     assert.equal(beforeRecoverySettlement.snapshot.effectJournal[0].status, "prepared");
-    const recoverySettlement = await settlePreparedRepairFromPersistedState({
+    const recoverySettlement = await runNexoRepairOnce({
+      owner: recovered.owner,
       store: recovered.store,
       statePath: recoveryStatePath,
-      idempotencyKey: "mission-owner-lifecycle:step-repair",
-      expectedContinuityRevision: 1
+      expectedContinuityRevision: 1,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      },
+      savedAt: 6
     });
-    assert.equal(recoverySettlement.status, "settled_observed");
-    assert.equal(recoverySettlement.environmentStateRevision, 31);
+    assert.equal(recoverySettlement.status, "recovered");
+    assert.equal(recoverySettlement.phase, "settlement");
+    assert.equal(recoverySettlement.dispatched, false,
+      "recovery must observe the persisted invariant rather than redispatch");
+    assert.equal(recoverySettlement.settlement.environmentStateRevision, 31);
     assert.equal((await loadStateStrict(recoveryStatePath)).stateRevision, 31);
     const afterRecoverySettlement = await recovered.owner.loadCurrent();
     assert.equal(afterRecoverySettlement.storeRevision, 2);
