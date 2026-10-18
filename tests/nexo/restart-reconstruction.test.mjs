@@ -132,3 +132,42 @@ assert.equal(learnedMemory.patterns[0].seen, 2);
 assert.notEqual(learnedMemory.patterns[0], priorLearningMemory.patterns[0]);
 
 console.log("Nexo: learning memory snapshot isolation OK.");
+
+// A prepared effect is a recovery obligation: retention must not evict the
+// mission plan needed to reconstruct its action/target/dependencies.
+const retainedMissionPlans = Array.from({length: 60}, (_, index) => ({
+  missionId: `retention-mission-${String(index).padStart(2,"0")}`,
+  version: 4,
+  status: "planned",
+  objective: "repair_agent_state",
+  steps: [{
+    id: "step-1", action: "repair_agent_state", target: `agent-${index}`,
+    status: "planned", dependsOn: []
+  }]
+}));
+const retainedPreparedJournal = [{
+  idempotencyKey: "retention-mission-00:step-1",
+  missionId: "retention-mission-00",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "agent-0",
+  status: "prepared"
+}];
+const retentionMemory = createLearningMemory({
+  nexo: { missions: retainedMissionPlans, effectJournal: retainedPreparedJournal }
+});
+assert.equal(retentionMemory.nexo.missions.length, 50);
+assert.ok(retentionMemory.nexo.missions.some(item => item.missionId === "retention-mission-00"));
+assert.ok(reconstructNexoMission(retentionMemory, "retention-mission-00"));
+assert.equal(retentionMemory.nexo.effectJournal[0].status, "prepared");
+
+// Adding a new plan must apply the same retention rule rather than evicting
+// the mission that still explains the prepared operation.
+const postRetentionPlan = recordNexoPlan(retentionMemory, {
+  version: 4, missionId: "retention-mission-new", status: "planned",
+  objective: "repair_agent_state",
+  steps: [{id:"step-1",action:"repair_agent_state",target:"agent-new",status:"planned",dependsOn:[]}]
+});
+assert.ok(postRetentionPlan.nexo.missions.some(item => item.missionId === "retention-mission-00"));
+assert.ok(reconstructNexoMission(postRetentionPlan, "retention-mission-00"));
+
