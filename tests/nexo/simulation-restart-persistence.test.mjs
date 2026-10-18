@@ -9,7 +9,7 @@ import { createInitialAgents } from "../../src/agents.js";
 import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
-import { observePersistedRepairInvariant } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
+import { observePersistedRepairInvariant, comparePersistedRepairRevision } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
 
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
 const statePath = pathToFileURL(path.join(dir, "world-state.json"));
@@ -359,6 +359,23 @@ assert.equal(
 assert.equal(
   observePersistedRepairInvariant({ snapshot: observationSnapshot, action: "repair_resource_state", target: "missing" }).outcome,
   "unknown"
+);
+
+assert.deepEqual(
+  comparePersistedRepairRevision({ expectedStateRevision: 7, currentSnapshot: observationSnapshot }),
+  { status: "observed", outcome: "current", reason: "PERSISTED_ENVIRONMENT_REVISION_MATCHES", expectedStateRevision: 7, currentStateRevision: 7 }
+);
+assert.deepEqual(
+  comparePersistedRepairRevision({ expectedStateRevision: 6, currentSnapshot: observationSnapshot }),
+  { status: "observed", outcome: "stale", reason: "PERSISTED_ENVIRONMENT_REVISION_CHANGED", expectedStateRevision: 6, currentStateRevision: 7 }
+);
+assert.deepEqual(
+  comparePersistedRepairRevision({ currentSnapshot: observationSnapshot }),
+  { status: "observed", outcome: "unknown", reason: "PREPARED_ENVIRONMENT_REVISION_NOT_BOUND", expectedStateRevision: null, currentStateRevision: 7 }
+);
+assert.deepEqual(
+  comparePersistedRepairRevision({ expectedStateRevision: 7, currentSnapshot: { ...observationSnapshot, stateRevision: NaN } }),
+  { status: "observed", outcome: "unknown", reason: "PERSISTED_ENVIRONMENT_REVISION_UNKNOWN", expectedStateRevision: 7, currentStateRevision: null }
 );
 assert.deepEqual(observationSnapshot, observationSnapshotBefore, "repair observation must not mutate persisted state");
 assert.equal(
