@@ -20,16 +20,32 @@ const REPAIR_ACTIONS = new Set([
  */
 export async function dispatchPreparedRepair({
   statePath,
-  preparedOperation,
+  owner,
+  idempotencyKey,
   savedAt = Date.now()
 } = {}) {
-  const action = preparedOperation?.action;
-  const target = preparedOperation?.target ?? null;
-  const expectedRevision = preparedOperation?.environmentStateRevision;
+  if (!owner || typeof owner.loadCurrent !== "function" ||
+      typeof idempotencyKey !== "string" || !idempotencyKey.trim()) {
+    return { status: "blocked", code: "NEXO_PREPARED_OWNER_AND_KEY_REQUIRED", persisted: false };
+  }
+
+  let continuity;
+  try {
+    continuity = await owner.loadCurrent();
+  } catch (error) {
+    return { status: "blocked", code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED", persisted: false };
+  }
+  const matches = continuity.snapshot.effectJournal.filter(entry => entry?.idempotencyKey === idempotencyKey);
+  if (matches.length !== 1 || matches[0]?.status !== "prepared") {
+    return { status: "blocked", code: "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN", persisted: false };
+  }
+  const preparedOperation = matches[0];
+  const action = preparedOperation.action;
+  const target = preparedOperation.target ?? null;
+  const expectedRevision = preparedOperation.environmentStateRevision;
   if (!REPAIR_ACTIONS.has(action) ||
-      typeof preparedOperation?.idempotencyKey !== "string" ||
-      typeof preparedOperation?.missionId !== "string" ||
-      typeof preparedOperation?.stepId !== "string") {
+      typeof preparedOperation.missionId !== "string" ||
+      typeof preparedOperation.stepId !== "string") {
     return { status: "blocked", code: "NEXO_REPAIR_OPERATION_CONTEXT_INVALID", persisted: false };
   }
   if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
