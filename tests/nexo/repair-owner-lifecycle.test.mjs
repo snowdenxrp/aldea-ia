@@ -182,6 +182,20 @@ try {
   assert.equal((await opened.owner.loadCurrent()).storeRevision, 2,
     "read-only goal verification must not mutate Nexo continuity");
 
+  await fs.writeFile(statePath, JSON.stringify(environment(12)), "utf8");
+  const goalMissing = await verifyRepairMissionGoalFromPersistedState({ store: opened.store, statePath, missionId: "mission-owner-lifecycle" });
+  assert.equal(goalMissing.status, "blocked");
+  assert.equal(goalMissing.code, "NEXO_REPAIR_MISSION_GOAL_INVARIANT_NOT_PRESENT");
+  assert.equal(goalMissing.verified, false);
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 2);
+
+  await fs.writeFile(statePath, JSON.stringify(environment(10, { x: 1, z: 2 })), "utf8");
+  const goalRollback = await verifyRepairMissionGoalFromPersistedState({ store: opened.store, statePath, missionId: "mission-owner-lifecycle" });
+  assert.equal(goalRollback.status, "unknown");
+  assert.equal(goalRollback.code, "NEXO_REPAIR_MISSION_ENVIRONMENT_REVISION_ROLLBACK_OR_REPLAY");
+  assert.equal(goalRollback.verified, false);
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 2);
+
   // Physical separation: Lúmina's world-state file must not embed Nexo memory.
   const rawWorldState = JSON.parse(await fs.readFile(statePath, "utf8"));
   assert.equal("nexoMemory" in rawWorldState, false);
