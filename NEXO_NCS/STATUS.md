@@ -1,3 +1,14 @@
+## M0 — Execution idempotency identity hardening (2026-10-18)
+
+- Hardened `src/nexo/core/continuity-operations.mjs`: reusing an existing execution idempotency key for a different mission/step/action/target now fails with `NEXO_EXECUTION_IDENTITY_MISMATCH` instead of silently treating the operation as a replay.
+- Same-identity replays preserve the first execution result; a late result does not overwrite the original lineage.
+- Added regression assertions in `tests/nexo/continuity-contract.test.mjs` for both same-identity replay preservation and mismatched-identity rejection.
+- Commits: implementation [6250c73](https://github.com/snowdenxrp/aldea-ia/commit/6250c73bef0691454a9830794ac7fdb8352968ac); regression [94fa6a1](https://github.com/snowdenxrp/aldea-ia/commit/94fa6a117a7b0d87e98640b920ccbfeaf80086b7).
+- **Verification pending:** the workflow-run lookup returned no run associated with the latest commit, and local execution is unavailable in this environment. Do not label this change tested until CI or an equivalent Node test run confirms it.
+- This hardening is limited to the snapshot operation function. It does not complete runtime migration, settle PREPARED effects, or grant authority. M0 remains incomplete; protected effects STOP; unresolved prepared outcomes UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## NEXT CHAT ENTRY — finish Nexo's independent continuity migration (2026-10-18)
 
 **Read first:** [Detailed next-chat handoff — finish migration](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_2026-10-18_MIGRATION.md), then [migration recovery checkpoint](BUILD/NCS_M0_CONTINUITY_MIGRATION_RECOVERY_CHECKPOINT_2026-10-18.md), then [continuity owner contract](BUILD/NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md).
