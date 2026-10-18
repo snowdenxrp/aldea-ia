@@ -52,6 +52,17 @@ function legacyMemory({ existingCompletedAttempt = false } = {}) {
   };
 }
 
+
+function genericMemory() {
+  const memory = legacyMemory();
+  memory.nexo.missions[0].steps[0].action = "generic_write";
+  memory.nexo.missions[0].steps[0].target = "alpha";
+  memory.nexo.effectJournal[0].action = "generic_write";
+  memory.nexo.effectJournal[0].target = "alpha";
+  delete memory.nexo.effectJournal[0].environmentStateRevision;
+  return memory;
+}
+
 function environment(stateRevision, { normalized = true } = {}) {
   return {
     version: 5,
@@ -271,13 +282,13 @@ try {
   await fs.mkdir(genericDir);
   const genericOpened = await openNexoContinuityOwner({
     filePath: path.join(genericDir, "nexo.json"),
-    legacyMemory: legacyMemory()
+    legacyMemory: genericMemory()
   });
   let genericVerifierCalls = 0;
   const genericOwner = createNexoContinuityOwner({
     store: genericOpened.store,
     effectVerifiers: {
-      repair_agent_state: async operation => {
+      generic_write: async operation => {
         genericVerifierCalls++;
         return {
           status: "applied",
@@ -297,8 +308,8 @@ try {
       idempotencyKey: "mission-crash-cut:step-repair",
       missionId: "mission-crash-cut",
       stepId: "step-repair",
-      action: "repair_agent_state",
-      target: "alex"
+      action: "generic_write",
+      target: "alpha"
     }
   });
   assert.equal(genericObserved.status, "observed");
@@ -318,12 +329,12 @@ try {
   await fs.mkdir(unknownDir);
   const unknownOpened = await openNexoContinuityOwner({
     filePath: path.join(unknownDir, "nexo.json"),
-    legacyMemory: legacyMemory()
+    legacyMemory: genericMemory()
   });
   const unknownOwner = createNexoContinuityOwner({
     store: unknownOpened.store,
     effectVerifiers: {
-      repair_agent_state: async operation => ({
+      generic_write: async operation => ({
         status: "unknown",
         idempotencyKey: operation.idempotencyKey,
         action: operation.action,
@@ -339,8 +350,8 @@ try {
       idempotencyKey: "mission-crash-cut:step-repair",
       missionId: "mission-crash-cut",
       stepId: "step-repair",
-      action: "repair_agent_state",
-      target: "alex"
+      action: "generic_write",
+      target: "alpha"
     }
   });
   assert.equal(genericUnknown.status, "blocked");
@@ -353,8 +364,8 @@ try {
       idempotencyKey: "mission-crash-cut:step-repair",
       missionId: "mission-crash-cut",
       stepId: "step-repair",
-      action: "repair_agent_state",
-      target: "alex"
+      action: "generic_write",
+      target: "alpha"
     }
   });
   assert.equal(noVerifierResult.status, "blocked");
@@ -368,13 +379,13 @@ try {
   await fs.mkdir(raceDir);
   const raceOpened = await openNexoContinuityOwner({
     filePath: path.join(raceDir, "nexo.json"),
-    legacyMemory: legacyMemory()
+    legacyMemory: genericMemory()
   });
   let raceCommitResult;
   const raceOwner = createNexoContinuityOwner({
     store: raceOpened.store,
     effectVerifiers: {
-      repair_agent_state: async operation => {
+      generic_write: async operation => {
         const concurrent = await raceOpened.store.loadCurrent();
         raceCommitResult = await raceOpened.store.commitIfCurrent(concurrent.storeRevision, concurrent.snapshot);
         return {
@@ -394,8 +405,8 @@ try {
       idempotencyKey: "mission-crash-cut:step-repair",
       missionId: "mission-crash-cut",
       stepId: "step-repair",
-      action: "repair_agent_state",
-      target: "alex"
+      action: "generic_write",
+      target: "alpha"
     }
   });
   assert.equal(raceCommitResult.status, "committed");
