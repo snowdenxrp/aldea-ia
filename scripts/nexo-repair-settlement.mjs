@@ -34,10 +34,6 @@ export async function settlePreparedRepairFromPersistedState({
   } catch (error) {
     return { status: "blocked", code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED", verified: false };
   }
-  if (current.storeRevision !== expectedContinuityRevision) {
-    return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", verified: false, storeRevision: current.storeRevision };
-  }
-
   const matches = current.snapshot.effectJournal.filter(entry => entry?.idempotencyKey === idempotencyKey);
   if (matches.length !== 1) {
     return { status: "blocked", code: "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN", verified: false, storeRevision: current.storeRevision };
@@ -80,6 +76,13 @@ export async function settlePreparedRepairFromPersistedState({
       environmentStateRevision: settlement.environmentStateRevision,
       storeRevision: current.storeRevision
     };
+  }
+  // Only a journal-confirmed settlement may recover across a changed store
+  // revision. An unresolved PREPARED entry still requires the caller's exact
+  // expected revision; otherwise return the CAS conflict without observing or
+  // mutating anything.
+  if (current.storeRevision !== expectedContinuityRevision) {
+    return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", verified: false, storeRevision: current.storeRevision };
   }
   if (entry.status !== "prepared") {
     return { status: "blocked", code: "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN", verified: false, storeRevision: current.storeRevision };
