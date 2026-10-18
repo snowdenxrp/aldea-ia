@@ -1,0 +1,34 @@
+name: Nexo M0 — Chronicle native vertical
+
+on:
+  push:
+    branches:
+      - ncs-clean-architecture
+    paths:
+      - "src/nexo/core/chronicle-store.mjs"
+      - "src/nexo/adapters/chronicle-observation.mjs"
+      - "tests/nexo/chronicle-store.test.mjs"
+      - ".github/workflows/nexo-m0-chronicle.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexo-m0-chronicle-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  chronicle-contract:
+    name: Chronicle persisted writer and independent reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Chronicle store and post-restart observation
+        run: node tests/nexo/chronicle-store.test.mjs
