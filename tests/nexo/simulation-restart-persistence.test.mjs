@@ -9,6 +9,7 @@ import { createInitialAgents } from "../../src/agents.js";
 import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
+import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
 import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
 import { observePersistedRepairInvariant, comparePersistedRepairRevision } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
 
@@ -277,31 +278,43 @@ assert.equal(preparedIntent.preparedCommitted, true);
 assert.equal(preparedIntent.environmentStateRevision, 0, "PREPARED revision must be derived from strict persisted state");
 assert.equal(preparedIntent.environmentRevisionSource, "strict-persisted-world-state");
 
-const repairAdapter = createLuminaEffectAdapter(repairSimulation);
-const repairedEffect = await repairAdapter.execute({
-  missionId: "repair-crash-cut",
-  stepId: "step-1",
-  action: "repair_agent_state",
-  target: "alex",
-  idempotencyKey: "repair-crash-cut:step-1",
-  precondition: ({ stateVersion }) => stateVersion === 0,
-  postcondition: ({ effectResult }) =>
-    effectResult?.status === "completed" &&
-    repairSimulation.agents[0].alive === true &&
-    Number.isFinite(repairSimulation.agents[0].position.x) &&
-    Number.isFinite(repairSimulation.agents[0].position.z)
+const repairedEffect = await dispatchPreparedRepair({
+  statePath: repairStatePath,
+  savedAt: 2000,
+  preparedOperation: {
+    missionId: "repair-crash-cut",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    idempotencyKey: "repair-crash-cut:step-1",
+    environmentStateRevision: preparedIntent.environmentStateRevision
+  }
 });
 assert.equal(repairedEffect.status, "completed");
-assert.equal(repairSimulation.agents[0].position.x, 0);
-
-await persistState(repairStatePath, repairSimulation, 2000, {
-  expectedRevision: 0,
-  stateRevision: 1
-});
+assert.equal(repairedEffect.persisted, true);
+assert.equal(repairedEffect.environmentStateRevision, 1);
 const durableRepairSnapshot = await loadStateStrict(repairStatePath);
 assert.equal(durableRepairSnapshot.stateRevision, 1);
 assert.equal(durableRepairSnapshot.agents[0].position.x, 0);
 assert.equal(durableRepairSnapshot.agents[0].alive, true);
+
+const staleDispatch = await dispatchPreparedRepair({
+  statePath: repairStatePath,
+  savedAt: 3000,
+  preparedOperation: {
+    missionId: "repair-crash-cut",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    idempotencyKey: "repair-crash-cut:stale-attempt",
+    environmentStateRevision: 0
+  }
+});
+assert.equal(staleDispatch.status, "blocked");
+assert.equal(staleDispatch.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_STALE");
+assert.equal(staleDispatch.persisted, false);
+assert.equal((await loadStateStrict(repairStatePath)).stateRevision, 1);
+
 
 // Simulate process restart by reopening the separate Nexo continuity owner.
 const restartedRepairContinuity = await openNexoContinuityOwner({
