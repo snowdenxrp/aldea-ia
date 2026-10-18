@@ -40,12 +40,17 @@ export async function verifyRepairMissionGoalFromPersistedState({
     return { status: "unknown", code: "NEXO_REPAIR_MISSION_STEPS_UNKNOWN", verified: false, storeRevision: current.storeRevision };
   }
 
-  const stepIds = new Set(mission.steps.map(step => step?.id));
+  const stepIds = new Set();
   for (const step of mission.steps) {
-    if (!step || typeof step.id !== "string" || !step.id.trim() ||
+    if (!step || typeof step.id !== "string" || !step.id.trim() || stepIds.has(step.id) ||
         !REPAIR_ACTIONS.has(step.action) || typeof step.target !== "string" || !step.target.trim() ||
-        !Array.isArray(step.dependsOn) ||
-        step.dependsOn.some(id => !stepIds.has(id) || id === step.id)) {
+        !Array.isArray(step.dependsOn)) {
+      return { status: "unknown", code: "NEXO_REPAIR_MISSION_STEP_OR_DEPENDENCY_UNSUPPORTED", verified: false, storeRevision: current.storeRevision };
+    }
+    stepIds.add(step.id);
+  }
+  for (const step of mission.steps) {
+    if (step.dependsOn.some(id => !stepIds.has(id) || id === step.id)) {
       return { status: "unknown", code: "NEXO_REPAIR_MISSION_STEP_OR_DEPENDENCY_UNSUPPORTED", verified: false, storeRevision: current.storeRevision };
     }
   }
@@ -68,6 +73,9 @@ export async function verifyRepairMissionGoalFromPersistedState({
   }
 
   const journal = current.snapshot.effectJournal.filter(entry => entry?.missionId === missionId);
+  if (journal.length !== mission.steps.length || journal.some(entry => !stepIds.has(entry?.stepId))) {
+    return { status: "unknown", code: "NEXO_REPAIR_MISSION_JOURNAL_COVERAGE_MISMATCH", verified: false, storeRevision: current.storeRevision };
+  }
   if (journal.some(entry => entry.status === "prepared")) {
     return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, storeRevision: current.storeRevision };
   }
