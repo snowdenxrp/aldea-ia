@@ -486,3 +486,25 @@ assert.equal(lineageFailure.status,"unknown");
 assert.equal(lineageFailure.code,"NEXO_EXECUTION_LINEAGE_COMMIT_OUTCOME_UNKNOWN");
 assert.equal(lineageFailure.preparedCommitted,true);
 assert.equal(lineageFailure.journalSettled,false);
+
+let repairPrepareCalls=0;
+let repairDispatchCalls=0;
+const repairCanonicalOwner={
+  ...canonicalOwner,
+  loadCurrent:async()=>({storeRevision:0,snapshot:{missions:[{missionId:"repair-canonical",status:"planned",steps:[{id:"step-1",action:"repair_agent_state",target:"alex",status:"planned"}]}]}}),
+  supportsReconciliation:()=>true,
+  recordPrepared:async()=>{repairPrepareCalls++;return {status:"committed",preparedCommitted:true,storeRevision:1};}
+};
+const repairCanonicalAdapter={
+  supports:()=>true,
+  supportsReconciliation:()=>true,
+  execute:async()=>{repairDispatchCalls++;return {status:"completed",verified:true};}
+};
+const repairCanonicalResult=await executeNexoStepWithContinuityOwner({
+  missionId:"repair-canonical",stepId:"step-1",owner:repairCanonicalOwner,adapter:repairCanonicalAdapter
+});
+assert.equal(repairCanonicalResult.status,"blocked");
+assert.equal(repairCanonicalResult.code,"NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED");
+assert.equal(repairCanonicalResult.dispatchAttempted,false);
+assert.equal(repairPrepareCalls,0);
+assert.equal(repairDispatchCalls,0);
