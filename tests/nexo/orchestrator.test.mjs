@@ -74,7 +74,7 @@ assert.equal(restoredSuccessor.parentMissionId, failed.missionId);
 assert.equal(restoredSuccessor.replanReason, "MESH_REPAIR_FAILED");
 assert.equal(lineageMemory.nexo.attempts[0].evidence.code, "MESH_REPAIR_FAILED");
 assert.equal(replanNexoMission({previousMission:{...failed,status:"planned"}}), null);
-assert.equal(replanNexoMission({previousMission:{...failed,status:"blocked",steps:[{status:"blocked"}]}}), null);
+assert.equal(replanNexoMission({previousMission:{missionId:failed.missionId,status:"blocked",steps:[{status:"blocked"}]}}), null);
 
 
 const boundedAction=buildNexoMission({
