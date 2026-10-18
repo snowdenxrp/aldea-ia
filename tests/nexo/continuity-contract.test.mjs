@@ -251,12 +251,20 @@ assert.throws(
 );
 operationalSnapshot = recordNexoOutcomeInSnapshot(operationalSnapshot, {
   missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
-  target: "alex", status: "completed", evidence: { verified: true, kind: "effect-postcondition" }
+  target: "alex", status: "completed", evidence: { verified: true, kind: "effect-postcondition", source: "test-postcondition" }
 });
 operationalSnapshot = recordNexoOutcomeInSnapshot(operationalSnapshot, {
   missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
-  target: "alex", status: "failed", evidence: { verified: false, kind: "late-replay" }
+  target: "alex", status: "failed", evidence: { verified: false, kind: "late-replay", source: "test-replay" }
 });
+assert.throws(
+  () => recordNexoOutcomeInSnapshot(operationalSnapshot, {
+    missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+    target: "alex", status: "completed", evidence: { verified: true, kind: "effect-postcondition" }
+  }),
+  error => error?.code === "NEXO_COMPLETION_EVIDENCE_UNVERIFIED",
+  "completion claims must name their evidence source; the label itself is not authentication"
+);
 const reconstructedCoreMission = reconstructNexoMissionFromSnapshot(operationalSnapshot, "core-mission");
 assert.equal(reconstructedCoreMission.steps[0].status, "completed", "late replay must not regress a verified completed step");
 assert.equal(reconstructedCoreMission.objective, "verify_mission_outcome");
