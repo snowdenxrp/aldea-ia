@@ -430,6 +430,29 @@ try {
   });
   assert.equal(corruptContinuity.status, "blocked");
   assert.equal(await fs.readFile(corruptContinuityPath, "utf8"), "{broken");
+
+  // Preflight both stores before any initialization side effect.
+  const corruptContinuityPath2 = path.join(entryRoot, "corrupt-continuity-no-partial.json");
+  const missingChroniclePath = path.join(entryRoot, "must-not-create-chronicle.json");
+  await fs.writeFile(corruptContinuityPath2, "{broken", "utf8");
+  const preflightContinuity = await runNexoChronicleAppend({
+    ...args, continuityPath: corruptContinuityPath2, chroniclePath: missingChroniclePath,
+    initializeContinuity: true, initializeChronicle: true
+  });
+  assert.equal(preflightContinuity.status, "blocked");
+  assert.equal(await fs.readFile(corruptContinuityPath2, "utf8"), "{broken");
+  await assert.rejects(fs.access(missingChroniclePath), { code: "ENOENT" });
+
+  const corruptChroniclePath2 = path.join(entryRoot, "corrupt-chronicle-no-partial.json");
+  const missingContinuityPath = path.join(entryRoot, "must-not-create-continuity.json");
+  await fs.writeFile(corruptChroniclePath2, "{broken", "utf8");
+  const preflightChronicle = await runNexoChronicleAppend({
+    ...args, continuityPath: missingContinuityPath, chroniclePath: corruptChroniclePath2,
+    initializeContinuity: true, initializeChronicle: true
+  });
+  assert.equal(preflightChronicle.status, "blocked");
+  assert.equal(await fs.readFile(corruptChroniclePath2, "utf8"), "{broken");
+  await assert.rejects(fs.access(missingContinuityPath), { code: "ENOENT" });
 } finally {
   await fs.rm(entryRoot, { recursive: true, force: true });
 }
