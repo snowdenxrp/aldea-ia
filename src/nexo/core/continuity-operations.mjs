@@ -166,7 +166,9 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
   const orphanPrepared = unresolvedPrepared.some(entry =>
     !mission.steps.some(step => step.id === entry.stepId)
   );
-  if (orphanPrepared) {
+  if (orphanPrepared || unresolvedPrepared.length > 0) {
+    // PREPARED uncertainty takes precedence over ordinary failure/replan status:
+    // a successor mission must not bypass an effect that may already have occurred.
     mission.status = "blocked";
     mission.objective = "reconcile_prepared_effect";
     mission.uncertainty = "present";
