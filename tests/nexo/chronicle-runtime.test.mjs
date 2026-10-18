@@ -136,6 +136,8 @@ const settledOwner = {
       }]
     }
   }),
+  recordPrepared: async () => { throw new Error("settled replay must not prepare again"); },
+  recordExecutionLineage: async () => { throw new Error("settled replay must not redispatch"); },
   supportsReconciliation: () => true,
   recordOutcome: async ({ expectedRevision }) => {
     replayCalls.push("outcome");
