@@ -769,7 +769,7 @@ try {
     statePath,
     expectedContinuityRevision: 0,
     operation: {
-      idempotencyKey: "mission-owner-lifecycle:adapter-crash",
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
       missionId: "mission-owner-lifecycle",
       stepId: "step-repair",
       action: "repair_agent_state",
@@ -780,7 +780,7 @@ try {
   const result = await dispatchPreparedRepair({
     owner: opened.owner,
     statePath,
-    idempotencyKey: "mission-owner-lifecycle:adapter-crash",
+    idempotencyKey: "mission-owner-lifecycle:step-repair",
     adapterFactory: () => ({
       execute: async () => { throw new Error("injected adapter crash"); }
     })
