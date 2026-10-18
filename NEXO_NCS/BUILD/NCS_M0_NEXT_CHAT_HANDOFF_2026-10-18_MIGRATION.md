@@ -1,3 +1,11 @@
+## Continuity index updated
+
+- `NEXO_NCS/STATUS.md` is now a concise entry point with the current state, exact-head CI links, and ordered next reads.
+- The prior chronological STATUS contents were preserved verbatim in [`NEXO_NCS/STATUS_HISTORY_2026-10-18.md`](../STATUS_HISTORY_2026-10-18.md); history was not discarded.
+- The index change is documentation-only. The latest code/test CI evidence remains attached to code/test head `431978730f3b2be300fa51d3a35938ef6702e607`; do not imply the documentation commit itself was run through those code tests.
+
+---
+
 ## Latest update — action reconciliation matrix added (2026-10-18)
 
 - New source-backed matrix: [action reconciliation classification](NCS_M0_ACTION_RECONCILIATION_CLASSIFICATION_2026-10-18.md).
