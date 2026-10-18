@@ -1,3 +1,21 @@
+## Latest implementation — repair revision-fenced preparation and dispatch (2026-10-18)
+
+- Exact code/test head: [`64f8329aef2ba050e9600227e2661f56fb75e21d`](https://github.com/snowdenxrp/aldea-ia/commit/64f8329aef2ba050e9600227e2661f56fb75e21d).
+- `prepareRepairAgainstPersistedState()` derives the repair PREPARED revision from `loadStateStrict()`; the caller no longer supplies that integer to the helper.
+- `dispatchPreparedRepair()` loads the operation from the durable Nexo journal by idempotency key and requires exactly one PREPARED entry. It rejects missing entries, unknown revision bindings, and stale durable environment revisions. It only dispatches the three convergent repairs.
+- Changed state persists through existing `persistState()` expected-revision fencing with strict reload comparison. A concurrent writer winning the race blocks the stale commit; uncertainty is not converted to success.
+- Test covers successful revision 0→1 repair persistence, stale dispatch refusal, and no-PREPARED-entry refusal. The environment write still does not settle the separate Nexo journal.
+- Exact-head CI PASS: mission/restart [39132820121](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132820121), semantic [39132820068](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132820068), outcome [39132820026](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132820026).
+- Checkpoint: [NCS_M0_REPAIR_PREPARE_DISPATCH_REVISION_FENCE_CHECKPOINT_2026-10-18.md](NCS_M0_REPAIR_PREPARE_DISPATCH_REVISION_FENCE_CHECKPOINT_2026-10-18.md).
+
+### Next gate
+
+Add crash-cut tests for conditional persistence failure and commit ambiguity. Then specify a **repair-only terminal settlement** using the repository's own strict-loaded persisted invariant, the prepared environment revision, and continuity-store compare-and-commit. A successful environment write followed by a process stop must still leave PREPARED unresolved until settlement evidence is consumed. Do not generalize this to non-idempotent actions, do not add a generic cross-store transaction wrapper, and do not wire runtime until settlement is proven.
+
+M0 incomplete; unresolved PREPARED remains UNKNOWN until owner settlement; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest implementation — PREPARED repair environment revision binding (2026-10-18)
 
 - Code/test head: [`d0e38809992be291262153b527ec21a4793ac3d6`](https://github.com/snowdenxrp/aldea-ia/commit/d0e38809992be291262153b527ec21a4793ac3d6).
