@@ -7,7 +7,11 @@ on:
     paths:
       - "src/nexo/core/chronicle-store.mjs"
       - "src/nexo/adapters/chronicle-observation.mjs"
+      - "src/nexo/adapters/chronicle-effect.mjs"
+      - "src/nexo/core/continuity-owner.mjs"
+      - "src/nexo/runtime.js"
       - "tests/nexo/chronicle-store.test.mjs"
+      - "tests/nexo/chronicle-runtime.test.mjs"
       - ".github/workflows/nexo-m0-chronicle.yml"
   workflow_dispatch:
 
@@ -32,3 +36,5 @@ jobs:
           node-version: 22
       - name: Chronicle store and post-restart observation
         run: node tests/nexo/chronicle-store.test.mjs
+      - name: Chronicle owner-backed runtime and restart recovery
+        run: node tests/nexo/chronicle-runtime.test.mjs
