@@ -408,3 +408,11 @@ CI exacto: [39144434201](https://github.com/snowdenxrp/aldea-ia/actions/runs/391
 **Semántica probada:** el journal conserva `settled_observed`; la función de verificación devuelve `goal_observed` sin escritura; la reconstrucción aún no tiene una transición durable que resuelva la misión y la deja bloqueada. No introducir completion implícita.
 
 Próximo trabajo: definir si conviene un registro separado de observación de objetivo y su regla de vigencia ligada a la revisión del entorno. Debe quedar invalidable si la invariante desaparece; un dato histórico no puede reemplazar observación actual. Probar CAS/restart/replay antes de añadir persistencia. Runtime genérico sigue sin migrar; M0 abierto.
+
+## Incremento verificado — replay fail-closed tras reinicio (2026-10-18)
+
+La prueba del proceso real de `scripts/assistants.mjs` ya no termina al primer settlement. Después de que el subproceso persiste una reparación y sale, el test vuelve a abrir el owner desde el mismo archivo de continuidad y solicita la misma misión. El replay queda bloqueado/falla cerrado y no altera la revisión del entorno ni añade otra obligación al journal.
+
+CI exacto: [39144863235](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144863235), SUCCESS en SHA `1cd8dfd914fad7848df51eca0f4e0f75cff22264`. El job `repair-crash-cuts` y el test CLI aislado terminaron SUCCESS.
+
+**Siguiente tarea:** continuar la migración del runtime genérico con un contrato mínimo de resultado/lineage que use el owner. No hacer reemplazo mecánico de imports. `recordExecutionLineage()` conserva la obligación PREPARED; `recordOutcome()` registra un claim y no autentica evidencia ni liquida el journal. Mantener legacy hasta que el contrato de resultados, recuperación y rollback esté cubierto por crash cuts. M0 sigue INCOMPLETO; Nexo/Lúmina separados; efectos protegidos STOP.
