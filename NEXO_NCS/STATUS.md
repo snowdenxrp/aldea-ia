@@ -1,3 +1,9 @@
+## M0 — segundo guard: outcome no puede saltarse PREPARED (CI pendiente)
+
+- Commit `d2d96e66e1870c24af31a8b78273d4b33909e999` amplía `tests/nexo/repair-settlement-crash-cuts.test.mjs`: intentar registrar `completed` directamente sobre un paso con efecto `prepared` debe devolver `blocked / NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`, conservar el journal en `prepared` y no crear un attempt.
+- Esto cubre un bypass distinto al de `reconcilePrepared()`: ni una observación arbitraria ni un outcome directo pueden cerrar la obligación pendiente. Es un guard contractual; no es settlement genérico implementado.
+- El SHA nuevo no muestra status checks (`statuses: []`). CI continúa PENDING/UNKNOWN; no declarar PASS.
+
 ## M0 — guard contractual de settlement genérico (CI pendiente)
 
 - Commit `df10a6466f23903d5b9a1c7ed2992be5a635bb59` agrega a `tests/nexo/repair-settlement-crash-cuts.test.mjs` una aserción explícita: `owner.reconcilePrepared()` debe seguir devolviendo `blocked / NEXO_EFFECT_RECONCILIATION_REQUIRED` aunque el caller aporte una observación con `desired_state_present`; el journal debe permanecer `prepared`.
