@@ -1,0 +1,135 @@
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
+
+function legacyMemory() {
+  return {
+    version: 4,
+    runs: [],
+    lessons: [],
+    patterns: [],
+    nexo: {
+      missions: [{
+        missionId: "mission-crash-cut",
+        status: "blocked",
+        objective: "reconcile_prepared_effect",
+        steps: [{
+          id: "step-repair",
+          action: "repair_agent_state",
+          target: "alex",
+          status: "blocked",
+          dependsOn: []
+        }]
+      }],
+      attempts: [],
+      doNotRepeat: [],
+      executions: [],
+      effectJournal: [{
+        idempotencyKey: "mission-crash-cut:step-repair",
+        missionId: "mission-crash-cut",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex",
+        status: "prepared",
+        environmentStateRevision: 10,
+        at: "2026-10-18T00:00:00.000Z"
+      }]
+    }
+  };
+}
+
+function environment(stateRevision, { normalized = true } = {}) {
+  return {
+    version: 5,
+    stateRevision,
+    savedAt: 1,
+    day: 1,
+    hour: 8,
+    world: { day: 1, timeOfDay: 8, resources: {} },
+    agents: [{
+      id: "alex",
+      alive: true,
+      position: normalized ? { x: 1, z: 2 } : { x: "invalid", z: 2 },
+      needs: {}
+    }],
+    events: []
+  };
+}
+
+const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-repair-crash-cuts-"));
+try {
+  // Crash cut: environment persistence succeeded, but Nexo still has PREPARED.
+  // Reconciliation may record observation only; it must not claim causality/completion.
+  const observedDir = path.join(root, "observed");
+  await fs.mkdir(observedDir);
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(observedDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  const statePath = path.join(observedDir, "world-state.json");
+  await fs.writeFile(statePath, JSON.stringify(environment(11)), "utf8");
+
+  const settled = await settlePreparedRepairFromPersistedState({
+    store: opened.store,
+    statePath,
+    idempotencyKey: "mission-crash-cut:step-repair",
+    expectedContinuityRevision: 0
+  });
+  assert.equal(settled.status, "settled_observed");
+  assert.equal(settled.verified, true);
+  assert.equal(settled.causalAttribution, "not_claimed");
+  const afterSettlement = await opened.owner.loadCurrent();
+  assert.equal(afterSettlement.snapshot.effectJournal[0].status, "settled_observed");
+  assert.equal(afterSettlement.snapshot.effectJournal[0].settlement.causalAttribution, "not_claimed");
+  const reconstructed = await opened.owner.reconstructMission("mission-crash-cut");
+  assert.equal(reconstructed.mission.status, "blocked");
+  assert.equal(reconstructed.mission.objective, "verify_observed_repair_goal");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+
+  // Crash cut: current environment revision advanced beyond the allowed adjacent
+  // revision. Do not settle even when the desired invariant happens to be present.
+  const staleDir = path.join(root, "stale");
+  await fs.mkdir(staleDir);
+  const staleOpened = await openNexoContinuityOwner({
+    filePath: path.join(staleDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  const staleStatePath = path.join(staleDir, "world-state.json");
+  await fs.writeFile(staleStatePath, JSON.stringify(environment(12)), "utf8");
+  const stale = await settlePreparedRepairFromPersistedState({
+    store: staleOpened.store,
+    statePath: staleStatePath,
+    idempotencyKey: "mission-crash-cut:step-repair",
+    expectedContinuityRevision: 0
+  });
+  assert.equal(stale.status, "blocked");
+  assert.equal(stale.code, "NEXO_REPAIR_SETTLEMENT_ENVIRONMENT_REVISION_UNRELATED");
+  assert.equal((await staleOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
+  // Crash cut: the revision is adjacent but the repair invariant is absent.
+  // PREPARED remains unresolved; no redispatch or false settlement is authorized.
+  const absentDir = path.join(root, "absent");
+  await fs.mkdir(absentDir);
+  const absentOpened = await openNexoContinuityOwner({
+    filePath: path.join(absentDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  const absentStatePath = path.join(absentDir, "world-state.json");
+  await fs.writeFile(absentStatePath, JSON.stringify(environment(11, { normalized: false })), "utf8");
+  const absent = await settlePreparedRepairFromPersistedState({
+    store: absentOpened.store,
+    statePath: absentStatePath,
+    idempotencyKey: "mission-crash-cut:step-repair",
+    expectedContinuityRevision: 0
+  });
+  assert.equal(absent.status, "blocked");
+  assert.equal(absent.code, "NEXO_REPAIR_SETTLEMENT_INVARIANT_NOT_PROVEN");
+  assert.equal((await absentOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+} finally {
+  await fs.rm(root, { recursive: true, force: true });
+}
+
+console.log("Nexo repair crash cuts: observed settlement remains non-causal and blocked; stale revision and absent invariant preserve PREPARED.");
