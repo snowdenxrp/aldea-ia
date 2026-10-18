@@ -1,3 +1,12 @@
+## Update: fail-closed reconstruction for unresolved PREPARED (2026-10-18)
+
+- `reconstructNexoMissionFromSnapshot()` now checks the independent effect journal. If any effect for the mission remains `prepared`, reconstruction returns a blocked mission with objective `reconcile_prepared_effect`; the affected step is blocked with code `NEXO_EFFECT_RECONCILIATION_REQUIRED` and its idempotency key.
+- This unresolved state dominates ordinary failure/replan status so replan cannot route around an effect that may already have occurred. It is not a reconciliation result and not permission to execute.
+- Exact-head CI PASS at `1f359dfd0ef4c736431eb1f9890d061bbf9680b6`: mission/restart [39104631021](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104631021), semantic validation [39104631004](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104631004), outcome classification [39104630998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104630998).
+- Next safe boundary remains: integrate runtime through Nexo owner only after independent operation-specific reconciliation and terminal settlement contracts exist. Do not add a caller-supplied boolean/callback as proof; do not dispatch or replan around PREPARED.
+
+---
+
 ## Update: Nexo-owned mission reconstruction landed (2026-10-18)
 
 - `src/nexo/core/continuity-owner.mjs` now exposes `reconstructMission(missionId)`, reconstructing from the standalone Nexo snapshot. Missing mission and invalid ID return explicit outcomes.
