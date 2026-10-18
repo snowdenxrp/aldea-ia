@@ -442,6 +442,27 @@ assert.equal(extraJournalGoal.status, "unknown");
 assert.equal(extraJournalGoal.code, "NEXO_REPAIR_MISSION_JOURNAL_COVERAGE_MISMATCH",
   "journal entries outside the mission step set must not be ignored");
 
+// A previous goal observation is not a durable completion claim: re-check the
+// actual current environment and refuse the goal if its invariant has regressed.
+const changedGoalDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-goal-regression-"));
+const changedGoalPath = pathToFileURL(path.join(changedGoalDir, "world-state.json"));
+const changedGoalEnvironment = applyState(await loadStateStrict(repairStatePath));
+changedGoalEnvironment.agents[0].position.x = "not-normalized";
+await persistState(changedGoalPath, changedGoalEnvironment, 8000, {
+  stateRevision: changedGoalEnvironment.stateRevision + 1
+});
+const regressedMissionGoal = await verifyRepairMissionGoalFromPersistedState({
+  store: restartedRepairContinuity.store,
+  statePath: changedGoalPath,
+  missionId: "repair-crash-cut"
+});
+assert.equal(regressedMissionGoal.status, "blocked");
+assert.equal(regressedMissionGoal.code, "NEXO_REPAIR_MISSION_GOAL_INVARIANT_NOT_PRESENT");
+assert.equal(regressedMissionGoal.missionCompleted, undefined,
+  "a regressed current invariant must not produce a mission completion claim");
+await fs.rm(changedGoalDir, { recursive: true, force: true });
+
+
 
 
 
