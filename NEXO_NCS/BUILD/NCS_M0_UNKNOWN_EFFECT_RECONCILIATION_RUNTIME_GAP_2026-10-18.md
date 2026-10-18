@@ -54,3 +54,14 @@ Until that contract is implemented and regression-tested, mark this seam **STOP 
 A narrow guard now prevents `replanNexoMission()` from creating a successor when the prior mission's last evidence or any step result/failure carries `EFFECT_OUTCOME_UNKNOWN`, even if the caller supplies an explicit replan reason. A regression was added to `tests/nexo/orchestrator.test.mjs` for this bypass attempt.
 
 This does not reconcile the prepared journal, does not establish durable operation identity across restart, and does not prevent all possible callers from constructing a mission through other APIs. The recovery contract remains OPEN / STOP / UNKNOWN; run the focused CI before treating this mitigation as verified.
+
+
+## CI verification of partial containment (2026-10-18)
+
+On exact code head `7f8e2e67f552e64a14adc2e64b41f77a90e0558d`:
+- Mission admission/restart continuity [39086881703](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881703) — PASS; job ran `tests/nexo/orchestrator.test.mjs` and `tests/nexo/runtime.test.mjs`.
+- M0 non-authority core contracts [39086881700](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881700) — PASS.
+- STEP 4 semantic validation [39086881778](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881778) — PASS.
+- STEP 5 outcome classification [39086881723](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881723) — PASS.
+
+These runs verify the narrow guard and existing regressions only. They do not prove runtime reconciliation, durable prepared-intent storage, external-world absence, exactly-once execution, or safe release from UNKNOWN.

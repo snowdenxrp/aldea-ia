@@ -269,3 +269,5 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Regression added to `tests/nexo/orchestrator.test.mjs` to prevent a caller-requested fresh mission from bypassing UNKNOWN.
 - This is a containment guard only. It does not provide reconciliation or prove operation identity across restart; the integrated recovery seam remains OPEN / STOP / UNKNOWN.
 
+
+- CI verification on exact code head `7f8e2e67f552e64a14adc2e64b41f77a90e0558d`: mission admission/restart continuity [39086881703](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881703) PASS (includes orchestrator and runtime tests); M0 core contracts [39086881700](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881700) PASS; STEP 4 [39086881778](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881778) PASS; STEP 5 [39086881723](https://github.com/snowdenxrp/aldea-ia/actions/runs/39086881723) PASS. This verifies the narrow replan guard regression, not end-to-end reconciliation.
