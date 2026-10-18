@@ -120,7 +120,7 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     const unresolvedEffect = current.snapshot.effectJournal.some(item =>
       item?.missionId === outcome.missionId &&
       item?.stepId === outcome.stepId &&
-      ["prepared", "settled_observed"].includes(item?.status)
+      ["prepared", "settled_observed", "reconciled_observed"].includes(item?.status)
     );
     if (unresolvedEffect) {
       return {
@@ -407,6 +407,11 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" };
     }
+    // Repair actions already have a stricter, revision-bound verifier and
+    // settlement contract. Do not relabel that repair-specific record as generic.
+    if (REPAIR_ACTIONS.has(operation.action)) {
+      return { status: "blocked", code: "NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED", preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
     const verifier = effectVerifiers && Object.hasOwn(effectVerifiers, operation.action) ? effectVerifiers[operation.action] : undefined;
     if (typeof verifier !== "function") {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
@@ -466,7 +471,7 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     }
     const candidate = emptyCandidate(latest.snapshot);
     const entry = candidate.effectJournal.find(item => item?.idempotencyKey === operation.idempotencyKey);
-    entry.status = "settled_observed";
+    entry.status = "reconciled_observed";
     entry.reconciliation = {
       status: observation.status,
       observedRevision: observation.observedRevision,
