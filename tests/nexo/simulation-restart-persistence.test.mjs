@@ -303,6 +303,17 @@ assert.equal(staleDispatch.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_STALE");
 assert.equal(staleDispatch.persisted, false);
 assert.equal((await loadStateStrict(repairStatePath)).stateRevision, 1);
 
+const unpreparedDispatch = await dispatchPreparedRepair({
+  statePath: repairStatePath,
+  owner: repairContinuity.owner,
+  idempotencyKey: "repair-crash-cut:not-prepared",
+  savedAt: 4000
+});
+assert.equal(unpreparedDispatch.status, "blocked");
+assert.equal(unpreparedDispatch.code, "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN");
+assert.equal((await loadStateStrict(repairStatePath)).stateRevision, 1);
+
+
 
 // Simulate process restart by reopening the separate Nexo continuity owner.
 const restartedRepairContinuity = await openNexoContinuityOwner({
