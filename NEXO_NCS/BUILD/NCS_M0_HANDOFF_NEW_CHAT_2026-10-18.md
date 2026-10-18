@@ -1,3 +1,13 @@
+## Avance posterior — admisión de PREPARED endurecida (2026-10-18)
+
+El owner canónico ya no crea una obligación PREPARED nueva si el paso no está exactamente `planned` o si alguna dependencia no existe/no está `completed`. Códigos: `NEXO_PREPARED_STEP_NOT_RUNNABLE` y `NEXO_PREPARED_DEPENDENCIES_UNMET`; ambos preservan `storeRevision` y journal. El check queda después de la rama de PREPARED existente para que un efecto ya incierto no desaparezca de la recuperación por cambios de estado.
+
+CI SUCCESS sobre SHA de código/pruebas `4549662e9cf879a15c4833b011ce5a8122e1c65e`: [bounded admission/restart 39152160229](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160229), [repair crash cuts 39152160394](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160394), [STEP 4 39152160252](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160252), [STEP 5 39152160267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160267). Test-first SHA `71764ddb9dfc511cfe437c6a12dc9f6122a2297b` falló en las dos suites de continuidad por el comportamiento anterior; STEP 4/STEP 5 pasaron pero no validaban el guard.
+
+**Siguiente:** avanzar al seam runtime canónico; runtime genérico legacy todavía no migrado. Mantener Nexo separado de Lúmina, sin atomicidad cross-store, sin `goalObservations`, sin completion por observación; efectos protegidos STOP y STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Nuevo avance posterior — replay de outcome contradictorio (2026-10-18)
 
 El owner canónico `recordOutcome()` ya no devuelve `already_recorded` cuando el mismo paso reaparece con un estado/evidencia distintos. Requiere igualdad de `status`, `evidence`, `parentMissionId` y `replanReason`; si difieren: `blocked / NEXO_OUTCOME_RESULT_MISMATCH`, sin cambiar la revisión ni el intento original. La prueba `tests/nexo/continuity-migration.test.mjs` verifica que un replay tardío `failed` no desplaza un outcome previamente `completed`.
