@@ -89,6 +89,32 @@ try {
   assert.equal(reconstructed.mission.objective, "verify_observed_repair_goal");
   assert.equal(reconstructed.mission.steps[0].status, "blocked");
 
+  // Recovery cut: the desired invariant was already present at the PREPARED
+  // baseline revision. Record observation only; this is not evidence that this
+  // repair caused the state, and reconstruction must still refuse redispatch.
+  const baselineDir = path.join(root, "baseline-already-satisfied");
+  await fs.mkdir(baselineDir);
+  const baselineOpened = await openNexoContinuityOwner({
+    filePath: path.join(baselineDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  const baselineStatePath = path.join(baselineDir, "world-state.json");
+  await fs.writeFile(baselineStatePath, JSON.stringify(environment(10)), "utf8");
+  const baselineObserved = await settlePreparedRepairFromPersistedState({
+    store: baselineOpened.store,
+    statePath: baselineStatePath,
+    idempotencyKey: "mission-crash-cut:step-repair",
+    expectedContinuityRevision: 0
+  });
+  assert.equal(baselineObserved.status, "settled_observed");
+  assert.equal(baselineObserved.environmentStateRevision, 10);
+  assert.equal(baselineObserved.causalAttribution, "not_claimed");
+  const baselineAfter = await baselineOpened.owner.loadCurrent();
+  assert.equal(baselineAfter.snapshot.effectJournal[0].status, "settled_observed");
+  const baselineMission = await baselineOpened.owner.reconstructMission("mission-crash-cut");
+  assert.equal(baselineMission.mission.status, "blocked");
+  assert.equal(baselineMission.mission.steps[0].status, "blocked");
+
   // Crash cut: current environment revision advanced beyond the allowed adjacent
   // revision. Do not settle even when the desired invariant happens to be present.
   const staleDir = path.join(root, "stale");
