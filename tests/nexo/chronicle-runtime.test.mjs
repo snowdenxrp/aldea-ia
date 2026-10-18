@@ -414,7 +414,7 @@ try {
   ];
   assert.equal(successfulCliArgs.includes(privateContent), false);
   const successfulCli = spawnSync(process.execPath, successfulCliArgs, { cwd: process.cwd(), encoding: "utf8", input: privateContent });
-  assert.equal(successfulCli.status, 0, successfulCli.stderr);
+  assert.equal(successfulCli.status, 0, JSON.stringify({ stdout: successfulCli.stdout, stderr: successfulCli.stderr, error: successfulCli.error?.message }));
   assert.equal(successfulCli.stderr, "");
   assert.equal(successfulCli.stdout.includes(privateContent), false);
   assert.equal(JSON.parse(successfulCli.stdout.trim()).status, "completed");
