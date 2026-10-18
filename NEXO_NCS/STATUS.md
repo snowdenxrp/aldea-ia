@@ -1,3 +1,12 @@
+## M0 — Execution-owner boundary gate from recovered AB/P evidence (2026-10-18)
+
+- Recovered and read existing AB104.150 / AB104.151, P112 effect-journal lifecycle + eviction audits, GLOBAL-AUDIT-109, AB104.999R and AB105.000R. These were retrieved, not rerun.
+- Root finding: no production caller drives the mission runtime; the missing link is the execution-owner boundary, not a forgotten callback. `persistPreparedIntent` alone is not durable unless the canonical snapshot owner persists it before dispatch.
+- Added [M0 execution-owner boundary gate](BUILD/NCS_M0_EXECUTION_OWNER_BOUNDARY_GATE_2026-10-18.md) specifying required admission, canonical state ownership, PREPARED-before-dispatch persistence, terminal snapshot, crash/revision conflict, operation-specific reconciliation, and limits.
+- No executor was added. This is intentional: no legitimate production permission source is established for protected effects, and connecting a generic executor now would create an unowned topology.
+- Runtime guard exact source+test head `23f2f5c24b9c8f9c5927513dedae1b20a4e40502` CI PASS: mission/restart [39096709481](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709481), STEP 4 [39096709477](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709477), STEP 5 [39096709519](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709519).
+- M0 remains incomplete. Prepared external effects remain UNKNOWN; no redispatch. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## M0 — Runtime rejects unverified completion claims (2026-10-18)
 
 - Change: `src/nexo/runtime.js` no longer maps `status: "completed"` to a successful mission unless both `adapterResult.verified === true` and `adapterResult.evidence.verified === true`. Missing/false verification is normalized to `blocked / UNVERIFIED_COMPLETION_RESULT` before persistence.
