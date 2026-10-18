@@ -498,3 +498,8 @@ M0 incomplete; protected effects STOP; PREPARED UNKNOWN; STEP 7 OPEN / STOP / UN
 ## Latest owner guard — 2026-10-18
 
 `recordExecutionLineage()` now requires a single matching persisted PREPARED entry before recording a new execution row. Exact identity match: idempotency key, mission, step, action and target. Owner change: `71b2db0b83e190f9f6d13c765a4e1bc85857903d`. Regression: `9971058e2477aa458e6afebdb240f4a52b3b2401`, verifies a mission without PREPARED is rejected and continuity remains unchanged. Exact-head CI is NOT VERIFIED; no local run is claimed. This remains lineage-only: no effect settlement, runtime cutover or independent proof.
+
+
+### Additional recovery regression (2026-10-18)
+
+Test commit `98caddd0edd81908c2f07b199391e9fe85dbeeae` adds a reconstruction case for an existing `settled_observed` repair entry. Expected behavior: mission remains blocked with objective `verify_observed_repair_goal`; the step is blocked with `NEXO_REPAIR_SETTLED_BY_OBSERVATION` and directs to `verify_mission_goal_without_redispatch`. This prevents an observation-only journal state from being treated as completed or executable. Exact-head CI NOT VERIFIED; no local test run claimed.
