@@ -241,6 +241,23 @@ try {
     const beforeRecoverySettlement = await recovered.owner.loadCurrent();
     assert.equal(beforeRecoverySettlement.storeRevision, 1);
     assert.equal(beforeRecoverySettlement.snapshot.effectJournal[0].status, "prepared");
+    const mismatchedRecovery = await runNexoRepairOnce({
+      owner: recovered.owner,
+      store: recovered.store,
+      statePath: recoveryStatePath,
+      expectedContinuityRevision: 1,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "different-agent"
+      }
+    });
+    assert.equal(mismatchedRecovery.status, "blocked");
+    assert.equal(mismatchedRecovery.code, "NEXO_REPAIR_OPERATION_CONTEXT_MISMATCH");
+    assert.equal((await loadStateStrict(recoveryStatePath)).stateRevision, 31,
+      "mismatched caller context must not trigger recovery or dispatch");
     const recoverySettlement = await runNexoRepairOnce({
       owner: recovered.owner,
       store: recovered.store,
