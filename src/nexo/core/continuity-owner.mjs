@@ -130,11 +130,22 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       return { status: "blocked", code: "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH", storeRevision: current.storeRevision };
     }
 
-    const unresolvedEffect = current.snapshot.effectJournal.some(item =>
-      item?.missionId === outcome.missionId &&
-      item?.stepId === outcome.stepId &&
-      ["prepared", "settled_observed", "reconciled_observed"].includes(item?.status)
+    const stepEffects = current.snapshot.effectJournal.filter(item =>
+      item?.missionId === outcome.missionId && item?.stepId === outcome.stepId
     );
+    // Chronicle's exact persisted append invariant is itself the goal for this
+    // one action. Other actions still require their separate goal-verification gate.
+    const chronicleSettlementReady = outcome.action === "chronicle_append" &&
+      outcome.status === "completed" &&
+      stepEffects.length === 1 &&
+      stepEffects[0]?.status === "settled_observed" &&
+      stepEffects[0]?.settlement?.status === "applied" &&
+      stepEffects[0]?.settlement?.source === "nexo-chronicle-store" &&
+      Number.isSafeInteger(stepEffects[0]?.settlement?.observedRevision) &&
+      stepEffects[0].settlement.observedRevision >= 0;
+    const unresolvedEffect = stepEffects.some(item =>
+      ["prepared", "settled_observed", "reconciled_observed"].includes(item?.status)
+    ) && !chronicleSettlementReady;
     if (unresolvedEffect) {
       return {
         status: "blocked",
@@ -488,14 +499,28 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       safeEvidence = structuredClone(observation.evidence ?? null);
       candidate = emptyCandidate(latest.snapshot);
       const entry = candidate.effectJournal.find(item => item?.idempotencyKey === operation.idempotencyKey);
-      entry.status = "reconciled_observed";
-      entry.reconciliation = {
-        status: observation.status,
-        observedRevision: observation.observedRevision,
-        source: observation.source,
-        evidence: safeEvidence,
-        observedAt: new Date().toISOString()
-      };
+      const chronicleApplied = operation.action === "chronicle_append" &&
+        observation.status === "applied" &&
+        observation.source === "nexo-chronicle-store";
+      if (chronicleApplied) {
+        entry.status = "settled_observed";
+        entry.settlement = {
+          status: "applied",
+          observedRevision: observation.observedRevision,
+          source: observation.source,
+          evidence: safeEvidence,
+          observedAt: new Date().toISOString()
+        };
+      } else {
+        entry.status = "reconciled_observed";
+        entry.reconciliation = {
+          status: observation.status,
+          observedRevision: observation.observedRevision,
+          source: observation.source,
+          evidence: safeEvidence,
+          observedAt: new Date().toISOString()
+        };
+      }
       assertNexoContinuitySnapshot(candidate);
     } catch (error) {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID", storeRevision: latest.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
@@ -508,9 +533,12 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       ...committed,
       status: "observed",
       observation: observation.status,
+      observedRevision: observation.observedRevision,
+      source: observation.source,
       preparedCommitted: false,
       observationCommitted: true,
-      journalSettled: false,
+      journalSettled: operation.action === "chronicle_append" &&
+        observation.status === "applied" && observation.source === "nexo-chronicle-store",
       causalAttribution: "NOT_ESTABLISHED",
       redispatchAuthorized: false,
       authorization: "NOT_EVALUATED"
