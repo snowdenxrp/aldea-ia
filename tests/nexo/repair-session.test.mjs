@@ -79,10 +79,14 @@ try {
   assert.equal(result.missionCompleted, false);
   assert.equal(result.causalAttribution, "not_claimed");
   const durableNexo = await opened.owner.loadCurrent();
-  assert.equal(durableNexo.storeRevision, 2);
+  assert.equal(durableNexo.storeRevision, 3,
+    "PREPARED, execution lineage, and observed settlement are three distinct owner commits");
   assert.equal(durableNexo.snapshot.effectJournal.length, 1);
   assert.equal(durableNexo.snapshot.effectJournal[0].status, "settled_observed");
   assert.equal(durableNexo.snapshot.effectJournal[0].action, "repair_agent_state");
+  assert.equal(durableNexo.snapshot.executions.length, 1);
+  assert.equal(durableNexo.snapshot.executions[0].result.persisted, true);
+  assert.equal(durableNexo.snapshot.executions[0].result.environmentStateRevision, 61);
   assert.equal((await loadStateStrict(statePath)).stateRevision, 61);
 
   const rawWorld = JSON.parse(await fs.readFile(statePath, "utf8"));
