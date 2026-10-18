@@ -48,6 +48,16 @@ assert.equal(mismatch.code,"POSTCONDITION_FAILED");
 assert.equal(mismatch.verified,false);
 assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s3")?.status,"prepared", "unverified effect must remain unresolved");
 assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s3")?.result,undefined);
+const callsAfterUnverifiedPostcondition=calls;
+const versionAfterUnverifiedPostcondition=version;
+const unverifiedRetry=await adapter.execute({
+  missionId:"m1",stepId:"s2",action:"safe_repair",target:"alex",idempotencyKey:"m1:s3",
+  precondition:()=>{throw new Error("unverified effect must not be redispatched");},postcondition:()=>true
+});
+assert.equal(unverifiedRetry.status,"blocked");
+assert.equal(unverifiedRetry.code,"EFFECT_RECONCILIATION_REQUIRED");
+assert.equal(calls,callsAfterUnverifiedPostcondition);
+assert.equal(version,versionAfterUnverifiedPostcondition);
 
 const concurrent=await adapter.execute({
   missionId:"m1",stepId:"s2",action:"safe_repair",target:"alex",idempotencyKey:"m1:s6",
