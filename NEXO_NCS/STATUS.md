@@ -1,3 +1,10 @@
+## M0 — Completion evidence requires a source label (2026-10-18)
+
+- Updated `src/nexo/core/continuity-operations.mjs` to require a non-empty `evidence.source` label for completion claims and to require that label during reconstruction. This follows M0.15's established rule.
+- Boundary remains explicit: the source string is only a label; it does not authenticate the source or prove independent verification. The standalone snapshot cannot grant authority or independently settle external effects.
+- Exact-head CI PASS at `3e5dbcd37a8e070ae6580357a1798a876070f7e4`: mission/restart [39099497697](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099497697), STEP 4 [39099497703](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099497703), STEP 5 [39099497743](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099497743).
+- Runtime migration remains pending; current legacy execution/reconstruction path still uses `createLearningMemory().nexo`. Do not mark Nexo/Lúmina separation complete.
+
 ## M0 — Nexo-only mission continuity operations extracted (2026-10-18)
 
 - Added `src/nexo/core/continuity-operations.mjs` at `b3a5aa2643a19a203c0db70c504e01c5900a2cb9`. It provides snapshot-only mission recording, execution lineage, outcome recording, and mission reconstruction without importing `createLearningMemory()` or learning analytics. The owner now uses this core mission-recording path.
