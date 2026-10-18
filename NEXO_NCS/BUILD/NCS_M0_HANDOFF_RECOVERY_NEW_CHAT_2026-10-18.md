@@ -54,6 +54,16 @@ La ruta ahora captura la excepción en la frontera concreta de settlement y devu
 - `tests/nexo/repair-owner-lifecycle.test.mjs` comprueba el adapter lanzando, la revisión ambiental conservada y la obligación `prepared` persistente en el owner.
 - Primer intento: run 39167516878 falló por una clave idempotente de fixture no canónica. Se corrigió a `mission-owner-lifecycle:step-repair`; el código quedó probado en commit `3f655a3f239ecaf87d4ba3dd1504bdfffa9a33df`, con [repair crash cuts 39167557221 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557221), [STEP 4 39167557187 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557187) y [STEP 5 39167557073 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557073).
 
+## 2B. Auditoría del seam genérico — hallazgo bloqueante (2026-10-18)
+
+El siguiente paso no es conectar mecánicamente `persistPreparedIntent` al owner:
+
+- `executeNexoStep()` llama al adapter antes de `commitRuntimeOutcome()`; este último registra execution/outcome en la memoria legacy `src/assistants/memory.js`.
+- `executeLuminaNexoStep()` acepta `persistPreparedIntent` opcional. Sin él, el journal solo es local. Con él, el adapter puede persistir PREPARED antes del handler, pero su resultado terminal se escribe solo en el journal local; el owner no recibe automáticamente execution lineage ni settlement.
+- `owner.reconcilePrepared()` devuelve `NEXO_EFFECT_RECONCILIATION_REQUIRED` por diseño. Un resultado `completed` del adapter no sustituye reconciliación persistida y confiable.
+- Por tanto, una integración parcial dejaría una obligación PREPARED sin resolver o permitiría una ventana de doble ejecución. **No hacer callback-only cutover ni sustituir memoria legacy después del dispatch.**
+- Próxima tarea: definir contratos confiables de reconciliación por acción/efecto y rechazo antes de dispatch cuando no exista contrato probado. Mantener separados admisión, PREPARED durable/CAS, dispatch, lineage, observación/reconciliación, settlement y outcome. El bridge repair-only es la única ruta completa demostrada; no generalizarlo por renombrado.
+
 ## 3. Próximo trabajo exacto
 
 **El hueco de excepción de dispatch y los límites de settlement ya auditados no deben repetirse.** El siguiente trabajo vuelve a la meta central de M0: definir el seam mínimo del **runtime genérico owner-backed**.

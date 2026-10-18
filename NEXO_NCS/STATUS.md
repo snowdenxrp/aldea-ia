@@ -11,6 +11,15 @@
 
 **Siguiente trabajo:** volver a la integración del runtime genérico de Nexo y especificar el seam mínimo owner-backed. No repetir el audit de dispatch ni el de settlement ya cubiertos.
 
+## M0 — seam del runtime genérico: callback PREPARED no basta (auditoría 2026-10-18)
+
+- `src/nexo/runtime.js` ejecuta `adapter.execute()` antes de `commitRuntimeOutcome()`; el commit posterior muta la memoria legacy de `src/assistants/memory.js`. No hay exigencia universal de PREPARED durable en el owner antes del dispatch.
+- `executeLuminaNexoStep()` pasa `persistPreparedIntent` al adaptador, pero ese callback es opcional. Sin callback, el journal es solo local/en memoria. Con callback, el adaptador persiste la intención antes del handler, pero su `persist()` terminal solo actualiza el journal local; no escribe execution lineage ni liquida el PREPARED del owner.
+- `createNexoContinuityOwner().reconcilePrepared()` devuelve deliberadamente `blocked / NEXO_EFFECT_RECONCILIATION_REQUIRED`. No existe un reconciliador genérico autorizado por el mero hecho de que el adapter informe `completed`.
+- **Conclusión:** conectar únicamente `persistPreparedIntent` al owner crearía PREPARED durable sin cerrar el ciclo de recuperación; sustituir las llamadas legacy por owner writes después del dispatch también deja una ventana de duplicación. No hacer ninguno de los dos cambios aisladamente.
+- **Siguiente corte:** definir contratos de reconciliación confiables por acción/efecto y bloquear dispatch para acciones que no tengan contrato demostrado. El contrato completo debe separar admisión canónica, PREPARED durable con CAS, dispatch, lineage, observación/reconciliación, settlement y outcome. El bridge repair-only es la única ruta concreta demostrada hoy; no generalizarlo por renombrado.
+- **M0 sigue INCOMPLETO.** Este hallazgo es auditoría de frontera, no integración terminada ni autorización para efectos protegidos.
+
 ## M0 — resultado incierto al confirmar PREPARED (2026-10-18, validado)
 
 - **Hueco reproducido:** `owner.recordPrepared()` podía persistir el registro PREPARED y luego lanzar una excepción antes de devolver confirmación (por ejemplo, respuesta perdida después del reemplazo durable). `prepareRepairAgainstPersistedState()` dejaba escapar la excepción y `runNexoRepairOnce()` no devolvía una respuesta estructurada. El journal podía contener PREPARED durable pese a que el caller no recibió confirmación.
