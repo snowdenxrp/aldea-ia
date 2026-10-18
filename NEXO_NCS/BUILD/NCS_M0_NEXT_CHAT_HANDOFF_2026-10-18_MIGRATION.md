@@ -1,3 +1,24 @@
+## Latest continuation — read-only persisted repair observer (2026-10-18)
+
+- Added `src/nexo/adapters/persisted-repair-observation.mjs` and regression coverage at exact code/test head [`8a89ef9b83b3126db3e83122a7876abe2a78819f`](https://github.com/snowdenxrp/aldea-ia/commit/8a89ef9b83b3126db3e83122a7876abe2a78819f).
+- For the three candidate repair actions, the observer classifies the durable desired-state invariant as present, absent, or unknown. It is read-only and fails closed on unknown life-state, invalid revision, missing targets, and malformed collection shapes.
+- It deliberately does **not** return `verified`, settle PREPARED, or authorize redispatch. It assumes a snapshot loaded through `loadStateStrict()` and is not atomic with later writes.
+- Exact-head CI PASS: mission/continuity [39107811320](https://github.com/snowdenxrp/aldea-ia/actions/runs/39107811320), semantic [39107811311](https://github.com/snowdenxrp/aldea-ia/actions/runs/39107811311), outcome [39107811306](https://github.com/snowdenxrp/aldea-ia/actions/runs/39107811306).
+- Checkpoint: [NCS_M0_REPAIR_OBSERVATION_CONTRACT_CHECKPOINT_2026-10-18.md](NCS_M0_REPAIR_OBSERVATION_CONTRACT_CHECKPOINT_2026-10-18.md).
+
+### Next exact task
+
+Design the repair-only settlement boundary; do not immediately add a terminal status switch.
+
+1. Decide whether a satisfied invariant can complete a *goal-state repair step* even if the exact operation cannot be attributed.
+2. Address the missing environment revision binding in PREPARED and the race between observing `world-state.json` and later writes.
+3. Prove behavior under stale environment revision, concurrent environment mutation, continuity-store revision conflict, absent desired state, and UNKNOWN target/life-state.
+4. Only after those decisions and crash-cut tests, add owner settlement backed by repository-controlled evidence and migrate runtime. No caller-provided `verified` assertion, generic transaction wrapper, or synthetic queue/receipt. Keep non-idempotent effects UNKNOWN.
+
+The observer is a diagnostic boundary, not end-to-end migration. M0 incomplete; legacy runtime outcome path remains; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest continuation — persisted repair crash cut (2026-10-18)
 
 - Added regression at code/test commit [`db3399aa28e6671bf5329ea5ca60544c8ac581ee`](https://github.com/snowdenxrp/aldea-ia/commit/db3399aa28e6671bf5329ea5ca60544c8ac581ee).
