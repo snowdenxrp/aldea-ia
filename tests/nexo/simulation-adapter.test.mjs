@@ -23,6 +23,19 @@ const needs=await adapter.execute({
 });
 assert.equal(needs.status,"completed");
 assert.equal(needs.verified,true);
+assert.equal(simulation.nexoEffectRevision,2);
+
+// A second normalization with a distinct operation key is convergent:
+// it must not manufacture a state revision when no data actually changes.
+const needsAgain=await adapter.execute({
+  missionId:"m1",stepId:"s2b",action:"repair_agent_needs",target:"alex",idempotencyKey:"m1:s2b",
+  precondition:({stateVersion})=>stateVersion===2,
+  postcondition:()=>simulation.agents[0].needs.hunger===100&&simulation.agents[0].needs.thirst===0
+});
+assert.equal(needsAgain.status,"completed");
+assert.equal(needsAgain.verified,true);
+assert.equal(needsAgain.effectResult.stateChanged,false);
+assert.equal(simulation.nexoEffectRevision,2,"idempotent normalization must not fabricate a revision");
 
 const stale=await adapter.execute({
   missionId:"m1",stepId:"s3",action:"repair_resource_state",target:"wood",idempotencyKey:"m1:s3",
@@ -40,6 +53,22 @@ const resource=await adapter.execute({
 });
 assert.equal(resource.status,"completed");
 assert.equal(resource.verified,true);
+assert.equal(simulation.nexoEffectRevision,3);
+
+const sparseResourceSimulation={
+  agents:[{id:"alex",alive:true,position:{x:0,z:0},needs:{hunger:50,thirst:50,energy:50,social:50,safety:50,health:100},inventory:[],skills:[]}],
+  world:{resources:{wood:{}}}
+};
+const sparseResourceAdapter=createLuminaEffectAdapter(sparseResourceSimulation);
+const sparseResource=await sparseResourceAdapter.execute({
+  missionId:"m3",stepId:"s1",action:"repair_resource_state",target:"wood",idempotencyKey:"m3:s1",
+  precondition:({stateVersion})=>stateVersion===0,
+  postcondition:()=>sparseResourceSimulation.world.resources.wood.amount===0
+});
+assert.equal(sparseResource.status,"completed");
+assert.equal(sparseResource.verified,true);
+assert.equal(sparseResourceSimulation.world.resources.wood.amount,0);
+assert.equal(sparseResourceSimulation.nexoEffectRevision,1);
 
 const action=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s5",
