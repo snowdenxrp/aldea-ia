@@ -1,5 +1,14 @@
 
 
+## Hallazgo incremental — misión bloqueada con paso planned (2026-10-18)
+
+`recordPrepared()` podía admitir una operación cuando el paso estaba `planned` pero la misión canónica estaba `blocked`. El owner ahora exige `mission.status === planned` para una nueva obligación PREPARED; rechaza con `NEXO_PREPARED_MISSION_NOT_RUNNABLE`, sin commit. La validación se ejecuta tras reconocer PREPARED existente, preservando el estado de recuperación.
+
+Test-first SHA `4c5cbf530da03642fb68da62f0abf1e8829bae5e`: [repair crash cuts 39153079971](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153079971) y [bounded admission/restart 39153080078](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153080078) fallaron en la aserción nueva. Código y pruebas validados en SHA `afb214730a1eca78d7f4a20b01d1a25826c42a5d`; runs 39153137599, 39153137708, 39153137714 y 39153137611 SUCCESS.
+
+Este guard mejora admisión, pero no sustituye el runtime legacy ni autoriza efectos fuera de la reconciliación específica. Mantener repair-only seam, sin atomicidad entre stores y sin declarar completion o atribución causal.
+
+
 ## Hallazgo incremental — PREPARED sin paso ejecutable (2026-10-18)
 
 `recordPrepared()` comprobaba identidad canónica pero no exigía por sí mismo que el paso estuviera `planned` y que todas sus dependencias estuvieran `completed`. La sesión de reparación ya hacía esa admisión; el owner necesitaba defender su propia frontera para que otros callers no pudieran crear un PREPARED sobre pasos no ejecutables.
