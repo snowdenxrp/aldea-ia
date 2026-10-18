@@ -62,7 +62,7 @@ The following original persisted artifacts were subsequently located and read:
 
 #### Direct implications for current M0 code
 
-1. The runtime guard now blocks a bare `completed` label when verification fields are absent/false. However, evidence provenance must also retain the **reason and scope** of that block; a generic `verified:false` record alone would lose the distinction required by AB104.999R.
+1. The runtime guard blocks a bare `completed` label when verification fields are absent/false and records `UNVERIFIED_COMPLETION_RESULT` with an explicit reason and operation scope (`missionId`, `stepId`, `action`, `target`) in attempt evidence, applying AB104.999R's reason/scope requirement. This is still self-reported adapter input at the boundary; it is not proof of independent source authenticity.
 2. A prepared effect cannot be resolved from the effect journal's `prepared` status, a caller callback, a terminal mission aggregate, a restored checkpoint, or a late receipt alone. This follows GLOBAL-AUDIT-109 and AB104.212.
 3. No current global revision, stateRevision, or local spatial version may be promoted to a universal effect fence. P112 explicitly records distributed writers and incomplete dependency closure.
 4. These artifacts support the current fail-closed direction; they do not supply the missing independent verifier/current fence/provenance source or prove an integrated PG-009 recovery path.
