@@ -1,3 +1,13 @@
+## Latest M0 architecture gate — Nexo-owned continuity boundary (2026-10-18)
+
+- Contract report: `NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md`.
+- Root coupling identified: current `createLearningMemory().nexo` operational history is mixed with learning data and `simulation.nexoMemory` is serialized into Lúmina `world-state.json`. This is a prototype bridge, not Nexo's canonical continuity store.
+- Contract derived from Maestra object ownership/persistence matrix, A05/A06 linearization, atomicity groups, P112 and AB104.150/.151. It defines a separate operational continuity owner without treating persistence as authority and without choosing storage technology.
+- Core contract: `src/nexo/core/continuity-contract.mjs`; strict load calls it; runtime/replan refuses invalid supplied continuity before dispatch. Regression CI PASS at runtime/test head `e237469a4e17ea4687a7b5fa9a84d9005d7938b6`: [mission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980956), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980918), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980960).
+- Next exact work: define Nexo-owned snapshot schema and conditional commit semantics; then audit the chosen persistence primitive against P0/P1 durability and crash cuts. Keep authority, STOP, provider reconciliation and Lúmina environment state separate. No external executor yet.
+
+---
+
 ## Latest M0 guard — continuity contract enforced at runtime (2026-10-18)
 
 - Runtime source `src/nexo/runtime.js` validates supplied memory before `executeNexoStep()` dispatch and before `replanPersistedNexoMission()` reconstructs or creates a successor.
