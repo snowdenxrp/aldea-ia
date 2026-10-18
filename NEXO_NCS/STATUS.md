@@ -1,3 +1,11 @@
+## M0.71 — Fail closed on unauthenticated reconciliation authority claims (2026-10-18)
+
+- Change: `src/nexo/core/reconciliation.mjs` no longer accepts caller-supplied `authoritative: true` plus a recognized outcome as sufficient for `RESOLVED`. This evidence boundary now remains `UNRESOLVED` until an independent trusted verifier/current fence/provenance source is wired in.
+- Regression: positive-looking caller claims and caller-owned evidence remain unresolved; custom array methods cannot promote authority; malformed-input fail-closed coverage remains.
+- Report: [M0.71 — Fail closed on unauthenticated reconciliation authority claims](BUILD/NCS_M0_71_FAIL_CLOSED_UNAUTHENTICATED_RECONCILIATION_AUTHORITY_2026-10-18.md).
+- Exact source/test head: `d67fd243016a2457747853a4b4a5342f8ca2ce4e`. Focused CI was queued: STEP 6 [39092325409](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325409), M0 Core [39092325426](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325426), STEP 4 [39092325423](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325423), STEP 5 [39092325427](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325427). Verify final results before treating as CI-PASS.
+- Limit: removes false positive reconciliation but does not provide an independent verifier, implement the PG-009 recovery transition, or prove runtime reachability. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
 ## M0 — Outcome-driven successor mission (2026-10-18)
 
 - Functional gap: failure/block states required callers to manually combine `buildNexoMission()` with parent/reason fields; no dedicated replan handoff validated prior state or derived a reason from existing evidence.
