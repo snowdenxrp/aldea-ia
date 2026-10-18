@@ -76,6 +76,63 @@ function recoverCoreAgents(agents) {
   }
 }
 
+// Safety-sensitive callers must distinguish an authoritative persisted snapshot
+// from loadState()'s simulation fallback. This loader never manufactures defaults.
+export async function loadStateStrict(statePath = STATE_PATH) {
+  let raw;
+  try {
+    raw = await fs.readFile(statePath, "utf8");
+  } catch (error) {
+    const wrapped = new Error(error?.code === "ENOENT"
+      ? "NEXO_STATE_NOT_FOUND"
+      : "NEXO_STATE_READ_FAILED");
+    wrapped.code = error?.code === "ENOENT" ? "NEXO_STATE_NOT_FOUND" : "NEXO_STATE_READ_FAILED";
+    wrapped.cause = error;
+    throw wrapped;
+  }
+
+  let state;
+  try {
+    state = JSON.parse(raw);
+  } catch (error) {
+    const wrapped = new Error("NEXO_STATE_INVALID_JSON");
+    wrapped.code = "NEXO_STATE_INVALID_JSON";
+    wrapped.cause = error;
+    throw wrapped;
+  }
+
+  if (!state || typeof state !== "object" || Array.isArray(state) ||
+      !Number.isSafeInteger(state.version) || state.version < 3 ||
+      !state.world || typeof state.world !== "object" || Array.isArray(state.world) ||
+      !Array.isArray(state.agents)) {
+    const error = new Error("NEXO_STATE_SCHEMA_INVALID");
+    error.code = "NEXO_STATE_SCHEMA_INVALID";
+    throw error;
+  }
+  if (!Number.isSafeInteger(state.stateRevision) || state.stateRevision < 0) {
+    const error = new Error("NEXO_STATE_REVISION_UNKNOWN");
+    error.code = "NEXO_STATE_REVISION_UNKNOWN";
+    throw error;
+  }
+
+  // Apply the same compatibility normalization as the simulation loader only
+  // after the persisted snapshot's identity and revision have been validated.
+  state.world.day = Number(state.day) || state.world.day || 1;
+  state.world.timeOfDay = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (state.world.timeOfDay || 8);
+  for (const type of ["wild_plants", "fish"]) {
+    const persisted = state.world.resources?.[type];
+    const defaults = defaultWorld.resources?.[type];
+    if (persisted && defaults) {
+      persisted.regenerationPerDay = defaults.regenerationPerDay;
+      if (Number(state.version) < 4 && Number(persisted.amount) <= 0) {
+        persisted.amount = defaults.amount;
+      }
+    }
+  }
+  state.version = Math.max(4, Number(state.version));
+  return state;
+}
+
 export async function loadState(statePath = STATE_PATH) {
   try {
     const raw = await fs.readFile(statePath, "utf8");
