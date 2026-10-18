@@ -257,6 +257,33 @@ export function createNexoContinuityOwner({ store } = {}) {
         existing.action === operation.action &&
         isDeepStrictEqual(existing.target ?? null, operation.target ?? null);
       if (!sameIdentity) return { status: "blocked", code: "NEXO_EXECUTION_IDENTITY_MISMATCH", storeRevision: current.storeRevision };
+      if (REPAIR_ACTIONS.has(operation.action)) {
+        const preparedMatches = current.snapshot.effectJournal.filter(item =>
+          item?.idempotencyKey === operation.idempotencyKey
+        );
+        if (preparedMatches.length !== 1 ||
+            !Number.isSafeInteger(preparedMatches[0]?.environmentStateRevision) ||
+            preparedMatches[0].environmentStateRevision < 0 ||
+            !Number.isSafeInteger(operation.environmentStateRevision) ||
+            operation.environmentStateRevision < 0) {
+          return {
+            status: "blocked",
+            code: "NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN",
+            storeRevision: current.storeRevision,
+            journalSettled: false,
+            authorization: "NOT_EVALUATED"
+          };
+        }
+        if (preparedMatches[0].environmentStateRevision !== operation.environmentStateRevision) {
+          return {
+            status: "blocked",
+            code: "NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH",
+            storeRevision: current.storeRevision,
+            journalSettled: false,
+            authorization: "NOT_EVALUATED"
+          };
+        }
+      }
       if (!isDeepStrictEqual(existing.result, result)) {
         return {
           status: "blocked",
