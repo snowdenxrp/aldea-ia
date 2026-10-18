@@ -1,3 +1,14 @@
+## M0 — Unresolved PREPARED dominates reconstructed mission state (2026-10-18)
+
+- Hardened `reconstructNexoMissionFromSnapshot()` so a mission with any unresolved `effectJournal.status === "prepared"` entry reconstructs as `blocked` with objective `reconcile_prepared_effect`; the matching step carries `NEXO_EFFECT_RECONCILIATION_REQUIRED` and the idempotency key.
+- PREPARED uncertainty now takes precedence over ordinary failed-step/replan status. A successor plan cannot bypass an effect that may already have occurred. This does not reconcile the effect or authorize execution; it deliberately leaves the mission blocked.
+- Regression coverage in `tests/nexo/continuity-contract.test.mjs` verifies reconstructed mission and step are blocked while the PREPARED obligation remains unresolved.
+- Commits: [fede733](https://github.com/snowdenxrp/aldea-ia/commit/fede733f96d5d199efcafdc78028a6b140643531) and precedence hardening [1f359df](https://github.com/snowdenxrp/aldea-ia/commit/1f359dfd0ef4c736431eb1f9890d061bbf9680b6).
+- **Exact-head CI PASS:** mission/restart [39104631021](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104631021), semantic validation [39104631004](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104631004), outcome classification [39104630998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104630998). The continuity-contract and restart-reconstruction tests passed.
+- Still open: runtime remains on legacy memory functions for execution/outcomes; independent operation-specific reconciliation and terminal settlement are not implemented. M0 incomplete; protected effects STOP; unresolved prepared outcomes UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — Nexo-owned mission reconstruction entry point (2026-10-18)
 
 - Added `reconstructMission(missionId)` to `src/nexo/core/continuity-owner.mjs`. It loads the standalone Nexo store and reconstructs a mission from that snapshot; it does not call `createLearningMemory()` or consult Lúmina's world-state envelope.
