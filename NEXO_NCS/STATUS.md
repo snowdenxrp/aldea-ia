@@ -1,3 +1,12 @@
+## M0 — Outcome-driven successor mission (2026-10-18)
+
+- Functional gap: failure/block states required callers to manually combine `buildNexoMission()` with parent/reason fields; no dedicated replan handoff validated prior state or derived a reason from existing evidence.
+- Added `replanNexoMission()`: accepts only `needs_replan` / `blocked`, uses explicit or existing failure/block evidence, returns `null` rather than inventing a reason, and preserves parent lineage.
+- Regression in `tests/nexo/orchestrator.test.mjs` checks lineage, persistence/reconstruction, retained prior outcome, and rejected states.
+- Report: [NCS M0 outcome-driven successor mission](BUILD/NCS_M0_OUTCOME_DRIVEN_SUCCESSOR_MISSION_2026-10-18.md).
+- Focused CI: PENDING until actual GitHub Actions result is fetched.
+- Scope: planning only; no effects, authority, retries/queues/new IDs. Proxy boundary design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## M0 — Learning memory snapshot isolation (2026-10-18)
 
 - Finding: `learnFromReports()` updated matching pattern counters through shared object references, mutating the prior memory snapshot while constructing the next one.

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { buildNexoMission, beginNexoStep, advanceNexoMission, verifyNexoMission, planNexoExecution } from "../../src/nexo/orchestrator.js";
-import { createLearningMemory, recordNexoPlan, recordNexoOutcome } from "../../src/assistants/memory.js";
+import { buildNexoMission, replanNexoMission, beginNexoStep, advanceNexoMission, verifyNexoMission, planNexoExecution } from "../../src/nexo/orchestrator.js";
+import { createLearningMemory, recordNexoPlan, recordNexoOutcome, reconstructNexoMission } from "../../src/assistants/memory.js";
 
 const reports=[{assistant:"Debugger",findings:[
   {severity:"warning",code:"AGENT_POSITION",message:"posición inválida",agent:"alex"},
@@ -50,6 +50,32 @@ const replan=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports:[{findi
 assert.equal(replan.parentMissionId,failed.missionId);
 assert.equal(replan.replanReason,"MESH_REPAIR_FAILED");
 assert.notEqual(replan.missionId,failed.missionId);
+assert.notEqual(replan.missionId,failed.missionId);
+
+// A terminal failure can be turned into a successor plan without hand-written lineage.
+const failedMemory = recordNexoOutcome(createLearningMemory(), {
+  missionId: failed.missionId, stepId: failed.steps[0].id, action: failed.steps[0].action,
+  target: failed.steps[0].target, status: "failed",
+  evidence: { verified: false, kind: "effect-result", code: "MESH_REPAIR_FAILED" }
+});
+assert.equal(replanNexoMission({previousMission: completed, reports}), null);
+const successor = replanNexoMission({
+  previousMission: failed, simulation: {agents:[{id:"alex"}]},
+  reports: [{assistant:"Debugger",findings:[{severity:"error",code:"MESH_MISSING",agent:"alex",message:"mesh sigue ausente"}]}],
+  memory: failedMemory
+});
+assert.ok(successor);
+assert.notEqual(successor.missionId, failed.missionId);
+assert.equal(successor.parentMissionId, failed.missionId);
+assert.equal(successor.replanReason, "MESH_REPAIR_FAILED");
+const lineageMemory = recordNexoPlan(failedMemory, successor);
+const restoredSuccessor = reconstructNexoMission(lineageMemory, successor.missionId);
+assert.equal(restoredSuccessor.parentMissionId, failed.missionId);
+assert.equal(restoredSuccessor.replanReason, "MESH_REPAIR_FAILED");
+assert.equal(lineageMemory.nexo.attempts[0].evidence.code, "MESH_REPAIR_FAILED");
+assert.equal(replanNexoMission({previousMission:{...failed,status:"planned"}}), null);
+assert.equal(replanNexoMission({previousMission:{...failed,status:"blocked",steps:[{status:"blocked"}]}}), null);
+
 
 const boundedAction=buildNexoMission({
   reports:[{assistant:"BehaviorAgent",findings:[{

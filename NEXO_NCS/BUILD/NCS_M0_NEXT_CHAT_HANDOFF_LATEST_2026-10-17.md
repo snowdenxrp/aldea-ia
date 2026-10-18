@@ -1,3 +1,13 @@
+## Latest functional M0 change — outcome-driven successor mission (2026-10-18)
+
+- Added `replanNexoMission()` to turn an existing `needs_replan` / `blocked` mission into a successor plan candidate from newly supplied reports and a reason grounded in existing failure/block evidence. Non-replan states or missing reasons return `null`.
+- Regression checks parent/reason lineage, persistence/reconstruction, retained prior outcome, and rejected states.
+- Report: [NCS M0 outcome-driven successor mission](NCS_M0_OUTCOME_DRIVEN_SUCCESSOR_MISSION_2026-10-18.md).
+- Fetch focused CI and record actual run ID/outcome before treating the increment as verified.
+- Planning only; do not connect to protected effects or infer authority. Proxy boundary remains design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
+---
+
 ## Latest functional M0 change — learning memory snapshot isolation (2026-10-18)
 
 - Defect: `learnFromReports()` changed a pattern record shared with the caller's prior memory snapshot when incrementing `seen` and refreshing `lastSeen`.
