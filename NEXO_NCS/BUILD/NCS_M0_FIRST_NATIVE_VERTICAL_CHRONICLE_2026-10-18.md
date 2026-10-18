@@ -1,7 +1,7 @@
 # M0 — primera vertical nativa de Nexo: Chronicle
 
 Fecha: 2026-10-18  
-Estado: decisión arquitectónica acotada; implementación y evidencia de persistencia pendientes.
+Estado: vertical implementada y validada en CI para su ruta explícita; M0 incompleto, runtime default sin cutover.
 
 ## Decisión
 
@@ -112,3 +112,13 @@ La prueba de integración inicia el ejecutable Node real con argumentos inválid
 CI en SHA `429fc980427c04f8db286e28ee9887333941acb8`: [39174861087 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861087) y [39174861039 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861039).
 
 Próximo: auditar y declarar los límites reales de filesystem/concurrencia/durabilidad; no afirmar resistencia a power loss ni activar el runtime predeterminado.
+
+
+## Auditoría de identidad y bootstrap — validada en CI (2026-10-18)
+
+- Se detectó y cerró la colisión posible en la identidad `missionId:stepId`: los IDs con `:` se rechazan en la entrada, handler y verificador. El verificador no clasifica una consulta ambigua como aplicada. No se cambió el contrato global de identidad.
+- El entrypoint ahora preflighta continuidad y Chronicle antes de inicializar ninguno. Los tests prueban que un almacén compañero corrupto no deja creado el otro archivo cuando ambos stores están marcados para inicialización.
+- La preflight reduce efectos laterales conocidos, pero no crea una transacción cross-store. Una carrera o fallo de E/S posterior al preflight puede producir inicialización parcial; no se reclama atomicidad entre archivos.
+- Pruebas: `tests/nexo/chronicle-store.test.mjs` y `tests/nexo/chronicle-runtime.test.mjs`.
+- SHA validado: `43827382ed27821182727c12a4ed6d03cc51ad36`. CI SUCCESS: [Chronicle run 39174839208](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839208), [continuidad/runtime run 39174839267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839267), [STEP 4 run 39174839176](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839176), [STEP 5 run 39174839133](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839133).
+- Siguiente: revisar el contrato de la entrada CLI y su integración posible con la aplicación principal sin usar `scripts/assistants.mjs` como puente, porque esa ruta está vinculada al estado/simulación de Lúmina. No ampliar acciones ni cambiar runtime default sin una decisión arquitectónica explícita y pruebas del cutover.
