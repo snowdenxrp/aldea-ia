@@ -1,3 +1,11 @@
+## Verified owner layer — mission admission and PREPARED checkpoint (2026-10-18)
+
+- Added `src/nexo/core/continuity-owner.mjs`, commit `773fdb612be248e235ccd3d8af156d7c84d82e38`.
+- The owner adds `recordMission()`, `recordPrepared()`, and fail-closed `reconcilePrepared()`. PREPARED is bound to the existing mission/step/action/target and operation key. Only a successful durable commit permits the caller to dispatch; an existing PREPARED entry returns UNKNOWN and forbids redispatch.
+- Exact-head CI PASS at `5f7f9b5a88ea120abb7df8af065d96cf129715d5`: mission/restart [39099113776](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113776), STEP 4 [39099113793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113793), STEP 5 [39099113804](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113804).
+- Owner cannot settle a prepared operation yet: no independent operation-specific reconciliation source is wired.
+- Runtime is not yet integrated. Legacy `nexoMemory` in `world-state.json` remains; no migration or dual-write has occurred. Next: map dual-store crash cuts and commit ordering, then integrate without pretending two files are atomic.
+
 ## Verified owner layer — mission admission and PREPARED gate (2026-10-18)
 
 - New module: `src/nexo/core/continuity-owner.mjs`, commit `773fdb612be248e235ccd3d8af156d7c84d82e38`.
