@@ -1,3 +1,23 @@
+## Latest runtime boundary — no successor before mission goal verification
+
+- Exact tested code/test head: [`9610580f838ea2f55a482f64a28f18d84cac202e`](https://github.com/snowdenxrp/aldea-ia/commit/9610580f838ea2f55a482f64a28f18d84cac202e).
+- Runtime replan now detects `settled_observed` journal entries and returns `NEXO_REPAIR_GOAL_VERIFICATION_REQUIRED` without creating a successor. This closes a path where observation settlement could otherwise permit replan even though the mission-level goal was not verified.
+- Exact-head CI PASS: mission/restart [39133373970](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133373970), outcome [39133373980](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133373980), semantic [39133373987](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133373987).
+- Checkpoint: [NCS_M0_REPAIR_OBSERVATION_SETTLEMENT_CHECKPOINT_2026-10-18.md](NCS_M0_REPAIR_OBSERVATION_SETTLEMENT_CHECKPOINT_2026-10-18.md).
+
+### Next exact task
+
+Specify a separate mission-goal verification contract. It must derive evidence from authoritative persisted state, validate all required mission steps and dependencies, and distinguish:
+- a repair invariant observed,
+- a step verified complete,
+- the whole mission verified complete.
+
+Until that verifier exists, observed-settled steps remain blocked and runtime cannot cut over to the new Nexo-owned continuity path. Keep legacy runtime memory intact. No authority or protected-effect claims.
+
+M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest settlement hardening — negative evidence + reconstruction non-redispatch (2026-10-18)
 
 - Latest exact tested code/test head: [`4cadf1831ecbd3664964c410ac8bc1397fd22a2e`](https://github.com/snowdenxrp/aldea-ia/commit/4cadf1831ecbd3664964c410ac8bc1397fd22a2e).
