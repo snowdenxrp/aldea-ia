@@ -53,6 +53,24 @@ assert.deepEqual(
   "unknown authority fields must be rejected rather than persisted"
 );
 
+// A stale lock must not be reclaimed through a racy check-then-remove sequence.
+const staleDirectory = path.join(directory, "stale-lock-case");
+await fs.mkdir(staleDirectory);
+const staleFilePath = path.join(staleDirectory, "continuity.json");
+const staleStore = createNexoContinuityStore({ filePath: staleFilePath });
+assert.equal((await staleStore.initialize(emptySnapshot)).status, "committed");
+const staleLockDir = `${staleFilePath}.lock`;
+await fs.mkdir(staleLockDir);
+await fs.writeFile(path.join(staleLockDir, "owner.json"), JSON.stringify({ pid: 2147483647, token: "dead-owner" }), "utf8");
+const staleTime = new Date(Date.now() - 120_000);
+await fs.utimes(staleLockDir, staleTime, staleTime);
+await assert.rejects(
+  () => staleStore.commitIfCurrent(0, emptySnapshot),
+  error => error?.code === "NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED"
+);
+assert.equal((await staleStore.loadCurrent()).storeRevision, 0);
+assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
+
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
   () => store.loadCurrent(),
