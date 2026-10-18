@@ -1,3 +1,12 @@
+## M0 — Continuity owner: mission admission and PREPARED checkpoint (2026-10-18)
+
+- Added `src/nexo/core/continuity-owner.mjs` at `773fdb612be248e235ccd3d8af156d7c84d82e38`.
+- The owner adds `recordMission()`, `recordPrepared()`, and fail-closed `reconcilePrepared()` over the standalone store. A successful durable PREPARED commit is required before dispatch permission is returned; an already-prepared operation remains UNKNOWN and cannot be redispatched.
+- Exact-head CI PASS at `5f7f9b5a88ea120abb7df8af065d96cf129715d5`: mission/restart [39099113776](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113776), STEP 4 [39099113793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113793), STEP 5 [39099113804](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099113804).
+- Runtime is not yet wired to this owner. Legacy `nexoMemory` remains in Lúmina's `world-state.json`; no migration or dual-write has occurred. The owner cannot terminalize a prepared operation because independent reconciliation is absent.
+- Next: map dual-store crash cuts and migration/commit ordering before runtime integration. Do not claim two file commits are atomic, do not erase prepared history, and do not redispatch an unknown outcome.
+- M0 incomplete; external prepared outcomes UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Independent Nexo continuity store regression verified (2026-10-18)
 
 - Exact source/test head: `a8a24db72be49427315a2386542c54ec1d3d9691`.
