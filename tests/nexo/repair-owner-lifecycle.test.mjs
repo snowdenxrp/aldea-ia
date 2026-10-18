@@ -565,3 +565,56 @@ try {
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
+
+
+// Failure to reload Nexo immediately after a confirmed PREPARED commit must
+// return an explicit uncertain result, not throw across the runtime boundary.
+const postPreparedReloadRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-post-prepared-reload-"));
+try {
+  const nexoPath = path.join(postPreparedReloadRoot, "nexo-continuity.json");
+  const statePath = path.join(postPreparedReloadRoot, "world-state.json");
+  const opened = await openNexoContinuityOwner({ filePath: nexoPath, legacyMemory: legacyMemory() });
+  await fs.writeFile(statePath, JSON.stringify(environment(80)), "utf8");
+  let loadCalls = 0;
+  const owner = {
+    ...opened.owner,
+    loadCurrent: async () => {
+      loadCalls += 1;
+      if (loadCalls === 2) {
+        const error = new Error("simulated continuity reload failure after PREPARED");
+        error.code = "NEXO_CONTINUITY_READ_FAILED";
+        throw error;
+      }
+      return opened.owner.loadCurrent();
+    },
+    recordPrepared: opened.owner.recordPrepared,
+    recordExecutionLineage: opened.owner.recordExecutionLineage
+  };
+  const result = await runNexoRepairOnce({
+    owner,
+    store: opened.store,
+    statePath,
+    expectedContinuityRevision: 0,
+    operation: {
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      missionId: "mission-owner-lifecycle",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    },
+    savedAt: 11
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_CONTINUITY_READ_FAILED");
+  assert.equal(result.preparedCommitted, true);
+  assert.equal(result.dispatched, false);
+  assert.equal(result.uncertainty, "prepared_commit_confirmed_but_journal_reload_unconfirmed");
+  const durable = await opened.owner.loadCurrent();
+  assert.equal(durable.storeRevision, 1);
+  assert.equal(durable.snapshot.effectJournal.length, 1);
+  assert.equal(durable.snapshot.effectJournal[0].status, "prepared");
+  assert.equal((await loadStateStrict(statePath)).stateRevision, 80,
+    "a failed post-PREPARED reload must never dispatch or mutate the environment");
+} finally {
+  await fs.rm(postPreparedReloadRoot, { recursive: true, force: true });
+}
