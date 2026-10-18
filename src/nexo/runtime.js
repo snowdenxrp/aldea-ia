@@ -1,6 +1,7 @@
 import { beginNexoStep, advanceNexoMission, replanNexoMission } from "./orchestrator.js";
 import { recordNexoOutcome, recordNexoExecution, recordNexoPlan, reconstructNexoMission } from "../assistants/memory.js";
 import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLuminaEffectPostcondition } from "./simulation-adapter.js";
+import { assertNexoContinuityMemoryShape } from "./core/continuity-contract.mjs";
 
 const runtimeCommitLocks = new WeakMap();
 
@@ -9,6 +10,11 @@ const runtimeCommitLocks = new WeakMap();
 export function replanPersistedNexoMission({memory,previousMissionId,simulation=null,reports=[],reason=null}={}) {
   if(!memory || typeof previousMissionId!=="string" || !previousMissionId.trim())
     return {mission:null,memory,status:"invalid"};
+  try {
+    assertNexoContinuityMemoryShape(memory);
+  } catch(error) {
+    return {mission:null,memory,status:"not_replanned",code:error?.code??"NEXO_MEMORY_SCHEMA_UNKNOWN"};
+  }
   const previousMission=reconstructNexoMission(memory,previousMissionId);
   if(!previousMission) return {mission:null,memory,status:"not_found"};
   // The durable effect journal is the recovery boundary across a crash window.
@@ -60,6 +66,14 @@ async function commitRuntimeOutcome(memory, mission, stepId, adapterResult, outc
 
 export async function executeNexoStep({mission,stepId,adapter,memory=null,context={},precondition,postcondition}={}) {
   if(!mission?.missionId||!adapter?.execute)return{mission:null,memory,adapterResult:null,status:"invalid"};
+  if(memory!==null&&memory!==undefined) {
+    try {
+      assertNexoContinuityMemoryShape(memory);
+    } catch(error) {
+      const code=error?.code??"NEXO_MEMORY_SCHEMA_UNKNOWN";
+      return {mission,memory,adapterResult:{status:"blocked",code,verified:false},status:"blocked"};
+    }
+  }
   const started=beginNexoStep(mission,stepId); const step=started?.steps?.find(s=>s.id===stepId);
   if(!step||step.status!=="executing")return{mission:started,memory,adapterResult:null,status:"blocked"};
   const idempotencyKey=`${started.missionId}:${stepId}`;
