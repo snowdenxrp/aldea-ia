@@ -1,13 +1,6 @@
 import { OUTCOMES } from "./contracts.mjs";
 
 export const RECONCILIATION_STATES = Object.freeze(["RESOLVED", "UNRESOLVED", "INVALID"]);
-const RESOLVABLE_OUTCOMES = Object.freeze([
-  OUTCOMES.SAFE_COMMIT,
-  OUTCOMES.STALE_CANDIDATE,
-  OUTCOMES.SEMANTIC_CONFLICT,
-  OUTCOMES.AUTHORITY_STOP
-]);
-
 function assertPlainRecordShape(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError("reconciliation input must be a record");
@@ -47,20 +40,6 @@ function assertPlainData(value, seen = new WeakSet()) {
   }
 }
 
-function detachedImmutable(value) {
-  // Inspect caller-owned data before cloning; cloning may invoke getters or omit properties.
-  assertPlainData(value);
-  const clone = structuredClone(value);
-  assertPlainData(clone);
-  function freeze(item, seen = new WeakSet()) {
-    if (item === null || typeof item !== "object" || seen.has(item)) return item;
-    seen.add(item);
-    for (const child of Object.values(item)) freeze(child, seen);
-    return Object.freeze(item);
-  }
-  return freeze(clone);
-}
-
 export function createReconciliationCase({ boundary, claimId = null } = {}) {
   if (typeof boundary !== "string" || boundary.trim().length === 0) throw new TypeError("boundary is required");
   if (claimId !== null && (typeof claimId !== "string" || claimId.trim().length === 0)) throw new TypeError("claimId is invalid");
@@ -97,7 +76,6 @@ export function createReconciler() {
         return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
       }
       // Avoid dispatching through caller-controlled array methods.
-      let item;
       for (let index = 0; index < evidence.length; index += 1) {
         const descriptor = Object.getOwnPropertyDescriptor(evidence, String(index));
         if (!descriptor || !("value" in descriptor)) {
@@ -107,16 +85,7 @@ export function createReconciler() {
         // "authoritative: true" is metadata, not authenticated authority. No trusted
         // verifier/fence/provenance port is wired into this reconciler yet.
       }
-      if (!item) return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
-      try {
-        return Object.freeze({
-          status: "RESOLVED",
-          outcome: item.outcome,
-          evidence: Object.freeze([detachedImmutable(item)])
-        });
-      } catch {
-        return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
-      }
+      return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
     }
   });
 }
