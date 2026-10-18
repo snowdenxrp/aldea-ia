@@ -21,6 +21,7 @@ on:
       - "tests/nexo/repair-owner-lifecycle.test.mjs"
       - "tests/nexo/repair-session.test.mjs"
       - "tests/nexo/assistants-runtime-cli.test.mjs"
+      - "tests/nexo/repair-mission-verification.test.mjs"
       - ".github/workflows/nexo-m0-repair-crash-cuts.yml"
   workflow_dispatch:
 
@@ -51,3 +52,5 @@ jobs:
         run: node --check scripts/nexo-runtime-session.mjs && node --check scripts/assistants.mjs
       - name: Run isolated assistants runtime CLI regression
         run: node tests/nexo/assistants-runtime-cli.test.mjs
+      - name: Run persisted repair mission goal verification regression
+        run: node tests/nexo/repair-mission-verification.test.mjs
