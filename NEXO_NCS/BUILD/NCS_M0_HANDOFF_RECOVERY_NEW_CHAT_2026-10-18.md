@@ -1,3 +1,11 @@
+## M0 — bootstrap de Chronicle sin inicialización parcial evitable (validado 2026-10-18)
+
+- Auditoría del entrypoint encontró que inicializaba Chronicle antes de comprobar si el almacén de continuidad estaba corrupto o ausente sin permiso de inicialización. Eso podía dejar un almacén Chronicle vacío como efecto lateral aunque la sesión completa fuera bloqueada.
+- `scripts/nexo-chronicle-session.mjs` ahora preflighta ambos almacenes antes de inicializar ninguno. Un almacén corrupto, ilegible o ausente sin su flag de opt-in bloquea antes de escribir el otro. Después del preflight, la inicialización sigue sin promesa de atomicidad entre archivos: una carrera o fallo de E/S posterior puede dejar una inicialización parcial; no se reclama transacción cross-store.
+- `tests/nexo/chronicle-runtime.test.mjs` comprueba ambos sentidos: continuidad corrupta no crea Chronicle ausente y Chronicle corrupto no crea continuidad ausente.
+- SHA de código/test validado: `43827382ed27821182727c12a4ed6d03cc51ad36`. CI SUCCESS: [Chronicle vertical run 39174839208](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839208), [continuidad/runtime run 39174839267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839267), [STEP 4 run 39174839176](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839176) y [STEP 5 run 39174839133](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839133).
+- Sigue sin cambiar el runtime default ni la separación Nexo/Lúmina. M0 permanece INCOMPLETO; la próxima frontera es revisar contrato de persistencia/recuperación y la integración de esta única capacidad, sin ampliar acciones ni inferir durabilidad ante pérdida de energía.
+
 ## M0 — Chronicle: identidad de operación sin colisiones (validado 2026-10-18)
 
 - Auditoría del primer vertical detectó un caso de ambigüedad: la clave `missionId:stepId` no es inyectiva si alguno de los identificadores contiene `:`. Dos pares distintos podían formar la misma clave, haciendo que una entrada persistida ajena pareciera corresponder a la operación consultada.
