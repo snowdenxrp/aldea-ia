@@ -98,16 +98,25 @@ export async function runNexoChronicleAppend({
   return { ...result, missionId, stepId };
 }
 
-function parseArguments(argv) {
+export function parseNexoChronicleArguments(argv) {
   const values = Object.create(null);
+  const valueOptions = new Set(["--continuity", "--chronicle", "--mission", "--step", "--content"]);
   const flags = new Set(["--initialize-continuity", "--initialize-chronicle"]);
+  function invalid() {
+    const error = new Error("NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID");
+    error.code = "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID";
+    throw error;
+  }
   for (let index = 0; index < argv.length; index += 1) {
     const key = argv[index];
     if (flags.has(key)) {
+      if (Object.hasOwn(values, key)) invalid();
       values[key] = true;
       continue;
     }
-    if (key.startsWith("--") && index + 1 < argv.length) values[key] = argv[++index];
+    if (!valueOptions.has(key) || Object.hasOwn(values, key) ||
+        index + 1 >= argv.length || argv[index + 1].startsWith("--")) invalid();
+    values[key] = argv[++index];
   }
   return {
     continuityPath: values["--continuity"],
@@ -121,8 +130,13 @@ function parseArguments(argv) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const result = await runNexoChronicleAppend(parseArguments(process.argv.slice(2)));
-  // Do not echo Chronicle content to logs.
+  let result;
+  try {
+    result = await runNexoChronicleAppend(parseNexoChronicleArguments(process.argv.slice(2)));
+  } catch (error) {
+    result = blocked(error?.code ?? "NEXO_CHRONICLE_SESSION_FAILED");
+  }
+  // Do not echo Chronicle content, raw errors, or filesystem paths to logs.
   console.log(JSON.stringify({
     status: result.status,
     code: result.code ?? null,
