@@ -379,7 +379,7 @@ try {
   const cliContinuity = path.join(cliRoot, "continuity.json");
   const cliChronicle = path.join(cliRoot, "chronicle.json");
   const privateContent = "PRIVATE_CHRONICLE_SENTINEL_DO_NOT_LOG";
-  const cli = spawnSync(process.execPath, [
+  const cliArgs = [
     "scripts/nexo-chronicle-session.mjs",
     "--continuity", cliContinuity,
     "--chronicle", cliChronicle,
@@ -387,8 +387,9 @@ try {
     "--step", "cli-step",
     "--content-stdin",
     "--unknown-option"
-  ], { cwd: process.cwd(), encoding: "utf8", input: privateContent });
-  assert.equal(cli.args?.includes(privateContent), false);
+  ];
+  assert.equal(cliArgs.includes(privateContent), false);
+  const cli = spawnSync(process.execPath, cliArgs, { cwd: process.cwd(), encoding: "utf8", input: privateContent });
   assert.equal(cli.status, 1);
   assert.equal(cli.stderr, "");
   const cliOutput = JSON.parse(cli.stdout.trim());
@@ -401,7 +402,7 @@ try {
 
   // Valid invocation receives content over stdin; payload is not an argv value
   // and is not echoed to the terminal.
-  const successfulCli = spawnSync(process.execPath, [
+  const successfulCliArgs = [
     "scripts/nexo-chronicle-session.mjs",
     "--continuity", path.join(cliRoot, "valid-continuity.json"),
     "--chronicle", path.join(cliRoot, "valid-chronicle.json"),
@@ -410,9 +411,10 @@ try {
     "--content-stdin",
     "--initialize-continuity",
     "--initialize-chronicle"
-  ], { cwd: process.cwd(), encoding: "utf8", input: privateContent });
+  ];
+  assert.equal(successfulCliArgs.includes(privateContent), false);
+  const successfulCli = spawnSync(process.execPath, successfulCliArgs, { cwd: process.cwd(), encoding: "utf8", input: privateContent });
   assert.equal(successfulCli.status, 0, successfulCli.stderr);
-  assert.equal(successfulCli.args?.includes(privateContent), false);
   assert.equal(successfulCli.stderr, "");
   assert.equal(successfulCli.stdout.includes(privateContent), false);
   assert.equal(JSON.parse(successfulCli.stdout.trim()).status, "completed");
