@@ -1,3 +1,13 @@
+## Latest update — dead-agent-safe repair and exact-head CI PASS
+
+- `repair_agent_state` now normalizes coordinates while preserving `alive:false`; the postcondition checks finite coordinates and a boolean alive flag instead of requiring a living agent.
+- Test head: [`0846597665e72de65917101c9206c3d26c11bf1b`](https://github.com/snowdenxrp/aldea-ia/commit/0846597665e72de65917101c9206c3d26c11bf1b).
+- Exact-head CI PASS: semantic validation [39106552699](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552699); outcome classification [39106552701](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552701).
+- Mission/restart continuity on this exact head was not observed; do not claim it passed here.
+- The change improves repair convergence only. It does not add a durable operation receipt or resolve PREPARED after a crash. Next: inspect the existing durable snapshot and crash-cut tests for repair actions; retain UNKNOWN until the action can be reconciled from independent, persisted evidence.
+
+---
+
 ## Latest update — repair normalization convergence (2026-10-18)
 
 - See [convergent repair revision checkpoint](NCS_M0_CONVERGENT_REPAIR_REVISION_CHECKPOINT_2026-10-18.md).
