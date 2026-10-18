@@ -465,6 +465,31 @@ try {
       }
     });
     assert.equal(lineage.status, "committed");
+
+    // Same operation identity is not sufficient for idempotent lineage replay:
+    // a conflicting adapter result must not be silently accepted.
+    const conflictingLineage = await reopened.owner.recordExecutionLineage({
+      expectedRevision: lineage.storeRevision,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex",
+        environmentStateRevision: 70
+      },
+      result: {
+        status: "completed",
+        persisted: false,
+        stateChanged: false,
+        environmentStateRevision: 70
+      }
+    });
+    assert.equal(conflictingLineage.status, "blocked");
+    assert.equal(conflictingLineage.code, "NEXO_EXECUTION_RESULT_MISMATCH");
+    assert.equal((await reopened.owner.loadCurrent()).storeRevision, lineage.storeRevision,
+      "conflicting lineage replay must not mutate continuity");
+
     const beforeRecovery = await reopened.owner.loadCurrent();
     assert.equal(beforeRecovery.storeRevision, 2);
     assert.equal(beforeRecovery.snapshot.executions.length, 1);
