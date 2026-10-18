@@ -379,3 +379,20 @@ No hacer sustitución mecánica de `src/assistants/memory.js` por `continuity-ow
 5. Ejecutar CI y verificar SHA/run/job exactos antes de presentar el código como validado. El CI disponible `39143459529` valida SHA `a1fea5791adbb81a8d6b6e82da9dad09accc7918`, no el HEAD documental actual `1cee895229e6980b8f142571a28a820fed7eef04`.
 
 No repetir el mapa de llamadas ni reabrir AB/P/P112. M0 sigue abierto; Nexo y Lúmina no se mezclan; no hay atomicidad cross-store; `settled_observed` no significa causalidad ni completion; efectos protegidos STOP.
+
+
+---
+
+## Incremento M0 — verificación persistida del objetivo sin declarar completion (2026-10-18)
+
+Se añadió `tests/nexo/repair-mission-verification.test.mjs` y se conectó al workflow de crash cuts. CI exacto: [39144348792](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144348792), commit `1d12c8e65aff1be75b04c0acee2fbc513b8ba5f4`, job `repair-crash-cuts` SUCCESS y todos los pasos SUCCESS, incluido el nuevo test de verificación.
+
+La prueba confirma:
+- Después de settlement, el verificador puede devolver `goal_observed`, pero `missionCompleted:false` y `causalAttribution:not_claimed`.
+- Reabrir el owner y repetir la observación no cambia la revisión de continuidad.
+- Si la invariante ya no está presente en una revisión de entorno posterior, la observación queda bloqueada.
+- PREPARED sin resolver bloquea; misión desconocida produce UNKNOWN.
+
+Esto valida el contrato de observación, no una transición de misión a completion ni el runtime genérico productivo. No se ha añadido un estado durable nuevo. Siguiente paso: auditar si hace falta representar `goal_observed` como dato durable separado, qué revisión/identidad debería enlazar y cómo evitar que replay convierta una observación histórica en verdad actual; solo después proponer la transición mínima y sus pruebas CAS/restart.
+
+El CI anterior corresponde al commit de código/prueba indicado; las actualizaciones documentales posteriores no están cubiertas por ese run. M0 sigue abierto; repair-only opt-in; efectos protegidos STOP; Nexo y Lúmina separados; no atomicidad cross-store.
