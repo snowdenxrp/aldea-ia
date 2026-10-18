@@ -738,3 +738,14 @@ This closes one crash boundary for the repair-only lifecycle; it does not prove 
 - Validación: el workflow M0 ampliado incluye esta suite, pero los checks/runs observables consultados siguen sin mostrar una ejecución asociada. **PENDING/UNKNOWN; no afirmar PASS.**
 - Siguiente frontera: contrato de reconciliación por acción, verificadores confiables y settlement CAS. Esta corrección endurece replay del owner; no conecta aún el runtime genérico. M0 permanece INCOMPLETO.
 
+
+## M0 — seam inicial de verificación confiable por acción (2026-10-18)
+
+- Se separó la presencia de un handler (supports(action)) de la capacidad de reconciliación: supportsReconciliation(action) informa únicamente si hay un verificador configurado en el bootstrap confiable.
+- createEffectAdapter() acepta ahora verifiers como configuración de arranque y permite registerVerifier(action, verifier). verifyPrepared() solo consulta una obligación que ya exista en estado prepared, comprueba identidad exacta (misión/paso/acción/target/idempotencyKey) y exige que la observación devuelta incluya status applied | not_applied | unknown, acción/target/idempotencyKey coincidentes, observedRevision entero no negativo y source no vacío.
+- Si el verificador falta, lanza excepción o devuelve evidencia mal formada, el resultado es unknown; la función no llama handlers, no modifica el journal, no liquida PREPARED y no autoriza redispatch. La función de verificación no acepta el verificador desde el request/caller.
+- Código: [6a123952c24a932e8a033de53381fcc17f34aa85](https://github.com/snowdenxrp/aldea-ia/commit/6a123952c24a932e8a033de53381fcc17f34aa85). Pruebas: [a29da03e62279ff748ecdac4ce01ae0b1cc30fb1](https://github.com/snowdenxrp/aldea-ia/commit/a29da03e62279ff748ecdac4ce01ae0b1cc30fb1).
+- Validación observable: get_commit_combined_status devolvió statuses vacíos para ambos SHAs. No se ejecutaron las pruebas localmente; CI PENDING/UNKNOWN, no PASS.
+- Límite deliberado: este es solo el seam de lectura confiable, no settlement. Aún no existe un contrato común que permita al owner aceptar esa observación mediante CAS y mover PREPARED a un estado terminal. No inferir causalidad a partir de applied, ni redispatch a partir de not_applied. La integración de src/nexo/runtime.js sigue pendiente; M0 INCOMPLETO, efectos protegidos STOP, Nexo/Lúmina separados.
+- Siguiente tarea concreta: diseñar y probar settlement CAS en el owner con la observación del verificador registrada como dato no causal y vinculada a identidad/revisión; definir cómo se conserva la procedencia del verificador sin confiar en una observación arbitraria del caller. Solo después evaluar el primer corte vertical del runtime canónico, empezando por bloquear antes de dispatch toda acción sin handler y verificador configurados.
+
