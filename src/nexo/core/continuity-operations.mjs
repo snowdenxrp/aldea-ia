@@ -175,6 +175,30 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     return mission;
   }
 
+  // A repair settled by observing its desired invariant is not causal proof of
+  // completion. Keep its step non-executable until a separate mission verifier
+  // resolves the goal; never reconstruct it as planned and redispatch it.
+  const observedSettlements = source.effectJournal.filter(entry =>
+    entry?.missionId === missionId && entry?.status === "settled_observed"
+  );
+  if (observedSettlements.length > 0) {
+    for (const entry of observedSettlements) {
+      const step = mission.steps.find(candidate => candidate.id === entry.stepId);
+      if (!step) continue;
+      step.status = "blocked";
+      step.blockReason = {
+        code: "NEXO_REPAIR_SETTLED_BY_OBSERVATION",
+        idempotencyKey: entry.idempotencyKey,
+        causalAttribution: "not_claimed",
+        next: "verify_mission_goal_without_redispatch"
+      };
+    }
+    mission.status = "blocked";
+    mission.objective = "verify_observed_repair_goal";
+    mission.uncertainty = "desired_state_observed_causality_not_claimed";
+    return mission;
+  }
+
   const failed = mission.steps.some(step => step.status === "failed");
   const blocked = mission.steps.some(step => step.status === "blocked");
   const unresolved = mission.steps.some(step => !["completed", "failed", "blocked"].includes(step.status));
