@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { isDeepStrictEqual } from "node:util";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
 import { world as defaultWorld } from "../src/world.js";
@@ -123,6 +124,28 @@ export async function loadStateStrict(statePath = STATE_PATH) {
       const error = new Error("NEXO_MEMORY_SCHEMA_UNKNOWN");
       error.code = "NEXO_MEMORY_SCHEMA_UNKNOWN";
       throw error;
+    }
+    for (const entry of memory.nexo.effectJournal.filter(item => item?.status === "prepared")) {
+      if (typeof entry.missionId !== "string" || !entry.missionId.trim() ||
+          typeof entry.stepId !== "string" || !entry.stepId.trim() ||
+          typeof entry.action !== "string" || !entry.action.trim()) {
+        const error = new Error("NEXO_RECOVERY_CONTEXT_MALFORMED");
+        error.code = "NEXO_RECOVERY_CONTEXT_MALFORMED";
+        throw error;
+      }
+      const plan = memory.nexo.missions.find(item => item?.missionId === entry.missionId);
+      const step = plan?.steps?.find(item => item?.id === entry.stepId);
+      if (!step) {
+        const error = new Error("NEXO_RECOVERY_CONTEXT_MISSING");
+        error.code = "NEXO_RECOVERY_CONTEXT_MISSING";
+        throw error;
+      }
+      if (step.action !== entry.action ||
+          !isDeepStrictEqual(step.target ?? null, entry.target ?? null)) {
+        const error = new Error("NEXO_RECOVERY_CONTEXT_MISMATCH");
+        error.code = "NEXO_RECOVERY_CONTEXT_MISMATCH";
+        throw error;
+      }
     }
   }
 
