@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { assertNexoContinuityMemoryShape } from "../../src/nexo/core/continuity-contract.mjs";
 import { assertNexoContinuitySnapshot, projectNexoContinuitySnapshot, NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
+import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -180,3 +181,48 @@ await assert.rejects(
 await fs.rm(storeDirectory, { recursive: true, force: true });
 
 console.log("Nexo-owned continuity store: independent file boundary, strict load, conditional commit and stale-writer conflict OK.");
+
+
+const ownerDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-continuity-owner-"));
+const ownerStore = createNexoContinuityStore({ filePath: path.join(ownerDirectory, "nexo-continuity.json") });
+assert.equal((await ownerStore.initialize(emptySnapshot)).status, "committed");
+const owner = createNexoContinuityOwner({ store: ownerStore });
+const ownerMission = {
+  missionId: "owner-mission",
+  objective: "repair_agent_state",
+  status: "planned",
+  steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+};
+const recordedMission = await owner.recordMission({ expectedRevision: 0, mission: ownerMission });
+assert.equal(recordedMission.status, "committed");
+assert.equal(recordedMission.storeRevision, 1);
+
+const operation = {
+  idempotencyKey: "owner-mission:step-1",
+  missionId: "owner-mission",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "alex"
+};
+const preparedCommit = await owner.recordPrepared({ expectedRevision: 1, operation });
+assert.equal(preparedCommit.status, "committed");
+assert.equal(preparedCommit.prepared, true);
+assert.equal(preparedCommit.dispatchAllowed, true, "only a confirmed PREPARED commit permits the caller to proceed to its dispatch boundary");
+assert.equal(preparedCommit.storeRevision, 2);
+
+const persistedPrepared = await owner.loadCurrent();
+assert.equal(persistedPrepared.snapshot.effectJournal[0].status, "prepared");
+assert.equal(persistedPrepared.snapshot.effectJournal[0].idempotencyKey, "owner-mission:step-1");
+const duplicatePrepared = await owner.recordPrepared({ expectedRevision: 2, operation });
+assert.equal(duplicatePrepared.status, "prepared_existing");
+assert.equal(duplicatePrepared.dispatchAllowed, false, "restart/duplicate request must not redispatch an unresolved PREPARED operation");
+const wrongOperation = await owner.recordPrepared({
+  expectedRevision: 2,
+  operation: { ...operation, target: "bruno" }
+});
+assert.equal(wrongOperation.status, "blocked");
+assert.equal(wrongOperation.dispatchAllowed, false);
+assert.equal((await owner.reconcilePrepared()).code, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
+await fs.rm(ownerDirectory, { recursive: true, force: true });
+
+console.log("Nexo continuity owner: mission admission, durable PREPARED-before-dispatch, identity binding and no redispatch OK.");
