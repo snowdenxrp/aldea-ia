@@ -285,7 +285,8 @@ try {
       evidence: { verified: false, kind: "late-replay", source: "regression" }
     }
   });
-  assert.equal(replay.status, "already_recorded");
+  assert.equal(replay.status, "blocked");
+  assert.equal(replay.code, "NEXO_OUTCOME_RESULT_MISMATCH");
   assert.equal((await opened.owner.loadCurrent()).storeRevision, 2);
   assert.equal((await opened.owner.reconstructMission(mission.missionId)).mission.steps[0].status, "completed");
 } finally {
