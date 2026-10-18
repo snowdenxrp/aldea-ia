@@ -4,6 +4,7 @@ import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLumin
 import { assertNexoContinuityMemoryShape } from "./core/continuity-contract.mjs";
 
 const runtimeCommitLocks = new WeakMap();
+const CANONICAL_REPAIR_ACTIONS = new Set(["repair_agent_state", "repair_agent_needs", "repair_resource_state"]);
 
 // Replan only from the durable reconstructed mission; preserve the old attempt and
 // persist the successor candidate before a caller can decide whether to execute it.
@@ -135,6 +136,13 @@ export async function executeNexoStepWithContinuityOwner({
     idempotencyKey: `${missionId}:${stepId}`,
     missionId, stepId, action: step.action, target: step.target ?? null
   };
+
+  // Repair effects have a separate environment-revision-bound settlement
+  // contract. Until that contract is wired through this owner-backed runtime,
+  // reject them before PREPARED and before adapter dispatch.
+  if (CANONICAL_REPAIR_ACTIONS.has(operation.action)) {
+    return { status: "blocked", code: "NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED", dispatchAttempted: false };
+  }
 
   // Capability checks happen before PREPARED and before any handler can run.
   if (!adapter.supports(operation.action)) {
