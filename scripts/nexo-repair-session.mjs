@@ -56,8 +56,13 @@ export async function runNexoRepairSession({
   if (!REPAIR_ACTIONS.has(step.action)) {
     return blocked("NEXO_REPAIR_SESSION_ACTION_NOT_ELIGIBLE", { action: step.action ?? null });
   }
-  if (["completed", "failed", "blocked"].includes(step.status)) {
-    return blocked("NEXO_REPAIR_SESSION_STEP_TERMINAL", { stepStatus: step.status });
+  if (step.status !== "planned") {
+    return blocked("NEXO_REPAIR_SESSION_STEP_NOT_RUNNABLE", { stepStatus: step.status ?? null });
+  }
+  if (!(step.dependsOn ?? []).every(dependencyId =>
+    mission.steps.find(candidate => candidate?.id === dependencyId)?.status === "completed"
+  )) {
+    return blocked("NEXO_REPAIR_SESSION_DEPENDENCIES_UNMET");
   }
 
   const operation = {
