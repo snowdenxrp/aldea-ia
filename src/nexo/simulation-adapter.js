@@ -40,9 +40,38 @@ export function createLuminaEffectPostcondition(simulation,action,target){
 export function createLuminaEffectAdapter(simulation,{executionJournal=null,persistPreparedIntent=null}={}){
   if(!simulation?.agents||!simulation?.world)throw new TypeError("simulación de Lúmina requerida");
   const handlers={
-    repair_agent_state:async({target})=>{const agent=simulation.agents.find(a=>a.id===target);if(!agent)return{status:"failed",code:"TARGET_AGENT_NOT_FOUND"};if(!agent.position||typeof agent.position!=="object")agent.position={};agent.position.x=normalizeCoordinate(agent.position.x);agent.position.z=normalizeCoordinate(agent.position.z);agent.alive=agent.alive!==false;bump(simulation);return{status:"completed",details:"agent_state_normalized",agentId:agent.id};},
-    repair_agent_needs:async({target})=>{const agent=simulation.agents.find(a=>a.id===target);if(!agent)return{status:"failed",code:"TARGET_AGENT_NOT_FOUND"};if(!agent.needs||typeof agent.needs!=="object")agent.needs={};for(const key of ["hunger","thirst","energy","social","safety","health"])agent.needs[key]=clamp(agent.needs[key]??100);bump(simulation);return{status:"completed",details:"agent_needs_normalized",agentId:agent.id};},
-    repair_resource_state:async({target})=>{const resource=simulation.world.resources?.[target];if(!resource||typeof resource!=="object")return{status:"failed",code:"TARGET_RESOURCE_NOT_FOUND"};if("amount"in resource)resource.amount=Math.max(0,Number(resource.amount)||0);bump(simulation);return{status:"completed",details:"resource_state_normalized",resourceId:target};},
+    repair_agent_state:async({target})=>{
+      const agent=simulation.agents.find(a=>a.id===target);
+      if(!agent)return{status:"failed",code:"TARGET_AGENT_NOT_FOUND"};
+      const before=structuredClone({position:agent.position,alive:agent.alive});
+      if(!agent.position||typeof agent.position!=="object")agent.position={};
+      agent.position.x=normalizeCoordinate(agent.position.x);
+      agent.position.z=normalizeCoordinate(agent.position.z);
+      // Preserve an explicit dead state; normalization must not resurrect an agent.
+      agent.alive=agent.alive!==false;
+      const changed=!isDeepStrictEqual(before,{position:agent.position,alive:agent.alive});
+      if(changed)bump(simulation);
+      return{status:"completed",details:"agent_state_normalized",agentId:agent.id,stateChanged:changed};
+    },
+    repair_agent_needs:async({target})=>{
+      const agent=simulation.agents.find(a=>a.id===target);
+      if(!agent)return{status:"failed",code:"TARGET_AGENT_NOT_FOUND"};
+      const before=structuredClone(agent.needs);
+      if(!agent.needs||typeof agent.needs!=="object")agent.needs={};
+      for(const key of ["hunger","thirst","energy","social","safety","health"])agent.needs[key]=clamp(agent.needs[key]??100);
+      const changed=!isDeepStrictEqual(before,agent.needs);
+      if(changed)bump(simulation);
+      return{status:"completed",details:"agent_needs_normalized",agentId:agent.id,stateChanged:changed};
+    },
+    repair_resource_state:async({target})=>{
+      const resource=simulation.world.resources?.[target];
+      if(!resource||typeof resource!=="object")return{status:"failed",code:"TARGET_RESOURCE_NOT_FOUND"};
+      const before=structuredClone(resource.amount);
+      resource.amount=Math.max(0,Number(resource.amount)||0);
+      const changed=!isDeepStrictEqual(before,resource.amount);
+      if(changed)bump(simulation);
+      return{status:"completed",details:"resource_state_normalized",resourceId:target,stateChanged:changed};
+    },
     execute_lumina_action:async({target,context})=>{if(!LUMINA_ACTIONS.has(context?.action?.name))return{status:"failed",code:"LUMINA_ACTION_NOT_ALLOWED"};const agent=simulation.agents.find(a=>a.id===target&&a.alive!==false);if(!agent)return{status:"failed",code:"TARGET_AGENT_NOT_FOUND_OR_DEAD"};const action={...context.action};const beforeVersion=stateVersion(simulation);const beforeState=structuredClone({agents:simulation.agents,world:simulation.world});const result=executeAction(simulation,agent,action);const stateChanged=!isDeepStrictEqual(beforeState,{agents:simulation.agents,world:simulation.world});if(stateChanged)bump(simulation);if(!result?.success)return{status:"failed",code:"LUMINA_ACTION_FAILED",reason:result?.reason??"unknown_failure",actionResult:result,agentId:agent.id,stateChanged,stateVersionBefore:beforeVersion,stateVersionAfter:stateVersion(simulation)};return{status:"completed",details:"lumina_action_executed",action:action.name,actionResult:result,agentId:agent.id,stateVersionBefore:beforeVersion,stateVersionAfter:stateVersion(simulation)};}
   };
   return createEffectAdapter({getStateVersion:()=>stateVersion(simulation),handlers,executionJournal,persistPreparedIntent});
