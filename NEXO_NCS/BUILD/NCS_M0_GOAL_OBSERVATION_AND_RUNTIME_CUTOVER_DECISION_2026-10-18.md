@@ -48,11 +48,23 @@ Una ruta candidata solo puede salir de `STOP` cuando satisface, en este orden:
 
 ## Siguiente trabajo
 
-1. Leer este contrato y la auditoría `NCS_M0_LEGACY_RUNTIME_MEMORY_CUTOVER_AUDIT_2026-10-18.md`.
-2. Inspeccionar el settlement actual y localizar el menor hueco demostrado entre PREPARED, lineage, observación persistida y transición de journal.
-3. Añadir una prueba de regresión para ese hueco antes de cambiar el contrato.
-4. No introducir nuevas colecciones, nuevas clases de efecto, permisos ni wrappers sin necesidad demostrada.
-5. No cerrar M0 hasta que exista una ruta runtime canónica probada en proceso real/reinicio y la memoria operativa de Nexo sea independiente de Lúmina.
+Las fronteras de recuperación identificadas después de la decisión original ya tienen regresiones y cambios independientes:
+- Recarga de continuidad tras PREPARED: resultado bloqueado explícito; sin dispatch.
+- Commit de execution lineage que lanza excepción: resultado bloqueado; se informa si el entorno quedó persistido; PREPARED permanece.
+- Commit de settlement que lanza excepción: resultado bloqueado con incertidumbre de commit; se preservan los códigos concretos y no se afirma si la escritura llegó a disco.
+- Admisión PREPARED valida estado del paso, dependencias y estado canónico de la misión.
+
+Prueba exacta del último cambio de settlement:
+- Test-first falló en el punto esperado: [run 39155348004](https://github.com/snowdenxrp/aldea-ia/actions/runs/39155348004), SHA `51c0ed94a7362133ddb9a29bd97e15b310dc298d`.
+- Código y regresión pasan: [run 39155469445](https://github.com/snowdenxrp/aldea-ia/actions/runs/39155469445), SHA `67048ebbdd30b49000f3a2bfea5e6a3ef0eb1b74`.
+
+### Siguiente tarea de arquitectura: seam del runtime genérico
+
+1. No repetir la auditoría ya cerrada de que `scripts/assistants.mjs` persiste planes pero no invoca `executeNexoStep()` / `executeLuminaNexoStep()`; tampoco mover `nexoMemory` a estado de Lúmina.
+2. Definir el primer punto de ejecución real desde una misión recuperada por el owner canónico. La misión y el paso deben volver a leerse desde continuidad; los argumentos del caller no autorizan acción ni objetivo.
+3. Antes de ejecutar cualquier adapter genérico, la ruta debe validar el tipo de acción y preparar una obligación durable con revisión ambiental vinculada. Si la acción no pertenece al conjunto repair-only aprobado, debe seguir bloqueada.
+4. No reutilizar `dispatchPreparedRepair()` como dispatcher genérico ni convertir `recordExecutionLineage()` en settlement. La primera integración debe conservar separado PREPARED, dispatch, lineage, observación del estado persistido y settlement.
+5. Crear un test de proceso/reinicio para la nueva ruta y comprobar que un replay no vuelve a ejecutar el efecto. No afirmar cutover completo hasta que el caller real use la ruta canónica y se pruebe end-to-end.
 
 ## No cambiar de estado
 
