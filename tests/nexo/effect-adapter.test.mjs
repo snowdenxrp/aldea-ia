@@ -367,3 +367,54 @@ const invalidProbe=await invalidProbeAdapter.verifyPrepared({idempotencyKey:"pro
 assert.equal(invalidProbe.status,"unknown");
 assert.equal(invalidProbe.code,"EFFECT_RECONCILIATION_EVIDENCE_INVALID");
 console.log("Nexo: trusted per-action verifier probe remains read-only and never dispatches.");
+
+
+// Canonical PREPARED receipt is required before executePrepared can dispatch.
+const canonicalLocalJournal=[];
+let canonicalDispatches=0, canonicalPersistCalls=0;
+const canonicalAdapter=createEffectAdapter({
+  executionJournal:canonicalLocalJournal,
+  persistPreparedIntent:async()=>{canonicalPersistCalls++;},
+  handlers:{canonical_effect:async()=>{canonicalDispatches++;return {status:"completed",details:"canonical-ok"};}}
+});
+const canonicalRequest={
+  missionId:"canonical-m1",stepId:"s1",action:"canonical_effect",target:{resource:"alpha"},
+  idempotencyKey:"canonical-m1:s1",
+  preparedOperation:{missionId:"canonical-m1",stepId:"s1",action:"canonical_effect",target:{resource:"alpha"},idempotencyKey:"canonical-m1:s1"},
+  precondition:()=>true,postcondition:()=>true
+};
+const invalidCanonicalReceipt=await canonicalAdapter.executePrepared(canonicalRequest,{preparedCommit:{status:"committed",preparedCommitted:false,storeRevision:4}});
+assert.equal(invalidCanonicalReceipt.status,"blocked");
+assert.equal(invalidCanonicalReceipt.code,"EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED");
+assert.equal(canonicalDispatches,0,"invalid canonical receipt must not dispatch");
+assert.equal(canonicalLocalJournal.length,0,"invalid receipt must not create adapter-local PREPARED");
+assert.equal(canonicalPersistCalls,0,"invalid receipt must not invoke local persistence hook");
+
+const canonicalResult=await canonicalAdapter.executePrepared(canonicalRequest,{preparedCommit:{status:"committed",preparedCommitted:true,storeRevision:4}});
+assert.equal(canonicalResult.status,"completed");
+assert.equal(canonicalResult.verified,true);
+assert.equal(canonicalDispatches,1);
+assert.equal(canonicalLocalJournal.length,0,"canonical mode must not create a second local journal");
+assert.equal(canonicalPersistCalls,0,"canonical mode must not call adapter-local PREPARED persistence");
+assert.equal(canonicalAdapter.hasExecuted("canonical-m1:s1"),false,"canonical mode must not populate adapter-local result cache");
+
+const conflictingLocalJournal=[{idempotencyKey:"canonical-m2:s1",missionId:"canonical-m2",stepId:"s1",action:"canonical_effect",target:"alpha",status:"prepared"}];
+let conflictingDispatches=0, conflictingPersistCalls=0;
+const conflictingAdapter=createEffectAdapter({
+  executionJournal:conflictingLocalJournal,
+  persistPreparedIntent:async()=>{conflictingPersistCalls++;},
+  handlers:{canonical_effect:async()=>{conflictingDispatches++;return {status:"completed",details:"must-not-run"};}}
+});
+const conflictingRequest={
+  missionId:"canonical-m2",stepId:"s1",action:"canonical_effect",target:"alpha",
+  idempotencyKey:"canonical-m2:s1",
+  preparedOperation:{missionId:"canonical-m2",stepId:"s1",action:"canonical_effect",target:"alpha",idempotencyKey:"canonical-m2:s1"},
+  precondition:()=>true,postcondition:()=>true
+};
+const localConflict=await conflictingAdapter.executePrepared(conflictingRequest,{preparedCommit:{status:"committed",preparedCommitted:true,storeRevision:5}});
+assert.equal(localConflict.status,"blocked");
+assert.equal(localConflict.code,"EFFECT_LOCAL_JOURNAL_CONFLICT_WITH_CANONICAL_PREPARE");
+assert.equal(conflictingDispatches,0,"a second ledger's existing obligation must block dispatch");
+assert.equal(conflictingLocalJournal[0].status,"prepared","conflicting local obligation must remain unresolved");
+assert.equal(conflictingPersistCalls,0);
+console.log("Nexo: canonical PREPARED receipt gates dispatch without creating a second adapter journal.");
