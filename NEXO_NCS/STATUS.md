@@ -1,3 +1,13 @@
+## M0 — contrato de sesión de runtime acotado (2026-10-18)
+
+- Revalidado el HEAD de rama antes de continuar: `7ed44d7179988e07cd0e19bbe5a5ab486eb9e191`. El CI de repair-only más reciente verificado sigue siendo [39142213418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142213418), sobre el SHA de código/pruebas `e36121220d4d89475a68bc4bf1a0d2880b4092be`; no es un PASS sobre el HEAD documental posterior.
+- Auditoría dirigida del seam actual: `src/nexo/runtime.js` aún ejecuta outcomes mediante `src/assistants/memory.js`; `scripts/assistants.mjs` registra misión en el owner separado pero no ejecuta la misión; `runNexoRepairOnce()` es una entrada de script repair-only, no el runtime productivo.
+- Se creó [NCS_M0_RUNTIME_SESSION_CONTRACT_2026-10-18.md](BUILD/NCS_M0_RUNTIME_SESSION_CONTRACT_2026-10-18.md), commit [d654583139df69202a726981a53878f32219cffa](https://github.com/snowdenxrp/aldea-ia/commit/d654583139df69202a726981a53878f32219cffa). Define el contrato mínimo para la primera sesión owner-backed: misión canónica, identidad de paso no sustituible por caller, PREPARED durable antes de dispatch, lista cerrada de reparaciones elegibles, settlement distinto de completion, recuperación fail-closed y pruebas a través de la API de sesión real.
+- **No se cortó runtime ni se afirma CI nuevo**: el cambio es documental y el contrato todavía debe materializarse en pruebas/código. El siguiente trabajo debe ser test-first sobre una API de sesión owner-backed; no reemplazar imports en `runtime.js` ni enrutar `executeNexoStep()` genérico hacia el dispatcher de reparación.
+- Límites sin cambio: M0 incompleto; no atomicidad cross-store; efectos protegidos STOP; PREPARED/`settled_observed` sin resolver UNKNOWN; Nexo y Lúmina separados; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — entrypoint repair-only (2026-10-18)
 
 - Implementado `scripts/nexo-repair-entrypoint.mjs` con `runNexoRepairOnce()`; la entrada está limitada a reparaciones convergentes.
