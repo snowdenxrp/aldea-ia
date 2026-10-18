@@ -115,6 +115,43 @@ try {
   assert.equal(afterSettlement.storeRevision, 2);
   assert.equal(afterSettlement.snapshot.effectJournal[0].status, "settled_observed");
 
+  // A caller-provided "verified" label cannot promote observed settlement into
+  // a completed mission outcome. The same owner-backed mission must reconstruct
+  // blocked after restart until a separate mission-goal contract exists.
+  const falsePromotion = await opened.owner.recordOutcome({
+    expectedRevision: afterSettlement.storeRevision,
+    outcome: {
+      missionId: "mission-owner-lifecycle",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex",
+      status: "completed",
+      evidence: {
+        verified: true,
+        kind: "caller-asserted",
+        source: "caller-asserted"
+      }
+    }
+  });
+  assert.equal(falsePromotion.status, "blocked");
+  assert.equal(falsePromotion.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 2,
+    "caller-labeled completion must not advance the owner revision");
+
+  const reconstructedAfterSettlement = await opened.owner.reconstructMission("mission-owner-lifecycle");
+  assert.equal(reconstructedAfterSettlement.status, "reconstructed");
+  assert.equal(reconstructedAfterSettlement.mission.status, "blocked");
+  assert.equal(reconstructedAfterSettlement.mission.objective, "verify_observed_repair_goal");
+  assert.equal(reconstructedAfterSettlement.mission.steps[0].status, "blocked");
+
+  const reopenedAfterSettlement = await openNexoContinuityOwner({ filePath: nexoPath });
+  const reconstructedAfterRestart = await reopenedAfterSettlement.owner.reconstructMission("mission-owner-lifecycle");
+  assert.equal(reconstructedAfterRestart.status, "reconstructed");
+  assert.equal(reconstructedAfterRestart.mission.status, "blocked");
+  assert.equal(reconstructedAfterRestart.mission.objective, "verify_observed_repair_goal");
+  assert.equal((await reopenedAfterSettlement.owner.loadCurrent()).storeRevision, 2,
+    "restart reconstruction must not mutate the settled owner snapshot");
+
   // Replay after settlement must fail closed before the repair adapter runs.
   // The journal is terminal for dispatch even though settlement makes no causal claim.
   const replay = await dispatchPreparedRepair({
