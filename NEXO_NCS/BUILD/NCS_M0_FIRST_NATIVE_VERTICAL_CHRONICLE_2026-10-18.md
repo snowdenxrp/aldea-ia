@@ -94,3 +94,12 @@ La clave canónica actual de continuidad concatena `missionId` y `stepId` con `:
 Validación CI en SHA `de89e228ca5b46becd17ef2e3159ab2e47c25f8e`: [39174610849 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610849) y [39174610848 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610848).
 
 Siguiente corte: endurecer el parser de argumentos del CLI (argumentos desconocidos, repetidos y valores ausentes) y probar que no filtre el contenido del Chronicle por salida de error. No hacer cutover ni ampliar acciones.
+
+
+## Parser CLI y superficie de error
+
+El entrypoint ahora valida estrictamente la gramática de argumentos y captura excepciones en modo CLI para no imprimir contenido Chronicle, stack ni rutas. Se registró un fallo intermedio de test por expectativa obsoleta del código de error y se corrigió antes de considerar la iteración verde.
+
+CI final en SHA `d7af2db2150ab6be57683ad1e15977f29c613081`: [39174722540 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722540) y [39174722491 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722491).
+
+Próximo corte: probar el CLI como subproceso real, con stores centinela, asegurando que entradas inválidas no los modifiquen y que la salida no filtre el cuerpo. No ampliar la vertical ni cambiar runtime default.
