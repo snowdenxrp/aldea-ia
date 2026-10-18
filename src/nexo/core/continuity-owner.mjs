@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
-import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
+import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
 
 function ownerError(code) {
   const error = new Error(code);
@@ -87,6 +87,74 @@ export function createNexoContinuityOwner({ store } = {}) {
     }
     assertNexoContinuitySnapshot(next);
     return store.commitIfCurrent(expectedRevision, next);
+  }
+
+  /**
+   * Persist a mission-step outcome in Nexo's own store.
+   * This records an outcome claim; it never settles effectJournal or authorizes effects.
+   */
+  async function recordOutcome({ expectedRevision, outcome } = {}) {
+    if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
+      return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
+    }
+    if (!outcome || typeof outcome !== "object" || Array.isArray(outcome) ||
+        typeof outcome.missionId !== "string" || !outcome.missionId.trim() ||
+        typeof outcome.stepId !== "string" || !outcome.stepId.trim() ||
+        typeof outcome.action !== "string" || !outcome.action.trim() ||
+        !["completed", "failed", "blocked"].includes(outcome.status)) {
+      return { status: "failed", code: "NEXO_OUTCOME_CONTEXT_INVALID" };
+    }
+
+    const current = await store.loadCurrent();
+    if (current.storeRevision !== expectedRevision) {
+      return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
+    }
+    const mission = current.snapshot.missions.find(item => item?.missionId === outcome.missionId);
+    const step = mission?.steps?.find(item => item?.id === outcome.stepId);
+    if (!step) return { status: "blocked", code: "NEXO_OUTCOME_MISSION_CONTEXT_MISSING", storeRevision: current.storeRevision };
+    if (step.action !== outcome.action ||
+        !isDeepStrictEqual(step.target ?? null, outcome.target ?? null)) {
+      return { status: "blocked", code: "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH", storeRevision: current.storeRevision };
+    }
+
+    const existing = current.snapshot.attempts.find(item =>
+      item?.missionId === outcome.missionId && item?.stepId === outcome.stepId
+    );
+    if (existing) {
+      const sameIdentity = existing.action === outcome.action &&
+        isDeepStrictEqual(existing.target ?? null, outcome.target ?? null);
+      if (!sameIdentity) return { status: "blocked", code: "NEXO_OUTCOME_IDENTITY_MISMATCH", storeRevision: current.storeRevision };
+      return { status: "already_recorded", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+
+    const prepared = current.snapshot.effectJournal.some(item =>
+      item?.missionId === outcome.missionId &&
+      item?.stepId === outcome.stepId &&
+      item?.status === "prepared"
+    );
+    if (prepared && outcome.status === "completed") {
+      return { status: "blocked", code: "NEXO_OUTCOME_PREPARED_OBLIGATION_UNRESOLVED", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+
+    let candidate;
+    try {
+      candidate = recordNexoOutcomeInSnapshot(current.snapshot, {
+        missionId: outcome.missionId,
+        stepId: outcome.stepId,
+        action: outcome.action,
+        target: outcome.target ?? null,
+        status: outcome.status,
+        evidence: outcome.evidence ?? null,
+        doNotRepeat: outcome.doNotRepeat === true,
+        parentMissionId: outcome.parentMissionId ?? null,
+        replanReason: outcome.replanReason ?? null
+      });
+    } catch (error) {
+      return { status: "failed", code: error?.code ?? "NEXO_OUTCOME_CONTEXT_INVALID", storeRevision: current.storeRevision };
+    }
+
+    const committed = await store.commitIfCurrent(expectedRevision, candidate);
+    return { ...committed, journalSettled: false, authorization: "NOT_EVALUATED" };
   }
 
   async function recordPrepared({ expectedRevision, operation } = {}) {
@@ -240,5 +308,5 @@ export function createNexoContinuityOwner({ store } = {}) {
     return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
-  return Object.freeze({ loadCurrent, reconstructMission, recordMission, recordPrepared, recordExecutionLineage, reconcilePrepared });
+  return Object.freeze({ loadCurrent, reconstructMission, recordMission, recordOutcome, recordPrepared, recordExecutionLineage, reconcilePrepared });
 }
