@@ -1,3 +1,22 @@
+## RECOVERY POINT — partial Nexo continuity migration (2026-10-18)
+
+Read first: [M0 continuity migration recovery checkpoint](NCS_M0_CONTINUITY_MIGRATION_RECOVERY_CHECKPOINT_2026-10-18.md) and `NEXO_NCS/STATUS.md`.
+
+- Migration bootstrap is implemented and regression-tested, not complete end-to-end.
+- Independent store: `.nexo-continuity.json`; owner/bootstrap: `scripts/nexo-continuity.mjs`.
+- `scripts/assistants.mjs` builds mission input from the standalone snapshot and calls `continuity.owner.recordMission()`.
+- `scripts/simulate.mjs` now persists Lúmina world/agents/events without `nexoMemory`; it opens the independent Nexo store and imports legacy Nexo memory only when that store is absent.
+- Migration test `tests/nexo/continuity-migration.test.mjs` preserves the old operational collections and PREPARED obligation, excludes learning analytics, proves canonical-store precedence, and rejects corrupt/missing continuity unless empty bootstrap is explicitly allowed.
+- Workflow triggers include the continuity owner/store/operations and migration scripts; the dedicated store and migration tests are now separate CI steps.
+- Exact source/test/workflow head `8b45736b92d6510ed5ccdb3d151b969210b2c66b` passed CI [39099935315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099935315).
+- **Do not repeat migration research or call migration complete.** `src/nexo/runtime.js` still records execution/outcomes through legacy functions in `src/assistants/memory.js`; effect PREPARED/terminal commit and mission reconstruction are not end-to-end wired to the independent owner.
+- No real user device/local dataset was migrated by this chat. CI tests used temporary directories.
+- Cross-store order is unresolved: Nexo mission admission may commit before Lúmina world-state persistence, so two-file atomicity must not be assumed. Require fresh admission before any execution based on a potentially stale plan.
+- Next bounded task: design the exact owner-level terminal/reconstruction contract and cross-store crash cuts; then integrate runtime with PREPARED-before-dispatch. Preserve UNKNOWN and never redispatch/replan around unresolved prepared effects. No new authority root/global revision/queue/retry/tombstone/transaction wrapper.
+- Safety state unchanged: M0 incomplete; prepared external outcomes UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Source-labelled completion claims — verified (2026-10-18)
 
 - Core continuity operations now require a non-empty `evidence.source` label on completion claims and when reconstructing completed steps, matching M0.15.
