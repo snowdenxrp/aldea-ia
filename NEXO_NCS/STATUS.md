@@ -729,3 +729,12 @@ This closes one crash boundary for the repair-only lifecycle; it does not prove 
 - El workflow M0 focal fue ampliado en [`8c1845e49cf116aad4d7b6de058a1b73b55e4d0d`](https://github.com/snowdenxrp/aldea-ia/commit/8c1845e49cf116aad4d7b6de058a1b73b55e4d0d) para incluir el owner, runtime y la suite del adaptador además de crash cuts. Aun así, las consultas de status/runs disponibles no devuelven evidencia de ejecución para estos SHAs. **CI PENDING/UNKNOWN; no declarar PASS.**
 - Siguiente frontera: contrato confiable de reconciliación por acción y settlement CAS. Esta corrección cierra un bypass de outcomes, no el ciclo de efecto ni la integración del runtime genérico. M0 sigue INCOMPLETO.
 
+## M0 — PREPARED domina también replay de un attempt terminal obsoleto (2026-10-18)
+
+- Hallazgo: aunque `recordOutcome()` ya bloqueaba outcomes terminales nuevos mientras el journal estaba `prepared` o `settled_observed`, la búsqueda de un attempt existente ocurría antes de ese guard. Un replay idéntico podía devolver `already_recorded` pese a que el mismo efecto seguía sin reconciliarse.
+- Corrección: el owner comprueba primero la obligación de efecto pendiente y solo después considera idempotencia del attempt. Un attempt previo no invalida ni resuelve PREPARED.
+- Regresión: fixture con un attempt `completed` preexistente y el journal `prepared`; repetir el outcome debe devolver `blocked / NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`, conservando PREPARED.
+- Commits: código [`909d564cbb88812624e29afb7cae7952b55d2b3f`](https://github.com/snowdenxrp/aldea-ia/commit/909d564cbb88812624e29afb7cae7952b55d2b3f); prueba [`2c64848e77c0e6ffc6989c7b16371123b0b19679`](https://github.com/snowdenxrp/aldea-ia/commit/2c64848e77c0e6ffc6989c7b16371123b0b19679).
+- Validación: el workflow M0 ampliado incluye esta suite, pero los checks/runs observables consultados siguen sin mostrar una ejecución asociada. **PENDING/UNKNOWN; no afirmar PASS.**
+- Siguiente frontera: contrato de reconciliación por acción, verificadores confiables y settlement CAS. Esta corrección endurece replay del owner; no conecta aún el runtime genérico. M0 permanece INCOMPLETO.
+
