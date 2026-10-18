@@ -418,3 +418,27 @@ assert.equal(conflictingDispatches,0,"a second ledger's existing obligation must
 assert.equal(conflictingLocalJournal[0].status,"prepared","conflicting local obligation must remain unresolved");
 assert.equal(conflictingPersistCalls,0);
 console.log("Nexo: canonical PREPARED receipt gates dispatch without creating a second adapter journal.");
+
+
+// Canonical mode must also avoid adapter-local writes when a precondition blocks.
+const preconditionLocalJournal=[];
+let preconditionDispatches=0, preconditionPersistCalls=0;
+const preconditionAdapter=createEffectAdapter({
+  executionJournal:preconditionLocalJournal,
+  persistPreparedIntent:async()=>{preconditionPersistCalls++;},
+  handlers:{canonical_blocked_effect:async()=>{preconditionDispatches++;return {status:"completed"};}}
+});
+const preconditionRequest={
+  missionId:"canonical-m3",stepId:"s1",action:"canonical_blocked_effect",target:"alpha",
+  idempotencyKey:"canonical-m3:s1",
+  preparedOperation:{missionId:"canonical-m3",stepId:"s1",action:"canonical_blocked_effect",target:"alpha",idempotencyKey:"canonical-m3:s1"},
+  precondition:()=>false,postcondition:()=>true
+};
+const preconditionBlocked=await preconditionAdapter.executePrepared(preconditionRequest,{preparedCommit:{status:"committed",preparedCommitted:true,storeRevision:6}});
+assert.equal(preconditionBlocked.status,"blocked");
+assert.equal(preconditionBlocked.code,"PRECONDITION_FAILED");
+assert.equal(preconditionDispatches,0);
+assert.equal(preconditionLocalJournal.length,0,"owner-prepared precondition failure must not create a local journal entry");
+assert.equal(preconditionPersistCalls,0,"owner-prepared precondition failure must not call local persistence");
+assert.equal(preconditionAdapter.hasExecuted("canonical-m3:s1"),false);
+console.log("Nexo: canonical mode precondition block remains single-ledger.");
