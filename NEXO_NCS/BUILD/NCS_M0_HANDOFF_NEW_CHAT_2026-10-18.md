@@ -169,3 +169,12 @@ This closes one crash boundary for the repair-only lifecycle; it does not prove 
 - Un cambio incompleto de esquema `goalObservations` produjo CI fallido en runs 39146494871/39146494887; se revirtió en `16c51fc994de1ca8a6471fa30f9060068b998da8`. No ocultar este fallo ni reintroducir el campo sin contrato/migración completa.
 - HEAD actual `864ab85d38bf67040ef5a662dd8769cad3ea4c9f`; el último CI verde explícito es sobre su padre `16c51fc994de1ca8a6471fa30f9060068b998da8`. Revalidar el HEAD antes de afirmar cobertura exacta.
 - Próximo: definir si y cómo persistir una observación de objetivo con procedencia que no dependa de etiquetas del caller. No promover misión a completed; no afirmar causalidad; no tocar el corte del runtime genérico aún.
+
+
+## Último cambio de código probado — estabilidad del snapshot de continuidad (2026-10-18)
+
+El verificador `verifyRepairMissionGoalFromPersistedState()` ahora vuelve a leer continuidad antes de devolver un resultado positivo. Si la revisión cambió desde la lectura inicial, responde `unknown / NEXO_CONTINUITY_CHANGED_DURING_MISSION_VERIFICATION`. Prueba de regresión en `tests/nexo/repair-mission-verification.test.mjs` simula el cambio y comprueba el código, estado y dos lecturas.
+
+Commit exacto: `57f3bffb52989a924bdbc5fb4fc626d803e6988f`. CI verde sobre el mismo SHA: repair [39146959705](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146959705), STEP 4 [39146959738](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146959738), STEP 5 [39146959691](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146959691). El workflow repair confirma explícitamente el paso de verificación del objetivo.
+
+Esto evita un PASS basado en continuidad que cambió durante la verificación; no es atomicidad cross-store ni cubre cambios que ocurran después de la lectura final. No persistimos aún goal observations, no declaramos misión completada y no migramos el runtime genérico. Siguiente: diseñar un contrato de observación durable/procedencia solo si el requisito de continuidad M0 lo necesita; de lo contrario, delimitar con precisión qué prueba de punto en el tiempo requiere el cutover. No añadir una colección de snapshot sin contrato/migración completos.
