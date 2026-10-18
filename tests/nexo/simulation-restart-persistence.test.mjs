@@ -8,6 +8,7 @@ import { world as defaultWorld } from "../../src/world.js";
 import { createInitialAgents } from "../../src/agents.js";
 import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
 import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
 import { observePersistedRepairInvariant, comparePersistedRepairRevision } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
 
@@ -258,20 +259,23 @@ const missionAdmission = await repairContinuity.owner.recordMission({
   }
 });
 assert.equal(missionAdmission.status, "committed");
-const preparedIntent = await repairContinuity.owner.recordPrepared({
-  expectedRevision: missionAdmission.storeRevision,
+const preparedIntent = await prepareRepairAgainstPersistedState({
+  owner: repairContinuity.owner,
+  statePath: repairStatePath,
+  expectedContinuityRevision: missionAdmission.storeRevision,
   operation: {
     missionId: "repair-crash-cut",
     stepId: "step-1",
     action: "repair_agent_state",
     target: "alex",
     idempotencyKey: "repair-crash-cut:step-1",
-    environmentStateRevision: 0,
     at: "2026-10-18T00:00:00.000Z"
   }
 });
 assert.equal(preparedIntent.status, "committed");
 assert.equal(preparedIntent.preparedCommitted, true);
+assert.equal(preparedIntent.environmentStateRevision, 0, "PREPARED revision must be derived from strict persisted state");
+assert.equal(preparedIntent.environmentRevisionSource, "strict-persisted-world-state");
 
 const repairAdapter = createLuminaEffectAdapter(repairSimulation);
 const repairedEffect = await repairAdapter.execute({
