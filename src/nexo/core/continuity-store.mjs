@@ -1,0 +1,193 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
+
+export const NEXO_CONTINUITY_STORE_SCHEMA = "NEXO_CONTINUITY_STORE";
+export const NEXO_CONTINUITY_STORE_VERSION = 1;
+
+const LOCK_RETRY_MS = 10;
+const LOCK_STALE_MS = 60_000;
+let tempSequence = 0;
+
+function storeError(code) {
+  const error = new Error(code);
+  error.code = code;
+  return error;
+}
+
+function lockPathFor(filePath) {
+  return `${filePath}.lock`;
+}
+
+function processIsAlive(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try { process.kill(pid, 0); return true; } catch (error) { return error?.code === "EPERM"; }
+}
+
+async function readLockOwner(fsModule, lockPath) {
+  try { return JSON.parse(await fsModule.readFile(path.join(lockPath, "owner.json"), "utf8")); }
+  catch { return null; }
+}
+
+async function acquireLock(fsModule, filePath) {
+  const lockPath = lockPathFor(filePath);
+  const token = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const owner = { pid: process.pid, token, createdAt: Date.now() };
+  while (true) {
+    try {
+      await fsModule.mkdir(lockPath);
+      await fsModule.writeFile(path.join(lockPath, "owner.json"), JSON.stringify(owner), "utf8");
+      return async () => {
+        const current = await readLockOwner(fsModule, lockPath);
+        if (current?.token === token) await fsModule.rm(lockPath, { recursive: true, force: true });
+      };
+    } catch (error) {
+      if (error?.code !== "EEXIST") throw error;
+      const current = await readLockOwner(fsModule, lockPath);
+      let age = 0;
+      try { age = Date.now() - (await fsModule.stat(lockPath)).mtimeMs; } catch {}
+      const stale = current
+        ? age > LOCK_STALE_MS && !processIsAlive(Number(current.pid))
+        : age > LOCK_STALE_MS;
+      if (stale) {
+        await fsModule.rm(lockPath, { recursive: true, force: true }).catch(() => {});
+        continue;
+      }
+      await new Promise(resolve => setTimeout(resolve, LOCK_RETRY_MS));
+    }
+  }
+}
+
+function validateEnvelope(envelope) {
+  if (!envelope || typeof envelope !== "object" || Array.isArray(envelope) ||
+      envelope.schema !== NEXO_CONTINUITY_STORE_SCHEMA ||
+      envelope.schemaVersion !== NEXO_CONTINUITY_STORE_VERSION ||
+      !Number.isSafeInteger(envelope.storeRevision) || envelope.storeRevision < 0 ||
+      !envelope.snapshot || typeof envelope.snapshot !== "object") {
+    throw storeError("NEXO_CONTINUITY_STORE_SCHEMA_UNKNOWN");
+  }
+  assertNexoContinuitySnapshot(envelope.snapshot);
+  return envelope;
+}
+
+async function readEnvelope(fsModule, filePath) {
+  let raw;
+  try { raw = await fsModule.readFile(filePath, "utf8"); }
+  catch (error) {
+    throw storeError(error?.code === "ENOENT" ? "NEXO_CONTINUITY_STORE_NOT_FOUND" : "NEXO_CONTINUITY_STORE_READ_FAILED");
+  }
+  let parsed;
+  try { parsed = JSON.parse(raw); }
+  catch { throw storeError("NEXO_CONTINUITY_STORE_INVALID_JSON"); }
+  return validateEnvelope(parsed);
+}
+
+async function writeEnvelope(fsModule, filePath, envelope) {
+  const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
+  try {
+    await fsModule.writeFile(tempPath, JSON.stringify(envelope, null, 2) + "\\n", "utf8");
+    await fsModule.rename(tempPath, filePath);
+  } catch (error) {
+    await fsModule.rm(tempPath, { force: true }).catch(() => {});
+    throw error;
+  }
+}
+
+/**
+ * Nexo-owned operational continuity file store.
+ *
+ * The store is independent of Lúmina's world-state lifecycle. storeRevision
+ * coordinates cooperating local writers only; it is not authority, a global
+ * fence, rollback protection, or proof of external-effect truth.
+ *
+ * This implementation does not claim fsync/power-loss durability or support
+ * network/distributed filesystems. Missing/corrupt state is never regenerated.
+ */
+export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
+  if (typeof filePath !== "string" || !filePath.trim()) {
+    throw storeError("NEXO_CONTINUITY_STORE_PATH_REQUIRED");
+  }
+
+  async function loadCurrent() {
+    const envelope = await readEnvelope(fsModule, filePath);
+    return {
+      status: "loaded",
+      storeRevision: envelope.storeRevision,
+      snapshot: structuredClone(envelope.snapshot)
+    };
+  }
+
+  async function initialize(snapshot) {
+    assertNexoContinuitySnapshot(snapshot);
+    const releaseLock = await acquireLock(fsModule, filePath);
+    try {
+      try {
+        await fsModule.access(filePath);
+        return { status: "conflict", code: "NEXO_CONTINUITY_STORE_ALREADY_EXISTS" };
+      } catch (error) {
+        if (error?.code !== "ENOENT") return { status: "failed", code: "NEXO_CONTINUITY_STORE_ACCESS_FAILED" };
+      }
+      const envelope = {
+        schema: NEXO_CONTINUITY_STORE_SCHEMA,
+        schemaVersion: NEXO_CONTINUITY_STORE_VERSION,
+        storeRevision: 0,
+        snapshot: structuredClone(snapshot)
+      };
+      try {
+        await writeEnvelope(fsModule, filePath, envelope);
+        return { status: "committed", storeRevision: 0, snapshot: structuredClone(envelope.snapshot) };
+      } catch {
+        return { status: "failed", code: "NEXO_CONTINUITY_STORE_INITIALIZE_FAILED" };
+      }
+    } finally {
+      await releaseLock();
+    }
+  }
+
+  async function commitIfCurrent(expectedRevision, candidate) {
+    if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
+      return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
+    }
+    try { assertNexoContinuitySnapshot(candidate); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_CONTINUITY_SNAPSHOT_INVALID" }; }
+
+    const releaseLock = await acquireLock(fsModule, filePath);
+    try {
+      let current;
+      try { current = await readEnvelope(fsModule, filePath); }
+      catch (error) { return { status: "unknown", code: error?.code ?? "NEXO_CONTINUITY_STORE_READ_FAILED" }; }
+      if (current.storeRevision !== expectedRevision) {
+        return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
+      }
+
+      const next = {
+        schema: NEXO_CONTINUITY_STORE_SCHEMA,
+        schemaVersion: NEXO_CONTINUITY_STORE_VERSION,
+        storeRevision: current.storeRevision + 1,
+        snapshot: structuredClone(candidate)
+      };
+      try {
+        await writeEnvelope(fsModule, filePath, next);
+        return { status: "committed", storeRevision: next.storeRevision, snapshot: structuredClone(next.snapshot) };
+      } catch {
+        // Rename/write errors are not promoted to success. Read-after-error only
+        // distinguishes a visibly committed candidate; otherwise preserve UNKNOWN.
+        try {
+          const observed = await readEnvelope(fsModule, filePath);
+          if (observed.storeRevision === next.storeRevision &&
+              JSON.stringify(observed.snapshot) === JSON.stringify(next.snapshot)) {
+            return { status: "committed", storeRevision: observed.storeRevision, snapshot: structuredClone(observed.snapshot) };
+          }
+          if (observed.storeRevision === current.storeRevision) {
+            return { status: "failed", code: "NEXO_CONTINUITY_STORE_WRITE_FAILED" };
+          }
+        } catch {}
+        return { status: "unknown", code: "NEXO_CONTINUITY_STORE_COMMIT_OUTCOME_UNKNOWN" };
+      }
+    } finally {
+      await releaseLock();
+    }
+  }
+
+  return Object.freeze({ loadCurrent, initialize, commitIfCurrent });
+}
