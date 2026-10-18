@@ -1,3 +1,12 @@
+## M0 — Standalone Nexo operational continuity snapshot schema candidate (2026-10-18)
+
+- Added `src/nexo/core/continuity-snapshot.mjs` with `NEXO_OPERATIONAL_CONTINUITY` schema version 1, a detached projection from the prototype memory shape, and strict validation.
+- Snapshot contains only `missions`, `attempts`, `doNotRepeat`, `executions`, and `effectJournal`; learning analytics, Lúmina environment state, and authority fields are excluded. Unknown extra fields are rejected.
+- This is a Nexo-owned data contract, not a persistence adapter, migration, or authority source. Existing `createLearningMemory().nexo` remains a prototype/legacy shape until migration is separately audited.
+- Owner contract: [Nexo operational continuity boundary](BUILD/NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md).
+- Exact source+test head `e8251dd88eb00165cc051c6c9d1562c503da314d` mission/restart CI PASS [39098157678](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098157678), including the standalone snapshot and continuity-contract regressions. STEP 4/STEP 5 passed on code-identical head `d47eaaa8009ea4b14dedbd80b88fb5fabb4584a0`: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098148895), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098148912). The final `e825...` commit only added the snapshot source path to CI triggers.
+- Next: define conditional-commit semantics and the owner for this snapshot. Storage tech remains unselected; no Nexo canonical store or protected executor exists. M0 incomplete; external prepared effects UNKNOWN; protected effects STOP.
+
 ## M0 — Nexo-owned operational continuity contract (2026-10-18)
 
 - Added [Nexo operational continuity boundary contract](BUILD/NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md), derived from the Maestra ownership/persistence matrix, A05/A06 linearization baseline, atomicity groups, P112 and AB104.150/.151.
