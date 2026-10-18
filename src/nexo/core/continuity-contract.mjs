@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from "node:util";
+import { assertContractInput } from "./contracts.mjs";
 
 const REQUIRED_COLLECTIONS = Object.freeze([
   "missions",
@@ -24,8 +25,14 @@ function contractError(code) {
 export function assertNexoContinuityMemoryShape(memory) {
   if (memory === null || memory === undefined) return true;
 
-  if (!memory || typeof memory !== "object" || Array.isArray(memory) ||
-      !memory.nexo || typeof memory.nexo !== "object" || Array.isArray(memory.nexo) ||
+  try {
+    // Reuse the canonical core data-shape guard so this public contract rejects
+    // accessors, symbol keys, exotic records and non-data properties before reading fields.
+    assertContractInput(memory, "nexo continuity memory");
+  } catch {
+    throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+  }
+  if (!memory.nexo || typeof memory.nexo !== "object" || Array.isArray(memory.nexo) ||
       REQUIRED_COLLECTIONS.some(key => !Array.isArray(memory.nexo[key]))) {
     throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
   }
