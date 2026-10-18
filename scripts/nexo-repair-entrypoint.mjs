@@ -170,26 +170,39 @@ export async function runNexoRepairOnce({
       uncertainty: "environment_persisted_but_lineage_and_settlement_unconfirmed"
     };
   }
-  const lineage = await owner.recordExecutionLineage({
-    expectedRevision: afterDispatch.storeRevision,
-    operation: {
-      idempotencyKey: preparedOperation.idempotencyKey,
-      missionId: preparedOperation.missionId,
-      stepId: preparedOperation.stepId,
-      action: preparedOperation.action,
-      target: preparedOperation.target ?? null,
-      environmentStateRevision: preparedOperation.environmentStateRevision
-    },
-    result: {
-      status: dispatch.status,
-      code: dispatch.code ?? null,
+  let lineage;
+  try {
+    lineage = await owner.recordExecutionLineage({
+      expectedRevision: afterDispatch.storeRevision,
+      operation: {
+        idempotencyKey: preparedOperation.idempotencyKey,
+        missionId: preparedOperation.missionId,
+        stepId: preparedOperation.stepId,
+        action: preparedOperation.action,
+        target: preparedOperation.target ?? null,
+        environmentStateRevision: preparedOperation.environmentStateRevision
+      },
+      result: {
+        status: dispatch.status,
+        code: dispatch.code ?? null,
+        persisted: dispatch.persisted === true,
+        stateChanged: dispatch.stateChanged === true,
+        environmentStateRevision: dispatch.environmentStateRevision ??
+          dispatch.previousEnvironmentStateRevision ??
+          preparedOperation.environmentStateRevision
+      }
+    });
+  } catch (error) {
+    return {
+      status: "blocked",
+      code: error?.code ?? "NEXO_REPAIR_EXECUTION_LINEAGE_COMMIT_UNKNOWN",
+      dispatch,
       persisted: dispatch.persisted === true,
-      stateChanged: dispatch.stateChanged === true,
-      environmentStateRevision: dispatch.environmentStateRevision ??
-        dispatch.previousEnvironmentStateRevision ??
-        preparedOperation.environmentStateRevision
-    }
-  });
+      uncertainty: dispatch.persisted === true
+        ? "environment_persisted_but_lineage_and_settlement_unconfirmed"
+        : "lineage_and_settlement_unconfirmed_after_noop_observation"
+    };
+  }
   if (!["committed", "already_recorded"].includes(lineage.status)) {
     return {
       status: "blocked",
