@@ -323,6 +323,22 @@ try {
   assert.equal(genericAfter.snapshot.effectJournal[0].status, "reconciled_observed");
   assert.equal(genericAfter.snapshot.effectJournal[0].reconciliation.status, "applied");
   assert.equal(genericAfter.snapshot.effectJournal[0].reconciliation.source, "test-persisted-state-reader");
+  const genericReconstructed = await genericOpened.owner.reconstructMission("mission-crash-cut");
+  assert.equal(genericReconstructed.mission.status, "blocked");
+  assert.equal(genericReconstructed.mission.objective, "verify_reconciled_effect");
+  assert.equal(genericReconstructed.mission.steps[0].status, "blocked");
+  const genericPrematureOutcome = await genericOwner.recordOutcome({
+    expectedRevision: 1,
+    outcome: {
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha",
+      status: "completed"
+    }
+  });
+  assert.equal(genericPrematureOutcome.status, "blocked");
+  assert.equal(genericPrematureOutcome.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
 
   // Unknown observations and absent verifier configuration must preserve PREPARED.
   const unknownDir = path.join(root, "generic-owner-unknown");
