@@ -81,9 +81,13 @@ export function recordNexoOutcomeInSnapshot(snapshot, {
   if (!missionId || !stepId || !action || !["completed", "failed", "blocked"].includes(status)) {
     throw operationError("NEXO_OUTCOME_CONTEXT_INVALID");
   }
-  if (status === "completed" && !(evidence?.verified === true && typeof evidence?.kind === "string" && evidence.kind.trim())) {
+  if (status === "completed" && !(evidence?.verified === true &&
+      typeof evidence?.kind === "string" && evidence.kind.trim() &&
+      typeof evidence?.source === "string" && evidence.source.trim())) {
     throw operationError("NEXO_COMPLETION_EVIDENCE_UNVERIFIED");
   }
+  // A non-empty source is a required label, not authentication of that source.
+  // This continuity layer cannot independently validate provenance.
   if (next.attempts.some(item => item?.missionId === missionId && item?.stepId === stepId)) return next;
   const at = new Date().toISOString();
   next.attempts.push({
@@ -127,7 +131,8 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     const stepAttempts = attempts.filter(item => item?.stepId === step.id);
     const latest = stepAttempts.find(item =>
       item?.status === "completed" && item?.evidence?.verified === true &&
-      typeof item?.evidence?.kind === "string" && item.evidence.kind.trim()
+      typeof item?.evidence?.kind === "string" && item.evidence.kind.trim() &&
+      typeof item?.evidence?.source === "string" && item.evidence.source.trim()
     ) ?? [...stepAttempts].reverse().find(Boolean);
     if (!latest) continue;
     step.status = latest.status;
