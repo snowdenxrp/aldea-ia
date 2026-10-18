@@ -3,7 +3,7 @@
 - Implementado `scripts/nexo-repair-entrypoint.mjs` con `runNexoRepairOnce()`; la entrada está limitada a reparaciones convergentes.
 - Comprueba identidad de PREPARED, observa el entorno persistido antes de recuperar una obligación existente y bloquea si la revisión cambió o el contexto no coincide.
 - El settlement solo registra `settled_observed`; no completa la misión ni afirma causalidad.
-- Test de crash cut y recovery: [CI 39142034311](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142034311), SHA `92687680bcf9186c3f753b85c688dfcf370d1c5f`, SUCCESS; los tres pasos de regresión finalizaron `success`.
+- CI actualizado tras ampliar el test de recuperación antes del dispatch: [run 39142131775](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142131775), SHA `7d54f50b1e2db04d32e1254764e84de57d811de0`, SUCCESS; los tres pasos de regresión finalizaron `success`. También sigue confirmado el run previo [39142034311](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142034311).
 - Límite: todavía no existe llamada desde `src/nexo/runtime.js` ni desde el arranque general. El runtime heredado sigue usando `src/assistants/memory.js`. No hay atomicidad cross-store demostrada; efectos protegidos siguen fuera de alcance y las misiones no se marcan completadas.
 
 ---
