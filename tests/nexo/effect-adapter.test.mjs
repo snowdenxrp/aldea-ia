@@ -75,9 +75,12 @@ assert.equal(ambiguous.uncertainty,"effect_may_or_may_not_have_occurred");
 assert.equal(exceptionCalls,1);
 assert.equal(exceptionJournal[0].status,"prepared");
 assert.equal(exceptionJournal[0].result,undefined);
-const exceptionReconciled=await exceptionAdapter.execute({missionId:"m8",stepId:"s1",action:"ambiguous_effect",target:"alex",idempotencyKey:"m8:s1",reconcile:async()=>({status:"completed",verified:true,evidence:{verified:true,kind:"provider-query"}})});
-assert.equal(exceptionReconciled.status,"completed");
-assert.equal(exceptionJournal[0].status,"completed");
+let exceptionReconcileCalls=0;
+const exceptionReconciled=await exceptionAdapter.execute({missionId:"m8",stepId:"s1",action:"ambiguous_effect",target:"alex",idempotencyKey:"m8:s1",reconcile:async()=>{exceptionReconcileCalls++;return {status:"completed",verified:true,evidence:{verified:true,kind:"provider-query"}};}});
+assert.equal(exceptionReconciled.status,"blocked");
+assert.equal(exceptionReconciled.code,"RECONCILIATION_AUTHORITY_UNAVAILABLE");
+assert.equal(exceptionReconcileCalls,0,"caller-supplied reconciliation callback must not be invoked as its own authority");
+assert.equal(exceptionJournal[0].status,"prepared","caller assertion must not terminalize the unresolved effect");
 
 const terminalIdentityJournal=[{idempotencyKey:"m7:s1",missionId:"m7",stepId:"s1",action:"original_effect",target:{resource:"alex"},status:"completed",result:{status:"completed",verified:true,action:"original_effect",target:{resource:"alex"},idempotencyKey:"m7:s1"}}];
 const terminalIdentityAdapter=createEffectAdapter({executionJournal:terminalIdentityJournal});
@@ -191,13 +194,16 @@ assert.equal(mismatchedReconcile.code,"EFFECT_IDENTITY_MISMATCH");
 assert.equal(mismatchedReconcileCalls,0,"identity mismatch must be rejected before reconciliation evidence is requested");
 assert.equal(mismatchedReconcileJournal[0].status,"prepared");
 
+let reconcileCalls=0;
 const reconcileResult=await recoveryAdapter.execute({
   missionId:"m5",stepId:"s1",action:"prepared_effect",target:"alex",idempotencyKey:"m5:s1",
-  reconcile:async({journalEntry})=>({status:"completed",verified:true,evidence:{verified:true,kind:"external-effect-reconciled",details:"already observed"},source:journalEntry.status})
+  reconcile:async()=>{reconcileCalls++;return {status:"completed",verified:true,evidence:{verified:true,kind:"external-effect-reconciled",details:"already observed"}};}
 });
-assert.equal(reconcileResult.status,"completed");
-assert.equal(reconcileResult.verified,true);
-assert.equal(preparedOnlyJournal[0].status,"completed");
+assert.equal(reconcileResult.status,"blocked");
+assert.equal(reconcileResult.code,"RECONCILIATION_AUTHORITY_UNAVAILABLE");
+assert.equal(reconcileResult.verified,false);
+assert.equal(reconcileCalls,0);
+assert.equal(preparedOnlyJournal[0].status,"prepared");
 assert.equal(recoveryCalls,0);
 
 const invalidReconcileJournal=[{idempotencyKey:"m6:s1",missionId:"m6",stepId:"s1",action:"prepared_effect",target:"alex",status:"prepared"}];
