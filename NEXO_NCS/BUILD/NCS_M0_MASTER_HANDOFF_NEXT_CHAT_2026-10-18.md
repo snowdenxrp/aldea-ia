@@ -1,3 +1,13 @@
+## Incremento M0 — entrada repair-only owner-backed (2026-10-18)
+
+Se añadió `scripts/nexo-repair-entrypoint.mjs` (`runNexoRepairOnce`) para reunir los helpers existentes en un flujo limitado a reparaciones convergentes. Para una obligación PREPARED previa, intenta observar la invariante persistida primero; solo considera dispatch si el estado sigue en la revisión base y la observación demuestra que la invariante no está presente. Rechaza target/context discrepante y revisiones nuevas. Settlement se mantiene separado y solo registra `settled_observed`.
+
+Test del entrypoint/crash recovery: [CI 39142034311](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142034311), SHA `92687680bcf9186c3f753b85c688dfcf370d1c5f`, SUCCESS en los tres pasos de prueba. STATUS actualizado en [41e90c248dc869fddfc67121a62e779cc44b99f9](https://github.com/snowdenxrp/aldea-ia/commit/41e90c248dc869fddfc67121a62e779cc44b99f9).
+
+No confundir este entrypoint de script con la integración productiva: `src/nexo/runtime.js` sigue usando la memoria heredada y no llama a `runNexoRepairOnce`. No hay atomicidad cross-store demostrada, no se completan misiones y los efectos protegidos permanecen fuera de alcance. Siguiente paso: auditar el contrato del entrypoint (incluido el caso de estado ya satisfecho sin escritura y los límites de recuperación) y preparar pruebas de integración antes de cualquier corte de runtime.
+
+---
+
 ## Incremento confirmado — recuperación después del commit de entorno (2026-10-18)
 
 El test de lifecycle ahora simula el crash cut entre persistir el entorno y liquidar PREPARED. Commit de prueba: [55f9a064dd28ed5b51eb552f903f3bec504f9640](https://github.com/snowdenxrp/aldea-ia/commit/55f9a064dd28ed5b51eb552f903f3bec504f9640). CI exacto [39141847081](https://github.com/snowdenxrp/aldea-ia/actions/runs/39141847081) terminó SUCCESS en ese SHA; los tres pasos de prueba del workflow finalizaron success.
