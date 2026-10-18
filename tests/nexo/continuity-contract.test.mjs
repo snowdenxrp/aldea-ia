@@ -207,7 +207,8 @@ const operation = {
 const preparedCommit = await owner.recordPrepared({ expectedRevision: 1, operation });
 assert.equal(preparedCommit.status, "committed");
 assert.equal(preparedCommit.prepared, true);
-assert.equal(preparedCommit.dispatchAllowed, true, "only a confirmed PREPARED commit permits the caller to proceed to its dispatch boundary");
+assert.equal(preparedCommit.preparedCommitted, true, "only a confirmed PREPARED commit establishes durable intent");
+assert.equal(preparedCommit.authorization, "NOT_EVALUATED", "durable preparation must not be confused with authorization");
 assert.equal(preparedCommit.storeRevision, 2);
 
 const persistedPrepared = await owner.loadCurrent();
@@ -215,13 +216,15 @@ assert.equal(persistedPrepared.snapshot.effectJournal[0].status, "prepared");
 assert.equal(persistedPrepared.snapshot.effectJournal[0].idempotencyKey, "owner-mission:step-1");
 const duplicatePrepared = await owner.recordPrepared({ expectedRevision: 2, operation });
 assert.equal(duplicatePrepared.status, "prepared_existing");
-assert.equal(duplicatePrepared.dispatchAllowed, false, "restart/duplicate request must not redispatch an unresolved PREPARED operation");
+assert.equal(duplicatePrepared.preparedCommitted, false, "an existing PREPARED record is not a new commit");
+assert.equal(duplicatePrepared.authorization, "NOT_EVALUATED");
 const wrongOperation = await owner.recordPrepared({
   expectedRevision: 2,
   operation: { ...operation, target: "bruno" }
 });
 assert.equal(wrongOperation.status, "blocked");
-assert.equal(wrongOperation.dispatchAllowed, false);
+assert.equal(wrongOperation.preparedCommitted, false);
+assert.equal(wrongOperation.authorization, "NOT_EVALUATED");
 assert.equal((await owner.reconcilePrepared()).code, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
 await fs.rm(ownerDirectory, { recursive: true, force: true });
 
