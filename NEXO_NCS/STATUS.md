@@ -1,3 +1,15 @@
+## M0 — replay de objetivo observado y no-redispatch (2026-10-18)
+
+- Se reforzó `tests/nexo/repair-mission-verification.test.mjs`: después de `goal_observed`, la reconstrucción canónica sigue manteniendo misión/paso en `blocked` con `NEXO_REPAIR_SETTLED_BY_OBSERVATION`; no se interpreta la observación como completion ni se permite redispatch.
+- **CI exacto:** [39144434201](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144434201), commit de código/pruebas `ec36dd7df7cccf57f372d2cf252444ce28292e84`, workflow `Nexo M0 — repair settlement crash cuts` SUCCESS. El job `repair-crash-cuts` y el nuevo paso de verificación terminaron SUCCESS.
+- La prueba cubre objetivo presente, replay de lectura tras reabrir el owner, objetivo ausente en una revisión posterior, PREPARED pendiente, misión desconocida y el hecho de que la reconstrucción permanece bloqueada después de observar el objetivo.
+- **Contrato actual:** `goal_observed` es efímero/read-only; el journal `settled_observed` permanece durable; la misión reconstruida sigue bloqueada. Aún no existe transición durable de misión a finalización, intencionalmente.
+- HEAD validado por ese CI: `ec36dd7df7cccf57f372d2cf252444ce28292e84`. Verificar HEAD y CI de nuevo después de estas actualizaciones documentales.
+- Siguiente paso: decidir desde el contrato existente si una observación de objetivo debe persistirse como registro distinto, enlazado a revisión del entorno, sin mutar `effectJournal` ni promoverlo a completion. Antes de implementar, añadir casos de stale revision, pérdida posterior de invariante y CAS/restart. No crear estados/campos sin especificación.
+- M0 sigue abierto; runtime genérico no migrado; Nexo/Lúmina separados; no atomicidad cross-store; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — contrato de observación del objetivo tras settlement (2026-10-18)
 
 - Añadida regresión `tests/nexo/repair-mission-verification.test.mjs` y conectada al workflow `.github/workflows/nexo-m0-repair-crash-cuts.yml`.
