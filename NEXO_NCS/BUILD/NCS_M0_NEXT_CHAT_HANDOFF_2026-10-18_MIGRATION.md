@@ -1,3 +1,13 @@
+## Update: Nexo-owned mission reconstruction landed (2026-10-18)
+
+- `src/nexo/core/continuity-owner.mjs` now exposes `reconstructMission(missionId)`, reconstructing from the standalone Nexo snapshot. Missing mission and invalid ID return explicit outcomes.
+- Regression tests landed in `tests/nexo/continuity-contract.test.mjs`.
+- Exact-head CI passed for commit `024c28c55458a517c03be37943651e805de07ca1`: mission/restart [39104216392](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104216392), semantic validation [39104216377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104216377), outcome classification [39104216391](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104216391).
+- This is a Nexo-owned reconstruction API, not a completed runtime cutover. `src/nexo/runtime.js` still imports legacy memory functions. The API does not establish that the mission is current against Lúmina's environment and does not authorize execution.
+- Next implementation boundary: trace the runtime's persisted execution path and add the owner integration without dispatching effects until the PREPARED ordering, final admission, terminal commit, and crash-window behavior are made explicit. Do not invent a terminal-success proof: the current owner must remain unable to settle ambiguous PREPARED effects until an independent operation-specific verifier exists.
+
+---
+
 # NCS — NEXT CHAT HANDOFF: FINISH NEXO CONTINUITY MIGRATION
 Date: 2026-10-18
 Repository: `snowdenxrp/aldea-ia`
