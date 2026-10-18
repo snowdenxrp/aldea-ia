@@ -841,3 +841,15 @@ This closes one crash boundary for the repair-only lifecycle; it does not prove 
 - Esto valida esas suites en ese SHA; no declara M0 completo ni cambia el runtime por defecto.
 - Revisión del siguiente límite: no se debe elegir el adaptador de Lúmina como verificador genérico porque su estado simulado en memoria no demuestra estado ambiental persistido tras reinicio. Las acciones repair tienen settlement específico y no son un atajo para generalizar el contrato. Aún no está identificada una acción genérica no-repair con escritura persistida y lector independiente reales.
 - **Siguiente paso exacto:** trazar desde la entrada real de Nexo una acción no-repair candidata hasta su mutación persistida y el mecanismo independiente para leerla después de reiniciar. Si no existe tal pareja escritura/lector, diseñar el mínimo contrato persistente que la acción necesita antes de implementar el verificador. No escribir un verificador ficticio, no habilitar dispatch por conveniencia y no mezclar Nexo con Lúmina. M0 sigue INCOMPLETO.
+
+
+## M0 — bloqueo estructural identificado: no hay aún un dominio de efectos propio de Nexo (2026-10-18)
+
+La inspección de la entrada real confirma por qué no se debe improvisar un verificador:
+
+- `scripts/assistants.mjs` abre el owner canónico de Nexo y persiste la misión, pero construye los reportes y `buildNexoMission()` a partir de `simulation`, los agentes y las acciones del dominio de Lúmina.
+- `src/nexo/simulation-adapter.js` delega las acciones permitidas a `executeAction` de `src/actions.js`; sus postcondiciones leen el objeto `simulation` en memoria. Eso no es una fuente independiente de estado ambiental persistido después de reiniciar.
+- `scripts/nexo-runtime-session.mjs` solo selecciona `repair_agent_state`, `repair_agent_needs` y `repair_resource_state`, que ya tienen un contrato repair-only con revisión ambiental.
+- Por tanto, el repositorio todavía no ofrece una acción genérica no-repair propia de Nexo con writer + reader persistido independiente. Reusar `execute_lumina_action` como si fuera esa acción mantendría la dependencia que la arquitectura prohíbe.
+
+**Decisión de trabajo:** no implementar todavía un verificador genérico ni cambiar el runtime por defecto. El siguiente diseño debe definir la primera capacidad/efecto nativo de Nexo y su estado persistido canónico (fuera de la simulación de Lúmina), incluyendo quién escribe, quién lo lee después de reinicio y qué invariante observable permite reconciliarlo. Solo entonces se añade un verificador por acción y se prueba el ciclo PREPARED → dispatch → lineage → observación/settlement sin redispatch. No construir otro monolito ni inventar infraestructura general antes de tener una acción concreta. M0 sigue INCOMPLETO.
