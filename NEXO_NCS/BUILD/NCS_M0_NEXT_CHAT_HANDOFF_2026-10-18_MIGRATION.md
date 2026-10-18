@@ -534,3 +534,13 @@ A focused review found `recordExecutionLineage()` could append repair lineage wi
 The mission/restart workflow failed before reaching `continuity-migration.test.mjs` because `applyState()` intentionally strips persistence metadata, but the test used `changedGoalEnvironment.stateRevision + 1` as a persisted revision. The test now captures `changedGoalSource = await loadStateStrict(repairStatePath)` and uses `changedGoalSource.stateRevision + 1`. Fix commit: `ea1a8390c2826021feab46f3197c84a1a4f47039`.
 
 At handoff time, the three exact-head workflows were in progress (mission/restart, STEP 5 outcome classification, STEP 4 semantic validation). Check their final jobs/logs before asserting PASS. Do not change Lúmina runtime persistence to accommodate a test that was deriving a durable revision from an in-memory simulation object.
+
+
+### CI results — verified after test correction
+
+Exact code/test head `ea1a8390c2826021feab46f3197c84a1a4f47039` passed all three workflows:
+- Mission/restart continuity [39138908196](https://github.com/snowdenxrp/aldea-ia/actions/runs/39138908196) — job steps explicitly confirm `simulation-restart-persistence.test.mjs` and `continuity-migration.test.mjs` succeeded.
+- STEP 5 outcome classification [39138908043](https://github.com/snowdenxrp/aldea-ia/actions/runs/39138908043).
+- STEP 4 semantic validation [39138908074](https://github.com/snowdenxrp/aldea-ia/actions/runs/39138908074).
+
+The repair-settlement crash-cut workflow passed at owner code head `291d482a2f1e03294c519bb8971fcce0b1c69176` ([39138771613](https://github.com/snowdenxrp/aldea-ia/actions/runs/39138771613)). Keep the claim bounded to these tested heads and workflows. No runtime cutover, real-device validation, protected effect authorization, or cross-store atomicity has been demonstrated.
