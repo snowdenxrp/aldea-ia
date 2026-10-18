@@ -30,7 +30,7 @@ export function createLuminaEffectPostcondition(simulation,action,target){
     if(effectResult?.status!=="completed")return false;
     const agent=target?simulation.agents?.find(a=>a.id===target):null;
     switch(action){
-      case "repair_agent_state": return !!agent && Number.isFinite(Number(agent.position?.x)) && Number.isFinite(Number(agent.position?.z)) && agent.alive!==false;
+      case "repair_agent_state": return !!agent && Number.isFinite(Number(agent.position?.x)) && Number.isFinite(Number(agent.position?.z)) && typeof agent.alive==="boolean";
       case "repair_agent_needs": return !!agent && ["hunger","thirst","energy","social","safety","health"].every(k=>Number.isFinite(Number(agent.needs?.[k]))&&Number(agent.needs[k])>=0&&Number(agent.needs[k])<=100);
       case "repair_resource_state": { const resource=simulation.world?.resources?.[target]; return !!resource && Number.isFinite(Number(resource.amount)) && Number(resource.amount)>=0; }
       default: return false;
