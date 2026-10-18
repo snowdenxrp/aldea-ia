@@ -8,6 +8,8 @@ on:
       - 'tests/nexo/orchestrator.test.mjs'
       - 'tests/nexo/restart-reconstruction.test.mjs'
       - 'src/nexo/runtime.js'
+      - 'src/nexo/effect-adapter.js'
+      - 'tests/nexo/effect-adapter.test.mjs'
       - 'tests/nexo/runtime.test.mjs'
       - '.github/workflows/nexo-mission-admission-continuity.yml'
   workflow_dispatch:
@@ -22,4 +24,5 @@ jobs:
           node-version: 22
       - run: node tests/nexo/orchestrator.test.mjs
       - run: node tests/nexo/runtime.test.mjs
+      - run: node tests/nexo/effect-adapter.test.mjs
       - run: node tests/nexo/restart-reconstruction.test.mjs
