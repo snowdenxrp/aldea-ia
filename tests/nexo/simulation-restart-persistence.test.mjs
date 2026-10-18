@@ -377,6 +377,23 @@ assert.deepEqual(
   comparePersistedRepairRevision({ expectedStateRevision: 7, currentSnapshot: { ...observationSnapshot, stateRevision: NaN } }),
   { status: "observed", outcome: "unknown", reason: "PERSISTED_ENVIRONMENT_REVISION_UNKNOWN", expectedStateRevision: 7, currentStateRevision: null }
 );
+
+assert.equal(
+  observePersistedRepairInvariant({
+    snapshot: { ...observationSnapshot, agents: [...observationSnapshot.agents, structuredClone(observationSnapshot.agents[0])] },
+    action: "repair_agent_state",
+    target: "normalized"
+  }).reason,
+  "REPAIR_TARGET_AGENT_AMBIGUOUS"
+);
+assert.equal(
+  observePersistedRepairInvariant({
+    snapshot: { ...observationSnapshot, world: { resources: {} } },
+    action: "repair_resource_state",
+    target: "toString"
+  }).reason,
+  "REPAIR_TARGET_RESOURCE_UNKNOWN"
+);
 assert.deepEqual(observationSnapshot, observationSnapshotBefore, "repair observation must not mutate persisted state");
 assert.equal(
   observePersistedRepairInvariant({ snapshot: { ...observationSnapshot, stateRevision: -1 }, action: "repair_agent_state", target: "normalized" }).outcome,
