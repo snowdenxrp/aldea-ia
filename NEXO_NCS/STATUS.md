@@ -1,3 +1,15 @@
+## M0 — contrato de observación del objetivo tras settlement (2026-10-18)
+
+- Añadida regresión `tests/nexo/repair-mission-verification.test.mjs` y conectada al workflow `.github/workflows/nexo-m0-repair-crash-cuts.yml`.
+- CI exacto [39144348792](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144348792) terminó SUCCESS en commit `1d12c8e65aff1be75b04c0acee2fbc513b8ba5f4`; el job `repair-crash-cuts` y todos sus pasos, incluido `Run persisted repair mission goal verification regression`, terminaron success.
+- Casos probados: objetivo observado después de `settled_observed` con `missionCompleted:false` y `causalAttribution:not_claimed`; verificación repetida tras reabrir owner sin mutación de continuidad; objetivo ausente en una revisión de entorno posterior bloquea la observación; PREPARED pendiente bloquea con `NEXO_EFFECT_RECONCILIATION_REQUIRED`; misión desconocida devuelve UNKNOWN.
+- La semántica queda separada: `settled_observed` registra una observación del efecto; `goal_observed` informa que la invariante del objetivo está presente ahora. Ninguno declara por sí mismo `missionCompleted:true`, causalidad ni autorización.
+- El test nuevo pasa en CI sobre el commit que incluye el workflow y el test. HEAD actual puede ser posterior por las actualizaciones documentales; no atribuir el PASS a cambios posteriores sin otro run.
+- Próximo paso: determinar si el contrato de misión necesita una transición durable explícita de estado “goal observed” y bajo qué regla, sin confundirla con completion. No agregar campos/estados nuevos hasta auditar el contrato y probar las consecuencias de replay/CAS. Después abordar una ruta de runtime canónica mínima.
+- M0 sigue abierto; runtime genérico no migrado; Nexo/Lúmina separados; sin atomicidad cross-store; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — auditoría de frontera de memoria legacy/runtime (2026-10-18)
 
 - Auditoría dirigida documentada en [NCS_M0_LEGACY_RUNTIME_MEMORY_CUTOVER_AUDIT_2026-10-18.md](BUILD/NCS_M0_LEGACY_RUNTIME_MEMORY_CUTOVER_AUDIT_2026-10-18.md), commit `f2b14a63665df50a99ea576d44db00092e2f7ca4`.
