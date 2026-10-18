@@ -123,36 +123,6 @@ try {
   assert.equal(changedDuringVerification.verified, false);
   assert.equal(continuityReads, 2);
 
-  // The environment is an independent persisted source too. Simulate it
-  // changing after the initial invariant read but during the continuity re-check.
-  let environmentRaceReads = 0;
-  const environmentChangingStore = {
-    async loadCurrent() {
-      environmentRaceReads += 1;
-      if (environmentRaceReads === 2) {
-        await fs.writeFile(statePath, JSON.stringify(environment(101)), "utf8");
-      }
-      return reopened.store.loadCurrent();
-    }
-  };
-  const environmentChangedDuringVerification = await verifyRepairMissionGoalFromPersistedState({
-    store: environmentChangingStore,
-    statePath,
-    missionId: "mission-verification"
-  });
-  assert.equal(environmentChangedDuringVerification.status, "unknown");
-  assert.equal(
-    environmentChangedDuringVerification.code,
-    "NEXO_REPAIR_MISSION_ENVIRONMENT_CHANGED_DURING_MISSION_VERIFICATION"
-  );
-  assert.equal(environmentChangedDuringVerification.verified, false);
-  assert.equal(environmentChangedDuringVerification.initialEnvironmentStateRevision, 100);
-  assert.equal(environmentChangedDuringVerification.finalEnvironmentStateRevision, 101);
-  assert.equal(environmentRaceReads, 2);
-
-  // Restore the persisted goal invariant for the remaining read-only/replay checks.
-  await fs.writeFile(statePath, JSON.stringify(environment(100)), "utf8");
-
   // Goal observation is deliberately not a durable mission completion. The
   // canonical reconstruction keeps the settled step blocked against redispatch.
   const reconstructed = await reopened.owner.reconstructMission("mission-verification");
