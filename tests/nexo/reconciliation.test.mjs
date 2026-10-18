@@ -5,7 +5,7 @@ const r = createReconciler();
 const c = createReconciliationCase({ boundary: "recovery-boundary", claimId: "claim-1" });
 
 assert.equal(r.reconcile({ reconciliationCase: c, evidence: [] }).status, "UNRESOLVED");
-assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "SEMANTIC_CONFLICT" }] }).status, "RESOLVED");
+assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: true, outcome: "SEMANTIC_CONFLICT" }] }).status, "UNRESOLVED", "caller-controlled authority claims must not resolve reconciliation");
 assert.equal(r.reconcile({ reconciliationCase: c, evidence: [{ authoritative: false, outcome: "SEMANTIC_CONFLICT" }] }).status, "UNRESOLVED");
 assert.equal(r.reconcile({ reconciliationCase: null, evidence: [] }).status, "INVALID");
 assert.equal(r.reconcile({ reconciliationCase: { boundary: " " }, evidence: [] }).status, "INVALID");
@@ -24,12 +24,10 @@ const suppliedEvidence = {
   details: { receipt: { digest: "abc" } }
 };
 const detachedResult = r.reconcile({ reconciliationCase: c, evidence: [suppliedEvidence] });
-assert.equal(detachedResult.status, "RESOLVED");
+assert.equal(detachedResult.status, "UNRESOLVED", "plain caller data is not independently authenticated authority");
+assert.deepEqual(detachedResult.evidence, []);
 suppliedEvidence.details.receipt.digest = "changed";
-assert.equal(detachedResult.evidence[0].details.receipt.digest, "abc");
-assert.notEqual(detachedResult.evidence[0], suppliedEvidence);
-assert.throws(() => { detachedResult.evidence[0].details.receipt.digest = "mutated"; }, TypeError);
-assert.throws(() => { detachedResult.evidence[0].details.receipt = {}; }, TypeError);
+assert.deepEqual(detachedResult.evidence, [], "untrusted evidence must not be retained as a resolved proof");
 assert.equal(r.reconcile({
   reconciliationCase: c,
   evidence: [{ authoritative: true, outcome: "SAFE_COMMIT", details: new Map([["k", "v"]]) }]
@@ -40,7 +38,7 @@ assert.equal(typeof r.commit, "undefined");
 assert.equal(typeof r.execute, "undefined");
 assert.equal(typeof r.authorize, "undefined");
 
-console.log("NEXO STEP 6 reconciliation contract tests: PASS");
+console.log("NEXO STEP 6 reconciliation contract tests: PASS (fail-closed authority boundary)");
 
 
 {
@@ -133,6 +131,6 @@ console.log("NEXO STEP 6 reconciliation contract tests: PASS");
     }
   });
   const result = r.reconcile({ reconciliationCase: c, evidence: hostileEvidence });
-  assert.equal(result.status, "RESOLVED", "own data candidate should be evaluated without dispatching through its custom array method");
+  assert.equal(result.status, "UNRESOLVED", "custom array methods must not make caller-supplied authority trusted");
   assert.equal(findCalls, 0, "reconciliation must not invoke caller-controlled array methods");
 }
