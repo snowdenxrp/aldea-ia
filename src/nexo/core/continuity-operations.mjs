@@ -66,7 +66,15 @@ export function recordNexoExecutionInSnapshot(snapshot, { idempotencyKey, missio
     throw operationError("NEXO_EXECUTION_CONTEXT_INVALID");
   }
   const existing = next.executions.find(item => item?.idempotencyKey === idempotencyKey);
-  if (existing) return next;
+  if (existing) {
+    const sameIdentity = existing.missionId === missionId &&
+      existing.stepId === stepId &&
+      existing.action === action &&
+      isDeepStrictEqual(existing.target ?? null, target ?? null);
+    if (!sameIdentity) throw operationError("NEXO_EXECUTION_IDENTITY_MISMATCH");
+    // Preserve the first recorded result for this identity; a replay is not a new execution.
+    return next;
+  }
   next.executions.push({ idempotencyKey, missionId, stepId, action, target: structuredClone(target), result: structuredClone(result), at: new Date().toISOString() });
   assertNexoContinuitySnapshot(next);
   return next;
