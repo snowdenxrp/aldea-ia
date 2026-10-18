@@ -146,6 +146,16 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       stepEffects[0]?.settlement?.source === "nexo-chronicle-store" &&
       Number.isSafeInteger(stepEffects[0]?.settlement?.observedRevision) &&
       stepEffects[0].settlement.observedRevision >= 0;
+    if (outcome.action === "chronicle_append" && outcome.status === "completed" &&
+        !chronicleSettlementReady) {
+      return {
+        status: "blocked",
+        code: "NEXO_CHRONICLE_SETTLEMENT_REQUIRED",
+        storeRevision: current.storeRevision,
+        journalSettled: false,
+        authorization: "NOT_EVALUATED"
+      };
+    }
     const unresolvedEffect = stepEffects.some(item =>
       ["prepared", "settled_observed", "reconciled_observed"].includes(item?.status)
     ) && !chronicleSettlementReady;
