@@ -445,3 +445,14 @@ La prueba añadida en commit `fd2331e8d71afbbf0f19ea978d552a89087c1dc6` extiende
 **CI exacto en el SHA de prueba:** repair crash cuts [39145754425](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754425) SUCCESS; STEP 4 [39145754371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754371) SUCCESS; STEP 5 [39145754375](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754375) SUCCESS.
 
 Esto cierra la regresión de promoción/replay para el contrato repair-only, no el corte del runtime genérico. Próximo trabajo: revisar el contrato canónico de estado/outcome para definir cómo una verificación independiente de objetivo puede registrar progreso sin convertir `settled_observed` en causalidad; después migrar una única operación legacy, con PREPARED durable antes de dispatch, CAS y replay de reinicio probados. No cambiar imports legacy mecánicamente. No ampliar el dispatcher a acciones no-repair o protegidas.
+
+
+## Último avance — límites del verificador de objetivo (2026-10-18)
+
+Se añadieron regresiones que hacen que `verifyRepairMissionGoalFromPersistedState()` falle de forma cerrada si la invariante ya no está presente en una revisión posterior, o si el estado persistido aparece con una revisión menor que la registrada en settlement. Resultados esperados: `blocked / NEXO_REPAIR_MISSION_GOAL_INVARIANT_NOT_PRESENT` y `unknown / NEXO_REPAIR_MISSION_ENVIRONMENT_REVISION_ROLLBACK_OR_REPLAY`. Ambas rutas dejan intacta la revisión del store Nexo.
+
+Prueba commit `d01384083368d1b9f52ad5c327dc4b1985e5573a`; CI verde: repair [39146476081](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146476081), STEP 4 [39146476199](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146476199), STEP 5 [39146476145](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146476145).
+
+Se intentó agregar una colección `goalObservations`, pero se detectó que el cambio solo modificaba la lista de colecciones y rompía el contrato de snapshot/store/migración. Se registró CI fallido en runs 39146494871 y 39146494887 y se revirtió el cambio incompleto en commit `16c51fc994de1ca8a6471fa30f9060068b998da8`. No se debe volver a añadir esa colección como parche de una sola línea: si se requiere persistir observaciones, primero definir contrato de procedencia, compatibilidad de snapshots existentes, migración, CAS, replay y semántica explícita de que observación no equivale a completion.
+
+El HEAD actual es `864ab85d38bf67040ef5a662dd8769cad3ea4c9f`; el último CI verde citado corresponde al padre `16c51fc994de1ca8a6471fa30f9060068b998da8`. Confirmar run exacto sobre HEAD antes de declararlo validado. Próximo paso: diseñar el contrato de goal observation sin confiar en `verified/source` enviados por caller, y solo entonces decidir si requiere una colección durable o si la lectura read-only satisface el límite de M0 actual.
