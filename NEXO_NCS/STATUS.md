@@ -831,3 +831,13 @@ This closes one crash boundary for the repair-only lifecycle; it does not prove 
 - La actualización está confirmada en el branch, pero los checks/runs consultados para este SHA no muestran ejecución asociada. **Estas pruebas están añadidas; su resultado CI sigue PENDING/UNKNOWN.** No declarar PASS.
 - Esto valida el contrato del adaptador a nivel unitario cuando se ejecute; no demuestra por sí solo que el recibo sea una prueba criptográfica ni que el runtime esté conectado por defecto. La autoridad para invocar este modo sigue siendo el runtime que obtiene la confirmación del owner.
 - Siguiente corte: obtener ejecución CI observable de `tests/nexo/effect-adapter.test.mjs`; corregir cualquier fallo real. Luego identificar una acción genérica concreta con un lector de estado persistido real. Si no hay acción/fuente de verificación definida, mantener el preflight bloqueante; no inventar un verificador genérico ni cambiar el runtime por defecto.
+
+
+## M0 — pruebas canónicas de adaptador ejecutadas en CI (2026-10-18)
+
+- Para el commit de pruebas [da3f3fa2621e1dd046a10d028b4fe8a81faee582](https://github.com/snowdenxrp/aldea-ia/commit/da3f3fa2621e1dd046a10d028b4fe8a81faee582), se observaron dos runs completos:
+  - [Nexo M0 — effect and settlement contract regressions, run 39172107130](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172107130): **SUCCESS**. El paso Effect adapter contract regressions y settlement crash cuts terminaron SUCCESS.
+  - [bounded mission admission and restart continuity, run 39172107167](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172107167): **SUCCESS**. Incluye runtime, effect-adapter.test.mjs, restart reconstruction, continuity store/contract/migration y otras regresiones listadas en el workflow.
+- Esto valida esas suites en ese SHA; no declara M0 completo ni cambia el runtime por defecto.
+- Revisión del siguiente límite: no se debe elegir el adaptador de Lúmina como verificador genérico porque su estado simulado en memoria no demuestra estado ambiental persistido tras reinicio. Las acciones repair tienen settlement específico y no son un atajo para generalizar el contrato. Aún no está identificada una acción genérica no-repair con escritura persistida y lector independiente reales.
+- **Siguiente paso exacto:** trazar desde la entrada real de Nexo una acción no-repair candidata hasta su mutación persistida y el mecanismo independiente para leerla después de reiniciar. Si no existe tal pareja escritura/lector, diseñar el mínimo contrato persistente que la acción necesita antes de implementar el verificador. No escribir un verificador ficticio, no habilitar dispatch por conveniencia y no mezclar Nexo con Lúmina. M0 sigue INCOMPLETO.
