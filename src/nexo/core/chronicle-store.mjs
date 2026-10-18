@@ -23,7 +23,7 @@ function validateDocument(document) {
   if (!document || typeof document !== "object" || Array.isArray(document) ||
       document.schema !== NEXO_CHRONICLE_SCHEMA ||
       document.schemaVersion !== NEXO_CHRONICLE_VERSION ||
-      !Array.isArray(document.entries) || !document.entries.every(validEntry)) {
+      !Number.isSafeInteger(document.storeRevision) || document.storeRevision < 0 ||\n      !Array.isArray(document.entries) || !document.entries.every(validEntry)) {
     throw fail("NEXO_CHRONICLE_SCHEMA_UNKNOWN");
   }
   const keys = new Set();
@@ -106,7 +106,7 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
 
   async function loadCurrent() {
     const document = await readDocument(fsModule, filePath);
-    return { status: "loaded", entries: structuredClone(document.entries) };
+    return { status: "loaded", storeRevision: document.storeRevision, entries: structuredClone(document.entries) };
   }
 
   async function initialize() {
@@ -118,14 +118,14 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
       } catch (error) {
         if (error?.code !== "ENOENT") return { status: "unknown", code: "NEXO_CHRONICLE_ACCESS_UNKNOWN" };
       }
-      const document = { schema: NEXO_CHRONICLE_SCHEMA, schemaVersion: NEXO_CHRONICLE_VERSION, entries: [] };
+      const document = { schema: NEXO_CHRONICLE_SCHEMA, schemaVersion: NEXO_CHRONICLE_VERSION, storeRevision: 0, entries: [] };
       try {
         await writeDocument(fsModule, filePath, document);
-        return { status: "committed", entries: [] };
+        return { status: "committed", storeRevision: 0, entries: [] };
       } catch {
         try {
           const observed = await readDocument(fsModule, filePath);
-          if (observed.entries.length === 0) return { status: "committed", entries: [] };
+          if (observed.storeRevision === 0 && observed.entries.length === 0) return { status: "committed", storeRevision: 0, entries: [] };
         } catch {}
         return { status: "unknown", code: "NEXO_CHRONICLE_INITIALIZE_OUTCOME_UNKNOWN" };
       }
@@ -148,7 +148,7 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
       const existing = current.entries.find(entry => entry.operationKey === operationKey);
       if (existing) {
         if (existing.content !== content) return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
-        return { status: "already_present", entry: structuredClone(existing) };
+        return { status: "already_present", storeRevision: current.storeRevision, entry: structuredClone(existing) };
       }
 
       const candidate = {
@@ -158,13 +158,13 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
       };
       try {
         await writeDocument(fsModule, filePath, candidate);
-        return { status: "committed", entry: { operationKey, content } };
+        return { status: "committed", storeRevision: candidate.storeRevision, entry: { operationKey, content } };
       } catch {
         try {
           const observed = await readDocument(fsModule, filePath);
           const matches = observed.entries.filter(entry => entry.operationKey === operationKey);
           if (matches.length === 1 && matches[0].content === content) {
-            return { status: "committed", entry: structuredClone(matches[0]), recoveredAfterWriteError: true };
+            return { status: "committed", storeRevision: observed.storeRevision, entry: structuredClone(matches[0]), recoveredAfterWriteError: true };
           }
           if (matches.length === 1) return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
           if (matches.length === 0) return { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" };
