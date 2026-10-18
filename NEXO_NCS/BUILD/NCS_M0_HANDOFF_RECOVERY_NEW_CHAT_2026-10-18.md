@@ -176,3 +176,15 @@ Después: leer `NEXO_NCS/STATUS.md` y este archivo en la rama `ncs-clean-archite
 - El commit existe en la rama. Consultas a status checks y workflow runs no devolvieron estados/runs asociados al SHA; **no hay evidencia CI de estos tests todavía**. No afirmar que pasan.
 - La cobertura de `executePrepared` no cambia el estado arquitectónico: el runtime canónico aún es una ruta explícita, no default; falta una acción genérica real con un verificador que lea estado ambiental persistido. Mantener bloqueadas acciones sin contrato probado.
 - Próximo paso: hacer que CI ejecute exactamente `node tests/nexo/effect-adapter.test.mjs` (preferentemente en un workflow focal ya existente o en un trigger que cubra ese archivo), observar resultado/log y corregir fallos. Después elegir una acción concreta y rastrear su escritura persistida y lector real antes de diseñar el primer verificador. No fabricar semántica genérica, no tocar Lúmina y no declarar M0 completo.
+
+
+## 11. Evidencia CI confirmada para pruebas directas del adaptador (2026-10-18)
+
+Corrección de la sección 10: las pruebas sí tienen CI observable y exitoso en el commit da3f3fa2621e1dd046a10d028b4fe8a81faee582.
+
+- [Run 39172107130 — Nexo M0 effect and settlement contract regressions](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172107130): SUCCESS; pasos de prueba del adaptador y settlement SUCCESS.
+- [Run 39172107167 — bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172107167): SUCCESS; incluye node tests/nexo/effect-adapter.test.mjs, runtime.test.mjs, restart reconstruction y continuidad.
+- Se confirman cuatro condiciones nuevas: recibo inválido no despacha; recibo válido no genera segundo journal; conflicto con journal local bloquea; fallo de precondición no deja escritura local ni dispatch.
+- Este éxito es de las suites y del SHA indicados. No significa que M0 esté terminado ni que el runtime canónico sea default.
+- La inspección siguiente no ha encontrado una acción genérica no-repair que ya tenga una pareja demostrada de mutación ambiental persistida + lector independiente post-restart. El adapter de Lúmina solo demuestra simulación en memoria; repair conserva su contrato separado.
+- Próxima tarea: trazar una acción real no-repair desde la entrada de Nexo hasta la escritura y lectura persistidas. Si el repositorio no tiene esa pareja, definirla explícitamente antes del verificador. Sin fuente persistida, el estado correcto es BLOCKED/UNKNOWN, no un verificador inventado.
