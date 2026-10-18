@@ -1,3 +1,12 @@
+## M0 — Chronicle: identidad de operación sin colisiones (validado 2026-10-18)
+
+- Auditoría del primer vertical detectó un caso de ambigüedad: la clave `missionId:stepId` no es inyectiva si alguno de los identificadores contiene `:`. Dos pares distintos podían formar la misma clave, haciendo que una entrada persistida ajena pareciera corresponder a la operación consultada.
+- Corrección aplicada en `src/nexo/adapters/chronicle-effect.mjs`, `src/nexo/adapters/chronicle-observation.mjs` y `scripts/nexo-chronicle-session.mjs`: la acción, el verificador y la entrada CLI rechazan IDs con `:`; el verificador devuelve UNKNOWN para la consulta ambigua. No se cambia el formato canónico de identidad de otras acciones ni se inventan IDs alternativos.
+- Regresiones: `tests/nexo/chronicle-store.test.mjs` verifica que la observación ambigua no se acepte; `tests/nexo/chronicle-runtime.test.mjs` verifica que la entrada rechace el ID antes de despachar.
+- La primera ejecución de CI en SHA `bf5ef739b951b73455cf96782de706afce86accb` falló por una expectativa incorrecta del código de error en el test, no por el comportamiento del runtime: [run 39174663488](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174663488). Se corrigió la expectativa para usar el código contractual `NEXO_CHRONICLE_ID_INVALID`.
+- SHA final validado: `5c2305c9c07c0010dc3ff6a77b2bff8ed2f7742c`. CI SUCCESS: [Chronicle vertical, run 39174706702](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174706702); [bounded continuity/runtime, run 39174706654](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174706654); [STEP 4, run 39174706726](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174706726); [STEP 5, run 39174706730](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174706730).
+- Estado: la identidad de esta vertical ahora tiene un delimitador no ambiguo por validación. Chronicle sigue siendo la única acción nativa habilitada por este entrypoint; no cambia runtime default, no se amplía a otras acciones y no se declara M0 completo.
+
 ## 1D. Outcome directo bloqueado mientras PREPARED siga abierto (CI pendiente)
 
 - Commit `d2d96e66e1870c24af31a8b78273d4b33909e999` amplía `tests/nexo/repair-settlement-crash-cuts.test.mjs`: `recordOutcome(... status: completed)` contra un paso cuyo efecto sigue `prepared` debe responder `blocked / NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`; el journal sigue `prepared` y no se crea un attempt.
