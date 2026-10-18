@@ -1,3 +1,15 @@
+## Latest M0 guard — strict state loading (2026-10-18)
+
+- Source: `scripts/simulate.mjs::loadStateStrict()`; source commit `c527c252edd3d44566f567ebf06745d81c437339`.
+- Regression: `tests/nexo/simulation-restart-persistence.test.mjs`; exact source+test head `41e561f57b1e03cc57828efa9ce866e71648593f`.
+- The ordinary `loadState()` intentionally retains its default-state fallback for simulation boot. The new strict path rejects missing snapshot, invalid JSON/schema, and unknown/invalid `stateRevision`; it never assigns revision 0 to a missing revision.
+- Report: `NCS_M0_STRICT_STATE_LOAD_2026-10-18.md`.
+- CI STEP 4 [39097259364](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097259364) and STEP 5 [39097259433](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097259433) were queued at report time; check exact-head completion before claiming PASS.
+- Limit: structurally valid snapshot is not proof of provenance/current authority; this does not make Lúmina the Nexo canonical continuity store.
+- Next: confirm CI, then define who may consume strict state and what provenance/currentness evidence is required; separately continue the bounded local simulation-owner path. External effects stay UNKNOWN/STOP.
+
+---
+
 ## Latest M0 execution-owner boundary gate (2026-10-18)
 
 - Recovered and reused existing AB104.150 / AB104.151, P112 effect-journal lifecycle + eviction audits, GLOBAL-AUDIT-109, AB104.999R and AB105.000R. No closed probes rerun.
