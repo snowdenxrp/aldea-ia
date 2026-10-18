@@ -431,3 +431,28 @@ try {
 }
 
 console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation, durable owner outcome recording, PREPARED admission guard and observed-settlement no-redispatch OK.");
+
+const verifierBootstrapDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-continuity-verifier-bootstrap-"));
+try {
+  const configuredVerifiers = {
+    write_file: async operation => ({
+      status: "applied",
+      idempotencyKey: operation.idempotencyKey,
+      action: operation.action,
+      target: operation.target,
+      observedRevision: 1,
+      source: "persisted-test-verifier"
+    })
+  };
+  const configured = await openNexoContinuityOwner({
+    filePath: path.join(verifierBootstrapDir, "nexo.json"),
+    allowEmptyInitialization: true,
+    effectVerifiers: configuredVerifiers
+  });
+  assert.equal(configured.owner.supportsReconciliation("write_file"), true);
+  assert.equal(configured.owner.supportsReconciliation("unknown_action"), false);
+  configuredVerifiers.write_file = async () => { throw new Error("external registry mutation"); };
+  assert.equal(configured.owner.supportsReconciliation("write_file"), true);
+} finally {
+  await fs.rm(verifierBootstrapDir, { recursive: true, force: true });
+}
