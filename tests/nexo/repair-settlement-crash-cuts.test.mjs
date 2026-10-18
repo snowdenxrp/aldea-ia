@@ -154,6 +154,50 @@ try {
   assert.equal(absent.status, "blocked");
   assert.equal(absent.code, "NEXO_REPAIR_SETTLEMENT_INVARIANT_NOT_PROVEN");
   assert.equal((await absentOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
+  // Lost-response cut: the conditional write commits, but the caller receives
+  // UNKNOWN. A replay with the original expected revision must recover the
+  // already-journaled observation instead of misclassifying it as a CAS conflict.
+  const uncertainDir = path.join(root, "settlement-response-lost");
+  await fs.mkdir(uncertainDir);
+  const uncertainOpened = await openNexoContinuityOwner({
+    filePath: path.join(uncertainDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  const uncertainStatePath = path.join(uncertainDir, "world-state.json");
+  await fs.writeFile(uncertainStatePath, JSON.stringify(environment(11)), "utf8");
+  let loseFirstCommitResponse = true;
+  const uncertainStore = {
+    loadCurrent: (...args) => uncertainOpened.store.loadCurrent(...args),
+    commitIfCurrent: async (...args) => {
+      const result = await uncertainOpened.store.commitIfCurrent(...args);
+      if (loseFirstCommitResponse && result.status === "committed") {
+        loseFirstCommitResponse = false;
+        return { status: "unknown", code: "TEST_COMMIT_RESPONSE_LOST" };
+      }
+      return result;
+    }
+  };
+  const uncertainFirst = await settlePreparedRepairFromPersistedState({
+    store: uncertainStore,
+    statePath: uncertainStatePath,
+    idempotencyKey: "mission-crash-cut:step-repair",
+    expectedContinuityRevision: 0
+  });
+  assert.equal(uncertainFirst.status, "unknown");
+  assert.equal(uncertainFirst.verified, false);
+  const uncertainReplay = await settlePreparedRepairFromPersistedState({
+    store: uncertainStore,
+    statePath: uncertainStatePath,
+    idempotencyKey: "mission-crash-cut:step-repair",
+    expectedContinuityRevision: 0
+  });
+  assert.equal(uncertainReplay.status, "settled_observed");
+  assert.equal(uncertainReplay.code, "NEXO_REPAIR_SETTLEMENT_ALREADY_JOURNALED");
+  assert.equal(uncertainReplay.verified, true);
+  assert.equal(uncertainReplay.recovered, true);
+  assert.equal(uncertainReplay.causalAttribution, "not_claimed");
+  assert.equal(uncertainReplay.storeRevision, 1);
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
