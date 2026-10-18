@@ -1,3 +1,26 @@
+## Latest continuation — persisted repair crash cut (2026-10-18)
+
+- Added regression at code/test commit [`db3399aa28e6671bf5329ea5ca60544c8ac581ee`](https://github.com/snowdenxrp/aldea-ia/commit/db3399aa28e6671bf5329ea5ca60544c8ac581ee).
+- The test commits mission + PREPARED in the standalone Nexo store, executes `repair_agent_state`, persists Lúmina `world-state.json`, strictly reloads it, then reopens Nexo continuity.
+- Observed: the repaired coordinate survives durable restart; the Nexo journal remains `prepared`; owner reconciliation remains blocked and unverified. This is the expected safe result while no operation-specific terminal settlement contract exists.
+- Exact-head CI PASS: mission/continuity [39107632187](https://github.com/snowdenxrp/aldea-ia/actions/runs/39107632187), outcome [39107632188](https://github.com/snowdenxrp/aldea-ia/actions/runs/39107632188), semantic [39107632199](https://github.com/snowdenxrp/aldea-ia/actions/runs/39107632199). Mission workflow logs confirm the restart persistence regression passed.
+- Checkpoint: [NCS_M0_DURABLE_REPAIR_CRASH_CUT_CHECKPOINT_2026-10-18.md](NCS_M0_DURABLE_REPAIR_CRASH_CUT_CHECKPOINT_2026-10-18.md).
+
+### Next implementation boundary (do not skip)
+
+1. Specify a repair-only recovery decision table based on the actual persisted snapshot, without mutating Nexo's journal:
+   - `repair_agent_state`: target exists, `alive` is boolean, coordinates finite → desired invariant satisfied; missing/non-boolean `alive` or missing target → UNKNOWN.
+   - `repair_agent_needs`: target exists and all six needs are finite and clamped to [0,100] → invariant satisfied; missing target/schema-invalid needs → UNKNOWN until exact normalization policy is explicitly represented.
+   - `repair_resource_state`: resource exists and `amount` is finite and non-negative → invariant satisfied; missing resource → UNKNOWN.
+2. Prove the complementary cases: invariant absent after restart; malformed target; unknown life-state; stale environment revision; Nexo continuity revision conflict.
+3. Decide explicitly whether a durable satisfied invariant is enough to mark a **convergent repair step** complete even if this exact operation cannot be attributed. Do not generalize that rule to other actions.
+4. Only after the contract and tests are accepted, implement owner settlement with evidence produced by the repository's own persisted-snapshot verifier—not a caller-supplied `verified` boolean or callback.
+5. Keep runtime cutover blocked until settlement is safe. Do not reintroduce Lúmina learning-memory coupling, delete legacy runtime functions early, or replay non-idempotent effects.
+
+This closes a missing crash-cut test, **not** the migration. M0 remains incomplete; unresolved PREPARED remains UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN; no device migration claimed.
+
+---
+
 ## Latest update — unknown life-state is not inferred
 
 - `repair_agent_state` now refuses to run if `alive` is missing or non-boolean, returning `AGENT_ALIVE_STATE_UNKNOWN` before any coordinate mutation. A valid explicit `alive:false` remains false while coordinates can be normalized.
