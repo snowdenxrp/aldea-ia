@@ -1,3 +1,13 @@
+## M0 — Prepared continuity history + strict recovery context (2026-10-18)
+
+- `loadStateStrict()` rejects missing/invalid state, unknown revision, malformed Nexo memory, and orphaned/mismatched prepared-effect context. It does not treat a structurally valid snapshot as proof of current authority.
+- Mission-memory retention preserves plans, attempts and execution records for all retained missions. A mission with a prepared effect cannot lose its plan or dependency outcomes because of the ordinary 50/100/200 history caps.
+- Regression tests cover 120-step missions and 220 execution records, including reconstruction after the prepared journal is cleared.
+- A flaky persistence-race test was exposed during CI: workers were not guaranteed to load the same revision before writing. The test now uses a ready/release barrier so it deterministically proves one commit and one revision conflict.
+- Reports: [strict state/recovery-context gate](BUILD/NCS_M0_STRICT_STATE_LOAD_2026-10-18.md); [prepared mission and outcome retention](BUILD/NCS_M0_PRESERVE_PREPARED_MISSION_CONTEXT_2026-10-18.md).
+- Final exact source+test head `0b55842258c9c9457837f5bc801f94a5c31b425c` CI PASS: mission/restart [39097716822](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716822), STEP 4 [39097716845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716845), STEP 5 [39097716821](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716821).
+- Limits: this is continuity/reconstruction integrity, not a canonical Nexo authority/store or an independent external-effect verifier. M0 incomplete; prepared external effects UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Recovery context and prepared-mission retention hardening (2026-10-18)
 
 - Strict snapshot loader now rejects malformed/missing state, unknown revision, malformed Nexo memory, and any prepared effect whose persisted mission/step context is missing or conflicts with action/target. It does not infer authority or an effect result from a valid snapshot.
