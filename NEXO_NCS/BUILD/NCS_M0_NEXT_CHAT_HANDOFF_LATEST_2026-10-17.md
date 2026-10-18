@@ -1,3 +1,21 @@
+## Latest M0.72 — adapter no longer trusts caller reconciliation callbacks (2026-10-18)
+
+- Source/test head: `0fc54a0cbc25a70f9cfbc0b8dfae98254eb6d642`.
+- In `src/nexo/effect-adapter.js`, `reconcilePrepared()` no longer invokes `request.reconcile`. A caller callback receives `RECONCILIATION_AUTHORITY_UNAVAILABLE`; no callback receives `EFFECT_RECONCILIATION_REQUIRED`. Both remain blocked/unverified, preserve journal status `prepared`, and do not redispatch the effect.
+- Tests prove callbacks that claim completed/verified are not called and cannot terminalize the journal.
+- Exact-head CI all PASS: mission/restart continuity [39092451637](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092451637), STEP 4 [39092451625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092451625), STEP 5 [39092451642](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092451642). The mission workflow explicitly runs orchestrator, runtime, effect-adapter, and restart reconstruction.
+- Report: [M0.72](NCS_M0_72_BLOCK_CALLER_CONTROLLED_EFFECT_RECONCILIATION_2026-10-18.md).
+- M0.71 also made `src/nexo/core/reconciliation.mjs` fail closed on caller-supplied `authoritative: true`; its exact-head STEP 6, M0 Core, STEP 4 and STEP 5 runs all passed (report: [M0.71](NCS_M0_71_FAIL_CLOSED_UNAUTHENTICATED_RECONCILIATION_AUTHORITY_2026-10-18.md)).
+
+## Next task — actual PG-009 recovery integration, not more callback patches
+
+- Confirmed gap: `src/nexo/runtime.js` does not import/call `createReconciler()`; the generic reconciler and effect adapter are separate, not an integrated recovery path.
+- Trace existing ownership/authority source composition and PG-009 transition model. Identify whether a real trusted verifier/current fence/provenance boundary already exists and where it belongs.
+- Do not invent authority epochs, lease tokens, provenance, retry machinery, or a new trust root. If no existing concrete source exists, document the architectural dependency and leave outcome UNKNOWN.
+- Keep original prepared entry and blocked mission history intact; never redispatch while effect outcome is unknown. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects STOP.
+
+---
+
 ## Latest M0.71 — reconciliation fails closed without authenticated authority (2026-10-18)
 
 - Source/test head: `d67fd243016a2457747853a4b4a5342f8ca2ce4e`.
