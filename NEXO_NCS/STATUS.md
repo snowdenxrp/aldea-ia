@@ -720,3 +720,12 @@ This closes one crash boundary for the repair-only lifecycle; it does not prove 
 - **Estado de validación:** pendiente de observar los checks/runs exactos de estos commits. No se ejecutaron las suites localmente en esta sesión; no declarar PASS.
 - **Siguiente frontera M0:** contrato confiable por acción para reconciliar el estado ambiental persistido y liquidar PREPARED mediante CAS. `supports(action)` solo acredita que existe un handler; no acredita verificador, autoridad, persistencia ni permiso para dispatch. No conectar todavía el runtime genérico ni introducir callbacks de reconciliación aportados por el caller.
 
+## M0 — outcome terminal bloqueado en cualquier estado mientras PREPARED siga abierto (2026-10-18)
+
+- Hallazgo concreto: `recordOutcome()` solo rechazaba `completed` cuando existía un efecto `prepared` o `settled_observed`. Permitía intentar registrar `failed` o `blocked` aunque el efecto pudiera haberse aplicado antes de una interrupción; eso no resolvía la incertidumbre y podía dejar una narrativa terminal contradictoria.
+- Corrección en `src/nexo/core/continuity-owner.mjs`: cualquier outcome terminal para esa misma operación queda bloqueado con `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED` mientras la obligación esté abierta. No liquida el journal ni convierte el bloqueo en una conclusión sobre el efecto.
+- Regresión ampliada en `tests/nexo/repair-settlement-crash-cuts.test.mjs`: intenta `completed`, `failed` y `blocked`; los tres deben quedar bloqueados, PREPARED debe permanecer y no debe crearse ningún attempt.
+- Commits: código [`86c3ebc8ade8fe018a9c40e95102af13c40f1d22`](https://github.com/snowdenxrp/aldea-ia/commit/86c3ebc8ade8fe018a9c40e95102af13c40f1d22); regresión [`3e3b76de309bbccaa7150e12e0ea5bbf0f2e9826`](https://github.com/snowdenxrp/aldea-ia/commit/3e3b76de309bbccaa7150e12e0ea5bbf0f2e9826).
+- El workflow M0 focal fue ampliado en [`8c1845e49cf116aad4d7b6de058a1b73b55e4d0d`](https://github.com/snowdenxrp/aldea-ia/commit/8c1845e49cf116aad4d7b6de058a1b73b55e4d0d) para incluir el owner, runtime y la suite del adaptador además de crash cuts. Aun así, las consultas de status/runs disponibles no devuelven evidencia de ejecución para estos SHAs. **CI PENDING/UNKNOWN; no declarar PASS.**
+- Siguiente frontera: contrato confiable de reconciliación por acción y settlement CAS. Esta corrección cierra un bypass de outcomes, no el ciclo de efecto ni la integración del runtime genérico. M0 sigue INCOMPLETO.
+
