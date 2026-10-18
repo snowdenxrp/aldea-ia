@@ -1,3 +1,13 @@
+## M0 — primera sesión owner-backed repair-only (2026-10-18)
+
+- Implementada `scripts/nexo-repair-session.mjs`, API `runNexoRepairSession()`: el caller solo selecciona `missionId` y `stepId`; misión/paso/acción/target se derivan del snapshot canónico de Nexo. Lista cerrada: `repair_agent_state`, `repair_agent_needs`, `repair_resource_state`; las demás acciones se bloquean antes de PREPARED/dispatch.
+- Añadida `tests/nexo/repair-session.test.mjs`: prueba de flujo completo a través de la sesión (PREPARED → dispatch condicional → `settled_observed`), rechazo de acción no elegible y crash cut tras persistencia del entorno con reapertura del owner; la sesión recupera la observación sin redispatch. También verifica que `world-state.json` no contiene `nexoMemory`.
+- CI exacto: [run 39142674734](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142674734), SHA de código/pruebas `b011a8078f9f0562a61a3bafb9c260810147ea84`, SUCCESS. Job `repair-crash-cuts` y los cuatro pasos de pruebas terminaron `success`. El commit anterior `e7eb932` falló por imports relativos incorrectos del test; corregido en el siguiente commit y validado en este PASS.
+- Esto es una sesión real owner-backed para la ruta repair-only y su prueba de reinicio; **todavía no está conectada a `src/nexo/runtime.js` ni demuestra arranque productivo completo**. No hay ejecución genérica, causalidad, mission completion ni atomicidad cross-store.
+- Documentos de contrato/handoff ya existentes deben considerarse actualizados a partir de este incremento. M0 sigue incompleto; efectos protegidos STOP; PREPARED/`settled_observed` UNKNOWN hasta verificación de objetivo; Nexo y Lúmina separados; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — contrato de sesión de runtime acotado (2026-10-18)
 
 - Revalidado el HEAD de rama antes de continuar: `7ed44d7179988e07cd0e19bbe5a5ab486eb9e191`. El CI de repair-only más reciente verificado sigue siendo [39142213418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142213418), sobre el SHA de código/pruebas `e36121220d4d89475a68bc4bf1a0d2880b4092be`; no es un PASS sobre el HEAD documental posterior.
