@@ -1,3 +1,13 @@
+## M0 — Independent Nexo continuity store regression verified (2026-10-18)
+
+- Exact source/test head: `a8a24db72be49427315a2386542c54ec1d3d9691`.
+- Mission/restart continuity CI PASS: [39099025262](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099025262).
+- STEP 4 PASS: [39099025286](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099025286).
+- STEP 5 PASS: [39099025352](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099025352).
+- The continuity CI executes the store regressions appended to `tests/nexo/continuity-contract.test.mjs`. The standalone `tests/nexo/continuity-store.test.mjs` exists but is not yet a separately invoked CI step; don't imply that exact file was run.
+- Two initial CI failures were preserved as evidence and repaired: first the serialized trailing newline was incorrectly escaped (run [39098904233](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098904233)); second the regression test had a literal escaped newline in a declaration (run [39098988754](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098988754)). Exact-head final CI passed after both fixes.
+- Runtime migration remains the main open item: store module is not yet the canonical source for `executeNexoStep`, effect-adapter prepared intent, terminal outcomes, or restart reconstruction. Legacy `nexoMemory` in `world-state.json` still exists. M0 incomplete; external prepared effects UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — First Nexo-owned operational continuity store implemented (2026-10-18)
 
 **State: store module and regression tests committed; runtime migration/integration and exact-head CI still pending. Do not call Nexo/Lúmina separation complete.**
