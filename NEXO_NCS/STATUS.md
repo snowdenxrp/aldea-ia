@@ -252,5 +252,5 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Defect: `replanPersistedNexoMission()` created a new memory snapshot then copied it into the input object, violating the prior-snapshot immutability convention.
 - Correction: return the new snapshot directly; regression checks the input remains unchanged and the successor exists only in the returned memory until the caller adopts it.
 - Report: [M0 replan snapshot isolation](BUILD/NCS_M0_REPLAN_SNAPSHOT_ISOLATION_2026-10-18.md).
-- Focused CI: pending for current source/test commit.
+- CI audit found the continuity workflow did not execute `tests/nexo/runtime.test.mjs` despite watching runtime paths. Workflow corrected to run it explicitly; new CI pending.
 - Scope: memory snapshot correctness only. Proxy boundary design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.

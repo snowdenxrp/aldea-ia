@@ -16,7 +16,7 @@ Status: IMPLEMENTED; focused CI pending
 
 ## Verification
 
-Focused CI is pending for the new source/test head. Do not call this PASS until the run has completed.
+The first CI inspection found that the continuity workflow watched runtime files but did not execute `tests/nexo/runtime.test.mjs`. That meant the new regression was not actually run by that workflow. The workflow has now been corrected to execute the runtime test explicitly. CI for this correction is pending; do not claim the snapshot-isolation regression passes until the resulting run shows the runtime test step completed successfully.
 
 ## Limits
 

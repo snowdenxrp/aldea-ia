@@ -712,4 +712,4 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - `replanPersistedNexoMission()` now returns the fresh memory snapshot from `recordNexoPlan()` without mutating the input snapshot.
 - Regression asserts prior memory remains unchanged while the returned memory contains the successor and retained failed attempt.
 - Report: `NEXO_NCS/BUILD/NCS_M0_REPLAN_SNAPSHOT_ISOLATION_2026-10-18.md`.
-- Check focused CI on the latest commit before claiming PASS. Continue the functional M0 loop; do not repeat closed audits. Proxy trust boundary remains design STOP; STEP 7 remains OPEN / STOP / UNKNOWN; protected effects STOP.
+- Workflow audit found the continuity workflow was not actually executing `tests/nexo/runtime.test.mjs`; it now includes that command. Verify the new run and confirm the runtime test step specifically passes before claiming regression PASS. Continue the functional M0 loop; do not repeat closed audits. Proxy trust boundary remains design STOP; STEP 7 remains OPEN / STOP / UNKNOWN; protected effects STOP.

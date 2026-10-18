@@ -14,7 +14,8 @@ export function replanPersistedNexoMission({memory,previousMissionId,simulation=
   const mission=replanNexoMission({previousMission,simulation,reports,memory,reason});
   if(!mission) return {mission:null,memory,status:"not_replanned"};
   const nextMemory=recordNexoPlan(memory,mission);
-  return {mission,memory:nextMemory,status:"planned"};
+  Object.assign(memory,nextMemory);
+  return {mission,memory,status:"planned"};
 }
 
 

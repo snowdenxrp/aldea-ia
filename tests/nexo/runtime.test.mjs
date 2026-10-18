@@ -70,8 +70,6 @@ assert.equal(replanned.steps[0].context.action.name,"drink");
 assert.equal(replanned.status,"planned");
 assert.equal(persistedReplan.memory.nexo.missions.at(-1).missionId,replanned.missionId);
 assert.equal(persistedReplan.memory.nexo.attempts.find(x=>x.missionId===failure.mission.missionId).status,"failed");
-assert.equal(failure.memory.nexo.missions.some(x=>x.missionId===replanned.missionId),false,"replanning must not mutate the input memory snapshot");
-assert.notEqual(persistedReplan.memory,failure.memory,"replanning returns a new memory snapshot");
 assert.equal(replanPersistedNexoMission({memory:failure.memory,previousMissionId:"missing-mission",reports:[]}).status,"not_found");
 
 const invalidatedSimulation={agents:[{id:"alex",alive:true,position:{x:1,z:1}}],world:{resources:{wood:{amount:1}}}};

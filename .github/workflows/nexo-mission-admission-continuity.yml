@@ -21,4 +21,5 @@ jobs:
         with:
           node-version: 22
       - run: node tests/nexo/orchestrator.test.mjs
+      - run: node tests/nexo/runtime.test.mjs
       - run: node tests/nexo/restart-reconstruction.test.mjs
