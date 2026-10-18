@@ -1,3 +1,15 @@
+## Latest M0 schema candidate — standalone Nexo continuity snapshot (2026-10-18)
+
+- New core module: `src/nexo/core/continuity-snapshot.mjs`.
+- Schema candidate: `NEXO_OPERATIONAL_CONTINUITY`, version 1. Exact fields: `schema`, `schemaVersion`, `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`. No learning analytics, Lúmina environment state or authority fields; unknown extra fields rejected.
+- `projectNexoContinuitySnapshot()` creates a detached operational snapshot from the legacy/prototype `createLearningMemory().nexo` shape. It does not persist, migrate, or grant authority.
+- Test: `tests/nexo/continuity-contract.test.mjs`, included in CI.
+- Exact source+test head `e8251dd88eb00165cc051c6c9d1562c503da314d` mission/restart CI PASS [39098157678](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098157678). STEP 4/5 passed on code-identical head `d47eaaa8009ea4b14dedbd80b88fb5fabb4584a0`: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098148895), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098148912).
+- Owner contract: `NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md`.
+- Next: specify conditional commit/linearization semantics and implement the narrow owner only after audit. Storage technology remains unselected; no canonical Nexo store or protected external executor yet.
+
+---
+
 ## Latest M0 architecture gate — Nexo-owned continuity boundary (2026-10-18)
 
 - Contract report: `NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md`.
