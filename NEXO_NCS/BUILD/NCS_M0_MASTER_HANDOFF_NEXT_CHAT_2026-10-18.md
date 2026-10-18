@@ -262,3 +262,30 @@ Detener el corte y rediseñar la raíz si:
 Trabaja directamente en el repositorio con cambios concretos, inspecciones dirigidas y pruebas. No respondas con otra recapitulación extensa como sustituto de avance. No repitas las mismas explicaciones cada turno. No marques tareas terminadas solo porque el usuario diga “continúa”. El usuario quiere iniciativa, pero exige precisión y continuidad.
 
 La misión es M0. Todo lo que no desbloquee M0 debe esperar.
+
+
+---
+
+## Update de continuidad — contrato de sesión de runtime (2026-10-18)
+
+### Último trabajo real
+- Rama inspeccionada antes del cambio: `7ed44d7179988e07cd0e19bbe5a5ab486eb9e191`.
+- El flujo repair-only mantiene CI SUCCESS en [39142213418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142213418), exacto al SHA de código/pruebas `e36121220d4d89475a68bc4bf1a0d2880b4092be`. No trasladar ese PASS a commits documentales posteriores.
+- Se inspeccionaron directamente `scripts/nexo-repair-entrypoint.mjs`, `scripts/nexo-repair-dispatch.mjs`, `tests/nexo/repair-owner-lifecycle.test.mjs`, `src/nexo/runtime.js` y `scripts/assistants.mjs`.
+- Confirmación: el entrypoint repair-only está aislado de runtime; `runtime.js` sigue con outcomes en memoria legacy; `assistants.mjs` persiste una misión en owner pero no ejecuta sus pasos. No existe todavía un camino productivo completo owner-backed.
+- Nuevo documento de contrato: [NCS_M0_RUNTIME_SESSION_CONTRACT_2026-10-18.md](NCS_M0_RUNTIME_SESSION_CONTRACT_2026-10-18.md), commit [d654583139df69202a726981a53878f32219cffa](https://github.com/snowdenxrp/aldea-ia/commit/d654583139df69202a726981a53878f32219cffa). STATUS actualizado en commit [4492fb32b500723312f0ba3f18159738c40b49d0](https://github.com/snowdenxrp/aldea-ia/commit/4492fb32b500723312f0ba3f18159738c40b49d0).
+
+### Siguiente tarea concreta — implementación test-first
+1. Inspeccionar las APIs existentes de `createNexoContinuityOwner()`, reconstrucción de misión y commits CAS para reutilizarlas; no crear un segundo modelo de misión ni duplicar el owner.
+2. Crear una prueba de integración contra la API propuesta de sesión owner-backed, usando archivos temporales y un owner reabierto desde disco. Debe demostrar: selección de misión/paso canónicos, PREPARED durable antes de dispatch, reparación elegible, recuperación tras crash y replay bloqueado.
+3. Implementar solo el mínimo de sesión que satisfaga esa prueba. Si el owner actual no puede expresar alguna transición necesaria, identificar la brecha exacta antes de alterar contratos.
+4. Mantener el dispatcher limitado a `repair_agent_state`, `repair_agent_needs`, `repair_resource_state`. No pasar `execute_lumina_action`, acciones no idempotentes ni protegidas.
+5. Ejecutar el workflow pertinente y verificar run → job → SHA exacto. Actualizar STATUS/handoff después de evidencia, no antes.
+6. Solo cuando la sesión real tenga tests de crash/restart, estudiar su conexión mínima con runtime. No reemplazar imports legacy ni declarar M0 completo antes de demostrar el arranque/camino productivo.
+
+### No cambiar
+- No volver a abrir P112/AB104 ni investigaciones cerradas.
+- No incorporar memoria Nexo en `world-state.json`.
+- No interpretar `settled_observed` como completion o causalidad.
+- No afirmar atomicidad entre el store Nexo y el estado persistido de Lúmina.
+- M0 sigue incompleto; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
