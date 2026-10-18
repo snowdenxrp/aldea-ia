@@ -149,3 +149,15 @@ Las regresiones viven en `tests/nexo/repair-owner-lifecycle.test.mjs` y `tests/n
 CI SUCCESS de código/pruebas sobre SHA `0653d7216c49dd6a9b0ea7a182333ff18ee07bc3`: repair 39150332075, STEP 4 39150332148, STEP 5 39150331964, bounded admission/restart 39150331921. CI SUCCESS posterior sobre SHA `3bfbad268ac1a9b5ea9492e8db0a90b5972f22d9`: repair 39150515026, STEP 4 39150514997, STEP 5 39150515080, bounded admission/restart 39150515015. Los documentos se actualizaron después; no declarar CI sobre el HEAD documental actual.
 
 Estos guards fortalecen idempotencia y contexto de lineage; no cambian la decisión de no añadir `goalObservations`, no declaran completion, no prueban atomicidad cross-store y no migran `src/nexo/runtime.js`. El siguiente paso sigue siendo diseñar y probar un seam canónico mínimo del runtime, sin sustituir mecánicamente los imports legacy ni extender el dispatcher repair-only a acciones generales/protegidas.
+
+
+## M0 — fallo de recarga inmediatamente después de PREPARED (2026-10-18)
+
+- **Hueco reproducido:** `runNexoRepairOnce()` confirmaba el commit de PREPARED y luego llamaba `owner.loadCurrent()` fuera de un `try/catch`. Si esa lectura fallaba, la excepción escapaba de la frontera de runtime sin un resultado estructurado. La obligación permanecía en disco, pero el caller no recibía claramente que PREPARED estaba confirmado y que el dispatch no había ocurrido.
+- **Prueba primero:** regresión añadida a `tests/nexo/repair-owner-lifecycle.test.mjs`. El commit de prueba `75e5e968ed234572661495d362586a9fd6e3a107` falló exactamente en la recarga posterior al PREPARED, reproduciendo el hueco: [repair crash cuts, run 39153769377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153769377).
+- **Corrección:** `scripts/nexo-repair-entrypoint.mjs` captura ese fallo y devuelve `blocked`, conserva el código de error, `preparedCommitted: true`, `dispatched: false` y `uncertainty: prepared_commit_confirmed_but_journal_reload_unconfirmed`. No intenta recuperar desde una vista obsoleta ni despacha; la obligación PREPARED permanece para una invocación posterior de recuperación.
+- **Validación exacta:** código + regresión en `53655508c4ea9b69cd6ab21f6d7463fdfefe8192`; workflow [Nexo M0 — repair settlement crash cuts, run 39153821932](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153821932) SUCCESS, job `repair-crash-cuts` SUCCESS. El test confirma journal PREPARED único, revisión Nexo 1, estado ambiental sin cambio (revisión 80), y cero dispatch.
+- **Alcance:** corrige el contrato de fallo de esta frontera de recuperación; no migra `src/nexo/runtime.js`, no autoriza acciones generales/protegidas, no afirma atomicidad entre archivos y no convierte PREPARED en completion.
+
+**Siguiente frontera M0:** diseñar y probar el seam canónico para el primer caller de runtime fuera de la ruta repair-only. No sustituir imports legacy mecánicamente ni generalizar el dispatcher de reparaciones. M0 continúa INCOMPLETO; efectos protegidos STOP; Nexo y Lúmina separados; STEP 7 OPEN / STOP / UNKNOWN.
+
