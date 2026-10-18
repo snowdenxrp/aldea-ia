@@ -51,9 +51,23 @@ If no such source exists for the capability, record that capability as unreconci
 
 The NCS checkpoint's explicit next audit is conflicting verification results and different assurance levels. M0 must not use majority, recency, or model preference as truth. The contract must define how contradictory evidence is evaluated and when the result stays UNKNOWN. This must be integrated into the existing Assurance/domain contract, not a new global conflict-resolution engine.
 
-### 5. AB/P archive coverage caveat
+### 5. Retrieved AB/P/GLOBAL-AUDIT evidence — existing research, not rerun
 
-The library search in this pass surfaced the Maestra and several NCS audits, and confirmed AB104.197/212/368 plus GLOBAL-AUDIT-109 references in the checkpoint. It did **not** surface the underlying full AB/P source records or a definitive named cross-archive audit report. Therefore this report does not claim exhaustive AB/P review. Next archive retrieval should target the exact audit report and relevant AB/P source records, especially the already-cited AB anchors and P112 active material, before treating the cross-check as complete. Do not rerun closed probes; retrieve their existing evidence.
+The following original persisted artifacts were subsequently located and read:
+
+- [GLOBAL-AUDIT-109 — STOP/revocation authority retention](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/docs/nexo/NEXO_GLOBAL_AUDIT_109_STOP_REVOCATION_AUTHORITY_RETENTION_2026-09-28.md): the audit explicitly leaves dependency completeness, TCB completeness, evidence-reducer completeness, independence proof, quorum semantics, and retention/reconstruction soundness UNKNOWN; formal verification NOT PERFORMED; implementation NOT STARTED. Its boundary requires downstream authorization/fencing outside the model and states that a cancellation acknowledgement or restored checkpoint does not prove effect absence/current authority.
+- [AB104.999R — evidence-coverage reason/scope](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/docs/nexo/AB104_999R_evidence_coverage_reason_scope_audit_2026-09-29.md): UNKNOWN/NOT_CHECKED must retain cause, scope, authority, observation time and coverage; aggregate terminal state cannot promote an unresolved subset.
+- [AB105.000R — aggregate evidence coverage boundary](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/docs/nexo/AB105_000R_aggregate_evidence_coverage_boundary_audit_2026-09-29.md): a completed check proves only its supported population/properties; aggregate evidence must retain its denominator and scope.
+- [MASTER P112 checkpoint](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_CONTINUITY/MASTER_P112_CHECKPOINT_2026-10-07.md) and [P112 mutation-boundary trace V2](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_CONTINUITY/P112_AUTHORITATIVE_MUTATION_BOUNDARY_TRACE_V2_2026-10-07.md): protected validation needs a claim-specific transition footprint, including authoritative ReadSet/WriteSet/DependencySet, predicate/range/aggregate dependencies, derived provenance, incarnations and relevant versions; complete dependency capture remains OPEN. Existing stateRevision/spatial version-like fields are not demonstrated complete fences.
+
+#### Direct implications for current M0 code
+
+1. The runtime guard now blocks a bare `completed` label when verification fields are absent/false. However, evidence provenance must also retain the **reason and scope** of that block; a generic `verified:false` record alone would lose the distinction required by AB104.999R.
+2. A prepared effect cannot be resolved from the effect journal's `prepared` status, a caller callback, a terminal mission aggregate, a restored checkpoint, or a late receipt alone. This follows GLOBAL-AUDIT-109 and AB104.212.
+3. No current global revision, stateRevision, or local spatial version may be promoted to a universal effect fence. P112 explicitly records distributed writers and incomplete dependency closure.
+4. These artifacts support the current fail-closed direction; they do not supply the missing independent verifier/current fence/provenance source or prove an integrated PG-009 recovery path.
+
+Archive coverage is improved but remains **PARTIAL**: this pass retrieved these exact records, not every historical AB/P artifact or a definitive all-archive audit index. Do not rerun closed probes and do not claim exhaustive coverage.
 
 ## Next implementation sequence
 
@@ -61,7 +75,7 @@ The library search in this pass surfaced the Maestra and several NCS audits, and
 2. Trace the capability-specific Operation Contract from mission step → prepared effect → effect journal → verifier/reconciliation → verified result → mission continuation.
 3. Prove the source of outcome evidence and its dependencies. If no source exists, leave the effect UNKNOWN and specify the missing contract input; do not fake a verifier.
 4. Add an integrated end-to-end regression for crash/restart, stale mission state, unresolved effect, conflicting reports, and no redispatch/no successor.
-5. Run CI on the exact source+test head and attach run IDs/logs. Until then, tests are unverified.
+5. Run CI on every exact source+test head and attach run IDs/logs; the new runtime guard has exact-head STEP 4/STEP 5/mission-continuity PASS, but this does not verify the entire PG-009 recovery architecture.
 6. Only after the existing route is contract-grounded, integrate it through runtime/orchestrator. Do not restart Step 7 research; it remains OPEN / STOP / UNKNOWN.
 
 ## Current truth
