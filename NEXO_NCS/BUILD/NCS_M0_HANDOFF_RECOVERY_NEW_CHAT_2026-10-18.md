@@ -262,3 +262,11 @@ La vertical Chronicle ya está conectada a `executeNexoStepWithContinuityOwner` 
 - [Run 39173941624](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173941624) SUCCESS en SHA `47790c4014581c42fc5f85f9ba609e3a0678b53b`; store y runtime Chronicle pasaron incluyendo el bloqueo de outcome fabricado sin settlement.
 - STEP 4 [39173941657](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173941657) y STEP 5 [39173941656](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173941656) también SUCCESS en el SHA final. El workflow bounded continuity/runtime pasó en el SHA previo del owner, `4657c36ca3eb1311f9593f1777636da57088581d`, run [39173935284](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173935284).
 - Siguiente frontera: entrada mínima propia de Nexo para invocar solo `chronicle_append`, con rutas explícitas, IDs de misión/paso suministrados y creación inicial opt-in. Debe validar contra el snapshot existente y no importar ni leer Lúmina. Esta entrada no se ha implementado aún; no cambiar runtime default. M0 INCOMPLETO.
+
+
+## Actualización M0 — entrypoint Chronicle implementado y CI verde
+
+- Entrada nueva: `scripts/nexo-chronicle-session.mjs`, independiente de Lúmina. Rutas, misión y step son explícitos; IDs no se generan automáticamente; inicialización requiere `--initialize-continuity` y `--initialize-chronicle` si faltan stores. Reutilizar misión/step con contenido distinto bloquea.
+- `package.json` ejecuta las dos suites Chronicle dentro del test estándar; `.github/workflows/nexo-m0-chronicle.yml` también corre cuando cambia ese script.
+- CI final [39174162150](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174162150) SUCCESS en SHA `1ef9a4745d31d324b56733e43e250d36bb3908b7`, con store, runtime owner-backed, crash cuts y entrada real. El test del entrypoint también pasó en [39174097465](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174097465).
+- Siguiente frontera: auditar la ruta de CLI y sus supuestos de almacenamiento, revisar el resultado de las suites amplias y decidir explícitamente si/ cuándo esta ruta se integra a la aplicación. No tocar runtime default ni ampliar a otras acciones hasta que el corte actual esté auditado. M0 INCOMPLETO.
