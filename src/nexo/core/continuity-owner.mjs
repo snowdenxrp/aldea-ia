@@ -48,6 +48,15 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       typeof store.commitIfCurrent !== "function") {
     throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
   }
+  if (!effectVerifiers || typeof effectVerifiers !== "object" || Array.isArray(effectVerifiers)) {
+    throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+  }
+  const verifierRegistry = Object.create(null);
+  for (const [action, verifier] of Object.entries(effectVerifiers)) {
+    if (!action.trim() || typeof verifier !== "function") throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+    Object.defineProperty(verifierRegistry, action, { value: verifier, enumerable: true, writable: false, configurable: false });
+  }
+  Object.freeze(verifierRegistry);
 
   async function loadCurrent() {
     return store.loadCurrent();
@@ -412,7 +421,7 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     if (REPAIR_ACTIONS.has(operation.action)) {
       return { status: "blocked", code: "NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED", preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
-    const verifier = effectVerifiers && Object.hasOwn(effectVerifiers, operation.action) ? effectVerifiers[operation.action] : undefined;
+    const verifier = Object.hasOwn(verifierRegistry, operation.action) ? verifierRegistry[operation.action] : undefined;
     if (typeof verifier !== "function") {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
