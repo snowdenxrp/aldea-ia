@@ -1,3 +1,13 @@
+## M0 — Nexo-owned continuity contract separated from simulation host (2026-10-18)
+
+- Moved Nexo-specific continuity validation to `src/nexo/core/continuity-contract.mjs` (`assertNexoContinuityMemoryShape`). `scripts/simulate.mjs::loadStateStrict()` delegates to that core contract instead of owning Nexo semantics itself.
+- Core contract rejects malformed recovery memory, orphaned prepared entries, and mismatched action/target versus persisted mission step. Structural validation is explicitly not authority or external-effect verification.
+- Added `tests/nexo/continuity-contract.test.mjs` and included it in the Nexo mission/restart CI workflow.
+- Exact code+test head `41c591a0845608418de2450525e8a9cf7ff6c3a9` mission/restart CI PASS [39097823559](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097823559), including strict-state persistence and continuity-contract tests.
+- STEP 4 / STEP 5 pass on code-identical head `5a00e917c02b650286cb9d379d3086c3d8001e80`: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097816995), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097816881). The later `41c...` commit only added the CI test path/step.
+- Reports: [strict state/recovery context](BUILD/NCS_M0_STRICT_STATE_LOAD_2026-10-18.md); [prepared mission/history retention](BUILD/NCS_M0_PRESERVE_PREPARED_MISSION_CONTEXT_2026-10-18.md).
+- M0 remains incomplete: no Nexo canonical store/authority owner or independent external-effect verifier exists yet. Prepared external effects UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Prepared continuity history + strict recovery context (2026-10-18)
 
 - `loadStateStrict()` rejects missing/invalid state, unknown revision, malformed Nexo memory, and orphaned/mismatched prepared-effect context. It does not treat a structurally valid snapshot as proof of current authority.
