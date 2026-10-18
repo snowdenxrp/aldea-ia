@@ -527,3 +527,10 @@ A focused review found `recordExecutionLineage()` could append repair lineage wi
 - Owner commit: `291d482a2f1e03294c519bb8971fcce0b1c69176`.
 - Regression commit: `4667d3b3cbe4a587c6e53118961437b2db733958`. The test exercises mismatch rejection with no store-revision advance, then the matching revision path.
 - Exact-head CI/local execution not verified. Next: obtain exact-head test evidence, then continue with operation-specific crash recovery. Do not wire runtime, settle effects, or re-open earlier P112/STEP 7 audits. Keep Nexo continuity independent from Lúmina state.
+
+
+## CI follow-up — persisted revision in crash-cut test (2026-10-18)
+
+The mission/restart workflow failed before reaching `continuity-migration.test.mjs` because `applyState()` intentionally strips persistence metadata, but the test used `changedGoalEnvironment.stateRevision + 1` as a persisted revision. The test now captures `changedGoalSource = await loadStateStrict(repairStatePath)` and uses `changedGoalSource.stateRevision + 1`. Fix commit: `ea1a8390c2826021feab46f3197c84a1a4f47039`.
+
+At handoff time, the three exact-head workflows were in progress (mission/restart, STEP 5 outcome classification, STEP 4 semantic validation). Check their final jobs/logs before asserting PASS. Do not change Lúmina runtime persistence to accommodate a test that was deriving a durable revision from an in-memory simulation object.
