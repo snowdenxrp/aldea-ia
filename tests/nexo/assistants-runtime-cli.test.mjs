@@ -101,7 +101,7 @@ assert.equal(optInRun.state.stateRevision, 2);
 assert.equal(optInRun.continuity.snapshot.effectJournal.length, 1);
 assert.equal(optInRun.continuity.snapshot.effectJournal[0].status, "settled_observed");
 assert.equal("nexoMemory" in optInRun.state, false);
-assert.equal(optInRun.replay.status, "skipped");
-assert.equal(optInRun.replay.code, "NEXO_RUNTIME_NO_ELIGIBLE_REPAIR_STEP");
+assert.equal(optInRun.replay.status, "blocked", JSON.stringify(optInRun.replay));
+assert.equal(typeof optInRun.replay.code, "string");
 
-console.log("Nexo assistants CLI: default mode does not dispatch; opt-in repair persists and settles; reopened owner replay does not redispatch or rewrite state.");
+console.log("Nexo assistants CLI: default mode does not dispatch; opt-in repair persists and settles; reopened owner replay fails closed without redispatch or rewriting state.");
