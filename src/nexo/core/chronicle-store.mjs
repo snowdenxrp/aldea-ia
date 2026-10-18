@@ -103,6 +103,9 @@ async function writeDocument(fsModule, filePath, document) {
  * Nexo-owned durable history, separate from the operational continuity journal.
  * This local store does not claim fsync/power-loss durability or rollback protection.
  * Missing state is never silently initialized by read or append.
+ * filePath is trusted configuration, not a sandbox boundary: callers must use a
+ * trusted local directory and prevent untrusted processes from mutating paths or
+ * lock entries. Symlink/path-attack resistance is not claimed.
  */
 export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
   if (typeof filePath !== "string" || !filePath.trim()) throw fail("NEXO_CHRONICLE_PATH_REQUIRED");
