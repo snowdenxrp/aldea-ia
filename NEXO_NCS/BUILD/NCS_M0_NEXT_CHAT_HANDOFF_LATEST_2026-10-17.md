@@ -1,3 +1,14 @@
+## Latest M0.71 — reconciliation fails closed without authenticated authority (2026-10-18)
+
+- Source/test head: `d67fd243016a2457747853a4b4a5342f8ca2ce4e`.
+- `src/nexo/core/reconciliation.mjs` no longer lets caller-supplied `authoritative: true` plus a recognized outcome produce `RESOLVED`. The generic boundary validates input shape but returns `UNRESOLVED` because there is no independently grounded verifier/current fence/authority epoch/provenance source wired here.
+- Regression updates are in `tests/nexo/reconciliation.test.mjs`; see [M0.71 report](NCS_M0_71_FAIL_CLOSED_UNAUTHENTICATED_RECONCILIATION_AUTHORITY_2026-10-18.md).
+- Exact-head CI was queued: STEP 6 [39092325409](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325409), M0 Core [39092325426](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325426), STEP 4 [39092325423](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325423), STEP 5 [39092325427](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325427). Check these exact runs for final conclusions.
+- This intentionally removes an unsafe positive decision; it does not solve PG-009. Next trace actual `createReconciler()` callers and the runtime recovery transition, then identify an existing independent authority/fence/provenance source. Do not invent those inputs or accept caller flags.
+- Keep unknown prepared effects unresolved and never redispatch them. STEP 7 = OPEN / STOP / UNKNOWN; protected effects STOP.
+
+---
+
 ## Latest confirmed M0 increment — identity check also covers cached terminal results (2026-10-18)
 
 - Commit: `378bf2036e3229f023bff3ca915fa09f95546ccf`.
