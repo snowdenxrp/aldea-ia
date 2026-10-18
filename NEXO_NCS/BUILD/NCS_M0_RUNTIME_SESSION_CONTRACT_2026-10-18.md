@@ -73,3 +73,14 @@ The session now enforces `status === "planned"` and canonical dependency complet
 Next, add a process-level CLI test using temporary fixtures and configurable paths so neither default nor opt-in test execution can touch the repository's real `world-state.json`. Verify default mode does not dispatch, opt-in mode reports the post-repair revision, and restart/replay stays blocked. Do not broaden beyond repair-only or cut over the generic runtime before this passes.
 
 Current status remains: M0 incomplete; repair integration opt-in only; production runtime default/canonical memory cutover not done; protected effects STOP; unresolved PREPARED/`settled_observed` UNKNOWN; Nexo and Lúmina separate.
+
+
+## Process-level proof (2026-10-18)
+
+The isolated CLI regression now launches `scripts/assistants.mjs` as a subprocess with temporary environment/continuity/memory paths. Default mode produces no runtime session and leaves the effect journal empty. Explicit `--nexo-repair-once` selects and settles a canonical repair step, advances environment revision 1 → 2, reports the final revision, and leaves Nexo memory out of `world-state.json`. The fixture uses explicit legacy continuity to avoid manufacturing owner authority from an empty state.
+
+The process test revealed that debugger findings for invalid position/needs lacked the `agent` field, allowing a mission target of null. `src/assistants/debugger.js` now preserves the agent ID on those findings. CI [39143459529](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143459529) passed on code/test SHA `a1fea5791adbb81a8d6b6e82da9dad09accc7918`.
+
+The report's process exit code can still be nonzero because its diagnostic summary describes the pre-repair state; the separate repair result does not erase that observation. This is deliberate until an independent postcondition/reporting contract exists.
+
+Next: audit legacy operational-memory reads/writes in `src/nexo/runtime.js` and `scripts/assistants.mjs`; move the canonical path toward owner-backed continuity without dual-writing or treating `settled_observed` as completion. Keep opt-in until a restart/replay and single-source-of-truth cutover test passes.
