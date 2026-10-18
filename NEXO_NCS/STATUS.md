@@ -314,3 +314,13 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Expected result: no successor mission, no second handler call, original prepared effect retained.
 - Report: [M0 — Persisted UNKNOWN effect blocks replan after reconstruction](BUILD/NCS_M0_UNKNOWN_EFFECT_PERSISTED_REPLAN_REGRESSION_2026-10-18.md).
 - CI evidence pending for this new regression. This is a safety containment regression, not reconciliation closure. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
+
+## CI verification — persisted UNKNOWN/replan seam
+
+Exact source/test commit: `3258f980ffb30cfc03b3e293c510054f54b518a7`.
+- Mission admission/restart continuity [39088109388](https://github.com/snowdenxrp/aldea-ia/actions/runs/39088109388) — PASS.
+- STEP 4 [39088109361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39088109361) — PASS.
+- STEP 5 [39088109363](https://github.com/snowdenxrp/aldea-ia/actions/runs/39088109363) — PASS.
+
+The mission continuity workflow runs `tests/nexo/runtime.test.mjs`; this verifies the regression through the current test harness. It does not prove a real external provider or protected execution boundary.

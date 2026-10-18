@@ -763,3 +763,8 @@ Latest design report: `NEXO_NCS/BUILD/NCS_M0_RECOVERY_CONTRACT_BEFORE_RUNTIME_RE
 ## Immediate next regression — persisted UNKNOWN cannot replan
 
 New runtime regression staged in `tests/nexo/runtime.test.mjs`: handler throws after dispatch; runtime returns `EFFECT_OUTCOME_UNKNOWN`; journal stays `prepared`; memory normalizes and reconstructs mission; caller attempts persisted replan with a fresh-operation reason; replan must return `not_replanned`, handler count must remain one, prepared entry must remain. Report: `NEXO_NCS/BUILD/NCS_M0_UNKNOWN_EFFECT_PERSISTED_REPLAN_REGRESSION_2026-10-18.md`. After commit, verify mission continuity CI on exact source/test head. This is still not the reconciliation implementation: next must use PG-009 binding fields and must not trust a bare caller-supplied `verified:true` as authority.
+
+
+## CI — persisted UNKNOWN/replan regression verified
+
+Exact source/test head `3258f980ffb30cfc03b3e293c510054f54b518a7`: mission continuity [39088109388](https://github.com/snowdenxrp/aldea-ia/actions/runs/39088109388) PASS; STEP 4 [39088109361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39088109361) PASS; STEP 5 [39088109363](https://github.com/snowdenxrp/aldea-ia/actions/runs/39088109363) PASS. Runtime workflow executes `tests/nexo/runtime.test.mjs`. This closes the regression test seam only; the reconciliation operation remains unimplemented. Continue from PG-009 binding fields; do not use bare `verified:true` callbacks as authority.
