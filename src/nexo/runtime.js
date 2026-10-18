@@ -97,8 +97,7 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
 
 export async function executeLuminaNexoStep({simulation,mission,stepId,memory=null,context={},precondition,postcondition,persistPreparedIntent=null}={}) {
   if(!simulation)return{mission:null,memory,adapterResult:null,status:"invalid"};
-  const runtimeMemory=memory ?? simulation.nexoMemory ?? null;
-  if(!simulation.nexoMemory && runtimeMemory) simulation.nexoMemory=runtimeMemory;
+  const runtimeMemory=memory ?? null;
   const executionJournal=Array.isArray(runtimeMemory?.nexo?.effectJournal)?runtimeMemory.nexo.effectJournal:[];
   const adapter=createLuminaEffectAdapter(simulation,{executionJournal,persistPreparedIntent});
   const step=mission?.steps?.find(s=>s.id===stepId); const actionIntent=step?.context?.action??context?.action??null;
