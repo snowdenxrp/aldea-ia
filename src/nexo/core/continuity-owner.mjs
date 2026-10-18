@@ -220,6 +220,35 @@ export function createNexoContinuityOwner({ store } = {}) {
       return { status: "prepared_existing", code: "NEXO_EFFECT_OUTCOME_UNKNOWN", preparedCommitted: false, authorization: "NOT_EVALUATED", storeRevision: current.storeRevision };
     }
 
+    // A new PREPARED obligation is admitted only for a currently runnable step.
+    // Keep this after the existing-obligation branch: replay of an unresolved
+    // PREPARED entry must remain visible as unknown, not be reclassified by
+    // later mission status changes.
+    if (step.status !== "planned") {
+      return {
+        status: "blocked",
+        code: "NEXO_PREPARED_STEP_NOT_RUNNABLE",
+        preparedCommitted: false,
+        authorization: "NOT_EVALUATED",
+        storeRevision: current.storeRevision
+      };
+    }
+    const dependencies = Array.isArray(step.dependsOn) ? step.dependsOn : [];
+    const dependenciesMet = dependencies.every(dependencyId =>
+      mission.steps.some(candidateStep =>
+        candidateStep?.id === dependencyId && candidateStep.status === "completed"
+      )
+    );
+    if (!dependenciesMet) {
+      return {
+        status: "blocked",
+        code: "NEXO_PREPARED_DEPENDENCIES_UNMET",
+        preparedCommitted: false,
+        authorization: "NOT_EVALUATED",
+        storeRevision: current.storeRevision
+      };
+    }
+
     candidate.effectJournal.push({
       idempotencyKey: operation.idempotencyKey,
       missionId: operation.missionId,
