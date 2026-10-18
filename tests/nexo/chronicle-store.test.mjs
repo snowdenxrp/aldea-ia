@@ -88,6 +88,22 @@ if (result.status !== "committed") process.exitCode = 1;`;
   assert.equal(crossProcessEntries.length, 2);
   assert.deepEqual(new Set(crossProcessEntries.map(entry => entry.operationKey)), new Set(["cross-process-a", "cross-process-b"]));
 
+  // A stale lock must fail closed; automatic check-then-remove reclamation is racy.
+  const staleLockPath = path.join(root, "stale-lock.json");
+  const staleLockStore = createNexoChronicleStore({ filePath: staleLockPath });
+  assert.equal((await staleLockStore.initialize()).status, "committed");
+  const staleLockDir = `${staleLockPath}.lock`;
+  await fs.mkdir(staleLockDir);
+  await fs.writeFile(path.join(staleLockDir, "owner.json"), JSON.stringify({ pid: 2147483647, token: "dead-owner" }), "utf8");
+  const staleTime = new Date(Date.now() - 120_000);
+  await fs.utimes(staleLockDir, staleTime, staleTime);
+  await assert.rejects(
+    () => staleLockStore.append({ operationKey: "stale-lock:step", content: "must not write" }),
+    error => error?.code === "NEXO_CHRONICLE_LOCK_STALE_RECOVERY_REQUIRED"
+  );
+  assert.equal((await staleLockStore.loadCurrent()).entries.length, 0);
+  assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
+
   // Simulate a lost writer response after the atomic rename already changed persisted state.
   const lostPath = path.join(root, "lost-response.json");
   let loseNextRename = false;
