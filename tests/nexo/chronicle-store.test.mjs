@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import { observeChronicleOperation } from "../../src/nexo/adapters/chronicle-observation.mjs";
+import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-"));
 try {
@@ -71,6 +72,27 @@ try {
     store: lostResponseReader, idempotencyKey: "mission-2:step-1", missionId: "mission-2",
     stepId: "step-1", action: "chronicle_append", target: { content: "survived" }
   })).status, "applied");
+
+  // The action-specific contract writes only through Chronicle and verifies through a fresh read.
+  const contracts = createNexoChronicleEffectContracts({ store: reopened });
+  const effectResult = await contracts.handlers.chronicle_append({
+    missionId: "mission-3", stepId: "step-1", action: "chronicle_append",
+    target: { content: "native Nexo history" }
+  });
+  assert.equal(effectResult.status, "completed");
+  assert.equal(await contracts.postcondition({
+    missionId: "mission-3", stepId: "step-1", action: "chronicle_append",
+    target: { content: "native Nexo history" }
+  }), true);
+  const ownerObservation = await contracts.verifiers({
+    idempotencyKey: "mission-3:step-1", missionId: "mission-3", stepId: "step-1",
+    action: "chronicle_append", target: { content: "native Nexo history" }
+  });
+  assert.equal(ownerObservation.status, "applied");
+  assert.equal(ownerObservation.idempotencyKey, "mission-3:step-1");
+  assert.equal(ownerObservation.action, "chronicle_append");
+  assert.deepEqual(ownerObservation.target, { content: "native Nexo history" });
+  assert.equal(Number.isSafeInteger(ownerObservation.observedRevision), true);
 
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
