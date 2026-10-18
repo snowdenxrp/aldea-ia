@@ -1,3 +1,19 @@
+## Latest mission-goal verifier — read-only, non-completion semantics
+
+- Exact tested head: [`1ae28c8570e76191663ed045e6d68644df17a52c`](https://github.com/snowdenxrp/aldea-ia/commit/1ae28c8570e76191663ed045e6d68644df17a52c).
+- `scripts/nexo-repair-mission-verification.mjs` exports `verifyRepairMissionGoalFromPersistedState()`. It requires a repair-only mission with one `settled_observed` journal entry per step, reloads one strict environment snapshot, rechecks every required invariant, and rejects dependency cycles.
+- Return is `goal_observed`, `missionCompleted: false`, `causalAttribution: "not_claimed"`. It does not write continuity, unblock steps, or authorize replan.
+- Runtime replan explicitly returns `NEXO_REPAIR_GOAL_VERIFICATION_REQUIRED` when an earlier mission contains `settled_observed`.
+- Exact-head CI PASS: mission/restart [39133517131](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133517131), outcome [39133517097](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133517097), semantic [39133517074](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133517074).
+
+### Next exact task
+
+Define whether/how `goal_observed` can be durably recorded through continuity CAS without turning it into causal completion. The contract must state how the current environment revision is bound, how later state changes invalidate/reopen verification, and how mission/step statuses avoid accidental redispatch. Keep the verifier read-only until those semantics are explicit and tested.
+
+M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest runtime boundary — no successor before mission goal verification
 
 - Exact tested code/test head: [`9610580f838ea2f55a482f64a28f18d84cac202e`](https://github.com/snowdenxrp/aldea-ia/commit/9610580f838ea2f55a482f64a28f18d84cac202e).
