@@ -145,7 +145,7 @@ export function createNexoContinuityOwner({ store } = {}) {
       item?.stepId === outcome.stepId &&
       ["prepared", "settled_observed"].includes(item?.status)
     );
-    if (unresolvedEffect && outcome.status === "completed") {
+    if (unresolvedEffect) {
       return {
         status: "blocked",
         code: "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED",
