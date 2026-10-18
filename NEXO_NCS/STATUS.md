@@ -1,3 +1,15 @@
+## M0 — auditoría de frontera de memoria legacy/runtime (2026-10-18)
+
+- Auditoría dirigida documentada en [NCS_M0_LEGACY_RUNTIME_MEMORY_CUTOVER_AUDIT_2026-10-18.md](BUILD/NCS_M0_LEGACY_RUNTIME_MEMORY_CUTOVER_AUDIT_2026-10-18.md), commit `f2b14a63665df50a99ea576d44db00092e2f7ca4`.
+- Hallazgo raíz: `src/nexo/runtime.js` ejecuta el adapter antes de confirmar un ciclo owner-backed durable; después registra plan, execution y outcome sobre una proyección de memoria legacy en proceso. El lock `WeakMap` no sustituye CAS ni persistencia entre procesos.
+- Incompatibilidad confirmada: `owner.recordOutcome()` bloquea `completed` cuando el mismo paso tiene efecto `prepared` o `settled_observed`; `recordExecutionLineage()` requiere PREPARED y no liquida el journal. Por eso no es seguro cambiar imports por llamadas directas al owner ni convertir `settled_observed` en completion.
+- Se mapeó el rol de `scripts/assistants.mjs`: registra misión en el store canónico y usa una vista legacy temporal para construir el plan; el puente CLI de reparación continúa opt-in y limitado a tres reparaciones. No se ha demostrado un cutover del runtime genérico.
+- Evidencia base disponible: [CI 39143459529](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143459529), SUCCESS en SHA de código/pruebas `a1fea5791adbb81a8d6b6e82da9dad09accc7918`. El HEAD documental actual no tiene un CI nuevo asociado; no extrapolar el PASS.
+- **Siguiente paso:** probar cómo se representa un outcome de misión tras settlement sin conflar journal/outcome/completion; luego diseñar la conexión owner-backed mínima sobre misión/paso canónicos, con CAS y crash/restart/replay. Mantener legacy y flag opt-in hasta que esa regresión pase.
+- M0 incompleto; Nexo/Lúmina separados; no atomicidad cross-store; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — prueba de proceso real del CLI aislado (2026-10-18)
 
 - Se habilitaron rutas de archivos configurables mediante `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH` y `NEXO_CONTINUITY_PATH`. Sin esas variables, los paths de producción permanecen iguales; la prueba usa exclusivamente un directorio temporal.
