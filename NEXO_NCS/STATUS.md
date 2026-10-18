@@ -1,3 +1,13 @@
+## M0 — la misión también debe ser ejecutable para admitir PREPARED (2026-10-18)
+
+- **Hueco encontrado:** un paso podía seguir `planned` aunque su misión canónica estuviera `blocked`. La comprobación de paso/dependencias no era suficiente por sí sola.
+- **Cambio:** `recordPrepared()` ahora exige `mission.status === planned` para una obligación nueva; de lo contrario devuelve `blocked / NEXO_PREPARED_MISSION_NOT_RUNNABLE`, sin avanzar `storeRevision` ni modificar `effectJournal`. Este control se ejecuta después de detectar un PREPARED existente, preservando la recuperación de obligaciones inciertas.
+- **Test-first:** SHA `4c5cbf530da03642fb68da62f0abf1e8829bae5e`. [Repair crash cuts 39153079971](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153079971) y [bounded admission/restart 39153080078](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153080078) fallaron en la regresión nueva: el owner devolvía `committed` para una misión `blocked`. STEP 4/STEP 5 pasaron en ese SHA, pero no validan el arreglo.
+- **CI verde exacto:** SHA `afb214730a1eca78d7f4a20b01d1a25826c42a5d`: [STEP 5 39153137599](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137599), [STEP 4 39153137708](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137708), [repair crash cuts 39153137714](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137714), [bounded admission/restart 39153137611](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137611): cuatro SUCCESS.
+- **Estado y límite:** refuerza admisión, pero no es el corte del runtime legacy. No acredita autenticación de evidencia, atomicidad entre stores ni finalización de misión. Siguiente: integrar el runtime a través del seam repair-only que ya posee PREPARED durable y conciliación específica, sin abrir efectos genéricos. Nexo/Lúmina separados; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — el owner bloquea PREPARED si el paso no es ejecutable (2026-10-18)
 
 - **Hueco encontrado:** `recordPrepared()` validaba misión/paso/acción/objetivo, pero podía crear una obligación PREPARED para un paso cuyo estado no era `planned` o cuyas dependencias no estaban todas `completed`. La sesión de reparación ya aplicaba estas comprobaciones, pero el owner canónico no las imponía por sí mismo.
