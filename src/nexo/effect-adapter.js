@@ -143,19 +143,39 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     }
     if(!effectResult || !validStatus(effectResult.status)){
       const afterInvalidVersion=getStateVersion();
-      const result={status:"failed",code:afterInvalidVersion!==beforeVersion?"PARTIAL_EFFECT_DETECTED":"INVALID_EFFECT_RESULT",verified:false,action,target};
+      if(afterInvalidVersion!==beforeVersion){
+        // A handler ran and the observed state changed, but no valid terminal
+        // result exists. Keep PREPARED: a partial effect is not a safe failure.
+        return {status:"blocked",code:"PARTIAL_EFFECT_DETECTED",verified:false,action,target,
+          beforeVersion,afterVersion:afterInvalidVersion,stateChanged:true,
+          idempotencyKey,uncertainty:"effect_may_or_may_not_have_occurred"};
+      }
+      const result={status:"failed",code:"INVALID_EFFECT_RESULT",verified:false,action,target};
       persist(idempotencyKey,result); return result;
     }
     const afterVersion=getStateVersion();
     if(effectResult.status!=="completed"){
-      const result={...effectResult,status:"failed",code:afterVersion!==beforeVersion?"PARTIAL_EFFECT_DETECTED":(effectResult.code??"EFFECT_NOT_COMPLETED"),verified:false,action,target,beforeVersion,afterVersion};
+      if(afterVersion!==beforeVersion){
+        // State changed despite a non-completed result. Do not cache failure:
+        // recovery must independently reconcile the still-PREPARED operation.
+        return {...effectResult,status:"blocked",code:"PARTIAL_EFFECT_DETECTED",verified:false,action,target,
+          beforeVersion,afterVersion,stateChanged:true,idempotencyKey,
+          uncertainty:"effect_may_or_may_not_have_occurred"};
+      }
+      const result={...effectResult,status:"failed",code:effectResult.code??"EFFECT_NOT_COMPLETED",verified:false,action,target,beforeVersion,afterVersion};
       persist(idempotencyKey,result); return result;
     }
 
     let post=false;
     try { post=typeof postcondition==="function" ? await postcondition({missionId,stepId,action,target,context,beforeVersion,afterVersion,effectResult}) : false; }
     catch(error){ post=false; }
-    if(post!==true){ const result={status:"failed",code:"POSTCONDITION_FAILED",verified:false,action,target,effectResult,beforeVersion,afterVersion}; persist(idempotencyKey,result); return result; }
+    if(post!==true){
+      // The handler reported completion but the required postcondition was not
+      // verified. The effect may already have happened; never cache this as a
+      // terminal failure or let a retry redispatch it.
+      return {status:"blocked",code:"POSTCONDITION_FAILED",verified:false,action,target,effectResult,
+        beforeVersion,afterVersion,idempotencyKey,uncertainty:"effect_may_or_may_not_have_occurred"};
+    }
 
     const evidence={verified:true,kind:"effect-postcondition",action,target,beforeVersion,afterVersion,details:effectResult.details??null};
     const result={status:"completed",verified:true,action,target,evidence,effectResult};
