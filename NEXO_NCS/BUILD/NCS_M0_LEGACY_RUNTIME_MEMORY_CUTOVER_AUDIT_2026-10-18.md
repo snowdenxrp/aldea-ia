@@ -88,3 +88,12 @@ El test de lifecycle ahora verifica que el objetivo no queda observado si la inv
 También queda registrada una decisión de diseño negativa: no aceptar el intento incompleto de agregar `goalObservations` como una colección más. El cambio solo actualizaba la lista del snapshot, sin compatibilidad de store ni contrato de observación; falló CI (39146494871, 39146494887) y fue revertido en `16c51fc994de1ca8a6471fa30f9060068b998da8`. Si la persistencia de observación independiente resulta necesaria, debe diseñarse como contrato completo con procedencia verificable, compatibilidad de snapshots antiguos, CAS/replay y una semántica que no confunda observación con completion.
 
 El HEAD actual es `864ab85d38bf67040ef5a662dd8769cad3ea4c9f`; el último CI verde registrado es de su padre. No declarar HEAD exacto validado hasta que los workflows lo confirmen.
+
+
+## Evidencia adicional — revisión de continuidad estable durante verificación (2026-10-18)
+
+El verificador ahora realiza una segunda lectura de `storeRevision` antes de devolver `goal_observed`. Una diferencia devuelve `unknown / NEXO_CONTINUITY_CHANGED_DURING_MISSION_VERIFICATION`. La prueba simula una revisión que cambia entre lecturas. Esto impide un resultado positivo basado en el snapshot inicial si el store ya cambió antes de la comprobación final; no es un commit coordinado con el archivo ambiental ni cubre escrituras posteriores a esa lectura.
+
+Commit probado `57f3bffb52989a924bdbc5fb4fc626d803e6988f`; CI exacto: repair 39146959705, STEP 4 39146959738, STEP 5 39146959691, todos SUCCESS. El job repair ejecutó y pasó la regresión de verificación de objetivo.
+
+El corte del runtime genérico permanece bloqueado hasta tener un contrato explícito de outcome/evidencia y pruebas integradas de PREPARED durable, CAS, recuperación y replay. No se agregó colección `goalObservations`; no se confunde observación con causalidad o completion.
