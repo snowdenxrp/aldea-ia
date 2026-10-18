@@ -1,3 +1,13 @@
+## M0 — Prepared effect journal vetoes successor replan (2026-10-18)
+
+- Finding: mission continuity could lose or stale the specific `EFFECT_OUTCOME_UNKNOWN` marker while the durable effect journal still retained the matching operation as `prepared`. Replanning based only on mission state could then create a successor identity over an unresolved effect.
+- Change: `replanPersistedNexoMission()` now checks the existing `memory.nexo.effectJournal` for a matching `missionId` with `status: "prepared"`. It returns `not_replanned / EFFECT_RECONCILIATION_REQUIRED`, leaves memory unchanged, and creates no successor.
+- Regression: `tests/nexo/runtime.test.mjs` simulates stale/generic mission outcome evidence while the journal remains prepared; caller-supplied successor reason cannot bypass the journal.
+- Research basis: `NCS_CHECKPOINT_2026-10-08.md`, `NCS_EFFECT_VERIFICATION_2026-10-08.md`, `NCS_RECOVERY_COMMON_MODE_AUDIT_2026-10-08.md`, AB104.197 / AB104.212 and P/P112 evidence/freshness constraints. No historical audit was rerun.
+- Report: [M0 prepared-effect replan guard](BUILD/NCS_M0_PREVENT_REPLAN_WITH_PREPARED_EFFECT_2026-10-18.md).
+- Source commit `57ccbe1bd3a6070c69f67e321b9432c0c188a755`; regression test commit `db8e6259a172d556f9311329df6942770938d04a`. Exact-head CI verification pending.
+- Limit: this blocks successor replanning but does not resolve the effect or provide the missing independent PG-009 verifier/fence/provenance source. Prepared effect remains UNKNOWN; no redispatch. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## M0.72 — Block caller-controlled effect reconciliation (2026-10-18)
 
 - `src/nexo/effect-adapter.js` no longer invokes `request.reconcile` for a prepared effect or accepts its `verified: true` claim. A supplied callback yields `RECONCILIATION_AUTHORITY_UNAVAILABLE`; no callback yields `EFFECT_RECONCILIATION_REQUIRED`. Both preserve `prepared` and unknown external-effect state.
