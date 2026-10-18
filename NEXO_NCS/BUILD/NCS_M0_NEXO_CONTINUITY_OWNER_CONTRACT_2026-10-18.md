@@ -11,6 +11,16 @@ This is not yet wired as the runtime's canonical owner: current mission executio
 
 The store uses a local filesystem lock and temp-file rename for cooperating local writers. It does not claim fsync/power-loss durability, rollback resistance, network-filesystem safety, distributed linearizability, or external-effect verification. The local store revision is not an authority epoch or global fence.
 
+## Implementation update — 2026-10-18
+
+The standalone store is now accompanied by `src/nexo/core/continuity-owner.mjs` and `src/nexo/core/continuity-operations.mjs`. The owner records missions and a durable PREPARED obligation bound to the stored mission/step/action/target. Existing PREPARED returns UNKNOWN and cannot be redispatched. Durable PREPARED is not authorization; the result explicitly says `authorization: NOT_EVALUATED`.
+
+Snapshot operations are independent of `createLearningMemory()` and do not include learning analytics. Completion claims require a non-empty evidence-source label, but that label is not authenticated and does not prove independent verification. The owner still cannot reconcile/terminalize PREPARED because an independent operation-specific verifier is not wired.
+
+Exact-head CI passed at `3e5dbcd37a8e070ae6580357a1798a876070f7e4`: mission/restart `39099497697`, STEP 4 `39099497703`, STEP 5 `39099497743`.
+
+Runtime integration remains pending: `executeNexoStep` and the existing effect adapter still use the legacy `createLearningMemory().nexo` shape, and `scripts/simulate.mjs` still serializes `nexoMemory` with Lúmina state. No migration or dual-write has occurred.
+
 ## Purpose
 
 Define the minimum boundary needed to give M0 a Nexo-owned operational continuity store without confusing that store with Lúmina's world state, learning memory, or constitutional authority.
