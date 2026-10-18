@@ -1,3 +1,12 @@
+## Latest update — action reconciliation matrix added (2026-10-18)
+
+- New source-backed matrix: [action reconciliation classification](NCS_M0_ACTION_RECONCILIATION_CLASSIFICATION_2026-10-18.md).
+- It distinguishes the candidate convergent repair actions from non-idempotent actions (resource consumption/transfer, trade, shelter/farm creation, harvest, etc.). The matrix does not authorize terminal settlement; repair candidates still need operation-specific crash-cut tests.
+- Current branch head at this update: [`d0049b010226fda3df96fe24a6c7f7c9baec7090`](https://github.com/snowdenxrp/aldea-ia/commit/d0049b010226fda3df96fe24a6c7f7c9baec7090), documentation-only after the code/test head with exact-head CI PASS.
+- Continue with the repair-action recovery contract only after testing the existing authoritative snapshot path. Do not wire runtime dispatch to the owner yet. Non-idempotent actions remain UNKNOWN when PREPARED is unresolved.
+
+---
+
 ## Latest update — environment crash cuts mapped (2026-10-18)
 
 - Read [environment reconciliation/crash-cut findings](NCS_M0_ENVIRONMENT_RECONCILIATION_CRASH_CUTS_2026-10-18.md) after the fail-closed handler fix.
