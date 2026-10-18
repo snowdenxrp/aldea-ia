@@ -10,6 +10,7 @@ import { persistState, loadState, loadStateStrict, applyState } from "../../scri
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
+import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
 import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
 import { observePersistedRepairInvariant, comparePersistedRepairRevision } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
 
@@ -358,6 +359,30 @@ assert.equal(mismatchedRepairRevision.status, "blocked");
 assert.equal(mismatchedRepairRevision.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_MISMATCH");
 assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal[0].environmentStateRevision, 0,
   "an existing PREPARED repair must never be rebound to a different environment revision");
+
+const settledRepair = await settlePreparedRepairFromPersistedState({
+  store: restartedRepairContinuity.store,
+  statePath: repairStatePath,
+  idempotencyKey: "repair-crash-cut:step-1",
+  expectedContinuityRevision: persistedRepairJournal.storeRevision
+});
+assert.equal(settledRepair.status, "settled_observed");
+assert.equal(settledRepair.verified, true);
+assert.equal(settledRepair.causalAttribution, "not_claimed");
+assert.equal(settledRepair.environmentStateRevision, 1);
+const settledJournal = await restartedRepairContinuity.owner.loadCurrent();
+assert.equal(settledJournal.snapshot.effectJournal[0].status, "settled_observed");
+assert.equal(settledJournal.snapshot.effectJournal[0].settlement.causalAttribution, "not_claimed");
+
+const staleSettlement = await settlePreparedRepairFromPersistedState({
+  store: restartedRepairContinuity.store,
+  statePath: repairStatePath,
+  idempotencyKey: "repair-crash-cut:step-1",
+  expectedContinuityRevision: persistedRepairJournal.storeRevision
+});
+assert.equal(staleSettlement.status, "conflict");
+assert.equal(staleSettlement.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+
 
 
 await fs.rm(repairDir, { recursive: true, force: true });
