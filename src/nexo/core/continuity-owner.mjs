@@ -397,6 +397,11 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
    * permission to redispatch. UNKNOWN and invalid evidence leave PREPARED open.
    */
   async function reconcilePrepared({ expectedRevision, operation } = {}) {
+    // Legacy/caller-supplied observations are not a trusted verifier contract.
+    // Preserve the fail-closed API when no canonical operation context is supplied.
+    if (!operation) {
+      return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
+    }
     try { validateOperation(operation); }
     catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" }; }
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
