@@ -169,7 +169,7 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
     let pre;
     try { pre=typeof precondition==="function" ? await precondition({missionId,stepId,action,target,context,stateVersion:preVersion}) : true; }
     catch(error){ pre=false; }
-    if(!pre){ const result={status:"blocked",code:"PRECONDITION_FAILED",verified:false,action,target}; persist(idempotencyKey,result); return result; }
+    if(!pre){ const result={status:"blocked",code:"PRECONDITION_FAILED",verified:false,action,target}; saveResult(idempotencyKey,result); return result; }
 
     const beforeVersion=getStateVersion();
     if(beforeVersion!==preVersion){
