@@ -493,3 +493,12 @@ Added a dedicated recovery scenario to `tests/nexo/repair-owner-lifecycle.test.m
 **Exact CI:** [Nexo M0 — repair settlement crash cuts, run 39145303242](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145303242) — SUCCESS on code/test SHA `59825c0b66034e39dfa62bf060665cff59c95269`. The `repair-crash-cuts` job passed, including the new crash-cut test, owner migration, canonical repair session, isolated CLI replay, and mission-goal verification.
 
 This closes one crash boundary for the repair-only lifecycle; it does not prove generic runtime cutover, cross-store atomicity, causal attribution, or protected-effect authorization. M0 remains INCOMPLETE.
+
+
+## M0 — no promover settled_observed a completed tras reinicio (2026-10-18)
+
+- La regresión nueva en `tests/nexo/repair-owner-lifecycle.test.mjs` intenta registrar `completed` con evidencia etiquetada por el caller como `verified: true` después de `settled_observed`. El owner debe rechazarla con `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED` sin incrementar `storeRevision`.
+- La misma prueba reconstruye la misión desde el owner actual y desde un owner reabierto en disco; en ambos casos la misión y el paso siguen `blocked`, con objetivo `verify_observed_repair_goal`. Esto verifica persistencia de la barrera, no autenticidad de la evidencia externa.
+- Commit de prueba: [fd2331e8d71afbbf0f19ea978d552a89087c1dc6](https://github.com/snowdenxrp/aldea-ia/commit/fd2331e8d71afbbf0f19ea978d552a89087c1dc6).
+- CI exacto en ese SHA: [repair settlement crash cuts — 39145754425](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754425) SUCCESS; [STEP 4 — 39145754371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754371) SUCCESS; [STEP 5 — 39145754375](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754375) SUCCESS. En el workflow repair, el job `repair-crash-cuts` pasó el lifecycle, migración, sesión canónica, CLI aislado y verificación de objetivo.
+- Límite: esto no liquida el journal, no convierte observación en causalidad, no habilita acciones generales ni prueba cutover del runtime genérico. M0 continúa INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
