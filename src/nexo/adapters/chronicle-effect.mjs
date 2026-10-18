@@ -20,8 +20,8 @@ export function createNexoChronicleEffectContracts({ store } = {}) {
 
   async function handler({ missionId, stepId, action, target } = {}) {
     if (action !== NEXO_CHRONICLE_APPEND_ACTION ||
-        typeof missionId !== "string" || !missionId.trim() ||
-        typeof stepId !== "string" || !stepId.trim() ||
+        typeof missionId !== "string" || !missionId.trim() || missionId.includes(":") ||
+        typeof stepId !== "string" || !stepId.trim() || stepId.includes(":") ||
         !target || typeof target !== "object" || Array.isArray(target) ||
         typeof target.content !== "string" || !target.content.trim()) {
       return { status: "blocked", code: "NEXO_CHRONICLE_ENTRY_INVALID", verified: false };
