@@ -1,3 +1,9 @@
+## M0 — Preparation is explicitly not authorization (2026-10-18)
+
+- Tightened `src/nexo/core/continuity-owner.mjs`: a successful durable PREPARED commit now returns `preparedCommitted: true` and `authorization: "NOT_EVALUATED"`, never a dispatch/authorization grant. An existing PREPARED entry remains UNKNOWN and cannot be dispatched again.
+- Exact corrected source/test head `0450e8a81491940f81c7ab80d97f072596eafb84` CI PASS: mission/restart [39099253129](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099253129), STEP 4 [39099253116](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099253116), STEP 5 [39099253174](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099253174).
+- This corrects a semantic naming risk: durable intent does not confer authorization. Runtime integration still needs a distinct final admission boundary and operation-specific verification. Nexo store/owner is not yet canonical in production; legacy continuity remains inside Lúmina's state envelope.
+
 ## M0 — Continuity owner: mission admission and PREPARED checkpoint (2026-10-18)
 
 - Added `src/nexo/core/continuity-owner.mjs` at `773fdb612be248e235ccd3d8af156d7c84d82e38`.
