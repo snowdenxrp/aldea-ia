@@ -1,3 +1,14 @@
+## M0 — el owner bloquea PREPARED si el paso no es ejecutable (2026-10-18)
+
+- **Hueco encontrado:** `recordPrepared()` validaba misión/paso/acción/objetivo, pero podía crear una obligación PREPARED para un paso cuyo estado no era `planned` o cuyas dependencias no estaban todas `completed`. La sesión de reparación ya aplicaba estas comprobaciones, pero el owner canónico no las imponía por sí mismo.
+- **Cambio:** antes de crear un PREPARED nuevo, el owner exige `step.status === planned` y que cada ID de `dependsOn` corresponda a un paso existente en estado `completed`. Si falla el estado devuelve `blocked / NEXO_PREPARED_STEP_NOT_RUNNABLE`; si falla una dependencia, `blocked / NEXO_PREPARED_DEPENDENCIES_UNMET`. No cambia `storeRevision` ni agrega journal.
+- **Orden de checks deliberado:** los checks se ejecutan después de detectar una obligación PREPARED ya existente. Así un replay de obligación sin resolver continúa visible como `prepared_existing`/UNKNOWN aunque la misión cambie después; no se reinterpreta como permiso para redispatch ni se oculta el pendiente.
+- **Test-first:** SHA de prueba `71764ddb9dfc511cfe437c6a12dc9f6122a2297b`. [Repair crash cuts 39152101773](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152101773) y [mission/restart continuity 39152101743](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152101743) fallaron en la aserción nueva: el owner anterior devolvía `committed` en vez de `blocked`. STEP 4/STEP 5 pasaron en ese SHA, pero no validan el fix.
+- **CI verde exacto de código/pruebas:** SHA `4549662e9cf879a15c4833b011ce5a8122e1c65e`: [mission/restart continuity 39152160229](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160229), [repair crash cuts 39152160394](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160394), [STEP 4 39152160252](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160252), [STEP 5 39152160267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160267): los cuatro SUCCESS.
+- **Límite / siguiente paso:** el guard protege admisión de PREPARED en el owner; no cambia `src/nexo/runtime.js`, no prueba atomicidad cross-store ni autentica evidencia. Siguiente: definir la frontera de integración canónica runtime sin despacho de acciones genéricas que carezcan de reconciliación específica. Nexo/Lúmina separados; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — replay de outcome con afirmación contradictoria (2026-10-18)
 
 - **Hueco demostrado:** `recordOutcome()` reconocía como `already_recorded` cualquier replay con la misma identidad misión/paso/acción/objetivo, aunque el estado o la evidencia del nuevo outcome contradijeran el intento durable existente. El intento original no se sobrescribía, pero el resultado contradictorio no quedaba explícitamente bloqueado.
