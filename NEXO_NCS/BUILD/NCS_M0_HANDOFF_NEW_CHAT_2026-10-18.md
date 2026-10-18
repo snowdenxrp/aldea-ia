@@ -1,3 +1,13 @@
+## Avance posterior — admisión PREPARED valida también la misión (2026-10-18)
+
+El owner ahora rechaza PREPARED nuevo si la misión canónica no está en estado `planned`, incluso cuando el paso individual aún aparece `planned`. Código: `NEXO_PREPARED_MISSION_NOT_RUNNABLE`; no cambia la revisión ni el journal. La comprobación no se aplica para ocultar un PREPARED ya existente: la obligación pendiente se conserva para recuperación.
+
+Test-first SHA `4c5cbf530da03642fb68da62f0abf1e8829bae5e` falló en repair crash cuts [39153079971](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153079971) y bounded admission/restart [39153080078](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153080078). Fix validado en SHA `afb214730a1eca78d7f4a20b01d1a25826c42a5d`: [STEP 5 39153137599](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137599), [STEP 4 39153137708](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137708), [repair crash cuts 39153137714](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137714), [bounded admission/restart 39153137611](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137611) SUCCESS.
+
+Continuar en el seam runtime canónico; no declarar migrado `src/nexo/runtime.js`. Mantener separación Nexo/Lúmina y el alcance repair-only. No inferir completion a partir de `settled_observed` ni añadir un journal de observaciones sin requisito explícito.
+
+---
+
 ## Avance posterior — admisión de PREPARED endurecida (2026-10-18)
 
 El owner canónico ya no crea una obligación PREPARED nueva si el paso no está exactamente `planned` o si alguna dependencia no existe/no está `completed`. Códigos: `NEXO_PREPARED_STEP_NOT_RUNNABLE` y `NEXO_PREPARED_DEPENDENCIES_UNMET`; ambos preservan `storeRevision` y journal. El check queda después de la rama de PREPARED existente para que un efecto ya incierto no desaparezca de la recuperación por cambios de estado.
