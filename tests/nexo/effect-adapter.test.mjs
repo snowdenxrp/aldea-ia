@@ -322,3 +322,18 @@ assert.ok(retentionJournal.some(entry=>entry.idempotencyKey==="must-survive:prep
 assert.ok(retentionJournal.length<=200);
 
 console.log("Nexo: adaptador tipado con concurrencia, idempotencia, detección de efecto parcial y evidencia estricta OK.");
+
+
+// Canonical-runtime preflight can inspect handler presence before admitting PREPARED.
+// This is capability discovery only; it does not claim reconciliation or authorization.
+let capabilityCalls=0;
+const capabilityAdapter=createEffectAdapter({handlers:{
+  registered_effect:async()=>{capabilityCalls++;return {status:"completed"};}
+}});
+assert.equal(capabilityAdapter.supports("registered_effect"),true);
+assert.equal(capabilityAdapter.supports("missing_effect"),false);
+assert.equal(capabilityAdapter.supports(""),false);
+capabilityAdapter.register("later_registered_effect",async()=>({status:"completed"}));
+assert.equal(capabilityAdapter.supports("later_registered_effect"),true);
+assert.equal(capabilityAdapter.supports("missing_effect"),false);
+assert.equal(capabilityCalls,0,"capability discovery must not dispatch a handler");
