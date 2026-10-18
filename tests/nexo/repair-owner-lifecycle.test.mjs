@@ -296,6 +296,58 @@ try {
   } finally {
     await fs.rm(recoveryRoot, { recursive: true, force: true });
   }
+
+  // Crash before dispatch: PREPARED is durable but environment remains at the
+  // baseline revision. Recovery may dispatch only after proving that exact
+  // revision is unchanged and the desired invariant is not already present.
+  const beforeDispatchRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-before-dispatch-"));
+  try {
+    const beforeDispatchNexoPath = path.join(beforeDispatchRoot, "nexo-continuity.json");
+    const beforeDispatchStatePath = path.join(beforeDispatchRoot, "world-state.json");
+    const beforeDispatchInitial = await openNexoContinuityOwner({
+      filePath: beforeDispatchNexoPath,
+      legacyMemory: legacyMemory()
+    });
+    await fs.writeFile(beforeDispatchStatePath, JSON.stringify(environment(40)), "utf8");
+    const beforeDispatchPrepared = await prepareRepairAgainstPersistedState({
+      owner: beforeDispatchInitial.owner,
+      statePath: beforeDispatchStatePath,
+      expectedContinuityRevision: 0,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      }
+    });
+    assert.equal(beforeDispatchPrepared.status, "committed");
+    const afterCrashBeforeDispatch = await openNexoContinuityOwner({
+      filePath: beforeDispatchNexoPath,
+      legacyMemory: null
+    });
+    const recoveredBeforeDispatch = await runNexoRepairOnce({
+      owner: afterCrashBeforeDispatch.owner,
+      store: afterCrashBeforeDispatch.store,
+      statePath: beforeDispatchStatePath,
+      expectedContinuityRevision: 1,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      },
+      savedAt: 7
+    });
+    assert.equal(recoveredBeforeDispatch.status, "settled_observed");
+    assert.equal(recoveredBeforeDispatch.dispatch.persisted, true);
+    assert.equal(recoveredBeforeDispatch.settlement.environmentStateRevision, 41);
+    assert.equal((await loadStateStrict(beforeDispatchStatePath)).stateRevision, 41);
+    assert.equal((await afterCrashBeforeDispatch.owner.loadCurrent()).snapshot.effectJournal[0].status, "settled_observed");
+  } finally {
+    await fs.rm(beforeDispatchRoot, { recursive: true, force: true });
+  }
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
