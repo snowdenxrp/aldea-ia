@@ -508,3 +508,21 @@ assert.equal(repairCanonicalResult.code,"NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRE
 assert.equal(repairCanonicalResult.dispatchAttempted,false);
 assert.equal(repairPrepareCalls,0);
 assert.equal(repairDispatchCalls,0);
+
+let uncertainPrepareDispatches=0;
+const uncertainPrepareOwner={
+  ...canonicalOwner,
+  recordPrepared:async()=>{throw new Error("prepare response lost");}
+};
+const uncertainPrepareAdapter={
+  ...canonicalAdapter,
+  execute:async()=>{uncertainPrepareDispatches++;return {status:"completed"};}
+};
+const uncertainPrepareResult=await executeNexoStepWithContinuityOwner({
+  missionId:"canonical-mission",stepId:"step-1",owner:uncertainPrepareOwner,adapter:uncertainPrepareAdapter
+});
+assert.equal(uncertainPrepareResult.status,"unknown");
+assert.equal(uncertainPrepareResult.code,"NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN");
+assert.equal(uncertainPrepareResult.dispatchAttempted,false);
+assert.equal(uncertainPrepareResult.preparedCommitted,"UNKNOWN");
+assert.equal(uncertainPrepareDispatches,0);
