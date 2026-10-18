@@ -25,6 +25,12 @@ Do not add a durable `goal_observed` transition, mark a mission completed, unblo
 
 Do not solve this by adding a generic transaction wrapper, an undocumented second revision, or a test-only callback that does not correspond to a real persistence seam.
 
+## Existing research to reuse — do not repeat
+
+- `NEXO_CONTINUITY/P112_PERSISTSTATE_FINAL_COMMIT_FEASIBILITY_AUDIT_V1_2026-10-07.md` and `NEXO_CONTINUITY/P112_PERSISTSTATE_PHYSICAL_BOUNDARY_CRASH_CUT_AUDIT_V2_2026-10-07.md` already analyze the canonical `persistState()` boundary and crash cuts.
+- `NEXO_CONTINUITY/P112_PROTECTED_OWNER_AGAINST_EXISTING_PERSISTENCE_PRIMITIVE_V1_2026-10-07.md` and `NEXO_CONTINUITY/P112_WRITER_DEPENDENCY_GRAPH_V1_2026-10-07.md` already inspect known canonical writers and explain why `stateRevision` is not a universal mutation fence.
+- These historical audits are context, not proof that a new goal-observation protocol is safe. Do not rerun them wholesale. The remaining narrow question is whether the specific proposed consumer needs a durable terminal goal record at all; if yes, whether its required writers can all participate in an existing domain boundary without a new unsupported abstraction.
+
 ## Architectural options to evaluate next
 
 1. Keep observation explicitly non-authoritative and ephemeral; no cross-store atomicity is claimed. This is the smallest valid choice if no consumer needs durable goal status.
