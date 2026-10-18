@@ -1,3 +1,15 @@
+## Segundo avance verificado — replay de lineage ligado al baseline PREPARED (2026-10-18)
+
+Se detectó y cerró otro hueco acotado: una lineage existente podía ser aceptada en replay con la misma identidad y resultado, pero con `operation.environmentStateRevision` distinto al baseline PREPARED. En `src/nexo/core/continuity-owner.mjs`, las reparaciones ahora vuelven a comprobar que exista una sola entrada de journal con baseline conocido y que coincida con la revisión que presenta el replay. Discrepancia: `blocked / NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH`; base ausente/ambigua: `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN`. No se escribe continuidad.
+
+Regresión añadida a `tests/nexo/continuity-migration.test.mjs`. El test-first falló en [39150495080](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150495080), al aceptar el comportamiento anterior. Tras el fix, CI SUCCESS sobre SHA `3bfbad268ac1a9b5ea9492e8db0a90b5972f22d9`: crash cuts [39150515026](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515026), STEP 4 [39150514997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150514997), STEP 5 [39150515080](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515080), bounded admission/restart [39150515015](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515015).
+
+El primer incremento relacionado está documentado inmediatamente después en este handoff y en `NEXO_NCS/STATUS.md`: el replay con el mismo identity pero distinto `result` ahora se bloquea como `NEXO_EXECUTION_RESULT_MISMATCH`. Ambos guards son estrechos; no equivalen al cutover de `src/nexo/runtime.js`, no crean completion, no agregan observaciones persistentes y no cambian los límites de aislamiento.
+
+**Continuar:** inspeccionar el siguiente gap de integración runtime, con test-first y CI sobre SHA exacto. No reabrir la decisión de `goalObservations`; Nexo y Lúmina siguen separados, no hay atomicidad cross-store, efectos protegidos STOP, STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Último avance verificado — replay contradictorio de execution lineage (2026-10-18)
 
 Se cerró una brecha concreta en `src/nexo/core/continuity-owner.mjs`: `recordExecutionLineage()` ya no devuelve `already_recorded` si la misma identidad de operación se repite con un `result` diferente. Ahora devuelve `blocked / NEXO_EXECUTION_RESULT_MISMATCH` sin mutar continuidad. Se añadieron/actualizaron regresiones en `tests/nexo/repair-owner-lifecycle.test.mjs` y `tests/nexo/continuity-migration.test.mjs`.
