@@ -1,3 +1,11 @@
+## M0 — Runtime validates continuity before execution and replan (2026-10-18)
+
+- `src/nexo/runtime.js` now calls the Nexo-owned continuity contract before executing a step with supplied memory and before persisted mission reconstruction/replan.
+- An orphan/mismatched prepared operation blocks execution before adapter dispatch and blocks successor replan; caller memory/mission remain unchanged.
+- Regression: `tests/nexo/runtime.test.mjs`; report [M0 runtime fail-closed invalid continuity](BUILD/NCS_M0_RUNTIME_FAIL_CLOSED_INVALID_CONTINUITY_2026-10-18.md).
+- Exact source+test head `e237469a4e17ea4687a7b5fa9a84d9005d7938b6` CI PASS: mission/restart [39097980956](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980956), STEP 4 [39097980918](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980918), STEP 5 [39097980960](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980960).
+- This closes a runtime normalization bypass, not the execution-owner gap. Nexo canonical persistence/authority ownership and independent external-effect verification remain absent. Prepared external effects UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Nexo-owned continuity contract separated from simulation host (2026-10-18)
 
 - Moved Nexo-specific continuity validation to `src/nexo/core/continuity-contract.mjs` (`assertNexoContinuityMemoryShape`). `scripts/simulate.mjs::loadStateStrict()` delegates to that core contract instead of owning Nexo semantics itself.
