@@ -9,7 +9,7 @@ import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-pr
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
 
-function legacyMemory(action = "repair_agent_state") {
+function legacyMemory(action = "repair_agent_state", { stepStatus = "planned", dependsOn = [] } = {}) {
   return {
     version: 4,
     runs: [],
@@ -24,8 +24,8 @@ function legacyMemory(action = "repair_agent_state") {
           id: "step-session",
           action,
           target: "alex",
-          status: "planned",
-          dependsOn: []
+          status: stepStatus,
+          dependsOn
         }]
       }],
       attempts: [],
@@ -87,6 +87,31 @@ try {
 
   const rawWorld = JSON.parse(await fs.readFile(statePath, "utf8"));
   assert.equal("nexoMemory" in rawWorld, false);
+
+  // Direct session callers cannot bypass canonical dependency readiness.
+  const dependencyRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-repair-session-dependency-"));
+  try {
+    const dependency = await openNexoContinuityOwner({
+      filePath: path.join(dependencyRoot, "nexo-continuity.json"),
+      legacyMemory: legacyMemory("repair_agent_state", { dependsOn: ["prerequisite-step"] })
+    });
+    const dependencyStatePath = path.join(dependencyRoot, "world-state.json");
+    await fs.writeFile(dependencyStatePath, JSON.stringify(environment(65)), "utf8");
+    const dependencyBlocked = await runNexoRepairSession({
+      owner: dependency.owner,
+      store: dependency.store,
+      statePath: dependencyStatePath,
+      missionId: "mission-session",
+      stepId: "step-session",
+      savedAt: 10
+    });
+    assert.equal(dependencyBlocked.status, "blocked");
+    assert.equal(dependencyBlocked.code, "NEXO_REPAIR_SESSION_DEPENDENCIES_UNMET");
+    assert.equal((await dependency.owner.loadCurrent()).snapshot.effectJournal.length, 0);
+    assert.equal((await loadStateStrict(dependencyStatePath)).stateRevision, 65);
+  } finally {
+    await fs.rm(dependencyRoot, { recursive: true, force: true });
+  }
 
   // Crash cut through the exact session API: a repair is persisted after
   // PREPARED, but settlement is interrupted. Reopening the canonical owner and
