@@ -278,3 +278,22 @@ assert.equal(staleMissionMemory.nexo.effectJournal.find(
 )?.status,"prepared");
 
 console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
+
+// Runtime boundary regression: an adapter's terminal label cannot create a
+// completed mission when its result lacks the two verification signals.
+const unverifiedCompletionMission=buildNexoMission({
+  reports:[{findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"unverified completion regression"}]}]
+});
+const unverifiedCompletionMemory=createLearningMemory();
+const unverifiedCompletion=await executeNexoStep({
+  mission:unverifiedCompletionMission,
+  stepId:"step-1",
+  memory:unverifiedCompletionMemory,
+  adapter:{execute:async()=>({status:"completed",verified:false,evidence:{verified:false,kind:"untrusted-result"}})}
+});
+assert.equal(unverifiedCompletion.status,"blocked");
+assert.equal(unverifiedCompletion.adapterResult.status,"blocked");
+assert.equal(unverifiedCompletion.adapterResult.code,"UNVERIFIED_COMPLETION_RESULT");
+assert.equal(unverifiedCompletion.mission.steps[0].status,"blocked");
+assert.equal(unverifiedCompletion.memory.nexo.attempts[0].status,"blocked");
+assert.equal(unverifiedCompletion.memory.nexo.executions[0].result.status,"blocked");
