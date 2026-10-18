@@ -334,3 +334,29 @@ La misión es M0. Todo lo que no desbloquee M0 debe esperar.
 Crear una prueba de proceso aislada que invoque la entrada real `scripts/assistants.mjs --nexo-repair-once` con fixtures/directorio temporal y nunca toque `world-state.json` real. Probar también el modo por defecto sin dispatch. La entrada actual usa rutas derivadas de `import.meta.url`; para testearla de forma segura, extraer solo el mínimo bootstrap/configurable de paths o introducir un proceso fixture sin cambiar la ruta productiva por defecto. No añadir abstracciones generales. Verificar que el resultado CLI refleja la revisión final del entorno después de la reparación. Solo después considerar cutover gradual de la ruta legacy.
 
 **Límites:** la integración está opt-in y acotada a tres reparaciones; no se ha ejecutado con datos reales. No es el runtime genérico completo, M0 no está cerrado, no hay atomicidad cross-store, `settled_observed` no significa completion ni causalidad, efectos protegidos STOP, Nexo y Lúmina separados, STEP 7 OPEN / STOP / UNKNOWN.
+
+
+---
+
+## Actualización — CLI real aislado con opt-in (2026-10-18)
+
+### Código
+- `scripts/assistants.mjs` acepta paths temporales por `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH` y `NEXO_CONTINUITY_PATH`. En ausencia de esas variables, conserva los paths normales del repositorio.
+- Nuevo `tests/nexo/assistants-runtime-cli.test.mjs` lanza el proceso Node real del entrypoint de asistentes, no solo una función importada, con dos fixtures en directorios temporales:
+  1. Sin flag: no se llama a la sesión; el journal permanece vacío.
+  2. Con `--nexo-repair-once`: la sesión selecciona una reparación de la misión canónica, persiste la reparación, el journal queda `settled_observed`, el entorno llega a revisión 2 y la salida CLI informa la revisión final. El estado guardado no incluye `nexoMemory`.
+- Se corrigió `src/assistants/debugger.js`: los hallazgos de posición/necesidad inválida incluyen `agent`, para que el plan derive un target de agente en vez de `null`.
+- Workflow ejecuta este proceso test además de las cuatro regresiones anteriores y chequeos sintácticos.
+
+### Evidencia
+- [CI 39143459529](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143459529) SUCCESS sobre el SHA exacto de código/pruebas `a1fea5791adbb81a8d6b6e82da9dad09accc7918`; todos los pasos del job `repair-crash-cuts` terminaron correctamente.
+- Primer intento falló por falta de continuidad heredada explícita en el fixture; segundo identificó que el script conserva exit code 1 por el diagnóstico inicial deliberadamente erróneo aunque la reparación pueda asentarse. Se corrigió el fixture y la aserción; no se eliminó el estado de error del reporte original. La sesión reporta su resultado por separado.
+- STATUS actualizado en commit [cb54fc0b5b1560e84ed29a60a86b2f4fb9c1291b](https://github.com/snowdenxrp/aldea-ia/commit/cb54fc0b5b1560e84ed29a60a86b2f4fb9c1291b).
+
+### Próxima frontera
+1. Diseñar el corte de la memoria operativa de runtime: ahora `scripts/assistants.mjs` crea una vista legacy local `nexoMemory` para construir misiones y luego registra la misión canónica en el owner. El nuevo puente solo ejecuta el paso canónico y no completa la migración de memoria/outcomes.
+2. Evitar doble escritura o tratar la memoria legacy como autoridad. Primero mapear las lecturas/escrituras necesarias en `src/nexo/runtime.js` y `scripts/assistants.mjs`; luego prueba de proceso de reinicio y CAS con una sola fuente canónica.
+3. No promover `settled_observed` a completion ni borrar el diagnóstico anterior; cualquier verificación de objetivo debe tener contrato explícito y evidencia persistida.
+4. Mantener el flag opt-in hasta que la ruta canónica de memoria/outcome y las pruebas de restart/replay pasen.
+
+**Límites:** CI usa solo fixtures temporales; no se tocó el `world-state.json` real. No es prueba de despliegue en dispositivo ni runtime genérico completo. M0 sigue abierto, reparación opt-in, efectos protegidos STOP, sin atomicidad cross-store y Nexo/Lúmina separados.
