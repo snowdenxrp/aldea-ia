@@ -1,3 +1,16 @@
+## M0 — prueba de proceso real del CLI aislado (2026-10-18)
+
+- Se habilitaron rutas de archivos configurables mediante `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH` y `NEXO_CONTINUITY_PATH`. Sin esas variables, los paths de producción permanecen iguales; la prueba usa exclusivamente un directorio temporal.
+- Se añadió `tests/nexo/assistants-runtime-cli.test.mjs`, que inicia el proceso real `scripts/assistants.mjs` dos veces con fixtures independientes: (a) modo por defecto: no aparece resultado de sesión y el journal no recibe efectos; (b) con `--nexo-repair-once`: se ejecuta una reparación canónica, el journal termina `settled_observed`, el entorno avanza de revisión 1 a 2 y el JSON reporta esa revisión final. También verifica que el estado persistido no incluya `nexoMemory`.
+- El fixture reveló una brecha de procedencia de destino: los hallazgos `AGENT_POSITION`/`INVALID_NEED` no incluían `agent`, por lo que el plan podía producir `target: null`. Se corrigió `src/assistants/debugger.js` para adjuntar el ID del agente al hallazgo; ahora el target del plan se origina en la observación y la sesión lo vuelve a leer de la misión persistida.
+- CI exacto: [run 39143459529](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143459529), SHA de código/pruebas `a1fea5791adbb81a8d6b6e82da9dad09accc7918`, SUCCESS. El job `repair-crash-cuts` pasó las regresiones de crash, migración, ciclo de vida, sesión, sintaxis y CLI aislado.
+- El primer intento de CLI test falló por fixture incompleto (faltaba continuidad heredada explícita); segundo intento identificó el código de salida de diagnóstico esperado por el hallazgo intencional. Se corrigió el fixture y la aserción para separar el estado diagnóstico inicial del resultado de la reparación. No se ocultó ni reinterpretó el fallo inicial.
+- **Límite:** prueba de proceso aislada con archivos temporales, no ejecución contra datos reales del usuario. La salida puede conservar exit code de diagnóstico `error` porque el reporte inicial se genera antes de reparar; el resultado de reparación se informa por separado y no borra la evidencia previa.
+- **Siguiente frontera:** estudiar un adaptador de reporte posterior a reparación solo si usa una observación independiente del estado persistido; no convertir `settled_observed` en causalidad ni en finalización de misión. Después, diseñar el cutover de continuidad de runtime sin doble escritura ni estado de Lúmina mezclado.
+- M0 incompleto; repair runtime sigue opt-in; efectos protegidos STOP; no atomicidad cross-store; Nexo y Lúmina separados; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — puente opt-in hacia la entrada real de asistentes (2026-10-18)
 
 - **Nuevo puente:** `scripts/nexo-runtime-session.mjs` exporta `runNexoRuntimeRepairSession()`. Selecciona una misión canónica sin ambigüedad y únicamente un paso `planned` de reparación cuyos prerequisitos estén `completed`; después delega en la sesión repair-only, que vuelve a leer la continuidad y deriva acción/target del snapshot.
