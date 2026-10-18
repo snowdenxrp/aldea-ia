@@ -166,23 +166,24 @@ También existe:
 
 ## 7. Siguiente tarea concreta
 
-**Continuar M0 hacia la migración real del runtime, pero primero cerrar el contrato de recuperación y su punto de integración con evidencia.**
+**La inspección dirigida y el mapa de integración ya están hechos; no repetirlos. El siguiente paso es definir y probar la entrada owner-backed real para la ruta repair-only antes de conectarla al runtime general.**
+
+Estado actual de la inspección (revalidado en HEAD antes de esta actualización):
+- `scripts/assistants.mjs` ya usa `owner.recordMission()` para persistir la misión en el store independiente; no ejecuta misiones.
+- `scripts/simulate.mjs` abre continuidad para migración legacy/diagnóstico, pero no ejecuta misiones.
+- `src/nexo/runtime.js` sigue usando `src/assistants/memory.js` para plan, execution, outcome y reconstruction; no hay caller productivo demostrado que ejecute `executeLuminaNexoStep()`.
+- `world-state.json` excluye `nexoMemory`; la regresión de reinicio ya verifica esa separación. No reintroducirla.
+- El owner tiene `recordMission`, `recordPrepared`, `recordExecutionLineage` y `recordOutcome`, pero el último no autentica evidencia externa y ninguno autoriza efectos protegidos. `settled_observed` no equivale a misión completada.
 
 Secuencia obligatoria:
 
-1. Verificar HEAD de `ncs-clean-architecture` y leer la versión actual de `src/nexo/runtime.js`, `src/assistants/memory.js`, `scripts/nexo-continuity.mjs`, `src/nexo/core/continuity-owner.mjs` y las pruebas de runtime existentes. No asumir que no hubo commits concurrentes.
-2. Hacer un mapa estrecho de llamadas reales en runtime donde hoy se crean/leen/escriben memorias de Nexo. Identificar cada write path relevante y quién lo consume. No repetir la auditoría general de todos los escritores de Lúmina; usar los hallazgos P112.
-3. Definir el mínimo contrato owner-backed para que el runtime pueda reconstruir y persistir continuidad de Nexo sin serializarla en el estado de Lúmina. Distinguir:
-   - misión/continuidad de Nexo;
-   - intento/obligación PREPARED;
-   - resultado/lineage;
-   - evidencia de estado de entorno;
-   - autoridad para efectos protegidos.
-4. Antes de cortar legacy, añadir pruebas end-to-end de migración: arranque con memoria legacy, creación/lectura canónica de Nexo, reinicio, conflicto, store corrupto/missing, rollback/fallback seguro y separación física entre datos Nexo/Lúmina. Fallback nunca debe convertir estado desconocido/corrupto en memoria vacía.
-5. No resolver aún efectos no idempotentes con observación de estado. Si no existe recibo durable/identidad de operación, mantener UNKNOWN/PREPARED y bloquear redispatch.
-6. Integrar el owner en runtime solo después de que el contrato y los crash cuts estén definidos y probados. Hacer un cambio pequeño y coherente, no una migración masiva. Preservar rollback hasta verificar.
-7. Correr CI sobre el head exacto; revisar jobs y logs, y actualizar `STATUS.md` + handoff con SHAs/run IDs. Registrar fallos reales, no ocultarlos.
-8. Después, continuar con la siguiente frontera que desbloquee M0. No considerar M0 completo hasta que Nexo use su propia continuidad operativa en el runtime con persistencia/reinicio/migración/rollback probados y sin mezclar Lúmina.
+1. Diseñar una sesión/entrada de ejecución **específica para las tres reparaciones convergentes existentes**; no una capa genérica de transacciones. Debe cargar misión canónica, mantener `storeRevision`, preparar antes del dispatch, usar el fence de `stateRevision`, liquidar solo por observación persistida y volver a verificar el objetivo.
+2. La recuperación de un PREPARED preexistente no debe redispatchar automáticamente. Si el estado persistido no prueba la invariante, dejar PREPARED/UNKNOWN y detenerse.
+3. Añadir primero pruebas con archivos temporales para: ejecución repair-only normal; crash/reinicio después de PREPARED; crash tras persistencia de entorno antes de settlement; revisión de entorno obsoleta; conflicto del store Nexo; invariant ausente/UNKNOWN; y comprobación de que el resultado nunca afirma causalidad ni misión completada.
+4. Ejecutar CI para ese test y revisar el log exacto. Solo después implementar el mínimo helper owner-backed y volver a ejecutar las pruebas. No conectarlo todavía a efectos no idempotentes ni a la ruta protegida general.
+5. Mantener la ruta legacy disponible hasta que una prueba end-to-end cubra arranque, misión canónica, dispatch elegible, recuperación, reinicio y rollback/fallback seguro. Corrupto/missing desconocido no se convierte en memoria vacía.
+6. Verificar HEAD y CI sobre el SHA exacto; actualizar `STATUS.md` y este handoff con commits y run IDs. No extrapolar PASS a un SHA sin run/job/log.
+7. Solo después decidir el punto mínimo de conexión a `runtime.js`. M0 no se declara completo hasta que el runtime de Nexo usa su continuidad propia con persistencia/reinicio/migración/rollback probados y sin mezclar Lúmina.
 
 ## 8. Criterios de “no avanzar todavía”
 
