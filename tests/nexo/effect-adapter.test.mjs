@@ -85,6 +85,50 @@ assert.equal(partialRetry.status,"blocked");
 assert.equal(partialRetry.code,"EFFECT_RECONCILIATION_REQUIRED");
 assert.equal(calls,2, "unresolved partial effect must not re-enter other handler");
 assert.equal(version,versionAfterPartial, "unresolved partial effect handler must not be redispatched");
+
+// A handler-reported failure with no observed revision change is still ambiguous.
+// The generic adapter has no operation-specific proof that the effect did not occur.
+const noMutationJournal=[];
+let noMutationCalls=0;
+const noMutationAdapter=createEffectAdapter({
+  getStateVersion:()=>0,
+  executionJournal:noMutationJournal,
+  handlers:{ambiguous_failure:async()=>{noMutationCalls++;return {status:"failed",code:"PROVIDER_REJECTED"};}}
+});
+const noMutationFailure=await noMutationAdapter.execute({
+  missionId:"m9",stepId:"s1",action:"ambiguous_failure",target:"alex",idempotencyKey:"m9:s1",
+  precondition:()=>true
+});
+assert.equal(noMutationFailure.status,"blocked");
+assert.equal(noMutationFailure.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(noMutationFailure.stateChanged,false);
+assert.equal(noMutationFailure.uncertainty,"effect_may_or_may_not_have_occurred");
+assert.equal(noMutationJournal[0].status,"prepared");
+assert.equal(noMutationJournal[0].result,undefined);
+const noMutationRetry=await noMutationAdapter.execute({
+  missionId:"m9",stepId:"s1",action:"ambiguous_failure",target:"alex",idempotencyKey:"m9:s1"
+});
+assert.equal(noMutationRetry.status,"blocked");
+assert.equal(noMutationRetry.code,"EFFECT_RECONCILIATION_REQUIRED");
+assert.equal(noMutationCalls,1,"ambiguous failure must not be redispatched");
+
+let invalidResultCalls=0;
+const invalidResultJournal=[];
+const invalidResultAdapter=createEffectAdapter({
+  getStateVersion:()=>0,
+  executionJournal:invalidResultJournal,
+  handlers:{invalid_result:async()=>{invalidResultCalls++;return {success:false};}}
+});
+const invalidResult=await invalidResultAdapter.execute({
+  missionId:"m10",stepId:"s1",action:"invalid_result",target:"alex",idempotencyKey:"m10:s1",
+  precondition:()=>true
+});
+assert.equal(invalidResult.status,"blocked");
+assert.equal(invalidResult.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(invalidResultJournal[0].status,"prepared");
+assert.equal(invalidResultJournal[0].result,undefined);
+assert.equal(invalidResultCalls,1);
+
 let exceptionCalls=0;
 const exceptionJournal=[];
 const exceptionAdapter=createEffectAdapter({executionJournal:exceptionJournal,handlers:{ambiguous_effect:async()=>{exceptionCalls++;throw new Error("provider timeout after send");}}});
