@@ -42,6 +42,21 @@ await assert.rejects(
   () => loadStateStrict(statePath),
   error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN"
 );
+await fs.writeFile(statePath, JSON.stringify({
+  version: 5, stateRevision: 0, day: 1, hour: 8,
+  world: structuredClone(defaultWorld), agents: createInitialAgents(),
+  nexoMemory: {
+    version: 4, runs: [], lessons: [], patterns: [],
+    nexo: {
+      missions: [], attempts: [], doNotRepeat: [], executions: [],
+      effectJournal: [{missionId:"orphan-mission",stepId:"step-1",action:"repair_agent_state",target:"alex",status:"prepared"}]
+    }
+  }
+}), "utf8");
+await assert.rejects(
+  () => loadStateStrict(statePath),
+  error => error?.code === "NEXO_RECOVERY_CONTEXT_MISSING"
+);
 await fs.rm(statePath);
 
 const mission = {
@@ -56,9 +71,19 @@ const mission = {
 };
 
 const effectJournal = [{ idempotencyKey: "prepared-restart:s1", missionId: "prepared-restart", stepId: "s1", action: "external_effect", target: "remote", status: "prepared", at: "2026-09-26T00:00:00.000Z" }];
+const preparedMission = {
+  version: 4, missionId: "prepared-restart", parentMissionId: null, replanReason: null,
+  objective: "external_effect", status: "planned",
+  steps: [{id:"s1",action:"external_effect",target:"remote",status:"planned",dependsOn:[]}],
+  generatedAt: "2026-09-26T00:00:00.000Z"
+};
+const baseMemory = recordNexoPlan(
+  recordNexoPlan(createLearningMemory({nexo:{effectJournal}}), preparedMission),
+  mission
+);
 
 const memory = recordNexoOutcome(
-  recordNexoPlan(createLearningMemory({nexo:{effectJournal}}), mission),
+  baseMemory,
   {
     missionId: mission.missionId,
     stepId: "step-1",
@@ -89,7 +114,8 @@ const raw = JSON.parse(await fs.readFile(statePath, "utf8"));
 assert.equal(raw.version, 5);
 assert.equal(raw.stateRevision, 0);
 assert.ok(raw.nexoMemory);
-assert.equal(raw.nexoMemory.nexo.missions[0].missionId, mission.missionId);
+assert.ok(raw.nexoMemory.nexo.missions.some(item => item.missionId === mission.missionId));
+assert.ok(raw.nexoMemory.nexo.missions.some(item => item.missionId === preparedMission.missionId));
 assert.equal(raw.nexoMemory.nexo.attempts[0].status, "completed");
 assert.equal(raw.nexoMemory.nexo.effectJournal[0].status, "prepared");
 assert.equal(raw.nexoMemory.nexo.effectJournal[0].idempotencyKey, "prepared-restart:s1");
