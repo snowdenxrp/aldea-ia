@@ -87,6 +87,22 @@ assert.equal(deadAgentSimulation.agents[0].position.x,0);
 assert.equal(deadAgentSimulation.agents[0].position.z,0);
 assert.equal(deadAgentSimulation.nexoEffectRevision,1);
 
+const unknownLifeSimulation={
+  agents:[{id:"unknown-life",position:{x:NaN,z:Infinity},needs:{hunger:50,thirst:50,energy:50,social:50,safety:50,health:100},inventory:[],skills:[]}],
+  world:{resources:{}}
+};
+const unknownLifeAdapter=createLuminaEffectAdapter(unknownLifeSimulation);
+const unknownLifeRepair=await unknownLifeAdapter.execute({
+  missionId:"m5",stepId:"s1",action:"repair_agent_state",target:"unknown-life",idempotencyKey:"m5:s1",
+  precondition:({stateVersion})=>stateVersion===0,
+  postcondition:()=>true
+});
+assert.equal(unknownLifeRepair.status,"blocked");
+assert.equal(unknownLifeRepair.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(unknownLifeSimulation.agents[0].alive,undefined,"unknown life state must not be inferred as alive");
+assert.equal(Number.isNaN(unknownLifeSimulation.agents[0].position.x),true,"unknown life state blocks before mutation");
+assert.equal(unknownLifeSimulation.nexoEffectRevision,0);
+
 const action=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s5",
   context:{action:{name:"drink",amount:2}},
