@@ -1,3 +1,12 @@
+## M0 — Nexo-owned operational continuity contract (2026-10-18)
+
+- Added [Nexo operational continuity boundary contract](BUILD/NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md), derived from the Maestra ownership/persistence matrix, A05/A06 linearization baseline, atomicity groups, P112 and AB104.150/.151.
+- It explicitly identifies the current coupling: Nexo mission data is nested in mixed `createLearningMemory().nexo` and serialized inside Lúmina's `world-state.json`. This is prototype persistence, not a solved Nexo-owned canonical store.
+- Contract separates operational continuity from authority and learning analytics; defines required load/conditional-commit/prepare/terminal/reconstruct semantics and crash-cut tests without selecting storage technology or inventing a global revision.
+- Latest runtime guard exact source+test head `e237469a4e17ea4687a7b5fa9a84d9005d7938b6` CI PASS: mission/restart [39097980956](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980956), STEP 4 [39097980918](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980918), STEP 5 [39097980960](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097980960).
+- The core continuity contract also rejects accessors and sparse arrays; its dedicated CI passed at `d15484c5d6a18c4240a8a63d13869334dfb408a4` [mission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097925313), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097925242), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097925289).
+- M0 remains incomplete: canonical Nexo store/owner and effect boundary not implemented; external prepared outcomes UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — Runtime validates continuity before execution and replan (2026-10-18)
 
 - `src/nexo/runtime.js` now calls the Nexo-owned continuity contract before executing a step with supplied memory and before persisted mission reconstruction/replan.
