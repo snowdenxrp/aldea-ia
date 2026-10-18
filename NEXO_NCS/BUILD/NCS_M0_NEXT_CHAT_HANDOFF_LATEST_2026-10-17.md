@@ -1,3 +1,13 @@
+## Latest implementation — standalone Nexo continuity store (2026-10-18)
+
+- Added `src/nexo/core/continuity-store.mjs` at commit `b339fb77258b9ced5f6b68adb75fc37fa12c3873`.
+- Added dedicated test `tests/nexo/continuity-store.test.mjs` at `cf0eddf864a4bcc714caaae7415bb3ca1cbb9b17`, plus appended equivalent store regressions to existing CI-covered `tests/nexo/continuity-contract.test.mjs` at `d0b0779392a154b2a7b221ee97d3a907c2e60ecd`.
+- Test scope: missing store fails closed; explicit initialization creates revision 0; reinitialization conflicts; two concurrent commits from same revision yield exactly one commit and one conflict; stored snapshot excludes Lúmina world/agents and learning analytics; unknown authority field is rejected; corrupt JSON fails closed.
+- The store is physically separate and validates the standalone continuity schema. Its local revision is concurrency only. It does not provide authority, anti-rollback, external-effect truth, fsync durability, or distributed filesystem guarantees.
+- **CI evidence pending** at this handoff point; do not mark tests PASS until an exact-head run is confirmed.
+- **Important:** legacy `createLearningMemory().nexo` and `world-state.json::nexoMemory` remain unchanged and runtime still uses them. Do not remove them, dual-write, or claim migration completed. Next work must verify CI and then design/implement a safe migration/integration cut with restart tests; keep prepared outcomes UNKNOWN and block redispatch/replan.
+- Architecture status remains: the Nexo store module exists, but the Nexo runtime does not yet use it as canonical owner. Nexo/Lúmina independence is not yet complete; M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## Latest M0 schema candidate — standalone Nexo continuity snapshot (2026-10-18)
 
 - New core module: `src/nexo/core/continuity-snapshot.mjs`.
