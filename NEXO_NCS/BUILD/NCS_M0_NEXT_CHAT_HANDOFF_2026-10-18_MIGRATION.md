@@ -1,3 +1,20 @@
+## Latest implementation — PREPARED repair environment revision binding (2026-10-18)
+
+- Code/test head: [`d0e38809992be291262153b527ec21a4793ac3d6`](https://github.com/snowdenxrp/aldea-ia/commit/d0e38809992be291262153b527ec21a4793ac3d6).
+- For `repair_agent_state`, `repair_agent_needs`, and `repair_resource_state`, `recordPrepared()` requires a valid non-negative safe integer `environmentStateRevision` and persists it in the PREPARED entry.
+- Existing PREPARED repair entries cannot be rebound to a different revision. Missing legacy binding remains UNKNOWN/unresolved. Tests cover missing binding and mismatched rebind.
+- Checkpoint: [NCS_M0_PREPARED_REPAIR_REVISION_BINDING_CHECKPOINT_2026-10-18.md](NCS_M0_PREPARED_REPAIR_REVISION_BINDING_CHECKPOINT_2026-10-18.md).
+- CI for exact code/test head: mission [39132557480](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132557480), outcome [39132557474](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132557474), semantic [39132557453](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132557453). Verify completed conclusions before describing them as PASS.
+- Boundary: this stores a caller-provided revision but does not derive it from strict-loaded state; it is not yet a dispatch fence and does not atomically coordinate the two files. No settlement/runtime cutover.
+
+### Next exact task
+
+Implement a Nexo-owned prepare path that loads the authoritative Lúmina snapshot through `loadStateStrict()`, derives `environmentStateRevision` from that snapshot, and commits PREPARED with the derived value. Then make repair dispatch conditional on the durable environment revision still matching the prepared revision, using the existing `persistState({expectedRevision, stateRevision})` concurrency boundary. Keep the distinction between durable `stateRevision` and in-memory `nexoEffectRevision`. Add stale-revision and crash-cut tests. No generic transaction wrapper, no synthetic receipt/queue, no caller-supplied `verified` boolean, no runtime cutover until proven.
+
+M0 incomplete; unresolved PREPARED UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest continuation — ambiguous repair targets + revision fence diagnostics (2026-10-18)
 
 - `comparePersistedRepairRevision()` classifies matching/stale/missing environment revision binding without inventing a historical revision. Code/test head for that change: [`db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f`](https://github.com/snowdenxrp/aldea-ia/commit/db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f); exact-head CI PASS: mission [39132287649](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287649), outcome [39132287652](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287652), semantic [39132287648](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287648).
