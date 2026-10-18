@@ -1,3 +1,9 @@
+## Semantic correction — PREPARED is not authorization (2026-10-18)
+
+- `continuity-owner.mjs` now returns `preparedCommitted: true` and `authorization: "NOT_EVALUATED"` after a durable PREPARED commit. It does not return a dispatch permission. Existing PREPARED still blocks repeat dispatch.
+- Exact source/test head `0450e8a81491940f81c7ab80d97f072596eafb84` passed mission/restart [39099253129](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099253129), STEP 4 [39099253116](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099253116), STEP 5 [39099253174](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099253174).
+- Required next: separate final admission from durable intent; define operation-specific local verification and commit ordering across the independent Nexo store and Lúmina environment state. Do not wire runtime so the new PREPARED checkpoint alone authorizes mutation. The owner remains unconnected to runtime; Nexo/Lúmina separation is not yet complete.
+
 ## Verified owner layer — mission admission and PREPARED checkpoint (2026-10-18)
 
 - Added `src/nexo/core/continuity-owner.mjs`, commit `773fdb612be248e235ccd3d8af156d7c84d82e38`.
