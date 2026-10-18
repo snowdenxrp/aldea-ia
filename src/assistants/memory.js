@@ -10,19 +10,35 @@ function retainEffectJournal(entries, limit = 200) {
   return journal;
 }
 
+function retainNexoMissions(entries, effectJournal, limit = 50) {
+  const missions = Array.isArray(entries) ? structuredClone(entries) : [];
+  const unresolvedMissionIds = new Set(effectJournal
+    .filter(entry => entry?.status === "prepared" && typeof entry.missionId === "string")
+    .map(entry => entry.missionId));
+  // Keep the causal plan for every unresolved prepared effect. The cap is soft:
+  // unresolved obligations and the mission context needed to interpret them survive.
+  while (missions.length > limit) {
+    const removableIndex = missions.findIndex(mission => !unresolvedMissionIds.has(mission?.missionId));
+    if (removableIndex < 0) break;
+    missions.splice(removableIndex, 1);
+  }
+  return missions;
+}
+
 export function createLearningMemory(raw = null) {
   const source = raw && typeof raw === "object" ? raw : {};
+  const effectJournal = retainEffectJournal(source.nexo?.effectJournal);
   return {
     version: 4,
     runs: Array.isArray(source.runs) ? source.runs.slice(-100) : [],
     lessons: Array.isArray(source.lessons) ? source.lessons.slice(-100) : [],
     patterns: Array.isArray(source.patterns) ? source.patterns.slice(-100) : [],
     nexo: {
-      missions: Array.isArray(source.nexo?.missions) ? source.nexo.missions.slice(-50) : [],
+      missions: retainNexoMissions(source.nexo?.missions, effectJournal),
       attempts: Array.isArray(source.nexo?.attempts) ? source.nexo.attempts.slice(-100) : [],
       doNotRepeat: Array.isArray(source.nexo?.doNotRepeat) ? source.nexo.doNotRepeat.slice(-100) : [],
       executions: Array.isArray(source.nexo?.executions) ? source.nexo.executions.slice(-200) : [],
-      effectJournal: retainEffectJournal(source.nexo?.effectJournal)
+      effectJournal
     }
   };
 }
@@ -79,7 +95,7 @@ export function recordNexoPlan(memory, mission) {
     ...(step.context !== undefined ? { context: structuredClone(step.context) } : {})
   }));
   next.nexo.missions.push({missionId:mission.missionId,version:mission.version,status:mission.status,objective:mission.objective,parentMissionId:mission.parentMissionId??null,replanReason:mission.replanReason??null,uncertainty:mission.uncertainty??null,evidenceCount:mission.evidenceCount??null,observedAgentCount:mission.observedAgentCount??null,admission:mission.admission?structuredClone(mission.admission):null,steps:persistedSteps,at:mission.generatedAt??new Date().toISOString()});
-  next.nexo.missions=next.nexo.missions.slice(-50);
+  next.nexo.missions=retainNexoMissions(next.nexo.missions,next.nexo.effectJournal);
   return next;
 }
 
