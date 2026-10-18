@@ -121,3 +121,11 @@ Siguiente tarea: auditar si hace falta persistir una observación de objetivo se
 [CI 39144434201](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144434201) terminó SUCCESS en SHA `ec36dd7df7cccf57f372d2cf252444ce28292e84`. La regresión adicional confirma que después de `goal_observed` la reconstrucción owner-backed mantiene misión/paso bloqueados con `NEXO_REPAIR_SETTLED_BY_OBSERVATION`, no marca completion ni permite redispatch. La verificación es read-only y no persiste una transición de misión.
 
 Continuar evaluando una observación durable separada y ligada a la revisión del entorno; nunca promover automáticamente `settled_observed` a completion. Exigir CAS/restart/replay e invalidación al desaparecer la invariante. HEAD de este CI es el SHA de código/pruebas indicado; los commits documentales posteriores no quedan cubiertos automáticamente.
+
+## Incremento verificado — replay fail-closed tras reinicio (2026-10-18)
+
+La prueba del proceso real de `scripts/assistants.mjs` ya no termina al primer settlement. Después de que el subproceso persiste una reparación y sale, el test vuelve a abrir el owner desde el mismo archivo de continuidad y solicita la misma misión. El replay queda bloqueado/falla cerrado y no altera la revisión del entorno ni añade otra obligación al journal.
+
+CI exacto: [39144863235](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144863235), SUCCESS en SHA `1cd8dfd914fad7848df51eca0f4e0f75cff22264`. El job `repair-crash-cuts` y el test CLI aislado terminaron SUCCESS.
+
+**Siguiente tarea:** continuar la migración del runtime genérico con un contrato mínimo de resultado/lineage que use el owner. No hacer reemplazo mecánico de imports. `recordExecutionLineage()` conserva la obligación PREPARED; `recordOutcome()` registra un claim y no autentica evidencia ni liquida el journal. Mantener legacy hasta que el contrato de resultados, recuperación y rollback esté cubierto por crash cuts. M0 sigue INCOMPLETO; Nexo/Lúmina separados; efectos protegidos STOP.
