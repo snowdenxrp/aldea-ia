@@ -172,4 +172,35 @@ try {
   await fs.rm(noPreparedDir, { recursive: true, force: true });
 }
 
-console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation and PREPARED admission guard OK.");
+const observedSettlementDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-observed-settlement-"));
+try {
+  const observedMemory = structuredClone(legacyMemory);
+  observedMemory.nexo.effectJournal[0] = {
+    ...observedMemory.nexo.effectJournal[0],
+    status: "settled_observed",
+    settlement: {
+      kind: "persisted-repair-invariant-observed",
+      source: "world-state.json",
+      observation: "desired_state_present",
+      environmentStateRevision: 11,
+      preparedEnvironmentStateRevision: 10,
+      causalAttribution: "not_claimed",
+      at: "2026-10-18T00:00:00.000Z"
+    }
+  };
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(observedSettlementDir, "nexo.json"),
+    legacyMemory: observedMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.status, "reconstructed");
+  assert.equal(reconstructed.mission.status, "blocked");
+  assert.equal(reconstructed.mission.objective, "verify_observed_repair_goal");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_REPAIR_SETTLED_BY_OBSERVATION");
+  assert.equal(reconstructed.mission.steps[0].blockReason.next, "verify_mission_goal_without_redispatch");
+} finally {
+  await fs.rm(observedSettlementDir, { recursive: true, force: true });
+}
+
+console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation, PREPARED admission guard and observed-settlement no-redispatch OK.");
