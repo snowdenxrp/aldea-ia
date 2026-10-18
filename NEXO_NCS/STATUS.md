@@ -473,3 +473,15 @@ Se amplió `tests/nexo/assistants-runtime-cli.test.mjs`: tras ejecutar el entryp
 **CI exacto:** [Nexo M0 — repair settlement crash cuts, run 39144863235](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144863235) — SUCCESS, SHA de código/pruebas `1cd8dfd914fad7848df51eca0f4e0f75cff22264`. El job `repair-crash-cuts` y el paso `Run isolated assistants runtime CLI regression` finalizaron SUCCESS.
 
 Límite: prueba aislada con archivos temporales y owner reabierto; no es cutover del runtime genérico `src/nexo/runtime.js`, no prueba atomicidad cross-store ni efectos protegidos. M0 continúa INCOMPLETO. Siguiente frontera: definir el contrato mínimo de resultados/lineage owner-backed antes de migrar las escrituras legacy; `recordExecutionLineage()` no liquida PREPARED y `recordOutcome()` no puede usar etiquetas `verified` del caller como autenticación.
+
+## M0 — repair dispatch lineage persisted before observed settlement (2026-10-18)
+
+The repair-only entrypoint now records the adapter/dispatch result through `owner.recordExecutionLineage()` after the dispatch reports completion and before it attempts independent persisted-state settlement. The lineage binds to the original PREPARED operation identity and baseline environment revision; the result records whether the environment write occurred and the resulting revision. The journal remains `prepared` during the lineage commit; only the separate persisted-invariant observer may transition it to `settled_observed`.
+
+The path fails closed if the lineage API/commit cannot be confirmed after environment persistence. A later invocation can re-read the durable environment and recover from the still-PREPARED journal without redispatching when the invariant is present. This does not make the two files atomic and does not authenticate causal attribution.
+
+Regression coverage now asserts a normal repair creates one execution-lineage record and a separate settlement commit; an already-satisfied no-op records lineage without fabricating an environment revision increment. Session integration asserts three distinct Nexo store revisions for PREPARED, lineage, and settlement.
+
+**Exact CI:** [Nexo M0 — repair settlement crash cuts, run 39145222433](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145222433) — SUCCESS on code/test SHA `e50f47d8c1717eb8d4d0f56caa508e3b50dc4c41`. Job `repair-crash-cuts` passed, including owner migration, repair lifecycle, canonical session, CLI restart/replay, and mission-goal verification regressions.
+
+Limit: this is still repair-only. Generic `src/nexo/runtime.js` remains legacy-memory-backed; non-repair/protected actions are not routed through this path. M0 incomplete; Nexo/Lúmina separate; unresolved PREPARED UNKNOWN; protected effects STOP.
