@@ -196,6 +196,77 @@ try {
   } finally {
     await fs.rm(staleRoot, { recursive: true, force: true });
   }
+
+  // Crash-cut recovery: environment write succeeds, but the process stops
+  // before settlement. A fresh owner instance must observe persisted state,
+  // settle the existing PREPARED obligation, and never redispatch the effect.
+  const recoveryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-crash-recovery-"));
+  try {
+    const recoveryNexoPath = path.join(recoveryRoot, "nexo-continuity.json");
+    const recoveryStatePath = path.join(recoveryRoot, "world-state.json");
+    const recoveryInitial = await openNexoContinuityOwner({
+      filePath: recoveryNexoPath,
+      legacyMemory: legacyMemory()
+    });
+    await fs.writeFile(recoveryStatePath, JSON.stringify(environment(30)), "utf8");
+    const recoveryPrepared = await prepareRepairAgainstPersistedState({
+      owner: recoveryInitial.owner,
+      statePath: recoveryStatePath,
+      expectedContinuityRevision: 0,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      }
+    });
+    assert.equal(recoveryPrepared.status, "committed");
+    const recoveryDispatch = await dispatchPreparedRepair({
+      owner: recoveryInitial.owner,
+      statePath: recoveryStatePath,
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      savedAt: 5
+    });
+    assert.equal(recoveryDispatch.status, "completed");
+    assert.equal(recoveryDispatch.persisted, true);
+    assert.equal(recoveryDispatch.environmentStateRevision, 31);
+
+    // Simulate process restart: discard the original owner and reopen from disk.
+    const recovered = await openNexoContinuityOwner({
+      filePath: recoveryNexoPath,
+      legacyMemory: null
+    });
+    const beforeRecoverySettlement = await recovered.owner.loadCurrent();
+    assert.equal(beforeRecoverySettlement.storeRevision, 1);
+    assert.equal(beforeRecoverySettlement.snapshot.effectJournal[0].status, "prepared");
+    const recoverySettlement = await settlePreparedRepairFromPersistedState({
+      store: recovered.store,
+      statePath: recoveryStatePath,
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      expectedContinuityRevision: 1
+    });
+    assert.equal(recoverySettlement.status, "settled_observed");
+    assert.equal(recoverySettlement.environmentStateRevision, 31);
+    assert.equal((await loadStateStrict(recoveryStatePath)).stateRevision, 31);
+    const afterRecoverySettlement = await recovered.owner.loadCurrent();
+    assert.equal(afterRecoverySettlement.storeRevision, 2);
+    assert.equal(afterRecoverySettlement.snapshot.effectJournal[0].status, "settled_observed");
+
+    // Once recovery settles the observed invariant, a replay must not dispatch.
+    const recoveryReplay = await dispatchPreparedRepair({
+      owner: recovered.owner,
+      statePath: recoveryStatePath,
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      savedAt: 6
+    });
+    assert.equal(recoveryReplay.status, "blocked");
+    assert.equal(recoveryReplay.code, "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN");
+    assert.equal(recoveryReplay.persisted, false);
+    assert.equal((await loadStateStrict(recoveryStatePath)).stateRevision, 31);
+  } finally {
+    await fs.rm(recoveryRoot, { recursive: true, force: true });
+  }
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
