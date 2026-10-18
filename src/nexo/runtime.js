@@ -153,7 +153,19 @@ export async function executeNexoStepWithContinuityOwner({
     return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", dispatchAttempted: false };
   }
 
-  const prepared = await owner.recordPrepared({ expectedRevision: current.storeRevision, operation });
+  let prepared;
+  try {
+    prepared = await owner.recordPrepared({ expectedRevision: current.storeRevision, operation });
+  } catch (error) {
+    // The owner may have committed PREPARED before its response was lost.
+    // Never dispatch without an explicit committed confirmation.
+    return {
+      status: "unknown",
+      code: error?.code ?? "NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN",
+      dispatchAttempted: false,
+      preparedCommitted: "UNKNOWN"
+    };
+  }
   if (prepared?.status !== "committed" || prepared.preparedCommitted !== true) {
     return {
       status: "blocked",
