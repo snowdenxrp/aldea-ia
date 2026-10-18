@@ -24,6 +24,10 @@ export function replanPersistedNexoMission({memory,previousMissionId,simulation=
     && memory.nexo.effectJournal.some(entry=>entry?.missionId===previousMissionId&&entry?.status==="prepared");
   if(unresolvedPreparedEffect)
     return {mission:null,memory,status:"not_replanned",code:"EFFECT_RECONCILIATION_REQUIRED"};
+  const observedSettlementNeedsGoalVerification=Array.isArray(memory?.nexo?.effectJournal)
+    && memory.nexo.effectJournal.some(entry=>entry?.missionId===previousMissionId&&entry?.status==="settled_observed");
+  if(observedSettlementNeedsGoalVerification)
+    return {mission:null,memory,status:"not_replanned",code:"NEXO_REPAIR_GOAL_VERIFICATION_REQUIRED"};
   const mission=replanNexoMission({previousMission,simulation,reports,memory,reason});
   if(!mission) return {mission:null,memory,status:"not_replanned"};
   const nextMemory=recordNexoPlan(memory,mission);
