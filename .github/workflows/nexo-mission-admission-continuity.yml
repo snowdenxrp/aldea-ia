@@ -11,6 +11,8 @@ on:
       - 'src/nexo/effect-adapter.js'
       - 'tests/nexo/effect-adapter.test.mjs'
       - 'tests/nexo/runtime.test.mjs'
+      - 'scripts/simulate.mjs'
+      - 'tests/nexo/simulation-restart-persistence.test.mjs'
       - '.github/workflows/nexo-mission-admission-continuity.yml'
   workflow_dispatch:
 
@@ -26,3 +28,4 @@ jobs:
       - run: node tests/nexo/runtime.test.mjs
       - run: node tests/nexo/effect-adapter.test.mjs
       - run: node tests/nexo/restart-reconstruction.test.mjs
+      - run: node tests/nexo/simulation-restart-persistence.test.mjs
