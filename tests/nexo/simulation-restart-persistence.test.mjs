@@ -446,10 +446,13 @@ assert.equal(extraJournalGoal.code, "NEXO_REPAIR_MISSION_JOURNAL_COVERAGE_MISMAT
 // actual current environment and refuse the goal if its invariant has regressed.
 const changedGoalDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-goal-regression-"));
 const changedGoalPath = pathToFileURL(path.join(changedGoalDir, "world-state.json"));
-const changedGoalEnvironment = applyState(await loadStateStrict(repairStatePath));
+const changedGoalSource = await loadStateStrict(repairStatePath);
+const changedGoalEnvironment = applyState(changedGoalSource);
+// applyState() builds an in-memory simulation and intentionally does not carry
+// the persisted snapshot's stateRevision; derive the next revision from source.
 changedGoalEnvironment.agents[0].position.x = "not-normalized";
 await persistState(changedGoalPath, changedGoalEnvironment, 8000, {
-  stateRevision: changedGoalEnvironment.stateRevision + 1
+  stateRevision: changedGoalSource.stateRevision + 1
 });
 const regressedMissionGoal = await verifyRepairMissionGoalFromPersistedState({
   store: restartedRepairContinuity.store,
