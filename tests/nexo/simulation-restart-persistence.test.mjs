@@ -6,8 +6,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { world as defaultWorld } from "../../src/world.js";
 import { createInitialAgents } from "../../src/agents.js";
-import { createLearningMemory, recordNexoPlan, recordNexoOutcome, reconstructNexoMission } from "../../src/assistants/memory.js";
 import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
+import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
 const statePath = pathToFileURL(path.join(dir, "world-state.json"));
@@ -33,66 +33,34 @@ await assert.rejects(
   () => loadStateStrict(statePath),
   error => error?.code === "NEXO_STATE_SCHEMA_INVALID"
 );
-await fs.writeFile(statePath, JSON.stringify({
-  version: 5, stateRevision: 0, day: 1, hour: 8,
-  world: structuredClone(defaultWorld), agents: createInitialAgents(),
-  nexoMemory: { version: 4, nexo: { missions: [] } }
-}), "utf8");
+
+const malformedLegacyPath = path.join(dir, "malformed-nexo-continuity.json");
 await assert.rejects(
-  () => loadStateStrict(statePath),
-  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN"
+  () => openNexoContinuityOwner({
+    filePath: malformedLegacyPath,
+    legacyMemory: { version: 4, nexo: { missions: [] } }
+  }),
+  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN",
+  "legacy Nexo data must be validated by Nexo migration, not by Lúmina's state loader"
 );
-await fs.writeFile(statePath, JSON.stringify({
-  version: 5, stateRevision: 0, day: 1, hour: 8,
-  world: structuredClone(defaultWorld), agents: createInitialAgents(),
-  nexoMemory: {
-    version: 4, runs: [], lessons: [], patterns: [],
-    nexo: {
-      missions: [], attempts: [], doNotRepeat: [], executions: [],
-      effectJournal: [{missionId:"orphan-mission",stepId:"step-1",action:"repair_agent_state",target:"alex",status:"prepared"}]
+
+const orphanLegacyPath = path.join(dir, "orphan-nexo-continuity.json");
+await assert.rejects(
+  () => openNexoContinuityOwner({
+    filePath: orphanLegacyPath,
+    legacyMemory: {
+      version: 4, runs: [], lessons: [], patterns: [],
+      nexo: {
+        missions: [], attempts: [], doNotRepeat: [], executions: [],
+        effectJournal: [{ idempotencyKey: "orphan:step-1", missionId: "orphan", stepId: "step-1", action: "repair_agent_state", target: "alex", status: "prepared" }]
+      }
     }
-  }
-}), "utf8");
-await assert.rejects(
-  () => loadStateStrict(statePath),
-  error => error?.code === "NEXO_RECOVERY_CONTEXT_MISSING"
+  }),
+  error => error?.code === "NEXO_RECOVERY_CONTEXT_MISSING",
+  "migration must preserve the fail-closed prepared-context rule"
 );
+
 await fs.rm(statePath);
-
-const mission = {
-  version: 4,
-  missionId: "persisted-restart-mission",
-  parentMissionId: null,
-  replanReason: null,
-  objective: "repair_agent_state",
-  status: "planned",
-  steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }],
-  generatedAt: "2026-09-26T00:00:00.000Z"
-};
-
-const effectJournal = [{ idempotencyKey: "prepared-restart:s1", missionId: "prepared-restart", stepId: "s1", action: "external_effect", target: "remote", status: "prepared", at: "2026-09-26T00:00:00.000Z" }];
-const preparedMission = {
-  version: 4, missionId: "prepared-restart", parentMissionId: null, replanReason: null,
-  objective: "external_effect", status: "planned",
-  steps: [{id:"s1",action:"external_effect",target:"remote",status:"planned",dependsOn:[]}],
-  generatedAt: "2026-09-26T00:00:00.000Z"
-};
-const baseMemory = recordNexoPlan(
-  recordNexoPlan(createLearningMemory({nexo:{effectJournal}}), preparedMission),
-  mission
-);
-
-const memory = recordNexoOutcome(
-  baseMemory,
-  {
-    missionId: mission.missionId,
-    stepId: "step-1",
-    action: "repair_agent_state",
-    target: "alex",
-    status: "completed",
-    evidence: { verified: true, kind: "agent-state", agentId: "alex" }
-  }
-);
 
 const simulation = applyState({
   version: 5,
@@ -101,8 +69,7 @@ const simulation = applyState({
   hour: 12,
   world: structuredClone(defaultWorld),
   agents: createInitialAgents(),
-  events: [{ id: "restart-event", type: "checkpoint", description: "before restart", participants: [] }],
-  nexoMemory: memory
+  events: [{ id: "restart-event", type: "checkpoint", description: "before restart", participants: [] }]
 });
 await persistState(statePath, simulation, 1234567890);
 
@@ -113,22 +80,14 @@ assert.equal(strictLoadedState.version, 5);
 const raw = JSON.parse(await fs.readFile(statePath, "utf8"));
 assert.equal(raw.version, 5);
 assert.equal(raw.stateRevision, 0);
-assert.ok(raw.nexoMemory);
-assert.ok(raw.nexoMemory.nexo.missions.some(item => item.missionId === mission.missionId));
-assert.ok(raw.nexoMemory.nexo.missions.some(item => item.missionId === preparedMission.missionId));
-assert.equal(raw.nexoMemory.nexo.attempts[0].status, "completed");
-assert.equal(raw.nexoMemory.nexo.effectJournal[0].status, "prepared");
-assert.equal(raw.nexoMemory.nexo.effectJournal[0].idempotencyKey, "prepared-restart:s1");
+assert.equal("nexoMemory" in raw, false, "Lúmina's canonical state file must not serialize Nexo operational continuity");
 
 const restartedState = await loadState(statePath);
 const restarted = applyState(restartedState);
-const reconstructed = reconstructNexoMission(restarted.nexoMemory, mission.missionId);
 assert.equal(restarted.day, 7);
 assert.equal(restarted.hour, 12);
 assert.equal(restarted.events[0].id, "restart-event");
-assert.equal(reconstructed.steps[0].status, "completed");
-assert.equal(reconstructed.status, "awaiting_verification");
-assert.equal(restarted.nexoMemory.nexo.effectJournal[0].status, "prepared");
+assert.equal("nexoMemory" in restarted, false, "Lúmina simulation must not own Nexo operational memory");
 
 const staleSimulation = applyState(restartedState);
 staleSimulation.hour = 13;
