@@ -13,7 +13,7 @@ Status: IMPLEMENTED; EXACT-HEAD CI PASS
 
 - Added `retainNexoMissions()`.
 - It identifies mission IDs referenced by `prepared` effect-journal entries and protects those mission plans from eviction.
-- It prunes non-protected mission plans first and treats the 50-plan cap as soft when unresolved operations require more context.
+- It prunes non-protected mission plans first and treats the 50-plan cap as soft when unresolved operations require more context. Attempts and execution records are also retained for every mission plan still in the retained set, because those records reconstruct step outcomes after restart.
 - `createLearningMemory()` now constructs the retained effect journal first, then applies the same retention rule to mission plans.
 - `recordNexoPlan()` uses the same retention rule; it no longer unconditionally slices the mission array.
 - No new operation IDs, queues, retries, tombstones, or authority tokens were introduced.
