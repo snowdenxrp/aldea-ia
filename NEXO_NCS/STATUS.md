@@ -1,3 +1,13 @@
+## M0 — owner-backed repair lifecycle integration regression (2026-10-18)
+
+- Added `tests/nexo/repair-owner-lifecycle.test.mjs` to exercise the actual existing owner/store + repair helpers in one flow: strict persisted baseline revision 10 → durable PREPARED → conditional repair persistence at revision 11 → separate `settled_observed` commit → read-only `goal_observed`.
+- Assertions require that PREPARED is durable before dispatch, the Nexo store revision advances only at the expected commits (0→1→2), the verifier does not mutate continuity, the result does not claim mission completion or causal attribution, and `world-state.json` excludes `nexoMemory`.
+- CI workflow updated to run the new regression after existing repair crash-cut and continuity migration tests.
+- Evidence: test commit `eddf41c542b252329e45304245728a7bdb5d6800`; workflow commit `d3bce60a5d53df8ffa5caf1fb987fccfe0116620`; focused CI run [39140959531](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140959531) was **in progress when this entry was authored**. Do not mark PASS until the run and its job steps complete successfully.
+- This test is an integration regression for the existing repair-only helpers, not the production `runtime.js` owner cutover. No non-repair/protected effects are authorized. M0 remains incomplete; ambiguous PREPARED stays UNKNOWN; Nexo/Lúmina stores remain separate.
+
+---
+
 ## M0 — Runtime integration seam revalidated (2026-10-18)
 
 - Reused existing P112/AB104 findings and checked the current source seam without reopening the historical audit.
