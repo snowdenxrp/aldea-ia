@@ -1,3 +1,14 @@
+## Latest update — environment crash cuts mapped (2026-10-18)
+
+- Read [environment reconciliation/crash-cut findings](NCS_M0_ENVIRONMENT_RECONCILIATION_CRASH_CUTS_2026-10-18.md) after the fail-closed handler fix.
+- Key source finding: the effect adapter mutates an in-memory Lúmina simulation and uses in-memory `nexoEffectRevision`; `scripts/simulate.mjs` persists `world-state.json` with a separate `stateRevision`. `scripts/assistants.mjs` commits Nexo mission admission and Lúmina state separately, and does not dispatch `executeLuminaNexoStep()`. This is not one connected durable effect protocol.
+- Therefore, do not implement a universal verifier or terminal settlement yet. Current persisted state cannot universally attribute an observed change to a specific PREPARED operation; action semantics differ, and some replay paths are non-idempotent (e.g. shelter/farm creation).
+- Next exact task: classify action handlers by existing durable evidence and idempotency/reconciliation properties; then specify the minimum operation-specific read/settlement contract and crash-cut tests. Any action lacking reliable operation-specific durable evidence remains UNKNOWN. Do not add synthetic queues, IDs, tombstones, global revision, generic transaction wrapper, or caller-asserted verification.
+- Exact-head CI PASS for fail-closed code/tests remains [39105986623](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986623), [39105986616](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986616), [39105986625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986625), all on `431978730f3b2be300fa51d3a35938ef6702e607`.
+- M0 incomplete; runtime still uses legacy memory for outcomes; no real-device migration or execution. PREPARED UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest update — ambiguous handler failures stay unresolved (2026-10-18)
 
 - See [focused checkpoint](NCS_M0_AMBIGUOUS_HANDLER_FAILURE_FAIL_CLOSED_CHECKPOINT_2026-10-18.md).
