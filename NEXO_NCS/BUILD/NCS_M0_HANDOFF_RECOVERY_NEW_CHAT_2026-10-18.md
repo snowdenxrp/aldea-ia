@@ -201,3 +201,10 @@ Se inspeccionaron los archivos vigentes de la rama, no solo documentos históric
 Esto significa que todavía no hay en el repositorio una acción genérica no-repair que sea nativa de Nexo y tenga una pareja demostrada de writer persistente + reader independiente post-restart. Por tanto, no es correcto inventar el siguiente verifier usando Lúmina ni tratar la simulación como memoria operativa de Nexo.
 
 **Siguiente tarea de arquitectura:** definir una primera capacidad nativa de Nexo (fuera del dominio de simulación Lúmina) con un estado persistido canónico explícito; identificar el único writer responsable, el lector de recuperación y la invariante que puede observarse después de reinicio. Hacerlo como una vertical concreta, no como un framework genérico. Después, conectar el verificador específico al owner y añadir crash-cut tests. Hasta que esa vertical exista, las acciones genéricas deben seguir bloqueadas antes de PREPARED/dispatch; el runtime canónico no pasa a default.
+
+
+## 13. Nueva regresión del runtime canónico y evidencia CI (2026-10-18)
+
+- Commit `2088417a482fefc0128f024c8c63fa212e87d64f` agrega una regresión: si el owner indica reconciliación disponible pero el adaptador no, el runtime bloquea antes de guardar PREPARED y no despacha. Así se prueba que ambos extremos anuncien el contrato, sin tratar la declaración de uno como sustituto del otro.
+- CI: [run 39172525158](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525158) SUCCESS; `runtime.test.mjs`, `effect-adapter.test.mjs`, restart reconstruction y suites de store/contrato/migración SUCCESS. [STEP 4 run 39172525106](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525106) y [STEP 5 run 39172525094](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525094) también SUCCESS.
+- No declara M0 completo. El siguiente paso es arquitectónico: elegir y diseñar una capacidad nativa de Nexo con un estado canónico persistido, writer y reader independiente tras reinicio; solo entonces implementar el verificador por acción. No añadir más preflights como sustituto de esa vertical y no reutilizar Lúmina.
