@@ -24,6 +24,12 @@ export function replanNexoMission({previousMission,simulation=null,reports=[],me
   if(!previousMission?.missionId||!["needs_replan","blocked"].includes(previousMission.status)) return null;
   const terminalStep=previousMission.steps?.find(step=>step.status==="failed")
     ?? previousMission.steps?.find(step=>step.status==="blocked");
+  // UNKNOWN means the external effect may already have happened. A successor
+  // mission must not turn that uncertainty into a fresh operation identity.
+  const unresolvedEffect=previousMission.lastEvidence?.code==="EFFECT_OUTCOME_UNKNOWN"
+    || previousMission.steps?.some(step=>step?.result?.code==="EFFECT_OUTCOME_UNKNOWN"
+      || step?.failure?.code==="EFFECT_OUTCOME_UNKNOWN");
+  if(unresolvedEffect) return null;
   const candidates=[reason,terminalStep?.failure?.code,
     typeof terminalStep?.blockReason==="string"?terminalStep.blockReason:null,
     previousMission.lastEvidence?.code];

@@ -2,7 +2,7 @@
 
 Date: 2026-10-18  
 Branch: `ncs-clean-architecture`  
-Status: **FUNCTIONAL GAP CONFIRMED BY SOURCE TRACE / IMPLEMENTATION STOP**
+Status: **FUNCTIONAL GAP CONFIRMED / PARTIAL CONTAINMENT IMPLEMENTED / RECOVERY STILL OPEN**
 
 ## Finding
 
@@ -47,3 +47,10 @@ Until that contract is implemented and regression-tested, mark this seam **STOP 
 - Existing focused CI PASS on source head `0a964abdc0a8f39465e484fd8f531a6a3d079caf`: runtime continuity [39085110783](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110783), STEP 4 [39085110788](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110788), STEP 5 [39085110864](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110864).
 - Those runs do **not** prove this cross-mission unresolved-effect seam is safe; no new test was run for this specific path in this increment.
 - No runtime code changed in this report-only increment.
+
+
+## Partial containment implemented (2026-10-18)
+
+A narrow guard now prevents `replanNexoMission()` from creating a successor when the prior mission's last evidence or any step result/failure carries `EFFECT_OUTCOME_UNKNOWN`, even if the caller supplies an explicit replan reason. A regression was added to `tests/nexo/orchestrator.test.mjs` for this bypass attempt.
+
+This does not reconcile the prepared journal, does not establish durable operation identity across restart, and does not prevent all possible callers from constructing a mission through other APIs. The recovery contract remains OPEN / STOP / UNKNOWN; run the focused CI before treating this mitigation as verified.

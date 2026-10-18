@@ -76,6 +76,20 @@ assert.equal(lineageMemory.nexo.attempts[0].evidence.code, "MESH_REPAIR_FAILED")
 assert.equal(replanNexoMission({previousMission:{...failed,status:"planned"}}), null);
 assert.equal(replanNexoMission({previousMission:{missionId:failed.missionId,status:"blocked",steps:[{status:"blocked"}]}}), null);
 
+// An UNKNOWN external-effect outcome cannot be bypassed with a caller-supplied
+// replan reason or a new mission ID; reconciliation must resolve it first.
+const unknownEffectMission={
+  missionId:"unknown-effect-mission", status:"blocked",
+  lastEvidence:{verified:false,kind:"effect-result",code:"EFFECT_OUTCOME_UNKNOWN"},
+  steps:[{id:"step-1",action:"execute_lumina_action",status:"blocked",
+    result:{verified:false,kind:"effect-result",code:"EFFECT_OUTCOME_UNKNOWN"}}]
+};
+assert.equal(replanNexoMission({
+  previousMission:unknownEffectMission,
+  reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:1}}]}],
+  reason:"caller_requests_fresh_operation"
+}),null,"UNKNOWN must not be bypassed by replan reason");
+
 
 const boundedAction=buildNexoMission({
   reports:[{assistant:"BehaviorAgent",findings:[{

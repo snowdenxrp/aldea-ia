@@ -729,3 +729,10 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - Report: `NEXO_NCS/BUILD/NCS_M0_UNKNOWN_EFFECT_RECONCILIATION_RUNTIME_GAP_2026-10-18.md`.
 - This is not a claim of a live exploit or dynamic reproduction. Prior focused CI validated existing runtime tests, not this cross-mission seam.
 - Next: use existing PG-009 recovery/restart/fencing decisions; specify operation identity, reconciliation outcomes and the conditions for admitting a successor operation, then add an integrated regression. Do not invent a new queue/retry/lock or treat UNKNOWN as failure. Protected effects remain STOP; STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## M0 follow-up — UNKNOWN cannot be bypassed by orchestrator replan (2026-10-18)
+
+- Implemented a narrow guard in `replanNexoMission()`: prior mission evidence/step result/failure containing `EFFECT_OUTCOME_UNKNOWN` blocks successor-plan creation even when a caller supplies an explicit reason.
+- Added a regression in `tests/nexo/orchestrator.test.mjs` for this bypass attempt.
+- This is not end-to-end reconciliation. The runtime still needs a defined path to reconcile the original prepared operation after restart and to classify completed/absent/still-unknown outcomes. Do not mark the whole gap closed.

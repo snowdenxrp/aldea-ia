@@ -263,3 +263,9 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - This is a source-path finding, not a dynamic exploit claim. Existing CI does not verify this cross-mission seam.
 - STOP code changes until operation identity and restart reconciliation are defined against the existing PG-009 research. Do not add guessed retries/queues/locks or activate protected effects. STEP 7 remains OPEN / STOP / UNKNOWN.
 
+## M0 — UNKNOWN replan admission guard (2026-10-18)
+
+- Added a narrow orchestrator guard: if the prior mission contains `EFFECT_OUTCOME_UNKNOWN` in its last evidence or step result/failure, `replanNexoMission()` returns `null`, even if the caller supplies a new replan reason.
+- Regression added to `tests/nexo/orchestrator.test.mjs` to prevent a caller-requested fresh mission from bypassing UNKNOWN.
+- This is a containment guard only. It does not provide reconciliation or prove operation identity across restart; the integrated recovery seam remains OPEN / STOP / UNKNOWN.
+
