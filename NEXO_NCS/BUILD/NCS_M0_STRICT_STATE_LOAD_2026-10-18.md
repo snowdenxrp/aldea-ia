@@ -1,7 +1,7 @@
 # NCS M0 — Strict persisted-state load for safety-sensitive recovery
 
 Date: 2026-10-18
-Status: IMPLEMENTED; EXACT-HEAD CI PENDING
+Status: IMPLEMENTED; EXACT-HEAD CI PASS
 
 ## Problem
 
@@ -18,7 +18,8 @@ Added `loadStateStrict(statePath)` alongside the existing `loadState()`:
 - `NEXO_STATE_INVALID_JSON` for malformed JSON.
 - `NEXO_STATE_SCHEMA_INVALID` for an unsupported top-level schema/shape.
 - `NEXO_STATE_REVISION_UNKNOWN` if the persisted revision is missing, non-integer, unsafe or negative.
-- `NEXO_MEMORY_SCHEMA_UNKNOWN` if non-null `nexoMemory` does not contain the required mission/attempt/do-not-repeat/execution/effect-journal collections. This prevents malformed recovery memory from being normalized into an empty journal at a safety-sensitive boundary.
+- `NEXO_MEMORY_SCHEMA_UNKNOWN` if non-null `nexoMemory` does not contain the required mission/attempt/do-not-repeat/execution/effect-journal collections.
+- `NEXO_RECOVERY_CONTEXT_MALFORMED`, `NEXO_RECOVERY_CONTEXT_MISSING`, or `NEXO_RECOVERY_CONTEXT_MISMATCH` when a `prepared` journal entry lacks its mission/step/action context, cannot find the matching persisted step, or conflicts with that step's action/target. This prevents an orphaned prepared entry from being treated as safely reconstructable.
 - Applies existing compatibility normalization only after the persisted snapshot shape, revision, and Nexo recovery-memory shape have passed validation.
 - Does not silently create a default snapshot or assign revision zero.
 
@@ -36,9 +37,9 @@ It also asserts that a valid persisted snapshot loads with its actual revision a
 
 ## Evidence
 
-- Source commits: `c527c252edd3d44566f567ebf06745d81c437339` (strict snapshot shape/revision), `02c00c2a67ec714803c3d06491e5ebdeb5c8b174` (strict Nexo memory shape).
-- Exact source+test head: `53e76287dbd89289b7975dd630f9ee4aed07fcfc`.
-- CI at report update: mission/restart [39097381824](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097381824), STEP 4 [39097381804](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097381804), and STEP 5 [39097381805](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097381805) were in progress. **Do not claim PASS until all three exact-head runs complete successfully.**
+- Source commits: `c527c252edd3d44566f567ebf06745d81c437339` (strict snapshot shape/revision), `02c00c2a67ec714803c3d06491e5ebdeb5c8b174` (memory shape), `64d170c9c29fb201dcbcde934daf17c96decb1ee` (prepared context validation).
+- Exact source+test head: `9c5b38f9ecc2710ee1d7036f3b391a8cd3f85246`.
+- Exact-head CI PASS: mission/restart [39097573478](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573478) (includes `simulation-restart-persistence.test.mjs`), STEP 4 [39097573456](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573456), STEP 5 [39097573552](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573552).
 - [Source](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/scripts/simulate.mjs)
 - [Regression test](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/simulation-restart-persistence.test.mjs)
 
