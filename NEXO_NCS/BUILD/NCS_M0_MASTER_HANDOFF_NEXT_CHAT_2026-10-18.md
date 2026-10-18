@@ -164,6 +164,25 @@ También existe:
 - No conectar todavía settlement ni lineage al runtime como si fueran autoridad para ejecutar.
 - No afirmar que una revisión contigua prueba causalidad: es una restricción conservadora de reconciliación, no una prueba causal.
 
+## Incremento adicional — integración repair-only (2026-10-18)
+
+Se añadió `tests/nexo/repair-owner-lifecycle.test.mjs`, una regresión integrada sobre los helpers reales existentes. Cubre la secuencia:
+1. continuidad legacy importada al store Nexo separado;
+2. PREPARED comprometido contra la revisión de entorno 10;
+3. dispatch repair-only con persistencia condicional del entorno en revisión 11;
+4. settlement separado como `settled_observed`, sin causalidad afirmada;
+5. verificación de solo lectura `goal_observed`, sin marcar misión completada ni mutar continuidad;
+6. aserción de que el archivo de Lúmina no incluye `nexoMemory`.
+
+Workflow modificado para ejecutar el test: `.github/workflows/nexo-m0-repair-crash-cuts.yml`.
+
+Commits:
+- Test integrado: `eddf41c542b252329e45304245728a7bdb5d6800`
+- Workflow: `d3bce60a5d53df8ffa5caf1fb987fccfe0116620`
+- STATUS: `42af7045279ddc494abc8c2b4f984a5506781596`
+
+CI enfocado [39140959531](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140959531) estaba en progreso al escribir esta nota. Confirmar resultado y los pasos de test antes de marcar PASS. Esta prueba todavía **no** integra `runtime.js`; valida el flujo repair-only de los helpers ya existentes.
+
 ## 7. Siguiente tarea concreta
 
 **La inspección dirigida y el mapa de integración ya están hechos; no repetirlos. El siguiente paso es definir y probar la entrada owner-backed real para la ruta repair-only antes de conectarla al runtime general.**
