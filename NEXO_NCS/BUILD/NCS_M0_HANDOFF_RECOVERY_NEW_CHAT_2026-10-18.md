@@ -217,3 +217,16 @@ Se eligió Chronicle como primera vertical nativa no-repair candidata, porque el
 Alcance exacto: una operación estrecha de escritura Chronicle con contenido validado; writer único; reader creado de nuevo desde almacenamiento tras cerrar/reabrir; idempotency key existente, sin ID paralelo; verificador que compruebe como máximo una entrada y contenido exacto. El owner mantiene PREPARED/lineage/settlement; Chronicle no se convierte en otro journal de efectos. No se usa Lúmina.
 
 Esto no es implementación terminada. El documento deja abierto el formato de almacenamiento hasta inspeccionar convenciones reales, prohíbe atomicidad cross-store inventada y enumera crash cuts obligatorios. Siguiente acción: implementar el writer/reader mínimo con pruebas de persistencia visible tras reapertura, conflicto por misma clave/contenido distinto, concurrencia y respuesta perdida; conectar verificador específico solo tras esas pruebas. Runtime default sigue sin cambiar; M0 INCOMPLETO.
+
+
+## Actualización 2026-10-18 — primera vertical Chronicle en código (CI aún no confirmada)
+
+Archivos nuevos:
+- `src/nexo/core/chronicle-store.mjs`: persistencia local de Chronicle separada del journal operativo; inicialización explícita, append por clave de operación existente, mismo contenido idempotente, contenido distinto conflictivo, lock local y lectura que no recrea estado ausente.
+- `src/nexo/adapters/chronicle-observation.mjs`: lectura persistida independiente que clasifica applied/not_applied/unknown sin atribuir causalidad.
+- `tests/nexo/chronicle-store.test.mjs`: ausencia, inicialización, concurrencia de misma clave, conflicto, reapertura con nueva instancia y corrupción.
+- `.github/workflows/nexo-m0-chronicle.yml`: ejecución focal Node 22.
+
+Commits: `aa9a3a34fd955edc19759aa8996416de7f938c7f`, `ef104bd8f2395449cc68fcaf374c136e17a367cb`, `8535c3a4df301d94b4f5d2bee3bf4b041e8402c5`, `9c759110dc2ac76b20030c2d9fac2a8feb18fa0e`. El workflow acaba de agregarse: resultado PENDING/UNKNOWN hasta inspeccionar la ejecución. No afirmar que el test pasó.
+
+No está conectado al runtime ni al owner verifier registry; todavía no cierra el ciclo PREPARED → dispatch → lineage → observación → settlement → outcome. Siguiente: observar CI, arreglar fallos concretos, probar respuesta perdida/crash cuts y solo entonces diseñar la conexión al CAS del owner para esta operación. No habilitar runtime default ni otras acciones. M0 INCOMPLETO.
