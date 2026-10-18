@@ -33,20 +33,30 @@ function retainNexoMissions(entries, effectJournal, limit = 50) {
   return retainMissionRecords(entries, unresolvedPreparedMissionIds(effectJournal), limit);
 }
 
+function missionIdsWithRetainedPlans(missions) {
+  return new Set(missions
+    .filter(mission => typeof mission?.missionId === "string")
+    .map(mission => mission.missionId));
+}
+
 export function createLearningMemory(raw = null) {
   const source = raw && typeof raw === "object" ? raw : {};
   const effectJournal = retainEffectJournal(source.nexo?.effectJournal);
-  const unresolvedMissionIds = unresolvedPreparedMissionIds(effectJournal);
+  const missions = retainNexoMissions(source.nexo?.missions, effectJournal);
+  const retainedMissionIds = missionIdsWithRetainedPlans(missions);
   return {
     version: 4,
     runs: Array.isArray(source.runs) ? source.runs.slice(-100) : [],
     lessons: Array.isArray(source.lessons) ? source.lessons.slice(-100) : [],
     patterns: Array.isArray(source.patterns) ? source.patterns.slice(-100) : [],
     nexo: {
-      missions: retainNexoMissions(source.nexo?.missions, effectJournal),
-      attempts: retainMissionRecords(source.nexo?.attempts, unresolvedMissionIds, 100),
+      missions,
+      // Attempt/execution history is the only durable projection used to rebuild
+      // step outcomes. Preserve it for every retained mission; a hard cap could
+      // regress an old completed dependency to planned after restart.
+      attempts: retainMissionRecords(source.nexo?.attempts, retainedMissionIds, 100),
       doNotRepeat: Array.isArray(source.nexo?.doNotRepeat) ? source.nexo.doNotRepeat.slice(-100) : [],
-      executions: retainMissionRecords(source.nexo?.executions, unresolvedMissionIds, 200),
+      executions: retainMissionRecords(source.nexo?.executions, retainedMissionIds, 200),
       effectJournal
     }
   };
@@ -166,7 +176,7 @@ export function recordNexoExecution(memory,{idempotencyKey,missionId,stepId,acti
   if(!idempotencyKey||!missionId||!stepId||!action||!result) return next;
   if(!next.nexo.executions.some(x=>x.idempotencyKey===idempotencyKey))
     next.nexo.executions.push({idempotencyKey,missionId,stepId,action,target,result,at:new Date().toISOString()});
-  next.nexo.executions=retainMissionRecords(next.nexo.executions,unresolvedPreparedMissionIds(next.nexo.effectJournal),200);
+  next.nexo.executions=retainMissionRecords(next.nexo.executions,missionIdsWithRetainedPlans(next.nexo.missions),200);
   return next;
 }
 
@@ -180,7 +190,7 @@ export function recordNexoOutcome(memory,{missionId,stepId,action,target=null,st
   const entry={missionId,stepId,action,target,status,evidence:evidence??null,parentMissionId:parentMissionId??null,replanReason:replanReason??null,at:new Date().toISOString()};
   next.nexo.attempts.push(entry);
   if(doNotRepeat) next.nexo.doNotRepeat.push({action,target,reason:evidence??"previous attempt marked non-repeatable",at:entry.at});
-  next.nexo.attempts=retainMissionRecords(next.nexo.attempts,unresolvedPreparedMissionIds(next.nexo.effectJournal),100); next.nexo.doNotRepeat=next.nexo.doNotRepeat.slice(-100);
+  next.nexo.attempts=retainMissionRecords(next.nexo.attempts,missionIdsWithRetainedPlans(next.nexo.missions),100); next.nexo.doNotRepeat=next.nexo.doNotRepeat.slice(-100);
   return next;
 }
 
