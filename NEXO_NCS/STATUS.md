@@ -1,3 +1,12 @@
+## M0 — Maestra / AB / P cross-check (2026-10-18)
+
+- Added [M0 cross-check against Maestra, AB, P and NCS invariants](BUILD/NCS_M0_MASTER_AB_P_CROSSCHECK_2026-10-18.md).
+- Reviewed Maestra, NCS checkpoint, common-mode recovery, constitutional custody/revocation, self-modification/Authority-of-Truth and current runtime/ownership/protected-transition/reconciliation/effect-adapter paths.
+- Confirmed architectural blocker: current code has fail-closed guards, but the generic reconciler, ownership port, protected transition, effect adapter and runtime are not composed into one capability-contract-grounded PG-009 recovery flow.
+- Cross-check is explicitly PARTIAL for AB/P archive coverage: exact full cross-archive audit report and underlying P112/AB source records were not surfaced in this search. Retrieve existing evidence next; do not rerun closed probes.
+- Next: trace the existing capability Operation Contract end-to-end; identify a real result verifier/current fence/provenance source and dependency chain. If none exists, preserve UNKNOWN/STOP instead of inventing a verifier.
+- This report does not claim M0 completion or CI PASS. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## M0 — Prepared effect journal vetoes successor replan (2026-10-18)
 
 - Finding: mission continuity could lose or stale the specific `EFFECT_OUTCOME_UNKNOWN` marker while the durable effect journal still retained the matching operation as `prepared`. Replanning based only on mission state could then create a successor identity over an unresolved effect.
