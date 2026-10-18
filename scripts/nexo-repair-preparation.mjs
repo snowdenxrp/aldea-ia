@@ -40,10 +40,25 @@ export async function prepareRepairAgainstPersistedState({
   }
 
   const environmentStateRevision = snapshot.stateRevision;
-  const prepared = await owner.recordPrepared({
-    expectedRevision: expectedContinuityRevision,
-    operation: { ...operation, environmentStateRevision }
-  });
+  let prepared;
+  try {
+    prepared = await owner.recordPrepared({
+      expectedRevision: expectedContinuityRevision,
+      operation: { ...operation, environmentStateRevision }
+    });
+  } catch (error) {
+    // A write can be durable even if its response is lost. Do not claim that
+    // PREPARED failed to commit, and never dispatch without a confirmed result.
+    return {
+      status: "blocked",
+      code: error?.code ?? "NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN",
+      preparedCommitted: false,
+      preparedCommitOutcome: "unknown",
+      uncertainty: "prepared_commit_outcome_unknown",
+      environmentStateRevision,
+      environmentRevisionSource: "strict-persisted-world-state"
+    };
+  }
   return {
     ...prepared,
     environmentStateRevision,
