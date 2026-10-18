@@ -1,3 +1,16 @@
+## M0 — puente opt-in hacia la entrada real de asistentes (2026-10-18)
+
+- **Nuevo puente:** `scripts/nexo-runtime-session.mjs` exporta `runNexoRuntimeRepairSession()`. Selecciona una misión canónica sin ambigüedad y únicamente un paso `planned` de reparación cuyos prerequisitos estén `completed`; después delega en la sesión repair-only, que vuelve a leer la continuidad y deriva acción/target del snapshot.
+- **Entrada real con opt-in:** `scripts/assistants.mjs` importa el puente. Solo lo ejecuta si el proceso recibe explícitamente `--nexo-repair-once`, después de persistir primero el snapshot de entorno de esa ejecución. Así el guardado previo no puede sobrescribir posteriormente el resultado de la reparación. El comportamiento normal sigue sin ejecutar reparaciones automáticamente.
+- **Cierre de hueco contractual:** `scripts/nexo-repair-session.mjs` ahora rechaza cualquier paso que no esté exactamente en `planned` y bloquea dependencias no satisfechas incluso si alguien llama directamente a la sesión.
+- **Pruebas:** `tests/nexo/repair-session.test.mjs` prueba el puente de runtime, flujo repair-only, recuperación después de reabrir el owner desde disco, no redispatch, acción no elegible, dependencias no satisfechas y separación de `world-state.json`. Workflow también ejecuta `node --check` sobre puente y `scripts/assistants.mjs`.
+- **CI exacto:** [run 39143194694](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143194694), SHA `3c414ff2d0b8ebd8f880e8a37e83602138924395`, SUCCESS. Job `repair-crash-cuts`, las cuatro regresiones y la comprobación sintáctica finalizaron correctamente. La suite ya había pasado en SHA de código/pruebas `93dc2cf3ed070fed35298a4777e43804e862fdef` en [run 39143167854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143167854); el run más reciente incluye además el chequeo de sintaxis.
+- **Alcance real:** ya hay un camino opt-in desde la entrada de asistentes hacia una sesión Nexo owner-backed, limitado a reparaciones. No es todavía el runtime genérico completo ni un cutover por defecto. No se ha ejecutado contra datos de usuario reales; la evidencia es CI con fixtures temporales. El puente no permite `execute_lumina_action`, acciones protegidas ni misión completada por `settled_observed`.
+- **Siguiente paso:** crear una prueba de proceso/CLI aislada con directorio temporal y estado canónico que invoque `scripts/assistants.mjs --nexo-repair-once` sin tocar `world-state.json` real; comprobar que el flag opt-in termina en salida reportada, que el revision final corresponde al estado después de reparación y que el modo por defecto no dispatcha. Solo después evaluar la sustitución gradual de la ruta legacy; no enrutar `executeNexoStep()` genérico hacia este dispatcher.
+- **No cambiar:** no atomicidad cross-store, no memoria Nexo dentro de Lúmina, efectos protegidos STOP, STEP 7 OPEN / STOP / UNKNOWN, M0 sigue incompleto.
+
+---
+
 ## M0 — primera sesión owner-backed repair-only (2026-10-18)
 
 - Implementada `scripts/nexo-repair-session.mjs`, API `runNexoRepairSession()`: el caller solo selecciona `missionId` y `stepId`; misión/paso/acción/target se derivan del snapshot canónico de Nexo. Lista cerrada: `repair_agent_state`, `repair_agent_needs`, `repair_resource_state`; las demás acciones se bloquean antes de PREPARED/dispatch.
