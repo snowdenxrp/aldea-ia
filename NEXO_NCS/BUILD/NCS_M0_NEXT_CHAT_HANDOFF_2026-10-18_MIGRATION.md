@@ -1,3 +1,15 @@
+## Latest update — ambiguous handler failures stay unresolved (2026-10-18)
+
+- See [focused checkpoint](NCS_M0_AMBIGUOUS_HANDLER_FAILURE_FAIL_CLOSED_CHECKPOINT_2026-10-18.md).
+- `src/nexo/effect-adapter.js` no longer turns a handler's non-completed status into terminal failure solely because the observed revision is unchanged. It returns `blocked / EFFECT_OUTCOME_UNKNOWN`; if the observed revision changed, it returns `blocked / PARTIAL_EFFECT_DETECTED`. Both leave PREPARED unresolved.
+- Invalid handler results are also blocked and left PREPARED. Same-key retries cannot redispatch; replan is blocked while the mission has an unresolved prepared entry.
+- Regression tests cover a no-observed-mutation failure, invalid result, retry suppression, and runtime replan suppression after environment change.
+- Exact code/test head: [431978730f3b2be300fa51d3a35938ef6702e607](https://github.com/snowdenxrp/aldea-ia/commit/431978730f3b2be300fa51d3a35938ef6702e607).
+- Exact-head CI PASS: mission/restart [39105986623](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986623), semantic validation [39105986616](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986616), outcome classification [39105986625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105986625).
+- Do not overstate this: there is still no independent operation-specific verifier/terminal settlement API, and `src/nexo/runtime.js` still relies on legacy memory functions. Do not wire the standalone owner into effect dispatch until the crash cuts and trusted settlement contract are explicit. M0 incomplete; PREPARED UNKNOWN; protected effects STOP.
+
+---
+
 ## Update: fail-closed reconstruction for unresolved PREPARED (2026-10-18)
 
 - `reconstructNexoMissionFromSnapshot()` now checks the independent effect journal. If any effect for the mission remains `prepared`, reconstruction returns a blocked mission with objective `reconcile_prepared_effect`; the affected step is blocked with code `NEXO_EFFECT_RECONCILIATION_REQUIRED` and its idempotency key.
