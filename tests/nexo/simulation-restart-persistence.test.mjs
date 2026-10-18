@@ -33,6 +33,15 @@ await assert.rejects(
   () => loadStateStrict(statePath),
   error => error?.code === "NEXO_STATE_SCHEMA_INVALID"
 );
+await fs.writeFile(statePath, JSON.stringify({
+  version: 5, stateRevision: 0, day: 1, hour: 8,
+  world: structuredClone(defaultWorld), agents: createInitialAgents(),
+  nexoMemory: { version: 4, nexo: { missions: [] } }
+}), "utf8");
+await assert.rejects(
+  () => loadStateStrict(statePath),
+  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN"
+);
 await fs.rm(statePath);
 
 const mission = {
