@@ -4,6 +4,7 @@ import { assertNexoContinuitySnapshot, projectNexoContinuitySnapshot, NEXO_CONTI
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
 import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
 import { recordNexoMissionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
+import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -272,3 +273,30 @@ assert.equal("patterns" in reconstructedCoreMission.operationalSignals, false);
 assert.equal(reconstructNexoMissionFromSnapshot(operationalSnapshot, "missing-mission"), null);
 
 console.log("Nexo core continuity operations: detached mission/outcome records and reconstruction without learning analytics OK.");
+
+const migrationDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-continuity-migration-"));
+const migrationPath = path.join(migrationDirectory, "nexo-continuity.json");
+const legacyForMigration = {
+  version: 4, runs: [{ id: "learning-only" }], lessons: [], patterns: [],
+  nexo: {
+    missions: [plan], attempts: [], doNotRepeat: [], executions: [], effectJournal: [prepared]
+  }
+};
+const migrated = await openNexoContinuityOwner({ filePath: migrationPath, legacyMemory: legacyForMigration });
+assert.equal(migrated.current.snapshot.missions[0].missionId, "mission-a");
+assert.equal("runs" in migrated.current.snapshot, false, "legacy learning analytics must not cross into Nexo operational continuity");
+const legacyDiverged = {
+  version: 4, runs: [], lessons: [], patterns: [],
+  nexo: { missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: [] }
+};
+const reopened = await openNexoContinuityOwner({ filePath: migrationPath, legacyMemory: legacyDiverged });
+assert.equal(reopened.current.snapshot.missions[0].missionId, "mission-a", "once initialized, the Nexo store remains canonical; do not merge legacy duplicates");
+await fs.rm(migrationDirectory, { recursive: true, force: true });
+
+const uninitializedDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-continuity-no-bootstrap-"));
+await assert.rejects(
+  () => openNexoContinuityOwner({ filePath: path.join(uninitializedDirectory, "nexo-continuity.json") }),
+  error => error?.code === "NEXO_CONTINUITY_INITIAL_STATE_UNKNOWN",
+  "missing store and missing legacy state must not silently fabricate continuity"
+);
+await fs.rm(uninitializedDirectory, { recursive: true, force: true });
