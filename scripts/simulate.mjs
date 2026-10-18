@@ -164,7 +164,7 @@ export function applyState(state) {
   const world = clone(state.world);
   const agents = clone(state.agents);
   recoverCoreAgents(agents);
-  const simulation = createSimulation(world, agents, { nexoMemory: state.nexoMemory ?? null });
+  const simulation = createSimulation(world, agents);
   simulation.day = Number(state.day) || world.day || 1;
   simulation.hour = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (world.timeOfDay || 8);
   simulation.events = Array.isArray(state.events) ? state.events.slice(-500) : [];
