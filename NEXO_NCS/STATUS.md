@@ -1,3 +1,19 @@
+## M0 — rechazo de replay de lineage con resultado contradictorio (2026-10-18)
+
+- **Hueco demostrado:** `recordExecutionLineage()` devolvía `already_recorded` para una clave/identidad ya existente sin comparar el resultado de adaptador persistido con el resultado del replay. No sobrescribía el primer registro, pero ocultaba un conflicto semántico.
+- **Cambio:** `src/nexo/core/continuity-owner.mjs` ahora devuelve `blocked / NEXO_EXECUTION_RESULT_MISMATCH` cuando la identidad coincide pero `existing.result` difiere del resultado propuesto. No hay commit nuevo ni avance de `storeRevision` en ese caso.
+- **Regresiones:** `tests/nexo/repair-owner-lifecycle.test.mjs` prueba que el replay conflictivo no modifica continuidad; `tests/nexo/continuity-migration.test.mjs` actualiza el contrato previo para exigir bloqueo en vez de aceptar silenciosamente un resultado distinto.
+- **Test-first transparente:** CI del test antes del fix [39150256557](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150256557) falló en la nueva aserción porque devolvía `already_recorded`. El primer CI tras el fix [39150274684](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150274684) detectó una expectativa heredada equivalente en la prueba de migración; se corrigió para reflejar el nuevo contrato.
+- **CI verde exacto tras alinear implementación y pruebas:** SHA `0653d7216c49dd6a9b0ea7a182333ff18ee07bc3`:
+  - [M0 repair settlement crash cuts — 39150332075](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150332075) SUCCESS.
+  - [STEP 4 semantic validation — 39150332148](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150332148) SUCCESS.
+  - [STEP 5 outcome classification — 39150331964](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150331964) SUCCESS.
+  - [bounded mission admission/restart continuity — 39150331921](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150331921) SUCCESS.
+- **Límite:** el guard corrige la idempotencia de lineage; no demuestra todavía cutover de `src/nexo/runtime.js`, atomicidad entre stores ni finalización de misión. M0 sigue incompleto; Nexo/Lúmina separados; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+- **Siguiente paso:** inspeccionar el siguiente hueco mínimo de continuidad después de PREPARED → lineage → settlement sin añadir `goalObservations` ni otros campos nuevos; después avanzar a una ruta runtime canónica con pruebas de proceso/reinicio.
+
+---
+
 ## M0 — replay de objetivo observado y no-redispatch (2026-10-18)
 
 - Se reforzó `tests/nexo/repair-mission-verification.test.mjs`: después de `goal_observed`, la reconstrucción canónica sigue manteniendo misión/paso en `blocked` con `NEXO_REPAIR_SETTLED_BY_OBSERVATION`; no se interpreta la observación como completion ni se permite redispatch.
