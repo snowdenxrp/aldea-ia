@@ -1,3 +1,19 @@
+## Latest settlement hardening — negative evidence + reconstruction non-redispatch (2026-10-18)
+
+- Latest exact tested code/test head: [`4cadf1831ecbd3664964c410ac8bc1397fd22a2e`](https://github.com/snowdenxrp/aldea-ia/commit/4cadf1831ecbd3664964c410ac8bc1397fd22a2e).
+- Negative recovery tests confirm that an absent desired invariant, a durable environment revision beyond the permitted window, and an UNKNOWN continuity commit result do not settle the operation. PREPARED stays in place for unresolved cases.
+- `continuity-operations.mjs` now treats `settled_observed` as non-executable: reconstruction blocks the step under `verify_observed_repair_goal`, explicitly without claiming causality. This prevents a settled-by-observation repair from resurfacing as a planned action and being redispatched.
+- Exact-head CI PASS: mission/restart [39133277523](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133277523), outcome [39133277522](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133277522), semantic [39133277520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133277520).
+- Checkpoint addendum in [NCS_M0_REPAIR_OBSERVATION_SETTLEMENT_CHECKPOINT_2026-10-18.md](NCS_M0_REPAIR_OBSERVATION_SETTLEMENT_CHECKPOINT_2026-10-18.md).
+
+### Next exact task
+
+Review `settled_observed` compatibility through runtime reconstruction and mission verification. A separate mission-level goal verifier must be defined before any runtime wiring: observation of one repair invariant is not mission completion. Continue testing persistence failure and restart boundaries. Keep non-idempotent actions excluded; no cross-store atomicity or authority claims.
+
+M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest implementation — repair settlement from persisted invariant (2026-10-18)
 
 - Code/test head: [`72bb686a4d6b84d6cd058751005dbe34cda1d273`](https://github.com/snowdenxrp/aldea-ia/commit/72bb686a4d6b84d6cd058751005dbe34cda1d273).
