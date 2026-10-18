@@ -618,3 +618,48 @@ try {
 } finally {
   await fs.rm(postPreparedReloadRoot, { recursive: true, force: true });
 }
+
+
+// A thrown lineage commit after the environment write must remain an explicit
+// unknown outcome with PREPARED intact; it must not escape as an unstructured
+// exception or be mistaken for settlement.
+const lineageCommitFailureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-lineage-commit-failure-"));
+try {
+  const nexoPath = path.join(lineageCommitFailureRoot, "nexo-continuity.json");
+  const statePath = path.join(lineageCommitFailureRoot, "world-state.json");
+  const opened = await openNexoContinuityOwner({ filePath: nexoPath, legacyMemory: legacyMemory() });
+  await fs.writeFile(statePath, JSON.stringify(environment(90)), "utf8");
+  const owner = {
+    ...opened.owner,
+    recordExecutionLineage: async () => {
+      const error = new Error("simulated lineage store write failure after environment persistence");
+      error.code = "NEXO_CONTINUITY_WRITE_FAILED";
+      throw error;
+    }
+  };
+  const result = await runNexoRepairOnce({
+    owner,
+    store: opened.store,
+    statePath,
+    expectedContinuityRevision: 0,
+    operation: {
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      missionId: "mission-owner-lifecycle",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    },
+    savedAt: 12
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_CONTINUITY_WRITE_FAILED");
+  assert.equal(result.persisted, true);
+  assert.equal(result.uncertainty, "environment_persisted_but_lineage_and_settlement_unconfirmed");
+  const durable = await opened.owner.loadCurrent();
+  assert.equal(durable.snapshot.effectJournal[0].status, "prepared");
+  assert.equal(durable.snapshot.executions.length, 0);
+  assert.equal((await loadStateStrict(statePath)).stateRevision, 91,
+    "environment persistence must be reported even if owner lineage cannot be committed");
+} finally {
+  await fs.rm(lineageCommitFailureRoot, { recursive: true, force: true });
+}
