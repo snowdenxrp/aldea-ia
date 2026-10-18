@@ -118,3 +118,51 @@ export function observePersistedRepairInvariant({ snapshot, action, target } = {
     ? present(action, target, revision)
     : absent("REPAIR_RESOURCE_AMOUNT_REQUIRES_NORMALIZATION", action, target, revision);
 }
+
+/**
+ * Check whether an earlier repair observation is still tied to the currently
+ * loaded persisted environment revision. This remains diagnostic only: it
+ * cannot lock the environment across a later continuity-store commit.
+ *
+ * expectedStateRevision must come from a separately persisted PREPARED field.
+ * The current PREPARED schema does not contain that field, so omission returns
+ * UNKNOWN rather than treating the current revision as the original revision.
+ */
+export function comparePersistedRepairRevision({ expectedStateRevision, currentSnapshot } = {}) {
+  const currentRevision = currentSnapshot?.stateRevision;
+  if (!Number.isSafeInteger(expectedStateRevision) || expectedStateRevision < 0) {
+    return {
+      status: "observed",
+      outcome: "unknown",
+      reason: "PREPARED_ENVIRONMENT_REVISION_NOT_BOUND",
+      expectedStateRevision: null,
+      currentStateRevision: Number.isSafeInteger(currentRevision) && currentRevision >= 0
+        ? currentRevision : null
+    };
+  }
+  if (!Number.isSafeInteger(currentRevision) || currentRevision < 0) {
+    return {
+      status: "observed",
+      outcome: "unknown",
+      reason: "PERSISTED_ENVIRONMENT_REVISION_UNKNOWN",
+      expectedStateRevision,
+      currentStateRevision: null
+    };
+  }
+  if (currentRevision !== expectedStateRevision) {
+    return {
+      status: "observed",
+      outcome: "stale",
+      reason: "PERSISTED_ENVIRONMENT_REVISION_CHANGED",
+      expectedStateRevision,
+      currentStateRevision: currentRevision
+    };
+  }
+  return {
+    status: "observed",
+    outcome: "current",
+    reason: "PERSISTED_ENVIRONMENT_REVISION_MATCHES",
+    expectedStateRevision,
+    currentStateRevision: currentRevision
+  };
+}
