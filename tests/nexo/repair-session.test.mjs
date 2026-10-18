@@ -4,6 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { runNexoRepairSession } from "../../scripts/nexo-repair-session.mjs";
+import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
+import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
 
 function legacyMemory(action = "repair_agent_state") {
@@ -87,6 +89,63 @@ try {
 
   const rawWorld = JSON.parse(await fs.readFile(statePath, "utf8"));
   assert.equal("nexoMemory" in rawWorld, false);
+
+  // Crash cut through the exact session API: a repair is persisted after
+  // PREPARED, but settlement is interrupted. Reopening the canonical owner and
+  // invoking the session must observe state and must not redispatch.
+  const recoveryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-repair-session-recovery-"));
+  try {
+    const recoveryNexoPath = path.join(recoveryRoot, "nexo-continuity.json");
+    const recoveryStatePath = path.join(recoveryRoot, "world-state.json");
+    const initial = await openNexoContinuityOwner({
+      filePath: recoveryNexoPath,
+      legacyMemory: legacyMemory()
+    });
+    await fs.writeFile(recoveryStatePath, JSON.stringify(environment(80)), "utf8");
+    const prepared = await prepareRepairAgainstPersistedState({
+      owner: initial.owner,
+      statePath: recoveryStatePath,
+      expectedContinuityRevision: 0,
+      operation: {
+        idempotencyKey: "mission-session:step-session",
+        missionId: "mission-session",
+        stepId: "step-session",
+        action: "repair_agent_state",
+        target: "alex"
+      }
+    });
+    assert.equal(prepared.status, "committed");
+    const dispatched = await dispatchPreparedRepair({
+      owner: initial.owner,
+      statePath: recoveryStatePath,
+      idempotencyKey: "mission-session:step-session",
+      savedAt: 12
+    });
+    assert.equal(dispatched.status, "completed");
+    assert.equal(dispatched.persisted, true);
+    assert.equal(dispatched.environmentStateRevision, 81);
+
+    const reopened = await openNexoContinuityOwner({
+      filePath: recoveryNexoPath,
+      legacyMemory: null
+    });
+    const recovered = await runNexoRepairSession({
+      owner: reopened.owner,
+      store: reopened.store,
+      statePath: recoveryStatePath,
+      missionId: "mission-session",
+      stepId: "step-session",
+      savedAt: 13
+    });
+    assert.equal(recovered.status, "recovered");
+    assert.equal(recovered.dispatched, false);
+    assert.equal((await loadStateStrict(recoveryStatePath)).stateRevision, 81);
+    const recoveredStore = await reopened.owner.loadCurrent();
+    assert.equal(recoveredStore.storeRevision, 2);
+    assert.equal(recoveredStore.snapshot.effectJournal[0].status, "settled_observed");
+  } finally {
+    await fs.rm(recoveryRoot, { recursive: true, force: true });
+  }
 
   // A caller can select a canonical mission/step but cannot supply an action
   // or target. A non-repair action is blocked before a PREPARED entry or write.
