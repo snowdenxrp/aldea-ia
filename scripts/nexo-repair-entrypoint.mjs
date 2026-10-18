@@ -227,12 +227,27 @@ export async function runNexoRepairOnce({
       uncertainty: "environment_and_lineage_persisted_but_settlement_unconfirmed"
     };
   }
-  const settlement = await settlePreparedRepairFromPersistedState({
-    store,
-    statePath,
-    idempotencyKey: operation.idempotencyKey,
-    expectedContinuityRevision: afterLineage.storeRevision
-  });
+  let settlement;
+  try {
+    settlement = await settlePreparedRepairFromPersistedState({
+      store,
+      statePath,
+      idempotencyKey: operation.idempotencyKey,
+      expectedContinuityRevision: afterLineage.storeRevision
+    });
+  } catch (error) {
+    // The environment and lineage may already be durable. A thrown settlement
+    // commit must not escape or be represented as success; preserve the PREPARED
+    // obligation for a later independent observation/recovery attempt.
+    return {
+      status: "blocked",
+      code: error?.code ?? "NEXO_REPAIR_SETTLEMENT_COMMIT_UNKNOWN",
+      dispatch,
+      lineage,
+      persisted: dispatch.persisted === true,
+      uncertainty: "environment_persisted_but_continuity_settlement_unconfirmed"
+    };
+  }
   if (settlement.status !== "settled_observed") {
     return {
       status: "blocked",
