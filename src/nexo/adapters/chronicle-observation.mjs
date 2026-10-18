@@ -5,8 +5,8 @@
 export async function observeChronicleOperation({ store, idempotencyKey, missionId, stepId, action, target = null } = {}) {
   if (!store || typeof store.loadCurrent !== "function" ||
       typeof idempotencyKey !== "string" || !idempotencyKey.trim() ||
-      typeof missionId !== "string" || !missionId.trim() ||
-      typeof stepId !== "string" || !stepId.trim() ||
+      typeof missionId !== "string" || !missionId.trim() || missionId.includes(":") ||
+      typeof stepId !== "string" || !stepId.trim() || stepId.includes(":") ||
       action !== "chronicle_append" ||
       !target || typeof target !== "object" || Array.isArray(target) ||
       typeof target.content !== "string" || !target.content.trim()) {
