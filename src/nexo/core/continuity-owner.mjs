@@ -469,17 +469,24 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         !isDeepStrictEqual(latestMatches[0].target ?? null, operation.target ?? null)) {
       return { status: "conflict", code: "NEXO_EFFECT_PREPARED_OBLIGATION_CHANGED", storeRevision: latest.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
-    const candidate = emptyCandidate(latest.snapshot);
-    const entry = candidate.effectJournal.find(item => item?.idempotencyKey === operation.idempotencyKey);
-    entry.status = "reconciled_observed";
-    entry.reconciliation = {
-      status: observation.status,
-      observedRevision: observation.observedRevision,
-      source: observation.source,
-      evidence: structuredClone(observation.evidence ?? null),
-      observedAt: new Date().toISOString()
-    };
-    assertNexoContinuitySnapshot(candidate);
+    let safeEvidence;
+    let candidate;
+    try {
+      safeEvidence = structuredClone(observation.evidence ?? null);
+      candidate = emptyCandidate(latest.snapshot);
+      const entry = candidate.effectJournal.find(item => item?.idempotencyKey === operation.idempotencyKey);
+      entry.status = "reconciled_observed";
+      entry.reconciliation = {
+        status: observation.status,
+        observedRevision: observation.observedRevision,
+        source: observation.source,
+        evidence: safeEvidence,
+        observedAt: new Date().toISOString()
+      };
+      assertNexoContinuitySnapshot(candidate);
+    } catch (error) {
+      return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID", storeRevision: latest.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
     const committed = await store.commitIfCurrent(expectedRevision, candidate);
     if (committed.status !== "committed") {
       return { ...committed, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
