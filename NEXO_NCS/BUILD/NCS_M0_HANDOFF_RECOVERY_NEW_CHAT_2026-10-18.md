@@ -327,3 +327,10 @@ Siguiente corte: auditar explícitamente el modelo de filesystem y concurrencia 
 - CI final en SHA `0ea0b8bcbd68a2e2062e359b11247cd6a04a2457`: [39176108822 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176108822), [39176108833 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176108833).
 - Auditoría encontró límites que no deben ocultarse: temp+rename no es prueba de fsync/power-loss; rutas del caller no se canonicalizan ni aíslan de symlinks; reclamación de lock obsoleto usa check-then-remove y no demuestra exclusión adversarial multiproceso. No integrar a producción ni afirmar esas garantías.
 - Próxima frontera: fijar el modelo de confianza de paths y del filesystem local, resolver la recuperación de locks con prueba de concurrencia entre procesos o limitar de manera explícita el store a un solo proceso cooperante. No hacer cutover ni ampliar acciones.
+
+
+## Evidencia adicional — concurrencia entre procesos
+
+La suite Chronicle inicia dos procesos Node separados que anexan entradas distintas al mismo archivo y verifica, con un reader recién creado, que ambas entradas sobreviven. Validado en SHA `6940f9524773b36a97d8c6eb44d7c2bd81146d62`: [Chronicle 39176214934 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214934), [continuidad/runtime 39176214965 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214965), [STEP 4 39176214931 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214931) y [STEP 5 39176214932 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214932).
+
+Alcance: dos escritores cooperantes en el filesystem local de CI. No es evidencia de seguridad bajo carreras adversariales de recuperación de locks obsoletos, rutas con symlink o pérdida de energía. Mantener runtime default sin cambios.
