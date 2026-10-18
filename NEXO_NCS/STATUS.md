@@ -306,3 +306,11 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Existing PG-009 recovery/restart fencing is the source contract; required exact effect identity, recovery owner/generation/fence, authority epoch, fresh evidence/provenance, target/precondition and policy-version binding must not be invented or silently omitted.
 - Design report: [M0 — Recovery contract required before runtime re-entry](BUILD/NCS_M0_RECOVERY_CONTRACT_BEFORE_RUNTIME_REENTRY_2026-10-18.md).
 - Journal retention regressions are CI-verified, but integrated recovery remains not implemented. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
+
+## M0 — Persisted UNKNOWN/replan seam regression (2026-10-18)
+
+- Added a runtime-level regression for handler exception after dispatch → `EFFECT_OUTCOME_UNKNOWN` → memory normalization → mission reconstruction → attempted persisted replan with caller-supplied new-operation reason.
+- Expected result: no successor mission, no second handler call, original prepared effect retained.
+- Report: [M0 — Persisted UNKNOWN effect blocks replan after reconstruction](BUILD/NCS_M0_UNKNOWN_EFFECT_PERSISTED_REPLAN_REGRESSION_2026-10-18.md).
+- CI evidence pending for this new regression. This is a safety containment regression, not reconciliation closure. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.

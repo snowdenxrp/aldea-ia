@@ -208,4 +208,44 @@ const unresolvedOnly=createLearningMemory({
 assert.equal(unresolvedOnly.length,201,
   "unresolved prepared operations may exceed the soft history cap rather than be discarded");
 
+
+const unknownRuntimeMemory=createLearningMemory();
+const unknownRuntimeMission=buildNexoMission({
+  reports:[{findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"unknown external effect regression"}]}]
+});
+let unknownHandlerCalls=0;
+const unknownRuntimeAdapter=createEffectAdapter({
+  executionJournal:unknownRuntimeMemory.nexo.effectJournal,
+  handlers:{repair_agent_state:async()=>{unknownHandlerCalls++;throw new Error("simulated crash after dispatch");}}
+});
+const unknownRuntimeResult=await executeNexoStep({
+  mission:unknownRuntimeMission,stepId:"step-1",adapter:unknownRuntimeAdapter,
+  memory:unknownRuntimeMemory,precondition:()=>true,postcondition:()=>true
+});
+assert.equal(unknownRuntimeResult.status,"blocked");
+assert.equal(unknownRuntimeResult.adapterResult.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(unknownHandlerCalls,1);
+assert.equal(unknownRuntimeResult.memory.nexo.effectJournal.find(
+  entry=>entry.idempotencyKey===`${unknownRuntimeMission.missionId}:step-1`
+)?.status,"prepared");
+const unknownPersistedMemory=createLearningMemory(unknownRuntimeResult.memory);
+const unknownReconstructedMission=(await import("../../src/assistants/memory.js"))
+  .reconstructNexoMission(unknownPersistedMemory,unknownRuntimeMission.missionId);
+assert.equal(unknownReconstructedMission.steps[0].status,"blocked");
+assert.equal(unknownReconstructedMission.steps[0].result.code,"EFFECT_OUTCOME_UNKNOWN");
+const unknownReplan=replanPersistedNexoMission({
+  memory:unknownPersistedMemory,
+  previousMissionId:unknownRuntimeMission.missionId,
+  reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:1}}]}],
+  reason:"caller_requests_new_operation_after_restart"
+});
+assert.equal(unknownReplan.status,"not_replanned",
+  "persisted UNKNOWN effect must block replan even after memory normalization and reconstruction");
+assert.equal(unknownHandlerCalls,1,
+  "replan rejection must not redispatch the uncertain effect");
+assert.equal(unknownPersistedMemory.nexo.effectJournal.find(
+  entry=>entry.idempotencyKey===`${unknownRuntimeMission.missionId}:step-1`
+)?.status,"prepared",
+  "reconstruction/replan must preserve the unresolved prepared effect");
+
 console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
