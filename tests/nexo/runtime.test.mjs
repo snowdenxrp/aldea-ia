@@ -248,4 +248,33 @@ assert.equal(unknownPersistedMemory.nexo.effectJournal.find(
 )?.status,"prepared",
   "reconstruction/replan must preserve the unresolved prepared effect");
 
+// Crash-window regression: the durable mission/outcome record may be stale or
+// generic while the effect journal still proves only that an operation is prepared.
+// The journal must veto a successor even when mission evidence lost the UNKNOWN code.
+const staleMissionMemory=createLearningMemory(unknownPersistedMemory);
+staleMissionMemory.nexo.attempts=staleMissionMemory.nexo.attempts.filter(
+  entry=>entry?.missionId!==unknownRuntimeMission.missionId
+);
+const stalePlan=staleMissionMemory.nexo.missions.find(
+  entry=>entry?.missionId===unknownRuntimeMission.missionId
+);
+stalePlan.status="blocked";
+stalePlan.steps[0].status="blocked";
+stalePlan.steps[0].blockReason="EFFECT_RECONCILIATION_REQUIRED";
+const journalVetoedReplan=replanPersistedNexoMission({
+  memory:staleMissionMemory,
+  previousMissionId:unknownRuntimeMission.missionId,
+  reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:1}}]}],
+  reason:"caller_requests_successor_after_stale_recovery_record"
+});
+assert.equal(journalVetoedReplan.status,"not_replanned");
+assert.equal(journalVetoedReplan.code,"EFFECT_RECONCILIATION_REQUIRED",
+  "prepared journal state must veto replan even if mission outcome evidence is stale");
+assert.equal(staleMissionMemory.nexo.missions.some(
+  entry=>entry?.parentMissionId===unknownRuntimeMission.missionId
+),false,"no successor mission may be persisted over an unresolved prepared effect");
+assert.equal(staleMissionMemory.nexo.effectJournal.find(
+  entry=>entry.idempotencyKey===`${unknownRuntimeMission.missionId}:step-1`
+)?.status,"prepared");
+
 console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
