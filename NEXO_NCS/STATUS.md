@@ -1,3 +1,17 @@
+## NEXT CHAT ENTRY — finish Nexo's independent continuity migration (2026-10-18)
+
+**Read first:** [Detailed next-chat handoff — finish migration](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_2026-10-18_MIGRATION.md), then [migration recovery checkpoint](BUILD/NCS_M0_CONTINUITY_MIGRATION_RECOVERY_CHECKPOINT_2026-10-18.md), then [continuity owner contract](BUILD/NCS_M0_NEXO_CONTINUITY_OWNER_CONTRACT_2026-10-18.md).
+
+- Repository `snowdenxrp/aldea-ia`, branch `ncs-clean-architecture`.
+- Migration is **PARTIAL**, not complete. Standalone store `.nexo-continuity.json` exists; `scripts/simulate.mjs` no longer writes Nexo memory into `world-state.json`; `scripts/assistants.mjs` uses the owner for mission admission.
+- Remaining critical gap: `src/nexo/runtime.js` still uses legacy `src/assistants/memory.js` functions for execution/outcomes/reconstruction. Wire PREPARED, terminal outcome and restart reconstruction through the independent owner only after the cross-store commit/crash ordering is explicit.
+- Latest migration source/test/workflow head: `8b45736b92d6510ed5ccdb3d151b969210b2c66b`; exact-head CI PASS [39099935315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099935315).
+- CI used temporary test files. No actual user/device dataset has been migrated by this work. Do not imply real-world migration or durability is proven.
+- Do not repeat closed audits or restart from M0.1. Use existing Maestra, AB104.150/.151, P112, A05/A06 constraints. No hidden fallback, no two-file atomicity claim, no new global revision/authority root/queue/retry/tombstone/transaction wrapper.
+- M0 incomplete; prepared external effects UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — Continuity migration recovered after app interruption (2026-10-18)
 
 - Recovery checkpoint: [continuity migration checkpoint](BUILD/NCS_M0_CONTINUITY_MIGRATION_RECOVERY_CHECKPOINT_2026-10-18.md).
