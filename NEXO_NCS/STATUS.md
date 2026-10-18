@@ -1,3 +1,14 @@
+## M0 — Nexo-owned mission reconstruction entry point (2026-10-18)
+
+- Added `reconstructMission(missionId)` to `src/nexo/core/continuity-owner.mjs`. It loads the standalone Nexo store and reconstructs a mission from that snapshot; it does not call `createLearningMemory()` or consult Lúmina's world-state envelope.
+- Explicit results: `reconstructed` with the store revision, `not_found` for an absent mission, and `NEXO_MISSION_ID_INVALID` for an invalid identifier. This is a read/reconstruction capability, not execution authorization or proof that a plan is current against the Lúmina environment.
+- Added regression checks in `tests/nexo/continuity-contract.test.mjs` for restored mission identity/action/target, missing mission and invalid ID.
+- Commits: implementation [eea4067](https://github.com/snowdenxrp/aldea-ia/commit/eea40675163ae11c73fd76b284ab0bd22133660f); tests [024c28c](https://github.com/snowdenxrp/aldea-ia/commit/024c28c55458a517c03be37943651e805de07ca1).
+- **Exact-head CI PASS:** [mission-admission-continuity run 39104216392](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104216392), [semantic-validation run 39104216377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104216377), and [outcome-classification run 39104216391](https://github.com/snowdenxrp/aldea-ia/actions/runs/39104216391) completed successfully on `024c28c55458a517c03be37943651e805de07ca1`. The mission/restart job passed orchestrator, runtime, effect-adapter, restart-reconstruction, simulation-restart-persistence, continuity-contract, continuity-store, and continuity-migration tests.
+- **Boundary:** `src/nexo/runtime.js` still has legacy-memory dependencies for execution/outcomes/replanning; this change does not finish end-to-end migration. Owner still cannot safely settle PREPARED because independent operation-specific reconciliation is unavailable. M0 remains incomplete; protected effects STOP; unresolved prepared outcomes UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## M0 — Execution idempotency identity hardening (2026-10-18)
 
 - Hardened `src/nexo/core/continuity-operations.mjs`: reusing an existing execution idempotency key for a different mission/step/action/target now fails with `NEXO_EXECUTION_IDENTITY_MISMATCH` instead of silently treating the operation as a replay.
