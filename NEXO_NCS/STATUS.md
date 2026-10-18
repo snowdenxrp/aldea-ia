@@ -554,3 +554,19 @@ The mission continuity workflow runs `tests/nexo/runtime.test.mjs`; this verifie
 - Added a terminal-entry regression: same idempotency key + different action must return `EFFECT_IDENTITY_MISMATCH` while preserving the original completed record.
 - CI exact source/test head `378bf2036e3229f023bff3ca915fa09f95546ccf`: [mission admission / runtime / effect-adapter / restart continuity — PASS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39089278683).
 - This only protects identity aliasing when the persisted journal entry is present. It does not authenticate reconciliation evidence or establish PG-009 owner/fence/authority/provenance. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+
+---
+
+## Verificación adicional de migración — 2026-10-18 (lectura del repositorio)
+
+Esta nota registra límites detectados al contrastar el checkpoint con el código y el historial consultados; no sustituye una ejecución local completa de la suite.
+
+- **CI histórica confirmada:** el run [39099935315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099935315) figura completado con conclusión `success`; el job ejecutó los tests de orchestrator, runtime, effect adapter, restart reconstruction, simulation persistence, continuity contract, continuity store y continuity migration. Esto prueba ese conjunto en el commit asociado, no en todo commit posterior.
+- **Referencia de estado desactualizada:** el historial del repositorio contiene commits posteriores a `8b45736b92d6510ed5ccdb3d151b969210b2c66b`; no se debe presentar ese SHA como si fuera automáticamente el estado actual de toda la rama.
+- **Residuo de datos heredados:** el `world-state.json` versionado en el historial reciente todavía contiene el campo `nexoMemory` legado. El escritor actual de `scripts/simulate.mjs` omite ese campo en su payload y la prueba de persistencia comprueba la omisión; eso no demuestra que el archivo versionado ya haya sido reescrito en la rama ni que el almacén independiente exista en un dispositivo. En el primer arranque de migración, si el almacén independiente no existe, el código intenta importar el contenido legado validado antes de persistir el estado nuevo.
+- **No hay evidencia de ejecución local en esta revisión:** no se pudo clonar el repositorio en este entorno, por lo que no se afirma que se haya ejecutado aquí `npm test` ni la suite completa.
+- **Bloqueo funcional confirmado por inspección:** `src/nexo/runtime.js` sigue dependiendo de `src/assistants/memory.js` para planes, resultados y reconstrucción; `createNexoContinuityOwner()` expone `loadCurrent`, `recordMission`, `recordPrepared` y `reconcilePrepared`, pero `reconcilePrepared` devuelve bloqueo y no hay todavía una ruta integrada de cierre terminal a través del propietario independiente. Por tanto, la migración end-to-end permanece **INCOMPLETA**.
+- **Orden seguro siguiente:** no conectar el dispatch al propietario mediante un parche superficial. Definir y probar la secuencia real de admisión fresca → PREPARED confirmado → efecto permitido → verificación independiente → persistencia de resultado, con conflictos y cortes de proceso; no declarar atomicidad entre los dos archivos.
+
+**Estado de verificación:** almacenamiento independiente y regresiones específicas implementados; CI histórica aprobada; limpieza efectiva del archivo versionado no confirmada en este turno; suite completa no ejecutada aquí; runtime end-to-end pendiente. M0 sigue abierto.
