@@ -341,6 +341,43 @@ try {
   assert.equal(genericPrematureOutcome.status, "blocked");
   assert.equal(genericPrematureOutcome.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
 
+  // The verifier registry is snapshotted at owner construction: later
+  // caller mutation cannot replace the configured reconciliation function.
+  const frozenRegistryDir = path.join(root, "generic-owner-frozen-registry");
+  await fs.mkdir(frozenRegistryDir);
+  const frozenRegistryOpened = await openNexoContinuityOwner({
+    filePath: path.join(frozenRegistryDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  const mutableVerifierRegistry = {
+    generic_write: async operation => ({
+      status: "applied",
+      idempotencyKey: operation.idempotencyKey,
+      action: operation.action,
+      target: operation.target,
+      observedRevision: 11,
+      source: "registered-verifier"
+    })
+  };
+  const frozenRegistryOwner = createNexoContinuityOwner({
+    store: frozenRegistryOpened.store,
+    effectVerifiers: mutableVerifierRegistry
+  });
+  mutableVerifierRegistry.generic_write = async () => { throw new Error("replaced"); };
+  const frozenRegistryResult = await frozenRegistryOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(frozenRegistryResult.status, "observed");
+  assert.equal(frozenRegistryResult.observation, "applied");
+  assert.equal((await frozenRegistryOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "reconciled_observed");
+
   // Unknown observations and absent verifier configuration must preserve PREPARED.
   const unknownDir = path.join(root, "generic-owner-unknown");
   await fs.mkdir(unknownDir);
