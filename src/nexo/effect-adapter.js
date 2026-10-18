@@ -64,10 +64,6 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
     registry.set(action, handler);
   }
 
-  function registerVerifier(action, verifier){
-    if(typeof action!=="string" || !action.trim() || typeof verifier!=="function") throw new TypeError("action y verifier confiable son obligatorios");
-    verifierRegistry.set(action, verifier);
-  }
 
   // Read-only reconciliation probe. The verifier must be installed by trusted
   // bootstrap configuration; operation callers cannot supply or replace it.
@@ -256,7 +252,7 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
   // Capability discovery lets a canonical runtime reject an unregistered action before PREPARED/dispatch.
   // This reports handler presence only; it is not a reconciliation or authorization contract.
   function supports(action){ return typeof action === "string" && registry.has(action); }
-  function supportsReconciliation(action){ return typeof action === "string" && verifierRegistry.has(action); }
+  function supportsReconciliation(action){ return typeof action === "string" && typeof verifierRegistry.get(action) === "function"; }
 
-  return {register,registerVerifier,execute,supports,supportsReconciliation,verifyPrepared,hasExecuted:key=>executed.has(key)};
+  return {register,execute,supports,supportsReconciliation,verifyPrepared,hasExecuted:key=>executed.has(key)};
 }
