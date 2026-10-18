@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
-import { recordNexoMissionInSnapshot } from "./continuity-operations.mjs";
+import { recordNexoMissionInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
 
 function ownerError(code) {
   const error = new Error(code);
@@ -49,6 +49,18 @@ export function createNexoContinuityOwner({ store } = {}) {
 
   async function loadCurrent() {
     return store.loadCurrent();
+  }
+
+  async function reconstructMission(missionId) {
+    if (typeof missionId !== "string" || !missionId.trim()) {
+      return { status: "failed", code: "NEXO_MISSION_ID_INVALID" };
+    }
+    const current = await store.loadCurrent();
+    const mission = reconstructNexoMissionFromSnapshot(current.snapshot, missionId);
+    if (!mission) {
+      return { status: "not_found", mission: null, storeRevision: current.storeRevision };
+    }
+    return { status: "reconstructed", mission, storeRevision: current.storeRevision };
   }
 
   async function recordMission({ expectedRevision, mission } = {}) {
@@ -125,5 +137,5 @@ export function createNexoContinuityOwner({ store } = {}) {
     return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
-  return Object.freeze({ loadCurrent, recordMission, recordPrepared, reconcilePrepared });
+  return Object.freeze({ loadCurrent, reconstructMission, recordMission, recordPrepared, reconcilePrepared });
 }
