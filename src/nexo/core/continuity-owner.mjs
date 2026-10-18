@@ -58,6 +58,10 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
   }
   Object.freeze(verifierRegistry);
 
+  function supportsReconciliation(action) {
+    return typeof action === "string" && Object.hasOwn(verifierRegistry, action);
+  }
+
   async function loadCurrent() {
     return store.loadCurrent();
   }
@@ -513,5 +517,5 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     };
   }
 
-  return Object.freeze({ loadCurrent, reconstructMission, recordMission, recordOutcome, recordPrepared, recordExecutionLineage, reconcilePrepared });
+  return Object.freeze({ loadCurrent, supportsReconciliation, reconstructMission, recordMission, recordOutcome, recordPrepared, recordExecutionLineage, reconcilePrepared });
 }
