@@ -1,3 +1,15 @@
+## Latest M0 core continuity contract (2026-10-18)
+
+- New Nexo-owned structural contract: `src/nexo/core/continuity-contract.mjs::assertNexoContinuityMemoryShape()`. It validates required collections and every prepared journal entry's mission/step/action/target link. It does not authenticate provenance or establish authority.
+- `scripts/simulate.mjs::loadStateStrict()` now delegates Nexo semantics to that core contract; ordinary simulation `loadState()` fallback remains unchanged.
+- New test: `tests/nexo/continuity-contract.test.mjs`; added to `.github/workflows/nexo-mission-admission-continuity.yml`.
+- Retention work preserves all attempts/executions for retained mission plans and preserves mission plans linked to prepared effects. The race test has a ready/release barrier to ensure both writers test the same initial revision.
+- Exact code+test head `41c591a0845608418de2450525e8a9cf7ff6c3a9` mission/restart CI PASS [39097823559](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097823559). STEP 4/5 passed on code-identical head `5a00e917c02b650286cb9d379d3086c3d8001e80`: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097816995), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097816881).
+- Reports: `NCS_M0_STRICT_STATE_LOAD_2026-10-18.md`; `NCS_M0_PRESERVE_PREPARED_MISSION_CONTEXT_2026-10-18.md`.
+- Next: use this core contract while designing the Nexo-owned continuity/persistence boundary. Do not promote Lúmina's world-state store to Nexo canonical authority. No external executor; protected effects remain STOP.
+
+---
+
 ## Latest M0 continuity work — strict recovery + retained mission history (2026-10-18)
 
 - Strict loader: `scripts/simulate.mjs::loadStateStrict()` rejects fallback state, invalid/missing revision, malformed Nexo memory, and prepared entries whose mission/step/action/target context is missing or inconsistent.
