@@ -518,3 +518,12 @@ Commits: test `59f3501f1d96358ad8f59649e06e00af00e219c3`; inclusión en `npm tes
 
 ### Próximo paso
 Obtener ejecución real de esta prueba en CI y revisar el log. Si falla, corregir antes de ampliar. Si pasa, usarla como evidencia de los tres cortes y después definir el contrato mínimo del propietario; no integrar el runtime hasta que exista una fuente de reconciliación apropiada para la acción y la frontera de persistencia. Mantener Nexo y Lúmina separados; no reabrir P112 ni STEP 7.
+
+
+## Continuation — repair lineage revision binding (2026-10-18)
+
+A focused review found `recordExecutionLineage()` could append repair lineage without checking that the environment revision supplied with the result matched the revision durably captured in PREPARED. The owner now fails closed for the three repair actions if either revision is absent/invalid or they differ. This is a lineage guard only; it does not settle PREPARED or prove causal attribution.
+
+- Owner commit: `291d482a2f1e03294c519bb8971fcce0b1c69176`.
+- Regression commit: `4667d3b3cbe4a587c6e53118961437b2db733958`. The test exercises mismatch rejection with no store-revision advance, then the matching revision path.
+- Exact-head CI/local execution not verified. Next: obtain exact-head test evidence, then continue with operation-specific crash recovery. Do not wire runtime, settle effects, or re-open earlier P112/STEP 7 audits. Keep Nexo continuity independent from Lúmina state.
