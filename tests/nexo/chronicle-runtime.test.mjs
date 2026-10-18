@@ -190,6 +190,16 @@ try {
     return { continuityPath, chroniclePath, chronicleStore, contracts, opened };
   }
   const real = await setup("chronicle-real");
+  const fabricatedCompletion = await real.opened.owner.recordOutcome({
+    expectedRevision: real.opened.current.storeRevision,
+    outcome: {
+      missionId: "chronicle-real", stepId: "step-1", action: "chronicle_append",
+      target: { content: "hello Nexo" }, status: "completed",
+      evidence: { verified: true, source: "caller-claim" }
+    }
+  });
+  assert.equal(fabricatedCompletion.status, "blocked");
+  assert.equal(fabricatedCompletion.code, "NEXO_CHRONICLE_SETTLEMENT_REQUIRED");
   let dispatches = 0;
   const realAdapter = createEffectAdapter({
     handlers: {
