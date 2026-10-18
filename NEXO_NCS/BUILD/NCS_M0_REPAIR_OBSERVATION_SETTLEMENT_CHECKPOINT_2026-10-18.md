@@ -1,3 +1,17 @@
+## Read-only mission-goal verifier added
+
+Latest exact tested head: [`59ec97393ad14fb7d1ef4bf6ab286f964f899410`](https://github.com/snowdenxrp/aldea-ia/commit/59ec97393ad14fb7d1ef4bf6ab286f964f899410).
+
+- Added `scripts/nexo-repair-mission-verification.mjs` with `verifyRepairMissionGoalFromPersistedState()`.
+- The verifier reads the Nexo mission and journal, accepts only missions whose steps are supported convergent repair actions, requires every step to have exactly one `settled_observed` entry, then re-loads one strict environment snapshot and re-checks each required invariant against that same snapshot.
+- It returns `goal_observed`, with `missionCompleted: false` and `causalAttribution: "not_claimed"`. This is deliberately not a terminal mission-completion claim and does not mutate continuity.
+- Regression verifies the observed goal result is distinct from mission completion.
+- Exact-head CI PASS: mission/restart [39133464114](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133464114), semantic [39133463875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133463875), outcome [39133463870](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133463870).
+
+Remaining: dependency graph validation needs a cycle guard; goal observation still needs a carefully scoped persistence contract and must not auto-unblock/replan without verifying all required mission semantics. No runtime cutover.
+
+---
+
 ## Runtime/replan compatibility guard
 
 Latest exact tested head: [`9610580f838ea2f55a482f64a28f18d84cac202e`](https://github.com/snowdenxrp/aldea-ia/commit/9610580f838ea2f55a482f64a28f18d84cac202e).
