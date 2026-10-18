@@ -54,6 +54,10 @@ La ruta ahora captura la excepción en la frontera concreta de settlement y devu
 - `tests/nexo/repair-owner-lifecycle.test.mjs` comprueba el adapter lanzando, la revisión ambiental conservada y la obligación `prepared` persistente en el owner.
 - Primer intento: run 39167516878 falló por una clave idempotente de fixture no canónica. Se corrigió a `mission-owner-lifecycle:step-repair`; el código quedó probado en commit `3f655a3f239ecaf87d4ba3dd1504bdfffa9a33df`, con [repair crash cuts 39167557221 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557221), [STEP 4 39167557187 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557187) y [STEP 5 39167557073 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557073).
 
+## 2C. Gate contractual del runtime genérico registrado
+
+Nuevo documento: `NEXO_NCS/BUILD/NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md`. No hacer un cutover parcial: el owner tiene PREPARED y lineage, pero no settlement genérico y `reconcilePrepared` bloquea por diseño. El adapter de Lúmina modifica estado en memoria; no demuestra estado ambiental durable después de restart. La siguiente implementación debe comenzar con pruebas contractuales de reconciliación/settlement y solo después conectar el runtime. Las acciones sin contrato no deben llegar al adapter.
+
 ## 2B. Auditoría del seam genérico — hallazgo bloqueante (2026-10-18)
 
 El siguiente paso no es conectar mecánicamente `persistPreparedIntent` al owner:

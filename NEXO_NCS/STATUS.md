@@ -11,6 +11,14 @@
 
 **Siguiente trabajo:** volver a la integración del runtime genérico de Nexo y especificar el seam mínimo owner-backed. No repetir el audit de dispatch ni el de settlement ya cubiertos.
 
+## M0 — gate de contrato genérico de efectos (2026-10-18)
+
+Documento: [NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md](BUILD/NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md).
+
+Decisión: no conectar el runtime por callback aislado ni despachar antes de persistir PREPARED. El runtime genérico necesita un contrato por acción para admisión canónica, PREPARED confirmado, dispatch, lineage, reconciliación del estado ambiental persistido, settlement CAS y outcome. El owner aún no tiene settlement genérico; `reconcilePrepared()` bloquea deliberadamente. La simulación de Lúmina en memoria no prueba recuperación durable tras restart. Acciones sin contrato deben bloquearse antes del adapter.
+
+Siguiente corte: pruebas contractuales de reconciliación/settlement en el owner antes de conectar el runtime. No crear ledger paralelo ni fingir atomicidad cross-store. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
 ## M0 — seam del runtime genérico: callback PREPARED no basta (auditoría 2026-10-18)
 
 - `src/nexo/runtime.js` ejecuta `adapter.execute()` antes de `commitRuntimeOutcome()`; el commit posterior muta la memoria legacy de `src/assistants/memory.js`. No hay exigencia universal de PREPARED durable en el owner antes del dispatch.

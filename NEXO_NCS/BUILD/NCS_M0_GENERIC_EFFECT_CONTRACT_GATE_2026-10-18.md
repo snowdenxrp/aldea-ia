@@ -1,0 +1,40 @@
+# M0 — contrato genérico de efectos de Nexo
+Fecha: 2026-10-18
+Estado: gate de diseño; no es implementación ni autorización de dispatch.
+
+## Evidencia actual
+- `src/nexo/runtime.js` ejecuta `adapter.execute()` antes de persistir el outcome en la memoria legacy.
+- `persistPreparedIntent` es opcional; no garantiza que lineage y settlement lleguen al owner.
+- `createNexoContinuityOwner()` expone `recordPrepared` y `recordExecutionLineage`, pero no settlement genérico. `reconcilePrepared()` devuelve `NEXO_EFFECT_RECONCILIATION_REQUIRED`.
+- El adapter de Lúmina modifica simulación en memoria. Eso no demuestra observación ambiental durable después de restart.
+- El store canónico declara que su revisión coordina escritores locales, pero no es autoridad ni prueba de efecto externo y no promete fsync/power-loss durability.
+
+## Decisión
+No hacer cutover mediante callback aislado ni registrar el PREPARED después del dispatch. Una acción solo puede ejecutarse desde el runtime genérico si tiene contrato explícito de reconciliación verificable. Si falta, bloquear antes de invocar el adapter.
+
+## Contrato por acción
+1. **Admisión:** reconstruir misión/paso desde snapshot canónico; identidad, target, idempotency key y dependencias deben coincidir.
+2. **PREPARED:** requerir commit condicional confirmado antes del dispatch. Si devuelve UNKNOWN o lanza, no despachar; reconciliar primero.
+3. **Dispatch:** clasificar excepciones como resultado desconocido si pudo haber efecto parcial; no reintentar automáticamente.
+4. **Lineage:** registrar resultado y revisión solo contra PREPARED existente y coincidente.
+5. **Reconciliación:** un verificador confiable específico de la acción debe observar el estado real persistido y distinguir aplicado/no aplicado/desconocido después de restart.
+6. **Settlement:** transición CAS del journal solo con resultado de reconciliación ligado a la misma operación; nunca por `adapter.status` solamente.
+7. **Outcome:** registrar después de reconciliación/settlement; `completed` requiere evidencia verificable con procedencia comprobable.
+
+## Orden de implementación
+1. Definir estados y contrato de reconciliación/settlement; un callback libre del solicitante no puede validar su propio efecto.
+2. Añadir pruebas de identidad incorrecta, conflicto CAS, commit UNKNOWN, resultado terminal sin reconciliación, replay de PREPARED y restart aplicado/no aplicado/desconocido.
+3. Implementar la transición del owner determinada por esas pruebas.
+4. Conectar el runtime exigiendo PREPARED confirmado antes del dispatch; verificar que acciones sin contrato nunca invocan el adapter.
+5. Integrar la entrada real y probar crash/replay/restart con estado ambiental persistido.
+6. Registrar SHA, runs y artefactos observados en STATUS.
+
+## Prohibiciones
+- No convertir el dispatcher repair-only en genérico por renombrado.
+- No añadir segundo ledger, retries automáticos, tombstones o wrappers transaccionales sin necesidad demostrada.
+- No afirmar atomicidad cross-store.
+- No mezclar continuidad Nexo con estado de mundo, agentes o memoria de Lúmina.
+- Efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+## Criterio de salida
+Una acción con contrato explícito debe demostrar PREPARED → dispatch → lineage → reconciliación → settlement → outcome tras interrupciones, sin doble ejecución ni finalización inventada. Tests aislados de métodos no bastan. M0 sigue INCOMPLETO.
