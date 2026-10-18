@@ -56,13 +56,13 @@ En `src/nexo/core/continuity-owner.mjs`:
 - Efectos protegidos y acciones generales de `execute_lumina_action`: fuera del alcance del dispatcher repair-only; siguen STOP.
 - `settled_observed`: evidencia de que se observó una invariante persistida bajo el contrato de reparación; no afirma causalidad, autorización ni completion de misión.
 
-## 4. Siguiente paso técnico obligatorio
+## 4. Estado actualizado de la siguiente frontera técnica
 
-1. Añadir una prueba de reinicio/replay que opere sobre la **misma misión owner-backed** y demuestre cómo se representa un outcome final sin contradecir un journal `settled_observed`; si el contrato no puede expresarlo sin conflar estados, documentar y resolver esa brecha antes de cambiar runtime.
-2. Definir el adaptador mínimo de runtime que recibe solo `missionId/stepId`, recarga la misión canónica y deriva acción/target del snapshot. No aceptar acción, target ni evidencia de autoridad del caller.
-3. Mantener dispatch genérico apagado por defecto. Solo habilitar las tres reparaciones permitidas a través de la sesión ya probada; no reutilizarla para acciones no idempotentes.
-4. Probar CAS conflictivo, restart después de PREPARED, restart después de persistir entorno, replay después de `settled_observed`, estado UNKNOWN y separación de archivos a través de la entrada real de proceso.
-5. Solo tras esas pruebas, reemplazar una operación legacy a la vez y retirar una lectura/escritura legacy únicamente cuando el test demuestre que no queda caller dependiente.
+1. **COMPLETADO para el contrato repair-only:** prueba de reinicio/replay sobre la misma misión owner-backed. El caller intenta registrar `completed` después de `settled_observed` con etiquetas `verified/kind/source`; el owner rechaza con `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`, no cambia revisión y la reconstrucción antes/después de reabrir el store mantiene la misión bloqueada. Commit de prueba `fd2331e8d71afbbf0f19ea978d552a89087c1dc6`; CI exacto de repair, STEP 4 y STEP 5 SUCCESS (runs 39145754425, 39145754371, 39145754375).
+2. **COMPLETADO solo para reparación acotada:** `runNexoRuntimeRepairSession()` y `runNexoRepairSession()` reciben identificadores, recargan el snapshot canónico y derivan acción/target desde la misión persistida. No equivalen a un adaptador genérico para `executeNexoStep()`.
+3. **COMPLETADO para la entrada de proceso existente:** el dispatcher repair-only requiere opt-in `--nexo-repair-once`; la ruta por defecto no ejecuta reparaciones. No ampliar a acciones generales ni protegidas.
+4. **PARCIAL:** hay pruebas de CAS/revisión, PREPARED, persistencia de entorno, recuperación sin redispatch, replay tras settlement, UNKNOWN y separación de archivos; la cobertura corresponde al lifecycle repair-only y a su entrada CLI aislada. No demuestra integración del runtime genérico ni atomicidad cross-store.
+5. **PENDIENTE / BLOQUEANTE:** no retirar aún las lecturas/escrituras legacy de `src/nexo/runtime.js`. Antes hace falta un contrato para el primer caller genérico que distinga durabilidad PREPARED, resultado de adapter, observación de estado y outcome de misión sin confiar en etiquetas de evidencia del caller. Luego migrar una sola operación y demostrar que no quedan callers dependientes.
 
 ## 5. Evidencia y límites
 
