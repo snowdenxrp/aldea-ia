@@ -139,6 +139,9 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       outcome.status === "completed" &&
       stepEffects.length === 1 &&
       stepEffects[0]?.status === "settled_observed" &&
+      stepEffects[0]?.idempotencyKey === `${outcome.missionId}:${outcome.stepId}` &&
+      stepEffects[0]?.action === outcome.action &&
+      isDeepStrictEqual(stepEffects[0]?.target ?? null, outcome.target ?? null) &&
       stepEffects[0]?.settlement?.status === "applied" &&
       stepEffects[0]?.settlement?.source === "nexo-chronicle-store" &&
       Number.isSafeInteger(stepEffects[0]?.settlement?.observedRevision) &&
