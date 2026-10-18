@@ -77,7 +77,7 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
     };
   }
   const outcome=adapterResult.status==="completed"?"completed":adapterResult.status==="blocked"||adapterResult.status==="unsupported"?"blocked":"failed";
-  const evidence=adapterResult.evidence??{verified:false,kind:"effect-result",code:adapterResult.code??null};
+  const evidence=adapterResult.code==="UNVERIFIED_COMPLETION_RESULT"?{verified:false,kind:"runtime-boundary",code:adapterResult.code,reason:"adapter completion lacked required verification signals",scope:{missionId:started.missionId,stepId,action:step.action,target:step.target??null}}:adapterResult.evidence??{verified:false,kind:"effect-result",code:adapterResult.code??null};
   return commitRuntimeOutcome(memory,mission,stepId,adapterResult,outcome,evidence,started);
 }
 
