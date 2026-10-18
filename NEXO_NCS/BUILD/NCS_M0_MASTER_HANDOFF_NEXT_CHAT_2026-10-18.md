@@ -313,3 +313,24 @@ La misión es M0. Todo lo que no desbloquee M0 debe esperar.
 4. Actualizar docs tras pruebas, verificando siempre SHA/run/job exactos.
 
 **Límite:** esto ya no es solo un conjunto de helpers; existe una sesión owner-backed y probada para reparación convergente. Aun así no está conectada a `src/nexo/runtime.js`, no representa todo el runtime productivo y no cierra M0. No hay atomicidad cross-store ni permiso para efectos protegidos.
+
+
+---
+
+## Continuidad más reciente — puente opt-in de runtime (2026-10-18)
+
+### Implementado
+- `scripts/nexo-runtime-session.mjs` exporta `runNexoRuntimeRepairSession()`. Lee el owner actual, exige una sola misión candidata y selecciona un único paso de reparación `planned` cuyas dependencias estén completadas. Acción y target se vuelven a derivar en `runNexoRepairSession()` desde la continuidad canónica.
+- `scripts/assistants.mjs` tiene una conexión explícita y opt-in con `--nexo-repair-once`. El flujo normal no despacha reparaciones. Con el flag, el snapshot inicial del entorno se persiste primero, se ejecuta la sesión después y se vuelve a leer el estado para informar la revisión final, evitando que la escritura anterior del mismo proceso sobrescriba la reparación.
+- Endurecimiento: la sesión directa solo admite estado `planned` y dependencias canónicas satisfechas; no confía en que el wrapper sea el único caller.
+- Tests cubren puente, repair-only, recuperación tras reapertura del owner, no redispatch, acción no elegible, dependencia no satisfecha y separación Nexo/Lúmina. Workflow incluye además `node --check scripts/nexo-runtime-session.mjs && node --check scripts/assistants.mjs`.
+
+### Evidencia verificada
+- [CI 39143194694](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143194694) SUCCESS en SHA `3c414ff2d0b8ebd8f880e8a37e83602138924395`; job `repair-crash-cuts`, cuatro regresiones y comprobación sintáctica SUCCESS.
+- La suite de integración del puente pasó primero en [CI 39143167854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143167854) con SHA `93dc2cf3ed070fed35298a4777e43804e862fdef`; el run más reciente suma la comprobación de sintaxis.
+- STATUS actualizado en commit [af4ebdd9eed77fab0bcc35abbed798e885b5de99](https://github.com/snowdenxrp/aldea-ia/commit/af4ebdd9eed77fab0bcc35abbed798e885b5de99).
+
+### Siguiente tarea inmediata
+Crear una prueba de proceso aislada que invoque la entrada real `scripts/assistants.mjs --nexo-repair-once` con fixtures/directorio temporal y nunca toque `world-state.json` real. Probar también el modo por defecto sin dispatch. La entrada actual usa rutas derivadas de `import.meta.url`; para testearla de forma segura, extraer solo el mínimo bootstrap/configurable de paths o introducir un proceso fixture sin cambiar la ruta productiva por defecto. No añadir abstracciones generales. Verificar que el resultado CLI refleja la revisión final del entorno después de la reparación. Solo después considerar cutover gradual de la ruta legacy.
+
+**Límites:** la integración está opt-in y acotada a tres reparaciones; no se ha ejecutado con datos reales. No es el runtime genérico completo, M0 no está cerrado, no hay atomicidad cross-store, `settled_observed` no significa completion ni causalidad, efectos protegidos STOP, Nexo y Lúmina separados, STEP 7 OPEN / STOP / UNKNOWN.
