@@ -8,6 +8,8 @@ on:
       - "scripts/nexo-repair-dispatch.mjs"
       - "scripts/nexo-repair-entrypoint.mjs"
       - "scripts/nexo-repair-session.mjs"
+      - "scripts/nexo-runtime-session.mjs"
+      - "scripts/assistants.mjs"
       - "scripts/nexo-repair-settlement.mjs"
       - "scripts/nexo-repair-mission-verification.mjs"
       - "scripts/nexo-continuity.mjs"
