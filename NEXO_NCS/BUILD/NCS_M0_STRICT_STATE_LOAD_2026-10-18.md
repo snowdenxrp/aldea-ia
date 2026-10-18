@@ -18,7 +18,8 @@ Added `loadStateStrict(statePath)` alongside the existing `loadState()`:
 - `NEXO_STATE_INVALID_JSON` for malformed JSON.
 - `NEXO_STATE_SCHEMA_INVALID` for an unsupported top-level schema/shape.
 - `NEXO_STATE_REVISION_UNKNOWN` if the persisted revision is missing, non-integer, unsafe or negative.
-- Applies existing compatibility normalization only after the persisted snapshot shape and revision have passed validation.
+- `NEXO_MEMORY_SCHEMA_UNKNOWN` if non-null `nexoMemory` does not contain the required mission/attempt/do-not-repeat/execution/effect-journal collections. This prevents malformed recovery memory from being normalized into an empty journal at a safety-sensitive boundary.
+- Applies existing compatibility normalization only after the persisted snapshot shape, revision, and Nexo recovery-memory shape have passed validation.
 - Does not silently create a default snapshot or assign revision zero.
 
 The original `loadState()` behavior remains unchanged for existing simulation startup callers.
@@ -35,9 +36,9 @@ It also asserts that a valid persisted snapshot loads with its actual revision a
 
 ## Evidence
 
-- Source commit: `c527c252edd3d44566f567ebf06745d81c437339`
-- Test commit / exact source+test head: `41e561f57b1e03cc57828efa9ce866e71648593f`
-- CI status at report creation: STEP 4 [39097259364](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097259364) and STEP 5 [39097259433](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097259433) queued. **No PASS claim until those exact-head runs complete successfully.**
+- Source commits: `c527c252edd3d44566f567ebf06745d81c437339` (strict snapshot shape/revision), `02c00c2a67ec714803c3d06491e5ebdeb5c8b174` (strict Nexo memory shape).
+- Exact source+test head: `53e76287dbd89289b7975dd630f9ee4aed07fcfc`.
+- CI at report update: mission/restart [39097381824](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097381824), STEP 4 [39097381804](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097381804), and STEP 5 [39097381805](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097381805) were in progress. **Do not claim PASS until all three exact-head runs complete successfully.**
 - [Source](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/scripts/simulate.mjs)
 - [Regression test](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/simulation-restart-persistence.test.mjs)
 
