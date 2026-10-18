@@ -31,3 +31,5 @@ jobs:
         run: node tests/nexo/repair-settlement-crash-cuts.test.mjs
       - name: Run Nexo continuity owner migration regression
         run: node tests/nexo/continuity-migration.test.mjs
+      - name: Run owner-backed repair lifecycle integration regression
+        run: node tests/nexo/repair-owner-lifecycle.test.mjs
