@@ -923,3 +923,12 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - CI final: [run 39174162150 — Chronicle native vertical, SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174162150), SHA `1ef9a4745d31d324b56733e43e250d36bb3908b7`. Tanto el paso del store/reader como el de runtime owner-backed/recovery terminaron SUCCESS. CI de entrada antes del último ajuste también fue verde en [run 39174097465](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174097465).
 - Comando local documentado por interfaz: `node scripts/nexo-chronicle-session.mjs --continuity <ruta> --chronicle <ruta> --mission <id-suministrado> --step <id-suministrado> --content "texto" --initialize-continuity --initialize-chronicle`. Los flags de inicialización se omiten cuando los stores ya existen. No generar IDs por cuenta propia.
 - **Alcance real:** primera vertical nativa de Nexo funciona por una entrada explícita y tests con stores/owner/adapter reales. No se ha migrado el runtime por defecto ni `scripts/assistants.mjs`; no se habilitaron otras acciones. Sin garantía fsync/pérdida de energía/rollback ni atomicidad cross-store. M0 sigue INCOMPLETO hasta auditar la integración de la entrada y definir el siguiente corte nativo sin mezclar Lúmina.
+
+
+## M0 — suites Chronicle y continuidad acotada verdes en el mismo SHA (2026-10-18)
+
+- SHA validado: `4626afbb1220feb0784c020288de697608b9276b`.
+- [Chronicle native vertical, run 39174272574](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272574): SUCCESS; store, verificador, runtime owner-backed, entrada CLI y recuperación tras reinicio.
+- [Bounded mission admission and restart continuity, run 39174272526](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272526): SUCCESS; orchestrator, runtime, adapter, reconstrucción, persistencia de reinicio, contrato/store/migración de continuidad y ambas suites Chronicle.
+- STEP 4 y STEP 5 ya estaban verdes en el SHA inmediatamente anterior; el código del owner/runtime no cambió entre ese SHA y 4626, que añadió las pruebas de corrupción de stores y los triggers de workflow.
+- No declarar M0 completo: la vertical cubre una acción y un CLI explícito. No hay cutover del runtime legado ni integración con `scripts/assistants.mjs`; esa separación es deliberada para no reintroducir Lúmina. Siguiente frontera: auditar los contratos de bootstrap/path de almacenamiento y decidir el corte de integración principal sin ampliar el dominio de acciones.
