@@ -1,3 +1,15 @@
+## Latest M0 runtime completion-verification guard — 2026-10-18
+
+- Runtime commit: `97e9deb8410af9bd9f9afb5dc876102741c202c5`.
+- Regression test commit: `c37b91c703b308c9ee888c9f9f1147489e345d80`.
+- Runtime previously treated any adapter `status: "completed"` as mission success. It now requires both `adapterResult.verified === true` and `adapterResult.evidence.verified === true`; otherwise it normalizes the result to `blocked / UNVERIFIED_COMPLETION_RESULT` before recording the mission attempt and execution.
+- Regression is in `tests/nexo/runtime.test.mjs`. Report: `NCS_M0_RUNTIME_REJECT_UNVERIFIED_COMPLETION_2026-10-18.md`.
+- CI/status lookup at the exact test head returned no checks/runs; CI is NOT VERIFIED.
+- Limit: this is a consistency guard, not authentication. An adapter can still fabricate positive verification fields. No independent verifier/current fence/provenance source is integrated into PG-009. Keep prepared effects UNKNOWN; no redispatch; M0 incomplete.
+- Next: obtain exact-head CI proof, then continue tracing the existing Operation Contract through runtime admission → effect boundary → evidence verification → persistence/reconstruction. Do not invent authority roots, epochs or tokens.
+
+---
+
 ## Latest M0 recovery continuity guard — prepared effect blocks successor replanning (2026-10-18)
 
 - Source commit: `57ccbe1bd3a6070c69f67e321b9432c0c188a755`.
