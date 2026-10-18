@@ -663,3 +663,48 @@ try {
 } finally {
   await fs.rm(lineageCommitFailureRoot, { recursive: true, force: true });
 }
+
+
+// A thrown settlement-store write after environment and lineage commits must
+// be represented as unknown; the durable PREPARED obligation remains visible.
+const settlementCommitFailureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-settlement-commit-failure-"));
+try {
+  const nexoPath = path.join(settlementCommitFailureRoot, "nexo-continuity.json");
+  const statePath = path.join(settlementCommitFailureRoot, "world-state.json");
+  const opened = await openNexoContinuityOwner({ filePath: nexoPath, legacyMemory: legacyMemory() });
+  await fs.writeFile(statePath, JSON.stringify(environment(100)), "utf8");
+  const store = {
+    ...opened.store,
+    loadCurrent: (...args) => opened.store.loadCurrent(...args),
+    commitIfCurrent: async () => {
+      const error = new Error("simulated settlement store write failure");
+      error.code = "NEXO_CONTINUITY_WRITE_FAILED";
+      throw error;
+    }
+  };
+  const result = await runNexoRepairOnce({
+    owner: opened.owner,
+    store,
+    statePath,
+    expectedContinuityRevision: 0,
+    operation: {
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      missionId: "mission-owner-lifecycle",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    },
+    savedAt: 13
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_CONTINUITY_WRITE_FAILED");
+  assert.equal(result.persisted, true);
+  assert.equal(result.uncertainty, "environment_persisted_but_continuity_settlement_unconfirmed");
+  const durable = await opened.owner.loadCurrent();
+  assert.equal(durable.snapshot.effectJournal[0].status, "prepared");
+  assert.equal(durable.snapshot.executions.length, 1,
+    "lineage remains committed independently when settlement commit fails");
+  assert.equal((await loadStateStrict(statePath)).stateRevision, 101);
+} finally {
+  await fs.rm(settlementCommitFailureRoot, { recursive: true, force: true });
+}
