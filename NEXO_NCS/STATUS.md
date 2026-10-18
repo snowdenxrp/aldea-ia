@@ -1,3 +1,10 @@
+## Consolidated M0.1 onward continuity dossier (2026-10-17)
+
+- Saved complete M0.1+ continuity, existing increments, source/test/CI evidence, architecture decisions, unresolved boundaries, and exact next-chat instructions in [NCS M0.1 onward consolidated continuity](BUILD/NCS_M0_1_ONWARD_CONSOLIDATED_CONTINUITY_2026-10-17.md).
+- **True M0 objective:** minimum coherent functional Nexo Core — observation, interpretation/reasoning, planning, memory/continuity, outcome verification, learning and replanning under honest uncertainty. Not endless hardening patches, not isolated tests, and not a claim of authority or protected activation.
+- Next work must start from latest verified branch head, check existing reports before research, and prioritize a real functional Core loop. Do not restart M0.1/M0.2 or repeat M0.63–M0.70 without new evidence.
+- Current boundaries unchanged: observation-to-claim identity gap remains documented; Proxy trust-boundary design pending; STEP 7 = OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## M0 functional correction — missing evidence must block the step, not only the mission (2026-10-17)
 
 - `advanceNexoMission()` previously returned a blocked mission when a completion lacked acceptable evidence, but left its target step `executing` with no step-level reason.
