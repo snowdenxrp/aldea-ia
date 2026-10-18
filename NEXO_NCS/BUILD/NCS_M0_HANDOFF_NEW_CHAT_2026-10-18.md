@@ -104,3 +104,14 @@ Estado de entrega: M0 EN PROGRESO / NO COMPLETO; store separation diseñada pero
 5. Actualizar STATUS, handoff maestro y este handoff con SHA/run/job exactos.
 
 **M0 sigue EN PROGRESO / NO COMPLETO.** Continuar desde este punto; no volver a M1, STEP 7 ni investigaciones AB/P cerradas. Nexo y Lúmina deben permanecer separados.
+
+
+## Update 2026-10-18 — prueba de objetivo observado tras settlement
+
+Último avance adicional: `tests/nexo/repair-mission-verification.test.mjs` cubre objetivo persistido después de `settled_observed`, replay read-only tras reabrir el owner, pérdida posterior de la invariante, PREPARED pendiente y misión desconocida. Se añadió al workflow M0.
+
+**CI verificado:** [39144348792](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144348792), commit `1d12c8e65aff1be75b04c0acee2fbc513b8ba5f4`, job `repair-crash-cuts` SUCCESS; el paso de verificación nueva terminó SUCCESS.
+
+Resultado semántico importante: `goal_observed` es una observación actual y read-only; no implica causalidad, autorización ni `missionCompleted:true`. Si la invariante desaparece en una revisión posterior, el verificador bloquea. No se añadió estado de misión nuevo ni se migró el runtime genérico.
+
+Siguiente tarea: auditar si hace falta persistir una observación de objetivo separada, sin convertir una observación histórica en verdad actual; definir vínculo con revisión de entorno, CAS, restart y replay. No cambiar a completion ni retirar legacy hasta tener ese contrato y regresiones. Nexo/Lúmina separados; efectos protegidos STOP; M0 abierto.
