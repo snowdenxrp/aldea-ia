@@ -1,3 +1,20 @@
+## Latest verifier hardening — exact mission/journal coverage
+
+- Code commit: [25598ba80e377cdf39498991f29abc665a4ded69](https://github.com/snowdenxrp/aldea-ia/commit/25598ba80e377cdf39498991f29abc665a4ded69).
+- Code + test head: [b74cc37edfad915fc8cc5deaf9269c6f15b28872](https://github.com/snowdenxrp/aldea-ia/commit/b74cc37edfad915fc8cc5deaf9269c6f15b28872).
+- The mission verifier now rejects duplicate step IDs and requires exact journal coverage: one journal entry for every declared step, no undeclared entries. Regression tests were added to `tests/nexo/simulation-restart-persistence.test.mjs`.
+- Exact-head CI is NOT YET VERIFIED; the available status/workflow lookup returned no records. Do not call this PASS.
+
+### Next exact actions
+
+1. Check Actions for exact head `b74cc37edfad915fc8cc5deaf9269c6f15b28872`; fix failures before proceeding.
+2. Add a race regression for environment changes between goal verification and any durable continuity write. A continuity CAS alone cannot atomically fence Lúmina's separate environment file.
+3. Do not persist `goal_observed` until revision binding/invalidation semantics are explicit. Do not mark mission completed, unblock, replan, wire runtime, or migrate legacy memory from this verifier.
+
+M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest mission-goal verifier — read-only, non-completion semantics
 
 - Exact tested head: [`1ae28c8570e76191663ed045e6d68644df17a52c`](https://github.com/snowdenxrp/aldea-ia/commit/1ae28c8570e76191663ed045e6d68644df17a52c).
