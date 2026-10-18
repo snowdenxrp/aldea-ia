@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import { loadStateStrict } from "./simulate.mjs";
 import { prepareRepairAgainstPersistedState } from "./nexo-repair-preparation.mjs";
 import { dispatchPreparedRepair } from "./nexo-repair-dispatch.mjs";
@@ -65,6 +66,13 @@ export async function runNexoRepairOnce({
 
   if (!prepared || prepared.status !== "prepared") {
     return { status: "blocked", code: "NEXO_REPAIR_PREPARED_RECORD_NOT_FOUND", persisted: false };
+  }
+  if (operation.idempotencyKey !== `${operation.missionId}:${operation.stepId}` ||
+      prepared.missionId !== operation.missionId ||
+      prepared.stepId !== operation.stepId ||
+      prepared.action !== operation.action ||
+      !isDeepStrictEqual(prepared.target ?? null, operation.target ?? null)) {
+    return { status: "blocked", code: "NEXO_REPAIR_OPERATION_CONTEXT_MISMATCH", persisted: false };
   }
 
   // A previously existing PREPARED record may represent a crash at any point.
