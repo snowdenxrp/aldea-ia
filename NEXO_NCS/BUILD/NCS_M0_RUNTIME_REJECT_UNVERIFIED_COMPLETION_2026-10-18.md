@@ -34,6 +34,13 @@ Keep M0's mission outcome, execution record, and evidence aligned. An adapter's 
 - Source: [runtime change](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/src/nexo/runtime.js)
 - Test: [runtime regression](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/runtime.test.mjs)
 
+## Follow-up — preserve the reason and scope (2026-10-18)
+
+- Source follow-up commit: `b23823e1d9613f850d0a7f71466ce7c529e271d8`.
+- Test follow-up commit / exact source+test head: `23f2f5c24b9c8f9c5927513dedae1b20a4e40502`.
+- The normalized `UNVERIFIED_COMPLETION_RESULT` evidence now carries an explicit reason and operation scope (`missionId`, `stepId`, `action`, `target`) into the durable attempt evidence. This applies AB104.999R's reason/scope constraint; it does not prove source authenticity.
+- Exact-head CI PASS: mission admission/restart [39096709481](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709481), STEP 4 [39096709477](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709477), STEP 5 [39096709519](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709519). Mission workflow ran `runtime.test.mjs`, `effect-adapter.test.mjs`, `orchestrator.test.mjs`, and `restart-reconstruction.test.mjs`; all three workflows completed successfully at the exact head.
+
 ## Limits
 
 This is a fail-closed consistency guard, not an independent verifier. A caller-controlled adapter can still fabricate both `verified: true` signals. The codebase still lacks a demonstrated independent verifier/current fence/provenance source composed with the PG-009 recovery flow. Do not infer authority or external-effect truth from this change.
