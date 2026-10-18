@@ -1,3 +1,14 @@
+## Runtime/replan compatibility guard
+
+Latest exact tested head: [`9610580f838ea2f55a482f64a28f18d84cac202e`](https://github.com/snowdenxrp/aldea-ia/commit/9610580f838ea2f55a482f64a28f18d84cac202e).
+
+- `replanPersistedNexoMission()` now blocks a successor when the prior mission contains a `settled_observed` repair, returning `NEXO_REPAIR_GOAL_VERIFICATION_REQUIRED`. It still separately blocks unresolved `prepared` entries.
+- Runtime regression confirms the successor is not appended and the observation journal entry remains unchanged.
+- Exact-head CI PASS: mission/restart [39133373970](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133373970), outcome [39133373980](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133373980), semantic [39133373987](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133373987).
+- This is still not a mission-level verifier. Runtime cutover remains blocked until goal verification has an explicit operation-specific contract and persisted evidence.
+
+---
+
 ## Follow-up hardening — negative recovery and reconstruction gate
 
 Latest tested head: [`4cadf1831ecbd3664964c410ac8bc1397fd22a2e`](https://github.com/snowdenxrp/aldea-ia/commit/4cadf1831ecbd3664964c410ac8bc1397fd22a2e).
