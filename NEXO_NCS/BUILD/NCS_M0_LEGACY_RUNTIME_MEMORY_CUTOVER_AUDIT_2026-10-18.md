@@ -106,3 +106,17 @@ Véase `NEXO_NCS/BUILD/NCS_M0_GOAL_OBSERVATION_AND_RUNTIME_CUTOVER_DECISION_2026
 La lectura del settlement actual confirma que `settlePreparedRepairFromPersistedState()` exige un PREPARED único, acción de reparación admitida, revisión ambiental enlazada, revisión actual igual a la base o base+1, invariante persistida presente y CAS de continuidad. El entrypoint persiste lineage aparte antes de settlement y no declara misión completa. Esto es una ruta repair-only; no demuestra que el runtime genérico legacy haya sido migrado ni permite generalizar el bridge a acciones protegidas.
 
 Último código/pruebas con CI verde tras retirar el experimento ambiental: `fe9fe3b656fceff67be31722d7729ff6637a428b` (repair 39149853015, STEP 4 39149852997, STEP 5 39149853023; todos SUCCESS). Commits posteriores son documentación. M0 continúa INCOMPLETO.
+
+
+## Evidencia incremental posterior — replay estricto de execution lineage (2026-10-18)
+
+Se corrigieron dos ambigüedades concretas de replay en `recordExecutionLineage()` sin cambiar el esquema de snapshot:
+
+1. Si la identidad de operación coincide pero el resultado del adaptador difiere del resultado durable, bloquear con `NEXO_EXECUTION_RESULT_MISMATCH`; no aceptar como idempotente una afirmación contradictoria.
+2. Para las tres reparaciones admitidas, antes de aceptar una lineage existente en replay, exigir una sola entrada de journal con baseline ambiental conocido y que `operation.environmentStateRevision` coincida con el baseline PREPARED. Discrepancia: `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH`; base desconocida/ambigua: `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN`.
+
+Las regresiones viven en `tests/nexo/repair-owner-lifecycle.test.mjs` y `tests/nexo/continuity-migration.test.mjs`. Test-first hizo visibles los dos comportamientos anteriores: [39150256557](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150256557) y [39150495080](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150495080) fallaron en las aserciones nuevas, como se esperaba antes del fix. El primer fix también expuso una expectativa heredada incompatible, corregida de forma explícita.
+
+CI SUCCESS de código/pruebas sobre SHA `0653d7216c49dd6a9b0ea7a182333ff18ee07bc3`: repair 39150332075, STEP 4 39150332148, STEP 5 39150331964, bounded admission/restart 39150331921. CI SUCCESS posterior sobre SHA `3bfbad268ac1a9b5ea9492e8db0a90b5972f22d9`: repair 39150515026, STEP 4 39150514997, STEP 5 39150515080, bounded admission/restart 39150515015. Los documentos se actualizaron después; no declarar CI sobre el HEAD documental actual.
+
+Estos guards fortalecen idempotencia y contexto de lineage; no cambian la decisión de no añadir `goalObservations`, no declaran completion, no prueban atomicidad cross-store y no migran `src/nexo/runtime.js`. El siguiente paso sigue siendo diseñar y probar un seam canónico mínimo del runtime, sin sustituir mecánicamente los imports legacy ni extender el dispatcher repair-only a acciones generales/protegidas.
