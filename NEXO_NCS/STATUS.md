@@ -1,5 +1,15 @@
 > **Continuidad de nuevo chat (2026-10-18):** antes de seguir, leer `NEXO_NCS/BUILD/NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md`. Es el handoff operativo vigente con HEAD observado, últimos cambios y CI, estado real de M0 y siguiente tarea exacta. No repetir auditorías cerradas. La misión sigue siendo M0: runtime canónico de Nexo, independiente de Lúmina.
 
+## M0 — recuperación de respuesta perdida durante settlement (implementado; CI pendiente)
+
+- **Problema concreto:** si `store.commitIfCurrent()` escribía `settled_observed` y la respuesta se perdía/devolvía UNKNOWN, el reintento con la revisión esperada original devolvía conflicto antes de inspeccionar el journal. La continuidad canónica podía demostrar que el settlement sí estaba registrado, pero la API no podía recuperar esa incertidumbre.
+- **Cambio:** `scripts/nexo-repair-settlement.mjs` ahora permite recuperar un settlement ya registrado únicamente si el registro persistido tiene forma válida, fuente `world-state.json`, observación `desired_state_present`, revisión ambiental ligada a la revisión PREPARED o la inmediatamente siguiente y `causalAttribution: not_claimed`. No vuelve a escribir, no despacha y no infiere causalidad.
+- **Regresión añadida:** `tests/nexo/repair-settlement-crash-cuts.test.mjs` simula commit real seguido de respuesta UNKNOWN; el replay usa la revisión original y debe recuperar `settled_observed` desde el journal a revisión canónica 1. Las pruebas existentes de revisión ambiental ajena e invariante no demostrada siguen exigiendo que PREPARED permanezca.
+- **Commits de código/test:** `1acf070385134ecbb6eeef78b7cec43b8a4a4916`, `b572724ec18e22b9f2f5fe10cd2e50e851e4fb84`, `3bc02acc1a1293e9c7726f44bf04cdbf4ad99724`. La consulta de runs asociados al último commit no devolvió runs; por tanto **CI todavía no está verificado** y no se afirma PASS.
+- **Límite:** esta recuperación sigue siendo específica de repair y de la forma del journal actual. No implementa settlement genérico ni habilita el runtime genérico. M0 continúa INCOMPLETO; no conectar aún `src/nexo/runtime.js` ni convertir el bridge repair-only en genérico.
+
+**Siguiente corte M0:** validar el nuevo test en CI; luego diseñar el contrato de reconciliación por acción con evidencia producida por un verificador confiable y persistido. El owner debe controlar la transición CAS del journal; un objeto de observación proporcionado libremente por el caller no debe bastar. No mezclar Lúmina con la continuidad canónica de Nexo.
+
 ## M0 — excepción del adaptador durante dispatch (2026-10-18, validado)
 
 - **Hueco:** `scripts/nexo-repair-dispatch.mjs` invocaba `adapter.execute()` sin capturar una excepción que puede ocurrir después de un efecto parcial. La excepción cruda no expresaba que el resultado del efecto fuera desconocido.
