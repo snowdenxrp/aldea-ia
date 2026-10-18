@@ -122,3 +122,22 @@ Próximo: auditar y declarar los límites reales de filesystem/concurrencia/dura
 - Pruebas: `tests/nexo/chronicle-store.test.mjs` y `tests/nexo/chronicle-runtime.test.mjs`.
 - SHA validado: `43827382ed27821182727c12a4ed6d03cc51ad36`. CI SUCCESS: [Chronicle run 39174839208](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839208), [continuidad/runtime run 39174839267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839267), [STEP 4 run 39174839176](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839176), [STEP 5 run 39174839133](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174839133).
 - Siguiente: revisar el contrato de la entrada CLI y su integración posible con la aplicación principal sin usar `scripts/assistants.mjs` como puente, porque esa ruta está vinculada al estado/simulación de Lúmina. No ampliar acciones ni cambiar runtime default sin una decisión arquitectónica explícita y pruebas del cutover.
+
+
+## Auditoría de privacidad CLI y límites del almacenamiento (2026-10-18)
+
+### Cambio validado
+
+El CLI ya no acepta el cuerpo Chronicle como argumento de proceso. La opción `--content` fue retirada y sustituida por `--content-stdin`; el ejecutable lee el stream stdin y rechaza stdin TTY. Las pruebas reales de proceso verifican que los argumentos no incluyen el cuerpo, que stdout/stderr no lo imprimen, que los argumentos inválidos no crean stores y que la ruta válida persiste el contenido en Chronicle.
+
+CI en SHA `0ea0b8bcbd68a2e2062e359b11247cd6a04a2457`: [39176108822 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176108822), [39176108833 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176108833).
+
+### Límites descubiertos — no se consideran resueltos
+
+- Temp + rename ofrece sustitución atómica observable en el entorno probado, pero no prueba fsync ni supervivencia a pérdida de energía.
+- Las rutas suministradas por caller no se canonicalizan ni se aíslan de symlinks; la frontera de confianza del filesystem no está cerrada.
+- La recuperación de locks obsoletos se basa en edad/PID y luego borra el directorio; el patrón check-then-remove no prueba exclusión segura frente a carreras entre procesos. No afirmar robustez adversarial multiproceso ni soporte de filesystem distribuido.
+
+### Próximo corte
+
+Definir si esta vertical se restringe a un único proceso cooperante en filesystem local, o diseñar una reclamación de lock segura con pruebas multiproceso; además, especificar el contrato de rutas y symlinks. No ampliar acciones, no cambiar runtime default, no declarar M0 completo.
