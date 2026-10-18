@@ -360,3 +360,22 @@ Crear una prueba de proceso aislada que invoque la entrada real `scripts/assista
 4. Mantener el flag opt-in hasta que la ruta canónica de memoria/outcome y las pruebas de restart/replay pasen.
 
 **Límites:** CI usa solo fixtures temporales; no se tocó el `world-state.json` real. No es prueba de despliegue en dispositivo ni runtime genérico completo. M0 sigue abierto, reparación opt-in, efectos protegidos STOP, sin atomicidad cross-store y Nexo/Lúmina separados.
+
+
+---
+
+## Update M0 — frontera de corte de memoria legacy (2026-10-18)
+
+Nueva auditoría dirigida: [NCS_M0_LEGACY_RUNTIME_MEMORY_CUTOVER_AUDIT_2026-10-18.md](NCS_M0_LEGACY_RUNTIME_MEMORY_CUTOVER_AUDIT_2026-10-18.md), commit `f2b14a63665df50a99ea576d44db00092e2f7ca4`.
+
+### Hallazgo decisivo
+No hacer sustitución mecánica de `src/assistants/memory.js` por `continuity-owner`. `executeNexoStep()` despacha primero y compromete outcome después en memoria de proceso. La API owner-backed exige revisión CAS y PREPARED concordante; `recordOutcome()` bloquea completion cuando existe journal `prepared` o `settled_observed`. La separación entre outcome, settlement y completion es deliberada.
+
+### Próximo trabajo obligatorio
+1. Resolver mediante prueba el estado durable posterior a `settled_observed`: qué observación permite registrar outcome de misión sin afirmar causalidad ni promover settlement a completion.
+2. Implementar solo una ruta owner-backed mínima basada en `missionId/stepId` canónicos; acción y target siempre desde snapshot, nunca desde caller.
+3. Añadir pruebas de CAS conflictivo, reinicio, replay, PREPARED pendiente, entorno persistido antes del settlement y estado UNKNOWN.
+4. Mantener la ruta genérica y los efectos protegidos apagados; no cambiar el dispatcher repair-only a acciones generales.
+5. Ejecutar CI y verificar SHA/run/job exactos antes de presentar el código como validado. El CI disponible `39143459529` valida SHA `a1fea5791adbb81a8d6b6e82da9dad09accc7918`, no el HEAD documental actual `1cee895229e6980b8f142571a28a820fed7eef04`.
+
+No repetir el mapa de llamadas ni reabrir AB/P/P112. M0 sigue abierto; Nexo y Lúmina no se mezclan; no hay atomicidad cross-store; `settled_observed` no significa causalidad ni completion; efectos protegidos STOP.
