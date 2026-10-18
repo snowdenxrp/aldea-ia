@@ -206,5 +206,9 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     finally { if(inFlight.get(key)===current) inFlight.delete(key); if(sharedQueue.get(executionJournal)===current) sharedQueue.delete(executionJournal); }
   }
 
-  // Capability discovery lets a canonical runtime reject an unregistered action before PREPARED/dispatch.\n  // This reports handler presence only; it is not a reconciliation or authorization contract.\n  function supports(action){ return typeof action === "string" && registry.has(action); }\n\n  return {register,execute,supports,hasExecuted:key=>executed.has(key)};
+  // Capability discovery lets a canonical runtime reject an unregistered action before PREPARED/dispatch.
+  // This reports handler presence only; it is not a reconciliation or authorization contract.
+  function supports(action){ return typeof action === "string" && registry.has(action); }
+
+  return {register,execute,supports,hasExecuted:key=>executed.has(key)};
 }
