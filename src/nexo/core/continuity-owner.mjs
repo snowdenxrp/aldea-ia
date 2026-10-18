@@ -257,6 +257,15 @@ export function createNexoContinuityOwner({ store } = {}) {
         existing.action === operation.action &&
         isDeepStrictEqual(existing.target ?? null, operation.target ?? null);
       if (!sameIdentity) return { status: "blocked", code: "NEXO_EXECUTION_IDENTITY_MISMATCH", storeRevision: current.storeRevision };
+      if (!isDeepStrictEqual(existing.result, result)) {
+        return {
+          status: "blocked",
+          code: "NEXO_EXECUTION_RESULT_MISMATCH",
+          storeRevision: current.storeRevision,
+          journalSettled: false,
+          authorization: "NOT_EVALUATED"
+        };
+      }
       return { status: "already_recorded", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
 
