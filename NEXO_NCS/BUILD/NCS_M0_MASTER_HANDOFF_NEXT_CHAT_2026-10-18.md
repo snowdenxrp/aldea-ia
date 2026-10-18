@@ -1,3 +1,13 @@
+## Tercer avance verificado — replay contradictorio de outcome (2026-10-18)
+
+`src/nexo/core/continuity-owner.mjs`: `recordOutcome()` ahora exige que un replay de la misma identidad coincida también en `status`, `evidence`, `parentMissionId` y `replanReason`. Un resultado contradictorio devuelve `blocked / NEXO_OUTCOME_RESULT_MISMATCH`, sin escritura ni avance de revisión. La regresión en `tests/nexo/continuity-migration.test.mjs` demuestra que `completed` seguido de `failed` no se acepta como replay idéntico y que la reconstrucción permanece `completed`.
+
+Test-first: [39151769794](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769794) y [39151769766](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769766) fallaron antes del fix por la nueva expectativa. Tras el fix, CI SUCCESS sobre SHA `783ccdbd5c9871b5c86e1994a2f348211e5e9bd3`: [repair crash cuts 39151794904](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794904), [STEP 4 39151794891](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794891), [STEP 5 39151794922](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794922), [bounded admission/restart 39151794894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794894). Documentación posterior no debe presentarse como código probado en ese SHA.
+
+**Continuar:** siguiente trabajo es el cutover mínimo y explícito del runtime genérico desde `src/assistants/memory.js` hacia el owner canónico. No hacer reemplazo mecánico: hoy `executeNexoStep()` despacha antes de registrar `recordNexoExecution()`/`recordNexoOutcome()` y usa un journal en memoria; la ruta repair-only en `scripts/` tiene PREPARED duradero, lineage y settlement separados. Antes de migrar, definir un seam que exija admisión/PREPARED duradero y mantenga acciones no admitidas/protegidas en STOP. No hay aún prueba de runtime genérico canónico ni atomicidad cross-store.
+
+---
+
 ## Segundo avance verificado — replay de lineage ligado al baseline PREPARED (2026-10-18)
 
 Se detectó y cerró otro hueco acotado: una lineage existente podía ser aceptada en replay con la misma identidad y resultado, pero con `operation.environmentStateRevision` distinto al baseline PREPARED. En `src/nexo/core/continuity-owner.mjs`, las reparaciones ahora vuelven a comprobar que exista una sola entrada de journal con baseline conocido y que coincida con la revisión que presenta el replay. Discrepancia: `blocked / NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH`; base ausente/ambigua: `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN`. No se escribe continuidad.
