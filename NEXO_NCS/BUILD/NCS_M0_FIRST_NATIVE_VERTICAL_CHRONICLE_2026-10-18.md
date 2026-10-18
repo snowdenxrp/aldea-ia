@@ -57,3 +57,22 @@ Una única operación de escritura de Chronicle, iniciada por Nexo y con conteni
 ## Siguiente acción de implementación
 
 Inspeccionar el estilo de persistencia y las convenciones de pruebas ya presentes; implementar únicamente el writer/reader mínimo de Chronicle con operaciones idempotentes/conflicto explícito, pruebas de reapertura y concurrencia; después implementar el verificador específico y conectar esta única vertical a la ruta owner-backed. Cada cambio debe incluir crash-cut tests y CI observable. Si la revisión demuestra que Chronicle no puede satisfacer el contrato sin infraestructura especulativa, detenerse y registrar el bloqueo antes de ampliar el diseño.
+
+
+## Resultado de implementación — Chronicle vertical (actualización 2026-10-18)
+
+La primera vertical ya pasó de diseño a código y tiene una entrada propia explícita:
+
+- Store: `src/nexo/core/chronicle-store.mjs`; reader/verifier: `src/nexo/adapters/chronicle-observation.mjs`; contrato de acción: `src/nexo/adapters/chronicle-effect.mjs`.
+- Owner: settlement específico de `chronicle_append` únicamente desde observación persistida `applied` del source registrado `nexo-chronicle-store`; outcome completed bloqueado si no existe settlement exacto ligado a la misma clave/acción/target.
+- Runtime: recuperación de PREPARED y replay de outcome por lectura/reconciliación; nunca redispatch automático. La única acción admitida por esta vertical es `chronicle_append`.
+- Entrada: `scripts/nexo-chronicle-session.mjs`, sin imports de Lúmina. Los IDs/rutas los suministra el caller y la inicialización de stores es opt-in. Reusar la misma identidad con contenido distinto se bloquea.
+- Tests: `tests/nexo/chronicle-store.test.mjs` y `tests/nexo/chronicle-runtime.test.mjs`, incluidos en `package.json` y workflow focal.
+- Evidencia: [CI 39174162150 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174162150), SHA `1ef9a4745d31d324b56733e43e250d36bb3908b7`.
+
+## Siguiente corte M0
+
+1. Auditar el CLI y el path de almacenamiento bajo estados existentes, faltantes y corruptos; no regenerar datos automáticamente.
+2. Ejecutar/observar las suites amplias aplicables tras los cambios de owner/runtime; conservar SHA + runs exactos.
+3. Decidir de forma explícita si el entrypoint Chronicle debe ser llamado por la aplicación principal o mantenerse como CLI de validación. No modificar `scripts/assistants.mjs` si eso vuelve a introducir dependencia de Lúmina.
+4. No habilitar otras acciones, no cambiar runtime default y no declarar M0 completo todavía.
