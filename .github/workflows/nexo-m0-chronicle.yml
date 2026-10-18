@@ -10,6 +10,7 @@ on:
       - "src/nexo/adapters/chronicle-effect.mjs"
       - "src/nexo/core/continuity-owner.mjs"
       - "src/nexo/runtime.js"
+      - "scripts/nexo-chronicle-session.mjs"
       - "tests/nexo/chronicle-store.test.mjs"
       - "tests/nexo/chronicle-runtime.test.mjs"
       - ".github/workflows/nexo-m0-chronicle.yml"
