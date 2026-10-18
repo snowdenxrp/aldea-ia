@@ -1,3 +1,15 @@
+function retainEffectJournal(entries, limit = 200) {
+  // A prepared record is an unresolved external-effect obligation, not disposable history.
+  // Detach records, prune terminal entries first, and let unresolved obligations exceed the soft cap.
+  const journal = Array.isArray(entries) ? structuredClone(entries) : [];
+  while (journal.length > limit) {
+    const terminalIndex = journal.findIndex(entry => entry?.status !== "prepared");
+    if (terminalIndex < 0) break;
+    journal.splice(terminalIndex, 1);
+  }
+  return journal;
+}
+
 export function createLearningMemory(raw = null) {
   const source = raw && typeof raw === "object" ? raw : {};
   return {
@@ -10,7 +22,7 @@ export function createLearningMemory(raw = null) {
       attempts: Array.isArray(source.nexo?.attempts) ? source.nexo.attempts.slice(-100) : [],
       doNotRepeat: Array.isArray(source.nexo?.doNotRepeat) ? source.nexo.doNotRepeat.slice(-100) : [],
       executions: Array.isArray(source.nexo?.executions) ? source.nexo.executions.slice(-200) : [],
-      effectJournal: Array.isArray(source.nexo?.effectJournal) ? source.nexo.effectJournal.slice(-200) : []
+      effectJournal: retainEffectJournal(source.nexo?.effectJournal)
     }
   };
 }

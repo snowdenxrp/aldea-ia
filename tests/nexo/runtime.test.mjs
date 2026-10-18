@@ -181,4 +181,31 @@ assert.equal(recovered.memory.nexo.missions.at(-1).missionId,chainedReplan.missi
 assert.equal(recovered.memory.nexo.missions.at(-1).parentMissionId,chainedReplan.parentMissionId);
 assert.equal(recovered.memory.nexo.missions.at(-1).replanReason,chainedReplan.replanReason);
 
+
+const terminalEffectEntries=Array.from({length:200},(_,i)=>({
+  idempotencyKey:`terminal-normalization:${i}`,status:"completed",
+  result:{status:"completed",evidence:{kind:"test"}}
+}));
+const unresolvedPreparedEntry={
+  idempotencyKey:"preserve-prepared-normalization",missionId:"old-mission",stepId:"old-step",
+  action:"ambiguous_effect",target:"alex",status:"prepared"
+};
+const normalizedJournal=createLearningMemory({
+  nexo:{effectJournal:[unresolvedPreparedEntry,...terminalEffectEntries]}
+}).nexo.effectJournal;
+assert.equal(normalizedJournal.length,200);
+assert.ok(normalizedJournal.some(entry=>entry.idempotencyKey==="preserve-prepared-normalization"),
+  "memory normalization must not truncate an unresolved prepared effect");
+assert.equal(normalizedJournal.some(entry=>entry.idempotencyKey==="terminal-normalization:0"),false,
+  "memory normalization should prune terminal history before unresolved operations");
+assert.notEqual(normalizedJournal.find(entry=>entry.idempotencyKey==="preserve-prepared-normalization"),unresolvedPreparedEntry,
+  "memory normalization must detach journal records");
+const unresolvedOnly=createLearningMemory({
+  nexo:{effectJournal:Array.from({length:201},(_,i)=>({
+    idempotencyKey:`prepared-only:${i}`,status:"prepared"
+  }))}
+}).nexo.effectJournal;
+assert.equal(unresolvedOnly.length,201,
+  "unresolved prepared operations may exceed the soft history cap rather than be discarded");
+
 console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
