@@ -51,7 +51,7 @@ assert.equal(crashWindowRetry.memory.nexo.attempts[0].status,"completed");
 const failureSimulation={agents:[{id:"alex",alive:true,position:{x:0,z:0},needs:{thirst:50},inventory:[]}],world:{resources:{water:{amount:0}}}};
 const failureMission=buildNexoMission({reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"sed detectada"}]}]});
 const failure=await executeLuminaNexoStep({simulation:failureSimulation,mission:failureMission,stepId:"step-1",memory:createLearningMemory(),precondition:({stateVersion})=>stateVersion===0});
-assert.equal(failure.status,"failed"); assert.equal(failure.adapterResult.code,"LUMINA_ACTION_FAILED"); assert.equal(failure.mission.status,"needs_replan"); assert.equal(failure.mission.objective,"replan_after_failure"); assert.equal(failure.memory.nexo.attempts[0].status,"failed"); assert.equal(failureSimulation.nexoEffectRevision,0);
+assert.equal(failure.status,"blocked"); assert.equal(failure.adapterResult.code,"EFFECT_OUTCOME_UNKNOWN"); assert.equal(failure.mission.status,"blocked"); assert.equal(failure.memory.nexo.attempts[0].status,"blocked"); assert.equal(failureSimulation.nexoEffectRevision,0); assert.equal(failure.memory.nexo.effectJournal[0].status,"prepared");
 
 // A failed Lúmina action can still mutate state. fish_escaped reduces energy
 // and changes activity; it must be detected as a partial effect, not terminal failure.
@@ -80,18 +80,10 @@ const persistedReplan=replanPersistedNexoMission({
   previousMissionId:failure.mission.missionId,
   reports:[{assistant:"EnvironmentProbe",findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua disponible tras cambio ambiental"}]}]
 });
-const replanned=persistedReplan.mission;
-assert.equal(persistedReplan.status,"planned");
-assert.notEqual(replanned.missionId,failure.mission.missionId);
-assert.equal(replanned.parentMissionId,failure.mission.missionId);
-assert.equal(replanned.replanReason,"LUMINA_ACTION_FAILED");
-assert.equal(replanned.steps[0].action,"execute_lumina_action");
-assert.equal(replanned.steps[0].context.action.name,"drink");
-assert.equal(replanned.status,"planned");
-assert.equal(persistedReplan.memory.nexo.missions.at(-1).missionId,replanned.missionId);
-assert.equal(persistedReplan.memory.nexo.attempts.find(x=>x.missionId===failure.mission.missionId).status,"failed");
-assert.equal(failure.memory.nexo.missions.some(x=>x.missionId===replanned.missionId),false,"replanning must not mutate the input memory snapshot");
-assert.notEqual(persistedReplan.memory,failure.memory,"replanning returns a new memory snapshot");
+assert.equal(persistedReplan.status,"not_replanned");
+assert.equal(persistedReplan.code,"EFFECT_RECONCILIATION_REQUIRED",
+  "a changed environment must not bypass an unresolved effect outcome");
+assert.equal(failure.memory.nexo.effectJournal[0].status,"prepared");
 assert.equal(replanPersistedNexoMission({memory:failure.memory,previousMissionId:"missing-mission",reports:[]}).status,"not_found");
 
 const invalidatedSimulation={agents:[{id:"alex",alive:true,position:{x:1,z:1}}],world:{resources:{wood:{amount:1}}}};
@@ -168,38 +160,22 @@ const chainedSecond=await executeLuminaNexoStep({
   simulation:chainedFailureSimulation,mission:chainedFirst.mission,stepId:"step-2",
   memory:chainedFirst.memory,precondition:({stateVersion})=>stateVersion===1
 });
-assert.equal(chainedSecond.status,"failed");
-assert.equal(chainedSecond.mission.status,"needs_replan");
-assert.equal(chainedSecond.mission.parentMissionId,null);
+assert.equal(chainedSecond.status,"blocked");
+assert.equal(chainedSecond.adapterResult.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(chainedSecond.mission.status,"blocked");
 assert.equal(chainedSecond.memory.nexo.attempts.length,2);
+assert.equal(chainedSecond.memory.nexo.effectJournal.at(-1).status,"prepared");
 chainedFailureSimulation.world.resources.water.amount=10;
-const chainedReplan=buildNexoMission({
+const chainedReplan=replanPersistedNexoMission({
   simulation:chainedFailureSimulation,
-  reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua restaurada"}]}],
   memory:chainedSecond.memory,
-  parentMissionId:chainedSecond.mission.missionId,
-  replanReason:"environment_changed_after_step_2_failure"
+  previousMissionId:chainedSecond.mission.missionId,
+  reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua restaurada"}]}]
 });
-assert.equal(chainedReplan.parentMissionId,chainedSecond.mission.missionId);
-assert.equal(chainedReplan.replanReason,"environment_changed_after_step_2_failure");
-
-
-const recovered=await executeLuminaNexoStep({
-  simulation:chainedFailureSimulation,
-  mission:chainedReplan,
-  stepId:"step-1",
-  memory:chainedSecond.memory,
-  precondition:({stateVersion})=>stateVersion===1
-});
-assert.equal(recovered.status,"completed");
-assert.equal(recovered.adapterResult.verified,true);
-assert.equal(chainedFailureSimulation.world.resources.water.amount,8);
-assert.equal(recovered.memory.nexo.attempts.at(-1).status,"completed");
-assert.equal(recovered.memory.nexo.attempts.at(-1).parentMissionId,chainedReplan.parentMissionId);
-assert.equal(recovered.memory.nexo.attempts.at(-1).replanReason,chainedReplan.replanReason);
-assert.equal(recovered.memory.nexo.missions.at(-1).missionId,chainedReplan.missionId);
-assert.equal(recovered.memory.nexo.missions.at(-1).parentMissionId,chainedReplan.parentMissionId);
-assert.equal(recovered.memory.nexo.missions.at(-1).replanReason,chainedReplan.replanReason);
+assert.equal(chainedReplan.status,"not_replanned");
+assert.equal(chainedReplan.code,"EFFECT_RECONCILIATION_REQUIRED");
+assert.equal(chainedFailureSimulation.world.resources.water.amount,10,
+  "environment change does not authorize retry while the prior outcome is unresolved");
 
 
 const terminalEffectEntries=Array.from({length:200},(_,i)=>({
