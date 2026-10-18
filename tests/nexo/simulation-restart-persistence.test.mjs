@@ -383,6 +383,68 @@ const staleSettlement = await settlePreparedRepairFromPersistedState({
 assert.equal(staleSettlement.status, "conflict");
 assert.equal(staleSettlement.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
 
+const revisionOneSnapshot = await loadStateStrict(repairStatePath);
+const malformedForNegativeTest = applyState(revisionOneSnapshot);
+malformedForNegativeTest.agents[0].position.x = "not-normalized";
+await persistState(repairStatePath, malformedForNegativeTest, 5000, {
+  expectedRevision: 1,
+  stateRevision: 2
+});
+
+const negativeMission = await restartedRepairContinuity.owner.recordMission({
+  expectedRevision: settledJournal.storeRevision,
+  mission: {
+    missionId: "repair-negative-settlement",
+    status: "planned",
+    objective: "normalize_agent_state",
+    steps: [{ id: "step-negative", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  }
+});
+assert.equal(negativeMission.status, "committed");
+const negativePrepared = await prepareRepairAgainstPersistedState({
+  owner: restartedRepairContinuity.owner,
+  statePath: repairStatePath,
+  expectedContinuityRevision: negativeMission.storeRevision,
+  operation: {
+    missionId: "repair-negative-settlement",
+    stepId: "step-negative",
+    action: "repair_agent_state",
+    target: "alex",
+    idempotencyKey: "repair-negative-settlement:step-negative"
+  }
+});
+assert.equal(negativePrepared.status, "committed");
+const absentInvariantSettlement = await settlePreparedRepairFromPersistedState({
+  store: restartedRepairContinuity.store,
+  statePath: repairStatePath,
+  idempotencyKey: "repair-negative-settlement:step-negative",
+  expectedContinuityRevision: negativePrepared.storeRevision
+});
+assert.equal(absentInvariantSettlement.status, "blocked");
+assert.equal(absentInvariantSettlement.code, "NEXO_REPAIR_SETTLEMENT_INVARIANT_NOT_PROVEN");
+assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal.find(
+  entry => entry.idempotencyKey === "repair-negative-settlement:step-negative"
+).status, "prepared");
+
+const revisionTwoSnapshot = await loadStateStrict(repairStatePath);
+const laterSnapshot = applyState(revisionTwoSnapshot);
+await persistState(repairStatePath, laterSnapshot, 6000, {
+  expectedRevision: 2,
+  stateRevision: 3
+});
+const unrelatedRevisionSettlement = await settlePreparedRepairFromPersistedState({
+  store: restartedRepairContinuity.store,
+  statePath: repairStatePath,
+  idempotencyKey: "repair-negative-settlement:step-negative",
+  expectedContinuityRevision: negativePrepared.storeRevision
+});
+assert.equal(unrelatedRevisionSettlement.status, "blocked");
+assert.equal(unrelatedRevisionSettlement.code, "NEXO_REPAIR_SETTLEMENT_ENVIRONMENT_REVISION_UNRELATED");
+assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal.find(
+  entry => entry.idempotencyKey === "repair-negative-settlement:step-negative"
+).status, "prepared");
+
+
 
 
 await fs.rm(repairDir, { recursive: true, force: true });
