@@ -117,6 +117,21 @@ export function createNexoContinuityOwner({ store } = {}) {
       return { status: "blocked", code: "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH", storeRevision: current.storeRevision };
     }
 
+    const unresolvedEffect = current.snapshot.effectJournal.some(item =>
+      item?.missionId === outcome.missionId &&
+      item?.stepId === outcome.stepId &&
+      ["prepared", "settled_observed"].includes(item?.status)
+    );
+    if (unresolvedEffect) {
+      return {
+        status: "blocked",
+        code: "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED",
+        storeRevision: current.storeRevision,
+        journalSettled: false,
+        authorization: "NOT_EVALUATED"
+      };
+    }
+
     const existing = current.snapshot.attempts.find(item =>
       item?.missionId === outcome.missionId && item?.stepId === outcome.stepId
     );
@@ -138,21 +153,6 @@ export function createNexoContinuityOwner({ store } = {}) {
         };
       }
       return { status: "already_recorded", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
-    }
-
-    const unresolvedEffect = current.snapshot.effectJournal.some(item =>
-      item?.missionId === outcome.missionId &&
-      item?.stepId === outcome.stepId &&
-      ["prepared", "settled_observed"].includes(item?.status)
-    );
-    if (unresolvedEffect) {
-      return {
-        status: "blocked",
-        code: "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED",
-        storeRevision: current.storeRevision,
-        journalSettled: false,
-        authorization: "NOT_EVALUATED"
-      };
     }
 
     let candidate;
