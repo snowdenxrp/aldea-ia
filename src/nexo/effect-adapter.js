@@ -62,60 +62,19 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
   }
 
   async function reconcilePrepared(entry, request) {
-    const reconcile = request?.reconcile;
-    if(typeof reconcile!=="function") {
-      return {
-        status:"blocked",
-        code:"EFFECT_RECONCILIATION_REQUIRED",
-        verified:false,
-        action:entry.action,
-        target:entry.target,
-        idempotencyKey:entry.idempotencyKey,
-        uncertainty:"effect_may_or_may_not_have_occurred"
-      };
-    }
-    let result;
-    try {
-      result = await reconcile({
-        journalEntry:structuredClone(entry),
-        missionId:entry.missionId,
-        stepId:entry.stepId,
-        action:entry.action,
-        target:entry.target,
-        context:request.context??{}
-      });
-    } catch(error) {
-      return {
-        status:"blocked",
-        code:"EFFECT_RECONCILIATION_FAILED",
-        verified:false,
-        action:entry.action,
-        target:entry.target,
-        idempotencyKey:entry.idempotencyKey,
-        error:String(error?.message??error)
-      };
-    }
-    if(!result || !validStatus(result.status)) {
-      return {
-        status:"blocked",
-        code:"INVALID_RECONCILIATION_RESULT",
-        verified:false,
-        action:entry.action,
-        target:entry.target,
-        idempotencyKey:entry.idempotencyKey
-      };
-    }
-    if(result.status==="completed" && result.verified!==true) {
-      return {
-        status:"blocked",
-        code:"UNVERIFIED_RECONCILIATION",
-        verified:false,
-        action:entry.action,
-        target:entry.target,
-        idempotencyKey:entry.idempotencyKey
-      };
-    }
-    return {...result,action:entry.action,target:entry.target,idempotencyKey:entry.idempotencyKey};
+    // A callback supplied by the operation caller cannot authenticate its own
+    // authority, provenance, freshness, or PG-009 recovery fence. Do not invoke
+    // it and do not turn its assertion into a terminal journal result.
+    const hasCallerReconciler = typeof request?.reconcile === "function";
+    return {
+      status: "blocked",
+      code: hasCallerReconciler ? "RECONCILIATION_AUTHORITY_UNAVAILABLE" : "EFFECT_RECONCILIATION_REQUIRED",
+      verified: false,
+      action: entry.action,
+      target: entry.target,
+      idempotencyKey: entry.idempotencyKey,
+      uncertainty: "effect_may_or_may_not_have_occurred"
+    };
   }
 
   async function executeFresh(request={}) {
