@@ -1,3 +1,13 @@
+## Incremento confirmado — recuperación después del commit de entorno (2026-10-18)
+
+El test de lifecycle ahora simula el crash cut entre persistir el entorno y liquidar PREPARED. Commit de prueba: [55f9a064dd28ed5b51eb552f903f3bec504f9640](https://github.com/snowdenxrp/aldea-ia/commit/55f9a064dd28ed5b51eb552f903f3bec504f9640). CI exacto [39141847081](https://github.com/snowdenxrp/aldea-ia/actions/runs/39141847081) terminó SUCCESS en ese SHA; los tres pasos de prueba del workflow finalizaron success.
+
+La prueba persiste entorno revisión 31 desde PREPARED revisión 30, reabre el owner/store desde disco, observa la invariante y registra `settled_observed`, y confirma que replay queda bloqueado sin otra escritura. Esto valida el helper lifecycle y recuperación de estado, no un reinicio completo de la aplicación productiva ni atomicidad cross-store. STATUS con evidencia actualizado en [ef459d67c31fe0c03515ab226b56dcc7a8d27ef5](https://github.com/snowdenxrp/aldea-ia/commit/ef459d67c31fe0c03515ab226b56dcc7a8d27ef5).
+
+Próximo paso: diseñar un único entrypoint repair-only owner-backed con contratos explícitos para PREPARED, dispatch, observación/settlement, recovery y UNKNOWN/STOP. No migrar todavía el runtime genérico que registra outcomes vía `src/assistants/memory.js`; no activar efectos protegidos.
+
+---
+
 ## Incremento posterior — replay y stale revision (2026-10-18)
 
 La prueba integrada `tests/nexo/repair-owner-lifecycle.test.mjs` ahora incluye dos regresiones adicionales en el commit [53cf292ae966c80eb722a7f48eec0c6c2c86595d](https://github.com/snowdenxrp/aldea-ia/commit/53cf292ae966c80eb722a7f48eec0c6c2c86595d):
