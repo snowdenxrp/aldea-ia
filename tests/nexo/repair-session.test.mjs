@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
-import { runNexoRepairSession } from "./nexo-repair-session.mjs";
-import { loadStateStrict } from "./simulate.mjs";
+import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { runNexoRepairSession } from "../../scripts/nexo-repair-session.mjs";
+import { loadStateStrict } from "../../scripts/simulate.mjs";
 
 function legacyMemory(action = "repair_agent_state") {
   return {
