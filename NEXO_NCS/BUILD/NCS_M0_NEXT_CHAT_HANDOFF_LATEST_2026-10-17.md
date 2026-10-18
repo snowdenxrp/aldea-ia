@@ -1,3 +1,11 @@
+## Latest confirmed M0 increment — identity check also covers cached terminal results (2026-10-18)
+
+- Commit: `378bf2036e3229f023bff3ca915fa09f95546ccf`.
+- A CI regression first exposed a real bypass: the outer `execute()` wrapper returned a cached terminal journal result before the new identity validation in `executeFresh()`. That run failed as it should; the bypass was fixed in the next commit.
+- The wrapper now checks persisted mission/step/action/target identity before terminal-cache return or in-flight reuse. A new test asserts that a changed action reusing a completed key returns `EFFECT_IDENTITY_MISMATCH` and leaves original terminal history intact.
+- Exact-head CI PASS: [run 39089278683](https://github.com/snowdenxrp/aldea-ia/actions/runs/39089278683) — orchestrator, runtime, effect adapter, restart reconstruction.
+- Recovery still lacks a trusted, independent PG-009 reconciliation authority/fence/provenance source. Do not accept caller `verified:true` as proof; do not retry unresolved prepared effects; STEP 7 remains OPEN / STOP / UNKNOWN and protected effects remain STOP.
+
 ## Latest increment — prepared-effect reconciliation identity binding (2026-10-18)
 
 - Current source/test change: `EFFECT_IDENTITY_MISMATCH` rejects a reconciliation request when mission ID, step ID, action, or target differs from the persisted prepared entry selected by the idempotency key.

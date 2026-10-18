@@ -332,3 +332,12 @@ The mission continuity workflow runs `tests/nexo/runtime.test.mjs`; this verifie
 - Regression reuses the same idempotency key with a different action and a callback claiming verified completion; callback is not invoked and the journal remains prepared.
 - Report: [M0 — Reject mismatched identity during prepared-effect reconciliation](BUILD/NCS_M0_REJECT_MISMATCHED_RECONCILIATION_IDENTITY_2026-10-18.md).
 - CI evidence pending. This binds identity only; it does not authenticate reconciliation evidence or establish PG-009 authority/fence/provenance. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+
+## M0 — Enforce effect identity across journal fast paths (2026-10-18)
+
+- Follow-up inspection found that `execute()` returned persisted terminal results before `executeFresh()` could validate identity. This meant the earlier check was bypassable for terminal entries.
+- Fixed the wrapper fast path to validate mission, step, action and structural target against the persisted journal entry before returning a cached result or joining an in-flight operation.
+- Added a terminal-entry regression: same idempotency key + different action must return `EFFECT_IDENTITY_MISMATCH` while preserving the original completed record.
+- CI exact source/test head `378bf2036e3229f023bff3ca915fa09f95546ccf`: [mission admission / runtime / effect-adapter / restart continuity — PASS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39089278683).
+- This only protects identity aliasing when the persisted journal entry is present. It does not authenticate reconciliation evidence or establish PG-009 owner/fence/authority/provenance. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP.
