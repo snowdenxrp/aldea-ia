@@ -100,6 +100,16 @@ try {
     target: "alex",
     environmentStateRevision: 10
   };
+  const missingRevision = await opened.owner.recordExecutionLineage({
+    expectedRevision: 0,
+    operation: (({ environmentStateRevision, ...withoutRevision }) => withoutRevision)(operation),
+    result: { status: "completed", verified: true }
+  });
+  assert.equal(missingRevision.status, "blocked");
+  assert.equal(missingRevision.code, "NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 0,
+    "missing repair revision must not append lineage or advance the Nexo store");
+
   const mismatchedRevision = await opened.owner.recordExecutionLineage({
     expectedRevision: 0,
     operation: { ...operation, environmentStateRevision: 11 },
