@@ -1,5 +1,16 @@
 
 
+## Hallazgo incremental — PREPARED sin paso ejecutable (2026-10-18)
+
+`recordPrepared()` comprobaba identidad canónica pero no exigía por sí mismo que el paso estuviera `planned` y que todas sus dependencias estuvieran `completed`. La sesión de reparación ya hacía esa admisión; el owner necesitaba defender su propia frontera para que otros callers no pudieran crear un PREPARED sobre pasos no ejecutables.
+
+Fix en `src/nexo/core/continuity-owner.mjs`; regresión en `tests/nexo/continuity-migration.test.mjs`. Para PREPARED nuevo: estado no `planned` → `NEXO_PREPARED_STEP_NOT_RUNNABLE`; dependencia inexistente/no completada → `NEXO_PREPARED_DEPENDENCIES_UNMET`. No se avanza `storeRevision` ni se escribe journal. Los checks están después del manejo de PREPARED existente, preservando la señal de una obligación incierta en vez de revalidar su admisibilidad como si fuera un nuevo despacho.
+
+Test-first SHA `71764ddb9dfc511cfe437c6a12dc9f6122a2297b`: repair [39152101773](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152101773) y mission/restart [39152101743](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152101743) fallaron en la nueva aserción; STEP 4/STEP 5 pasaron. Código/pruebas validados en SHA `4549662e9cf879a15c4833b011ce5a8122e1c65e`: runs 39152160229, 39152160394, 39152160252, 39152160267 todos SUCCESS.
+
+Este avance no migra `src/nexo/runtime.js`, no autentica evidencia y no añade settlement genérico. La integración runtime debe seguir sin despacho para acciones sin reconciliación específica; no generalizar el repair-only dispatcher ni inventar transacciones cross-store.
+
+
 ## Hallazgo incremental — replay de outcome no idéntico (2026-10-18)
 
 En `createNexoContinuityOwner().recordOutcome()`, la rama de intento existente verificaba identidad misión/paso/acción/objetivo, pero respondía `already_recorded` sin comparar `status`, `evidence`, `parentMissionId` ni `replanReason`. Se corrigió para exigir igualdad de esos campos; una afirmación contradictoria retorna `blocked / NEXO_OUTCOME_RESULT_MISMATCH` y conserva el registro durable original y la revisión. No se está autenticando `evidence.source`: sigue siendo una etiqueta declarada por caller, no una prueba de procedencia.
