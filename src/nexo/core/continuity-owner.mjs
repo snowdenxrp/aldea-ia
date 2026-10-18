@@ -64,7 +64,7 @@ export function createNexoContinuityOwner({ store } = {}) {
     const existing = candidate.missions.find(item => item?.missionId === mission.missionId);
     if (existing) {
       if (isDeepStrictEqual(existing, mission)) {
-        return { status: "already_recorded", storeRevision: current.storeRevision, dispatchAllowed: false };
+        return { status: "already_recorded", storeRevision: current.storeRevision, preparedCommitted: false, authorization: "NOT_EVALUATED" };
       }
       return { status: "conflict", code: "NEXO_MISSION_ID_ALREADY_BOUND", storeRevision: current.storeRevision };
     }
@@ -87,10 +87,10 @@ export function createNexoContinuityOwner({ store } = {}) {
     const candidate = emptyCandidate(current.snapshot);
     const mission = candidate.missions.find(item => item?.missionId === operation.missionId);
     const step = mission?.steps?.find(item => item?.id === operation.stepId);
-    if (!step) return { status: "blocked", code: "NEXO_PREPARED_MISSION_CONTEXT_MISSING", dispatchAllowed: false };
+    if (!step) return { status: "blocked", code: "NEXO_PREPARED_MISSION_CONTEXT_MISSING", preparedCommitted: false, authorization: "NOT_EVALUATED" };
     if (step.action !== operation.action ||
         !isDeepStrictEqual(step.target ?? null, operation.target ?? null)) {
-      return { status: "blocked", code: "NEXO_PREPARED_OPERATION_CONTEXT_MISMATCH", dispatchAllowed: false };
+      return { status: "blocked", code: "NEXO_PREPARED_OPERATION_CONTEXT_MISMATCH", preparedCommitted: false, authorization: "NOT_EVALUATED" };
     }
 
     const existing = candidate.effectJournal.find(item => item?.idempotencyKey === operation.idempotencyKey);
@@ -99,9 +99,9 @@ export function createNexoContinuityOwner({ store } = {}) {
         existing.stepId === operation.stepId &&
         existing.action === operation.action &&
         isDeepStrictEqual(existing.target ?? null, operation.target ?? null);
-      if (!sameIdentity) return { status: "blocked", code: "NEXO_OPERATION_IDENTITY_MISMATCH", dispatchAllowed: false };
+      if (!sameIdentity) return { status: "blocked", code: "NEXO_OPERATION_IDENTITY_MISMATCH", preparedCommitted: false, authorization: "NOT_EVALUATED" };
       // Existing PREPARED is an unresolved obligation, never permission to redispatch.
-      return { status: "prepared_existing", code: "NEXO_EFFECT_OUTCOME_UNKNOWN", dispatchAllowed: false, storeRevision: current.storeRevision };
+      return { status: "prepared_existing", code: "NEXO_EFFECT_OUTCOME_UNKNOWN", preparedCommitted: false, authorization: "NOT_EVALUATED", storeRevision: current.storeRevision };
     }
 
     candidate.effectJournal.push({
@@ -115,12 +115,12 @@ export function createNexoContinuityOwner({ store } = {}) {
     });
     assertNexoContinuitySnapshot(candidate);
     const committed = await store.commitIfCurrent(expectedRevision, candidate);
-    if (committed.status === "committed") return { ...committed, prepared: true, dispatchAllowed: true };
-    return { ...committed, prepared: false, dispatchAllowed: false };
+    if (committed.status === "committed") return { ...committed, prepared: true, preparedCommitted: true, authorization: "NOT_EVALUATED" };
+    return { ...committed, prepared: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
   async function reconcilePrepared() {
-    return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, dispatchAllowed: false };
+    return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
   return Object.freeze({ loadCurrent, recordMission, recordPrepared, reconcilePrepared });
