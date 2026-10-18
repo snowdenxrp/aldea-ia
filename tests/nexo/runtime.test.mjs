@@ -472,3 +472,17 @@ assert.equal(thrownDispatch.status,"unknown");
 assert.equal(thrownDispatch.code,"NEXO_EFFECT_DISPATCH_OUTCOME_UNKNOWN");
 assert.equal(thrownDispatch.preparedCommitted,true);
 assert.equal(throwingLineageCalls,0);
+
+const lineageFailureOwner={
+  ...throwingOwner,
+  recordPrepared:async()=>({status:"committed",preparedCommitted:true,storeRevision:1}),
+  recordExecutionLineage:async()=>{throw new Error("lineage commit response lost");},
+  reconcilePrepared:async()=>{throw new Error("must not reconcile after uncertain lineage commit");}
+};
+const lineageFailure=await executeNexoStepWithContinuityOwner({
+  missionId:"canonical-mission",stepId:"step-1",owner:lineageFailureOwner,adapter:canonicalAdapter
+});
+assert.equal(lineageFailure.status,"unknown");
+assert.equal(lineageFailure.code,"NEXO_EXECUTION_LINEAGE_COMMIT_OUTCOME_UNKNOWN");
+assert.equal(lineageFailure.preparedCommitted,true);
+assert.equal(lineageFailure.journalSettled,false);
