@@ -1,3 +1,9 @@
+## M0 — guard contractual de settlement genérico (CI pendiente)
+
+- Commit `df10a6466f23903d5b9a1c7ed2992be5a635bb59` agrega a `tests/nexo/repair-settlement-crash-cuts.test.mjs` una aserción explícita: `owner.reconcilePrepared()` debe seguir devolviendo `blocked / NEXO_EFFECT_RECONCILIATION_REQUIRED` aunque el caller aporte una observación con `desired_state_present`; el journal debe permanecer `prepared`.
+- Es una prueba del límite actual, no implementación de settlement genérico. El owner no acepta todavía un verificador por acción; no se debe convertir una afirmación del caller en prueba del estado ambiental persistido.
+- El push de este test debería activar el workflow focal. La consulta de checks del SHA devolvió `statuses: []`; ejecución y resultado siguen PENDING/UNKNOWN. No declarar PASS.
+
 > **Continuidad de nuevo chat (2026-10-18):** antes de seguir, leer `NEXO_NCS/BUILD/NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md`. Es el handoff operativo vigente con HEAD observado, últimos cambios y CI, estado real de M0 y siguiente tarea exacta. No repetir auditorías cerradas. La misión sigue siendo M0: runtime canónico de Nexo, independiente de Lúmina.
 
 ## M0 — CI focal para replay de settlement agregado (ejecución pendiente de observar)
