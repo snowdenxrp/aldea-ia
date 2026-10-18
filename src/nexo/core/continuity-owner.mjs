@@ -203,6 +203,20 @@ export function createNexoContinuityOwner({ store } = {}) {
       return { status: "blocked", code: "NEXO_EXECUTION_PREPARED_IDENTITY_MISMATCH", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
 
+    // Repair lineage must remain bound to the environment revision captured by
+    // PREPARED. A later/current revision is not interchangeable with that
+    // baseline, and legacy PREPARED entries without it cannot be upgraded by
+    // a caller-supplied result.
+    if (REPAIR_ACTIONS.has(operation.action)) {
+      if (!Number.isSafeInteger(prepared.environmentStateRevision) || prepared.environmentStateRevision < 0 ||
+          !Number.isSafeInteger(operation.environmentStateRevision) || operation.environmentStateRevision < 0) {
+        return { status: "blocked", code: "NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+      }
+      if (prepared.environmentStateRevision !== operation.environmentStateRevision) {
+        return { status: "blocked", code: "NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+      }
+    }
+
     let candidate;
     try {
       candidate = recordNexoExecutionInSnapshot(current.snapshot, {
