@@ -18,21 +18,23 @@ The repository has planning and execution primitives, but the canonical producti
 - [GLOBAL-AUDIT-109](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/docs/nexo/NEXO_GLOBAL_AUDIT_109_STOP_REVOCATION_AUTHORITY_RETENTION_2026-09-28.md): local STOP/checkpoint/cancellation cannot establish current authority or absence of an external effect; the enforcement point must be downstream and independent of model compliance.
 - [AB104.999R / AB105.000R](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/docs/nexo/AB104_999R_evidence_coverage_reason_scope_audit_2026-09-29.md): missing evidence and aggregate completion must preserve reason, scope and coverage; terminal aggregate state cannot silently widen proof.
 
-## Current source shape
+## Current source shape and Nexo/Lúmina boundary
 
-- `scripts/assistants.mjs` loads canonical state, creates a mission, persists its plan and returns a report. It does not execute a mission step.
-- `scripts/simulate.mjs` owns the existing state lock, expected-revision check, temporary snapshot write/rename, and persisted `nexoMemory`.
+- `scripts/assistants.mjs` loads the canonical **simulation** state, creates a mission, persists its plan and returns a report. It does not execute a mission step.
+- `scripts/simulate.mjs` owns the Lúmina/world-state lock, expected-revision check, temporary snapshot write/rename, and currently serialized `nexoMemory`.
+- The fact that the Lúmina simulation snapshot currently carries `nexoMemory` is prototype integration evidence, **not proof that Lúmina owns Nexo's canonical continuity state**. The Maestra invariant remains `Lúmina ≠ Nexo`.
 - `src/nexo/runtime.js` exposes `executeNexoStep()` and `executeLuminaNexoStep()`, but its `persistPreparedIntent` argument has no canonical production owner.
 - `src/nexo/effect-adapter.js` can mutate the working simulation and journal in memory. The callback seam alone is not durable evidence.
 - `src/nexo/core/protected-transition.mjs` has its own ports and conditional commit, but it is not composed with the mission runtime/effect lifecycle. The default effect-boundary port is NOT_IMPLEMENTED.
-- No evidence establishes a current constitutional authority gate for protected external effects. Those effects remain STOP.
+- No evidence establishes a Nexo-owned canonical persistence/continuity owner or a current constitutional authority gate for protected external effects. Those effects remain STOP.
+- Therefore `persistState()` can only be used to validate a bounded Lúmina simulation adapter/test harness. It must not be promoted into Nexo's canonical state owner or authority source. Nexo's own state/persistence boundary must be specified separately before production execution.
 
 ## Required execution-owner contract before implementation
 
-The owner must be the one explicit component that coordinates a mission step with the canonical state/persistence owner. This is a responsibility boundary, not a new queue, identity system, global revision, or trust root.
+The owner must be the one explicit component that coordinates a mission step with Nexo's canonical state/persistence owner. This is a responsibility boundary, not a new queue, identity system, global revision, or trust root. The existing Lúmina `persistState()` is not that owner; it may only back a clearly labeled simulation test harness.
 
 1. **Admission before effect:** verify that the requested mission/step is the one being admitted and that its operation contract permits this exact action/target. If authority/permission evidence is absent or UNKNOWN, return STOP/UNKNOWN before dispatch.
-2. **One canonical state lineage:** work from a loaded canonical snapshot and its existing `stateRevision`. The simulation's `nexoMemory` and the memory passed to runtime must be the same owned state graph, not parallel copies.
+2. **One canonical state lineage:** work from Nexo's own loaded canonical snapshot and its revision/fencing semantics, once specified. Do not assume Lúmina's `world-state.json` or `stateRevision` is Nexo's canonical authority. In the simulation test harness only, the simulation's `nexoMemory` and memory passed to runtime must be the same owned state graph, not parallel copies.
 3. **PREPARED durability before dispatch:** the owner supplies `persistPreparedIntent`; it must commit the snapshot containing the prepared entry using existing `persistState(expectedRevision, stateRevision)` semantics before the handler is allowed to run. A missing callback or revision conflict must prevent dispatch.
 4. **Terminal snapshot after local effect:** for an allowed local simulation effect, persist the resulting world/agents, mission outcome, and terminal journal result together in one canonical snapshot/revision transition. Do not claim this is atomic with an external provider effect.
 5. **Crash/revision conflict:** after PREPARED is durable, any exception or failed final snapshot leaves the durable operation unresolved. Discard stale working state and reload canonical state; never redispatch because a process restarted or because a caller requested a new mission.
@@ -49,7 +51,8 @@ The owner must be the one explicit component that coordinates a mission step wit
 
 ## Next exact work
 
-1. Design the owner as a narrow integration of the existing mission runtime and canonical snapshot persistence; do not add a parallel execution engine.
-2. Specify the permitted-action/authority input that the owner must receive. If no legitimate source exists, keep the owner non-executing rather than manufacture authorization.
-3. Add fault-injection tests for: prepare persistence failure (handler count 0), revision conflict before dispatch (handler count 0), crash after durable PREPARED, local mutation before terminal snapshot, terminal snapshot conflict, restart reconstruction, and unresolved effect blocking redispatch/replan.
+1. First define Nexo's own canonical state/persistence ownership boundary and its relation to the existing mission runtime; do not inherit Lúmina's persistence as Nexo's source of truth.
+2. Design the owner as a narrow integration of the existing mission runtime and that Nexo-owned boundary; do not add a parallel execution engine.
+3. Specify the permitted-action/authority input that the owner must receive. If no legitimate source exists, keep the owner non-executing rather than manufacture authorization.
+4. Add fault-injection tests for: prepare persistence failure (handler count 0), revision conflict before dispatch (handler count 0), crash after durable PREPARED, local mutation before terminal snapshot, terminal snapshot conflict, restart reconstruction, and unresolved effect blocking redispatch/replan.
 4. Run CI at the exact source+test head and preserve run IDs.
