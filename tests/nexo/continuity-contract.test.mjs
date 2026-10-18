@@ -101,6 +101,10 @@ assert.throws(
   error => error?.code === "NEXO_CONTINUITY_SNAPSHOT_SCHEMA_UNKNOWN"
 );
 assert.throws(
+  () => assertNexoContinuitySnapshot({...snapshot,authority:{status:"AUTHORIZED"}}),
+  error => error?.code === "NEXO_CONTINUITY_SNAPSHOT_SCHEMA_UNKNOWN"
+);
+assert.throws(
   () => projectNexoContinuitySnapshot(null),
   error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN"
 );
