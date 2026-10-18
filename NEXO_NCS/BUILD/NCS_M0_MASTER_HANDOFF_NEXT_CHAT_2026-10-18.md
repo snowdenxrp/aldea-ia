@@ -396,3 +396,15 @@ La prueba confirma:
 Esto valida el contrato de observación, no una transición de misión a completion ni el runtime genérico productivo. No se ha añadido un estado durable nuevo. Siguiente paso: auditar si hace falta representar `goal_observed` como dato durable separado, qué revisión/identidad debería enlazar y cómo evitar que replay convierta una observación histórica en verdad actual; solo después proponer la transición mínima y sus pruebas CAS/restart.
 
 El CI anterior corresponde al commit de código/prueba indicado; las actualizaciones documentales posteriores no están cubiertas por ese run. M0 sigue abierto; repair-only opt-in; efectos protegidos STOP; Nexo y Lúmina separados; no atomicidad cross-store.
+
+---
+
+## CI adicional — objetivo observado no desbloquea redispatch (2026-10-18)
+
+Se amplió `tests/nexo/repair-mission-verification.test.mjs` para comprobar que la reconstrucción canónica, después de `goal_observed`, conserva misión y paso en `blocked` bajo `NEXO_REPAIR_SETTLED_BY_OBSERVATION`. Así se prueba que observar el objetivo no modifica la continuidad ni habilita un redispatch accidental.
+
+CI exacto: [39144434201](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144434201), SHA `ec36dd7df7cccf57f372d2cf252444ce28292e84`, workflow de crash cuts SUCCESS; todos los pasos, incluido el test de verificación, SUCCESS.
+
+**Semántica probada:** el journal conserva `settled_observed`; la función de verificación devuelve `goal_observed` sin escritura; la reconstrucción aún no tiene una transición durable que resuelva la misión y la deja bloqueada. No introducir completion implícita.
+
+Próximo trabajo: definir si conviene un registro separado de observación de objetivo y su regla de vigencia ligada a la revisión del entorno. Debe quedar invalidable si la invariante desaparece; un dato histórico no puede reemplazar observación actual. Probar CAS/restart/replay antes de añadir persistencia. Runtime genérico sigue sin migrar; M0 abierto.
