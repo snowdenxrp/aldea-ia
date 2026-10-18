@@ -29,6 +29,7 @@ const legacyMemory = {
       action: "repair_agent_state",
       target: "alex",
       status: "prepared",
+      environmentStateRevision: 10,
       at: "2026-10-18T00:00:00.000Z"
     }]
   }
@@ -96,8 +97,19 @@ try {
     missionId: "mission-legacy-1",
     stepId: "step-1",
     action: "repair_agent_state",
-    target: "alex"
+    target: "alex",
+    environmentStateRevision: 10
   };
+  const mismatchedRevision = await opened.owner.recordExecutionLineage({
+    expectedRevision: 0,
+    operation: { ...operation, environmentStateRevision: 11 },
+    result: { status: "completed", verified: true }
+  });
+  assert.equal(mismatchedRevision.status, "blocked");
+  assert.equal(mismatchedRevision.code, "NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 0,
+    "mismatched environment revision must not append lineage or advance the Nexo store");
+
   const recorded = await opened.owner.recordExecutionLineage({
     expectedRevision: 0,
     operation,
