@@ -84,10 +84,11 @@ export async function runNexoChronicleAppend({
     handlers: contracts.handlers,
     verifiers: contracts.verifiers
   });
-  return executeNexoStepWithContinuityOwner({
+  const result = await executeNexoStepWithContinuityOwner({
     missionId, stepId, owner: opened.owner, adapter,
     postcondition: contracts.postcondition
   });
+  return { ...result, missionId, stepId };
 }
 
 function parseArguments(argv) {
