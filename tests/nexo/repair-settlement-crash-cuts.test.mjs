@@ -390,6 +390,41 @@ try {
   assert.equal((await unknownOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
 
+  // Repair actions cannot bypass their revision-bound repair-specific
+  // settlement contract through the generic observation API.
+  const repairContractDir = path.join(root, "generic-repair-route-rejected");
+  await fs.mkdir(repairContractDir);
+  const repairContractOpened = await openNexoContinuityOwner({
+    filePath: path.join(repairContractDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  const repairContractOwner = createNexoContinuityOwner({
+    store: repairContractOpened.store,
+    effectVerifiers: {
+      repair_agent_state: async operation => ({
+        status: "applied",
+        idempotencyKey: operation.idempotencyKey,
+        action: operation.action,
+        target: operation.target,
+        observedRevision: 11,
+        source: "must-not-be-used"
+      })
+    }
+  });
+  const repairGenericAttempt = await repairContractOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    }
+  });
+  assert.equal(repairGenericAttempt.status, "blocked");
+  assert.equal(repairGenericAttempt.code, "NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED");
+  assert.equal((await repairContractOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
   // A verifier that races with another canonical write cannot settle against
   // the stale expected revision; the concurrent revision remains authoritative.
   const raceDir = path.join(root, "generic-owner-cas-race");
