@@ -146,19 +146,22 @@ try {
   assert.equal(genericSettlement.verified, false);
   assert.equal((await staleOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
-  // An unresolved PREPARED effect also blocks direct completion recording.
-  const prematureOutcome = await staleOpened.owner.recordOutcome({
-    expectedRevision: 0,
-    outcome: {
-      missionId: "mission-crash-cut",
-      stepId: "step-repair",
-      action: "repair_agent_state",
-      target: "alex",
-      status: "completed"
-    }
-  });
-  assert.equal(prematureOutcome.status, "blocked");
-  assert.equal(prematureOutcome.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
+  // No terminal outcome may bypass reconciliation while PREPARED is unresolved.
+  // A dispatch may have applied an effect even if the caller now claims failed/blocked.
+  for (const status of ["completed", "failed", "blocked"]) {
+    const prematureOutcome = await staleOpened.owner.recordOutcome({
+      expectedRevision: 0,
+      outcome: {
+        missionId: "mission-crash-cut",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex",
+        status
+      }
+    });
+    assert.equal(prematureOutcome.status, "blocked", `unresolved PREPARED must reject ${status}`);
+    assert.equal(prematureOutcome.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
+  }
   const afterPrematureOutcome = await staleOpened.owner.loadCurrent();
   assert.equal(afterPrematureOutcome.snapshot.effectJournal[0].status, "prepared");
   assert.equal(afterPrematureOutcome.snapshot.attempts.length, 0);
