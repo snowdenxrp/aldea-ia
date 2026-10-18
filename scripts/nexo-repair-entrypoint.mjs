@@ -236,7 +236,7 @@ export async function runNexoRepairOnce({
   if (settlement.status !== "settled_observed") {
     return {
       status: "blocked",
-      code: "NEXO_REPAIR_SETTLEMENT_NOT_CONFIRMED",
+      code: settlement.code ?? "NEXO_REPAIR_SETTLEMENT_NOT_CONFIRMED",
       dispatch,
       settlement,
       persisted: true,
