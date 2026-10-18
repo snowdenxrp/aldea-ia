@@ -63,7 +63,19 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
   const started=beginNexoStep(mission,stepId); const step=started?.steps?.find(s=>s.id===stepId);
   if(!step||step.status!=="executing")return{mission:started,memory,adapterResult:null,status:"blocked"};
   const idempotencyKey=`${started.missionId}:${stepId}`;
-  const adapterResult=await adapter.execute({missionId:started.missionId,stepId,action:step.action,target:step.target,idempotencyKey,context:step.context??context,precondition,postcondition});
+  let adapterResult=await adapter.execute({missionId:started.missionId,stepId,action:step.action,target:step.target,idempotencyKey,context:step.context??context,precondition,postcondition});
+  // A terminal status alone is not proof of a completed operation. Keep the
+  // runtime's persisted execution/outcome aligned when an adapter omits either
+  // verification signal; never record a positive completion from that response.
+  if(adapterResult?.status==="completed" && !(adapterResult.verified===true && adapterResult.evidence?.verified===true)) {
+    adapterResult={
+      ...adapterResult,
+      status:"blocked",
+      code:"UNVERIFIED_COMPLETION_RESULT",
+      verified:false,
+      uncertainty:"completion_claim_not_verified"
+    };
+  }
   const outcome=adapterResult.status==="completed"?"completed":adapterResult.status==="blocked"||adapterResult.status==="unsupported"?"blocked":"failed";
   const evidence=adapterResult.evidence??{verified:false,kind:"effect-result",code:adapterResult.code??null};
   return commitRuntimeOutcome(memory,mission,stepId,adapterResult,outcome,evidence,started);
