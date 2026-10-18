@@ -129,7 +129,7 @@ console.log("Nexo continuity shape, snapshot separation, and prepared-operation 
 
 
 const storeDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owned-continuity-"));
-const storePath = path.join(storeDirectory, "nexo-continuity.json");
+// The store owns a separate file; the test also validates real JSON round-tripping.\nconst storePath = path.join(storeDirectory, "nexo-continuity.json");
 const store = createNexoContinuityStore({ filePath: storePath });
 const emptySnapshot = {
   schema: NEXO_CONTINUITY_SCHEMA,
