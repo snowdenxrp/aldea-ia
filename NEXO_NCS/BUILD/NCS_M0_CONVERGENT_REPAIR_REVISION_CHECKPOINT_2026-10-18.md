@@ -20,8 +20,10 @@ In `tests/nexo/simulation-adapter.test.mjs`:
 - A resource object with no `amount` field normalizes to zero and satisfies its postcondition.
 - Existing stale-precondition and physical-action cases remain in the test file.
 
-Code commit: [`892680032b5512de11532b6ea609e5e9cbc9f75f`](https://github.com/snowdenxrp/aldea-ia/commit/892680032b5512de11532b6ea609e5e9cbc9f75f)  
-Test commit: [`575d01789250bb26800d66146da18321ffad32ab`](https://github.com/snowdenxrp/aldea-ia/commit/575d01789250bb26800d66146da18321ffad32ab)
+Repair revision code: [`892680032b5512de11532b6ea609e5e9cbc9f75f`](https://github.com/snowdenxrp/aldea-ia/commit/892680032b5512de11532b6ea609e5e9cbc9f75f)  
+Convergence tests: [`575d01789250bb26800d66146da18321ffad32ab`](https://github.com/snowdenxrp/aldea-ia/commit/575d01789250bb26800d66146da18321ffad32ab)  
+Dead-agent-safe postcondition: [`a17a540d8795d29e2320f0e1fc16345f83b9a0f0`](https://github.com/snowdenxrp/aldea-ia/commit/a17a540d8795d29e2320f0e1fc16345f83b9a0f0)  
+Test that repair never resurrects: [`0846597665e72de65917101c9206c3d26c11bf1b`](https://github.com/snowdenxrp/aldea-ia/commit/0846597665e72de65917101c9206c3d26c11bf1b)
 
 ## CI evidence on exact test head
 
@@ -33,5 +35,5 @@ Test commit: [`575d01789250bb26800d66146da18321ffad32ab`](https://github.com/sno
 
 - The revision remains in-memory and is not `world-state.json`'s durable `stateRevision`.
 - A normalized postcondition is not an operation-specific receipt.
-- A dead agent is deliberately not resurrected. The current generic repair postcondition still requires `alive !== false`; if a repair is attempted on a dead agent, it may fail its postcondition and remain unresolved. That case must be clarified before treating `repair_agent_state` as universally settleable.
+- A dead agent is deliberately not resurrected. The repair postcondition now permits `alive === false` when coordinates are normalized, and a regression test covers this. This still does not make the action independently attributable after restart.
 - No owner settlement API or runtime cutover was added. PREPARED remains UNKNOWN; protected effects STOP; M0 incomplete.
