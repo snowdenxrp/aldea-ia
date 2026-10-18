@@ -1013,3 +1013,12 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - `scripts/assistants.mjs` importa `world.js`, `simulation.js`, `simulate.mjs`, memoria de asistentes y el builder de misiones desde informes de simulación. Aunque persiste continuidad, su flujo principal pertenece a la aplicación de simulación. Conectar ahí Chronicle como si fuera la entrada de Nexo reintroduciría el acoplamiento que queremos evitar.
 - Decisión de trabajo: conservar la vertical Chronicle como CLI explícita de validación; no modificar `scripts/assistants.mjs` para alojarla. La siguiente frontera de arquitectura es diseñar/identificar una entrada de aplicación Nexo independiente que pueda invocar la capacidad sin inicializar mundo/simulación Lúmina. No construir todavía una segunda aplicación completa ni cambiar runtime default: primero inspeccionar el punto de entrada del producto y los contratos mínimos que requiere.
 - Esta auditoría no altera código ni cambia el estado de M0: INCOMPLETO. Efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+## M0 — handoff de cambio de chat (2026-10-18, actualizado)
+
+- Handoff operativo vigente: [NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md](BUILD/NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md), sección 10. Contiene HEAD observado, commits, CI probado, límites ya cerrados y pasos exactos para continuar sin repetir investigación.
+- Punto actual: definir una entrada principal Nexo-only sin inicializar Lúmina. `scripts/assistants.mjs` importa simulación/mundo y no debe ser anfitrión de Chronicle. Mantener el CLI Chronicle explícito como vertical focal.
+- Stores: locks obsoletos fallan cerrado; no hay reaper automático. `filePath` es configuración confiable, no sandbox. No reclamar resistencia a symlink/path attacks, fsync/power-loss o filesystem distribuido.
+- Continuación posterior: seam mínimo de entrada Nexo-only; luego contrato genérico owner-backed con PREPARED confirmado antes de dispatch y reconciliación confiable por acción. Chronicle es la única acción no-repair demostrada en esta vertical.
+- **M0 INCOMPLETO; runtime default sin cutover; efectos protegidos STOP; Nexo/Lúmina separados.** No reabrir auditorías cerradas ni pasar a M1/STEP 7.
