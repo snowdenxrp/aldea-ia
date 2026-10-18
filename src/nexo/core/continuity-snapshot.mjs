@@ -9,8 +9,7 @@ const COLLECTIONS = Object.freeze([
   "attempts",
   "doNotRepeat",
   "executions",
-  "effectJournal",
-  "goalObservations"
+  "effectJournal"
 ]);
 
 function snapshotError(code) {
