@@ -255,3 +255,11 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Report: [M0 replan snapshot isolation](BUILD/NCS_M0_REPLAN_SNAPSHOT_ISOLATION_2026-10-18.md).
 - Scope: memory snapshot correctness only. Proxy boundary design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
 
+
+## M0 — UNKNOWN effect recovery seam (2026-10-18)
+
+- Source trace found an integration gap between the adapter's prepared/same-key reconciliation and the mission runtime: `executeNexoStep()` does not forward reconciliation; a blocked unknown outcome becomes a terminal step; replanning can issue a fresh mission/step key while the old journal entry remains prepared.
+- Report: [UNKNOWN effect reconciliation runtime gap](BUILD/NCS_M0_UNKNOWN_EFFECT_RECONCILIATION_RUNTIME_GAP_2026-10-18.md).
+- This is a source-path finding, not a dynamic exploit claim. Existing CI does not verify this cross-mission seam.
+- STOP code changes until operation identity and restart reconciliation are defined against the existing PG-009 research. Do not add guessed retries/queues/locks or activate protected effects. STEP 7 remains OPEN / STOP / UNKNOWN.
+

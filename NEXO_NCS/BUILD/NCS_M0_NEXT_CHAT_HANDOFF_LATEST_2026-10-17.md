@@ -720,3 +720,12 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - A workflow commit was built from a stale base tree and unintentionally reverted the snapshot-isolation source/test changes. The prior CI success therefore did not validate the new regression.
 - Source + regression have been restored against the actual current branch HEAD; workflow explicitly runs `tests/nexo/runtime.test.mjs`.
 - Verified on exact head `0a964abdc0a8f39465e484fd8f531a6a3d079caf`: continuity/runtime [39085110783](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110783), STEP 4 [39085110788](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110788), STEP 5 [39085110864](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085110864) — all success; the runtime step ran and passed with snapshot assertions present. Do not rely on earlier run IDs for this correction.
+
+
+## Latest continuation — unresolved effect recovery integration gap (2026-10-18)
+
+- Current branch head inspected: `804a621dcb06f626a498d23eb6609a8c7a90c1b9`; no runtime source change made in this increment.
+- Confirmed by source trace: adapter keeps handler-exception outcomes as UNKNOWN with the journal still prepared and requires same-key reconciliation, but runtime does not forward reconciliation; it records the result as a terminal blocked step. Replanning can then create a fresh `missionId:stepId` key without reconciling the old prepared entry first.
+- Report: `NEXO_NCS/BUILD/NCS_M0_UNKNOWN_EFFECT_RECONCILIATION_RUNTIME_GAP_2026-10-18.md`.
+- This is not a claim of a live exploit or dynamic reproduction. Prior focused CI validated existing runtime tests, not this cross-mission seam.
+- Next: use existing PG-009 recovery/restart/fencing decisions; specify operation identity, reconciliation outcomes and the conditions for admitting a successor operation, then add an integrated regression. Do not invent a new queue/retry/lock or treat UNKNOWN as failure. Protected effects remain STOP; STEP 7 remains OPEN / STOP / UNKNOWN.
