@@ -99,6 +99,119 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
   return commitRuntimeOutcome(memory,mission,stepId,adapterResult,outcome,evidence,started);
 }
 
+/**
+ * Canonical owner-backed execution slice for actions with a trusted verifier.
+ * PREPARED must be committed before adapter dispatch. Any ambiguous result keeps
+ * the obligation open; this path never retries and never declares a terminal
+ * mission outcome from adapter status alone.
+ *
+ * Repair actions remain on their dedicated revision-bound settlement path.
+ */
+export async function executeNexoStepWithContinuityOwner({
+  missionId, stepId, owner, adapter, context={}, precondition, postcondition
+}={}) {
+  if (typeof missionId !== "string" || !missionId.trim() ||
+      typeof stepId !== "string" || !stepId.trim() ||
+      !owner || typeof owner.loadCurrent !== "function" ||
+      typeof owner.recordPrepared !== "function" ||
+      typeof owner.recordExecutionLineage !== "function" ||
+      typeof owner.reconcilePrepared !== "function" ||
+      typeof owner.supportsReconciliation !== "function" ||
+      !adapter || typeof adapter.execute !== "function" ||
+      typeof adapter.supports !== "function" ||
+      typeof adapter.supportsReconciliation !== "function") {
+    return { status: "invalid", code: "NEXO_CANONICAL_RUNTIME_CONTEXT_INVALID", dispatchAttempted: false };
+  }
+
+  let current;
+  try { current = await owner.loadCurrent(); }
+  catch (error) {
+    return { status: "blocked", code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED", dispatchAttempted: false };
+  }
+  const mission = current.snapshot?.missions?.find(item => item?.missionId === missionId);
+  const step = mission?.steps?.find(item => item?.id === stepId);
+  if (!step) return { status: "blocked", code: "NEXO_CANONICAL_RUNTIME_STEP_UNKNOWN", dispatchAttempted: false };
+  const operation = {
+    idempotencyKey: `${missionId}:${stepId}`,
+    missionId, stepId, action: step.action, target: step.target ?? null
+  };
+
+  // Capability checks happen before PREPARED and before any handler can run.
+  if (!adapter.supports(operation.action)) {
+    return { status: "blocked", code: "NEXO_EFFECT_HANDLER_UNAVAILABLE", dispatchAttempted: false };
+  }
+  if (!adapter.supportsReconciliation(operation.action) ||
+      !owner.supportsReconciliation(operation.action)) {
+    return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", dispatchAttempted: false };
+  }
+
+  const prepared = await owner.recordPrepared({ expectedRevision: current.storeRevision, operation });
+  if (prepared?.status !== "committed" || prepared.preparedCommitted !== true) {
+    return {
+      status: "blocked",
+      code: prepared?.code ?? "NEXO_PREPARED_COMMIT_NOT_CONFIRMED",
+      dispatchAttempted: false,
+      prepared
+    };
+  }
+
+  let adapterResult;
+  try {
+    adapterResult = await adapter.execute({
+      missionId, stepId, action: operation.action, target: operation.target,
+      idempotencyKey: operation.idempotencyKey,
+      context: step.context ?? context, precondition, postcondition
+    });
+  } catch (error) {
+    // The effect may have happened before the adapter threw. Do not redispatch.
+    return {
+      status: "unknown",
+      code: "NEXO_EFFECT_DISPATCH_OUTCOME_UNKNOWN",
+      dispatchAttempted: true,
+      preparedCommitted: true,
+      journalSettled: false,
+      adapterError: String(error?.message ?? error)
+    };
+  }
+
+  const lineage = await owner.recordExecutionLineage({
+    expectedRevision: prepared.storeRevision,
+    operation,
+    result: adapterResult && typeof adapterResult === "object"
+      ? adapterResult
+      : { status: "unknown", code: "NEXO_ADAPTER_RESULT_INVALID" }
+  });
+  if (lineage?.status !== "committed") {
+    return {
+      status: "unknown",
+      code: lineage?.code ?? "NEXO_EXECUTION_LINEAGE_COMMIT_NOT_CONFIRMED",
+      dispatchAttempted: true,
+      preparedCommitted: true,
+      journalSettled: false,
+      adapterResult,
+      lineage
+    };
+  }
+
+  const reconciled = await owner.reconcilePrepared({
+    expectedRevision: lineage.storeRevision,
+    operation
+  });
+  return {
+    status: reconciled?.status === "observed" ? "observed" : "unknown",
+    code: reconciled?.code ?? "NEXO_EFFECT_RECONCILIATION_REQUIRED",
+    dispatchAttempted: true,
+    preparedCommitted: true,
+    lineageCommitted: true,
+    journalSettled: false,
+    terminalOutcomeRecorded: false,
+    redispatchAuthorized: false,
+    adapterResult,
+    lineage,
+    reconciliation: reconciled
+  };
+}
+
 export async function executeLuminaNexoStep({simulation,mission,stepId,memory=null,context={},precondition,postcondition,persistPreparedIntent=null}={}) {
   if(!simulation)return{mission:null,memory,adapterResult:null,status:"invalid"};
   const runtimeMemory=memory ?? null;
