@@ -1,5 +1,6 @@
 import { pathToFileURL } from "node:url";
 import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
+import { createNexoContinuityStore } from "../src/nexo/core/continuity-store.mjs";
 import { createNexoChronicleStore } from "../src/nexo/core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts, NEXO_CHRONICLE_APPEND_ACTION } from "../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../src/nexo/effect-adapter.js";
@@ -35,18 +36,24 @@ export async function runNexoChronicleAppend({
   }
 
   const chronicleStore = createNexoChronicleStore({ filePath: chroniclePath });
-  try {
-    if (initializeChronicle) {
-      const initialized = await chronicleStore.initialize();
-      if (initialized.status !== "committed" && initialized.status !== "conflict") {
-        return blocked(initialized.code ?? "NEXO_CHRONICLE_INITIALIZE_FAILED");
-      }
-    }
-    // Explicitly load to distinguish an existing store from a missing one.
-    await chronicleStore.loadCurrent();
-  } catch (error) {
-    return blocked(error?.code ?? "NEXO_CHRONICLE_STORE_UNAVAILABLE");
+  const continuityStore = createNexoContinuityStore({ filePath: continuityPath });
+  let chronicleMissing = false;
+  let continuityMissing = false;
+
+  // Preflight BOTH stores before initializing either one. A known-corrupt or
+  // unapproved-missing companion store must not cause partial bootstrap writes.
+  try { await chronicleStore.loadCurrent(); }
+  catch (error) {
+    if (error?.code === "NEXO_CHRONICLE_NOT_FOUND") chronicleMissing = true;
+    else return blocked(error?.code ?? "NEXO_CHRONICLE_STORE_UNAVAILABLE");
   }
+  try { await continuityStore.loadCurrent(); }
+  catch (error) {
+    if (error?.code === "NEXO_CONTINUITY_STORE_NOT_FOUND") continuityMissing = true;
+    else return blocked(error?.code ?? "NEXO_CONTINUITY_STORE_UNAVAILABLE");
+  }
+  if (chronicleMissing && !initializeChronicle) return blocked("NEXO_CHRONICLE_STORE_UNAVAILABLE");
+  if (continuityMissing && !initializeContinuity) return blocked("NEXO_CONTINUITY_INITIAL_STATE_UNKNOWN");
 
   const contracts = createNexoChronicleEffectContracts({ store: chronicleStore });
   let opened;
@@ -58,6 +65,16 @@ export async function runNexoChronicleAppend({
     });
   } catch (error) {
     return blocked(error?.code ?? "NEXO_CONTINUITY_STORE_UNAVAILABLE");
+  }
+  if (chronicleMissing) {
+    try {
+      const initialized = await chronicleStore.initialize();
+      if (initialized.status !== "committed") {
+        return blocked(initialized.code ?? "NEXO_CHRONICLE_INITIALIZE_FAILED");
+      }
+    } catch (error) {
+      return blocked(error?.code ?? "NEXO_CHRONICLE_INITIALIZE_FAILED");
+    }
   }
 
   const target = { content };
