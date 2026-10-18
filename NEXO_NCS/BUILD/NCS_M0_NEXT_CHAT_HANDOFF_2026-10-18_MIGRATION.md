@@ -1,3 +1,20 @@
+## Latest implementation — repair settlement from persisted invariant (2026-10-18)
+
+- Code/test head: [`72bb686a4d6b84d6cd058751005dbe34cda1d273`](https://github.com/snowdenxrp/aldea-ia/commit/72bb686a4d6b84d6cd058751005dbe34cda1d273).
+- New `scripts/nexo-repair-settlement.mjs` exports `settlePreparedRepairFromPersistedState()`. It reads the durable continuity entry and strict persisted environment itself, requires exactly one PREPARED repair, requires a valid bound environment revision, checks that current revision is the prepared revision or immediate successor, verifies the operation-specific invariant, and commits through `store.commitIfCurrent()`.
+- It marks journal entry `settled_observed`, not generic `completed`; evidence includes the persisted revision and `causalAttribution: "not_claimed"`. This records a grounded observation without pretending the operation caused the invariant.
+- If environment revision is unrelated, invariant is absent/unknown, target is ambiguous, or continuity revision conflicts, settlement is not reported successful.
+- Exact-head CI PASS: mission/restart [39133009763](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133009763), semantic [39133009760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133009760), outcome [39133009772](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133009772).
+- Checkpoint: [NCS_M0_REPAIR_OBSERVATION_SETTLEMENT_CHECKPOINT_2026-10-18.md](NCS_M0_REPAIR_OBSERVATION_SETTLEMENT_CHECKPOINT_2026-10-18.md).
+
+### Next exact task
+
+Add negative crash-cut tests for desired invariant absent/unknown and environment revision advanced beyond the allowed window. Inject continuity-store commit failures/ambiguous read-after-write results and verify that no caller receives false settlement success. Inspect mission reconstruction so `settled_observed` is terminal only for the repair journal and does not imply broader mission completion. Only then consider runtime wiring; no non-idempotent effects and no cross-store atomicity claims.
+
+M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest implementation — repair revision-fenced preparation and dispatch (2026-10-18)
 
 - Exact code/test head: [`64f8329aef2ba050e9600227e2661f56fb75e21d`](https://github.com/snowdenxrp/aldea-ia/commit/64f8329aef2ba050e9600227e2661f56fb75e21d).
