@@ -1,3 +1,12 @@
+## M0 — Runtime rejects unverified completion claims (2026-10-18)
+
+- Change: `src/nexo/runtime.js` no longer maps `status: "completed"` to a successful mission unless both `adapterResult.verified === true` and `adapterResult.evidence.verified === true`. Missing/false verification is normalized to `blocked / UNVERIFIED_COMPLETION_RESULT` before persistence.
+- Regression: `tests/nexo/runtime.test.mjs` asserts mission step, attempt, and execution record all remain blocked when an adapter reports completed with false verification signals.
+- Report: [M0 runtime reject unverified completion](BUILD/NCS_M0_RUNTIME_REJECT_UNVERIFIED_COMPLETION_2026-10-18.md).
+- Source commit `97e9deb8410af9bd9f9afb5dc876102741c202c5`; test commit `c37b91c703b308c9ee888c9f9f1147489e345d80`; report commit `01dcae97215e31b286602c2865b952c577dad577`.
+- Exact-head CI/status lookup returned no runs/status checks. **CI NOT VERIFIED; not PASS.**
+- Limitation: consistency guard only. It does not authenticate the adapter's `verified` claim; independent verifier/current fence/provenance is still absent from the integrated PG-009 path. Prepared effects remain UNKNOWN; no redispatch. M0 incomplete; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## M0 — Maestra / AB / P cross-check (2026-10-18)
 
 - Added [M0 cross-check against Maestra, AB, P and NCS invariants](BUILD/NCS_M0_MASTER_AB_P_CROSSCHECK_2026-10-18.md).
