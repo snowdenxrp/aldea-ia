@@ -398,4 +398,34 @@ try {
   await fs.rm(preparedAdmissionDir, { recursive: true, force: true });
 }
 
+const missionStateAdmissionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-mission-state-admission-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(missionStateAdmissionDir, "nexo.json"),
+    allowEmptyInitialization: true
+  });
+  const mission = {
+    missionId: "owner-mission-state-admission",
+    status: "blocked",
+    objective: "mission state admission regression",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 0, mission })).status, "committed");
+  const result = await opened.owner.recordPrepared({
+    expectedRevision: 1,
+    operation: {
+      idempotencyKey: "owner-mission-state-admission:step-1",
+      missionId: mission.missionId, stepId: "step-1",
+      action: "repair_agent_state", target: "alex", environmentStateRevision: 0
+    }
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_PREPARED_MISSION_NOT_RUNNABLE");
+  const current = await opened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 1);
+  assert.equal(current.snapshot.effectJournal.length, 0);
+} finally {
+  await fs.rm(missionStateAdmissionDir, { recursive: true, force: true });
+}
+
 console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation, durable owner outcome recording, PREPARED admission guard and observed-settlement no-redispatch OK.");
