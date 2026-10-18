@@ -23,7 +23,11 @@ function fixtureState() {
     hour: 8,
     world: structuredClone(world),
     agents,
-    events: []
+    events: [],
+    nexoMemory: {
+      version: 4, runs: [], lessons: [], patterns: [],
+      nexo: { missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: [] }
+    }
   };
 }
 
