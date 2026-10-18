@@ -1,3 +1,16 @@
+## Incremento posterior — replay y stale revision (2026-10-18)
+
+La prueba integrada `tests/nexo/repair-owner-lifecycle.test.mjs` ahora incluye dos regresiones adicionales en el commit [53cf292ae966c80eb722a7f48eec0c6c2c86595d](https://github.com/snowdenxrp/aldea-ia/commit/53cf292ae966c80eb722a7f48eec0c6c2c86595d):
+
+1. Tras `settled_observed`, repetir dispatch debe quedar bloqueado sin mutar entorno ni continuidad.
+2. Si el entorno cambia de revisión 20 a 21 después de PREPARED, dispatch debe fallar cerrado, conservar revisión 21 y dejar la obligación PREPARED para reconciliación.
+
+**CI de ese commit: PENDIENTE DE VERIFICACIÓN.** No asumir que el workflow se ejecutó ni marcar PASS sin run, job y log exactos. STATUS actualizado en commit [09ac224852661be6ea1ca5529326ea6326c26779](https://github.com/snowdenxrp/aldea-ia/commit/09ac224852661be6ea1ca5529326ea6326c26779).
+
+Estas pruebas cubren el comportamiento de helpers repair-only, no el corte de runtime productivo ni atomicidad entre almacenes. Siguiente: verificar CI del commit de test; corregir cualquier fallo real; después añadir/ejecutar el corte de crash tras persistencia de entorno antes del settlement y evaluar un entrypoint owner-backed repair-only antes de cualquier conexión a `runtime.js`.
+
+---
+
 # NCS — MASTER HANDOFF PARA NUEVO CHAT — MISIÓN M0
 
 Fecha de corte: 2026-10-18
