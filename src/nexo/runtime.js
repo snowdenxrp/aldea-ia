@@ -118,7 +118,7 @@ export async function executeNexoStepWithContinuityOwner({
       typeof owner.recordExecutionLineage !== "function" ||
       typeof owner.reconcilePrepared !== "function" ||
       typeof owner.supportsReconciliation !== "function" ||
-      !adapter || typeof adapter.execute !== "function" ||
+      !adapter || typeof adapter.executePrepared !== "function" ||
       typeof adapter.supports !== "function" ||
       typeof adapter.supportsReconciliation !== "function") {
     return { status: "invalid", code: "NEXO_CANONICAL_RUNTIME_CONTEXT_INVALID", dispatchAttempted: false };
@@ -177,11 +177,12 @@ export async function executeNexoStepWithContinuityOwner({
 
   let adapterResult;
   try {
-    adapterResult = await adapter.execute({
+    adapterResult = await adapter.executePrepared({
       missionId, stepId, action: operation.action, target: operation.target,
       idempotencyKey: operation.idempotencyKey,
+      preparedOperation: operation,
       context: step.context ?? context, precondition, postcondition
-    });
+    }, { preparedCommit: prepared });
   } catch (error) {
     // The effect may have happened before the adapter threw. Do not redispatch.
     return {
