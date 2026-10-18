@@ -43,7 +43,7 @@ function emptyCandidate(snapshot) {
  * dispatched. It intentionally cannot settle a prepared effect: no independent
  * operation-specific reconciliation/verifier is wired into this owner yet.
  */
-export function createNexoContinuityOwner({ store } = {}) {
+export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) {
   if (!store || typeof store.loadCurrent !== "function" ||
       typeof store.commitIfCurrent !== "function") {
     throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
@@ -391,8 +391,99 @@ export function createNexoContinuityOwner({ store } = {}) {
     return { ...committed, journalSettled: false, authorization: "NOT_EVALUATED" };
   }
 
-  async function reconcilePrepared() {
-    return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
+  /**
+   * Persist an observation from a verifier fixed at owner construction.
+   * This is an observation record, not causal attribution, authorization, or
+   * permission to redispatch. UNKNOWN and invalid evidence leave PREPARED open.
+   */
+  async function reconcilePrepared({ expectedRevision, operation } = {}) {
+    try { validateOperation(operation); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" }; }
+    if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
+      return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" };
+    }
+    const verifier = effectVerifiers?.[operation.action];
+    if (typeof verifier !== "function") {
+      return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+
+    const current = await store.loadCurrent();
+    if (current.storeRevision !== expectedRevision) {
+      return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    const matches = current.snapshot.effectJournal.filter(item => item?.idempotencyKey === operation.idempotencyKey);
+    if (matches.length !== 1 || matches[0]?.status !== "prepared") {
+      return { status: "blocked", code: "NEXO_EFFECT_PREPARED_OBLIGATION_REQUIRED", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    const prepared = matches[0];
+    if (prepared.missionId !== operation.missionId || prepared.stepId !== operation.stepId ||
+        prepared.action !== operation.action || !isDeepStrictEqual(prepared.target ?? null, operation.target ?? null)) {
+      return { status: "blocked", code: "NEXO_EFFECT_PREPARED_IDENTITY_MISMATCH", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+
+    let observation;
+    try {
+      observation = await verifier(structuredClone({
+        idempotencyKey: operation.idempotencyKey,
+        missionId: operation.missionId,
+        stepId: operation.stepId,
+        action: operation.action,
+        target: operation.target ?? null
+      }));
+    } catch (error) {
+      return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_FAILED", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    if (!observation || typeof observation !== "object" || Array.isArray(observation) ||
+        !["applied", "not_applied", "unknown"].includes(observation.status) ||
+        observation.idempotencyKey !== operation.idempotencyKey ||
+        observation.action !== operation.action ||
+        !isDeepStrictEqual(observation.target ?? null, operation.target ?? null) ||
+        !Number.isSafeInteger(observation.observedRevision) || observation.observedRevision < 0 ||
+        typeof observation.source !== "string" || !observation.source.trim()) {
+      return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    if (observation.status === "unknown") {
+      return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_UNKNOWN", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+
+    // The verifier may take time. Reload immediately before CAS; never write
+    // an observation against a stale snapshot or overwrite a concurrent change.
+    const latest = await store.loadCurrent();
+    if (latest.storeRevision !== expectedRevision) {
+      return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: latest.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    const latestMatches = latest.snapshot.effectJournal.filter(item => item?.idempotencyKey === operation.idempotencyKey);
+    if (latestMatches.length !== 1 || latestMatches[0]?.status !== "prepared" ||
+        latestMatches[0].missionId !== operation.missionId || latestMatches[0].stepId !== operation.stepId ||
+        latestMatches[0].action !== operation.action ||
+        !isDeepStrictEqual(latestMatches[0].target ?? null, operation.target ?? null)) {
+      return { status: "conflict", code: "NEXO_EFFECT_PREPARED_OBLIGATION_CHANGED", storeRevision: latest.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    const candidate = emptyCandidate(latest.snapshot);
+    const entry = candidate.effectJournal.find(item => item?.idempotencyKey === operation.idempotencyKey);
+    entry.status = "settled_observed";
+    entry.reconciliation = {
+      status: observation.status,
+      observedRevision: observation.observedRevision,
+      source: observation.source,
+      evidence: structuredClone(observation.evidence ?? null),
+      observedAt: new Date().toISOString()
+    };
+    assertNexoContinuitySnapshot(candidate);
+    const committed = await store.commitIfCurrent(expectedRevision, candidate);
+    if (committed.status !== "committed") {
+      return { ...committed, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    return {
+      ...committed,
+      status: "observed",
+      observation: observation.status,
+      preparedCommitted: true,
+      journalSettled: false,
+      causalAttribution: "NOT_ESTABLISHED",
+      redispatchAuthorized: false,
+      authorization: "NOT_EVALUATED"
+    };
   }
 
   return Object.freeze({ loadCurrent, reconstructMission, recordMission, recordOutcome, recordPrepared, recordExecutionLineage, reconcilePrepared });
