@@ -148,6 +148,31 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     if (latest.status === "failed") step.failure = latest.evidence ?? null;
     if (latest.status === "blocked") step.blockReason = latest.evidence ?? "blocked";
   }
+  // An unresolved PREPARED entry dominates any plan-only or stale attempt view.
+  // Reconstruction must never make a possibly-dispatched operation look executable.
+  const unresolvedPrepared = source.effectJournal.filter(entry =>
+    entry?.missionId === missionId && entry?.status === "prepared"
+  );
+  for (const entry of unresolvedPrepared) {
+    const step = mission.steps.find(candidate => candidate.id === entry.stepId);
+    if (!step) continue; // Snapshot validation should prevent this; fail closed below if encountered.
+    step.status = "blocked";
+    step.blockReason = {
+      code: "NEXO_EFFECT_RECONCILIATION_REQUIRED",
+      idempotencyKey: entry.idempotencyKey,
+      uncertainty: "effect_may_or_may_not_have_occurred"
+    };
+  }
+  const orphanPrepared = unresolvedPrepared.some(entry =>
+    !mission.steps.some(step => step.id === entry.stepId)
+  );
+  if (orphanPrepared) {
+    mission.status = "blocked";
+    mission.objective = "reconcile_prepared_effect";
+    mission.uncertainty = "present";
+    return mission;
+  }
+
   const failed = mission.steps.some(step => step.status === "failed");
   const blocked = mission.steps.some(step => step.status === "blocked");
   const unresolved = mission.steps.some(step => !["completed", "failed", "blocked"].includes(step.status));
