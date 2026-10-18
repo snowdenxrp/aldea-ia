@@ -1,7 +1,7 @@
 # NCS M0 — Preserve mission context for unresolved prepared effects
 
 Date: 2026-10-18
-Status: IMPLEMENTED; EXACT-HEAD CI PENDING
+Status: IMPLEMENTED; EXACT-HEAD CI PASS
 
 ## Defect
 
@@ -30,7 +30,7 @@ Status: IMPLEMENTED; EXACT-HEAD CI PENDING
 
 - Source commit: `d9ccf449f401bdedf5efad7017b67befb983014c`
 - Test commit / exact source+test head: `ff6c6d26c03d7bd9908a82805b67af9bb96bfeb2`
-- Exact-head CI at report creation: mission/restart [39097456067](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097456067), STEP 4 [39097456038](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097456038), STEP 5 [39097456049](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097456049) queued. **Do not claim PASS until all three complete successfully.**
+- Exact source+test head `a054e817a9305c11a226a81b480b6276635c6e6d` CI PASS: mission/restart [39097516115](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097516115), STEP 4 [39097516106](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097516106), STEP 5 [39097516122](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097516122). The mission/restart workflow ran `restart-reconstruction.test.mjs` successfully, including the new retention regressions.
 - [Source](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/src/assistants/memory.js)
 - [Regression](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/restart-reconstruction.test.mjs)
 
