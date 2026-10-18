@@ -433,3 +433,27 @@ First action: read `NEXO_NCS/STATUS.md` and this file; confirm the current branc
 5. Only then implement owner-backed runtime outcome/reconstruction integration. Do not remove legacy memory functions until end-to-end migration and rollback diagnostics pass.
 
 Latest STATUS update commit before this handoff edit: `38e495812f05004b4371f87fbcc7ae3b0259bc0c`. M0 remains incomplete; runtime still uses legacy memory operations; no device migration is claimed; protected effects STOP; unresolved PREPARED UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+---
+
+## Latest M0 continuation point — cross-store revision-fence analysis (2026-10-18)
+
+Analysis checkpoint: [NCS_M0_CROSS_STORE_REVISION_FENCE_ANALYSIS_2026-10-18.md](NCS_M0_CROSS_STORE_REVISION_FENCE_ANALYSIS_2026-10-18.md), commit [6e3a51be77b45407707917ccc0ecf0cc94e50994](https://github.com/snowdenxrp/aldea-ia/commit/6e3a51be77b45407707917ccc0ecf0cc94e50994).
+
+### Confirmed implementation boundary
+
+- `scripts/simulate.mjs` owns the current persisted environment read/write path. `persistState()` has its own lock and optional expected-revision check; `loadStateStrict()` validates revision but returns without retaining a lock.
+- `src/nexo/core/continuity-store.mjs` has a separate lock and compare-and-commit for the Nexo continuity file.
+- The mission verifier reads continuity, then the environment; it is read-only. The settlement helper reads environment, then writes Nexo continuity. No shared fence currently prevents an environment writer from committing a new revision between those operations.
+- Do not persist a terminal `goal_observed` status or claim mission completion based on this verifier. Do not wire it into protected runtime execution.
+- Exact-head CI for latest regression test commit `5f7d268bc92920aad25599f6d2689267e18fd98a` remains NOT VERIFIED. Status/workflow lookup exposed no records. Do not call it PASS.
+
+### Next work, without restarting prior audits
+
+1. Trace all writers and callers that can mutate or persist `world-state.json`, including whether any writer bypasses `persistState()` or its revision check.
+2. Decide whether a domain-specific environment revision fence can be enforced by every relevant writer. If not, keep durable terminal goal status unavailable and require fresh read-only verification when consumed.
+3. Avoid generic transaction abstractions, invented global revisions, and test-only hooks that do not represent a real persistence boundary.
+4. Preserve legacy runtime memory until end-to-end migration and rollback evidence exists.
+
+M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
