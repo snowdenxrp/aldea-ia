@@ -263,6 +263,82 @@ try {
   assert.equal(replayResult.status, "completed");
   assert.equal(replayResult.dispatchAttempted, false);
   assert.equal(replayDispatches, 0);
+  // PREPARED with no persisted entry remains blocked after restart; no implicit retry.
+  const absent = await setup("chronicle-absent");
+  const absentPrepared = await absent.opened.owner.recordPrepared({
+    expectedRevision: absent.opened.current.storeRevision,
+    operation: {
+      idempotencyKey: "chronicle-absent:step-1", missionId: "chronicle-absent",
+      stepId: "step-1", action: "chronicle_append", target: { content: "hello Nexo" }
+    }
+  });
+  assert.equal(absentPrepared.status, "committed");
+  const absentReopened = await openNexoContinuityOwner({
+    filePath: absent.continuityPath, effectVerifiers: absent.contracts.verifiers
+  });
+  let absentDispatches = 0;
+  const absentAdapter = createEffectAdapter({
+    handlers: { chronicle_append: async () => { absentDispatches++; return { status: "completed" }; } },
+    verifiers: absent.contracts.verifiers
+  });
+  const absentResult = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-absent", stepId: "step-1",
+    owner: absentReopened.owner, adapter: absentAdapter,
+    postcondition: absent.contracts.postcondition
+  });
+  assert.equal(absentResult.status, "unknown");
+  assert.equal(absentResult.dispatchAttempted, false);
+  assert.equal(absentDispatches, 0);
+  assert.equal((await absentReopened.owner.loadCurrent()).snapshot.effectJournal[0].status, "reconciled_observed");
+
+  // Outcome response lost after its commit: restart replays only the outcome, never the append.
+  const lostOutcome = await setup("chronicle-lost-outcome");
+  let loseOutcomeResponse = true;
+  const ownerWithLostOutcomeResponse = Object.freeze({
+    ...lostOutcome.opened.owner,
+    recordOutcome: async args => {
+      const committed = await lostOutcome.opened.owner.recordOutcome(args);
+      if (loseOutcomeResponse && (committed.status === "committed" || committed.status === "already_recorded")) {
+        loseOutcomeResponse = false;
+        throw new Error("simulated outcome response loss after commit");
+      }
+      return committed;
+    }
+  });
+  let lostOutcomeDispatches = 0;
+  const lostOutcomeAdapter = createEffectAdapter({
+    handlers: {
+      chronicle_append: async request => {
+        lostOutcomeDispatches++;
+        return lostOutcome.contracts.handlers.chronicle_append(request);
+      }
+    },
+    verifiers: lostOutcome.contracts.verifiers
+  });
+  const uncertainOutcome = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-lost-outcome", stepId: "step-1",
+    owner: ownerWithLostOutcomeResponse, adapter: lostOutcomeAdapter,
+    postcondition: lostOutcome.contracts.postcondition
+  });
+  assert.equal(uncertainOutcome.status, "unknown");
+  assert.equal(lostOutcomeDispatches, 1);
+  const outcomeReopened = await openNexoContinuityOwner({
+    filePath: lostOutcome.continuityPath, effectVerifiers: lostOutcome.contracts.verifiers
+  });
+  const outcomeReplayAdapter = createEffectAdapter({
+    handlers: { chronicle_append: async () => { lostOutcomeDispatches++; return { status: "completed" }; } },
+    verifiers: lostOutcome.contracts.verifiers
+  });
+  const outcomeReplay = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-lost-outcome", stepId: "step-1",
+    owner: outcomeReopened.owner, adapter: outcomeReplayAdapter,
+    postcondition: lostOutcome.contracts.postcondition
+  });
+  assert.equal(outcomeReplay.status, "completed");
+  assert.equal(outcomeReplay.dispatchAttempted, false);
+  assert.equal(lostOutcomeDispatches, 1);
+  assert.equal((await outcomeReopened.owner.loadCurrent()).snapshot.attempts[0].status, "completed");
+
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
