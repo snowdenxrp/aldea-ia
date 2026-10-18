@@ -361,6 +361,48 @@ try {
   assert.equal(noVerifierResult.code, "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE");
   assert.equal((await unknownOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
+
+  // A verifier that races with another canonical write cannot settle against
+  // the stale expected revision; the concurrent revision remains authoritative.
+  const raceDir = path.join(root, "generic-owner-cas-race");
+  await fs.mkdir(raceDir);
+  const raceOpened = await openNexoContinuityOwner({
+    filePath: path.join(raceDir, "nexo.json"),
+    legacyMemory: legacyMemory()
+  });
+  let raceCommitResult;
+  const raceOwner = createNexoContinuityOwner({
+    store: raceOpened.store,
+    effectVerifiers: {
+      repair_agent_state: async operation => {
+        const concurrent = await raceOpened.store.loadCurrent();
+        raceCommitResult = await raceOpened.store.commitIfCurrent(concurrent.storeRevision, concurrent.snapshot);
+        return {
+          status: "applied",
+          idempotencyKey: operation.idempotencyKey,
+          action: operation.action,
+          target: operation.target,
+          observedRevision: 11,
+          source: "test-racing-reader"
+        };
+      }
+    }
+  });
+  const racedObservation = await raceOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    }
+  });
+  assert.equal(raceCommitResult.status, "committed");
+  assert.equal(racedObservation.status, "conflict");
+  assert.equal(racedObservation.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+  assert.equal((await raceOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
