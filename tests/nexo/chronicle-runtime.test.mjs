@@ -6,7 +6,7 @@ import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
-import { runNexoChronicleAppend } from "../../scripts/nexo-chronicle-session.mjs";
+import { runNexoChronicleAppend, parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 
 function chronicleMission() {
@@ -353,6 +353,21 @@ try {
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
+
+// CLI parsing rejects unknown, repeated, and missing options before touching either store.
+const validCli = [
+  "--continuity", "/tmp/nexo-continuity.json",
+  "--chronicle", "/tmp/nexo-chronicle.json",
+  "--mission", "mission-1",
+  "--step", "step-1",
+  "--content", "private body"
+];
+assert.equal(parseNexoChronicleArguments(validCli).content, "private body");
+assert.throws(() => parseNexoChronicleArguments([...validCli, "--unexpected"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
+assert.throws(() => parseNexoChronicleArguments([...validCli, "--mission", "mission-2"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
+assert.throws(() => parseNexoChronicleArguments(["--continuity"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
+assert.throws(() => parseNexoChronicleArguments(["--content", "--initialize-chronicle"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
+assert.throws(() => parseNexoChronicleArguments([...validCli, "--initialize-continuity", "--initialize-continuity"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
 
 // The real Nexo entrypoint is explicitly initialized and remains independent of Lúmina.
 const entryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-entry-"));
