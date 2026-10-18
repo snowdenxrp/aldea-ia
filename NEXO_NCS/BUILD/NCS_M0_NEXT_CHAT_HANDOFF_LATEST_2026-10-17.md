@@ -1,7 +1,7 @@
 ## Latest M0 runtime completion-verification guard — 2026-10-18
 
-- Runtime commit: `97e9deb8410af9bd9f9afb5dc876102741c202c5`.
-- Regression test commit: `c37b91c703b308c9ee888c9f9f1147489e345d80`.
+- Runtime commits: `97e9deb8410af9bd9f9afb5dc876102741c202c5` (initial guard), `b23823e1d9613f850d0a7f71466ce7c529e271d8` (reason/scope evidence).
+- Exact source+test head: `23f2f5c24b9c8f9c5927513dedae1b20a4e40502`.
 - Runtime previously treated any adapter `status: "completed"` as mission success. It now requires both `adapterResult.verified === true` and `adapterResult.evidence.verified === true`; otherwise it normalizes the result to `blocked / UNVERIFIED_COMPLETION_RESULT` before recording the mission attempt and execution.
 - Regression is in `tests/nexo/runtime.test.mjs`. Report: `NCS_M0_RUNTIME_REJECT_UNVERIFIED_COMPLETION_2026-10-18.md`.
 - CI/status lookup at the exact test head returned no checks/runs; CI is NOT VERIFIED.
