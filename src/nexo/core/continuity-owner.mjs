@@ -402,7 +402,7 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" };
     }
-    const verifier = effectVerifiers?.[operation.action];
+    const verifier = effectVerifiers && Object.hasOwn(effectVerifiers, operation.action) ? effectVerifiers[operation.action] : undefined;
     if (typeof verifier !== "function") {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
