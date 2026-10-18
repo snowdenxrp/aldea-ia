@@ -56,7 +56,22 @@ export async function runNexoRepairOnce({
       return { status: "blocked", code: preparation.code ?? "NEXO_REPAIR_PREPARATION_NOT_COMMITTED", preparation, persisted: false };
     }
     preparedNew = true;
-    current = await owner.loadCurrent();
+    try {
+      current = await owner.loadCurrent();
+    } catch (error) {
+      // PREPARED was confirmed committed by the preparation result. If the
+      // follow-up read fails, do not let the exception escape or dispatch from
+      // stale state; preserve the obligation for a later recovery invocation.
+      return {
+        status: "blocked",
+        code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED",
+        preparation,
+        preparedCommitted: true,
+        dispatched: false,
+        persisted: false,
+        uncertainty: "prepared_commit_confirmed_but_journal_reload_unconfirmed"
+      };
+    }
     prepared = current.snapshot.effectJournal.find(
       entry => entry?.idempotencyKey === operation.idempotencyKey
     ) ?? null;
