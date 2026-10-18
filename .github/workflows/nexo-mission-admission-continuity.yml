@@ -15,6 +15,13 @@ on:
       - 'tests/nexo/simulation-restart-persistence.test.mjs'
       - 'src/nexo/core/continuity-contract.mjs'
       - 'src/nexo/core/continuity-snapshot.mjs'
+      - 'src/nexo/core/continuity-store.mjs'
+      - 'src/nexo/core/continuity-owner.mjs'
+      - 'src/nexo/core/continuity-operations.mjs'
+      - 'scripts/nexo-continuity.mjs'
+      - 'scripts/assistants.mjs'
+      - 'tests/nexo/continuity-store.test.mjs'
+      - 'tests/nexo/continuity-migration.test.mjs'
       - 'tests/nexo/continuity-contract.test.mjs'
       - '.github/workflows/nexo-mission-admission-continuity.yml'
   workflow_dispatch:
@@ -33,3 +40,5 @@ jobs:
       - run: node tests/nexo/restart-reconstruction.test.mjs
       - run: node tests/nexo/simulation-restart-persistence.test.mjs
       - run: node tests/nexo/continuity-contract.test.mjs
+      - run: node tests/nexo/continuity-store.test.mjs
+      - run: node tests/nexo/continuity-migration.test.mjs
