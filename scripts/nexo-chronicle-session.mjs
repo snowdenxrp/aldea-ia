@@ -1,5 +1,4 @@
 import { pathToFileURL } from "node:url";
-import fs from "node:fs/promises";
 import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
 import { createNexoContinuityStore } from "../src/nexo/core/continuity-store.mjs";
 import { createNexoChronicleStore } from "../src/nexo/core/chronicle-store.mjs";
@@ -156,7 +155,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       error.code = "NEXO_CHRONICLE_CLI_CONTENT_SOURCE_REQUIRED";
       throw error;
     }
-    const content = await fs.readFile(0, "utf8");
+    const chunks = [];
+    for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
+    const content = Buffer.concat(chunks).toString("utf8");
     result = await runNexoChronicleAppend({ ...args, content });
   } catch (error) {
     result = blocked(error?.code ?? "NEXO_CHRONICLE_SESSION_FAILED");
