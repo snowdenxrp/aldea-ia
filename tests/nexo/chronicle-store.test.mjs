@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { spawn } from "node:child_process";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import { observeChronicleOperation } from "../../src/nexo/adapters/chronicle-observation.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
@@ -50,6 +51,42 @@ try {
     reopened.append({ operationKey: "mission-1:step-3", content: "third" })
   ]);
   assert.equal((await reopened.loadCurrent()).entries.length, 3);
+
+  // Separate Node processes must serialize cooperating appends without losing either entry.
+  const crossProcessPath = path.join(root, "cross-process.json");
+  const crossProcessStore = createNexoChronicleStore({ filePath: crossProcessPath });
+  assert.equal((await crossProcessStore.initialize()).status, "committed");
+  const moduleUrl = new URL("../../src/nexo/core/chronicle-store.mjs", import.meta.url).href;
+  function appendInChild(operationKey, content) {
+    const source = `import { createNexoChronicleStore } from ${JSON.stringify(moduleUrl)};
+const store = createNexoChronicleStore({ filePath: ${JSON.stringify(crossProcessPath)} });
+const result = await store.append({ operationKey: ${JSON.stringify(operationKey)}, content: ${JSON.stringify(content)} });
+console.log(JSON.stringify(result));
+if (result.status !== "committed") process.exitCode = 1;`;
+    return new Promise((resolve, reject) => {
+      const child = spawn(process.execPath, ["--input-type=module", "-e", source], { cwd: process.cwd() });
+      let stdout = "";
+      let stderr = "";
+      child.stdout.setEncoding("utf8");
+      child.stderr.setEncoding("utf8");
+      child.stdout.on("data", chunk => { stdout += chunk; });
+      child.stderr.on("data", chunk => { stderr += chunk; });
+      child.on("error", reject);
+      child.on("close", code => {
+        if (code !== 0) return reject(new Error(`cross-process append failed: ${stderr}`));
+        try { resolve(JSON.parse(stdout.trim())); } catch (error) { reject(error); }
+      });
+    });
+  }
+  const crossProcessResults = await Promise.all([
+    appendInChild("cross-process-a", "entry A"),
+    appendInChild("cross-process-b", "entry B")
+  ]);
+  assert.equal(crossProcessResults.filter(result => result.status === "committed").length, 2);
+  const crossProcessReopened = createNexoChronicleStore({ filePath: crossProcessPath });
+  const crossProcessEntries = (await crossProcessReopened.loadCurrent()).entries;
+  assert.equal(crossProcessEntries.length, 2);
+  assert.deepEqual(new Set(crossProcessEntries.map(entry => entry.operationKey)), new Set(["cross-process-a", "cross-process-b"]));
 
   // Simulate a lost writer response after the atomic rename already changed persisted state.
   const lostPath = path.join(root, "lost-response.json");
