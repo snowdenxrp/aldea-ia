@@ -754,3 +754,48 @@ try {
 } finally {
   await fs.rm(preparedCommitUnknownRoot, { recursive: true, force: true });
 }
+
+
+// An adapter exception is an unknown outcome, not proof that no effect ran.
+// PREPARED must remain durable and no environment revision may be fabricated.
+const adapterCrashRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-adapter-crash-"));
+try {
+  const nexoPath = path.join(adapterCrashRoot, "nexo-continuity.json");
+  const statePath = path.join(adapterCrashRoot, "world-state.json");
+  const opened = await openNexoContinuityOwner({ filePath: nexoPath, legacyMemory: legacyMemory() });
+  await fs.writeFile(statePath, JSON.stringify(environment(120)), "utf8");
+  const prepared = await prepareRepairAgainstPersistedState({
+    owner: opened.owner,
+    statePath,
+    expectedContinuityRevision: 0,
+    operation: {
+      idempotencyKey: "mission-owner-lifecycle:adapter-crash",
+      missionId: "mission-owner-lifecycle",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    }
+  });
+  assert.equal(prepared.status, "committed");
+  const result = await dispatchPreparedRepair({
+    owner: opened.owner,
+    statePath,
+    idempotencyKey: "mission-owner-lifecycle:adapter-crash",
+    adapterFactory: () => ({
+      execute: async () => { throw new Error("injected adapter crash"); }
+    })
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_REPAIR_ADAPTER_OUTCOME_UNKNOWN");
+  assert.equal(result.persisted, false);
+  assert.equal(result.environmentStateRevision, 120);
+  assert.equal(result.uncertainty, "adapter_call_may_have_applied_effect_before_throwing");
+  assert.equal(result.error, "injected adapter crash");
+  const durable = await opened.owner.loadCurrent();
+  assert.equal(durable.storeRevision, 1);
+  assert.equal(durable.snapshot.effectJournal.length, 1);
+  assert.equal(durable.snapshot.effectJournal[0].status, "prepared");
+  assert.equal((await loadStateStrict(statePath)).stateRevision, 120);
+} finally {
+  await fs.rm(adapterCrashRoot, { recursive: true, force: true });
+}

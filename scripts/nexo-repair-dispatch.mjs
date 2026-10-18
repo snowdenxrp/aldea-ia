@@ -22,7 +22,8 @@ export async function dispatchPreparedRepair({
   statePath,
   owner,
   idempotencyKey,
-  savedAt = Date.now()
+  savedAt = Date.now(),
+  adapterFactory = createLuminaEffectAdapter
 } = {}) {
   if (!owner || typeof owner.loadCurrent !== "function" ||
       typeof idempotencyKey !== "string" || !idempotencyKey.trim()) {
@@ -79,15 +80,29 @@ export async function dispatchPreparedRepair({
     events: Array.isArray(snapshot.events) ? snapshot.events : [],
     nexoEffectRevision: 0
   };
-  const adapter = createLuminaEffectAdapter(simulation);
-  const result = await adapter.execute({
-    missionId: preparedOperation.missionId,
-    stepId: preparedOperation.stepId,
-    action,
-    target,
-    idempotencyKey: preparedOperation.idempotencyKey,
-    postcondition: createLuminaEffectPostcondition(simulation, action, target)
-  });
+  let result;
+  try {
+    const adapter = adapterFactory(simulation);
+    result = await adapter.execute({
+      missionId: preparedOperation.missionId,
+      stepId: preparedOperation.stepId,
+      action,
+      target,
+      idempotencyKey: preparedOperation.idempotencyKey,
+      postcondition: createLuminaEffectPostcondition(simulation, action, target)
+    });
+  } catch (error) {
+    // The adapter may have applied an effect before throwing. Keep PREPARED
+    // durable and require reconciliation; never imply non-execution or retry.
+    return {
+      status: "blocked",
+      code: "NEXO_REPAIR_ADAPTER_OUTCOME_UNKNOWN",
+      persisted: false,
+      environmentStateRevision: expectedRevision,
+      uncertainty: "adapter_call_may_have_applied_effect_before_throwing",
+      error: String(error?.message ?? error)
+    };
+  }
 
   if (result.status !== "completed") {
     return {
