@@ -1,3 +1,12 @@
+## M0 — Strict persisted-state loading guard (2026-10-18)
+
+- Added `loadStateStrict(statePath)` in `scripts/simulate.mjs` for safety-sensitive recovery callers. Unlike ordinary simulation `loadState()`, it refuses missing files, invalid JSON/schema, and missing/invalid revision instead of silently manufacturing a default state at revision 0.
+- Existing `loadState()` behavior remains unchanged; this is a separate strict path, not a migration and not a claim that the simulation snapshot is Nexo's canonical continuity/authority store.
+- Regression coverage added to `tests/nexo/simulation-restart-persistence.test.mjs`.
+- Report: [M0 strict state load](BUILD/NCS_M0_STRICT_STATE_LOAD_2026-10-18.md).
+- Exact source+test head: `41e561f57b1e03cc57828efa9ce866e71648593f`; STEP 4 [39097259364](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097259364) and STEP 5 [39097259433](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097259433) were queued when documented; await completed runs before marking PASS.
+- Structural validity is not provenance/current authority. M0 remains incomplete; protected effects STOP; prepared external effects UNKNOWN.
+
 ## M0 — Execution-owner boundary gate from recovered AB/P evidence (2026-10-18)
 
 - Recovered and read existing AB104.150 / AB104.151, P112 effect-journal lifecycle + eviction audits, GLOBAL-AUDIT-109, AB104.999R and AB105.000R. These were retrieved, not rerun.
