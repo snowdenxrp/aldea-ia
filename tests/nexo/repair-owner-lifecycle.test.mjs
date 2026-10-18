@@ -348,6 +348,41 @@ try {
   } finally {
     await fs.rm(beforeDispatchRoot, { recursive: true, force: true });
   }
+
+  // Desired invariant already holds: the entrypoint may observe and settle it,
+  // but must not invent an environment write or advance its revision.
+  const alreadySatisfiedRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-already-satisfied-"));
+  try {
+    const alreadySatisfiedNexoPath = path.join(alreadySatisfiedRoot, "nexo-continuity.json");
+    const alreadySatisfiedStatePath = path.join(alreadySatisfiedRoot, "world-state.json");
+    const alreadySatisfied = await openNexoContinuityOwner({
+      filePath: alreadySatisfiedNexoPath,
+      legacyMemory: legacyMemory()
+    });
+    await fs.writeFile(alreadySatisfiedStatePath, JSON.stringify(environment(50, { x: 1, z: 2 })), "utf8");
+    const noOp = await runNexoRepairOnce({
+      owner: alreadySatisfied.owner,
+      store: alreadySatisfied.store,
+      statePath: alreadySatisfiedStatePath,
+      expectedContinuityRevision: 0,
+      operation: {
+        idempotencyKey: "mission-owner-lifecycle:step-repair",
+        missionId: "mission-owner-lifecycle",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex"
+      },
+      savedAt: 8
+    });
+    assert.equal(noOp.status, "settled_observed");
+    assert.equal(noOp.dispatch.persisted, false);
+    assert.equal(noOp.persisted, false);
+    assert.equal(noOp.settlement.environmentStateRevision, 50);
+    assert.equal((await loadStateStrict(alreadySatisfiedStatePath)).stateRevision, 50);
+    assert.equal((await alreadySatisfied.owner.loadCurrent()).snapshot.effectJournal[0].status, "settled_observed");
+  } finally {
+    await fs.rm(alreadySatisfiedRoot, { recursive: true, force: true });
+  }
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
