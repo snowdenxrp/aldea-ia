@@ -36,10 +36,13 @@ try {
     stepId: "step-1", action: "chronicle_append", target: { content: "record" },
     observedRevision: 1, source: "nexo-chronicle-store", causalAttribution: "not_established"
   });
+
+
+  // Colon-delimited operation identity must reject ambiguous identifier pairs.
   assert.equal((await observeChronicleOperation({
-    store: reopened, idempotencyKey: "mission-1:step-2", missionId: "mission-1",
-    stepId: "step-2", action: "chronicle_append", target: { content: "missing" }
-  })).status, "not_applied");
+    store: reopened, idempotencyKey: "mission-1:step-1", missionId: "mission-1:step",
+    stepId: "1", action: "chronicle_append", target: { content: "record" }
+  })).status, "unknown");
 
   // Independent operations written concurrently must not overwrite each other.
   await Promise.all([
