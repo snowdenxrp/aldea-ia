@@ -314,7 +314,8 @@ try {
   });
   assert.equal(genericObserved.status, "observed");
   assert.equal(genericObserved.observation, "applied");
-  assert.equal(genericObserved.preparedCommitted, true);
+  assert.equal(genericObserved.preparedCommitted, false);
+  assert.equal(genericObserved.observationCommitted, true);
   assert.equal(genericObserved.journalSettled, false);
   assert.equal(genericObserved.causalAttribution, "NOT_ESTABLISHED");
   assert.equal(genericObserved.redispatchAuthorized, false);
