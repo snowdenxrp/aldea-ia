@@ -1,3 +1,13 @@
+## Nuevo avance posterior — replay de outcome contradictorio (2026-10-18)
+
+El owner canónico `recordOutcome()` ya no devuelve `already_recorded` cuando el mismo paso reaparece con un estado/evidencia distintos. Requiere igualdad de `status`, `evidence`, `parentMissionId` y `replanReason`; si difieren: `blocked / NEXO_OUTCOME_RESULT_MISMATCH`, sin cambiar la revisión ni el intento original. La prueba `tests/nexo/continuity-migration.test.mjs` verifica que un replay tardío `failed` no desplaza un outcome previamente `completed`.
+
+CI SUCCESS sobre SHA de código/pruebas `783ccdbd5c9871b5c86e1994a2f348211e5e9bd3`: [bounded restart 39151794894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794894), [repair crash cuts 39151794904](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794904), [STEP 4 39151794891](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794891), [STEP 5 39151794922](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794922). Los workflows de test-first [39151769794](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769794) y [39151769766](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769766) fallaron con la expectativa nueva antes del fix; mantener visible ese historial.
+
+**Siguiente:** preparar corte de runtime canónico sin reemplazar mecánicamente las escrituras legacy. `executeNexoStep()` ejecuta el adaptador antes de escribir execution/outcome en la memoria legacy; el camino no debe migrarse hasta que PREPARED y replay/reconciliación estén garantizados por owner canónico. No crear `goalObservations`, no reclamar completion por settlement, no mezclar Nexo/Lúmina, efectos protegidos STOP y STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Incremento posterior — replay de lineage ligado al baseline (2026-10-18)
 
 Además de rechazar resultados contradictorios (`NEXO_EXECUTION_RESULT_MISMATCH`), `recordExecutionLineage()` ahora vuelve a validar para reparaciones la revisión ambiental capturada en PREPARED antes de aceptar un replay existente. Baseline distinto → `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH`; baseline desconocido/ambiguo → `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN`. Ninguna de esas rutas avanza la revisión de continuidad. Regresión en `tests/nexo/continuity-migration.test.mjs`.
