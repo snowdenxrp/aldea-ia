@@ -13,6 +13,7 @@ on:
       - "scripts/nexo-chronicle-session.mjs"
       - "tests/nexo/chronicle-store.test.mjs"
       - "tests/nexo/chronicle-runtime.test.mjs"
+      - "package.json"
       - ".github/workflows/nexo-m0-chronicle.yml"
   workflow_dispatch:
 
