@@ -76,3 +76,12 @@ La primera vertical ya pasó de diseño a código y tiene una entrada propia exp
 2. Ejecutar/observar las suites amplias aplicables tras los cambios de owner/runtime; conservar SHA + runs exactos.
 3. Decidir de forma explícita si el entrypoint Chronicle debe ser llamado por la aplicación principal o mantenerse como CLI de validación. No modificar `scripts/assistants.mjs` si eso vuelve a introducir dependencia de Lúmina.
 4. No habilitar otras acciones, no cambiar runtime default y no declarar M0 completo todavía.
+
+
+## Validación amplia adicional
+
+En SHA `4626afbb1220feb0784c020288de697608b9276b` quedaron verdes dos workflows:
+- Chronicle native vertical: [39174272574 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272574).
+- Bounded mission admission and restart continuity: [39174272526 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272526), incluyendo suites Chronicle, runtime y continuidad existentes.
+
+Esto valida la vertical en la ruta explícita y las suites de regresión afectadas; no es validación de todo el producto ni permiso para cambiar el runtime por defecto. El siguiente corte sigue siendo auditar bootstrap y almacenamiento del CLI y decidir una integración principal sin dependencia de Lúmina.
