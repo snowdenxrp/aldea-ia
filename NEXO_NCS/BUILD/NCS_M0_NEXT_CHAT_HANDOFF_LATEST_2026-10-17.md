@@ -1,3 +1,20 @@
+## Latest functional M0 correction — missing evidence blocks the step (2026-10-17)
+
+A concrete state-consistency defect was fixed in `advanceNexoMission()`: an attempted completion without acceptable evidence previously blocked only the mission while leaving the step `executing`. It now marks both mission and step `blocked`, records `MISSING_VERIFIED_EVIDENCE`, and sets `replan_from_constraints`. Regression verifies no executable action is emitted.
+
+- Source commit: [`ec20889`](https://github.com/snowdenxrp/aldea-ia/commit/ec20889da48e57c895b8273d57d2c68ec5027471)
+- Test commit: [`f27147f`](https://github.com/snowdenxrp/aldea-ia/commit/f27147f0a273d28ad8168a9f29e9c0ab06e24713)
+- Focused CI all success: mission continuity [39081098250](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098250), M0 Core [39081098279](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098279), STEP 4 [39081098274](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098274), STEP 5 [39081098277](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098277).
+- Report: [NCS M0 missing-evidence step state](NCS_M0_MISSING_EVIDENCE_STEP_STATE_2026-10-17.md).
+
+### Keep M0's actual objective in view
+
+M0 is the minimum functional Nexo Core: observation, reasoning/planning, memory/continuity, outcome evaluation and learning under honest uncertainty. It is not a never-ending patch treadmill. Make a narrow fix when a real defect blocks those capabilities; otherwise keep building functional Core behavior. Do not claim M0 complete based on contract tests alone.
+
+The current `evidenceAcceptable()` check still trusts caller-supplied `verified: true` and nonblank `kind`; it does not establish evidence provenance. The Proxy-trap root trust boundary is unresolved. STEP 7 remains OPEN / STOP / UNKNOWN; protected effects remain STOP. Do not connect legacy runtime to protected effects or infer authorization from these tests.
+
+---
+
 ## Latest functional increment — bounded mission admission across restart (2026-10-17)
 
 Implemented at `10067f1eaa626500c803bb6d3504fc5816eb7239`. The mission planner now reports candidate/admitted/omitted step counts and `truncated`, keeps the historical eight-step cap, blocks an admitted step whose prerequisite was omitted, and persists the admission summary across restart. Regression tests in `tests/nexo/orchestrator.test.mjs` and `tests/nexo/restart-reconstruction.test.mjs` passed in focused CI [39080272772](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272772). STEP 4, STEP 5 and M0 Core workflows also passed: [39080272763](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272763), [39080272752](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272752), [39080272843](https://github.com/snowdenxrp/aldea-ia/actions/runs/39080272843).
