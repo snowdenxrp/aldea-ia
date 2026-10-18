@@ -1,13 +1,13 @@
 # NCS M0 — Nexo-owned operational continuity boundary contract
 
 Date: 2026-10-18
-Status: STORE MODULE IMPLEMENTED; RUNTIME OWNER INTEGRATION PENDING; LOCAL FILE DURABILITY LIMITS EXPLICIT
+Status: STORE + SEMANTIC OWNER MODULES IMPLEMENTED; RUNTIME INTEGRATION PENDING; LOCAL FILE DURABILITY LIMITS EXPLICIT
 
 ## Implementation update — 2026-10-18
 
 `src/nexo/core/continuity-store.mjs` now implements the first independent store module. It provides strict `loadCurrent()`, explicit `initialize(snapshot)`, and conditional `commitIfCurrent(expectedRevision, candidate)` over a separate file path. The store envelope is validated against `NEXO_OPERATIONAL_CONTINUITY` and excludes Lúmina state, learning analytics, and authority fields.
 
-This is not yet the runtime's canonical owner: current mission execution still receives the legacy `createLearningMemory().nexo` shape and current simulation persistence still serializes `nexoMemory` inside `world-state.json`. No migration, dual-write, or runtime switch has been performed. Tests have been added, but exact-head CI is still pending at this document revision.
+This is not yet wired as the runtime's canonical owner: current mission execution still receives the legacy `createLearningMemory().nexo` shape and current simulation persistence still serializes `nexoMemory` inside `world-state.json`. No migration, dual-write, or runtime switch has been performed. The owner layer adds mission admission and a durable PREPARED checkpoint bound to the stored mission/step/action/target. It intentionally cannot settle PREPARED; reconciliation returns blocked until a real independent verifier/source exists. Exact-head CI passed at `5f7f9b5a88ea120abb7df8af065d96cf129715d5` (mission/restart `39099113776`, STEP 4 `39099113793`, STEP 5 `39099113804`).
 
 The store uses a local filesystem lock and temp-file rename for cooperating local writers. It does not claim fsync/power-loss durability, rollback resistance, network-filesystem safety, distributed linearizability, or external-effect verification. The local store revision is not an authority epoch or global fence.
 
