@@ -66,8 +66,10 @@ async function acquireLock(fsModule, filePath) {
       try { age = Date.now() - (await fsModule.stat(lock)).mtimeMs; } catch {}
       const stale = age > LOCK_STALE_MS && (!owner || !processIsAlive(Number(owner.pid)));
       if (stale) {
-        await fsModule.rm(lock, { recursive: true, force: true }).catch(() => {});
-        continue;
+        // Reclaiming by check-then-rm is racy: another process may replace the
+        // lock between the stale check and removal. Fail closed and require
+        // explicit operator recovery rather than deleting a possibly new lock.
+        throw fail("NEXO_CHRONICLE_LOCK_STALE_RECOVERY_REQUIRED");
       }
       await new Promise(resolve => setTimeout(resolve, LOCK_RETRY_MS));
     }
