@@ -1,3 +1,16 @@
+## Follow-up hardening — negative recovery and reconstruction gate
+
+Latest tested head: [`4cadf1831ecbd3664964c410ac8bc1397fd22a2e`](https://github.com/snowdenxrp/aldea-ia/commit/4cadf1831ecbd3664964c410ac8bc1397fd22a2e).
+
+- Added negative crash-cut coverage: malformed persisted coordinates keep PREPARED unresolved; a durable revision that advances beyond the allowed preparation window also keeps PREPARED unresolved; a continuity-store result of UNKNOWN is never reported as verified settlement.
+- Fixed reconstruction semantics for `settled_observed`: a repair settled by observing its desired invariant is reconstructed as blocked with objective `verify_observed_repair_goal`, not as a completed mission and not as an executable planned step. The reason explicitly retains `causalAttribution: "not_claimed"`.
+- Exact-head CI PASS:
+  - Mission/restart continuity: [39133277523](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133277523)
+  - STEP 5 outcome classification: [39133277522](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133277522)
+  - STEP 4 semantic validation: [39133277520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133277520)
+
+---
+
 # NCS M0 — Repair settlement from persisted invariant observation
 
 Date: 2026-10-18  
