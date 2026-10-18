@@ -2,7 +2,7 @@
 Fecha: 2026-10-18
 Repositorio: `snowdenxrp/aldea-ia`
 Rama: `ncs-clean-architecture`
-HEAD observado al preparar este handoff: `cb034a5099d84b03d118efd3121f936e7a9996e0`
+Último commit de código probado: `3f655a3f239ecaf87d4ba3dd1504bdfffa9a33df` (el commit documental de continuidad se registra después).
 
 ## 0. Instrucción de entrada y misión
 
@@ -48,15 +48,21 @@ La ruta ahora captura la excepción en la frontera concreta de settlement y devu
 - Owner rechaza PREPARED nuevo si la misión no está `planned`, el paso no está `planned` o las dependencias no están `completed`. Códigos: `NEXO_PREPARED_MISSION_NOT_RUNNABLE`, `NEXO_PREPARED_STEP_NOT_RUNNABLE`, `NEXO_PREPARED_DEPENDENCIES_UNMET`. SHA `afb214730a1eca78d7f4a20b01d1a25826c42a5d`, cuatro suites verdes: STEP 4 [39153137708](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137708), STEP 5 [39153137599](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137599), repair crash cuts [39153137714](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137714), bounded admission/restart [39153137611](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137611).
 - Replay contradictorio de outcome bloqueado con `NEXO_OUTCOME_RESULT_MISMATCH`; SHA `783ccdbd5c9871b5c86e1994a2f348211e5e9bd3`, cuatro suites verdes documentadas en STATUS/master handoff.
 
+## 2A. Dispatch adapter crash — cerrado con prueba (2026-10-18)
+
+- `scripts/nexo-repair-dispatch.mjs` ahora inyecta `adapterFactory` para prueba y captura excepciones al crear/ejecutar el adapter. Devuelve `blocked / NEXO_REPAIR_ADAPTER_OUTCOME_UNKNOWN` con incertidumbre `adapter_call_may_have_applied_effect_before_throwing`; no supone que no hubo efecto, no hace retry y no altera la revisión ambiental ni liquida PREPARED.
+- `tests/nexo/repair-owner-lifecycle.test.mjs` comprueba el adapter lanzando, la revisión ambiental conservada y la obligación `prepared` persistente en el owner.
+- Primer intento: run 39167516878 falló por una clave idempotente de fixture no canónica. Se corrigió a `mission-owner-lifecycle:step-repair`; el código quedó probado en commit `3f655a3f239ecaf87d4ba3dd1504bdfffa9a33df`, con [repair crash cuts 39167557221 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557221), [STEP 4 39167557187 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557187) y [STEP 5 39167557073 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557073).
+
 ## 3. Próximo trabajo exacto
 
-**No empezar todavía reemplazando imports legacy.** Continuar desde las fronteras de error específicas de la ruta repair-only, con foco inmediato en:
+**El hueco de excepción de dispatch y los límites de settlement ya auditados no deben repetirse.** El siguiente trabajo vuelve a la meta central de M0: definir el seam mínimo del **runtime genérico owner-backed**.
 
-1. Inspeccionar `scripts/nexo-repair-dispatch.mjs`, en particular la llamada a `adapter.execute()`. Confirmar qué pasa si el adapter lanza una excepción antes de `persistState()`; el resultado debe ser estructurado, PREPARED debe permanecer visible y no debe afirmarse si hubo efecto cuando no se sabe.
-2. Inspeccionar límites de lectura/commit en `scripts/nexo-repair-settlement.mjs`: errores de lectura, conflicto de revisión CAS y excepciones de commit. Añadir solo una regresión por hueco demostrado; no añadir catch global que borre distinciones de persistencia.
-3. Para cada hueco: prueba primero → confirmar que falla por la razón esperada → corregir el límite mínimo → correr el workflow `Nexo M0 — repair settlement crash cuts` y revisar el log real → registrar SHA exacto y resultado en `STATUS.md` y este handoff. No declarar CI verde sin run SUCCESS y SHA coincidente.
-4. Después de cerrar los límites repair-only, volver a la meta central: diseñar el seam canónico del **runtime genérico** con selección de misión/paso canónica, admisión owner-backed, PREPARED durable con CAS antes del dispatch, lineage separado, reconciliación del estado persistido, settlement separado de outcome y pruebas de crash/replay/restart/proceso. El primer corte debe ser estrecho y explícito; no convertir el dispatcher de reparación en dispatcher genérico.
-5. Solo declarar M0 completo cuando el runtime real use esa continuidad canónica y haya evidencia integrada end-to-end; los tests unitarios del owner y del repair bridge no bastan.
+1. Inspeccionar solo los contratos necesarios entre `src/nexo/runtime.js`, `src/nexo/core/continuity-owner.mjs` y la entrada `scripts/assistants.mjs`. El runtime legacy ejecuta el adapter antes de registrar execution/outcome en memoria local; no hacer un reemplazo mecánico de imports.
+2. Especificar cómo el runtime seleccionará misión/paso desde el snapshot canónico, comprobará admisión y escribirá PREPARED durable mediante CAS **antes** del dispatch; después separar dispatch, lineage, reconciliación, settlement y outcome.
+3. Primer corte deliberadamente estrecho: solo acciones con reconciliación y postcondición demostradas. Las demás deben bloquearse sin dispatch. No convertir el dispatcher repair-only en dispatcher genérico, no añadir un segundo ledger ni simular atomicidad cross-store.
+4. Prueba primero para cada límite nuevo, revisar los logs reales de CI y registrar SHA/run exactos. No declarar PASS sin evidencia.
+5. Solo declarar M0 completo cuando el runtime real use continuidad canónica con evidencia end-to-end de crash/replay/restart; tests unitarios del owner y repair bridge no bastan.
 
 ## 4. Guardas de arquitectura
 

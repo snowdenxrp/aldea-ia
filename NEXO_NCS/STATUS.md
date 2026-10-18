@@ -1,5 +1,16 @@
 > **Continuidad de nuevo chat (2026-10-18):** antes de seguir, leer `NEXO_NCS/BUILD/NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md`. Es el handoff operativo vigente con HEAD observado, últimos cambios y CI, estado real de M0 y siguiente tarea exacta. No repetir auditorías cerradas. La misión sigue siendo M0: runtime canónico de Nexo, independiente de Lúmina.
 
+## M0 — excepción del adaptador durante dispatch (2026-10-18, validado)
+
+- **Hueco:** `scripts/nexo-repair-dispatch.mjs` invocaba `adapter.execute()` sin capturar una excepción que puede ocurrir después de un efecto parcial. La excepción cruda no expresaba que el resultado del efecto fuera desconocido.
+- **Corrección:** el dispatcher acepta una `adapterFactory` inyectable para la regresión y captura la excepción en la frontera de dispatch. Devuelve `blocked / NEXO_REPAIR_ADAPTER_OUTCOME_UNKNOWN`, `persisted: false` y `uncertainty: adapter_call_may_have_applied_effect_before_throwing`. No afirma que el efecto no ocurrió, no reintenta y no avanza la revisión del entorno ni el journal PREPARED.
+- **Regresión:** `tests/nexo/repair-owner-lifecycle.test.mjs` inyecta un adapter que lanza, y verifica resultado incierto, continuidad en revisión 1 con journal `prepared` y entorno sin revisión inventada.
+- **Primer run de la regresión:** [39167516878](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167516878) falló porque el fixture usaba una clave no canónica; se corrigió a `mission-owner-lifecycle:step-repair`. No fue un fallo de la corrección del dispatcher.
+- **Validación exacta:** commit de código `3f655a3f239ecaf87d4ba3dd1504bdfffa9a33df`; [CI Nexo M0 — repair settlement crash cuts, run 39167557221](https://github.com/snowdenxrp/aldea-ia/actions/runs/39167557221) SUCCESS. STEP 4 run 39167557187 y STEP 5 run 39167557073 también SUCCESS en el mismo SHA.
+- **Alcance:** cierra el hueco concreto del dispatch repair-only; no convierte ese dispatcher en runtime genérico ni completa M0.
+
+**Siguiente trabajo:** volver a la integración del runtime genérico de Nexo y especificar el seam mínimo owner-backed. No repetir el audit de dispatch ni el de settlement ya cubiertos.
+
 ## M0 — resultado incierto al confirmar PREPARED (2026-10-18, validado)
 
 - **Hueco reproducido:** `owner.recordPrepared()` podía persistir el registro PREPARED y luego lanzar una excepción antes de devolver confirmación (por ejemplo, respuesta perdida después del reemplazo durable). `prepareRepairAgainstPersistedState()` dejaba escapar la excepción y `runNexoRepairOnce()` no devolvía una respuesta estructurada. El journal podía contener PREPARED durable pese a que el caller no recibió confirmación.
@@ -8,7 +19,7 @@
 - **Validación exacta:** código + regresión en `6300f8cb60fe18568e3ebd58e3ca1ee5b70d3d51`; [CI Nexo M0 — repair settlement crash cuts, run 39160656605](https://github.com/snowdenxrp/aldea-ia/actions/runs/39160656605) SUCCESS.
 - **Alcance:** esto no migra el runtime genérico, no afirma atomicidad entre archivos y no habilita acciones protegidas.
 
-**Siguiente trabajo:** continuar auditando límites de error específicos del lifecycle repair-only; mantener separados PREPARED, lineage, observación y settlement. Después, diseñar la ruta canónica del runtime genérico con PREPARED durable antes de dispatch. M0 permanece INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados; STEP 7 OPEN / STOP / UNKNOWN.
+**Siguiente trabajo:** diseñar el seam mínimo del runtime genérico owner-backed. No repetir la auditoría de dispatch ni settlement ya cubiertos. Mantener separados PREPARED, lineage, observación/reconciliación, settlement y outcome. M0 permanece INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados; STEP 7 OPEN / STOP / UNKNOWN.
 
 
 ## M0 — excepción durante commit de settlement (2026-10-18, validada)
