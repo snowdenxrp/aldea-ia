@@ -135,6 +135,17 @@ try {
   assert.equal(stale.code, "NEXO_REPAIR_SETTLEMENT_ENVIRONMENT_REVISION_UNRELATED");
   assert.equal((await staleOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
+  // Generic owner settlement remains fail-closed. Caller-supplied observation
+  // data is not a verifier contract and must not settle an unresolved PREPARED.
+  const genericSettlement = await staleOpened.owner.reconcilePrepared({
+    idempotencyKey: "mission-crash-cut:step-repair",
+    observation: { outcome: "desired_state_present", source: "caller-supplied" }
+  });
+  assert.equal(genericSettlement.status, "blocked");
+  assert.equal(genericSettlement.code, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
+  assert.equal(genericSettlement.verified, false);
+  assert.equal((await staleOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
   // Crash cut: the revision is adjacent but the repair invariant is absent.
   // PREPARED remains unresolved; no redispatch or false settlement is authorized.
   const absentDir = path.join(root, "absent");
