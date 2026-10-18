@@ -7,6 +7,7 @@ on:
       - "scripts/nexo-repair-preparation.mjs"
       - "scripts/nexo-repair-dispatch.mjs"
       - "scripts/nexo-repair-entrypoint.mjs"
+      - "scripts/nexo-repair-session.mjs"
       - "scripts/nexo-repair-settlement.mjs"
       - "scripts/nexo-repair-mission-verification.mjs"
       - "scripts/nexo-continuity.mjs"
@@ -15,6 +16,7 @@ on:
       - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
       - "tests/nexo/continuity-migration.test.mjs"
       - "tests/nexo/repair-owner-lifecycle.test.mjs"
+      - "tests/nexo/repair-session.test.mjs"
       - ".github/workflows/nexo-m0-repair-crash-cuts.yml"
   workflow_dispatch:
 
@@ -39,3 +41,5 @@ jobs:
         run: node tests/nexo/continuity-migration.test.mjs
       - name: Run owner-backed repair lifecycle integration regression
         run: node tests/nexo/repair-owner-lifecycle.test.mjs
+      - name: Run canonical owner-backed repair session regression
+        run: node tests/nexo/repair-session.test.mjs
