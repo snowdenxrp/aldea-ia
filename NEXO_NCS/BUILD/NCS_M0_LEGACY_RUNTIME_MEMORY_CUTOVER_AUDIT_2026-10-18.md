@@ -70,3 +70,12 @@ En `src/nexo/core/continuity-owner.mjs`:
 - El test de proceso CLI más reciente con evidencia disponible es [CI 39143459529](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143459529), SHA de código/pruebas `a1fea5791adbb81a8d6b6e82da9dad09accc7918`, SUCCESS. Ese SHA precede al HEAD documental inspeccionado; **no** atribuir ese PASS al HEAD actual.
 - Esta auditoría es de código y contratos existentes. No se hizo un nuevo CI de código porque no se modificó código; la documentación añadida tampoco está cubierta por el run anterior.
 - M0 permanece abierto. No se ha probado un cutover del runtime genérico, un despliegue en el teléfono ni atomicidad entre el store Nexo y el estado de Lúmina.
+
+
+## Evidencia posterior — falsa promoción tras restart (2026-10-18)
+
+La prueba en commit `fd2331e8d71afbbf0f19ea978d552a89087c1dc6` añade un caso concreto al paso 1 de la siguiente tarea: tras `settled_observed`, el owner rechaza un `completed` basado solo en etiquetas `verified/kind/source` del caller y mantiene la misión bloqueada al reconstruirla desde un owner reabierto.
+
+CI exacto sobre ese SHA: [repair crash cuts 39145754425](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754425) SUCCESS; [STEP 4 39145754371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754371) SUCCESS; [STEP 5 39145754375](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754375) SUCCESS. Estos resultados reemplazan la nota de “sin CI exacto” para esta regresión específica; no cambian la evaluación del resto de esta auditoría.
+
+El contrato aún carece de una transición basada en verificación independiente de objetivo que pueda representar completion sin atribuir causalidad al repair. No usar `settled_observed` como prueba de completion y no cortar el runtime genérico hasta resolver este contrato y probar el primer caller migrado.
