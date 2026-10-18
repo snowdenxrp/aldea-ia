@@ -1,3 +1,17 @@
+## M0.72 — Block caller-controlled effect reconciliation (2026-10-18)
+
+- `src/nexo/effect-adapter.js` no longer invokes `request.reconcile` for a prepared effect or accepts its `verified: true` claim. A supplied callback yields `RECONCILIATION_AUTHORITY_UNAVAILABLE`; no callback yields `EFFECT_RECONCILIATION_REQUIRED`. Both preserve `prepared` and unknown external-effect state.
+- Regression tests changed to assert that caller callbacks are never invoked and do not terminalize the journal.
+- Report: [M0.72 — Block caller-controlled effect reconciliation](BUILD/NCS_M0_72_BLOCK_CALLER_CONTROLLED_EFFECT_RECONCILIATION_2026-10-18.md).
+- Exact source/test head `0fc54a0cbc25a70f9cfbc0b8dfae98254eb6d642`: mission admission/restart [39092451637](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092451637), STEP 4 [39092451625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092451625), STEP 5 [39092451642](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092451642) — all success. Mission workflow includes orchestrator, runtime, effect-adapter and restart-reconstruction tests.
+- Limit: closes the caller-controlled positive path but does not implement an independent verifier/fence/provenance source. Runtime still does not call `createReconciler()`; PG-009 recovery is not integrated. STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
+
+## M0.71 — Fail closed on unauthenticated reconciliation authority claims (2026-10-18)
+
+- `src/nexo/core/reconciliation.mjs` no longer accepts caller-supplied `authoritative: true` plus a recognized outcome as sufficient for `RESOLVED`; evidence remains `UNRESOLVED` until an independent trusted verifier/current fence/provenance source exists.
+- Report: [M0.71 — Fail closed on unauthenticated reconciliation authority claims](BUILD/NCS_M0_71_FAIL_CLOSED_UNAUTHENTICATED_RECONCILIATION_AUTHORITY_2026-10-18.md).
+- Exact source/test head `d67fd243016a2457747853a4b4a5342f8ca2ce4e`: STEP 6 [39092325409](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325409), M0 Core [39092325426](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325426), STEP 4 [39092325423](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325423), STEP 5 [39092325427](https://github.com/snowdenxrp/aldea-ia/actions/runs/39092325427) — all success.
+
 ## M0.71 — Fail closed on unauthenticated reconciliation authority claims (2026-10-18)
 
 - Change: `src/nexo/core/reconciliation.mjs` no longer accepts caller-supplied `authoritative: true` plus a recognized outcome as sufficient for `RESOLVED`. This evidence boundary now remains `UNRESOLVED` until an independent trusted verifier/current fence/provenance source is wired in.
