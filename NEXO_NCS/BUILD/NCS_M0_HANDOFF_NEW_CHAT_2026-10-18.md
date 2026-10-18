@@ -149,3 +149,14 @@ Added a dedicated recovery scenario to `tests/nexo/repair-owner-lifecycle.test.m
 **Exact CI:** [Nexo M0 — repair settlement crash cuts, run 39145303242](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145303242) — SUCCESS on code/test SHA `59825c0b66034e39dfa62bf060665cff59c95269`. The `repair-crash-cuts` job passed, including the new crash-cut test, owner migration, canonical repair session, isolated CLI replay, and mission-goal verification.
 
 This closes one crash boundary for the repair-only lifecycle; it does not prove generic runtime cutover, cross-store atomicity, causal attribution, or protected-effect authorization. M0 remains INCOMPLETE.
+
+
+## Actualización final de M0 — 2026-10-18
+
+- Commit de regresión: [fd2331e8d71afbbf0f19ea978d552a89087c1dc6](https://github.com/snowdenxrp/aldea-ia/commit/fd2331e8d71afbbf0f19ea978d552a89087c1dc6).
+- La prueba verifica que `recordOutcome(status: completed)` no puede promover un repair cuyo journal ya está `settled_observed`, incluso si el caller presenta `verified: true`, `kind` y `source`. El owner responde `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED` sin mutar la revisión.
+- Reconstrucción antes y después de reabrir el owner: la misión permanece `blocked`, objetivo `verify_observed_repair_goal`; no se re-despacha ni se afirma completion.
+- CI exacto sobre el SHA de prueba: [repair crash cuts 39145754425](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754425), [STEP 4 39145754371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754371), [STEP 5 39145754375](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754375): todos SUCCESS.
+- La prueba no autentica fuentes externas ni cierra M0. Mantener efectos protegidos STOP, STEP 7 OPEN / STOP / UNKNOWN, no repetir M1 ni auditorías históricas.
+
+**Siguiente acción:** trabajar el contrato de outcome para una verificación independiente de objetivo; definir su evidencia/procedencia y transición sin conflar `settled_observed`, causalidad y completion. Luego migrar solo una operación legacy tras demostrar PREPARED durable, CAS, crash recovery y replay en la entrada real. No sustituir los imports de `src/nexo/runtime.js` por owner calls de forma mecánica.
