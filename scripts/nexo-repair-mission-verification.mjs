@@ -162,6 +162,31 @@ export async function verifyRepairMissionGoalFromPersistedState({
     };
   }
 
+  // The environment is a separate persisted source. Re-read it as well so a
+  // revision change during the continuity re-check cannot leave this result
+  // asserting an invariant from an older environment snapshot.
+  let finalSnapshot;
+  try {
+    finalSnapshot = await loadStateStrict(statePath);
+  } catch (error) {
+    return {
+      status: "unknown",
+      code: error?.code ?? "NEXO_PERSISTED_ENVIRONMENT_LOAD_FAILED",
+      verified: false,
+      storeRevision: current.storeRevision
+    };
+  }
+  if (finalSnapshot.stateRevision !== snapshot.stateRevision) {
+    return {
+      status: "unknown",
+      code: "NEXO_REPAIR_MISSION_ENVIRONMENT_CHANGED_DURING_MISSION_VERIFICATION",
+      verified: false,
+      initialEnvironmentStateRevision: snapshot.stateRevision,
+      finalEnvironmentStateRevision: finalSnapshot.stateRevision,
+      storeRevision: current.storeRevision
+    };
+  }
+
   return {
     status: "goal_observed",
     code: "NEXO_REPAIR_MISSION_GOAL_OBSERVED",
