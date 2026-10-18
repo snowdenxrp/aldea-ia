@@ -71,12 +71,12 @@ Archive coverage is improved but remains **PARTIAL**: this pass retrieved these 
 
 ## Next implementation sequence
 
-1. Recover the exact existing AB/P audit report and relevant original records; map their conclusions to the above gap without reopening closed investigations.
-2. Trace the capability-specific Operation Contract from mission step → prepared effect → effect journal → verifier/reconciliation → verified result → mission continuation.
-3. Prove the source of outcome evidence and its dependencies. If no source exists, leave the effect UNKNOWN and specify the missing contract input; do not fake a verifier.
-4. Add an integrated end-to-end regression for crash/restart, stale mission state, unresolved effect, conflicting reports, and no redispatch/no successor.
-5. Run CI on every exact source+test head and attach run IDs/logs; the new runtime guard has exact-head STEP 4/STEP 5/mission-continuity PASS, but this does not verify the entire PG-009 recovery architecture.
-6. Only after the existing route is contract-grounded, integrate it through runtime/orchestrator. Do not restart Step 7 research; it remains OPEN / STOP / UNKNOWN.
+1. Existing evidence retrieval is now partially complete: AB104.150/.151, P112 lifecycle/eviction, GLOBAL-AUDIT-109, AB104.999R and AB105.000R were read. Do not rerun those probes; archive coverage remains partial.
+2. Define the narrow execution-owner boundary from the existing canonical state/persistence owner and mission runtime; the new gate report records requirements.
+3. Specify the legitimate permission/admission input. If no legitimate source exists, protected execution remains STOP; do not create an executor that bypasses authority.
+4. Implement the owner only after that contract is grounded, then add crash/restart, revision-conflict, PREPARED-before-dispatch, terminal-snapshot, and no-redispatch/no-successor fault-injection tests.
+5. Run CI on each exact source+test head and preserve run IDs. The current runtime guard has exact-head STEP 4/STEP 5/mission-continuity PASS; the full PG-009 recovery architecture remains unverified.
+6. Do not restart Step 7 research; it remains OPEN / STOP / UNKNOWN.
 
 ## Current truth
 
