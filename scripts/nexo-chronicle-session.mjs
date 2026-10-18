@@ -27,6 +27,13 @@ export async function runNexoChronicleAppend({
     return blocked("NEXO_CHRONICLE_SESSION_INPUT_INVALID");
   }
 
+  // The continuity journal currently defines operation identity as
+  // `${missionId}:${stepId}`; reject separators to prevent tuple collisions.
+  if (missionId.includes(":") || stepId.includes(":") ||
+      missionId !== missionId.trim() || stepId !== stepId.trim()) {
+    return blocked("NEXO_CHRONICLE_ID_INVALID");
+  }
+
   const chronicleStore = createNexoChronicleStore({ filePath: chroniclePath });
   try {
     if (initializeChronicle) {
