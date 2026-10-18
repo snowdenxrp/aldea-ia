@@ -43,6 +43,10 @@ It also asserts that a valid persisted snapshot loads with its actual revision a
 - [Source](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/scripts/simulate.mjs)
 - [Regression test](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/simulation-restart-persistence.test.mjs)
 
+## Test-run correction
+
+An intermediate CI run failed in the existing persistence-race test because the two worker processes were not synchronized after loading the initial revision; one worker could load after the other's valid commit, so the test's expected one-conflict assertion was nondeterministic. The test now uses a ready/release barrier: both workers report the revision they loaded, and the parent releases them only after both are ready. At exact source+test head `0b55842258c9c9457837f5bc801f94a5c31b425c`, the race test and strict-load tests passed in [mission/restart CI](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716822).
+
 ## Limits
 
 - This strict loader is a safer read boundary for the existing simulation snapshot; it does not turn Lúmina into Nexo, and does not make `world-state.json` Nexo's canonical continuity or authority store.
