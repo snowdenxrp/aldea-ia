@@ -104,9 +104,13 @@ export function createReconciler() {
           return Object.freeze({ status: "UNRESOLVED", outcome: null, evidence: Object.freeze([]) });
         }
         const candidate = descriptor.value;
+        // "authoritative: true" is caller-controlled metadata, not authenticated
+        // authority. Until a trusted verifier/fence/provenance port is wired in,
+        // evidence supplied to this generic reconciler cannot resolve a case.
         if (candidate && typeof candidate === "object" && !Array.isArray(candidate) &&
             candidate.authoritative === true &&
             RESOLVABLE_OUTCOMES.includes(candidate.outcome)) {
+          continue;
           item = candidate;
           break;
         }
