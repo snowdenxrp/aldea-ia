@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import { assertNexoContinuityMemoryShape } from "../src/nexo/core/continuity-contract.mjs";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
 import path from "node:path";
 import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
@@ -8,6 +9,7 @@ import { createSimulation, tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
+const NEXO_CONTINUITY_PATH = fileURLToPath(new URL("../.nexo-continuity.json", import.meta.url));
 const MAX_CATCHUP_SECONDS = 12 * 60 * 60;
 let tempSequence = 0;
 
@@ -115,7 +117,7 @@ export async function loadStateStrict(statePath = STATE_PATH) {
     error.code = "NEXO_STATE_REVISION_UNKNOWN";
     throw error;
   }
-  assertNexoContinuityMemoryShape(state.nexoMemory);
+  if (state.nexoMemory !== null && state.nexoMemory !== undefined) assertNexoContinuityMemoryShape(state.nexoMemory);
 
   // Apply the same compatibility normalization as the simulation loader only
   // after the persisted snapshot's identity and revision have been validated.
@@ -212,7 +214,6 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     world: simulation.world,
     agents: simulation.agents,
     events: simulation.events.slice(-500),
-    nexoMemory: simulation.nexoMemory
   };
   const tempPrefix = `${statePath.pathname}.tmp-`;
   try {
@@ -234,7 +235,14 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
 }
 
 async function main() {
-  const state = await loadState();
+  let stateExists = true;
+  try { await fs.access(STATE_PATH); } catch (error) { if (error?.code === "ENOENT") stateExists = false; else throw error; }
+  const state = stateExists ? await loadStateStrict(STATE_PATH) : await loadState(STATE_PATH);
+  const continuity = await openNexoContinuityOwner({
+    filePath: NEXO_CONTINUITY_PATH,
+    legacyMemory: state.nexoMemory ?? null,
+    allowEmptyInitialization: !stateExists
+  });
   const now = Date.now();
   const previousSavedAt = Number(state.savedAt) || now;
   const elapsedSeconds = Math.max(0, Math.min((now - previousSavedAt) / 1000, MAX_CATCHUP_SECONDS));
@@ -244,7 +252,7 @@ async function main() {
 
   await persistState(STATE_PATH, simulation, persistedSavedAt, { expectedRevision: state.stateRevision, stateRevision: state.stateRevision + 1 });
 
-  console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive), nexoMemory: Boolean(simulation.nexoMemory) }));
+  console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive), nexoContinuityStoreRevision: continuity.current.storeRevision }));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
