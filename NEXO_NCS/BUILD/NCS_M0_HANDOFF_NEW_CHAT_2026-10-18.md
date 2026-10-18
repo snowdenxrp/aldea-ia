@@ -178,3 +178,12 @@ El verificador `verifyRepairMissionGoalFromPersistedState()` ahora vuelve a leer
 Commit exacto: `57f3bffb52989a924bdbc5fb4fc626d803e6988f`. CI verde sobre el mismo SHA: repair [39146959705](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146959705), STEP 4 [39146959738](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146959738), STEP 5 [39146959691](https://github.com/snowdenxrp/aldea-ia/actions/runs/39146959691). El workflow repair confirma explícitamente el paso de verificación del objetivo.
 
 Esto evita un PASS basado en continuidad que cambió durante la verificación; no es atomicidad cross-store ni cubre cambios que ocurran después de la lectura final. No persistimos aún goal observations, no declaramos misión completada y no migramos el runtime genérico. Siguiente: diseñar un contrato de observación durable/procedencia solo si el requisito de continuidad M0 lo necesita; de lo contrario, delimitar con precisión qué prueba de punto en el tiempo requiere el cutover. No añadir una colección de snapshot sin contrato/migración completos.
+
+
+## Último estado M0 — decisión de cutover y guard de continuidad (2026-10-18)
+
+Nueva decisión: `NEXO_NCS/BUILD/NCS_M0_GOAL_OBSERVATION_AND_RUNTIME_CUTOVER_DECISION_2026-10-18.md`. No se añade `goalObservations` por ahora: la observación es read-only, no declara misión completa y la reconstrucción ya bloquea el paso `settled_observed` para impedir redispatch. El documento define el contrato mínimo de cutover y sus crash cuts.
+
+Se conserva el guard y test determinista de cambio de `storeRevision` durante la verificación: `unknown / NEXO_CONTINUITY_CHANGED_DURING_MISSION_VERIFICATION`. No afirmar atomicidad cross-store ni estabilidad del entorno a lo largo de toda la lectura. Se intentó una prueba de carrera ambiental pero no reprodujo el orden esperado; se retiró el test y el guard experimental antes de aceptar una falsa garantía. No ocultar ese límite ni reintroducirlo sin una prueba determinista.
+
+Código/pruebas verificados sobre `fe9fe3b656fceff67be31722d7729ff6637a428b`: repair [39149853015](https://github.com/snowdenxrp/aldea-ia/actions/runs/39149853015), STEP 4 [39149852997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39149852997), STEP 5 [39149853023](https://github.com/snowdenxrp/aldea-ia/actions/runs/39149853023), todos SUCCESS. Próximo trabajo: inspeccionar el menor hueco demostrable entre PREPARED, lineage, observación y journal settlement antes de cualquier cambio de runtime. M0 INCOMPLETO; efectos protegidos STOP; no migrar runtime genérico aún.
