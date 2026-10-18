@@ -374,6 +374,14 @@ const settledJournal = await restartedRepairContinuity.owner.loadCurrent();
 assert.equal(settledJournal.snapshot.effectJournal[0].status, "settled_observed");
 assert.equal(settledJournal.snapshot.effectJournal[0].settlement.causalAttribution, "not_claimed");
 
+const reconstructedAfterObservedSettlement = await restartedRepairContinuity.owner.reconstructMission("repair-crash-cut");
+assert.equal(reconstructedAfterObservedSettlement.status, "reconstructed");
+assert.equal(reconstructedAfterObservedSettlement.mission.status, "blocked");
+assert.equal(reconstructedAfterObservedSettlement.mission.objective, "verify_observed_repair_goal");
+assert.equal(reconstructedAfterObservedSettlement.mission.steps[0].status, "blocked");
+assert.equal(reconstructedAfterObservedSettlement.mission.steps[0].blockReason.code, "NEXO_REPAIR_SETTLED_BY_OBSERVATION");
+
+
 const staleSettlement = await settlePreparedRepairFromPersistedState({
   store: restartedRepairContinuity.store,
   statePath: repairStatePath,
