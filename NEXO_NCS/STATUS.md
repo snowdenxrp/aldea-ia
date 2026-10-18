@@ -3,8 +3,8 @@
 - Change: `src/nexo/runtime.js` no longer maps `status: "completed"` to a successful mission unless both `adapterResult.verified === true` and `adapterResult.evidence.verified === true`. Missing/false verification is normalized to `blocked / UNVERIFIED_COMPLETION_RESULT` before persistence.
 - Regression: `tests/nexo/runtime.test.mjs` asserts mission step, attempt, and execution record all remain blocked when an adapter reports completed with false verification signals.
 - Report: [M0 runtime reject unverified completion](BUILD/NCS_M0_RUNTIME_REJECT_UNVERIFIED_COMPLETION_2026-10-18.md).
-- Source commit `97e9deb8410af9bd9f9afb5dc876102741c202c5`; test commit `c37b91c703b308c9ee888c9f9f1147489e345d80`; report commit `01dcae97215e31b286602c2865b952c577dad577`.
-- Exact source+test head `c37b91c703b308c9ee888c9f9f1147489e345d80` CI PASS: mission admission/restart [39096581372](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096581372) (includes runtime/effect-adapter/orchestrator/restart tests), STEP 4 [39096581378](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096581378), STEP 5 [39096581373](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096581373).
+- Source follow-up commit `b23823e1d9613f850d0a7f71466ce7c529e271d8`; exact source+test head `23f2f5c24b9c8f9c5927513dedae1b20a4e40502`; report updated in commit `20019063833bb16a9de4e1ea23360ba9e4ac57f8`.
+- Exact source+test head `23f2f5c24b9c8f9c5927513dedae1b20a4e40502` CI PASS: mission admission/restart [39096709481](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709481) (runtime/effect-adapter/orchestrator/restart tests), STEP 4 [39096709477](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709477), STEP 5 [39096709519](https://github.com/snowdenxrp/aldea-ia/actions/runs/39096709519).
 - Limitation: consistency guard only. It does not authenticate the adapter's `verified` claim; independent verifier/current fence/provenance is still absent from the integrated PG-009 path. Prepared effects remain UNKNOWN; no redispatch. M0 incomplete; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
 
 ## M0 — Maestra / AB / P cross-check (2026-10-18)
