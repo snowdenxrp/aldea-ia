@@ -137,6 +137,31 @@ export async function verifyRepairMissionGoalFromPersistedState({
     });
   }
 
+  // The continuity snapshot and the environment snapshot are read from
+  // separate stores. Re-check the canonical continuity revision before
+  // returning a positive observation so a concurrent journal/mission change
+  // during verification cannot be silently treated as the same view.
+  let finalContinuity;
+  try {
+    finalContinuity = await store.loadCurrent();
+  } catch (error) {
+    return {
+      status: "unknown",
+      code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED",
+      verified: false,
+      storeRevision: current.storeRevision
+    };
+  }
+  if (finalContinuity.storeRevision !== current.storeRevision) {
+    return {
+      status: "unknown",
+      code: "NEXO_CONTINUITY_CHANGED_DURING_MISSION_VERIFICATION",
+      verified: false,
+      initialStoreRevision: current.storeRevision,
+      finalStoreRevision: finalContinuity.storeRevision
+    };
+  }
+
   return {
     status: "goal_observed",
     code: "NEXO_REPAIR_MISSION_GOAL_OBSERVED",
