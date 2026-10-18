@@ -37,6 +37,37 @@ try {
     store: reopened, operationKey: "mission-1:step-2", expectedContent: "missing"
   })).status, "not_applied");
 
+  // Independent operations written concurrently must not overwrite each other.
+  await Promise.all([
+    reopened.append({ operationKey: "mission-1:step-2", content: "second" }),
+    reopened.append({ operationKey: "mission-1:step-3", content: "third" })
+  ]);
+  assert.equal((await reopened.loadCurrent()).entries.length, 3);
+
+  // Simulate a lost writer response after the atomic rename already changed persisted state.
+  const lostPath = path.join(root, "lost-response.json");
+  let loseNextRename = false;
+  const fsWithLostResponse = {
+    ...fs,
+    rename: async (from, to) => {
+      await fs.rename(from, to);
+      if (loseNextRename) {
+        loseNextRename = false;
+        throw new Error("simulated response lost after rename");
+      }
+    }
+  };
+  const lostWriter = createNexoChronicleStore({ filePath: lostPath, fsModule: fsWithLostResponse });
+  assert.equal((await lostWriter.initialize()).status, "committed");
+  loseNextRename = true;
+  const recoveredWrite = await lostWriter.append({ operationKey: "mission-2:step-1", content: "survived" });
+  assert.equal(recoveredWrite.status, "committed");
+  assert.equal(recoveredWrite.recoveredAfterWriteError, true);
+  const lostResponseReader = createNexoChronicleStore({ filePath: lostPath });
+  assert.equal((await observeChronicleOperation({
+    store: lostResponseReader, operationKey: "mission-2:step-1", expectedContent: "survived"
+  })).status, "applied");
+
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
   assert.equal((await observeChronicleOperation({
