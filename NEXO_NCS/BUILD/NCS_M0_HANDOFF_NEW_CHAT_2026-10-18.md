@@ -76,3 +76,31 @@ Referencias a reutilizar:
 - P112 audits: `NEXO_CONTINUITY/P112_PERSISTSTATE_FINAL_COMMIT_FEASIBILITY_AUDIT_V1_2026-10-07.md`, `NEXO_CONTINUITY/P112_PERSISTSTATE_PHYSICAL_BOUNDARY_CRASH_CUT_AUDIT_V2_2026-10-07.md`, `NEXO_CONTINUITY/P112_PROTECTED_OWNER_AGAINST_EXISTING_PERSISTENCE_PRIMITIVE_V1_2026-10-07.md`, `NEXO_CONTINUITY/P112_WRITER_DEPENDENCY_GRAPH_V1_2026-10-07.md`.
 
 Estado de entrega: M0 EN PROGRESO / NO COMPLETO; store separation diseñada pero sin atomicidad cross-store; lineage guard y suites señaladas en CI aprobadas; runtime pendiente; efectos protegidos STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+
+---
+
+## Actualización final del 2026-10-18 — CLI real aislado
+
+### Qué cambió desde el handoff previo
+- Añadido puente `scripts/nexo-runtime-session.mjs`, llamado desde `scripts/assistants.mjs` solo con el flag explícito `--nexo-repair-once`. El modo normal no despacha reparaciones.
+- Los paths de entorno, memoria de Lúmina y continuidad de Nexo son configurables solo mediante variables de entorno de test; sin ellas se conservan los paths normales.
+- Añadida prueba de proceso `tests/nexo/assistants-runtime-cli.test.mjs` que lanza el entrypoint real en subprocesos aislados. Modo normal deja el journal vacío. Modo opt-in realiza la reparación, guarda `settled_observed`, actualiza la revisión de entorno de 1 a 2 y reporta la revisión final. Se confirma que `world-state.json` no contiene `nexoMemory`.
+- El test detectó que los hallazgos `AGENT_POSITION` y `INVALID_NEED` no incluían el ID del agente, por lo que una misión podía tener `target: null`. Corregido en `src/assistants/debugger.js`.
+- La sesión ahora exige paso `planned` y dependencias canónicas completadas incluso si se llama directamente, no solo por el puente.
+- CI [39143459529](https://github.com/snowdenxrp/aldea-ia/actions/runs/39143459529) pasó en SHA exacto de código/pruebas `a1fea5791adbb81a8d6b6e82da9dad09accc7918`; los checks STEP 4 y STEP 5 también pasaron sobre ese SHA. El HEAD actual de documentación es `e6db7493e96014a1008bce3a3bb9a2e63eafe6a4`; no confundir HEAD documental con SHA de prueba.
+
+### Qué no significa
+- No se ejecutó sobre los datos reales del repositorio ni sobre el teléfono del usuario; solo fixtures temporales en CI.
+- El flag no migra el runtime genérico `src/nexo/runtime.js` y no sustituye las escrituras heredadas de resultados. Es una ruta opt-in para tres reparaciones.
+- `settled_observed` no prueba causalidad ni finaliza misión. El reporte puede conservar exit code de diagnóstico porque el informe principal refleja el estado previo a reparar.
+- No existe atomicidad entre continuidad Nexo y entorno Lúmina. Los efectos protegidos siguen STOP.
+
+### Próxima tarea concreta (no repetir auditorías)
+1. Auditar en detalle todas las lecturas/escrituras legacy de `src/nexo/runtime.js` y el uso de la vista `nexoMemory` dentro de `scripts/assistants.mjs`.
+2. Diseñar el corte mínimo hacia una sola fuente canónica: la misión ya se guarda en el owner; la ruta repair-only deja el journal en `settled_observed`, pero no registra completion/causalidad. No usar `recordOutcome()` para liquidar ese journal.
+3. Añadir pruebas de reinicio/replay contra el proceso real con los mismos archivos temporales, incluida ausencia de dispatch por defecto y bloqueo del replay tras settlement.
+4. Solo entonces proponer un cutover incremental del runtime genérico; mantener rollback y no borrar la ruta heredada sin pruebas.
+5. Actualizar STATUS, handoff maestro y este handoff con SHA/run/job exactos.
+
+**M0 sigue EN PROGRESO / NO COMPLETO.** Continuar desde este punto; no volver a M1, STEP 7 ni investigaciones AB/P cerradas. Nexo y Lúmina deben permanecer separados.
