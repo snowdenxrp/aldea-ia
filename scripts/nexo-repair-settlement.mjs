@@ -96,7 +96,20 @@ export async function settlePreparedRepairFromPersistedState({
   };
   assertNexoContinuitySnapshot(candidate);
 
-  const committed = await store.commitIfCurrent(expectedContinuityRevision, candidate);
+  let committed;
+  try {
+    committed = await store.commitIfCurrent(expectedContinuityRevision, candidate);
+  } catch (error) {
+    // The store may have failed before or after durable replacement. Do not
+    // infer whether settlement committed; a later read/recovery must resolve it.
+    return {
+      status: "blocked",
+      code: error?.code ?? "NEXO_REPAIR_SETTLEMENT_COMMIT_OUTCOME_UNKNOWN",
+      verified: false,
+      storeRevision: expectedContinuityRevision,
+      uncertainty: "settlement_commit_outcome_unknown"
+    };
+  }
   if (committed.status !== "committed") {
     return {
       ...committed,
