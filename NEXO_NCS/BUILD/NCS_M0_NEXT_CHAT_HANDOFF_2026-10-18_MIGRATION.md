@@ -119,3 +119,29 @@ At minimum:
 ## Instructions for the next chat
 User starts new project chat with exactly: `NCS`.
 First action: read `NEXO_NCS/STATUS.md` and this file; confirm the current branch/head and CI evidence before editing. Continue at **runtime integration / terminal owner contract and cross-store crash cuts**. Do not restart M0 from M0.1, do not redo closed AB/P audits, do not treat this handoff as proof of migration completion, and do not stop at documentation only. The goal is to finish Nexo's independent operational-continuity migration and integrate it into M0's real observe → decide → plan → permitted execute → verify → persist → restart/recover/replan loop.
+
+
+## Update — 2026-10-18, latest verified progress
+
+### Effect adapter fail-closed hardening
+- `src/nexo/effect-adapter.js` no longer persists detected partial effects or failed postconditions as terminal failures. They return BLOCKED with uncertainty and keep the journal PREPARED; a same-key retry is blocked instead of dispatching again.
+- Code commit: `699b14d57918cbd02c6d6440120f88c91bc84672`.
+- Tests added across `af412f23a4898fa279e995e4bc67e0e53b01410c`, `8183fa6ce39c1fd968eeafdcd3833d648d05f549`, `630dc8a51b91047ce5d33cbe08901e8db9a0fc0c`, and `d3ebb7738ba29a3e1ffdbd93f29e35e0c692093a`.
+- Exact-head CI PASS at `d3ebb7738ba29a3e1ffdbd93f29e35e0c692093a`: mission/restart [39105138229](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138229), semantic [39105138224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138224), outcome [39105138205](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138205).
+- Checkpoint: `NEXO_NCS/BUILD/NCS_M0_PARTIAL_EFFECT_FAIL_CLOSED_CHECKPOINT_2026-10-18.md`.
+
+### Lúmina action mutation on failure
+- `src/actions.js` showed `catchFish()` can fail with `fish_escaped` after mutating agent energy/activity. Previously the simulation adapter bumped its state version only for successful actions, masking this partial effect.
+- `src/nexo/simulation-adapter.js` now compares agents/world before and after action execution, including failure outcomes, and advances the effect revision when observed state changed. Code commit: `ed64bec0ad8b8741b7da6f8bcccf65f5af5d2742`.
+- Regression test in `tests/nexo/runtime.test.mjs` at `08681d908a3231e0b45700fd09bd35207d7069ae` forces a deterministic fish escape; asserts BLOCKED/PARTIAL_EFFECT_DETECTED, PREPARED retained, and replan rejected.
+- Exact-head CI PASS at `08681d908a3231e0b45700fd09bd35207d7069ae`: mission/restart [39105229917](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105229917), semantic [39105229991](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105229991), outcome [39105229910](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105229910).
+- Checkpoint: `NEXO_NCS/BUILD/NCS_M0_LUMINA_FAILED_ACTION_MUTATION_CHECKPOINT_2026-10-18.md`.
+
+### Mandatory next work — no restart of closed research
+1. Review exact branch head and STATUS after this handoff update.
+2. Define operation-specific definitive-no-effect semantics. Generic handler `status: failed` with no observed state-version change is not universal proof that an external effect did not occur. Do not permit generic retries based only on that status.
+3. Determine how a persisted Lúmina environment state can expose trustworthy operation-specific reconciliation after a crash without adding ungrounded IDs/queues/tombstones or claiming cross-file atomicity. Current PREPARED record contains identity but no independent terminal verifier/settlement exists.
+4. Add crash-cut tests for Lúmina state commit success followed by missing/lost Nexo terminal commit, and stale environment revision. Keep UNKNOWN if evidence cannot distinguish.
+5. Only then implement owner-backed runtime outcome/reconstruction integration. Do not remove legacy memory functions until end-to-end migration and rollback diagnostics pass.
+
+Latest STATUS update commit before this handoff edit: `38e495812f05004b4371f87fbcc7ae3b0259bc0c`. M0 remains incomplete; runtime still uses legacy memory operations; no device migration is claimed; protected effects STOP; unresolved PREPARED UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
