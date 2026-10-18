@@ -279,3 +279,10 @@ En SHA `4626afbb1220feb0784c020288de697608b9276b`:
 - [Run 39174272526](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174272526) SUCCESS — suite acotada de continuidad/runtime, ahora incluyendo las dos suites Chronicle.
 
 El entrypoint es independiente de Lúmina y los tests incluyen: stores ausentes/corruptos no se recrean silenciosamente, IDs de misión/step suministrados, misma identidad con contenido diferente bloqueada, append con lectura independiente, recovery sin redispatch y replay del outcome. M0 permanece INCOMPLETO; no habilitar otras acciones ni cambiar runtime default.
+
+
+## Última auditoría de entrada — clave canónica sin colisiones (2026-10-18)
+
+- Se identificó que la clave canónica heredada `missionId:stepId` es ambigua si alguno de los IDs contiene `:`. Para no cambiar el contrato de continuidad ni reinterpretar datos existentes, el entrypoint Chronicle ahora rechaza IDs con ese separador y los IDs con espacios periféricos; pruebas explícitas cubren ambos lados de la colisión.
+- CI verde en SHA `de89e228ca5b46becd17ef2e3159ab2e47c25f8e`: [Chronicle run 39174610849](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610849) y [continuity/runtime run 39174610848](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174610848), ambos SUCCESS.
+- Próximo: endurecer parsing CLI sin aceptar argumentos desconocidos/duplicados silenciosamente; probar errores de entrada y asegurar que los mensajes de salida no filtren contenido. No activar runtime por defecto ni ampliar la vertical.
