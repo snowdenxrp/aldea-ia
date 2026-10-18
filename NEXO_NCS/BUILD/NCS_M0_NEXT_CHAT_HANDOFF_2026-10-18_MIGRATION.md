@@ -1,3 +1,24 @@
+## Latest continuation — ambiguous repair targets + revision fence diagnostics (2026-10-18)
+
+- `comparePersistedRepairRevision()` classifies matching/stale/missing environment revision binding without inventing a historical revision. Code/test head for that change: [`db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f`](https://github.com/snowdenxrp/aldea-ia/commit/db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f); exact-head CI PASS: mission [39132287649](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287649), outcome [39132287652](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287652), semantic [39132287648](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287648).
+- Tightened target resolution: duplicate agent IDs for either agent repair return UNKNOWN; resource target must be an own property of the persisted resources object. Tests at [`f6ad72da4f0caff056a21dbdf8835391844c6b0c`](https://github.com/snowdenxrp/aldea-ia/commit/f6ad72da4f0caff056a21dbdf8835391844c6b0c). Exact-head CI PASS: semantic [39132380744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132380744), outcome [39132380742](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132380742), mission/restart [39132380735](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132380735).
+- Checkpoint: [NCS_M0_AMBIGUOUS_REPAIR_TARGET_CHECKPOINT_2026-10-18.md](NCS_M0_AMBIGUOUS_REPAIR_TARGET_CHECKPOINT_2026-10-18.md).
+
+### Next work boundary
+
+The revision observer only detects staleness. Current PREPARED records do not bind the authoritative persisted environment `stateRevision`; adapter `nexoEffectRevision` is an in-memory counter and is not the durable `world-state.json` revision. Do not conflate them.
+
+Before terminal settlement:
+1. Review explicit schema-versioned addition of the prepared environment revision (no silent inference).
+2. Define the adapter's pre-dispatch check against the same durable revision and ensure mutation/persist path uses conditional expected revision.
+3. Re-load strict persisted state during recovery, classify the action-specific repair invariant, and reject stale revision.
+4. At terminal settlement, use the continuity store's compare-and-commit revision; any conflict keeps PREPARED unresolved.
+5. Add crash-cut tests at prepare, dispatch, persist, recovery, and settlement boundaries. Do not claim two independent stores are atomic.
+
+No generic transaction wrapper, synthetic receipt/queue, or runtime cutover. Non-idempotent effects remain UNKNOWN. M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest continuation — stale/missing environment revision binding (2026-10-18)
 
 - Added `comparePersistedRepairRevision()` and tests at [`db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f`](https://github.com/snowdenxrp/aldea-ia/commit/db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f).
