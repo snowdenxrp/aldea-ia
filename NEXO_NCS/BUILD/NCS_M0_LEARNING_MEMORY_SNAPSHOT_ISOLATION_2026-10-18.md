@@ -2,7 +2,7 @@
 
 Date: 2026-10-18  
 Branch: `ncs-clean-architecture`  
-Status: IMPLEMENTED IN SOURCE + REGRESSION ADDED; FOCUSED CI PENDING
+Status: IMPLEMENTED / FOCUSED CI PASS
 
 ## Defect
 
@@ -17,7 +17,10 @@ Status: IMPLEMENTED IN SOURCE + REGRESSION ADDED; FOCUSED CI PENDING
 ## Verification
 
 - Regression added to the existing focused mission-continuity workflow.
-- CI result: PENDING at commit creation; do not treat this as verified until the workflow result is fetched.
+- Mission admission / restart continuity: [run 39084194889](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084194889) — success; job `mission-admission-continuity` explicitly passed both `tests/nexo/orchestrator.test.mjs` and `tests/nexo/restart-reconstruction.test.mjs`.
+- STEP 4 semantic validation: [run 39084194898](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084194898) — success.
+- STEP 5 outcome classification: [run 39084194895](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084194895) — success.
+- All three workflows ran on source/test commit `7723f38e901ccca75323aa92b6ccda2cf5c022ba`.
 
 ## Scope limits
 

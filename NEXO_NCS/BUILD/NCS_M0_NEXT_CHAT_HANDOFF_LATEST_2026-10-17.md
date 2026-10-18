@@ -3,7 +3,7 @@
 - Defect: `learnFromReports()` changed a pattern record shared with the caller's prior memory snapshot when incrementing `seen` and refreshing `lastSeen`.
 - Fix: clone pattern records before learning updates; regression in `tests/nexo/restart-reconstruction.test.mjs` asserts old snapshot unchanged and new snapshot incremented.
 - Report: [NCS M0 learning memory snapshot isolation](NCS_M0_LEARNING_MEMORY_SNAPSHOT_ISOLATION_2026-10-18.md).
-- CI is pending at this change's initial commit. Fetch the workflow result and only then update this handoff/STATUS with the actual run ID and outcome.
+- Focused CI PASS on commit `7723f38e901ccca75323aa92b6ccda2cf5c022ba`: mission admission / restart continuity [39084194889](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084194889) passed both `tests/nexo/orchestrator.test.mjs` and `tests/nexo/restart-reconstruction.test.mjs`; STEP 4 [39084194898](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084194898) and STEP 5 [39084194895](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084194895) also succeeded.
 - Do not reopen M0.1–M0.70 or treat this as resolving evidence provenance, Proxy-trap boundary, authority, or protected effects.
 
 ---
