@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { runNexoRepairSession } from "../../scripts/nexo-repair-session.mjs";
+import { runNexoRuntimeRepairSession } from "../../scripts/nexo-runtime-session.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
@@ -68,13 +69,10 @@ try {
   });
   await fs.writeFile(statePath, JSON.stringify(environment(60)), "utf8");
 
-  const result = await runNexoRepairSession({
-    owner: opened.owner,
-    store: opened.store,
+  const result = await runNexoRuntimeRepairSession({
+    continuity: opened,
     statePath,
-    missionId: "mission-session",
-    stepId: "step-session",
-    savedAt: 10
+    missionId: "mission-session"
   });
 
   assert.equal(result.status, "settled_observed");
