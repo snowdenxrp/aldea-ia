@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 
 let version=1, calls=0;
+const executionJournal=[];
 const adapter=createEffectAdapter({
   getStateVersion:()=>version,
+  executionJournal,
   handlers:{
     safe_repair: async ({target})=>{ calls++; version++; return {status:"completed",details:"changed "+target}; },
     partial_repair: async ()=>{ version++; return {status:"failed",code:"PARTIAL_EFFECT"}; },
@@ -41,9 +43,11 @@ const mismatch=await adapter.execute({
   missionId:"m1",stepId:"s2",action:"safe_repair",target:"alex",idempotencyKey:"m1:s3",
   precondition:()=>true,postcondition:()=>false
 });
-assert.equal(mismatch.status,"failed");
+assert.equal(mismatch.status,"blocked");
 assert.equal(mismatch.code,"POSTCONDITION_FAILED");
 assert.equal(mismatch.verified,false);
+assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s3")?.status,"prepared", "unverified effect must remain unresolved");
+assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s3")?.result,undefined);
 
 const concurrent=await adapter.execute({
   missionId:"m1",stepId:"s2",action:"safe_repair",target:"alex",idempotencyKey:"m1:s6",
@@ -57,14 +61,18 @@ assert.equal(calls,2);
 const partial=await adapter.execute({
   missionId:"m1",stepId:"s3",action:"partial_repair",target:"alex",idempotencyKey:"m1:s4"
 });
-assert.equal(partial.status,"failed");
+assert.equal(partial.status,"blocked");
 assert.equal(partial.code,"PARTIAL_EFFECT_DETECTED");
 assert.equal(partial.verified,false);
+assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s4")?.status,"prepared");
+assert.equal(executionJournal.find(x=>x.idempotencyKey==="m1:s4")?.result,undefined);
 
 const partialRetry=await adapter.execute({
   missionId:"m1",stepId:"s3",action:"partial_repair",target:"alex",idempotencyKey:"m1:s4"
 });
-assert.equal(partialRetry.code,"PARTIAL_EFFECT_DETECTED");
+assert.equal(partialRetry.status,"blocked");
+assert.equal(partialRetry.code,"EFFECT_RECONCILIATION_REQUIRED");
+assert.equal(calls,2, "unresolved partial effect must not be redispatched");
 let exceptionCalls=0;
 const exceptionJournal=[];
 const exceptionAdapter=createEffectAdapter({executionJournal:exceptionJournal,handlers:{ambiguous_effect:async()=>{exceptionCalls++;throw new Error("provider timeout after send");}}});
