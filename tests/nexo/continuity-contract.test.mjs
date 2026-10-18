@@ -3,6 +3,7 @@ import { assertNexoContinuityMemoryShape } from "../../src/nexo/core/continuity-
 import { assertNexoContinuitySnapshot, projectNexoContinuitySnapshot, NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
 import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
+import { recordNexoMissionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -229,3 +230,37 @@ assert.equal((await owner.reconcilePrepared()).code, "NEXO_EFFECT_RECONCILIATION
 await fs.rm(ownerDirectory, { recursive: true, force: true });
 
 console.log("Nexo continuity owner: mission admission, durable PREPARED-before-dispatch, identity binding and no redispatch OK.");
+
+
+const coreMission = {
+  missionId: "core-mission",
+  version: 4,
+  status: "planned",
+  objective: "repair_agent_state",
+  generatedAt: "2026-10-18T00:00:00.000Z",
+  steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+};
+let operationalSnapshot = recordNexoMissionInSnapshot(emptySnapshot, coreMission);
+assert.equal(operationalSnapshot.missions.length, 1);
+assert.throws(
+  () => recordNexoOutcomeInSnapshot(operationalSnapshot, {
+    missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+    target: "alex", status: "completed", evidence: { verified: false, kind: "effect-postcondition" }
+  }),
+  error => error?.code === "NEXO_COMPLETION_EVIDENCE_UNVERIFIED"
+);
+operationalSnapshot = recordNexoOutcomeInSnapshot(operationalSnapshot, {
+  missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+  target: "alex", status: "completed", evidence: { verified: true, kind: "effect-postcondition" }
+});
+operationalSnapshot = recordNexoOutcomeInSnapshot(operationalSnapshot, {
+  missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+  target: "alex", status: "failed", evidence: { verified: false, kind: "late-replay" }
+});
+const reconstructedCoreMission = reconstructNexoMissionFromSnapshot(operationalSnapshot, "core-mission");
+assert.equal(reconstructedCoreMission.steps[0].status, "completed", "late replay must not regress a verified completed step");
+assert.equal(reconstructedCoreMission.objective, "verify_mission_outcome");
+assert.equal("patterns" in reconstructedCoreMission.operationalSignals, false);
+assert.equal(reconstructNexoMissionFromSnapshot(operationalSnapshot, "missing-mission"), null);
+
+console.log("Nexo core continuity operations: detached mission/outcome records and reconstruction without learning analytics OK.");
