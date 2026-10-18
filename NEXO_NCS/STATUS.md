@@ -249,3 +249,5 @@ M0 incomplete; protected effects STOP; unresolved PREPARED UNKNOWN; STEP 7 OPEN 
 - Still no runtime cutover, effect settlement, independent evidence authentication, or cross-store atomicity claim.
 
 M0 incomplete; protected effects STOP; unresolved PREPARED UNKNOWN; STEP 7 OPEN / STOP / UNKNOWN.
+- Added regression commit `98caddd0edd81908c2f07b199391e9fe85dbeeae`: a persisted `settled_observed` repair reconstructs as blocked with objective `verify_observed_repair_goal` and explicit `verify_mission_goal_without_redispatch`; observation is not converted into completed execution.
+- Exact-head CI remains NOT VERIFIED and no local test execution is claimed.
