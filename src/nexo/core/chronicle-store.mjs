@@ -23,7 +23,8 @@ function validateDocument(document) {
   if (!document || typeof document !== "object" || Array.isArray(document) ||
       document.schema !== NEXO_CHRONICLE_SCHEMA ||
       document.schemaVersion !== NEXO_CHRONICLE_VERSION ||
-      !Number.isSafeInteger(document.storeRevision) || document.storeRevision < 0 ||\n      !Array.isArray(document.entries) || !document.entries.every(validEntry)) {
+      !Number.isSafeInteger(document.storeRevision) || document.storeRevision < 0 ||
+      !Array.isArray(document.entries) || !document.entries.every(validEntry)) {
     throw fail("NEXO_CHRONICLE_SCHEMA_UNKNOWN");
   }
   const keys = new Set();
@@ -154,6 +155,7 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
       const candidate = {
         schema: NEXO_CHRONICLE_SCHEMA,
         schemaVersion: NEXO_CHRONICLE_VERSION,
+        storeRevision: current.storeRevision + 1,
         entries: [...current.entries, { operationKey, content }]
       };
       try {
