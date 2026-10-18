@@ -1,3 +1,13 @@
+## Cuarto avance verificado — PREPARED solo para pasos ejecutables (2026-10-18)
+
+`src/nexo/core/continuity-owner.mjs` ahora impone admisión en `recordPrepared()` para una obligación nueva: el paso canónico debe seguir `planned` y todas las dependencias declaradas deben existir y estar `completed`. Rechaza estados no ejecutables con `NEXO_PREPARED_STEP_NOT_RUNNABLE` y dependencias incompletas con `NEXO_PREPARED_DEPENDENCIES_UNMET`, sin avanzar revisión ni escribir journal. La validación se aplica después del branch de PREPARED existente, de modo que una obligación incierta existente no se oculta por cambios posteriores de estado.
+
+Regresión test-first en `tests/nexo/continuity-migration.test.mjs`. SHA test-only `71764ddb9dfc511cfe437c6a12dc9f6122a2297b`: repair crash cuts [39152101773](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152101773) y mission/restart [39152101743](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152101743) fallaron como esperado (`committed` en vez de `blocked`). Fix y prueba en SHA `4549662e9cf879a15c4833b011ce5a8122e1c65e`: mission/restart [39152160229](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160229), repair crash cuts [39152160394](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160394), STEP 4 [39152160252](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160252), STEP 5 [39152160267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39152160267) SUCCESS.
+
+**Continuar:** todavía no es runtime cutover. No añadir `goalObservations`, no aceptar evidencia del caller como autenticación, no declarar completion por `settled_observed`, no generalizar el dispatcher repair-only ni reclamar atomicidad entre Nexo y Lúmina. La siguiente frontera es el seam runtime canónico con `PREPARED` durable y conciliación por tipo de efecto; lo no soportado sigue STOP.
+
+---
+
 ## Tercer avance verificado — replay contradictorio de outcome (2026-10-18)
 
 `src/nexo/core/continuity-owner.mjs`: `recordOutcome()` ahora exige que un replay de la misma identidad coincida también en `status`, `evidence`, `parentMissionId` y `replanReason`. Un resultado contradictorio devuelve `blocked / NEXO_OUTCOME_RESULT_MISMATCH`, sin escritura ni avance de revisión. La regresión en `tests/nexo/continuity-migration.test.mjs` demuestra que `completed` seguido de `failed` no se acepta como replay idéntico y que la reconstrucción permanece `completed`.
