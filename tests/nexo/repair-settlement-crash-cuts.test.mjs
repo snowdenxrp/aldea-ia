@@ -320,7 +320,7 @@ try {
   assert.equal(genericObserved.redispatchAuthorized, false);
   assert.equal(genericVerifierCalls, 1);
   const genericAfter = await genericOpened.owner.loadCurrent();
-  assert.equal(genericAfter.snapshot.effectJournal[0].status, "settled_observed");
+  assert.equal(genericAfter.snapshot.effectJournal[0].status, "reconciled_observed");
   assert.equal(genericAfter.snapshot.effectJournal[0].reconciliation.status, "applied");
   assert.equal(genericAfter.snapshot.effectJournal[0].reconciliation.source, "test-persisted-state-reader");
 
