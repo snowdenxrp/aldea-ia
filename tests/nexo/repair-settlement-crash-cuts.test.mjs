@@ -5,7 +5,7 @@ import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
 
-function legacyMemory() {
+function legacyMemory({ existingCompletedAttempt = false } = {}) {
   return {
     version: 4,
     runs: [],
@@ -24,7 +24,17 @@ function legacyMemory() {
           dependsOn: []
         }]
       }],
-      attempts: [],
+      attempts: existingCompletedAttempt ? [{
+        missionId: "mission-crash-cut",
+        stepId: "step-repair",
+        action: "repair_agent_state",
+        target: "alex",
+        status: "completed",
+        evidence: null,
+        parentMissionId: null,
+        replanReason: null,
+        at: "2026-10-18T00:00:00.000Z"
+      }] : [],
       doNotRepeat: [],
       executions: [],
       effectJournal: [{
@@ -165,6 +175,29 @@ try {
   const afterPrematureOutcome = await staleOpened.owner.loadCurrent();
   assert.equal(afterPrematureOutcome.snapshot.effectJournal[0].status, "prepared");
   assert.equal(afterPrematureOutcome.snapshot.attempts.length, 0);
+
+  // Even an idempotent replay of an already-present terminal attempt must not
+  // bypass the unresolved-effect check. PREPARED dominates stale attempt history.
+  const staleAttemptDir = path.join(root, "stale-terminal-attempt");
+  await fs.mkdir(staleAttemptDir);
+  const staleAttemptOpened = await openNexoContinuityOwner({
+    filePath: path.join(staleAttemptDir, "nexo.json"),
+    legacyMemory: legacyMemory({ existingCompletedAttempt: true })
+  });
+  const replayedTerminalAttempt = await staleAttemptOpened.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex",
+      status: "completed",
+      evidence: null
+    }
+  });
+  assert.equal(replayedTerminalAttempt.status, "blocked");
+  assert.equal(replayedTerminalAttempt.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
+  assert.equal((await staleAttemptOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
   // Crash cut: the revision is adjacent but the repair invariant is absent.
   // PREPARED remains unresolved; no redispatch or false settlement is authorized.
