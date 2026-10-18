@@ -5,7 +5,7 @@ La prueba integrada `tests/nexo/repair-owner-lifecycle.test.mjs` ahora incluye d
 1. Tras `settled_observed`, repetir dispatch debe quedar bloqueado sin mutar entorno ni continuidad.
 2. Si el entorno cambia de revisión 20 a 21 después de PREPARED, dispatch debe fallar cerrado, conservar revisión 21 y dejar la obligación PREPARED para reconciliación.
 
-**CI de ese commit: PENDIENTE DE VERIFICACIÓN.** No asumir que el workflow se ejecutó ni marcar PASS sin run, job y log exactos. STATUS actualizado en commit [09ac224852661be6ea1ca5529326ea6326c26779](https://github.com/snowdenxrp/aldea-ia/commit/09ac224852661be6ea1ca5529326ea6326c26779).
+**CI exacto verificado:** [run 39141470114](https://github.com/snowdenxrp/aldea-ia/actions/runs/39141470114) completó SUCCESS sobre el commit de prueba `53cf292ae966c80eb722a7f48eec0c6c2c86595d`. El job `repair-crash-cuts` y los tres pasos de test finalizaron `success`. STATUS actualizado con esta evidencia en commit [e6b48e922af1caf5e173ae273e2f7a2e80c84fba](https://github.com/snowdenxrp/aldea-ia/commit/e6b48e922af1caf5e173ae273e2f7a2e80c84fba).
 
 Estas pruebas cubren el comportamiento de helpers repair-only, no el corte de runtime productivo ni atomicidad entre almacenes. Siguiente: verificar CI del commit de test; corregir cualquier fallo real; después añadir/ejecutar el corte de crash tras persistencia de entorno antes del settlement y evaluar un entrypoint owner-backed repair-only antes de cualquier conexión a `runtime.js`.
 
