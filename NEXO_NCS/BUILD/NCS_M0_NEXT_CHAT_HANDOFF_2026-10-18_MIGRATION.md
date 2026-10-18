@@ -451,8 +451,8 @@ Analysis checkpoint: [NCS_M0_CROSS_STORE_REVISION_FENCE_ANALYSIS_2026-10-18.md](
 
 ### Next work, without restarting prior audits
 
-1. Trace all writers and callers that can mutate or persist `world-state.json`, including whether any writer bypasses `persistState()` or its revision check.
-2. Decide whether a domain-specific environment revision fence can be enforced by every relevant writer. If not, keep durable terminal goal status unavailable and require fresh read-only verification when consumed.
+1. Reuse—not repeat—the closed P112 writer/persistence audits: `P112_PERSISTSTATE_FINAL_COMMIT_FEASIBILITY_AUDIT_V1_2026-10-07.md`, `P112_PERSISTSTATE_PHYSICAL_BOUNDARY_CRASH_CUT_AUDIT_V2_2026-10-07.md`, `P112_PROTECTED_OWNER_AGAINST_EXISTING_PERSISTENCE_PRIMITIVE_V1_2026-10-07.md`, and `P112_WRITER_DEPENDENCY_GRAPH_V1_2026-10-07.md`.
+2. Answer only the unresolved consumer-level question: does M0 actually require a durable terminal `goal_observed` record? If not, keep the verifier read-only and re-check on use. If yes, demonstrate that the relevant writer set can participate in a domain-specific revision fence; otherwise declare the terminal durable status unavailable.
 3. Avoid generic transaction abstractions, invented global revisions, and test-only hooks that do not represent a real persistence boundary.
 4. Preserve legacy runtime memory until end-to-end migration and rollback evidence exists.
 
