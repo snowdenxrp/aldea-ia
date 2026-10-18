@@ -117,12 +117,93 @@ export async function runNexoRepairOnce({
     return { status: "blocked", code: dispatch.code ?? "NEXO_REPAIR_DISPATCH_NOT_CONFIRMED", dispatch, persisted: dispatch.persisted === true };
   }
 
-  const afterDispatch = await owner.loadCurrent();
+  // Persist adapter-result lineage separately from settlement. This is an
+  // audit record only: the owner method cannot settle PREPARED or authenticate
+  // caller-provided verification labels. Bind it to the original PREPARED
+  // environment revision, then independently observe the durable environment.
+  let afterDispatch;
+  try {
+    afterDispatch = await owner.loadCurrent();
+  } catch (error) {
+    return {
+      status: "blocked",
+      code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED",
+      dispatch,
+      persisted: true,
+      uncertainty: "environment_persisted_but_lineage_and_settlement_unconfirmed"
+    };
+  }
+  const preparedAfterDispatch = afterDispatch.snapshot.effectJournal.filter(
+    entry => entry?.idempotencyKey === operation.idempotencyKey
+  );
+  if (preparedAfterDispatch.length !== 1 || preparedAfterDispatch[0]?.status !== "prepared") {
+    return {
+      status: "blocked",
+      code: "NEXO_REPAIR_PREPARED_RECORD_NOT_FOUND_AFTER_DISPATCH",
+      dispatch,
+      persisted: true,
+      uncertainty: "environment_persisted_but_lineage_and_settlement_unconfirmed"
+    };
+  }
+  const preparedOperation = preparedAfterDispatch[0];
+  if (typeof owner.recordExecutionLineage !== "function") {
+    return {
+      status: "blocked",
+      code: "NEXO_REPAIR_EXECUTION_LINEAGE_API_UNAVAILABLE",
+      dispatch,
+      persisted: true,
+      uncertainty: "environment_persisted_but_lineage_and_settlement_unconfirmed"
+    };
+  }
+  const lineage = await owner.recordExecutionLineage({
+    expectedRevision: afterDispatch.storeRevision,
+    operation: {
+      idempotencyKey: preparedOperation.idempotencyKey,
+      missionId: preparedOperation.missionId,
+      stepId: preparedOperation.stepId,
+      action: preparedOperation.action,
+      target: preparedOperation.target ?? null,
+      environmentStateRevision: preparedOperation.environmentStateRevision
+    },
+    result: {
+      status: dispatch.status,
+      code: dispatch.code ?? null,
+      persisted: dispatch.persisted === true,
+      stateChanged: dispatch.stateChanged === true,
+      environmentStateRevision: dispatch.environmentStateRevision ??
+        dispatch.previousEnvironmentStateRevision ??
+        preparedOperation.environmentStateRevision
+    }
+  });
+  if (!["committed", "already_recorded"].includes(lineage.status)) {
+    return {
+      status: "blocked",
+      code: "NEXO_REPAIR_EXECUTION_LINEAGE_NOT_CONFIRMED",
+      dispatch,
+      lineage,
+      persisted: true,
+      uncertainty: "environment_persisted_but_lineage_and_settlement_unconfirmed"
+    };
+  }
+
+  let afterLineage;
+  try {
+    afterLineage = await owner.loadCurrent();
+  } catch (error) {
+    return {
+      status: "blocked",
+      code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED",
+      dispatch,
+      lineage,
+      persisted: true,
+      uncertainty: "environment_and_lineage_persisted_but_settlement_unconfirmed"
+    };
+  }
   const settlement = await settlePreparedRepairFromPersistedState({
     store,
     statePath,
     idempotencyKey: operation.idempotencyKey,
-    expectedContinuityRevision: afterDispatch.storeRevision
+    expectedContinuityRevision: afterLineage.storeRevision
   });
   if (settlement.status !== "settled_observed") {
     return {
