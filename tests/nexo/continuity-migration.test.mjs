@@ -143,9 +143,10 @@ try {
     operation,
     result: { status: "failed", verified: false }
   });
-  assert.equal(duplicate.status, "already_recorded");
+  assert.equal(duplicate.status, "blocked");
+  assert.equal(duplicate.code, "NEXO_EXECUTION_RESULT_MISMATCH");
   assert.equal((await opened.owner.loadCurrent()).storeRevision, 1,
-    "replaying an execution identity must not rewrite its first lineage record");
+    "conflicting lineage replay must not rewrite or advance the first lineage record");
 
   const stale = await opened.owner.recordExecutionLineage({
     expectedRevision: 0,
