@@ -544,3 +544,13 @@ Exact code/test head `ea1a8390c2826021feab46f3197c84a1a4f47039` passed all three
 - STEP 4 semantic validation [39138908074](https://github.com/snowdenxrp/aldea-ia/actions/runs/39138908074).
 
 The repair-settlement crash-cut workflow passed at owner code head `291d482a2f1e03294c519bb8971fcce0b1c69176` ([39138771613](https://github.com/snowdenxrp/aldea-ia/actions/runs/39138771613)). Keep the claim bounded to these tested heads and workflows. No runtime cutover, real-device validation, protected effect authorization, or cross-store atomicity has been demonstrated.
+
+
+### Latest exact-head CI — revision-binding regression
+
+Test head `12452f8d851c646d3cb7674cd0f59d7ba1246fe1` passed all three workflows:
+- Mission/restart continuity [39139024311](https://github.com/snowdenxrp/aldea-ia/actions/runs/39139024311), including `simulation-restart-persistence.test.mjs` and `continuity-migration.test.mjs`.
+- STEP 5 outcome classification [39139024315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39139024315).
+- STEP 4 semantic validation [39139024377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39139024377).
+
+The regression now proves both missing and mismatched repair environment revisions fail closed before lineage persistence. Continue from the current M0 seam; do not repeat the historical audits. The next gate is operation-specific recovery evidence and runtime/store boundary design, not switching runtime yet.
