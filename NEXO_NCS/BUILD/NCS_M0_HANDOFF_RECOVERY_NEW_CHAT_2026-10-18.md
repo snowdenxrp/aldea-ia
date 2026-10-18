@@ -310,3 +310,12 @@ El entrypoint es independiente de Lúmina y los tests incluyen: stores ausentes/
 - El parser exportado rechaza opciones desconocidas, duplicadas, flags repetidos y valores ausentes; el ejecutable captura fallos y emite solo estado/código/IDs, sin cuerpo Chronicle, stack ni rutas.
 - Se corrigió una aserción desfasada detectada por [run 39174663488 FAILURE](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174663488); no se ocultó el fallo. Tras alinear la expectativa con `NEXO_CHRONICLE_ID_INVALID`, ambos workflows quedaron verdes en SHA `d7af2db2150ab6be57683ad1e15977f29c613081`: [39174722540](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722540) y [39174722491](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722491).
 - Siguiente: prueba de proceso CLI real para garantizar no-mutación con argumentos inválidos y ausencia de contenido privado en stdout/stderr; auditar bootstrap/rutas. Mantener runtime por defecto intacto.
+
+
+## CLI real y no-mutación ante argumentos inválidos — evidencia verde
+
+La suite ejecuta el CLI real con un contenido centinela y un argumento desconocido. Resultado: exit status 1, código JSON estructurado, stderr vacío, el centinela no aparece en salida y ninguno de los dos stores se crea.
+
+SHA `429fc980427c04f8db286e28ee9887333941acb8`: [Chronicle 39174861087 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861087) y [continuity/runtime 39174861039 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861039).
+
+Siguiente corte: auditar explícitamente el modelo de filesystem y concurrencia que estos stores soportan; separar garantías demostradas de las no demostradas. No cambiar runtime por defecto ni ampliar acciones.
