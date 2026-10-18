@@ -216,6 +216,20 @@ assert.equal(preparedCommit.storeRevision, 2);
 const persistedPrepared = await owner.loadCurrent();
 assert.equal(persistedPrepared.snapshot.effectJournal[0].status, "prepared");
 assert.equal(persistedPrepared.snapshot.effectJournal[0].idempotencyKey, "owner-mission:step-1");
+
+const recoveredMission = await owner.reconstructMission("owner-mission");
+assert.equal(recoveredMission.status, "reconstructed");
+assert.equal(recoveredMission.storeRevision, 2);
+assert.equal(recoveredMission.mission.missionId, "owner-mission");
+assert.equal(recoveredMission.mission.steps[0].action, "repair_agent_state");
+assert.equal(recoveredMission.mission.steps[0].target, "alex");
+assert.equal((await owner.reconstructMission("missing-mission")).status, "not_found");
+assert.equal((await owner.reconstructMission("")).code, "NEXO_MISSION_ID_INVALID");
+assert.equal(
+  Object.keys(owner).includes("reconstructMission"),
+  true,
+  "restart reconstruction must be exposed by the Nexo-owned continuity boundary"
+);
 const duplicatePrepared = await owner.recordPrepared({ expectedRevision: 2, operation });
 assert.equal(duplicatePrepared.status, "prepared_existing");
 assert.equal(duplicatePrepared.preparedCommitted, false, "an existing PREPARED record is not a new commit");
