@@ -22,6 +22,8 @@ function validateOperation(operation) {
   }
 }
 
+const REPAIR_ACTIONS = new Set(["repair_agent_state", "repair_agent_needs", "repair_resource_state"]);
+
 function emptyCandidate(snapshot) {
   return {
     schema: NEXO_CONTINUITY_SCHEMA,
@@ -94,6 +96,11 @@ export function createNexoContinuityOwner({ store } = {}) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
     }
 
+    if (REPAIR_ACTIONS.has(operation.action) &&
+        (!Number.isSafeInteger(operation.environmentStateRevision) || operation.environmentStateRevision < 0)) {
+      return { status: "blocked", code: "NEXO_PREPARED_ENVIRONMENT_REVISION_REQUIRED", preparedCommitted: false, authorization: "NOT_EVALUATED" };
+    }
+
     const current = await store.loadCurrent();
     if (current.storeRevision !== expectedRevision) {
       return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
@@ -114,6 +121,14 @@ export function createNexoContinuityOwner({ store } = {}) {
         existing.action === operation.action &&
         isDeepStrictEqual(existing.target ?? null, operation.target ?? null);
       if (!sameIdentity) return { status: "blocked", code: "NEXO_OPERATION_IDENTITY_MISMATCH", preparedCommitted: false, authorization: "NOT_EVALUATED" };
+      if (REPAIR_ACTIONS.has(operation.action)) {
+        if (!Number.isSafeInteger(existing.environmentStateRevision) || existing.environmentStateRevision < 0) {
+          return { status: "prepared_existing", code: "NEXO_PREPARED_ENVIRONMENT_REVISION_UNKNOWN", preparedCommitted: false, authorization: "NOT_EVALUATED", storeRevision: current.storeRevision };
+        }
+        if (existing.environmentStateRevision !== operation.environmentStateRevision) {
+          return { status: "blocked", code: "NEXO_PREPARED_ENVIRONMENT_REVISION_MISMATCH", preparedCommitted: false, authorization: "NOT_EVALUATED", storeRevision: current.storeRevision };
+        }
+      }
       // Existing PREPARED is an unresolved obligation, never permission to redispatch.
       return { status: "prepared_existing", code: "NEXO_EFFECT_OUTCOME_UNKNOWN", preparedCommitted: false, authorization: "NOT_EVALUATED", storeRevision: current.storeRevision };
     }
@@ -124,6 +139,7 @@ export function createNexoContinuityOwner({ store } = {}) {
       stepId: operation.stepId,
       action: operation.action,
       target: structuredClone(operation.target ?? null),
+      ...(REPAIR_ACTIONS.has(operation.action) ? { environmentStateRevision: operation.environmentStateRevision } : {}),
       status: "prepared",
       at: operation.at ?? new Date().toISOString()
     });
