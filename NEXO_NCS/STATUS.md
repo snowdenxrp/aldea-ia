@@ -861,3 +861,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - CI observable: [run 39172525158 — bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525158) SUCCESS. Incluye `runtime.test.mjs`, `effect-adapter.test.mjs`, reconstrucción tras reinicio, store y contrato de continuidad.
 - STEP 4 y STEP 5 también SUCCESS para este SHA: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525106), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39172525094). No extrapolar estas suites a M0 completo.
 - El bloqueo arquitectónico sigue igual: no hay aún una acción no-repair nativa de Nexo con writer persistente + lector independiente post-restart. La ruta simulada de Lúmina no sirve como sustituto. La siguiente tarea no es agregar más preflights, sino definir la primera vertical nativa y su fuente persistida concreta antes de conectar un verificador específico.
+
+
+## M0 — primera vertical nativa seleccionada: Chronicle (2026-10-18)
+
+- Decisión documentada en [NCS_M0_FIRST_NATIVE_VERTICAL_CHRONICLE_2026-10-18.md](BUILD/NCS_M0_FIRST_NATIVE_VERTICAL_CHRONICLE_2026-10-18.md): usar una escritura de Chronicle como primer candidato no-repair para demostrar writer persistente + reader independiente tras reapertura, usando la identidad/idempotency key de la operación existente. Chronicle se mantiene separado de continuidad operativa, memoria ordinaria y Lúmina.
+- Es una decisión de vertical, no implementación ni autorización de dispatch. Aún faltan writer/reader reales, idempotencia/conflicto, verificador específico, crash-cut tests y CI. No cambiar el runtime por defecto; M0 INCOMPLETO.
+- Siguiente: inspeccionar convenciones de persistencia existentes e implementar solo el almacenamiento mínimo de Chronicle y sus pruebas de reapertura/concurrencia; luego conectar el verificador específico a la ruta owner-backed. No añadir otro effect journal ni asumir atomicidad cross-store.
