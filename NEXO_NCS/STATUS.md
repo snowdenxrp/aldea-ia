@@ -1,5 +1,12 @@
 > **Continuidad de nuevo chat (2026-10-18):** antes de seguir, leer `NEXO_NCS/BUILD/NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md`. Es el handoff operativo vigente con HEAD observado, últimos cambios y CI, estado real de M0 y siguiente tarea exacta. No repetir auditorías cerradas. La misión sigue siendo M0: runtime canónico de Nexo, independiente de Lúmina.
 
+## M0 — CI focal para replay de settlement agregado (ejecución pendiente de observar)
+
+- Se añadió `.github/workflows/nexo-m0-settlement-replay.yml`, limitado a la rama `ncs-clean-architecture`, con trigger por cambios en el reconciliador/test/workflow y `workflow_dispatch`. Ejecuta exactamente `node tests/nexo/repair-settlement-crash-cuts.test.mjs` en Node 22.
+- Commit que agrega el workflow: `cd8daa099f6778ef80d19cbdde51a8fbf010cda5`. El workflow y el test fueron releídos del branch. La consulta inmediata de status checks devolvió una lista vacía; todavía no se afirma que Actions haya ejecutado o aprobado el test.
+- Propósito: hacer visible y reproducible la regresión de respuesta perdida sin lanzar toda la batería ni mezclarla con Lúmina. El workflow no habilita runtime ni cambia el alcance repair-only.
+- Siguiente: confirmar el run y el SHA observado; si falla, leer el log exacto y corregir la causa. Solo después seguir con pruebas contractuales de settlement genérico en el owner. M0 sigue INCOMPLETO.
+
 ## M0 — recuperación de respuesta perdida durante settlement (implementado; CI pendiente)
 
 - **Problema concreto:** si `store.commitIfCurrent()` escribía `settled_observed` y la respuesta se perdía/devolvía UNKNOWN, el reintento con la revisión esperada original devolvía conflicto antes de inspeccionar el journal. La continuidad canónica podía demostrar que el settlement sí estaba registrado, pero la API no podía recuperar esa incertidumbre.
