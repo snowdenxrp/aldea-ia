@@ -11,7 +11,7 @@ P112's existing prepared-checkpoint audit explicitly identifies fallback provena
 
 ## Change
 
-Added `loadStateStrict(statePath)` alongside the existing `loadState()`:
+Added `loadStateStrict(statePath)` alongside the existing `loadState()` and moved the Nexo-specific continuity shape checks into `src/nexo/core/continuity-contract.mjs` (`assertNexoContinuityMemoryShape`). This keeps Nexo's continuity contract in Nexo core instead of embedding the contract logic inside the Lúmina simulation script.
 
 - `NEXO_STATE_NOT_FOUND` when the file does not exist.
 - `NEXO_STATE_READ_FAILED` for other read failures.
@@ -38,8 +38,9 @@ It also asserts that a valid persisted snapshot loads with its actual revision a
 ## Evidence
 
 - Source commits: `c527c252edd3d44566f567ebf06745d81c437339` (strict snapshot shape/revision), `02c00c2a67ec714803c3d06491e5ebdeb5c8b174` (memory shape), `64d170c9c29fb201dcbcde934daf17c96decb1ee` (prepared context validation).
-- Final exact source+test head: `0b55842258c9c9457837f5bc801f94a5c31b425c`.
-- Exact-head CI PASS: mission/restart [39097716822](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716822) (includes `simulation-restart-persistence.test.mjs`), STEP 4 [39097716845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716845), STEP 5 [39097716821](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716821).
+- Final code+test head: `41c591a0845608418de2450525e8a9cf7ff6c3a9`.
+- Exact-head mission/restart CI PASS [39097823559](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097823559), including both `simulation-restart-persistence.test.mjs` and `continuity-contract.test.mjs`.
+- STEP 4 and STEP 5 CI PASS at code-identical head `5a00e917c02b650286cb9d379d3086c3d8001e80`: [STEP 4 39097816995](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097816995), [STEP 5 39097816881](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097816881). The subsequent `41c...` commit only adds the CI workflow step/path and does not change the tested source.
 - [Source](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/scripts/simulate.mjs)
 - [Regression test](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/simulation-restart-persistence.test.mjs)
 
