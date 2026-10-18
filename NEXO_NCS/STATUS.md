@@ -603,3 +603,11 @@ Esta nota registra límites detectados al contrastar el checkpoint con el códig
 - **Orden seguro siguiente:** no conectar el dispatch al propietario mediante un parche superficial. Definir y probar la secuencia real de admisión fresca → PREPARED confirmado → efecto permitido → verificación independiente → persistencia de resultado, con conflictos y cortes de proceso; no declarar atomicidad entre los dos archivos.
 
 **Estado de verificación:** almacenamiento independiente y regresiones específicas implementados; CI histórica aprobada; limpieza efectiva del archivo versionado no confirmada en este turno; suite completa no ejecutada aquí; runtime end-to-end pendiente. M0 sigue abierto.
+
+
+## M0 update — partial effect safety (2026-10-18)
+
+- Code: `699b14d57918cbd02c6d6440120f88c91bc84672`; tests at `d3ebb7738ba29a3e1ffdbd93f29e35e0c692093a`.
+- A detected partial state change or failed postcondition now returns BLOCKED and leaves the journal PREPARED, rather than caching a terminal failure. Same-key replay is tested not to dispatch the handler again.
+- Exact-head CI PASS at `d3ebb7738ba29a3e1ffdbd93f29e35e0c692093a`: [mission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138229), [semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138224), [outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39105138205).
+- Details: [partial-effect checkpoint](BUILD/NCS_M0_PARTIAL_EFFECT_FAIL_CLOSED_CHECKPOINT_2026-10-18.md). This does not provide independent reconciliation and does not complete runtime cutover. M0 remains INCOMPLETE; unresolved PREPARED UNKNOWN; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
