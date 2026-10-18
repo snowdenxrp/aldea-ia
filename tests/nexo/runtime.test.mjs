@@ -297,3 +297,10 @@ assert.equal(unverifiedCompletion.adapterResult.code,"UNVERIFIED_COMPLETION_RESU
 assert.equal(unverifiedCompletion.mission.steps[0].status,"blocked");
 assert.equal(unverifiedCompletion.memory.nexo.attempts[0].status,"blocked");
 assert.equal(unverifiedCompletion.memory.nexo.executions[0].result.status,"blocked");
+assert.equal(unverifiedCompletion.memory.nexo.attempts[0].evidence.code,"UNVERIFIED_COMPLETION_RESULT");
+assert.deepEqual(unverifiedCompletion.memory.nexo.attempts[0].evidence.scope,{
+  missionId:unverifiedCompletionMission.missionId,
+  stepId:"step-1",
+  action:unverifiedCompletionMission.steps[0].action,
+  target:unverifiedCompletionMission.steps[0].target??null
+});
