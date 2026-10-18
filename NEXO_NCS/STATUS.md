@@ -1,3 +1,12 @@
+## M0 functional correction — missing evidence must block the step, not only the mission (2026-10-17)
+
+- `advanceNexoMission()` previously returned a blocked mission when a completion lacked acceptable evidence, but left its target step `executing` with no step-level reason.
+- Now the step and mission both become `blocked`, with `MISSING_VERIFIED_EVIDENCE`; the objective becomes `replan_from_constraints`, and execution planning returns no actions.
+- Source commit [`ec20889`](https://github.com/snowdenxrp/aldea-ia/commit/ec20889da48e57c895b8273d57d2c68ec5027471); regression commit [`f27147f`](https://github.com/snowdenxrp/aldea-ia/commit/f27147f0a273d28ad8168a9f29e9c0ab06e24713).
+- Focused mission continuity [39081098250](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098250), M0 Core [39081098279](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098279), STEP 4 [39081098274](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098274), STEP 5 [39081098277](https://github.com/snowdenxrp/aldea-ia/actions/runs/39081098277) — all success.
+- Report: [M0 missing-evidence step state](BUILD/NCS_M0_MISSING_EVIDENCE_STEP_STATE_2026-10-17.md).
+- M0 remains the minimum functional Core, not an endless patch series. This does not establish evidence provenance, constitutional authority, or protected-path closure. Proxy boundary unresolved; STEP 7 = OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## M0 mission admission — make the eight-step bound explicit (2026-10-17)
 
 - Mission planning still admits at most eight steps, but now exposes candidate/admitted/omitted counts and a truncation flag; omitted candidates are not treated as failed or resolved.
