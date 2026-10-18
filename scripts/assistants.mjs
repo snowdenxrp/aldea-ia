@@ -1,17 +1,20 @@
 import fs from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { createSimulation } from "../src/simulation.js";
 import { tick } from "../src/simulation.js";
-import { loadState, applyState, persistState } from "./simulate.mjs";
+import { loadState, loadStateStrict, applyState, persistState } from "./simulate.mjs";
+import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
-import { createLearningMemory, learnFromReports, recordNexoPlan } from "../src/assistants/memory.js";
+import { createLearningMemory, learnFromReports } from "../src/assistants/memory.js";
 import { runAssistantSquad } from "../src/assistants/squad.js";
 import { buildNexoMission } from "../src/nexo/orchestrator.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
 const MEMORY_PATH = new URL("../.lumina-assistant-memory.json", import.meta.url);
+const NEXO_CONTINUITY_PATH = fileURLToPath(new URL("../.nexo-continuity.json", import.meta.url));
 
 async function readJson(path, fallback) {
   try { return JSON.parse(await fs.readFile(path, "utf8")); } catch { return fallback; }
@@ -33,7 +36,14 @@ function normalizeCoreAgents(agents) {
   }
 }
 
-const persisted = await loadState(STATE_PATH);
+let stateExists = true;
+try { await fs.access(STATE_PATH); } catch (error) { if (error?.code === "ENOENT") stateExists = false; else throw error; }
+const persisted = stateExists ? await loadStateStrict(STATE_PATH) : await loadState(STATE_PATH);
+const continuity = await openNexoContinuityOwner({
+  filePath: NEXO_CONTINUITY_PATH,
+  legacyMemory: persisted.nexoMemory ?? null,
+  allowEmptyInitialization: !stateExists
+});
 const simulation = applyState(persisted);
 normalizeCoreAgents(simulation.agents);
 
@@ -43,7 +53,7 @@ for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "s
 }
 
 const memory = createLearningMemory(await readJson(MEMORY_PATH, null));
-const nexoMemory = simulation.nexoMemory;
+const nexoMemory = { version: 4, runs: [], lessons: [], patterns: [], nexo: continuity.current.snapshot };
 const debuggerReport = runDebugger({ files: codeFiles, simulation });
 const testerReport = runTester({ simulation, tick, moveAgent, setMovementTarget });
 const analystReport = analyzeLumina({
@@ -68,7 +78,16 @@ const report = buildAssistantReport({ debuggerReport, testerReport, analystRepor
 report.assistantSquad = squadReport;
 const nexoMission = buildNexoMission({ simulation, reports: [...squadReport.reports, debuggerReport, testerReport, analystReport], memory: nexoMemory });
 report.nexoMission = nexoMission;
-simulation.nexoMemory = recordNexoPlan(nexoMemory, nexoMission);
+const missionCommit = await continuity.owner.recordMission({
+  expectedRevision: continuity.current.storeRevision,
+  mission: nexoMission
+});
+if (!["committed", "already_recorded"].includes(missionCommit.status)) {
+  const error = new Error(missionCommit.code ?? "NEXO_MISSION_PERSISTENCE_UNKNOWN");
+  error.code = missionCommit.code ?? "NEXO_MISSION_PERSISTENCE_UNKNOWN";
+  throw error;
+}
+simulation.nexoMemory = null;
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
@@ -78,6 +97,6 @@ const learned = learnFromReports(
 await fs.writeFile(MEMORY_PATH, JSON.stringify(learned, null, 2) + "\n", "utf8");
 const nextRevision = Number(persisted.stateRevision ?? 0) + 1;
 await persistState(STATE_PATH, simulation, Date.now(), { expectedRevision: Number(persisted.stateRevision ?? 0), stateRevision: nextRevision });
-console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length }, nexoMemoryPersisted: true, stateRevision: nextRevision }, null, 2));
+console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length }, nexoContinuityPersisted: true, nexoContinuityStoreRevision: missionCommit.storeRevision ?? continuity.current.storeRevision, stateRevision: nextRevision }, null, 2));
 
 if (report.status === "error") process.exitCode = 1;
