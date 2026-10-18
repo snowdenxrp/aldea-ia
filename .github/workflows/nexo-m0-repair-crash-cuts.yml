@@ -45,3 +45,5 @@ jobs:
         run: node tests/nexo/repair-owner-lifecycle.test.mjs
       - name: Run canonical owner-backed repair session regression
         run: node tests/nexo/repair-session.test.mjs
+      - name: Check runtime bridge and opt-in assistant entrypoint syntax
+        run: node --check scripts/nexo-runtime-session.mjs && node --check scripts/assistants.mjs
