@@ -58,7 +58,7 @@ const failedMemory = recordNexoOutcome(createLearningMemory(), {
   target: failed.steps[0].target, status: "failed",
   evidence: { verified: false, kind: "effect-result", code: "MESH_REPAIR_FAILED" }
 });
-assert.equal(replanNexoMission({previousMission: completed, reports}), null);
+assert.equal(replanNexoMission({previousMission: mission, reports}), null);
 const successor = replanNexoMission({
   previousMission: failed, simulation: {agents:[{id:"alex"}]},
   reports: [{assistant:"Debugger",findings:[{severity:"error",code:"MESH_MISSING",agent:"alex",message:"mesh sigue ausente"}]}],
