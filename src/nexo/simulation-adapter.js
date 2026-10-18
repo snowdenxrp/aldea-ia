@@ -43,12 +43,13 @@ export function createLuminaEffectAdapter(simulation,{executionJournal=null,pers
     repair_agent_state:async({target})=>{
       const agent=simulation.agents.find(a=>a.id===target);
       if(!agent)return{status:"failed",code:"TARGET_AGENT_NOT_FOUND"};
+      // Missing/non-boolean life state is UNKNOWN, not permission to infer alive=true.
+      if(typeof agent.alive!=="boolean")return{status:"failed",code:"AGENT_ALIVE_STATE_UNKNOWN",agentId:agent.id};
       const before=structuredClone({position:agent.position,alive:agent.alive});
       if(!agent.position||typeof agent.position!=="object")agent.position={};
       agent.position.x=normalizeCoordinate(agent.position.x);
       agent.position.z=normalizeCoordinate(agent.position.z);
-      // Preserve an explicit dead state; normalization must not resurrect an agent.
-      agent.alive=agent.alive!==false;
+      // Keep an explicit true/false value unchanged; normalization must not resurrect an agent.
       const changed=!isDeepStrictEqual(before,{position:agent.position,alive:agent.alive});
       if(changed)bump(simulation);
       return{status:"completed",details:"agent_state_normalized",agentId:agent.id,stateChanged:changed};
