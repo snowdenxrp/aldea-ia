@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { buildNexoMission } from "../../src/nexo/orchestrator.js";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
-import { executeNexoStep, executeLuminaNexoStep } from "../../src/nexo/runtime.js";
+import { executeNexoStep, executeLuminaNexoStep, replanPersistedNexoMission } from "../../src/nexo/runtime.js";
 import { createLearningMemory } from "../../src/assistants/memory.js";
 
 const mission=buildNexoMission({reports:[{assistant:"Debugger",findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"posición inválida"}]}]});
@@ -54,8 +54,23 @@ const failure=await executeLuminaNexoStep({simulation:failureSimulation,mission:
 assert.equal(failure.status,"failed"); assert.equal(failure.adapterResult.code,"LUMINA_ACTION_FAILED"); assert.equal(failure.mission.status,"needs_replan"); assert.equal(failure.mission.objective,"replan_after_failure"); assert.equal(failure.memory.nexo.attempts[0].status,"failed"); assert.equal(failureSimulation.nexoEffectRevision,0);
 
 failureSimulation.world.resources.water.amount=10;
-const replanned=buildNexoMission({simulation:failureSimulation,reports:[{assistant:"EnvironmentProbe",findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua disponible tras cambio ambiental"}]}],memory:failure.memory,parentMissionId:failure.mission.missionId,replanReason:"environment_changed"});
-assert.notEqual(replanned.missionId,failure.mission.missionId); assert.equal(replanned.parentMissionId,failure.mission.missionId); assert.equal(replanned.replanReason,"environment_changed"); assert.equal(replanned.steps[0].action,"execute_lumina_action"); assert.equal(replanned.steps[0].context.action.name,"drink"); assert.equal(replanned.status,"planned");
+const persistedReplan=replanPersistedNexoMission({
+  simulation:failureSimulation,
+  memory:failure.memory,
+  previousMissionId:failure.mission.missionId,
+  reports:[{assistant:"EnvironmentProbe",findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"drink",amount:2},message:"agua disponible tras cambio ambiental"}]}]
+});
+const replanned=persistedReplan.mission;
+assert.equal(persistedReplan.status,"planned");
+assert.notEqual(replanned.missionId,failure.mission.missionId);
+assert.equal(replanned.parentMissionId,failure.mission.missionId);
+assert.equal(replanned.replanReason,"LUMINA_ACTION_FAILED");
+assert.equal(replanned.steps[0].action,"execute_lumina_action");
+assert.equal(replanned.steps[0].context.action.name,"drink");
+assert.equal(replanned.status,"planned");
+assert.equal(persistedReplan.memory.nexo.missions.at(-1).missionId,replanned.missionId);
+assert.equal(persistedReplan.memory.nexo.attempts.find(x=>x.missionId===failure.mission.missionId).status,"failed");
+assert.equal(replanPersistedNexoMission({memory:failure.memory,previousMissionId:"missing-mission",reports:[]}).status,"not_found");
 
 const invalidatedSimulation={agents:[{id:"alex",alive:true,position:{x:1,z:1}}],world:{resources:{wood:{amount:1}}}};
 const invalidatedMission=buildNexoMission({reports:[{findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"posición inválida"}]}]});

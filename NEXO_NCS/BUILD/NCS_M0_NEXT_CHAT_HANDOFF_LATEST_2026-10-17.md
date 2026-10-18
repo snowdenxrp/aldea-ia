@@ -696,3 +696,12 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - M0.30 report: [NCS_M0_30_NORMALIZE_NONAUTHORITATIVE_SOURCE_LABELS_2026-10-17.md](NCS_M0_30_NORMALIZE_NONAUTHORITATIVE_SOURCE_LABELS_2026-10-17.md)
 - M0.29 report: [NCS_M0_29_MALFORMED_REQUIRED_CLAIM_ITEM_FAIL_CLOSED_2026-10-17.md](NCS_M0_29_MALFORMED_REQUIRED_CLAIM_ITEM_FAIL_CLOSED_2026-10-17.md)
 - STEP 7 handoff preserved separately: [NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-16.md](NCS_STEP_7_NEXT_CHAT_HANDOFF_LATEST_2026-10-16.md)
+
+
+## Latest continuation — persisted mission replan integration (2026-10-18)
+
+- Current change: `replanPersistedNexoMission()` in `src/nexo/runtime.js` connects durable reconstruction to successor planning and persistence.
+- Regression exercises failure → reconstruct → replan → persist successor → execute successor; original failed attempt remains in memory.
+- Report: `NEXO_NCS/BUILD/NCS_M0_REPLAN_FROM_DURABLE_MISSION_STATE_2026-10-18.md`.
+- Verify focused CI before claiming PASS; then continue toward integrated observation/report → mission → permitted execution → verified outcome → durable restart/replan cycle.
+- Do not reopen completed M0 increments. Do not activate protected effects. Proxy boundary remains design STOP; STEP 7 remains OPEN / STOP / UNKNOWN.

@@ -1,8 +1,23 @@
-import { beginNexoStep, advanceNexoMission } from "./orchestrator.js";
+import { beginNexoStep, advanceNexoMission, replanNexoMission } from "./orchestrator.js";
 import { recordNexoOutcome, recordNexoExecution, recordNexoPlan, reconstructNexoMission } from "../assistants/memory.js";
 import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLuminaEffectPostcondition } from "./simulation-adapter.js";
 
 const runtimeCommitLocks = new WeakMap();
+
+// Replan only from the durable reconstructed mission; preserve the old attempt and
+// persist the successor candidate before a caller can decide whether to execute it.
+export function replanPersistedNexoMission({memory,previousMissionId,simulation=null,reports=[],reason=null}={}) {
+  if(!memory || typeof previousMissionId!=="string" || !previousMissionId.trim())
+    return {mission:null,memory,status:"invalid"};
+  const previousMission=reconstructNexoMission(memory,previousMissionId);
+  if(!previousMission) return {mission:null,memory,status:"not_found"};
+  const mission=replanNexoMission({previousMission,simulation,reports,memory,reason});
+  if(!mission) return {mission:null,memory,status:"not_replanned"};
+  const nextMemory=recordNexoPlan(memory,mission);
+  Object.assign(memory,nextMemory);
+  return {mission,memory,status:"planned"};
+}
+
 
 async function commitRuntimeOutcome(memory, mission, stepId, adapterResult, outcome, evidence, started) {
   const commit = async () => {

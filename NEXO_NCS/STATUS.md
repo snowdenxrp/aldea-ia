@@ -236,3 +236,12 @@ Continue from the latest handoff; do not repeat M0.1–M0.56 investigations or c
 - [M0.45 — Reject blank Observation source/code](BUILD/NCS_M0_45_REJECT_BLANK_OBSERVATION_SOURCE_CODE_2026-10-17.md)
 
 Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS/`, and `PROOF/`. STATUS is an entry point, not a duplicate of the audit archive.
+
+
+## M0 — Replan from durable mission state (2026-10-18)
+
+- Added `replanPersistedNexoMission()`: reconstruct prior mission from persisted memory, derive the successor reason from stored failure/block evidence, preserve parent lineage, and persist the successor plan without executing it.
+- Runtime regression covers failure → durable reconstruction → successor plan persistence → execution, while retaining the prior failed attempt.
+- Report: [M0 replan from durable mission state](BUILD/NCS_M0_REPLAN_FROM_DURABLE_MISSION_STATE_2026-10-18.md).
+- Focused CI status: pending until the new workflow run is checked.
+- This remains non-authoritative planning. STEP 7 = OPEN / STOP / UNKNOWN; protected effects remain STOP.

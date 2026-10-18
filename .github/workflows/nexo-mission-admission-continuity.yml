@@ -7,6 +7,8 @@ on:
       - 'src/assistants/memory.js'
       - 'tests/nexo/orchestrator.test.mjs'
       - 'tests/nexo/restart-reconstruction.test.mjs'
+      - 'src/nexo/runtime.js'
+      - 'tests/nexo/runtime.test.mjs'
       - '.github/workflows/nexo-mission-admission-continuity.yml'
   workflow_dispatch:
 
