@@ -344,7 +344,13 @@ try {
     assert.equal(recoveredBeforeDispatch.dispatch.persisted, true);
     assert.equal(recoveredBeforeDispatch.settlement.environmentStateRevision, 41);
     assert.equal((await loadStateStrict(beforeDispatchStatePath)).stateRevision, 41);
-    assert.equal((await afterCrashBeforeDispatch.owner.loadCurrent()).snapshot.effectJournal[0].status, "settled_observed");
+    const afterFirstDispatchRecovery = await afterCrashBeforeDispatch.owner.loadCurrent();
+    assert.equal(afterFirstDispatchRecovery.snapshot.effectJournal[0].status, "settled_observed");
+    assert.equal(afterFirstDispatchRecovery.snapshot.executions.length, 1,
+      "successful repair dispatch must persist owner-backed execution lineage");
+    assert.equal(afterFirstDispatchRecovery.snapshot.executions[0].idempotencyKey,
+      "mission-owner-lifecycle:step-repair");
+    assert.equal(afterFirstDispatchRecovery.snapshot.executions[0].result.persisted, true);
   } finally {
     await fs.rm(beforeDispatchRoot, { recursive: true, force: true });
   }
@@ -379,7 +385,12 @@ try {
     assert.equal(noOp.persisted, false);
     assert.equal(noOp.settlement.environmentStateRevision, 50);
     assert.equal((await loadStateStrict(alreadySatisfiedStatePath)).stateRevision, 50);
-    assert.equal((await alreadySatisfied.owner.loadCurrent()).snapshot.effectJournal[0].status, "settled_observed");
+    const noOpCurrent = await alreadySatisfied.owner.loadCurrent();
+    assert.equal(noOpCurrent.snapshot.effectJournal[0].status, "settled_observed");
+    assert.equal(noOpCurrent.snapshot.executions.length, 1,
+      "already-satisfied repair still records its dispatch lineage separately");
+    assert.equal(noOpCurrent.snapshot.executions[0].result.persisted, false);
+    assert.equal(noOpCurrent.snapshot.executions[0].result.stateChanged, false);
   } finally {
     await fs.rm(alreadySatisfiedRoot, { recursive: true, force: true });
   }
