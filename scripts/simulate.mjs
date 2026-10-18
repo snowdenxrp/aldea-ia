@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import { assertNexoContinuityMemoryShape } from "../src/nexo/core/continuity-contract.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
 import path from "node:path";
@@ -117,7 +116,6 @@ export async function loadStateStrict(statePath = STATE_PATH) {
     error.code = "NEXO_STATE_REVISION_UNKNOWN";
     throw error;
   }
-  if (state.nexoMemory !== null && state.nexoMemory !== undefined) assertNexoContinuityMemoryShape(state.nexoMemory);
 
   // Apply the same compatibility normalization as the simulation loader only
   // after the persisted snapshot's identity and revision have been validated.
