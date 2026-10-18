@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { buildNexoMission } from "../../src/nexo/orchestrator.js";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { executeNexoStep, executeLuminaNexoStep, replanPersistedNexoMission } from "../../src/nexo/runtime.js";
-import { createLearningMemory } from "../../src/assistants/memory.js";
+import { createLearningMemory, recordNexoPlan } from "../../src/assistants/memory.js";
 
 const mission=buildNexoMission({reports:[{assistant:"Debugger",findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"posición inválida"}]}]});
 let version=1; const adapter=createEffectAdapter({getStateVersion:()=>version,handlers:{repair_agent_state:async()=>{version++;return{status:"completed",details:"position repaired"};}}});
@@ -345,3 +345,45 @@ assert.equal(invalidContinuityReplan.code,"NEXO_RECOVERY_CONTEXT_MISSING");
 assert.equal(invalidContinuityReplan.memory,orphanPreparedMemory);
 assert.equal(orphanPreparedMemory.nexo.missions.length,0);
 
+
+
+// An observed repair invariant is not mission completion. Runtime replan must
+// wait for a separate goal verifier instead of creating a successor that bypasses it.
+const observedSettlementMission = {
+  version: 4,
+  missionId: "observed-settled-mission",
+  parentMissionId: null,
+  replanReason: null,
+  objective: "verify_observed_repair_goal",
+  status: "blocked",
+  uncertainty: "desired_state_observed_causality_not_claimed",
+  steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "blocked", dependsOn: [] }]
+};
+const observedSettlementMemory = recordNexoPlan(createLearningMemory(), observedSettlementMission);
+observedSettlementMemory.nexo.effectJournal.push({
+  idempotencyKey: "observed-settled-mission:step-1",
+  missionId: "observed-settled-mission",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "alex",
+  environmentStateRevision: 4,
+  status: "settled_observed",
+  settlement: {
+    kind: "persisted-repair-invariant-observed",
+    source: "world-state.json",
+    observation: "desired_state_present",
+    environmentStateRevision: 5,
+    preparedEnvironmentStateRevision: 4,
+    causalAttribution: "not_claimed"
+  }
+});
+const observedSettlementReplan = replanPersistedNexoMission({
+  memory: observedSettlementMemory,
+  previousMissionId: "observed-settled-mission",
+  reports: [{ findings: [{ severity: "info", code: "new-proposal" }] }],
+  reason: "caller_requests_replan_before_goal_verification"
+});
+assert.equal(observedSettlementReplan.status, "not_replanned");
+assert.equal(observedSettlementReplan.code, "NEXO_REPAIR_GOAL_VERIFICATION_REQUIRED");
+assert.equal(observedSettlementMemory.nexo.missions.length, 1);
+assert.equal(observedSettlementMemory.nexo.effectJournal[0].status, "settled_observed");
