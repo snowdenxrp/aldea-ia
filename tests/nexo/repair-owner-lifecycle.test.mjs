@@ -708,3 +708,49 @@ try {
 } finally {
   await fs.rm(settlementCommitFailureRoot, { recursive: true, force: true });
 }
+
+
+// A thrown PREPARED commit may happen after the store durably replaced the
+// continuity envelope. The caller must fail closed without dispatch and mark
+// the commit outcome unknown so the next invocation can inspect the journal.
+const preparedCommitUnknownRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-prepared-commit-unknown-"));
+try {
+  const nexoPath = path.join(preparedCommitUnknownRoot, "nexo-continuity.json");
+  const statePath = path.join(preparedCommitUnknownRoot, "world-state.json");
+  const opened = await openNexoContinuityOwner({ filePath: nexoPath, legacyMemory: legacyMemory() });
+  await fs.writeFile(statePath, JSON.stringify(environment(110)), "utf8");
+  const owner = {
+    ...opened.owner,
+    recordPrepared: async args => {
+      await opened.owner.recordPrepared(args);
+      const error = new Error("simulated response loss after durable PREPARED commit");
+      error.code = "NEXO_CONTINUITY_WRITE_OUTCOME_UNKNOWN";
+      throw error;
+    }
+  };
+  const result = await runNexoRepairOnce({
+    owner,
+    store: opened.store,
+    statePath,
+    expectedContinuityRevision: 0,
+    operation: {
+      idempotencyKey: "mission-owner-lifecycle:step-repair",
+      missionId: "mission-owner-lifecycle",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex"
+    },
+    savedAt: 14
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_CONTINUITY_WRITE_OUTCOME_UNKNOWN");
+  assert.equal(result.dispatched, false);
+  assert.equal(result.uncertainty, "prepared_commit_outcome_unknown");
+  const durable = await opened.owner.loadCurrent();
+  assert.equal(durable.storeRevision, 1);
+  assert.equal(durable.snapshot.effectJournal.length, 1);
+  assert.equal(durable.snapshot.effectJournal[0].status, "prepared");
+  assert.equal((await loadStateStrict(statePath)).stateRevision, 110);
+} finally {
+  await fs.rm(preparedCommitUnknownRoot, { recursive: true, force: true });
+}
