@@ -23,20 +23,21 @@ In `tests/nexo/simulation-adapter.test.mjs`:
 Repair revision code: [`892680032b5512de11532b6ea609e5e9cbc9f75f`](https://github.com/snowdenxrp/aldea-ia/commit/892680032b5512de11532b6ea609e5e9cbc9f75f)  
 Convergence tests: [`575d01789250bb26800d66146da18321ffad32ab`](https://github.com/snowdenxrp/aldea-ia/commit/575d01789250bb26800d66146da18321ffad32ab)  
 Dead-agent-safe postcondition: [`a17a540d8795d29e2320f0e1fc16345f83b9a0f0`](https://github.com/snowdenxrp/aldea-ia/commit/a17a540d8795d29e2320f0e1fc16345f83b9a0f0)  
-Test that repair never resurrects: [`0846597665e72de65917101c9206c3d26c11bf1b`](https://github.com/snowdenxrp/aldea-ia/commit/0846597665e72de65917101c9206c3d26c11bf1b)
+Test that repair never resurrects: [`0846597665e72de65917101c9206c3d26c11bf1b`](https://github.com/snowdenxrp/aldea-ia/commit/0846597665e72de65917101c9206c3d26c11bf1b)  
+Unknown life-state guard: [`11b9497c083fcdeb390c3d176008463498b83b2f`](https://github.com/snowdenxrp/aldea-ia/commit/11b9497c083fcdeb390c3d176008463498b83b2f)  
+Unknown life-state regression: [`508a76a13384e282b812fcc91cbf4fb17222341f`](https://github.com/snowdenxrp/aldea-ia/commit/508a76a13384e282b812fcc91cbf4fb17222341f)
 
 ## CI evidence on exact test head
 
-Final test head: `0846597665e72de65917101c9206c3d26c11bf1b`.
+Final code/test head: `508a76a13384e282b812fcc91cbf4fb17222341f`.
 
-- Semantic validation: [run 39106552699](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552699) — **success**.
-- Outcome classification: [run 39106552701](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106552701) — **success**.
-- The prior head `575d01789250bb26800d66146da18321ffad32ab` passed semantic validation [39106460906](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106460906) and outcome classification [39106460938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106460938).
-- A separate mission/restart continuity run for the final test head has not been observed; do not carry forward the earlier head's result as if it covered this one.
+- Semantic validation: [run 39106685371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106685371) — **success**.
+- Outcome classification: [run 39106685361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39106685361) — **success**.
+- Mission/restart continuity workflow for this exact head has not been observed; do not claim it passed on this head.
 
 ## Limits
 
 - The revision remains in-memory and is not `world-state.json`'s durable `stateRevision`.
 - A normalized postcondition is not an operation-specific receipt.
-- A dead agent is deliberately not resurrected. The repair postcondition now permits `alive === false` when coordinates are normalized, and a regression test covers this. This still does not make the action independently attributable after restart.
+- A dead agent is deliberately not resurrected. If `alive` is a boolean, coordinate repair preserves its value; if `alive` is missing/non-boolean, the handler refuses to infer `true`, makes no mutation, and remains blocked/UNKNOWN. Both cases have regression coverage. This still does not make the action independently attributable after restart.
 - No owner settlement API or runtime cutover was added. PREPARED remains UNKNOWN; protected effects STOP; M0 incomplete.
