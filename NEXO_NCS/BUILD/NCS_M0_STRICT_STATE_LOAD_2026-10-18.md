@@ -38,8 +38,8 @@ It also asserts that a valid persisted snapshot loads with its actual revision a
 ## Evidence
 
 - Source commits: `c527c252edd3d44566f567ebf06745d81c437339` (strict snapshot shape/revision), `02c00c2a67ec714803c3d06491e5ebdeb5c8b174` (memory shape), `64d170c9c29fb201dcbcde934daf17c96decb1ee` (prepared context validation).
-- Exact source+test head: `9c5b38f9ecc2710ee1d7036f3b391a8cd3f85246`.
-- Exact-head CI PASS: mission/restart [39097573478](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573478) (includes `simulation-restart-persistence.test.mjs`), STEP 4 [39097573456](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573456), STEP 5 [39097573552](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097573552).
+- Final exact source+test head: `0b55842258c9c9457837f5bc801f94a5c31b425c`.
+- Exact-head CI PASS: mission/restart [39097716822](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716822) (includes `simulation-restart-persistence.test.mjs`), STEP 4 [39097716845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716845), STEP 5 [39097716821](https://github.com/snowdenxrp/aldea-ia/actions/runs/39097716821).
 - [Source](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/scripts/simulate.mjs)
 - [Regression test](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/simulation-restart-persistence.test.mjs)
 
