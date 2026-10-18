@@ -1,3 +1,13 @@
+## Verified follow-up — Nexo-owned continuity store (2026-10-18)
+
+- Exact source/test head `a8a24db72be49427315a2386542c54ec1d3d9691` passed:
+  - mission/restart continuity [39099025262](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099025262)
+  - STEP 4 [39099025286](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099025286)
+  - STEP 5 [39099025352](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099025352)
+- The CI run includes store assertions appended to `tests/nexo/continuity-contract.test.mjs`; the separate `tests/nexo/continuity-store.test.mjs` has not been added as its own workflow command.
+- Two failed runs are retained, not hidden: [39098904233](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098904233) caught invalid newline escaping in JSON serialization; [39098988754](https://github.com/snowdenxrp/aldea-ia/actions/runs/39098988754) caught a literal escaped newline in the test declaration. Both were corrected before the passing exact-head run.
+- Do not move to “Nexo/Lúmina independent” as a completed status yet. The standalone store exists and its tests pass, but runtime/effect-adapter/restart still use legacy `nexoMemory` under Lúmina's world-state file. Next task is the actual owner integration with durable prepare-before-dispatch and canonical restart reconstruction; preserve UNKNOWN prepared outcomes and never redispatch or replan around them.
+
 ## Latest implementation — standalone Nexo continuity store (2026-10-18)
 
 - Added `src/nexo/core/continuity-store.mjs` at commit `b339fb77258b9ced5f6b68adb75fc37fa12c3873`.
