@@ -406,6 +406,43 @@ const cyclicMissionGoal = await verifyRepairMissionGoalFromPersistedState({
 assert.equal(cyclicMissionGoal.status, "unknown");
 assert.equal(cyclicMissionGoal.code, "NEXO_REPAIR_MISSION_DEPENDENCY_CYCLE");
 
+const duplicateStepSnapshot = structuredClone(settledJournal.snapshot);
+duplicateStepSnapshot.missions[0].steps = [
+  { id: "step-1", action: "repair_agent_state", target: "alex", status: "blocked", dependsOn: [] },
+  { id: "step-1", action: "repair_agent_state", target: "alex", status: "blocked", dependsOn: [] }
+];
+const duplicateStepGoal = await verifyRepairMissionGoalFromPersistedState({
+  store: { loadCurrent: async () => ({ storeRevision: settledJournal.storeRevision, snapshot: duplicateStepSnapshot }) },
+  statePath: repairStatePath,
+  missionId: "repair-crash-cut"
+});
+assert.equal(duplicateStepGoal.status, "unknown");
+assert.equal(duplicateStepGoal.code, "NEXO_REPAIR_MISSION_STEP_OR_DEPENDENCY_UNSUPPORTED",
+  "duplicate step IDs must not let one journal entry satisfy multiple mission steps");
+
+const extraJournalSnapshot = structuredClone(settledJournal.snapshot);
+extraJournalSnapshot.effectJournal.push({
+  idempotencyKey: "repair-crash-cut:ghost",
+  missionId: "repair-crash-cut",
+  stepId: "ghost",
+  action: "repair_agent_state",
+  target: "alex",
+  status: "settled_observed",
+  settlement: {
+    causalAttribution: "not_claimed",
+    environmentStateRevision: 1
+  }
+});
+const extraJournalGoal = await verifyRepairMissionGoalFromPersistedState({
+  store: { loadCurrent: async () => ({ storeRevision: settledJournal.storeRevision, snapshot: extraJournalSnapshot }) },
+  statePath: repairStatePath,
+  missionId: "repair-crash-cut"
+});
+assert.equal(extraJournalGoal.status, "unknown");
+assert.equal(extraJournalGoal.code, "NEXO_REPAIR_MISSION_JOURNAL_COVERAGE_MISMATCH",
+  "journal entries outside the mission step set must not be ignored");
+
+
 
 
 
