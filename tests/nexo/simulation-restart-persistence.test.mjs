@@ -294,7 +294,7 @@ assert.equal(durableRepairSnapshot.agents[0].alive, true);
 
 const staleDispatch = await dispatchPreparedRepair({
   statePath: repairStatePath,
-  owner: restartedRepairContinuity.owner,
+  owner: repairContinuity.owner,
   idempotencyKey: "repair-crash-cut:step-1",
   savedAt: 3000
 });
