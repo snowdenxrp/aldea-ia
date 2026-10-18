@@ -39,13 +39,50 @@ export async function settlePreparedRepairFromPersistedState({
   }
 
   const matches = current.snapshot.effectJournal.filter(entry => entry?.idempotencyKey === idempotencyKey);
-  if (matches.length !== 1 || matches[0]?.status !== "prepared") {
+  if (matches.length !== 1) {
     return { status: "blocked", code: "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN", verified: false, storeRevision: current.storeRevision };
   }
   const entry = matches[0];
   if (!REPAIR_ACTIONS.has(entry.action) ||
       !Number.isSafeInteger(entry.environmentStateRevision) || entry.environmentStateRevision < 0) {
     return { status: "blocked", code: "NEXO_PREPARED_REPAIR_REVISION_UNKNOWN", verified: false, storeRevision: current.storeRevision };
+  }
+
+  // A previous caller may have lost the response after the CAS actually
+  // committed. Recover that uncertainty from the canonical journal rather
+  // than misreporting a known settlement as an unknown PREPARED entry.
+  // Validate the stored observation's shape and binding; do not redispatch or
+  // infer causal attribution from this recovery path.
+  if (entry.status === "settled_observed") {
+    const settlement = entry.settlement;
+    const validSettlement = settlement?.kind === "persisted-repair-invariant-observed" &&
+      settlement.source === "world-state.json" &&
+      settlement.observation === "desired_state_present" &&
+      settlement.preparedEnvironmentStateRevision === entry.environmentStateRevision &&
+      Number.isSafeInteger(settlement.environmentStateRevision) &&
+      (settlement.environmentStateRevision === entry.environmentStateRevision ||
+        settlement.environmentStateRevision === entry.environmentStateRevision + 1) &&
+      settlement.causalAttribution === "not_claimed";
+    if (!validSettlement) {
+      return {
+        status: "blocked",
+        code: "NEXO_REPAIR_SETTLEMENT_RECORD_INVALID",
+        verified: false,
+        storeRevision: current.storeRevision
+      };
+    }
+    return {
+      status: "settled_observed",
+      code: "NEXO_REPAIR_SETTLEMENT_ALREADY_JOURNALED",
+      verified: true,
+      recovered: true,
+      causalAttribution: "not_claimed",
+      environmentStateRevision: settlement.environmentStateRevision,
+      storeRevision: current.storeRevision
+    };
+  }
+  if (entry.status !== "prepared") {
+    return { status: "blocked", code: "NEXO_PREPARED_JOURNAL_ENTRY_UNKNOWN", verified: false, storeRevision: current.storeRevision };
   }
 
   let environment;
