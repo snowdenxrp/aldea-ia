@@ -3,7 +3,7 @@ import { assertNexoContinuityMemoryShape } from "../../src/nexo/core/continuity-
 import { assertNexoContinuitySnapshot, projectNexoContinuitySnapshot, NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
 import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
-import { recordNexoMissionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
+import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -272,7 +272,35 @@ assert.equal(reconstructedCoreMission.objective, "verify_mission_outcome");
 assert.equal("patterns" in reconstructedCoreMission.operationalSignals, false);
 assert.equal(reconstructNexoMissionFromSnapshot(operationalSnapshot, "missing-mission"), null);
 
-console.log("Nexo core continuity operations: detached mission/outcome records and reconstruction without learning analytics OK.");
+let executionSnapshot = recordNexoExecutionInSnapshot(operationalSnapshot, {
+  idempotencyKey: "core-mission:step-1",
+  missionId: "core-mission",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "alex",
+  result: { status: "completed", verified: true }
+});
+const replayedExecutionSnapshot = recordNexoExecutionInSnapshot(executionSnapshot, {
+  idempotencyKey: "core-mission:step-1",
+  missionId: "core-mission",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "alex",
+  result: { status: "failed", code: "late-replay" }
+});
+assert.deepEqual(replayedExecutionSnapshot.executions[0].result, { status: "completed", verified: true },
+  "same-identity replay must preserve the first execution result");
+assert.throws(() => recordNexoExecutionInSnapshot(executionSnapshot, {
+  idempotencyKey: "core-mission:step-1",
+  missionId: "core-mission",
+  stepId: "step-1",
+  action: "repair_agent_needs",
+  target: "alex",
+  result: { status: "completed", verified: true }
+}), error => error?.code === "NEXO_EXECUTION_IDENTITY_MISMATCH",
+"an idempotency key must not be silently rebound to a different operation");
+
+console.log("Nexo core continuity operations: detached mission/outcome records, reconstruction, and idempotency identity binding OK.");
 
 const migrationDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-continuity-migration-"));
 const migrationPath = path.join(migrationDirectory, "nexo-continuity.json");
