@@ -1,3 +1,15 @@
+## Mission-goal verifier dependency hardening
+
+Latest exact tested head: [`1ae28c8570e76191663ed045e6d68644df17a52c`](https://github.com/snowdenxrp/aldea-ia/commit/1ae28c8570e76191663ed045e6d68644df17a52c).
+
+- The read-only verifier rejects cyclic step dependencies before evaluating the environment.
+- Regression creates a two-step cycle and confirms `NEXO_REPAIR_MISSION_DEPENDENCY_CYCLE`.
+- Exact-head CI PASS: mission/restart [39133517131](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133517131), outcome [39133517097](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133517097), semantic [39133517074](https://github.com/snowdenxrp/aldea-ia/actions/runs/39133517074).
+
+The verifier remains read-only and returns `goal_observed`, not `mission_completed`. It is intentionally not wired to mission completion or replan.
+
+---
+
 ## Read-only mission-goal verifier added
 
 Latest exact tested head: [`59ec97393ad14fb7d1ef4bf6ab286f964f899410`](https://github.com/snowdenxrp/aldea-ia/commit/59ec97393ad14fb7d1ef4bf6ab286f964f899410).
