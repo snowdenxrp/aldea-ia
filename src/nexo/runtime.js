@@ -174,13 +174,25 @@ export async function executeNexoStepWithContinuityOwner({
     };
   }
 
-  const lineage = await owner.recordExecutionLineage({
-    expectedRevision: prepared.storeRevision,
-    operation,
-    result: adapterResult && typeof adapterResult === "object"
-      ? adapterResult
-      : { status: "unknown", code: "NEXO_ADAPTER_RESULT_INVALID" }
-  });
+  let lineage;
+  try {
+    lineage = await owner.recordExecutionLineage({
+      expectedRevision: prepared.storeRevision,
+      operation,
+      result: adapterResult && typeof adapterResult === "object"
+        ? adapterResult
+        : { status: "unknown", code: "NEXO_ADAPTER_RESULT_INVALID" }
+    });
+  } catch (error) {
+    return {
+      status: "unknown",
+      code: error?.code ?? "NEXO_EXECUTION_LINEAGE_COMMIT_OUTCOME_UNKNOWN",
+      dispatchAttempted: true,
+      preparedCommitted: true,
+      journalSettled: false,
+      adapterResult
+    };
+  }
   if (lineage?.status !== "committed") {
     return {
       status: "unknown",
@@ -193,10 +205,26 @@ export async function executeNexoStepWithContinuityOwner({
     };
   }
 
-  const reconciled = await owner.reconcilePrepared({
-    expectedRevision: lineage.storeRevision,
-    operation
-  });
+  let reconciled;
+  try {
+    reconciled = await owner.reconcilePrepared({
+      expectedRevision: lineage.storeRevision,
+      operation
+    });
+  } catch (error) {
+    return {
+      status: "unknown",
+      code: error?.code ?? "NEXO_EFFECT_RECONCILIATION_OUTCOME_UNKNOWN",
+      dispatchAttempted: true,
+      preparedCommitted: true,
+      lineageCommitted: true,
+      journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false,
+      adapterResult,
+      lineage
+    };
+  }
   return {
     status: reconciled?.status === "observed" ? "observed" : "unknown",
     code: reconciled?.code ?? "NEXO_EFFECT_RECONCILIATION_REQUIRED",
