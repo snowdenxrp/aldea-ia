@@ -319,3 +319,11 @@ La suite ejecuta el CLI real con un contenido centinela y un argumento desconoci
 SHA `429fc980427c04f8db286e28ee9887333941acb8`: [Chronicle 39174861087 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861087) y [continuity/runtime 39174861039 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861039).
 
 Siguiente corte: auditar explícitamente el modelo de filesystem y concurrencia que estos stores soportan; separar garantías demostradas de las no demostradas. No cambiar runtime por defecto ni ampliar acciones.
+
+
+## Continuidad — corrección de privacidad CLI y límites de filesystem
+
+- Se eliminó `--content <texto>`: el cuerpo de Chronicle podía quedar expuesto en argv/listado de procesos. Ahora se exige `--content-stdin` y el contenido se consume del stream stdin; stdin TTY se rechaza para evitar espera interactiva accidental. La prueba de integración ejecuta el CLI real y confirma no filtración a argv/stdout/stderr, no-mutación ante argumentos inválidos y persistencia correcta ante invocación válida.
+- CI final en SHA `0ea0b8bcbd68a2e2062e359b11247cd6a04a2457`: [39176108822 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176108822), [39176108833 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176108833).
+- Auditoría encontró límites que no deben ocultarse: temp+rename no es prueba de fsync/power-loss; rutas del caller no se canonicalizan ni aíslan de symlinks; reclamación de lock obsoleto usa check-then-remove y no demuestra exclusión adversarial multiproceso. No integrar a producción ni afirmar esas garantías.
+- Próxima frontera: fijar el modelo de confianza de paths y del filesystem local, resolver la recuperación de locks con prueba de concurrencia entre procesos o limitar de manera explícita el store a un solo proceso cooperante. No hacer cutover ni ampliar acciones.
