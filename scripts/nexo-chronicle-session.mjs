@@ -155,6 +155,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       error.code = "NEXO_CHRONICLE_CLI_CONTENT_SOURCE_REQUIRED";
       throw error;
     }
+    if (process.stdin.isTTY) {
+      const error = new Error("NEXO_CHRONICLE_CLI_STDIN_PIPE_REQUIRED");
+      error.code = "NEXO_CHRONICLE_CLI_STDIN_PIPE_REQUIRED";
+      throw error;
+    }
     const chunks = [];
     for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
     const content = Buffer.concat(chunks).toString("utf8");
