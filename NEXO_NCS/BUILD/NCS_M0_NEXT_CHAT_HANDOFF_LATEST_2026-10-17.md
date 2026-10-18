@@ -713,3 +713,10 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - Regression asserts prior memory remains unchanged while the returned memory contains the successor and retained failed attempt.
 - Report: `NEXO_NCS/BUILD/NCS_M0_REPLAN_SNAPSHOT_ISOLATION_2026-10-18.md`.
 - Workflow audit found the continuity workflow was not actually executing `tests/nexo/runtime.test.mjs`; it now includes that command. Verified on head `77c4184ce5931a1d4ef0f90b3bee00f8e6fc7b0a`: continuity/runtime [39085019303](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085019303), STEP 4 [39085019318](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085019318), STEP 5 [39085019335](https://github.com/snowdenxrp/aldea-ia/actions/runs/39085019335) all succeeded, and the runtime test step explicitly passed. Continue the functional M0 loop; do not repeat closed audits. Proxy trust boundary remains design STOP; STEP 7 remains OPEN / STOP / UNKNOWN; protected effects STOP.
+
+
+## Correction to latest CI qualification (2026-10-18)
+
+- A workflow commit was built from a stale base tree and unintentionally reverted the snapshot-isolation source/test changes. The prior CI success therefore did not validate the new regression.
+- Source + regression have been restored against the actual current branch HEAD; workflow explicitly runs `tests/nexo/runtime.test.mjs`.
+- Treat CI as pending until a run on the new exact HEAD passes with the snapshot assertions present. Do not rely on the earlier run IDs for this correction.
