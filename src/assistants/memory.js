@@ -10,24 +10,33 @@ function retainEffectJournal(entries, limit = 200) {
   return journal;
 }
 
-function retainNexoMissions(entries, effectJournal, limit = 50) {
-  const missions = Array.isArray(entries) ? structuredClone(entries) : [];
-  const unresolvedMissionIds = new Set(effectJournal
+function unresolvedPreparedMissionIds(effectJournal) {
+  return new Set(effectJournal
     .filter(entry => entry?.status === "prepared" && typeof entry.missionId === "string")
     .map(entry => entry.missionId));
-  // Keep the causal plan for every unresolved prepared effect. The cap is soft:
-  // unresolved obligations and the mission context needed to interpret them survive.
-  while (missions.length > limit) {
-    const removableIndex = missions.findIndex(mission => !unresolvedMissionIds.has(mission?.missionId));
+}
+
+function retainMissionRecords(entries, unresolvedMissionIds, limit) {
+  const records = Array.isArray(entries) ? structuredClone(entries) : [];
+  // Preserve all causal records for a mission with an unresolved prepared effect.
+  // The soft cap may be exceeded; truncating these records could regress a prior
+  // completed dependency to planned after restart and permit an unsafe duplicate.
+  while (records.length > limit) {
+    const removableIndex = records.findIndex(record => !unresolvedMissionIds.has(record?.missionId));
     if (removableIndex < 0) break;
-    missions.splice(removableIndex, 1);
+    records.splice(removableIndex, 1);
   }
-  return missions;
+  return records;
+}
+
+function retainNexoMissions(entries, effectJournal, limit = 50) {
+  return retainMissionRecords(entries, unresolvedPreparedMissionIds(effectJournal), limit);
 }
 
 export function createLearningMemory(raw = null) {
   const source = raw && typeof raw === "object" ? raw : {};
   const effectJournal = retainEffectJournal(source.nexo?.effectJournal);
+  const unresolvedMissionIds = unresolvedPreparedMissionIds(effectJournal);
   return {
     version: 4,
     runs: Array.isArray(source.runs) ? source.runs.slice(-100) : [],
@@ -35,9 +44,9 @@ export function createLearningMemory(raw = null) {
     patterns: Array.isArray(source.patterns) ? source.patterns.slice(-100) : [],
     nexo: {
       missions: retainNexoMissions(source.nexo?.missions, effectJournal),
-      attempts: Array.isArray(source.nexo?.attempts) ? source.nexo.attempts.slice(-100) : [],
+      attempts: retainMissionRecords(source.nexo?.attempts, unresolvedMissionIds, 100),
       doNotRepeat: Array.isArray(source.nexo?.doNotRepeat) ? source.nexo.doNotRepeat.slice(-100) : [],
-      executions: Array.isArray(source.nexo?.executions) ? source.nexo.executions.slice(-200) : [],
+      executions: retainMissionRecords(source.nexo?.executions, unresolvedMissionIds, 200),
       effectJournal
     }
   };
@@ -157,7 +166,7 @@ export function recordNexoExecution(memory,{idempotencyKey,missionId,stepId,acti
   if(!idempotencyKey||!missionId||!stepId||!action||!result) return next;
   if(!next.nexo.executions.some(x=>x.idempotencyKey===idempotencyKey))
     next.nexo.executions.push({idempotencyKey,missionId,stepId,action,target,result,at:new Date().toISOString()});
-  next.nexo.executions=next.nexo.executions.slice(-200);
+  next.nexo.executions=retainMissionRecords(next.nexo.executions,unresolvedPreparedMissionIds(next.nexo.effectJournal),200);
   return next;
 }
 
@@ -171,7 +180,7 @@ export function recordNexoOutcome(memory,{missionId,stepId,action,target=null,st
   const entry={missionId,stepId,action,target,status,evidence:evidence??null,parentMissionId:parentMissionId??null,replanReason:replanReason??null,at:new Date().toISOString()};
   next.nexo.attempts.push(entry);
   if(doNotRepeat) next.nexo.doNotRepeat.push({action,target,reason:evidence??"previous attempt marked non-repeatable",at:entry.at});
-  next.nexo.attempts=next.nexo.attempts.slice(-100); next.nexo.doNotRepeat=next.nexo.doNotRepeat.slice(-100);
+  next.nexo.attempts=retainMissionRecords(next.nexo.attempts,unresolvedPreparedMissionIds(next.nexo.effectJournal),100); next.nexo.doNotRepeat=next.nexo.doNotRepeat.slice(-100);
   return next;
 }
 
