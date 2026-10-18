@@ -53,6 +53,26 @@ const failureMission=buildNexoMission({reports:[{findings:[{severity:"info",code
 const failure=await executeLuminaNexoStep({simulation:failureSimulation,mission:failureMission,stepId:"step-1",memory:createLearningMemory(),precondition:({stateVersion})=>stateVersion===0});
 assert.equal(failure.status,"failed"); assert.equal(failure.adapterResult.code,"LUMINA_ACTION_FAILED"); assert.equal(failure.mission.status,"needs_replan"); assert.equal(failure.mission.objective,"replan_after_failure"); assert.equal(failure.memory.nexo.attempts[0].status,"failed"); assert.equal(failureSimulation.nexoEffectRevision,0);
 
+// A failed Lúmina action can still mutate state. fish_escaped reduces energy
+// and changes activity; it must be detected as a partial effect, not terminal failure.
+const escapedFishSimulation={
+  agents:[{id:"alex",alive:true,currentActivity:"idle",position:{x:0,z:0},needs:{hunger:50,thirst:50,energy:50,social:50,safety:50,health:100},inventory:[],skills:[]}],
+  world:{resources:{fish:{amount:10},water:{amount:10},wild_plants:{amount:10},wood:{amount:10},stone:{amount:10}}},
+  random:()=>0.99
+};
+const escapedFishMission=buildNexoMission({reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"catch_fish",amount:1},message:"probar pesca"}]}]});
+const escapedFish=await executeLuminaNexoStep({simulation:escapedFishSimulation,mission:escapedFishMission,stepId:"step-1",memory:createLearningMemory(),precondition:({stateVersion})=>stateVersion===0});
+assert.equal(escapedFish.status,"blocked");
+assert.equal(escapedFish.adapterResult.code,"PARTIAL_EFFECT_DETECTED");
+assert.equal(escapedFishSimulation.agents[0].currentActivity,"fishing");
+assert.equal(escapedFishSimulation.agents[0].needs.energy,48.5);
+assert.equal(escapedFishSimulation.nexoEffectRevision,1);
+assert.equal(escapedFish.memory.nexo.effectJournal[0].status,"prepared");
+const escapedFishReplan=replanPersistedNexoMission({memory:escapedFish.memory,previousMissionId:escapedFishMission.missionId,simulation:escapedFishSimulation,reports:[{findings:[{severity:"info",code:"LUMINA_ACTION",agent:"alex",action:{name:"catch_fish",amount:1},message:"reintento"}]}]});
+assert.equal(escapedFishReplan.status,"not_replanned");
+assert.equal(escapedFishReplan.code,"EFFECT_RECONCILIATION_REQUIRED");
+
+// Restore the ordinary failure fixture for the known no-water/no-mutation case.
 failureSimulation.world.resources.water.amount=10;
 const persistedReplan=replanPersistedNexoMission({
   simulation:failureSimulation,
