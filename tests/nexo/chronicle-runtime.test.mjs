@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
@@ -368,6 +369,35 @@ assert.throws(() => parseNexoChronicleArguments([...validCli, "--mission", "miss
 assert.throws(() => parseNexoChronicleArguments(["--continuity"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
 assert.throws(() => parseNexoChronicleArguments(["--content", "--initialize-chronicle"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
 assert.throws(() => parseNexoChronicleArguments([...validCli, "--initialize-continuity", "--initialize-continuity"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
+
+// Exercise the actual executable boundary: invalid args exit nonzero, create no
+// stores, and never echo private Chronicle content to stdout/stderr.
+const cliRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-cli-"));
+try {
+  const cliContinuity = path.join(cliRoot, "continuity.json");
+  const cliChronicle = path.join(cliRoot, "chronicle.json");
+  const privateContent = "PRIVATE_CHRONICLE_SENTINEL_DO_NOT_LOG";
+  const cli = spawnSync(process.execPath, [
+    "scripts/nexo-chronicle-session.mjs",
+    "--continuity", cliContinuity,
+    "--chronicle", cliChronicle,
+    "--mission", "cli-mission",
+    "--step", "cli-step",
+    "--content", privateContent,
+    "--unknown-option"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(cli.status, 1);
+  assert.equal(cli.stderr, "");
+  const cliOutput = JSON.parse(cli.stdout.trim());
+  assert.equal(cliOutput.status, "blocked");
+  assert.equal(cliOutput.code, "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID");
+  assert.equal(cli.stdout.includes(privateContent), false);
+  assert.equal(cli.stderr.includes(privateContent), false);
+  await assert.rejects(fs.access(cliContinuity), { code: "ENOENT" });
+  await assert.rejects(fs.access(cliChronicle), { code: "ENOENT" });
+} finally {
+  await fs.rm(cliRoot, { recursive: true, force: true });
+}
 
 // The real Nexo entrypoint is explicitly initialized and remains independent of Lúmina.
 const entryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-entry-"));
