@@ -1,3 +1,10 @@
+## M0 — Nexo-only mission continuity operations extracted (2026-10-18)
+
+- Added `src/nexo/core/continuity-operations.mjs` at `b3a5aa2643a19a203c0db70c504e01c5900a2cb9`. It provides snapshot-only mission recording, execution lineage, outcome recording, and mission reconstruction without importing `createLearningMemory()` or learning analytics. The owner now uses this core mission-recording path.
+- Tests cover standalone snapshot mission admission, rejection of unverified completion claims, replay non-regression, and reconstruction without learning-pattern fields.
+- Exact-head CI PASS at `da990d548c36fac0fbb589f6372159c9b9539d79`: mission/restart [39099364565](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099364565), STEP 4 [39099364571](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099364571), STEP 5 [39099364647](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099364647).
+- This is core functionality, not runtime migration. Legacy memory remains in use. Do not interpret snapshot schema or an `evidence.verified` field as cryptographic provenance or independent authority; the owner still lacks a trusted operation-specific reconciliation source. Runtime integration remains pending.
+
 ## M0 — Preparation is explicitly not authorization (2026-10-18)
 
 - Tightened `src/nexo/core/continuity-owner.mjs`: a successful durable PREPARED commit now returns `preparedCommitted: true` and `authorization: "NOT_EVALUATED"`, never a dispatch/authorization grant. An existing PREPARED entry remains UNKNOWN and cannot be dispatched again.
