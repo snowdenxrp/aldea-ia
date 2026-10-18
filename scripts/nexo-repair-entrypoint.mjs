@@ -105,7 +105,7 @@ export async function runNexoRepairOnce({
     idempotencyKey: operation.idempotencyKey,
     savedAt
   });
-  if (dispatch.status !== "completed" || dispatch.persisted !== true) {
+  if (dispatch.status !== "completed") {
     return { status: "blocked", code: dispatch.code ?? "NEXO_REPAIR_DISPATCH_NOT_CONFIRMED", dispatch, persisted: dispatch.persisted === true };
   }
 
@@ -131,7 +131,7 @@ export async function runNexoRepairOnce({
     status: "settled_observed",
     dispatch,
     settlement,
-    persisted: true,
+    persisted: dispatch.persisted === true,
     missionCompleted: false,
     causalAttribution: "not_claimed"
   };
