@@ -1,3 +1,24 @@
+## Latest continuation — stale/missing environment revision binding (2026-10-18)
+
+- Added `comparePersistedRepairRevision()` and tests at [`db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f`](https://github.com/snowdenxrp/aldea-ia/commit/db36ee40f44c06aae0e168c4dd36e6cbb3d0e01f).
+- It reports `current`, `stale`, or `unknown`; if PREPARED lacks a bound environment revision, it explicitly returns `PREPARED_ENVIRONMENT_REVISION_NOT_BOUND` instead of assuming the latest revision is the original one.
+- Exact-head CI PASS: mission/continuity [39132287649](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287649), outcome [39132287652](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287652), semantic [39132287648](https://github.com/snowdenxrp/aldea-ia/actions/runs/39132287648). The mission workflow ran the restart-persistence test successfully.
+- Checkpoint: [NCS_M0_REVISION_FENCE_OBSERVATION_CHECKPOINT_2026-10-18.md](NCS_M0_REVISION_FENCE_OBSERVATION_CHECKPOINT_2026-10-18.md).
+
+### Next exact architecture step
+
+The observer only detects stale state; it cannot close the race. Before settlement:
+1. Review and explicitly version the PREPARED schema to bind the persisted environment revision.
+2. Make dispatch conditional on the adapter seeing the same current environment revision; stale revision means no dispatch.
+3. On recovery, re-load strict persisted state and evaluate the operation-specific repair invariant.
+4. Recheck revision at settlement; if changed, preserve PREPARED as UNKNOWN.
+5. Settle only via continuity store compare-and-commit at the expected store revision; a conflict leaves PREPARED unresolved.
+6. Add crash-cut tests around prepare, dispatch, environment persist, recovery observation, and terminal commit.
+
+Do not pretend the two independent files form one atomic transaction. No generic transaction wrapper, queue, synthetic receipt, or runtime cutover. Non-idempotent actions remain UNKNOWN. M0 incomplete; protected effects STOP; STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Latest continuation — read-only persisted repair observer (2026-10-18)
 
 - Added `src/nexo/adapters/persisted-repair-observation.mjs` and regression coverage at exact code/test head [`8a89ef9b83b3126db3e83122a7876abe2a78819f`](https://github.com/snowdenxrp/aldea-ia/commit/8a89ef9b83b3126db3e83122a7876abe2a78819f).
