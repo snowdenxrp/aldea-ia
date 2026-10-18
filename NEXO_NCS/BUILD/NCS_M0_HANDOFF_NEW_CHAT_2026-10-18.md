@@ -1,3 +1,13 @@
+## Incremento posterior — replay de lineage ligado al baseline (2026-10-18)
+
+Además de rechazar resultados contradictorios (`NEXO_EXECUTION_RESULT_MISMATCH`), `recordExecutionLineage()` ahora vuelve a validar para reparaciones la revisión ambiental capturada en PREPARED antes de aceptar un replay existente. Baseline distinto → `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_MISMATCH`; baseline desconocido/ambiguo → `NEXO_EXECUTION_PREPARED_ENVIRONMENT_REVISION_UNKNOWN`. Ninguna de esas rutas avanza la revisión de continuidad. Regresión en `tests/nexo/continuity-migration.test.mjs`.
+
+CI SUCCESS sobre SHA de código/pruebas `3bfbad268ac1a9b5ea9492e8db0a90b5972f22d9`: [repair crash cuts 39150515026](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515026), [STEP 4 39150514997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150514997), [STEP 5 39150515080](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515080), [bounded admission/restart 39150515015](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150515015). El test-first falló en [39150495080](https://github.com/snowdenxrp/aldea-ia/actions/runs/39150495080) al demostrar la aceptación anterior del baseline discrepante. `STATUS.md` y el handoff maestro contienen el historial y ambos incrementos.
+
+**Siguiente:** continuar M0 hacia el cutover canónico de runtime, primero con el seam mínimo y pruebas de proceso/reinicio. No volver a investigar lo cerrado, no añadir `goalObservations`, no convertir settlement en completion, no mezclar Nexo/Lúmina, no afirmar atomicidad cross-store; efectos protegidos STOP y STEP 7 OPEN / STOP / UNKNOWN.
+
+---
+
 ## Continuidad más reciente (2026-10-18, después del estado base)
 
 Último incremento de código/pruebas validado: `0653d7216c49dd6a9b0ea7a182333ff18ee07bc3`. `recordExecutionLineage()` compara ahora el resultado ya persistido con el resultado propuesto en un replay de la misma identidad. Si son distintos: `blocked / NEXO_EXECUTION_RESULT_MISMATCH`; no cambia `storeRevision` ni el registro inicial. Regresiones en `tests/nexo/repair-owner-lifecycle.test.mjs` y `tests/nexo/continuity-migration.test.mjs`.
