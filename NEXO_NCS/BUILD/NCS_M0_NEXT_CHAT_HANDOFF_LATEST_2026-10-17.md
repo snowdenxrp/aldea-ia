@@ -1,3 +1,13 @@
+## Latest functional M0 change — learning memory snapshot isolation (2026-10-18)
+
+- Defect: `learnFromReports()` changed a pattern record shared with the caller's prior memory snapshot when incrementing `seen` and refreshing `lastSeen`.
+- Fix: clone pattern records before learning updates; regression in `tests/nexo/restart-reconstruction.test.mjs` asserts old snapshot unchanged and new snapshot incremented.
+- Report: [NCS M0 learning memory snapshot isolation](NCS_M0_LEARNING_MEMORY_SNAPSHOT_ISOLATION_2026-10-18.md).
+- CI is pending at this change's initial commit. Fetch the workflow result and only then update this handoff/STATUS with the actual run ID and outcome.
+- Do not reopen M0.1–M0.70 or treat this as resolving evidence provenance, Proxy-trap boundary, authority, or protected effects.
+
+---
+
 ## Master continuity — M0.1 onward (read first next chat)
 
 Consolidated dossier: [NCS M0.1 onward — full continuity and next instructions](NCS_M0_1_ONWARD_CONSOLIDATED_CONTINUITY_2026-10-17.md). This dossier is the navigation point for the M0.1 observation contract through latest mission lifecycle increments, historical CI evidence, current trust-boundary issues, and the next work order. Start with it and `NEXO_NCS/STATUS.md`; do not re-run old audits.

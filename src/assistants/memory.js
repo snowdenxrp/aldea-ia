@@ -21,6 +21,9 @@ function fingerprintFinding(finding) {
 
 export function learnFromReports(memory, reports, context = {}) {
   const next = createLearningMemory(memory);
+  // Learning updates pattern counters; detach records so the new snapshot never
+  // mutates the caller's prior snapshot through shared object references.
+  next.patterns = next.patterns.map(item => item && typeof item === "object" ? { ...item } : item);
   const findings = reports.flatMap(report => report?.findings ?? []);
   const conclusions = reports.flatMap(report => report?.conclusions ?? []);
   const failures = reports.flatMap(report => (report?.results ?? []).filter(item => item.status === "fail"));

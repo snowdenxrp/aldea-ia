@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { createLearningMemory, recordNexoPlan, recordNexoExecution, recordNexoOutcome, reconstructNexoMission } from "../../src/assistants/memory.js";
+import { createLearningMemory, recordNexoPlan, recordNexoExecution, recordNexoOutcome, reconstructNexoMission, learnFromReports } from "../../src/assistants/memory.js";
 
 const mission={
   version:4, missionId:"restart-mission", parentMissionId:null, replanReason:null,
@@ -109,3 +109,26 @@ assert.deepEqual(
 );
 
 console.log("Nexo: durable mission restart reconstruction + execution/outcome crash-window semantics OK.");
+
+
+// Learning must produce a new memory snapshot without mutating an existing pattern record.
+const priorPattern = {
+  signature: "warning|MEMORY_MUTATION|learning counter test",
+  seen: 1,
+  firstSeen: "2026-10-17T00:00:00.000Z",
+  lastSeen: "2026-10-17T00:00:00.000Z"
+};
+const priorLearningMemory = createLearningMemory({ patterns: [priorPattern] });
+const learnedMemory = learnFromReports(priorLearningMemory, [{
+  findings: [{
+    severity: "warning",
+    code: "MEMORY_MUTATION",
+    message: "learning counter test"
+  }]
+}]);
+assert.equal(priorLearningMemory.patterns[0].seen, 1);
+assert.equal(priorLearningMemory.patterns[0].lastSeen, "2026-10-17T00:00:00.000Z");
+assert.equal(learnedMemory.patterns[0].seen, 2);
+assert.notEqual(learnedMemory.patterns[0], priorLearningMemory.patterns[0]);
+
+console.log("Nexo: learning memory snapshot isolation OK.");

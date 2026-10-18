@@ -1,3 +1,11 @@
+## M0 — Learning memory snapshot isolation (2026-10-18)
+
+- Finding: `learnFromReports()` updated matching pattern counters through shared object references, mutating the prior memory snapshot while constructing the next one.
+- Change + regression: clone pattern records before updating `seen` / `lastSeen`; regression added to `tests/nexo/restart-reconstruction.test.mjs`.
+- Report: [NCS M0 learning memory snapshot isolation](BUILD/NCS_M0_LEARNING_MEMORY_SNAPSHOT_ISOLATION_2026-10-18.md).
+- Focused CI: PENDING at source/test commit creation; retrieve the actual workflow result before declaring verified.
+- Scope: local learning snapshot correctness only. Proxy-trap boundary remains a design STOP; STEP 7 = OPEN / STOP / UNKNOWN; protected effects STOP.
+
 ## Consolidated M0.1 onward continuity dossier (2026-10-17)
 
 - Saved complete M0.1+ continuity, existing increments, source/test/CI evidence, architecture decisions, unresolved boundaries, and exact next-chat instructions in [NCS M0.1 onward consolidated continuity](BUILD/NCS_M0_1_ONWARD_CONSOLIDATED_CONTINUITY_2026-10-17.md).
