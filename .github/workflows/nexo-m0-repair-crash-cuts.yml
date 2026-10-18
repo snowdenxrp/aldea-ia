@@ -6,6 +6,7 @@ on:
     paths:
       - "scripts/nexo-repair-preparation.mjs"
       - "scripts/nexo-repair-dispatch.mjs"
+      - "scripts/nexo-repair-entrypoint.mjs"
       - "scripts/nexo-repair-settlement.mjs"
       - "scripts/nexo-repair-mission-verification.mjs"
       - "scripts/nexo-continuity.mjs"
