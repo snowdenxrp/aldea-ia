@@ -419,10 +419,11 @@ const canonicalOwner={
 const canonicalAdapter={
   supports: action=>action==="write_file",
   supportsReconciliation: action=>action==="write_file",
-  execute: async request=>{
+  executePrepared: async (request,{preparedCommit})=>{
     canonicalCalls.push("dispatch");
     assert.equal(canonicalCalls[0],"prepare");
     assert.equal(request.idempotencyKey,"canonical-mission:step-1");
+    assert.equal(preparedCommit.preparedCommitted,true);
     return {status:"completed",verified:true,evidence:{verified:true}};
   }
 };
@@ -445,7 +446,7 @@ const noVerifierOwner={
 };
 const noVerifierAdapter={
   ...canonicalAdapter,
-  execute:async()=>{unsupportedDispatches++;return {status:"completed"};}
+  executePrepared:async()=>{unsupportedDispatches++;return {status:"completed"};}
 };
 const noVerifierRuntime=await executeNexoStepWithContinuityOwner({
   missionId:"canonical-mission",stepId:"step-1",owner:noVerifierOwner,adapter:noVerifierAdapter
@@ -457,7 +458,7 @@ assert.equal(unsupportedPrepares,0);
 assert.equal(unsupportedDispatches,0);
 
 let throwingLineageCalls=0;
-const throwingAdapter={...canonicalAdapter,execute:async()=>{throw new Error("dispatch response lost");}};
+const throwingAdapter={...canonicalAdapter,executePrepared:async()=>{throw new Error("dispatch response lost");}};
 const throwingOwner={
   ...canonicalOwner,
   loadCurrent:async()=>({storeRevision:0,snapshot:{missions:[{missionId:"canonical-mission",status:"planned",steps:[{id:"step-1",action:"write_file",target:"alpha",status:"planned"}]}]}}),
@@ -498,7 +499,7 @@ const repairCanonicalOwner={
 const repairCanonicalAdapter={
   supports:()=>true,
   supportsReconciliation:()=>true,
-  execute:async()=>{repairDispatchCalls++;return {status:"completed",verified:true};}
+  executePrepared:async()=>{repairDispatchCalls++;return {status:"completed",verified:true};}
 };
 const repairCanonicalResult=await executeNexoStepWithContinuityOwner({
   missionId:"repair-canonical",stepId:"step-1",owner:repairCanonicalOwner,adapter:repairCanonicalAdapter
