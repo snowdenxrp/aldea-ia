@@ -237,3 +237,10 @@ No está conectado al runtime ni al owner verifier registry; todavía no cierra 
 - CI confirmada para la versión inicial: [run 39173007733](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173007733), SUCCESS, SHA `9c759110dc2ac76b20030c2d9fac2a8feb18fa0e`.
 - Se añadieron pruebas para escrituras concurrentes con claves distintas y respuesta perdida después del rename: commit `bf3ded518216a9556118b36f6f6135a7baa3fa93`. Run [39173111447](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173111447) estaba QUEUED al guardar esta actualización; el resultado de la ampliación permanece PENDING.
 - Próximo: comprobar run 39173111447 y corregir únicamente fallos observados. Después, implementar el enlace al owner de forma que el verificador no pueda liquidar una PREPARED distinta y el resultado solo se acepte bajo CAS; todavía no conectar dispatch real ni cambiar runtime default.
+
+
+## Corrección — crash-cut Chronicle ya validado
+
+La ejecución [39173111447](https://github.com/snowdenxrp/aldea-ia/actions/runs/39173111447) terminó SUCCESS para el commit `bf3ded518216a9556118b36f6f6135a7baa3fa93`. Pasaron las pruebas focales de concurrencia con claves distintas, idempotencia, conflicto de contenido, reader reabierto, estado corrupto y respuesta perdida después de persistencia visible. Alcance limitado al store/verifier; no demuestra durabilidad ante pérdida de energía ni integración de runtime/owner.
+
+Siguiente tarea exacta: revisar la API del owner y el binding de PREPARED → verificador → CAS, y cubrir con pruebas que una observación solo puede liquidar la misma operación/revisión. No cambiar runtime default ni activar otras acciones.
