@@ -171,3 +171,54 @@ const postRetentionPlan = recordNexoPlan(retentionMemory, {
 assert.ok(postRetentionPlan.nexo.missions.some(item => item.missionId === "retention-mission-00"));
 assert.ok(reconstructNexoMission(postRetentionPlan, "retention-mission-00"));
 
+// Prepared-operation recovery also depends on prior step attempts: truncating an
+// old completed dependency could reconstruct it as planned after restart.
+const longMissionId = "long-prepared-mission";
+const longMissionSteps = Array.from({length: 120}, (_, index) => ({
+  id: `step-${index + 1}`,
+  action: "repair_agent_state",
+  target: `agent-${index + 1}`,
+  status: "planned",
+  dependsOn: index === 0 ? [] : [`step-${index}`]
+}));
+const longMissionAttempts = longMissionSteps.map(step => ({
+  missionId: longMissionId,
+  stepId: step.id,
+  action: step.action,
+  target: step.target,
+  status: "completed",
+  evidence: {verified:true,kind:"effect-postcondition",action:step.action,target:step.target}
+}));
+const longMissionExecutions = Array.from({length: 220}, (_, index) => ({
+  idempotencyKey: `${longMissionId}:execution-${index}`,
+  missionId: longMissionId,
+  stepId: "step-120",
+  action: "repair_agent_state",
+  target: "agent-120",
+  result: {status:"completed",verified:true}
+}));
+const longPreparedMemory = createLearningMemory({
+  nexo: {
+    missions: [{
+      missionId: longMissionId, version:4, status:"planned",
+      objective:"repair_agent_state", steps:longMissionSteps
+    }],
+    attempts: longMissionAttempts,
+    executions: longMissionExecutions,
+    effectJournal: [{
+      idempotencyKey: `${longMissionId}:step-120`,
+      missionId: longMissionId, stepId:"step-120",
+      action:"repair_agent_state", target:"agent-120", status:"prepared"
+    }]
+  }
+});
+assert.equal(longPreparedMemory.nexo.attempts.length, 120);
+assert.equal(longPreparedMemory.nexo.executions.length, 220);
+assert.equal(reconstructNexoMission(longPreparedMemory,longMissionId).steps[0].status,"completed");
+const afterUnrelatedAttempt = recordNexoOutcome(longPreparedMemory,{
+  missionId:"unrelated-mission",stepId:"step-1",action:"unrelated_action",
+  status:"failed",evidence:{verified:false,kind:"effect-result",code:"TEST"}
+});
+assert.ok(afterUnrelatedAttempt.nexo.attempts.some(item=>item.missionId===longMissionId&&item.stepId==="step-1"));
+assert.equal(reconstructNexoMission(afterUnrelatedAttempt,longMissionId).steps[0].status,"completed");
+
