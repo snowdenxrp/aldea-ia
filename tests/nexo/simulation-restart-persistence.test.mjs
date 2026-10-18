@@ -8,6 +8,7 @@ import { world as defaultWorld } from "../../src/world.js";
 import { createInitialAgents } from "../../src/agents.js";
 import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
 
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
 const statePath = pathToFileURL(path.join(dir, "world-state.json"));
@@ -214,5 +215,103 @@ await persistState(pathToFileURL(crashStatePath), recovered, 2000, { expectedRev
 assert.equal((await loadState(pathToFileURL(crashStatePath))).stateRevision, 1);
 await fs.rm(crashDir, { recursive: true, force: true });
 
+
+/*
+ * Crash cut: a convergent repair reaches the authoritative Lúmina snapshot,
+ * but Nexo has not settled the separate PREPARED journal entry. The invariant
+ * is durable after restart; that alone must not silently rewrite Nexo history.
+ */
+const repairDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-repair-crash-cut-"));
+const repairStatePath = pathToFileURL(path.join(repairDir, "world-state.json"));
+const repairContinuityPath = path.join(repairDir, ".nexo-continuity.json");
+const repairSimulation = applyState({
+  version: 5,
+  stateRevision: 0,
+  savedAt: 1000,
+  day: 1,
+  hour: 8,
+  world: structuredClone(defaultWorld),
+  agents: [{
+    id: "alex",
+    alive: true,
+    position: { x: "not-a-number", z: 4 },
+    needs: { hunger: 50, thirst: 50, energy: 50, social: 50, safety: 50, health: 100 },
+    inventory: [],
+    skills: []
+  }],
+  events: []
+});
+await persistState(repairStatePath, repairSimulation, 1000, { stateRevision: 0 });
+
+const repairContinuity = await openNexoContinuityOwner({
+  filePath: repairContinuityPath,
+  allowEmptyInitialization: true
+});
+const missionAdmission = await repairContinuity.owner.recordMission({
+  expectedRevision: 0,
+  mission: {
+    missionId: "repair-crash-cut",
+    status: "planned",
+    objective: "normalize_agent_state",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  }
+});
+assert.equal(missionAdmission.status, "committed");
+const preparedIntent = await repairContinuity.owner.recordPrepared({
+  expectedRevision: missionAdmission.storeRevision,
+  operation: {
+    missionId: "repair-crash-cut",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    idempotencyKey: "repair-crash-cut:step-1",
+    at: "2026-10-18T00:00:00.000Z"
+  }
+});
+assert.equal(preparedIntent.status, "committed");
+assert.equal(preparedIntent.preparedCommitted, true);
+
+const repairAdapter = createLuminaEffectAdapter(repairSimulation);
+const repairedEffect = await repairAdapter.execute({
+  missionId: "repair-crash-cut",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "alex",
+  idempotencyKey: "repair-crash-cut:step-1",
+  precondition: ({ stateVersion }) => stateVersion === 0,
+  postcondition: ({ effectResult }) =>
+    effectResult?.status === "completed" &&
+    repairSimulation.agents[0].alive === true &&
+    Number.isFinite(repairSimulation.agents[0].position.x) &&
+    Number.isFinite(repairSimulation.agents[0].position.z)
+});
+assert.equal(repairedEffect.status, "completed");
+assert.equal(repairSimulation.agents[0].position.x, 0);
+
+await persistState(repairStatePath, repairSimulation, 2000, {
+  expectedRevision: 0,
+  stateRevision: 1
+});
+const durableRepairSnapshot = await loadStateStrict(repairStatePath);
+assert.equal(durableRepairSnapshot.stateRevision, 1);
+assert.equal(durableRepairSnapshot.agents[0].position.x, 0);
+assert.equal(durableRepairSnapshot.agents[0].alive, true);
+
+// Simulate process restart by reopening the separate Nexo continuity owner.
+const restartedRepairContinuity = await openNexoContinuityOwner({
+  filePath: repairContinuityPath
+});
+const unresolvedRepair = await restartedRepairContinuity.owner.reconcilePrepared({
+  idempotencyKey: "repair-crash-cut:step-1"
+});
+assert.equal(unresolvedRepair.status, "blocked");
+assert.equal(unresolvedRepair.code, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
+assert.equal(unresolvedRepair.verified, false);
+const persistedRepairJournal = await restartedRepairContinuity.owner.loadCurrent();
+assert.equal(persistedRepairJournal.snapshot.effectJournal[0].status, "prepared",
+  "durable desired state must not be silently treated as owner settlement");
+await fs.rm(repairDir, { recursive: true, force: true });
+
 await fs.rm(dir, { recursive: true, force: true });
-console.log("Nexo: real file save -> restart -> reconstruct preserves mission memory and simulation state.");
+console.log("Nexo: real file save -> restart -> reconstruct preserves mission memory and simulation state; repair crash-cut remains explicitly unsettled.");
+
