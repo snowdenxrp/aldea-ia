@@ -304,3 +304,48 @@ assert.deepEqual(unverifiedCompletion.memory.nexo.attempts[0].evidence.scope,{
   action:unverifiedCompletionMission.steps[0].action,
   target:unverifiedCompletionMission.steps[0].target??null
 });
+
+// Safety-sensitive runtime/replan boundaries must validate persisted continuity
+// before tolerant memory normalization can erase an orphan prepared obligation.
+const orphanPreparedMemory = {
+  version: 4,
+  runs: [], lessons: [], patterns: [],
+  nexo: {
+    missions: [], attempts: [], doNotRepeat: [], executions: [],
+    effectJournal: [{
+      idempotencyKey: "orphan-mission:step-1",
+      missionId: "orphan-mission",
+      stepId: "step-1",
+      action: "repair_agent_state",
+      target: "alex",
+      status: "prepared"
+    }]
+  }
+};
+const invalidContinuityMission = buildNexoMission({
+  reports:[{findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"invalid continuity must stop before effect"}]}]
+});
+let invalidContinuityHandlerCalls = 0;
+const invalidContinuityExecution = await executeNexoStep({
+  mission: invalidContinuityMission,
+  stepId: "step-1",
+  memory: orphanPreparedMemory,
+  adapter: {execute: async () => { invalidContinuityHandlerCalls += 1; return {status:"completed",verified:true,evidence:{verified:true,kind:"fake"}}; }}
+});
+assert.equal(invalidContinuityExecution.status,"blocked");
+assert.equal(invalidContinuityExecution.adapterResult.code,"NEXO_RECOVERY_CONTEXT_MISSING");
+assert.equal(invalidContinuityHandlerCalls,0);
+assert.equal(invalidContinuityMission.steps[0].status,"planned");
+assert.equal(orphanPreparedMemory.nexo.effectJournal[0].status,"prepared");
+
+const invalidContinuityReplan = replanPersistedNexoMission({
+  memory: orphanPreparedMemory,
+  previousMissionId: "orphan-mission",
+  reports: [{findings:[{severity:"info",code:"new-proposal"}]}],
+  reason: "caller_requests_replan"
+});
+assert.equal(invalidContinuityReplan.status,"not_replanned");
+assert.equal(invalidContinuityReplan.code,"NEXO_RECOVERY_CONTEXT_MISSING");
+assert.equal(invalidContinuityReplan.memory,orphanPreparedMemory);
+assert.equal(orphanPreparedMemory.nexo.missions.length,0);
+
