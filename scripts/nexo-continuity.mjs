@@ -29,7 +29,8 @@ function emptySnapshot() {
 export async function openNexoContinuityOwner({
   filePath,
   legacyMemory = null,
-  allowEmptyInitialization = false
+  allowEmptyInitialization = false,
+  effectVerifiers = {}
 } = {}) {
   const store = createNexoContinuityStore({ filePath });
   let current;
@@ -60,7 +61,7 @@ export async function openNexoContinuityOwner({
 
   return Object.freeze({
     store,
-    owner: createNexoContinuityOwner({ store }),
+    owner: createNexoContinuityOwner({ store, effectVerifiers }),
     current
   });
 }
