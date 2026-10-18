@@ -12,6 +12,19 @@ La misión real es **M0: construir una continuidad operativa propia de Nexo, ind
 
 Ruta de trabajo del repo: `STATUS → MASTER/CORE → BUILD → trabajo`. Leer primero `NEXO_NCS/STATUS.md` y este handoff; después inspeccionar solo el siguiente límite no resuelto. Los resúmenes previos ya contienen el historial extenso.
 
+## 1A. Cambio posterior: replay de settlement tras respuesta perdida (CI pendiente)
+
+Se endureció la recuperación de `settlePreparedRepairFromPersistedState()`:
+
+- Si el commit del settlement se aplicó en el store, pero el caller recibió `UNKNOWN`, el replay puede consultar el journal canónico aunque la revisión actual ya haya avanzado.
+- Solo recupera `settled_observed` si el registro almacenado tiene el tipo/fuente/observación esperados, conserva la revisión PREPARED y la revisión ambiental observada es la misma o la inmediatamente siguiente; `causalAttribution` debe seguir en `not_claimed`.
+- No repite escritura ni dispatch. Un PREPARED todavía no liquidado sigue requiriendo coincidencia exacta de revisión; en caso contrario se devuelve conflicto.
+- Regresión nueva en `tests/nexo/repair-settlement-crash-cuts.test.mjs`: el store confirma internamente el commit y el wrapper devuelve UNKNOWN; el segundo intento con revisión esperada original recupera el settlement registrado.
+- Commits: `1acf070385134ecbb6eeef78b7cec43b8a4a4916` (lógica), `b572724ec18e22b9f2f5fe10cd2e50e851e4fb84` (recuperación aun cuando la revisión canónica avanzó), `3bc02acc1a1293e9c7726f44bf04cdbf4ad99724` (regresión).
+- **Validación pendiente:** no se ha observado un run CI asociado al último commit. No declarar la regresión PASS hasta obtener evidencia de ejecución.
+
+**No confundir este cambio con el settlement genérico de M0.** Es un arreglo de idempotencia/recuperación en el reconciliador repair-only existente. El siguiente trabajo sigue siendo el contrato genérico por acción, guiado por pruebas, sin callback de reconciliación libre ni evidencia que el caller pueda autoafirmar.
+
 ## 1. Estado real al detenerse
 
 - **M0: INCOMPLETO.** Hay un owner/store canónico de continuidad, admisión PREPARED, lineage, settlement separado y una ruta limitada de reparación con pruebas de reinicio/crash.
