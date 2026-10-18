@@ -186,6 +186,23 @@ export function createNexoContinuityOwner({ store } = {}) {
       return { status: "already_recorded", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
 
+    // New execution lineage must correspond to exactly one already-persisted
+    // PREPARED obligation. Lineage must not create an execution record for an
+    // operation that Nexo never durably admitted for dispatch.
+    const preparedMatches = current.snapshot.effectJournal.filter(item =>
+      item?.idempotencyKey === operation.idempotencyKey
+    );
+    if (preparedMatches.length !== 1 || preparedMatches[0]?.status !== "prepared") {
+      return { status: "blocked", code: "NEXO_EXECUTION_PREPARED_OBLIGATION_REQUIRED", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    const prepared = preparedMatches[0];
+    if (prepared.missionId !== operation.missionId ||
+        prepared.stepId !== operation.stepId ||
+        prepared.action !== operation.action ||
+        !isDeepStrictEqual(prepared.target ?? null, operation.target ?? null)) {
+      return { status: "blocked", code: "NEXO_EXECUTION_PREPARED_IDENTITY_MISMATCH", storeRevision: current.storeRevision, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+
     let candidate;
     try {
       candidate = recordNexoExecutionInSnapshot(current.snapshot, {
