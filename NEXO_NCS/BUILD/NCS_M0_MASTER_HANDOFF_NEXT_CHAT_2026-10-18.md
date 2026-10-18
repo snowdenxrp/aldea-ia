@@ -183,6 +183,14 @@ Commits:
 
 CI enfocado [39140959531](https://github.com/snowdenxrp/aldea-ia/actions/runs/39140959531) completó **SUCCESS** en el SHA exacto del workflow `d3bce60a5d53df8ffa5caf1fb987fccfe0116620`. El job `repair-crash-cuts` y los pasos de crash-cut, migración y lifecycle integrado finalizaron `success`. Esta prueba todavía **no** integra `runtime.js`; valida el flujo repair-only de los helpers ya existentes. Los commits documentales posteriores no cambian el SHA al que aplica esta evidencia.
 
+## Incremento — CI trigger coverage corregida (2026-10-18)
+
+El workflow `.github/workflows/nexo-m0-repair-crash-cuts.yml` ahora activa CI ante cambios en preparación, dispatch, settlement, verificación de misión, migración de continuidad y la prueba integrada. Antes, varios de esos inputs no estaban en `paths`, por lo que una edición podía no ejecutar el workflow focalizado.
+
+- Commit: `f54dcc9452d3010fe9fb4463786d263b9d8eaac4`.
+- CI exacto: [39141182732](https://github.com/snowdenxrp/aldea-ia/actions/runs/39141182732), **SUCCESS** sobre ese mismo SHA; todos los tres pasos de test configurados finalizaron `success`.
+- Pendiente como regresión explícita: replay después de `settled_observed` y revisión de entorno obsoleta entre PREPARED y dispatch. No inferir que están cubiertos por el PASS actual.
+
 ## 7. Siguiente tarea concreta
 
 **La inspección dirigida y el mapa de integración ya están hechos; no repetirlos. El siguiente paso es definir y probar la entrada owner-backed real para la ruta repair-only antes de conectarla al runtime general.**
