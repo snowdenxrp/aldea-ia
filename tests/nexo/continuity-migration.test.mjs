@@ -345,4 +345,57 @@ try {
   await fs.rm(unresolvedOutcomeDir, { recursive: true, force: true });
 }
 
+const preparedAdmissionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-prepared-admission-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(preparedAdmissionDir, "nexo.json"),
+    allowEmptyInitialization: true
+  });
+  const mission = {
+    missionId: "owner-prepared-admission",
+    status: "planned",
+    objective: "enforce canonical step admission before PREPARED",
+    steps: [
+      { id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] },
+      { id: "step-2", action: "repair_agent_needs", target: "alex", status: "planned", dependsOn: ["step-1"] }
+    ]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 0, mission })).status, "committed");
+  const blockedDependency = await opened.owner.recordPrepared({
+    expectedRevision: 1,
+    operation: {
+      idempotencyKey: "owner-prepared-admission:step-2",
+      missionId: mission.missionId, stepId: "step-2",
+      action: "repair_agent_needs", target: "alex", environmentStateRevision: 0
+    }
+  });
+  assert.equal(blockedDependency.status, "blocked");
+  assert.equal(blockedDependency.code, "NEXO_PREPARED_DEPENDENCIES_UNMET");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 1);
+  assert.equal((await opened.owner.loadCurrent()).snapshot.effectJournal.length, 0);
+
+  const nonRunnableMission = {
+    missionId: "owner-prepared-nonrunnable",
+    status: "planned",
+    objective: "must not prepare terminal step",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "completed", dependsOn: [] }]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 1, mission: nonRunnableMission })).status, "committed");
+  const blockedStatus = await opened.owner.recordPrepared({
+    expectedRevision: 2,
+    operation: {
+      idempotencyKey: "owner-prepared-nonrunnable:step-1",
+      missionId: nonRunnableMission.missionId, stepId: "step-1",
+      action: "repair_agent_state", target: "alex", environmentStateRevision: 0
+    }
+  });
+  assert.equal(blockedStatus.status, "blocked");
+  assert.equal(blockedStatus.code, "NEXO_PREPARED_STEP_NOT_RUNNABLE");
+  const unchanged = await opened.owner.loadCurrent();
+  assert.equal(unchanged.storeRevision, 2);
+  assert.equal(unchanged.snapshot.effectJournal.length, 0);
+} finally {
+  await fs.rm(preparedAdmissionDir, { recursive: true, force: true });
+}
+
 console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation, durable owner outcome recording, PREPARED admission guard and observed-settlement no-redispatch OK.");
