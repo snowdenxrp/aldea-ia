@@ -1,3 +1,13 @@
+## Quinto avance verificado — estado de misión en admisión PREPARED (2026-10-18)
+
+Se encontró que un paso `planned` dentro de una misión `blocked` podía pasar la admisión del owner. `src/nexo/core/continuity-owner.mjs` ahora requiere `mission.status === planned` antes de crear PREPARED nuevo; falla con `NEXO_PREPARED_MISSION_NOT_RUNNABLE` sin cambiar revisión ni journal. El check ocurre después del manejo de PREPARED existente, para que una obligación incierta ya durable siga siendo visible a recuperación.
+
+Regresión test-first en `tests/nexo/continuity-migration.test.mjs`: SHA `4c5cbf530da03642fb68da62f0abf1e8829bae5e`; [repair crash cuts 39153079971](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153079971) y [bounded admission/restart 39153080078](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153080078) fallaron como esperado (`committed` vs `blocked`). El arreglo en SHA `afb214730a1eca78d7f4a20b01d1a25826c42a5d` quedó validado por las cuatro suites: [STEP 5 39153137599](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137599), [STEP 4 39153137708](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137708), [repair crash cuts 39153137714](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137714), [bounded admission/restart 39153137611](https://github.com/snowdenxrp/aldea-ia/actions/runs/39153137611) SUCCESS.
+
+**Siguiente:** la frontera legacy sigue sin migrar. El paso siguiente es diseñar integración runtime usando solo la sesión canónica repair-only ya existente; no sustituir llamadas legacy con writes del owner sin un PREPARED duradero y conciliación específica. No `goalObservations`, no atribución causal por etiquetas, no atomicidad cross-store, no dispatcher genérico.
+
+---
+
 ## Cuarto avance verificado — PREPARED solo para pasos ejecutables (2026-10-18)
 
 `src/nexo/core/continuity-owner.mjs` ahora impone admisión en `recordPrepared()` para una obligación nueva: el paso canónico debe seguir `planned` y todas las dependencias declaradas deben existir y estar `completed`. Rechaza estados no ejecutables con `NEXO_PREPARED_STEP_NOT_RUNNABLE` y dependencias incompletas con `NEXO_PREPARED_DEPENDENCIES_UNMET`, sin avanzar revisión ni escribir journal. La validación se aplica después del branch de PREPARED existente, de modo que una obligación incierta existente no se oculta por cambios posteriores de estado.
