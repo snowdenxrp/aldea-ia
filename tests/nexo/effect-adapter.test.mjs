@@ -79,6 +79,13 @@ const exceptionReconciled=await exceptionAdapter.execute({missionId:"m8",stepId:
 assert.equal(exceptionReconciled.status,"completed");
 assert.equal(exceptionJournal[0].status,"completed");
 
+const terminalIdentityJournal=[{idempotencyKey:"m7:s1",missionId:"m7",stepId:"s1",action:"original_effect",target:{resource:"alex"},status:"completed",result:{status:"completed",verified:true,action:"original_effect",target:{resource:"alex"},idempotencyKey:"m7:s1"}}];
+const terminalIdentityAdapter=createEffectAdapter({executionJournal:terminalIdentityJournal});
+const terminalIdentityMismatch=await terminalIdentityAdapter.execute({missionId:"m7",stepId:"s1",action:"different_effect",target:{resource:"alex"},idempotencyKey:"m7:s1"});
+assert.equal(terminalIdentityMismatch.status,"blocked");
+assert.equal(terminalIdentityMismatch.code,"EFFECT_IDENTITY_MISMATCH","terminal cached results must not be replayed for a different semantic operation");
+assert.equal(terminalIdentityJournal[0].status,"completed","rejecting alias must not rewrite original terminal history");
+
 const evidenceMismatch=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"safe_repair",target:"alex",idempotencyKey:"m1:s7",
   precondition:()=>true,postcondition:()=>({verified:true,kind:"fake"})

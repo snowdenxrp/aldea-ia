@@ -121,22 +121,21 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
   async function executeFresh(request={}) {
     const {missionId,stepId,action,target=null,idempotencyKey,precondition,postcondition,context={}}=request;
     if(!missionId || !stepId || !action || !idempotencyKey) return {status:"failed",code:"INVALID_EFFECT_REQUEST",verified:false};
-    if(executed.has(idempotencyKey)) return structuredClone(executed.get(idempotencyKey));
-
     const existingEntry=journalEntry(idempotencyKey);
+    // Validate the persisted operation identity before returning either a cached
+    // result or attempting reconciliation. Idempotency must not alias new intent.
+    if(existingEntry && (request.missionId!==existingEntry.missionId || request.stepId!==existingEntry.stepId ||
+      request.action!==existingEntry.action || !isDeepStrictEqual(request.target??null,existingEntry.target??null))) {
+      return {status:"blocked",code:"EFFECT_IDENTITY_MISMATCH",verified:false,
+        idempotencyKey,expected:{missionId:existingEntry.missionId,stepId:existingEntry.stepId,
+          action:existingEntry.action,target:structuredClone(existingEntry.target??null)}};
+    }
+    if(executed.has(idempotencyKey)) return structuredClone(executed.get(idempotencyKey));
     if(existingEntry?.result) {
       executed.set(idempotencyKey,existingEntry.result);
       return structuredClone(existingEntry.result);
     }
     if(existingEntry?.status==="prepared") {
-      // The idempotency key selects an operation; it does not make mismatched
-      // caller-supplied metadata equivalent to that operation's identity.
-      if(request.missionId!==existingEntry.missionId || request.stepId!==existingEntry.stepId ||
-        request.action!==existingEntry.action || !isDeepStrictEqual(request.target??null,existingEntry.target??null)) {
-        return {status:"blocked",code:"EFFECT_IDENTITY_MISMATCH",verified:false,
-          idempotencyKey,expected:{missionId:existingEntry.missionId,stepId:existingEntry.stepId,
-            action:existingEntry.action,target:structuredClone(existingEntry.target??null)}};
-      }
       const reconciled=await reconcilePrepared(existingEntry,request);
       // A blocked reconciliation is not a terminal fact about the external effect.
       // Keep the journal in `prepared` so a later, stronger reconciliation attempt
