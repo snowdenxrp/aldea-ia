@@ -71,7 +71,7 @@ async function runIsolated({ repair }) {
       replay = await runNexoRuntimeRepairSession({
         continuity: reopened,
         statePath,
-        missionId: report.nexoMission.missionId
+        missionId: continuity.snapshot.effectJournal[0].missionId
       });
       const afterReplayState = JSON.parse(await fs.readFile(statePath, "utf8"));
       const afterReplayContinuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
