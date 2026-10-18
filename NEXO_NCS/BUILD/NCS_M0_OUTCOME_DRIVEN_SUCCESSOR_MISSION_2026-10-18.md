@@ -2,7 +2,7 @@
 
 Date: 2026-10-18  
 Branch: `ncs-clean-architecture`  
-Status: IMPLEMENTED IN SOURCE + REGRESSION ADDED; CI PENDING
+Status: IMPLEMENTED / FOCUSED CI PASS
 
 ## Functional gap
 
@@ -18,7 +18,11 @@ The lifecycle could mark a mission `needs_replan` or `blocked`, and callers coul
 
 ## Verification
 
-- Source/test commit created; focused CI pending. Record actual run IDs and outcomes after GitHub Actions completes.
+- Mission admission / continuity: [39084644603](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644603) — success.
+- STEP 4 semantic validation: [39084644520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644520) — success.
+- STEP 5 outcome classification: [39084644555](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644555) — success.
+- M0 non-authority core contracts: [39084644458](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644458) — success.
+- Final source/test head exercised by these workflows: `edd274dd6cade0534ca2b8adc3eeef662336ca1d`.
 
 ## Limits
 

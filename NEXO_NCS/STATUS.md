@@ -4,7 +4,7 @@
 - Added `replanNexoMission()`: accepts only `needs_replan` / `blocked`, uses explicit or existing failure/block evidence, returns `null` rather than inventing a reason, and preserves parent lineage.
 - Regression in `tests/nexo/orchestrator.test.mjs` checks lineage, persistence/reconstruction, retained prior outcome, and rejected states.
 - Report: [NCS M0 outcome-driven successor mission](BUILD/NCS_M0_OUTCOME_DRIVEN_SUCCESSOR_MISSION_2026-10-18.md).
-- Focused CI: PENDING until actual GitHub Actions result is fetched.
+- Focused CI PASS at `edd274dd6cade0534ca2b8adc3eeef662336ca1d`: mission continuity [39084644603](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644603), STEP 4 [39084644520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644520), STEP 5 [39084644555](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644555), M0 core [39084644458](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644458) — all success.
 - Scope: planning only; no effects, authority, retries/queues/new IDs. Proxy boundary design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
 
 ## M0 — Learning memory snapshot isolation (2026-10-18)

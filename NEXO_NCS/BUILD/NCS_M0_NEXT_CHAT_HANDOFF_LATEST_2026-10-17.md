@@ -3,7 +3,7 @@
 - Added `replanNexoMission()` to turn an existing `needs_replan` / `blocked` mission into a successor plan candidate from newly supplied reports and a reason grounded in existing failure/block evidence. Non-replan states or missing reasons return `null`.
 - Regression checks parent/reason lineage, persistence/reconstruction, retained prior outcome, and rejected states.
 - Report: [NCS M0 outcome-driven successor mission](NCS_M0_OUTCOME_DRIVEN_SUCCESSOR_MISSION_2026-10-18.md).
-- Fetch focused CI and record actual run ID/outcome before treating the increment as verified.
+- Focused CI PASS on head `edd274dd6cade0534ca2b8adc3eeef662336ca1d`: mission continuity [39084644603](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644603), STEP 4 [39084644520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644520), STEP 5 [39084644555](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644555), M0 core [39084644458](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084644458) — all success.
 - Planning only; do not connect to protected effects or infer authority. Proxy boundary remains design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
 
 ---
