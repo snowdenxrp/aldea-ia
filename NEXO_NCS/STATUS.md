@@ -1,3 +1,14 @@
+## M0 — replay de outcome con afirmación contradictoria (2026-10-18)
+
+- **Hueco demostrado:** `recordOutcome()` reconocía como `already_recorded` cualquier replay con la misma identidad misión/paso/acción/objetivo, aunque el estado o la evidencia del nuevo outcome contradijeran el intento durable existente. El intento original no se sobrescribía, pero el resultado contradictorio no quedaba explícitamente bloqueado.
+- **Contrato corregido:** el replay solo es `already_recorded` cuando coinciden estado, evidencia, `parentMissionId` y `replanReason`, además de la identidad ya validada. Si la identidad coincide pero esos datos difieren, retorna `blocked / NEXO_OUTCOME_RESULT_MISMATCH`; no avanza `storeRevision` y no reemplaza el primer outcome. Un resultado tardío no puede hacer retroceder una finalización previa ni presentarse como replay idéntico.
+- **Prueba:** `tests/nexo/continuity-migration.test.mjs` cambió la regresión del outcome `completed` seguido de un replay `failed` para exigir bloqueo y conservación de `storeRevision` y del estado reconstruido `completed`.
+- **Test-first:** SHA de prueba `d953e13aa026e52c6dcf3c65f4c18f7e86fc7d37`; [crash cuts 39151769794](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769794) y [bounded admission/restart 39151769766](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769766) fallaron con la expectativa nueva antes del fix. STEP 4 y STEP 5 pasaron en esa fase, pero no constituyen validación del fix.
+- **CI verde tras el fix:** SHA de código/pruebas `783ccdbd5c9871b5c86e1994a2f348211e5e9bd3`: [bounded admission/restart 39151794894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794894), [repair settlement crash cuts 39151794904](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794904), [STEP 4 39151794891](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794891), [STEP 5 39151794922](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151794922): los cuatro SUCCESS.
+- **Límite / siguiente paso:** este guard endurece la idempotencia del owner; no migra `src/nexo/runtime.js` del ledger legacy ni autentica la evidencia del caller. No convertir outcome en settlement, no añadir `goalObservations`, no mezclar Nexo/Lúmina, efectos protegidos STOP y STEP 7 OPEN / STOP / UNKNOWN. Siguiente frente: diseñar el cutover canónico mínimo de runtime y sus crash/restart tests antes de sustituir escrituras legacy.
+
+---
+
 ## M0 — lineage debe conservar también la revisión PREPARED (2026-10-18)
 
 - **Segundo hueco concreto:** incluso después de comprobar que un replay de lineage repetía exactamente el mismo resultado, `recordExecutionLineage()` podía aceptar una llamada con una revisión ambiental base distinta de la que estaba ligada al journal PREPARED. El resultado guardado por sí solo no bastaba para verificar ese contexto.
