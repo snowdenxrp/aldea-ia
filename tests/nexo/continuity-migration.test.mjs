@@ -85,4 +85,54 @@ try {
   await fs.rm(missingDir, { recursive: true, force: true });
 }
 
-console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed and explicit empty bootstrap OK.");
+const lineageDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-execution-lineage-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(lineageDir, "nexo.json"),
+    legacyMemory
+  });
+  const operation = {
+    idempotencyKey: "mission-legacy-1:step-1",
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex"
+  };
+  const recorded = await opened.owner.recordExecutionLineage({
+    expectedRevision: 0,
+    operation,
+    // Even a caller-supplied terminal-looking result is lineage, not proof.
+    result: { status: "completed", verified: true, evidence: { source: "caller" } }
+  });
+  assert.equal(recorded.status, "committed");
+  assert.equal(recorded.journalSettled, false);
+  const afterLineage = await opened.owner.loadCurrent();
+  assert.equal(afterLineage.storeRevision, 1);
+  assert.equal(afterLineage.snapshot.executions.length, 2);
+  assert.equal(afterLineage.snapshot.effectJournal[0].status, "prepared",
+    "execution lineage must never settle the unresolved effect journal");
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.status, "reconstructed");
+  assert.equal(reconstructed.mission.status, "blocked");
+  assert.equal(reconstructed.mission.objective, "reconcile_prepared_effect");
+
+  const duplicate = await opened.owner.recordExecutionLineage({
+    expectedRevision: 1,
+    operation,
+    result: { status: "failed", verified: false }
+  });
+  assert.equal(duplicate.status, "already_recorded");
+  assert.equal((await opened.owner.loadCurrent()).storeRevision, 1,
+    "replaying an execution identity must not rewrite its first lineage record");
+
+  const stale = await opened.owner.recordExecutionLineage({
+    expectedRevision: 0,
+    operation: { ...operation, idempotencyKey: "mission-legacy-1:step-1" },
+    result: { status: "blocked" }
+  });
+  assert.equal(stale.status, "conflict");
+} finally {
+  await fs.rm(lineageDir, { recursive: true, force: true });
+}
+
+console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, and execution-lineage isolation OK.");
