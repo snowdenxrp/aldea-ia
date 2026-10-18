@@ -51,8 +51,14 @@ A future Nexo-owned session entrypoint may be introduced only with these explici
 - No new queue, retry engine, tombstone, global ID, transaction wrapper, or alternate authority mechanism.
 - No migration of Nexo operational memory into Lúmina's simulation state.
 
+## Implementation update — session API now exists
+
+Implemented `scripts/nexo-repair-session.mjs` with `runNexoRepairSession()`. The caller supplies only missionId/stepId; action and target are taken from the canonical persisted Nexo mission. Unsupported actions and terminal/missing/duplicate step identities fail closed. The session delegates to the repair-only entrypoint and is tested through its own API.
+
+Regression: `tests/nexo/repair-session.test.mjs` covers normal owner-backed repair, non-repair action rejection before PREPARED/dispatch, crash after environment persistence and before settlement, reopening the owner from disk, and recovery without redispatch. CI [39142674734](https://github.com/snowdenxrp/aldea-ia/actions/runs/39142674734) passed on code/test SHA `b011a8078f9f0562a61a3bafb9c260810147ea84`; later documentation commits are not that test SHA.
+
 ## Next implementation task
 
-Add the first test against a proposed owner-backed session API and make the session API the single production entrypoint for the repair-only path. Before implementing it, inspect the existing owner factory and mission reconstruction APIs to avoid duplicating a lifecycle already present. The test must prove the full lifecycle through that session API. If the current owner API cannot provide a required identity or durable transition, document the exact missing contract instead of fabricating it.
+The session is still not called by `src/nexo/runtime.js` or a production startup path. Next, test the narrowest real runtime/startup invocation without allowing a caller to override the stored action/target, and preserve legacy rollback until restart/crash-cut tests pass through that real entrypoint. Do not route generic `executeNexoStep()` through the repair dispatcher. Keep `settled_observed` separate from outcome, causal attribution, and mission completion; protected effects remain blocked.
 
 Current status: M0 incomplete; production runtime cutover not done; protected effects STOP; unresolved PREPARED/settled_observed UNKNOWN; Nexo and Lúmina separate.
