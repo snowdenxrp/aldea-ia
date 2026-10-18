@@ -705,3 +705,11 @@ Continue only where there is a concrete, contract-grounded gap in the remaining 
 - Report: `NEXO_NCS/BUILD/NCS_M0_REPLAN_FROM_DURABLE_MISSION_STATE_2026-10-18.md`.
 - Focused CI PASS on head `a7f60d90303fcbd24f4918f4b05730c6967527c8`: mission continuity [39084825665](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825665), STEP 4 [39084825686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825686), STEP 5 [39084825638](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825638) — all success. Continue toward integrated observation/report → mission → permitted execution → verified outcome → durable restart/replan cycle.
 - Do not reopen completed M0 increments. Do not activate protected effects. Proxy boundary remains design STOP; STEP 7 remains OPEN / STOP / UNKNOWN.
+
+
+## Latest continuation — replan snapshot isolation (2026-10-18)
+
+- `replanPersistedNexoMission()` now returns the fresh memory snapshot from `recordNexoPlan()` without mutating the input snapshot.
+- Regression asserts prior memory remains unchanged while the returned memory contains the successor and retained failed attempt.
+- Report: `NEXO_NCS/BUILD/NCS_M0_REPLAN_SNAPSHOT_ISOLATION_2026-10-18.md`.
+- Check focused CI on the latest commit before claiming PASS. Continue the functional M0 loop; do not repeat closed audits. Proxy trust boundary remains design STOP; STEP 7 remains OPEN / STOP / UNKNOWN; protected effects STOP.

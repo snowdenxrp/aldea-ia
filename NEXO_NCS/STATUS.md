@@ -245,3 +245,12 @@ Older evidence and handoffs remain in `NEXO_NCS/BUILD/`, `RESEARCH/`, `DECISIONS
 - Report: [M0 replan from durable mission state](BUILD/NCS_M0_REPLAN_FROM_DURABLE_MISSION_STATE_2026-10-18.md).
 - Focused CI PASS on head `a7f60d90303fcbd24f4918f4b05730c6967527c8`: mission continuity [39084825665](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825665), STEP 4 [39084825686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825686), STEP 5 [39084825638](https://github.com/snowdenxrp/aldea-ia/actions/runs/39084825638) — all success.
 - This remains non-authoritative planning. STEP 7 = OPEN / STOP / UNKNOWN; protected effects remain STOP.
+
+
+## M0 — Replan memory snapshot isolation (2026-10-18)
+
+- Defect: `replanPersistedNexoMission()` created a new memory snapshot then copied it into the input object, violating the prior-snapshot immutability convention.
+- Correction: return the new snapshot directly; regression checks the input remains unchanged and the successor exists only in the returned memory until the caller adopts it.
+- Report: [M0 replan snapshot isolation](BUILD/NCS_M0_REPLAN_SNAPSHOT_ISOLATION_2026-10-18.md).
+- Focused CI: pending for current source/test commit.
+- Scope: memory snapshot correctness only. Proxy boundary design STOP; STEP 7 OPEN / STOP / UNKNOWN; protected effects STOP.
