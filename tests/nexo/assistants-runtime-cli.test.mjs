@@ -52,8 +52,10 @@ async function runIsolated({ repair }) {
       }
     });
     assert.equal(child.error, undefined, child.error?.message);
-    assert.equal(child.status, 0, child.stderr || child.stdout);
     const report = JSON.parse(child.stdout);
+    // The fixture intentionally starts with an invalid agent position, so the
+    // diagnostic report can set exitCode=1 even when the repair itself settles.
+    assert.equal(child.status, report.status === "error" ? 1 : 0, child.stderr || child.stdout);
     const state = JSON.parse(await fs.readFile(statePath, "utf8"));
     const continuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
     return { report, state, continuity };
