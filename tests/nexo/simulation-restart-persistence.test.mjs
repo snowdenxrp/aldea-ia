@@ -434,6 +434,59 @@ assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effe
   entry => entry.idempotencyKey === "repair-negative-settlement:step-negative"
 ).status, "prepared");
 
+const currentNegativeEnvironment = await loadStateStrict(repairStatePath);
+const normalizedForCommitAmbiguity = applyState(currentNegativeEnvironment);
+normalizedForCommitAmbiguity.agents[0].position = { x: 0, z: 4 };
+await persistState(repairStatePath, normalizedForCommitAmbiguity, 7000, {
+  expectedRevision: 4,
+  stateRevision: 5
+});
+
+const beforeAmbiguousMission = await restartedRepairContinuity.owner.loadCurrent();
+const ambiguousMission = await restartedRepairContinuity.owner.recordMission({
+  expectedRevision: beforeAmbiguousMission.storeRevision,
+  mission: {
+    missionId: "repair-ambiguous-settlement",
+    status: "planned",
+    objective: "normalize_agent_state",
+    steps: [{ id: "step-ambiguous", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  }
+});
+assert.equal(ambiguousMission.status, "committed");
+const ambiguousPrepared = await prepareRepairAgainstPersistedState({
+  owner: restartedRepairContinuity.owner,
+  statePath: repairStatePath,
+  expectedContinuityRevision: ambiguousMission.storeRevision,
+  operation: {
+    missionId: "repair-ambiguous-settlement",
+    stepId: "step-ambiguous",
+    action: "repair_agent_state",
+    target: "alex",
+    idempotencyKey: "repair-ambiguous-settlement:step-ambiguous"
+  }
+});
+assert.equal(ambiguousPrepared.status, "committed");
+const ambiguousStore = {
+  loadCurrent: () => restartedRepairContinuity.store.loadCurrent(),
+  commitIfCurrent: async () => ({
+    status: "unknown",
+    code: "NEXO_CONTINUITY_STORE_COMMIT_OUTCOME_UNKNOWN"
+  })
+};
+const ambiguousSettlement = await settlePreparedRepairFromPersistedState({
+  store: ambiguousStore,
+  statePath: repairStatePath,
+  idempotencyKey: "repair-ambiguous-settlement:step-ambiguous",
+  expectedContinuityRevision: ambiguousPrepared.storeRevision
+});
+assert.equal(ambiguousSettlement.status, "unknown");
+assert.equal(ambiguousSettlement.verified, false);
+assert.equal(ambiguousSettlement.code, "NEXO_CONTINUITY_STORE_COMMIT_OUTCOME_UNKNOWN");
+assert.equal((await restartedRepairContinuity.owner.loadCurrent()).snapshot.effectJournal.find(
+  entry => entry.idempotencyKey === "repair-ambiguous-settlement:step-ambiguous"
+).status, "prepared");
+
+
 const revisionTwoSnapshot = await loadStateStrict(repairStatePath);
 const laterSnapshot = applyState(revisionTwoSnapshot);
 await persistState(repairStatePath, laterSnapshot, 6000, {
