@@ -438,7 +438,7 @@ const revisionTwoSnapshot = await loadStateStrict(repairStatePath);
 const laterSnapshot = applyState(revisionTwoSnapshot);
 await persistState(repairStatePath, laterSnapshot, 6000, {
   expectedRevision: 2,
-  stateRevision: 3
+  stateRevision: 4
 });
 const unrelatedRevisionSettlement = await settlePreparedRepairFromPersistedState({
   store: restartedRepairContinuity.store,
