@@ -97,6 +97,8 @@ const preparedSnapshot = {
 };
 const recoveryOwner = {
   loadCurrent: async () => structuredClone(preparedSnapshot),
+  recordPrepared: async () => { throw new Error("recovery must not prepare again"); },
+  recordExecutionLineage: async () => { throw new Error("recovery must not redispatch or add lineage"); },
   supportsReconciliation: () => true,
   reconcilePrepared: async ({ expectedRevision }) => {
     recoveryCalls.push("reconcile");
@@ -136,6 +138,8 @@ const settledOwner = {
       }]
     }
   }),
+  recordPrepared: async () => { throw new Error("settled replay must not prepare again"); },
+  recordExecutionLineage: async () => { throw new Error("settled replay must not redispatch"); },
   recordPrepared: async () => { throw new Error("settled replay must not prepare again"); },
   recordExecutionLineage: async () => { throw new Error("settled replay must not redispatch"); },
   supportsReconciliation: () => true,
