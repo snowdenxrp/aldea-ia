@@ -120,10 +120,14 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
     };
   }
 
-  async function executeFresh(request={}) {
+  async function executeFresh(request={}, { preparedExternally = false } = {}) {
     const {missionId,stepId,action,target=null,idempotencyKey,precondition,postcondition,context={}}=request;
     if(!missionId || !stepId || !action || !idempotencyKey) return {status:"failed",code:"INVALID_EFFECT_REQUEST",verified:false};
     const existingEntry=journalEntry(idempotencyKey);
+    const saveResult = (key, result) => preparedExternally ? result : persist(key, result);
+    if (preparedExternally && (executed.has(idempotencyKey) || existingEntry)) {
+      return { status:"blocked", code:"EFFECT_LOCAL_JOURNAL_CONFLICT_WITH_CANONICAL_PREPARE", verified:false, idempotencyKey };
+    }
     // Validate the persisted operation identity before returning either a cached
     // result or attempting reconciliation. Idempotency must not alias new intent.
     if(existingEntry && (request.missionId!==existingEntry.missionId || request.stepId!==existingEntry.stepId ||
@@ -132,12 +136,12 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
         idempotencyKey,expected:{missionId:existingEntry.missionId,stepId:existingEntry.stepId,
           action:existingEntry.action,target:structuredClone(existingEntry.target??null)}};
     }
-    if(executed.has(idempotencyKey)) return structuredClone(executed.get(idempotencyKey));
-    if(existingEntry?.result) {
+    if(!preparedExternally && executed.has(idempotencyKey)) return structuredClone(executed.get(idempotencyKey));
+    if(!preparedExternally && existingEntry?.result) {
       executed.set(idempotencyKey,existingEntry.result);
       return structuredClone(existingEntry.result);
     }
-    if(existingEntry?.status==="prepared") {
+    if(!preparedExternally && existingEntry?.status==="prepared") {
       const reconciled=await reconcilePrepared(existingEntry,request);
       // A blocked reconciliation is not a terminal fact about the external effect.
       // Keep the journal in `prepared` so a later, stronger reconciliation attempt
@@ -146,8 +150,8 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
       return reconciled;
     }
 
-    recordIntent(request);
-    if(typeof persistPreparedIntent==="function") {
+    if(!preparedExternally) recordIntent(request);
+    if(!preparedExternally && typeof persistPreparedIntent==="function") {
       try {
         await persistPreparedIntent({idempotencyKey, journalEntry:structuredClone(journalEntry(idempotencyKey)), request:{missionId,stepId,action,target,idempotencyKey,context:structuredClone(context)}});
       } catch(error) {
@@ -158,7 +162,7 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
     const handler=registry.get(action);
     if(typeof handler!=="function"){
       const result={status:"unsupported",code:"EFFECT_NOT_REGISTERED",verified:false,action,target};
-      persist(idempotencyKey,result); return result;
+      saveResult(idempotencyKey,result); return result;
     }
 
     const preVersion=getStateVersion();
@@ -170,7 +174,7 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
     const beforeVersion=getStateVersion();
     if(beforeVersion!==preVersion){
       const result={status:"blocked",code:"STATE_CHANGED_DURING_PRECONDITION",verified:false,action,target,preVersion,beforeVersion};
-      persist(idempotencyKey,result); return result;
+      saveResult(idempotencyKey,result); return result;
     }
 
     let effectResult;
@@ -220,7 +224,22 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
 
     const evidence={verified:true,kind:"effect-postcondition",action,target,beforeVersion,afterVersion,details:effectResult.details??null};
     const result={status:"completed",verified:true,action,target,evidence,effectResult};
-    persist(idempotencyKey,result); return result;
+    saveResult(idempotencyKey,result); return result;
+  }
+
+  async function executePrepared(request={}, { preparedCommit } = {}) {
+    const key=request?.idempotencyKey;
+    if (!preparedCommit || preparedCommit.status !== "committed" ||
+        preparedCommit.preparedCommitted !== true ||
+        !Number.isSafeInteger(preparedCommit.storeRevision) || preparedCommit.storeRevision < 0 ||
+        !key || request.missionId !== request?.preparedOperation?.missionId ||
+        request.stepId !== request?.preparedOperation?.stepId ||
+        request.action !== request?.preparedOperation?.action ||
+        !isDeepStrictEqual(request.target ?? null, request?.preparedOperation?.target ?? null) ||
+        key !== request?.preparedOperation?.idempotencyKey) {
+      return { status:"blocked", code:"EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED", verified:false, idempotencyKey:key };
+    }
+    return executeFresh(request, { preparedExternally: true });
   }
 
   async function execute(request={}) {
@@ -254,5 +273,5 @@ export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=
   function supports(action){ return typeof action === "string" && registry.has(action); }
   function supportsReconciliation(action){ return typeof action === "string" && typeof verifierRegistry.get(action) === "function"; }
 
-  return {register,execute,supports,supportsReconciliation,verifyPrepared,hasExecuted:key=>executed.has(key)};
+  return {register,execute,executePrepared,supports,supportsReconciliation,verifyPrepared,hasExecuted:key=>executed.has(key)};
 }
