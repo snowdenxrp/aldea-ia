@@ -188,3 +188,16 @@ Corrección de la sección 10: las pruebas sí tienen CI observable y exitoso en
 - Este éxito es de las suites y del SHA indicados. No significa que M0 esté terminado ni que el runtime canónico sea default.
 - La inspección siguiente no ha encontrado una acción genérica no-repair que ya tenga una pareja demostrada de mutación ambiental persistida + lector independiente post-restart. El adapter de Lúmina solo demuestra simulación en memoria; repair conserva su contrato separado.
 - Próxima tarea: trazar una acción real no-repair desde la entrada de Nexo hasta la escritura y lectura persistidas. Si el repositorio no tiene esa pareja, definirla explícitamente antes del verificador. Sin fuente persistida, el estado correcto es BLOCKED/UNKNOWN, no un verificador inventado.
+
+
+## 12. Hallazgo de arquitectura tras CI verde — bloqueo real antes del verificador genérico
+
+Se inspeccionaron los archivos vigentes de la rama, no solo documentos históricos:
+
+- `scripts/assistants.mjs` abre `openNexoContinuityOwner()` y registra la misión en el store canónico, pero genera informes y la misión desde `simulation`, y `buildNexoMission()` recibe esa memoria/reporte de Lúmina.
+- `src/nexo/simulation-adapter.js` ejecuta `executeAction` de `src/actions.js` contra el objeto `simulation` en memoria. Las postcondiciones también inspeccionan esa simulación. No es evidencia independiente de un estado ambiental persistido que sobreviva un reinicio.
+- `scripts/nexo-runtime-session.mjs` solo selecciona las tres acciones `repair_*`, que están protegidas por su contrato de settlement específico. No deben generalizarse ni renombrarse como settlement genérico.
+
+Esto significa que todavía no hay en el repositorio una acción genérica no-repair que sea nativa de Nexo y tenga una pareja demostrada de writer persistente + reader independiente post-restart. Por tanto, no es correcto inventar el siguiente verifier usando Lúmina ni tratar la simulación como memoria operativa de Nexo.
+
+**Siguiente tarea de arquitectura:** definir una primera capacidad nativa de Nexo (fuera del dominio de simulación Lúmina) con un estado persistido canónico explícito; identificar el único writer responsable, el lector de recuperación y la invariante que puede observarse después de reinicio. Hacerlo como una vertical concreta, no como un framework genérico. Después, conectar el verificador específico al owner y añadir crash-cut tests. Hasta que esa vertical exista, las acciones genéricas deben seguir bloqueadas antes de PREPARED/dispatch; el runtime canónico no pasa a default.
