@@ -141,3 +141,10 @@ CI en SHA `0ea0b8bcbd68a2e2062e359b11247cd6a04a2457`: [39176108822 SUCCESS](http
 ### Próximo corte
 
 Definir si esta vertical se restringe a un único proceso cooperante en filesystem local, o diseñar una reclamación de lock segura con pruebas multiproceso; además, especificar el contrato de rutas y symlinks. No ampliar acciones, no cambiar runtime default, no declarar M0 completo.
+
+
+## Prueba adicional de concurrencia real
+
+La prueba del store ejecuta dos procesos Node independientes, concurrentes, sobre el mismo Chronicle local y verifica ambas entradas desde una nueva instancia lectora. CI pasó en SHA `6940f9524773b36a97d8c6eb44d7c2bd81146d62`: [39176214934](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214934), [39176214965](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214965), [STEP 4 39176214931](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214931), [STEP 5 39176214932](https://github.com/snowdenxrp/aldea-ia/actions/runs/39176214932), todos SUCCESS.
+
+La prueba respalda solo concurrencia cooperante local normal. No cierra la carrera check-then-remove en recuperación de lock obsoleto, la confianza de rutas/symlinks ni durabilidad ante pérdida de energía. Estos siguen siendo límites abiertos antes de producción.
