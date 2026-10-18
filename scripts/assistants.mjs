@@ -6,6 +6,7 @@ import { createSimulation } from "../src/simulation.js";
 import { tick } from "../src/simulation.js";
 import { loadState, loadStateStrict, applyState, persistState } from "./simulate.mjs";
 import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
+import { runNexoRuntimeRepairSession } from "./nexo-runtime-session.mjs";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
 import { createLearningMemory, learnFromReports } from "../src/assistants/memory.js";
@@ -96,6 +97,21 @@ const learned = learnFromReports(
 await fs.writeFile(MEMORY_PATH, JSON.stringify(learned, null, 2) + "\n", "utf8");
 const nextRevision = Number(persisted.stateRevision ?? 0) + 1;
 await persistState(STATE_PATH, simulation, Date.now(), { expectedRevision: Number(persisted.stateRevision ?? 0), stateRevision: nextRevision });
-console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length }, nexoContinuityPersisted: true, nexoContinuityStoreRevision: missionCommit.storeRevision ?? continuity.current.storeRevision, stateRevision: nextRevision }, null, 2));
+
+let finalStateRevision = nextRevision;
+if (process.argv.includes("--nexo-repair-once")) {
+  // Explicit opt-in only: the default assistant/simulation run remains unchanged.
+  // The repair session runs after this invocation has durably saved its snapshot,
+  // so no later write from this invocation can overwrite the repaired environment.
+  report.nexoRuntimeSession = await runNexoRuntimeRepairSession({
+    continuity,
+    statePath: fileURLToPath(STATE_PATH),
+    missionId: nexoMission.missionId
+  });
+  const finalState = await loadStateStrict(STATE_PATH);
+  finalStateRevision = finalState.stateRevision;
+}
+
+console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length }, nexoContinuityPersisted: true, nexoContinuityStoreRevision: (await continuity.owner.loadCurrent()).storeRevision, stateRevision: finalStateRevision }, null, 2));
 
 if (report.status === "error") process.exitCode = 1;
