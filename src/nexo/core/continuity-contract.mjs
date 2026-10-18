@@ -15,6 +15,15 @@ function contractError(code) {
   return error;
 }
 
+function assertDenseArray(value) {
+  for (let index = 0; index < value.length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+    }
+  }
+}
+
 /**
  * Validate only the persisted continuity shape needed to reconstruct a Nexo
  * mission and its unresolved prepared-effect obligations.
@@ -36,8 +45,13 @@ export function assertNexoContinuityMemoryShape(memory) {
       REQUIRED_COLLECTIONS.some(key => !Array.isArray(memory.nexo[key]))) {
     throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
   }
+  for (const key of REQUIRED_COLLECTIONS) assertDenseArray(memory.nexo[key]);
 
-  for (const entry of memory.nexo.effectJournal.filter(item => item?.status === "prepared")) {
+  for (const entry of memory.nexo.effectJournal) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+    }
+    if (entry.status !== "prepared") continue;
     if (typeof entry.missionId !== "string" || !entry.missionId.trim() ||
         typeof entry.stepId !== "string" || !entry.stepId.trim() ||
         typeof entry.action !== "string" || !entry.action.trim()) {
