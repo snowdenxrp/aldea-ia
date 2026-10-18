@@ -1,3 +1,12 @@
+
+
+## Hallazgo incremental — replay de outcome no idéntico (2026-10-18)
+
+En `createNexoContinuityOwner().recordOutcome()`, la rama de intento existente verificaba identidad misión/paso/acción/objetivo, pero respondía `already_recorded` sin comparar `status`, `evidence`, `parentMissionId` ni `replanReason`. Se corrigió para exigir igualdad de esos campos; una afirmación contradictoria retorna `blocked / NEXO_OUTCOME_RESULT_MISMATCH` y conserva el registro durable original y la revisión. No se está autenticando `evidence.source`: sigue siendo una etiqueta declarada por caller, no una prueba de procedencia.
+
+La regresión está en `tests/nexo/continuity-migration.test.mjs`. Test-first SHA `d953e13aa026e52c6dcf3c65f4c18f7e86fc7d37`: crash cuts [39151769794](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769794) y bounded admission/restart [39151769766](https://github.com/snowdenxrp/aldea-ia/actions/runs/39151769766) fallaron en la expectativa nueva. Tras fix, SHA `783ccdbd5c9871b5c86e1994a2f348211e5e9bd3` tiene cuatro workflows SUCCESS: 39151794904, 39151794891, 39151794922, 39151794894.
+
+Este guard no soluciona el cutover de runtime. El código legacy `executeNexoStep()` hace `adapter.execute()` antes de `recordNexoExecution()` y `recordNexoOutcome()` sobre `src/assistants/memory.js`; su journal de efecto vive en esa memoria. La ruta repair-only canónica de scripts sigue siendo distinta y no debe generalizarse sin un contrato explícito. La siguiente tarea es identificar el seam mínimo del runtime y decidir cómo se proporciona el PREPARED durable, con rechazo por defecto para acciones fuera del conjunto admitido. No introducir un segundo ledger ni un transaction wrapper ficticio.
 # NCS M0 — auditoría de memoria legacy y frontera de corte de runtime
 Fecha: 2026-10-18
 Rama: `ncs-clean-architecture`
