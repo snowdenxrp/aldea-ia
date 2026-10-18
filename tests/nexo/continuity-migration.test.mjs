@@ -135,4 +135,41 @@ try {
   await fs.rm(lineageDir, { recursive: true, force: true });
 }
 
-console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, and execution-lineage isolation OK.");
+const noPreparedDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-lineage-without-prepared-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(noPreparedDir, "nexo.json"),
+    allowEmptyInitialization: true
+  });
+  const admitted = await opened.owner.recordMission({
+    expectedRevision: 0,
+    mission: {
+      missionId: "mission-no-prepared",
+      status: "planned",
+      objective: "must not create execution lineage before PREPARED",
+      steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned" }]
+    }
+  });
+  assert.equal(admitted.status, "committed");
+  const rejected = await opened.owner.recordExecutionLineage({
+    expectedRevision: 1,
+    operation: {
+      idempotencyKey: "mission-no-prepared:step-1",
+      missionId: "mission-no-prepared",
+      stepId: "step-1",
+      action: "repair_agent_state",
+      target: "alex"
+    },
+    result: { status: "completed" }
+  });
+  assert.equal(rejected.status, "blocked");
+  assert.equal(rejected.code, "NEXO_EXECUTION_PREPARED_OBLIGATION_REQUIRED");
+  const unchanged = await opened.owner.loadCurrent();
+  assert.equal(unchanged.storeRevision, 1);
+  assert.equal(unchanged.snapshot.executions.length, 0);
+  assert.equal(unchanged.snapshot.effectJournal.length, 0);
+} finally {
+  await fs.rm(noPreparedDir, { recursive: true, force: true });
+}
+
+console.log("Nexo continuity migration: legacy transfer, prepared-obligation preservation, canonical reopen, corrupt-store fail-closed, explicit empty bootstrap, execution-lineage isolation and PREPARED admission guard OK.");
