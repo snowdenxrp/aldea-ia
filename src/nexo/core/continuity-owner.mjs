@@ -1,5 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
+import { recordNexoMissionInSnapshot } from "./continuity-operations.mjs";
 
 function ownerError(code) {
   const error = new Error(code);
@@ -61,16 +62,17 @@ export function createNexoContinuityOwner({ store } = {}) {
       return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
     }
     const candidate = emptyCandidate(current.snapshot);
-    const existing = candidate.missions.find(item => item?.missionId === mission.missionId);
-    if (existing) {
-      if (isDeepStrictEqual(existing, mission)) {
-        return { status: "already_recorded", storeRevision: current.storeRevision, preparedCommitted: false, authorization: "NOT_EVALUATED" };
-      }
-      return { status: "conflict", code: "NEXO_MISSION_ID_ALREADY_BOUND", storeRevision: current.storeRevision };
+    let next;
+    try {
+      next = recordNexoMissionInSnapshot(candidate, mission);
+    } catch (error) {
+      return { status: "conflict", code: error?.code ?? "NEXO_MISSION_CONTEXT_INVALID", storeRevision: current.storeRevision };
     }
-    candidate.missions.push(structuredClone(mission));
-    assertNexoContinuitySnapshot(candidate);
-    return store.commitIfCurrent(expectedRevision, candidate);
+    if (next.missions.length === candidate.missions.length) {
+      return { status: "already_recorded", storeRevision: current.storeRevision, authorization: "NOT_EVALUATED" };
+    }
+    assertNexoContinuitySnapshot(next);
+    return store.commitIfCurrent(expectedRevision, next);
   }
 
   async function recordPrepared({ expectedRevision, operation } = {}) {
