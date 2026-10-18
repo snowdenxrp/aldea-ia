@@ -84,7 +84,7 @@ try {
     missionId: "mission-3", stepId: "step-1", action: "chronicle_append",
     target: { content: "native Nexo history" }
   }), true);
-  const ownerObservation = await contracts.verifiers({
+  const ownerObservation = await contracts.verifiers.chronicle_append({
     idempotencyKey: "mission-3:step-1", missionId: "mission-3", stepId: "step-1",
     action: "chronicle_append", target: { content: "native Nexo history" }
   });
