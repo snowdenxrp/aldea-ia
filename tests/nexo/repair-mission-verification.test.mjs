@@ -101,6 +101,18 @@ try {
   assert.equal(replayed.status, "goal_observed");
   assert.equal(afterReplay.storeRevision, beforeReplay.storeRevision);
 
+  // Goal observation is deliberately not a durable mission completion. The
+  // canonical reconstruction keeps the settled step blocked against redispatch.
+  const reconstructed = await reopened.owner.reconstructMission("mission-verification");
+  assert.equal(reconstructed.status, "reconstructed");
+  assert.equal(reconstructed.mission.status, "blocked");
+  assert.equal(reconstructed.mission.objective, "verify_observed_repair_goal");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(
+    reconstructed.mission.steps[0].blockReason.code,
+    "NEXO_REPAIR_SETTLED_BY_OBSERVATION"
+  );
+
   // A later environment revision with the invariant absent invalidates the
   // present-goal observation; old settlement is not treated as permanent truth.
   const changed = environment(102);
