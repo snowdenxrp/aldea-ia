@@ -143,27 +143,25 @@ export function createEffectAdapter({handlers={}, getStateVersion=()=>null, exec
     }
     if(!effectResult || !validStatus(effectResult.status)){
       const afterInvalidVersion=getStateVersion();
-      if(afterInvalidVersion!==beforeVersion){
-        // A handler ran and the observed state changed, but no valid terminal
-        // result exists. Keep PREPARED: a partial effect is not a safe failure.
-        return {status:"blocked",code:"PARTIAL_EFFECT_DETECTED",verified:false,action,target,
-          beforeVersion,afterVersion:afterInvalidVersion,stateChanged:true,
-          idempotencyKey,uncertainty:"effect_may_or_may_not_have_occurred"};
-      }
-      const result={status:"failed",code:"INVALID_EFFECT_RESULT",verified:false,action,target};
-      persist(idempotencyKey,result); return result;
+      // A handler ran but returned no usable contract result. An unchanged
+      // observed revision is not proof that no external effect occurred.
+      // Keep PREPARED and require independent reconciliation before any retry.
+      return {status:"blocked",
+        code:afterInvalidVersion!==beforeVersion?"PARTIAL_EFFECT_DETECTED":"EFFECT_OUTCOME_UNKNOWN",
+        verified:false,action,target,beforeVersion,afterVersion:afterInvalidVersion,
+        stateChanged:afterInvalidVersion!==beforeVersion,idempotencyKey,
+        uncertainty:"effect_may_or_may_not_have_occurred"};
     }
     const afterVersion=getStateVersion();
     if(effectResult.status!=="completed"){
-      if(afterVersion!==beforeVersion){
-        // State changed despite a non-completed result. Do not cache failure:
-        // recovery must independently reconcile the still-PREPARED operation.
-        return {...effectResult,status:"blocked",code:"PARTIAL_EFFECT_DETECTED",verified:false,action,target,
-          beforeVersion,afterVersion,stateChanged:true,idempotencyKey,
-          uncertainty:"effect_may_or_may_not_have_occurred"};
-      }
-      const result={...effectResult,status:"failed",code:effectResult.code??"EFFECT_NOT_COMPLETED",verified:false,action,target,beforeVersion,afterVersion};
-      persist(idempotencyKey,result); return result;
+      // Handler-reported failure/unsupported is not a universal no-effect
+      // guarantee. Only an operation-specific trusted verifier may settle it;
+      // none is available here, so preserve PREPARED even if revision is stable.
+      return {...effectResult,status:"blocked",
+        code:afterVersion!==beforeVersion?"PARTIAL_EFFECT_DETECTED":"EFFECT_OUTCOME_UNKNOWN",
+        verified:false,action,target,beforeVersion,afterVersion,
+        stateChanged:afterVersion!==beforeVersion,idempotencyKey,
+        uncertainty:"effect_may_or_may_not_have_occurred"};
     }
 
     let post=false;
