@@ -103,3 +103,12 @@ El entrypoint ahora valida estrictamente la gramática de argumentos y captura e
 CI final en SHA `d7af2db2150ab6be57683ad1e15977f29c613081`: [39174722540 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722540) y [39174722491 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174722491).
 
 Próximo corte: probar el CLI como subproceso real, con stores centinela, asegurando que entradas inválidas no los modifiquen y que la salida no filtre el cuerpo. No ampliar la vertical ni cambiar runtime default.
+
+
+## CLI real: no-mutación y no filtración
+
+La prueba de integración inicia el ejecutable Node real con argumentos inválidos y contenido centinela. Verifica salida de error estructurada, stderr vacío, ausencia del centinela en stdout/stderr y ausencia de ambos archivos de store. No depende solo de una prueba unitaria del parser.
+
+CI en SHA `429fc980427c04f8db286e28ee9887333941acb8`: [39174861087 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861087) y [39174861039 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39174861039).
+
+Próximo: auditar y declarar los límites reales de filesystem/concurrencia/durabilidad; no afirmar resistencia a power loss ni activar el runtime predeterminado.
