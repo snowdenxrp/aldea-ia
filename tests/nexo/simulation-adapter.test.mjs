@@ -70,6 +70,23 @@ assert.equal(sparseResource.verified,true);
 assert.equal(sparseResourceSimulation.world.resources.wood.amount,0);
 assert.equal(sparseResourceSimulation.nexoEffectRevision,1);
 
+const deadAgentSimulation={
+  agents:[{id:"dead",alive:false,position:{x:NaN,z:Infinity},needs:{hunger:50,thirst:50,energy:50,social:50,safety:50,health:100},inventory:[],skills:[]}],
+  world:{resources:{}}
+};
+const deadAgentAdapter=createLuminaEffectAdapter(deadAgentSimulation);
+const deadRepair=await deadAgentAdapter.execute({
+  missionId:"m4",stepId:"s1",action:"repair_agent_state",target:"dead",idempotencyKey:"m4:s1",
+  precondition:({stateVersion})=>stateVersion===0,
+  postcondition:({effectResult})=>deadAgentSimulation.agents[0].alive===false&&Number.isFinite(deadAgentSimulation.agents[0].position.x)&&Number.isFinite(deadAgentSimulation.agents[0].position.z)&&effectResult.agentId==="dead"
+});
+assert.equal(deadRepair.status,"completed");
+assert.equal(deadRepair.verified,true);
+assert.equal(deadAgentSimulation.agents[0].alive,false,"repair must not resurrect a dead agent");
+assert.equal(deadAgentSimulation.agents[0].position.x,0);
+assert.equal(deadAgentSimulation.agents[0].position.z,0);
+assert.equal(deadAgentSimulation.nexoEffectRevision,1);
+
 const action=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s5",
   context:{action:{name:"drink",amount:2}},
