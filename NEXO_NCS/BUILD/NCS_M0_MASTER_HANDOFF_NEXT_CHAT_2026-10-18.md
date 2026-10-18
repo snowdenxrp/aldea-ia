@@ -436,3 +436,12 @@ Added a dedicated recovery scenario to `tests/nexo/repair-owner-lifecycle.test.m
 **Exact CI:** [Nexo M0 — repair settlement crash cuts, run 39145303242](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145303242) — SUCCESS on code/test SHA `59825c0b66034e39dfa62bf060665cff59c95269`. The `repair-crash-cuts` job passed, including the new crash-cut test, owner migration, canonical repair session, isolated CLI replay, and mission-goal verification.
 
 This closes one crash boundary for the repair-only lifecycle; it does not prove generic runtime cutover, cross-store atomicity, causal attribution, or protected-effect authorization. M0 remains INCOMPLETE.
+
+
+## Última frontera cerrada — replay y falsa promoción de misión (2026-10-18)
+
+La prueba añadida en commit `fd2331e8d71afbbf0f19ea978d552a89087c1dc6` extiende `tests/nexo/repair-owner-lifecycle.test.mjs`: después de `settled_observed`, intenta registrar un outcome `completed` usando etiquetas de evidencia suministradas por el caller. La operación debe bloquearse con `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`, sin mutar la revisión. Luego reconstruye la misma misión tanto en el owner vivo como tras reabrir el store desde disco; permanece `blocked` con objetivo `verify_observed_repair_goal`.
+
+**CI exacto en el SHA de prueba:** repair crash cuts [39145754425](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754425) SUCCESS; STEP 4 [39145754371](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754371) SUCCESS; STEP 5 [39145754375](https://github.com/snowdenxrp/aldea-ia/actions/runs/39145754375) SUCCESS.
+
+Esto cierra la regresión de promoción/replay para el contrato repair-only, no el corte del runtime genérico. Próximo trabajo: revisar el contrato canónico de estado/outcome para definir cómo una verificación independiente de objetivo puede registrar progreso sin convertir `settled_observed` en causalidad; después migrar una única operación legacy, con PREPARED durable antes de dispatch, CAS y replay de reinicio probados. No cambiar imports legacy mecánicamente. No ampliar el dispatcher a acciones no-repair o protegidas.
