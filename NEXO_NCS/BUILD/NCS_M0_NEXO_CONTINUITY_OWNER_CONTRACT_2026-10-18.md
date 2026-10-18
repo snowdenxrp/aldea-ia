@@ -1,7 +1,7 @@
 # NCS M0 — Nexo-owned operational continuity boundary contract
 
 Date: 2026-10-18
-Status: CONTRACT CANDIDATE; NOT IMPLEMENTED; STORAGE TECHNOLOGY NOT SELECTED
+Status: CONTRACT CANDIDATE; SNAPSHOT SHAPE IMPLEMENTED; STORE/OWNER NOT IMPLEMENTED; STORAGE TECHNOLOGY NOT SELECTED
 
 ## Purpose
 
@@ -48,7 +48,7 @@ Learning runs, lessons, patterns, planner caches and analytics are non-authorita
 
 A safety-sensitive load may return a validated snapshot or an explicit failure/UNKNOWN result. It may not turn missing, malformed, or unrecognized continuity into an empty store or revision zero.
 
-The new `assertNexoContinuityMemoryShape()` enforces the in-memory shape and prepared-entry context, but it does not yet establish the store's provenance/currentness.
+The new `assertNexoContinuityMemoryShape()` enforces the in-memory shape and prepared-entry context. `src/nexo/core/continuity-snapshot.mjs` now defines a versioned standalone operational snapshot and a detached projection from the prototype memory shape. Neither establishes store provenance/currentness or persists the snapshot.
 
 ### C2 — Prepared obligation closure
 
@@ -83,6 +83,12 @@ The operational continuity store may preserve evidence and prior decisions, but 
 
 Protected external effects remain STOP until the independent authority/final-effect boundary exists.
 
+## Snapshot contract implemented; owner interface still required
+
+The current core candidate is `NEXO_OPERATIONAL_CONTINUITY` schema version 1, with exactly these top-level fields: `schema`, `schemaVersion`, `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`. It excludes learning runs/lessons/patterns, environment state, and authority fields. Unknown extra fields are rejected rather than silently accepted. `projectNexoContinuitySnapshot()` returns a detached copy from the prototype memory structure; it does not persist or migrate it.
+
+This schema is a contract candidate, not proof of an approved migration or deployed store. Existing `createLearningMemory().nexo` remains the legacy/prototype shape until a separately audited migration path exists.
+
 ## Required owner interface before choosing an adapter
 
 The owner must expose the minimum semantic operations, independent of storage technology:
@@ -114,7 +120,7 @@ Do not create one global transaction for planner/model/learning/authority/enviro
 ## Implementation order
 
 1. Keep the continuity shape contract and runtime fail-closed guards.
-2. Define the Nexo-owned snapshot schema and conditional-commit semantics, separated from Lúmina.
+2. Snapshot shape is now implemented as a contract candidate; define the Nexo-owned conditional-commit semantics, separated from Lúmina.
 3. Audit whether the selected persistence primitive meets P0/P1 durability and restore/currentness requirements.
 4. Implement the smallest owner for **bounded local operations only**, with an explicit operation allowlist and fault injection. No protected external provider.
 5. Test crash cuts: before prepared commit; after prepared commit before dispatch; after local handler mutates its isolated candidate; before terminal commit; terminal commit succeeds but response is lost; stale concurrent writer; restart with prepared/terminal/malformed context.
@@ -123,7 +129,8 @@ Do not create one global transaction for planner/model/learning/authority/enviro
 ## Status
 
 - Contract candidate: documented.
-- Nexo-owned canonical operational store: NOT IMPLEMENTED.
+- Standalone snapshot shape/projection: IMPLEMENTED in core; not persisted.
+- Nexo-owned canonical operational store/conditional commit: NOT IMPLEMENTED.
 - Runtime/store integration: NOT IMPLEMENTED.
 - Protected external execution: STOP.
 - Prepared external outcome: UNKNOWN.
