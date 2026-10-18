@@ -361,9 +361,11 @@ const validCli = [
   "--chronicle", "/tmp/nexo-chronicle.json",
   "--mission", "mission-1",
   "--step", "step-1",
-  "--content", "private body"
+  "--content-stdin"
 ];
-assert.equal(parseNexoChronicleArguments(validCli).content, "private body");
+assert.equal(parseNexoChronicleArguments(validCli).contentFromStdin, true);
+assert.throws(() => parseNexoChronicleArguments([...validCli, "--content-stdin"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
+assert.throws(() => parseNexoChronicleArguments([...validCli, "--content", "private body"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
 assert.throws(() => parseNexoChronicleArguments([...validCli, "--unexpected"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
 assert.throws(() => parseNexoChronicleArguments([...validCli, "--mission", "mission-2"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
 assert.throws(() => parseNexoChronicleArguments(["--continuity"]), { code: "NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID" });
@@ -383,9 +385,10 @@ try {
     "--chronicle", cliChronicle,
     "--mission", "cli-mission",
     "--step", "cli-step",
-    "--content", privateContent,
+    "--content-stdin",
     "--unknown-option"
-  ], { cwd: process.cwd(), encoding: "utf8" });
+  ], { cwd: process.cwd(), encoding: "utf8", input: privateContent });
+  assert.equal(cli.args?.includes(privateContent), false);
   assert.equal(cli.status, 1);
   assert.equal(cli.stderr, "");
   const cliOutput = JSON.parse(cli.stdout.trim());
