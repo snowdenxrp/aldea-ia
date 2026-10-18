@@ -1,3 +1,9 @@
+## Source-labelled completion claims — verified (2026-10-18)
+
+- Core continuity operations now require a non-empty `evidence.source` label on completion claims and when reconstructing completed steps, matching M0.15.
+- Exact-head CI PASS at `3e5dbcd37a8e070ae6580357a1798a876070f7e4`: mission/restart [39099497697](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099497697), STEP 4 [39099497703](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099497703), STEP 5 [39099497743](https://github.com/snowdenxrp/aldea-ia/actions/runs/39099497743).
+- A source label is not source authentication. No runtime switch yet: legacy `createLearningMemory().nexo` still used; canonical Nexo store/owner integration and operation-specific reconciliation remain open.
+
 ## Nexo-only continuity operations — verified core extraction (2026-10-18)
 
 - Added `src/nexo/core/continuity-operations.mjs` at `b3a5aa2643a19a203c0db70c504e01c5900a2cb9`. It records mission/attempt/execution lineage and reconstructs from the standalone Nexo snapshot without learning analytics. `continuity-owner.mjs` now uses this path for mission admission.
