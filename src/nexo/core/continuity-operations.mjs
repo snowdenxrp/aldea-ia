@@ -136,6 +136,9 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     generatedAt: plan.at
   };
   const attempts = source.attempts.filter(item => item?.missionId === missionId);
+  const planClaimedCompletedStepIds = new Set(
+    mission.steps.filter(item => item?.status === "completed").map(item => item.id)
+  );
   for (const step of mission.steps) {
     const stepAttempts = attempts.filter(item => item?.stepId === step.id);
     const matchesStepIdentity = item => item?.action === step.action &&
@@ -167,7 +170,8 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       const hasChronicleSettlement = stepEffects.some(item =>
         item?.action === "chronicle_append" && item?.status === "settled_observed"
       );
-      const hasCompletedClaim = stepAttempts.some(item => item?.status === "completed");
+      const hasCompletedClaim = stepAttempts.some(item => item?.status === "completed") ||
+        planClaimedCompletedStepIds.has(step.id);
       if (hasChronicleSettlement || hasCompletedClaim) {
         step.status = "blocked";
         step.blockReason = {
@@ -200,6 +204,17 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
             : step.action !== "local_analysis" && step.action !== "chronicle_append"
               ? "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED"
               : "NEXO_COMPLETION_EVIDENCE_UNVERIFIED",
+        next: "verify_mission_goal_without_redispatch"
+      };
+      continue;
+    }
+
+    if (planClaimedCompletedStepIds.has(step.id)) {
+      step.status = "blocked";
+      step.blockReason = {
+        code: step.action === "local_analysis"
+          ? "NEXO_COMPLETION_EVIDENCE_UNVERIFIED"
+          : "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED",
         next: "verify_mission_goal_without_redispatch"
       };
       continue;
