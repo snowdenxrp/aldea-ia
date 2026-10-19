@@ -759,3 +759,13 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Added a focused regression for allowlist + UNKNOWN preservation + private payload non-disclosure.
 - Validated code/test SHA: 3c8d14163144e6f83a6130f38f025e31302c1ac9. All four focal workflows SUCCESS: Chronicle [39187723675](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723675), bounded mission admission/restart [39187723680](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723680), STEP 4 [39187723651](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723651), STEP 5 [39187723612](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723612).
 - Next: continue response-loss/recovery audit at the application boundary only. Do not add a mutating use case, UI/legacy runtime integration, or index.html change. No authority inference; M0 remains INCOMPLETE.
+
+
+
+## M0 continuation — public result field validation (2026-10-19)
+
+- Hardened publicChronicleResult() after identifying that a field allowlist alone still copied malformed values. The serializer now accepts only documented public statuses, string codes, boolean/UNKNOWN tri-state fields, and nonnegative safe-integer storeRevision values.
+- redispatchAuthorized is always false in this currently enabled application vertical. Malformed values are omitted or normalized; valid UNKNOWN remains UNKNOWN.
+- Added regression coverage for malformed status/code/flags/revision and private-value non-disclosure.
+- Validated code/test SHA: 42f0e12640a35bc1e7b524501f8dbe879a311d90. CI SUCCESS: Chronicle [39187949155](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949155), bounded mission admission/restart [39187949154](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949154), STEP 4 [39187949143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949143), STEP 5 [39187949152](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949152), all SUCCESS.
+- Next: continue the M0 audit from public result schema into read-only recovery/query semantics and crash cuts that are not already covered. Avoid rerunning closed historical research. No new mutating action, no UI/legacy runtime integration, no index.html change, no authority inference. M0 remains INCOMPLETE.
