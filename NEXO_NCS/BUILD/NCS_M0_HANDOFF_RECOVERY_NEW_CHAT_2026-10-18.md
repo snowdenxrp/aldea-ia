@@ -663,3 +663,10 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - CI: Chronicle/entrypoint [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), semantic validation [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), outcome/restart [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834), all SUCCESS.
 - Stable import: `src/nexo/application/index.mjs`, exactly three exports: append Chronicle, read-only continuity status, read-only mission reconstruction. Full output semantics in [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
 - Next: define explicit acceptance criteria for connecting this API to an application surface, then integrate only through this public API. No `src/nexo/runtime.js` or `index.html` cutover, no additional mutating actions, no authority inference. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
+
+
+## Gate de integración de superficie
+
+- Documento: [NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md](NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md).
+- La API pública está lista como seam para un vertical; no hay app Android/web Nexo creada aquí. No conectar a `index.html`, servidor HTTP local ni runtime legacy hasta revisar los criterios del gate.
+- No añadir autoridad desde el store, no habilitar efectos protegidos, no introducir retry automático y no confundir observación con causalidad. M0 INCOMPLETO.
