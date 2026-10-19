@@ -1169,3 +1169,12 @@ La matriz de resultados quedó consolidada en un contrato de aplicación: distin
 Documento: [NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md](BUILD/NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md).
 
 Decisión actual: la API pública es un seam de backend validado para Chronicle, no autorización para conectarla a UI, HTTP local ni runtime legacy. Antes de esa integración deben revisarse límites de amenaza, autoridad, configuración de rutas, outcomes UNKNOWN y pruebas de reinicio contra todos los criterios del gate. `index.html` sigue siendo Lúmina; no se cambia. M0 INCOMPLETO.
+
+
+## M0 — respuesta perdida al admitir una misión (2026-10-18, CI pendiente)
+
+- Revisión del seam de aplicación detectó que `owner.recordMission()` se llamaba sin capturar excepciones. Si el store persistía la misión y se perdía la respuesta, la excepción podía escapar como error crudo aunque no hubiera dispatch.
+- Corrección en `src/nexo/application/chronicle-append.mjs`: helper `recordNexoMissionSafely()` convierte la excepción en `status=unknown`, `missionAdmissionCommitted=UNKNOWN`, `dispatchAttempted=false`, `redispatchAuthorized=false`. No continúa al dispatch.
+- Regresión en `tests/nexo/chronicle-runtime.test.mjs`: simula respuesta perdida, conserva UNKNOWN, no revela mensaje interno ni autoriza dispatch.
+- Código/test SHA: `e4562b6edb0ce4c3f0df1ccaae94cc63edf33d1f`. CI todavía no observado para ese SHA; PENDING/UNKNOWN, no declarar PASS.
+- La recuperación posterior debe releer continuidad canónica. No convertir UNKNOWN en false ni añadir retry automático. M0 INCOMPLETO; no ampliar acciones ni conectar runtime default.
