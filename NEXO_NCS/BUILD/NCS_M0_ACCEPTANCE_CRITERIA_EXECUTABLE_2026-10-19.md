@@ -1,3 +1,11 @@
+## Última regresión integrada observada (2026-10-19)
+
+La corrección de visibilidad de autorización pública fue ejecutada junto con los contratos M0 en [run 39292627540](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292627540), SHA exacto `dbced55ae0f345a7677b5df4b598631ec0d78ed8`. Job `Nexo M0 contracts on one SHA` = SUCCESS; los cinco grupos de pruebas enumerados = SUCCESS. El workflow Chronicle [run 39292627699](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292627699) también terminó SUCCESS en el mismo SHA.
+
+Este resultado añade evidencia para la revisión integrada de las regresiones en ese SHA. No convierte el M0 global en PASS: la raíz de autoridad constitucional sigue sin implementarse/evaluarse y los efectos protegidos continúan STOP.
+
+---
+
 # Nexo M0 — criterios de aceptación ejecutables
 
 Fecha: 2026-10-19  
