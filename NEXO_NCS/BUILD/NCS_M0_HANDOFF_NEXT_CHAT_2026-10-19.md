@@ -291,3 +291,18 @@ Fix funcional `c9be5ee5f931d2a873cca32e2dd0b81c33010396`; SHA final de pruebas `
 Fix funcional `4a976b76ece07e1c168761cb6bd29ec5b420ab00`; SHA final de pruebas `d4936c965eb926b3e61eb7ecbe3f9becf58925ca`. Bounded admission, Chronicle native, STEP 4 y STEP 5 SUCCESS (runs 39196697574, 39196697543, 39196697516, 39196697496); crash cuts SUCCESS en código `4a976...` (run 39196649127).
 
 **Siguiente paso:** auditar uso externo de `settlement.evidence`; sólo endurecer su shape si puede afectar una decisión o resultado público.
+
+
+## 20. Checkpoint — read failure bloquea owner writes y runtime dispatch (2026-10-19)
+
+En `continuity-owner.mjs`, `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()` convierten fallo de `store.loadCurrent()` en respuesta estructurada fail-closed. Conservan el código del error si existe, marcan `continuity_read_failed`, dejan autorización sin evaluar y no intentan commit.
+
+**Pruebas nuevas y evidencia:**
+- `tests/nexo/continuity-contract.test.mjs`: los tres métodos bloquean con lectura fallida; `commitIfCurrent` no se invoca.
+- `tests/nexo/chronicle-runtime.test.mjs`: una falla en la lectura de admisión PREPARED bloquea el runtime antes del adapter: cero dispatches y commits.
+- SHA código+pruebas `d200472052b3795b2b7e6ab7d1cd4fae5e71ae91`. CI SUCCESS: Chronicle native 39196910123, bounded admission/restart 39196910131, STEP 4 39196910145 y STEP 5 39196910180. Enlaces en STATUS.
+- La ejecución intermedia de la regresión de continuidad falló por la excepción no normalizada; después se añadió el manejo explícito en los tres métodos y la misma prueba pasó. Esto fue una brecha real, no un fallo ocultado.
+
+La auditoría de Chronicle outcome quedó también cerrada en el código actual: la evidencia del outcome debe coincidir con source/revision del settlement canónico, y replay exige esa misma correspondencia. Es un control de coherencia persistida, **no** una firma, una procedencia autenticada ni un goal verifier.
+
+**Siguiente frontera:** auditar la reconstrucción de snapshots con entradas terminales inconsistentes en `effectJournal` genérico. Leer schema + reconstrucción + tests antes de modificar; preservar compatibilidad legacy deliberada. No inventar estados nuevos ni extender a runtime legacy. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
