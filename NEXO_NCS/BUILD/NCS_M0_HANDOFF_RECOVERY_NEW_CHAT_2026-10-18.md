@@ -704,3 +704,12 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Every blocked result explicitly returns `dispatchAttempted=false` and `redispatchAuthorized=false`. Mission-admission uncertainty remains `UNKNOWN` and never dispatches.
 - Validated code/test SHA: `7eaa58f106c7fe696e7674085cc58286a4256f75`. CI SUCCESS: [Chronicle 39187179382](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179382), [continuity/restart 39187179340](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179340), [STEP 4 39187179363](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179363), [STEP 5 39187179346](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179346), all SUCCESS.
 - Scope: this hardens the public result boundary for the existing Chronicle vertical. It does not add a mutating capability or authorize UI/runtime integration. M0 INCOMPLETO.
+
+
+## Current verified pointer — M0 public result boundary
+
+- Branch HEAD: `0e4baf55de41bcfff249377785809765487ec883` (documentation-only).
+- Latest code/test SHA with all four focal workflows SUCCESS: `7eaa58f106c7fe696e7674085cc58286a4256f75`.
+- Comparison from code/test SHA to HEAD contains only `STATUS.md`, this handoff, and `NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
+- Current proof: mission-admission thrown/returned UNKNOWN stays UNKNOWN and cannot dispatch; public Chronicle application results omit payload/internal execution objects; every blocked result explicitly prohibits redispatch; read-only mission reconstruction preserves PREPARED as blocked; same-operation process replay does not append twice.
+- Next frontier: continue auditing exception/response-loss semantics at the public application boundary and keep the result allowlist stable. No new action, no UI/legacy-runtime integration, no `index.html` change, no authority inference. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
