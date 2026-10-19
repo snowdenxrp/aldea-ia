@@ -71,7 +71,8 @@ function missionRecord(mission) {
   const stepIds = new Set();
   for (const step of mission.steps) {
     if (!step || typeof step !== "object" || Array.isArray(step) ||
-        typeof step.id !== "string" || !step.id.trim() || step.id.includes(":") || stepIds.has(step.id)) {
+        typeof step.id !== "string" || !step.id.trim() || step.id.includes(":") || stepIds.has(step.id) ||
+        typeof step.action !== "string" || !step.action.trim()) {
       throw operationError("NEXO_MISSION_CONTEXT_INVALID");
     }
     stepIds.add(step.id);
