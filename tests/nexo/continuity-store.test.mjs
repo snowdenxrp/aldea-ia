@@ -53,6 +53,23 @@ assert.deepEqual(
   "unknown authority fields must be rejected rather than persisted"
 );
 
+// Failed owner-record creation must not leave a lock directory that blocks future work.
+const ownerFailureDir = path.join(directory, "lock-owner-write-failure");
+await fs.mkdir(ownerFailureDir);
+const ownerFailurePath = path.join(ownerFailureDir, "continuity.json");
+const fsWithOwnerWriteFailure = {
+  ...fs,
+  writeFile: async (file, ...args) => {
+    if (String(file).endsWith(path.join("continuity.json.lock", "owner.json"))) {
+      throw new Error("simulated lock owner record failure");
+    }
+    return fs.writeFile(file, ...args);
+  }
+};
+const ownerFailureStore = createNexoContinuityStore({ filePath: ownerFailurePath, fsModule: fsWithOwnerWriteFailure });
+await assert.rejects(() => ownerFailureStore.initialize(emptySnapshot), /simulated lock owner record failure/);
+await assert.rejects(() => fs.access(ownerFailurePath + ".lock"), error => error?.code === "ENOENT");
+
 // Initialization must reconcile a lost response against the exact persisted envelope.
 const initializeLostDirectory = path.join(directory, "initialize-lost-response");
 await fs.mkdir(initializeLostDirectory);
