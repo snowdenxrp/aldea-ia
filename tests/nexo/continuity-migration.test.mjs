@@ -920,6 +920,32 @@ try {
   await fs.rm(singleUnresolvedPreparedDir, { recursive: true, force: true });
 }
 
+const unknownEffectJournalStatusDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-unknown-effect-journal-status-"));
+try {
+  const memory = structuredClone(legacyMemory);
+  memory.nexo.missions[0].status = "planned";
+  memory.nexo.missions[0].steps[0].status = "planned";
+  memory.nexo.attempts = [];
+  memory.nexo.effectJournal = [{
+    idempotencyKey: "mission-legacy-1:step-1",
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    status: "terminal_state_from_unknown_writer"
+  }];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(unknownEffectJournalStatusDir, "nexo.json"),
+    legacyMemory: memory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN");
+} finally {
+  await fs.rm(unknownEffectJournalStatusDir, { recursive: true, force: true });
+}
+
 const preparedReplayAfterRestartDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-prepared-replay-after-restart-"));
 try {
   const filePath = path.join(preparedReplayAfterRestartDir, "nexo.json");
