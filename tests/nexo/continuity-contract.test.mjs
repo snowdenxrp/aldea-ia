@@ -166,7 +166,7 @@ assert.throws(
     steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
   }),
   error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
-  "mission admission must reject non-string mission status values"
+  "mission admission must reject non-string mission status values before persistence"
 );
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
