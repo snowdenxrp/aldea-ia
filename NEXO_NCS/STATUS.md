@@ -1602,3 +1602,12 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - SHA código: `f3a54153d3574f559aa32f1c56d093e1152b4842`. SHA código + prueba corregida: `b21896e893a1b739bbfa511f76c3a215298a73e6`.
 - CI SUCCESS en el SHA final: [repair crash cuts 39192937988](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937988), [effect/settlement 39192937997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937997), [STEP 4 39192938031](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192938031), [STEP 5 39192937987](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937987).
 - El alcance se limita a integridad del settlement y aceptación de completion. No demuestra goal verifier general, causalidad externa, durabilidad ante pérdida de energía ni autoridad legítima. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## M0 — auditoría de consistencia misión/pasos/objetivo (2026-10-19)
+
+- Se inspeccionaron `missionRecord()`, `reconstructNexoMissionFromSnapshot()`, `recordPrepared()`, `executeNexoStepWithContinuityOwnerInternal()` y las regresiones de admisión/reconstrucción.
+- Resultado: **sin contradicción adicional demostrada**. El runtime exige tanto el `mission.status` almacenado como la misión/paso reconstruidos en `planned`; las dependencias deben reconstruirse como `completed`. Un `completed` en el plan sin outcome canónico queda bloqueado. `objective` no funciona como autorización de ejecución y se recalcula durante la reconstrucción normal.
+- No se modificó código ni se añadieron invariantes especulativos. Comparación GitHub: `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5...ncs-clean-architecture` contiene sólo tres commits documentales; el código validado no cambió en esa comparación.
+- Frontera siguiente: aclarar el contrato de observación/verificación de objetivos sin conectar efectos de reparación al runtime. `scripts/nexo-repair-settlement.mjs` lee un snapshot mediante `loadStateStrict()` y `src/nexo/adapters/persisted-repair-observation.mjs` sólo prueba invariantes observables; ambos describen explícitamente que no prueban causalidad ni atomicidad entre el archivo de estado y la continuidad de Nexo. Mantener esa ruta diagnóstica separada; no habilitar reparaciones ni mezclar memoria/simulación de Lúmina con Nexo.
+- **M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.**
