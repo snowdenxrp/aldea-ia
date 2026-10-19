@@ -532,6 +532,46 @@ try {
   await fs.rm(unresolvedOutcomeDir, { recursive: true, force: true });
 }
 
+const blockedStepAdmissionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-blocked-step-admission-"));
+try {
+  const blockedStepMemory = structuredClone(legacyMemory);
+  blockedStepMemory.nexo.missions[0].status = "planned";
+  blockedStepMemory.nexo.missions[0].objective = "repair_agent_state";
+  blockedStepMemory.nexo.missions[0].steps[0] = {
+    id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: []
+  };
+  blockedStepMemory.nexo.attempts = [{
+    missionId: "mission-legacy-1", stepId: "step-1",
+    action: "repair_agent_state", target: "alex", status: "completed",
+    evidence: { verified: true, kind: "caller-asserted", source: "legacy-runtime" },
+    at: "2026-10-19T00:00:00.000Z"
+  }];
+  blockedStepMemory.nexo.effectJournal = [];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(blockedStepAdmissionDir, "nexo.json"),
+    legacyMemory: blockedStepMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  const current = await opened.owner.loadCurrent();
+  const prepared = await opened.owner.recordPrepared({
+    expectedRevision: current.storeRevision,
+    operation: {
+      idempotencyKey: "mission-legacy-1:step-1",
+      missionId: "mission-legacy-1", stepId: "step-1",
+      action: "repair_agent_state", target: "alex", environmentStateRevision: 0
+    }
+  });
+  assert.equal(prepared.status, "blocked",
+    "PREPARED admission must use reconstructed step status, not the plan's stale planned status");
+  assert.equal(prepared.code, "NEXO_PREPARED_STEP_NOT_RUNNABLE");
+  const after = await opened.owner.loadCurrent();
+  assert.equal(after.storeRevision, current.storeRevision);
+  assert.equal(after.snapshot.effectJournal.length, 0);
+} finally {
+  await fs.rm(blockedStepAdmissionDir, { recursive: true, force: true });
+}
+
 const planOnlyCompletedDependencyDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-plan-only-completed-dependency-"));
 try {
   const opened = await openNexoContinuityOwner({
