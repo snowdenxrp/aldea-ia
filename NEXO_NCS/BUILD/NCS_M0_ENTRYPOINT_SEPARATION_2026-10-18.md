@@ -85,3 +85,10 @@ The initialization flags are opt-in and should only be used when creating genuin
 - Two concurrent same-operation callers cannot dispatch twice or create duplicate Chronicle entries. An explicit subsequent retry returns the persisted completed result without dispatch and without changing either store.
 - CI SUCCESS on SHA `140769ea651ed5cd198fd57f05530679e79f8c5d`: [39180811315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811315), [39180811308](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811308), [39180811234](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811234), [39180811257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811257).
 - The API permits an explicit conflict/retry path; it does not introduce automatic retry loops, queues, generic effect enablement or runtime-default cutover.
+
+
+## Concurrent first-time bootstrap — validated (2026-10-19)
+
+- Two concurrent calls against absent continuity/Chronicle stores with explicit initialization opt-in may leave one caller blocked, but they cannot dispatch the append twice. An explicit retry converges to one Chronicle entry, and the next replay does not change either file.
+- CI SUCCESS on SHA `7f4c69ef8003515c53d761677185f4668c05d5a0`: [39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
+- This does not claim atomic initialization across the two stores. No automatic retry, queue, or second dispatch is introduced.
