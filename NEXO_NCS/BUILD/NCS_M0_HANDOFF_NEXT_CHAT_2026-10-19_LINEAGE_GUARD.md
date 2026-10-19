@@ -1,6 +1,6 @@
 # NCS — handoff de continuidad para el siguiente chat (M0)
 
-> **Checkpoint de continuidad más reciente (2026-10-19):** leer [NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md](./NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md). Los cinco workflows focales pasan en runtime SHA `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` y test SHA `e38556bc78487aae117b1c11085aca1731dfbb2e`. Además, la suite completa `npm test` pasó en SHA exacto `fd87dfdb2eccd6d356fd970cfa24544568b72833`, run [39338294317](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294317). Se corrigieron dos expectativas obsoletas en `tests/nexo/simulation-adapter.test.mjs` para preservar `blocked / EFFECT_OUTCOME_UNKNOWN`; no se relajó el runtime. Las actualizaciones de documentación posteriores no son nuevas pruebas del código. Verificar HEAD al iniciar el siguiente chat. Mantener M0 INCOMPLETO, `authorization: NOT_EVALUATED`, efectos protegidos STOP y raíz legítima PENDING.
+> **Checkpoint de continuidad más reciente (2026-10-19):** leer [NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md](./NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md). Los cinco workflows focales pasan en runtime SHA `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` y test SHA `e38556bc78487aae117b1c11085aca1731dfbb2e`. Además, la suite completa `npm test` pasó en SHA exacto `fd87dfdb2eccd6d356fd970cfa24544568b72833`, run [39338294317](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294317). Se corrigieron dos expectativas obsoletas en `tests/nexo/simulation-adapter.test.mjs` para preservar `blocked / EFFECT_OUTCOME_UNKNOWN`; no se relajó el runtime. Las actualizaciones de documentación posteriores no son nuevas pruebas del código. Verificar HEAD al iniciar el siguiente chat. El siguiente trabajo acotado es especificar provisión independiente y verificación de la única llave raíz decidida, reutilizando el borrador semántico existente; no reabrir investigación general de familias ni implementar un pseudo-root. Mantener M0 INCOMPLETO, `authorization: NOT_EVALUATED`, efectos protegidos STOP y raíz legítima PENDING.
 
 **Fecha:** 2026-10-19  
 **Repositorio:** `snowdenxrp/aldea-ia`  
@@ -12,7 +12,7 @@
 1. Leer `NEXO_NCS/STATUS.md` como puerta de entrada y luego este handoff y el checkpoint citado abajo. Verificar el HEAD actual de la rama y el estado real de CI antes de hacer cambios.
 2. Continuar desde el siguiente contrato verificable del runtime owner-backed M0. No repetir análisis ya cerrados de PREPARED ni volver a introducir parches defensivos sin demostrar una ruta real que los necesite.
 3. Distinguir siempre SHA probado de SHA que solo contiene documentación. Para el cambio de resultado terminal, los SHA de código y pruebas `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` y `e38556bc78487aae117b1c11085aca1731dfbb2e` tienen cinco workflows SUCCESS cada uno; la sección 8 del checkpoint contiene los enlaces. Los HEAD documentales posteriores no son por sí solos SHAs de prueba.
-4. `npm test` completo pasó en SHA exacto `fd87dfdb2eccd6d356fd970cfa24544568b72833` (run [39338294317](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294317)). No presentar ese PASS como prueba de autoridad legítima ni habilitar efectos protegidos.
+4. `npm test` completo pasó en SHA exacto `fd87dfdb2eccd6d356fd970cfa24544568b72833` (run [39338294317](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294317)). No presentar ese PASS como prueba de autoridad legítima ni habilitar efectos protegidos. La decisión de alcance de raíz única está aceptada, pero su provisión/verificación no está implementada.
 
 ## Estado técnico de esta ronda
 
@@ -60,3 +60,11 @@ Los runs prueban los contratos cubiertos por esos workflows en ese SHA. No equiv
 
 ## Estado al cambiar de chat
 **M0 sigue incompleto.** Los cambios de resultado terminal y sus regresiones pasan cinco workflows en cada SHA de código/pruebas, según el checkpoint actualizado. El HEAD documental debe verificarse de nuevo al iniciar el siguiente chat. Suite completa `npm test` PASS en `fd87dfdb...` (no es una ejecución del HEAD documental posterior). Autoridad del propietario `NOT_EVALUATED`; efectos protegidos `STOP`.
+
+
+## Próximo contrato M0: provisión/verificación de raíz única
+
+- Alcance decidido: una llave criptográfica raíz y un dispositivo inicial; pérdida irrecuperable de la única llave, multi-dispositivo y sucesión quedan fuera de la primera fase.
+- No hay modelo físico/protocolo elegido ni llave adquirida/configurada. No inventar un procedimiento ni usar el teléfono, el store o un constructor como raíz autoautenticada.
+- Reutilizar NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md y el gate actualizado; especificar cómo la provisión se establece fuera del estado que pretende autenticar, qué firma/prueba verifica Nexo y cómo el resultado llega al límite de dispatch sin convertir NOT_EVALUATED en ALLOW.
+- Si el mecanismo independiente no se puede especificar con evidencia, dejar la implementación bloqueada y mantener STOP. No reiniciar STEP 7/M1 ni repetir investigación general de familias.
