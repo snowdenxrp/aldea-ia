@@ -130,7 +130,7 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
       // Lock acquisition happens before any Chronicle initialization write.
       // Normalize filesystem failures at the store boundary instead of leaking
       // raw OS codes through the public Nexo application result.
-      if (error?.code === "ENOENT") {
+      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" };
       }
       return {
