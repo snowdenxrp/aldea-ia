@@ -446,3 +446,12 @@ Siguiente paso: mantener fail-closed y evaluar si se puede cambiar el protocolo 
 ## 10. Nota de diseño para el siguiente ciclo
 
 Leer `NEXO_NCS/BUILD/NCS_M0_LOCK_RECOVERY_DESIGN_NOTE_2026-10-19.md` antes de volver a tocar locks. Define las invariantes requeridas, el motivo de retirada de PR #106 y la evidencia mínima para cualquier rediseño. La decisión presente es mantener fail-closed y no implementar limpieza por pathname, stat-then-rm ni recuperación automática por edad. No inventar un fix alternativo sin probar identidad/propiedad bajo concurrencia.
+
+
+## 11. Frontera observación/verificación de objetivo auditada (2026-10-19)
+
+Nota nueva: `NEXO_NCS/BUILD/NCS_M0_GOAL_VERIFICATION_BOUNDARY_2026-10-19.md`. Auditoría read-only de `scripts/nexo-repair-settlement.mjs`, `src/nexo/adapters/persisted-repair-observation.mjs` y `scripts/simulate.mjs`.
+
+Conclusión: los módulos observan una invariante y su revisión; no prueban quién causó el estado, ejecución exactamente una vez, autoridad del escritor ni atomicidad entre el estado de simulación y el journal de Nexo. `loadStateStrict()` falla ante ausencia/JSON/esquema/revisión inválidos, pero luego normaliza campos de compatibilidad y no establece procedencia criptográfica. `persistState()` tiene su propio lock/CAS de revisión, no una transacción compartida con continuidad Nexo.
+
+Decisión: no conectar el observador al dispatch ni crear un verifier genérico desde una etiqueta caller-supplied, revisión o booleano. Mantener la ruta diagnóstica separada. Antes de implementación se necesita definir propietario canónico del estado y fuente de evidencia independiente, vinculación de identidad, semántica tri-state, concurrencia y crash cuts. No hubo cambio de runtime ni CI nuevo por esta auditoría. M0 INCOMPLETO; efectos STOP; Nexo/Lúmina separados.
