@@ -1,6 +1,6 @@
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { loadNexoContinuityStatus, loadNexoMissionStatus } from "../src/nexo/application/continuity-queries.mjs";
+import { loadNexoContinuityStatus, loadNexoMissionStatus } from "../src/nexo/application/index.mjs";
 
 /**
  * Nexo's independent command entrypoint.
