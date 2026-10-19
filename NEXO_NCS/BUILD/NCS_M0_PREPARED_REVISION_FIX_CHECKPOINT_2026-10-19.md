@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-10-19  
 **Rama:** `ncs-clean-architecture`  
-**Estado global:** M0 INCOMPLETO; pruebas dinámicas pendientes.
+**Estado global:** M0 INCOMPLETO. Regresiones de PREPARED y lineage ejecutadas por GitHub Actions con aceptación integrada PASS en SHA `48114cd275b98cbbf3142bb242f90d0c5c543d0a`; `npm test` completo no queda demostrado.
 
 ## Cambios de código publicados
 
@@ -14,24 +14,20 @@
    - Commit de regresiones base: `4203330689d6ea4072585d8cc6bca74b383ca461`; endurecimiento de aserciones: `cfd57bf8e8a74570c23908c30599126f9d76748a`; revisiones no sucesoras: `bdef7856448b3004b4c64afc635b79f6ad862176`
    - [Ver diff](https://github.com/snowdenxrp/aldea-ia/commit/4203330689d6ea4072585d8cc6bca74b383ca461)
 
-3. La matriz de regresión fue actualizada para reflejar el guard implementado y los casos escritos, pero aún no ejecutados. Commit de matriz base: `c57867b3131416e7d6bcf564106427a4d40a3a05`; actualización de revisión sucesora: `3f8434c188c09a90056d6e44cbeee0f187c568ec`.
+3. La matriz de regresión refleja los casos PREPARED y lineage; ejecución CI confirmada en el SHA actual de evidencia. Commit de matriz base: `c57867b3131416e7d6bcf564106427a4d40a3a05`; actualización de revisión sucesora: `3f8434c188c09a90056d6e44cbeee0f187c568ec`.
    - [Matriz](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_PREPARED_CONFIRMATION_REGRESSION_MATRIX_2026-10-19.md)
    - [Hallazgo inicial y corrección registrada](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_PREPARED_REVISION_BOUNDARY_FINDING_2026-10-19.md) (actualizado en commit `d1be3dbe8e805e8fbd847fa272f7f83244655581`)
 
-## Verificación realizada
+## Verificación inicial (histórica; reemplazada por CI posterior)
 
-- Volví a leer el runtime, la prueba y la matriz desde la rama.
-- Revisión estática adicional: las regresiones cuentan por separado las llamadas al adaptador y al handler. El contrato de `commitIfCurrent` incrementa la revisión exactamente en una unidad; el runtime ahora rechaza revisiones iguales o con saltos, además de ausentes, negativas, fraccionarias o inseguras.
-- Recuperé los diffs de los cambios de runtime, prueba y documentación y confirmé que solo cambian el guard de PREPARED y la prueba focal prevista.
-- No ejecuté Node, la prueba focal ni la suite Nexo. Intenté obtener un checkout para ejecutar la prueba, pero el entorno no pudo resolver `github.com`; no fue posible correr Node aquí. La consulta disponible no muestra ejecuciones de workflow asociadas a los commits de prueba. No declarar PASS.
+La nota anterior de que las pruebas estaban pendientes corresponde al momento inicial de la investigación. Fue superada por las ejecuciones GitHub Actions registradas abajo. No debe usarse como estado actual.
 
-## Siguiente secuencia obligatoria
+## Siguiente secuencia
 
-1. Ejecutar `node tests/nexo/chronicle-runtime.test.mjs`.
-2. Ejecutar los tests Nexo relacionados, al menos `effect-adapter.test.mjs`, `runtime.test.mjs`, `runtime-concurrency.test.mjs`, `restart-reconstruction.test.mjs` y `protected-transition.test.mjs`.
-3. Ejecutar la suite de proyecto si el entorno lo permite.
-4. Inspeccionar resultados y fijarlos al SHA probado; corregir cualquier fallo antes de avanzar.
-5. Mantener la decisión de autoridad separada: `authorization: NOT_EVALUATED`, efectos protegidos STOP, M0 INCOMPLETO. Esta corrección valida el contrato de revisión; no establece autoridad legítima ni una raíz de propietario.
+1. La prueba focal `chronicle-runtime.test.mjs` y los workflows de aceptación integrada, Chronicle vertical, mission admission/restart, STEP 4 y STEP 5 ya pasaron en el SHA actual `48114cd275b98cbbf3142bb242f90d0c5c543d0a`.
+2. Ejecutar `npm test` completo y cualquier suite Nexo fuera de los workflows ya citados; no afirmar que ya pasó.
+3. Continuar con el siguiente contrato real de settlement/owner-backed runtime sin reabrir auditorías cerradas ni cambiar de misión.
+4. Mantener la decisión de autoridad separada: `authorization: NOT_EVALUATED`, efectos protegidos STOP, M0 INCOMPLETO. Estos guards no establecen autoridad legítima ni una raíz de propietario.
 
 ## Primera ejecución real de CI y corrección derivada
 
@@ -56,3 +52,14 @@ Enlaces de ejecución:
 - https://github.com/snowdenxrp/aldea-ia/actions/runs/39334316706
 
 Esto valida dinámicamente las regresiones de esta rama hasta el SHA indicado y la aceptación integrada enumerada por ese workflow. No equivale a pasar `npm test` completo ni a demostrar autoridad legítima del propietario. Estado constitucional permanece `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+
+
+## Nueva corrección: confirmación de revisión de lineage
+
+La inspección del runtime detectó un límite posterior a PREPARED: el runtime aceptaba `lineage.status === "committed"` y pasaba `lineage.storeRevision` a reconciliación sin validar que la revisión fuera segura y exactamente el sucesor de la revisión PREPARED. La llamada externa ya pudo haber ocurrido, así que un resultado malformado debe producir UNKNOWN y detener la reconciliación; nunca reintentar el efecto.
+
+- Runtime: commit `3aa59cbfeadc7928a7592b7f0fe479b86206ccf7` añade el guard. Exige revisión PREPARED válida y menor que `Number.MAX_SAFE_INTEGER`, revisión de lineage entero seguro y `lineage.storeRevision === prepared.storeRevision + 1`. Si falla, devuelve `NEXO_EXECUTION_LINEAGE_COMMIT_NOT_CONFIRMED`, `lineageCommitted: "UNKNOWN"`, sin reconciliar, sin terminal outcome y con `redispatchAuthorized:false`.
+- Regresiones: commit `48114cd275b98cbbf3142bb242f90d0c5c543d0a` prueba tres respuestas comprometidas malformadas (revisión ausente, igual a PREPARED y salto de revisión). Las tres confirman que el adaptador se invoca solo una vez, reconciliación cero veces, estado UNKNOWN y sin autorización de redispatch.
+- GitHub Actions en SHA `48114cd275b98cbbf3142bb242f90d0c5c543d0a`: aceptación M0 integrada run `39335842717` SUCCESS; Chronicle native vertical `39335842965` SUCCESS; mission admission/restart `39335842749` SUCCESS; STEP 4 `39335842689` SUCCESS; STEP 5 `39335842743` SUCCESS.
+- Enlaces: https://github.com/snowdenxrp/aldea-ia/actions/runs/39335842717 ; https://github.com/snowdenxrp/aldea-ia/actions/runs/39335842965 ; https://github.com/snowdenxrp/aldea-ia/actions/runs/39335842749
+- Estos workflows verifican la regresión focal y contratos integrados cubiertos por ellos, no la suite completa `npm test`, autenticación de propietario ni ejecución protegida habilitada.
