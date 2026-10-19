@@ -11,7 +11,7 @@ En `src/nexo/core/owner-backed-runtime.mjs`, después de `owner.recordPrepared()
 - antes de invocar el adaptador solo exige `status === "committed"` y `preparedCommitted === true`;
 - devuelve `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` cuando no se cumplen esas dos condiciones.
 
-**Hallazgo adicional:** el runtime no valida `storeRevision` en esa frontera. El adaptador `src/nexo/effect-adapter.js` sí rechaza una revisión ausente/no segura/negativa con `EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED`, pero para entonces el runtime ya puso `dispatchAttempted = true` y llama después a `recordExecutionLineage()` con esa revisión. Por tanto, no es correcto afirmar que las respuestas con revisión ausente o negativa se bloquean en el runtime antes de cruzar la frontera de invocación del adaptador. Tampoco hay evidencia aquí de que el handler externo llegue a ejecutarse: eso requiere una prueba que cuente invocaciones del handler.
+**Hallazgo adicional y estado de corrección:** la inspección inicial detectó que el runtime no validaba `storeRevision` antes de marcar el despacho. Esto fue corregido en `src/nexo/core/owner-backed-runtime.mjs` (commit `dd1abc69cd867927c2fba949a4677fc7b2e51e99`): ahora exige una revisión entera segura y no negativa antes de llamar al adaptador. Las regresiones en `tests/nexo/chronicle-runtime.test.mjs` (commit `4203330689d6ea4072585d8cc6bca74b383ca461`) cuentan invocaciones del handler y esperan cero para las respuestas malformadas. **La prueba está escrita, pero no se ha ejecutado**; la garantía dinámica queda pendiente hasta correrla.
 
 ## Matriz de regresión requerida
 
