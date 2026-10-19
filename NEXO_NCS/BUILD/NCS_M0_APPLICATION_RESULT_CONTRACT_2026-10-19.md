@@ -105,3 +105,11 @@ Missing boolean state fields are normalized to false only where no write was att
 - Branch HEAD at last documentation update: `0e4baf55de41bcfff249377785809765487ec883`; latest docs updates may advance HEAD further without changing code.
 - Latest code/test SHA with four focal workflows SUCCESS: `274af889dfcfe8457af005f5ee126d012b1b6555`.
 - Next: continue audit of the public application boundary and result contract. No new mutating action, no UI/legacy runtime integration, no `index.html` change, no authority inference. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
+
+
+
+## Public admission UNKNOWN normalization — validated update (2026-10-19)
+
+The runNexoChronicleAppend() mission-admission UNKNOWN branch now uses the same public allowlist serializer as all other application results. It preserves missionAdmissionCommitted=UNKNOWN and the no-dispatch/no-redispatch flags while including the request identity (missionId, stepId). Internal target/adapter objects are excluded. A focused regression covers the serializer contract and private payload non-disclosure.
+
+CI SUCCESS on code/test SHA 3c8d14163144e6f83a6130f38f025e31302c1ac9: [Chronicle 39187723675](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723675), [bounded mission admission/restart 39187723680](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723680), [STEP 4 39187723651](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723651), [STEP 5 39187723612](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723612). This is a response-shape correction only; no new action, no retry authorization, and no runtime cutover.
