@@ -113,3 +113,11 @@ Missing boolean state fields are normalized to false only where no write was att
 The runNexoChronicleAppend() mission-admission UNKNOWN branch now uses the same public allowlist serializer as all other application results. It preserves missionAdmissionCommitted=UNKNOWN and the no-dispatch/no-redispatch flags while including the request identity (missionId, stepId). Internal target/adapter objects are excluded. A focused regression covers the serializer contract and private payload non-disclosure.
 
 CI SUCCESS on code/test SHA 3c8d14163144e6f83a6130f38f025e31302c1ac9: [Chronicle 39187723675](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723675), [bounded mission admission/restart 39187723680](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723680), [STEP 4 39187723651](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723651), [STEP 5 39187723612](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723612). This is a response-shape correction only; no new action, no retry authorization, and no runtime cutover.
+
+
+
+## Public result value-schema validation — validated update (2026-10-19)
+
+The public result serializer now validates field values as well as field names. Status is restricted to the documented public status set; code must be a string; tri-state commit/settlement fields accept only boolean or UNKNOWN; storeRevision must be a nonnegative safe integer. The current public vertical always reports redispatchAuthorized=false. Malformed values are omitted or normalized rather than passed through. Regression covers malformed values and private-data non-disclosure.
+
+CI SUCCESS on code/test SHA 42f0e12640a35bc1e7b524501f8dbe879a311d90: [Chronicle 39187949155](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949155), [bounded mission admission/restart 39187949154](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949154), [STEP 4 39187949143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949143), [STEP 5 39187949152](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949152). This hardens response shape only and does not establish power-loss durability or authorize retry/redispatch.
