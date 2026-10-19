@@ -9,6 +9,7 @@ import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chro
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { runNexoChronicleAppend, parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
+import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 
 function chronicleMission() {
   return {
@@ -223,6 +224,10 @@ try {
   assert.equal(realContinuity.snapshot.effectJournal[0].status, "settled_observed");
   assert.equal(realContinuity.snapshot.effectJournal[0].settlement.source, "nexo-chronicle-store");
   assert.equal(realContinuity.snapshot.attempts[0].status, "completed");
+  const reconstructedChronicle = reconstructNexoMissionFromSnapshot(realContinuity.snapshot, "chronicle-real");
+  assert.equal(reconstructedChronicle.steps[0].status, "completed",
+    "a settled Chronicle append with a recorded outcome must not be downgraded as an observed repair");
+  assert.notEqual(reconstructedChronicle.objective, "verify_observed_repair_goal");
   assert.equal((await real.chronicleStore.loadCurrent()).entries.length, 1);
 
   // Restart after the append but before lineage/settlement: recover by reading Chronicle, never redispatch.
