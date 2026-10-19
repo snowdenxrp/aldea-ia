@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `467cea28706a54b2f30e320485c1d7b3f57e2692` (2026-10-19)
+Latest validated code/test checkpoint: `9ca094242d25fced843b7d5595f9cff6e0d82ee3` (2026-10-19)
 
 ## Scope
 
@@ -292,3 +292,8 @@ Test SHA `376f2d984eeb969d25c2c797a40037a72a6a5c6b`; bounded admission/restart, 
 ## Checkpoint M0 — Chronicle outcome reconstruction after response loss
 
 La prueba de runtime simula pérdida de respuesta después del commit terminal, reabre el owner y comprueba reconstrucción: settlement válido + attempt completed producen paso `completed`; la misión completa permanece `awaiting_verification` y el runtime recupera sin un segundo dispatch. SHA de test `467cea28706a54b2f30e320485c1d7b3f57e2692`; Chronicle native, bounded admission, STEP 4 y STEP 5 SUCCESS (runs 39196004121, 39196004116, 39196004098, 39196004164). M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — Chronicle outcome evidence must match settlement
+
+La evidencia del outcome Chronicle debe llevar el tipo canónico y `source/observedRevision` iguales al settlement persistido. Owner bloquea mismatch; reconstrucción también bloquea evidencia desatada e identidad distinta en lugar de informar que sólo falta replay. La pareja canónica sigue reconstructing completed. Fix funcional `c9be5ee...`; test SHA `9ca094...`; bounded admission, crash cuts, STEP 4 y STEP 5 SUCCESS. Esto es coherencia estructural, no autenticación de procedencia. M0 INCOMPLETO; efectos protegidos STOP.
