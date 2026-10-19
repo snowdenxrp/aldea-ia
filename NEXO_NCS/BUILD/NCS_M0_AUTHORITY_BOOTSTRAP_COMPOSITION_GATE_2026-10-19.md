@@ -1,7 +1,7 @@
 # Nexo M0 — gate de composición de la raíz de autoridad
 
 Fecha: 2026-10-19  
-Estado: **DECISIÓN DE DISEÑO: NO SE PROMUEVE UNA RAÍZ; IMPLEMENTACIÓN PROTEGIDA EN STOP**.
+Estado: **ALCANCE ACOTADO POR DECISIÓN POSTERIOR: UNA LLAVE RAÍZ; PROVISIÓN/PROTOCOLO/VERIFICACIÓN PENDIENTES; EFECTOS PROTEGIDOS STOP**.
 
 ## Por qué se abre este gate
 
@@ -19,9 +19,9 @@ Esta nota **reutiliza** la investigación ya guardada. No vuelve a auditarla ni 
 
 ## Decisión actual
 
-**No seleccionar todavía hardware, teléfono, biometría, servicio externo, quórum, credencial ni procedimiento humano como raíz constitucional.** Los documentos previos rechazaron promover una clase universal y exigen un contrato de composición. No existe evidencia para afirmar que una clase concreta cumple el requisito de independencia para el caso de recuperación tras perder todos los teléfonos.
+**La decisión posterior NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md fija el alcance de primera fase en una llave criptográfica raíz y un dispositivo inicial.** Esto reemplaza la indecisión sobre el número de raíces, pero no selecciona un modelo físico, protocolo, provisión, verificador ni fuente independiente de la prueba. No se afirma que la llave ya exista o esté configurada, ni que la autoridad se evalúe en runtime. Teléfono y biometría no se promueven a raíz por defecto; no se elige quórum ni servicio externo sin evidencia.
 
-La siguiente capa de arquitectura debe separar:
+La siguiente capa de arquitectura debe separar (la selección de una única llave acota el diseño, pero no fusiona estas responsabilidades):
 
 `ROOT COMPOSITION` → `CURRENT AUTHORITY` → `AUTHORIZATION DECISION` → `PROTECTED EFFECT ADMISSION` → `EFFECT OUTCOME / RECONCILIATION`
 
@@ -62,8 +62,15 @@ Si falta cualquiera de las bases, el resultado correcto es `PENDING/UNKNOWN`, no
 
 ## Estado final de este checkpoint
 
-- Gate de regresión M0: PASS en el SHA probado.
+- Gate de regresión M0: PASS en los SHAs probados, incluido el PASS posterior de npm test registrado en el checkpoint de continuidad.
 - Admisión de autoridad en runtime: NO IMPLEMENTADA / `NOT_EVALUATED`.
 - Raíz constitucional / composición de bootstrap: PENDING.
 - Efectos protegidos: STOP.
 - M0 global: INCOMPLETO.
+
+
+## Addendum de continuidad — alcance de raíz acotado (2026-10-19)
+
+La decisión NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md posterior a esta nota fija una llave criptográfica raíz y un dispositivo inicial. Debe leerse como una reducción de alcance, no como implementación ni como promoción de una raíz ya verificada. Las frases anteriores que dejaban abierto el número de raíces quedan superadas en ese punto; siguen pendientes el tipo físico, el protocolo de prueba, la provisión inicial independiente, la verificación y el enforcement en el último límite antes de un efecto.
+
+**Próximo paso acotado:** especificar el contrato mínimo de provisión y verificación de esa única llave, reutilizando el contrato semántico existente. No reabrir comparación general de familias, no crear un root de software que se autentique a sí mismo y no cambiar authorization: NOT_EVALUATED ni STOP.
