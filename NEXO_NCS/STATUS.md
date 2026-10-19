@@ -1729,3 +1729,12 @@ La matriz completa y sus límites están en `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CR
 Esto confirma la suite integrada de regresión AC1–AC6 sobre un mismo SHA. No equivale a demostrar la legitimidad de la raíz de autoridad, durabilidad ante pérdida física de energía, resistencia global a rollback/tampering ni a autorizar efectos protegidos. El cambio desde ese SHA hasta los commits documentales posteriores no alteró código de producción ni tests.
 
 **Estado:** gate de regresión M0 PASS en `c57be8aa...`; misión M0 global todavía INCOMPLETA por bloqueos arquitectónicos de seguridad no resueltos. Efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## M0 — brecha de admisión de autoridad confirmada por inspección (2026-10-19)
+
+Nuevo análisis: `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_ADMISSION_GAP_2026-10-19.md`.
+
+El gate integrado de regresión pasa, pero el código de runtime/owner **no evalúa autoridad del propietario**: `createNexoContinuityOwner()` recibe store + verifiers, no una raíz/principal/decisión de autorización; el runtime verifica capacidades y readiness, pero no autoridad antes de PREPARED/dispatch. Los resultados que exponen `authorization: "NOT_EVALUATED"` son evidencia directa de esa limitación. La vertical `chronicle-append` es un prototipo local de persistencia/replay, no una ruta demostrada de efecto protegido owner-authorized.
+
+Decisión: no inventar un pseudo-root ni añadir una función que convierta input del caller en autoridad. No conectar acciones externas, financieras, irreversibles, reparación externa ni cambios constitucionales a esta ruta. Reutilizar investigación existente de `docs/nexo/` sobre raíz independiente, autorización efectiva, revocación y STOP; no repetir auditorías históricas. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
