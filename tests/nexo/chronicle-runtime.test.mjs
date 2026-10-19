@@ -243,7 +243,7 @@ assert.equal(dependencyGateDispatchCalls, 0, "dependency gate must run before ad
 
 const completedClaimMission = {
   missionId: "completed-claim-mission",
-  status: "completed",
+  status: "planned",
   steps: [{ id: "step-1", action: "chronicle_append", target: { content: "claimed" }, status: "completed", dependsOn: [] }]
 };
 let completedClaimPrepareCalls = 0;
