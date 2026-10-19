@@ -470,3 +470,11 @@ Estado: **M0 INCOMPLETO**. Chronicle sigue opt-in. Runtime default sin cutover. 
 - The last relevant code gates are green: mission admission/continuity [39179591854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591854), outcome/restart [39179591845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591845), semantic validation [39179591868](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591868), plus Chronicle/entrypoint [39179449609](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179449609).
 - Next work must not invent a new action to fill the allowlist. Choose only from an already justified Nexo-native requirement, then define its trusted observation + settlement + outcome contract and crash/restart tests before enabling dispatch. Until such a concrete action is selected and proven, `chronicle_append` remains the sole enabled action.
 - M0: **INCOMPLETO**. Runtime default unchanged. Protected effects STOP. Nexo/Lúmina separation remains mandatory.
+
+
+## Addendum — continuidad read-only por CLI
+
+- La entrada `scripts/nexo.mjs` ahora admite `status --continuity PATH`, además de `chronicle-append`. El comando status solo lee el store y devuelve revisión + contadores agregados; no imprime misiones, targets ni contenido, y no crea un store faltante.
+- Test real: store ausente → bloqueado sin creación; store existente → contadores correctos y bytes idénticos antes/después.
+- CI SUCCESS en SHA de código/test `f15760571a6092235c1ff8dbb776be4a384ba2d5`: [39179823123](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823123), [39179823124](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823124), [39179823115](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823115).
+- Esto aporta observabilidad del store, no autoriza efectos nuevos. Solo Chronicle muta desde el CLI. Mantener el gate de acción owner-backed, no cambiar runtime default y no declarar M0 completo.
