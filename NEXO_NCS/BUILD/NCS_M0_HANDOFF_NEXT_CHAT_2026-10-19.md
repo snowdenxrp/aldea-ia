@@ -548,3 +548,18 @@ Se encontró y verificó el run real del workflow `.github/workflows/nexo-m0-mis
 - **Run corregido:** [39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), SHA exacto del fix. Job `mission-status` y paso `Run independent Nexo entrypoint regression` SUCCESS. El log emitió la línea de éxito del entrypoint independiente.
 
 Conclusión: M0-AC1 = PASS focal en SHA `82f1204...`; no implica cierre global ni activación de efectos protegidos. Se registró el historial fallo→fix→PASS en el documento de criterios y en STATUS. No repetir esta comprobación salvo cambio relevante del código/test/workflow. Siguiente paso: construir la matriz AC1–AC6 usando evidencia existente por SHA, y marcar con precisión los criterios históricos que no están validados sobre el HEAD actual. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 28. Matriz de evidencia AC1–AC6 y cierre de regresión Chronicle (2026-10-19)
+
+Se revisó el primer fallo del workflow Chronicle `39264921840`: store y runtime pasaron; el paso de entrypoint falló con `NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE`, la misma discrepancia de API corregida en `82f1204...`. La causa era el consumidor, no Chronicle store/runtime.
+
+Se añadió a `.github/workflows/nexo-m0-chronicle.yml` el trigger por cambios en `src/nexo/application/continuity-queries.mjs` y `src/nexo/application/index.mjs`, ya que el test de entrypoint consume esos módulos. El nuevo run [39291153543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39291153543), SHA `7f83195657df829d993226cf909c8f76f655d23b`, terminó SUCCESS: los pasos Chronicle store, Chronicle runtime/recovery y entrypoint independiente pasaron.
+
+Matriz:
+- AC1 PASS focal en `82f1204...` (run 39265121361) y confirmado en `7f831956...` (run 39291153543).
+- AC4 y AC6 PASS focal en `7f831956...`.
+- AC2/AC3 PASS histórico en runs/SHAs documentados en el archivo de criterios.
+- AC5 PASS histórico en crash cuts `39210287996` (SHA `d4544e...`) y `39209200872` (SHA `e8f169ac...`); falta ejecutar la suite crash-cut en el SHA de cierre.
+
+Documento de matriz: `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EXECUTABLE_2026-10-19.md`. Próximo paso: decidir/ejecutar la validación integrada final de los criterios obligatorios, empezando por crash cuts en el HEAD actual. No reabrir las regresiones de query/entrypoint salvo cambios relevantes. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
