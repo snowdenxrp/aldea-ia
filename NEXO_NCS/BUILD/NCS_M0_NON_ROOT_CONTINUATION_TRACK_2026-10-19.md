@@ -48,17 +48,13 @@ La regresión de `tests/nexo/chronicle-runtime.test.mjs` contiene el caso de acc
 
 La prueba `tests/nexo/continuity-store.test.mjs` ya cubre, entre otros, ausencia de estado, concurrencia por revisión, fallos de creación del lock, pérdida de respuesta tras rename, agotamiento de revisión y lock stale fail-closed. No convertir esos tests en afirmación de resistencia a rollback, manipulación del filesystem o corte eléctrico real.
 
-## 4. Siguiente trabajo M0 sin llave
+## 4. Trabajo M0 sin llave — matriz de despliegue creada
 
-Prioridad propuesta: preparar una matriz de aceptación de despliegue del store que distinga de manera verificable:
+La matriz preliminar quedó creada en [NCS_M0_CONTINUITY_STORE_DEPLOYMENT_ACCEPTANCE_MATRIX_DRAFT_2026-10-19.md](NCS_M0_CONTINUITY_STORE_DEPLOYMENT_ACCEPTANCE_MATRIX_DRAFT_2026-10-19.md).
 
-1. Invariantes ya cubiertos por tests de software (lectura/escritura, revisión condicional, recuperación de respuesta perdida, JSON corrupto/ausente, lock stale).
-2. Propiedades que el diseño actual **no reclama** (fsync/power-loss durability, rollback/tampering del filesystem, symlink/path attacks, procesos locales hostiles, network filesystems).
-3. Qué propiedad es requisito de la primera versión y cuál queda fuera del alcance inicial.
-4. Qué prueba automatizada es viable en CI y qué prueba requeriría hardware/OS real.
-5. Qué brecha exige rediseño arquitectónico antes de implementar, en lugar de agregar un parche local.
+Distingue invariantes cubiertos por tests de software de garantías no reclamadas por el store: fsync/pérdida de energía, rollback, symlink/path attacks, procesos locales hostiles y filesystem de red/distribuido. También deja explícito que la recuperación automática de lock stale no está habilitada y que un PASS de persistencia no autoriza efectos protegidos.
 
-No añadir por anticipado journals, hashes encadenados, nuevas revisiones, copias, rollback ni wrappers transaccionales. Primero fijar la propiedad de seguridad y el modelo de amenaza; si el requisito exige un ancla externa o física, registrar la dependencia sin bloquear los demás trabajos M0.
+Siguiente paso: mantener esas propiedades como PENDING hasta que el requisito de despliegue y el modelo de amenaza se definan. No modificar el runtime para “resolver” un requisito que todavía no se ha elegido. Si se exige resistencia a host local comprometido, rollback o pérdida de energía, detenerse a diseñar una fuente de confianza/frescura y una frontera adecuada; no añadir hashes, epochs, journals o wrappers por anticipado.
 
 ## 5. Estado de cierre
 
