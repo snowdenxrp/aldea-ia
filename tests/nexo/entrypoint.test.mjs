@@ -6,6 +6,12 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseNexoEntrypointArguments } from "../../scripts/nexo.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import * as nexoApplication from "../../src/nexo/application/index.mjs";
+
+assert.deepEqual(Object.keys(nexoApplication).sort(), [
+  "loadNexoContinuityStatus", "loadNexoMissionStatus", "runNexoChronicleAppend"
+].sort(), "public Nexo application API must remain narrow and must not expose a generic dispatcher");
+for (const exportedUseCase of Object.values(nexoApplication)) assert.equal(typeof exportedUseCase, "function");
 
 const entrypointPath = fileURLToPath(new URL("../../scripts/nexo.mjs", import.meta.url));
 const chronicleSessionSource = await fs.readFile(new URL("../../scripts/nexo-chronicle-session.mjs", import.meta.url), "utf8");
