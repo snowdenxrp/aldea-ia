@@ -70,6 +70,8 @@ const invalidApplicationInput = await runNexoChronicleAppend({
 });
 assert.equal(invalidApplicationInput.status, "blocked");
 assert.equal(invalidApplicationInput.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
+assert.equal(invalidApplicationInput.authorization, "NOT_EVALUATED",
+  "early public rejection must preserve the unevaluated authority state");
 assert.equal(invalidApplicationInput.dispatchAttempted, false);
 assert.equal(invalidApplicationInput.redispatchAuthorized, false);
 const invalidInitializationType = await runNexoChronicleAppend({
@@ -1077,6 +1079,8 @@ try {
   assert.equal(delimiterCollision.code, "NEXO_CHRONICLE_ID_INVALID");
   const entryResult = await runNexoChronicleAppend(args);
   assert.equal(entryResult.status, "completed");
+  assert.equal(entryResult.authorization, "NOT_EVALUATED",
+    "local Chronicle settlement must not imply owner authorization");
   assert.equal(entryResult.dispatchAttempted, true);
   assert.equal(JSON.stringify(entryResult).includes(args.content), false,
     "public application results must not expose Chronicle payloads");
