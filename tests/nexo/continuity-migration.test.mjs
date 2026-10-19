@@ -333,6 +333,63 @@ try {
   await fs.rm(chronicleInvalidSettlementDir, { recursive: true, force: true });
 }
 
+const unsupportedCompletionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-unsupported-completion-reconstruction-"));
+try {
+  const unsupportedCompletionMemory = structuredClone(legacyMemory);
+  unsupportedCompletionMemory.nexo.missions[0].status = "planned";
+  unsupportedCompletionMemory.nexo.missions[0].objective = "repair_agent_state";
+  unsupportedCompletionMemory.nexo.missions[0].steps[0].status = "planned";
+  unsupportedCompletionMemory.nexo.attempts = [{
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    status: "completed",
+    evidence: { verified: true, kind: "caller-asserted", source: "legacy-runtime" },
+    at: "2026-10-19T00:00:00.000Z"
+  }];
+  unsupportedCompletionMemory.nexo.effectJournal = [];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(unsupportedCompletionDir, "nexo.json"),
+    legacyMemory: unsupportedCompletionMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked",
+    "caller-labelled completion for a mutating action must not bypass the canonical goal-verification gate");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED");
+} finally {
+  await fs.rm(unsupportedCompletionDir, { recursive: true, force: true });
+}
+
+const localAnalysisCompletionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-local-analysis-completion-reconstruction-"));
+try {
+  const localAnalysisMemory = structuredClone(legacyMemory);
+  localAnalysisMemory.nexo.missions[0].status = "planned";
+  localAnalysisMemory.nexo.missions[0].objective = "local_analysis";
+  localAnalysisMemory.nexo.missions[0].steps[0] = {
+    id: "step-1", action: "local_analysis", target: "alex", status: "planned", dependsOn: []
+  };
+  localAnalysisMemory.nexo.attempts = [{
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "local_analysis",
+    target: "alex",
+    status: "completed",
+    evidence: { verified: true, kind: "local-analysis", source: "nexo-local-analysis" },
+    at: "2026-10-19T00:00:00.000Z"
+  }];
+  localAnalysisMemory.nexo.effectJournal = [];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(localAnalysisCompletionDir, "nexo.json"),
+    legacyMemory: localAnalysisMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "completed",
+    "the explicitly non-mutating local_analysis action remains eligible for reconstruction");
+} finally {
+  await fs.rm(localAnalysisCompletionDir, { recursive: true, force: true });
+}
+
 const observedSettlementDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-observed-settlement-"));
 try {
   const observedMemory = structuredClone(legacyMemory);
