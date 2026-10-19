@@ -1611,3 +1611,12 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - No se modificó código ni se añadieron invariantes especulativos. Comparación GitHub: `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5...ncs-clean-architecture` contiene sólo tres commits documentales; el código validado no cambió en esa comparación.
 - Frontera siguiente: aclarar el contrato de observación/verificación de objetivos sin conectar efectos de reparación al runtime. `scripts/nexo-repair-settlement.mjs` lee un snapshot mediante `loadStateStrict()` y `src/nexo/adapters/persisted-repair-observation.mjs` sólo prueba invariantes observables; ambos describen explícitamente que no prueban causalidad ni atomicidad entre el archivo de estado y la continuidad de Nexo. Mantener esa ruta diagnóstica separada; no habilitar reparaciones ni mezclar memoria/simulación de Lúmina con Nexo.
 - **M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.**
+
+
+## M0 — recuperación de fallo al crear lock (2026-10-19; PR #106)
+
+- Hallazgo: en los dos stores locales, `acquireLock()` podía crear `<store>.lock` y fallar al escribir `owner.json`; como la ruta de error no retiraba el directorio recién creado, una operación posterior podía quedar esperando el lock sin propietario y terminar exigiendo recuperación manual. Esto no era corrupción de datos probada, pero sí una recuperación incompleta del mecanismo de exclusión mutua.
+- Añadidas regresiones de fallo inyectado para Continuity Store y Chronicle Store: la primera escritura de `owner.json` falla con `EIO`; se exige que el lock incompleto no permanezca y que una inicialización posterior pueda completarse.
+- Fix acotado: ambos `acquireLock()` distinguen el caso en que el `mkdir` de esta misma llamada tuvo éxito; si luego falla la escritura del owner, intentan limpiar ese directorio y propagan el error original. No se cambia el protocolo de locks existentes, no se auto-reclaman locks stale y no se alteran efectos/autoridad.
+- PR #106: https://github.com/snowdenxrp/aldea-ia/pull/106 (rama `ncs-m0-lock-acquisition-cleanup`). La implementación y los tests están en la rama de PR; no se afirma todavía CI SUCCESS ni merge. La ejecución local de tests no está disponible en este entorno; confirmar las acciones de GitHub antes de integrar.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
