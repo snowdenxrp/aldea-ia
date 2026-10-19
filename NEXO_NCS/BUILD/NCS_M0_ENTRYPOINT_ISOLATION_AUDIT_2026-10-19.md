@@ -51,3 +51,10 @@ No concluir "desconectado" solo porque el módulo no aparece en `src/main-stable
 ## 7. Estado
 
 Auditoría parcial de entrypoints completada; inventario global aún pendiente. Sin cambios de runtime, UI ni CI. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 8. Compatibilidad legacy y puente explícito de reparación
+
+La inspección adicional de `scripts/assistants.mjs` y `scripts/nexo-runtime-session.mjs` detectó un puente de compatibilidad explícito: `scripts/assistants.mjs` solo llama `runNexoRuntimeRepairSession()` cuando se proporciona `--nexo-repair-once`. Ese puente selecciona una reparación del snapshot de continuidad Nexo, pero la reparación opera sobre `statePath` (`world-state.json`) mediante `scripts/nexo-repair-session.mjs` y `scripts/nexo-repair-entrypoint.mjs`. Esto es un acoplamiento legacy entre una misión construida a partir de informes de simulación y la mutación del estado de simulación.
+
+La ruta está detrás de una bandera opt-in y no es el camino de la API pública Nexo ni del runtime owner-backed, que bloquea reparaciones antes del dispatch. Aun así, su existencia significa que no debe afirmarse que todo el repositorio está completamente libre de puente Nexo/Lúmina. Mantener esta ruta fuera del uso normal; no usarla para avanzar el nuevo Nexo independiente. Antes de retirarla o rediseñarla, revisar sus tests/contrato y obtener CI real. No borrar ni migrar automáticamente datos legacy como parte de esta auditoría.
