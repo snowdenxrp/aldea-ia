@@ -1,3 +1,12 @@
+## Latest verified checkpoint — repair completion gate (2026-10-19)
+
+- Concrete gap: `recordOutcome(status=completed)` could complete a known repair action when its mission had no `effectJournal` row. The prior unresolved-effect guard only protected existing PREPARED/observed obligations; caller-supplied `verified/source` labels were not independent proof.
+- Fix in `src/nexo/core/continuity-owner.mjs`: completion for `repair_agent_state`, `repair_agent_needs` and `repair_resource_state` now blocks with `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED` until an action-specific mission-goal verifier is wired into the owner. Existing unresolved PREPARED/observed obligations still return `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED` first. Non-mutating `local_analysis` behavior is unchanged.
+- Regression: `tests/nexo/repair-settlement-crash-cuts.test.mjs` verifies a caller-asserted repair completion without PREPARED is blocked and does not advance the canonical revision.
+- The first attempt (`ae805de72869f265a836f1f6fa7a4f7f82d3b620`) failed because the new guard masked the existing PREPARED error precedence and affected a non-mutating outcome test. Corrected ordering/scope, then validated code/test SHA `bef43609defa7a57f542d1a572dde388afb90812`.
+- CI SUCCESS on the validated SHA: M0 effect/settlement [39188821844](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821844), repair crash cuts [39188821998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821998), bounded admission/restart [39188821789](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821789), STEP 4 [39188821769](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821769), Chronicle [39188821790](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821790).
+- Next: audit trusted action/goal-verifier registration and the boundary between goal observation and mission decision. Do not add actions, UI, HTTP server, or legacy-runtime cutover. M0 remains INCOMPLETE; protected effects STOP; Nexo/Lúmina separate.
+
 ## M0 — bootstrap de Chronicle sin inicialización parcial evitable (validado 2026-10-18)
 
 - Auditoría del entrypoint encontró que inicializaba Chronicle antes de comprobar si el almacén de continuidad estaba corrupto o ausente sin permiso de inicialización. Eso podía dejar un almacén Chronicle vacío como efecto lateral aunque la sesión completa fuera bloqueada.
