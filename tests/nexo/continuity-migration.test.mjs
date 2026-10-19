@@ -1012,3 +1012,16 @@ try {
 } finally {
   await fs.rm(verifierBootstrapDir, { recursive: true, force: true });
 }
+
+const unknownJournalStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-unknown-journal-state-"));
+try {
+  const unknownJournalMemory = structuredClone(legacyMemory);
+  unknownJournalMemory.nexo.effectJournal = [{ ...unknownJournalMemory.nexo.effectJournal[0], status: "unknown_state" }];
+  const opened = await openNexoContinuityOwner({ filePath: path.join(unknownJournalStateDir, "nexo.json"), legacyMemory: unknownJournalMemory });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN");
+} finally {
+  await fs.rm(unknownJournalStateDir, { recursive: true, force: true });
+}
