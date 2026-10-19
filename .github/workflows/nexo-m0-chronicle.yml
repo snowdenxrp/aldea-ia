@@ -11,6 +11,8 @@ on:
       - "src/nexo/core/continuity-owner.mjs"
       - "src/nexo/runtime.js"
       - "scripts/nexo-chronicle-session.mjs"
+      - "scripts/nexo.mjs"
+      - "tests/nexo/entrypoint.test.mjs"
       - "tests/nexo/chronicle-store.test.mjs"
       - "tests/nexo/chronicle-runtime.test.mjs"
       - "package.json"
@@ -40,3 +42,5 @@ jobs:
         run: node tests/nexo/chronicle-store.test.mjs
       - name: Chronicle owner-backed runtime and restart recovery
         run: node tests/nexo/chronicle-runtime.test.mjs
+      - name: Independent Nexo command entrypoint
+        run: node tests/nexo/entrypoint.test.mjs
