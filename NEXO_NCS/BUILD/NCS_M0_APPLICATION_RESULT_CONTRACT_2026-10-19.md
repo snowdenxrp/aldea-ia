@@ -67,3 +67,11 @@ Missing boolean state fields are normalized to false only where no write was att
 
 - Import from `src/nexo/application/index.mjs`; the stable exports are exactly `runNexoChronicleAppend`, `loadNexoContinuityStatus`, and `loadNexoMissionStatus`.
 - The CLI wrappers and export-list regression consume this surface. CI SUCCESS on SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
+
+
+## Mission-admission response loss — guard added (CI pending)
+
+- `runNexoChronicleAppend()` now catches an exception around `owner.recordMission()` and returns `status=unknown`, `missionAdmissionCommitted=UNKNOWN`, `dispatchAttempted=false`, and `redispatchAuthorized=false`.
+- Rationale: `recordMission()` delegates to a store commit; an exception may mean the commit did not happen or happened before the response was lost. The caller must not be told admission definitely failed, and no effect dispatch may follow that uncertain response.
+- Regression: `tests/nexo/chronicle-runtime.test.mjs` injects a store-response-loss error, asserts tri-state uncertainty and no dispatch/retry authorization, and confirms the raw error message is not exposed.
+- Code/test SHA: `e4562b6edb0ce4c3f0df1ccaae94cc63edf33d1f`. CI has not yet been observed for this SHA; status remains PENDING/UNKNOWN until the matching workflow runs complete.
