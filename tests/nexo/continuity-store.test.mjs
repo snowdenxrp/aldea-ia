@@ -32,6 +32,11 @@ assert.deepEqual(
   { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" },
   "a missing parent path must be a structured store failure, not a raw ENOENT"
 );
+assert.deepEqual(
+  await unavailableParentStore.commitIfCurrent(0, emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" },
+  "conditional commit must normalize a missing parent before any write"
+);
 
 const initialized = await store.initialize(emptySnapshot);
 assert.equal(initialized.status, "committed");
