@@ -1,3 +1,13 @@
+## M0 — precisión del alcance de la ruta legacy de efectos (2026-10-19)
+
+- La auditoría de referencias encontró la definición de `executeLuminaNexoStep()` y su llamada interna a `executeNexoStep()`, además de pruebas y referencias históricas; no encontró un caller de producción actual.
+- `scripts/assistants.mjs` planifica/persiste misiones y `scripts/simulate.mjs` persiste el estado de simulación, pero ninguno ejecuta actualmente esos entrypoints de Nexo.
+- Corrección de alcance: hay dos APIs/contratos en el repositorio, pero no evidencia de que ambas sean rutas de ejecución de producción activas. La ruta legacy puede mutar simulación si se invoca; no se afirma un bypass de producción observado.
+- Auditoría precisada: `NEXO_NCS/BUILD/NCS_M0_LEGACY_EFFECT_PATH_VS_OWNER_BACKED_2026-10-19.md`, commit `3cb28318a35a78a8880556351fef9bf0fb7414db`.
+- Próximo foco: comprobar la frontera de la API importable y el recibo PREPARED sin migrar efectos de simulación ni asumir autoridad. Estado estático; tests/CI para cambios recientes PENDING; `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — coexistencia de rutas de efecto legacy y owner-backed (2026-10-19)
 
 - Auditoría de llamadas: `NEXO_NCS/BUILD/NCS_M0_LEGACY_EFFECT_PATH_VS_OWNER_BACKED_2026-10-19.md`.
