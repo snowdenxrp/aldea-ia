@@ -256,30 +256,30 @@ const coreMission = {
   missionId: "core-mission",
   version: 4,
   status: "planned",
-  objective: "repair_agent_state",
+  objective: "local_analysis",
   generatedAt: "2026-10-18T00:00:00.000Z",
-  steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  steps: [{ id: "step-1", action: "local_analysis", target: "alex", status: "planned", dependsOn: [] }]
 };
 let operationalSnapshot = recordNexoMissionInSnapshot(emptySnapshot, coreMission);
 assert.equal(operationalSnapshot.missions.length, 1);
 assert.throws(
   () => recordNexoOutcomeInSnapshot(operationalSnapshot, {
-    missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+    missionId: "core-mission", stepId: "step-1", action: "local_analysis",
     target: "alex", status: "completed", evidence: { verified: false, kind: "effect-postcondition" }
   }),
   error => error?.code === "NEXO_COMPLETION_EVIDENCE_UNVERIFIED"
 );
 operationalSnapshot = recordNexoOutcomeInSnapshot(operationalSnapshot, {
-  missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+  missionId: "core-mission", stepId: "step-1", action: "local_analysis",
   target: "alex", status: "completed", evidence: { verified: true, kind: "effect-postcondition", source: "test-postcondition" }
 });
 operationalSnapshot = recordNexoOutcomeInSnapshot(operationalSnapshot, {
-  missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+  missionId: "core-mission", stepId: "step-1", action: "local_analysis",
   target: "alex", status: "failed", evidence: { verified: false, kind: "late-replay", source: "test-replay" }
 });
 assert.throws(
   () => recordNexoOutcomeInSnapshot(operationalSnapshot, {
-    missionId: "core-mission", stepId: "step-1", action: "repair_agent_state",
+    missionId: "core-mission", stepId: "step-1", action: "local_analysis",
     target: "alex", status: "completed", evidence: { verified: true, kind: "effect-postcondition" }
   }),
   error => error?.code === "NEXO_COMPLETION_EVIDENCE_UNVERIFIED",
@@ -295,7 +295,7 @@ let executionSnapshot = recordNexoExecutionInSnapshot(operationalSnapshot, {
   idempotencyKey: "core-mission:step-1",
   missionId: "core-mission",
   stepId: "step-1",
-  action: "repair_agent_state",
+  action: "local_analysis",
   target: "alex",
   result: { status: "completed", verified: true }
 });
