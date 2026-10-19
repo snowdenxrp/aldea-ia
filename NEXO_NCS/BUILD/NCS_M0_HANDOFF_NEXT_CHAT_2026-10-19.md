@@ -2,7 +2,7 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-HEAD de rama antes de este handoff: `b171cf23c5a9b287e10f72d14b054048f7c21034`; consultar GitHub al retomar para el HEAD documental exacto.
+HEAD documental verificado al guardar esta continuidad: `1e9f3badf026c00131b2207101d32652c2042f2c`; SHA de código+pruebas: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`.
 Último SHA código+pruebas validado por CI: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`
 Último fix funcional incluido: `360b0dafbebc700477bc30879ef4175da81c904b`
 
@@ -377,3 +377,16 @@ Siguiente paso: probar valores no persistibles dentro de mission/target sin ampl
 Seguir la frontera que ya registra `NEXO_NCS/STATUS.md`: investigar si valores no persistibles dentro de `mission`/`target` (funciones, símbolos, ciclos y valores numéricos no finitos) pueden superar admisión o producir una excepción no estructurada/CAS innecesario. Leer `assertContractInput()` y `missionRecord()` en `src/nexo/core/continuity-operations.mjs`, junto con `tests/nexo/continuity-contract.test.mjs` y las pruebas de bounded admission. Primero crear/reproducir un caso concreto, después determinar si el helper ya lo rechaza y sólo entonces modificar. No ampliar globalmente el helper ni duplicar los tests de getters/sparse arrays ya cerrados.
 
 **Reglas de continuación:** no reabrir Chronicle settlement/restart, read-failure handling, reconstructed mission PREPARED gate, IDs de journal, nested accessors o sparse dependencies salvo evidencia nueva. No cambiar estado/contrato por intuición. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+
+## 20. Recuperación de parada y continuidad exacta (2026-10-19)
+
+El usuario informó que el chat se detuvo en esta secuencia: “Ajustando tus pruebas local_analysis / Aclaraste la prueba heredada / Actualizaste la documentación / Actualizó el estado / Revisaste la reconciliación / Vinculó evidencia”. Se recupera así, sin reiniciar investigación:
+
+- **Pruebas:** el estado final visible en el repo es el rechazo de dependencias `dependsOn` sparse. Se cubre `new Array(1)` y también un hueco que intenta ocultarse con propiedad extra. El código devuelve `NEXO_MISSION_CONTEXT_INVALID` antes del recorrido del grafo. No volver a abrir esta regresión si no hay evidencia nueva.
+- **Documentación:** `STATUS.md`, este handoff y el contrato de resultados reflejan el checkpoint. HEAD documental verificado `1e9f3badf026c00131b2207101d32652c2042f2c`; SHA código+tests `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix funcional `360b0dafbebc700477bc30879ef4175da81c904b`.
+- **Reconciliación/evidencia Chronicle:** el trabajo previo ligó el outcome a la evidencia del settlement canónico y se añadió reconstrucción condicionada por esa misma evidencia. Está fuera de la siguiente frontera; no repetir ni debilitarlo. La línea actual continúa con validación de datos de entrada en misión, no con una nueva investigación de Chronicle.
+
+CI final para el SHA de prueba: bounded admission/restart run 39197992970, STEP 4 run 39197992902, STEP 5 run 39197992893. Crash cuts SUCCESS run 39197974984 en el SHA funcional `360b0daf...`; no afirmar que ese run corresponde al SHA de prueba posterior.
+
+**Próximo paso obligatorio:** inspeccionar `assertContractInput()` y `missionRecord()` en `src/nexo/core/continuity-operations.mjs`; revisar `tests/nexo/continuity-contract.test.mjs` y bounded admission; probar funciones, símbolos, ciclos y valores numéricos no finitos antes de cambiar el helper. La regla es reproducir primero y mantener el alcance mínimo. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
