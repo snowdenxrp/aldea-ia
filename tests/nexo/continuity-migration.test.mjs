@@ -751,6 +751,42 @@ try {
   await fs.rm(singleUnresolvedPreparedDir, { recursive: true, force: true });
 }
 
+const preparedReplayAfterRestartDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-prepared-replay-after-restart-"));
+try {
+  const filePath = path.join(preparedReplayAfterRestartDir, "nexo.json");
+  const opened = await openNexoContinuityOwner({ filePath, allowEmptyInitialization: true });
+  const mission = {
+    missionId: "owner-prepared-replay-after-restart",
+    status: "planned",
+    objective: "same unresolved obligation remains unknown after restart",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 0, mission })).status, "committed");
+  const operation = {
+    idempotencyKey: "owner-prepared-replay-after-restart:step-1",
+    missionId: mission.missionId,
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    environmentStateRevision: 0
+  };
+  const first = await opened.owner.recordPrepared({ expectedRevision: 1, operation });
+  assert.equal(first.status, "committed");
+  const reopened = await openNexoContinuityOwner({ filePath });
+  const replay = await reopened.owner.recordPrepared({ expectedRevision: 2, operation });
+  assert.equal(replay.status, "prepared_existing");
+  assert.equal(replay.code, "NEXO_EFFECT_OUTCOME_UNKNOWN");
+  assert.equal(replay.preparedCommitted, false);
+  assert.equal(replay.authorization, "NOT_EVALUATED");
+  const current = await reopened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 2);
+  assert.equal(current.snapshot.effectJournal.length, 1);
+  assert.equal(current.snapshot.effectJournal[0].status, "prepared");
+  assert.equal(current.snapshot.effectJournal[0].idempotencyKey, operation.idempotencyKey);
+} finally {
+  await fs.rm(preparedReplayAfterRestartDir, { recursive: true, force: true });
+}
+
 const missionStateAdmissionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-mission-state-admission-"));
 try {
   const opened = await openNexoContinuityOwner({
