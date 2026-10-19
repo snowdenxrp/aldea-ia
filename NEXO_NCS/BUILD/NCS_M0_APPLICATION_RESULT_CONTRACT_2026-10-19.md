@@ -61,3 +61,9 @@ Missing boolean state fields are normalized to false only where no write was att
 - No claim of fsync/power-loss durability or cross-store transaction atomicity.
 - Nexo remains independent of Lúmina; protected effects remain STOP.
 - M0 remains INCOMPLETE.
+
+
+## Public application API surface — validated update (2026-10-19)
+
+- Import from `src/nexo/application/index.mjs`; the stable exports are exactly `runNexoChronicleAppend`, `loadNexoContinuityStatus`, and `loadNexoMissionStatus`.
+- The CLI wrappers and export-list regression consume this surface. CI SUCCESS on SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
