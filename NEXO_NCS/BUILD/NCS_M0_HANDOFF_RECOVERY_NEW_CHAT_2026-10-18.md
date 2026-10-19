@@ -478,3 +478,24 @@ Estado: **M0 INCOMPLETO**. Chronicle sigue opt-in. Runtime default sin cutover. 
 - Test real: store ausente → bloqueado sin creación; store existente → contadores correctos y bytes idénticos antes/después.
 - CI SUCCESS en SHA de código/test `f15760571a6092235c1ff8dbb776be4a384ba2d5`: [39179823123](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823123), [39179823124](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823124), [39179823115](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823115).
 - Esto aporta observabilidad del store, no autoriza efectos nuevos. Solo Chronicle muta desde el CLI. Mantener el gate de acción owner-backed, no cambiar runtime default y no declarar M0 completo.
+
+
+## Addendum — reconstrucción de misión por la entrada Nexo (2026-10-19)
+
+### Defecto corregido
+- `reconstructNexoMissionFromSnapshot()` aplicaba el guard de reparación observada a cualquier `settled_observed`. Un `chronicle_append` ya persistido con settlement específico y outcome terminal podía reconstruirse incorrectamente como `blocked / verify_observed_repair_goal`.
+- El guard ahora excluye únicamente `chronicle_append`, cuyo contrato específico verifica el append persistido y registra el outcome. Las demás acciones con `settled_observed` siguen bloqueadas y conservadoras.
+- Regresión: `tests/nexo/chronicle-runtime.test.mjs` asegura que el paso Chronicle continúa `completed` tras reconstrucción. CI: [39180216543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180216543) SUCCESS.
+
+### Capacidad read-only añadida
+- `scripts/nexo.mjs` admite `mission-status --continuity PATH --mission ID`.
+- Reconstruye mediante `createNexoContinuityOwner().reconstructMission()` desde el store canónico; devuelve revisión, estado/objetivo/incertidumbre y resumen por paso (ID, acción, estado, cantidad de dependencias y código de bloqueo si aplica). No devuelve targets, contexto ni payloads.
+- Misión inexistente devuelve `NEXO_MISSION_NOT_FOUND`; store ausente/corrupto bloquea. No inicializa ni escribe.
+- Prueba de proceso: lectura no mutante (bytes iguales), sin fuga del sentinel privado y estado Chronicle completado. CI SUCCESS en SHA `ccb1fb7218fbb0b13615a95c403b002b025faa35`: [39180275512](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275512), [39180275517](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275517), [39180275561](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275561).
+
+### Comando
+```sh
+npm run nexo -- mission-status --continuity ./private/nexo-continuity.json --mission mission-1
+```
+
+Esto permite consultar la continuidad reconstruida, pero no significa que toda misión esté completada ni que un efecto observado pruebe causalidad. M0 INCOMPLETO; solo `chronicle_append` muta desde el CLI; runtime default sin cutover; efectos protegidos STOP; Nexo/Lúmina separados.
