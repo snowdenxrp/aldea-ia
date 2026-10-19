@@ -688,3 +688,11 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Cambio: `recordNexoMissionSafely()` devuelve `unknown` y `missionAdmissionCommitted=UNKNOWN`, con `dispatchAttempted=false` y `redispatchAuthorized=false`. No continúa al efecto ni filtra el mensaje de error.
 - Regresión añadida a `tests/nexo/chronicle-runtime.test.mjs`. Código/test SHA `e4562b6edb0ce4c3f0df1ccaae94cc63edf33d1f`; CI aún no observado para este SHA. Mantener PENDING/UNKNOWN hasta consultar el run exacto.
 - Próximo paso: validar CI y después revisar las otras fronteras de persistencia del caso de uso, sin añadir otra acción ni conectar el runtime antiguo. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## Mission-admission UNKNOWN normalization — validated update (2026-10-18 local)
+
+- The safe admission helper now normalizes both thrown store errors and returned `status=unknown` results to `missionAdmissionCommitted=UNKNOWN`, `dispatchAttempted=false`, and `redispatchAuthorized=false`. A returned UNKNOWN cannot lose its tri-state marker merely because it did not throw.
+- Regression covers both exception-after-possible-commit and an explicit UNKNOWN return. Raw exception text remains hidden.
+- Validated code/test SHA: `872a67b3e6512fce134507f82052a5cbc37d495f`. CI SUCCESS: [Chronicle 39187025194](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025194), [continuity/restart 39187025178](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025178), [STEP 4 39187025188](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025188), [STEP 5 39187025187](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025187), all SUCCESS.
+- Replay policy remains explicit: no automatic retry or dispatch after UNKNOWN; next call reloads canonical continuity. M0 INCOMPLETO.
