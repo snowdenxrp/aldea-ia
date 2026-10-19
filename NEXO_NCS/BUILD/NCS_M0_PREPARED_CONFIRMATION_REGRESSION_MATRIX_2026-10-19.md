@@ -8,10 +8,10 @@
 En `src/nexo/core/owner-backed-runtime.mjs`, después de `owner.recordPrepared()`, el runtime:
 - devuelve `conflict` sin invocar el adaptador si la respuesta declara `status: "conflict"`;
 - devuelve `unknown` sin invocar el adaptador si declara `status: "unknown"`, `preparedCommitted: "UNKNOWN"`, o la llamada lanza una excepción;
-- antes de invocar el adaptador exige `status === "committed"`, `preparedCommitted === true` y `storeRevision` entero seguro no negativo;
+- antes de invocar el adaptador exige `status === "committed"`, `preparedCommitted === true` y `storeRevision` entero seguro no negativo y exactamente igual a `current.storeRevision + 1`;
 - devuelve `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` si falla cualquiera de esas condiciones.
 
-**Hallazgo adicional y estado de corrección:** la inspección inicial detectó que el runtime no validaba `storeRevision` antes de marcar el despacho. Esto fue corregido en `src/nexo/core/owner-backed-runtime.mjs` (commit `dd1abc69cd867927c2fba949a4677fc7b2e51e99`): ahora exige una revisión entera segura y no negativa antes de llamar al adaptador. Las regresiones en `tests/nexo/chronicle-runtime.test.mjs` (commit `4203330689d6ea4072585d8cc6bca74b383ca461`) cuentan invocaciones del handler y esperan cero para las respuestas malformadas. **La prueba está escrita, pero no se ha ejecutado**; la garantía dinámica queda pendiente hasta correrla.
+**Hallazgo adicional y estado de corrección:** la inspección inicial detectó que el runtime no validaba `storeRevision` antes de marcar el despacho. Esto fue corregido en `src/nexo/core/owner-backed-runtime.mjs` (commit `dd1abc69cd867927c2fba949a4677fc7b2e51e99`): ahora exige una revisión entera segura y no negativa, además de ser la revisión sucesora exacta de `current.storeRevision`, antes de llamar al adaptador. Las regresiones en `tests/nexo/chronicle-runtime.test.mjs` (commit `4203330689d6ea4072585d8cc6bca74b383ca461`) cuentan invocaciones del handler y esperan cero para las respuestas malformadas. **La prueba está escrita, pero no se ha ejecutado**; la garantía dinámica queda pendiente hasta correrla.
 
 ## Matriz de regresión requerida
 
@@ -28,6 +28,8 @@ En `src/nexo/core/owner-backed-runtime.mjs`, después de `owner.recordPrepared()
 | `{status:"committed", preparedCommitted:true}` | Guard corregido; prueba debe confirmar que no se marca despacho ni se invoca adaptador | 0 |
 | `{status:"committed", preparedCommitted:true, storeRevision:-1}` | Guard corregido; prueba debe confirmar que no se marca despacho ni se invoca adaptador | 0 |
 | `{status:"committed", preparedCommitted:true, storeRevision:1.5}` o revisión no segura | Guard corregido; prueba debe confirmar que no se marca despacho ni se invoca adaptador | 0 |
+| `{status:"committed", preparedCommitted:true, storeRevision:4}` cuando `current.storeRevision:4` | Revisión no avanza; bloquear antes de despacho | 0 |
+| `{status:"committed", preparedCommitted:true, storeRevision:6}` cuando `current.storeRevision:4` | Revisión salta más de una unidad; bloquear antes de despacho | 0 |
 
 ## Prueba posterior al inicio del efecto
 
@@ -38,7 +40,7 @@ Conservar las garantías ya cubiertas: si el handler puede haber producido el ef
 - Inspección estática de runtime, adaptador y prueba focal: realizada.
 - Pruebas dinámicas: no ejecutadas.
 - Corrección runtime para validar revisión antes de la frontera de despacho: commit `dd1abc69cd867927c2fba949a4677fc7b2e51e99`.
-- Ocho regresiones negativas añadidas; ahora cuentan tanto llamadas al adaptador como invocaciones del handler: commit `cfd57bf8e8a74570c23908c30599126f9d76748a` (cambio inicial de pruebas: `4203330689d6ea4072585d8cc6bca74b383ca461`).
+- Diez regresiones negativas añadidas; cuentan tanto llamadas al adaptador como invocaciones del handler. Prueba inicial: `4203330689d6ea4072585d8cc6bca74b383ca461`; aserciones de frontera: `cfd57bf8e8a74570c23908c30599126f9d76748a`; revisiones no sucesoras: `bdef7856448b3004b4c64afc635b79f6ad862176`.
 - Ejecutar prueba focal y suite Nexo: pendiente.
 - CI vinculado al SHA exacto: pendiente.
 - No declarar PASS. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
