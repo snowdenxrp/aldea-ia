@@ -420,7 +420,7 @@ try {
   // throws before the caller receives the commit result. The API must return
   // structured uncertainty; a reopened owner recovers the persisted record
   // without running the verifier a second time.
-  const ambiguousDir = path.join(root, "generic-observation-response-lost");
+  const ambiguousDir = path.join(root, "generic-observation-response-lost-recovery");
   await fs.mkdir(ambiguousDir);
   const ambiguousOpened = await openNexoContinuityOwner({
     filePath: path.join(ambiguousDir, "nexo.json"),
@@ -544,7 +544,7 @@ try {
   // Lost-response cut for the generic path: the store commits the observation,
   // but the first caller sees an uncertain result. Replay must return the
   // persisted observation without invoking the verifier or settling PREPARED.
-  const genericLostResponseDir = path.join(root, "generic-observation-response-lost");
+  const genericLostResponseDir = path.join(root, "generic-observation-response-lost-recovery");
   await fs.mkdir(genericLostResponseDir);
   const genericLostResponseOpened = await openNexoContinuityOwner({
     filePath: path.join(genericLostResponseDir, "nexo.json"),
