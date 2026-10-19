@@ -327,3 +327,14 @@ La lectura legacy sigue permitida; no se inventa un nuevo estado de ejecución n
 SHA código+tests `e31547f17764c18fd0bf2fe39dab1ebfc5748686`; bounded admission/restart 39197251854, STEP 4 39197251843, STEP 5 39197251835, crash cuts 39197251844: SUCCESS. Ver enlaces en STATUS.
 
 **Siguiente paso:** revisar el contrato de reconstrucción para attempts `completed` no-Chronicle: asegurar que el historial terminal no se acepte si falta vínculo suficiente a un contrato de completion, sin fingir un goal verifier general. M0 sigue INCOMPLETO; efectos protegidos STOP.
+
+
+## 22. Checkpoint — replay de journal e input mission sin getters
+
+HEAD código+pruebas `82826e12bfd88c07aeabda05f6a14605f85bda33`; CI SUCCESS en bounded admission/restart (39197558462), STEP 4 (39197558524), STEP 5 (39197558514) y crash cuts (39197558507).
+
+Se reforzó reconstrucción para no ignorar estados de journal desconocidos, huérfanos o desanclados; ahora exige vínculo de misión/step/action/target para estados conocidos. La regresión nueva demuestra que una entrada `settled_observed` Chronicle con IDs de step coincidentes pero action/target ajenos no puede dejar el step runnable. Se conserva la compatibilidad de carga legacy, pero las obligaciones ambiguas reconstruyen como blocked.
+
+Además, `missionRecord()` valida la forma del input con `assertContractInput` antes de acceder a `mission.missionId`, rechazando getters caller-supplied sin ejecutarlos. La primera ejecución del test falló antes del guard; el fix pasó los cuatro workflows en `24e44be...`, y las pruebas de journal pasaron en `82826e...`.
+
+**Siguiente paso:** auditar si la validación de la misión también protege sus objetos anidados (`steps`, `target`, `dependsOn`) antes de leerlos y clonarlos. No duplicar la validación top-level ni ampliar contratos sin test que reproduzca ejecución de getter o ambigüedad.
