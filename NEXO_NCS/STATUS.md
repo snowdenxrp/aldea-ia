@@ -1,3 +1,20 @@
+## M0 — recuperación de los tres puntos donde se detuvo el chat (2026-10-19)
+
+**Punto de entrada vigente, confirmado en GitHub:** rama `ncs-clean-architecture`; HEAD documental `1e9f3badf026c00131b2207101d32652c2042f2c`; código+pruebas validados en `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix funcional más reciente de esa prueba `360b0dafbebc700477bc30879ef4175da81c904b`. Los commits posteriores al SHA de prueba son documentación.
+
+**Recuperación de los tres puntos descritos al detenerse el chat:**
+1. **Pruebas / análisis local:** se estaba corrigiendo y aclarando una regresión heredada; las iteraciones posteriores dejaron reproducida y corregida la admisión de `dependsOn` sparse. La prueba inicial cubría `new Array(1)`; la regresión final demuestra también que un hueco no se oculta con una propiedad extra. El arreglo rechaza la estructura como `NEXO_MISSION_CONTEXT_INVALID` antes de recorrer el grafo.
+2. **Documentación y estado:** se actualizaron STATUS, handoff y contrato de resultados con el checkpoint de dependencias densas, SHA y runs. HEAD documental actual es `1e9f3bad...`; no confundirlo con el SHA de código+pruebas `3683e470...`.
+3. **Reconciliación / vinculación de evidencia:** la línea anterior de trabajo había revisado la reconciliación y ligado la evidencia de outcome Chronicle al settlement canónico; los cambios de código de esa línea están antes de la frontera actual y no se deben repetir por rutina. La frontera más reciente y validada es la validación de datos de entrada de misión y dependencias. Si se vuelve a tocar Chronicle, debe haber una reproducción nueva y un test específico.
+
+**CI confirmado en SHA final de test `3683e470...`:** bounded admission/restart [39197992970](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992970), STEP 4 [39197992902](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992902), STEP 5 [39197992893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992893). Crash cuts SUCCESS en el código funcional equivalente `360b0daf...`: [39197974984](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197974984). Hubo fallos intermedios durante la depuración; no presentarlos como fallos finales. No afirmar que crash cuts se ejecutó en `3683e470...` porque el run registrado corresponde al SHA funcional anterior.
+
+**Siguiente frontera concreta:** revisar `assertContractInput()` y `missionRecord()` en `src/nexo/core/continuity-operations.mjs` junto con `tests/nexo/continuity-contract.test.mjs` y bounded admission. Probar si funciones, símbolos, ciclos o números no finitos en la misión/target pueden superar admisión, disparar excepción no estructurada o intentar CAS. Primero reproducir; no ampliar el helper global ni cambiar código sin evidencia. Ya están cerrados: getters/accessors anidados, IDs de misión/paso y colon, journal con identidad/estado desconocido, Chronicle settlement y replay, PREPARED gate reconstruido, fallos de lectura y dependencias sparse. No duplicar esas auditorías.
+
+M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+---
+
 ## M0 — rechazo de dependencias sparse (2026-10-19)
 
 - Test SHA: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix funcional: `360b0dafbebc700477bc30879ef4175da81c904b`.
