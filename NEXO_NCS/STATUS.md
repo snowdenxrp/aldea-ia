@@ -1636,3 +1636,7 @@ Nota: `NEXO_NCS/BUILD/NCS_M0_DISPATCH_BOUNDARY_AUDIT_2026-10-19.md`. Revisión e
 
 ### Entry points — auditoría parcial (2026-10-19)
 Nota: `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_ISOLATION_AUDIT_2026-10-19.md`. `npm run nexo` dirige a un CLI estrecho (status, mission-status, chronicle-append); `index.html` arranca Lúmina y `src/main-stable.js` no muestra conexión directa a la API Nexo. Sin embargo, `src/nexo/runtime.js` conserva un runtime legacy que importa memoria antigua y adaptador de simulación; no declarar aislamiento total hasta inventariar todos sus importadores. No hubo cambios de runtime/UI/CI.
+
+
+### Brecha de cobertura del puente legacy (2026-10-19)
+La auditoría `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_ISOLATION_AUDIT_2026-10-19.md` ahora distingue la evidencia estática del gate `--nexo-repair-once` de una prueba de integración: `tests/nexo/entrypoint.test.mjs` no invoca esa ruta. Esto no demuestra un fallo del gate; significa que falta evidencia de normal-vs-opt-in con estado/directorios temporales aislados. Antes de retirar o rediseñar el puente, añadir esa prueba y obtener CI Node asociado al SHA correcto. Sin cambios de runtime; M0 INCOMPLETO, efectos protegidos STOP.
