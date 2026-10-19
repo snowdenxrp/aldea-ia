@@ -2,8 +2,8 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA de código validado por CI: `98abe80c058802f2f5ad50cd49bc2525ade6b09f`
-Último SHA de código: `98abe80c058802f2f5ad50cd49bc2525ade6b09f`; SHA con regresiones de reconstrucción: `5767851584eba13298cada7bf46b162844b7d7bd`
+Último SHA de código validado por CI: `dfef7209ed8af5b5fdd57b973e4b905fd821005f`
+Último SHA de código: `dfef7209ed8af5b5fdd57b973e4b905fd821005f`; SHA con regresiones Chronicle: `fe79862299cb51dd95bd39e0d227d05698c65a03`
 
 ## 0. Instrucción principal al chat nuevo
 
@@ -203,3 +203,12 @@ Se corrigió `reconstructNexoMissionFromSnapshot()`: la completion sólo se reco
 Pruebas: intento con action/target distintos y completion con evidence no verificada. Código SHA `98abe80...`; pruebas SHA `576785...`. Bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS en el SHA de prueba final; enlaces en STATUS. La ejecución intermedia de código falló contra la expectativa antigua planned, y el test se actualizó a la condición segura blocked antes de dar por válido el checkpoint.
 
 **Siguiente paso:** auditar el caso Chronicle `settled_observed` sin outcome terminal válido y verificar que la reconstrucción no deje una operación ejecutable; no modificar runtime ni volver a abrir contratos ya cerrados sin una regresión nueva.
+
+
+## 14. Checkpoint — Chronicle settled sin outcome no se reconstruye como ejecutable
+
+La reconstrucción consulta ahora el contrato compartido de settlement Chronicle. Un paso `chronicle_append` sólo puede reconstruirse como completed si existe exactamente un settlement canónico válido y un intento completed con action/target coincidentes y evidencia verificada. Si hay settlement válido pero falta intento terminal, se devuelve blocked con `NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED`; si existe un claim completed pero el settlement no es válido, se devuelve blocked con `NEXO_CHRONICLE_SETTLEMENT_REQUIRED`.
+
+Pruebas: settlement válido sin outcome y outcome completed con evidence null en el settlement. Código SHA `dfef720...`; regresiones SHA `fe798622...`. Bounded admission/restart, crash cuts, STEP 4 y STEP 5 SUCCESS en el SHA de pruebas; enlaces en STATUS. La ejecución previa de test demostró el hueco: reconstruía planned en el caso settled sin outcome.
+
+**Siguiente paso:** delimitar los intentos legacy frente a los intentos canónicos de acciones no Chronicle. El goal verifier general sigue pendiente; no afirmar que una evidencia caller-supplied autoriza completion.
