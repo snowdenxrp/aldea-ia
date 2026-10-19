@@ -1872,3 +1872,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Regresión:** [`entrypoint.test.mjs`](https://github.com/snowdenxrp/aldea-ia/commit/cab6b2e2f030a99db153f289874cda3420856e11) ahora exige el código estructurado exacto, además de ausencia de dispatch/admisión y recuperación por reintento.
 - **Límite:** esto no elimina la inicialización parcial de dos archivos; hace explícito y testeable el fallo de adquisición de lock. No se ha observado ejecución local ni CI para estos commits. **PENDING; no PASS.**
 - **Estado global:** M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
+
+### Corrección simétrica en la inicialización de Continuidad
+
+- **Misma causa raíz:** `createNexoContinuityStore().initialize()` también adquiría el lock antes de su bloque protegido; un directorio padre inexistente podía propagar `ENOENT` crudo.
+- **Fix de producción:** [commit `a31ff7b0`](https://github.com/snowdenxrp/aldea-ia/commit/a31ff7b0b186ca49b42425057b0433de7df88456) devuelve el fallo estructurado `NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE` cuando no se puede adquirir el lock por ausencia del padre, y conserva códigos explícitos para otros fallos.
+- **Regresión de store:** [commit `a81560da`](https://github.com/snowdenxrp/aldea-ia/commit/a81560daad363cc802afa43a58f421b1a25d93d7) exige el resultado exacto sin depender del código OS.
+- **Estado de validación:** los archivos están publicados; ejecución local y CI siguen **PENDING**. No se declara PASS.
+- **M0:** INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
