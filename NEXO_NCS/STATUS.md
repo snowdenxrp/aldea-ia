@@ -1836,3 +1836,13 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Regresión Chronicle:** [c657021413df](https://github.com/snowdenxrp/aldea-ia/commit/c657021413df7dc895d06393d1cb5d045d8683ab); fuerza el fallo y comprueba la limpieza.
 - **Validación:** cambios y pruebas están publicados en `ncs-clean-architecture`; no se ejecutaron localmente y no hay resultado CI observado para estos SHA. **PENDING; no declarar PASS.**
 - **Límite:** la limpieza sólo se intenta en la rama de ejecución que creó el directorio y cuyo registro de propietario falló. No se habilita recuperación automática de locks ajenos o stale. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
+
+## M0 — arranque coordinado de Continuidad y Chronicle no es atómico (2026-10-19)
+
+- **Brecha confirmada por inspección del flujo:** `runNexoChronicleAppend()` hace preflight de ambos almacenes, pero después llama a `openNexoContinuityOwner()` (que puede crear Continuidad) antes de llamar a `chronicleStore.initialize()`. Si Continuidad se inicializa y Chronicle falla durante su inicialización, la operación devuelve `blocked` con Continuidad ya creada. La prevalidación evita algunos fallos conocidos antes de escribir, pero no hace atómica la inicialización de dos archivos.
+- **No se aplica rollback automático:** eliminar el primer archivo como compensación podría borrar estado válido o competir con otro proceso. Tampoco se inventa un tercer coordinador, diario de bootstrap o protocolo transaccional sin decisión arquitectónica explícita.
+- **Clasificación:** brecha de arquitectura/contrato, no PASS ni defecto cerrado. Antes de cambiar código, definir qué significa bootstrap coordinado, qué estado observable debe quedar tras fallo parcial y qué componente tiene autoridad para inicializar ambos almacenes.
+- **Evidencia de código:** `src/nexo/application/chronicle-append.mjs` preflighta ambos archivos; después abre/posiblemente inicializa Continuidad y luego inicializa Chronicle. `src/nexo/core/continuity-service.mjs` realiza la inicialización vacía cuando `allowEmptyInitialization === true`.
+- **Validación:** hallazgo por inspección del código publicado; no se ha ejecutado una prueba de fallo inducido ni CI para una regresión de este caso. **PENDING**.
+- **Estado global:** M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
