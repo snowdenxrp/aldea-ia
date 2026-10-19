@@ -1,3 +1,17 @@
+## M0 — coherencia misión/pasos/reconstrucción y admisión inicial (2026-10-19)
+
+- **HEAD actual verificado:** `f0fcf181778a61c8ad094b315289f5f43c1abe8f`.
+- **Suite completa `npm test`: SUCCESS** en ese SHA, [run 39339904741](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904741).
+- **Admisión/continuidad:** SUCCESS en ese SHA, [run 39339904645](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904645); incluye `continuity-contract.test.mjs` y `continuity-migration.test.mjs`.
+- **M0 integrado:** SUCCESS en ese SHA, [run 39339904658](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904658). STEP 4 [run 39339904656](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904656) y STEP 5 [run 39339904735](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904735) también SUCCESS.
+- Se probó y revirtió una hipótesis de endurecimiento que prohibía a `owner.recordMission()` admitir pasos con estado `completed`. El workflow [39339816995](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339816995) falló en `continuity-migration.test.mjs:801`: un contrato existente necesita admitir una declaración de paso completado para probar que, sin outcome canónico, la reconstrucción lo bloquea. La regla nueva mezclaba admisión con verificación del outcome; fue retirada junto con sus pruebas temporales. El contrato correcto permanece: las claims persistidas no prueban completion; reconstrucción y gate deben fallar cerrados.
+- El cambio no declara misión completada ni habilita efectos protegidos. `loadNexoMissionStatus()` expone desde una única lectura `persistedMissionStatus`, `missionStatus` reconstruido y `statusDiscrepancy`; este último significa diferencia literal, no diagnóstico universal de corrupción. La consulta es de solo lectura y no expone target/content.
+- El run específico antiguo de mission-status [39323179028](https://github.com/snowdenxrp/aldea-ia/actions/runs/39323179028) falló en SHA anterior `b97b72d20e762a1ac9d14335120bbe67b72981ba`. La regresión CLI fue ejecutada después dentro de la suite completa e integrada en el HEAD actual `f0fcf181...`, ambos SUCCESS.
+- **Siguiente paso M0:** inspeccionar el siguiente contrato de continuidad con una ruta concreta y una prueba de regresión; no imponer igualdad entre status persistido y reconstruido ni confiar en claims terminales sin evidencia canónica. No reabrir la auditoría de status ya cerrada salvo fallo nuevo.
+- **Estado constitucional invariable:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING. Los PASS de tests no prueban autoridad.
+
+---
+
 ## M0 — validación de continuidad terminal y suite completa (2026-10-19)
 
 - **CI focal del resultado terminal:** SUCCESS en runtime SHA `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` y test SHA `e38556bc78487aae117b1c11085aca1731dfbb2e`; cinco workflows completados por cada SHA. El workflow bounded admission [39337387520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387520) ejecutó `tests/nexo/chronicle-runtime.test.mjs`.
