@@ -387,7 +387,7 @@ try {
     filePath: path.join(genericLostResponseDir, "nexo.json"),
     legacyMemory: genericMemory()
   });
-  let genericVerifierCalls = 0;
+  let lostResponseVerifierCalls = 0;
   let loseGenericCommitResponse = true;
   const genericLostResponseStore = {
     loadCurrent: (...args) => genericLostResponseOpened.store.loadCurrent(...args),
@@ -404,7 +404,7 @@ try {
     store: genericLostResponseStore,
     effectVerifiers: {
       generic_write: async operation => {
-        genericVerifierCalls += 1;
+        lostResponseVerifierCalls += 1;
         return {
           status: "applied",
           idempotencyKey: operation.idempotencyKey,
@@ -429,7 +429,7 @@ try {
     operation: genericOperation
   });
   assert.equal(uncertainGenericObservation.status, "unknown");
-  assert.equal(genericVerifierCalls, 1);
+  assert.equal(lostResponseVerifierCalls, 1);
   const genericReplay = await genericLostResponseOwner.reconcilePrepared({
     expectedRevision: 0,
     operation: genericOperation
@@ -440,7 +440,7 @@ try {
   assert.equal(genericReplay.journalSettled, false);
   assert.equal(genericReplay.causalAttribution, "NOT_ESTABLISHED");
   assert.equal(genericReplay.redispatchAuthorized, false);
-  assert.equal(genericVerifierCalls, 1, "replay must not re-run the verifier");
+  assert.equal(lostResponseVerifierCalls, 1, "replay must not re-run the verifier");
   const genericPersistedAfterReplay = await genericLostResponseOpened.owner.loadCurrent();
   assert.equal(genericPersistedAfterReplay.snapshot.effectJournal[0].status, "reconciled_observed");
   assert.equal(genericPersistedAfterReplay.snapshot.attempts.length, 0);
@@ -450,7 +450,7 @@ try {
   });
   assert.equal(incompatibleGenericReplay.status, "conflict");
   assert.equal(incompatibleGenericReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
-  assert.equal(genericVerifierCalls, 1);
+  assert.equal(lostResponseVerifierCalls, 1);
 
   // Unknown observations and absent verifier configuration must preserve PREPARED.
   const unknownDir = path.join(root, "generic-owner-unknown");
