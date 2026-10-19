@@ -24,6 +24,14 @@ function validateOperation(operation) {
 
 const REPAIR_ACTIONS = new Set(["repair_agent_state", "repair_agent_needs", "repair_resource_state"]);
 
+function validChronicleSettlementEvidence(evidence, idempotencyKey, target) {
+  return evidence !== null && typeof evidence === "object" && !Array.isArray(evidence) &&
+    evidence.kind === "persisted-chronicle-entry" &&
+    evidence.operationKey === idempotencyKey &&
+    typeof target?.content === "string" &&
+    evidence.content === target.content;
+}
+
 function emptyCandidate(snapshot) {
   return {
     schema: NEXO_CONTINUITY_SCHEMA,
@@ -164,7 +172,9 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       chronicleSettlement?.source === "nexo-chronicle-store" &&
       Number.isSafeInteger(chronicleSettlement.observedRevision) &&
       chronicleSettlement.observedRevision >= 0 &&
-      Object.hasOwn(chronicleSettlement, "evidence") &&
+      validChronicleSettlementEvidence(
+        chronicleSettlement?.evidence, stepEffects[0]?.idempotencyKey, stepEffects[0]?.target
+      ) &&
       validChronicleSettlementTimestamp;
     if (outcome.action === "chronicle_append" && outcome.status === "completed" &&
         !chronicleSettlementReady) {
@@ -542,7 +552,9 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         replaySettlement?.source === "nexo-chronicle-store" &&
         Number.isSafeInteger(replaySettlement.observedRevision) &&
         replaySettlement.observedRevision >= 0 &&
-        Object.hasOwn(replaySettlement, "evidence") &&
+        validChronicleSettlementEvidence(
+          replaySettlement?.evidence, replayEntry.idempotencyKey, replayEntry.target
+        ) &&
         validSettlementTimestamp;
       if (genericObservation || chronicleSettlement) {
         const recorded = genericObservation ? replayEntry.reconciliation : replayEntry.settlement;
