@@ -1720,3 +1720,12 @@ El workflow Chronicle había fallado en SHA `d1396cd110a01a9547209b58626a52cbc7b
 - AC5 tiene PASS histórico en crash cuts; falta ejecutar crash cuts en un SHA de cierre común.
 
 La matriz completa y sus límites están en `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EXECUTABLE_2026-10-19.md`. No cerrar M0 ni habilitar efectos protegidos. 
+
+
+## M0 — gate integrado de aceptación PASS (2026-10-19)
+
+**Ejecución verificada:** [run 39291344910](https://github.com/snowdenxrp/aldea-ia/actions/runs/39291344910), SHA exacto `c57be8aa6fd7e558d870c3e46feab741637b4314`, workflow `.github/workflows/nexo-m0-acceptance.yml`. El job concluyó SUCCESS; los cinco grupos pasaron: admisión/store, reconstrucción/transición protegida, Chronicle/entrypoints, crash cuts/recuperación de propietario y goal verification/outcome classification.
+
+Esto confirma la suite integrada de regresión AC1–AC6 sobre un mismo SHA. No equivale a demostrar la legitimidad de la raíz de autoridad, durabilidad ante pérdida física de energía, resistencia global a rollback/tampering ni a autorizar efectos protegidos. El cambio desde ese SHA hasta los commits documentales posteriores no alteró código de producción ni tests.
+
+**Estado:** gate de regresión M0 PASS en `c57be8aa...`; misión M0 global todavía INCOMPLETA por bloqueos arquitectónicos de seguridad no resueltos. Efectos protegidos STOP; Nexo/Lúmina separados.
