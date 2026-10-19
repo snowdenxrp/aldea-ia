@@ -25,6 +25,10 @@ function validateOperation(operation) {
 
 const REPAIR_ACTIONS = new Set(["repair_agent_state", "repair_agent_needs", "repair_resource_state"]);
 
+function validObservationEvidence(evidence) {
+  return evidence !== null && typeof evidence === "object" && !Array.isArray(evidence);
+}
+
 function emptyCandidate(snapshot) {
   return {
     schema: NEXO_CONTINUITY_SCHEMA,
@@ -518,7 +522,7 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         replayReconciliation.observedRevision >= 0 &&
         typeof replayReconciliation.source === "string" &&
         replayReconciliation.source.trim() &&
-        Object.hasOwn(replayReconciliation, "evidence") &&
+        validObservationEvidence(replayReconciliation?.evidence) &&
         validReplayTimestamp;
       const chronicleSettlement = sameReplayIdentity &&
         operation.action === "chronicle_append" &&
@@ -575,6 +579,16 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     }
     if (observation.status === "unknown") {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_UNKNOWN", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
+    if (!Object.hasOwn(observation, "evidence") || !validObservationEvidence(observation.evidence)) {
+      return {
+        status: "blocked",
+        code: "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID",
+        storeRevision: current.storeRevision,
+        preparedCommitted: false,
+        journalSettled: false,
+        authorization: "NOT_EVALUATED"
+      };
     }
 
     // The verifier may take time. Reload immediately before CAS; never write
