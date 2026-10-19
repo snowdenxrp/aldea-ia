@@ -197,6 +197,15 @@ async function executeNexoStepWithContinuityOwnerInternal({
     }
   }
 
+  // Capability checks happen before PREPARED and before any handler can run.
+  if (!adapter.supports(operation.action)) {
+    return { status: "blocked", code: "NEXO_EFFECT_HANDLER_UNAVAILABLE", dispatchAttempted: false };
+  }
+  if (!adapter.supportsReconciliation(operation.action) ||
+      !owner.supportsReconciliation(operation.action)) {
+    return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", dispatchAttempted: false };
+  }
+
   // New dispatch is permitted only for a canonically reconstructed runnable
   // step. Recovery of an existing journal obligation returned above; this gate
   // prevents a caller from bypassing mission state or dependency ordering.
@@ -222,15 +231,6 @@ async function executeNexoStepWithContinuityOwnerInternal({
       dependencies.some(dependencyId =>
         reconstructedMission.steps.find(item => item?.id === dependencyId)?.status !== "completed")) {
     return { status: "blocked", code: "NEXO_CANONICAL_RUNTIME_DEPENDENCIES_UNRESOLVED", dispatchAttempted: false };
-  }
-
-  // Capability checks happen before PREPARED and before any handler can run.
-  if (!adapter.supports(operation.action)) {
-    return { status: "blocked", code: "NEXO_EFFECT_HANDLER_UNAVAILABLE", dispatchAttempted: false };
-  }
-  if (!adapter.supportsReconciliation(operation.action) ||
-      !owner.supportsReconciliation(operation.action)) {
-    return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", dispatchAttempted: false };
   }
 
   let prepared;
