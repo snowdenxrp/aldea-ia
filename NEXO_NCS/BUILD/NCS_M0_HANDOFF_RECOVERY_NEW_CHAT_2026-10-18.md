@@ -653,3 +653,13 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Los CLI wrappers y la prueba de contrato consumen esa entrada pública. El test verifica la lista exacta de exports.
 - CI SUCCESS en SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
 - Esta API es el seam para futura integración; no conectar todavía al runtime legacy ni a `index.html`. M0 INCOMPLETO.
+
+
+## Current verified pointer — public application API frozen
+
+- Branch HEAD: `a8f7745fc05440fbdf26d7b736263ecc36f9c4ba` (documentation-only).
+- Latest code/test SHA with focused CI SUCCESS: `71a01beb06d9a9d01e1cd459fe123588e1dd553b`.
+- Compare confirms only four continuity documents changed after that code/test SHA.
+- CI: Chronicle/entrypoint [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), semantic validation [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), outcome/restart [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834), all SUCCESS.
+- Stable import: `src/nexo/application/index.mjs`, exactly three exports: append Chronicle, read-only continuity status, read-only mission reconstruction. Full output semantics in [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
+- Next: define explicit acceptance criteria for connecting this API to an application surface, then integrate only through this public API. No `src/nexo/runtime.js` or `index.html` cutover, no additional mutating actions, no authority inference. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
