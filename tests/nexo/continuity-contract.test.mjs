@@ -172,6 +172,35 @@ assert.throws(
   error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
   "dependencies must resolve to a step in the same admitted mission"
 );
+for (const invalidGraph of [
+  {
+    missionId: "self-dependent-step",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: ["step-1"] }]
+  },
+  {
+    missionId: "duplicate-dependency-reference",
+    steps: [
+      { id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] },
+      { id: "step-2", action: "local_analysis", target: "bravo", status: "planned", dependsOn: ["step-1", "step-1"] }
+    ]
+  },
+  {
+    missionId: "cyclic-dependencies",
+    steps: [
+      { id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: ["step-2"] },
+      { id: "step-2", action: "local_analysis", target: "bravo", status: "planned", dependsOn: ["step-1"] }
+    ]
+  }
+]) {
+  assert.throws(
+    () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+      ...invalidGraph, status: "planned"
+    }),
+    error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+    `invalid dependency graph ${invalidGraph.missionId} must not be persisted`
+  );
+}
+
 const snapshot = projectNexoContinuitySnapshot(validMemory);
 assert.equal(snapshot.schema, NEXO_CONTINUITY_SCHEMA);
 assert.equal(snapshot.schemaVersion, 1);
