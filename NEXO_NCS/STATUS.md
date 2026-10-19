@@ -1,5 +1,15 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — shape de evidencia terminal Chronicle queda cerrado (validado 2026-10-19)
+
+- La evidencia del outcome Chronicle ahora acepta exactamente cuatro claves: `verified`, `kind`, `source`, `observedRevision`. El tipo debe ser `nexo-chronicle-persisted-invariant`, y source/revision deben coincidir con el settlement canónico validado. Claims adicionales no ligados al settlement se rechazan con `NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH`.
+- Reconstrucción usa el mismo helper: evidence desatada deja el paso blocked sin result; target/action incompatibles quedan `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`; settlement+outcome canónicos coincidentes siguen reconstructing completed. La prueba del runtime real confirma que el outcome generado tiene el shape exacto.
+- SHA funcional: `4a976b76ece07e1c168761cb6bd29ec5b420ab00`; SHA final de código+pruebas `d4936c965eb926b3e61eb7ecbe3f9becf58925ca`. SUCCESS en SHA final: bounded admission/restart [39196697574](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697574), Chronicle native [39196697543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697543), STEP 4 [39196697516](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697516), STEP 5 [39196697496](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697496). Crash cuts SUCCESS en SHA funcional `4a976...` [39196649127](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196649127); la última prueba de shape no cambió runtime/código.
+- Límite: coherencia estructural de evidencia, no autenticación criptográfica, causalidad ni autorización. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** inspeccionar si la evidencia de settlement Chronicle se consume fuera de la reconstrucción y si su shape debe ser igual de estricto. No ampliar el contrato si los campos extra no afectan ninguna decisión ni resultado público.
+
+
 ## M0 — outcome Chronicle ligado al settlement; errores de lectura normalizados (validado 2026-10-19)
 
 - Hueco 1 reproducido en CI: con settlement Chronicle válido, `recordOutcome()` aceptaba una claim `completed` cuya evidencia declaraba `source` y `observedRevision` distintos de los asentados. El test falló con `committed` donde debía bloquear.
@@ -19,7 +29,7 @@
 - SHA funcional validado: `c9be5ee5f931d2a873cca32e2dd0b81c33010396`; SHA final de código+pruebas `9ca094242d25fced843b7d5595f9cff6e0d82ee3`. SUCCESS: bounded admission/restart [39196527692](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527692), crash cuts [39196527776](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527776), STEP 4 [39196527671](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527671), STEP 5 [39196527814](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527814). El commit final sólo añadió la prueba positiva del evidence binding; el fix funcional ya estaba presente en `c9be5ee...`.
 - Límite: consistencia estructural de metadata, no autenticación criptográfica ni procedencia autenticada. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
 
-**Siguiente frontera:** verificar que la evidencia Chronicle terminal tenga un shape canónico sin claims extra no ligados al settlement. No expandir el contrato: probar primero si campos extra pueden llegar al result reconstruido y falsear detalles.
+**Frontera posterior:** auditar el uso de `settlement.evidence` fuera del helper; decidir si el shape estricto tiene impacto real antes de tocarlo.
 
 
 ## M0 — Chronicle terminal outcome reconstructs after response loss (validated 2026-10-19)
