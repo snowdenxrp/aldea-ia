@@ -645,3 +645,11 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Focused CI SUCCESS on the code/test SHA: [Chronicle 39181627883](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627883), [continuity/restart 39181627998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627998), [semantic validation 39181627889](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627889), [outcome/restart 39181627894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627894).
 - Formal contract: [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
 - Next: freeze the Chronicle vertical contract, then evaluate an application integration seam only after explicit acceptance criteria are defined. Do not wire it into legacy `src/nexo/runtime.js` or `index.html`; no second mutating action; no authority inference; no automatic retry. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
+
+
+### Addendum — entrada pública estable de aplicación (2026-10-19)
+
+- `src/nexo/application/index.mjs` expone exactamente `runNexoChronicleAppend`, `loadNexoContinuityStatus` y `loadNexoMissionStatus`. No exporta dispatcher genérico.
+- Los CLI wrappers y la prueba de contrato consumen esa entrada pública. El test verifica la lista exacta de exports.
+- CI SUCCESS en SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
+- Esta API es el seam para futura integración; no conectar todavía al runtime legacy ni a `index.html`. M0 INCOMPLETO.
