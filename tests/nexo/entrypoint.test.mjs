@@ -49,7 +49,7 @@ try {
   assert.equal(valid.stdout.includes(privateSentinel), false);
   const result = JSON.parse(valid.stdout);
   assert.equal(result.status, "completed");
-  assert.equal(result.code, null);
+  assert.equal(result.code, "NEXO_CHRONICLE_APPEND_SETTLED");
   assert.equal(result.missionId, "entrypoint-mission");
   assert.equal(result.stepId, "entrypoint-step");
   assert.equal(result.dispatchAttempted, true);
