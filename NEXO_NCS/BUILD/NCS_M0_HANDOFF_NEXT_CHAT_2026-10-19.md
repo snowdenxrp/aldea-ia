@@ -2,7 +2,7 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-HEAD documental previo al cierre de esta corrección: `b21896e893a1b739bbfa511f76c3a215298a73e6`
+Último SHA de código + regresión validado por CI: `b21896e893a1b739bbfa511f76c3a215298a73e6`
 Último SHA de código: `f3a54153d3574f559aa32f1c56d093e1152b4842`; SHA de código + regresión corregida: `b21896e893a1b739bbfa511f76c3a215298a73e6`
 
 ## 0. Instrucción principal al chat nuevo
