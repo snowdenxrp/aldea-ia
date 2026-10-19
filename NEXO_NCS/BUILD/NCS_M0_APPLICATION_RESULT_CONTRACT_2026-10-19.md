@@ -211,3 +211,12 @@ Code SHA: `f3a54153d3574f559aa32f1c56d093e1152b4842`. Code + corrected regressio
 CI SUCCESS at the code + regression SHA: [repair settlement crash cuts 39192937988](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937988), [effect and settlement contract regressions 39192937997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937997), [STEP 4 semantic validation 39192938031](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192938031), [STEP 5 outcome classification 39192937987](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937987).
 
 This closes the identified record-completeness discrepancy only. It does not establish external-effect causality, general goal verification, power-loss durability, legitimate authority, or protected-runtime readiness. M0 remains incomplete; protected effects remain STOP.
+
+
+## Checkpoint M0 — evidencia Chronicle ligada al registro persistido (2026-10-19)
+
+La observación Chronicle aplicada debe contener evidencia no nula ligada al registro que se leyó. `observeChronicleOperation()` produce `{kind: "persisted-chronicle-entry", operationKey, content}`; el propietario comprueba el tipo, kind y coincidencia exacta de operationKey/content tanto al recuperar settlement como antes de permitir `recordOutcome(status="completed")`. La presencia de una propiedad `evidence` con valor null ya no satisface el contrato Chronicle.
+
+Regresión: un settlement con status/source/revisión/timestamp válidos pero `evidence: null` no puede completar una misión ni modificar la revisión canónica. Pruebas y CI quedan documentados en `NEXO_NCS/STATUS.md` y en el handoff M0 del 2026-10-19.
+
+Esta evidencia demuestra coincidencia con una entrada observada del Chronicle local; no es una firma, autoridad, atribución causal, garantía de durabilidad física ni verificación general de objetivo. M0 continúa INCOMPLETO y los efectos protegidos permanecen STOP.
