@@ -14,6 +14,7 @@ function validateOperation(operation) {
       typeof operation.idempotencyKey !== "string" || !operation.idempotencyKey.trim() ||
       typeof operation.missionId !== "string" || !operation.missionId.trim() ||
       typeof operation.stepId !== "string" || !operation.stepId.trim() ||
+      operation.missionId.includes(":") || operation.stepId.includes(":") ||
       typeof operation.action !== "string" || !operation.action.trim()) {
     throw ownerError("NEXO_OPERATION_CONTEXT_INVALID");
   }
