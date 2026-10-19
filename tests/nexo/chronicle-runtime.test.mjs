@@ -435,6 +435,8 @@ const malformedPreparedResponses = [
   { label: "negative revision", value: { status: "committed", preparedCommitted: true, storeRevision: -1 } },
   { label: "fractional revision", value: { status: "committed", preparedCommitted: true, storeRevision: 1.5 } },
   { label: "unsafe revision", value: { status: "committed", preparedCommitted: true, storeRevision: Number.MAX_SAFE_INTEGER + 1 } },
+  { label: "unchanged revision", value: { status: "committed", preparedCommitted: true, storeRevision: 4 } },
+  { label: "skipped revision", value: { status: "committed", preparedCommitted: true, storeRevision: 6 } },
   { label: "unexpected status", value: { status: "failed", preparedCommitted: true, storeRevision: 5 } },
   { label: "null response", value: null }
 ];
