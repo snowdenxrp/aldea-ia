@@ -195,7 +195,7 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
     try {
       releaseLock = await acquireLock(fsModule, filePath);
     } catch (error) {
-      if (error?.code === "ENOENT") {
+      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" };
       }
       throw error;
