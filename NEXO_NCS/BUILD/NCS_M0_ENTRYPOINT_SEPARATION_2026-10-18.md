@@ -44,3 +44,11 @@ The initialization flags are opt-in and should only be used when creating genuin
 - No protected effects, generic action expansion, runtime-default cutover, or Lúmina initialization is permitted.
 - The next gate is the canonical owner-backed Nexo runtime transition for explicitly supported actions: select a persisted mission/step, commit PREPARED by CAS, dispatch only after confirmed commit, persist lineage, verify durable external state using a trusted operation-specific verifier, then settle and record outcome. Any action lacking its verifier/settlement contract must block before dispatch.
 - M0 remains INCOMPLETE. This CLI seam is not the Nexo browser application and does not complete M0.
+
+
+## Read-only mission reconstruction — validation update (2026-10-19)
+
+- Added `mission-status --continuity PATH --mission ID` to the independent entrypoint. It calls the canonical owner reconstruction and emits only mission-level status plus step ID/action/status/dependency count and an optional block code; it omits target/context/payload.
+- Missing mission returns `NEXO_MISSION_NOT_FOUND`; absent/corrupt store blocks without initialization. Process test verifies no payload leakage and byte-identical store contents before/after.
+- Found and fixed a reconstruction mismatch: Chronicle's `settled_observed` journal entry was incorrectly treated as repair-only observed settlement. The operation-specific Chronicle settlement plus terminal outcome now preserves `step.status=completed`; other actions remain conservative.
+- CI SUCCESS on SHA `ccb1fb7218fbb0b13615a95c403b002b025faa35`: [39180275512](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275512), [39180275517](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275517), [39180275561](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275561).
