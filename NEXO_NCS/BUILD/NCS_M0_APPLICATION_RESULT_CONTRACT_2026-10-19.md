@@ -184,3 +184,10 @@ This is fail-closed recovery integrity, not mission completion or cross-store at
 `reconcilePrepared()` has equivalent structured failure handling for its initial read and pre-CAS re-read. The initial-read test confirms the verifier is not called; the pre-CAS re-read test confirms PREPARED remains untouched. Code SHA `b34c09492a36ef354faf566b8a8b1e34cae7dadb` passed all six focal workflows; test SHA `9852ec69da2b1fe685619d765521916eba5a9786` passed its four triggered workflows, including the new admission-read regression. See STATUS and handoff for exact run links.
 
 This handles known read-failure boundaries only. It does not add cross-store atomicity or mission-goal verification. M0 remains incomplete.
+
+
+## M0 — Chronicle settlement replay requires complete canonical record (2026-10-19)
+
+Chronicle replay previously accepted a settlement with status `applied`, source `nexo-chronicle-store`, and nonnegative revision even when the canonical record lacked evidence and `observedAt`. It now requires the evidence property and canonical ISO timestamp, matching the generic observation replay standard. A malformed partial settlement returns conflict and does not invoke the verifier.
+
+Code SHA `005338b91656e61eee3ffbef105c306e2af496b2` passed all six focal workflows. Test SHA `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72` passed all four workflows triggered by the added regression. See STATUS/handoff for exact CI links. M0 remains incomplete; this is replay-integrity validation, not authorization or goal verification.
