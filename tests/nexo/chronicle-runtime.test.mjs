@@ -236,6 +236,7 @@ const dependencyGateResult = await executeNexoStepWithContinuityOwner({
 });
 assert.equal(dependencyGateResult.status, "blocked",
   "the runtime must block a successor whose dependency is not completed");
+assert.equal(dependencyGateResult.code, "NEXO_CANONICAL_RUNTIME_DEPENDENCIES_UNRESOLVED");
 assert.equal(dependencyGateResult.dispatchAttempted, false);
 assert.equal(dependencyGatePrepareCalls, 0, "dependency gate must run before PREPARED");
 assert.equal(dependencyGateDispatchCalls, 0, "dependency gate must run before adapter dispatch");
@@ -275,6 +276,7 @@ const completedClaimResult = await executeNexoStepWithContinuityOwner({
 });
 assert.equal(completedClaimResult.status, "blocked",
   "an unverified completed claim must not be treated as a fresh runnable step");
+assert.equal(completedClaimResult.code, "NEXO_CANONICAL_RUNTIME_STEP_NOT_RUNNABLE");
 assert.equal(completedClaimResult.dispatchAttempted, false);
 assert.equal(completedClaimPrepareCalls, 0);
 assert.equal(completedClaimDispatchCalls, 0);
