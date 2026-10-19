@@ -124,6 +124,50 @@ assert.equal(prepareConflictResult.dispatchAttempted, false);
 assert.equal(prepareConflictResult.preparedCommitted, false);
 assert.equal(prepareConflictResult.storeRevision, 5);
 
+const preparedUnknownResult = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission",
+  stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({ status: "unknown", code: "NEXO_COMMIT_RESULT_UNKNOWN" }),
+    recordExecutionLineage: async () => { throw new Error("lineage must not follow unknown PREPARED commit"); },
+    reconcilePrepared: async () => { throw new Error("reconcile must not follow unknown PREPARED commit"); },
+    recordOutcome: async () => { throw new Error("outcome must not follow unknown PREPARED commit"); }
+  },
+  adapter: adapter(() => { throw new Error("dispatch must not follow unknown PREPARED commit"); })
+});
+assert.equal(preparedUnknownResult.status, "unknown");
+assert.equal(preparedUnknownResult.preparedCommitted, "UNKNOWN");
+assert.equal(preparedUnknownResult.dispatchAttempted, false);
+assert.equal(preparedUnknownResult.lineageCommitted, false);
+assert.equal(preparedUnknownResult.journalSettled, false);
+assert.equal(preparedUnknownResult.terminalOutcomeRecorded, false);
+assert.equal(preparedUnknownResult.redispatchAuthorized, false);
+
+let reconciliationDispatches = 0;
+const reconciliationUnknownResult = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission",
+  stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
+    recordExecutionLineage: async () => ({ status: "committed", storeRevision: 6 }),
+    reconcilePrepared: async () => { throw new Error("observation commit response lost"); },
+    recordOutcome: async () => { throw new Error("outcome must wait for reconciliation"); }
+  },
+  adapter: adapter(() => { reconciliationDispatches++; return { status: "completed" }; })
+});
+assert.equal(reconciliationUnknownResult.status, "unknown");
+assert.equal(reconciliationUnknownResult.dispatchAttempted, true);
+assert.equal(reconciliationUnknownResult.preparedCommitted, true);
+assert.equal(reconciliationUnknownResult.lineageCommitted, true);
+assert.equal(reconciliationUnknownResult.journalSettled, "UNKNOWN");
+assert.equal(reconciliationUnknownResult.terminalOutcomeRecorded, false);
+assert.equal(reconciliationUnknownResult.redispatchAuthorized, false);
+assert.equal(reconciliationDispatches, 1);
+
 // Restart after dispatch but before settlement: reconcile only, never dispatch again.
 let recoveryCalls = [];
 const preparedSnapshot = {
@@ -491,6 +535,12 @@ try {
     postcondition: lostOutcome.contracts.postcondition
   });
   assert.equal(uncertainOutcome.status, "unknown");
+  assert.equal(uncertainOutcome.dispatchAttempted, true);
+  assert.equal(uncertainOutcome.preparedCommitted, true);
+  assert.equal(uncertainOutcome.lineageCommitted, true);
+  assert.equal(uncertainOutcome.journalSettled, true);
+  assert.equal(uncertainOutcome.terminalOutcomeRecorded, "UNKNOWN");
+  assert.equal(uncertainOutcome.redispatchAuthorized, false);
   assert.equal(lostOutcomeDispatches, 1);
   const outcomeReopened = await openNexoContinuityOwner({
     filePath: lostOutcome.continuityPath, effectVerifiers: lostOutcome.contracts.verifiers
