@@ -53,6 +53,28 @@ assert.deepEqual(
   "unknown authority fields must be rejected rather than persisted"
 );
 
+// If lock directory creation succeeds but writing owner.json fails, release the
+// directory created by this attempt so future writers do not inherit a poisoned lock.
+const lockOwnerFailurePath = path.join(directory, "lock-owner-failure.json");
+let failLockOwnerWrite = true;
+const fsWithLockOwnerFailure = {
+  ...fs,
+  writeFile: async (target, ...args) => {
+    if (failLockOwnerWrite && target === path.join(`${lockOwnerFailurePath}.lock`, "owner.json")) {
+      failLockOwnerWrite = false;
+      const error = new Error("simulated lock owner write failure");
+      error.code = "EIO";
+      throw error;
+    }
+    return fs.writeFile(target, ...args);
+  }
+};
+const lockOwnerFailureStore = createNexoContinuityStore({ filePath: lockOwnerFailurePath, fsModule: fsWithLockOwnerFailure });
+await assert.rejects(() => lockOwnerFailureStore.initialize(), error => error?.code === "EIO");
+await assert.rejects(() => fs.access(`${lockOwnerFailurePath}.lock`), error => error?.code === "ENOENT");
+assert.equal((await lockOwnerFailureStore.initialize()).status, "committed",
+  "a failed lock-owner write must not poison later store operations");
+
 // A stale lock must not be reclaimed through a racy check-then-remove sequence.
 const staleDirectory = path.join(directory, "stale-lock-case");
 await fs.mkdir(staleDirectory);
