@@ -1,3 +1,13 @@
+## Latest verified checkpoint — generic reconciliation read failures (2026-10-19)
+
+- Gap: `reconcilePrepared()` handled observation-commit response loss, but its initial continuity read and the mandatory pre-CAS re-read could still throw out of the application API.
+- Fix: both read boundaries now return `blocked` with the original error code when available and explicit `uncertainty: continuity_read_failed` or `continuity_recheck_failed`. A failed pre-CAS read does not commit an observation.
+- Regression: trusted verifier returns a valid observation, then the second canonical read fails. The API returns structured uncertainty, calls the verifier once, leaves store revision 0, and keeps the journal `prepared`.
+- Code SHA `c8b5c59cd5e2a69e11c9c8ba1263d46a5c678469`; final code/test SHA `f43c757cc7dc6ce966f797637dd5d7e2b5715827`. SUCCESS: repair crash cuts [39189612150](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612150), effect/settlement [39189612141](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612141), STEP 4 [39189612151](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612151), STEP 5 [39189612143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612143), Chronicle [39189596625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596625), continuity/restart [39189596815](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596815).
+- No automatic retry, verifier re-execution after read failure, redispatch, or cross-store atomicity claim. M0 INCOMPLETE; protected effects STOP; Nexo/Lúmina separate.
+
+Next: test generic-observation replay against corrupt/partial canonical records. Replay must require valid state, identity, revision, and source; missing fields must remain blocked/UNKNOWN and must not call the verifier as a shortcut.
+
 ## Latest verified checkpoint — generic observation commit response loss (2026-10-19)
 
 - Concrete gap: `reconcilePrepared()` let an exception from `store.commitIfCurrent()` escape. If the store durably persisted `reconciled_observed` and then threw before returning its receipt, the API did not return structured uncertainty.
