@@ -355,6 +355,28 @@ async function executeNexoStepWithContinuityOwnerInternal({
     };
   }
 
+  // A committed lineage response must identify the exact successor revision
+  // before it can be used as the reconciliation CAS baseline. The adapter has
+  // already been called, so malformed confirmation is UNKNOWN, never a retry.
+  if (!Number.isSafeInteger(prepared.storeRevision) ||
+      prepared.storeRevision < 0 ||
+      prepared.storeRevision >= Number.MAX_SAFE_INTEGER ||
+      !Number.isSafeInteger(lineage.storeRevision) ||
+      lineage.storeRevision !== prepared.storeRevision + 1) {
+    return {
+      status: "unknown",
+      code: "NEXO_EXECUTION_LINEAGE_COMMIT_NOT_CONFIRMED",
+      dispatchAttempted: true,
+      preparedCommitted: true,
+      lineageCommitted: "UNKNOWN",
+      journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false,
+      adapterResult,
+      lineage
+    };
+  }
+
   let reconciled;
   try {
     reconciled = await owner.reconcilePrepared({
