@@ -2,35 +2,36 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-SHA de código+pruebas validado: `5b0441df17cdd16d8c9add1b87527201b68d195b`
-Los commits documentales pueden mover HEAD; comprobar el HEAD vivo al retomar.
+SHA de código+pruebas validado: `4f1492c66e787ddfe5f769b32e39c5d18cf7d9dc`
+Los commits documentales pueden mover HEAD; verificar la rama viva al retomar.
 
 ## 0. Instrucción principal
 
-**La misión sigue siendo M0.** No reiniciar M0.1–M0.52 ni auditorías históricas cerradas; no desviarse a STEP 7, M1, Lúmina, UI o despliegue. Leer `NEXO_NCS/STATUS.md`, este handoff y `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
+**La misión es M0.** No reiniciar M0.1–M0.52 ni auditorías históricas cerradas; no desviarse a STEP 7, M1, Lúmina, UI o despliegue. Leer `NEXO_NCS/STATUS.md`, este handoff y `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
 
-## 1. Último estado confirmado
+## 1. Estado confirmado
 
-### Admisión de misión
-- La admisión valida datos persistibles del registro proyectado y rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays.
+### Admisión
+- El registro proyectado rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays.
 - `step.action` debe ser string no vacío.
-- `mission.status` y `step.status`, cuando se proporcionan, deben ser strings no vacíos. Nullish conserva el default `planned`. No se inventó un enum ni un allowlist de acciones.
-- Pruebas owner-level confirman que entradas inválidas no avanzan la revisión canónica.
+- Mission statuses permitidos: `planned`, `blocked`, `executing`, `needs_replan`, `awaiting_verification`, `awaiting_dependencies`, `completed`, `incomplete`, `invalid`.
+- Step statuses permitidos: `planned`, `blocked`, `executing`, `completed`, `failed`.
+- Nullish statuses mantienen el default `planned`. Los estados no reconocidos se rechazan antes de commit.
+- Compatibilidad importante: un claim `completed` puede aparecer en el plan, pero no prueba finalización; la reconstrucción bloquea el paso si no existe evidencia canónica.
 
 ### Runtime readiness gate
-- Se reprodujo que el owner-backed runtime podía preparar/despachar un sucesor con su dependencia aún `planned`. El runtime ahora reconstruye la misión canónica antes de cualquier nuevo PREPARED/dispatch, requiere misión y paso reconstruidos como `planned` y todas las dependencias como `completed`.
-- Claims `completed` sin evidencia canónica se bloquean.
-- Si ya existe una obligación en el journal para la operación solicitada, se conserva la ruta de recuperación existente antes del gate de nuevo dispatch; no se sustituye recuperación por un bloqueo ciego.
-- Los checks de capacidad de handler/verificador siguen antes del gate y del PREPARED.
+- Se reprodujo que un paso sucesor podía llegar a PREPARED mientras su dependencia seguía `planned`. Antes de nuevo PREPARED/dispatch, el runtime reconstruye la misión canónica y exige misión/paso `planned` y dependencias `completed`.
+- El recovery de obligaciones existentes en el journal ocurre antes del gate de nuevo dispatch.
+- Los checks de capacidad del handler/verificador siguen antes del gate y del PREPARED.
 
 ### SHA / CI
-- SHA final código+tests: `5b0441df17cdd16d8c9add1b87527201b68d195b`.
-- SUCCESS: bounded admission/runtime [39209446774](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446774), STEP 4 [39209446739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446739), STEP 5 [39209446752](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446752), crash cuts [39209446733](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446733).
-- Chronicle native vertical SUCCESS sobre el SHA de runtime gate `e8f169ac43ec2675a9a0057bc979bdf42c4625e8`: [39209200899](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209200899).
-- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101), [#102](https://github.com/snowdenxrp/aldea-ia/pull/102), [#103](https://github.com/snowdenxrp/aldea-ia/pull/103).
+- SHA código+tests: `4f1492c66e787ddfe5f769b32e39c5d18cf7d9dc`.
+- SUCCESS: bounded admission/runtime [39209925550](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925550), STEP 4 [39209925522](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925522), STEP 5 [39209925518](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925518), crash cuts [39209925614](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925614).
+- Chronicle native vertical SUCCESS sobre `e8f169ac43ec2675a9a0057bc979bdf42c4625e8`: [39209200899](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209200899).
+- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101), [#102](https://github.com/snowdenxrp/aldea-ia/pull/102), [#103](https://github.com/snowdenxrp/aldea-ia/pull/103), [#104](https://github.com/snowdenxrp/aldea-ia/pull/104).
 
-### Siguiente frontera
-Auditar el vocabulario real de `mission.status` y `step.status`: productor real, consumidores y reconstrucción. Determinar los estados emitidos/consumidos y si un string desconocido puede dejar una misión estancada. No imponer un enum hasta tener evidencia del flujo real.
+### Siguiente frontera concreta
+Auditar consistencia entre `mission.status`, estados de los pasos y `objective`. Buscar si combinaciones imposibles pueden entrar al snapshot y cambiar la reconstrucción. Leer productores/consumidores y reproducir primero; no imponer invariantes nuevos por intuición.
 
 **Estado global:** M0 **INCOMPLETO**; efectos protegidos **STOP**; STEP 7 **OPEN / STOP / UNKNOWN**; Nexo y Lúmina separados. No se ha demostrado autoridad constitucional legítima.
 
