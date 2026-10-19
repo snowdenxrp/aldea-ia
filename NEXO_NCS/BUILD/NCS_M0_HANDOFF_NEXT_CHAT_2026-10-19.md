@@ -3,7 +3,7 @@ Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
 Último SHA funcional validado por CI: `3ebb037f53409df9681f5ed01b6458e915e36a29`
-HEAD código+pruebas validado: `c59a825771af3376a88a9bc212e9967cf1d75f1d`
+HEAD código+pruebas validado: `376f2d984eeb969d25c2c797a40037a72a6a5c6b`
 
 ## 0. Instrucción principal al chat nuevo
 
@@ -20,7 +20,7 @@ No reabrir research ya cerrado salvo que aparezca evidencia nueva y concreta. Co
 
 ## 1. Estado confirmado
 
-- HEAD actual al checkpoint: `c59a825771af3376a88a9bc212e9967cf1d75f1d` (código+pruebas; HEAD de rama puede incluir commits documentales posteriores).
+- HEAD actual al checkpoint: `376f2d984eeb969d25c2c797a40037a72a6a5c6b` (código+pruebas; HEAD de rama puede incluir commits documentales posteriores).
 - Fix funcional más reciente: `3ebb037f53409df9681f5ed01b6458e915e36a29`; cambios de documentación no alteran el código validado.
 - Últimos runs finales SUCCESS: bounded admission/restart `39195662848`, STEP 4 `39195662862`, STEP 5 `39195662845`, crash cuts `39195662831`. Chronicle native/effect-settlement SUCCESS en SHA funcional `3ebb037...`: `39195543682`, `39195543685`.
 - Los puntos anteriores de esta sección y los apartados históricos siguientes conservan evidencia previa; no son el estado más reciente. Para continuar, manda siempre el estado superior de `NEXO_NCS/STATUS.md` y el checkpoint final de este handoff.
@@ -243,6 +243,15 @@ Se cerraron dos guards relacionados en `recordPrepared()`:
 
 El segundo hueco se reprodujo con una misión de dos pasos independientes: step-1 se preparaba, step-2 se intentaba preparar con la misión reconstruida bloqueada. El guard ahora devuelve `NEXO_PREPARED_MISSION_NOT_RUNNABLE` y no modifica la revisión ni el journal. Se actualizaron expectativas de pruebas de dependencia para reflejar que el guard de misión canónica se activa antes que el guard más específico de dependencias.
 
-HEAD código+tests `c59a825771af3376a88a9bc212e9967cf1d75f1d`. SUCCESS: bounded admission/restart run 39195662848, STEP 4 run 39195662862, STEP 5 run 39195662845, crash cuts run 39195662831. Chronicle native/effect-settlement SUCCESS en código funcional `3ebb037...` (runs 39195543682, 39195543685). Enlaces en STATUS.
+HEAD código+tests `c59a825771af3376a88a9bc212e9967cf1d75f1d`. SUCCESS: bounded admission/restart run 39195866238, STEP 4 run 39195866236, STEP 5 run 39195866226, crash cuts run 39195866266. Chronicle native/effect-settlement SUCCESS en código funcional `3ebb037...` (runs 39195543682, 39195543685). Enlaces en STATUS.
 
 **Siguiente paso:** revisar `reconcilePrepared()` y `recordOutcome()` para confirmar que la reconciliación terminal mantiene coherencia entre effectJournal, attempt y estado reconstruido; no alterar la máquina de estados sin una regresión concreta.
+
+
+## 18. Checkpoint — replay de PREPARED tras reinicio conserva la obligación UNKNOWN
+
+Se añadió una regresión que crea la misión, confirma un PREPARED y vuelve a abrir el owner desde el mismo archivo. Repetir la misma operación con la revisión vigente devuelve `prepared_existing / NEXO_EFFECT_OUTCOME_UNKNOWN`, `preparedCommitted=false`, `authorization=NOT_EVALUATED`; revisión permanece en 2, el journal conserva exactamente una entrada `prepared` y la misma idempotency key. No se redispatcha ni se trata como una nueva admisión.
+
+Test SHA `376f2d984eeb969d25c2c797a40037a72a6a5c6b`. Bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195866238, 39195866236, 39195866226, 39195866266). La lógica funcional de misión/step gate permanece en `3ebb037f53409df9681f5ed01b6458e915e36a29`; el último commit sólo añade prueba de continuidad tras reinicio.
+
+**Auditoría de reconciliación revisada:** `reconcilePrepared()` persiste observaciones genéricas como `reconciled_observed`, no las trata como settlement terminal; `recordOutcome()` rechaza los estados `prepared`, `settled_observed` y `reconciled_observed` salvo el contrato Chronicle completo. Los crash-cut tests ya cubren que un outcome prematuro no añade attempt y que la observación genérica sigue no-terminal. No se hizo cambio en esa frontera porque la conducta observada es fail-closed y coherente con el contrato.
