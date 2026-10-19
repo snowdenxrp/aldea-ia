@@ -563,3 +563,14 @@ Matriz:
 - AC5 PASS histórico en crash cuts `39210287996` (SHA `d4544e...`) y `39209200872` (SHA `e8f169ac...`); falta ejecutar la suite crash-cut en el SHA de cierre.
 
 Documento de matriz: `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EXECUTABLE_2026-10-19.md`. Próximo paso: decidir/ejecutar la validación integrada final de los criterios obligatorios, empezando por crash cuts en el HEAD actual. No reabrir las regresiones de query/entrypoint salvo cambios relevantes. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 29. Gate integrado de aceptación M0 — PASS (2026-10-19)
+
+Se añadió `.github/workflows/nexo-m0-acceptance.yml` como un gate único que ejecuta las regresiones obligatorias de continuidad/admisión, reconstrucción/transición protegida, Chronicle/entrypoints, crash cuts/recuperación y verificación de objetivo/clasificación.
+
+**Resultado observado:** [run 39291344910](https://github.com/snowdenxrp/aldea-ia/actions/runs/39291344910), SHA `c57be8aa6fd7e558d870c3e46feab741637b4314`, SUCCESS. Se inspeccionaron los steps; los cinco grupos de prueba concluyeron SUCCESS. El run da evidencia de AC1–AC6 en el mismo SHA. Los commits posteriores hasta el estado actual sólo añadieron/actualizaron documentación; no cambiaron producción ni tests.
+
+No declarar Nexo listo ni cerrar toda la misión M0 por este resultado. La suite no prueba la legitimidad constitucional de la raíz de autoridad, pérdida total de dispositivos, resistencia general a rollback/tampering, durabilidad física ante pérdida de energía ni coordinación offline multi-dispositivo. Efectos protegidos siguen STOP.
+
+Siguiente paso técnico: usar el resultado integrado como baseline y volver a la brecha arquitectónica de autoridad/efectos protegidos sólo con una fuente de prueba independiente y concreta; no volver a auditar tests ya pasados salvo cambios relevantes. Mantener Nexo separado de Lúmina.
