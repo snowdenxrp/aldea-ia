@@ -2,10 +2,12 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA de código validado por CI: `fbfda4b7be4de8cf2e3ae1b0d7903f0287cf5b6e`
-Último SHA de código: `fbfda4b7be4de8cf2e3ae1b0d7903f0287cf5b6e`; SHA final de pruebas: `ac8e4bc88c04c2f1ea257a58ecf224d867dd4b94`
+Último SHA funcional validado por CI: `615941bf3bc4389c3ce9fd12b0212f3144f9c87a`
+HEAD código+pruebas validado: `9d46f1400cef0eb4c74a4c4419edcc2c616a73b9`
 
 ## 0. Instrucción principal al chat nuevo
+
+**Última continuidad verificada:** la frontera más reciente cerró el gate de PREPARED frente al estado reconstruido del paso. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
 
 **La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
 
@@ -221,3 +223,14 @@ La reconstrucción canónica ahora permite completion sólo para `local_analysis
 El test de replay monotónico se acotó a `local_analysis`; no se tocó el runtime legacy `src/assistants/memory.js`. Código `fbfda4...`; test final `ac8e4...`. Bounded admission/restart, STEP 4, STEP 5 SUCCESS en `ac8e4...`; crash cuts SUCCESS en `fbfda4...`. Enlaces en STATUS. Goal verifier general sigue pendiente; no activar efectos protegidos.
 
 **Siguiente paso:** auditar la admisión de dependencias con pasos terminales declarados en el plan, y comprobar que `recordPrepared()` se guía por resultados canónicos en vez de etiquetas de estado. No cambiar si los guards existentes ya bloquean el caso.
+
+
+## 16. Checkpoint — PREPARED usa estado reconstruido del paso
+
+La regresión demostró que un intento terminal caller-supplied para `repair_agent_state` dejaba el paso reconstruido como blocked, pero `recordPrepared()` miraba únicamente el estado `planned` del plan almacenado y aun así confirmaba PREPARED. La prueba falló antes del fix con `committed` en vez de `blocked`.
+
+Fix en `src/nexo/core/continuity-owner.mjs`: antes de PREPARED se reconstruye la misión desde el snapshot y se exige que el paso correspondiente también esté `planned`. El rechazo usa `NEXO_PREPARED_STEP_NOT_RUNNABLE` y no cambia storeRevision ni effectJournal. La verificación de dependencias usa esa misma reconstrucción.
+
+Fix SHA `615941bf3bc4389c3ce9fd12b0212f3144f9c87a`; HEAD con regresiones `9d46f1400cef0eb4c74a4c4419edcc2c616a73b9`. En HEAD pasaron bounded admission/restart run 39195354527, STEP 4 run 39195354529, STEP 5 run 39195354611, crash cuts run 39195354737. Chronicle native y effect/settlement pasaron en el SHA funcional: runs 39195344263 y 39195344261. Los enlaces están en STATUS.
+
+**Siguiente paso:** buscar el contrato ya existente sobre más de un PREPARED no resuelto por misión. La reconstrucción marca la misión bloqueada si existe uno; antes de cambiar admission, comprobar si la arquitectura permite obligaciones independientes en paralelo. No inventar un mutex, cola ni serialización.
