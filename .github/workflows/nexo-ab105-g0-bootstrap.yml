@@ -287,3 +287,5 @@ jobs:
           path: /tmp/nexo-g0-bootstrap-evidence.txt
 
       # AB105 controlled main-branch execution gate: real G0 runtime harness. No Nexo model implementation.
+
+# AB105 compile-fix validation branch: semantics unchanged; runtime result must come from raw run evidence.
