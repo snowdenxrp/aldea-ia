@@ -302,3 +302,10 @@ La evidencia del outcome Chronicle debe llevar el tipo canónico y `source/obser
 ## Checkpoint M0 — forma exacta de evidencia Chronicle
 
 Outcome evidence debe contener exactamente `verified`, `kind`, `source`, `observedRevision`; kind canónico y source/revision ligados al settlement. Claims extra o desatadas se bloquean; el runtime real prueba que el resultado canónico sigue siendo aceptado. SHA funcional `4a976...`, SHA final de pruebas `d4936...`; bounded admission, Chronicle native, STEP 4 y STEP 5 SUCCESS. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — errores de lectura no pueden habilitar writes ni dispatch (2026-10-19)
+
+Los tres métodos del owner que escriben PREPARED, lineage y outcome ahora devuelven `blocked / continuity_read_failed` si falla `store.loadCurrent()`; no hacen CAS ni marcan autorización. Las regresiones de owner y runtime verifican cero escrituras y cero dispatch si la lectura falla en admisión. SHA `d200472052b3795b2b7e6ab7d1cd4fae5e71ae91`; Chronicle native, bounded admission/restart, STEP 4 y STEP 5 SUCCESS (runs 39196910123, 39196910131, 39196910145, 39196910180). La evidencia Chronicle de outcome se compara con el settlement persistido durante escritura y replay, como coherencia estructural y no como autenticación.
+
+Siguiente frontera: snapshot/replay de entradas genéricas terminales inconsistentes en `effectJournal`; M0 INCOMPLETO, efectos protegidos STOP.
