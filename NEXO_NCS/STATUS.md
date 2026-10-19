@@ -1,3 +1,12 @@
+## M0 — matriz de regresión para respuestas PREPARED malformadas (2026-10-19)
+
+- Matriz documentada: `NEXO_NCS/BUILD/NCS_M0_PREPARED_CONFIRMATION_REGRESSION_MATRIX_2026-10-19.md`, commit `0babe34a63d7f00e1d3e0fd64d33d3bbe17d5290`.
+- El runtime bloquea respuestas PREPARED que no sean explícitamente `status: "committed"` y `preparedCommitted: true`; conflicto, UNKNOWN y excepción ya tienen cobertura visible en la prueba focal.
+- La inspección estática no encontró casos explícitos para cada respuesta malformada (confirmación sin flag, flag false, revisión ausente/negativa, status inesperado o null). Deben añadirse como regresiones ejecutables.
+- Pruebas dinámicas y CI PENDING; no se declara PASS. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — decisión de alcance del recibo PREPARED (2026-10-19)
 
 - Decisión documentada: `NEXO_NCS/BUILD/NCS_M0_PREPARED_RECEIPT_TRUST_DECISION_2026-10-19.md`, commit `a4b6a53baa9c7eb18dfc43b0c97813d7f67b7d73`.
