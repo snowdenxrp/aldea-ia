@@ -1620,3 +1620,7 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - Por tanto, la propuesta NO se integra. PR #106 fue cerrado sin merge: https://github.com/snowdenxrp/aldea-ia/pull/106. La rama de la propuesta revirtió cambios de producción y tests a su contenido de base antes de cerrar. No declarar el problema resuelto.
 - Decisión actual: conservar comportamiento fail-closed y no limpiar por ruta sin una garantía de identidad/propiedad segura. Rediseñar el protocolo de adquisición/recuperación como trabajo separado si se demuestra que se puede hacer sin una carrera de reemplazo; no añadir stat seguido de rm como supuesto arreglo porque también es TOCTOU.
 - No hay nuevo CI de pruebas Node que certifique este caso. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+### Diseño abierto — recuperación de locks locales
+Consultar `NEXO_NCS/BUILD/NCS_M0_LOCK_RECOVERY_DESIGN_NOTE_2026-10-19.md`. PR #106 se retiró sin merge al detectarse TOCTOU en la limpieza por ruta. Estado actual: fail-closed; no añadir stat-then-rm ni recuperación por antigüedad como parche. No hay fix integrado ni CI nuevo para este caso.
