@@ -108,7 +108,7 @@ Los runs prueban los contratos cubiertos por esos workflows en ese SHA. No equiv
 
 ## M0 — bloqueo explícito de provisión independiente de la raíz (2026-10-19)
 
-- Documento de bloqueo: [NCS_M0_ROOT_PROVISIONING_SOURCE_BLOCKER_2026-10-19.md](BUILD/NCS_M0_ROOT_PROVISIONING_SOURCE_BLOCKER_2026-10-19.md).
+- Documento de bloqueo: [NCS_M0_ROOT_PROVISIONING_SOURCE_BLOCKER_2026-10-19.md](./NCS_M0_ROOT_PROVISIONING_SOURCE_BLOCKER_2026-10-19.md).
 - **Conclusión limitada a la evidencia actual:** no está demostrado un canal/procedimiento independiente para provisionar el fingerprint real de la única llave raíz. Esto no afirma que sea imposible; significa que no existe evidencia suficiente para implementarlo como si estuviera resuelto.
 - No hay llave física seleccionada/adquirida/configurada ni pin real con procedencia independiente verificada. El teléfono, OS, modelo, cuenta/repositorio, snapshot y store de continuidad no se aceptan como raíz por defecto.
 - No implementar verificador ni escoger hardware por inferencia. La puerta de salida exige fuente independiente disponible, procedimiento de pin reproducible, vector criptográfico, desafío fresco/replay tests, revocación vigente y enforcement en la frontera real.
