@@ -5,6 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseNexoEntrypointArguments } from "../../scripts/nexo.mjs";
+import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 
 const entrypointPath = fileURLToPath(new URL("../../scripts/nexo.mjs", import.meta.url));
 const chronicleSessionSource = await fs.readFile(new URL("../../scripts/nexo-chronicle-session.mjs", import.meta.url), "utf8");
@@ -136,6 +137,39 @@ try {
     status: "not_found", code: "NEXO_MISSION_NOT_FOUND", storeRevision: persistedContinuity.storeRevision
   });
   assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
+
+  // An unresolved PREPARED obligation must reconstruct as blocked after restart.
+  const preparedContinuityPath = path.join(root, "prepared-continuity.json");
+  const preparedPayload = "PREPARED_PRIVATE_SENTINEL_DO_NOT_OUTPUT";
+  const preparedLegacyMemory = {
+    version: 4, runs: [], lessons: [], patterns: [],
+    nexo: {
+      missions: [{
+        missionId: "prepared-mission", status: "planned", objective: "chronicle_append",
+        steps: [{ id: "step-1", action: "chronicle_append", target: { content: preparedPayload }, status: "planned", dependsOn: [] }]
+      }],
+      attempts: [], doNotRepeat: [], executions: [],
+      effectJournal: [{
+        idempotencyKey: "prepared-mission:step-1",
+        missionId: "prepared-mission", stepId: "step-1", action: "chronicle_append",
+        target: { content: preparedPayload }, status: "prepared", at: "2026-10-19T00:00:00.000Z"
+      }]
+    }
+  };
+  await openNexoContinuityOwner({ filePath: preparedContinuityPath, legacyMemory: preparedLegacyMemory });
+  const preparedBytesBefore = await fs.readFile(preparedContinuityPath, "utf8");
+  const preparedMissionStatus = spawnSync(process.execPath, [
+    entrypointPath, "mission-status", "--continuity", preparedContinuityPath, "--mission", "prepared-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(preparedMissionStatus.status, 0, preparedMissionStatus.stderr || preparedMissionStatus.stdout);
+  assert.equal(preparedMissionStatus.stderr, "");
+  assert.equal(preparedMissionStatus.stdout.includes(preparedPayload), false);
+  const preparedSummary = JSON.parse(preparedMissionStatus.stdout);
+  assert.equal(preparedSummary.status, "reconstructed");
+  assert.equal(preparedSummary.missionStatus, "blocked");
+  assert.equal(preparedSummary.steps[0].status, "blocked");
+  assert.equal(preparedSummary.steps[0].blockCode, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
+  assert.equal(await fs.readFile(preparedContinuityPath, "utf8"), preparedBytesBefore);
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
