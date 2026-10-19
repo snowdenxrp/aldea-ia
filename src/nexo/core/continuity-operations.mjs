@@ -137,11 +137,40 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
   const attempts = source.attempts.filter(item => item?.missionId === missionId);
   for (const step of mission.steps) {
     const stepAttempts = attempts.filter(item => item?.stepId === step.id);
-    const latest = stepAttempts.find(item =>
-      item?.status === "completed" && item?.evidence?.verified === true &&
+    const matchesStepIdentity = item => item?.action === step.action &&
+      isDeepStrictEqual(item?.target ?? null, step.target ?? null);
+    const verifiedCompletion = stepAttempts.find(item =>
+      item?.status === "completed" && matchesStepIdentity(item) &&
+      item?.evidence?.verified === true &&
       typeof item?.evidence?.kind === "string" && item.evidence.kind.trim() &&
       typeof item?.evidence?.source === "string" && item.evidence.source.trim()
-    ) ?? [...stepAttempts].reverse().find(Boolean);
+    );
+    if (verifiedCompletion) {
+      step.status = "completed";
+      step.result = structuredClone(verifiedCompletion.evidence);
+      continue;
+    }
+
+    // A completion-shaped attempt without exact operation binding and evidence
+    // is not proof. Keep the step blocked rather than reconstructing it as
+    // planned, which could make a possibly-applied operation executable again.
+    const invalidCompletion = stepAttempts.find(item => item?.status === "completed");
+    if (invalidCompletion) {
+      step.status = "blocked";
+      step.blockReason = {
+        code: matchesStepIdentity(invalidCompletion)
+          ? "NEXO_COMPLETION_EVIDENCE_UNVERIFIED"
+          : "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH",
+        next: "verify_mission_goal_without_redispatch"
+      };
+      continue;
+    }
+
+    const latest = [...stepAttempts].reverse().find(item => {
+      if (!["failed", "blocked"].includes(item?.status)) return false;
+      const hasIdentity = typeof item?.action === "string" || Object.hasOwn(item, "target");
+      return !hasIdentity || matchesStepIdentity(item);
+    });
     if (!latest) continue;
     step.status = latest.status;
     if (latest.evidence != null) step.result = structuredClone(latest.evidence);
