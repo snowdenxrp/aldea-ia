@@ -315,7 +315,7 @@ const blockedMissionResult = await executeNexoStepWithContinuityOwner({
   })
 });
 assert.equal(blockedMissionResult.status, "blocked",
-  "a canonically blocked mission must not become runnable merely because reconstruction finds a planned step");
+  "the runtime must preserve the canonical blocked mission state before reconstruction");
 assert.equal(blockedMissionResult.dispatchAttempted, false);
 assert.equal(blockedMissionPrepareCalls, 0);
 assert.equal(blockedMissionDispatchCalls, 0);
