@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `c59a825771af3376a88a9bc212e9967cf1d75f1d` (2026-10-19)
+Latest validated code/test checkpoint: `376f2d984eeb969d25c2c797a40037a72a6a5c6b` (2026-10-19)
 
 ## Scope
 
@@ -280,3 +280,10 @@ HEAD validado `9d46f1400cef0eb4c74a4c4419edcc2c616a73b9`: bounded admission/rest
 `recordPrepared()` exige que la misión reconstruida esté `planned` y que el paso reconstruido también esté `planned`, además de validar el plan persistido. Una claim terminal no autorizada bloquea el paso; un PREPARED sin resolver bloquea la misión y evita admitir otro paso independiente. El branch de idempotency/existing PREPARED se mantiene antes de los guards y sigue devolviendo UNKNOWN/prepared_existing, nunca permiso para redispatch.
 
 HEAD código+tests `c59a825771af3376a88a9bc212e9967cf1d75f1d`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195662848, 39195662862, 39195662845, 39195662831). Chronicle native y effect/settlement SUCCESS en código `3ebb037f53409df9681f5ed01b6458e915e36a29` (runs 39195543682, 39195543685). M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — PREPARED permanece UNKNOWN tras reinicio
+
+La prueba de continuidad reabre el owner después de confirmar PREPARED y repite la misma identidad. El resultado es `prepared_existing / NEXO_EFFECT_OUTCOME_UNKNOWN`, sin nueva escritura, sin cambio de revisión y con una sola entrada `prepared` persistida. Esto valida replay de la obligación, no despacho ni causalidad del efecto.
+
+Test SHA `376f2d984eeb969d25c2c797a40037a72a6a5c6b`; bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195866238, 39195866236, 39195866226, 39195866266). La auditoría del camino genérico `reconcilePrepared()` confirmó que `reconciled_observed` es observación no-terminal y `recordOutcome()` sigue bloqueando outcomes mientras esa obligación no tenga contrato terminal específico. M0 INCOMPLETO; efectos protegidos STOP.
