@@ -1097,3 +1097,12 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - `tests/nexo/entrypoint.test.mjs` recorre los imports locales estáticos desde `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`. La prueba falla si cualquier dependencia transitiva importa la memoria de asistentes, el adapter de simulación, `world.js`, `simulation.js`, `simulate.mjs` o el runtime de compatibilidad `src/nexo/runtime.js`.
 - CI SUCCESS en SHA `c9f62e3611a598f0ab29fa1b55d2ac849a67c6c3`: [39180518798](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518798), [39180518686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518686), [39180518787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518787).
 - Protege separación arquitectónica estática; no prueba aislamiento de proceso/OS ni cambia runtime default. M0 INCOMPLETO.
+
+
+## M0 — seam de aplicación Nexo separado del CLI (2026-10-19)
+
+- Se extrajo la lógica de `runNexoChronicleAppend()` a `src/nexo/application/chronicle-append.mjs`; la apertura del owner pasó de `scripts/nexo-continuity.mjs` a `src/nexo/core/continuity-service.mjs`. El script antiguo conserva solo reexport de compatibilidad.
+- `status` y `mission-status` se movieron a `src/nexo/application/continuity-queries.mjs`; `scripts/nexo.mjs` queda como parser/router CLI. `scripts/nexo-chronicle-session.mjs` queda como wrapper de proceso sobre el servicio de aplicación.
+- El primer CI del refactor detectó `ReferenceError: blocked is not defined` después de mover la función fuera del script. Se restauró el helper de resultado bloqueado en la frontera CLI y en el servicio de aplicación; no se ocultó el fallo.
+- Validación posterior SUCCESS: [Chronicle/entrypoint 39180686782](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686782), [mission admission/restart 39180686817](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686817), SHA de código/test `8d05417d0a47b5f38fb63833c338a0f04d1499e7`.
+- Esto crea una API de aplicación Nexo reutilizable sin convertir el CLI en la lógica de dominio. No es todavía app Android/web ni cutover del runtime default. M0 INCOMPLETO.
