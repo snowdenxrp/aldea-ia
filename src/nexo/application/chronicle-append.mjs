@@ -15,7 +15,18 @@ function blocked(code) {
  */
 export async function recordNexoMissionSafely({ owner, expectedRevision, mission } = {}) {
   try {
-    return await owner.recordMission({ expectedRevision, mission });
+    const result = await owner.recordMission({ expectedRevision, mission });
+    if (result?.status === "unknown" || result?.missionAdmissionCommitted === "UNKNOWN") {
+      return {
+        ...result,
+        status: "unknown",
+        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
+        missionAdmissionCommitted: "UNKNOWN",
+        dispatchAttempted: false,
+        redispatchAuthorized: false
+      };
+    }
+    return result;
   } catch (error) {
     return {
       status: "unknown",
