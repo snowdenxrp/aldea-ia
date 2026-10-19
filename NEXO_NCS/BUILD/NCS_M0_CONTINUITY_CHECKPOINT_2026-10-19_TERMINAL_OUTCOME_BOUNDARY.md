@@ -130,3 +130,16 @@ La consulta directa a GitHub Actions corrigió el estado PENDING anterior. Los d
 **What this proves / does not prove:** the targeted Nexo workflows passed on the exact runtime and test SHAs, including execution of `chronicle-runtime.test.mjs` on the test SHA. This is not a full `npm test` run; the complete suite remains PENDING because the local clone attempt could not resolve `github.com` and no full-suite CI result has been observed.
 
 Current constitutional state remains unchanged: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; protected effects `STOP`; legitimate owner root PENDING.
+
+
+## 9. Suite completa aprobada y test de contrato corregido (2026-10-19)
+
+- **PASS de `npm test` completo:** [GitHub Actions run 39338294317](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294317), SHA exacto `fd87dfdb2eccd6d356fd970cfa24544568b72833`. El workflow ejecutó el comando literal `npm test`; el paso `Run tests` terminó SUCCESS.
+- La primera ejecución [39338128405](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338128405) falló en `tests/nexo/simulation-adapter.test.mjs:126`: la prueba esperaba `failed`, pero el contrato genérico devolvió `blocked`. La segunda [39338238697](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338238697) detectó otra expectativa antigua del mismo tipo en la rama de acción no permitida.
+- Inspección del contrato en `src/nexo/effect-adapter.js`: después de invocar un handler, cualquier resultado distinto de `completed` se normaliza a `blocked` y `EFFECT_OUTCOME_UNKNOWN` (o `PARTIAL_EFFECT_DETECTED` si la revisión local cambia). La razón explícita es que una respuesta `failed` del handler no demuestra por sí sola que no ocurrió un efecto parcial/externo; sin un verificador específico, el adaptador mantiene la operación sin resolver.
+- Se corrigieron solo las expectativas de `tests/nexo/simulation-adapter.test.mjs` para la acción no permitida y la acción `drink` fallida: ambas esperan ahora `blocked / EFFECT_OUTCOME_UNKNOWN` y `uncertainty: effect_may_or_may_not_have_occurred`. No se cambió el comportamiento del runtime para satisfacer una prueba obsoleta.
+- Test de expectativa corregida: commit `40c3571c449e0c64b6dc2740d09ed0d09e9d953c`; segunda corrección: `fd87dfdb2eccd6d356fd970cfa24544568b72833`. El run de suite completa sobre el segundo SHA terminó SUCCESS.
+- Se habilitó el workflow existente `.github/workflows/nexo-deterministic-tests.yml` para pushes a `ncs-clean-architecture` además de `main`, commit `69829e9db06f9edab8776f61916db9e34b1133e5`; esto evita depender de la red local para obtener evidencia del conjunto completo.
+- El SHA `fd87dfdb...` es el SHA de código/pruebas que aprobó `npm test`; los commits de documentación posteriores no son nuevas ejecuciones del test completo.
+
+**Estado global no promovido:** M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima del propietario PENDING. Suite completa PASS no equivale a prueba de autoridad ni a permiso para efectos protegidos.
