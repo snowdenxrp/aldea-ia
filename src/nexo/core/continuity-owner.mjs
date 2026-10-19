@@ -597,7 +597,25 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     } catch (error) {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID", storeRevision: latest.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
-    const committed = await store.commitIfCurrent(expectedRevision, candidate);
+    let committed;
+    try {
+      committed = await store.commitIfCurrent(expectedRevision, candidate);
+    } catch (error) {
+      // A store may throw after the durable replacement. Do not leak an
+      // exception or guess whether the observation committed; the next call
+      // must recover from the canonical journal without invoking the verifier
+      // again.
+      return {
+        status: "blocked",
+        code: error?.code ?? "NEXO_EFFECT_OBSERVATION_COMMIT_OUTCOME_UNKNOWN",
+        storeRevision: expectedRevision,
+        preparedCommitted: false,
+        observationCommitted: false,
+        journalSettled: false,
+        uncertainty: "effect_observation_commit_outcome_unknown",
+        authorization: "NOT_EVALUATED"
+      };
+    }
     if (committed.status !== "committed") {
       return { ...committed, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
