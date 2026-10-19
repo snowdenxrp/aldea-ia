@@ -1,5 +1,6 @@
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { createNexoContinuityStore } from "../src/nexo/core/continuity-store.mjs";
 
 /**
  * Nexo's independent command entrypoint.
@@ -15,10 +16,24 @@ export function parseNexoEntrypointArguments(argv) {
   if (argv.length === 0 || !argv[0].trim()) {
     return { status: "blocked", code: "NEXO_COMMAND_REQUIRED", dispatchAttempted: false };
   }
-  if (argv[0] !== "chronicle-append") {
-    return { status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false };
+  if (argv[0] === "chronicle-append") {
+    return { status: "dispatch", command: "chronicle-append", args: argv.slice(1) };
   }
-  return { status: "dispatch", command: "chronicle-append", args: argv.slice(1) };
+  if (argv[0] === "status") {
+    let continuityPath;
+    for (let index = 1; index < argv.length; index += 1) {
+      if (argv[index] !== "--continuity" || continuityPath !== undefined ||
+          index + 1 >= argv.length || !argv[index + 1].trim() || argv[index + 1].startsWith("--")) {
+        return { status: "blocked", code: "NEXO_STATUS_ARGUMENTS_INVALID", dispatchAttempted: false };
+      }
+      continuityPath = argv[++index];
+    }
+    if (typeof continuityPath !== "string") {
+      return { status: "blocked", code: "NEXO_STATUS_CONTINUITY_PATH_REQUIRED", dispatchAttempted: false };
+    }
+    return { status: "status", continuityPath };
+  }
+  return { status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
