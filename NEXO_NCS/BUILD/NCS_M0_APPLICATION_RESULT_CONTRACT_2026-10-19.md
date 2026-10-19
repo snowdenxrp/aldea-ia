@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `e31547f17764c18fd0bf2fe39dab1ebfc5748686` (2026-10-19)
+Latest validated code/test checkpoint: `82826e12bfd88c07aeabda05f6a14605f85bda33` (2026-10-19)
 
 ## Scope
 
@@ -321,3 +321,10 @@ IDs de misión/paso duplicados o con `:` se rechazan en admisión; el snapshot f
 La reconstrucción no ignora estados desconocidos de `effectJournal` ni registros reconocidos que no pueden enlazarse a una misión y step canónicos con acción/target coincidentes. La prueba de settlement Chronicle huérfano reprodujo un estado planned antes del fix; ahora devuelve misión/steps blocked. Estados legacy aún pueden cargarse, pero una obligación ambigua no queda ejecutable.
 
 SHA código+tests `e31547f17764c18fd0bf2fe39dab1ebfc5748686`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39197251854, 39197251843, 39197251835, 39197251844). M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — journal identity binding and mission input data-only validation (2026-10-19)
+
+La reconstrucción bloquea estados de journal desconocidos, entradas sin propietario o step canónico, y registros cuyo action/target no coincide con el paso. `missionRecord()` también valida el objeto misión con `assertContractInput` antes de acceder a propiedades, evitando ejecutar getters caller-supplied durante la admisión.
+
+SHA código+pruebas `82826e12bfd88c07aeabda05f6a14605f85bda33`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39197558462, 39197558524, 39197558514, 39197558507). M0 INCOMPLETO; efectos protegidos STOP.
