@@ -216,6 +216,22 @@ assert.throws(
 assert.equal(missionGetterCalls, 0,
   "mission admission must reject accessors before evaluating caller-provided getters");
 
+let nestedMissionGetterCalls = 0;
+const nestedAccessorStep = {
+  id: "step-1", action: "local_analysis", status: "planned", dependsOn: []
+};
+Object.defineProperty(nestedAccessorStep, "target", {
+  enumerable: true,
+  get() { nestedMissionGetterCalls += 1; return "alpha"; }
+});
+const nestedAccessorMission = { missionId: "nested-accessor-mission", steps: [nestedAccessorStep] };
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, nestedAccessorMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID"
+);
+assert.equal(nestedMissionGetterCalls, 0,
+  "mission admission must reject nested step accessors before traversing targets or dependencies");
+
 const snapshot = projectNexoContinuitySnapshot(validMemory);
 assert.equal(snapshot.schema, NEXO_CONTINUITY_SCHEMA);
 assert.equal(snapshot.schemaVersion, 1);
