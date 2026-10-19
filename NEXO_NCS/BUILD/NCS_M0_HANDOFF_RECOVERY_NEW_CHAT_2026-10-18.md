@@ -1,3 +1,13 @@
+## Latest verified checkpoint — generic observation replay validation (2026-10-19)
+
+- Generic observation replay now requires a canonical record with allowed `applied/not_applied` status, nonnegative safe observed revision, nonblank source, an `evidence` property (nullable as written by the producer), and a valid canonical ISO `observedAt`. Partial records cannot return `already_observed`; replay fails closed and does not call the verifier again.
+- Initial and pre-CAS continuity read failures return structured `blocked` uncertainty. Tests prove initial read failure does not invoke the verifier and pre-CAS re-read failure leaves PREPARED/revision unchanged.
+- Response-loss crash cut: canonical commit succeeds then throws → structured uncertainty; reopening owner recovers `already_observed` without verifier re-invocation.
+- Code SHA `abd9e9d4ed64e96940155712b1dae173ba22c77e`; final code/test SHA `c2c2414edd8ffc138f6cf473f5eae2ee1bbae397`. SUCCESS: repair crash cuts [39189827272](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827272), effect/settlement [39189827289](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827289), STEP 4 [39189827310](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827310), STEP 5 [39189827224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827224), Chronicle [39189720937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189720937).
+- No new states, automatic retries, verifier re-execution during recovery, causal attribution, cross-store atomicity, or mission completion. M0 INCOMPLETE; protected effects STOP; Nexo/Lúmina separate.
+
+Next: audit snapshot-level validation of observed effectJournal states without breaking intentional legacy compatibility; identify the exact scope and test first.
+
 ## Latest verified checkpoint — generic reconciliation read failures (2026-10-19)
 
 - Gap: `reconcilePrepared()` handled observation-commit response loss, but its initial continuity read and the mandatory pre-CAS re-read could still throw out of the application API.
