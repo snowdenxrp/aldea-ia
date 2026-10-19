@@ -174,16 +174,24 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       );
       const hasCompletedClaim = stepAttempts.some(item => item?.status === "completed") ||
         planClaimedCompletedStepIds.has(step.id);
+      const hasDetachedOutcomeEvidence = validChronicleSettlement && stepAttempts.some(item =>
+        item?.status === "completed" && matchesStepIdentity(item) &&
+        !isValidNexoChronicleOutcomeEvidence(stepEffects[0], item.evidence)
+      );
       if (hasChronicleSettlement || hasCompletedClaim) {
         step.status = "blocked";
         step.blockReason = {
-          code: validChronicleSettlement
-            ? "NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED"
-            : "NEXO_CHRONICLE_SETTLEMENT_REQUIRED",
+          code: hasDetachedOutcomeEvidence
+            ? "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH"
+            : validChronicleSettlement
+              ? "NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED"
+              : "NEXO_CHRONICLE_SETTLEMENT_REQUIRED",
           idempotencyKey: `${missionId}:${step.id}`,
-          next: validChronicleSettlement
-            ? "recover_terminal_outcome_without_redispatch"
-            : "verify_chronicle_settlement_without_redispatch"
+          next: hasDetachedOutcomeEvidence
+            ? "verify_chronicle_outcome_without_redispatch"
+            : validChronicleSettlement
+              ? "recover_terminal_outcome_without_redispatch"
+              : "verify_chronicle_settlement_without_redispatch"
         };
         continue;
       }
