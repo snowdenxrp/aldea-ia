@@ -21,6 +21,7 @@ const invalidApplicationInput = await runNexoChronicleAppend({
 assert.equal(invalidApplicationInput.status, "blocked");
 assert.equal(invalidApplicationInput.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
 assert.equal(invalidApplicationInput.dispatchAttempted, false);
+assert.equal(invalidApplicationInput.redispatchAuthorized, false);
 const invalidInitializationType = await runNexoChronicleAppend({
   continuityPath: "/unused/continuity.json", chroniclePath: "/unused/chronicle.json",
   missionId: "invalid-mission", stepId: "step-1", content: "payload",
