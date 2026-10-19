@@ -1,3 +1,13 @@
+## M0 — precisión del modelo de amenazas PREPARED receipt (2026-10-19)
+
+- Nota de decisión pendiente: `NEXO_NCS/BUILD/NCS_M0_PREPARED_RECEIPT_THREAT_MODEL_2026-10-19.md`.
+- El test actual fabrica un objeto `preparedCommit` y la API pública del adaptador lo acepta. Esto confirma validación de forma, no procedencia canónica.
+- Alcance: brecha de API dentro del mismo proceso; no es evidencia de acceso remoto ni de un bypass de autoridad constitucional. Si el consumidor es no confiable, hace falta una capacidad no accesible a ese consumidor o una frontera de proceso real; si forma parte de la misma base de confianza, documentar la API como interna y validar la composición owner-backed. Un callback controlado por el mismo consumidor no demuestra autenticidad.
+- Siguiente paso: inspeccionar los puntos de creación/consumo de adaptadores y fijar el modelo de amenazas antes de tocar código. No añadir otro journal ni infraestructura incidental.
+- Estado: decisión de arquitectura y regresión PENDING; `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — frontera de confianza del recibo PREPARED canónico (2026-10-19)
 
 - Hallazgo estático documentado en `NEXO_NCS/BUILD/NCS_M0_CANONICAL_PREPARED_RECEIPT_TRUST_BOUNDARY_AUDIT_2026-10-19.md`.
