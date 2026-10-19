@@ -52,14 +52,23 @@ async function acquireLock(fsModule, filePath) {
   const lock = lockPath(filePath);
   const token = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   while (true) {
+    let created = false;
     try {
       await fsModule.mkdir(lock);
+      created = true;
       await fsModule.writeFile(path.join(lock, "owner.json"), JSON.stringify({ pid: process.pid, token }), "utf8");
+
       return async () => {
         const owner = await readLockOwner(fsModule, lock);
         if (owner?.token === token) await fsModule.rm(lock, { recursive: true, force: true });
       };
     } catch (error) {
+      if (created) {
+        // We created this directory but could not establish its owner record.
+        // Remove only this incomplete lock attempt, then preserve the original error.
+        await fsModule.rm(lock, { recursive: true, force: true }).catch(() => {});
+        throw error;
+      }
       if (error?.code !== "EEXIST") throw error;
       const owner = await readLockOwner(fsModule, lock);
       let age = 0;
