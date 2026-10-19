@@ -238,3 +238,10 @@ Para `applied/not_applied`, `reconcilePrepared()` requiere `evidence` como propi
 Regresiones de ausencia, objeto vacío y replay con null: CI crash cuts/effect/settlement/STEP 4/STEP 5 en SHA `b3a3f8fbaafb29ba913916ce989fb3a3e7196768`; Chronicle native/bounded en SHA de código `6ab75e1b59758cd33cd0a470c90e45e02f418882`. Ver STATUS para enlaces.
 
 Este requisito sólo garantiza una estructura mínima; no autentica el origen ni autoriza efectos. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — identidad de operación no ambigua (2026-10-19)
+
+`validateOperation()` rechaza `:` en `missionId` o `stepId` usando el código existente `NEXO_OPERATION_IDENTITY_MISMATCH`, preservando el formato actual de clave y evitando colisiones de tuplas. Se probaron ambas posiciones y la ausencia de mutación. Los seis workflows focales pasaron en SHA `442963578e2de42e6d67afd6fd85062ccea1a23e`; ver enlaces en STATUS.
+
+Esto reduce colisiones de identidad local, no autentica al propietario ni autoriza efectos. M0 INCOMPLETO; efectos protegidos STOP.
