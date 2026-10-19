@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
-import { isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
+import { isValidNexoChronicleOutcomeEvidence, isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
 
 function operationError(code) {
   const error = new Error(code);
@@ -156,6 +156,8 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     const verifiedCompletion = stepAttempts.find(item =>
       item?.status === "completed" && matchesStepIdentity(item) &&
       completionContractAvailable &&
+      (step.action !== "chronicle_append" ||
+        isValidNexoChronicleOutcomeEvidence(stepEffects[0], item.evidence)) &&
       item?.evidence?.verified === true &&
       typeof item?.evidence?.kind === "string" && item.evidence.kind.trim() &&
       typeof item?.evidence?.source === "string" && item.evidence.source.trim()
