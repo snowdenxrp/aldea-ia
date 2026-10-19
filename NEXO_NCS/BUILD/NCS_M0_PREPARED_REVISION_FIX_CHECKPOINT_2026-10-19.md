@@ -38,7 +38,7 @@
 - La ejecución real `nexo-m0-chronicle` sobre SHA `bdef7856448b3004b4c64afc635b79f6ad862176` falló antes de llegar a `chronicle-runtime.test.mjs`.
 - Log: `chronicle-store.test.mjs:130` esperaba que `initialize()` rechazara con la excepción interna simulada. El contrato real de `createNexoChronicleStore.initialize()` normaliza fallos de adquisición del lock como resultado `blocked / NEXO_CHRONICLE_LOCK_ACQUISITION_FAILED`, y el test no coincidía con ese contrato. El log confirma que el fallo fue la aserción “Missing expected rejection”, no la regresión PREPARED.
 - Corrección del test publicada en commit `2b9f2f5f3a21dac0f3b6cf0a221e6f28c943db86`: ahora exige el resultado normalizado y sigue comprobando que el directorio `.lock` se elimine.
-- CI fue disparado otra vez para el nuevo SHA; sus resultados están pendientes de lectura. No declarar PASS hasta comprobar tanto el test Chronicle como la suite integrada y la ejecución que incluya `chronicle-runtime.test.mjs`.
+- Tras corregir también la expectativa equivalente en `continuity-store.test.mjs` (commit `c7b7937039eddb13cda1061cf002342146ba7bf4`) y exponer `authorization: NOT_EVALUATED` en el CLI (commit `8476f321ba1b17c840c9fbafda7d76d54b8abd07`), las ejecuciones M0 Chronicle, M0 aceptación integrada y mission-admission-continuity pasaron en el SHA `8476f321ba1b17c840c9fbafda7d76d54b8abd07`; véase la sección de verificación CI más abajo.
 
 ## Verificación CI completada en SHA exacto
 
