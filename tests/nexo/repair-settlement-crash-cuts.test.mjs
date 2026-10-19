@@ -865,6 +865,41 @@ try {
   assert.equal(incompatibleGenericReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
   assert.equal(lostResponseVerifierCalls, 1);
 
+  // Colon-delimited idempotency keys are ambiguous if either tuple component
+  // contains the separator. Reject both forms before reading or writing state.
+  const ambiguousIdentityDir = path.join(root, "ambiguous-operation-identity");
+  await fs.mkdir(ambiguousIdentityDir);
+  const ambiguousIdentityOpened = await openNexoContinuityOwner({
+    filePath: path.join(ambiguousIdentityDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  const ambiguousMissionId = await ambiguousIdentityOpened.owner.recordPrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission:crash-cut:step-repair",
+      missionId: "mission:crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(ambiguousMissionId.status, "failed");
+  assert.equal(ambiguousMissionId.code, "NEXO_OPERATION_IDENTITY_MISMATCH");
+  const ambiguousStepId = await ambiguousIdentityOpened.owner.recordPrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step:repair",
+      missionId: "mission-crash-cut",
+      stepId: "step:repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(ambiguousStepId.status, "failed");
+  assert.equal(ambiguousStepId.code, "NEXO_OPERATION_IDENTITY_MISMATCH");
+  assert.equal((await ambiguousIdentityOpened.owner.loadCurrent()).storeRevision, 0);
+  assert.equal((await ambiguousIdentityOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
   // Unknown observations and absent verifier configuration must preserve PREPARED.
   const unknownDir = path.join(root, "generic-owner-unknown");
   await fs.mkdir(unknownDir);
