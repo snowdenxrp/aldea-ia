@@ -199,6 +199,69 @@ await assert.rejects(
 assert.equal((await staleStore.loadCurrent()).storeRevision, 0);
 assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
 
+// Characterize lock-release failure separately from persistence outcome.
+// The injected rm failure is restricted to the lock directory; canonical file reads
+// use the real filesystem and therefore independently reveal whether persistence occurred.
+async function makeLockReleaseFailureStore(targetPath) {
+  let failed = false;
+  const fsWithLockReleaseFailure = {
+    ...fs,
+    rm: async (target, options) => {
+      if (!failed && String(target) === targetPath + ".lock") {
+        failed = true;
+        const error = new Error("simulated lock release failure");
+        error.code = "EACCES";
+        throw error;
+      }
+      return fs.rm(target, options);
+    }
+  };
+  return createNexoContinuityStore({ filePath: targetPath, fsModule: fsWithLockReleaseFailure });
+}
+
+const releaseInitializeDir = path.join(directory, "lock-release-initialize");
+await fs.mkdir(releaseInitializeDir);
+const releaseInitializePath = path.join(releaseInitializeDir, "continuity.json");
+const releaseInitializeStore = await makeLockReleaseFailureStore(releaseInitializePath);
+await assert.rejects(
+  () => releaseInitializeStore.initialize(emptySnapshot),
+  error => error?.code === "EACCES",
+  "current behavior exposes lock cleanup failure even after initialize persisted"
+);
+assert.equal(
+  (await createNexoContinuityStore({ filePath: releaseInitializePath }).loadCurrent()).storeRevision,
+  0,
+  "independent read proves initialize persisted before lock cleanup failed"
+);
+await assert.rejects(
+  () => fs.access(releaseInitializePath + ".lock"),
+  error => error?.code !== "ENOENT",
+  "failed lock cleanup leaves the lock directory present"
+);
+await fs.rm(releaseInitializePath + ".lock", { recursive: true, force: true });
+
+const releaseCommitDir = path.join(directory, "lock-release-commit");
+await fs.mkdir(releaseCommitDir);
+const releaseCommitPath = path.join(releaseCommitDir, "continuity.json");
+const releaseCommitBase = createNexoContinuityStore({ filePath: releaseCommitPath });
+assert.equal((await releaseCommitBase.initialize(emptySnapshot)).status, "committed");
+const releaseCommitStore = await makeLockReleaseFailureStore(releaseCommitPath);
+await assert.rejects(
+  () => releaseCommitStore.commitIfCurrent(0, candidateA),
+  error => error?.code === "EACCES",
+  "current behavior exposes lock cleanup failure even after conditional commit persisted"
+);
+const releaseCommitObserved = await createNexoContinuityStore({ filePath: releaseCommitPath }).loadCurrent();
+assert.equal(releaseCommitObserved.storeRevision, 1,
+  "independent read proves conditional commit persisted before lock cleanup failed");
+assert.deepEqual(releaseCommitObserved.snapshot, candidateA);
+await assert.rejects(
+  () => fs.access(releaseCommitPath + ".lock"),
+  error => error?.code !== "ENOENT",
+  "failed conditional-commit lock cleanup leaves the lock directory present"
+);
+await fs.rm(releaseCommitPath + ".lock", { recursive: true, force: true });
+
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
   () => store.loadCurrent(),
