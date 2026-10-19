@@ -83,6 +83,32 @@ function environment(stateRevision, { normalized = true } = {}) {
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-repair-crash-cuts-"));
 try {
+  // No PREPARED entry is not evidence of completion. Until an action-specific
+  // goal verifier is connected to the owner, a caller-supplied "verified"
+  // label must not complete a non-Chronicle action.
+  const noPreparedDir = path.join(root, "no-prepared");
+  await fs.mkdir(noPreparedDir);
+  const noPreparedMemory = legacyMemory();
+  noPreparedMemory.nexo.effectJournal = [];
+  const noPreparedOwner = await openNexoContinuityOwner({
+    filePath: path.join(noPreparedDir, "nexo.json"),
+    legacyMemory: noPreparedMemory
+  });
+  const unsupportedGoalCompletion = await noPreparedOwner.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "repair_agent_state",
+      target: "alex",
+      status: "completed",
+      evidence: { verified: true, kind: "caller-asserted", source: "caller-asserted" }
+    }
+  });
+  assert.equal(unsupportedGoalCompletion.status, "blocked");
+  assert.equal(unsupportedGoalCompletion.code, "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED");
+  assert.equal((await noPreparedOwner.owner.loadCurrent()).storeRevision, 0,
+    "an unsupported goal claim must not mutate canonical continuity");
   // Crash cut: environment persistence succeeded, but Nexo still has PREPARED.
   // Reconciliation may record observation only; it must not claim causality/completion.
   const observedDir = path.join(root, "observed");
