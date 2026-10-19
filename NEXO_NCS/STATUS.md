@@ -1076,3 +1076,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Se añadió `npm run nexo -- mission-status --continuity PATH --mission ID`. Reconstruye desde el store canónico y expone solo misión/estado, objetivo, incertidumbre y resumen de pasos; omite target/context/payload. Misión ausente → `NEXO_MISSION_NOT_FOUND`. La consulta no modifica el store.
 - Test de proceso real compara bytes antes/después, verifica que el contenido privado no salga a stdout y comprueba estado reconstruido. CI SUCCESS en SHA `ccb1fb7218fbb0b13615a95c403b002b025faa35`: [39180275512](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275512), [39180275517](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275517), [39180275561](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275561). La regresión de clasificación de reconstrucción previa pasó en [39180216543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180216543).
 - Esto mejora lectura/reconstrucción; no añade efectos ni cambia runtime default. M0 INCOMPLETO; Chronicle sigue como única acción mutante expuesta; efectos protegidos STOP.
+
+
+## M0 — misión-status conserva PREPARED tras restart (2026-10-19)
+
+- Se amplió el test de proceso de `mission-status` con un store canónico que contiene una obligación `prepared`. Tras reconstrucción, la misión y el paso siguen `blocked` con `NEXO_EFFECT_RECONCILIATION_REQUIRED`; el payload privado no aparece en stdout y los bytes del store permanecen idénticos.
+- CI SUCCESS en SHA `c7ad605f1257904cb3c4ff8eae261243068cfa95`: [39180351432](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351432), [39180351413](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351413), [39180351418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351418).
+- Esto demuestra consulta de continuidad y preservación de incertidumbre, no settlement ni autorización de efectos. M0 INCOMPLETO; runtime default sin cutover; efectos protegidos STOP.
