@@ -1,25 +1,27 @@
-## M0 — misión persistible y runtime con gate de preparación (2026-10-19)
+## M0 — misión persistible y gate de ejecución canónico (2026-10-19)
 
-**Punto de entrada:** rama `ncs-clean-architecture`; SHA de código+pruebas validado `4f1492c66e787ddfe5f769b32e39c5d18cf7d9dc`. Verificar el HEAD vivo después de los commits documentales.
+**Punto de entrada:** rama `ncs-clean-architecture`; SHA de código+pruebas validado `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5`. Consultar HEAD vivo después de los commits documentales.
 
 ### Cambios reproducidos e integrados
-1. **Datos persistibles:** CI reprodujo la admisión indebida de un `target` función. Ahora se rechazan funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays.
-2. **Acción y estados:** `step.action` debe ser string no vacío. `mission.status` y `step.status` deben pertenecer al vocabulario ya emitido/consumido por el ciclo de vida; nullish conserva el default `planned`. No se añadieron estados nuevos.
-3. **Sin commit inválido:** las pruebas del owner confirman que entradas inválidas no avanzan la revisión canónica.
-4. **Readiness gate:** antes de una nueva preparación/dispatch, el runtime reconstruye la misión canónica y exige misión/paso `planned` y dependencias `completed`. Obligaciones ya presentes en el journal conservan la ruta de recuperación.
-5. **Compatibilidad:** se preserva la regresión que admite un claim `completed` sin evidencia en el plan y luego lo reconstruye como bloqueado; el estado declarado no se trata como prueba.
+1. **Datos persistibles:** CI reprodujo que un `target` función se admitía. Se rechazan funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays.
+2. **Contrato de misión:** `step.action` debe ser string no vacío; `mission.status` y `step.status` deben pertenecer al vocabulario ya emitido/consumido. Nullish conserva el default `planned`; no se añadieron estados nuevos.
+3. **Sin commit inválido:** pruebas owner-level verifican que entradas inválidas no avanzan la revisión canónica.
+4. **Readiness gate:** antes de un nuevo PREPARED/dispatch, el runtime exige que el estado almacenado de la misión sea `planned`, y que la reconstrucción canónica marque misión/paso como `planned` y dependencias como `completed`. Una misión almacenada como `blocked` no puede reactivarse porque la reconstrucción encuentre un paso planificado.
+5. **Recuperación:** las obligaciones ya presentes en el journal conservan la ruta de recuperación antes del gate de nuevo dispatch.
 
-### CI final
-- SHA código+tests: `4f1492c66e787ddfe5f769b32e39c5d18cf7d9dc`.
-- SUCCESS: [bounded admission/runtime 39209925550](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925550), [STEP 4 39209925522](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925522), [STEP 5 39209925518](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925518), [crash cuts 39209925614](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209925614).
-- Chronicle native vertical SUCCESS sobre el SHA de runtime gate `e8f169ac43ec2675a9a0057bc979bdf42c4625e8`: [39209200899](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209200899).
-- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101), [#102](https://github.com/snowdenxrp/aldea-ia/pull/102), [#103](https://github.com/snowdenxrp/aldea-ia/pull/103), [#104](https://github.com/snowdenxrp/aldea-ia/pull/104).
+### CI final — SUCCESS en `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5`
+- [Bounded admission/runtime 39210288131](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210288131)
+- [STEP 4 39210288085](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210288085)
+- [STEP 5 39210288034](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210288034)
+- [Crash cuts 39210287996](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210287996)
+- [Chronicle native vertical 39210287994](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210287994)
+- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101), [#102](https://github.com/snowdenxrp/aldea-ia/pull/102), [#103](https://github.com/snowdenxrp/aldea-ia/pull/103), [#104](https://github.com/snowdenxrp/aldea-ia/pull/104), [#105](https://github.com/snowdenxrp/aldea-ia/pull/105).
 
 ### Siguiente frontera concreta
-Auditar el vocabulario/consistencia de `mission.status`, `step.status` y `objective` contra los productores y consumidores reales; verificar si combinaciones imposibles (por ejemplo, misión `blocked` con pasos todos `planned`) pueden entrar y alterar la reconstrucción. No añadir estados nuevos ni endurecer combinaciones sin una reproducción concreta.
+Auditar consistencia entre `mission.status`, estados de pasos y `objective`. Verificar si combinaciones imposibles pueden entrar al snapshot y alterar la reconstrucción. Leer productores/consumidores y reproducir primero; no imponer invariantes nuevos por intuición.
 
 ### Límites
-El gate valida readiness/dependencias para el runtime owner-backed actual de Chronicle. No establece autoridad constitucional ni habilita settlement genérico o efectos protegidos. **M0 INCOMPLETO; efectos protegidos STOP; Nexo y Lúmina separados.**
+Esto valida admisión y readiness para el runtime owner-backed actual de Chronicle. No demuestra autoridad constitucional legítima ni habilita settlement genérico o efectos protegidos. **M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.**
 ---
 
 ## M0 — rechazo de dependencias sparse (2026-10-19)
