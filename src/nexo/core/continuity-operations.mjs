@@ -101,7 +101,9 @@ function missionRecord(mission) {
   };
   for (const stepId of stepIds) visitDependencyGraph(stepId);
 
-  const record = {
+  let record;
+  try {
+    record = {
     missionId: mission.missionId,
     version: mission.version ?? 4,
     status: mission.status ?? "planned",
@@ -127,8 +129,7 @@ function missionRecord(mission) {
       ...(step.context !== undefined ? { context: structuredClone(step.context) } : {})
     })),
     at: mission.generatedAt ?? new Date().toISOString()
-  };
-  try {
+    };
     assertMissionPersistableData(record);
   } catch {
     throw operationError("NEXO_MISSION_CONTEXT_INVALID");
