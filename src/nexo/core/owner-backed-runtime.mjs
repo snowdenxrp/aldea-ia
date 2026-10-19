@@ -1,4 +1,5 @@
 import { isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
+import { reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
 
 /**
  * Nexo-owned, adapter-agnostic execution slice.
@@ -194,6 +195,33 @@ async function executeNexoStepWithContinuityOwnerInternal({
         terminalOutcomeRecorded: false, redispatchAuthorized: false
       };
     }
+  }
+
+  // New dispatch is permitted only for a canonically reconstructed runnable
+  // step. Recovery of an existing journal obligation returned above; this gate
+  // prevents a caller from bypassing mission state or dependency ordering.
+  let reconstructedMission;
+  try {
+    reconstructedMission = reconstructNexoMissionFromSnapshot(current.snapshot, missionId);
+  } catch (error) {
+    return {
+      status: "blocked",
+      code: error?.code ?? "NEXO_CANONICAL_RUNTIME_MISSION_STATE_INVALID",
+      dispatchAttempted: false
+    };
+  }
+  const reconstructedStep = reconstructedMission?.steps?.find(item => item?.id === stepId);
+  if (!reconstructedMission || !reconstructedStep) {
+    return { status: "blocked", code: "NEXO_CANONICAL_RUNTIME_STEP_UNKNOWN", dispatchAttempted: false };
+  }
+  if (reconstructedMission.status !== "planned" || reconstructedStep.status !== "planned") {
+    return { status: "blocked", code: "NEXO_CANONICAL_RUNTIME_STEP_NOT_RUNNABLE", dispatchAttempted: false };
+  }
+  const dependencies = reconstructedStep.dependsOn ?? [];
+  if (!Array.isArray(dependencies) ||
+      dependencies.some(dependencyId =>
+        reconstructedMission.steps.find(item => item?.id === dependencyId)?.status !== "completed")) {
+    return { status: "blocked", code: "NEXO_CANONICAL_RUNTIME_DEPENDENCIES_UNRESOLVED", dispatchAttempted: false };
   }
 
   // Capability checks happen before PREPARED and before any handler can run.
