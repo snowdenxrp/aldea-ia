@@ -9,7 +9,7 @@ function blocked(code) {
   return { status: "blocked", code, dispatchAttempted: false, redispatchAuthorized: false };
 }
 
-function publicChronicleResult(result, missionId, stepId) {
+export function publicChronicleResult(result, missionId, stepId) {
   const safe = {
     status: typeof result?.status === "string" ? result.status : "unknown",
     dispatchAttempted: result?.dispatchAttempted === true,
@@ -130,7 +130,7 @@ export async function runNexoChronicleAppend({
     const recorded = await recordNexoMissionSafely({
       owner: opened.owner, expectedRevision: current.storeRevision, mission: candidate
     });
-    if (recorded.status === "unknown") return recorded;
+    if (recorded.status === "unknown") return publicChronicleResult(recorded, missionId, stepId);
     if (recorded.status === "conflict") {
       return {
         status: "conflict",
