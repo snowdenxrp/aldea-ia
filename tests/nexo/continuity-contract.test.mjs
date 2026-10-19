@@ -173,6 +173,65 @@ assert.throws(
   "dependencies must resolve to a step in the same admitted mission"
 );
 
+const functionTargetMission = {
+  missionId: "function-target",
+  status: "planned",
+  steps: [{ id: "step-1", action: "local_analysis", target: () => "not-persistable", status: "planned", dependsOn: [] }]
+};
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, functionTargetMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must reject function values before persistence"
+);
+
+const symbolTargetMission = {
+  missionId: "symbol-target",
+  status: "planned",
+  steps: [{ id: "step-1", action: "local_analysis", target: Symbol("not-persistable"), status: "planned", dependsOn: [] }]
+};
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, symbolTargetMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must reject symbol values before persistence"
+);
+
+const cyclicTarget = {};
+cyclicTarget.self = cyclicTarget;
+const cyclicTargetMission = {
+  missionId: "cyclic-target",
+  status: "planned",
+  steps: [{ id: "step-1", action: "local_analysis", target: cyclicTarget, status: "planned", dependsOn: [] }]
+};
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, cyclicTargetMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must reject cyclic target data before persistence"
+);
+
+const nonFiniteTargetMission = {
+  missionId: "non-finite-target",
+  status: "planned",
+  steps: [{ id: "step-1", action: "local_analysis", target: { value: Number.POSITIVE_INFINITY }, status: "planned", dependsOn: [] }]
+};
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, nonFiniteTargetMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must reject non-finite numbers that cannot round-trip through JSON"
+);
+
+const functionContextMission = {
+  missionId: "function-context",
+  status: "planned",
+  steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [], context: { callback: () => "not-persistable" } }]
+};
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, functionContextMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "uncloneable values in persisted mission context must return the structured admission error"
+);
+
+
+
 const sparseDependencies = new Array(1);
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {

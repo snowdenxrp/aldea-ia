@@ -9,6 +9,50 @@ function operationError(code) {
   return error;
 }
 
+/**
+ * Mission records are durable JSON data. The shared contract shape guard
+ * rejects accessors and exotic objects, but intentionally does not establish
+ * JSON round-trip safety for primitive values, sparse arrays, or cycles.
+ */
+function assertMissionPersistableData(value, ancestors = new WeakSet()) {
+  if (value === null || typeof value === "string" || typeof value === "boolean") return;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new TypeError("mission data numbers must be finite");
+    return;
+  }
+  if (typeof value !== "object") {
+    throw new TypeError("mission data must contain only JSON-compatible values");
+  }
+  if (ancestors.has(value)) throw new TypeError("mission data must not contain cycles");
+  ancestors.add(value);
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+      if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+        throw new TypeError("mission data arrays must be dense");
+      }
+      assertMissionPersistableData(descriptor.value, ancestors);
+    }
+    for (const key of Reflect.ownKeys(value)) {
+      if (key === "length") continue;
+      if (typeof key !== "string" || String(Number(key)) !== key ||
+          Number(key) < 0 || Number(key) >= value.length) {
+        throw new TypeError("mission data arrays must not have extra properties");
+      }
+    }
+  } else {
+    for (const key of Reflect.ownKeys(value)) {
+      if (typeof key !== "string") throw new TypeError("mission data must not have symbol keys");
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+        throw new TypeError("mission data must contain only enumerable data properties");
+      }
+      assertMissionPersistableData(descriptor.value, ancestors);
+    }
+  }
+  ancestors.delete(value);
+}
+
 function cloneSnapshot(snapshot) {
   assertNexoContinuitySnapshot(snapshot);
   return structuredClone(snapshot);
@@ -57,7 +101,9 @@ function missionRecord(mission) {
   };
   for (const stepId of stepIds) visitDependencyGraph(stepId);
 
-  return {
+  let record;
+  try {
+    record = {
     missionId: mission.missionId,
     version: mission.version ?? 4,
     status: mission.status ?? "planned",
@@ -83,7 +129,12 @@ function missionRecord(mission) {
       ...(step.context !== undefined ? { context: structuredClone(step.context) } : {})
     })),
     at: mission.generatedAt ?? new Date().toISOString()
-  };
+    };
+    assertMissionPersistableData(record);
+  } catch {
+    throw operationError("NEXO_MISSION_CONTEXT_INVALID");
+  }
+  return record;
 }
 
 /** Add a mission to the Nexo-only snapshot without importing learning analytics. */
