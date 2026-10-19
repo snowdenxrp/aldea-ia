@@ -1088,3 +1088,24 @@ try {
 } finally {
   await fs.rm(orphanSettlementDir, { recursive: true, force: true });
 }
+
+const mismatchedJournalIdentityDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-mismatched-journal-identity-"));
+try {
+  const mismatchedJournalMemory = structuredClone(legacyMemory);
+  mismatchedJournalMemory.nexo.effectJournal = [{
+    ...mismatchedJournalMemory.nexo.effectJournal[0],
+    action: "chronicle_append", target: { content: "different payload" }, status: "settled_observed",
+    settlement: { status: "applied", source: "nexo-chronicle-store", observedRevision: 1,
+      evidence: { content: "different payload" }, observedAt: "2026-10-19T00:00:00.000Z" }
+  }];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(mismatchedJournalIdentityDir, "nexo.json"), legacyMemory: mismatchedJournalMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_IDENTITY_UNKNOWN",
+    "a journal record with the right IDs but wrong action/target must not bind to the canonical step");
+} finally {
+  await fs.rm(mismatchedJournalIdentityDir, { recursive: true, force: true });
+}
