@@ -1178,3 +1178,11 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - Regresión en `tests/nexo/chronicle-runtime.test.mjs`: simula respuesta perdida, conserva UNKNOWN, no revela mensaje interno ni autoriza dispatch.
 - Código/test SHA: `e4562b6edb0ce4c3f0df1ccaae94cc63edf33d1f`. CI todavía no observado para ese SHA; PENDING/UNKNOWN, no declarar PASS.
 - La recuperación posterior debe releer continuidad canónica. No convertir UNKNOWN en false ni añadir retry automático. M0 INCOMPLETO; no ampliar acciones ni conectar runtime default.
+
+
+## Mission-admission UNKNOWN normalization — validated update (2026-10-18 local)
+
+- The safe admission helper now normalizes both thrown store errors and returned `status=unknown` results to `missionAdmissionCommitted=UNKNOWN`, `dispatchAttempted=false`, and `redispatchAuthorized=false`. A returned UNKNOWN cannot lose its tri-state marker merely because it did not throw.
+- Regression covers both exception-after-possible-commit and an explicit UNKNOWN return. Raw exception text remains hidden.
+- Validated code/test SHA: `872a67b3e6512fce134507f82052a5cbc37d495f`. CI SUCCESS: [Chronicle 39187025194](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025194), [continuity/restart 39187025178](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025178), [STEP 4 39187025188](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025188), [STEP 5 39187025187](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025187), all SUCCESS.
+- Replay policy remains explicit: no automatic retry or dispatch after UNKNOWN; next call reloads canonical continuity. M0 INCOMPLETO.
