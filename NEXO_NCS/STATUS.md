@@ -1,3 +1,11 @@
+## M0 — validación de input anidado de misión (2026-10-19)
+
+- Test SHA actual: `bceabad2e1f62a23ba7586ba27b2977841d6b778`; código funcional permanece en `82826e12bfd88c07aeabda05f6a14605f85bda33`.
+- `assertContractInput(mission)` recorre la estructura con descriptores de datos antes de que `missionRecord()` lea `missionId`, steps, target o dependencias. Se añadió una regresión para un getter en `step.target`: debe rechazarse como `NEXO_MISSION_CONTEXT_INVALID` sin ejecutar el getter.
+- SUCCESS: bounded admission/restart [39197679061](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197679061), STEP 4 [39197679021](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197679021), STEP 5 [39197678998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197678998). Crash cuts SUCCESS en el código+tests previos `82826e...` [39197558507](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197558507); este checkpoint sólo añade una prueba de input a `continuity-contract.test.mjs`.
+- **Siguiente frontera:** comprobar si mission admission rechaza valores que no son datos persistibles (p. ej. funciones, símbolos, ciclos) con un resultado estructurado, antes de intentar CAS/escritura. Primero una reproducción aislada; no cambiar el helper global sin medir compatibilidad.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
 ## M0 — journal replay exige identidad completa; misión rechaza accessors (2026-10-19)
 
 - Último SHA código+pruebas: `82826e12bfd88c07aeabda05f6a14605f85bda33`.
