@@ -89,9 +89,9 @@ Los siguientes asuntos no se deben ocultar ni declarar resueltos por estas prueb
 
 ## Punto de continuación inmediato
 
-1. Obtener y revisar una ejecución real de `.github/workflows/nexo-m0-mission-status.yml` que pruebe un SHA posterior a la corrección `82f1204ae4e9298163231ab7a323233ad87777b8`.
-2. Si no se puede recuperar ese run, ejecutar manualmente el workflow si el repositorio lo permite; registrar SHA exacto y logs. Hasta entonces M0-AC1 permanece UNKNOWN.
-3. Construir una matriz de evidencia compacta para AC1–AC6 usando sólo runs existentes y verificables. No reauditar cada criterio si su código y prueba no cambiaron.
+1. La regresión específica `nexo-m0-mission-status.yml` pasó en `82f1204ae4e9298163231ab7a323233ad87777b8` ([run 39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361)). Además, el fix es ancestro del SHA integrado `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae` (28 commits adelante, 0 detrás; sin cambios posteriores en `continuity-queries.mjs` ni `tests/nexo/entrypoint.test.mjs`), y el run integrado [39292887874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292887874) ejecutó `tests/nexo/entrypoint.test.mjs` con SUCCESS. Por ello AC1 tiene PASS para esa regresión en el SHA integrado, no UNKNOWN.
+2. No se requiere forzar otra ejecución del workflow dedicado sólo por su nombre: el workflow integrado ejecutó la misma regresión en un SHA posterior y trazable. Mantener el run dedicado como evidencia focal histórica y el integrado como cobertura posterior.
+3. Continuar la matriz AC1–AC6 sin reauditar criterios cuyo código/test no cambió. El bloqueo global sigue siendo raíz/decisión de autoridad no implementada y otros límites de despliegue; no la consulta canónica ya probada.
 
 
 ## Evidencia observada añadida — 2026-10-19
