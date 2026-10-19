@@ -59,3 +59,11 @@ Antes de código de producción hacen falta:
 - evidencia CI y prueba en hardware real; y, por separado, enforcement de autoridad vigente en la última frontera antes del efecto.
 
 **Próximo paso:** conservar YubiKey 5 NFC + PIV/NFC/YubiKit como candidato técnico principal, sin afirmar selección o disponibilidad. No hay motivo para volver a comparar familias en general. Si no se dispone del hardware, continuar con contratos y pruebas que no requieran root real, pero mantener el bloqueo constitucional.
+
+## M0 — perfil criptográfico de bootstrap redactado, pendiente de provisión (2026-10-19)
+
+- Borrador: [NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md](./NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md).
+- Se propone un perfil preciso para revisión: P-256/ECDSA-SHA256, SPKI DER con fingerprint SHA-256, desafío CSPRNG de 32 bytes y mensaje con dominio `NEXO-ROOT-BOOTSTRAP-V1\0`. Es especificación documental, no código ni vector validado.
+- El pin/fingerprint independiente sigue sin ceremonia aceptada; hardware candidato no adquirido/probado. No escribir aún el verificador de producción ni conectar la firma a dispatch.
+- Próxima puerta: cerrar provisión del pin, confirmar disponibilidad/compatibilidad de hardware, crear vector criptográfico reproducible y pruebas negativas; después CI y prueba física. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
