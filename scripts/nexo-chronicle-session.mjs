@@ -3,6 +3,10 @@ import { runNexoChronicleAppend } from "../src/nexo/application/chronicle-append
 
 export { runNexoChronicleAppend };
 
+function blocked(code) {
+  return { status: "blocked", code, dispatchAttempted: false };
+}
+
 export function parseNexoChronicleArguments(argv) {
   const values = Object.create(null);
   const valueOptions = new Set(["--continuity", "--chronicle", "--mission", "--step"]);
