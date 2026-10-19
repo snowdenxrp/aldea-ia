@@ -1,7 +1,7 @@
 # NCS M0 — matriz de regresión para confirmación PREPARED
 
 **Fecha:** 2026-10-19  
-**Estado:** corrección y regresiones añadidas al repositorio; ejecución dinámica y CI siguen pendientes.
+**Estado:** corrección y regresiones ejecutadas mediante GitHub Actions en SHA `8476f321ba1b17c840c9fbafda7d76d54b8abd07`; la aceptación M0 integrada y la vertical Chronicle pasaron en ese SHA.
 
 ## Contrato observado
 
@@ -11,7 +11,7 @@ En `src/nexo/core/owner-backed-runtime.mjs`, después de `owner.recordPrepared()
 - antes de invocar el adaptador exige `status === "committed"`, `preparedCommitted === true` y `storeRevision` entero seguro no negativo y exactamente igual a `current.storeRevision + 1`;
 - devuelve `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` si falla cualquiera de esas condiciones.
 
-**Hallazgo adicional y estado de corrección:** la inspección inicial detectó que el runtime no validaba `storeRevision` antes de marcar el despacho. Esto se corrigió en dos pasos en `src/nexo/core/owner-backed-runtime.mjs`: el guard inicial de revisión está en `dd1abc69cd867927c2fba949a4677fc7b2e51e99` y la exigencia de revisión sucesora exacta en `879b9e0791696bafdb081f973ae16827cf8eab04`. Las regresiones de `tests/nexo/chronicle-runtime.test.mjs` cuentan llamadas al adaptador y al handler; diez respuestas malformadas o contractualmente inconsistentes esperan cero llamadas. **La prueba está escrita, pero no se ha ejecutado**; la garantía dinámica queda pendiente hasta correrla.
+**Hallazgo adicional y estado de corrección:** la inspección inicial detectó que el runtime no validaba `storeRevision` antes de marcar el despacho. Esto se corrigió en dos pasos en `src/nexo/core/owner-backed-runtime.mjs`: el guard inicial de revisión está en `dd1abc69cd867927c2fba949a4677fc7b2e51e99` y la exigencia de revisión sucesora exacta en `879b9e0791696bafdb081f973ae16827cf8eab04`. Las regresiones de `tests/nexo/chronicle-runtime.test.mjs` cuentan llamadas al adaptador y al handler; diez respuestas malformadas o contractualmente inconsistentes esperan cero llamadas. **La prueba fue ejecutada por GitHub Actions** en el SHA `8476f321ba1b17c840c9fbafda7d76d54b8abd07`; la garantía dinámica queda respaldada por la ejecución registrada, no solo por inspección estática.
 
 ## Matriz de regresión requerida
 
