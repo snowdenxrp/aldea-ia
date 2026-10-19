@@ -77,6 +77,29 @@ async function recordChronicleTerminalOutcome({
       adapterResult, lineage, reconciliation, outcome
     };
   }
+
+  // A terminal outcome response is a commit receipt, not just a status string.
+  // The real store advances exactly one revision on a new commit and keeps the
+  // current revision for an identical already-recorded outcome. If the injected
+  // owner cannot confirm that revision contract, the effect is already settled
+  // but the terminal outcome remains UNKNOWN; never promote it to completed.
+  const validExpectedRevision = Number.isSafeInteger(expectedRevision) && expectedRevision >= 0;
+  const validOutcomeRevision = Number.isSafeInteger(outcome.storeRevision) && outcome.storeRevision >= 0;
+  const outcomeRevisionConfirmed = validExpectedRevision && validOutcomeRevision &&
+    (outcome.status === "committed"
+      ? expectedRevision < Number.MAX_SAFE_INTEGER && outcome.storeRevision === expectedRevision + 1
+      : outcome.storeRevision === expectedRevision);
+  if (!outcomeRevisionConfirmed) {
+    return {
+      status: "unknown",
+      code: "NEXO_CHRONICLE_OUTCOME_COMMIT_NOT_CONFIRMED",
+      dispatchAttempted, preparedCommitted, lineageCommitted,
+      journalSettled: reconciliation?.journalSettled === true,
+      terminalOutcomeRecorded: "UNKNOWN", redispatchAuthorized: false,
+      adapterResult, lineage, reconciliation, outcome
+    };
+  }
+
   return {
     status: "completed", code: "NEXO_CHRONICLE_APPEND_SETTLED",
     dispatchAttempted, preparedCommitted, lineageCommitted,
