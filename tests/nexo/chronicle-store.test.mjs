@@ -161,6 +161,30 @@ if (result.status !== "committed") process.exitCode = 1;`;
     content: "native Nexo history"
   });
 
+  // Revision exhaustion must reject before any persisted mutation.
+  const exhaustedPath = path.join(root, "revision-exhausted.json");
+  const maxRevisionDocument = {
+    schema: "NEXO_CHRONICLE",
+    schemaVersion: 1,
+    storeRevision: Number.MAX_SAFE_INTEGER,
+    entries: [{ operationKey: "existing-operation", content: "preserve this entry" }]
+  };
+  const maxRevisionBytes = JSON.stringify(maxRevisionDocument, null, 2) + "\n";
+  await fs.writeFile(exhaustedPath, maxRevisionBytes, "utf8");
+  const exhaustedStore = createNexoChronicleStore({ filePath: exhaustedPath });
+  assert.deepEqual(
+    await exhaustedStore.append({ operationKey: "new-operation", content: "must not be written" }),
+    {
+      status: "blocked",
+      code: "NEXO_CHRONICLE_REVISION_EXHAUSTED",
+      storeRevision: Number.MAX_SAFE_INTEGER
+    }
+  );
+  assert.equal(await fs.readFile(exhaustedPath, "utf8"), maxRevisionBytes);
+  const exhaustedRead = await exhaustedStore.loadCurrent();
+  assert.equal(exhaustedRead.storeRevision, Number.MAX_SAFE_INTEGER);
+  assert.deepEqual(exhaustedRead.entries, maxRevisionDocument.entries);
+
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
   assert.equal((await observeChronicleOperation({
