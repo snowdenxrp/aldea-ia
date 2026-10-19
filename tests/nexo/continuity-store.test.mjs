@@ -53,6 +53,59 @@ assert.deepEqual(
   "unknown authority fields must be rejected rather than persisted"
 );
 
+// Initialization must reconcile a lost response against the exact persisted envelope.
+const initializeLostDirectory = path.join(directory, "initialize-lost-response");
+await fs.mkdir(initializeLostDirectory);
+const initializeLostPath = path.join(initializeLostDirectory, "continuity.json");
+let loseInitializeResponse = true;
+const fsWithLostInitializeResponse = {
+  ...fs,
+  rename: async (from, to) => {
+    await fs.rename(from, to);
+    if (loseInitializeResponse) {
+      loseInitializeResponse = false;
+      throw new Error("simulated response lost after initialization rename");
+    }
+  }
+};
+const initializeLostStore = createNexoContinuityStore({
+  filePath: initializeLostPath,
+  fsModule: fsWithLostInitializeResponse
+});
+assert.deepEqual(
+  await initializeLostStore.initialize(emptySnapshot),
+  {
+    status: "committed",
+    storeRevision: 0,
+    snapshot: emptySnapshot,
+    recoveredAfterWriteError: true
+  },
+  "a matching persisted envelope proves initialization committed despite a lost response"
+);
+assert.equal((await createNexoContinuityStore({ filePath: initializeLostPath }).loadCurrent()).storeRevision, 0);
+
+// If the write fails before rename and the target remains absent, failure is confirmed.
+const initializeFailedDirectory = path.join(directory, "initialize-failed");
+await fs.mkdir(initializeFailedDirectory);
+const initializeFailedPath = path.join(initializeFailedDirectory, "continuity.json");
+const fsWithFailedInitializeWrite = {
+  ...fs,
+  rename: async () => { throw new Error("simulated rename failure before persistence"); }
+};
+const initializeFailedStore = createNexoContinuityStore({
+  filePath: initializeFailedPath,
+  fsModule: fsWithFailedInitializeWrite
+});
+assert.deepEqual(
+  await initializeFailedStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_INITIALIZE_FAILED" },
+  "an absent target after failed write confirms initialization did not commit"
+);
+await assert.rejects(
+  () => initializeFailedStore.loadCurrent(),
+  error => error?.code === "NEXO_CONTINUITY_STORE_NOT_FOUND"
+);
+
 // Exhausted safe-integer revisions must fail before writing an invalid envelope.
 const exhaustedDirectory = path.join(directory, "revision-exhausted");
 await fs.mkdir(exhaustedDirectory);
