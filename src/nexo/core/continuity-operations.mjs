@@ -26,6 +26,30 @@ function missionRecord(mission) {
     }
     stepIds.add(step.id);
   }
+
+  const dependenciesByStep = new Map();
+  for (const step of mission.steps) {
+    const dependencies = step.dependsOn ?? [];
+    if (!Array.isArray(dependencies) ||
+        dependencies.some(id => typeof id !== "string" || !id.trim() ||
+          !stepIds.has(id) || id === step.id) ||
+        new Set(dependencies).size !== dependencies.length) {
+      throw operationError("NEXO_MISSION_CONTEXT_INVALID");
+    }
+    dependenciesByStep.set(step.id, dependencies);
+  }
+  const visiting = new Set();
+  const visited = new Set();
+  const visitDependencyGraph = stepId => {
+    if (visiting.has(stepId)) throw operationError("NEXO_MISSION_CONTEXT_INVALID");
+    if (visited.has(stepId)) return;
+    visiting.add(stepId);
+    for (const dependencyId of dependenciesByStep.get(stepId)) visitDependencyGraph(dependencyId);
+    visiting.delete(stepId);
+    visited.add(stepId);
+  };
+  for (const stepId of stepIds) visitDependencyGraph(stepId);
+
   return {
     missionId: mission.missionId,
     version: mission.version ?? 4,
