@@ -1,5 +1,16 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — reconstrucción Chronicle exige settlement y outcome coherentes (validado 2026-10-19)
+
+- Hueco reproducido: un `settled_observed` Chronicle sin intento terminal podía dejar el paso como `planned`; y una tentativa `completed` con evidencia aparente podía marcar el paso completado aunque el settlement persistido tuviera `evidence: null`. El runtime canónico evitaba redispatch, pero la reconstrucción pública no reflejaba siempre esa obligación.
+- Corrección: `reconstructNexoMissionFromSnapshot()` usa el contrato compartido `isValidNexoChronicleSettlementRecord()`. Para reconstruir un Chronicle como `completed` exige simultáneamente un único settlement canónico válido y un intento terminal con identidad/evidencia válidas. Settlement válido sin intento terminal produce `blocked / NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED`; claim completed con settlement inválido/ausente produce `blocked / NEXO_CHRONICLE_SETTLEMENT_REQUIRED`. No se convierte a planned ni se redispatcha.
+- Regresiones: settlement válido sin outcome; attempt completed con evidence de settlement null. Ambas pruebas fallaban antes del cambio; CI observó el primer caso como `planned` en vez de `blocked`.
+- SHA de código: `dfef7209ed8af5b5fdd57b973e4b905fd821005f`; SHA de regresiones: `fe79862299cb51dd95bd39e0d227d05698c65a03`. SUCCESS: bounded admission/restart [39194696292](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194696292), crash cuts [39194696297](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194696297), STEP 4 [39194696399](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194696399), STEP 5 [39194696338](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194696338).
+- Límite: reconstrucción coherente del estado Chronicle; no completa la verificación general de objetivos ni la autorización de efectos. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** inspeccionar el contrato de intentos terminales para acciones no Chronicle que no tengan settlement específico. Distinguir con precisión los registros legacy que se preservan de los resultados canónicos que no pueden autorizar completion; no romper compatibilidad sin una prueba y una regla de migración explícita.
+
+
 ## M0 — reconstrucción no acepta completion de intento no ligado (validado 2026-10-19)
 
 - Hueco reproducido: `reconstructNexoMissionFromSnapshot()` agrupaba intentos por `missionId/stepId`, pero no cotejaba `action/target` con el paso canónico. Además, si no encontraba una completion verificada, el fallback podía elegir cualquier intento, incluyendo `completed` con evidencia no verificada. Resultado: un intento distinto o una afirmación terminal sin evidencia válida podía reconstruir el paso como `completed`.
@@ -60,7 +71,7 @@
 **Siguiente frontera:** seguir dentro de M0 desde la recuperación canónica/reconstrucción del estado persistido, inspeccionando el siguiente límite concreto con sus pruebas existentes. No reabrir la discrepancia de evidencia Chronicle salvo que aparezca una regresión nueva.
 
 
-**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código validado: `98abe80c058802f2f5ad50cd49bc2525ade6b09f`; SHA con regresiones de reconstrucción: `5767851584eba13298cada7bf46b162844b7d7bd`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
+**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código validado: `dfef7209ed8af5b5fdd57b973e4b905fd821005f`; SHA con regresiones Chronicle: `fe79862299cb51dd95bd39e0d227d05698c65a03`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
 
 ## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
 
