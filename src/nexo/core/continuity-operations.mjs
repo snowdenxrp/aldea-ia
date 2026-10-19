@@ -1,5 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
+import { isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
 
 function operationError(code) {
   const error = new Error(code);
@@ -139,8 +140,17 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     const stepAttempts = attempts.filter(item => item?.stepId === step.id);
     const matchesStepIdentity = item => item?.action === step.action &&
       isDeepStrictEqual(item?.target ?? null, step.target ?? null);
+    const stepEffects = source.effectJournal.filter(item =>
+      item?.missionId === missionId && item?.stepId === step.id
+    );
+    const validChronicleSettlement = step.action === "chronicle_append" &&
+      stepEffects.length === 1 &&
+      stepEffects[0]?.action === step.action &&
+      isDeepStrictEqual(stepEffects[0]?.target ?? null, step.target ?? null) &&
+      isValidNexoChronicleSettlementRecord(stepEffects[0]);
     const verifiedCompletion = stepAttempts.find(item =>
       item?.status === "completed" && matchesStepIdentity(item) &&
+      (step.action !== "chronicle_append" || validChronicleSettlement) &&
       item?.evidence?.verified === true &&
       typeof item?.evidence?.kind === "string" && item.evidence.kind.trim() &&
       typeof item?.evidence?.source === "string" && item.evidence.source.trim()
@@ -149,6 +159,26 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       step.status = "completed";
       step.result = structuredClone(verifiedCompletion.evidence);
       continue;
+    }
+
+    if (step.action === "chronicle_append") {
+      const hasChronicleSettlement = stepEffects.some(item =>
+        item?.action === "chronicle_append" && item?.status === "settled_observed"
+      );
+      const hasCompletedClaim = stepAttempts.some(item => item?.status === "completed");
+      if (hasChronicleSettlement || hasCompletedClaim) {
+        step.status = "blocked";
+        step.blockReason = {
+          code: validChronicleSettlement
+            ? "NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED"
+            : "NEXO_CHRONICLE_SETTLEMENT_REQUIRED",
+          idempotencyKey: `${missionId}:${step.id}`,
+          next: validChronicleSettlement
+            ? "recover_terminal_outcome_without_redispatch"
+            : "verify_chronicle_settlement_without_redispatch"
+        };
+        continue;
+      }
     }
 
     // A completion-shaped attempt without exact operation binding and evidence
