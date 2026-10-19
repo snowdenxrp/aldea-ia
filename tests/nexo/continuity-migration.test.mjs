@@ -605,8 +605,8 @@ try {
     }
   });
   assert.equal(prepared.status, "blocked",
-    "PREPARED admission must use reconstructed step status, not the plan's stale planned status");
-  assert.equal(prepared.code, "NEXO_PREPARED_STEP_NOT_RUNNABLE");
+    "PREPARED admission must use reconstructed mission status when a terminal claim blocks the mission");
+  assert.equal(prepared.code, "NEXO_PREPARED_MISSION_NOT_RUNNABLE");
   const after = await opened.owner.loadCurrent();
   assert.equal(after.storeRevision, current.storeRevision);
   assert.equal(after.snapshot.effectJournal.length, 0);
