@@ -37,6 +37,14 @@ assert.deepEqual(
   { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" },
   "conditional commit must normalize a missing parent before any write"
 );
+const fileAsParent = path.join(directory, "not-a-directory");
+await fs.writeFile(fileAsParent, "file blocks directory traversal", "utf8");
+const invalidParentStore = createNexoContinuityStore({ filePath: path.join(fileAsParent, "continuity.json") });
+assert.deepEqual(
+  await invalidParentStore.commitIfCurrent(0, emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" },
+  "conditional commit must normalize ENOTDIR as an unavailable parent path"
+);
 
 const initialized = await store.initialize(emptySnapshot);
 assert.equal(initialized.status, "committed");
