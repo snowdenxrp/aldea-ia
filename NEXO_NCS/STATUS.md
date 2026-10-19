@@ -1,8 +1,10 @@
-## Siguiente diseño M0 — borrador semántico de composición de autoridad
+## Siguiente diseño M0 — inventario de claims y dominios de fallo de autoridad
 
-Se añadió `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md` (commit `5b24b106d06d22335d09b03560128eb9c9e7b24a`). Define las capas root composition → current authority → authorization decision → protected effect admission → outcome/reconciliation, los resultados de no-root/conflicto/vigencia y las condiciones que deben probarse antes de implementación. No selecciona una raíz física ni habilita dispatch. Reutiliza los gates STEP 7 y las investigaciones AB105 ya existentes.
-
-La última validación funcional sigue siendo CI integrado PASS run `39292887874` en SHA `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; los commits posteriores son documentales. M0 INCOMPLETO; efectos protegidos STOP.
+- Nuevo inventario: `NEXO_NCS/BUILD/NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md` (commit `194c6b8868e4632dfb909b14112ca19f10e28fe6`), con afirmaciones delimitadas C0–C8, nivel de evidencia, fallos comunes y obligaciones de frontera.
+- El contraste con los contratos existentes encontró que el primer borrador de composición duplicaba estados: se corrigió para reutilizar `ESTABLISHED / UNKNOWN / INVALID` del contrato bootstrap, `AUTHORITY_UNAVAILABLE / AUTHORITY_UNRESOLVED` de la investigación de recuperación y la distinción `STALE / REVOKED` de AB105.078R. No se crea un enum agregado.
+- Contrato revisado: `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md`, corrección commit `c83a864232793e963a7a99fb88fc313f4f1a48ca`.
+- **Siguiente paso exacto:** completar sólo los hechos de despliegue aún UNKNOWN (recuperación fuera del teléfono, funcionamiento offline, control real de credenciales, garantías de plataforma y frontera final bajo control de Nexo). Después comparar las familias de reconocimiento ya enumeradas en STATUS. No escoger root ni implementar evaluator por intuición.
+- CI funcional observado: run `39292887874`, SHA probado `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; los commits posteriores citados aquí son documentales. M0 INCOMPLETO; efectos protegidos STOP.
 
 ---
 
