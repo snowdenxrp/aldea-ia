@@ -1042,4 +1042,79 @@ assert.equal(unsupportedAction.preparedCommitted, false);
 assert.equal(unsupportedPrepareCalls, 0);
 assert.equal(unsupportedDispatchCalls, 0);
 
+const runtimeReadFailureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-runtime-prepared-read-failure-"));
+try {
+  const continuityPath = path.join(runtimeReadFailureRoot, "continuity.json");
+  const chroniclePath = path.join(runtimeReadFailureRoot, "chronicle.json");
+  const chronicleStore = createNexoChronicleStore({ filePath: chroniclePath });
+  assert.equal((await chronicleStore.initialize()).status, "committed");
+  const contracts = createNexoChronicleEffectContracts({ store: chronicleStore });
+  const readFailureMemory = {
+    version: 4, runs: [], lessons: [], patterns: [],
+    nexo: {
+      missions: [{
+        missionId: "runtime-read-failure",
+        status: "planned",
+        objective: "chronicle_append",
+        steps: [{
+          id: "step-1", action: "chronicle_append",
+          target: { content: "hello Nexo" }, status: "planned", dependsOn: []
+        }]
+      }],
+      attempts: [], doNotRepeat: [], executions: [], effectJournal: []
+    }
+  };
+  const opened = await openNexoContinuityOwner({
+    filePath: continuityPath,
+    legacyMemory: readFailureMemory,
+    effectVerifiers: contracts.verifiers
+  });
+  const readError = Object.assign(new Error("simulated PREPARED read failure"), {
+    code: "TEST_PREPARED_READ_FAILED"
+  });
+  let readCount = 0;
+  let commits = 0;
+  let dispatches = 0;
+  const flakyStore = {
+    loadCurrent: async (...args) => {
+      readCount++;
+      if (readCount === 2) throw readError;
+      return opened.store.loadCurrent(...args);
+    },
+    commitIfCurrent: async (...args) => {
+      commits++;
+      return opened.store.commitIfCurrent(...args);
+    }
+  };
+  const owner = createNexoContinuityOwner({
+    store: flakyStore,
+    effectVerifiers: contracts.verifiers
+  });
+  const adapter = createEffectAdapter({
+    handlers: {
+      chronicle_append: async request => {
+        dispatches++;
+        return contracts.handlers.chronicle_append(request);
+      }
+    },
+    verifiers: contracts.verifiers
+  });
+  const result = await executeNexoStepWithContinuityOwner({
+    missionId: "runtime-read-failure",
+    stepId: "step-1",
+    owner,
+    adapter,
+    postcondition: contracts.postcondition
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "TEST_PREPARED_READ_FAILED");
+  assert.equal(result.dispatchAttempted, false);
+  assert.equal(result.preparedCommitted, false);
+  assert.equal(readCount, 2, "one runtime snapshot read and one PREPARED admission read are expected");
+  assert.equal(commits, 0);
+  assert.equal(dispatches, 0, "a read failure before PREPARED must never invoke the adapter");
+} finally {
+  await fs.rm(runtimeReadFailureRoot, { recursive: true, force: true });
+}
+
 console.log("Nexo Chronicle owner-backed runtime tests passed");
