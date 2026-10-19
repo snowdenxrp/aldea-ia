@@ -62,3 +62,10 @@ The initialization flags are opt-in and should only be used when creating genuin
 - A process-level regression runs `chronicle-append`, then launches a fresh Node process with the same operation identity and payload. The replay returns `completed` with `dispatchAttempted=false`; Chronicle and continuity files remain byte-identical, and the private sentinel is not logged.
 - CI SUCCESS on SHA `3ed7860a189b6b00d0a5444eb466a4393c4a2c4c`: [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886).
 - Scope is process restart and idempotent replay for the Chronicle vertical only; no fsync/power-loss durability, authority, generic actions, or runtime-default cutover is claimed.
+
+
+## Transitive import-graph guard — validated (2026-10-19)
+
+- `tests/nexo/entrypoint.test.mjs` recursively walks static local imports from both Nexo entrypoints and fails if a reachable module imports the legacy assistant memory, simulation adapter, `world.js`, `simulation.js`, `simulate.mjs`, or `src/nexo/runtime.js`.
+- CI SUCCESS on SHA `c9f62e3611a598f0ab29fa1b55d2ac849a67c6c3`: [39180518798](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518798), [39180518686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518686), [39180518787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518787).
+- This guards static import separation for the CLI entrypoints only. It does not claim OS/process sandboxing, web-app integration, or general runtime cutover.
