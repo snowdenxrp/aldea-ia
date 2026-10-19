@@ -1,17 +1,17 @@
 # NCS M0 — revisión de la frontera PREPARED y storeRevision
 
 **Fecha:** 2026-10-19  
-**Tipo de evidencia:** inspección estática de blobs; no se ejecutaron pruebas.
+**Tipo de evidencia:** hallazgo histórico por inspección estática; corrección posterior escrita y pruebas pendientes de ejecución.
 
 ## Hallazgo
 
-Archivos revisados en la rama `ncs-clean-architecture`:
+Archivos revisados para el hallazgo inicial en la rama `ncs-clean-architecture` (blobs históricos):
 
 - `src/nexo/core/owner-backed-runtime.mjs`, blob `ca738c3e42cefbdd6576770ac0296dd7e3ac8966`.
 - `src/nexo/effect-adapter.js`, blob `efe00f7f0bd3586266209fb17e2eb725a6522463`.
 - `tests/nexo/chronicle-runtime.test.mjs`, blob `1fcb816f14565fb5630f8bc32d175c513732119b`.
 
-El runtime owner-backed acepta como confirmación suficiente de PREPARED únicamente `status === "committed"` y `preparedCommitted === true`. No valida `storeRevision` antes de poner `_executionState.dispatchAttempted = true` y llamar `adapter.executePrepared(...)`.
+En el blob histórico inspeccionado, el runtime owner-backed aceptaba como confirmación suficiente de PREPARED únicamente `status === "committed"` y `preparedCommitted === true`. No validaba `storeRevision` antes de poner `_executionState.dispatchAttempted = true` y llamar `adapter.executePrepared(...)`. Este hallazgo histórico fue corregido posteriormente; véase la sección siguiente.
 
 El adaptador sí valida que `storeRevision` sea un entero seguro no negativo. Si falta o es inválida, devuelve `blocked / EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED` sin llamar a `executeFresh()`. Sin embargo, el runtime continúa posteriormente a `owner.recordExecutionLineage()` con `expectedRevision: prepared.storeRevision` y, si la respuesta de lineage es `committed`, a reconciliación. Esto mezcla una respuesta PREPARED estructuralmente inválida con la ruta posterior al intento de despacho y puede reportar `dispatchAttempted: true` aunque el handler no se haya invocado.
 
