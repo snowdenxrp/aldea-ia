@@ -395,7 +395,7 @@ const canonicalOwner = {
   supportsReconciliation: action => action === "write_file",
   loadCurrent: async () => ({
     storeRevision: 0,
-    snapshot: { missions: [{ missionId: "canonical-mission", status: "planned",
+    snapshot: { effectJournal: [], missions: [{ missionId: "canonical-mission", status: "planned",
       steps: [{ id: "step-1", action: "write_file", target: "alpha", status: "planned" }] }] }
   }),
   recordPrepared: async () => { genericPrepareCalls += 1; return { status: "committed", preparedCommitted: true, storeRevision: 1 }; },
@@ -426,7 +426,7 @@ const noVerifierOwner = {
   supportsReconciliation: () => false,
   loadCurrent: async () => ({
     storeRevision: 0,
-    snapshot: { missions: [{ missionId: "no-verifier-mission", status: "planned",
+    snapshot: { effectJournal: [], missions: [{ missionId: "no-verifier-mission", status: "planned",
       steps: [{ id: "step-1", action: "chronicle_append", target: { content: "payload" }, status: "planned" }] }] }
   }),
   recordPrepared: async () => { unsupportedPrepares += 1; return { status: "committed", preparedCommitted: true, storeRevision: 1 }; }
@@ -471,7 +471,7 @@ let uncertainPrepareDispatches=0;
 const uncertainPrepareOwner={
   ...canonicalOwner,
   supportsReconciliation: action => action === "chronicle_append",
-  loadCurrent: async()=>({storeRevision:0,snapshot:{missions:[{missionId:"uncertain-prepare-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
+  loadCurrent: async()=>({storeRevision:0,snapshot:{effectJournal:[],missions:[{missionId:"uncertain-prepare-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
   recordPrepared:async()=>{throw new Error("prepare response lost");}
 };
 const uncertainPrepareAdapter={
@@ -497,7 +497,7 @@ let adapterVerifierDispatchCalls=0;
 const noAdapterVerifierOwner={
   ...canonicalOwner,
   supportsReconciliation:()=>true,
-  loadCurrent:async()=>({storeRevision:0,snapshot:{missions:[{missionId:"no-adapter-verifier-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
+  loadCurrent:async()=>({storeRevision:0,snapshot:{effectJournal:[],missions:[{missionId:"no-adapter-verifier-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
   recordPrepared:async()=>{adapterVerifierPrepareCalls++;return {status:"committed",preparedCommitted:true,storeRevision:1};}
 };
 const noAdapterVerifier={
