@@ -1698,3 +1698,13 @@ Se añadió `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EXECUTABLE_2026-10-19.md`
 **No es un PASS global.** La consulta de misión ya informa estado persistido y reconstruido desde un único snapshot, pero la ejecución CI posterior a la corrección de integración `82f1204ae4e9298163231ab7a323233ad87777b8` no está observada aquí. M0-AC1 permanece UNKNOWN. Los PASS históricos siguen limitados a sus SHAs originales. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
 
 Siguiente paso: recuperar el run real del workflow `.github/workflows/nexo-m0-mission-status.yml` para un SHA que incluya la corrección y test actuales; después crear la matriz de evidencia AC1–AC6 sin repetir auditorías cerradas.
+
+
+## M0 — CI observado para mission-status (2026-10-19)
+
+Se recuperó la ejecución real del workflow específico y se revisaron jobs, steps y logs:
+- **FAIL inicial:** [run 39264987091](https://github.com/snowdenxrp/aldea-ia/actions/runs/39264987091), SHA `4b6423404d5ad2e901e3b3eccb5db6e2140ee492`. El test falló en `tests/nexo/entrypoint.test.mjs:185`: la consulta devolvió `NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE`.
+- **Corrección:** `82f1204ae4e9298163231ab7a323233ad87777b8`; el reconstructor retorna misión o null, no un wrapper.
+- **PASS focal:** [run 39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), SHA exacto `82f1204ae4e9298163231ab7a323233ad87777b8`; job `mission-status` SUCCESS, paso `Run independent Nexo entrypoint regression` SUCCESS. Log final confirma que el entrypoint independiente falla cerrado en comandos no soportados y que Chronicle no depende de Lúmina ni filtra contenido.
+
+Por tanto, M0-AC1 pasa **para la regresión focal en ese SHA**, no como cierre global de M0. Se conserva el fallo inicial como parte de la evidencia red-green. El estado global sigue M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
