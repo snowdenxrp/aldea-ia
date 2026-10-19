@@ -1217,3 +1217,17 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - Branch HEAD at last documentation update: `0e4baf55de41bcfff249377785809765487ec883`; latest docs updates may advance HEAD further without changing code.
 - Latest code/test SHA with four focal workflows SUCCESS: `274af889dfcfe8457af005f5ee126d012b1b6555`.
 - Next: continue audit of the public application boundary and result contract. No new mutating action, no UI/legacy runtime integration, no `index.html` change, no authority inference. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
+
+
+## Public API import-graph guard — re-exports included (validated 2026-10-18 local)
+
+- The static Nexo/Lúmina separation test now traverses both `import ... from` and `export ... from`. This closes a blind spot where the public application index's re-exports could hide its implementation modules from the recursive audit.
+- The test explicitly proves that `src/nexo/application/chronicle-append.mjs` and `continuity-queries.mjs` are reached from the CLI entrypoints through the public index, while `src/nexo/runtime.js` remains unreachable.
+- Code/test SHA: `0872c646db77af2e3e0bbd9e711d7f81c6cc1caa`. CI SUCCESS: [Chronicle 39187372728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372728), [STEP 4 39187372719](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372719), [STEP 5 39187372729](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372729).
+- This is a static import-graph guard, not OS isolation or UI integration. M0 remains INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
+
+## Current verified pointer — import-graph guard
+
+- Latest code/test SHA with focal CI SUCCESS: `0872c646db77af2e3e0bbd9e711d7f81c6cc1caa`.
+- The only code change since the preceding validated checkpoint is the test's import-graph traversal and its assertions; no runtime or application behavior changed.
+- Next: audit public API boundaries and recovery semantics only. Do not add a second mutating use case, connect `index.html` or the legacy runtime, or infer authority from continuity state.
