@@ -74,10 +74,15 @@ Si cualquier punto queda sin evidencia, la implementación sigue bloqueada. No s
 ## 8. Decisión actual
 
 - Contrato semántico propuesto: disponible para revisión arquitectónica.
-- Mecanismo concreto de bootstrap/root: **NO SELECCIONA**; requiere evidencia y decisión sustentada, no intuición.
+- Alcance de bootstrap/root: **UNA LLAVE CRIPTOGRÁFICA RAÍZ Y UN DISPOSITIVO INICIAL, DECISIÓN ACEPTADA**. Modelo físico, protocolo, provisión y verificador concreto siguen pendientes; no existe prueba de raíz implementada.
 - Evaluación de autoridad en runtime: **NO IMPLEMENTADA**.
 - API pública Chronicle: **`authorization: "NOT_EVALUATED"` explícito**.
 - Efectos protegidos: **STOP**.
 - M0 global: **INCOMPLETO**.
 
-El contraste con los contratos canónicos quedó registrado en `NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md`. La siguiente actividad es cerrar el inventario de hechos reales del despliegue (recuperación externa disponible, operación offline, control de credenciales, garantías de plataforma y frontera de ejecución) antes de comparar familias de reconocimiento. No repetir las auditorías históricas ni implementar un pseudo-root.
+El contraste con los contratos canónicos quedó registrado en `NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md`. La actividad posterior acotada es especificar provisión inicial independiente y verificación para la llave raíz única decidida, con los límites del gate actualizado. No volver a comparar familias de reconocimiento como investigación general, no repetir auditorías históricas ni implementar un pseudo-root.
+
+
+## Addendum de continuidad — decisión de alcance posterior (2026-10-19)
+
+La decisión aceptada NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md cierra la pregunta de alcance sobre cantidad de raíces para la primera fase: una llave raíz y un dispositivo inicial. No cierra las preguntas de implementación ni aporta evidencia de autoridad legítima. La frase anterior mecanismo concreto NO SELECCIONA se interpreta ahora como mecanismo/protocolo físico de provisión y verificación aún no seleccionado, no como que el alcance de cantidad de raíces siga abierto.
