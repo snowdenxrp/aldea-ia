@@ -8,8 +8,8 @@
 En `src/nexo/core/owner-backed-runtime.mjs`, después de `owner.recordPrepared()`, el runtime:
 - devuelve `conflict` sin invocar el adaptador si la respuesta declara `status: "conflict"`;
 - devuelve `unknown` sin invocar el adaptador si declara `status: "unknown"`, `preparedCommitted: "UNKNOWN"`, o la llamada lanza una excepción;
-- antes de invocar el adaptador solo exige `status === "committed"` y `preparedCommitted === true`;
-- devuelve `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` cuando no se cumplen esas dos condiciones.
+- antes de invocar el adaptador exige `status === "committed"`, `preparedCommitted === true` y `storeRevision` entero seguro no negativo;
+- devuelve `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` si falla cualquiera de esas condiciones.
 
 **Hallazgo adicional y estado de corrección:** la inspección inicial detectó que el runtime no validaba `storeRevision` antes de marcar el despacho. Esto fue corregido en `src/nexo/core/owner-backed-runtime.mjs` (commit `dd1abc69cd867927c2fba949a4677fc7b2e51e99`): ahora exige una revisión entera segura y no negativa antes de llamar al adaptador. Las regresiones en `tests/nexo/chronicle-runtime.test.mjs` (commit `4203330689d6ea4072585d8cc6bca74b383ca461`) cuentan invocaciones del handler y esperan cero para las respuestas malformadas. **La prueba está escrita, pero no se ha ejecutado**; la garantía dinámica queda pendiente hasta correrla.
 
@@ -25,9 +25,9 @@ En `src/nexo/core/owner-backed-runtime.mjs`, después de `owner.recordPrepared()
 | `{status:"committed", preparedCommitted:false, storeRevision:5}` | Bloqueo contractual antes de invocar el adaptador | 0 |
 | `{status:"failed", preparedCommitted:true, storeRevision:5}` | Bloqueo contractual antes de invocar el adaptador | 0 |
 | `null` | Bloqueo contractual antes de invocar el adaptador | 0 |
-| `{status:"committed", preparedCommitted:true}` | **Definir/corregir frontera:** revisión ausente; no marcar despacho ni llamar handler | 0 |
-| `{status:"committed", preparedCommitted:true, storeRevision:-1}` | **Definir/corregir frontera:** revisión inválida; no marcar despacho ni llamar handler | 0 |
-| `{status:"committed", preparedCommitted:true, storeRevision:1.5}` o revisión no segura | **Definir/corregir frontera:** revisión inválida | 0 |
+| `{status:"committed", preparedCommitted:true}` | Guard corregido; prueba debe confirmar que no se marca despacho ni se invoca adaptador | 0 |
+| `{status:"committed", preparedCommitted:true, storeRevision:-1}` | Guard corregido; prueba debe confirmar que no se marca despacho ni se invoca adaptador | 0 |
+| `{status:"committed", preparedCommitted:true, storeRevision:1.5}` o revisión no segura | Guard corregido; prueba debe confirmar que no se marca despacho ni se invoca adaptador | 0 |
 
 ## Prueba posterior al inicio del efecto
 
@@ -38,7 +38,7 @@ Conservar las garantías ya cubiertas: si el handler puede haber producido el ef
 - Inspección estática de runtime, adaptador y prueba focal: realizada.
 - Pruebas dinámicas: no ejecutadas.
 - Corrección runtime para validar revisión antes de la frontera de despacho: commit `dd1abc69cd867927c2fba949a4677fc7b2e51e99`.
-- Ocho regresiones negativas añadidas con contador del handler: commit `4203330689d6ea4072585d8cc6bca74b383ca461`.
+- Ocho regresiones negativas añadidas; ahora cuentan tanto llamadas al adaptador como invocaciones del handler: commit `cfd57bf8e8a74570c23908c30599126f9d76748a` (cambio inicial de pruebas: `4203330689d6ea4072585d8cc6bca74b383ca461`).
 - Ejecutar prueba focal y suite Nexo: pendiente.
 - CI vinculado al SHA exacto: pendiente.
 - No declarar PASS. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
