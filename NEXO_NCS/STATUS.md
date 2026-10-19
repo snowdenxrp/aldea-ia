@@ -1825,3 +1825,14 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Regresiones:** `tests/nexo/continuity-store.test.mjs`, commit [f657137de4c2](https://github.com/snowdenxrp/aldea-ia/commit/f657137de4c2c6d3f8e8df99568a0b0dff646a42). Cubre respuesta perdida después del rename y fallo antes de persistir, verificando el estado durable observado.
 - **Validación:** código y pruebas publicados en `ncs-clean-architecture`; no ejecutados localmente y CI aún no observado para estos SHA. **PENDING; no marcar PASS.**
 - **Límite:** corrige semántica de resultado de inicialización local. No demuestra autorización ni durabilidad ante pérdida de energía; efectos protegidos STOP, autoridad NOT_EVALUATED, M0 INCOMPLETO.
+
+
+## M0 — no dejar locks incompletos si falla el registro del propietario (2026-10-19)
+
+- **Defecto compartido:** ambos `acquireLock()` creaban el directorio `.lock` y escribían `owner.json` dentro del mismo `try`. Si falla la escritura del propietario después de crear el directorio, la función propagaba el error pero dejaba el directorio incompleto; llamadas posteriores podían quedar esperando hasta exigir recuperación manual.
+- **Corrección en continuidad:** [b1c3e144e566](https://github.com/snowdenxrp/aldea-ia/commit/b1c3e144e5665b10ef9e78425422f8db33bc2c08). Si falla la creación de `owner.json`, limpia el directorio que esta misma llamada acaba de crear antes de propagar el error.
+- **Regresión continuidad:** [d840d0808812](https://github.com/snowdenxrp/aldea-ia/commit/d840d0808812bef77e3ad904617ed181f550a154); fuerza el fallo y comprueba que no quede `.lock`.
+- **Corrección en Chronicle:** [1af58e9f24f6](https://github.com/snowdenxrp/aldea-ia/commit/1af58e9f24f6effe6ca19e5db4550183ae2eccb1), mismo alcance y condición de propiedad del directorio.
+- **Regresión Chronicle:** [c657021413df](https://github.com/snowdenxrp/aldea-ia/commit/c657021413df7dc895d06393d1cb5d045d8683ab); fuerza el fallo y comprueba la limpieza.
+- **Validación:** cambios y pruebas están publicados en `ncs-clean-architecture`; no se ejecutaron localmente y no hay resultado CI observado para estos SHA. **PENDING; no declarar PASS.**
+- **Límite:** la limpieza sólo se intenta en la rama de ejecución que creó el directorio y cuyo registro de propietario falló. No se habilita recuperación automática de locks ajenos o stale. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
