@@ -1067,3 +1067,12 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Se añadió `npm run nexo -- status --continuity PATH`: solo lee el store canónico y devuelve revisión + contadores agregados; no expone contenido/targets ni inicializa stores ausentes.
 - Test de proceso real confirma error sin mutación para store ausente y bytes idénticos antes/después de lectura válida. CI SUCCESS en SHA `f15760571a6092235c1ff8dbb776be4a384ba2d5`: [39179823123](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823123), [39179823124](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823124), [39179823115](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823115).
 - Es diagnóstico read-only, no una acción de efecto ni runtime general. Solo `chronicle_append` puede mutar; M0 INCOMPLETO.
+
+
+## M0 — reconstrucción canónica de misión desde la entrada Nexo (2026-10-19)
+
+- Se corrigió un error semántico en `reconstructNexoMissionFromSnapshot()`: toda entrada `settled_observed` se clasificaba como reparación observada, incluso `chronicle_append`, degradando a `blocked` un paso Chronicle con settlement específico y outcome terminal ya persistidos. Ahora Chronicle se excluye de ese guard de reparación; otras acciones siguen conservadoras.
+- Regresión en `tests/nexo/chronicle-runtime.test.mjs`: después del append real, el outcome completado sigue apareciendo como `step.status=completed` tras reconstrucción.
+- Se añadió `npm run nexo -- mission-status --continuity PATH --mission ID`. Reconstruye desde el store canónico y expone solo misión/estado, objetivo, incertidumbre y resumen de pasos; omite target/context/payload. Misión ausente → `NEXO_MISSION_NOT_FOUND`. La consulta no modifica el store.
+- Test de proceso real compara bytes antes/después, verifica que el contenido privado no salga a stdout y comprueba estado reconstruido. CI SUCCESS en SHA `ccb1fb7218fbb0b13615a95c403b002b025faa35`: [39180275512](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275512), [39180275517](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275517), [39180275561](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180275561). La regresión de clasificación de reconstrucción previa pasó en [39180216543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180216543).
+- Esto mejora lectura/reconstrucción; no añade efectos ni cambia runtime default. M0 INCOMPLETO; Chronicle sigue como única acción mutante expuesta; efectos protegidos STOP.
