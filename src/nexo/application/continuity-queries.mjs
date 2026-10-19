@@ -1,5 +1,5 @@
 import { createNexoContinuityStore } from "../core/continuity-store.mjs";
-import { createNexoContinuityOwner } from "../core/continuity-owner.mjs";
+import { reconstructNexoMissionFromSnapshot } from "../core/continuity-operations.mjs";
 
 export async function loadNexoContinuityStatus(continuityPath) {
   if (typeof continuityPath !== "string" || !continuityPath.trim()) {
@@ -38,22 +38,30 @@ export async function loadNexoMissionStatus(continuityPath, missionId) {
   }
   try {
     const store = createNexoContinuityStore({ filePath: continuityPath });
-    const owner = createNexoContinuityOwner({ store });
-    const reconstructed = await owner.reconstructMission(missionId);
+    // Read once: persisted and reconstructed status must refer to the same revision.
+    const current = await store.loadCurrent();
+    const persistedMission = current.snapshot.missions.find(item => item?.missionId === missionId);
+    if (!persistedMission) {
+      return { status: "not_found", code: "NEXO_MISSION_NOT_FOUND", storeRevision: current.storeRevision };
+    }
+    const reconstructed = reconstructNexoMissionFromSnapshot(current.snapshot, missionId);
     if (reconstructed.status !== "reconstructed") {
       return {
-        status: reconstructed.status === "not_found" ? "not_found" : "blocked",
-        code: reconstructed.status === "not_found" ? "NEXO_MISSION_NOT_FOUND" : reconstructed.code ?? "NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE",
-        storeRevision: reconstructed.storeRevision
+        status: "blocked",
+        code: reconstructed.code ?? "NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE",
+        storeRevision: current.storeRevision
       };
     }
     const mission = reconstructed.mission;
+    const persistedMissionStatus = persistedMission.status ?? "planned";
     return {
       status: "reconstructed",
       code: null,
-      storeRevision: reconstructed.storeRevision,
+      storeRevision: current.storeRevision,
       missionId: mission.missionId,
+      persistedMissionStatus,
       missionStatus: mission.status,
+      statusDiscrepancy: persistedMissionStatus !== mission.status,
       objective: mission.objective,
       uncertainty: mission.uncertainty,
       steps: mission.steps.map(step => ({
