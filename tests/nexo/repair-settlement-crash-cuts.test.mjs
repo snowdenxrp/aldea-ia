@@ -378,6 +378,80 @@ try {
   assert.equal(frozenRegistryResult.observation, "applied");
   assert.equal((await frozenRegistryOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "reconciled_observed");
 
+  // Lost-response cut for the generic path: the store commits the observation,
+  // but the first caller sees an uncertain result. Replay must return the
+  // persisted observation without invoking the verifier or settling PREPARED.
+  const genericLostResponseDir = path.join(root, "generic-observation-response-lost");
+  await fs.mkdir(genericLostResponseDir);
+  const genericLostResponseOpened = await openNexoContinuityOwner({
+    filePath: path.join(genericLostResponseDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  let genericVerifierCalls = 0;
+  let loseGenericCommitResponse = true;
+  const genericLostResponseStore = {
+    loadCurrent: (...args) => genericLostResponseOpened.store.loadCurrent(...args),
+    commitIfCurrent: async (...args) => {
+      const result = await genericLostResponseOpened.store.commitIfCurrent(...args);
+      if (loseGenericCommitResponse && result.status === "committed") {
+        loseGenericCommitResponse = false;
+        return { status: "unknown", code: "NEXO_COMMIT_RESULT_UNKNOWN", storeRevision: result.storeRevision };
+      }
+      return result;
+    }
+  };
+  const genericLostResponseOwner = createNexoContinuityOwner({
+    store: genericLostResponseStore,
+    effectVerifiers: {
+      generic_write: async operation => {
+        genericVerifierCalls += 1;
+        return {
+          status: "applied",
+          idempotencyKey: operation.idempotencyKey,
+          action: operation.action,
+          target: operation.target,
+          observedRevision: 11,
+          source: "test-persisted-reader",
+          evidence: { revision: 11 }
+        };
+      }
+    }
+  });
+  const genericOperation = {
+    idempotencyKey: "mission-crash-cut:step-repair",
+    missionId: "mission-crash-cut",
+    stepId: "step-repair",
+    action: "generic_write",
+    target: "alpha"
+  };
+  const uncertainGenericObservation = await genericLostResponseOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: genericOperation
+  });
+  assert.equal(uncertainGenericObservation.status, "unknown");
+  assert.equal(genericVerifierCalls, 1);
+  const genericReplay = await genericLostResponseOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: genericOperation
+  });
+  assert.equal(genericReplay.status, "already_observed");
+  assert.equal(genericReplay.observation, "applied");
+  assert.equal(genericReplay.observationCommitted, false);
+  assert.equal(genericReplay.journalSettled, false);
+  assert.equal(genericReplay.causalAttribution, "NOT_ESTABLISHED");
+  assert.equal(genericReplay.redispatchAuthorized, false);
+  assert.equal(genericVerifierCalls, 1, "replay must not re-run the verifier");
+  const genericPersistedAfterReplay = await genericLostResponseOpened.owner.loadCurrent();
+  assert.equal(genericPersistedAfterReplay.snapshot.effectJournal[0].status, "reconciled_observed");
+  assert.equal(genericPersistedAfterReplay.snapshot.attempts.length, 0);
+  const incompatibleGenericReplay = await genericLostResponseOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: { ...genericOperation, target: "different-target" }
+  });
+  assert.equal(incompatibleGenericReplay.status, "conflict");
+  assert.equal(incompatibleGenericReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+  assert.equal(genericVerifierCalls, 1);
+
   // Unknown observations and absent verifier configuration must preserve PREPARED.
   const unknownDir = path.join(root, "generic-owner-unknown");
   await fs.mkdir(unknownDir);
