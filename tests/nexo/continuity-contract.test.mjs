@@ -159,6 +159,26 @@ assert.throws(
   "mission admission must reject non-string actions before persisting a planned step"
 );
 
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "non-string-mission-status",
+    status: 7,
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must reject non-string mission status values"
+);
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "non-string-step-status",
+    status: "planned",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: { state: "planned" }, dependsOn: [] }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must reject non-string step status values"
+);
+
+
 
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
@@ -469,6 +489,25 @@ assert.equal(
   1,
   "a mission with a non-string action must not advance the canonical store revision"
 );
+
+const invalidStatusResult = await owner.recordMission({
+  expectedRevision: 1,
+  mission: {
+    missionId: "owner-invalid-status",
+    objective: "repair_agent_state",
+    status: 7,
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  }
+});
+assert.equal(invalidStatusResult.status, "conflict");
+assert.equal(invalidStatusResult.code, "NEXO_MISSION_CONTEXT_INVALID");
+assert.equal(invalidStatusResult.storeRevision, 1);
+assert.equal(
+  (await owner.loadCurrent()).storeRevision,
+  1,
+  "a mission with malformed status must not advance the canonical store revision"
+);
+
 
 
 
