@@ -36,7 +36,8 @@ function missionRecord(mission) {
   const dependenciesByStep = new Map();
   for (const step of mission.steps) {
     const dependencies = step.dependsOn ?? [];
-    if (!Array.isArray(dependencies) || Object.keys(dependencies).length !== dependencies.length ||
+    if (!Array.isArray(dependencies) ||
+        Object.keys(dependencies).filter(key => String(Number(key)) === key && Number(key) >= 0 && Number(key) < dependencies.length).length !== dependencies.length ||
         dependencies.some(id => typeof id !== "string" || !id.trim() ||
           !stepIds.has(id) || id === step.id) ||
         new Set(dependencies).size !== dependencies.length) {
