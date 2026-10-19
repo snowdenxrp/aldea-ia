@@ -1248,3 +1248,13 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - Corrección: esa rama pasa ahora por publicChronicleResult() y conserva missionAdmissionCommitted=UNKNOWN, dispatchAttempted=false, redispatchAuthorized=false, junto con missionId y stepId. La allowlist descarta target, adapterResult y otros objetos internos.
 - Regresión unitaria: resultado sintético UNKNOWN confirma forma pública, tri-state y ausencia de payload interno. CI SUCCESS en SHA 3c8d14163144e6f83a6130f38f025e31302c1ac9: Chronicle [39187723675](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723675), bounded mission admission/restart [39187723680](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723680), STEP 4 [39187723651](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723651), STEP 5 [39187723612](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723612).
 - Esto uniforma el contrato público; no cambia recuperación, no autoriza dispatch ni añade otra acción mutante. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+
+
+## M0 — validación de tipos en el resultado público (2026-10-19)
+
+- Segundo hallazgo de la misma frontera: la allowlist de campos copiaba valores sin validar tipos; un resultado interno mal formado podía introducir objetos en status/code/flags o metadatos de revisión.
+- Corrección: status se limita al conjunto público documentado; code solo se conserva si es string; los campos triestado solo aceptan boolean o UNKNOWN; storeRevision solo acepta entero seguro no negativo. redispatchAuthorized queda forzado a false en el contrato público actual.
+- Regresión: valores mal formados no pasan a la respuesta pública; UNKNOWN válido se conserva y no se filtran valores privados.
+- SHA código/pruebas: 42f0e12640a35bc1e7b524501f8dbe879a311d90. CI SUCCESS: Chronicle [39187949155](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949155), admisión/reinicio [39187949154](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949154), STEP 4 [39187949143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949143), STEP 5 [39187949152](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949152).
+- El cambio solo valida la forma de la respuesta. No prueba fsync/power-loss, no autoriza reintentos ni despacho, no añade otra acción mutante. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
