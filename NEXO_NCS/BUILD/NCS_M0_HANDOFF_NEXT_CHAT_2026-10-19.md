@@ -420,3 +420,15 @@ El usuario reportó que se borró el texto de cuatro respuestas que se detuviero
 - Leer `NEXO_NCS/STATUS.md` primero y verificar HEAD actual de `ncs-clean-architecture`; después este handoff y `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
 - Continuar por la siguiente frontera registrada: `assertContractInput()` / `missionRecord()` frente a funciones, símbolos, ciclos y valores numéricos no finitos en misión/target. Inspeccionar tests y contrato antes de editar; reproducir primero; sólo aplicar un fix con regresión concreta.
 - No declarar M0 completo: permanece INCOMPLETO y los efectos protegidos permanecen STOP. Nexo y Lúmina continúan separados.
+
+
+## 7. Continuidad añadida — auditoría de consistencia de misión
+
+Se revisó la frontera indicada en STATUS: estados almacenados/reconstruidos de misión, paso, dependencias y `objective`. No se encontró un defecto nuevo que justifique un cambio de código. La rama exige estado almacenado `planned`, misión/paso reconstruidos `planned`, y dependencias `completed`; claims de completion sin respaldo canónico quedan bloqueados. `objective` no autoriza ejecución y se recalcula en la reconstrucción normal.
+
+La comparación GitHub de `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5...ncs-clean-architecture` muestra tres commits documentales y ningún cambio de código posterior a ese checkpoint.
+
+### Siguiente frontera exacta
+Auditar el límite entre observación de estado y verificación del objetivo, sin habilitar acciones nuevas. `scripts/nexo-repair-settlement.mjs` consume un snapshot leído con `loadStateStrict()`; `src/nexo/adapters/persisted-repair-observation.mjs` clasifica invariantes presentes/ausentes/unknown. Esos datos son evidencia diagnóstica: no prueban causalidad, autoridad de origen ni atomicidad con el store de continuidad. Antes de conectar un goal verifier, establecer qué componente es propietario canónico del estado observado y qué contrato independiente puede respaldarlo. No integrar Lúmina, simulación, UI ni reparaciones al runtime Nexo como atajo. Si no existe fuente independiente suficiente, conservar STOP y documentar el bloqueo; no fabricar un verificador.
+
+No se hicieron cambios de código ni se ejecutaron nuevas pruebas en esta auditoría; no atribuirle un CI nuevo. M0 sigue INCOMPLETO.
