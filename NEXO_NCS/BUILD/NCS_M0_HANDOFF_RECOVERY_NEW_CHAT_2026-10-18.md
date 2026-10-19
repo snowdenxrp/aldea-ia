@@ -551,3 +551,11 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 ### Límite y siguiente frontera
 - El caso de uso ya puede ser consumido sin ejecutar el CLI, pero solo se ha probado la vertical Chronicle y sus consultas. No se declara runtime general, app Android/web, aislamiento OS, fsync/power-loss durability ni autoridad.
 - Siguiente: revisar el contrato de la API de aplicación (inputs, resultado, idempotencia, concurrencia y recuperación) como interfaz estable antes de conectarla a otra superficie. No ampliar acciones ni cambiar runtime default. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+### Addendum — contrato directo de aplicación y carrera concurrente (2026-10-19)
+
+- `tests/nexo/chronicle-runtime.test.mjs` importa el caso de uso desde `src/nexo/application/chronicle-append.mjs`; la prueba CLI permanece aparte.
+- Dos invocaciones concurrentes de la misma operación no producen dos dispatches ni dos entradas Chronicle. Después, un retry explícito recupera `completed` con `dispatchAttempted=false`; continuidad y Chronicle quedan byte-identical durante el replay.
+- CI SUCCESS en SHA `140769ea651ed5cd198fd57f05530679e79f8c5d`: [39180811315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811315), [39180811308](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811308), [39180811234](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811234), [39180811257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811257).
+- No automatic retries, queues, generic action dispatch or causality claims are added. The caller must handle a conflict/blocked concurrent loser and retry explicitly.
