@@ -90,3 +90,18 @@ El runtime recibe el owner por inyección; las pruebas ya usan owners simulados.
 - No declarar la suite completa aprobada sin ejecutar `npm test`.
 
 **Regla final:** el repo es la fuente de continuidad. Cada cambio de código debe tener test focal, CI sobre SHA exacto y una entrada de evidencia. Si una operación de documentación falla, reportarlo claramente.
+
+
+## 7. Implementación posterior a la auditoría estática — CI todavía pendiente
+
+La pista de resultado terminal se convirtió en un cambio acotado y en regresiones. **No declarar todavía que la corrección pasó pruebas ni CI.**
+
+- Runtime actualizado en commit [`85b47f11d82ffbdca70b3a5e327ae97b63ada6e8`](https://github.com/snowdenxrp/aldea-ia/commit/85b47f11d82ffbdca70b3a5e327ae97b63ada6e8), archivo `src/nexo/core/owner-backed-runtime.mjs`. El recibo de `recordOutcome` ahora exige revisión exacta: `committed` debe ser `expectedRevision + 1`; `already_recorded` debe permanecer en `expectedRevision`. Respuesta de revisión ausente, repetida, saltada, inválida o no segura debe quedar UNKNOWN y no terminal-completed.
+- Regresiones añadidas en commit [`e38556bc78487aae117b1c11085aca1731dfbb2e`](https://github.com/snowdenxrp/aldea-ia/commit/e38556bc78487aae117b1c11085aca1731dfbb2e), archivo `tests/nexo/chronicle-runtime.test.mjs`. Cubren revisión ausente, revisión que no avanza, salto de revisión y `already_recorded` con revisión incorrectamente avanzada. Verifican UNKNOWN, `terminalOutcomeRecorded: "UNKNOWN"`, `journalSettled: true`, sin redispatch, y que no se persista un intento terminal falso.
+- Blob runtime tras el cambio: `e5b956ea5394387708535106c2dcee8de70bf2fe`.
+- Blob test tras el cambio: `873d38bf7fd19b8c90ec5e48c9fbfec87ffe0777`.
+- Se verificó lectura posterior de ambos archivos desde `ncs-clean-architecture`. El wrapper de CI asociado al commit de pruebas devolvió lista vacía de runs y el estado de commit no reportó checks; por tanto, **CI para este cambio sigue PENDING**. No se observó ejecución local.
+- Próxima acción obligatoria: revisar que los workflows hayan arrancado sobre el SHA que incluye ambos commits, leer logs de la prueba focal, corregir cualquier fallo real y volver a verificar. Si el conector no expone runs push, obtener evidencia desde la interfaz pública de Actions o el método soportado del repo; no convertir una lista vacía en PASS.
+- SHA de código y pruebas esperado en esta secuencia: el commit de pruebas `e38556bc78487aae117b1c11085aca1731dfbb2e` ya incluye el cambio de runtime como antecesor, pero el HEAD directo de la rama debe verificarse explícitamente antes de declarar que es el actual.
+
+El estado constitucional no cambia: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; suite completa `npm test` pendiente.
