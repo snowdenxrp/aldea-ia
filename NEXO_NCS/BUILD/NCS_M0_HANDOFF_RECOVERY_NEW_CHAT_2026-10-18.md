@@ -602,3 +602,12 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - CI: Chronicle [39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), continuity/restart [39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), semantic validation [39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), outcome classification [39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827), all SUCCESS.
 - Application code now lives under `src/nexo/application/`; core continuity service under `src/nexo/core/`; CLI scripts are wrappers. The only mutating use case is Chronicle append. Tests cover invalid inputs, same-identity replay, payload mismatch, concurrent callers/bootstrap, process restart, PREPARED uncertainty and payload non-disclosure.
 - Next exact task: review whether application results make conflict vs unknown vs blocked sufficiently explicit to a caller, and formalize that result contract with tests before any new UI/legacy runtime integration. Do not add a generic dispatcher, do not switch runtime default, do not infer authority from persisted state. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separated.
+
+
+### Addendum — semántica de resultados: conflict no equivale a unknown (2026-10-19)
+
+- Conflicto CAS al persistir PREPARED: `status=conflict`, revisión actual reportada, `dispatchAttempted=false`; no se llama adapter.
+- Conflicto CAS al registrar outcome después de settlement Chronicle: `status=conflict`, `journalSettled=true`, `terminalOutcomeRecorded=false`. La obligación ya está asentada, así que el siguiente proceso repite solo el outcome y no redispatcha Chronicle.
+- Una excepción o respuesta perdida alrededor del commit sigue siendo `unknown`; un conflicto confirmado ya no se etiqueta como desconocido.
+- CI SUCCESS en SHA `8e0d226c1df5e8c52ab802fe138d86da1a7a08d8`: [39181169917](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169917), [39181169919](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169919), [39181169938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169938), [39181169900](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169900).
+- No automatic retry ni queue; caller must re-read canonical state and decide explicitly.
