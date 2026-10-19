@@ -428,6 +428,42 @@ assert.equal(preparedUnknownResult.journalSettled, false);
 assert.equal(preparedUnknownResult.terminalOutcomeRecorded, false);
 assert.equal(preparedUnknownResult.redispatchAuthorized, false);
 
+const malformedPreparedResponses = [
+  { label: "missing confirmation flag", value: { status: "committed", storeRevision: 5 } },
+  { label: "false confirmation flag", value: { status: "committed", preparedCommitted: false, storeRevision: 5 } },
+  { label: "missing revision", value: { status: "committed", preparedCommitted: true } },
+  { label: "negative revision", value: { status: "committed", preparedCommitted: true, storeRevision: -1 } },
+  { label: "fractional revision", value: { status: "committed", preparedCommitted: true, storeRevision: 1.5 } },
+  { label: "unsafe revision", value: { status: "committed", preparedCommitted: true, storeRevision: Number.MAX_SAFE_INTEGER + 1 } },
+  { label: "unexpected status", value: { status: "failed", preparedCommitted: true, storeRevision: 5 } },
+  { label: "null response", value: null }
+];
+for (const testCase of malformedPreparedResponses) {
+  let handlerInvocations = 0;
+  const result = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-mission",
+    stepId: "step-1",
+    owner: {
+      loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
+      supportsReconciliation: () => true,
+      recordPrepared: async () => testCase.value,
+      recordExecutionLineage: async () => { throw new Error(`lineage must not follow ${testCase.label}`); },
+      reconcilePrepared: async () => { throw new Error(`reconciliation must not follow ${testCase.label}`); },
+      recordOutcome: async () => { throw new Error(`outcome must not follow ${testCase.label}`); }
+    },
+    adapter: adapter(() => {
+      handlerInvocations++;
+      return { status: "completed" };
+    })
+  });
+  assert.equal(result.status, "blocked", testCase.label);
+  assert.equal(result.code, "NEXO_PREPARED_COMMIT_NOT_CONFIRMED", testCase.label);
+  assert.equal(result.dispatchAttempted, false, testCase.label);
+  assert.equal(result.preparedCommitted, false, testCase.label);
+  assert.equal(result.redispatchAuthorized, false, testCase.label);
+  assert.equal(handlerInvocations, 0, testCase.label);
+}
+
 let reconciliationDispatches = 0;
 const reconciliationUnknownResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
