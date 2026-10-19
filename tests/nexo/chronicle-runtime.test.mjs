@@ -438,7 +438,17 @@ const settledOwner = {
         idempotencyKey: "chronicle-mission:step-1", missionId: "chronicle-mission",
         stepId: "step-1", action: "chronicle_append", target: { content: "hello Nexo" },
         status: "settled_observed",
-        settlement: { status: "applied", observedRevision: 1, source: "nexo-chronicle-store" }
+        settlement: {
+          status: "applied",
+          observedRevision: 1,
+          source: "nexo-chronicle-store",
+          evidence: {
+            kind: "persisted-chronicle-entry",
+            operationKey: "chronicle-mission:step-1",
+            content: "hello Nexo"
+          },
+          observedAt: "2026-10-19T00:00:00.000Z"
+        }
       }]
     }
   }),
@@ -461,6 +471,34 @@ const replayed = await executeNexoStepWithContinuityOwner({
 assert.equal(replayed.status, "completed");
 assert.deepEqual(replayCalls, ["outcome"]);
 assert.equal(replayed.dispatchAttempted, false);
+
+// Runtime recovery must use the same complete settlement contract as the owner.
+// A merely settled_observed label with null evidence cannot claim journal settlement.
+let malformedReplayOutcomeCalls = 0;
+let malformedReplayDispatches = 0;
+const malformedSettledOwner = {
+  ...settledOwner,
+  loadCurrent: async () => {
+    const current = await settledOwner.loadCurrent();
+    current.snapshot.effectJournal[0].settlement.evidence = null;
+    return current;
+  },
+  recordOutcome: async () => {
+    malformedReplayOutcomeCalls += 1;
+    return { status: "committed", storeRevision: 9 };
+  }
+};
+const malformedSettledReplay = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission", stepId: "step-1", owner: malformedSettledOwner,
+  adapter: adapter(() => { malformedReplayDispatches++; return { status: "completed" }; })
+});
+assert.equal(malformedSettledReplay.status, "unknown");
+assert.equal(malformedSettledReplay.code, "NEXO_CHRONICLE_EXISTING_OBLIGATION_UNRESOLVED");
+assert.equal(malformedSettledReplay.dispatchAttempted, false);
+assert.equal(malformedSettledReplay.journalSettled, false);
+assert.equal(malformedSettledReplay.terminalOutcomeRecorded, false);
+assert.equal(malformedReplayOutcomeCalls, 0);
+assert.equal(malformedReplayDispatches, 0);
 
 // Real stores and real owner: verify the entire first Chronicle vertical.
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-runtime-"));
