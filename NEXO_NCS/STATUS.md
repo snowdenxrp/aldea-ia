@@ -1,8 +1,8 @@
 ## M0 — vector integrado en `npm test`; CI de este SHA pendiente (2026-10-19)
 
 - Test añadido: [root-bootstrap-protocol.test.mjs](../tests/nexo/root-bootstrap-protocol.test.mjs) en el repositorio y conectado al script `npm test` de `package.json`.
-- HEAD de rama verificado: `4c0cec1833842103f21194b1f4a3ebdfe168181d`; comparación de ese SHA contra `ncs-clean-architecture` = `identical`.
-- La misma lógica del vector se ejecutó localmente con Node.js v22.16.0: caso positivo PASS; desafío modificado, firma alterada, clave distinta y firma truncada rechazados. **No afirmar todavía PASS de CI en el SHA nuevo**: falta observar la ejecución completa del workflow.
+- Commit que integró el test y lo conectó a `npm test`: `4c0cec1833842103f21194b1f4a3ebdfe168181d`. El HEAD actual posterior es `e08c62aa94c8eaec8bd79f2438e81ad6b76a4779`; la comparación confirma que el tramo posterior sólo modifica documentación.
+- La misma lógica de verificación del vector se ejecutó localmente con Node.js v22.16.0: caso positivo PASS; desafío modificado, firma alterada, clave distinta y firma truncada rechazados. El test del repositorio está integrado en `npm test`, pero **no hay todavía evidencia observada de CI para el commit que lo añadió**.
 - La suite completa anterior sigue siendo PASS sólo para el SHA `846f1ca5ff5b194ecd22e097f303964873184bce`, run [39340435744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340435744). Los cambios posteriores incluyen documentación más el test y su inclusión en `npm test`; la suite del HEAD actual debe confirmarse.
 - Después del CI: mantener como pendiente la provisión independiente del pin y la prueba en hardware real. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
 
@@ -10,15 +10,15 @@
 
 - El borrador [NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md](BUILD/NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md), sección 8, contiene un vector de verificación P-256/ECDSA-SHA256: SPKI DER, fingerprint SHA-256, mensaje canónico, firma DER y resultados negativos.
 - Validación local observada con Node.js v22.16.0: firma válida `true`; desafío alterado, firma alterada y clave pública distinta `false`. **No es CI, no es hardware real y no valida el canal de provisión.**
-- Siguiente paso técnico acotado: convertir el vector en test automatizado/CI; en paralelo, cerrar el procedimiento independiente del pin y confirmar disponibilidad/compatibilidad del hardware candidato. No conectar el perfil a dispatch ni habilitar efectos.
+- Siguiente paso técnico acotado: obtener CI completo para el commit que añadió el test; en paralelo, cerrar el procedimiento independiente del pin y confirmar disponibilidad/compatibilidad del hardware candidato. No conectar el perfil a dispatch ni habilitar efectos.
 - Estado invariable: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
 
 ## M0 — perfil criptográfico de bootstrap redactado, pendiente de provisión (2026-10-19)
 
 - Borrador: [NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md](BUILD/NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md).
 - Se propone un perfil preciso para revisión: P-256/ECDSA-SHA256, SPKI DER con fingerprint SHA-256, desafío CSPRNG de 32 bytes y mensaje con dominio `NEXO-ROOT-BOOTSTRAP-V1\0`. Es especificación documental, no código ni vector validado.
-- El pin/fingerprint independiente sigue sin ceremonia aceptada; hardware candidato no adquirido/probado. No escribir aún el verificador de producción ni conectar la firma a dispatch.
-- Próxima puerta: cerrar provisión del pin, confirmar disponibilidad/compatibilidad de hardware, crear vector criptográfico reproducible y pruebas negativas; después CI y prueba física. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+- El pin/fingerprint independiente sigue sin ceremonia aceptada; hardware candidato no adquirido/probado. El vector de verificación software ya está documentado y automatizado en `tests/nexo/root-bootstrap-protocol.test.mjs`, pero su CI en el commit nuevo está pendiente. No escribir aún el verificador de producción ni conectar la firma a dispatch.
+- Próxima puerta: obtener CI del test, cerrar provisión del pin y confirmar disponibilidad/compatibilidad de hardware; después prueba física y CI de integración. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
 
 ## Addendum — candidato técnico identificado, sin disponibilidad ni prueba (2026-10-19)
 
