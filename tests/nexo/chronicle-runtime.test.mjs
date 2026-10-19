@@ -281,6 +281,45 @@ assert.equal(completedClaimResult.dispatchAttempted, false);
 assert.equal(completedClaimPrepareCalls, 0);
 assert.equal(completedClaimDispatchCalls, 0);
 
+const blockedMissionClaim = {
+  missionId: "blocked-mission-with-planned-step",
+  status: "blocked",
+  steps: [{ id: "step-1", action: "chronicle_append", target: { content: "blocked" }, status: "planned", dependsOn: [] }]
+};
+let blockedMissionPrepareCalls = 0;
+let blockedMissionDispatchCalls = 0;
+const blockedMissionOwner = {
+  loadCurrent: async () => ({
+    storeRevision: 0,
+    snapshot: continuitySnapshot([blockedMissionClaim])
+  }),
+  supportsReconciliation: () => true,
+  recordPrepared: async () => {
+    blockedMissionPrepareCalls += 1;
+    return { status: "committed", preparedCommitted: true, storeRevision: 1 };
+  },
+  recordExecutionLineage: async () => ({ status: "committed", storeRevision: 2 }),
+  reconcilePrepared: async () => ({
+    status: "observed", observation: "applied", storeRevision: 3,
+    observedRevision: 1, source: "nexo-chronicle-store", journalSettled: true
+  }),
+  recordOutcome: async () => ({ status: "committed", storeRevision: 4 })
+};
+const blockedMissionResult = await executeNexoStepWithContinuityOwner({
+  missionId: "blocked-mission-with-planned-step",
+  stepId: "step-1",
+  owner: blockedMissionOwner,
+  adapter: adapter(() => {
+    blockedMissionDispatchCalls += 1;
+    return { status: "completed", verified: true, evidence: { verified: true } };
+  })
+});
+assert.equal(blockedMissionResult.status, "blocked",
+  "a canonically blocked mission must not become runnable merely because reconstruction finds a planned step");
+assert.equal(blockedMissionResult.dispatchAttempted, false);
+assert.equal(blockedMissionPrepareCalls, 0);
+assert.equal(blockedMissionDispatchCalls, 0);
+
 
 
 // First execution: PREPARED -> dispatch -> lineage -> trusted persisted observation -> terminal outcome.
