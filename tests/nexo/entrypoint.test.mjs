@@ -34,7 +34,10 @@ async function auditNexoImportGraph(relativePath) {
   if (auditedFiles.has(absolutePath)) return;
   auditedFiles.add(absolutePath);
   const source = await fs.readFile(absolutePath, "utf8");
-  const specifiers = [...source.matchAll(/\bimport\s+(?:[^'";]*?\s+from\s+)?["']([^"']+)["']/g)]
+  // Follow both imports and re-exports: the public application index uses
+  // "export ... from", so ignoring re-exports would leave its implementation
+  // graph outside this architectural guard.
+  const specifiers = [...source.matchAll(/\b(?:import|export)\s+(?:[^'";]*?\s+from\s+)?["']([^"']+)["']/g)]
     .map(match => match[1]);
   for (const specifier of specifiers) {
     assert.equal(forbiddenImport.test(specifier), false,
@@ -47,6 +50,10 @@ async function auditNexoImportGraph(relativePath) {
 }
 await auditNexoImportGraph("scripts/nexo.mjs");
 await auditNexoImportGraph("scripts/nexo-chronicle-session.mjs");
+assert.equal(auditedFiles.has(path.resolve(process.cwd(), "src/nexo/application/chronicle-append.mjs")), true,
+  "import graph guard must traverse the public index re-export to the mutating use case");
+assert.equal(auditedFiles.has(path.resolve(process.cwd(), "src/nexo/application/continuity-queries.mjs")), true,
+  "import graph guard must traverse public read-only query re-exports");
 assert.equal(auditedFiles.has(path.resolve(process.cwd(), "src/nexo/runtime.js")), false,
   "the independent Nexo entrypoints must not transitively import the compatibility runtime");
 assert.deepEqual(parseNexoEntrypointArguments([]), {
