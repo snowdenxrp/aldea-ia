@@ -145,3 +145,21 @@ Se cerró la discrepancia detectada entre replay y `recordOutcome()`: replay ya 
 - Este resultado demuestra la frontera de completion y la regresión de CI; no demuestra durabilidad ante pérdida de energía, causalidad del efecto externo, goal verifier general ni autoridad legítima.
 
 **Siguiente paso:** continuar M0 desde el siguiente límite real de escritura/recuperación, leyendo sus pruebas antes de cambiar código. No repetir la auditoría de `chronicleSettlementReady` ni del replay ya cerrada. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 7. Checkpoint verificado — evidencia Chronicle no puede ser null (2026-10-19)
+
+Se encontró una brecha posterior al gate de settlement completo: el verificador Chronicle confirmaba la entrada persistida pero no devolvía evidencia. El propietario serializaba `evidence: null`, y las guardas previas sólo exigían que la propiedad existiera.
+
+**Cambio funcional:**
+- `src/nexo/adapters/chronicle-observation.mjs`: cuando encuentra una única entrada con operationKey y contenido coincidentes, devuelve `evidence: { kind: "persisted-chronicle-entry", operationKey, content }`.
+- `src/nexo/core/continuity-owner.mjs`: helper compartido valida que evidence sea objeto, kind sea exacto y operationKey/content coincidan con la entrada/target. Aplicado tanto al replay de settlement Chronicle como a `recordOutcome(status="completed")`.
+- Pruebas: `tests/nexo/chronicle-store.test.mjs` comprueba la evidencia material del verificador. `tests/nexo/repair-settlement-crash-cuts.test.mjs` inyecta `evidence: null` con el resto de settlement válido y confirma bloqueo, revisión sin cambio e intentos vacíos.
+
+**SHA y CI:** código `b3a583038a3844b804655544097783d73bc222d2`; observador + prueba de forma `af465ba0d2d0b787dc6ac0f7c6dc4f2f18851db4`; SHA final con regresión `9914f45517e20fbe2764d6c023bfb0ac66295020`. Chronicle native SUCCESS run `39193460291`; bounded admission/restart SUCCESS `39193460351`; STEP 4 SUCCESS `39193464132`; STEP 5 SUCCESS `39193464001`; crash cuts SUCCESS `39193464060`; effect/settlement regressions SUCCESS `39193464046`. Chronicle/bounded pasaron en el SHA de código+test `af465...`; los otros cuatro en el SHA final `9914...`. Una ejecución intermedia falló por la expectativa exacta antigua del test y se corrigió antes del checkpoint validado; no ocultar ese orden ni atribuir el fallo a producto.
+
+**Límite:** evidencia estructurada tomada del store local, no autenticación criptográfica ni causalidad, autorización, garantía fsync/power-loss, o verificación general del objetivo. M0 sigue INCOMPLETO y efectos protegidos STOP.
+
+## 8. Próximo paso obligatorio
+
+Continuar la siguiente frontera real de M0 en recuperación/reconstrucción de continuidad canónica. Leer primero los tests relevantes antes de modificar. No repetir auditoría de settlement Chronicle; no hacer un cambio si no hay un fallo reproducible. Mantener Nexo separado de Lúmina y no activar efectos protegidos.
