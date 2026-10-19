@@ -183,6 +183,18 @@ function adapter(onDispatch = () => ({ status: "completed", verified: true })) {
     executePrepared: async () => onDispatch()
   };
 }
+function continuitySnapshot(missions, effectJournal = []) {
+  return {
+    schema: "NEXO_OPERATIONAL_CONTINUITY",
+    schemaVersion: 1,
+    missions,
+    attempts: [],
+    doNotRepeat: [],
+    executions: [],
+    effectJournal
+  };
+}
+
 
 // A requested successor step must not reach PREPARED or dispatch while its
 // declared predecessor remains planned in the canonical mission snapshot.
@@ -199,7 +211,7 @@ let dependencyGateDispatchCalls = 0;
 const dependencyGateOwner = {
   loadCurrent: async () => ({
     storeRevision: 0,
-    snapshot: { missions: [dependencyGateMission], effectJournal: [] }
+    snapshot: continuitySnapshot([dependencyGateMission])
   }),
   supportsReconciliation: () => true,
   recordPrepared: async () => {
@@ -228,10 +240,50 @@ assert.equal(dependencyGateResult.dispatchAttempted, false);
 assert.equal(dependencyGatePrepareCalls, 0, "dependency gate must run before PREPARED");
 assert.equal(dependencyGateDispatchCalls, 0, "dependency gate must run before adapter dispatch");
 
+const completedClaimMission = {
+  missionId: "completed-claim-mission",
+  status: "completed",
+  steps: [{ id: "step-1", action: "chronicle_append", target: { content: "claimed" }, status: "completed", dependsOn: [] }]
+};
+let completedClaimPrepareCalls = 0;
+let completedClaimDispatchCalls = 0;
+const completedClaimOwner = {
+  loadCurrent: async () => ({
+    storeRevision: 0,
+    snapshot: continuitySnapshot([completedClaimMission])
+  }),
+  supportsReconciliation: () => true,
+  recordPrepared: async () => {
+    completedClaimPrepareCalls += 1;
+    return { status: "committed", preparedCommitted: true, storeRevision: 1 };
+  },
+  recordExecutionLineage: async () => ({ status: "committed", storeRevision: 2 }),
+  reconcilePrepared: async () => ({
+    status: "observed", observation: "applied", storeRevision: 3,
+    observedRevision: 1, source: "nexo-chronicle-store", journalSettled: true
+  }),
+  recordOutcome: async () => ({ status: "committed", storeRevision: 4 })
+};
+const completedClaimResult = await executeNexoStepWithContinuityOwner({
+  missionId: "completed-claim-mission",
+  stepId: "step-1",
+  owner: completedClaimOwner,
+  adapter: adapter(() => {
+    completedClaimDispatchCalls += 1;
+    return { status: "completed", verified: true, evidence: { verified: true } };
+  })
+});
+assert.equal(completedClaimResult.status, "blocked",
+  "an unverified completed claim must not be treated as a fresh runnable step");
+assert.equal(completedClaimResult.dispatchAttempted, false);
+assert.equal(completedClaimPrepareCalls, 0);
+assert.equal(completedClaimDispatchCalls, 0);
+
+
 
 // First execution: PREPARED -> dispatch -> lineage -> trusted persisted observation -> terminal outcome.
 const calls = [];
-let current = { storeRevision: 0, snapshot: { missions: [chronicleMission()], effectJournal: [] } };
+let current = { storeRevision: 0, snapshot: continuitySnapshot([chronicleMission()]) };
 const owner = {
   loadCurrent: async () => structuredClone(current),
   supportsReconciliation: action => action === "chronicle_append",
@@ -292,7 +344,7 @@ const prepareConflictResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
   stepId: "step-1",
   owner: {
-    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
     supportsReconciliation: () => true,
     recordPrepared: async () => ({
       status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: 5
@@ -313,7 +365,7 @@ const preparedUnknownResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
   stepId: "step-1",
   owner: {
-    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
     supportsReconciliation: () => true,
     recordPrepared: async () => ({ status: "unknown", code: "NEXO_COMMIT_RESULT_UNKNOWN" }),
     recordExecutionLineage: async () => { throw new Error("lineage must not follow unknown PREPARED commit"); },
@@ -335,7 +387,7 @@ const reconciliationUnknownResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
   stepId: "step-1",
   owner: {
-    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
     supportsReconciliation: () => true,
     recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
     recordExecutionLineage: async () => ({ status: "committed", storeRevision: 6 }),
@@ -357,7 +409,7 @@ const adapterThrowResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
   stepId: "step-1",
   owner: {
-    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
     supportsReconciliation: () => true,
     recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
     recordExecutionLineage: async () => { throw new Error("must not record lineage after adapter throw"); },
@@ -381,7 +433,7 @@ const lineageConflictResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
   stepId: "step-1",
   owner: {
-    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
     supportsReconciliation: () => true,
     recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
     recordExecutionLineage: async () => ({
@@ -1053,14 +1105,11 @@ let unsupportedDispatchCalls = 0;
 const unsupportedOwner = {
   loadCurrent: async () => ({
     storeRevision: 0,
-    snapshot: {
-      missions: [{
-        missionId: "generic-mission",
-        status: "planned",
-        steps: [{ id: "step-1", action: "generic_write", target: "alpha", status: "planned", dependsOn: [] }]
-      }],
-      effectJournal: []
-    }
+    snapshot: continuitySnapshot([{
+      missionId: "generic-mission",
+      status: "planned",
+      steps: [{ id: "step-1", action: "generic_write", target: "alpha", status: "planned", dependsOn: [] }]
+    }])
   }),
   recordPrepared: async () => { unsupportedPrepareCalls += 1; return { status: "committed", preparedCommitted: true, storeRevision: 1 }; },
   recordExecutionLineage: async () => ({ status: "committed", storeRevision: 2 }),
