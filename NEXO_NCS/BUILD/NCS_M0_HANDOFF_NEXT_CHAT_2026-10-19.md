@@ -537,3 +537,14 @@ El documento distingue el gate de ejecución de la legitimidad de la raíz de au
 **Bloqueo inmediato:** CI del cambio `mission-status` sigue UNKNOWN. La corrección de integración está en `82f1204ae4e9298163231ab7a323233ad87777b8`, pero no se observó aquí un run real que ejecute la regresión sobre un SHA que la contenga. El workflow existente permite `workflow_dispatch`; no se dispone de una acción de dispatch mediante la integración GitHub disponible en esta sesión. No declarar PASS ni afirmar que se ejecutó localmente.
 
 Próximo paso exacto: recuperar el run de `.github/workflows/nexo-m0-mission-status.yml` por la interfaz/endpoint permitido, o pedir al usuario que abra Actions sólo si la vía automatizada sigue bloqueada. Después registrar SHA, run, job y log; completar matriz AC1–AC6 usando evidencia ya disponible, sin reabrir los tests cerrados salvo cambios relevantes. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 27. Resultado CI recuperado — mission-status (2026-10-19)
+
+Se encontró y verificó el run real del workflow `.github/workflows/nexo-m0-mission-status.yml` consultando el endpoint de Actions permitido por GitHub:
+- **Run fallido:** [39264987091](https://github.com/snowdenxrp/aldea-ia/actions/runs/39264987091), SHA `4b6423404d5ad2e901e3b3eccb5db6e2140ee492`. El log mostró que el test esperaba éxito, pero la consulta devolvió `NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE` en `tests/nexo/entrypoint.test.mjs:185`.
+- **Causa:** contrato de retorno incorrectamente supuesto; `reconstructNexoMissionFromSnapshot()` devuelve la misión directamente o `null`.
+- **Fix:** `82f1204ae4e9298163231ab7a323233ad87777b8`.
+- **Run corregido:** [39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), SHA exacto del fix. Job `mission-status` y paso `Run independent Nexo entrypoint regression` SUCCESS. El log emitió la línea de éxito del entrypoint independiente.
+
+Conclusión: M0-AC1 = PASS focal en SHA `82f1204...`; no implica cierre global ni activación de efectos protegidos. Se registró el historial fallo→fix→PASS en el documento de criterios y en STATUS. No repetir esta comprobación salvo cambio relevante del código/test/workflow. Siguiente paso: construir la matriz AC1–AC6 usando evidencia existente por SHA, y marcar con precisión los criterios históricos que no están validados sobre el HEAD actual. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
