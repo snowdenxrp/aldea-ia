@@ -114,10 +114,10 @@ try {
   assert.equal(recoveredAdmission.storeRevision, 1);
   assert.equal(recoveredAdmission.snapshot.missions[0].missionId, "admission-crash-cut");
   assert.equal(recoveredAdmission.snapshot.missions.length, 1);
-  const replayAdmission = await admissionOwner.recordMission({
-    expectedRevision: 1, mission: candidateMission
-  });
-  assert.equal(replayAdmission.status, "already_recorded");
+  const reconstructedAfterLostResponse = await admissionOwner.reconstructMission("admission-crash-cut");
+  assert.equal(reconstructedAfterLostResponse.status, "reconstructed");
+  assert.equal(reconstructedAfterLostResponse.mission.status, "planned");
+  assert.equal(reconstructedAfterLostResponse.mission.steps[0].status, "planned");
   assert.equal((await durableStore.loadCurrent()).storeRevision, 1);
 } finally {
   await fs.rm(admissionCrashRoot, { recursive: true, force: true });
