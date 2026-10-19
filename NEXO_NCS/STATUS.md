@@ -1,5 +1,17 @@
 # Puerta de entrada NCS — estado M0
 
+
+## M0 — PREPARED admission now respects reconstructed current-step status (validated 2026-10-19)
+
+- Hueco reproducido en CI: `recordPrepared()` validaba `step.status === "planned"` usando sólo la misión persistida. La reconstrucción podía bloquear ese mismo paso por una claim terminal de acción mutante sin goal verifier, pero la admisión seguía creando PREPARED. Resultado observado antes del fix: `committed` donde la regresión exigía `blocked` (bounded admission run [39195312143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195312143); crash cuts también falló en la misma regresión [39195312160](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195312160)).
+- Corrección en `src/nexo/core/continuity-owner.mjs`: la admisión obtiene `reconstructNexoMissionFromSnapshot()` y requiere que el paso canónico reconstruido siga en `planned`, además del estado del plan almacenado. Si la reconstrucción no habilita el paso, devuelve `NEXO_PREPARED_STEP_NOT_RUNNABLE` sin incrementar revisión ni añadir entradas a `effectJournal`. La comprobación de dependencias también se basa en la reconstrucción canónica.
+- Regresión en `tests/nexo/continuity-migration.test.mjs`: una claim `completed` caller-supplied para `repair_agent_state` hace que la reconstrucción bloquee el paso; intentar crear PREPARED con el plan antiguo todavía en `planned` debe bloquearse sin mutación. La prueba falló antes del fix y pasó después.
+- HEAD código+tests validado: `9d46f1400cef0eb4c74a4c4419edcc2c616a73b9`; fix funcional `615941bf3bc4389c3ce9fd12b0212f3144f9c87a`. SUCCESS en SHA final: bounded admission/restart [39195354527](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195354527), STEP 4 [39195354529](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195354529), STEP 5 [39195354611](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195354611), crash cuts [39195354737](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195354737). Chronicle native vertical y effect/settlement también SUCCESS en SHA funcional `615941...`: [39195344263](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195344263), [39195344261](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195344261).
+- Límite: protege la admisión contra estado canónico bloqueado; no implementa goal verifier ni autoriza el efecto externo. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera (auditoría, todavía no un defecto confirmado):** comprobar en tests/docs si el contrato permite más de una obligación `PREPARED` no resuelta por misión. `reconstructNexoMissionFromSnapshot()` marca la misión bloqueada ante PREPARED no resuelto, mientras que la admisión consulta el estado canónico del paso actual y las dependencias; no imponer serialización ni añadir límites hasta encontrar el contrato existente y una reproducción concreta.
+
+
 ## M0 — reconstrucción respeta el gate de goal verification (validado 2026-10-19)
 
 - Hueco: la reconstrucción canónica aceptaba una tentativa `completed` con action/target coincidentes y labels `verified/kind/source` incluso para acciones mutantes sin goal verifier. Eso contradice `recordOutcome()`, que bloquea completion para esas acciones mientras no exista un contrato de verificación específico.
@@ -9,7 +21,7 @@
 - SHA funcional `fbfda4b7be4de8cf2e3ae1b0d7903f0287cf5b6e`; SHA final de pruebas `ac8e4bc88c04c2f1ea257a58ecf224d867dd4b94`. SUCCESS en SHA final: bounded admission/restart [39194990258](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194990258), STEP 4 [39194990341](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194990341), STEP 5 [39194990334](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194990334); crash cuts SUCCESS en código funcional `fbfda4...` [39194945319](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194945319). Las ejecuciones intermedias fallaron por tests que todavía asumían completion de repair o usaban action distinto en el replay; se actualizaron y los workflows finales pasaron.
 - Límite: no existe aún un goal verifier general para acciones mutantes. Este cambio bloquea claims, no implementa el verificador. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
 
-**Siguiente frontera:** inspeccionar la admisión de misiones y sus dependencias: confirmar que un paso marcado `completed` en el plan no se acepta como prueba suficiente de que una dependencia mutante terminó, salvo que la continuidad canónica tenga outcome permitido. No cambiar el contrato hasta tener una reproducción que no esté ya cubierta por los guards de `recordPrepared()`.
+**Siguiente frontera:** revisar el contrato existente sobre múltiples PREPARED no resueltos por misión. No asumir que deben serializarse ni cambiar el comportamiento sin evidencia y regresión.
 
 
 ## M0 — reconstrucción Chronicle exige settlement y outcome coherentes (validado 2026-10-19)
