@@ -118,3 +118,11 @@ The initialization flags are opt-in and should only be used when creating genuin
 ## Stable result contract
 
 See [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md) for the status meanings, tri-state persistence fields, retry constraints and proof links.
+
+
+## Stable public application API — validated (2026-10-19)
+
+- `src/nexo/application/index.mjs` is the single public application import surface and exports exactly `runNexoChronicleAppend`, `loadNexoContinuityStatus`, and `loadNexoMissionStatus`.
+- CLI wrappers and the direct application test use this module. The export-list regression prevents an implicit generic dispatcher from being added.
+- CI SUCCESS on SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
+- This is an integration seam, not a browser/Android app or runtime-default cutover.
