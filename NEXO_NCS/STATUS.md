@@ -1,3 +1,10 @@
+## M0 — vector criptográfico preliminar verificado (2026-10-19)
+
+- El borrador [NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md](BUILD/NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md), sección 8, contiene un vector de verificación P-256/ECDSA-SHA256: SPKI DER, fingerprint SHA-256, mensaje canónico, firma DER y resultados negativos.
+- Validación local observada con Node.js v22.16.0: firma válida `true`; desafío alterado, firma alterada y clave pública distinta `false`. **No es CI, no es hardware real y no valida el canal de provisión.**
+- Siguiente paso técnico acotado: convertir el vector en test automatizado/CI; en paralelo, cerrar el procedimiento independiente del pin y confirmar disponibilidad/compatibilidad del hardware candidato. No conectar el perfil a dispatch ni habilitar efectos.
+- Estado invariable: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
+
 ## M0 — perfil criptográfico de bootstrap redactado, pendiente de provisión (2026-10-19)
 
 - Borrador: [NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md](BUILD/NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md).
