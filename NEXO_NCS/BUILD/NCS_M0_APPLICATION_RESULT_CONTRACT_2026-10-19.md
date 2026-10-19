@@ -130,3 +130,12 @@ The owner previously rejected completion when an unresolved effect journal row e
 Regression in `tests/nexo/repair-settlement-crash-cuts.test.mjs`: no PREPARED entry + caller-asserted repair completion → blocked; canonical revision remains 0.
 
 Validated code/test SHA `bef43609defa7a57f542d1a572dde388afb90812`. CI SUCCESS: [M0 effect/settlement 39188821844](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821844), [repair crash cuts 39188821998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821998), [bounded admission/restart 39188821789](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821789), [STEP 4 39188821769](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821769), [Chronicle 39188821790](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821790). This is a fail-closed guard, not the missing goal-verification implementation; M0 remains incomplete.
+
+
+## Latest M0 checkpoint — completion guard for registered effects (2026-10-19)
+
+A caller-supplied evidence shape is not a goal verifier. The owner now blocks completed outcomes for the three known repair actions and any action registered in the trusted `effectVerifiers` registry, except `chronicle_append`, whose completion is gated by its own exact persisted settlement contract. If PREPARED/observed effect state is unresolved, the existing `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED` result retains precedence. Non-mutating `local_analysis` completion remains unchanged.
+
+Regressions cover a repair with no PREPARED row and a registered `generic_write` with no PREPARED row. Both caller-asserted completions block without advancing canonical revision. The first guard iteration failed CI due to precedence/scope; corrected code and expanded tests passed all six focal workflows on code/test SHA `f0a2472887e8bf5d46aaff2c904e50dae190345b`: [bounded admission/restart 39188948325](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948325), [STEP 5 39188948326](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948326), [STEP 4 39188948327](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948327), [Chronicle 39188948337](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948337), [repair crash cuts 39188948338](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948338), [effect/settlement 39188948346](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948346).
+
+This guard does not implement the missing mission-goal verifier or enable additional effects. M0 remains incomplete.
