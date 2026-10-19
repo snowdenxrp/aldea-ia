@@ -10,10 +10,30 @@ import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mj
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { runNexoChronicleAppend } from "../../src/nexo/application/index.mjs";
-import { recordNexoMissionSafely } from "../../src/nexo/application/chronicle-append.mjs";
+import { publicChronicleResult, recordNexoMissionSafely } from "../../src/nexo/application/chronicle-append.mjs";
 import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
+
+const publicAdmissionUnknown = publicChronicleResult({
+  status: "unknown",
+  code: "NEXO_TEST_MISSION_ADMISSION_UNKNOWN",
+  missionAdmissionCommitted: "UNKNOWN",
+  dispatchAttempted: false,
+  redispatchAuthorized: false,
+  target: { content: "PRIVATE_PUBLIC_RESULT_PAYLOAD" },
+  adapterResult: { secret: "PRIVATE_INTERNAL_RESULT" }
+}, "public-unknown-mission", "step-unknown");
+assert.equal(publicAdmissionUnknown.status, "unknown");
+assert.equal(publicAdmissionUnknown.missionId, "public-unknown-mission");
+assert.equal(publicAdmissionUnknown.stepId, "step-unknown");
+assert.equal(publicAdmissionUnknown.missionAdmissionCommitted, "UNKNOWN");
+assert.equal(publicAdmissionUnknown.dispatchAttempted, false);
+assert.equal(publicAdmissionUnknown.redispatchAuthorized, false);
+assert.equal(Object.hasOwn(publicAdmissionUnknown, "target"), false);
+assert.equal(Object.hasOwn(publicAdmissionUnknown, "adapterResult"), false);
+assert.equal(JSON.stringify(publicAdmissionUnknown).includes("PRIVATE_PUBLIC_RESULT_PAYLOAD"), false);
+assert.equal(JSON.stringify(publicAdmissionUnknown).includes("PRIVATE_INTERNAL_RESULT"), false);
 
 const invalidApplicationInput = await runNexoChronicleAppend({
   continuityPath: "", chroniclePath: "/unused/chronicle.json",
