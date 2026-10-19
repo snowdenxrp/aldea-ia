@@ -1,6 +1,6 @@
 # NCS — handoff de continuidad para el siguiente chat (M0)
 
-> **Checkpoint de continuidad más reciente (2026-10-19):** leer también [NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md](./NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md). Este documento complementa y corrige el orden del siguiente trabajo: incluye la brecha candidata de revisión en el resultado terminal y aclara que el HEAD del ref debe verificarse directamente; no inferirlo del SHA documental. Mantener M0 INCOMPLETO, `authorization: NOT_EVALUATED`, efectos protegidos STOP y `npm test` completo pendiente.
+> **Checkpoint de continuidad más reciente (2026-10-19):** leer también [NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md](./NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md). El siguiente contrato acotado de recibo terminal ya tiene un cambio de runtime y cuatro regresiones publicados: runtime commit `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8`, tests commit `e38556bc78487aae117b1c11085aca1731dfbb2e`. **La evidencia de CI de estos commits aún no está observada**; no declarar PASS. Verificar el HEAD real de la rama y el resultado de Actions antes de seguir. Mantener M0 INCOMPLETO, `authorization: NOT_EVALUATED`, efectos protegidos STOP y `npm test` completo pendiente.
 
 **Fecha:** 2026-10-19  
 **Repositorio:** `snowdenxrp/aldea-ia`  
