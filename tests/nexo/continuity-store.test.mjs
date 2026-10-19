@@ -64,7 +64,7 @@ const maxRevisionEnvelope = {
   storeRevision: Number.MAX_SAFE_INTEGER,
   snapshot: emptySnapshot
 };
-await fs.writeFile(exhaustedFilePath, JSON.stringify(maxRevisionEnvelope, null, 2) + "\\n", "utf8");
+await fs.writeFile(exhaustedFilePath, JSON.stringify(maxRevisionEnvelope, null, 2) + "\n", "utf8");
 const exhaustedBytesBefore = await fs.readFile(exhaustedFilePath, "utf8");
 assert.deepEqual(
   await exhaustedStore.commitIfCurrent(Number.MAX_SAFE_INTEGER, candidateA),
