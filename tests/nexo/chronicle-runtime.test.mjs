@@ -4,6 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
+import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
@@ -62,6 +64,64 @@ assert.equal(returnedUnknownMissionAdmission.status, "unknown");
 assert.equal(returnedUnknownMissionAdmission.missionAdmissionCommitted, "UNKNOWN");
 assert.equal(returnedUnknownMissionAdmission.dispatchAttempted, false);
 assert.equal(returnedUnknownMissionAdmission.redispatchAuthorized, false);
+
+// Simulate the actual crash cut: the canonical store commits mission admission,
+// then the caller loses the response. UNKNOWN is returned while the persisted
+// mission remains recoverable on the next canonical read.
+const admissionCrashRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-admission-crash-cut-"));
+try {
+  const admissionPath = path.join(admissionCrashRoot, "continuity.json");
+  const durableStore = createNexoContinuityStore({ filePath: admissionPath });
+  const initialized = await durableStore.initialize({
+    schema: "NEXO_OPERATIONAL_CONTINUITY",
+    schemaVersion: 1,
+    missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: []
+  });
+  assert.equal(initialized.status, "committed");
+  let loseNextCommitResponse = true;
+  const wrappedStore = {
+    loadCurrent: () => durableStore.loadCurrent(),
+    commitIfCurrent: async (...args) => {
+      const committed = await durableStore.commitIfCurrent(...args);
+      if (loseNextCommitResponse && committed.status === "committed") {
+        loseNextCommitResponse = false;
+        const error = new Error("simulated response loss after durable commit");
+        error.code = "NEXO_TEST_ADMISSION_RESPONSE_LOST_AFTER_COMMIT";
+        throw error;
+      }
+      return committed;
+    }
+  };
+  const admissionOwner = createNexoContinuityOwner({ store: wrappedStore });
+  const candidateMission = {
+    missionId: "admission-crash-cut",
+    status: "planned",
+    objective: "chronicle_append",
+    steps: [{
+      id: "step-1", action: "chronicle_append",
+      target: { content: "PRIVATE_ADMISSION_PAYLOAD" },
+      status: "planned", dependsOn: []
+    }]
+  };
+  const uncertainAdmission = await recordNexoMissionSafely({
+    owner: admissionOwner, expectedRevision: 0, mission: candidateMission
+  });
+  assert.equal(uncertainAdmission.status, "unknown");
+  assert.equal(uncertainAdmission.missionAdmissionCommitted, "UNKNOWN");
+  assert.equal(uncertainAdmission.dispatchAttempted, false);
+  assert.equal(uncertainAdmission.redispatchAuthorized, false);
+  const recoveredAdmission = await durableStore.loadCurrent();
+  assert.equal(recoveredAdmission.storeRevision, 1);
+  assert.equal(recoveredAdmission.snapshot.missions[0].missionId, "admission-crash-cut");
+  assert.equal(recoveredAdmission.snapshot.missions.length, 1);
+  const replayAdmission = await admissionOwner.recordMission({
+    expectedRevision: 1, mission: candidateMission
+  });
+  assert.equal(replayAdmission.status, "already_recorded");
+  assert.equal((await durableStore.loadCurrent()).storeRevision, 1);
+} finally {
+  await fs.rm(admissionCrashRoot, { recursive: true, force: true });
+}
 
 function chronicleMission() {
   return {
