@@ -86,7 +86,7 @@ async function recordChronicleTerminalOutcome({
 }
 
 async function executeNexoStepWithContinuityOwnerInternal({
-  missionId, stepId, owner, adapter, context={}, precondition, postcondition
+  missionId, stepId, owner, adapter, context={}, precondition, postcondition, _executionState
 }={}) {
   if (typeof missionId !== "string" || !missionId.trim() ||
       typeof stepId !== "string" || !stepId.trim() ||
@@ -290,6 +290,9 @@ async function executeNexoStepWithContinuityOwnerInternal({
 
   let adapterResult;
   try {
+    // From this point onward an adapter call may have produced an external effect.
+    // The outer boundary uses this marker if an unexpected exception escapes.
+    if (_executionState) _executionState.dispatchAttempted = true;
     adapterResult = await adapter.executePrepared({
       missionId, stepId, action: operation.action, target: operation.target,
       idempotencyKey: operation.idempotencyKey,
@@ -399,7 +402,25 @@ async function executeNexoStepWithContinuityOwnerInternal({
  * "UNKNOWN". This normalization reports state only and never authorizes retry.
  */
 export async function executeNexoStepWithContinuityOwner(args = {}) {
-  const result = await executeNexoStepWithContinuityOwnerInternal(args);
+  const executionState = { dispatchAttempted: false };
+  let result;
+  try {
+    result = await executeNexoStepWithContinuityOwnerInternal({ ...args, _executionState: executionState });
+  } catch {
+    // A surprise before the dispatch boundary is a closed failure. After the
+    // boundary, the effect may exist: preserve UNKNOWN and forbid redispatch.
+    result = executionState.dispatchAttempted
+      ? {
+          status: "unknown", code: "NEXO_RUNTIME_OUTCOME_UNKNOWN",
+          dispatchAttempted: true, preparedCommitted: true,
+          lineageCommitted: "UNKNOWN", journalSettled: "UNKNOWN",
+          terminalOutcomeRecorded: "UNKNOWN", redispatchAuthorized: false
+        }
+      : {
+          status: "blocked", code: "NEXO_RUNTIME_INTERNAL_FAILURE",
+          dispatchAttempted: false, redispatchAuthorized: false
+        };
+  }
   return {
     ...result,
     dispatchAttempted: result?.dispatchAttempted === true,
