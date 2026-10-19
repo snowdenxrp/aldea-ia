@@ -1,5 +1,5 @@
 import { pathToFileURL } from "node:url";
-import { runNexoChronicleAppend } from "../src/nexo/application/chronicle-append.mjs";
+import { runNexoChronicleAppend } from "../src/nexo/application/index.mjs";
 
 export { runNexoChronicleAppend };
 
