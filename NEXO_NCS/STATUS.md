@@ -1,3 +1,7 @@
+# Puerta de entrada NCS — estado M0
+
+**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. HEAD documental de cierre: `0e689f32df5463c751bcd32ef29b4af66b5c20a1`; último SHA código/pruebas focales: `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72`. El HEAD posterior al SHA validado contiene sólo tres commits documentales. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
+
 ## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
 
 - Hueco concreto: el replay genérico exigía `evidence` y `observedAt` ISO canónico, pero la rama `chronicle_append` sólo comprobaba estado, source y revisión. Un settlement incompleto podía devolverse como `already_observed` aunque no contuviera evidencia ni timestamp.
