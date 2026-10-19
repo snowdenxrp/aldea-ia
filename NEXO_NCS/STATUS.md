@@ -1628,3 +1628,7 @@ Consultar `NEXO_NCS/BUILD/NCS_M0_LOCK_RECOVERY_DESIGN_NOTE_2026-10-19.md`. PR #1
 
 ### Frontera observación/verificación de objetivo — auditoría read-only (2026-10-19)
 Nota: `NEXO_NCS/BUILD/NCS_M0_GOAL_VERIFICATION_BOUNDARY_2026-10-19.md`. Se inspeccionaron `scripts/nexo-repair-settlement.mjs`, `src/nexo/adapters/persisted-repair-observation.mjs` y los loaders/persistencia de `scripts/simulate.mjs`. La evidencia solo permite registrar condición observada y revisión; no prueba causalidad, ejecución única ni atomicidad con continuidad. No se conectó un verifier ni se cambió runtime. Mantener observador diagnóstico, STOP y separación Nexo/Lúmina.
+
+
+### Frontera de despacho auditada — solo Chronicle permanece habilitado (2026-10-19)
+Nota: `NEXO_NCS/BUILD/NCS_M0_DISPATCH_BOUNDARY_AUDIT_2026-10-19.md`. Revisión estática de `owner-backed-runtime.mjs`: reparaciones y acciones distintas de `chronicle_append` se bloquean antes de dispatch; PREPARED, lineage, reconciliación y outcome permanecen separados; la API pública aplica allowlist y nunca autoriza redispatch. No hubo cambios de runtime ni tests nuevos. Próxima auditoría: inventario de entrypoints CLI/legacy y evidencia de cuáles son accesibles por defecto, sin cutover ni cambio de `index.html`.
