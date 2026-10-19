@@ -174,6 +174,8 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       );
       const hasCompletedClaim = stepAttempts.some(item => item?.status === "completed") ||
         planClaimedCompletedStepIds.has(step.id);
+      const mismatchedCompletedClaim = validChronicleSettlement &&
+        stepAttempts.some(item => item?.status === "completed" && !matchesStepIdentity(item));
       const hasDetachedOutcomeEvidence = validChronicleSettlement && stepAttempts.some(item =>
         item?.status === "completed" && matchesStepIdentity(item) &&
         !isValidNexoChronicleOutcomeEvidence(stepEffects[0], item.evidence)
@@ -181,13 +183,15 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       if (hasChronicleSettlement || hasCompletedClaim) {
         step.status = "blocked";
         step.blockReason = {
-          code: hasDetachedOutcomeEvidence
-            ? "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH"
-            : validChronicleSettlement
-              ? "NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED"
-              : "NEXO_CHRONICLE_SETTLEMENT_REQUIRED",
+          code: mismatchedCompletedClaim
+            ? "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH"
+            : hasDetachedOutcomeEvidence
+              ? "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH"
+              : validChronicleSettlement
+                ? "NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED"
+                : "NEXO_CHRONICLE_SETTLEMENT_REQUIRED",
           idempotencyKey: `${missionId}:${step.id}`,
-          next: hasDetachedOutcomeEvidence
+          next: mismatchedCompletedClaim || hasDetachedOutcomeEvidence
             ? "verify_chronicle_outcome_without_redispatch"
             : validChronicleSettlement
               ? "recover_terminal_outcome_without_redispatch"
