@@ -432,3 +432,12 @@ La comparación GitHub de `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5...ncs-clean-
 Auditar el límite entre observación de estado y verificación del objetivo, sin habilitar acciones nuevas. `scripts/nexo-repair-settlement.mjs` consume un snapshot leído con `loadStateStrict()`; `src/nexo/adapters/persisted-repair-observation.mjs` clasifica invariantes presentes/ausentes/unknown. Esos datos son evidencia diagnóstica: no prueban causalidad, autoridad de origen ni atomicidad con el store de continuidad. Antes de conectar un goal verifier, establecer qué componente es propietario canónico del estado observado y qué contrato independiente puede respaldarlo. No integrar Lúmina, simulación, UI ni reparaciones al runtime Nexo como atajo. Si no existe fuente independiente suficiente, conservar STOP y documentar el bloqueo; no fabricar un verificador.
 
 No se hicieron cambios de código ni se ejecutaron nuevas pruebas en esta auditoría; no atribuirle un CI nuevo. M0 sigue INCOMPLETO.
+
+
+## 9. Corrección de rumbo — propuesta de limpieza de lock retirada
+
+PR #106 se cerró sin merge tras revisión adicional: https://github.com/snowdenxrp/aldea-ia/pull/106. La propuesta de limpiar el lock path con rm(lockPath) cuando falla la escritura de owner.json no era segura. El pathname puede ser eliminado y reemplazado por otro proceso entre la creación original y la limpieza; el rm podría borrar un lock nuevo. Un stat seguido de rm no resuelve esa carrera.
+
+Se revirtieron en la rama del PR los cambios de producción y tests a su contenido de base antes del cierre. No se integró el arreglo y no se deben presentar las pruebas añadidas como validadas. El fallo de owner-write aún puede dejar un lock huérfano y requiere diseño de protocolo, no parche por ruta.
+
+Siguiente paso: mantener fail-closed y evaluar si se puede cambiar el protocolo de lock para que la adquisición/recuperación identifique de forma segura el objeto de lock que posee la operación, sin reclamar ni borrar locks de otros procesos. No usar limpieza por pathname ni stat-then-rm como solución. Requerir pruebas de concurrencia/crash cuts y CI real antes de integrar. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
