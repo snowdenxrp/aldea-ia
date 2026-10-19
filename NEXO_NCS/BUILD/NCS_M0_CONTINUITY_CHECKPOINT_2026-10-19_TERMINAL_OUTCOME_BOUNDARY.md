@@ -105,3 +105,28 @@ La pista de resultado terminal se convirtió en un cambio acotado y en regresion
 - SHA de código y pruebas esperado en esta secuencia: el commit de pruebas `e38556bc78487aae117b1c11085aca1731dfbb2e` ya incluye el cambio de runtime como antecesor, pero el HEAD directo de la rama debe verificarse explícitamente antes de declarar que es el actual.
 
 El estado constitucional no cambia: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; suite completa `npm test` pendiente.
+
+
+## 8. Evidencia posterior: CI del recibo terminal confirmado (2026-10-19)
+
+La consulta directa a GitHub Actions corrigió el estado PENDING anterior. Los dos commits de código/prueba tienen cinco workflows cada uno, todos `completed / success`.
+
+**Runtime commit** `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8`:
+- [STEP 4 semantic validation — 39337360652](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337360652) — SUCCESS.
+- [Chronicle native vertical — 39337360673](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337360673) — SUCCESS.
+- [M0 integrated acceptance — 39337360680](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337360680) — SUCCESS.
+- [Repair settlement crash cuts — 39337360720](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337360720) — SUCCESS.
+- [STEP 5 outcome classification — 39337360679](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337360679) — SUCCESS.
+
+**Test commit** `e38556bc78487aae117b1c11085aca1731dfbb2e`:
+- [STEP 5 outcome classification — 39337387545](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387545) — SUCCESS.
+- [Chronicle native vertical — 39337387569](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387569) — SUCCESS.
+- [Bounded mission admission / restart continuity — 39337387520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387520) — SUCCESS. Job steps explicitly include `node tests/nexo/chronicle-runtime.test.mjs`; this is the direct execution evidence for the four new terminal-outcome regression cases at the test commit.
+- [STEP 4 semantic validation — 39337387598](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387598) — SUCCESS.
+- [M0 integrated acceptance — 39337387526](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387526) — SUCCESS.
+
+**Branch tip verified directly:** `ncs-clean-architecture` points to `e8be8f664a7ad7982686010439282d3f3474850d`. GitHub compare reports the branch is 3 commits ahead of `e38556bc...`, 0 behind; the compare diff lists only this checkpoint and the handoff as changed files. Thus the terminal-outcome code and tests are ancestors of the verified branch tip; the three later commits are documentation-only in that comparison.
+
+**What this proves / does not prove:** the targeted Nexo workflows passed on the exact runtime and test SHAs, including execution of `chronicle-runtime.test.mjs` on the test SHA. This is not a full `npm test` run; the complete suite remains PENDING because the local clone attempt could not resolve `github.com` and no full-suite CI result has been observed.
+
+Current constitutional state remains unchanged: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; protected effects `STOP`; legitimate owner root PENDING.
