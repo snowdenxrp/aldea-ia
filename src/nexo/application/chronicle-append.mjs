@@ -6,7 +6,7 @@ import { createEffectAdapter } from "../effect-adapter.js";
 import { executeNexoStepWithContinuityOwner } from "../core/owner-backed-runtime.mjs";
 
 function blocked(code) {
-  return { status: "blocked", code, dispatchAttempted: false };
+  return { status: "blocked", code, dispatchAttempted: false, redispatchAuthorized: false };
 }
 
 function publicChronicleResult(result, missionId, stepId) {
