@@ -1,3 +1,11 @@
+## Siguiente diseño M0 — borrador semántico de composición de autoridad
+
+Se añadió `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md` (commit `5b24b106d06d22335d09b03560128eb9c9e7b24a`). Define las capas root composition → current authority → authorization decision → protected effect admission → outcome/reconciliation, los resultados de no-root/conflicto/vigencia y las condiciones que deben probarse antes de implementación. No selecciona una raíz física ni habilita dispatch. Reutiliza los gates STEP 7 y las investigaciones AB105 ya existentes.
+
+La última validación funcional sigue siendo CI integrado PASS run `39292887874` en SHA `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; los commits posteriores son documentales. M0 INCOMPLETO; efectos protegidos STOP.
+
+---
+
 ## M0 — verificación final de transparencia de autoridad (2026-10-19)
 
 - La revisión detectó y cerró dos omisiones en resultados públicos Chronicle: el resultado normalizado, los rechazos tempranos y el conflicto de admisión deben conservar `authorization: "NOT_EVALUATED"` mientras no exista evaluación de autoridad.
