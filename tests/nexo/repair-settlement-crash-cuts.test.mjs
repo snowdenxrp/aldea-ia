@@ -416,6 +416,94 @@ try {
   assert.equal(genericPrematureOutcome.status, "blocked");
   assert.equal(genericPrematureOutcome.code, "NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED");
 
+  // Crash cut: the canonical store commits a generic observation and then
+  // throws before the caller receives the commit result. The API must return
+  // structured uncertainty; a reopened owner recovers the persisted record
+  // without running the verifier a second time.
+  const ambiguousDir = path.join(root, "generic-observation-response-lost");
+  await fs.mkdir(ambiguousDir);
+  const ambiguousOpened = await openNexoContinuityOwner({
+    filePath: path.join(ambiguousDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  let ambiguousVerifierCalls = 0;
+  let throwAfterCommit = true;
+  const canonicalStore = ambiguousOpened.store;
+  const ambiguousStore = {
+    loadCurrent: () => canonicalStore.loadCurrent(),
+    commitIfCurrent: async (...args) => {
+      const result = await canonicalStore.commitIfCurrent(...args);
+      if (throwAfterCommit && result.status === "committed") {
+        throwAfterCommit = false;
+        const error = new Error("simulated response loss after durable commit");
+        error.code = "NEXO_CONTINUITY_WRITE_FAILED";
+        throw error;
+      }
+      return result;
+    }
+  };
+  const ambiguousOwner = createNexoContinuityOwner({
+    store: ambiguousStore,
+    effectVerifiers: {
+      generic_write: async operation => {
+        ambiguousVerifierCalls++;
+        return {
+          status: "applied",
+          idempotencyKey: operation.idempotencyKey,
+          action: operation.action,
+          target: operation.target,
+          observedRevision: 11,
+          source: "test-persisted-state-reader",
+          evidence: { invariantPresent: true }
+        };
+      }
+    }
+  });
+  const ambiguousFirst = await ambiguousOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(ambiguousFirst.status, "blocked");
+  assert.equal(ambiguousFirst.uncertainty, "effect_observation_commit_outcome_unknown");
+  assert.equal(ambiguousFirst.observationCommitted, false);
+  assert.equal(ambiguousVerifierCalls, 1);
+
+  const reopenedAmbiguous = await openNexoContinuityOwner({
+    filePath: path.join(ambiguousDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  let replayVerifierCalls = 0;
+  const reopenedOwner = createNexoContinuityOwner({
+    store: reopenedAmbiguous.store,
+    effectVerifiers: {
+      generic_write: async () => {
+        replayVerifierCalls++;
+        return { status: "unknown" };
+      }
+    }
+  });
+  const ambiguousReplay = await reopenedOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(ambiguousReplay.status, "already_observed");
+  assert.equal(ambiguousReplay.observation, "applied");
+  assert.equal(ambiguousReplay.storeRevision, 1);
+  assert.equal(replayVerifierCalls, 0);
+  assert.equal((await reopenedAmbiguous.owner.loadCurrent()).snapshot.effectJournal[0].status, "reconciled_observed");
+
   // The verifier registry is snapshotted at owner construction: later
   // caller mutation cannot replace the configured reconciliation function.
   const frozenRegistryDir = path.join(root, "generic-owner-frozen-registry");
