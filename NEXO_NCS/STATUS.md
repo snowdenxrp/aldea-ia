@@ -1,3 +1,13 @@
+## M0 — completion fail-closed por defecto (validado 2026-10-19)
+
+- Segundo hueco encontrado en el guard anterior: cubrir acciones repair y acciones registradas en `effectVerifiers` no protegía una acción con efecto no registrada. El owner podía aceptar `recordOutcome(status=completed)` sin PREPARED ni un verificador de objetivo si el nombre de acción no estaba en esos dos grupos.
+- Corrección en `src/nexo/core/continuity-owner.mjs`: por defecto, toda acción `completed` queda bloqueada con `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`, excepto `chronicle_append` (usa su gate de settlement canónico) y `local_analysis` (acción definida como no mutante). La protección de PREPARED/reconciliación no resuelta sigue teniendo prioridad.
+- Regresión: `tests/nexo/repair-settlement-crash-cuts.test.mjs` prueba acción `generic_write` sin PREPARED y sin verificador registrado; el caller no puede declarar completion y `storeRevision` permanece en 0. Se mantiene también la cobertura para repair y acción genérica registrada.
+- Código + pruebas validados en SHA `8d8a92a0ad7ed73b0f35bc798f033be11402856c`. Workflows SUCCESS: [STEP 4 39189265872](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265872), [STEP 5 39189265904](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265904), [repair settlement crash cuts 39189265894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265894), [effect/settlement contract 39189265926](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265926). Chronicle SUCCESS en el commit de código anterior `a0cf6b87d479e39c3927b952869d52b3539b6c75`; no cambió en el commit de prueba.
+- Límite: este es un guard fail-closed, no una implementación del goal verifier. No habilita acciones nuevas, no completa misiones automáticamente, no conecta el runtime legacy ni UI. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+**Siguiente corte:** revisar si el contrato de observación del verificador queda ligado suficientemente a identidad de misión/paso y a una revisión de entorno verificable. No crear campos nuevos ni persistir un goal-observation nuevo sin demostrar primero el hueco y especificar el contrato.
+
 ## M0 — guard de completion para acciones con efecto (validado 2026-10-19)
 
 - Hueco: `recordOutcome(status=completed)` podía registrar completion para una reparación sin `effectJournal`, si el caller aportaba campos de evidencia con forma válida. La misma protección debía cubrir cualquier acción con verificador de efecto registrado aunque faltara PREPARED canónico.
