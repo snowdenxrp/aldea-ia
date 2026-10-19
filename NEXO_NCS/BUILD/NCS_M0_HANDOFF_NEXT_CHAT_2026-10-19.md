@@ -313,3 +313,17 @@ La auditoría de Chronicle outcome quedó también cerrada en el código actual:
 La admisión rechaza step IDs duplicados y mission/step IDs con `:`; el contrato de snapshot rechaza mission IDs duplicados y step IDs duplicados persistidos. La reconstrucción bloquea estados de effectJournal fuera de `prepared/settled_observed/reconciled_observed`, incluidas entradas desconocidas huérfanas. Pruebas de admission, snapshot y replay; bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS en SHA `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3` (runs 39197181542, 39197181545, 39197181644, 39197181585).
 
 Siguiente paso: auditar `dependsOn` persistido (self-reference, IDs inexistentes/duplicados y ciclos) y comprobar si algún grafo inválido puede volverse ejecutable. No crear scheduler ni estados nuevos.
+
+
+## 21. Checkpoint — replay fail-closed de effectJournal desconocido/desanclado
+
+Se comprobó con una regresión que un `settled_observed` Chronicle huérfano (step inexistente) podía ser ignorado y dejar el paso planned. También se comprobó que un estado de journal desconocido no debe equivaler a ausencia de efectos. `reconstructNexoMissionFromSnapshot()` ahora bloquea cuando:
+
+- el estado de journal es desconocido y se atribuye a la misión actual, o su identidad de misión falta/no existe;
+- un estado reconocido (`prepared`, `settled_observed`, `reconciled_observed`) no tiene misión propietaria o no enlaza con step/action/target canónicos.
+
+La lectura legacy sigue permitida; no se inventa un nuevo estado de ejecución ni se transforma la observación en completion. Las pruebas cubren estado desconocido ligado, estado desconocido huérfano y settlement Chronicle con step ausente. El test de settlement huérfano falló antes del fix y pasó después.
+
+SHA código+tests `e31547f17764c18fd0bf2fe39dab1ebfc5748686`; bounded admission/restart 39197251854, STEP 4 39197251843, STEP 5 39197251835, crash cuts 39197251844: SUCCESS. Ver enlaces en STATUS.
+
+**Siguiente paso:** revisar el contrato de reconstrucción para attempts `completed` no-Chronicle: asegurar que el historial terminal no se acepte si falta vínculo suficiente a un contrato de completion, sin fingir un goal verifier general. M0 sigue INCOMPLETO; efectos protegidos STOP.
