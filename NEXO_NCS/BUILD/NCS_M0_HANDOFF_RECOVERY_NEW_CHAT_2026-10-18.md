@@ -532,3 +532,22 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - La suite de entrada recorre recursivamente los imports estáticos locales desde `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`, rechazando dependencias transitivas de `assistants/memory.js`, `simulation-adapter.js`, `world.js`, `simulation.js`, `simulate.mjs` o `src/nexo/runtime.js`.
 - CI SUCCESS en SHA `c9f62e3611a598f0ab29fa1b55d2ac849a67c6c3`: [39180518798](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518798), [39180518686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518686), [39180518787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518787).
 - Esto protege el grafo de módulos de la entrada CLI, pero no afirma aislamiento del proceso completo ni autoriza el runtime general. No cambiar `src/nexo/runtime.js` ni `index.html` todavía.
+
+
+## Addendum — extracción del servicio de aplicación (2026-10-19)
+
+### Estructura resultante
+- `src/nexo/core/continuity-service.mjs`: abre store/owner canónico; solo importa módulos core.
+- `src/nexo/application/chronicle-append.mjs`: contiene el caso de uso de append, prepara/ejecuta/verifica/liquida mediante el owner y contratos Chronicle.
+- `src/nexo/application/continuity-queries.mjs`: consulta de contadores y reconstrucción de misión con salida sin payloads.
+- `scripts/nexo.mjs`: parser/router CLI; `scripts/nexo-chronicle-session.mjs`: wrapper CLI del caso de uso; `scripts/nexo-continuity.mjs`: reexport de compatibilidad hacia core.
+- Se mantuvo `src/nexo/runtime.js` sin cambios como compatibilidad legacy; la nueva aplicación no debe depender de él.
+
+### Validación y fallo intermedio
+- El primer refactor falló con `ReferenceError: blocked is not defined` al quedar el helper de resultado bloqueado en el script anterior. Se agregó explícitamente el helper en ambos límites (servicio y CLI wrapper).
+- CI final SUCCESS en SHA `8d05417d0a47b5f38fb63833c338a0f04d1499e7`: [39180686782 — Chronicle/entrypoint](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686782) y [39180686817 — mission admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686817).
+- La suite del grafo de imports continúa verificando que ambos entrypoints no importen la memoria de asistentes, simulación, `world.js`, `simulation.js`, `simulate.mjs` ni `src/nexo/runtime.js`.
+
+### Límite y siguiente frontera
+- El caso de uso ya puede ser consumido sin ejecutar el CLI, pero solo se ha probado la vertical Chronicle y sus consultas. No se declara runtime general, app Android/web, aislamiento OS, fsync/power-loss durability ni autoridad.
+- Siguiente: revisar el contrato de la API de aplicación (inputs, resultado, idempotencia, concurrencia y recuperación) como interfaz estable antes de conectarla a otra superficie. No ampliar acciones ni cambiar runtime default. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
