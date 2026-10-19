@@ -228,11 +228,39 @@ try {
   });
   const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
   assert.equal(reconstructed.status, "reconstructed");
-  assert.equal(reconstructed.mission.steps[0].status, "planned",
-    "an attempt for a different action/target must not complete this canonical step");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked",
+    "an attempt for a different action/target must not complete or re-enable this canonical step");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH");
   assert.equal(reconstructed.mission.steps[0].result, undefined);
 } finally {
   await fs.rm(mismatchedAttemptDir, { recursive: true, force: true });
+}
+
+const unverifiedCompletionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-unverified-completion-attempt-"));
+try {
+  const unverifiedCompletionMemory = structuredClone(legacyMemory);
+  unverifiedCompletionMemory.nexo.missions[0].status = "planned";
+  unverifiedCompletionMemory.nexo.missions[0].objective = "repair_agent_state";
+  unverifiedCompletionMemory.nexo.missions[0].steps[0].status = "planned";
+  unverifiedCompletionMemory.nexo.attempts = [{
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    status: "completed",
+    evidence: { verified: false, kind: "caller-claim", source: "caller" },
+    at: "2026-10-18T00:00:00.000Z"
+  }];
+  unverifiedCompletionMemory.nexo.effectJournal = [];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(unverifiedCompletionDir, "nexo.json"),
+    legacyMemory: unverifiedCompletionMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_COMPLETION_EVIDENCE_UNVERIFIED");
+} finally {
+  await fs.rm(unverifiedCompletionDir, { recursive: true, force: true });
 }
 
 const observedSettlementDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-observed-settlement-"));
