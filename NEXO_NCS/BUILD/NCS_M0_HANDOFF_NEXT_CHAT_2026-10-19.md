@@ -3,11 +3,11 @@ Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
 Último SHA funcional validado por CI: `3ebb037f53409df9681f5ed01b6458e915e36a29`
-HEAD código+pruebas validado: `467cea28706a54b2f30e320485c1d7b3f57e2692`
+HEAD código+pruebas validado: `9ca094242d25fced843b7d5595f9cff6e0d82ee3`
 
 ## 0. Instrucción principal al chat nuevo
 
-**Última continuidad verificada:** PREPARED mantiene su identidad UNKNOWN tras reinicio; el test Chronicle también comprueba que, después de perder la respuesta terminal y reabrir el owner, settlement+outcome válidos reconstruyen el paso como `completed` sin nuevo dispatch, mientras la misión global sigue `awaiting_verification`. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
+**Última continuidad verificada:** además del replay PREPARED y del outcome Chronicle tras pérdida de respuesta, el owner y la reconstrucción ahora exigen que la metadata de outcome Chronicle coincida con el settlement persistido; claims desatadas o con identidad distinta quedan bloqueadas. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
 
 **La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
 
@@ -273,3 +273,12 @@ Se añadió una aserción en el crash cut de `tests/nexo/chronicle-runtime.test.
 SHA test `467cea28706a54b2f30e320485c1d7b3f57e2692`. Chronicle native, bounded admission, STEP 4 y STEP 5 SUCCESS (runs 39196004121, 39196004116, 39196004098, 39196004164). Crash cuts de continuidad SUCCESS en SHA `376f2d...` (run 39195866266); no hubo cambios de código funcional.
 
 **Siguiente paso:** comprobar si la evidencia/result de outcome Chronicle está vinculada al settlement canónico y no sólo el estado terminal. Exigir reproducción antes de cambiar el contrato.
+
+
+## 20. Checkpoint — outcome Chronicle vinculado al settlement persistido
+
+Contrato compartido `isValidNexoChronicleOutcomeEvidence()` exige `verified === true`, el tipo canónico `nexo-chronicle-persisted-invariant`, y `source/observedRevision` iguales al settlement Chronicle validado. `recordOutcome()` rechaza metadata desatada con `NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH`; reconstrucción bloquea outcomes desatados y distingue identidad de operación incorrecta con `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`. El test positivo confirma que la pareja settlement+outcome correcta sigue reconstruyendo el paso completed.
+
+Fix funcional `c9be5ee5f931d2a873cca32e2dd0b81c33010396`; SHA final de pruebas `9ca094242d25fced843b7d5595f9cff6e0d82ee3`. Bounded admission, crash cuts, STEP 4 y STEP 5 SUCCESS (runs 39196527692, 39196527776, 39196527671, 39196527814). No es autenticación criptográfica ni prueba de causalidad.
+
+**Siguiente paso:** probar si evidence Chronicle acepta campos extra no ligados al settlement y, si la regresión confirma exposición de claims falsos en `step.result`, acotar el shape canónico sin ampliar el contrato innecesariamente.
