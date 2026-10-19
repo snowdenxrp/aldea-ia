@@ -139,6 +139,25 @@ try {
   assert.equal(unpreparedGenericCompletion.code, "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED");
   assert.equal((await genericNoPreparedOpened.owner.loadCurrent()).storeRevision, 0,
     "a registered effect cannot complete without canonical effect/goal evidence");
+
+  // An action with no registered effect verifier is not implicitly safe to
+  // complete. Unknown action semantics fail closed unless explicitly defined
+  // as non-mutating or covered by a dedicated goal contract.
+  const unregisteredCompletion = await genericNoPreparedOpened.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha",
+      status: "completed",
+      evidence: { verified: true, kind: "caller-asserted", source: "caller-asserted" }
+    }
+  });
+  assert.equal(unregisteredCompletion.status, "blocked");
+  assert.equal(unregisteredCompletion.code, "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED");
+  assert.equal((await genericNoPreparedOpened.owner.loadCurrent()).storeRevision, 0,
+    "an unregistered effect cannot complete by default");
   // Crash cut: environment persistence succeeded, but Nexo still has PREPARED.
   // Reconciliation may record observation only; it must not claim causality/completion.
   const observedDir = path.join(root, "observed");
