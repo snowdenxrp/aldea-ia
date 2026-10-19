@@ -1,6 +1,7 @@
 import { isDeepStrictEqual } from "node:util";
 import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
 import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
+import { isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
 
 function ownerError(code) {
   const error = new Error(code);
@@ -23,14 +24,6 @@ function validateOperation(operation) {
 }
 
 const REPAIR_ACTIONS = new Set(["repair_agent_state", "repair_agent_needs", "repair_resource_state"]);
-
-function validChronicleSettlementEvidence(evidence, idempotencyKey, target) {
-  return evidence !== null && typeof evidence === "object" && !Array.isArray(evidence) &&
-    evidence.kind === "persisted-chronicle-entry" &&
-    evidence.operationKey === idempotencyKey &&
-    typeof target?.content === "string" &&
-    evidence.content === target.content;
-}
 
 function emptyCandidate(snapshot) {
   return {
@@ -156,26 +149,13 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     // one action. Other actions still require their separate goal-verification gate.
     // Keep completion's persisted-record predicate aligned with replay: a partial
     // settlement must never authorize a terminal outcome.
-    const chronicleSettlement = stepEffects[0]?.settlement;
-    const chronicleSettlementObservedAt = chronicleSettlement?.observedAt;
-    const validChronicleSettlementTimestamp = typeof chronicleSettlementObservedAt === "string" &&
-      Number.isFinite(Date.parse(chronicleSettlementObservedAt)) &&
-      new Date(chronicleSettlementObservedAt).toISOString() === chronicleSettlementObservedAt;
     const chronicleSettlementReady = outcome.action === "chronicle_append" &&
       outcome.status === "completed" &&
       stepEffects.length === 1 &&
-      stepEffects[0]?.status === "settled_observed" &&
       stepEffects[0]?.idempotencyKey === `${outcome.missionId}:${outcome.stepId}` &&
       stepEffects[0]?.action === outcome.action &&
       isDeepStrictEqual(stepEffects[0]?.target ?? null, outcome.target ?? null) &&
-      chronicleSettlement?.status === "applied" &&
-      chronicleSettlement?.source === "nexo-chronicle-store" &&
-      Number.isSafeInteger(chronicleSettlement.observedRevision) &&
-      chronicleSettlement.observedRevision >= 0 &&
-      validChronicleSettlementEvidence(
-        chronicleSettlement?.evidence, stepEffects[0]?.idempotencyKey, stepEffects[0]?.target
-      ) &&
-      validChronicleSettlementTimestamp;
+      isValidNexoChronicleSettlementRecord(stepEffects[0]);
     if (outcome.action === "chronicle_append" && outcome.status === "completed" &&
         !chronicleSettlementReady) {
       return {
@@ -540,22 +520,9 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         replayReconciliation.source.trim() &&
         Object.hasOwn(replayReconciliation, "evidence") &&
         validReplayTimestamp;
-      const replaySettlement = replayEntry?.settlement;
-      const replaySettlementObservedAt = replaySettlement?.observedAt;
-      const validSettlementTimestamp = typeof replaySettlementObservedAt === "string" &&
-        Number.isFinite(Date.parse(replaySettlementObservedAt)) &&
-        new Date(replaySettlementObservedAt).toISOString() === replaySettlementObservedAt;
       const chronicleSettlement = sameReplayIdentity &&
         operation.action === "chronicle_append" &&
-        replayEntry.status === "settled_observed" &&
-        replaySettlement?.status === "applied" &&
-        replaySettlement?.source === "nexo-chronicle-store" &&
-        Number.isSafeInteger(replaySettlement.observedRevision) &&
-        replaySettlement.observedRevision >= 0 &&
-        validChronicleSettlementEvidence(
-          replaySettlement?.evidence, replayEntry.idempotencyKey, replayEntry.target
-        ) &&
-        validSettlementTimestamp;
+        isValidNexoChronicleSettlementRecord(replayEntry);
       if (genericObservation || chronicleSettlement) {
         const recorded = genericObservation ? replayEntry.reconciliation : replayEntry.settlement;
         return {
