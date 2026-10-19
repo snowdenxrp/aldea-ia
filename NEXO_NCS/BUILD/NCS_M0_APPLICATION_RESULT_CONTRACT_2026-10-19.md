@@ -266,3 +266,10 @@ CI bounded admission/restart, crash cuts, STEP 4 y STEP 5 SUCCESS en SHA `fe7986
 La reconstrucción canónica sólo reconoce completion verificada para `local_analysis` o para `chronicle_append` con settlement y outcome válidos. Una claim completed de acción mutante sin goal verifier queda blocked con `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`; evidence inválida conserva su propio código. La prueba de replay monotónico se restringe a `local_analysis`, acción no mutante explícitamente permitida.
 
 CI bounded admission/restart, STEP 4, STEP 5 SUCCESS en SHA de prueba `ac8e4bc88c04c2f1ea257a58ecf224d867dd4b94`; crash cuts SUCCESS en código `fbfda4b7be4de8cf2e3ae1b0d7903f0287cf5b6e`. Ver STATUS para enlaces. No hay goal verifier general; M0 INCOMPLETO y efectos protegidos STOP.
+
+
+## Checkpoint M0 — PREPARED exige paso canónico reconstruido como planned (2026-10-19)
+
+`recordPrepared()` ya no confía únicamente en el `status` del plan almacenado. La admisión reconstruye la misión desde el snapshot y requiere que el paso actual esté `planned` también en esa reconstrucción; de lo contrario devuelve `NEXO_PREPARED_STEP_NOT_RUNNABLE` sin commit. Regresión: una claim terminal caller-supplied para una acción mutante bloquea reconstrucción y no puede producir un nuevo PREPARED.
+
+HEAD validado `9d46f1400cef0eb4c74a4c4419edcc2c616a73b9`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195354527, 39195354529, 39195354611, 39195354737). Chronicle native y effect/settlement SUCCESS en fix funcional `615941bf3bc4389c3ce9fd12b0212f3144f9c87a` (runs 39195344263, 39195344261). M0 sigue INCOMPLETO; efectos protegidos STOP.
