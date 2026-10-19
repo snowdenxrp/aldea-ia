@@ -1,3 +1,15 @@
+# Continuidad M0 — inventario de autoridad y siguiente frontera (2026-10-19)
+
+## Último avance documental verificado
+
+- Inventario claim-relative: `NEXO_NCS/BUILD/NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md`, commit `194c6b8868e4632dfb909b14112ca19f10e28fe6`; actualizado con el crosswalk de estados en `bec6fc3d2ddbe36856f0297515af2eaa2a80e37a`.
+- El borrador semántico de composición fue corregido en `c83a864232793e963a7a99fb88fc313f4f1a48ca`: no define un enum agregado; reutiliza el contrato bootstrap, la investigación no-root y AB105.078R.
+- Hallazgo clave: la investigación previa ya contiene contratos de composición, independencia y mapa de roles. No repetir esos ataques. El hueco actual no es falta de otra taxonomía; es falta de hechos de despliegue verificables para elegir una familia de reconocimiento.
+- Siguiente acción: cerrar el inventario de hechos del entorno real (recuperación fuera del teléfono, capacidad offline, custodia de credenciales, garantías de plataforma y frontera de ejecución final), etiquetando cada elemento como verificado, supuesto o UNKNOWN. Sólo después comparar las familias candidatas ya listadas en STATUS.
+- Estado funcional no cambia: CI integrado PASS run `39292887874` en SHA probado `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; autoridad runtime NOT_EVALUATED; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — verificación final de transparencia de autoridad (2026-10-19)
 
 - La revisión detectó y cerró dos omisiones en resultados públicos Chronicle: el resultado normalizado, los rechazos tempranos y el conflicto de admisión deben conservar `authorization: "NOT_EVALUATED"` mientras no exista evaluación de autoridad.
