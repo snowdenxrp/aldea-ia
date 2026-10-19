@@ -81,3 +81,8 @@ La marca explícita evita una inferencia engañosa, pero no es una decisión de 
 
 ---
 
+
+
+## Addendum — alcance de raíz decidido después de esta auditoría (2026-10-19)
+
+La decisión posterior NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md fija una llave criptográfica raíz y un dispositivo inicial para la primera fase. Esto sustituye la pregunta abierta de cantidad de raíces, pero no autoriza un constructor autoautenticado ni convierte la llave en permiso ilimitado. El mecanismo de provisión independiente, el protocolo/verificador y el enforcement final siguen sin implementarse ni probarse. No repetir investigación general: el siguiente trabajo acotado es especificar esos contratos usando el borrador semántico existente y mantener authorization: NOT_EVALUATED / STOP hasta prueba real.
