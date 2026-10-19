@@ -406,3 +406,22 @@ Definir el contrato de ruta y filesystem para ambos stores: canonicalización de
 - Efectos protegidos: STOP; STEP 7 permanece OPEN / STOP / UNKNOWN y fuera del alcance actual.
 - Nexo/Lúmina: separación obligatoria.
 - Frase de entrada del chat nuevo: **NCS**.
+
+
+## Addendum — continuación M0: replay de observación genérica (2026-10-18)
+
+### Cambio realizado, sin declarar validación
+
+- Implementación: `src/nexo/core/continuity-owner.mjs`, commit `39d13a8251e836abd1917aff071396f165993ab8`.
+- Prueba de crash cut: `tests/nexo/repair-settlement-crash-cuts.test.mjs`, commit `31c8b3a4be5743ac12fc0c66bcae1d69b2fae1d6`.
+- En un replay con revisión antigua, el owner reconoce una observación solo si el journal ya la persistió para la misma identidad canónica. No reejecuta el verifier. Una identidad incompatible no obtiene el replay. La respuesta usa `already_observed`, conserva `causalAttribution: NOT_ESTABLISHED`, `redispatchAuthorized: false` y no marca como settled el estado genérico `reconciled_observed`.
+- CI para el SHA de prueba no tiene checks visibles ni runs confirmadas en la consulta realizada: **UNKNOWN/PENDING**. No afirmar que la suite pasó.
+
+### Instrucciones inmediatas
+
+1. Primero obtener evidencia ejecutable para `node tests/nexo/repair-settlement-crash-cuts.test.mjs` y las suites de continuidad/runtime que correspondan. Revisar el primer fallo si lo hay; no ocultarlo ni declarar PASS por ausencia de checks.
+2. Auditar el diff del replay contra el contrato del owner: misma identidad completa, ningún segundo verifier, ningún dispatch, ningún outcome terminal, y Chronicle solo puede reflejar settlement si el settlement específico ya está persistido.
+3. Después volver a la siguiente frontera documentada: identificar una entrada principal Nexo-only que no importe `world.js`, `simulation.js`, `simulate.mjs` ni memoria de asistentes de Lúmina. No alojar Chronicle en `scripts/assistants.mjs`.
+4. No reabrir la investigación de locks/rutas ya documentada salvo que la prueba nueva revele un defecto. No cambiar runtime default ni ampliar acciones.
+
+Estado: **M0 INCOMPLETO**. Chronicle sigue opt-in. Runtime default sin cutover. Efectos protegidos STOP. Nexo y Lúmina deben permanecer separados.
