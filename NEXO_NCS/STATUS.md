@@ -1,3 +1,13 @@
+## M0 — frontera pública del runtime ante excepciones inesperadas (2026-10-19)
+
+- Hallazgo: `executeNexoStepWithContinuityOwner()` llamaba al runtime interno sin una última frontera de captura. Una excepción inesperada de una comprobación inyectada (por ejemplo, `adapter.supports()`) podía escapar del contrato público.
+- Corrección: `src/nexo/core/owner-backed-runtime.mjs`, commit `2aabf83753d66e7a25780cf13c46238d9fcac617`. Antes de la frontera de despacho, la excepción inesperada se convierte en `blocked / NEXO_RUNTIME_INTERNAL_FAILURE`; después de marcar el inicio del despacho, se convierte conservadoramente en `unknown / NEXO_RUNTIME_OUTCOME_UNKNOWN`, con redispatch desautorizado. No se exponen mensajes internos de excepción.
+- Regresión: `tests/nexo/chronicle-runtime.test.mjs`, commit `55d2c1b11b3bbda1abf42677636d279ebce84187`. Comprueba que una excepción de capability-check no escapa, no alcanza PREPARED ni despacho y no filtra el mensaje.
+- Evidencia de ejecución: todavía no observada para estos commits. El cambio y la prueba están publicados en la rama; no declarar PASS hasta revisar CI o ejecutar las pruebas en un entorno real.
+- Límite: esto normaliza fallos inesperados del runtime, no implementa autorización del propietario. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 global INCOMPLETO.
+
+---
+
 ## Siguiente diseño M0 — inventario de claims y dominios de fallo de autoridad
 
 - Nuevo inventario: `NEXO_NCS/BUILD/NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md` (commits `194c6b8868e4632dfb909b14112ca19f10e28fe6` and `5aeb504d0d324030f0db2966c54bdb59cfdda5fd`), con afirmaciones delimitadas C0–C8, nivel de evidencia, fallos comunes y obligaciones de frontera.
