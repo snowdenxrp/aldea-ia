@@ -562,6 +562,15 @@ try {
   const realContinuity = await real.opened.owner.loadCurrent();
   assert.equal(realContinuity.snapshot.effectJournal[0].status, "settled_observed");
   assert.equal(realContinuity.snapshot.effectJournal[0].settlement.source, "nexo-chronicle-store");
+  assert.deepEqual(realContinuity.snapshot.effectJournal[0].settlement.evidence, {
+    kind: "persisted-chronicle-entry",
+    operationKey: "chronicle-real:step-1",
+    content: "real persisted Chronicle content"
+  });
+  assert.equal(
+    new Date(realContinuity.snapshot.effectJournal[0].settlement.observedAt).toISOString(),
+    realContinuity.snapshot.effectJournal[0].settlement.observedAt
+  );
   assert.equal(realContinuity.snapshot.attempts[0].status, "completed");
   const reconstructedChronicle = reconstructNexoMissionFromSnapshot(realContinuity.snapshot, "chronicle-real");
   assert.equal(reconstructedChronicle.steps[0].status, "completed",
