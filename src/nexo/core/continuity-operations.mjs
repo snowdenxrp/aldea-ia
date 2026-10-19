@@ -1,4 +1,5 @@
 import { isDeepStrictEqual } from "node:util";
+import { assertContractInput } from "./contracts.mjs";
 import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
 import { isValidNexoChronicleOutcomeEvidence, isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
 
@@ -14,6 +15,11 @@ function cloneSnapshot(snapshot) {
 }
 
 function missionRecord(mission) {
+  try {
+    assertContractInput(mission, "Nexo mission");
+  } catch {
+    throw operationError("NEXO_MISSION_CONTEXT_INVALID");
+  }
   if (!mission || typeof mission.missionId !== "string" || !mission.missionId.trim() ||
       mission.missionId.includes(":") || !Array.isArray(mission.steps)) {
     throw operationError("NEXO_MISSION_CONTEXT_INVALID");
