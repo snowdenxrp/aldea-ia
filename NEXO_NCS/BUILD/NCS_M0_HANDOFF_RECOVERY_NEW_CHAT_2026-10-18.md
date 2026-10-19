@@ -635,3 +635,13 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Documento operativo: [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
 - Usarlo como referencia para toda integración futura del servicio de aplicación. No reinterpretar `UNKNOWN` como `false`, no convertir conflicto CAS en write uncertainty y no hacer retry automático.
 - La evidencia de CI y las fronteras actuales están registradas en el contrato. No habilitar otra acción ni hacer cutover del runtime predeterminado.
+
+
+## Current verified pointer — formal result contract checkpoint
+
+- Branch HEAD: `d3fc92e73a83e89ca607d6dfbd4d5d17cdabf61c` (documentation-only).
+- Latest code/test SHA: `7148263da84eb37e80fc0fcfdb5957e299674a10`.
+- Compare SHA → HEAD shows only the formal result contract and continuity documentation changed.
+- Focused CI SUCCESS on the code/test SHA: [Chronicle 39181627883](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627883), [continuity/restart 39181627998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627998), [semantic validation 39181627889](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627889), [outcome/restart 39181627894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181627894).
+- Formal contract: [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
+- Next: freeze the Chronicle vertical contract, then evaluate an application integration seam only after explicit acceptance criteria are defined. Do not wire it into legacy `src/nexo/runtime.js` or `index.html`; no second mutating action; no authority inference; no automatic retry. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
