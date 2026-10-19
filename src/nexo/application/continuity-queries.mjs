@@ -44,15 +44,14 @@ export async function loadNexoMissionStatus(continuityPath, missionId) {
     if (!persistedMission) {
       return { status: "not_found", code: "NEXO_MISSION_NOT_FOUND", storeRevision: current.storeRevision };
     }
-    const reconstructed = reconstructNexoMissionFromSnapshot(current.snapshot, missionId);
-    if (reconstructed.status !== "reconstructed") {
+    const mission = reconstructNexoMissionFromSnapshot(current.snapshot, missionId);
+    if (!mission) {
       return {
         status: "blocked",
-        code: reconstructed.code ?? "NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE",
+        code: "NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE",
         storeRevision: current.storeRevision
       };
     }
-    const mission = reconstructed.mission;
     const persistedMissionStatus = persistedMission.status ?? "planned";
     return {
       status: "reconstructed",
