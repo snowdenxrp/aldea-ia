@@ -35,6 +35,31 @@ assert.equal(Object.hasOwn(publicAdmissionUnknown, "adapterResult"), false);
 assert.equal(JSON.stringify(publicAdmissionUnknown).includes("PRIVATE_PUBLIC_RESULT_PAYLOAD"), false);
 assert.equal(JSON.stringify(publicAdmissionUnknown).includes("PRIVATE_INTERNAL_RESULT"), false);
 
+const malformedPublicResult = publicChronicleResult({
+  status: { nested: "PRIVATE_STATUS" },
+  code: { nested: "PRIVATE_CODE" },
+  dispatchAttempted: "true",
+  redispatchAuthorized: true,
+  preparedCommitted: { nested: "PRIVATE_COMMIT_STATE" },
+  lineageCommitted: "UNKNOWN",
+  journalSettled: false,
+  terminalOutcomeRecorded: 7,
+  missionAdmissionCommitted: "UNKNOWN",
+  storeRevision: "9",
+  target: { content: "PRIVATE_TARGET" }
+}, "safe-mission", "safe-step");
+assert.equal(malformedPublicResult.status, "unknown");
+assert.equal(malformedPublicResult.code, undefined);
+assert.equal(malformedPublicResult.dispatchAttempted, false);
+assert.equal(malformedPublicResult.redispatchAuthorized, false);
+assert.equal(malformedPublicResult.preparedCommitted, undefined);
+assert.equal(malformedPublicResult.lineageCommitted, "UNKNOWN");
+assert.equal(malformedPublicResult.journalSettled, false);
+assert.equal(malformedPublicResult.terminalOutcomeRecorded, undefined);
+assert.equal(malformedPublicResult.missionAdmissionCommitted, "UNKNOWN");
+assert.equal(malformedPublicResult.storeRevision, undefined);
+assert.equal(JSON.stringify(malformedPublicResult).includes("PRIVATE"), false);
+
 const invalidApplicationInput = await runNexoChronicleAppend({
   continuityPath: "", chroniclePath: "/unused/chronicle.json",
   missionId: "invalid-mission", stepId: "step-1", content: "payload",
