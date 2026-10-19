@@ -25,6 +25,8 @@ const publicAdmissionUnknown = publicChronicleResult({
   adapterResult: { secret: "PRIVATE_INTERNAL_RESULT" }
 }, "public-unknown-mission", "step-unknown");
 assert.equal(publicAdmissionUnknown.status, "unknown");
+assert.equal(publicAdmissionUnknown.authorization, "NOT_EVALUATED",
+  "public results must not hide that owner authority was not evaluated");
 assert.equal(publicAdmissionUnknown.missionId, "public-unknown-mission");
 assert.equal(publicAdmissionUnknown.stepId, "step-unknown");
 assert.equal(publicAdmissionUnknown.missionAdmissionCommitted, "UNKNOWN");
@@ -49,6 +51,7 @@ const malformedPublicResult = publicChronicleResult({
   target: { content: "PRIVATE_TARGET" }
 }, "safe-mission", "safe-step");
 assert.equal(malformedPublicResult.status, "unknown");
+assert.equal(malformedPublicResult.authorization, "NOT_EVALUATED");
 assert.equal(malformedPublicResult.code, undefined);
 assert.equal(malformedPublicResult.dispatchAttempted, false);
 assert.equal(malformedPublicResult.redispatchAuthorized, false);
