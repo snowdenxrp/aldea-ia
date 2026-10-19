@@ -1,26 +1,22 @@
-## M0 — persistibilidad y forma semántica mínima de acción en admisión (2026-10-19)
+## M0 — admisión de misiones: datos persistibles y acción válida (2026-10-19)
 
-**Punto de entrada vigente:** rama `ncs-clean-architecture`. SHA de código+pruebas validado: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`. Corrección de datos persistibles integrada en `eea375d9feddcfd4c074fc7a039d19470e890daa`; validación de `step.action` y regresiones finales integradas en `6c06c233...`. Verificar el HEAD vivo al retomar porque los commits documentales lo moverán.
+**Punto de entrada vigente:** rama `ncs-clean-architecture`; SHA de código+pruebas verificado `6c06c2330578ffe3f47804b4cab4033b5a5c9160`. El HEAD documental puede avanzar al guardar esta continuidad; comprobar siempre la rama viva.
 
 ### Cambios reproducidos e integrados
+1. **Datos no persistibles:** CI demostró que un `target` de tipo función se admitía. `missionRecord()` ahora rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays. Fallos de clonación/proyección se normalizan a `NEXO_MISSION_CONTEXT_INVALID`. No se modificó el helper global `assertContractInput()`.
+2. **Acción mal formada:** CI demostró que `action: 42` podía persistirse como misión `planned`. La admisión exige que `step.action` sea un string no vacío; no se inventó un allowlist de acciones.
+3. **Frontera de escritura:** pruebas del owner verifican que las misiones inválidas devuelven `NEXO_MISSION_CONTEXT_INVALID` y la revisión canónica no cambia; no se ejecuta `commitIfCurrent()`.
 
-1. **Datos no persistibles:** la regresión demostró que un `target` función se admitía. `missionRecord()` valida el registro proyectado y rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays. Los fallos de clonación/proyección se normalizan a `NEXO_MISSION_CONTEXT_INVALID`. No se amplió `assertContractInput()` global.
-2. **Acción con tipo incorrecto:** una segunda regresión demostró que `action: 42` podía quedar persistida en una misión `planned`. `missionRecord()` ahora exige que cada `step.action` sea string no vacío; no se inventó un allowlist de acciones.
-3. **Límite de escritura:** las pruebas del owner confirman que misión inválida devuelve `NEXO_MISSION_CONTEXT_INVALID` y la revisión canónica no avanza. La admisión se detiene antes de `commitIfCurrent()`.
-
-### Evidencia CI
-
-- SHA final código+tests: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`.
+### Evidencia CI final
+- SHA código+tests: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`.
 - SUCCESS: [bounded admission/restart 39208156912](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156912), [STEP 4 39208156893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156893), [STEP 5 39208156962](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156962), [repair settlement crash cuts 39208156901](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156901).
-- Las reproducciones red/green están registradas en [PR #99](https://github.com/snowdenxrp/aldea-ia/pull/99), [PR #100](https://github.com/snowdenxrp/aldea-ia/pull/100) y [PR #101](https://github.com/snowdenxrp/aldea-ia/pull/101), todos integrados.
+- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101).
 
 ### Siguiente frontera concreta
-
-Auditar el contrato de `mission.status` y `step.status`: rastrear valores emitidos por el productor de misiones, consumidores de ejecución y reconstrucción. Determinar si valores de tipo incorrecto o estados desconocidos pueden quedar persistidos como planes estancados o ambiguos. Primero usar las pruebas y productores existentes; no imponer un enum nuevo hasta demostrar qué valores son válidos en el flujo actual.
+Auditar `mission.status` y `step.status` antes de cambiar código: rastrear los valores que emite el productor real, los que consume el runtime owner-backed y los que reconstruye `reconstructNexoMissionFromSnapshot()`. Determinar si tipos incorrectos o estados desconocidos producen una misión persistida estancada o ambigua. No imponer un enum ni ampliar el contrato hasta conocer los valores válidos del flujo y reproducir una discrepancia.
 
 ### Límites
-
-Esto valida datos persistibles, el tipo mínimo de acción y ausencia de commit para las entradas inválidas cubiertas. No demuestra autenticidad, goal verifier general, autoridad constitucional legítima ni permiso para efectos protegidos. **M0 INCOMPLETO; efectos protegidos STOP; Nexo y Lúmina separados.**
+Esto demuestra persistibilidad, forma mínima de acción y ausencia de commit para las entradas inválidas cubiertas. No demuestra autenticidad, goal verifier general, autoridad constitucional legítima ni autorización para efectos protegidos. **M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.**
 ---
 
 ## M0 — rechazo de dependencias sparse (2026-10-19)
