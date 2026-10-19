@@ -3,11 +3,11 @@ Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
 Último SHA funcional validado por CI: `3ebb037f53409df9681f5ed01b6458e915e36a29`
-HEAD código+pruebas validado: `376f2d984eeb969d25c2c797a40037a72a6a5c6b`
+HEAD código+pruebas validado: `467cea28706a54b2f30e320485c1d7b3f57e2692`
 
 ## 0. Instrucción principal al chat nuevo
 
-**Última continuidad verificada:** la admisión exige que la misión y el paso estén `planned` tanto en el plan como en la reconstrucción. Un PREPARED no resuelto bloquea nuevos PREPARED dentro de esa misión; la repetición de la misma identidad sigue UNKNOWN/prepared_existing. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
+**Última continuidad verificada:** PREPARED mantiene su identidad UNKNOWN tras reinicio; el test Chronicle también comprueba que, después de perder la respuesta terminal y reabrir el owner, settlement+outcome válidos reconstruyen el paso como `completed` sin nuevo dispatch, mientras la misión global sigue `awaiting_verification`. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
 
 **La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
 
@@ -264,3 +264,12 @@ Test SHA `376f2d984eeb969d25c2c797a40037a72a6a5c6b`. Bounded admission/restart, 
 La prueba existente `tests/nexo/chronicle-runtime.test.mjs` ya cubre el reinicio tras append antes de settlement, el reinicio después de settlement/outcome y la pérdida de respuesta tras el commit del outcome. En el último caso, la reconstrucción devuelve step `completed` sólo porque el settlement Chronicle canónico y el outcome terminal están persistidos; el replay posterior devuelve `completed` sin redispatch. La migración también cubre settlement sin outcome y mantiene el paso blocked. Se comprobó el código/test existente; no se añadió otra regresión redundante.
 
 **Siguiente paso:** revisar el contrato de errores de lectura de continuidad en `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()`; comparar con `recordMission()`/`reconcilePrepared()` y probar antes de cambiar.
+
+
+## 19. Checkpoint — outcome Chronicle se reconstruye tras pérdida de respuesta
+
+Se añadió una aserción en el crash cut de `tests/nexo/chronicle-runtime.test.mjs`: después de que `recordOutcome()` persiste completion pero se pierde la respuesta, el owner se reabre y la reconstrucción devuelve `status: reconstructed`, paso `completed`, misión global `awaiting_verification`. La recuperación del runtime no vuelve a despachar; el contador permanece en uno.
+
+SHA test `467cea28706a54b2f30e320485c1d7b3f57e2692`. Chronicle native, bounded admission, STEP 4 y STEP 5 SUCCESS (runs 39196004121, 39196004116, 39196004098, 39196004164). Crash cuts de continuidad SUCCESS en SHA `376f2d...` (run 39195866266); no hubo cambios de código funcional.
+
+**Siguiente paso:** comprobar si la evidencia/result de outcome Chronicle está vinculada al settlement canónico y no sólo el estado terminal. Exigir reproducción antes de cambiar el contrato.
