@@ -1,3 +1,13 @@
+## M0 — replay de observación genérica y lecturas fallidas (validado 2026-10-19)
+
+- Reconciliación genérica: `reconcilePrepared()` ahora exige que el replay canónico incluya `status` válido (`applied/not_applied`), revisión observada no negativa, `source` no vacío, propiedad `evidence` presente y `observedAt` ISO válido. Si el registro es parcial, no devuelve `already_observed`, no vuelve a invocar el verificador y devuelve conflicto/UNKNOWN de forma fail-closed.
+- Lecturas: fallos de la lectura inicial o de la relectura pre-CAS devuelven `blocked` con código de error y marca de incertidumbre explícita. La prueba de relectura demuestra que no se escribe y PREPARED permanece; la prueba de lectura inicial demuestra que el verificador ni siquiera se invoca.
+- Crash cut de commit también cubierto: commit durable seguido de excepción → resultado estructurado de incertidumbre; al reabrir, el replay recupera `already_observed` sin invocar el verificador por segunda vez.
+- Código final con hardening de replay: `abd9e9d4ed64e96940155712b1dae173ba22c77e`; SHA final de código/pruebas: `c2c2414edd8ffc138f6cf473f5eae2ee1bbae397`. CI SUCCESS: [repair crash cuts 39189827272](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827272), [effect/settlement 39189827289](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827289), [STEP 4 39189827310](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827310), [STEP 5 39189827224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827224). Chronicle SUCCESS en hardening de código: [run 39189720937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189720937).
+- Límites: no se añade un estado nuevo, no se repite la operación ni el verificador durante recovery, no se afirma causalidad, atomicidad cross-store ni completion de misión. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+**Siguiente frontera:** auditar si el contrato de `effectJournal` valida también los estados observados al cargar un snapshot, no solo durante replay. Mantener la compatibilidad deliberada con entradas legacy; primero identificar el alcance y añadir regresión antes de endurecer el schema global.
+
 ## M0 — fallos de lectura en reconciliación genérica (validado 2026-10-19)
 
 - Hueco concreto: `reconcilePrepared()` ya devolvía incertidumbre estructurada para fallo de commit y podía recuperar una respuesta perdida, pero dos lecturas de continuidad —la lectura inicial y la relectura inmediatamente anterior a CAS— aún podían propagar excepciones crudas.
