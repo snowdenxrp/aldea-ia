@@ -585,3 +585,10 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Compare code/test SHA → HEAD: only `STATUS.md`, this handoff, and `NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md` changed.
 - Latest focused CI SUCCESS on code/test SHA: [Chronicle 39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [continuity/restart 39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [semantic validation 39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [outcome/restart 39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
 - Next exact task: finalize the stable application API contract: document accepted inputs/results and test invalid input, same-identity replay, payload mismatch, concurrent initial bootstrap, and unknown outcomes. Then evaluate one application integration seam without routing through legacy Lúmina memory. Do not add mutating actions or change runtime default. M0 INCOMPLETO.
+
+
+### Addendum — validación de inputs de la API de aplicación (2026-10-19)
+
+- El caso de uso se prueba directamente con ruta vacía y tipo incorrecto en un flag. Devuelve bloqueo contractual y `dispatchAttempted=false` antes de tocar los stores.
+- CI SUCCESS en SHA `e8abe56f791e8460be6ae71abe723a3907bd13aa`: [39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), [39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), [39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), [39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827).
+- API del vertical: validación estricta de entrada; misma identidad/payload es idempotente; payload distinto bloquea; concurrente/restart no duplica dispatch; incertidumbre no se convierte en fracaso/success inventado. Esto no cubre otras acciones ni autoriza runtime default.
