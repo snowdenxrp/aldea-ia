@@ -270,6 +270,58 @@ try {
   assert.equal(contradictorySummary.missionStatus, "planned");
   assert.equal(contradictorySummary.statusDiscrepancy, true);
   assert.equal(await fs.readFile(contradictoryContinuityPath, "utf8"), contradictoryBytesBefore);
+  // Coordinated bootstrap is not atomic across the two independent files.
+  // If Continuity initializes but Chronicle's parent directory is unavailable,
+  // the first attempt must remain blocked with no mission/effect admitted.
+  // A retry against the same Continuity file and a valid Chronicle path must
+  // resume from that durable empty state without duplicate initialization.
+  const partialBootstrapContinuityPath = path.join(root, "partial-bootstrap-continuity.json");
+  const unavailableChroniclePath = path.join(root, "missing-parent", "chronicle.json");
+  const partialBootstrap = spawnSync(process.execPath, [
+    entrypointPath, "chronicle-append",
+    "--continuity", partialBootstrapContinuityPath,
+    "--chronicle", unavailableChroniclePath,
+    "--mission", "partial-bootstrap-mission",
+    "--step", "step-1",
+    "--initialize-continuity",
+    "--initialize-chronicle",
+    "--content-stdin"
+  ], { cwd: process.cwd(), input: "bootstrap-retry-content", encoding: "utf8" });
+  assert.equal(partialBootstrap.status, 1);
+  assert.equal(partialBootstrap.stderr, "");
+  const partialBootstrapResult = JSON.parse(partialBootstrap.stdout);
+  assert.equal(partialBootstrapResult.status, "blocked");
+  assert.equal(partialBootstrapResult.dispatchAttempted, false);
+  assert.equal(partialBootstrapResult.redispatchAuthorized, false);
+  assert.equal(partialBootstrapResult.authorization, "NOT_EVALUATED");
+  const partialContinuity = JSON.parse(await fs.readFile(partialBootstrapContinuityPath, "utf8"));
+  assert.equal(partialContinuity.storeRevision, 0);
+  assert.deepEqual(partialContinuity.snapshot.missions, []);
+  await assert.rejects(fs.access(unavailableChroniclePath), { code: "ENOENT" });
+
+  const retryChroniclePath = path.join(root, "partial-bootstrap-chronicle.json");
+  const bootstrapRetry = spawnSync(process.execPath, [
+    entrypointPath, "chronicle-append",
+    "--continuity", partialBootstrapContinuityPath,
+    "--chronicle", retryChroniclePath,
+    "--mission", "partial-bootstrap-mission",
+    "--step", "step-1",
+    "--initialize-continuity",
+    "--initialize-chronicle",
+    "--content-stdin"
+  ], { cwd: process.cwd(), input: "bootstrap-retry-content", encoding: "utf8" });
+  assert.equal(bootstrapRetry.status, 0, bootstrapRetry.stderr || bootstrapRetry.stdout);
+  assert.equal(bootstrapRetry.stderr, "");
+  const bootstrapRetryResult = JSON.parse(bootstrapRetry.stdout);
+  assert.equal(bootstrapRetryResult.status, "completed");
+  assert.equal(bootstrapRetryResult.dispatchAttempted, true);
+  const retryContinuity = JSON.parse(await fs.readFile(partialBootstrapContinuityPath, "utf8"));
+  const retryChronicle = JSON.parse(await fs.readFile(retryChroniclePath, "utf8"));
+  assert.equal(retryContinuity.snapshot.missions.filter(item => item.missionId === "partial-bootstrap-mission").length, 1);
+  assert.equal(retryContinuity.snapshot.effectJournal.length, 1);
+  assert.equal(retryContinuity.snapshot.effectJournal[0].status, "settled_observed");
+  assert.equal(retryChronicle.entries.filter(item => item.content === "bootstrap-retry-content").length, 1);
+
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
