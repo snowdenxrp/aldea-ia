@@ -148,9 +148,11 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       stepEffects[0]?.action === step.action &&
       isDeepStrictEqual(stepEffects[0]?.target ?? null, step.target ?? null) &&
       isValidNexoChronicleSettlementRecord(stepEffects[0]);
+    const completionContractAvailable = step.action === "local_analysis" ||
+      (step.action === "chronicle_append" && validChronicleSettlement);
     const verifiedCompletion = stepAttempts.find(item =>
       item?.status === "completed" && matchesStepIdentity(item) &&
-      (step.action !== "chronicle_append" || validChronicleSettlement) &&
+      completionContractAvailable &&
       item?.evidence?.verified === true &&
       typeof item?.evidence?.kind === "string" && item.evidence.kind.trim() &&
       typeof item?.evidence?.source === "string" && item.evidence.source.trim()
@@ -188,9 +190,11 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     if (invalidCompletion) {
       step.status = "blocked";
       step.blockReason = {
-        code: matchesStepIdentity(invalidCompletion)
-          ? "NEXO_COMPLETION_EVIDENCE_UNVERIFIED"
-          : "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH",
+        code: !matchesStepIdentity(invalidCompletion)
+          ? "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH"
+          : step.action !== "local_analysis" && step.action !== "chronicle_append"
+            ? "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED"
+            : "NEXO_COMPLETION_EVIDENCE_UNVERIFIED",
         next: "verify_mission_goal_without_redispatch"
       };
       continue;
