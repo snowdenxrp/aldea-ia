@@ -1162,3 +1162,10 @@ La matriz de resultados quedó consolidada en un contrato de aplicación: distin
 - CLI y pruebas consumen ahora esa entrada pública. Una regresión falla si se añade un dispatcher genérico o export adicional sin decisión arquitectónica explícita.
 - CI SUCCESS en SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [Chronicle/entrypoint 39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [semantic validation 39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [outcome/restart 39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
 - Es un seam de aplicación reutilizable, no una app web/Android ni cutover. Solo Chronicle muta. M0 INCOMPLETO.
+
+
+## M0 — gate previo a integrar UI/runtime
+
+Documento: [NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md](BUILD/NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md).
+
+Decisión actual: la API pública es un seam de backend validado para Chronicle, no autorización para conectarla a UI, HTTP local ni runtime legacy. Antes de esa integración deben revisarse límites de amenaza, autoridad, configuración de rutas, outcomes UNKNOWN y pruebas de reinicio contra todos los criterios del gate. `index.html` sigue siendo Lúmina; no se cambia. M0 INCOMPLETO.
