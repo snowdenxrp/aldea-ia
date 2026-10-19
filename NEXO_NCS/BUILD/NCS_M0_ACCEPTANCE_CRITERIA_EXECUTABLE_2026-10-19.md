@@ -29,7 +29,7 @@ Convertir los contratos ya implementados en resultados verificables. Este docume
 4. Los bytes del store antes y después son idénticos.
 5. Misión inexistente y reconstrucción no disponible terminan con códigos estructurados y sin mutación.
 **Prueba candidata existente:** `tests/nexo/entrypoint.test.mjs`.  
-**Estado actual:** **UNKNOWN** hasta observar CI sobre un SHA que contenga la corrección de integración `82f1204ae4e9298163231ab7a323233ad87777b8` y el test actual.
+**Estado actual:** **PASS para el alcance de esta regresión en el SHA `82f1204ae4e9298163231ab7a323233ad87777b8`**, ejecutado por [run 39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), job `mission-status` (ID `118102572970`), step `Run independent Nexo entrypoint regression` = SUCCESS. El log muestra `Nexo independent entrypoint: unsupported commands fail closed; Chronicle delegates without Lúmina or content leakage.` El PASS cubre la regresión de entrypoint, incluida la proyección de misión; no equivale al cierre de M0 ni prueba autoridad legítima, durabilidad ante pérdida de energía o integridad global del repositorio.
 
 ### M0-AC2 — Admisión de misión acotada y persistible
 **Setup:** misiones válidas e inválidas, incluidos inputs anidados no persistibles o estructuralmente malformados cubiertos por las regresiones existentes.  
@@ -74,3 +74,11 @@ Los siguientes asuntos no se deben ocultar ni declarar resueltos por estas prueb
 1. Obtener y revisar una ejecución real de `.github/workflows/nexo-m0-mission-status.yml` que pruebe un SHA posterior a la corrección `82f1204ae4e9298163231ab7a323233ad87777b8`.
 2. Si no se puede recuperar ese run, ejecutar manualmente el workflow si el repositorio lo permite; registrar SHA exacto y logs. Hasta entonces M0-AC1 permanece UNKNOWN.
 3. Construir una matriz de evidencia compacta para AC1–AC6 usando sólo runs existentes y verificables. No reauditar cada criterio si su código y prueba no cambiaron.
+
+
+## Evidencia observada añadida — 2026-10-19
+
+- Primera ejecución del workflow: [run 39264987091](https://github.com/snowdenxrp/aldea-ia/actions/runs/39264987091), SHA `4b6423404d5ad2e901e3b3eccb5db6e2140ee492`, FAILURE en `tests/nexo/entrypoint.test.mjs:185`: la consulta devolvió `NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE` porque el consumidor esperaba un wrapper que la función pura no devuelve.
+- Fix: `82f1204ae4e9298163231ab7a323233ad87777b8`.
+- Reejecución por push: [run 39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), mismo workflow, mismo test, SHA del fix exacto, SUCCESS. El job y el paso de regresión quedaron completados con conclusión SUCCESS.
+- La secuencia fallo → corrección → éxito es evidencia trazable; no borrar ni reetiquetar el primer fallo. Los commits documentales posteriores no cambian el SHA probado.
