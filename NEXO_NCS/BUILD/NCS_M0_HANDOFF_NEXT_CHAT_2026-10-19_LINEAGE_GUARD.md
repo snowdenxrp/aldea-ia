@@ -1,17 +1,17 @@
 # NCS — handoff de continuidad para el siguiente chat (M0)
 
-> **Checkpoint de continuidad más reciente (2026-10-19):** leer [NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md](./NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md). La rama se verificó directamente en HEAD `e8be8f664a7ad7982686010439282d3f3474850d`. Los cinco workflows de CI pasaron tanto en el runtime commit `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` como en el test commit `e38556bc78487aae117b1c11085aca1731dfbb2e`; el run [39337387520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387520) ejecutó `tests/nexo/chronicle-runtime.test.mjs` en el SHA de pruebas. **Esto no demuestra que la suite completa `npm test` haya pasado**: sigue PENDING. Mantener M0 INCOMPLETO, `authorization: NOT_EVALUATED`, efectos protegidos STOP.
+> **Checkpoint de continuidad más reciente (2026-10-19):** leer [NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md](./NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md). La rama se verificó directamente en HEAD `75ad2fbe3278b2900ca138080286d60e6ef75a9d` al cerrar esta actualización documental; el siguiente chat debe volver a comprobar el ref antes de editar. Los cinco workflows de CI pasaron tanto en el runtime commit `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` como en el test commit `e38556bc78487aae117b1c11085aca1731dfbb2e`; el run [39337387520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387520) ejecutó `tests/nexo/chronicle-runtime.test.mjs` en el SHA de pruebas. **Esto no demuestra que la suite completa `npm test` haya pasado**: sigue PENDING. Mantener M0 INCOMPLETO, `authorization: NOT_EVALUATED`, efectos protegidos STOP.
 
 **Fecha:** 2026-10-19  
 **Repositorio:** `snowdenxrp/aldea-ia`  
 **Rama:** `ncs-clean-architecture`  
-**HEAD verificado al preparar este handoff:** `7df24747188f9a93c8adb96b3e723e04ea65f9bc`  
+**HEAD histórico de una versión anterior de este handoff:** `7df24747188f9a93c8adb96b3e723e04ea65f9bc` (superado por las verificaciones posteriores de la sección de continuidad)  
 **Misión obligatoria:** continuar M0. No reiniciar auditorías cerradas, no volver a M1 ni convertir esto en una nueva investigación de STEP 7.
 
 ## Instrucción inicial para el siguiente chat
 1. Leer `NEXO_NCS/STATUS.md` como puerta de entrada y luego este handoff y el checkpoint citado abajo. Verificar el HEAD actual de la rama y el estado real de CI antes de hacer cambios.
 2. Continuar desde el siguiente contrato verificable del runtime owner-backed M0. No repetir análisis ya cerrados de PREPARED ni volver a introducir parches defensivos sin demostrar una ruta real que los necesite.
-3. Distinguir siempre SHA probado de SHA que solo contiene documentación. El SHA con evidencia de CI de esta ronda es `48114cd275b98cbbf3142bb242f90d0c5c543d0a`; el HEAD posterior `7df24747188f9a93c8adb96b3e723e04ea65f9bc` incorpora documentación y debe tratarse como distinto.
+3. Distinguir siempre SHA probado de SHA que solo contiene documentación. Para el cambio de resultado terminal, los SHA de código y pruebas `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` y `e38556bc78487aae117b1c11085aca1731dfbb2e` tienen cinco workflows SUCCESS cada uno; la sección 8 del checkpoint contiene los enlaces. Los HEAD documentales posteriores no son por sí solos SHAs de prueba.
 4. No afirmar que `npm test` completo pasó. No afirmar que existe autoridad legítima ni habilitar efectos protegidos.
 
 ## Estado técnico de esta ronda
@@ -46,7 +46,7 @@ Los runs prueban los contratos cubiertos por esos workflows en ese SHA. No equiv
 1. Verificar el estado de HEAD y CI en el nuevo chat.
 2. Leer el checkpoint actual:  
    `NEXO_NCS/BUILD/NCS_M0_PREPARED_REVISION_FIX_CHECKPOINT_2026-10-19.md`
-3. Completar una auditoría acotada de la frontera de reconciliación y resultado terminal: comprobar qué garantiza el contrato real de store/owner, qué respuestas malformadas son alcanzables y si existe algún falso `completed`/settled. No duplicar checks ya cubiertos sin un caso concreto.
+3. La auditoría acotada del recibo de resultado terminal y las cuatro regresiones de revisión ya están implementadas y pasan en los workflows indicados en el checkpoint. No repetirla salvo evidencia nueva concreta; elegir el siguiente contrato M0 a partir del código y sus garantías de persistencia.
 4. Ejecutar la suite completa `npm test` mediante CI si existe workflow/forma soportada; registrar resultado exacto y SHA. Hasta entonces, suite completa pendiente.
 5. Corregir documentación obsoleta con una actualización pequeña y segura, si se puede, para que STATUS y checkpoint no contradigan la evidencia actual. No reemplazar el STATUS enorme ni intentar evadir controles de herramienta.
 6. Después de probar el contrato real, continuar con la siguiente capacidad M0 que pueda tener observación, settlement y resultado terminal verificables a través de interrupción/reinicio.
@@ -59,4 +59,4 @@ Los runs prueban los contratos cubiertos por esos workflows en ese SHA. No equiv
 - Si una operación de documentación falla, decirlo; no afirmar que quedó actualizada.
 
 ## Estado al cambiar de chat
-**M0 sigue incompleto.** Las regresiones focales y cinco workflows pasaron en SHA `48114cd...`; HEAD actual verificado al crear este handoff es `7df2474...`, un commit documental posterior. Suite completa `npm test` pendiente. Autoridad del propietario `NOT_EVALUATED`; efectos protegidos `STOP`.
+**M0 sigue incompleto.** Los cambios de resultado terminal y sus regresiones pasan cinco workflows en cada SHA de código/pruebas, según el checkpoint actualizado. El HEAD documental debe verificarse de nuevo al iniciar el siguiente chat. Suite completa `npm test` pendiente. Autoridad del propietario `NOT_EVALUATED`; efectos protegidos `STOP`.
