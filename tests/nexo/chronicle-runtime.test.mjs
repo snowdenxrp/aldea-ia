@@ -856,6 +856,63 @@ try {
   assert.equal(conflictDispatches, 1);
   assert.equal((await conflictReopened.owner.loadCurrent()).snapshot.attempts[0].status, "completed");
 
+  // A terminal-outcome status string alone is not a commit receipt. Once the
+  // Chronicle effect is settled, malformed owner revisions must preserve UNKNOWN
+  // and must not claim a terminal outcome or redispatch the append.
+  const malformedOutcomeReceipts = [
+    {
+      label: "missing committed revision",
+      response: () => ({ status: "committed" })
+    },
+    {
+      label: "committed revision did not advance",
+      response: ({ expectedRevision }) => ({ status: "committed", storeRevision: expectedRevision })
+    },
+    {
+      label: "committed revision skipped",
+      response: ({ expectedRevision }) => ({ status: "committed", storeRevision: expectedRevision + 2 })
+    },
+    {
+      label: "already-recorded revision advanced unexpectedly",
+      response: ({ expectedRevision }) => ({ status: "already_recorded", storeRevision: expectedRevision + 1 })
+    }
+  ];
+  for (let index = 0; index < malformedOutcomeReceipts.length; index++) {
+    const testCase = malformedOutcomeReceipts[index];
+    const malformedOutcomeSetup = await setup(`chronicle-malformed-outcome-${index}`);
+    let malformedOutcomeDispatches = 0;
+    const malformedOutcomeOwner = Object.freeze({
+      ...malformedOutcomeSetup.opened.owner,
+      recordOutcome: async args => testCase.response(args)
+    });
+    const malformedOutcomeAdapter = createEffectAdapter({
+      handlers: {
+        chronicle_append: async request => {
+          malformedOutcomeDispatches++;
+          return malformedOutcomeSetup.contracts.handlers.chronicle_append(request);
+        }
+      },
+      verifiers: malformedOutcomeSetup.contracts.verifiers
+    });
+    const malformedOutcomeResult = await executeNexoStepWithContinuityOwner({
+      missionId: `chronicle-malformed-outcome-${index}`,
+      stepId: "step-1",
+      owner: malformedOutcomeOwner,
+      adapter: malformedOutcomeAdapter,
+      postcondition: malformedOutcomeSetup.contracts.postcondition
+    });
+    assert.equal(malformedOutcomeResult.status, "unknown", testCase.label);
+    assert.equal(malformedOutcomeResult.code, "NEXO_CHRONICLE_OUTCOME_COMMIT_NOT_CONFIRMED", testCase.label);
+    assert.equal(malformedOutcomeResult.dispatchAttempted, true, testCase.label);
+    assert.equal(malformedOutcomeResult.journalSettled, true, testCase.label);
+    assert.equal(malformedOutcomeResult.terminalOutcomeRecorded, "UNKNOWN", testCase.label);
+    assert.equal(malformedOutcomeResult.redispatchAuthorized, false, testCase.label);
+    assert.equal(malformedOutcomeDispatches, 1, testCase.label);
+    const malformedOutcomeCurrent = await malformedOutcomeSetup.opened.owner.loadCurrent();
+    assert.equal(malformedOutcomeCurrent.snapshot.effectJournal[0].status, "settled_observed", testCase.label);
+    assert.equal(malformedOutcomeCurrent.snapshot.attempts.length, 0, testCase.label);
+  }
+
   // Two callers racing on an already-admitted operation must not duplicate the
   // append. A loser may report conflict/unknown; an explicit retry recovers the
   // persisted result without automatic redispatch.
