@@ -2,8 +2,8 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA de código + regresión validado por CI: `b21896e893a1b739bbfa511f76c3a215298a73e6`
-Último SHA de código: `e62b65ab699c5d177c40d08f32a1393af118e4ee`; SHA con regresión runtime: `26eab01d09ab4be20c7228da8abf17e3224f5a6b`
+Último SHA de código validado por CI: `6ab75e1b59758cd33cd0a470c90e45e02f418882`
+Último SHA de código: `6ab75e1b59758cd33cd0a470c90e45e02f418882`; SHA final con regresiones genéricas: `b3a3f8fbaafb29ba913916ce989fb3a3e7196768`
 
 ## 0. Instrucción principal al chat nuevo
 
@@ -174,3 +174,14 @@ Se creó `src/nexo/core/chronicle-settlement-contract.mjs` para centralizar las 
 La prueba positiva de replay incluye evidence/timestamp válidos. La negativa usa `evidence: null` y verifica que no hay redispatch, no se invoca outcome writer y el resultado no marca `journalSettled` ni terminal outcome. SHA de código/contrato final `e62b65ab699c5d177c40d08f32a1393af118e4ee`; SHA con regresión runtime `26eab01d09ab4be20c7228da8abf17e3224f5a6b`. Chronicle native, bounded admission, STEP 4 y STEP 5 pasaron en `26eab...`; crash cuts, STEP 4 y STEP 5 pasaron después del cambio final de identidad en `e62b...`. Una ejecución intermedia de Chronicle falló por fixture antigua sin evidencia; fixture corregida y ejecución posterior verde. Detalle y enlaces en `NEXO_NCS/STATUS.md`.
 
 **Siguiente paso:** revisar observación genérica y la forma de `evidence` con el mismo estándar, empezando por los tests existentes. No cambiar el contrato genérico hasta demostrar la brecha y comprobar las compatibilidades deliberadas.
+
+
+## 11. Checkpoint — evidencia genérica ausente/vacía ya no se acepta
+
+Se cerró la brecha en `reconcilePrepared()`: una observación `applied/not_applied` debe traer una propiedad propia `evidence` con objeto no nulo, no-array y al menos una clave enumerable. Replay genérico usa la misma condición. `unknown` mantiene su retorno de incertidumbre antes de exigir evidencia positiva.
+
+`observeChronicleOperation()` aporta evidencia de ausencia cuando no encuentra entrada: `{kind: "chronicle-operation-absence", operationKey, observedRevision, matchCount: 0}`. Esto conserva la ruta legítima que registra que la entrada no estaba presente sin permitir que un verificador genérico omita evidencia.
+
+Pruebas nuevas: sin evidence y `evidence: {}` bloquean sin mutar; replay legacy con `evidence: null` no devuelve `already_observed`. SHA código owner `6ab75e1...`, adaptador `8920343...`; SHA de pruebas `b3a3f8...`. Chronicle native + bounded admission SUCCESS en `6ab75e...`; crash cuts, effect/settlement, STEP 4 y STEP 5 SUCCESS en `b3a3f8...`. Enlaces e IDs en STATUS.
+
+**Siguiente frontera:** revisar colisiones de identidad por separador en `validateOperation()`; no introducir formato nuevo. Reproducir si `missionId`/`stepId` con `:` permiten identidad ambigua y añadir test antes del cambio mínimo.
