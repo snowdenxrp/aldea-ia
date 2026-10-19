@@ -178,6 +178,26 @@ assert.throws(
   "mission admission must reject non-string step status values"
 );
 
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "unknown-mission-status",
+    status: "awaiting_verification",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "new mission admission must use a status emitted by the mission planner"
+);
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "unknown-step-status",
+    status: "planned",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "awaiting_verification", dependsOn: [] }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "new mission admission must not persist a runtime-only or unknown step status"
+);
+
+
 
 
 assert.throws(
@@ -507,6 +527,25 @@ assert.equal(
   1,
   "a mission with malformed status must not advance the canonical store revision"
 );
+
+const invalidStatusVocabularyResult = await owner.recordMission({
+  expectedRevision: 1,
+  mission: {
+    missionId: "owner-unknown-step-status",
+    objective: "repair_agent_state",
+    status: "planned",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "awaiting_verification", dependsOn: [] }]
+  }
+});
+assert.equal(invalidStatusVocabularyResult.status, "conflict");
+assert.equal(invalidStatusVocabularyResult.code, "NEXO_MISSION_CONTEXT_INVALID");
+assert.equal(invalidStatusVocabularyResult.storeRevision, 1);
+assert.equal(
+  (await owner.loadCurrent()).storeRevision,
+  1,
+  "a mission with unknown status vocabulary must not advance the canonical store revision"
+);
+
 
 
 
