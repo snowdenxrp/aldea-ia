@@ -1,3 +1,13 @@
+## M0 — reconstrucción bloquea estados de effectJournal desconocidos, huérfanos o desanclados (2026-10-19)
+
+- Hallazgo reproducido: un registro `effectJournal` con estado no reconocido podía ser ignorado y dejar la misión en `planned`; un `settled_observed` de Chronicle apuntando a un step inexistente también podía quedar fuera del filtrado por paso. En ambos casos el snapshot legacy pasaba la validación estructural y la reconstrucción no asociaba el registro con un paso ejecutable.
+- Corrección en `src/nexo/core/continuity-operations.mjs`: estados de journal desconocidos asociados a la misión bloquean su reconstrucción; registros con estados reconocidos pero sin misión propietaria, huérfanos, o cuyo step/action/target no coincide bloquean la misión antes de procesar intentos. No se rechaza indiscriminadamente todo snapshot legacy ni se añade un nuevo estado de ejecución; se usa `blocked` y se preserva la evidencia para reconciliación.
+- Regresiones en `tests/nexo/continuity-migration.test.mjs`: (1) estado de journal desconocido para un step; (2) estado desconocido huérfano de otra misión; (3) settlement Chronicle `settled_observed` con step inexistente. El tercer test falló antes del fix con `blockReason.code === undefined`, confirmando que la entrada se ignoraba; tras el fix, pasó.
+- CI SUCCESS en SHA código+pruebas `e31547f17764c18fd0bf2fe39dab1ebfc5748686`: bounded admission/restart [39197251854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197251854), STEP 4 [39197251843](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197251843), STEP 5 [39197251835](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197251835), crash cuts [39197251844](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197251844). La ejecución roja de la regresión previa fue el test-first esperado y quedó corregida en el SHA final; no ocultar esa secuencia.
+- Alcance: protege la reconstrucción contra registros de efecto que de otro modo desaparecerían de la vista canónica. No autentica provenance, no prueba causalidad externa ni implementa el goal verifier.
+- **Siguiente frontera:** auditar la coherencia de identidad al reconstruir outcomes terminales no-Chronicle (attempts completed con acción/target correctos pero evidencia o vínculo de journal insuficiente). Usar tests existentes de completion/legacy; no crear un goal verifier ficticio ni promover claims a autorización.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina; STEP 7 OPEN / STOP / UNKNOWN.
+
 # Puerta de entrada NCS — estado M0
 
 ## M0 — identidad canónica y estados de journal desconocidos bloquean la reconstrucción (validado 2026-10-19)
