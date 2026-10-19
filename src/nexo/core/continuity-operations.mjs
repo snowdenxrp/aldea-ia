@@ -335,6 +335,31 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     return mission;
   }
 
+  // Unknown persisted effect-journal states cannot be ignored: they may
+  // represent an effect whose outcome is not understood by this reader.
+  // Fail closed without rejecting the whole legacy snapshot or inventing a new
+  // execution state; a blocked reconstructed mission is not runnable.
+  const unknownEffectEntries = source.effectJournal.filter(entry =>
+    !["prepared", "settled_observed", "reconciled_observed"].includes(entry?.status)
+  );
+  if (unknownEffectEntries.length > 0) {
+    const relevantUnknownEntries = unknownEffectEntries.filter(entry =>
+      entry?.missionId === missionId || typeof entry?.missionId !== "string" || !entry.missionId.trim()
+    );
+    if (relevantUnknownEntries.length > 0) {
+      for (const step of mission.steps) {
+        step.status = "blocked";
+        step.blockReason = {
+          code: "NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN",
+          next: "reconcile_effect_journal_without_redispatch"
+        };
+      }
+      mission.status = "blocked";
+      mission.uncertainty = "effect_journal_status_unknown";
+      return mission;
+    }
+  }
+
   const failed = mission.steps.some(step => step.status === "failed");
   const blocked = mission.steps.some(step => step.status === "blocked");
   const unresolved = mission.steps.some(step => !["completed", "failed", "blocked"].includes(step.status));
