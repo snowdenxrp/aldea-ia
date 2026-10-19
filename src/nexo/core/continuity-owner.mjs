@@ -84,7 +84,18 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         !Array.isArray(mission.steps)) {
       return { status: "failed", code: "NEXO_MISSION_CONTEXT_INVALID" };
     }
-    const current = await store.loadCurrent();
+    let current;
+    try {
+      current = await store.loadCurrent();
+    } catch (error) {
+      return {
+        status: "blocked",
+        code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED",
+        storeRevision: expectedRevision,
+        uncertainty: "continuity_read_failed",
+        authorization: "NOT_EVALUATED"
+      };
+    }
     if (current.storeRevision !== expectedRevision) {
       return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
     }
