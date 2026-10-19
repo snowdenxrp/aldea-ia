@@ -231,6 +231,35 @@ try {
   assert.notEqual(reconstructedChronicle.objective, "verify_observed_repair_goal");
   assert.equal((await real.chronicleStore.loadCurrent()).entries.length, 1);
 
+  // Two callers racing on an already-admitted operation must not duplicate the
+  // append. A loser may report conflict/unknown; an explicit retry recovers the
+  // persisted result without automatic redispatch.
+  const concurrent = await setup("chronicle-concurrent");
+  const concurrentArgs = {
+    continuityPath: concurrent.continuityPath,
+    chroniclePath: concurrent.chroniclePath,
+    missionId: "chronicle-concurrent",
+    stepId: "step-1",
+    content: "hello Nexo",
+    initializeContinuity: false,
+    initializeChronicle: false
+  };
+  const concurrentResults = await Promise.all([
+    runNexoChronicleAppend(concurrentArgs),
+    runNexoChronicleAppend(concurrentArgs)
+  ]);
+  assert.ok(concurrentResults.some(result => result.status === "completed"));
+  assert.ok(concurrentResults.filter(result => result.dispatchAttempted === true).length <= 1,
+    "concurrent same-operation calls must not dispatch the effect twice");
+  assert.equal((await concurrent.chronicleStore.loadCurrent()).entries.length, 1);
+  const concurrentContinuityBeforeRetry = await fs.readFile(concurrent.continuityPath, "utf8");
+  const concurrentChronicleBeforeRetry = await fs.readFile(concurrent.chroniclePath, "utf8");
+  const concurrentRetry = await runNexoChronicleAppend(concurrentArgs);
+  assert.equal(concurrentRetry.status, "completed");
+  assert.equal(concurrentRetry.dispatchAttempted, false);
+  assert.equal(await fs.readFile(concurrent.continuityPath, "utf8"), concurrentContinuityBeforeRetry);
+  assert.equal(await fs.readFile(concurrent.chroniclePath, "utf8"), concurrentChronicleBeforeRetry);
+
   // Restart after the append but before lineage/settlement: recover by reading Chronicle, never redispatch.
   const interrupted = await setup("chronicle-interrupted");
   const prepared = await interrupted.opened.owner.recordPrepared({
