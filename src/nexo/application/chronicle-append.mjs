@@ -6,7 +6,10 @@ import { createEffectAdapter } from "../effect-adapter.js";
 import { executeNexoStepWithContinuityOwner } from "../core/owner-backed-runtime.mjs";
 
 function blocked(code) {
-  return { status: "blocked", code, dispatchAttempted: false, redispatchAuthorized: false };
+  return {
+    status: "blocked", code, authorization: "NOT_EVALUATED",
+    dispatchAttempted: false, redispatchAuthorized: false
+  };
 }
 
 const PUBLIC_CHRONICLE_STATUSES = new Set([
@@ -20,6 +23,9 @@ const TRI_STATE_FIELDS = new Set([
 export function publicChronicleResult(result, missionId, stepId) {
   const safe = {
     status: PUBLIC_CHRONICLE_STATUSES.has(result?.status) ? result.status : "unknown",
+    // No owner-authority evaluator is wired into this prototype. Never let a
+    // successful local Chronicle settlement imply authorization.
+    authorization: "NOT_EVALUATED",
     dispatchAttempted: result?.dispatchAttempted === true,
     redispatchAuthorized: false,
     missionId,
