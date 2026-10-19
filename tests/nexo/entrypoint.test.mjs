@@ -89,6 +89,31 @@ try {
   assert.equal(persistedChronicle.entries.length, 1);
   assert.equal(persistedChronicle.entries[0].content, privateSentinel);
   const persistedContinuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
+
+  // A second OS process simulates restart: replay the same mission/step and
+  // prove the existing Chronicle append is observed without a second dispatch.
+  const replayBytesBefore = await fs.readFile(continuityPath, "utf8");
+  const replayChronicleBytesBefore = await fs.readFile(chroniclePath, "utf8");
+  const replay = spawnSync(process.execPath, [
+    entrypointPath, "chronicle-append",
+    "--continuity", continuityPath,
+    "--chronicle", chroniclePath,
+    "--mission", "entrypoint-mission",
+    "--step", "entrypoint-step",
+    "--initialize-continuity",
+    "--initialize-chronicle",
+    "--content-stdin"
+  ], { cwd: process.cwd(), input: privateSentinel, encoding: "utf8" });
+  assert.equal(replay.status, 0, replay.stderr || replay.stdout);
+  assert.equal(replay.stderr, "");
+  assert.equal(replay.stdout.includes(privateSentinel), false);
+  const replayResult = JSON.parse(replay.stdout);
+  assert.equal(replayResult.status, "completed");
+  assert.equal(replayResult.dispatchAttempted, false);
+  assert.equal(replayResult.terminalOutcomeRecorded, true);
+  assert.equal(replayResult.redispatchAuthorized, false);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), replayBytesBefore);
+  assert.equal(await fs.readFile(chroniclePath, "utf8"), replayChronicleBytesBefore);
   assert.equal(persistedContinuity.snapshot.effectJournal[0].status, "settled_observed");
 
   // Status is read-only and emits counts, not mission content or target payloads.
