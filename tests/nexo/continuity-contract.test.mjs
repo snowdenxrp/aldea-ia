@@ -91,6 +91,28 @@ assert.throws(
 );
 
 
+const emptyOperationalSnapshot = {
+  schema: NEXO_CONTINUITY_SCHEMA,
+  schemaVersion: 1,
+  missions: [],
+  attempts: [],
+  doNotRepeat: [],
+  executions: [],
+  effectJournal: []
+};
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "duplicate-step-identity",
+    status: "planned",
+    steps: [
+      { id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] },
+      { id: "step-1", action: "repair_agent_state", target: "bravo", status: "planned", dependsOn: [] }
+    ]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "duplicate step IDs alias the missionId:stepId idempotency identity and must be rejected at admission"
+);
+
 const snapshot = projectNexoContinuitySnapshot(validMemory);
 assert.equal(snapshot.schema, NEXO_CONTINUITY_SCHEMA);
 assert.equal(snapshot.schemaVersion, 1);
