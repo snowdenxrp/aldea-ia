@@ -476,3 +476,8 @@ Corrección tras revisar `tests/nexo/assistants-runtime-cli.test.mjs`: sí exist
 ## 14. Frontera de migración inicial
 
 `src/nexo/core/continuity-service.mjs` consulta primero la tienda independiente; solo si no existe puede importar `legacyMemory`. Una tienda existente es canónica y no se mezcla con la copia legacy. Si no hay tienda ni memoria y el caller no demuestra bootstrap vacío, se bloquea como estado inicial desconocido. En `scripts/assistants.mjs`, la memoria legacy procede del estado de simulación: es un puente de migración inicial en la ruta legacy, no doble escritura posterior. No retirar sin política de recuperación y pruebas para migración, bootstrap vacío y tienda ausente con historia previa desconocida. No hubo cambios de runtime ni pruebas ejecutadas.
+
+
+## 15. Evidencia CI histórica del test CLI aislado
+
+Se verificó el job del run [39144863235](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144863235): `repair-crash-cuts` terminó SUCCESS y el paso `Run isolated assistants runtime CLI regression` también SUCCESS, sobre código/test SHA `1cd8dfd914fad7848df51eca0f4e0f75cff22264`. El commit de test ajusta el replay posterior a reinicio para exigir fail-closed (`blocked`) sin reescribir estado ni duplicar la obligación. Es evidencia histórica para ese SHA, no un CI nuevo del HEAD documental actual.
