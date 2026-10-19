@@ -41,6 +41,11 @@ const fileAsParent = path.join(directory, "not-a-directory");
 await fs.writeFile(fileAsParent, "file blocks directory traversal", "utf8");
 const invalidParentStore = createNexoContinuityStore({ filePath: path.join(fileAsParent, "continuity.json") });
 assert.deepEqual(
+  await invalidParentStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" },
+  "initialize must normalize ENOTDIR as an unavailable parent path"
+);
+assert.deepEqual(
   await invalidParentStore.commitIfCurrent(0, emptySnapshot),
   { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" },
   "conditional commit must normalize ENOTDIR as an unavailable parent path"
