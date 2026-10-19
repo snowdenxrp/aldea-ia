@@ -8,6 +8,7 @@ import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mj
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { runNexoChronicleAppend } from "../../src/nexo/application/index.mjs";
+import { recordNexoMissionSafely } from "../../src/nexo/application/chronicle-append.mjs";
 import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
@@ -27,6 +28,24 @@ const invalidInitializationType = await runNexoChronicleAppend({
 });
 assert.equal(invalidInitializationType.status, "blocked");
 assert.equal(invalidInitializationType.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
+
+const lostMissionAdmissionResponse = await recordNexoMissionSafely({
+  owner: {
+    recordMission: async () => {
+      const error = new Error("private store failure detail");
+      error.code = "NEXO_TEST_MISSION_ADMISSION_RESPONSE_LOST";
+      throw error;
+    }
+  },
+  expectedRevision: 0,
+  mission: { missionId: "admission-unknown", steps: [] }
+});
+assert.equal(lostMissionAdmissionResponse.status, "unknown");
+assert.equal(lostMissionAdmissionResponse.code, "NEXO_TEST_MISSION_ADMISSION_RESPONSE_LOST");
+assert.equal(lostMissionAdmissionResponse.missionAdmissionCommitted, "UNKNOWN");
+assert.equal(lostMissionAdmissionResponse.dispatchAttempted, false);
+assert.equal(lostMissionAdmissionResponse.redispatchAuthorized, false);
+assert.equal(JSON.stringify(lostMissionAdmissionResponse).includes("private store failure detail"), false);
 
 function chronicleMission() {
   return {
