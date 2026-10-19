@@ -768,7 +768,8 @@ try {
       action: operation.action,
       target: operation.target,
       observedRevision: 11,
-      source: "registered-verifier"
+      source: "registered-verifier",
+      evidence: { reader: "registered-verifier" }
     })
   };
   const frozenRegistryOwner = createNexoContinuityOwner({
@@ -1020,6 +1021,90 @@ try {
   assert.equal(nullEvidenceReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
   assert.notEqual(nullEvidenceReplay.status, "already_observed");
 
+  // Generic applied observations must carry a non-null structured evidence object.
+  // UNKNOWN remains handled by its earlier branch and does not need positive evidence.
+  const missingGenericEvidenceDir = path.join(root, "generic-owner-missing-evidence");
+  await fs.mkdir(missingGenericEvidenceDir);
+  const missingGenericEvidenceOpened = await openNexoContinuityOwner({
+    filePath: path.join(missingGenericEvidenceDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  const missingGenericEvidenceOwner = createNexoContinuityOwner({
+    store: missingGenericEvidenceOpened.store,
+    effectVerifiers: {
+      generic_write: async operation => ({
+        status: "applied",
+        idempotencyKey: operation.idempotencyKey,
+        action: operation.action,
+        target: operation.target,
+        observedRevision: 11,
+        source: "test-reader-without-evidence"
+      })
+    }
+  });
+  const missingGenericEvidenceResult = await missingGenericEvidenceOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(missingGenericEvidenceResult.status, "blocked");
+  assert.equal(missingGenericEvidenceResult.code, "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID");
+  assert.equal((await missingGenericEvidenceOpened.owner.loadCurrent()).storeRevision, 0);
+  assert.equal((await missingGenericEvidenceOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
+  // A legacy/corrupt generic replay with evidence:null is not already_observed.
+  const nullGenericReplayDir = path.join(root, "generic-owner-null-evidence-replay");
+  await fs.mkdir(nullGenericReplayDir);
+  const nullGenericReplayMemory = genericMemory();
+  nullGenericReplayMemory.nexo.effectJournal[0].status = "reconciled_observed";
+  nullGenericReplayMemory.nexo.effectJournal[0].reconciliation = {
+    status: "applied",
+    observedRevision: 11,
+    source: "test-persisted-reader",
+    evidence: null,
+    observedAt: "2026-10-19T00:00:00.000Z"
+  };
+  const nullGenericReplayOpened = await openNexoContinuityOwner({
+    filePath: path.join(nullGenericReplayDir, "nexo.json"),
+    legacyMemory: nullGenericReplayMemory
+  });
+  const nullGenericReplayOwner = createNexoContinuityOwner({
+    store: nullGenericReplayOpened.store,
+    effectVerifiers: {
+      generic_write: async operation => ({
+        status: "applied",
+        idempotencyKey: operation.idempotencyKey,
+        action: operation.action,
+        target: operation.target,
+        observedRevision: 11,
+        source: "must-not-be-called",
+        evidence: { valid: true }
+      })
+    }
+  });
+  const nullGenericCurrent = await nullGenericReplayOpened.store.loadCurrent();
+  assert.equal((await nullGenericReplayOpened.store.commitIfCurrent(
+    nullGenericCurrent.storeRevision, nullGenericCurrent.snapshot
+  )).status, "committed");
+  const nullGenericReplayResult = await nullGenericReplayOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(nullGenericReplayResult.status, "conflict");
+  assert.equal(nullGenericReplayResult.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+  assert.notEqual(nullGenericReplayResult.status, "already_observed");
+
   // Repair actions cannot bypass their revision-bound repair-specific
   // settlement contract through the generic observation API.
   const repairContractDir = path.join(root, "generic-repair-route-rejected");
@@ -1076,7 +1161,8 @@ try {
           action: operation.action,
           target: operation.target,
           observedRevision: 11,
-          source: "test-racing-reader"
+          source: "test-racing-reader",
+          evidence: { observedRevision: 11 }
         };
       }
     }
