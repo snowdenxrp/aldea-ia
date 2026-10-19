@@ -139,3 +139,12 @@ A caller-supplied evidence shape is not a goal verifier. The owner now blocks co
 Regressions cover a repair with no PREPARED row and a registered `generic_write` with no PREPARED row. Both caller-asserted completions block without advancing canonical revision. The first guard iteration failed CI due to precedence/scope; corrected code and expanded tests passed all six focal workflows on code/test SHA `f0a2472887e8bf5d46aaff2c904e50dae190345b`: [bounded admission/restart 39188948325](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948325), [STEP 5 39188948326](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948326), [STEP 4 39188948327](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948327), [Chronicle 39188948337](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948337), [repair crash cuts 39188948338](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948338), [effect/settlement 39188948346](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948346).
 
 This guard does not implement the missing mission-goal verifier or enable additional effects. M0 remains incomplete.
+
+
+## M0 checkpoint — default-deny outcome completion (2026-10-19)
+
+The guard that covered known repairs and actions registered in `effectVerifiers` left an uncovered case: an unregistered effectful action could be marked `completed` without PREPARED or a goal verifier. `recordOutcome(status=completed)` now fails closed by default, returning `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`, except for `chronicle_append` (its exact persisted settlement gate) and `local_analysis` (the explicitly non-mutating action). The existing unresolved-effect check still runs first. Regression: unregistered `generic_write`, no PREPARED, caller-asserted evidence → blocked and canonical revision remains 0.
+
+Validated code/test SHA `8d8a92a0ad7ed73b0f35bc798f033be11402856c`. SUCCESS: [STEP 4 39189265872](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265872), [STEP 5 39189265904](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265904), [repair crash cuts 39189265894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265894), [effect/settlement 39189265926](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265926). Chronicle SUCCESS on the preceding code-only SHA `a0cf6b87d479e39c3927b952869d52b3539b6c75`; the validated SHA added the regression test only.
+
+This is a fail-closed guard, not the missing goal-verification implementation. M0 remains incomplete.
