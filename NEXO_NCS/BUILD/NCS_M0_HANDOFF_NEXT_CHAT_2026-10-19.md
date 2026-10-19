@@ -574,3 +574,14 @@ Se añadió `.github/workflows/nexo-m0-acceptance.yml` como un gate único que e
 No declarar Nexo listo ni cerrar toda la misión M0 por este resultado. La suite no prueba la legitimidad constitucional de la raíz de autoridad, pérdida total de dispositivos, resistencia general a rollback/tampering, durabilidad física ante pérdida de energía ni coordinación offline multi-dispositivo. Efectos protegidos siguen STOP.
 
 Siguiente paso técnico: usar el resultado integrado como baseline y volver a la brecha arquitectónica de autoridad/efectos protegidos sólo con una fuente de prueba independiente y concreta; no volver a auditar tests ya pasados salvo cambios relevantes. Mantener Nexo separado de Lúmina.
+
+
+## 30. Brecha de admisión de autoridad — siguiente bloqueo arquitectónico (2026-10-19)
+
+Nuevo documento: `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_ADMISSION_GAP_2026-10-19.md`.
+
+La inspección directa confirmó que el gate integrado PASS no equivale a autorización: `createNexoContinuityOwner()` no recibe ni valida raíz/principal/decisión/epoch de autoridad; `executeNexoStepWithContinuityOwner()` comprueba capabilities y readiness, no autoridad del propietario. Varias respuestas del owner etiquetan explícitamente `authorization: "NOT_EVALUATED"`. El vertical Chronicle puede persistir una entrada local; no debe presentarse como efecto protegido owner-authorized.
+
+Decisión: mantener el prototipo local acotado, no inventar un root/credential/token/epoch, y no conectar efectos externos, financieros, irreversibles o constitucionales a esta ruta. La raíz de autoridad debe provenir de una fuente independiente verificable; un constructor, un store, un dispositivo o datos caller-supplied no se validan a sí mismos.
+
+Próximo paso: sintetizar la investigación ya existente sobre raíz independiente, autorización efectiva, revocación y STOP desde las fuentes del repo y handoffs, sin reabrir auditorías cerradas. Si no existe una raíz implementada y verificable, conservar STOP y no implementar un pseudo-gate. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
