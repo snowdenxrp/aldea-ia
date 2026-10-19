@@ -592,3 +592,13 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - El caso de uso se prueba directamente con ruta vacía y tipo incorrecto en un flag. Devuelve bloqueo contractual y `dispatchAttempted=false` antes de tocar los stores.
 - CI SUCCESS en SHA `e8abe56f791e8460be6ae71abe723a3907bd13aa`: [39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), [39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), [39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), [39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827).
 - API del vertical: validación estricta de entrada; misma identidad/payload es idempotente; payload distinto bloquea; concurrente/restart no duplica dispatch; incertidumbre no se convierte en fracaso/success inventado. Esto no cubre otras acciones ni autoriza runtime default.
+
+
+## Current verified pointer — stable application contract gate
+
+- Branch HEAD: `5116e2347da17f48f8e37fa4436d84984da7aa64` (documentation-only).
+- Latest code/test SHA with focused CI SUCCESS: `e8abe56f791e8460be6ae71abe723a3907bd13aa`.
+- Code/test → HEAD comparison: only `STATUS.md`, this handoff, and `NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md` changed.
+- CI: Chronicle [39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), continuity/restart [39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), semantic validation [39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), outcome classification [39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827), all SUCCESS.
+- Application code now lives under `src/nexo/application/`; core continuity service under `src/nexo/core/`; CLI scripts are wrappers. The only mutating use case is Chronicle append. Tests cover invalid inputs, same-identity replay, payload mismatch, concurrent callers/bootstrap, process restart, PREPARED uncertainty and payload non-disclosure.
+- Next exact task: review whether application results make conflict vs unknown vs blocked sufficiently explicit to a caller, and formalize that result contract with tests before any new UI/legacy runtime integration. Do not add a generic dispatcher, do not switch runtime default, do not infer authority from persisted state. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separated.
