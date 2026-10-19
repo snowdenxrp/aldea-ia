@@ -2,8 +2,8 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA funcional validado por CI: `3ebb037f53409df9681f5ed01b6458e915e36a29`
-HEAD código+pruebas validado: `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3`
+Último SHA funcional validado por CI: `e31547f17764c18fd0bf2fe39dab1ebfc5748686`
+HEAD código+pruebas validado: `e31547f17764c18fd0bf2fe39dab1ebfc5748686`
 
 ## 0. Instrucción principal al chat nuevo
 
