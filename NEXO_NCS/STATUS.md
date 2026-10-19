@@ -1904,10 +1904,20 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **M0:** INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
 
 
-## M0 — normalización de ENOENT en operaciones mutables de ambos almacenes (2026-10-19)
+## M0 — normalización de rutas padre no disponibles en ambos almacenes (2026-10-19)
 
-- **Continuidad:** `commitIfCurrent()` captura únicamente `ENOENT` al adquirir el lock y devuelve `failed / NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE` antes de modificar el snapshot. Código: [23d9567c90a2](https://github.com/snowdenxrp/aldea-ia/commit/23d9567c90a2997353ae54d6ba6bbd79c8f663a9); regresión: [857e6f2951eb](https://github.com/snowdenxrp/aldea-ia/commit/857e6f2951eb524bbbb687ba2c22e2db4642cf43).
-- **Chronicle:** `append()` captura únicamente `ENOENT` al adquirir el lock y devuelve `blocked / NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE` antes de escribir. Código: [c13c56e7aff0](https://github.com/snowdenxrp/aldea-ia/commit/c13c56e7aff03fe4ec2b9f5fe4a585473e1822cb); regresión: [26a6ec60f8bd](https://github.com/snowdenxrp/aldea-ia/commit/26a6ec60f8bdf1201d3a9c90ae45732931f08b96).
+- **Continuidad:** `commitIfCurrent()` captura `ENOENT` y `ENOTDIR` al adquirir el lock y devuelve `failed / NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE` antes de modificar el snapshot. Código: [23d9567c90a2](https://github.com/snowdenxrp/aldea-ia/commit/23d9567c90a2997353ae54d6ba6bbd79c8f663a9); regresión: [857e6f2951eb](https://github.com/snowdenxrp/aldea-ia/commit/857e6f2951eb524bbbb687ba2c22e2db4642cf43).
+- **Chronicle:** `append()` captura `ENOENT` y `ENOTDIR` al adquirir el lock y devuelve `blocked / NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE` antes de escribir. Código: [c13c56e7aff0](https://github.com/snowdenxrp/aldea-ia/commit/c13c56e7aff03fe4ec2b9f5fe4a585473e1822cb); regresión: [26a6ec60f8bd](https://github.com/snowdenxrp/aldea-ia/commit/26a6ec60f8bdf1201d3a9c90ae45732931f08b96).
 - **Verificación documental:** los cuatro archivos de código/prueba se releyeron desde la rama y contienen las guardas y aserciones esperadas. El estado se actualiza aquí; commit de estado anterior al cambio: blob `b0dd24f7fb0463c59eac1ace927587075fb9eb2d`.
 - **Límite:** errores de lock distintos de `ENOENT` conservan el comportamiento previo. No se ha obtenido ejecución local ni resultado de CI asociado a estos SHA; **pruebas/CI PENDING, no PASS**.
 - **Estado global:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP. La inicialización coordinada de ambos archivos sigue sin ser atómica y no se añade rollback compensatorio.
+
+
+### Extensión: ruta padre que existe como archivo (ENOTDIR)
+
+- **Defecto:** los almacenes normalizaban la ausencia del directorio padre (`ENOENT`), pero una ruta padre existente como archivo producía `ENOTDIR`. En operaciones mutables podía escapar como excepción de sistema; en inicialización podía exponerse el código del sistema en vez del contrato de ruta no disponible.
+- **Corrección:** `initialize()`, `append()` y `commitIfCurrent()` de Chronicle/Continuidad ahora clasifican tanto `ENOENT` como `ENOTDIR` como `*_PARENT_PATH_UNAVAILABLE`, sin cambiar la recuperación explícita de locks stale ni convertir esos errores en autorización de reintento.
+- **Regresiones publicadas:** Chronicle [`686a5ef8c956`](https://github.com/snowdenxrp/aldea-ia/commit/686a5ef8c95695f1d874e0c604b7f8ecc8ac84aa) y Continuidad [`2b82f0c53740`](https://github.com/snowdenxrp/aldea-ia/commit/2b82f0c53740d58bc6cd8d3e22b3be73bb86d8e2); cubren inicialización y mutación con un archivo ocupando el lugar del directorio padre.
+- **Implementación:** Chronicle [`a8cc1e0a932e`](https://github.com/snowdenxrp/aldea-ia/commit/a8cc1e0a932e3d362ea0ec2ac120db74fa9b1a63); Continuidad [`b97b72d20e76`](https://github.com/snowdenxrp/aldea-ia/commit/b97b72d20e762a1ac9d14335120bbe67b72981ba).
+- **Validación:** archivos actualizados; pruebas locales y CI no ejecutadas/observadas en esta sesión. **PENDING; no PASS.**
+- **Estado global:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP.
