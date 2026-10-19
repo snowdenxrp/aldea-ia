@@ -1,3 +1,13 @@
+## M0 — coexistencia de rutas de efecto legacy y owner-backed (2026-10-19)
+
+- Auditoría de llamadas: `NEXO_NCS/BUILD/NCS_M0_LEGACY_EFFECT_PATH_VS_OWNER_BACKED_2026-10-19.md`.
+- `executeLuminaNexoStep()` sigue llamando a `executeNexoStep()`, que invoca `adapter.execute()`; los handlers de simulación mutan directamente el objeto de simulación. El journal puede venir de memoria local y `persistPreparedIntent` es opcional.
+- La ruta owner-backed es distinta y actualmente sólo admite `chronicle_append`; reparación y otras acciones se bloquean antes de PREPARED/dispatch. Por tanto, no clasificar la ruta legacy como ejecución protegida de Nexo.
+- Decisión pendiente: etiquetar legacy como simulación/no protegida o migrar futuras acciones mediante contrato owner-backed después de definir autoridad y frontera de efecto. No migrar todas las acciones ni introducir segundo journal/rollback/retries por conveniencia.
+- Estado: brecha estática confirmada; pruebas dinámicas/CI PENDING; `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — precisión del modelo de amenazas PREPARED receipt (2026-10-19)
 
 - Nota de decisión pendiente: `NEXO_NCS/BUILD/NCS_M0_PREPARED_RECEIPT_THREAT_MODEL_2026-10-19.md`.
