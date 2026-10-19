@@ -109,6 +109,36 @@ try {
   assert.equal(unsupportedGoalCompletion.code, "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED");
   assert.equal((await noPreparedOwner.owner.loadCurrent()).storeRevision, 0,
     "an unsupported goal claim must not mutate canonical continuity");
+
+  // The same fail-closed rule applies to a generic effect registered with a
+  // trusted verifier, even if its PREPARED row is absent.
+  const genericNoPreparedDir = path.join(root, "generic-no-prepared");
+  await fs.mkdir(genericNoPreparedDir);
+  const genericNoPreparedMemory = genericMemory();
+  genericNoPreparedMemory.nexo.effectJournal = [];
+  const genericNoPreparedOpened = await openNexoContinuityOwner({
+    filePath: path.join(genericNoPreparedDir, "nexo.json"),
+    legacyMemory: genericNoPreparedMemory
+  });
+  const registeredEffectOwner = createNexoContinuityOwner({
+    store: genericNoPreparedOpened.store,
+    effectVerifiers: { generic_write: async () => ({ status: "unknown" }) }
+  });
+  const unpreparedGenericCompletion = await registeredEffectOwner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha",
+      status: "completed",
+      evidence: { verified: true, kind: "caller-asserted", source: "caller-asserted" }
+    }
+  });
+  assert.equal(unpreparedGenericCompletion.status, "blocked");
+  assert.equal(unpreparedGenericCompletion.code, "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED");
+  assert.equal((await genericNoPreparedOpened.owner.loadCurrent()).storeRevision, 0,
+    "a registered effect cannot complete without canonical effect/goal evidence");
   // Crash cut: environment persistence succeeded, but Nexo still has PREPARED.
   // Reconciliation may record observation only; it must not claim causality/completion.
   const observedDir = path.join(root, "observed");
