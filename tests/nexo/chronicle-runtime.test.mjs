@@ -260,6 +260,38 @@ try {
   assert.equal(await fs.readFile(concurrent.continuityPath, "utf8"), concurrentContinuityBeforeRetry);
   assert.equal(await fs.readFile(concurrent.chroniclePath, "utf8"), concurrentChronicleBeforeRetry);
 
+  // Concurrent first-time bootstrap is not a cross-store transaction. It may
+  // produce a blocked loser, but an explicit retry must converge to one append.
+  const bootstrapRaceArgs = {
+    continuityPath: path.join(root, "bootstrap-race-continuity.json"),
+    chroniclePath: path.join(root, "bootstrap-race-chronicle.json"),
+    missionId: "chronicle-bootstrap-race",
+    stepId: "step-1",
+    content: "first-time concurrent append",
+    initializeContinuity: true,
+    initializeChronicle: true
+  };
+  const bootstrapRaceResults = await Promise.all([
+    runNexoChronicleAppend(bootstrapRaceArgs),
+    runNexoChronicleAppend(bootstrapRaceArgs)
+  ]);
+  assert.ok(bootstrapRaceResults.filter(result => result.dispatchAttempted === true).length <= 1);
+  const bootstrapRetry = await runNexoChronicleAppend(bootstrapRaceArgs);
+  assert.equal(bootstrapRetry.status, "completed");
+  assert.ok(
+    [...bootstrapRaceResults, bootstrapRetry].filter(result => result.dispatchAttempted === true).length <= 1,
+    "first-time concurrent calls plus explicit retry must dispatch at most once"
+  );
+  const bootstrapChronicle = createNexoChronicleStore({ filePath: bootstrapRaceArgs.chroniclePath });
+  assert.equal((await bootstrapChronicle.loadCurrent()).entries.length, 1);
+  const bootstrapContinuityBeforeFinalReplay = await fs.readFile(bootstrapRaceArgs.continuityPath, "utf8");
+  const bootstrapChronicleBeforeFinalReplay = await fs.readFile(bootstrapRaceArgs.chroniclePath, "utf8");
+  const bootstrapFinalReplay = await runNexoChronicleAppend(bootstrapRaceArgs);
+  assert.equal(bootstrapFinalReplay.status, "completed");
+  assert.equal(bootstrapFinalReplay.dispatchAttempted, false);
+  assert.equal(await fs.readFile(bootstrapRaceArgs.continuityPath, "utf8"), bootstrapContinuityBeforeFinalReplay);
+  assert.equal(await fs.readFile(bootstrapRaceArgs.chroniclePath, "utf8"), bootstrapChronicleBeforeFinalReplay);
+
   // Restart after the append but before lineage/settlement: recover by reading Chronicle, never redispatch.
   const interrupted = await setup("chronicle-interrupted");
   const prepared = await interrupted.opened.owner.recordPrepared({
