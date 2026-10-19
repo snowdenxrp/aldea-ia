@@ -1708,3 +1708,15 @@ Se recuperó la ejecución real del workflow específico y se revisaron jobs, st
 - **PASS focal:** [run 39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), SHA exacto `82f1204ae4e9298163231ab7a323233ad87777b8`; job `mission-status` SUCCESS, paso `Run independent Nexo entrypoint regression` SUCCESS. Log final confirma que el entrypoint independiente falla cerrado en comandos no soportados y que Chronicle no depende de Lúmina ni filtra contenido.
 
 Por tanto, M0-AC1 pasa **para la regresión focal en ese SHA**, no como cierre global de M0. Se conserva el fallo inicial como parte de la evidencia red-green. El estado global sigue M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## M0 — matriz inicial AC1–AC6 y cobertura del workflow Chronicle (2026-10-19)
+
+El workflow Chronicle había fallado en SHA `d1396cd110a01a9547209b58626a52cbc7b6bd97` porque ejecutaba `tests/nexo/entrypoint.test.mjs`, que exponía el mismo error de integración del query. Se corrigió el consumidor en `82f1204...` y el workflow dedicado pasó. Después se actualizó `.github/workflows/nexo-m0-chronicle.yml` para incluir los paths `src/nexo/application/continuity-queries.mjs` y `src/nexo/application/index.mjs`, evitando que futuros cambios en la consulta pública omitan la regresión de integración.
+
+- [Run Chronicle SUCCESS 39291153543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39291153543), SHA exacto `7f83195657df829d993226cf909c8f76f655d23b`: store, runtime y entrypoint todos SUCCESS.
+- AC1, AC4 y AC6 tienen PASS focal en ese SHA.
+- AC2/AC3 tienen PASS histórico en los SHA/runs documentados en la matriz del documento de criterios.
+- AC5 tiene PASS histórico en crash cuts; falta ejecutar crash cuts en un SHA de cierre común.
+
+La matriz completa y sus límites están en `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EXECUTABLE_2026-10-19.md`. No cerrar M0 ni habilitar efectos protegidos. 
