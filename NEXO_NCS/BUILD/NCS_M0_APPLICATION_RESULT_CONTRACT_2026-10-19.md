@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `5b0441df17cdd16d8c9add1b87527201b68d195b` (2026-10-19; runtime readiness gate + mission status field types)
+Latest validated code/test checkpoint: `4f1492c66e787ddfe5f769b32e39c5d18cf7d9dc` (2026-10-19; runtime readiness gate + mission status field types)
 
 ## Scope
 
@@ -351,20 +351,21 @@ La revisión anterior de reconciliación/evidencia Chronicle se conserva; no rea
 
 ## Canonical runtime readiness gate + mission status field types — validated 2026-10-19
 
-**Current validated code/test SHA:** `5b0441df17cdd16d8c9add1b87527201b68d195b`.
+**Current validated code/test SHA:** `4f1492c66e787ddfe5f769b32e39c5d18cf7d9dc`.
 
 - The owner-backed runtime now reconstructs the mission from the canonical snapshot before any *new* PREPARED write/dispatch. It requires the reconstructed mission and requested step to be `planned`, and all declared dependencies to be reconstructed as `completed`.
 - Existing target effect-journal obligations retain their recovery path before the new-dispatch readiness gate. Recovery of a possibly-applied effect is not replaced with a blind status check.
 - New blocked reasons include `NEXO_CANONICAL_RUNTIME_STEP_NOT_RUNNABLE`, `NEXO_CANONICAL_RUNTIME_DEPENDENCIES_UNRESOLVED`, and `NEXO_CANONICAL_RUNTIME_MISSION_STATE_INVALID`. These describe gating outcomes; they do not authorize retry.
-- Mission admission rejects non-persistable projected data, missing/non-string/blank `step.action`, and non-string/blank `mission.status` or `step.status` when those status fields are supplied. Nullish statuses retain the existing default-to-`planned` behavior. No status enum or action allowlist was invented.
+- Mission admission rejects non-persistable projected data, missing/non-string/blank `step.action`, and unknown mission/step status strings. Nullish statuses retain the existing default-to-`planned` behavior. The allowlists use existing lifecycle values observed in the planner, runtime, and reconstruction code; no new state was invented.
+- Accepted mission statuses: `planned`, `blocked`, `executing`, `needs_replan`, `awaiting_verification`, `awaiting_dependencies`, `completed`, `incomplete`, `invalid`. Accepted step statuses: `planned`, `blocked`, `executing`, `completed`, `failed`. Unknown values are rejected before commit; the existing regression that admits a plan-only `completed` step and then reconstructs it as blocked remains intact.
 - Owner-level regressions verify invalid mission input does not advance the canonical store revision. Runtime regressions verify an unresolved successor dependency and an unverified `completed` claim are blocked before PREPARED and before dispatch.
 - PRs integrated: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101), [#102](https://github.com/snowdenxrp/aldea-ia/pull/102), [#103](https://github.com/snowdenxrp/aldea-ia/pull/103).
 
-CI SUCCESS on SHA `5b0441df17cdd16d8c9add1b87527201b68d195b`:
+CI SUCCESS on SHA `4f1492c66e787ddfe5f769b32e39c5d18cf7d9dc`:
 - [Bounded admission/runtime — 39209446774](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446774)
-- [STEP 4 semantic validation — 39209446739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446739)
-- [STEP 5 outcome classification — 39209446752](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446752)
-- [Repair settlement crash cuts — 39209446733](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446733)
+- [STEP 4 semantic validation — 39209925522](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446739)
+- [STEP 5 outcome classification — 39209925518](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446752)
+- [Repair settlement crash cuts — 39209925614](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446733)
 - Chronicle native vertical also passed on the immediately preceding runtime-gate SHA `e8f169ac43ec2675a9a0057bc979bdf42c4625e8`: [39209200899](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209200899). The later `5b0441df` change is limited to mission status field type validation and its regressions.
 
 **Limit:** this gate verifies mission readiness/dependencies for the current owner-backed Chronicle vertical. It does not establish constitutional authority, generic effect settlement, or authorization for protected repair effects. M0 remains **INCOMPLETE**; protected effects remain **STOP**.
