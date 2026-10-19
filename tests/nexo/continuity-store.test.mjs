@@ -53,6 +53,33 @@ assert.deepEqual(
   "unknown authority fields must be rejected rather than persisted"
 );
 
+// Exhausted safe-integer revisions must fail before writing an invalid envelope.
+const exhaustedDirectory = path.join(directory, "revision-exhausted");
+await fs.mkdir(exhaustedDirectory);
+const exhaustedFilePath = path.join(exhaustedDirectory, "continuity.json");
+const exhaustedStore = createNexoContinuityStore({ filePath: exhaustedFilePath });
+const maxRevisionEnvelope = {
+  schema: "NEXO_CONTINUITY_STORE",
+  schemaVersion: 1,
+  storeRevision: Number.MAX_SAFE_INTEGER,
+  snapshot: emptySnapshot
+};
+await fs.writeFile(exhaustedFilePath, JSON.stringify(maxRevisionEnvelope, null, 2) + "\\n", "utf8");
+const exhaustedBytesBefore = await fs.readFile(exhaustedFilePath, "utf8");
+assert.deepEqual(
+  await exhaustedStore.commitIfCurrent(Number.MAX_SAFE_INTEGER, candidateA),
+  {
+    status: "failed",
+    code: "NEXO_CONTINUITY_STORE_REVISION_EXHAUSTED",
+    storeRevision: Number.MAX_SAFE_INTEGER
+  },
+  "revision exhaustion must fail closed rather than write an unsafe integer"
+);
+assert.equal(await fs.readFile(exhaustedFilePath, "utf8"), exhaustedBytesBefore,
+  "revision exhaustion must leave the canonical envelope byte-for-byte unchanged");
+assert.equal((await exhaustedStore.loadCurrent()).storeRevision, Number.MAX_SAFE_INTEGER,
+  "the existing envelope must remain readable after rejected revision exhaustion");
+
 // A stale lock must not be reclaimed through a racy check-then-remove sequence.
 const staleDirectory = path.join(directory, "stale-lock-case");
 await fs.mkdir(staleDirectory);
