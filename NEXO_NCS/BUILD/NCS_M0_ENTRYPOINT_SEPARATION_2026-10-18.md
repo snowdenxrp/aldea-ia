@@ -77,3 +77,11 @@ The initialization flags are opt-in and should only be used when creating genuin
 - `src/nexo/core/continuity-service.mjs` owns opening the canonical Nexo continuity store/owner. `scripts/nexo-continuity.mjs` remains a compatibility re-export.
 - Initial refactor CI caught `ReferenceError: blocked is not defined` after moving the use case; the structured-blocked helper was restored at both application and CLI boundaries. Latest validation is SUCCESS: [39180686782](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686782), [39180686817](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686817) on SHA `8d05417d0a47b5f38fb63833c338a0f04d1499e7`.
 - This is a reusable Nexo application seam, not an Android/web UI or runtime-default cutover. Chronicle remains the only mutating use case.
+
+
+## Application API concurrency/replay — validated (2026-10-19)
+
+- The Chronicle use-case test imports `runNexoChronicleAppend` directly from `src/nexo/application/chronicle-append.mjs`; CLI process tests independently exercise the wrapper.
+- Two concurrent same-operation callers cannot dispatch twice or create duplicate Chronicle entries. An explicit subsequent retry returns the persisted completed result without dispatch and without changing either store.
+- CI SUCCESS on SHA `140769ea651ed5cd198fd57f05530679e79f8c5d`: [39180811315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811315), [39180811308](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811308), [39180811234](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811234), [39180811257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811257).
+- The API permits an explicit conflict/retry path; it does not introduce automatic retry loops, queues, generic effect enablement or runtime-default cutover.
