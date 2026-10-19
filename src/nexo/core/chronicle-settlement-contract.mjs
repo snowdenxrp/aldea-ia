@@ -38,8 +38,11 @@ export function isValidNexoChronicleSettlementRecord(entry) {
  */
 export function isValidNexoChronicleOutcomeEvidence(entry, evidence) {
   const settlement = entry?.settlement;
+  const canonicalEvidenceKeys = ["verified", "kind", "source", "observedRevision"];
   return isValidNexoChronicleSettlementRecord(entry) &&
     evidence !== null && typeof evidence === "object" && !Array.isArray(evidence) &&
+    Object.keys(evidence).length === canonicalEvidenceKeys.length &&
+    canonicalEvidenceKeys.every(key => Object.hasOwn(evidence, key)) &&
     evidence.verified === true &&
     evidence.kind === "nexo-chronicle-persisted-invariant" &&
     evidence.source === settlement.source &&
