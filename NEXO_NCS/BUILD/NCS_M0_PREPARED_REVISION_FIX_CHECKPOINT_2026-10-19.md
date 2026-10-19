@@ -39,3 +39,20 @@
 - Log: `chronicle-store.test.mjs:130` esperaba que `initialize()` rechazara con la excepción interna simulada. El contrato real de `createNexoChronicleStore.initialize()` normaliza fallos de adquisición del lock como resultado `blocked / NEXO_CHRONICLE_LOCK_ACQUISITION_FAILED`, y el test no coincidía con ese contrato. El log confirma que el fallo fue la aserción “Missing expected rejection”, no la regresión PREPARED.
 - Corrección del test publicada en commit `2b9f2f5f3a21dac0f3b6cf0a221e6f28c943db86`: ahora exige el resultado normalizado y sigue comprobando que el directorio `.lock` se elimine.
 - CI fue disparado otra vez para el nuevo SHA; sus resultados están pendientes de lectura. No declarar PASS hasta comprobar tanto el test Chronicle como la suite integrada y la ejecución que incluya `chronicle-runtime.test.mjs`.
+
+## Verificación CI completada en SHA exacto
+
+En SHA `8476f321ba1b17c840c9fbafda7d76d54b8abd07`, GitHub Actions terminó con éxito en los flujos que cubren esta corrección:
+
+- M0 aceptación integrada: `39334317092` — SUCCESS. Incluye continuidad admission/store, reconstrucción y transición protegida, Chronicle store/runtime/entrypoint, crash cuts/owner recovery y clasificación/verificación de resultados.
+- Chronicle native vertical: `39334316772` — SUCCESS. Ejecutó `chronicle-store.test.mjs`, `chronicle-runtime.test.mjs` y `entrypoint.test.mjs`.
+- Mission admission / restart continuity: `39334316706` — SUCCESS.
+- STEP 4 semantic validation: `39334260966` — SUCCESS (SHA anterior `c7b7937039eddb13cda1061cf002342146ba7bf4`).
+- STEP 5 outcome classification: `39334261022` — SUCCESS (SHA anterior `c7b7937039eddb13cda1061cf002342146ba7bf4`).
+
+Enlaces de ejecución:
+- https://github.com/snowdenxrp/aldea-ia/actions/runs/39334317092
+- https://github.com/snowdenxrp/aldea-ia/actions/runs/39334316772
+- https://github.com/snowdenxrp/aldea-ia/actions/runs/39334316706
+
+Esto valida dinámicamente las regresiones de esta rama hasta el SHA indicado y la aceptación integrada enumerada por ese workflow. No equivale a pasar `npm test` completo ni a demostrar autoridad legítima del propietario. Estado constitucional permanece `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
