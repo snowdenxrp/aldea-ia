@@ -1,6 +1,6 @@
 # Puerta de entrada NCS — estado M0
 
-**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. HEAD documental de cierre: `0e689f32df5463c751bcd32ef29b4af66b5c20a1`; último SHA código/pruebas focales: `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72`. El HEAD posterior al SHA validado contiene sólo tres commits documentales. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
+**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código: `f3a54153d3574f559aa32f1c56d093e1152b4842`; SHA de código + regresión corregida: `b21896e893a1b739bbfa511f76c3a215298a73e6`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
 
 ## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
 
@@ -1347,3 +1347,13 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - Regresión: valores mal formados no pasan a la respuesta pública; UNKNOWN válido se conserva y no se filtran valores privados.
 - SHA código/pruebas: 42f0e12640a35bc1e7b524501f8dbe879a311d90. CI SUCCESS: Chronicle [39187949155](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949155), admisión/reinicio [39187949154](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949154), STEP 4 [39187949143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949143), STEP 5 [39187949152](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187949152).
 - El cambio solo valida la forma de la respuesta. No prueba fsync/power-loss, no autoriza reintentos ni despacho, no añade otra acción mutante. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## M0 — completion Chronicle exige settlement completo (2026-10-19)
+
+- Hallazgo: `recordOutcome()` podía tratar como settlement suficiente una entrada `settled_observed` con status/source/revision válidos pero sin `evidence` o `observedAt`. La validación estructural general no impone esos dos campos a cada settlement histórico.
+- Corrección en `src/nexo/core/continuity-owner.mjs`: la condición `chronicleSettlementReady` ahora exige propiedad `evidence` y timestamp ISO válido/canónico, alineándose con el contrato de replay.
+- Regresión en `tests/nexo/repair-settlement-crash-cuts.test.mjs`: una entrada incompleta debe devolver `blocked / NEXO_CHRONICLE_SETTLEMENT_REQUIRED`, dejar `storeRevision=0` y no añadir attempt.
+- SHA código: `f3a54153d3574f559aa32f1c56d093e1152b4842`. SHA código + prueba corregida: `b21896e893a1b739bbfa511f76c3a215298a73e6`.
+- CI SUCCESS en el SHA final: [repair crash cuts 39192937988](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937988), [effect/settlement 39192937997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937997), [STEP 4 39192938031](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192938031), [STEP 5 39192937987](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937987).
+- El alcance se limita a integridad del settlement y aceptación de completion. No demuestra goal verifier general, causalidad externa, durabilidad ante pérdida de energía ni autoridad legítima. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
