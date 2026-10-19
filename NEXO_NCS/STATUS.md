@@ -1632,3 +1632,7 @@ Nota: `NEXO_NCS/BUILD/NCS_M0_GOAL_VERIFICATION_BOUNDARY_2026-10-19.md`. Se inspe
 
 ### Frontera de despacho auditada — solo Chronicle permanece habilitado (2026-10-19)
 Nota: `NEXO_NCS/BUILD/NCS_M0_DISPATCH_BOUNDARY_AUDIT_2026-10-19.md`. Revisión estática de `owner-backed-runtime.mjs`: reparaciones y acciones distintas de `chronicle_append` se bloquean antes de dispatch; PREPARED, lineage, reconciliación y outcome permanecen separados; la API pública aplica allowlist y nunca autoriza redispatch. No hubo cambios de runtime ni tests nuevos. Próxima auditoría: inventario de entrypoints CLI/legacy y evidencia de cuáles son accesibles por defecto, sin cutover ni cambio de `index.html`.
+
+
+### Entry points — auditoría parcial (2026-10-19)
+Nota: `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_ISOLATION_AUDIT_2026-10-19.md`. `npm run nexo` dirige a un CLI estrecho (status, mission-status, chronicle-append); `index.html` arranca Lúmina y `src/main-stable.js` no muestra conexión directa a la API Nexo. Sin embargo, `src/nexo/runtime.js` conserva un runtime legacy que importa memoria antigua y adaptador de simulación; no declarar aislamiento total hasta inventariar todos sus importadores. No hubo cambios de runtime/UI/CI.
