@@ -2,31 +2,53 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-HEAD documental confirmado al inicio de recuperar el chat: `1260dfad73f144c0264dcf22bc0b601e018fe5d4`; SHA de código+pruebas: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`. Las actualizaciones de este handoff son documentales; consultar el HEAD vivo de la rama al retomar.
-Último SHA código+pruebas validado por CI: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`
-Último fix funcional incluido: `360b0dafbebc700477bc30879ef4175da81c904b`
+SHA de código+pruebas verificado: `661a9594f6454ff6e3877db5218f523cbffe793c`
+Corrección funcional integrada: `eea375d9feddcfd4c074fc7a039d19470e890daa`
+Pruebas de owner integradas: `661a9594f6454ff6e3877db5218f523cbffe793c`
+Al guardar documentación el HEAD cambia; verificar el HEAD vivo de la rama al retomar.
 
 ## 0. Instrucción principal al chat nuevo
 
-**Última continuidad verificada:** la misión sigue en M0; el gate Chronicle de evidencia exacta permanece activo; la admisión rechaza IDs de misión/paso duplicados o con `:`, reconstrucción bloquea estados de effectJournal desconocidos incluso si están huérfanos, los accessors anidados caller-supplied se rechazan antes de ejecutarse, y `dependsOn` sparse se rechaza antes del recorrido del grafo (incluidos huecos ocultos por propiedades extra). La última frontera cerrada es `dependsOn` dense. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde una sección histórica como si fuera el estado más reciente.
+**La misión sigue siendo M0.** No reiniciar M0.1–M0.52 ni auditorías históricas ya cerradas, no desviarse a STEP 7, M1, Lúmina, interfaz ni despliegue. La última frontera cerrada es la admisión de datos de misión persistibles y la comprobación de que el owner no escribe cuando la misión es inválida.
 
-**La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
-
-1. `NEXO_NCS/STATUS.md` (puerta de entrada única).
-2. Este handoff: `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md`.
+Leer en este orden:
+1. `NEXO_NCS/STATUS.md` — puerta de entrada única y checkpoint actual.
+2. Este handoff.
 3. `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
-4. Sólo los archivos y pruebas nombrados en la siguiente frontera, antes de modificar código.
+4. Sólo los archivos necesarios para la siguiente frontera semántica, descrita abajo.
 
-No reabrir research ya cerrado salvo que aparezca evidencia nueva y concreta. Continuar desde el HEAD actual; no recrear commits ni reimplementar arreglos que ya están presentes.
+No volver a buscar lo que ya está documentado salvo evidencia nueva. No tratar una prueba unitaria verde como evidencia de autoridad legítima o runtime autorizado.
 
-## 1. Estado confirmado
+## 1. Estado confirmado más reciente
 
-- HEAD de rama citado en el checkpoint histórico anterior: `b171cf23c5a9b287e10f72d14b054048f7c21034`; ese dato quedó superado. Al recuperar el chat, el HEAD real consultado fue `1260dfad73f144c0264dcf22bc0b601e018fe5d4` (documentación).
-- SHA código+prueba más reciente validado: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix funcional de densidad: `360b0dafbebc700477bc30879ef4175da81c904b`. No hubo cambios de código después de `3683e470...`; los commits siguientes son documentación.
-- SUCCESS en SHA de test `3683e470...`: bounded admission/restart `39197992970`, STEP 4 `39197992902`, STEP 5 `39197992893`. Crash cuts SUCCESS sobre código funcional `360b0daf...`: `39197974984`. La comprobación de CI se hizo desde GitHub Actions; no se ejecutó suite local.
-- No confundir con runs históricos que fallaron en iteraciones previas: hubo regresiones inicialmente mal esperadas o fixes intermedios; el checkpoint final de arriba sí tiene los runs focales SUCCESS.
-- Los puntos anteriores de esta sección y los apartados históricos siguientes conservan evidencia previa; no son el estado más reciente. Para continuar, manda siempre el estado superior de `NEXO_NCS/STATUS.md` y el checkpoint final de este handoff.
-- Estado de misión: **M0 INCOMPLETO**. Efectos protegidos en **STOP**. Ningún PASS implica que el runtime real esté autorizado o listo.
+### Hallazgo y arreglo
+
+- Se añadió una regresión que demostró que `recordNexoMissionInSnapshot()` aceptaba un `target` con valor función. El CI falló inicialmente con `Missing expected exception` en [run 39207382906](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207382906), reproduciendo el hueco.
+- `src/nexo/core/continuity-operations.mjs` ahora valida el registro proyectado como datos persistibles: rechaza funciones, símbolos, bigint/undefined que aparezcan en el registro, números no finitos, ciclos, arrays sparse y propiedades extra de arrays. Errores de clonación/proyección se normalizan a `NEXO_MISSION_CONTEXT_INVALID`.
+- No se modificó `assertContractInput()` global. No se cambiaron autoridad, permisos, dispatch, estados de efectos ni separación Nexo/Lúmina.
+- La regresión de owner en `tests/nexo/continuity-contract.test.mjs` usa el almacén canónico y confirma que una misión inválida devuelve `NEXO_MISSION_CONTEXT_INVALID` y deja `storeRevision=1`; no se ejecuta el commit condicional.
+
+### SHA y CI
+
+- SHA código+tests: `661a9594f6454ff6e3877db5218f523cbffe793c`.
+- SUCCESS: bounded admission/restart [39207856224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856224), STEP 4 [39207856228](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856228), STEP 5 [39207856158](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856158).
+- Crash cuts SUCCESS sobre código funcional `eea375d9feddcfd4c074fc7a039d19470e890daa`: [39207676997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207676997).
+- PR funcional [#99](https://github.com/snowdenxrp/aldea-ia/pull/99) y PR de prueba owner [#100](https://github.com/snowdenxrp/aldea-ia/pull/100) están integrados.
+
+### Siguiente paso obligatorio
+
+Auditar la validez semántica de campos de paso que son JSON válidos pero quizá operacionalmente inválidos, en particular `action` y su relación con los contratos de operación existentes.
+
+1. Leer `missionRecord()`, sus consumidores, los validadores de operación y pruebas actuales.
+2. Comprobar si una acción ausente/no-string/unknown puede quedar comprometida como misión `planned` y cómo se comporta después.
+3. Primero añadir una reproducción que demuestre una inconsistencia concreta; no crear un catálogo de acciones nuevo ni modificar contratos por intuición.
+4. Si se confirma el hueco, corregir la frontera mínima y comprobar tanto resultado estructurado como ausencia de CAS para la misión inválida.
+5. Verificar CI por SHA y actualizar STATUS/handoff con runs reales.
+
+No reabrir los casos ya cerrados: accessors anidados, IDs duplicados/con `:`, estados de journal desconocidos/huérfanos, settlement/replay Chronicle, PREPARED, fallos de lectura, dependencias sparse ni tipos de datos no persistibles.
+
+**Estado global:** M0 **INCOMPLETO**; efectos protegidos **STOP**; STEP 7 permanece **OPEN / STOP / UNKNOWN**; Nexo y Lúmina separados. El trabajo actual no demuestra autenticidad, goal verifier general, autoridad constitucional ni permiso para ejecutar efectos protegidos.
+
 
 ## 2. Último cambio concreto: replay Chronicle incompleto
 
