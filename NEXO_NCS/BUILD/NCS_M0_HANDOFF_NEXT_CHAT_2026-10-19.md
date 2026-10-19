@@ -481,3 +481,14 @@ Corrección tras revisar `tests/nexo/assistants-runtime-cli.test.mjs`: sí exist
 ## 15. Evidencia CI histórica del test CLI aislado
 
 Se verificó el job del run [39144863235](https://github.com/snowdenxrp/aldea-ia/actions/runs/39144863235): `repair-crash-cuts` terminó SUCCESS y el paso `Run isolated assistants runtime CLI regression` también SUCCESS, sobre código/test SHA `1cd8dfd914fad7848df51eca0f4e0f75cff22264`. El commit de test ajusta el replay posterior a reinicio para exigir fail-closed (`blocked`) sin reescribir estado ni duplicar la obligación. Es evidencia histórica para ese SHA, no un CI nuevo del HEAD documental actual.
+
+## 7. Auditoría de coherencia de estado — 2026-10-19
+
+Se inspeccionó la frontera que el STATUS marcaba: admisión de `mission.status`, estados de pasos y `objective`.
+
+- `missionRecord()` valida el vocabulario, pero no exige coherencia entre estados individuales. Por ejemplo, puede admitir una misión almacenada como `completed` con un paso `planned`.
+- `reconstructNexoMissionFromSnapshot()` deriva el estado operativo a partir de pasos y outcomes y puede proyectar esa misión como `planned`; el runtime owner-backed, por separado, comprueba el estado almacenado y bloquea nuevas ejecuciones si la misión almacenada no es `planned`. En la ruta revisada no se demostró bypass de dispatch, pero sí una posible discrepancia entre estado presentado y gate de ejecución.
+- `objective` se usa como descripción/objetivo libre en productores y luego se recalcula durante reconstrucción; no es autorización ni conviene restringirlo por intuición.
+- No se cambió código, no se añadieron tests y no se ejecutó CI para esta auditoría.
+- **Continuación obligatoria:** inspeccionar `src/nexo/application/index.mjs` y los wrappers CLI de status para ver si la discrepancia llega al operador. Luego reproducir con una regresión de lectura y decidir si la admisión debe rechazar estados no-`planned` para misiones nuevas o si la proyección debe representar la contradicción fail-closed. No alterar migración legacy sin política explícita.
+
