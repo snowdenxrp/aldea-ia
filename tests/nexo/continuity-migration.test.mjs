@@ -375,6 +375,40 @@ try {
   await fs.rm(chronicleInvalidSettlementDir, { recursive: true, force: true });
 }
 
+const chronicleOutcomeEvidenceMismatchDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-outcome-evidence-mismatch-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleOutcomeEvidenceMismatchDir, "nexo.json"),
+    legacyMemory: chronicleSettlementMemory()
+  });
+  const outcome = await opened.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-legacy-1",
+      stepId: "step-1",
+      action: "chronicle_append",
+      target: { content: "hello Nexo" },
+      status: "completed",
+      evidence: {
+        verified: true,
+        kind: "nexo-chronicle-persisted-invariant",
+        source: "caller-fabricated-source",
+        observedRevision: 999
+      }
+    }
+  });
+  assert.equal(outcome.status, "blocked",
+    "a Chronicle terminal outcome must bind its evidence source/revision to the canonical settlement");
+  assert.equal(outcome.code, "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH");
+  const current = await opened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 0);
+  assert.equal(current.snapshot.attempts.length, 0);
+  assert.equal(current.snapshot.effectJournal[0].settlement.source, "nexo-chronicle-store");
+  assert.equal(current.snapshot.effectJournal[0].settlement.observedRevision, 1);
+} finally {
+  await fs.rm(chronicleOutcomeEvidenceMismatchDir, { recursive: true, force: true });
+}
+
 const unsupportedCompletionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-unsupported-completion-reconstruction-"));
 try {
   const unsupportedCompletionMemory = structuredClone(legacyMemory);
