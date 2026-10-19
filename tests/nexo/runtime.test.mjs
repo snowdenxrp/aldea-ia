@@ -470,14 +470,18 @@ assert.equal(repairDispatchCalls,0);
 let uncertainPrepareDispatches=0;
 const uncertainPrepareOwner={
   ...canonicalOwner,
+  supportsReconciliation: action => action === "chronicle_append",
+  loadCurrent: async()=>({storeRevision:0,snapshot:{missions:[{missionId:"uncertain-prepare-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
   recordPrepared:async()=>{throw new Error("prepare response lost");}
 };
 const uncertainPrepareAdapter={
   ...canonicalAdapter,
-  execute:async()=>{uncertainPrepareDispatches++;return {status:"completed"};}
+  supports: action => action === "chronicle_append",
+  supportsReconciliation: action => action === "chronicle_append",
+  executePrepared:async()=>{uncertainPrepareDispatches++;return {status:"completed"};}
 };
 const uncertainPrepareResult=await executeNexoStepWithContinuityOwner({
-  missionId:"canonical-mission",stepId:"step-1",owner:uncertainPrepareOwner,adapter:uncertainPrepareAdapter
+  missionId:"uncertain-prepare-mission",stepId:"step-1",owner:uncertainPrepareOwner,adapter:uncertainPrepareAdapter
 });
 assert.equal(uncertainPrepareResult.status,"unknown");
 assert.equal(uncertainPrepareResult.code,"NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN");
@@ -493,15 +497,17 @@ let adapterVerifierDispatchCalls=0;
 const noAdapterVerifierOwner={
   ...canonicalOwner,
   supportsReconciliation:()=>true,
+  loadCurrent:async()=>({storeRevision:0,snapshot:{missions:[{missionId:"no-adapter-verifier-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
   recordPrepared:async()=>{adapterVerifierPrepareCalls++;return {status:"committed",preparedCommitted:true,storeRevision:1};}
 };
 const noAdapterVerifier={
   ...canonicalAdapter,
+  supports: action => action === "chronicle_append",
   supportsReconciliation:()=>false,
   executePrepared:async()=>{adapterVerifierDispatchCalls++;return {status:"completed",verified:true};}
 };
 const noAdapterVerifierResult=await executeNexoStepWithContinuityOwner({
-  missionId:"canonical-mission",stepId:"step-1",owner:noAdapterVerifierOwner,adapter:noAdapterVerifier
+  missionId:"no-adapter-verifier-mission",stepId:"step-1",owner:noAdapterVerifierOwner,adapter:noAdapterVerifier
 });
 assert.equal(noAdapterVerifierResult.status,"blocked");
 assert.equal(noAdapterVerifierResult.code,"NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE");
