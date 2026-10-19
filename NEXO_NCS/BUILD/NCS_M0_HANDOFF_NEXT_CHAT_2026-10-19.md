@@ -3,11 +3,11 @@ Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
 Último SHA funcional validado por CI: `3ebb037f53409df9681f5ed01b6458e915e36a29`
-HEAD código+pruebas validado: `9ca094242d25fced843b7d5595f9cff6e0d82ee3`
+HEAD código+pruebas validado: `d4936c965eb926b3e61eb7ecbe3f9becf58925ca`
 
 ## 0. Instrucción principal al chat nuevo
 
-**Última continuidad verificada:** además del replay PREPARED y del outcome Chronicle tras pérdida de respuesta, el owner y la reconstrucción ahora exigen que la metadata de outcome Chronicle coincida con el settlement persistido; claims desatadas o con identidad distinta quedan bloqueadas. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
+**Última continuidad verificada:** la evidencia terminal Chronicle tiene un shape exacto de cuatro claves (`verified/kind/source/observedRevision`), y source/revision deben coincidir con el settlement. Claims extra o desatadas se bloquean; identidad distinta se clasifica aparte. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
 
 **La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
 
@@ -282,3 +282,12 @@ Contrato compartido `isValidNexoChronicleOutcomeEvidence()` exige `verified === 
 Fix funcional `c9be5ee5f931d2a873cca32e2dd0b81c33010396`; SHA final de pruebas `9ca094242d25fced843b7d5595f9cff6e0d82ee3`. Bounded admission, crash cuts, STEP 4 y STEP 5 SUCCESS (runs 39196527692, 39196527776, 39196527671, 39196527814). No es autenticación criptográfica ni prueba de causalidad.
 
 **Siguiente paso:** probar si evidence Chronicle acepta campos extra no ligados al settlement y, si la regresión confirma exposición de claims falsos en `step.result`, acotar el shape canónico sin ampliar el contrato innecesariamente.
+
+
+## 21. Checkpoint — shape exacto de evidencia terminal Chronicle
+
+`isValidNexoChronicleOutcomeEvidence()` limita el outcome a las claves `verified`, `kind`, `source`, `observedRevision`; `kind` es `nexo-chronicle-persisted-invariant`, y source/revision coinciden con el settlement. El owner bloquea claims extra con `NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH`; reconstrucción usa el mismo contrato. El runtime real confirma que la evidencia generada usa exactamente ese shape.
+
+Fix funcional `4a976b76ece07e1c168761cb6bd29ec5b420ab00`; SHA final de pruebas `d4936c965eb926b3e61eb7ecbe3f9becf58925ca`. Bounded admission, Chronicle native, STEP 4 y STEP 5 SUCCESS (runs 39196697574, 39196697543, 39196697516, 39196697496); crash cuts SUCCESS en código `4a976...` (run 39196649127).
+
+**Siguiente paso:** auditar uso externo de `settlement.evidence`; sólo endurecer su shape si puede afectar una decisión o resultado público.
