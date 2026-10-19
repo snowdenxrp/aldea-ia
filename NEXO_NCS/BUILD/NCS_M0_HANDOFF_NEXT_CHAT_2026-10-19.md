@@ -1,3 +1,16 @@
+## 9. Implementación de status projection — verificar CI antes de continuar
+
+Se implementó en `src/nexo/application/continuity-queries.mjs` una lectura canónica única en `loadNexoMissionStatus()`: el resultado incluye `persistedMissionStatus`, el `missionStatus` reconstruido y `statusDiscrepancy`. Así se evita comparar estados tomados de revisiones distintas y se hace visible una contradicción sin exponer target/content ni escribir en el store.
+
+Se añadió en `tests/nexo/entrypoint.test.mjs` una regresión de CLI para misión persistida `completed` con paso `planned`; comprueba la discrepancia, la ausencia del contenido privado en stdout y que el archivo de continuidad no cambia. Se creó el workflow `.github/workflows/nexo-m0-mission-status.yml` para ejecutar esta prueba en la rama `ncs-clean-architecture`.
+
+Commits funcionales:
+- Query: `ff343a09a5678dcce18535de6901940ec274d3c5`
+- Test: `d1396cd110a01a9547209b58626a52cbc7b6bd97`
+- Workflow: `4b6423404d5ad2e901e3b3eccb5db6e2140ee492`
+
+**No afirmar PASS todavía:** no se ejecutó la prueba localmente y no se ha observado el resultado de GitHub Actions para el workflow nuevo. Próxima acción: localizar/verificar el run del workflow y revisar el job/log. Si falla, corregir la causa con evidencia; no quitar la regresión ni debilitar los assertions para forzar verde. Si pasa, registrar el run ID y SHA exacto validado en STATUS y este handoff.
+
 
 ## 8. Seguimiento de estado público — hallazgo adicional
 
