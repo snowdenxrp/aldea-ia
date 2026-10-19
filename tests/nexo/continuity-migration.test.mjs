@@ -646,7 +646,7 @@ try {
     }
   });
   assert.equal(prepared.status, "blocked");
-  assert.equal(prepared.code, "NEXO_PREPARED_DEPENDENCIES_UNMET");
+  assert.equal(prepared.code, "NEXO_PREPARED_MISSION_NOT_RUNNABLE");
   const current = await opened.owner.loadCurrent();
   assert.equal(current.storeRevision, 1);
   assert.equal(current.snapshot.effectJournal.length, 0);
