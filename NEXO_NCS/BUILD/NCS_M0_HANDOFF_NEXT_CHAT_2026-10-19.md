@@ -2,7 +2,7 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-HEAD documental verificado al guardar esta continuidad: `1e9f3badf026c00131b2207101d32652c2042f2c`; SHA de código+pruebas: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`.
+HEAD documental confirmado al inicio de recuperar el chat: `1260dfad73f144c0264dcf22bc0b601e018fe5d4`; SHA de código+pruebas: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`. Las actualizaciones de este handoff son documentales; consultar el HEAD vivo de la rama al retomar.
 Último SHA código+pruebas validado por CI: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`
 Último fix funcional incluido: `360b0dafbebc700477bc30879ef4175da81c904b`
 
@@ -21,7 +21,7 @@ No reabrir research ya cerrado salvo que aparezca evidencia nueva y concreta. Co
 
 ## 1. Estado confirmado
 
-- HEAD de rama al checkpoint actual: `b171cf23c5a9b287e10f72d14b054048f7c21034` (documentación después del código/tests).
+- HEAD de rama citado en el checkpoint histórico anterior: `b171cf23c5a9b287e10f72d14b054048f7c21034`; ese dato quedó superado. Al recuperar el chat, el HEAD real consultado fue `1260dfad73f144c0264dcf22bc0b601e018fe5d4` (documentación).
 - SHA código+prueba más reciente validado: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix funcional de densidad: `360b0dafbebc700477bc30879ef4175da81c904b`. No hubo cambios de código después de `3683e470...`; los commits siguientes son documentación.
 - SUCCESS en SHA de test `3683e470...`: bounded admission/restart `39197992970`, STEP 4 `39197992902`, STEP 5 `39197992893`. Crash cuts SUCCESS sobre código funcional `360b0daf...`: `39197974984`. La comprobación de CI se hizo desde GitHub Actions; no se ejecutó suite local.
 - No confundir con runs históricos que fallaron en iteraciones previas: hubo regresiones inicialmente mal esperadas o fixes intermedios; el checkpoint final de arriba sí tiene los runs focales SUCCESS.
@@ -390,3 +390,27 @@ El usuario informó que el chat se detuvo en esta secuencia: “Ajustando tus pr
 CI final para el SHA de prueba: bounded admission/restart run 39197992970, STEP 4 run 39197992902, STEP 5 run 39197992893. Crash cuts SUCCESS run 39197974984 en el SHA funcional `360b0daf...`; no afirmar que ese run corresponde al SHA de prueba posterior.
 
 **Próximo paso obligatorio:** inspeccionar `assertContractInput()` y `missionRecord()` en `src/nexo/core/continuity-operations.mjs`; revisar `tests/nexo/continuity-contract.test.mjs` y bounded admission; probar funciones, símbolos, ciclos y valores numéricos no finitos antes de cambiar el helper. La regla es reproducir primero y mantener el alcance mínimo. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 20. Recuperación de las últimas respuestas interrumpidas (2026-10-19)
+
+El usuario reportó que se borró el texto de cuatro respuestas que se detuvieron. No es posible recuperar palabra por palabra los mensajes que la interfaz ya eliminó, pero se contrastó el rastro visible, los archivos de la rama y GitHub Actions para reconstruir el trabajo verificable y guardar el punto de continuidad.
+
+### Los tres puntos recuperados
+
+1. **Pruebas / análisis local:** se estaba ajustando y aclarando una regresión heredada de admisión de misión. Se probó que `dependsOn: new Array(1)` podía esquivar validación con `.some()` y terminar en error al recorrer el grafo. La validación ahora cuenta los índices de array reales y rechaza también un hueco enmascarado por una propiedad extra. Resultado: `NEXO_MISSION_CONTEXT_INVALID` antes de recorrer dependencias. Fix funcional `360b0dafbebc700477bc30879ef4175da81c904b`; test final `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`.
+2. **Documentación / estado:** STATUS, este handoff y el contrato de resultados reflejan la frontera dense-dependency, el SHA y la diferencia entre código validado y commits documentales. Se corrigió el SHA documental stale: antes de guardar esta actualización, GitHub confirmó HEAD `1260dfad73f144c0264dcf22bc0b601e018fe5d4`. Al volver a entrar, leer el HEAD actual directamente; los nuevos commits de documentación cambian ese valor, pero no el SHA de código/test.
+3. **Reconciliación / vinculación de evidencia Chronicle:** la línea previa vinculó la evidencia terminal del outcome Chronicle al settlement persistido exacto. `isValidNexoChronicleOutcomeEvidence()` exige el settlement estructuralmente válido y metadata de outcome que coincide con source/revision del settlement; la reconstrucción sólo considera completed el intento `chronicle_append` cuando esa evidencia corresponde al settlement. Se anotó que estas comprobaciones son consistencia estructural, no procedencia autenticada ni garantía de durabilidad. No reabrir sin una nueva regresión concreta.
+
+### Evidencia CI que se conserva
+
+- Test SHA `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`: bounded admission/restart [39197992970](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992970), STEP 4 [39197992902](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992902), STEP 5 [39197992893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992893) SUCCESS.
+- Fix funcional `360b0dafbebc700477bc30879ef4175da81c904b`: crash cuts [39197974984](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197974984) SUCCESS. No afirmar que ese workflow se ejecutó en el SHA posterior `3683e470...`.
+- Hubo runs fallidos durante iteraciones intermedias; no son el resultado final. El checkpoint final indicado arriba pasó sus workflows focales.
+
+### Instrucciones obligatorias para el chat nuevo
+
+- Misión exclusiva: **M0**. No reiniciar auditorías cerradas ni desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime legacy o despliegue.
+- Leer `NEXO_NCS/STATUS.md` primero y verificar HEAD actual de `ncs-clean-architecture`; después este handoff y `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
+- Continuar por la siguiente frontera registrada: `assertContractInput()` / `missionRecord()` frente a funciones, símbolos, ciclos y valores numéricos no finitos en misión/target. Inspeccionar tests y contrato antes de editar; reproducir primero; sólo aplicar un fix con regresión concreta.
+- No declarar M0 completo: permanece INCOMPLETO y los efectos protegidos permanecen STOP. Nexo y Lúmina continúan separados.
