@@ -3,11 +3,11 @@ Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
 Último SHA funcional validado por CI: `3ebb037f53409df9681f5ed01b6458e915e36a29`
-HEAD código+pruebas validado: `d4936c965eb926b3e61eb7ecbe3f9becf58925ca`
+HEAD código+pruebas validado: `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3`
 
 ## 0. Instrucción principal al chat nuevo
 
-**Última continuidad verificada:** la evidencia terminal Chronicle tiene un shape exacto de cuatro claves (`verified/kind/source/observedRevision`), y source/revision deben coincidir con el settlement. Claims extra o desatadas se bloquean; identidad distinta se clasifica aparte. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
+**Última continuidad verificada:** el gate Chronicle de evidencia exacta sigue activo; además, mission/step IDs duplicados o con `:` se rechazan, y la reconstrucción bloquea estados de effectJournal desconocidos, incluso entradas huérfanas. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
 
 **La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
 
@@ -306,3 +306,10 @@ En `continuity-owner.mjs`, `recordPrepared()`, `recordExecutionLineage()` y `rec
 La auditoría de Chronicle outcome quedó también cerrada en el código actual: la evidencia del outcome debe coincidir con source/revision del settlement canónico, y replay exige esa misma correspondencia. Es un control de coherencia persistida, **no** una firma, una procedencia autenticada ni un goal verifier.
 
 **Siguiente frontera:** auditar la reconstrucción de snapshots con entradas terminales inconsistentes en `effectJournal` genérico. Leer schema + reconstrucción + tests antes de modificar; preservar compatibilidad legacy deliberada. No inventar estados nuevos ni extender a runtime legacy. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 22. Checkpoint — identidad y effectJournal desconocido
+
+La admisión rechaza step IDs duplicados y mission/step IDs con `:`; el contrato de snapshot rechaza mission IDs duplicados y step IDs duplicados persistidos. La reconstrucción bloquea estados de effectJournal fuera de `prepared/settled_observed/reconciled_observed`, incluidas entradas desconocidas huérfanas. Pruebas de admission, snapshot y replay; bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS en SHA `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3` (runs 39197181542, 39197181545, 39197181644, 39197181585).
+
+Siguiente paso: auditar `dependsOn` persistido (self-reference, IDs inexistentes/duplicados y ciclos) y comprobar si algún grafo inválido puede volverse ejecutable. No crear scheduler ni estados nuevos.
