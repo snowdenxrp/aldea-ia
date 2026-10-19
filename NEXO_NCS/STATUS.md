@@ -1,3 +1,13 @@
+## M0 — autoridad no evaluada debe permanecer visible en la API pública (2026-10-19)
+
+- Hallazgo: `publicChronicleResult()` normalizaba el resultado sin exponer `authorization: "NOT_EVALUATED"`; el helper de rechazo temprano también lo omitía. Eso podía esconder del consumidor la diferencia entre settlement local y autorización del propietario.
+- Corrección en `src/nexo/application/chronicle-append.mjs`, commit funcional `aa8509e75dd7925189d54b2667bcdd2ae27e6647`: los resultados públicos normalizados y los rechazos tempranos declaran explícitamente `authorization: "NOT_EVALUATED"`. No se implementó ni simuló una raíz de autoridad.
+- Regresión en `tests/nexo/chronicle-runtime.test.mjs`, commit `dbced55ae0f345a7677b5df4b598631ec0d78ed8`, que exige la marca explícita en el resultado normalizado y el caso de datos malformados.
+- CI integrado: [run 39292627540](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292627540), job `Nexo M0 contracts on one SHA`, PASS en SHA exacto `dbced55ae0f345a7677b5df4b598631ec0d78ed8`; cinco grupos de pruebas SUCCESS. Workflow Chronicle específico run 39292627699 también SUCCESS en el mismo SHA.
+- Alcance: este PASS valida las regresiones enumeradas; no prueba raíz constitucional ni autorización legítima. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+---
+
 ## M0 — corrección de la integración con la función pura de reconstrucción (2026-10-19)
 
 - Revisión posterior al primer commit detectó una diferencia de API: `reconstructNexoMissionFromSnapshot()` devuelve la misión reconstruida directamente (o `null`), no un wrapper `{ status, mission }`. Se corrigió el consumidor en `continuity-queries.mjs` antes de declarar validada la implementación.
