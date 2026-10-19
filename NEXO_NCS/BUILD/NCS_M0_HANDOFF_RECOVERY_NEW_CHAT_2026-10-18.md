@@ -628,3 +628,10 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Matriz probada: PREPARED UNKNOWN bloquea antes de dispatch; adapter exception devuelve UNKNOWN y no expone mensaje crudo; lineage exception devuelve `lineageCommitted="UNKNOWN"`; reconciliation exception devuelve `journalSettled="UNKNOWN"`; outcome response-lost devuelve `terminalOutcomeRecorded="UNKNOWN"`; conflictos CAS conocidos siguen siendo `conflict`.
 - CI SUCCESS en SHA `7f4f80f44912ac93f59b65977f728b95dc6fab2e`: [39181497303](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497303), [39181497305](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497305), [39181497592](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497592), [39181497309](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497309).
 - Los errores crudos del adapter no se exponen por el API de aplicación. El caller debe volver a leer estado canónico y decidir el retry; no hay retry automático.
+
+
+### Contrato estable de resultados
+
+- Documento operativo: [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
+- Usarlo como referencia para toda integración futura del servicio de aplicación. No reinterpretar `UNKNOWN` como `false`, no convertir conflicto CAS en write uncertainty y no hacer retry automático.
+- La evidencia de CI y las fronteras actuales están registradas en el contrato. No habilitar otra acción ni hacer cutover del runtime predeterminado.
