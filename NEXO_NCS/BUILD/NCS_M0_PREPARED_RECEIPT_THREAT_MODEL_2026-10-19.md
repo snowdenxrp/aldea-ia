@@ -22,3 +22,14 @@ No tratar un callback `verifyReceipt` suministrado por el mismo consumidor como 
 Antes de cambiar código, inspeccionar todos los puntos de creación/consumo de `createEffectAdapter()` y decidir cuál de las dos bases de confianza describe el producto actual. Después escribir una prueba negativa que corresponda al límite elegido y ejecutar CI en el SHA exacto.
 
 **Estado global:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; raíz/autoridad PENDING; efectos protegidos STOP; regresión del hallazgo PENDING.
+
+## M0 — decisión de alcance PREPARED receipt (2026-10-19)
+
+- Decisión registrada: [NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md](../DECISIONS/NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md).
+- El adaptador genérico y su `executePrepared()` son interfaces internas de la misma base de confianza; no son una sandbox contra JavaScript arbitrario en el mismo proceso. Bloquear sólo un recibo fabricado no arreglaría ese modelo: el consumidor con acceso al adaptador también puede registrar handlers o llamar a `execute()`.
+- Se cierra la ambigüedad documental como decisión de alcance, no como PASS de seguridad ni como cambio de runtime. La composición owner-backed mantiene sus regresiones de PREPARED/settlement/no-redispatch. No se añade segundo journal, booleano de autenticidad ni callback auto-verificador.
+- No hay evidencia de un caller de producción actual para el runtime legacy de Lúmina; no describirlo como ruta protegida activa.
+- **Sin cambio constitucional:** M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz `PENDING/UNKNOWN`. La provisión independiente de la raíz sigue siendo un bloqueo separado.
+
+---
+
