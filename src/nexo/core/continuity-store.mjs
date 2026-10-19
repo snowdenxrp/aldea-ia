@@ -141,7 +141,23 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
         await writeEnvelope(fsModule, filePath, envelope);
         return { status: "committed", storeRevision: 0, snapshot: structuredClone(envelope.snapshot) };
       } catch {
-        return { status: "failed", code: "NEXO_CONTINUITY_STORE_INITIALIZE_FAILED" };
+        try {
+          const observed = await readEnvelope(fsModule, filePath);
+          if (observed.storeRevision === envelope.storeRevision &&
+              JSON.stringify(observed.snapshot) === JSON.stringify(envelope.snapshot)) {
+            return {
+              status: "committed",
+              storeRevision: observed.storeRevision,
+              snapshot: structuredClone(observed.snapshot),
+              recoveredAfterWriteError: true
+            };
+          }
+        } catch (error) {
+          if (error?.code === "NEXO_CONTINUITY_STORE_NOT_FOUND") {
+            return { status: "failed", code: "NEXO_CONTINUITY_STORE_INITIALIZE_FAILED" };
+          }
+        }
+        return { status: "unknown", code: "NEXO_CONTINUITY_STORE_INITIALIZE_OUTCOME_UNKNOWN" };
       }
     } finally {
       await releaseLock();
