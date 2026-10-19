@@ -1,5 +1,16 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — outcome Chronicle ligado al settlement; errores de lectura normalizados (validado 2026-10-19)
+
+- Hueco 1 reproducido en CI: con settlement Chronicle válido, `recordOutcome()` aceptaba una claim `completed` cuya evidencia declaraba `source` y `observedRevision` distintos de los asentados. El test falló con `committed` donde debía bloquear.
+- Corrección: `isValidNexoChronicleOutcomeEvidence()` valida que el outcome tenga `verified === true`, kind canónico `nexo-chronicle-persisted-invariant`, source igual al settlement y observedRevision igual al settlement. `recordOutcome()` bloquea el desacople con `NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH`. La reconstrucción aplica el mismo contrato: evidencia histórica despegada del settlement queda `blocked` con ese código; target/action distintos se clasifican como `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`. Se cubren los casos negativo y positivo de evidencia ligada.
+- Hueco 2 reproducido: `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()` dejaban escapar una excepción si fallaba el read inicial de `store.loadCurrent()`, a diferencia de `recordMission()` y `reconcilePrepared()`. La regresión falló en CI con `TEST_CONTINUITY_READ_FAILED` propagado. Ahora devuelven `blocked`, código del error o `NEXO_CONTINUITY_LOAD_FAILED`, incertidumbre `continuity_read_failed` y marcadores de no-commit; la prueba confirma cero llamadas a `commitIfCurrent`.
+- Último SHA código+tests: `9ca094242d25fced843b7d5595f9cff6e0d82ee3`; último cambio funcional en el árbol: `862f660e7f54412a23c62b6b8619e28445925524`. SUCCESS en SHA de prueba: bounded admission/restart [39196527692](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527692), STEP 4 [39196527671](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527671), STEP 5 [39196527814](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527814), crash cuts [39196527776](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527776). El conjunto de seis workflows pasó en SHA `56abe3375aefa89d77085eb33a8487a5c2c468fd` tras el fix de escritura y errores de lectura; después, las pruebas de reconstrucción de evidencia ligada/desligada pasaron en los cuatro workflows listados.
+- Límite: la consistencia source/revision es un control estructural, no autenticación criptográfica de procedencia. No autoriza efectos externos ni completa goal verification general. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** comprobar el paso de los resultados de lectura fallida a través de `executeNexoStepWithContinuityOwner()`: una admisión bloqueada por continuidad ilegible debe impedir cualquier llamada al adapter y no disparar retry/redispatch. Añadir prueba de proceso/owner aislado antes de tocar el runtime.
+
+
 ## M0 — Chronicle outcome queda ligado a settlement canónico (validado 2026-10-19)
 
 - Hueco reproducido: con un `settled_observed` válido, `recordOutcome()` aceptaba metadata de outcome `verified/kind/source/observedRevision` que no coincidía con el settlement. También la reconstrucción clasificaba una claim completed con identidad distinta como si sólo faltara replay del outcome.
