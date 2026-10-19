@@ -441,3 +441,8 @@ PR #106 se cerró sin merge tras revisión adicional: https://github.com/snowden
 Se revirtieron en la rama del PR los cambios de producción y tests a su contenido de base antes del cierre. No se integró el arreglo y no se deben presentar las pruebas añadidas como validadas. El fallo de owner-write aún puede dejar un lock huérfano y requiere diseño de protocolo, no parche por ruta.
 
 Siguiente paso: mantener fail-closed y evaluar si se puede cambiar el protocolo de lock para que la adquisición/recuperación identifique de forma segura el objeto de lock que posee la operación, sin reclamar ni borrar locks de otros procesos. No usar limpieza por pathname ni stat-then-rm como solución. Requerir pruebas de concurrencia/crash cuts y CI real antes de integrar. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 10. Nota de diseño para el siguiente ciclo
+
+Leer `NEXO_NCS/BUILD/NCS_M0_LOCK_RECOVERY_DESIGN_NOTE_2026-10-19.md` antes de volver a tocar locks. Define las invariantes requeridas, el motivo de retirada de PR #106 y la evidencia mínima para cualquier rediseño. La decisión presente es mantener fail-closed y no implementar limpieza por pathname, stat-then-rm ni recuperación automática por edad. No inventar un fix alternativo sin probar identidad/propiedad bajo concurrencia.
