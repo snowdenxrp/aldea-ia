@@ -1,3 +1,13 @@
+## M0 — journal replay exige identidad completa; misión rechaza accessors (2026-10-19)
+
+- Último SHA código+pruebas: `82826e12bfd88c07aeabda05f6a14605f85bda33`.
+- Reconstrucción fail-closed: un `effectJournal` con estado desconocido, propietario inexistente, step huérfano o identidad `action/target` que no coincide ya no se ignora para dejar la misión ejecutable. Regresiones cubren estado desconocido asociado, estado desconocido huérfano, settlement Chronicle con step inexistente y registro Chronicle con los mismos IDs pero action/target distintos.
+- El nuevo test de identidad mismatch pasó en el SHA final. El test previo del settlement huérfano falló antes del fix (el `blockReason` no existía porque el registro se ignoraba) y pasó después. No fue un fallo de CI ocultado: se usó como reproducción red-green.
+- También se cerró un hueco de entrada: `missionRecord()` ejecuta `assertContractInput` antes de leer `mission.missionId`; un getter caller-supplied se rechaza como `NEXO_MISSION_CONTEXT_INVALID` sin ejecutarse. El primer test de esa condición falló antes del guard y pasó después.
+- CI SUCCESS en SHA `82826e12bfd88c07aeabda05f6a14605f85bda33`: bounded admission/restart [39197558462](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197558462), STEP 4 [39197558524](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197558524), STEP 5 [39197558514](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197558514), crash cuts [39197558507](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197558507). El guard de input también pasó en el SHA previo `24e44be7828563661a172e351828cb2892a70b11`: bounded admission 39197548004, STEP 4 39197547919, STEP 5 39197547877 y crash cuts 39197547897.
+- **Siguiente frontera:** revisar la admisión de misiones con inputs anidados (steps/target/dependsOn) y confirmar que los guards de contrato se ejecutan antes de cualquier getter o traversal caller-supplied; ampliar sólo si existe un caso concreto y sin duplicar el guard de `missionRecord()`.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina; STEP 7 OPEN / STOP / UNKNOWN.
+
 ## M0 — reconstrucción bloquea estados de effectJournal desconocidos, huérfanos o desanclados (2026-10-19)
 
 - Hallazgo reproducido: un registro `effectJournal` con estado no reconocido podía ser ignorado y dejar la misión en `planned`; un `settled_observed` de Chronicle apuntando a un step inexistente también podía quedar fuera del filtrado por paso. En ambos casos el snapshot legacy pasaba la validación estructural y la reconstrucción no asociaba el registro con un paso ejecutable.
