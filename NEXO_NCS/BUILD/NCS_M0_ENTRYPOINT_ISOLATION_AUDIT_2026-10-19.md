@@ -1,0 +1,53 @@
+# NCS M0 — auditoría de entrypoints e aislamiento de Nexo/Lúmina
+
+Fecha: 2026-10-19  
+Tipo: revisión estática read-only; no cambia entrypoints, UI ni runtime.
+
+## 1. Artefactos inspeccionados
+
+- `package.json`
+- `scripts/nexo.mjs`
+- `scripts/nexo-chronicle-session.mjs`
+- `src/nexo/application/index.mjs`
+- `src/nexo/application/chronicle-append.mjs`
+- `src/nexo/runtime.js`
+- `src/main-stable.js`
+- `index.html`
+- `.github/workflows/nexo-deterministic-tests.yml`
+
+## 2. Entry point de Nexo
+
+- `package.json` declara `npm run nexo` como `node scripts/nexo.mjs`; el script `simulate` es independiente.
+- `scripts/nexo.mjs` importa únicamente las consultas públicas de continuidad y enruta tres familias: `status`, `mission-status` y `chronicle-append`. El último delega al CLI `scripts/nexo-chronicle-session.mjs`.
+- Los comandos desconocidos fallan cerrados. El CLI de Chronicle exige argumentos explícitos y contenido por stdin; la salida no imprime el contenido Chronicle ni rutas/errores crudos.
+- `src/nexo/application/index.mjs` expone tres funciones: `runNexoChronicleAppend`, `loadNexoContinuityStatus` y `loadNexoMissionStatus`. No expone un dispatcher genérico.
+
+## 3. Entry point visual actual
+
+- `index.html` tiene título y HUD de Lúmina e importa `src/main-stable.js` junto con módulos de mundo/simulación/renderizado.
+- En las importaciones revisadas de `src/main-stable.js` no aparece una conexión a la API pública Nexo ni al runtime owner-backed. No se cambió `index.html` ni se conectó Nexo a la interfaz.
+- `src/nexo/runtime.js` sí contiene un runtime legacy que importa `assistants/memory.js` y `simulation-adapter.js`. Este módulo es arquitectónicamente distinto del runtime owner-backed. La inspección de los artefactos anteriores no basta por sí sola para probar que no exista otro import indirecto desde todos los entrypoints; hace falta inventario global de importadores antes de afirmar aislamiento total.
+
+## 4. Límite de la conclusión
+
+Evidencia suficiente para decir que el entrypoint CLI explícito de Nexo es estrecho y que el HTML principal sigue siendo de Lúmina sin una conexión Nexo visible en el módulo principal. No es suficiente para declarar completado el aislamiento total del runtime legacy. El hecho de que el módulo legacy exista y mezcle memoria antigua con adaptadores de simulación no justifica trasladar esa arquitectura a Nexo ni duplicar estado entre sistemas.
+
+## 5. CI
+
+`.github/workflows/nexo-deterministic-tests.yml` ejecuta `npm test` en push a `main` o mediante `workflow_dispatch`; no tiene trigger `pull_request`. Por ello, cambios en una rama NCS no obtienen automáticamente esta suite por PR. El contrato de aplicación conserva las referencias de workflows focales ya exitosos; esta auditoría documental no ejecutó CI nuevo.
+
+No cambiar triggers como parte de esta auditoría: al usar `pull_request`, GitHub toma la definición del workflow de la rama base, por lo que un cambio solo en la rama de trabajo no valida por sí mismo el PR. Si se decide habilitar validación por PR, tratarlo como cambio de infraestructura CI separado, con alcance y revisión explícitos.
+
+## 6. Siguiente paso verificable
+
+Hacer un inventario de referencias/importadores de `src/nexo/runtime.js`, `src/nexo/simulation-adapter.js`, `assistants/memory.js` y los entrypoints de scripts/HTML, usando búsqueda de repositorio o análisis de imports estático reproducible. Clasificar cada ruta como:
+- alcanzable desde entrypoint de producción,
+- solo llamada por tests,
+- CLI/manual,
+- importada pero sin evidencia de ejecución.
+
+No concluir "desconectado" solo porque el módulo no aparece en `src/main-stable.js`. No modificar legacy, UI ni runtime hasta que el inventario muestre una conexión concreta que requiera una decisión arquitectónica.
+
+## 7. Estado
+
+Auditoría parcial de entrypoints completada; inventario global aún pendiente. Sin cambios de runtime, UI ni CI. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
