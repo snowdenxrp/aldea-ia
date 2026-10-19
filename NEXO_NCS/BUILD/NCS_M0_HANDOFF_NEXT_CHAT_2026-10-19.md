@@ -245,7 +245,9 @@ El segundo hueco se reprodujo con una misión de dos pasos independientes: step-
 
 HEAD código+tests `c59a825771af3376a88a9bc212e9967cf1d75f1d`. SUCCESS: bounded admission/restart run 39195866238, STEP 4 run 39195866236, STEP 5 run 39195866226, crash cuts run 39195866266. Chronicle native/effect-settlement SUCCESS en código funcional `3ebb037...` (runs 39195543682, 39195543685). Enlaces en STATUS.
 
-**Siguiente paso:** revisar `reconcilePrepared()` y `recordOutcome()` para confirmar que la reconciliación terminal mantiene coherencia entre effectJournal, attempt y estado reconstruido; no alterar la máquina de estados sin una regresión concreta.
+**Auditoría completada; no repetir:** `reconcilePrepared()` conserva observaciones genéricas como `reconciled_observed` no terminales, y `recordOutcome()` rechaza outcomes mientras el efecto siga unresolved salvo Chronicle completo. Los crash-cut tests cubren esta frontera.
+
+**Siguiente paso:** comprobar el contrato de fallos de lectura de `store.loadCurrent()` en `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()`, comparado con los catches fail-closed de `recordMission()` y `reconcilePrepared()`.
 
 
 ## 18. Checkpoint — replay de PREPARED tras reinicio conserva la obligación UNKNOWN
@@ -255,3 +257,10 @@ Se añadió una regresión que crea la misión, confirma un PREPARED y vuelve a 
 Test SHA `376f2d984eeb969d25c2c797a40037a72a6a5c6b`. Bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195866238, 39195866236, 39195866226, 39195866266). La lógica funcional de misión/step gate permanece en `3ebb037f53409df9681f5ed01b6458e915e36a29`; el último commit sólo añade prueba de continuidad tras reinicio.
 
 **Auditoría de reconciliación revisada:** `reconcilePrepared()` persiste observaciones genéricas como `reconciled_observed`, no las trata como settlement terminal; `recordOutcome()` rechaza los estados `prepared`, `settled_observed` y `reconciled_observed` salvo el contrato Chronicle completo. Los crash-cut tests ya cubren que un outcome prematuro no añade attempt y que la observación genérica sigue no-terminal. No se hizo cambio en esa frontera porque la conducta observada es fail-closed y coherente con el contrato.
+
+
+## 19. Frontera Chronicle restart/lost-response ya cubierta — no duplicar
+
+La prueba existente `tests/nexo/chronicle-runtime.test.mjs` ya cubre el reinicio tras append antes de settlement, el reinicio después de settlement/outcome y la pérdida de respuesta tras el commit del outcome. En el último caso, la reconstrucción devuelve step `completed` sólo porque el settlement Chronicle canónico y el outcome terminal están persistidos; el replay posterior devuelve `completed` sin redispatch. La migración también cubre settlement sin outcome y mantiene el paso blocked. Se comprobó el código/test existente; no se añadió otra regresión redundante.
+
+**Siguiente paso:** revisar el contrato de errores de lectura de continuidad en `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()`; comparar con `recordMission()`/`reconcilePrepared()` y probar antes de cambiar.
