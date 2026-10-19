@@ -32,3 +32,10 @@
 3. Ejecutar la suite de proyecto si el entorno lo permite.
 4. Inspeccionar resultados y fijarlos al SHA probado; corregir cualquier fallo antes de avanzar.
 5. Mantener la decisión de autoridad separada: `authorization: NOT_EVALUATED`, efectos protegidos STOP, M0 INCOMPLETO. Esta corrección valida el contrato de revisión; no establece autoridad legítima ni una raíz de propietario.
+
+## Primera ejecución real de CI y corrección derivada
+
+- La ejecución real `nexo-m0-chronicle` sobre SHA `bdef7856448b3004b4c64afc635b79f6ad862176` falló antes de llegar a `chronicle-runtime.test.mjs`.
+- Log: `chronicle-store.test.mjs:130` esperaba que `initialize()` rechazara con la excepción interna simulada. El contrato real de `createNexoChronicleStore.initialize()` normaliza fallos de adquisición del lock como resultado `blocked / NEXO_CHRONICLE_LOCK_ACQUISITION_FAILED`, y el test no coincidía con ese contrato. El log confirma que el fallo fue la aserción “Missing expected rejection”, no la regresión PREPARED.
+- Corrección del test publicada en commit `2b9f2f5f3a21dac0f3b6cf0a221e6f28c943db86`: ahora exige el resultado normalizado y sigue comprobando que el directorio `.lock` se elimine.
+- CI fue disparado otra vez para el nuevo SHA; sus resultados están pendientes de lectura. No declarar PASS hasta comprobar tanto el test Chronicle como la suite integrada y la ejecución que incluya `chronicle-runtime.test.mjs`.
