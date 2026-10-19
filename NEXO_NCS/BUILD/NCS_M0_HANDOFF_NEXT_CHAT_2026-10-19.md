@@ -3,40 +3,35 @@ Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
 SHA de código+pruebas validado: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`
-Corrección funcional integrada: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`
-La actualización de STATUS/handoff crea nuevos commits documentales; verificar el HEAD vivo al retomar.
+Los commits de documentación pueden mover el HEAD; verificar la rama viva al retomar.
 
 ## 0. Instrucción principal al chat nuevo
 
-**La misión es M0.** No reiniciar M0.1–M0.52 ni las auditorías históricas cerradas; no desviarse a STEP 7, M1, Lúmina, interfaz o despliegue. El último trabajo corrigió la admisión de datos no persistibles y la validación de `step.action`.
+**La misión es M0.** No reiniciar M0.1–M0.52 ni auditorías cerradas; no desviarse a STEP 7, M1, Lúmina, interfaz o despliegue. Leer primero `NEXO_NCS/STATUS.md`, después este handoff y `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
 
-Leer primero `NEXO_NCS/STATUS.md`, después este handoff y `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`. Trabajar sólo en la frontera indicada abajo y consultar el HEAD vivo.
+## 1. Estado confirmado
 
-## 1. Último estado confirmado
+- Se reprodujo con CI que una función en `step.target` era admitida. `missionRecord()` valida el registro proyectado y rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays. Fallos de clonación/proyección devuelven `NEXO_MISSION_CONTEXT_INVALID`.
+- Se reprodujo con CI que `step.action: 42` era admitida como una misión `planned`. Ahora `step.action` debe ser string no vacío; no se creó un allowlist de acciones.
+- Pruebas owner-level confirman que las entradas inválidas no avanzan la revisión canónica ni ejecutan el commit condicional.
+- El helper global `assertContractInput()` permanece sin cambios. No se cambiaron autoridad, permisos, dispatch, estados de efectos ni separación Nexo/Lúmina.
 
-### Hallazgos cerrados
-- La regresión inicial demostró que una función como `step.target` era aceptada. La corrección local a `missionRecord()` rechaza valores no persistibles en el registro proyectado: funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays.
-- Una segunda regresión demostró que `step.action: 42` podía quedar persistida como misión `planned`. La admisión ahora exige `step.action` string no vacío. No se añadió allowlist de acciones.
-- Las pruebas del owner verifican que una misión inválida devuelve `NEXO_MISSION_CONTEXT_INVALID` y no cambia la revisión canónica; la escritura condicional no se ejecuta.
-- El helper compartido `assertContractInput()` no se modificó. No se tocaron autoridad, permisos, dispatch, estados de efectos ni la separación Nexo/Lúmina.
-
-### CI final
-- SHA de código+tests: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`.
+### SHA y CI
+- Código+tests final: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`.
 - SUCCESS: bounded admission/restart [39208156912](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156912), STEP 4 [39208156893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156893), STEP 5 [39208156962](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156962), crash cuts [39208156901](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156901).
 - PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101).
 
 ### Siguiente frontera concreta
+Auditar `mission.status` y `step.status` sin suponer el enum:
+1. Inspeccionar el productor real de planes, el runtime owner-backed y `reconstructNexoMissionFromSnapshot()`.
+2. Extraer los valores de estado efectivamente emitidos/consumidos.
+3. Comprobar si estados de tipo incorrecto o desconocidos pueden quedar persistidos y crear una misión estancada/ambigua.
+4. Añadir una regresión red/green sólo si se reproduce un problema real; verificar que entradas inválidas no llegan a commit.
+5. Registrar SHA y CI reales en STATUS.
 
-Auditar `mission.status` y `step.status` antes de modificar código:
-1. Leer el productor real de planes, consumidores que deciden qué pasos son ejecutables y la reconstrucción canónica.
-2. Identificar el conjunto de estados realmente emitido/consumido; no inferirlo sólo por nombres.
-3. Reproducir si un estado de tipo incorrecto o desconocido puede quedar persistido y crear una misión estancada o ambigua.
-4. Sólo si hay discrepancia real, añadir una regresión red/green y validar que no se escribe la misión inválida.
-5. Registrar SHA y workflows CI exactos en STATUS/handoff.
+No repetir: getters/accessors, IDs duplicados/con `:`, journal desconocido/huérfano, settlement/replay Chronicle, PREPARED, fallos de lectura, dependencias sparse, datos no persistibles ni acción no-string/vacía.
 
-No repetir: getters/accessors anidados, IDs duplicados/con `:`, journal desconocido/huérfano, settlement/replay Chronicle, PREPARED, fallos de lectura, dependencias sparse, valores no persistibles ni acción no-string/vacía.
-
-**Estado global:** M0 **INCOMPLETO**; efectos protegidos **STOP**; STEP 7 **OPEN / STOP / UNKNOWN**; Nexo y Lúmina permanecen separados. La evidencia de CI no prueba autoridad constitucional ni autorización de runtime.
+**Estado global:** M0 **INCOMPLETO**; efectos protegidos **STOP**; STEP 7 **OPEN / STOP / UNKNOWN**; Nexo y Lúmina separados. CI verde no demuestra autenticidad, goal verifier general, autoridad constitucional ni permiso para ejecutar efectos protegidos.
 
 
 ## 2. Último cambio concreto: replay Chronicle incompleto
