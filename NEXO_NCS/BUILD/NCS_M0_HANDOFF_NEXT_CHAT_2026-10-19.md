@@ -347,3 +347,12 @@ Test SHA `bceabad2e1f62a23ba7586ba27b2977841d6b778`; código funcional `82826e12
 SUCCESS: bounded admission/restart 39197679061, STEP 4 39197679021 y STEP 5 39197678998. Crash cuts siguen SUCCESS en código+tests previos 82826e... (39197558507); el cambio actual es sólo una prueba en continuity-contract.
 
 **Siguiente paso:** reproducir si valores no persistibles (función/símbolo/ciclo) pueden atravesar mission admission y producir un error no estructurado o CAS innecesario. No modificar el helper global sin caso reproducible y análisis de compatibilidad.
+
+
+## 24. Checkpoint — dependencia sparse rechazada antes de recorrer el grafo
+
+La regresión `dependsOn: new Array(1)` reprodujo un `TypeError` en `visitDependencyGraph()`: `.some()` omite huecos sparse. `missionRecord()` ahora cuenta índices canónicos dentro de `dependencies.length`; también rechaza un hueco ocultado por una propiedad extra. El input se rechaza como `NEXO_MISSION_CONTEXT_INVALID` antes de persistir.
+
+SHA código+pruebas `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; código `360b0dafbebc700477bc30879ef4175da81c904b`. SUCCESS: bounded admission 39197992970, STEP 4 39197992902, STEP 5 39197992893. Crash cuts SUCCESS con el código funcional 360b0daf..., run 39197974984.
+
+Siguiente paso: probar valores no persistibles dentro de mission/target sin ampliar globalmente el contrato antes de tener reproducción y evaluación de compatibilidad.
