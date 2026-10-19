@@ -1,3 +1,14 @@
+## Latest verified checkpoint — generic observation commit response loss (2026-10-19)
+
+- Concrete gap: `reconcilePrepared()` let an exception from `store.commitIfCurrent()` escape. If the store durably persisted `reconciled_observed` and then threw before returning its receipt, the API did not return structured uncertainty.
+- Fix: the generic observation commit boundary now catches that specific exception and returns `blocked`, the original error code when available (fallback `NEXO_EFFECT_OBSERVATION_COMMIT_OUTCOME_UNKNOWN`), `observationCommitted:false`, and `uncertainty: effect_observation_commit_outcome_unknown`. It does not infer commit success/failure.
+- Crash-cut regression commits through the real canonical store and then throws. First call returns structured uncertainty; after reopening the owner, replay returns `already_observed` at revision 1, retains `reconciled_observed`, and does not call the verifier again.
+- Two initial CI failures were test-fixture directory collisions, not code failures. The new fixture directory was made distinct; final focal workflows passed.
+- Validated code/test SHA `a8f5d06cb983a412b8187612c70a6032215518eb`: repair crash cuts [39189472295](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472295), effect/settlement [39189472360](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472360), STEP 4 [39189472242](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472242), STEP 5 [39189472266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472266). Chronicle passed at code SHA `ea2bc19753d82c9d79a98c100b9b9ee2dd0b3c90`, run [39189369262](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189369262).
+- This handles uncertainty only. No cross-store atomicity, automatic effect retry, or verifier re-invocation on replay. M0 INCOMPLETE; protected effects STOP; Nexo/Lúmina separate.
+
+Next: review read failures and confirm replay accepts only exact canonical observation identity/status. No UI/legacy-runtime cutover or new states.
+
 ## Latest verified checkpoint — default-deny mission completion (2026-10-19)
 
 - The previous guard covered known repair actions and registered `effectVerifiers`, but an unregistered effectful action could still be marked completed without PREPARED or a goal verifier.
