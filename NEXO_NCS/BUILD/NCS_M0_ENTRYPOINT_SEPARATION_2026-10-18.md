@@ -5,7 +5,7 @@ Validated code SHA: 9174921f587b504f40524ae5e89f47da68e40ae2
 ## Decision and implementation
 
 - `scripts/nexo.mjs` is the independent command entrypoint, exposed as `npm run nexo -- ...`.
-- Its only supported command is `chronicle-append`. Unknown commands return `NEXO_COMMAND_UNSUPPORTED` and do not dispatch. This is a narrow router, not a generic effect dispatcher.
+- Its only mutating command is `chronicle-append`. The `status --continuity PATH` command is read-only and reports aggregate counts from the canonical store; it never initializes a missing store. Unknown effect commands return `NEXO_COMMAND_UNSUPPORTED` and do not dispatch. This is a narrow router, not a generic effect dispatcher.
 - A transitive coupling was found: the Chronicle session imported `src/nexo/runtime.js`, which statically imports the Lumina adapter and the assistant memory layer. The adapter-agnostic owner-backed execution slice was extracted to `src/nexo/core/owner-backed-runtime.mjs`. The Chronicle session imports that module directly; `src/nexo/runtime.js` re-exports the function for compatibility.
 - The new owner-backed module has no static imports from Lumina, simulation, or assistants. The CLI entrypoint does not load `world.js`, `simulation.js`, `simulate.mjs`, or Lumina assistant memory.
 - `index.html` remains the existing Lumina web entrypoint and was not changed. This work creates a Nexo-only CLI seam, not a browser UI or a general runtime cutover.
