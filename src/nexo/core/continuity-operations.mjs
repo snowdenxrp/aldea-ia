@@ -189,12 +189,17 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     const invalidCompletion = stepAttempts.find(item => item?.status === "completed");
     if (invalidCompletion) {
       step.status = "blocked";
+      const invalidEvidence = invalidCompletion?.evidence?.verified !== true ||
+        typeof invalidCompletion?.evidence?.kind !== "string" || !invalidCompletion.evidence.kind.trim() ||
+        typeof invalidCompletion?.evidence?.source !== "string" || !invalidCompletion.evidence.source.trim();
       step.blockReason = {
         code: !matchesStepIdentity(invalidCompletion)
           ? "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH"
-          : step.action !== "local_analysis" && step.action !== "chronicle_append"
-            ? "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED"
-            : "NEXO_COMPLETION_EVIDENCE_UNVERIFIED",
+          : invalidEvidence
+            ? "NEXO_COMPLETION_EVIDENCE_UNVERIFIED"
+            : step.action !== "local_analysis" && step.action !== "chronicle_append"
+              ? "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED"
+              : "NEXO_COMPLETION_EVIDENCE_UNVERIFIED",
         next: "verify_mission_goal_without_redispatch"
       };
       continue;
