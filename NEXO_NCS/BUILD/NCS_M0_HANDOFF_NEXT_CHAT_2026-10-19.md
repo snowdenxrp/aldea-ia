@@ -1,3 +1,12 @@
+
+## 8. Seguimiento de estado público — hallazgo adicional
+
+Se inspeccionó `src/nexo/application/continuity-queries.mjs` y la ruta CLI `scripts/nexo.mjs`. `loadNexoMissionStatus()` devuelve el estado reconstruido, pero no informa el estado guardado en el snapshot. Un plan persistido `completed` con un paso `planned` puede aparecer como `missionStatus: planned`, mientras el runtime owner-backed bloquea el dispatch porque el estado almacenado no es `planned`.
+
+Esto es una discrepancia de observabilidad, no un bypass de dispatch demostrado. No se modificó código ni se ejecutó CI.
+
+Siguiente paso recomendado: refactorizar la consulta para reconstruir desde **una única lectura canónica** y devolver por separado `persistedMissionStatus`, `missionStatus` (reconstruido) y un indicador de discrepancia, sin exponer target/content. Añadir una regresión CLI para el caso contradictorio y confirmar que el archivo no cambia. No usar `objective` como autorización ni añadir reglas de estado sin evidencia de los consumidores.
+
 # NCS / Nexo — handoff de continuidad M0
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
