@@ -118,6 +118,18 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     if (next.missions.length === candidate.missions.length) {
       return { status: "already_recorded", storeRevision: current.storeRevision, authorization: "NOT_EVALUATED" };
     }
+    // Owner admission is for a new, not-yet-executed plan. Historical/imported
+    // mission states remain readable through snapshot projection, but a new
+    // owner-backed admission must not start with terminal/runtime step claims.
+    const admittedMission = next.missions[next.missions.length - 1];
+    if (admittedMission.status !== "planned" ||
+        admittedMission.steps.some(step => step.status !== "planned")) {
+      return {
+        status: "conflict",
+        code: "NEXO_MISSION_CONTEXT_INVALID",
+        storeRevision: current.storeRevision
+      };
+    }
     assertNexoContinuitySnapshot(next);
     return store.commitIfCurrent(expectedRevision, next);
   }
