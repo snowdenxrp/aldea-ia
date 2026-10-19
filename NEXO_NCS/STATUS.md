@@ -1902,3 +1902,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Regresión de store:** [commit `a81560da`](https://github.com/snowdenxrp/aldea-ia/commit/a81560daad363cc802afa43a58f421b1a25d93d7) exige el resultado exacto sin depender del código OS.
 - **Estado de validación:** los archivos están publicados; ejecución local y CI siguen **PENDING**. No se declara PASS.
 - **M0:** INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
+
+## M0 — normalización de ENOENT en operaciones mutables de ambos almacenes (2026-10-19)
+
+- **Continuidad:** `commitIfCurrent()` captura únicamente `ENOENT` al adquirir el lock y devuelve `failed / NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE` antes de modificar el snapshot. Código: [23d9567c90a2](https://github.com/snowdenxrp/aldea-ia/commit/23d9567c90a2997353ae54d6ba6bbd79c8f663a9); regresión: [857e6f2951eb](https://github.com/snowdenxrp/aldea-ia/commit/857e6f2951eb524bbbb687ba2c22e2db4642cf43).
+- **Chronicle:** `append()` captura únicamente `ENOENT` al adquirir el lock y devuelve `blocked / NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE` antes de escribir. Código: [c13c56e7aff0](https://github.com/snowdenxrp/aldea-ia/commit/c13c56e7aff03fe4ec2b9f5fe4a585473e1822cb); regresión: [26a6ec60f8bd](https://github.com/snowdenxrp/aldea-ia/commit/26a6ec60f8bdf1201d3a9c90ae45732931f08b96).
+- **Verificación documental:** los cuatro archivos de código/prueba se releyeron desde la rama y contienen las guardas y aserciones esperadas. El estado se actualiza aquí; commit de estado anterior al cambio: blob `b0dd24f7fb0463c59eac1ace927587075fb9eb2d`.
+- **Límite:** errores de lock distintos de `ENOENT` conservan el comportamiento previo. No se ha obtenido ejecución local ni resultado de CI asociado a estos SHA; **pruebas/CI PENDING, no PASS**.
+- **Estado global:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP. La inicialización coordinada de ambos archivos sigue sin ser atómica y no se añade rollback compensatorio.
