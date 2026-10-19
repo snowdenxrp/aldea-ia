@@ -1,3 +1,15 @@
+## M0 — auditoría de coherencia mission.status / steps / objective (2026-10-19)
+
+- Se inspeccionó `missionRecord()`, `reconstructNexoMissionFromSnapshot()`, el gate de `executeNexoStepWithContinuityOwner()`, la admisión de `runNexoChronicleAppend()` y las regresiones actuales.
+- **Hallazgo concreto:** `missionRecord()` admite estados de misión válidos individualmente aunque contradigan los estados de sus pasos. Ejemplo estructuralmente admitido: misión `completed` con paso `planned`. La reconstrucción recalcula el estado desde pasos/outcomes y puede devolver `planned`, mientras el runtime consulta también el estado almacenado y bloquea nuevas ejecuciones si no es `planned`. Esto crea una discrepancia de lectura/proyección; en la ruta owner-backed revisada no demuestra un bypass de ejecución.
+- `objective` es texto descriptivo libre en los productores (p. ej. “preserve continuity”) y la reconstrucción lo sustituye por un objetivo operativo derivado. No debe tratarse como autorización ni limitarse a un enum sin revisar contratos y consumidores.
+- **Decisión de esta auditoría:** no imponer todavía una regla nueva ni tocar runtime. Falta definir si los estados persistidos no-`planned` en una misión recién admitida son inválidos, o si se aceptan por compatibilidad y la reconstrucción debe exponer explícitamente la contradicción. Primero inspeccionar `loadNexoMissionStatus()` y consumidores CLI para determinar el alcance de la discrepancia.
+- No se cambiaron código ni pruebas y no se ejecutó CI en este checkpoint. No atribuirle un PASS.
+- **Siguiente paso exacto:** revisar `src/nexo/application/index.mjs` y los scripts de status para verificar qué estado se presenta al operador; después escribir una regresión que compare estado persistido vs reconstruido y elegir la corrección mínima basada en esa evidencia.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+---
+
 ## M0 — misión persistible y gate de ejecución canónico (2026-10-19)
 
 **Punto de entrada:** rama `ncs-clean-architecture`; SHA de código+pruebas validado `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5`. Consultar HEAD vivo después de los commits documentales.
