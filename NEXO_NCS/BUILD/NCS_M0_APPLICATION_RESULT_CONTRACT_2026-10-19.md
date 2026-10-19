@@ -338,3 +338,10 @@ La prueba de `step.target` con getter confirma que `assertContractInput(mission)
 ## Checkpoint M0 — dense dependency arrays (2026-10-19)
 
 Mission admission rejects sparse `dependsOn` arrays with `NEXO_MISSION_CONTEXT_INVALID` before graph traversal. A second regression proves extra array properties cannot mask a missing dependency index. Test SHA `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; code SHA `360b0dafbebc700477bc30879ef4175da81c904b`. Bounded admission, STEP 4 and STEP 5 SUCCESS (runs 39197992970, 39197992902, 39197992893); crash cuts SUCCESS run 39197974984. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — recuperación de continuidad (2026-10-19)
+
+La validación más reciente de admisión de misión rechaza arrays `dependsOn` sparse antes de recorrer el grafo, incluso cuando una propiedad extra oculta el hueco. Test SHA `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix `360b0dafbebc700477bc30879ef4175da81c904b`. CI SUCCESS: bounded admission 39197992970, STEP 4 39197992902, STEP 5 39197992893; crash cuts SUCCESS 39197974984 sobre el SHA funcional anterior.
+
+La revisión anterior de reconciliación/evidencia Chronicle se conserva; no reabrirla sin una nueva regresión. Siguiente trabajo: comprobar si funciones, símbolos, ciclos y números no finitos pueden atravesar `assertContractInput()`/`missionRecord()`, producir excepción no estructurada o provocar CAS innecesario. M0 INCOMPLETO; efectos protegidos STOP.
