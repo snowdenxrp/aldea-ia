@@ -309,10 +309,11 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       };
     }
     const dependencies = Array.isArray(step.dependsOn) ? step.dependsOn : [];
+    const reconstructedMission = reconstructNexoMissionFromSnapshot(current.snapshot, operation.missionId);
     const dependenciesMet = dependencies.every(dependencyId =>
-      mission.steps.some(candidateStep =>
+      reconstructedMission?.steps.some(candidateStep =>
         candidateStep?.id === dependencyId && candidateStep.status === "completed"
-      )
+      ) === true
     );
     if (!dependenciesMet) {
       return {
