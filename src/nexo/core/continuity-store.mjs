@@ -136,7 +136,7 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
     } catch (error) {
       // Initialization has not begun writing until its lock is acquired.
       // Keep OS filesystem codes behind the Nexo store contract.
-      if (error?.code === "ENOENT") {
+      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" };
       }
       return {
