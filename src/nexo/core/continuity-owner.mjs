@@ -495,14 +495,21 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         replayEntry.stepId === operation.stepId &&
         replayEntry.action === operation.action &&
         isDeepStrictEqual(replayEntry.target ?? null, operation.target ?? null);
+      const replayReconciliation = replayEntry?.reconciliation;
+      const replayObservedAt = replayReconciliation?.observedAt;
+      const validReplayTimestamp = typeof replayObservedAt === "string" &&
+        Number.isFinite(Date.parse(replayObservedAt)) &&
+        new Date(replayObservedAt).toISOString() === replayObservedAt;
       const genericObservation = sameReplayIdentity &&
         replayEntry.status === "reconciled_observed" &&
-        replayEntry.reconciliation &&
-        ["applied", "not_applied"].includes(replayEntry.reconciliation.status) &&
-        Number.isSafeInteger(replayEntry.reconciliation.observedRevision) &&
-        replayEntry.reconciliation.observedRevision >= 0 &&
-        typeof replayEntry.reconciliation.source === "string" &&
-        replayEntry.reconciliation.source.trim();
+        replayReconciliation &&
+        ["applied", "not_applied"].includes(replayReconciliation.status) &&
+        Number.isSafeInteger(replayReconciliation.observedRevision) &&
+        replayReconciliation.observedRevision >= 0 &&
+        typeof replayReconciliation.source === "string" &&
+        replayReconciliation.source.trim() &&
+        Object.hasOwn(replayReconciliation, "evidence") &&
+        validReplayTimestamp;
       const chronicleSettlement = sameReplayIdentity &&
         operation.action === "chronicle_append" &&
         replayEntry.status === "settled_observed" &&
