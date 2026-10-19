@@ -69,3 +69,11 @@ The initialization flags are opt-in and should only be used when creating genuin
 - `tests/nexo/entrypoint.test.mjs` recursively walks static local imports from both Nexo entrypoints and fails if a reachable module imports the legacy assistant memory, simulation adapter, `world.js`, `simulation.js`, `simulate.mjs`, or `src/nexo/runtime.js`.
 - CI SUCCESS on SHA `c9f62e3611a598f0ab29fa1b55d2ac849a67c6c3`: [39180518798](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518798), [39180518686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518686), [39180518787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518787).
 - This guards static import separation for the CLI entrypoints only. It does not claim OS/process sandboxing, web-app integration, or general runtime cutover.
+
+
+## Application-layer extraction — validated (2026-10-19)
+
+- `src/nexo/application/chronicle-append.mjs` now owns the Chronicle use case; `src/nexo/application/continuity-queries.mjs` owns read-only status and mission reconstruction. The CLI scripts are parsers/process wrappers.
+- `src/nexo/core/continuity-service.mjs` owns opening the canonical Nexo continuity store/owner. `scripts/nexo-continuity.mjs` remains a compatibility re-export.
+- Initial refactor CI caught `ReferenceError: blocked is not defined` after moving the use case; the structured-blocked helper was restored at both application and CLI boundaries. Latest validation is SUCCESS: [39180686782](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686782), [39180686817](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686817) on SHA `8d05417d0a47b5f38fb63833c338a0f04d1499e7`.
+- This is a reusable Nexo application seam, not an Android/web UI or runtime-default cutover. Chronicle remains the only mutating use case.
