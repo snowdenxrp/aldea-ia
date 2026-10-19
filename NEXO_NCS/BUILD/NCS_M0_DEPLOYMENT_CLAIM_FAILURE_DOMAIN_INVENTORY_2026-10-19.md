@@ -57,6 +57,19 @@ El borrador NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md s
 - AB105.078R separa STALE de REVOKED porque revocación solicitada no es revocación aplicada.
 La combinación STALE_OR_REVOKED borra una distinción contractual existente; CONFLICT como estado agregado duplica AUTHORITY_UNRESOLVED en la frontera de autoridad. La lista inicial se corrigió en el borrador el 2026-10-19 para reutilizar estos vocabularios canónicos. No crear un segundo vocabulario ni cambiar el runtime para materializar estados agregados.
 
+## Hechos actuales del entorno según continuidad del proyecto
+
+Estos datos proceden de lo informado por el propietario en conversaciones previas; son contexto operativo reportado, no evidencia criptográfica ni verificación independiente:
+
+- El punto de trabajo actual es Android-first y el propietario no dispone actualmente de una PC.
+- No hay impresora disponible para establecer una ruta que dependa de imprimir códigos/documentos de recuperación.
+- El teléfono actual es un canal de interacción/prueba candidato, no una autoridad raíz seleccionada.
+- Se habló de una llave de hardware, pero no está adquirida ni elegida como mecanismo del proyecto.
+- No se ha seleccionado una autoridad externa, una cuenta de recuperación, un custodio alterno ni una raíz de bootstrap independiente.
+- El prototipo M1 local está pausado; no cuenta como raíz ni como frontera de autoridad.
+
+Consecuencia: no diseñar como si ya existiera una llave, un segundo dispositivo independiente, material offline impreso o un custodio externo. La ausencia de esos medios en el registro actual tampoco demuestra que sean imposibles de conseguir; significa que hoy no pueden contarse como capacidades disponibles.
+
 ## Próximo paso autorizado por la evidencia
 
 Antes de comparar las familias de reconocimiento, completar la matriz de **hechos de despliegue** que siguen desconocidos: qué soporte de recuperación existe realmente fuera del teléfono; qué dependencia puede permanecer disponible sin conexión; quién controla cada material/credencial; qué garantías de plataforma son observables; qué frontera de ejecución está dentro del control de Nexo; y qué pérdida común se acepta como estado no recuperable. Etiquetar cada respuesta como verificada, supuesto de entorno o UNKNOWN.
