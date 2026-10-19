@@ -47,6 +47,24 @@ async function recordChronicleTerminalOutcome({
       adapterResult, lineage, reconciliation
     };
   }
+  if (outcome?.status === "conflict") {
+    return {
+      status: "conflict", code: outcome.code ?? "NEXO_CHRONICLE_OUTCOME_COMMIT_CONFLICT",
+      dispatchAttempted, preparedCommitted, lineageCommitted,
+      journalSettled: reconciliation?.journalSettled === true,
+      terminalOutcomeRecorded: false, redispatchAuthorized: false,
+      adapterResult, lineage, reconciliation, outcome
+    };
+  }
+  if (outcome?.status === "blocked" || outcome?.status === "failed") {
+    return {
+      status: "blocked", code: outcome.code ?? "NEXO_CHRONICLE_OUTCOME_NOT_RECORDED",
+      dispatchAttempted, preparedCommitted, lineageCommitted,
+      journalSettled: reconciliation?.journalSettled === true,
+      terminalOutcomeRecorded: false, redispatchAuthorized: false,
+      adapterResult, lineage, reconciliation, outcome
+    };
+  }
   if (outcome?.status !== "committed" && outcome?.status !== "already_recorded") {
     return {
       status: "unknown", code: outcome?.code ?? "NEXO_CHRONICLE_OUTCOME_NOT_CONFIRMED",
@@ -188,6 +206,16 @@ export async function executeNexoStepWithContinuityOwner({
       code: error?.code ?? "NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN",
       dispatchAttempted: false,
       preparedCommitted: "UNKNOWN"
+    };
+  }
+  if (prepared?.status === "conflict") {
+    return {
+      status: "conflict",
+      code: prepared.code ?? "NEXO_PREPARED_COMMIT_CONFLICT",
+      dispatchAttempted: false,
+      preparedCommitted: false,
+      storeRevision: prepared.storeRevision,
+      prepared
     };
   }
   if (prepared?.status !== "committed" || prepared.preparedCommitted !== true) {
