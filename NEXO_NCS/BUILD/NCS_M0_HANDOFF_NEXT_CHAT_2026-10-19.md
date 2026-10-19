@@ -7,7 +7,7 @@ HEAD código+pruebas validado: `c59a825771af3376a88a9bc212e9967cf1d75f1d`
 
 ## 0. Instrucción principal al chat nuevo
 
-**Última continuidad verificada:** la frontera más reciente cerró el gate de PREPARED frente al estado reconstruido del paso. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
+**Última continuidad verificada:** la admisión exige que la misión y el paso estén `planned` tanto en el plan como en la reconstrucción. Un PREPARED no resuelto bloquea nuevos PREPARED dentro de esa misión; la repetición de la misma identidad sigue UNKNOWN/prepared_existing. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
 
 **La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
 
@@ -20,12 +20,10 @@ No reabrir research ya cerrado salvo que aparezca evidencia nueva y concreta. Co
 
 ## 1. Estado confirmado
 
-- HEAD de rama al guardar: `0e689f32df5463c751bcd32ef29b4af66b5c20a1`, commit documental.
-- Comparación GitHub entre código/pruebas validados `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72` y HEAD: **3 commits posteriores, todos documentación**; no hay cambios de código/pruebas posteriores a la base validada.
-- Código base anterior a la regresión Chronicle: `005338b91656e61eee3ffbef105c306e2af496b2`.
-- Último conjunto de pruebas focales disparado por la regresión Chronicle (SHA `ddf1034...`): crash cuts SUCCESS run `39190786403`; effect/settlement SUCCESS `39190786395`; STEP 4 SUCCESS `39190786373`; STEP 5 SUCCESS `39190786377`.
-- Los seis workflows focales habían pasado en `005338...`: Chronicle `39190771042`, bounded admission/restart `39190771031`, STEP 4 `39190771037`, STEP 5 `39190771029`, crash cuts `39190771021`, effect/settlement `39190771114`.
-- Por tanto, Chronicle y bounded admission pasaron en el SHA de código `005338...`; el SHA `ddf103...` agregó la regresión de replay parcial y los cuatro workflows activados pasaron. No describirlo como una ejecución única de seis workflows en `ddf103...`.
+- HEAD actual al checkpoint: `c59a825771af3376a88a9bc212e9967cf1d75f1d` (código+pruebas; HEAD de rama puede incluir commits documentales posteriores).
+- Fix funcional más reciente: `3ebb037f53409df9681f5ed01b6458e915e36a29`; cambios de documentación no alteran el código validado.
+- Últimos runs finales SUCCESS: bounded admission/restart `39195662848`, STEP 4 `39195662862`, STEP 5 `39195662845`, crash cuts `39195662831`. Chronicle native/effect-settlement SUCCESS en SHA funcional `3ebb037...`: `39195543682`, `39195543685`.
+- Los puntos anteriores de esta sección y los apartados históricos siguientes conservan evidencia previa; no son el estado más reciente. Para continuar, manda siempre el estado superior de `NEXO_NCS/STATUS.md` y el checkpoint final de este handoff.
 - Estado de misión: **M0 INCOMPLETO**. Efectos protegidos en **STOP**. Ningún PASS implica que el runtime real esté autorizado o listo.
 
 ## 2. Último cambio concreto: replay Chronicle incompleto
