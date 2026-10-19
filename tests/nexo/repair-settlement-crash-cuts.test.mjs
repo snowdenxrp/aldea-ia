@@ -1057,6 +1057,34 @@ try {
   assert.equal((await missingGenericEvidenceOpened.owner.loadCurrent()).storeRevision, 0);
   assert.equal((await missingGenericEvidenceOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
+  const emptyGenericEvidenceOwner = createNexoContinuityOwner({
+    store: missingGenericEvidenceOpened.store,
+    effectVerifiers: {
+      generic_write: async operation => ({
+        status: "applied",
+        idempotencyKey: operation.idempotencyKey,
+        action: operation.action,
+        target: operation.target,
+        observedRevision: 11,
+        source: "test-reader-with-empty-evidence",
+        evidence: {}
+      })
+    }
+  });
+  const emptyGenericEvidenceResult = await emptyGenericEvidenceOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(emptyGenericEvidenceResult.status, "blocked");
+  assert.equal(emptyGenericEvidenceResult.code, "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID");
+  assert.equal((await missingGenericEvidenceOpened.owner.loadCurrent()).storeRevision, 0);
+
   // A legacy/corrupt generic replay with evidence:null is not already_observed.
   const nullGenericReplayDir = path.join(root, "generic-owner-null-evidence-replay");
   await fs.mkdir(nullGenericReplayDir);
