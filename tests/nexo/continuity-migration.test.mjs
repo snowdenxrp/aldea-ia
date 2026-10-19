@@ -1051,3 +1051,19 @@ try {
 } finally {
   await fs.rm(unknownJournalStateDir, { recursive: true, force: true });
 }
+
+const orphanUnknownEffectDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-orphan-unknown-effect-"));
+try {
+  const orphanMemory = structuredClone(legacyMemory);
+  orphanMemory.nexo.effectJournal = [{
+    ...orphanMemory.nexo.effectJournal[0], missionId: "missing-mission", status: "unknown_state"
+  }];
+  const opened = await openNexoContinuityOwner({ filePath: path.join(orphanUnknownEffectDir, "nexo.json"), legacyMemory: orphanMemory });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.status, "blocked",
+    "an unrecognized orphan effect state cannot be silently ignored by another runnable mission");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN");
+} finally {
+  await fs.rm(orphanUnknownEffectDir, { recursive: true, force: true });
+}
