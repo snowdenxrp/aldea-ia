@@ -504,6 +504,63 @@ try {
   assert.equal(replayVerifierCalls, 0);
   assert.equal((await reopenedAmbiguous.owner.loadCurrent()).snapshot.effectJournal[0].status, "reconciled_observed");
 
+  // A verifier can succeed but the canonical re-read before CAS can fail.
+  // This must return structured uncertainty and leave PREPARED untouched.
+  const recheckDir = path.join(root, "generic-observation-recheck-failure");
+  await fs.mkdir(recheckDir);
+  const recheckOpened = await openNexoContinuityOwner({
+    filePath: path.join(recheckDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  let recheckCalls = 0;
+  let recheckVerifierCalls = 0;
+  const recheckStore = {
+    loadCurrent: async () => {
+      recheckCalls++;
+      if (recheckCalls === 2) {
+        const error = new Error("simulated canonical re-read failure");
+        error.code = "NEXO_CONTINUITY_READ_FAILED";
+        throw error;
+      }
+      return recheckOpened.store.loadCurrent();
+    },
+    commitIfCurrent: (...args) => recheckOpened.store.commitIfCurrent(...args)
+  };
+  const recheckOwner = createNexoContinuityOwner({
+    store: recheckStore,
+    effectVerifiers: {
+      generic_write: async operation => {
+        recheckVerifierCalls++;
+        return {
+          status: "applied",
+          idempotencyKey: operation.idempotencyKey,
+          action: operation.action,
+          target: operation.target,
+          observedRevision: 11,
+          source: "test-persisted-state-reader",
+          evidence: { invariantPresent: true }
+        };
+      }
+    }
+  });
+  const recheckResult = await recheckOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(recheckResult.status, "blocked");
+  assert.equal(recheckResult.code, "NEXO_CONTINUITY_READ_FAILED");
+  assert.equal(recheckResult.uncertainty, "continuity_recheck_failed");
+  assert.equal(recheckVerifierCalls, 1);
+  const afterRecheckFailure = await recheckOpened.owner.loadCurrent();
+  assert.equal(afterRecheckFailure.storeRevision, 0);
+  assert.equal(afterRecheckFailure.snapshot.effectJournal[0].status, "prepared");
+
   // The verifier registry is snapshotted at owner construction: later
   // caller mutation cannot replace the configured reconciliation function.
   const frozenRegistryDir = path.join(root, "generic-owner-frozen-registry");
