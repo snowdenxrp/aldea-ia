@@ -263,6 +263,76 @@ try {
   await fs.rm(unverifiedCompletionDir, { recursive: true, force: true });
 }
 
+function chronicleSettlementMemory({ withCompletedAttempt = false, evidence = {
+  kind: "persisted-chronicle-entry",
+  operationKey: "mission-legacy-1:step-1",
+  content: "hello Nexo"
+} } = {}) {
+  const memory = structuredClone(legacyMemory);
+  memory.nexo.missions[0].status = "planned";
+  memory.nexo.missions[0].objective = "chronicle_append";
+  memory.nexo.missions[0].steps[0] = {
+    id: "step-1",
+    action: "chronicle_append",
+    target: { content: "hello Nexo" },
+    status: "planned",
+    dependsOn: []
+  };
+  memory.nexo.attempts = withCompletedAttempt ? [{
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "chronicle_append",
+    target: { content: "hello Nexo" },
+    status: "completed",
+    evidence: { verified: true, kind: "nexo-chronicle-persisted-invariant", source: "nexo-chronicle-store" },
+    at: "2026-10-19T00:00:00.000Z"
+  }] : [];
+  memory.nexo.effectJournal = [{
+    idempotencyKey: "mission-legacy-1:step-1",
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "chronicle_append",
+    target: { content: "hello Nexo" },
+    status: "settled_observed",
+    settlement: {
+      status: "applied",
+      observedRevision: 1,
+      source: "nexo-chronicle-store",
+      evidence,
+      observedAt: "2026-10-19T00:00:00.000Z"
+    }
+  }];
+  return memory;
+}
+
+const chronicleNoOutcomeDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-settled-no-outcome-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleNoOutcomeDir, "nexo.json"),
+    legacyMemory: chronicleSettlementMemory()
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked",
+    "a settled Chronicle operation without a terminal attempt must not reconstruct as executable");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED");
+} finally {
+  await fs.rm(chronicleNoOutcomeDir, { recursive: true, force: true });
+}
+
+const chronicleInvalidSettlementDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-invalid-settlement-with-outcome-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleInvalidSettlementDir, "nexo.json"),
+    legacyMemory: chronicleSettlementMemory({ withCompletedAttempt: true, evidence: null })
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked",
+    "a completed attempt cannot override a Chronicle settlement without evidence");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_CHRONICLE_SETTLEMENT_REQUIRED");
+} finally {
+  await fs.rm(chronicleInvalidSettlementDir, { recursive: true, force: true });
+}
+
 const observedSettlementDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-observed-settlement-"));
 try {
   const observedMemory = structuredClone(legacyMemory);
