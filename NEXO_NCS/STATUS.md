@@ -1129,3 +1129,12 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - `tests/nexo/chronicle-runtime.test.mjs` invoca directamente el servicio de aplicación con ruta requerida vacía y tipo inválido en flag de inicialización. Ambos casos devuelven `blocked / NEXO_CHRONICLE_SESSION_INPUT_INVALID` y `dispatchAttempted=false`, antes de acceder a los stores.
 - CI SUCCESS en SHA `e8abe56f791e8460be6ae71abe723a3907bd13aa`: [Chronicle 39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), [continuity/restart 39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), [semantic validation 39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), [outcome classification 39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827).
 - Se cubren inputs, binding de payload, concurrencia, replay, outcomes inciertos y ausencia de dispatch duplicado para el vertical Chronicle. No generalizar a otras acciones; M0 INCOMPLETO.
+
+
+## M0 — resultados distinguen conflicto CAS de outcome desconocido (2026-10-19)
+
+- `executeNexoStepWithContinuityOwner()` ya no aplana un conflicto CAS confirmado al escribir PREPARED en un `blocked` genérico: devuelve `status=conflict`, revisión observada y `dispatchAttempted=false`.
+- Si el append Chronicle quedó asentado pero el CAS del outcome devuelve `conflict`, la respuesta ahora conserva `status=conflict`, `journalSettled=true`, `terminalOutcomeRecorded=false`. Un replay posterior registra el outcome existente sin redispatch.
+- `src/nexo/application/chronicle-append.mjs` propaga de forma explícita el conflicto de admisión de misión. Excepciones/commit-response-lost siguen siendo `unknown`; los conflictos conocidos no se presentan como incertidumbre de escritura.
+- Regresiones: conflicto PREPARED bloquea antes del adapter; conflicto de outcome deja journal settled y recupera por outcome replay solamente. CI SUCCESS en SHA `8e0d226c1df5e8c52ab802fe138d86da1a7a08d8`: [Chronicle 39181169917](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169917), [continuity/restart 39181169919](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169919), [semantic validation 39181169938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169938), [outcome/restart 39181169900](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169900).
+- No se añade retry automático. El caller decide cuándo reintentar después de leer el estado canónico. M0 INCOMPLETO.
