@@ -1,3 +1,13 @@
+## M0 — verificación final de transparencia de autoridad (2026-10-19)
+
+- La revisión detectó y cerró dos omisiones en resultados públicos Chronicle: el resultado normalizado, los rechazos tempranos y el conflicto de admisión deben conservar `authorization: "NOT_EVALUATED"` mientras no exista evaluación de autoridad.
+- Implementación: `src/nexo/application/chronicle-append.mjs`, commit `2faf2b988c676dc907c9322f5e63be36200af97b` (visibilidad en conflicto, sobre la corrección inicial `aa8509e75dd7925189d54b2667bcdd2ae27e6647`).
+- Regresión: `tests/nexo/chronicle-runtime.test.mjs`, commit `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; verifica resultado desconocido normalizado, datos malformados, rechazo temprano y settlement local completado.
+- **CI integrado PASS:** [run 39292887874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292887874), SHA exacto `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; job `Nexo M0 contracts on one SHA` SUCCESS, con los cinco grupos de pruebas SUCCESS. Chronicle específico [run 39292887749](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292887749) también SUCCESS en el mismo SHA.
+- **Límite:** la transparencia se corrigió; no se creó ni evaluó una raíz constitucional. Settlement local no significa autorización. Raíz/composición PENDING; efectos protegidos STOP; M0 global INCOMPLETO.
+
+---
+
 ## M0 — autoridad no evaluada debe permanecer visible en la API pública (2026-10-19)
 
 - Hallazgo: `publicChronicleResult()` normalizaba el resultado sin exponer `authorization: "NOT_EVALUATED"`; el helper de rechazo temprano también lo omitía. Eso podía esconder del consumidor la diferencia entre settlement local y autorización del propietario.
