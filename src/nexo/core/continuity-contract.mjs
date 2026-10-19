@@ -47,6 +47,23 @@ export function assertNexoContinuityMemoryShape(memory) {
   }
   for (const key of REQUIRED_COLLECTIONS) assertDenseArray(memory.nexo[key]);
 
+  // Mission and step identifiers form the durable operation identity
+  // (missionId:stepId). Duplicate identities make reconstruction ambiguous.
+  const missionIds = new Set();
+  for (const mission of memory.nexo.missions) {
+    if (typeof mission?.missionId === "string" && mission.missionId.trim()) {
+      if (missionIds.has(mission.missionId)) throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+      missionIds.add(mission.missionId);
+    }
+    if (!Array.isArray(mission?.steps)) continue;
+    const stepIds = new Set();
+    for (const step of mission.steps) {
+      if (typeof step?.id !== "string" || !step.id.trim()) continue;
+      if (stepIds.has(step.id)) throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+      stepIds.add(step.id);
+    }
+  }
+
   for (const entry of memory.nexo.effectJournal) {
     if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
       throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
