@@ -741,3 +741,11 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Latest code/test SHA with focal CI SUCCESS: `0872c646db77af2e3e0bbd9e711d7f81c6cc1caa`.
 - The only code change since the preceding validated checkpoint is the test's import-graph traversal and its assertions; no runtime or application behavior changed.
 - Next: audit public API boundaries and recovery semantics only. Do not add a second mutating use case, connect `index.html` or the legacy runtime, or infer authority from continuity state.
+
+
+## Pointer reconciliado tras documentación de separación (2026-10-18 local)
+
+- Branch HEAD actual: `35dee17378716200d3f1fa0c0915256e66e2a72f` (documentación-only).
+- Último SHA de código/test: `0872c646db77af2e3e0bbd9e711d7f81c6cc1caa`; workflows relevantes SUCCESS: [39187372728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372728), [39187372719](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372719), [39187372729](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372729).
+- Comparación código/test → HEAD: únicamente `STATUS.md`, `NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md` y `NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md`.
+- No se ha conectado UI ni runtime legacy. Siguiente frontera: seguir probando el contrato público y las ventanas de respuesta perdida; no ampliar la capacidad mutante más allá de Chronicle.
