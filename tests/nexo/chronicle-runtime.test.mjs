@@ -247,6 +247,60 @@ try {
   assert.notEqual(reconstructedChronicle.objective, "verify_observed_repair_goal");
   assert.equal((await real.chronicleStore.loadCurrent()).entries.length, 1);
 
+  // A known CAS conflict while recording the terminal outcome is not the same
+  // as an unknown commit result. The settled append is recovered by outcome
+  // replay only; no second dispatch is allowed.
+  const outcomeConflict = await setup("chronicle-outcome-conflict");
+  let conflictDispatches = 0;
+  let returnOutcomeConflict = true;
+  const conflictOwner = Object.freeze({
+    ...outcomeConflict.opened.owner,
+    recordOutcome: async args => {
+      if (returnOutcomeConflict) {
+        returnOutcomeConflict = false;
+        const current = await outcomeConflict.opened.owner.loadCurrent();
+        return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
+      }
+      return outcomeConflict.opened.owner.recordOutcome(args);
+    }
+  });
+  const conflictAdapter = createEffectAdapter({
+    handlers: {
+      chronicle_append: async request => {
+        conflictDispatches++;
+        return outcomeConflict.contracts.handlers.chronicle_append(request);
+      }
+    },
+    verifiers: outcomeConflict.contracts.verifiers
+  });
+  const conflictResult = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-outcome-conflict", stepId: "step-1",
+    owner: conflictOwner, adapter: conflictAdapter,
+    postcondition: outcomeConflict.contracts.postcondition
+  });
+  assert.equal(conflictResult.status, "conflict");
+  assert.equal(conflictResult.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+  assert.equal(conflictResult.journalSettled, true);
+  assert.equal(conflictResult.terminalOutcomeRecorded, false);
+  assert.equal(conflictDispatches, 1);
+  assert.equal((await outcomeConflict.opened.owner.loadCurrent()).snapshot.effectJournal[0].status, "settled_observed");
+  const conflictReopened = await openNexoContinuityOwner({
+    filePath: outcomeConflict.continuityPath, effectVerifiers: outcomeConflict.contracts.verifiers
+  });
+  const conflictReplay = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-outcome-conflict", stepId: "step-1",
+    owner: conflictReopened.owner,
+    adapter: createEffectAdapter({
+      handlers: { chronicle_append: async () => { conflictDispatches++; return { status: "completed" }; } },
+      verifiers: outcomeConflict.contracts.verifiers
+    }),
+    postcondition: outcomeConflict.contracts.postcondition
+  });
+  assert.equal(conflictReplay.status, "completed");
+  assert.equal(conflictReplay.dispatchAttempted, false);
+  assert.equal(conflictDispatches, 1);
+  assert.equal((await conflictReopened.owner.loadCurrent()).snapshot.attempts[0].status, "completed");
+
   // Two callers racing on an already-admitted operation must not duplicate the
   // append. A loser may report conflict/unknown; an explicit retry recovers the
   // persisted result without automatic redispatch.
