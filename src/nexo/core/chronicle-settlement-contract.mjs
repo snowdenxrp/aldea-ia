@@ -31,3 +31,17 @@ export function isValidNexoChronicleSettlementRecord(entry) {
     evidence.content === target.content &&
     validTimestamp;
 }
+
+/**
+ * Validate the terminal outcome metadata against the exact persisted settlement.
+ * The fields are structural consistency checks, not authenticated provenance.
+ */
+export function isValidNexoChronicleOutcomeEvidence(entry, evidence) {
+  const settlement = entry?.settlement;
+  return isValidNexoChronicleSettlementRecord(entry) &&
+    evidence !== null && typeof evidence === "object" && !Array.isArray(evidence) &&
+    evidence.verified === true &&
+    evidence.kind === "nexo-chronicle-persisted-invariant" &&
+    evidence.source === settlement.source &&
+    evidence.observedRevision === settlement.observedRevision;
+}
