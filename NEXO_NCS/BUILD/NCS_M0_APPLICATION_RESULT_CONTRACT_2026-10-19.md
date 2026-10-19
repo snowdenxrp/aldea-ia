@@ -259,3 +259,10 @@ Regresiones de intento mismatcheado y evidence no verificada: bounded admission/
 Para reconstruir `chronicle_append` como completed deben existir un settlement canónico validado por `isValidNexoChronicleSettlementRecord()` y un intento terminal verificado con action/target exactos. Settlement sin outcome terminal → blocked `NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED`; claim completed sin settlement válido → blocked `NEXO_CHRONICLE_SETTLEMENT_REQUIRED`. No vuelve a planned ni redispatcha.
 
 CI bounded admission/restart, crash cuts, STEP 4 y STEP 5 SUCCESS en SHA `fe79862299cb51dd95bd39e0d227d05698c65a03`. Ver STATUS para enlaces. M0 sigue INCOMPLETO; los efectos protegidos permanecen STOP.
+
+
+## Checkpoint M0 — reconstrucción respeta acciones con completion permitido
+
+La reconstrucción canónica sólo reconoce completion verificada para `local_analysis` o para `chronicle_append` con settlement y outcome válidos. Una claim completed de acción mutante sin goal verifier queda blocked con `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`; evidence inválida conserva su propio código. La prueba de replay monotónico se restringe a `local_analysis`, acción no mutante explícitamente permitida.
+
+CI bounded admission/restart, STEP 4, STEP 5 SUCCESS en SHA de prueba `ac8e4bc88c04c2f1ea257a58ecf224d867dd4b94`; crash cuts SUCCESS en código `fbfda4b7be4de8cf2e3ae1b0d7903f0287cf5b6e`. Ver STATUS para enlaces. No hay goal verifier general; M0 INCOMPLETO y efectos protegidos STOP.
