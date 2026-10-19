@@ -473,6 +473,39 @@ for (const testCase of malformedPreparedResponses) {
   assert.equal(handlerInvocations, 0, testCase.label);
 }
 
+// A malformed "committed" lineage response cannot be used as the reconciliation CAS baseline.
+for (const malformedLineage of [
+  { status: "committed" },
+  { status: "committed", storeRevision: 5 },
+  { status: "committed", storeRevision: 7 }
+]) {
+  let dispatches = 0;
+  let reconciliations = 0;
+  const result = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-mission",
+    stepId: "step-1",
+    owner: {
+      loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
+      supportsReconciliation: () => true,
+      recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
+      recordExecutionLineage: async () => malformedLineage,
+      reconcilePrepared: async () => { reconciliations++; return { status: "observed", observation: "applied", storeRevision: 7, journalSettled: true, source: "nexo-chronicle-store", observedRevision: 1 }; },
+      recordOutcome: async () => { throw new Error("malformed lineage must not record outcome"); }
+    },
+    adapter: adapter(() => { dispatches++; return { status: "completed" }; })
+  });
+  assert.equal(result.status, "unknown");
+  assert.equal(result.code, "NEXO_EXECUTION_LINEAGE_COMMIT_NOT_CONFIRMED");
+  assert.equal(result.dispatchAttempted, true);
+  assert.equal(result.preparedCommitted, true);
+  assert.equal(result.lineageCommitted, "UNKNOWN");
+  assert.equal(result.journalSettled, false);
+  assert.equal(result.terminalOutcomeRecorded, false);
+  assert.equal(result.redispatchAuthorized, false);
+  assert.equal(dispatches, 1);
+  assert.equal(reconciliations, 0);
+}
+
 let reconciliationDispatches = 0;
 const reconciliationUnknownResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
