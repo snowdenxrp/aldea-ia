@@ -166,7 +166,15 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
         typeof content !== "string" || !content.trim()) {
       return { status: "blocked", code: "NEXO_CHRONICLE_ENTRY_INVALID" };
     }
-    const release = await acquireLock(fsModule, filePath);
+    let release;
+    try {
+      release = await acquireLock(fsModule, filePath);
+    } catch (error) {
+      if (error?.code === "ENOENT") {
+        return { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" };
+      }
+      throw error;
+    }
     try {
       let current;
       try { current = await readDocument(fsModule, filePath); }
