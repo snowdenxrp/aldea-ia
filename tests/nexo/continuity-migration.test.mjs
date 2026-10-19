@@ -297,7 +297,7 @@ try {
   });
   assert.equal(prepared.status, "blocked",
     "PREPARED admission must use the reconstructed current-step status, not only the raw plan");
-  assert.equal(prepared.code, "NEXO_PREPARED_STEP_NOT_RUNNABLE");
+  assert.equal(prepared.code, "NEXO_PREPARED_MISSION_NOT_RUNNABLE");
   const current = await opened.owner.loadCurrent();
   assert.equal(current.storeRevision, 0);
   assert.equal(current.snapshot.effectJournal.length, 0);
