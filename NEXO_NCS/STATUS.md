@@ -1689,3 +1689,12 @@ La nota anterior de brecha fue demasiado amplia: aunque `tests/nexo/entrypoint.t
 
 ### Migración inicial legacy — frontera confirmada (2026-10-19)
 La auditoría de entrypoints confirma que `src/nexo/core/continuity-service.mjs` solo proyecta `legacyMemory` cuando la tienda Nexo separada no existe; una tienda presente permanece canónica y no se mezcla con la copia legacy. `scripts/assistants.mjs` puede alimentar esa migración inicial desde el estado de simulación. No es doble escritura posterior, pero sí un puente de arranque legacy. No retirarlo sin política y pruebas para migración, bootstrap vacío demostrado y tienda ausente con historia desconocida. Sin cambios de runtime ni pruebas nuevas.
+
+
+## M0 — criterios de aceptación ejecutables (2026-10-19)
+
+Se añadió `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EXECUTABLE_2026-10-19.md` para convertir los contratos existentes en seis criterios medibles: consulta canónica de solo lectura; admisión persistible; gate fail-closed; journal/replay sin duplicación; recuperación/crash cuts; entrypoints Nexo estrechos y separados de Lúmina/legacy.
+
+**No es un PASS global.** La consulta de misión ya informa estado persistido y reconstruido desde un único snapshot, pero la ejecución CI posterior a la corrección de integración `82f1204ae4e9298163231ab7a323233ad87777b8` no está observada aquí. M0-AC1 permanece UNKNOWN. Los PASS históricos siguen limitados a sus SHAs originales. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+Siguiente paso: recuperar el run real del workflow `.github/workflows/nexo-m0-mission-status.yml` para un SHA que incluya la corrección y test actuales; después crear la matriz de evidencia AC1–AC6 sin repetir auditorías cerradas.
