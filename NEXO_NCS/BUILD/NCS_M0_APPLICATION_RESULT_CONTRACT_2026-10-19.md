@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `82826e12bfd88c07aeabda05f6a14605f85bda33` (2026-10-19)
+Latest validated code/test checkpoint: `bceabad2e1f62a23ba7586ba27b2977841d6b778` (2026-10-19; test-only update)
 
 ## Scope
 
@@ -328,3 +328,8 @@ SHA código+tests `e31547f17764c18fd0bf2fe39dab1ebfc5748686`: bounded admission/
 La reconstrucción bloquea estados de journal desconocidos, entradas sin propietario o step canónico, y registros cuyo action/target no coincide con el paso. `missionRecord()` también valida el objeto misión con `assertContractInput` antes de acceder a propiedades, evitando ejecutar getters caller-supplied durante la admisión.
 
 SHA código+pruebas `82826e12bfd88c07aeabda05f6a14605f85bda33`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39197558462, 39197558524, 39197558514, 39197558507). M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — nested mission accessor guard (2026-10-19)
+
+La prueba de `step.target` con getter confirma que `assertContractInput(mission)` rechaza accessors anidados antes de ejecutarlos. Test SHA `bceabad2e1f62a23ba7586ba27b2977841d6b778`; código `82826e12bfd88c07aeabda05f6a14605f85bda33`. SUCCESS: bounded admission/restart 39197679061, STEP 4 39197679021, STEP 5 39197678998. El cambio fue test-only.
