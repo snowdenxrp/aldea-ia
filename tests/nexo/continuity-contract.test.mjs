@@ -181,11 +181,11 @@ assert.throws(
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
     missionId: "unknown-mission-status",
-    status: "awaiting_verification",
+    status: "unknown_mission_state",
     steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
   }),
   error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
-  "new mission admission must reject runtime-only status values"
+  "new mission admission must reject unknown mission status values"
 );
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
