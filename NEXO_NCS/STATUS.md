@@ -1,3 +1,11 @@
+## M0 — rechazo de dependencias sparse (2026-10-19)
+
+- Test SHA: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix funcional: `360b0dafbebc700477bc30879ef4175da81c904b`.
+- Se reprodujo que `dependsOn: new Array(1)` esquivaba `.some()` y terminaba en un `TypeError` durante el recorrido de dependencias. `missionRecord()` ahora valida los índices reales y rechaza también un hueco ocultado por una propiedad extra del array.
+- SUCCESS: bounded admission [39197992970](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992970), STEP 4 [39197992902](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992902), STEP 5 [39197992893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992893); crash cuts con el mismo código [39197974984](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197974984).
+- Siguiente frontera: probar si funciones/símbolos/ciclos/valores numéricos no finitos pueden atravesar mission admission; no tocar el helper global sin reproducción y revisión de compatibilidad.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
 ## M0 — validación de input anidado de misión (2026-10-19)
 
 - Test SHA actual: `bceabad2e1f62a23ba7586ba27b2977841d6b778`; código funcional permanece en `82826e12bfd88c07aeabda05f6a14605f85bda33`.
