@@ -36,6 +36,34 @@ export function parseNexoEntrypointArguments(argv) {
   return { status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false };
 }
 
+/** Read-only continuity summary. Missing/corrupt stores are never initialized or repaired. */
+export async function loadNexoContinuityStatus(continuityPath) {
+  if (typeof continuityPath !== "string" || !continuityPath.trim()) {
+    return { status: "blocked", code: "NEXO_STATUS_CONTINUITY_PATH_REQUIRED" };
+  }
+  try {
+    const current = await createNexoContinuityStore({ filePath: continuityPath }).loadCurrent();
+    const snapshot = current.snapshot;
+    const journal = snapshot.effectJournal;
+    return {
+      status: "loaded",
+      code: null,
+      storeRevision: current.storeRevision,
+      counts: {
+        missions: snapshot.missions.length,
+        attempts: snapshot.attempts.length,
+        executions: snapshot.executions.length,
+        journalEntries: journal.length,
+        preparedObligations: journal.filter(entry => entry.status === "prepared").length,
+        observedUnsettled: journal.filter(entry => entry.status === "reconciled_observed").length,
+        settledObserved: journal.filter(entry => entry.status === "settled_observed").length
+      }
+    };
+  } catch (error) {
+    return { status: "blocked", code: error?.code ?? "NEXO_CONTINUITY_STATUS_UNAVAILABLE" };
+  }
+}
+
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const parsed = parseNexoEntrypointArguments(process.argv.slice(2));
   if (parsed.status !== "dispatch") {
