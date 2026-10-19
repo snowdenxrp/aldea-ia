@@ -5,7 +5,7 @@
 **Palabra para abrir el siguiente chat:** `NCS`  
 **Misión:** M0. No cambiar a M1 ni reiniciar STEP 7.
 
-> Este checkpoint complementa y corrige la prioridad del handoff anterior. No declara que el HEAD actual haya quedado verificado: la integración GitHub disponible permitió leer los archivos de la rama y comparar commits, pero no expuso directamente el SHA del ref de la rama. El siguiente chat debe resolver eso antes de tocar código.
+> Este checkpoint se escribió antes de disponer de la consulta directa del ref de rama. La verificación posterior confirmó el HEAD y la sección 9 registra la suite completa. Las comprobaciones de SHA y CI de esta sección reflejan el estado al redactarse originalmente y quedan supersedidas por las secciones posteriores cuando indiquen un estado más reciente.
 
 ## 1. Fuentes que se leyeron en la rama
 
@@ -37,7 +37,7 @@ Los cinco workflows fueron observados completados con éxito:
 
 El handoff documental anterior es commit `10a03faea974160025f907302467277647ba2e8c`. La comparación GitHub confirmó que ese commit está 2 commits por delante de `48114cd...`, sin commits detrás; el diff incluye el handoff nuevo y una modificación del checkpoint. No etiquetar esos commits documentales como código probado. El ref exacto de la rama todavía debe verificarse de forma directa en el siguiente chat.
 
-**No se ha demostrado la suite completa `npm test`.** En `package.json`, `npm test` encadena muchas pruebas generales y Nexo; debe ejecutarse en CI o en un entorno real compatible y registrarse el SHA exacto.
+**Estado histórico al redactar esta sección:** la suite completa `npm test` aún no se había demostrado. La ejecución posterior está registrada en la sección 9: PASS en SHA exacto `fd87dfdb2eccd6d356fd970cfa24544568b72833`.
 
 ## 3. Estado que no puede cambiarse por inferencia
 
@@ -76,7 +76,7 @@ El runtime recibe el owner por inyección; las pruebas ya usan owners simulados.
 2. Verificar el SHA del HEAD real de `ncs-clean-architecture`, comparar con `48114cd...` y `10a03fa...`, e inspeccionar los runs de CI asociados al SHA actual. No inferir el HEAD a partir del nombre de rama ni de un commit documental.
 3. Terminar la auditoría acotada del resultado terminal descrita arriba, sin reabrir el análisis general de PREPARED ya cerrado.
 4. Identificar contrato, caso concreto, test de regresión y workflow que lo ejecutará antes de modificar código.
-5. Ejecutar la prueba focal y el workflow correspondiente. Registrar SHA exacto, enlaces y resultado. Luego intentar `npm test` completo en una vía soportada.
+5. La prueba focal y los workflows correspondientes ya pasaron; `npm test` completo también pasó en SHA exacto `fd87dfdb...` (sección 9). Si se cambia código después de ese SHA, repetir la suite sobre el nuevo SHA antes de afirmar que sigue PASS.
 6. Actualizar `STATUS.md` con una entrada breve al inicio solo si se puede conservar el archivo completo sin truncarlo; no reemplazar un STATUS de cientos de miles de caracteres con una extracción parcial. Mantener este checkpoint y actualizar el handoff para enlazarlo.
 7. Mantener `authorization: NOT_EVALUATED`, efectos protegidos `STOP` y M0 `INCOMPLETO` hasta que haya evidencia independiente que justifique cambiar esos estados.
 
@@ -100,11 +100,11 @@ La pista de resultado terminal se convirtió en un cambio acotado y en regresion
 - Regresiones añadidas en commit [`e38556bc78487aae117b1c11085aca1731dfbb2e`](https://github.com/snowdenxrp/aldea-ia/commit/e38556bc78487aae117b1c11085aca1731dfbb2e), archivo `tests/nexo/chronicle-runtime.test.mjs`. Cubren revisión ausente, revisión que no avanza, salto de revisión y `already_recorded` con revisión incorrectamente avanzada. Verifican UNKNOWN, `terminalOutcomeRecorded: "UNKNOWN"`, `journalSettled: true`, sin redispatch, y que no se persista un intento terminal falso.
 - Blob runtime tras el cambio: `e5b956ea5394387708535106c2dcee8de70bf2fe`.
 - Blob test tras el cambio: `873d38bf7fd19b8c90ec5e48c9fbfec87ffe0777`.
-- Se verificó lectura posterior de ambos archivos desde `ncs-clean-architecture`. El wrapper de CI asociado al commit de pruebas devolvió lista vacía de runs y el estado de commit no reportó checks; por tanto, **CI para este cambio sigue PENDING**. Se intentó clonar la rama y ejecutar `npm test` desde el entorno disponible, pero el entorno no pudo resolver `github.com`; no se obtuvo una ejecución local.
+- Estado histórico al escribir esta sección: el wrapper inicial no devolvió runs y el entorno local no pudo resolver `github.com`. La consulta directa posterior sí recuperó Actions y confirmó los cinco workflows por SHA; véase sección 8. La suite completa fue ejecutada después en CI y pasó; véase sección 9.
 - Próxima acción obligatoria: revisar que los workflows hayan arrancado sobre el SHA que incluye ambos commits, leer logs de la prueba focal, corregir cualquier fallo real y volver a verificar. Si el conector no expone runs push, obtener evidencia desde la interfaz pública de Actions o el método soportado del repo; no convertir una lista vacía en PASS.
 - SHA de código y pruebas esperado en esta secuencia: el commit de pruebas `e38556bc78487aae117b1c11085aca1731dfbb2e` ya incluye el cambio de runtime como antecesor, pero el HEAD directo de la rama debe verificarse explícitamente antes de declarar que es el actual.
 
-El estado constitucional no cambia: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; suite completa `npm test` pendiente.
+El estado constitucional no cambia: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP. La suite completa `npm test` está PASS en el SHA registrado en la sección 9.
 
 
 ## 8. Evidencia posterior: CI del recibo terminal confirmado (2026-10-19)
@@ -127,7 +127,7 @@ La consulta directa a GitHub Actions corrigió el estado PENDING anterior. Los d
 
 **Branch tip verified directly:** `ncs-clean-architecture` points to `e8be8f664a7ad7982686010439282d3f3474850d`. GitHub compare reports the branch is 3 commits ahead of `e38556bc...`, 0 behind; the compare diff lists only this checkpoint and the handoff as changed files. Thus the terminal-outcome code and tests are ancestors of the verified branch tip; the three later commits are documentation-only in that comparison.
 
-**What this proves / does not prove:** the targeted Nexo workflows passed on the exact runtime and test SHAs, including execution of `chronicle-runtime.test.mjs` on the test SHA. This is not a full `npm test` run; the complete suite remains PENDING because the local clone attempt could not resolve `github.com` and no full-suite CI result has been observed.
+**Historical scope note:** the targeted workflows passed on the exact runtime and test SHAs, including `chronicle-runtime.test.mjs` on the test SHA. At the time this paragraph was first written, full-suite evidence was unavailable; section 9 supersedes that earlier PENDING state with a verified full `npm test` PASS.
 
 Current constitutional state remains unchanged: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; protected effects `STOP`; legitimate owner root PENDING.
 
