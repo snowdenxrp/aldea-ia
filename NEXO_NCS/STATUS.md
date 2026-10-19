@@ -1022,3 +1022,14 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Stores: locks obsoletos fallan cerrado; no hay reaper automático. `filePath` es configuración confiable, no sandbox. No reclamar resistencia a symlink/path attacks, fsync/power-loss o filesystem distribuido.
 - Continuación posterior: seam mínimo de entrada Nexo-only; luego contrato genérico owner-backed con PREPARED confirmado antes de dispatch y reconciliación confiable por acción. Chronicle es la única acción no-repair demostrada en esta vertical.
 - **M0 INCOMPLETO; runtime default sin cutover; efectos protegidos STOP; Nexo/Lúmina separados.** No reabrir auditorías cerradas ni pasar a M1/STEP 7.
+
+
+## M0 — replay idempotente de reconciliación genérica tras respuesta perdida (2026-10-18)
+
+- Código: `src/nexo/core/continuity-owner.mjs`. Si `reconcilePrepared` encuentra una revisión distinta de la esperada, ahora inspecciona primero el journal persistido. Solo reconoce replay cuando existe exactamente una entrada con la misma identidad canónica (missionId, stepId, action, target e idempotencyKey) y un registro de observación ya persistido compatible con su estado.
+- Respuesta de replay: `already_observed`; no vuelve a ejecutar el verifier, no afirma causalidad, no autoriza redispatch y no convierte `reconciled_observed` en settlement. Para Chronicle, solo refleja `journalSettled: true` cuando ya existe el settlement persistido específico `nexo-chronicle-store`.
+- Prueba añadida a `tests/nexo/repair-settlement-crash-cuts.test.mjs`: el store confirma internamente el commit y devuelve una respuesta incierta; el replay recupera la observación sin segunda llamada al verifier; una operación con target distinto no puede reutilizar el registro; el journal permanece `reconciled_observed`.
+- Commits de cambio: implementación `39d13a8251e836abd1917aff071396f165993ab8`; prueba `31c8b3a4be5743ac12fc0c66bcae1d69b2fae1d6`.
+- Validación remota consultada para el SHA de prueba: no hay statuses/checks visibles en el conector y la consulta de runs asociadas no devolvió ejecuciones. **CI = UNKNOWN/PENDING; la prueba aún no está demostrada como ejecutada.** No declarar PASS por ausencia de fallo.
+- Próximo paso: conseguir evidencia de ejecución de la suite focal y regresiones. Después continuar la frontera arquitectónica ya fijada: entrada principal Nexo-only sin importar mundo/simulación de Lúmina. No hacer cutover del runtime default ni ampliar acciones.
+- M0 continúa **INCOMPLETO**; efectos protegidos **STOP**; Nexo/Lúmina separados.
