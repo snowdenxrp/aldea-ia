@@ -525,3 +525,10 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Verified CI: Chronicle/entrypoint [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), outcome classification [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), semantic validation [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886), all SUCCESS on the code/test SHA.
 - Latest validated capabilities: Chronicle settlement/outcome reconstruction no longer misclassifies Chronicle as a repair observation; `status` reads aggregate counts; `mission-status` reconstructs canonical mission state without payload disclosure; unresolved PREPARED remains blocked; same-operation CLI replay in a fresh process does not dispatch again or change either file.
 - Next step: inspect the minimum application/runtime seam and its full transitive import graph. Do not integrate `src/nexo/runtime.js` into production or change the default runtime yet; it still has legacy compatibility coupling. No new mutating actions, no authority inference, no fsync/power-loss claims. M0 INCOMPLETO, protected effects STOP, Nexo/Lúmina separated.
+
+
+### Addendum — guard automático del grafo de imports (2026-10-19)
+
+- La suite de entrada recorre recursivamente los imports estáticos locales desde `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`, rechazando dependencias transitivas de `assistants/memory.js`, `simulation-adapter.js`, `world.js`, `simulation.js`, `simulate.mjs` o `src/nexo/runtime.js`.
+- CI SUCCESS en SHA `c9f62e3611a598f0ab29fa1b55d2ac849a67c6c3`: [39180518798](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518798), [39180518686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518686), [39180518787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518787).
+- Esto protege el grafo de módulos de la entrada CLI, pero no afirma aislamiento del proceso completo ni autoriza el runtime general. No cambiar `src/nexo/runtime.js` ni `index.html` todavía.
