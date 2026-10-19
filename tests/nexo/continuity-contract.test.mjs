@@ -201,6 +201,21 @@ for (const invalidGraph of [
   );
 }
 
+let missionGetterCalls = 0;
+const accessorMission = {
+  steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
+};
+Object.defineProperty(accessorMission, "missionId", {
+  enumerable: true,
+  get() { missionGetterCalls += 1; return "getter-mission"; }
+});
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, accessorMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID"
+);
+assert.equal(missionGetterCalls, 0,
+  "mission admission must reject accessors before evaluating caller-provided getters");
+
 const snapshot = projectNexoContinuitySnapshot(validMemory);
 assert.equal(snapshot.schema, NEXO_CONTINUITY_SCHEMA);
 assert.equal(snapshot.schemaVersion, 1);
