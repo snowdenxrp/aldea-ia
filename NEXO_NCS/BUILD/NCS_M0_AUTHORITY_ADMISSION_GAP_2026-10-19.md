@@ -57,3 +57,15 @@ El gate integrado [run 39291344910](https://github.com/snowdenxrp/aldea-ia/actio
 ## Próximo paso
 
 Antes de cambiar runtime, revisar las fuentes de investigación/handoff ya existentes sobre raíz independiente, autorización efectiva, revocación y STOP, y sintetizar una decisión mínima que no duplique investigación cerrada. Si no hay raíz implementada y verificable, mantener la frontera explícitamente sin autorizar y no construir un pseudo-root.
+
+
+## Corrección posterior: el contrato público también debe mostrar la ausencia de evaluación (2026-10-19)
+
+La inspección posterior detectó un segundo problema de transparencia: aunque el runtime interno conservaba `authorization: "NOT_EVALUATED"` en rutas relevantes, `publicChronicleResult()` no lo copiaba al resultado público y el helper de rechazo temprano tampoco lo añadía. Así, un consumidor podía ver `status: "completed"` del settlement local sin ver que autorización no se evaluó.
+
+Corrección:
+- `src/nexo/application/chronicle-append.mjs`, commit `aa8509e75dd7925189d54b2667bcdd2ae27e6647`.
+- `tests/nexo/chronicle-runtime.test.mjs`, commit `dbced55ae0f345a7677b5df4b598631ec0d78ed8`.
+- Integración M0 PASS observada en [run 39292627540](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292627540), SHA `dbced55ae0f345a7677b5df4b598631ec0d78ed8`; workflow Chronicle [run 39292627699](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292627699) PASS.
+
+La marca explícita evita una inferencia engañosa, pero no es una decisión de autorización y no concede permiso. La raíz sigue PENDING; efectos protegidos STOP; M0 global INCOMPLETO.
