@@ -48,3 +48,9 @@ No basta con añadir otro booleano, un campo `source` o una firma de objeto que 
 ## Estado
 
 No se modificó el código de ejecución en esta auditoría. La corrección requiere definir la frontera de confianza primero. **M0 INCOMPLETO; raíz/autoridad PENDING; efectos protegidos STOP; ejecución de pruebas de este hallazgo PENDING.**
+
+## Disposición posterior de alcance (2026-10-19)
+
+El hallazgo estático sigue siendo correcto: un consumidor puede construir un objeto ordinario que satisfaga la forma de PREPARED. La decisión posterior [NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md](../DECISIONS/NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md) establece que el adaptador actual no es una sandbox ni una frontera de seguridad frente a código arbitrario del mismo proceso. Por tanto, la forma del recibo no debe venderse como autenticidad; tampoco se añade una defensa cosmética a esa API interna. La composición owner-backed conserva sus pruebas propias. Si el producto exige consumidores no confiables, hace falta una frontera de proceso/capacidad real antes de ampliar el modelo.
+
+Estado global invariable: M0 INCOMPLETO; authorization NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
