@@ -303,7 +303,7 @@ const replayedExecutionSnapshot = recordNexoExecutionInSnapshot(executionSnapsho
   idempotencyKey: "core-mission:step-1",
   missionId: "core-mission",
   stepId: "step-1",
-  action: "repair_agent_state",
+  action: "local_analysis",
   target: "alex",
   result: { status: "failed", code: "late-replay" }
 });
