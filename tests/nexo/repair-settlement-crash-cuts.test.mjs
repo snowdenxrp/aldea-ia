@@ -539,6 +539,56 @@ try {
   assert.equal(malformedReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
   assert.equal(malformedReplayVerifierCalls, 0);
 
+  // Chronicle settlement replay must meet the same complete-record standard:
+  // a status/source/revision tuple without evidence and canonical observedAt
+  // is not enough to recover "already observed".
+  const malformedSettlementDir = path.join(root, "malformed-chronicle-settlement-replay");
+  await fs.mkdir(malformedSettlementDir);
+  const malformedSettlementMemory = genericMemory();
+  malformedSettlementMemory.nexo.missions[0].steps[0].action = "chronicle_append";
+  malformedSettlementMemory.nexo.effectJournal[0].action = "chronicle_append";
+  malformedSettlementMemory.nexo.effectJournal[0].status = "settled_observed";
+  delete malformedSettlementMemory.nexo.effectJournal[0].environmentStateRevision;
+  malformedSettlementMemory.nexo.effectJournal[0].settlement = {
+    status: "applied",
+    observedRevision: 7,
+    source: "nexo-chronicle-store"
+  };
+  const malformedSettlementOpened = await openNexoContinuityOwner({
+    filePath: path.join(malformedSettlementDir, "nexo.json"),
+    legacyMemory: malformedSettlementMemory
+  });
+  const malformedSettlementStore = {
+    loadCurrent: async () => {
+      const current = await malformedSettlementOpened.store.loadCurrent();
+      return { ...current, storeRevision: 1 };
+    },
+    commitIfCurrent: (...args) => malformedSettlementOpened.store.commitIfCurrent(...args)
+  };
+  let malformedSettlementVerifierCalls = 0;
+  const malformedSettlementOwner = createNexoContinuityOwner({
+    store: malformedSettlementStore,
+    effectVerifiers: {
+      chronicle_append: async () => {
+        malformedSettlementVerifierCalls++;
+        return { status: "unknown" };
+      }
+    }
+  });
+  const malformedSettlementReplay = await malformedSettlementOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "chronicle_append",
+      target: "alex"
+    }
+  });
+  assert.equal(malformedSettlementReplay.status, "conflict");
+  assert.equal(malformedSettlementReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+  assert.equal(malformedSettlementVerifierCalls, 0);
+
   // A verifier can succeed but the canonical re-read before CAS can fail.
   // This must return structured uncertainty and leave PREPARED untouched.
   const recheckDir = path.join(root, "generic-observation-recheck-failure");
