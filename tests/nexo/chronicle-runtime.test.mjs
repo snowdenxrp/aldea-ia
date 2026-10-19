@@ -257,6 +257,36 @@ assert.deepEqual(recoveryCalls, ["reconcile", "outcome"]);
 assert.equal(recovered.dispatchAttempted, false);
 assert.equal(recovered.redispatchAuthorized, false);
 
+const preparedRecoveryUnknown = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission", stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({
+      storeRevision: 5,
+      snapshot: {
+        missions: [chronicleMission()],
+        effectJournal: [{
+          idempotencyKey: "chronicle-mission:step-1", missionId: "chronicle-mission",
+          stepId: "step-1", action: "chronicle_append",
+          target: { content: "hello Nexo" }, status: "prepared"
+        }]
+      }
+    }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => { throw new Error("restart must not prepare again"); },
+    recordExecutionLineage: async () => { throw new Error("restart must not rewrite lineage blindly"); },
+    reconcilePrepared: async () => { throw new Error("settlement may have committed before response loss"); },
+    recordOutcome: async () => { throw new Error("outcome waits for confirmed settlement"); }
+  },
+  adapter: adapter(() => { throw new Error("restart must never dispatch"); })
+});
+assert.equal(preparedRecoveryUnknown.status, "unknown");
+assert.equal(preparedRecoveryUnknown.dispatchAttempted, false);
+assert.equal(preparedRecoveryUnknown.preparedCommitted, true);
+assert.equal(preparedRecoveryUnknown.lineageCommitted, "UNKNOWN");
+assert.equal(preparedRecoveryUnknown.journalSettled, "UNKNOWN");
+assert.equal(preparedRecoveryUnknown.terminalOutcomeRecorded, false);
+assert.equal(preparedRecoveryUnknown.redispatchAuthorized, false);
+
 // A settled append whose terminal outcome response was lost is recovered by outcome replay only.
 let replayCalls = [];
 const settledOwner = {
