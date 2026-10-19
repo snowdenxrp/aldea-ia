@@ -66,7 +66,11 @@ export async function loadNexoContinuityStatus(continuityPath) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const parsed = parseNexoEntrypointArguments(process.argv.slice(2));
-  if (parsed.status !== "dispatch") {
+  if (parsed.status === "status") {
+    const result = await loadNexoContinuityStatus(parsed.continuityPath);
+    console.log(JSON.stringify(result));
+    if (result.status !== "loaded") process.exitCode = 1;
+  } else if (parsed.status !== "dispatch") {
     console.log(JSON.stringify({
       status: parsed.status,
       code: parsed.code,
