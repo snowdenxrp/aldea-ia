@@ -74,3 +74,12 @@ No seleccionar automáticamente el hardware, no instalar dependencias ni generar
 - Siguiente paso técnico acotado: convertir el vector en test automatizado/CI; en paralelo, cerrar el procedimiento independiente del pin y confirmar disponibilidad/compatibilidad del hardware candidato. No conectar el perfil a dispatch ni habilitar efectos.
 - Estado invariable: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
 
+
+## M0 — vector integrado en `npm test`; CI de este SHA pendiente (2026-10-19)
+
+- Test añadido: [root-bootstrap-protocol.test.mjs](../tests/nexo/root-bootstrap-protocol.test.mjs) en el repositorio y conectado al script `npm test` de `package.json`.
+- HEAD de rama verificado: `4c0cec1833842103f21194b1f4a3ebdfe168181d`; comparación de ese SHA contra `ncs-clean-architecture` = `identical`.
+- La misma lógica del vector se ejecutó localmente con Node.js v22.16.0: caso positivo PASS; desafío modificado, firma alterada, clave distinta y firma truncada rechazados. **No afirmar todavía PASS de CI en el SHA nuevo**: falta observar la ejecución completa del workflow.
+- La suite completa anterior sigue siendo PASS sólo para el SHA `846f1ca5ff5b194ecd22e097f303964873184bce`, run [39340435744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340435744). Los cambios posteriores incluyen documentación más el test y su inclusión en `npm test`; la suite del HEAD actual debe confirmarse.
+- Después del CI: mantener como pendiente la provisión independiente del pin y la prueba en hardware real. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
