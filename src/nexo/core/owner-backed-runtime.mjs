@@ -206,6 +206,13 @@ async function executeNexoStepWithContinuityOwnerInternal({
     return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", dispatchAttempted: false };
   }
 
+  // A stored non-planned mission state must not be erased by reconstruction
+  // recomputing an otherwise-planned step. Existing journal recovery returned
+  // above and remains allowed to resolve an outstanding obligation.
+  if (mission.status !== "planned") {
+    return { status: "blocked", code: "NEXO_CANONICAL_RUNTIME_MISSION_NOT_RUNNABLE", dispatchAttempted: false };
+  }
+
   // New dispatch is permitted only for a canonically reconstructed runnable
   // step. Recovery of an existing journal obligation returned above; this gate
   // prevents a caller from bypassing mission state or dependency ordering.
