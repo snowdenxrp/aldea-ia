@@ -1083,3 +1083,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Se amplió el test de proceso de `mission-status` con un store canónico que contiene una obligación `prepared`. Tras reconstrucción, la misión y el paso siguen `blocked` con `NEXO_EFFECT_RECONCILIATION_REQUIRED`; el payload privado no aparece en stdout y los bytes del store permanecen idénticos.
 - CI SUCCESS en SHA `c7ad605f1257904cb3c4ff8eae261243068cfa95`: [39180351432](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351432), [39180351413](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351413), [39180351418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351418).
 - Esto demuestra consulta de continuidad y preservación de incertidumbre, no settlement ni autorización de efectos. M0 INCOMPLETO; runtime default sin cutover; efectos protegidos STOP.
+
+
+## M0 — replay desde un segundo proceso sin duplicar Chronicle (2026-10-19)
+
+- `tests/nexo/entrypoint.test.mjs` ejecuta `chronicle-append` en un proceso, cierra ese proceso y vuelve a invocar el CLI con el mismo mission/step/payload en un segundo proceso. El replay devuelve completed con `dispatchAttempted=false`; el archivo Chronicle y el store de continuidad permanecen byte por byte idénticos.
+- Esto valida la frontera de reinicio del CLI, no solo repetir la función en memoria. CI SUCCESS en SHA `3ed7860a189b6b00d0a5444eb466a4393c4a2c4c`: [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886).
+- M0 sigue INCOMPLETO: prueba de un solo vertical, no pérdida de energía/fsync, autoridad ni runtime general. No cambiar runtime default ni ampliar acciones.
