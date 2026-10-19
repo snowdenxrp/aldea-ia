@@ -1,3 +1,12 @@
+## Latest verified checkpoint — completion guard covers registered effects (2026-10-19)
+
+- Concrete gap: a repair action could be marked completed without any PREPARED/journal row if the caller supplied well-shaped `verified/source` labels. The same principle applies to any action registered in the trusted `effectVerifiers` registry; a missing PREPARED record is not proof of completion.
+- Fix in `src/nexo/core/continuity-owner.mjs`: completed outcomes for known repair actions and registered effect actions are blocked with `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`, except `chronicle_append`, which has its own exact persisted-settlement gate. Existing unresolved PREPARED/observed effects retain precedence and return `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`. Non-mutating `local_analysis` behavior remains unchanged.
+- Regression covers both repair-without-PREPARED and registered `generic_write`-without-PREPARED; both caller-asserted completions block without advancing canonical revision.
+- The first guard was too broad/early and CI caught two contract regressions. The guard was scoped to known/registered effectful actions and moved after the unresolved-effect check. Validated code/test SHA: `f0a2472887e8bf5d46aaff2c904e50dae190345b`.
+- All six focal workflows SUCCESS: bounded admission/restart [39188948325](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948325), STEP 5 [39188948326](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948326), STEP 4 [39188948327](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948327), Chronicle [39188948337](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948337), repair crash cuts [39188948338](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948338), effect/settlement contract [39188948346](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948346).
+- Next: audit the boundary between a registered verifier, its persisted observation, and a future mission-goal decision. Do not enable actions, UI, HTTP, or legacy-runtime cutover. M0 INCOMPLETE; protected effects STOP; Nexo/Lúmina separate.
+
 ## Latest verified checkpoint — repair completion gate (2026-10-19)
 
 - Concrete gap: `recordOutcome(status=completed)` could complete a known repair action when its mission had no `effectJournal` row. The prior unresolved-effect guard only protected existing PREPARED/observed obligations; caller-supplied `verified/source` labels were not independent proof.
