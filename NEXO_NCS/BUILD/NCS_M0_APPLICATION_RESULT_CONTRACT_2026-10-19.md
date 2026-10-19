@@ -91,3 +91,17 @@ Missing boolean state fields are normalized to false only where no write was att
 - Every blocked result explicitly returns `dispatchAttempted=false` and `redispatchAuthorized=false`. Mission-admission uncertainty remains `UNKNOWN` and never dispatches.
 - Validated code/test SHA: `7eaa58f106c7fe696e7674085cc58286a4256f75`. CI SUCCESS: [Chronicle 39187179382](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179382), [continuity/restart 39187179340](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179340), [STEP 4 39187179363](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179363), [STEP 5 39187179346](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187179346), all SUCCESS.
 - Scope: this hardens the public result boundary for the existing Chronicle vertical. It does not add a mutating capability or authorize UI/runtime integration. M0 INCOMPLETO.
+
+
+## Mission admission commit-response crash cut — validated (2026-10-18 local)
+
+- The regression now uses the real canonical continuity file store. A wrapper commits a mission, then throws to simulate response loss after persistence. The application helper returns `unknown / missionAdmissionCommitted=UNKNOWN`, `dispatchAttempted=false`, `redispatchAuthorized=false`; a fresh canonical read reconstructs the mission as planned at revision 1. No effect was dispatched.
+- The first test attempt expected a second direct `recordMission()` call to return `already_recorded`; CI correctly returned `conflict`, because duplicate mission registration is not the recovery API. The test was corrected to assert canonical reconstruction instead; no production behavior was changed to fake duplicate admission.
+- Validated code/test SHA: `274af889dfcfe8457af005f5ee126d012b1b6555`. CI SUCCESS: [Chronicle 39187313873](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187313873), [continuity/restart 39187313731](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187313731), [STEP 4 39187313692](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187313692), [STEP 5 39187313854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187313854), all SUCCESS.
+- This proves the mission-admission response-loss cut and read-only recovery. It does not claim power-loss/fsync durability or authorize dispatch from UNKNOWN. M0 INCOMPLETO.
+
+## Current verified pointer — mission-admission response-loss proof
+
+- Branch HEAD at last documentation update: `0e4baf55de41bcfff249377785809765487ec883`; latest docs updates may advance HEAD further without changing code.
+- Latest code/test SHA with four focal workflows SUCCESS: `274af889dfcfe8457af005f5ee126d012b1b6555`.
+- Next: continue audit of the public application boundary and result contract. No new mutating action, no UI/legacy runtime integration, no `index.html` change, no authority inference. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
