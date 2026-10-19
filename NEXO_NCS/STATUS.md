@@ -1154,3 +1154,11 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 Documento: [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
 
 La matriz de resultados quedó consolidada en un contrato de aplicación: distingue `blocked`, `conflict`, `unknown`, `observed` y `completed`; define campos booleanos/tri-state y prohíbe convertir un commit potencialmente persistido en `false`. El contrato se valida con la matriz de crash cuts y la suite de Chronicle/continuidad. M0 INCOMPLETO; solo Chronicle habilitado.
+
+
+## M0 — superficie pública estrecha de aplicación (2026-10-19)
+
+- Se añadió `src/nexo/application/index.mjs` como entrada pública estable para consumidores. Exporta exactamente tres funciones: `runNexoChronicleAppend`, `loadNexoContinuityStatus`, `loadNexoMissionStatus`.
+- CLI y pruebas consumen ahora esa entrada pública. Una regresión falla si se añade un dispatcher genérico o export adicional sin decisión arquitectónica explícita.
+- CI SUCCESS en SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [Chronicle/entrypoint 39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [semantic validation 39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [outcome/restart 39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
+- Es un seam de aplicación reutilizable, no una app web/Android ni cutover. Solo Chronicle muta. M0 INCOMPLETO.
