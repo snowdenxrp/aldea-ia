@@ -191,7 +191,15 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
     try { assertNexoContinuitySnapshot(candidate); }
     catch (error) { return { status: "failed", code: error?.code ?? "NEXO_CONTINUITY_SNAPSHOT_INVALID" }; }
 
-    const releaseLock = await acquireLock(fsModule, filePath);
+    let releaseLock;
+    try {
+      releaseLock = await acquireLock(fsModule, filePath);
+    } catch (error) {
+      if (error?.code === "ENOENT") {
+        return { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" };
+      }
+      throw error;
+    }
     try {
       let current;
       try { current = await readEnvelope(fsModule, filePath); }
