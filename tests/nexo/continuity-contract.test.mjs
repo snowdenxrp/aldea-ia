@@ -172,6 +172,17 @@ assert.throws(
   error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
   "dependencies must resolve to a step in the same admitted mission"
 );
+
+const sparseDependencies = new Array(1);
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "sparse-dependency-reference",
+    status: "planned",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: sparseDependencies }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "sparse dependency arrays must be rejected as malformed mission data, not traversed as an undefined step"
+);
 for (const invalidGraph of [
   {
     missionId: "self-dependent-step",
