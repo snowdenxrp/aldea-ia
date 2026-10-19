@@ -1,5 +1,17 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — operación genérica rechaza IDs ambiguos con separador (validado 2026-10-19)
+
+- Hueco concreto: `validateOperation()` comprobaba que `idempotencyKey === missionId + ":" + stepId`, pero permitía que `missionId` o `stepId` contuvieran `:`. Así, pares distintos podían producir la misma clave (por ejemplo `a:b + c` y `a + b:c`). `recordPrepared()` ya bloqueaba una segunda identidad conflictiva, por lo que el impacto directo era ambigüedad/colisión y bloqueo, no una duplicación demostrada de efecto.
+- Corrección: validación compartida rechaza cualquier componente con `:` usando el código existente `NEXO_OPERATION_IDENTITY_MISMATCH`; no se inventó formato de clave ni código nuevo. La validación ocurre antes de leer/escribir continuidad.
+- Regresión: prueba ambas variantes, verifica el código de rechazo y confirma que la revisión y PREPARED existente no cambian.
+- SHA final de código: `442963578e2de42e6d67afd6fd85062ccea1a23e`; regresión en `ddfc6f98514ca3222a6e9424835602c40643cbea`. Los seis workflows focales SUCCESS en SHA `442963...`: Chronicle [39194316831](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194316831), bounded admission/restart [39194316813](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194316813), STEP 4 [39194316843](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194316843), STEP 5 [39194316811](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194316811), crash cuts [39194316847](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194316847), effect/settlement [39194316799](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194316799).
+- Un intento intermedio falló porque el rechazo por separador se clasificó inicialmente como contexto inválido en lugar del código de identidad existente. Se movió a la rama específica de identidad y todos los seis workflows pasaron después; no se presenta el intento fallido como verde.
+- Límite: evita ambigüedad del identificador local; no autentica identidad ni autoriza efectos. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** inspeccionar la reconstrucción de misión y la selección de intentos históricos: comprobar si una tentativa con `missionId/stepId` coincidentes pero `action/target` distintos puede reconstruir un paso como `completed`. Añadir una regresión antes de tocar la lógica.
+
+
 ## M0 — evidencia genérica debe existir y no estar vacía (validado 2026-10-19)
 
 - Hueco concreto: `reconcilePrepared()` aceptaba observaciones `applied/not_applied` sin `evidence` y guardaba `evidence: null`; el replay genérico sólo comprobaba que la propiedad existiera. Incluso un objeto vacío no representaba evidencia material.
@@ -37,7 +49,7 @@
 **Siguiente frontera:** seguir dentro de M0 desde la recuperación canónica/reconstrucción del estado persistido, inspeccionando el siguiente límite concreto con sus pruebas existentes. No reabrir la discrepancia de evidencia Chronicle salvo que aparezca una regresión nueva.
 
 
-**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código: `6ab75e1b59758cd33cd0a470c90e45e02f418882`; SHA final con regresiones genéricas: `b3a3f8fbaafb29ba913916ce989fb3a3e7196768`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
+**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código validado: `442963578e2de42e6d67afd6fd85062ccea1a23e`; SHA con regresión de identidad: `ddfc6f98514ca3222a6e9424835602c40643cbea`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
 
 ## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
 
