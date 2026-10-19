@@ -14,13 +14,14 @@ function cloneSnapshot(snapshot) {
 }
 
 function missionRecord(mission) {
-  if (!mission || typeof mission.missionId !== "string" || !mission.missionId.trim() || !Array.isArray(mission.steps)) {
+  if (!mission || typeof mission.missionId !== "string" || !mission.missionId.trim() ||
+      mission.missionId.includes(":") || !Array.isArray(mission.steps)) {
     throw operationError("NEXO_MISSION_CONTEXT_INVALID");
   }
   const stepIds = new Set();
   for (const step of mission.steps) {
     if (!step || typeof step !== "object" || Array.isArray(step) ||
-        typeof step.id !== "string" || !step.id.trim() || stepIds.has(step.id)) {
+        typeof step.id !== "string" || !step.id.trim() || step.id.includes(":") || stepIds.has(step.id)) {
       throw operationError("NEXO_MISSION_CONTEXT_INVALID");
     }
     stepIds.add(step.id);
