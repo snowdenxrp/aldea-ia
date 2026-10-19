@@ -170,7 +170,7 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
     try {
       release = await acquireLock(fsModule, filePath);
     } catch (error) {
-      if (error?.code === "ENOENT") {
+      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" };
       }
       throw error;
