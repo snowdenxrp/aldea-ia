@@ -42,8 +42,8 @@ async function recordChronicleTerminalOutcome({
     return {
       status: "unknown", code: error?.code ?? "NEXO_CHRONICLE_OUTCOME_COMMIT_UNKNOWN",
       dispatchAttempted, preparedCommitted, lineageCommitted,
-      journalSettled: reconciliation?.journalSettled === true,
-      terminalOutcomeRecorded: false, redispatchAuthorized: false,
+      journalSettled: reconciliation?.journalSettled ?? false,
+      terminalOutcomeRecorded: "UNKNOWN", redispatchAuthorized: false,
       adapterResult, lineage, reconciliation
     };
   }
@@ -69,8 +69,8 @@ async function recordChronicleTerminalOutcome({
     return {
       status: "unknown", code: outcome?.code ?? "NEXO_CHRONICLE_OUTCOME_NOT_CONFIRMED",
       dispatchAttempted, preparedCommitted, lineageCommitted,
-      journalSettled: reconciliation?.journalSettled === true,
-      terminalOutcomeRecorded: false, redispatchAuthorized: false,
+      journalSettled: reconciliation?.journalSettled ?? false,
+      terminalOutcomeRecorded: "UNKNOWN", redispatchAuthorized: false,
       adapterResult, lineage, reconciliation, outcome
     };
   }
@@ -218,11 +218,27 @@ async function executeNexoStepWithContinuityOwnerInternal({
       prepared
     };
   }
+  if (prepared?.status === "unknown" || prepared?.preparedCommitted === "UNKNOWN") {
+    return {
+      status: "unknown",
+      code: prepared.code ?? "NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN",
+      dispatchAttempted: false,
+      preparedCommitted: "UNKNOWN",
+      journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false,
+      prepared
+    };
+  }
   if (prepared?.status !== "committed" || prepared.preparedCommitted !== true) {
     return {
       status: "blocked",
       code: prepared?.code ?? "NEXO_PREPARED_COMMIT_NOT_CONFIRMED",
       dispatchAttempted: false,
+      preparedCommitted: false,
+      journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false,
       prepared
     };
   }
@@ -262,7 +278,10 @@ async function executeNexoStepWithContinuityOwnerInternal({
       code: error?.code ?? "NEXO_EXECUTION_LINEAGE_COMMIT_OUTCOME_UNKNOWN",
       dispatchAttempted: true,
       preparedCommitted: true,
+      lineageCommitted: "UNKNOWN",
       journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false,
       adapterResult
     };
   }
@@ -272,7 +291,10 @@ async function executeNexoStepWithContinuityOwnerInternal({
       code: lineage?.code ?? "NEXO_EXECUTION_LINEAGE_COMMIT_NOT_CONFIRMED",
       dispatchAttempted: true,
       preparedCommitted: true,
+      lineageCommitted: lineage?.status === "unknown" ? "UNKNOWN" : false,
       journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false,
       adapterResult,
       lineage
     };
@@ -291,7 +313,7 @@ async function executeNexoStepWithContinuityOwnerInternal({
       dispatchAttempted: true,
       preparedCommitted: true,
       lineageCommitted: true,
-      journalSettled: false,
+      journalSettled: "UNKNOWN",
       terminalOutcomeRecorded: false,
       redispatchAuthorized: false,
       adapterResult,
@@ -313,7 +335,7 @@ async function executeNexoStepWithContinuityOwnerInternal({
     dispatchAttempted: true,
     preparedCommitted: true,
     lineageCommitted: true,
-    journalSettled: false,
+    journalSettled: reconciled?.status === "unknown" ? "UNKNOWN" : false,
     terminalOutcomeRecorded: false,
     redispatchAuthorized: false,
     adapterResult,
@@ -334,9 +356,9 @@ export async function executeNexoStepWithContinuityOwner(args = {}) {
     ...result,
     dispatchAttempted: result?.dispatchAttempted === true,
     preparedCommitted: result?.preparedCommitted ?? false,
-    lineageCommitted: result?.lineageCommitted === true,
-    journalSettled: result?.journalSettled === true,
-    terminalOutcomeRecorded: result?.terminalOutcomeRecorded === true,
+    lineageCommitted: result?.lineageCommitted ?? false,
+    journalSettled: result?.journalSettled ?? false,
+    terminalOutcomeRecorded: result?.terminalOutcomeRecorded ?? false,
     redispatchAuthorized: result?.redispatchAuthorized === true
   };
 }
