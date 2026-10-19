@@ -143,3 +143,14 @@ Current constitutional state remains unchanged: M0 `INCOMPLETO`; `authorization:
 - El SHA `fd87dfdb...` es el SHA de código/pruebas que aprobó `npm test`; los commits de documentación posteriores no son nuevas ejecuciones del test completo.
 
 **Estado global no promovido:** M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima del propietario PENDING. Suite completa PASS no equivale a prueba de autoridad ni a permiso para efectos protegidos.
+
+
+## 10. Siguiente bloque arquitectónico M0 tras el PASS completo
+
+El contrato de resultado terminal y el npm test completo ya están validados en los SHAs indicados en las secciones 8–9. No reabrir ese trabajo sin cambio nuevo de código.
+
+La continuidad existente ya contiene la decisión NEXO_NCS/DECISIONS/NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md: **una llave criptográfica raíz y un dispositivo inicial** para la primera fase. La nota posterior de alcance supera la indecisión anterior sobre el número de raíces, pero no selecciona un modelo físico/protocolo ni demuestra provisión independiente o verificación de autoridad. Se reconciliaron las notas de gate y contrato semántico para que no parezca que la cantidad de raíces sigue abierta.
+
+**Siguiente tarea acotada:** convertir la decisión existente en un contrato de provisión y verificación implementable, reutilizando NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md; especificar fuente de verdad externa al estado que se valida, qué afirmación prueba la llave, cómo se valida el desafío/firmado y qué queda fuera del permiso. No seleccionar hardware por intuición ni crear un root ficticio. Si la provisión independiente no se puede demostrar con la configuración actual, registrar el bloqueo y no conectar la verificación a dispatch.
+
+El estado constitucional sigue: M0 INCOMPLETO; authorization: NOT_EVALUATED; efectos protegidos STOP; raíz implementada/probada PENDING.
