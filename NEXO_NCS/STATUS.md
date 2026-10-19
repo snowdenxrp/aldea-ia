@@ -1,3 +1,14 @@
+## M0 — normalización de ENOENT en fronteras de mutación de ambos almacenes (2026-10-19)
+
+- Hallazgo: la normalización de ruta padre ausente cubría `initialize()`, pero no las operaciones mutables `Continuity.commitIfCurrent()` y `Chronicle.append()`. La adquisición del lock ocurría fuera de una captura y podía dejar escapar el `ENOENT` del sistema operativo.
+- Corrección Continuity: commit `23d9567c90a2997353ae54d6ba6bbd79c8f663a9`; si la adquisición del lock falla por padre ausente, devuelve `failed / NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE` antes de mutar. Otros errores de lock siguen propagándose para no alterar el contrato existente de recuperación de lock obsoleto.
+- Corrección Chronicle: commit `c13c56e7aff03fe4ec2b9f5fe4a585473e1822cb`; ante padre ausente devuelve `blocked / NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE` antes de escribir. Los errores de lock distintos de ENOENT mantienen el comportamiento previo.
+- Regresiones: Continuity `857e6f2951eb524bbbb687ba2c22e2db4642cf43`; Chronicle `26a6ec60f8bdf1201d3a9c90ae45732931f08b96`. Comprueban los resultados estructurados en las operaciones mutables sin depender del código OS.
+- Validación: archivos publicados y lectura posterior pendiente de terminar; ejecución local/CI no observada. No declarar PASS.
+- Límite: solo normaliza el fallo previo a escritura; no convierte dos almacenes en una transacción atómica ni prueba autoridad legítima. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — frontera pública del runtime ante excepciones inesperadas (2026-10-19)
 
 - Hallazgo: `executeNexoStepWithContinuityOwner()` llamaba al runtime interno sin una última frontera de captura. Una excepción inesperada de una comprobación inyectada (por ejemplo, `adapter.supports()`) podía escapar del contrato público.
