@@ -1,3 +1,22 @@
+# Continuidad M0 — última corrección verificada (2026-10-19)
+
+## Estado más reciente observado
+
+- Se detectó que el contrato público de `runNexoChronicleAppend()` ocultaba `authorization: "NOT_EVALUATED"` durante la normalización y en rechazos tempranos.
+- Código: commit `aa8509e75dd7925189d54b2667bcdd2ae27e6647` en `src/nexo/application/chronicle-append.mjs`.
+- Test: commit `dbced55ae0f345a7677b5df4b598631ec0d78ed8` en `tests/nexo/chronicle-runtime.test.mjs`.
+- CI integrado observado: [run 39292627540](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292627540), SHA `dbced55ae0f345a7677b5df4b598631ec0d78ed8`, job `Nexo M0 contracts on one SHA` = SUCCESS; todos los cinco grupos de prueba = SUCCESS. CI Chronicle específico [run 39292627699](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292627699) = SUCCESS.
+- La corrección mejora transparencia del contrato; no evalúa ni crea autoridad. La raíz y composición de bootstrap siguen pendientes; efectos protegidos STOP; M0 global INCOMPLETO.
+
+## Próximo paso sin repetir auditorías
+
+1. Verificar el contenido final de este registro y STATUS tras commits documentales.
+2. Seguir el gate de composición de raíz ya documentado y las investigaciones históricas citadas; no escoger hardware/teléfono/proveedor/persona como raíz universal por intuición.
+3. No abrir otra investigación genérica: formular un contrato de composición revisable a partir de los requisitos ya enumerados, marcar cada dependencia demostrada/no demostrada y no codificar hasta que exista base independiente verificable.
+4. No permitir que `completed`/settlement de Chronicle sea interpretado como autorización. Mantener `NOT_EVALUATED` explícito.
+
+---
+
 ## 10. Corrección de integración previa a CI
 
 En revisión del consumidor se detectó y corrigió antes de validación una discrepancia de API: `reconstructNexoMissionFromSnapshot()` devuelve la misión reconstruida directamente o `null`, no un objeto `{ status, mission }`. Corrección en commit `82f1204ae4e9298163231ab7a323233ad87777b8`.
