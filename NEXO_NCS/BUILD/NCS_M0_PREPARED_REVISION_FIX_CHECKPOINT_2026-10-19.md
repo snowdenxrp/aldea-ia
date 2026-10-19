@@ -10,17 +10,18 @@
    - Commit: `dd1abc69cd867927c2fba949a4677fc7b2e51e99`
    - [Ver diff](https://github.com/snowdenxrp/aldea-ia/commit/dd1abc69cd867927c2fba949a4677fc7b2e51e99)
 
-2. Pruebas: `tests/nexo/chronicle-runtime.test.mjs` incluye ocho respuestas PREPARED malformadas y verifica bloqueo, `dispatchAttempted:false`, `redispatchAuthorized:false` y cero invocaciones del handler.
-   - Commit: `4203330689d6ea4072585d8cc6bca74b383ca461`
+2. Pruebas: `tests/nexo/chronicle-runtime.test.mjs` incluye ocho respuestas PREPARED malformadas y verifica bloqueo, `dispatchAttempted:false`, `redispatchAuthorized:false`, cero llamadas a `adapter.executePrepared` y cero invocaciones del handler.
+   - Commit de regresiones base: `4203330689d6ea4072585d8cc6bca74b383ca461`; endurecimiento de aserciones: `cfd57bf8e8a74570c23908c30599126f9d76748a`
    - [Ver diff](https://github.com/snowdenxrp/aldea-ia/commit/4203330689d6ea4072585d8cc6bca74b383ca461)
 
-3. La matriz de regresión fue actualizada para reflejar que la corrección y los casos están escritos, pero aún no ejecutados.
+3. La matriz de regresión fue actualizada para reflejar el guard implementado y los casos escritos, pero aún no ejecutados. Commit de matriz: `c57867b3131416e7d6bcf564106427a4d40a3a05`.
    - [Matriz](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_PREPARED_CONFIRMATION_REGRESSION_MATRIX_2026-10-19.md)
    - [Hallazgo original](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_PREPARED_REVISION_BOUNDARY_FINDING_2026-10-19.md)
 
 ## Verificación realizada
 
-- Volví a leer el runtime y la prueba desde la rama.
+- Volví a leer el runtime, la prueba y la matriz desde la rama.
+- Revisión estática adicional: las regresiones ahora cuentan por separado las llamadas al adaptador y al handler, de modo que no dependan solo de observar cero efectos.
 - Recuperé los diffs de ambos commits y confirmé que solo cambian el guard de PREPARED y la prueba focal prevista.
 - No ejecuté Node, la prueba focal, la suite Nexo ni CI. Los commits no tienen ejecuciones de workflow asociadas en la consulta disponible. No declarar PASS.
 
