@@ -1,22 +1,25 @@
-## M0 — admisión de misiones: datos persistibles y acción válida (2026-10-19)
+## M0 — misión persistible y runtime con gate de preparación (2026-10-19)
 
-**Punto de entrada vigente:** rama `ncs-clean-architecture`; SHA de código+pruebas verificado `6c06c2330578ffe3f47804b4cab4033b5a5c9160`. El HEAD documental puede avanzar al guardar esta continuidad; comprobar siempre la rama viva.
+**Punto de entrada:** rama `ncs-clean-architecture`; SHA de código+pruebas validado `5b0441df17cdd16d8c9add1b87527201b68d195b`. Consultar el HEAD vivo tras los commits de documentación.
 
 ### Cambios reproducidos e integrados
-1. **Datos no persistibles:** CI demostró que un `target` de tipo función se admitía. `missionRecord()` ahora rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays. Fallos de clonación/proyección se normalizan a `NEXO_MISSION_CONTEXT_INVALID`. No se modificó el helper global `assertContractInput()`.
-2. **Acción mal formada:** CI demostró que `action: 42` podía persistirse como misión `planned`. La admisión exige que `step.action` sea un string no vacío; no se inventó un allowlist de acciones.
-3. **Frontera de escritura:** pruebas del owner verifican que las misiones inválidas devuelven `NEXO_MISSION_CONTEXT_INVALID` y la revisión canónica no cambia; no se ejecuta `commitIfCurrent()`.
+1. **Datos persistibles:** se reprodujo que un `target` función se admitía. La admisión ahora rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays.
+2. **Contrato mínimo de misión:** `step.action` debe ser string no vacío. `mission.status` y `step.status`, cuando están presentes, deben ser strings no vacíos; null/undefined mantienen el default existente. No se impuso un enum ni allowlist de acciones.
+3. **Sin commit inválido:** pruebas owner-level verifican que los datos inválidos devuelven `NEXO_MISSION_CONTEXT_INVALID` y no avanzan la revisión canónica.
+4. **Gate de ejecución:** el runtime owner-backed reconstruye la misión canónica antes de una nueva preparación/dispatch. Requiere misión y paso reconstruidos como `planned` y todas las dependencias como `completed`. Obligaciones existentes en el journal mantienen su ruta de recuperación antes del gate de nuevo despacho.
+5. **Regresiones de runtime:** se reprodujo que un paso sucesor podía llegar a PREPARED con su dependencia aún `planned`; también se cubre un claim `completed` sin evidencia. Ambos se bloquean antes de PREPARED y dispatch.
 
-### Evidencia CI final
-- SHA código+tests: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`.
-- SUCCESS: [bounded admission/restart 39208156912](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156912), [STEP 4 39208156893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156893), [STEP 5 39208156962](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156962), [repair settlement crash cuts 39208156901](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156901).
-- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101).
+### CI final
+- SHA código+tests: `5b0441df17cdd16d8c9add1b87527201b68d195b`.
+- SUCCESS: [bounded admission/runtime 39209446774](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446774), [STEP 4 39209446739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446739), [STEP 5 39209446752](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446752), [crash cuts 39209446733](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209446733).
+- Chronicle native vertical SUCCESS sobre el SHA de gate runtime `e8f169ac43ec2675a9a0057bc979bdf42c4625e8`: [39209200899](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209200899).
+- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101), [#102](https://github.com/snowdenxrp/aldea-ia/pull/102), [#103](https://github.com/snowdenxrp/aldea-ia/pull/103).
 
 ### Siguiente frontera concreta
-Auditar `mission.status` y `step.status` antes de cambiar código: rastrear los valores que emite el productor real, los que consume el runtime owner-backed y los que reconstruye `reconstructNexoMissionFromSnapshot()`. Determinar si tipos incorrectos o estados desconocidos producen una misión persistida estancada o ambigua. No imponer un enum ni ampliar el contrato hasta conocer los valores válidos del flujo y reproducir una discrepancia.
+Auditar el vocabulario real de `mission.status` y `step.status`: rastrear productor, consumidores y reconstrucción; identificar los estados que efectivamente se emiten/consumen y comprobar si un string desconocido puede dejar la misión estancada. No imponer un enum nuevo sin evidencia. La nueva readiness gate ya bloquea el despacho si la misión reconstruida o el paso no están listos.
 
 ### Límites
-Esto demuestra persistibilidad, forma mínima de acción y ausencia de commit para las entradas inválidas cubiertas. No demuestra autenticidad, goal verifier general, autoridad constitucional legítima ni autorización para efectos protegidos. **M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.**
+El gate sólo valida readiness/dependencias para el runtime owner-backed actual de Chronicle. No establece autoridad constitucional legítima ni habilita settlement genérico o efectos protegidos. **M0 INCOMPLETO; efectos protegidos STOP; Nexo y Lúmina separados.**
 ---
 
 ## M0 — rechazo de dependencias sparse (2026-10-19)
