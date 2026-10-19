@@ -67,7 +67,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     stepId: result.stepId ?? null,
     dispatchAttempted: result.dispatchAttempted ?? false,
     terminalOutcomeRecorded: result.terminalOutcomeRecorded ?? false,
-    redispatchAuthorized: result.redispatchAuthorized ?? false
+    redispatchAuthorized: result.redispatchAuthorized ?? false,
+    authorization: result.authorization ?? "NOT_EVALUATED"
   }));
   if (result.status !== "completed") process.exitCode = 1;
 }
