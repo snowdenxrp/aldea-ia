@@ -420,7 +420,7 @@ try {
   // throws before the caller receives the commit result. The API must return
   // structured uncertainty; a reopened owner recovers the persisted record
   // without running the verifier a second time.
-  const ambiguousDir = path.join(root, "generic-observation-response-lost-recovery");
+  const ambiguousDir = path.join(root, "generic-observation-response-lost-cas-recovery");
   await fs.mkdir(ambiguousDir);
   const ambiguousOpened = await openNexoContinuityOwner({
     filePath: path.join(ambiguousDir, "nexo.json"),
