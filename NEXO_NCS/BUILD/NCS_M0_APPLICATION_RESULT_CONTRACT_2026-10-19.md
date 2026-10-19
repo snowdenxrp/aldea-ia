@@ -175,3 +175,12 @@ Replay of `reconciled_observed` now requires allowed status, safe nonnegative `o
 Code SHA `abd9e9d4ed64e96940155712b1dae173ba22c77e`; final code/test SHA `c2c2414edd8ffc138f6cf473f5eae2ee1bbae397`. SUCCESS: [repair crash cuts 39189827272](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827272), [effect/settlement 39189827289](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827289), [STEP 4 39189827310](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827310), [STEP 5 39189827224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827224), [Chronicle 39189720937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189720937).
 
 This is fail-closed recovery integrity, not mission completion or cross-store atomicity. M0 remains incomplete.
+
+
+## M0 — canonical continuity read failures (2026-10-19)
+
+`recordMission()` now catches a failure from `store.loadCurrent()` and returns a structured blocked result with the original code (or `NEXO_CONTINUITY_LOAD_FAILED`), `uncertainty: continuity_read_failed`, expected revision, and `authorization: NOT_EVALUATED`. It does not attempt to build/commit against an unknown snapshot. Regression confirms unchanged canonical revision.
+
+`reconcilePrepared()` has equivalent structured failure handling for its initial read and pre-CAS re-read. The initial-read test confirms the verifier is not called; the pre-CAS re-read test confirms PREPARED remains untouched. Code SHA `b34c09492a36ef354faf566b8a8b1e34cae7dadb` passed all six focal workflows; test SHA `9852ec69da2b1fe685619d765521916eba5a9786` passed its four triggered workflows, including the new admission-read regression. See STATUS and handoff for exact run links.
+
+This handles known read-failure boundaries only. It does not add cross-store atomicity or mission-goal verification. M0 remains incomplete.
