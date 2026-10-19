@@ -273,3 +273,10 @@ CI bounded admission/restart, STEP 4, STEP 5 SUCCESS en SHA de prueba `ac8e4bc88
 `recordPrepared()` ya no confía únicamente en el `status` del plan almacenado. La admisión reconstruye la misión desde el snapshot y requiere que el paso actual esté `planned` también en esa reconstrucción; de lo contrario devuelve `NEXO_PREPARED_STEP_NOT_RUNNABLE` sin commit. Regresión: una claim terminal caller-supplied para una acción mutante bloquea reconstrucción y no puede producir un nuevo PREPARED.
 
 HEAD validado `9d46f1400cef0eb4c74a4c4419edcc2c616a73b9`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195354527, 39195354529, 39195354611, 39195354737). Chronicle native y effect/settlement SUCCESS en fix funcional `615941bf3bc4389c3ce9fd12b0212f3144f9c87a` (runs 39195344263, 39195344261). M0 sigue INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — admisión bloqueada por misión reconstruida no runnable (2026-10-19)
+
+`recordPrepared()` exige que la misión reconstruida esté `planned` y que el paso reconstruido también esté `planned`, además de validar el plan persistido. Una claim terminal no autorizada bloquea el paso; un PREPARED sin resolver bloquea la misión y evita admitir otro paso independiente. El branch de idempotency/existing PREPARED se mantiene antes de los guards y sigue devolviendo UNKNOWN/prepared_existing, nunca permiso para redispatch.
+
+HEAD código+tests `c59a825771af3376a88a9bc212e9967cf1d75f1d`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195662848, 39195662862, 39195662845, 39195662831). Chronicle native y effect/settlement SUCCESS en código `3ebb037f53409df9681f5ed01b6458e915e36a29` (runs 39195543682, 39195543685). M0 INCOMPLETO; efectos protegidos STOP.
