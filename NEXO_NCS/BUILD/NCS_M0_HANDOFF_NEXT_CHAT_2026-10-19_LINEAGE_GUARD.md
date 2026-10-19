@@ -1,4 +1,7 @@
 # NCS — handoff de continuidad para el siguiente chat (M0)
+
+> **Checkpoint de continuidad más reciente (2026-10-19):** leer también [NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md](./NCS_M0_CONTINUITY_CHECKPOINT_2026-10-19_TERMINAL_OUTCOME_BOUNDARY.md). Este documento complementa y corrige el orden del siguiente trabajo: incluye la brecha candidata de revisión en el resultado terminal y aclara que el HEAD del ref debe verificarse directamente; no inferirlo del SHA documental. Mantener M0 INCOMPLETO, `authorization: NOT_EVALUATED`, efectos protegidos STOP y `npm test` completo pendiente.
+
 **Fecha:** 2026-10-19  
 **Repositorio:** `snowdenxrp/aldea-ia`  
 **Rama:** `ncs-clean-architecture`  
