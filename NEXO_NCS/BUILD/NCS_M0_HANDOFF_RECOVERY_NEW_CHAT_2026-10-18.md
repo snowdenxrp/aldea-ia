@@ -559,3 +559,12 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Dos invocaciones concurrentes de la misma operación no producen dos dispatches ni dos entradas Chronicle. Después, un retry explícito recupera `completed` con `dispatchAttempted=false`; continuidad y Chronicle quedan byte-identical durante el replay.
 - CI SUCCESS en SHA `140769ea651ed5cd198fd57f05530679e79f8c5d`: [39180811315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811315), [39180811308](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811308), [39180811234](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811234), [39180811257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811257).
 - No automatic retries, queues, generic action dispatch or causality claims are added. The caller must handle a conflict/blocked concurrent loser and retry explicitly.
+
+
+## Current verified pointer — application layer and concurrency proof
+
+- Branch HEAD: `91569816fc19c56bc8126db4b18fd04976216f8a` (documentation-only).
+- Last code/test SHA: `140769ea651ed5cd198fd57f05530679e79f8c5d`; focused CI SUCCESS: [39180811315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811315), [39180811308](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811308), [39180811234](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811234), [39180811257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811257).
+- Compared SHA `140769ea...` → HEAD: only `STATUS.md`, this handoff and `NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md` changed.
+- Current application boundary: `src/nexo/core/continuity-service.mjs`; `src/nexo/application/chronicle-append.mjs`; `src/nexo/application/continuity-queries.mjs`; thin CLI wrappers under `scripts/`. The import-graph regression ensures no transitive dependency on Lúmina's world/simulation/assistant memory or `src/nexo/runtime.js`.
+- Next gate: audit the public application contract for operation identity, payload binding, concurrent admission, result uncertainty and explicit retry behavior before any new caller (web/mobile or legacy runtime) consumes it. Do not enable a second mutating action, change the default runtime, or infer authority from store contents. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
