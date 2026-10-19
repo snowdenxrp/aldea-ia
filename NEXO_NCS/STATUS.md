@@ -1640,3 +1640,7 @@ Nota: `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_ISOLATION_AUDIT_2026-10-19.md`. `npm run
 
 ### Brecha de cobertura del puente legacy (2026-10-19)
 La auditoría `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_ISOLATION_AUDIT_2026-10-19.md` ahora distingue la evidencia estática del gate `--nexo-repair-once` de una prueba de integración: `tests/nexo/entrypoint.test.mjs` no invoca esa ruta. Esto no demuestra un fallo del gate; significa que falta evidencia de normal-vs-opt-in con estado/directorios temporales aislados. Antes de retirar o rediseñar el puente, añadir esa prueba y obtener CI Node asociado al SHA correcto. Sin cambios de runtime; M0 INCOMPLETO, efectos protegidos STOP.
+
+
+### Migración inicial legacy — frontera confirmada (2026-10-19)
+La auditoría de entrypoints confirma que `src/nexo/core/continuity-service.mjs` solo proyecta `legacyMemory` cuando la tienda Nexo separada no existe; una tienda presente permanece canónica y no se mezcla con la copia legacy. `scripts/assistants.mjs` puede alimentar esa migración inicial desde el estado de simulación. No es doble escritura posterior, pero sí un puente de arranque legacy. No retirarlo sin política y pruebas para migración, bootstrap vacío demostrado y tienda ausente con historia desconocida. Sin cambios de runtime ni pruebas nuevas.
