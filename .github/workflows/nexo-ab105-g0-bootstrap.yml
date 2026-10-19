@@ -1,4 +1,4 @@
-name: NEXO AB105 G0 Kafka Bootstrap
+name: NEXO AB105 G0 Kafka Runtime Execution
 
 on:
   push:
@@ -286,4 +286,4 @@ jobs:
           name: nexo-ab105-g0-bootstrap-evidence
           path: /tmp/nexo-g0-bootstrap-evidence.txt
 
-      # AB105 controlled main-branch execution gate: real G0 runtime harness. No Nexo model implementation.
+      # AB105 controlled runtime execution gate on PR. Temporary harness only; no Nexo model implementation.
