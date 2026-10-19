@@ -82,7 +82,7 @@ async function recordChronicleTerminalOutcome({
   };
 }
 
-export async function executeNexoStepWithContinuityOwner({
+async function executeNexoStepWithContinuityOwnerInternal({
   missionId, stepId, owner, adapter, context={}, precondition, postcondition
 }={}) {
   if (typeof missionId !== "string" || !missionId.trim() ||
@@ -319,5 +319,24 @@ export async function executeNexoStepWithContinuityOwner({
     adapterResult,
     lineage,
     reconciliation: reconciled
+  };
+}
+
+
+/**
+ * Stable public result contract for application callers. Missing flags are
+ * explicit false; PREPARED commit uncertainty remains the distinct string
+ * "UNKNOWN". This normalization reports state only and never authorizes retry.
+ */
+export async function executeNexoStepWithContinuityOwner(args = {}) {
+  const result = await executeNexoStepWithContinuityOwnerInternal(args);
+  return {
+    ...result,
+    dispatchAttempted: result?.dispatchAttempted === true,
+    preparedCommitted: result?.preparedCommitted ?? false,
+    lineageCommitted: result?.lineageCommitted === true,
+    journalSettled: result?.journalSettled === true,
+    terminalOutcomeRecorded: result?.terminalOutcomeRecorded === true,
+    redispatchAuthorized: result?.redispatchAuthorized === true
   };
 }
