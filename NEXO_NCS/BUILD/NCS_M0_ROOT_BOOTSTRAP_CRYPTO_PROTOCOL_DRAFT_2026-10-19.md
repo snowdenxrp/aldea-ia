@@ -105,3 +105,12 @@ Vector generado y verificado con Node.js v22.16.0 `node:crypto`. La clave privad
 
 El vector fue verificado directamente: firma válida = `true`; desafío alterado, firma alterada y clave pública distinta = `false`. La comprobación debe convertirse en test automatizado y ejecutarse en CI antes de congelar el perfil. No usar esta clave de prueba como raíz real ni incorporar una clave privada de prueba al producto.
 
+
+## M0 — vector integrado en `npm test`; CI de este SHA pendiente (2026-10-19)
+
+- Test añadido: [root-bootstrap-protocol.test.mjs](../tests/nexo/root-bootstrap-protocol.test.mjs) en el repositorio y conectado al script `npm test` de `package.json`.
+- HEAD de rama verificado: `4c0cec1833842103f21194b1f4a3ebdfe168181d`; comparación de ese SHA contra `ncs-clean-architecture` = `identical`.
+- La misma lógica del vector se ejecutó localmente con Node.js v22.16.0: caso positivo PASS; desafío modificado, firma alterada, clave distinta y firma truncada rechazados. **No afirmar todavía PASS de CI en el SHA nuevo**: falta observar la ejecución completa del workflow.
+- La suite completa anterior sigue siendo PASS sólo para el SHA `846f1ca5ff5b194ecd22e097f303964873184bce`, run [39340435744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340435744). Los cambios posteriores incluyen documentación más el test y su inclusión en `npm test`; la suite del HEAD actual debe confirmarse.
+- Después del CI: mantener como pendiente la provisión independiente del pin y la prueba en hardware real. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
