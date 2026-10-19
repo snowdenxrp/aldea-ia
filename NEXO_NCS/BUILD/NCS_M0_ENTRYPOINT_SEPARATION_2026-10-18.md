@@ -113,3 +113,8 @@ The initialization flags are opt-in and should only be used when creating genuin
 - Public result flags are normalized; commit uncertainty preserves `"UNKNOWN"` instead of a misleading `false` for PREPARED, lineage, settlement, and terminal outcome when a commit may have persisted before its response was lost.
 - Covered cases include PREPARED unknown, adapter throw, lineage exception, reconciliation exception, outcome response lost, and known CAS conflicts. Raw adapter exception messages are not exposed through the application result.
 - CI SUCCESS on SHA `7f4f80f44912ac93f59b65977f728b95dc6fab2e`: [39181497303](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497303), [39181497305](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497305), [39181497592](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497592), [39181497309](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497309).
+
+
+## Stable result contract
+
+See [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md) for the status meanings, tri-state persistence fields, retry constraints and proof links.
