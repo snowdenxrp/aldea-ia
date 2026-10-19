@@ -494,6 +494,56 @@ try {
   await fs.rm(chronicleOutcomeEvidenceMismatchDir, { recursive: true, force: true });
 }
 
+const chronicleOutcomeExtraEvidenceDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-outcome-extra-evidence-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleOutcomeExtraEvidenceDir, "nexo.json"),
+    legacyMemory: chronicleSettlementMemory()
+  });
+  const outcome = await opened.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-legacy-1",
+      stepId: "step-1",
+      action: "chronicle_append",
+      target: { content: "hello Nexo" },
+      status: "completed",
+      evidence: {
+        verified: true,
+        kind: "nexo-chronicle-persisted-invariant",
+        source: "nexo-chronicle-store",
+        observedRevision: 1,
+        authorityClaim: "root-owner"
+      }
+    }
+  });
+  assert.equal(outcome.status, "blocked",
+    "unbound extra outcome claims must not be persisted as canonical Chronicle completion evidence");
+  assert.equal(outcome.code, "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH");
+  const current = await opened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 0);
+  assert.equal(current.snapshot.attempts.length, 0);
+} finally {
+  await fs.rm(chronicleOutcomeExtraEvidenceDir, { recursive: true, force: true });
+}
+
+const chronicleReconstructionExtraEvidenceDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-reconstruction-extra-evidence-"));
+try {
+  const memory = chronicleSettlementMemory({ withCompletedAttempt: true });
+  memory.nexo.attempts[0].evidence.authorityClaim = "root-owner";
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleReconstructionExtraEvidenceDir, "nexo.json"),
+    legacyMemory: memory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH");
+  assert.equal(reconstructed.mission.steps[0].result, undefined,
+    "reconstruction must not surface unbound extra claims as canonical outcome evidence");
+} finally {
+  await fs.rm(chronicleReconstructionExtraEvidenceDir, { recursive: true, force: true });
+}
+
 const unsupportedCompletionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-unsupported-completion-reconstruction-"));
 try {
   const unsupportedCompletionMemory = structuredClone(legacyMemory);
