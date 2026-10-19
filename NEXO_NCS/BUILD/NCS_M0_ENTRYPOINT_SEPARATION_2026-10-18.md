@@ -40,7 +40,7 @@ The initialization flags are opt-in and should only be used when creating genuin
 
 ## Limits and next gate
 
-- Only `chronicle_append` is enabled by this entrypoint.
+- Only `chronicle_append` is enabled as a mutating action by this entrypoint; `status` is read-only.
 - No protected effects, generic action expansion, runtime-default cutover, or Lúmina initialization is permitted.
 - The next gate is the canonical owner-backed Nexo runtime transition for explicitly supported actions: select a persisted mission/step, commit PREPARED by CAS, dispatch only after confirmed commit, persist lineage, verify durable external state using a trusted operation-specific verifier, then settle and record outcome. Any action lacking its verifier/settlement contract must block before dispatch.
 - M0 remains INCOMPLETE. This CLI seam is not the Nexo browser application and does not complete M0.
