@@ -6,7 +6,7 @@
 
 ## Cambios de código publicados
 
-1. Runtime: `src/nexo/core/owner-backed-runtime.mjs` ahora valida `Number.isSafeInteger(prepared.storeRevision)` y `prepared.storeRevision >= 0` antes de marcar despacho e invocar el adaptador.
+1. Runtime: `src/nexo/core/owner-backed-runtime.mjs` ahora exige que `prepared.storeRevision` sea entero seguro no negativo y exactamente `current.storeRevision + 1`; también valida la revisión actual y bloquea antes de marcar despacho o invocar el adaptador si no existe sucesor seguro.
    - Commit inicial de validación de revisión: `dd1abc69cd867927c2fba949a4677fc7b2e51e99`; contrato de sucesor exacto: `879b9e0791696bafdb081f973ae16827cf8eab04`
    - [Ver diff](https://github.com/snowdenxrp/aldea-ia/commit/dd1abc69cd867927c2fba949a4677fc7b2e51e99)
 
@@ -16,14 +16,14 @@
 
 3. La matriz de regresión fue actualizada para reflejar el guard implementado y los casos escritos, pero aún no ejecutados. Commit de matriz base: `c57867b3131416e7d6bcf564106427a4d40a3a05`; actualización de revisión sucesora: `3f8434c188c09a90056d6e44cbeee0f187c568ec`.
    - [Matriz](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_PREPARED_CONFIRMATION_REGRESSION_MATRIX_2026-10-19.md)
-   - [Hallazgo original](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_PREPARED_REVISION_BOUNDARY_FINDING_2026-10-19.md)
+   - [Hallazgo inicial y corrección registrada](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_PREPARED_REVISION_BOUNDARY_FINDING_2026-10-19.md) (actualizado en commit `d1be3dbe8e805e8fbd847fa272f7f83244655581`)
 
 ## Verificación realizada
 
 - Volví a leer el runtime, la prueba y la matriz desde la rama.
 - Revisión estática adicional: las regresiones cuentan por separado las llamadas al adaptador y al handler. El contrato de `commitIfCurrent` incrementa la revisión exactamente en una unidad; el runtime ahora rechaza revisiones iguales o con saltos, además de ausentes, negativas, fraccionarias o inseguras.
 - Recuperé los diffs de los cambios de runtime, prueba y documentación y confirmé que solo cambian el guard de PREPARED y la prueba focal prevista.
-- No ejecuté Node, la prueba focal, la suite Nexo ni CI. Los commits no tienen ejecuciones de workflow asociadas en la consulta disponible. No declarar PASS.
+- No ejecuté Node, la prueba focal ni la suite Nexo. Intenté obtener un checkout para ejecutar la prueba, pero el entorno no pudo resolver `github.com`; no fue posible correr Node aquí. La consulta disponible no muestra ejecuciones de workflow asociadas a los commits de prueba. No declarar PASS.
 
 ## Siguiente secuencia obligatoria
 
