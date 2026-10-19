@@ -507,3 +507,11 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - La salida no contiene el sentinel del payload; los bytes del store no cambian. Así el CLI no suaviza la incertidumbre ni resuelve automáticamente una obligación posiblemente despachada.
 - CI SUCCESS en SHA `c7ad605f1257904cb3c4ff8eae261243068cfa95`: [39180351432](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351432), [39180351413](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351413), [39180351418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351418).
 - Próxima frontera: no añadir comandos de efecto. Revisar la lectura/recuperación de la entrada independiente como una frontera de operación tras restart; después diseñar una conexión de aplicación que no importe Lúmina ni convierta los resultados de observación en autoridad. Runtime default permanece intacto.
+
+
+### Addendum — replay real del CLI tras cierre de proceso (2026-10-19)
+
+- `tests/nexo/entrypoint.test.mjs` ejecuta Chronicle append y después lanza una segunda invocación del proceso Node con la misma identidad/payload. El segundo proceso recupera el outcome ya persistido y devuelve `completed` con `dispatchAttempted=false`.
+- Verificación fuerte: los bytes del archivo Chronicle y del store de continuidad no cambian en el replay; el sentinel del contenido no aparece en stdout. Esto comprueba idempotencia tras restart del CLI, no solo dentro del mismo proceso.
+- CI SUCCESS en SHA `3ed7860a189b6b00d0a5444eb466a4393c4a2c4c`: [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886).
+- No extrapolar a pérdida de energía/fsync ni a otras acciones. Siguiente frontera: consolidar el contrato de recuperación del vertical y decidir el seam mínimo de aplicación Nexo sin importar Lúmina; no cambiar el runtime default.
