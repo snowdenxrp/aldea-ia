@@ -22,17 +22,16 @@ Cada capa necesita evidencia propia. Una capa posterior no puede inferir ni fabr
 - **Protected effect admission:** aplica la decisión vigente en el límite real anterior al dispatch.
 - **Outcome/reconciliation:** demuestra qué ocurrió con el efecto; no demuestra que se autorizó.
 
-## 3. Estados semánticos mínimos
+## 3. Resultados: reutilizar vocabularios canónicos; no crear un enum agregado
 
-La composición debe producir uno de estos resultados semánticos, sin convertirlos en credenciales por sí mismos:
+Este borrador **no introduce un nuevo vocabulario de estados de runtime**. La semántica ya está repartida entre contratos que tienen propietarios distintos:
 
-- `ESTABLISHED`: composición satisface el contrato y existe evidencia independiente verificable.
-- `UNAVAILABLE`: falta una base requerida o no puede consultarse.
-- `CONFLICT`: evidencia de raíces/autoridades incompatibles sin regla de composición ya aprobada.
-- `STALE_OR_REVOKED`: la evidencia ya no es aplicable o existe revocación efectiva.
-- `UNKNOWN`: evidencia incompleta, contradictoria o no verificable.
+- **Composición bootstrap:** reutilizar `ESTABLISHED / UNKNOWN / INVALID` del `STEP_7_MINIMUM_BOOTSTRAP_COMPOSITION_CONTRACT_2026-10-08.md`, siempre para el claim y alcance exactos. `ESTABLISHED` no equivale a autoridad constitucional ni autoriza una acción.
+- **Pérdida de raíz / raíces incompatibles:** conservar las condiciones históricas `AUTHORITY_UNAVAILABLE` y `AUTHORITY_UNRESOLVED` de la investigación de bootstrap/recuperación. No resolver ramas incompatibles por mayoría, antigüedad, timestamp, orden de llegada ni “última credencial” sin una regla constitucional previa y evidenciada.
+- **Decisión de autorización:** reutilizar los estados ya definidos por AB105.077R/AB105.078R; en particular, no colapsar `STALE` y `REVOKED`. Una solicitud de revocación no demuestra enforcement.
+- **Admisión protegida:** mientras el runtime no demuestre evaluación de autoridad actual en la frontera final, la salida pública sigue siendo `authorization: "NOT_EVALUATED"` y los efectos protegidos permanecen STOP.
 
-Sólo `ESTABLISHED` permite continuar a la evaluación de autoridad actual; **no autoriza por sí mismo ninguna acción**. Los demás estados producen `UNKNOWN/STOP` para efectos protegidos. No se permite resolver conflictos por mayoría, antigüedad, timestamp, orden de llegada ni “última credencial” salvo contrato explícito y evidenciado.
+La evidencia incompleta sigue siendo `UNKNOWN`; una condición requerida refutada puede ser `INVALID` dentro del contrato que la evalúa. Estas palabras no son credenciales, ni el resultado de una capa puede fabricar el de otra.
 
 ## 4. Independencia y anti-recursión
 
@@ -81,4 +80,4 @@ Si cualquier punto queda sin evidencia, la implementación sigue bloqueada. No s
 - Efectos protegidos: **STOP**.
 - M0 global: **INCOMPLETO**.
 
-La siguiente actividad es confrontar este borrador contra las fuentes ya citadas y registrar sólo contradicciones reales. No repetir las auditorías históricas ni implementar un pseudo-root.
+El contraste con los contratos canónicos quedó registrado en `NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md`. La siguiente actividad es cerrar el inventario de hechos reales del despliegue (recuperación externa disponible, operación offline, control de credenciales, garantías de plataforma y frontera de ejecución) antes de comparar familias de reconocimiento. No repetir las auditorías históricas ni implementar un pseudo-root.
