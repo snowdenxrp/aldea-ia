@@ -1,10 +1,12 @@
-## M0 — vector integrado en `npm test`; CI de este SHA pendiente (2026-10-19)
+## M0 — CI del vector de bootstrap confirmado; continuación sin llave (2026-10-19)
 
-- Test añadido: [root-bootstrap-protocol.test.mjs](../tests/nexo/root-bootstrap-protocol.test.mjs) en el repositorio y conectado al script `npm test` de `package.json`.
-- Commit que integró el test y lo conectó a `npm test`: `4c0cec1833842103f21194b1f4a3ebdfe168181d`. Los commits posteriores observados en esta sesión fueron documentales; no se ha observado CI completo para el commit que añadió el test.
-- La misma lógica de verificación del vector se ejecutó localmente con Node.js v22.16.0: caso positivo PASS; desafío modificado, firma alterada, clave distinta y firma truncada rechazados. El test del repositorio está integrado en `npm test`, pero **no hay todavía evidencia observada de CI para el commit que lo añadió**.
-- La suite completa anterior sigue siendo PASS sólo para el SHA `846f1ca5ff5b194ecd22e097f303964873184bce`, run [39340435744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340435744). Los cambios posteriores incluyen documentación más el test y su inclusión en `npm test`; la suite del HEAD actual debe confirmarse.
-- Después del CI: mantener como pendiente la provisión independiente del pin y la prueba en hardware real. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+- **Corrección del checkpoint anterior:** sí existe CI completo observado para el commit que integró `tests/nexo/root-bootstrap-protocol.test.mjs` en `npm test`: [run 39342543741](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543741), SHA exacto `4c0cec1833842103f21194b1f4a3ebdfe168181d`, job `tests`, paso `Run tests` = SUCCESS.
+- Aceptación integrada M0: [run 39342543894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543894), cinco grupos SUCCESS; Chronicle vertical [run 39342543925](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543925) SUCCESS; admisión/continuidad [run 39342543933](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543933) SUCCESS. Todos están asociados al mismo SHA `4c0cec...`.
+- El HEAD observado antes de esta actualización documental era `e795a79ed7faaae6f7218a6bd3f67aacafcb6698`. La comparación GitHub desde `4c0cec...` confirmó 15 commits posteriores con cambios exclusivamente en cinco archivos Markdown; no hubo cambios posteriores de runtime/test. No presentar la ejecución como si probara literalmente el SHA documental HEAD.
+- La prueba automatizada del vector confirma el contrato de codificación y verificación software. No demuestra llave física, provisión independiente del fingerprint, identidad del propietario ni autoridad vigente.
+- **La llave física NO bloquea el resto de M0.** Continuar en paralelo con contratos de continuidad, recuperación, no-redispatch, límites de acciones y matriz de aceptación del store. Sólo la provisión/fingerprint real y la prueba de hardware requieren la llave.
+- Nueva continuidad de carril no dependiente de llave: [NCS_M0_NON_ROOT_CONTINUATION_TRACK_2026-10-19.md](BUILD/NCS_M0_NON_ROOT_CONTINUATION_TRACK_2026-10-19.md). Incluye el resultado CI, revisión del gate de acciones y los límites explícitos del store.
+- Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
 ## M0 — vector criptográfico preliminar verificado (2026-10-19)
 
