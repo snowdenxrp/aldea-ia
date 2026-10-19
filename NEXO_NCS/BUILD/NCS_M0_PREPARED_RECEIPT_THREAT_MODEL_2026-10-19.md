@@ -1,7 +1,7 @@
 # NCS M0 — modelo de amenazas para PREPARED receipt
 
 **Fecha:** 2026-10-19  
-**Estado:** decisión arquitectónica pendiente; no se cambió código.
+**Estado:** decisión de alcance resuelta; no se cambió código.
 
 ## Evidencia
 
@@ -21,7 +21,7 @@ No tratar un callback `verifyReceipt` suministrado por el mismo consumidor como 
 
 Antes de cambiar código, inspeccionar todos los puntos de creación/consumo de `createEffectAdapter()` y decidir cuál de las dos bases de confianza describe el producto actual. Después escribir una prueba negativa que corresponda al límite elegido y ejecutar CI en el SHA exacto.
 
-**Estado global:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; raíz/autoridad PENDING; efectos protegidos STOP; regresión del hallazgo PENDING.
+**Estado global:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; raíz/autoridad PENDING; efectos protegidos STOP; ambigüedad de alcance resuelta documentalmente; no se añade regresión de seguridad a la API de bajo nivel.
 
 ## M0 — decisión de alcance PREPARED receipt (2026-10-19)
 
