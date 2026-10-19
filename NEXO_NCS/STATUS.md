@@ -1090,3 +1090,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - `tests/nexo/entrypoint.test.mjs` ejecuta `chronicle-append` en un proceso, cierra ese proceso y vuelve a invocar el CLI con el mismo mission/step/payload en un segundo proceso. El replay devuelve completed con `dispatchAttempted=false`; el archivo Chronicle y el store de continuidad permanecen byte por byte idénticos.
 - Esto valida la frontera de reinicio del CLI, no solo repetir la función en memoria. CI SUCCESS en SHA `3ed7860a189b6b00d0a5444eb466a4393c4a2c4c`: [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886).
 - M0 sigue INCOMPLETO: prueba de un solo vertical, no pérdida de energía/fsync, autoridad ni runtime general. No cambiar runtime default ni ampliar acciones.
+
+
+## M0 — guard de import graph Nexo-only (2026-10-19)
+
+- `tests/nexo/entrypoint.test.mjs` recorre los imports locales estáticos desde `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`. La prueba falla si cualquier dependencia transitiva importa la memoria de asistentes, el adapter de simulación, `world.js`, `simulation.js`, `simulate.mjs` o el runtime de compatibilidad `src/nexo/runtime.js`.
+- CI SUCCESS en SHA `c9f62e3611a598f0ab29fa1b55d2ac849a67c6c3`: [39180518798](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518798), [39180518686](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518686), [39180518787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180518787).
+- Protege separación arquitectónica estática; no prueba aislamiento de proceso/OS ni cambia runtime default. M0 INCOMPLETO.
