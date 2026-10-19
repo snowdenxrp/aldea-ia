@@ -638,6 +638,33 @@ try {
   assert.equal(initialReadVerifierCalls, 0);
   assert.equal((await initialReadOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
+  // Mission admission also fails closed if its canonical read fails. It must
+  // not leak the storage exception or attempt a commit from an unknown base.
+  const admissionReadDir = path.join(root, "mission-admission-read-failure");
+  await fs.mkdir(admissionReadDir);
+  const admissionReadOpened = await openNexoContinuityOwner({
+    filePath: path.join(admissionReadDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  const admissionReadStore = {
+    loadCurrent: async () => {
+      const error = new Error("simulated mission admission read failure");
+      error.code = "NEXO_MISSION_ADMISSION_READ_FAILED";
+      throw error;
+    },
+    commitIfCurrent: (...args) => admissionReadOpened.store.commitIfCurrent(...args)
+  };
+  const admissionReadOwner = createNexoContinuityOwner({ store: admissionReadStore });
+  const admissionReadResult = await admissionReadOwner.recordMission({
+    expectedRevision: 0,
+    mission: { missionId: "mission-read-failure", steps: [] }
+  });
+  assert.equal(admissionReadResult.status, "blocked");
+  assert.equal(admissionReadResult.code, "NEXO_MISSION_ADMISSION_READ_FAILED");
+  assert.equal(admissionReadResult.uncertainty, "continuity_read_failed");
+  assert.equal(admissionReadResult.storeRevision, 0);
+  assert.equal((await admissionReadOpened.owner.loadCurrent()).storeRevision, 0);
+
   // The verifier registry is snapshotted at owner construction: later
   // caller mutation cannot replace the configured reconciliation function.
   const frozenRegistryDir = path.join(root, "generic-owner-frozen-registry");
