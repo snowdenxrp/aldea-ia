@@ -470,7 +470,7 @@ Siguiente paso: cerrar el inventario global de importadores de `src/nexo/runtime
 
 ## 13. Brecha de pruebas del puente legacy
 
-La revisión de `tests/nexo/entrypoint.test.mjs` confirma que la prueba de grafo/imports cubre los dos entrypoints Nexo independientes y su API, pero no invoca `scripts/assistants.mjs --nexo-repair-once`. El gate de bandera existe en código, aunque falta una prueba de integración específica que demuestre normal-vs-opt-in y aislamiento mediante directorios temporales. Esto es una brecha de cobertura, no evidencia de que el gate falle. Antes de retirar/rediseñar el puente, añadir una prueba mínima con esas propiedades y ejecutar la suite Node con job/commit verificable. No modificar runtime por esta observación estática.
+Corrección tras revisar `tests/nexo/assistants-runtime-cli.test.mjs`: sí existe una prueba de integración que ejecuta `scripts/assistants.mjs` como proceso hijo con directorios temporales, compara modo normal frente a `--nexo-repair-once`, comprueba que el modo normal no despacha y que el modo opt-in persiste/liquida una única obligación; también reabre el owner y comprueba que el replay no reescribe el estado ni duplica el journal. `.github/workflows/nexo-m0-repair-crash-cuts.yml` incluye explícitamente ese test. La brecha de cobertura normal-vs-opt-in indicada antes era falsa por haber inspeccionado solo `entrypoint.test.mjs`; no repetir esta investigación ni añadir un test duplicado. Sigue pendiente comprobar el CI real por SHA antes de afirmar PASS actual. Esto no prueba aislamiento global del repositorio ni autoridad constitucional.
 
 
 ## 14. Frontera de migración inicial
