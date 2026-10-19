@@ -1,3 +1,18 @@
+## M0 — validación actualizada del recibo de resultado terminal (2026-10-19)
+
+- **HEAD de la rama verificado directamente antes de esta actualización documental:** `846f1ca5ff5b194ecd22e097f303964873184bce`. La comparación GitHub de `846f1ca5...` contra `ncs-clean-architecture` devolvió `identical`, cero commits de diferencia.
+- **Suite completa `npm test`: SUCCESS** en ese SHA exacto: [run 39340435744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340435744), job `tests`, pasos `Install` y `Run tests` SUCCESS.
+- La suite incluye los cuatro casos añadidos en `e38556bc78487aae117b1c11085aca1731dfbb2e` para recibos terminales malformados: `committed` sin revisión, revisión sin avanzar, salto de revisión y `already_recorded` con revisión avanzada incorrectamente. El test exige `UNKNOWN`, journal asentado, cero outcome terminal falso y cero redispatch.
+- El contrato del runtime en `src/nexo/core/owner-backed-runtime.mjs` valida que `committed` sea exactamente `expectedRevision + 1` y que `already_recorded` conserve exactamente `expectedRevision`. La revisión ausente, insegura o incoherente no puede convertirse en `completed`.
+- El SHA `846f1ca5...` está 34 commits por delante del test SHA `e38556bc...`; la comparación no muestra cambios de código runtime entre ellos. Las diferencias de ese tramo incluyen documentación y expectativas de tests del adaptador de simulación. El PASS completo del HEAD exacto es la evidencia principal; el run `39337387520` es evidencia focal adicional porque ejecutó explícitamente `node tests/nexo/chronicle-runtime.test.mjs`.
+- **Alcance de la evidencia:** esto verifica contratos de settlement y regresiones, no autoridad constitucional del propietario ni autorización para efectos protegidos.
+
+**Estado invariable:** M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima PENDING.
+
+**Siguiente paso M0:** continuar desde la frontera real de provisión independiente de la llave raíz, sin elegir hardware ni implementar un verificador hasta que exista un procedimiento independiente demostrable. Si no existe, registrar el bloqueo concreto. No volver a M1/STEP 7 ni repetir auditorías cerradas.
+
+---
+
 ## M0 — coherencia misión/pasos/reconstrucción y admisión inicial (2026-10-19)
 
 - **HEAD de código/pruebas con validación focal:** `f0fcf181778a61c8ad094b315289f5f43c1abe8f`.
