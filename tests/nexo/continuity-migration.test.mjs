@@ -1067,3 +1067,24 @@ try {
 } finally {
   await fs.rm(orphanUnknownEffectDir, { recursive: true, force: true });
 }
+
+const orphanSettlementDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-orphan-settlement-"));
+try {
+  const orphanSettlementMemory = structuredClone(legacyMemory);
+  orphanSettlementMemory.nexo.effectJournal = [{
+    ...orphanSettlementMemory.nexo.effectJournal[0],
+    stepId: "missing-step", action: "chronicle_append", status: "settled_observed",
+    settlement: { status: "applied", source: "nexo-chronicle-store", observedRevision: 1,
+      evidence: { content: "hello Nexo" }, observedAt: "2026-10-19T00:00:00.000Z" }
+  }];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(orphanSettlementDir, "nexo.json"), legacyMemory: orphanSettlementMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.status, "blocked",
+    "a Chronicle settlement orphaned from its step must not leave the mission runnable");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_IDENTITY_UNKNOWN");
+} finally {
+  await fs.rm(orphanSettlementDir, { recursive: true, force: true });
+}
