@@ -276,7 +276,10 @@ async function executeNexoStepWithContinuityOwnerInternal({
     };
   }
   if (prepared?.status !== "committed" || prepared.preparedCommitted !== true ||
-      !Number.isSafeInteger(prepared.storeRevision) || prepared.storeRevision < 0) {
+      !Number.isSafeInteger(prepared.storeRevision) || prepared.storeRevision < 0 ||
+      !Number.isSafeInteger(current.storeRevision) || current.storeRevision < 0 ||
+      current.storeRevision >= Number.MAX_SAFE_INTEGER ||
+      prepared.storeRevision !== current.storeRevision + 1) {
     return {
       status: "blocked",
       code: prepared?.code ?? "NEXO_PREPARED_COMMIT_NOT_CONFIRMED",
