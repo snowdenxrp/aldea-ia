@@ -572,6 +572,9 @@ try {
     realContinuity.snapshot.effectJournal[0].settlement.observedAt
   );
   assert.equal(realContinuity.snapshot.attempts[0].status, "completed");
+  assert.deepEqual(Object.keys(realContinuity.snapshot.attempts[0].evidence).sort(),
+    ["kind", "observedRevision", "source", "verified"],
+    "the canonical Chronicle outcome evidence shape must not expose unbound extra claims");
   const reconstructedChronicle = reconstructNexoMissionFromSnapshot(realContinuity.snapshot, "chronicle-real");
   assert.equal(reconstructedChronicle.steps[0].status, "completed",
     "a settled Chronicle append with a recorded outcome must not be downgraded as an observed repair");
