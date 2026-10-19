@@ -82,3 +82,21 @@ Los siguientes asuntos no se deben ocultar ni declarar resueltos por estas prueb
 - Fix: `82f1204ae4e9298163231ab7a323233ad87777b8`.
 - Reejecución por push: [run 39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), mismo workflow, mismo test, SHA del fix exacto, SUCCESS. El job y el paso de regresión quedaron completados con conclusión SUCCESS.
 - La secuencia fallo → corrección → éxito es evidencia trazable; no borrar ni reetiquetar el primer fallo. Los commits documentales posteriores no cambian el SHA probado.
+
+
+## Matriz inicial de evidencia por criterio (actualizada 2026-10-19)
+
+| Criterio | Evidencia observada | Evaluación precisa |
+|---|---|---|
+| AC1 — consulta canónica / solo lectura / no fuga | [mission-status run 39265121361](https://github.com/snowdenxrp/aldea-ia/actions/runs/39265121361), SHA `82f1204...`; y [Chronicle native run 39291153543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39291153543), SHA `7f83195657df829d993226cf909c8f76f655d23b` | **PASS focal**. El run actual de Chronicle ejecutó y pasó la regresión completa de entrypoint después del fix. |
+| AC2 — admisión persistible | [bounded admission run 39210288131](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210288131), SHA `d4544e...`; también [39197992970](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992970), SHA `3683e470...` | **PASS histórico** en los SHA indicados; no afirmar ejecución en el SHA de cierre actual. |
+| AC3 — gate fail-closed | [bounded admission run 39210288131](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210288131), SHA `d4544e...`; [STEP 4 run 39264921967](https://github.com/snowdenxrp/aldea-ia/actions/runs/39264921967) y [STEP 5 run 39264921710](https://github.com/snowdenxrp/aldea-ia/actions/runs/39264921710), SHA `d1396cd...` | **PASS histórico** en pruebas de gate/admisión; no demuestra raíz de autoridad legítima. |
+| AC4 — journal / settlement / replay | [Chronicle native run 39291153543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39291153543), SHA `7f831956...`, pasó store, runtime y entrypoint; además [run 39210287994](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210287994), SHA `d4544e...` | **PASS focal** para la vertical Chronicle probada. No prueba procedencia criptográfica ni durabilidad de hardware. |
+| AC5 — crash cuts / recuperación | [crash cuts run 39210287996](https://github.com/snowdenxrp/aldea-ia/actions/runs/39210287996), SHA `d4544e...`; [run 39209200872](https://github.com/snowdenxrp/aldea-ia/actions/runs/39209200872), SHA `e8f169ac...` | **PASS histórico** para los SHAs indicados. Falta un run del conjunto crash-cut en el SHA de cierre. |
+| AC6 — entrypoints estrechos / separación auditada | [Chronicle native run 39291153543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39291153543), SHA `7f831956...` | **PASS focal**: job SUCCESS y los tres pasos de pruebas SUCCESS, incluyendo `tests/nexo/entrypoint.test.mjs`. El alcance es el grafo auditado, no todo el repositorio. |
+
+### Lectura de la matriz
+
+La corrección del query no sólo pasó el workflow específico: el workflow Chronicle también se ejecutó en el SHA posterior `7f83195657df829d993226cf909c8f76f655d23b` y pasó store, runtime y entrypoint. Se añadió `src/nexo/application/continuity-queries.mjs` y `src/nexo/application/index.mjs` a los paths de `.github/workflows/nexo-m0-chronicle.yml` porque la regresión de entrypoint consume esos módulos; así futuras modificaciones de la consulta no dejan obsoleto el test de integración.
+
+**Cierre global aún bloqueado:** AC2, AC3 y AC5 sólo tienen PASS históricos en la matriz; se necesita una ejecución integrada de los criterios obligatorios sobre un SHA de cierre, o una política de evidencia explícita que permita fijar cada criterio a su último SHA relevante sin afirmar que es el mismo build. No mezclar ambos modelos.
