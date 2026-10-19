@@ -2,7 +2,7 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-HEAD de rama actual: `b171cf23c5a9b287e10f72d14b054048f7c21034` (incluye documentación)
+HEAD de rama antes de este handoff: `b171cf23c5a9b287e10f72d14b054048f7c21034`; consultar GitHub al retomar para el HEAD documental exacto.
 Último SHA código+pruebas validado por CI: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`
 Último fix funcional incluido: `360b0dafbebc700477bc30879ef4175da81c904b`
 
