@@ -163,18 +163,29 @@ async function executeNexoStepWithContinuityOwnerInternal({
         try {
           recovered = await owner.reconcilePrepared({ expectedRevision: current.storeRevision, operation });
         } catch (error) {
-          return { status: "unknown", code: error?.code ?? "NEXO_CHRONICLE_RECOVERY_UNKNOWN", dispatchAttempted: false, preparedCommitted: true, redispatchAuthorized: false };
+          return {
+            status: "unknown",
+            code: error?.code ?? "NEXO_CHRONICLE_RECOVERY_UNKNOWN",
+            dispatchAttempted: false,
+            preparedCommitted: true,
+            lineageCommitted: "UNKNOWN",
+            journalSettled: "UNKNOWN",
+            terminalOutcomeRecorded: false,
+            redispatchAuthorized: false
+          };
         }
         if (recovered?.status === "observed" && recovered.observation === "applied" && recovered.journalSettled === true) {
           return recordChronicleTerminalOutcome({
             owner, operation, expectedRevision: recovered.storeRevision,
-            dispatchAttempted: false, preparedCommitted: true, lineageCommitted: false,
+            dispatchAttempted: false, preparedCommitted: true, lineageCommitted: "UNKNOWN",
             reconciliation: recovered
           });
         }
         return {
           status: "unknown", code: recovered?.code ?? "NEXO_CHRONICLE_RECOVERY_UNRESOLVED",
-          dispatchAttempted: false, preparedCommitted: true, journalSettled: false,
+          dispatchAttempted: false, preparedCommitted: true,
+          lineageCommitted: "UNKNOWN",
+          journalSettled: recovered?.status === "unknown" ? "UNKNOWN" : false,
           terminalOutcomeRecorded: false, redispatchAuthorized: false, reconciliation: recovered
         };
       }
