@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `376f2d984eeb969d25c2c797a40037a72a6a5c6b` (2026-10-19)
+Latest validated code/test checkpoint: `467cea28706a54b2f30e320485c1d7b3f57e2692` (2026-10-19)
 
 ## Scope
 
@@ -287,3 +287,8 @@ HEAD código+tests `c59a825771af3376a88a9bc212e9967cf1d75f1d`: bounded admission
 La prueba de continuidad reabre el owner después de confirmar PREPARED y repite la misma identidad. El resultado es `prepared_existing / NEXO_EFFECT_OUTCOME_UNKNOWN`, sin nueva escritura, sin cambio de revisión y con una sola entrada `prepared` persistida. Esto valida replay de la obligación, no despacho ni causalidad del efecto.
 
 Test SHA `376f2d984eeb969d25c2c797a40037a72a6a5c6b`; bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39195866238, 39195866236, 39195866226, 39195866266). La auditoría del camino genérico `reconcilePrepared()` confirmó que `reconciled_observed` es observación no-terminal y `recordOutcome()` sigue bloqueando outcomes mientras esa obligación no tenga contrato terminal específico. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — Chronicle outcome reconstruction after response loss
+
+La prueba de runtime simula pérdida de respuesta después del commit terminal, reabre el owner y comprueba reconstrucción: settlement válido + attempt completed producen paso `completed`; la misión completa permanece `awaiting_verification` y el runtime recupera sin un segundo dispatch. SHA de test `467cea28706a54b2f30e320485c1d7b3f57e2692`; Chronicle native, bounded admission, STEP 4 y STEP 5 SUCCESS (runs 39196004121, 39196004116, 39196004098, 39196004164). M0 INCOMPLETO; efectos protegidos STOP.
