@@ -471,3 +471,8 @@ Siguiente paso: cerrar el inventario global de importadores de `src/nexo/runtime
 ## 13. Brecha de pruebas del puente legacy
 
 La revisión de `tests/nexo/entrypoint.test.mjs` confirma que la prueba de grafo/imports cubre los dos entrypoints Nexo independientes y su API, pero no invoca `scripts/assistants.mjs --nexo-repair-once`. El gate de bandera existe en código, aunque falta una prueba de integración específica que demuestre normal-vs-opt-in y aislamiento mediante directorios temporales. Esto es una brecha de cobertura, no evidencia de que el gate falle. Antes de retirar/rediseñar el puente, añadir una prueba mínima con esas propiedades y ejecutar la suite Node con job/commit verificable. No modificar runtime por esta observación estática.
+
+
+## 14. Frontera de migración inicial
+
+`src/nexo/core/continuity-service.mjs` consulta primero la tienda independiente; solo si no existe puede importar `legacyMemory`. Una tienda existente es canónica y no se mezcla con la copia legacy. Si no hay tienda ni memoria y el caller no demuestra bootstrap vacío, se bloquea como estado inicial desconocido. En `scripts/assistants.mjs`, la memoria legacy procede del estado de simulación: es un puente de migración inicial en la ruta legacy, no doble escritura posterior. No retirar sin política de recuperación y pruebas para migración, bootstrap vacío y tienda ausente con historia previa desconocida. No hubo cambios de runtime ni pruebas ejecutadas.
