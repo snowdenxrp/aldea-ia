@@ -1,21 +1,26 @@
-## M0 — admisión de misión exige datos persistibles y falla antes de CAS (2026-10-19)
+## M0 — persistibilidad y forma semántica mínima de acción en admisión (2026-10-19)
 
-**Punto de entrada vigente:** rama `ncs-clean-architecture`. SHA de código+pruebas verificado tras integrar la corrección y la regresión de owner: `661a9594f6454ff6e3877db5218f523cbffe793c`. La corrección funcional quedó integrada en `eea375d9feddcfd4c074fc7a039d19470e890daa`; `661a9594...` añade la prueba del owner que confirma que no cambia la revisión canónica. Los commits de documentación posteriores sólo actualizarán continuidad: al retomar, comprobar el HEAD vivo.
+**Punto de entrada vigente:** rama `ncs-clean-architecture`. SHA de código+pruebas validado: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`. Corrección de datos persistibles integrada en `eea375d9feddcfd4c074fc7a039d19470e890daa`; validación de `step.action` y regresiones finales integradas en `6c06c233...`. Verificar el HEAD vivo al retomar porque los commits documentales lo moverán.
 
-**Hallazgo reproducido:** `recordNexoMissionInSnapshot()` admitía un `target` con valor función. El primer CI falló con `Missing expected exception` en la regresión nueva (run [39207382906](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207382906)); no fue una inferencia estática.
+### Cambios reproducidos e integrados
 
-**Corrección integrada:** `src/nexo/core/continuity-operations.mjs` valida el registro de misión ya proyectado como datos persistibles antes de devolverlo. Rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays; normaliza fallos de clonación/proyección a `NEXO_MISSION_CONTEXT_INVALID`. No se amplió el helper global `assertContractInput()`. No se cambiaron permisos, autoridad, dispatch, estados de efectos ni el límite Nexo/Lúmina.
+1. **Datos no persistibles:** la regresión demostró que un `target` función se admitía. `missionRecord()` valida el registro proyectado y rechaza funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays. Los fallos de clonación/proyección se normalizan a `NEXO_MISSION_CONTEXT_INVALID`. No se amplió `assertContractInput()` global.
+2. **Acción con tipo incorrecto:** una segunda regresión demostró que `action: 42` podía quedar persistida en una misión `planned`. `missionRecord()` ahora exige que cada `step.action` sea string no vacío; no se inventó un allowlist de acciones.
+3. **Límite de escritura:** las pruebas del owner confirman que misión inválida devuelve `NEXO_MISSION_CONTEXT_INVALID` y la revisión canónica no avanza. La admisión se detiene antes de `commitIfCurrent()`.
 
-**Pruebas y evidencia:**
-- SHA final código+tests: `661a9594f6454ff6e3877db5218f523cbffe793c`.
-- SUCCESS final: [bounded admission/restart 39207856224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856224), [STEP 4 39207856228](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856228), [STEP 5 39207856158](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856158).
-- Crash cuts SUCCESS sobre el SHA funcional `eea375d9feddcfd4c074fc7a039d19470e890daa`: [39207676997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207676997).
-- La regresión del owner en `tests/nexo/continuity-contract.test.mjs` confirma que una misión inválida devuelve `NEXO_MISSION_CONTEXT_INVALID` y la revisión del store permanece en 1; por tanto no se alcanza el commit canónico. También pasó en su PR [#100](https://github.com/snowdenxrp/aldea-ia/pull/100).
-- Corrección funcional y pruebas de tipos no persistibles integradas mediante [PR #99](https://github.com/snowdenxrp/aldea-ia/pull/99).
+### Evidencia CI
 
-**Siguiente frontera concreta:** auditar la validez semántica de los campos de paso que son JSON válidos pero pueden ser operacionalmente inválidos —en particular `action` y su relación con los contratos de operación existentes— antes de permitir que una misión se comprometa. Leer consumidores y pruebas existentes primero; reproducir una discrepancia real antes de cambiar el contrato. No inventar un catálogo de acciones ni ampliar el helper global sin evidencia.
+- SHA final código+tests: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`.
+- SUCCESS: [bounded admission/restart 39208156912](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156912), [STEP 4 39208156893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156893), [STEP 5 39208156962](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156962), [repair settlement crash cuts 39208156901](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156901).
+- Las reproducciones red/green están registradas en [PR #99](https://github.com/snowdenxrp/aldea-ia/pull/99), [PR #100](https://github.com/snowdenxrp/aldea-ia/pull/100) y [PR #101](https://github.com/snowdenxrp/aldea-ia/pull/101), todos integrados.
 
-**Límites:** este cambio prueba forma persistible y bloqueo antes de CAS para la regresión cubierta; no prueba autenticidad de datos, verificación general de objetivos, autoridad constitucional legítima ni autorización para efectos protegidos. M0 sigue **INCOMPLETO**; efectos protegidos **STOP**; Nexo permanece separado de Lúmina.
+### Siguiente frontera concreta
+
+Auditar el contrato de `mission.status` y `step.status`: rastrear valores emitidos por el productor de misiones, consumidores de ejecución y reconstrucción. Determinar si valores de tipo incorrecto o estados desconocidos pueden quedar persistidos como planes estancados o ambiguos. Primero usar las pruebas y productores existentes; no imponer un enum nuevo hasta demostrar qué valores son válidos en el flujo actual.
+
+### Límites
+
+Esto valida datos persistibles, el tipo mínimo de acción y ausencia de commit para las entradas inválidas cubiertas. No demuestra autenticidad, goal verifier general, autoridad constitucional legítima ni permiso para efectos protegidos. **M0 INCOMPLETO; efectos protegidos STOP; Nexo y Lúmina separados.**
 ---
 
 ## M0 — rechazo de dependencias sparse (2026-10-19)
