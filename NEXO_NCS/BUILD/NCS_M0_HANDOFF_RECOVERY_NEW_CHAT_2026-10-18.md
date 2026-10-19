@@ -499,3 +499,11 @@ npm run nexo -- mission-status --continuity ./private/nexo-continuity.json --mis
 ```
 
 Esto permite consultar la continuidad reconstruida, pero no significa que toda misión esté completada ni que un efecto observado pruebe causalidad. M0 INCOMPLETO; solo `chronicle_append` muta desde el CLI; runtime default sin cutover; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+### Addendum — prueba de PREPARED a través del CLI (2026-10-19)
+
+- `tests/nexo/entrypoint.test.mjs` ahora prepara un store real con una obligación `prepared` y ejecuta el proceso `mission-status`. El resultado debe reconstruir misión/paso como `blocked`, con `NEXO_EFFECT_RECONCILIATION_REQUIRED`.
+- La salida no contiene el sentinel del payload; los bytes del store no cambian. Así el CLI no suaviza la incertidumbre ni resuelve automáticamente una obligación posiblemente despachada.
+- CI SUCCESS en SHA `c7ad605f1257904cb3c4ff8eae261243068cfa95`: [39180351432](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351432), [39180351413](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351413), [39180351418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351418).
+- Próxima frontera: no añadir comandos de efecto. Revisar la lectura/recuperación de la entrada independiente como una frontera de operación tras restart; después diseñar una conexión de aplicación que no importe Lúmina ni convierta los resultados de observación en autoridad. Runtime default permanece intacto.
