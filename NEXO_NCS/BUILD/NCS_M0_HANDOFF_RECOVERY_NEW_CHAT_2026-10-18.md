@@ -465,7 +465,7 @@ Estado: **M0 INCOMPLETO**. Chronicle sigue opt-in. Runtime default sin cutover. 
 ## Current continuity pointer (verified after latest documentation commit)
 
 - Branch: `ncs-clean-architecture`.
-- Current HEAD: `a408a0498d4519f7220bdb022cf8088caca47782` (documentation-only commit).
+- HEAD verificado inmediatamente antes de este addendum: `a408a0498d4519f7220bdb022cf8088caca47782`; este addendum añade otro commit documental. En el siguiente chat, volver a leer el ref de la rama antes de escribir. No asumir que un SHA documental previo sigue siendo HEAD.
 - Last code/test SHA with relevant focused CI green: `64e175a0c641357c40922bbeb6a74cd8eb63bdf0`. Comparing it to HEAD shows only these three documentation files changed: `STATUS.md`, this handoff, and `NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md`.
 - The last relevant code gates are green: mission admission/continuity [39179591854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591854), outcome/restart [39179591845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591845), semantic validation [39179591868](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591868), plus Chronicle/entrypoint [39179449609](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179449609).
 - Next work must not invent a new action to fill the allowlist. Choose only from an already justified Nexo-native requirement, then define its trusted observation + settlement + outcome contract and crash/restart tests before enabling dispatch. Until such a concrete action is selected and proven, `chronicle_append` remains the sole enabled action.
