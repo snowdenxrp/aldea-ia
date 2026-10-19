@@ -86,3 +86,60 @@ El contraste con los contratos canónicos quedó registrado en `NCS_M0_DEPLOYMEN
 ## Addendum de continuidad — decisión de alcance posterior (2026-10-19)
 
 La decisión aceptada NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md cierra la pregunta de alcance sobre cantidad de raíces para la primera fase: una llave raíz y un dispositivo inicial. No cierra las preguntas de implementación ni aporta evidencia de autoridad legítima. La frase anterior mecanismo concreto NO SELECCIONA se interpreta ahora como mecanismo/protocolo físico de provisión y verificación aún no seleccionado, no como que el alcance de cantidad de raíces siga abierto.
+
+
+## 9. Protocolo mínimo de raíz única — requisitos de diseño, no implementación
+
+Esta sección concreta las obligaciones derivadas de la decisión de una sola llave raíz y un dispositivo de ejecución. **No selecciona hardware, no inventa un proveedor de bootstrap y no cambia el estado de runtime.**
+
+### 9.1 Provisión de la clave pública confiable
+
+- La clave pública/fingerprint que Nexo acepta debe quedar establecida mediante un procedimiento verificable **independiente del store de continuidad que después se valida**. Un snapshot, un archivo restaurado, una cuenta del proveedor o un campo del caller no pueden convertirse en fuente de confianza por sí mismos.
+- La clave privada permanece bajo control del mecanismo de firma; no se copia al store de Nexo, al contexto del modelo ni a los argumentos del runtime.
+- La provisión debe registrar qué fuente se usó, qué fingerprint se comparó, quién/qué lo verificó y cuál es el alcance del claim. El registro de la comparación es evidencia auditable, no sustituye la independencia de la fuente.
+- Si no se puede demostrar el canal de provisión independiente o la integridad del pin público instalado, la composición es `UNKNOWN`; no se acepta el primer valor que aparezca en disco como “bootstrap”.
+- **Bloqueo actual:** el repositorio no demuestra todavía ese canal de provisión ni el pin de una clave real. Por ello no existe base para implementar un verificador que pueda producir `ESTABLISHED` en despliegue.
+
+### 9.2 Prueba de posesión al arranque
+
+Cuando exista una fuente de provisión aceptada, el desafío de arranque debe:
+
+1. Generar un desafío impredecible nuevo mediante el generador criptográfico del entorno, no aceptar el nonce elegido por el caller.
+2. Firmar una codificación canónica y separada por dominio que identifique como mínimo el protocolo/propósito de bootstrap y el desafío. No usar una firma genérica reutilizable entre protocolos o acciones.
+3. Verificar la firma con la clave pública previamente provisionada; rechazar entradas malformadas, firmas inválidas y respuestas que no correspondan al desafío actual.
+4. No usar timestamps aislados como sustituto de frescura, ni reutilizar una respuesta previa para un desafío nuevo.
+5. Tratar fallo de acceso a la clave, configuración ambigua, algoritmo incompatible o falta de evidencia como `UNKNOWN`; una prueba criptográfica refutada es `INVALID` dentro del contrato de bootstrap.
+
+La prueba sólo demuestra control de la clave privada correspondiente al pin provisionado para ese desafío. No demuestra que la persona que la controla sea el propietario legítimo si la provisión inicial fue fraudulenta, ni que el programa/OS/store estén íntegros, ni que una acción concreta esté autorizada.
+
+### 9.3 De la prueba a la admisión protegida
+
+La cadena no puede acortarse:
+
+`ROOT COMPOSITION` → `CURRENT AUTHORITY` → `AUTHORIZATION DECISION` → `PROTECTED EFFECT ADMISSION` → `EFFECT OUTCOME / RECONCILIATION`
+
+- La posesión de la llave no otorga permisos ilimitados.
+- Antes de cada efecto protegido se evalúan principal, acción, recurso, alcance y contexto usando los contratos de autorización existentes.
+- La decisión debe seguir vigente en el último límite antes del dispatch. Una prueba de arranque anterior no demuestra por sí sola frescura ni enforcement de revocación.
+- No existe aún una fuente implementada que demuestre el estado vigente/no revocado de la autoridad. Mientras esa fuente y el fencing de la frontera no estén definidos y probados, la autorización sigue `NOT_EVALUATED` y el dispatch protegido permanece `STOP`.
+- Si una operación pudo producir un efecto y su resultado es ambiguo, se mantiene `UNKNOWN`; no se repite automáticamente para “arreglar” la continuidad.
+
+### 9.4 Alcance explícito de la primera fase
+
+- Una llave raíz y un dispositivo de ejecución.
+- Sin recuperación automática tras pérdida irrecuperable de la llave, sin autoridad multi-dispositivo, sin quórum y sin sucesión en esta fase.
+- La ausencia de recuperación significa `AUTHORITY_UNAVAILABLE` cuando no existe una prueba válida; no autoriza restaurar una raíz desde snapshots.
+- La rotación/revocación de la llave raíz no puede fingirse como resuelta por la propia llave revocada. Hasta que exista un procedimiento independiente y verificable, los cambios de raíz y cualquier autoridad cuyo estado no pueda probarse permanecen bloqueados.
+
+### 9.5 Puerta para código
+
+No escribir ni conectar un verificador hasta disponer de evidencia concreta para:
+
+- fuente/canal de provisión independiente y método para validar el fingerprint;
+- algoritmo/codificación exactos y un vector de firma/verificación reproducible;
+- generación de desafío fresco y rechazo de replay;
+- comportamiento frente a clave ausente, pin alterado, firma inválida, estado restaurado/rollback y autoridad no verificable;
+- prueba de que la decisión vigente se aplica en el límite real anterior al efecto, no sólo en un helper previo;
+- CI que ejecute esos casos en un SHA exacto.
+
+Si el primer requisito no se puede cumplir con el entorno disponible, el resultado de diseño es un bloqueo explícito, no un root de software autoautenticado ni una simulación de `AUTHORIZED`.
