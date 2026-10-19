@@ -1863,3 +1863,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Commit: [150eac0209a3fa40c4ba9a37f790a3fffaa612ec](https://github.com/snowdenxrp/aldea-ia/commit/150eac0209a3fa40c4ba9a37f790a3fffaa612ec).
 - La regresión ahora exige el código exacto `NEXO_CHRONICLE_INITIALIZE_OUTCOME_UNKNOWN` además de `blocked`, sin dispatch, sin redispatch y sin misión admitida. Esto evita que un fallo distinto o una clasificación demasiado genérica satisfaga accidentalmente el test.
 - La comprobación está publicada y el archivo fue releído. **Ejecución/CI de este SHA: PENDING**; no se declara PASS.
+
+
+## M0 — normalización de fallo al adquirir lock de Chronicle (2026-10-19)
+
+- **Causa raíz encontrada al endurecer la prueba de bootstrap parcial:** cuando la ruta del directorio padre de Chronicle no existe, `acquireLock()` falla antes de entrar en el bloque protegido de `initialize()`. El error de sistema `ENOENT` se propagaba hasta el resultado público. La inicialización no había escrito Chronicle, pero el contrato de aplicación exponía un código OS genérico.
+- **Corrección:** [`chronicle-store.mjs`](https://github.com/snowdenxrp/aldea-ia/commit/792c2f4f5252071cb1ae8a033efaa1556e7588e6) normaliza `ENOENT` como `NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE` y clasifica otros fallos de adquisición de lock como bloqueados, conservando códigos explícitos de recuperación cuando existan.
+- **Regresión:** [`entrypoint.test.mjs`](https://github.com/snowdenxrp/aldea-ia/commit/cab6b2e2f030a99db153f289874cda3420856e11) ahora exige el código estructurado exacto, además de ausencia de dispatch/admisión y recuperación por reintento.
+- **Límite:** esto no elimina la inicialización parcial de dos archivos; hace explícito y testeable el fallo de adquisición de lock. No se ha observado ejecución local ni CI para estos commits. **PENDING; no PASS.**
+- **Estado global:** M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
