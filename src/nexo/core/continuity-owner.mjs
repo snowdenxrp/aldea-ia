@@ -146,6 +146,13 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     );
     // Chronicle's exact persisted append invariant is itself the goal for this
     // one action. Other actions still require their separate goal-verification gate.
+    // Keep completion's persisted-record predicate aligned with replay: a partial
+    // settlement must never authorize a terminal outcome.
+    const chronicleSettlement = stepEffects[0]?.settlement;
+    const chronicleSettlementObservedAt = chronicleSettlement?.observedAt;
+    const validChronicleSettlementTimestamp = typeof chronicleSettlementObservedAt === "string" &&
+      Number.isFinite(Date.parse(chronicleSettlementObservedAt)) &&
+      new Date(chronicleSettlementObservedAt).toISOString() === chronicleSettlementObservedAt;
     const chronicleSettlementReady = outcome.action === "chronicle_append" &&
       outcome.status === "completed" &&
       stepEffects.length === 1 &&
@@ -153,10 +160,12 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       stepEffects[0]?.idempotencyKey === `${outcome.missionId}:${outcome.stepId}` &&
       stepEffects[0]?.action === outcome.action &&
       isDeepStrictEqual(stepEffects[0]?.target ?? null, outcome.target ?? null) &&
-      stepEffects[0]?.settlement?.status === "applied" &&
-      stepEffects[0]?.settlement?.source === "nexo-chronicle-store" &&
-      Number.isSafeInteger(stepEffects[0]?.settlement?.observedRevision) &&
-      stepEffects[0].settlement.observedRevision >= 0;
+      chronicleSettlement?.status === "applied" &&
+      chronicleSettlement?.source === "nexo-chronicle-store" &&
+      Number.isSafeInteger(chronicleSettlement.observedRevision) &&
+      chronicleSettlement.observedRevision >= 0 &&
+      Object.hasOwn(chronicleSettlement, "evidence") &&
+      validChronicleSettlementTimestamp;
     if (outcome.action === "chronicle_append" && outcome.status === "completed" &&
         !chronicleSettlementReady) {
       return {
