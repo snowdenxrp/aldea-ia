@@ -1,7 +1,7 @@
 ## M0 — coherencia misión/pasos/reconstrucción y admisión inicial (2026-10-19)
 
-- **HEAD actual verificado:** `f0fcf181778a61c8ad094b315289f5f43c1abe8f`.
-- **Suite completa `npm test`: SUCCESS** en ese SHA, [run 39339904741](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904741).
+- **HEAD de código/pruebas con validación focal:** `f0fcf181778a61c8ad094b315289f5f43c1abe8f`.
+- **Suite completa `npm test`: SUCCESS** tanto en ese SHA ([run 39339904741](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904741)) como en el HEAD documental posterior `67407fcf814b396e05db45ff6049b30839fc7508` ([run 39340064494](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340064494)). Las actualizaciones de documentación no cambiaron el código.
 - **Admisión/continuidad:** SUCCESS en ese SHA, [run 39339904645](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904645); incluye `continuity-contract.test.mjs` y `continuity-migration.test.mjs`.
 - **M0 integrado:** SUCCESS en ese SHA, [run 39339904658](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904658). STEP 4 [run 39339904656](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904656) y STEP 5 [run 39339904735](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904735) también SUCCESS.
 - Se probó y revirtió una hipótesis de endurecimiento que prohibía a `owner.recordMission()` admitir pasos con estado `completed`. El workflow [39339816995](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339816995) falló en `continuity-migration.test.mjs:801`: un contrato existente necesita admitir una declaración de paso completado para probar que, sin outcome canónico, la reconstrucción lo bloquea. La regla nueva mezclaba admisión con verificación del outcome; fue retirada junto con sus pruebas temporales. El contrato correcto permanece: las claims persistidas no prueban completion; reconstrucción y gate deben fallar cerrados.
