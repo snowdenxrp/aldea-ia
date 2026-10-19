@@ -100,6 +100,21 @@ export async function executeNexoStepWithContinuityOwner({
     return { status: "blocked", code: "NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED", dispatchAttempted: false };
   }
 
+  // Chronicle is the only non-repair action with a demonstrated end-to-end
+  // verifier + settlement + terminal-outcome contract in this runtime. A caller
+  // installing an arbitrary handler/verifier must not enable another action.
+  if (operation.action !== "chronicle_append") {
+    return {
+      status: "blocked",
+      code: "NEXO_CANONICAL_RUNTIME_ACTION_NOT_ENABLED",
+      dispatchAttempted: false,
+      preparedCommitted: false,
+      journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false
+    };
+  }
+
   // Recover an existing Chronicle obligation by observation only. A restart must
   // never re-dispatch an append whose prior effect may already exist.
   if (operation.action === "chronicle_append") {
