@@ -1122,3 +1122,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Un retry explícito converge a un solo append; una reproducción final no despacha y mantiene idénticos ambos archivos. No se afirma atomicidad cross-store: se comprueba recuperación segura tras la carrera.
 - CI SUCCESS en SHA `7f4c69ef8003515c53d761677185f4668c05d5a0`: [Chronicle 39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [continuity/restart 39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [semantic validation 39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [outcome classification 39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
 - No automatic retry/queue; el caller reintenta explícitamente. Solo Chronicle muta. M0 INCOMPLETO.
+
+
+## M0 — API de aplicación rechaza entrada inválida antes de tocar stores (2026-10-19)
+
+- `tests/nexo/chronicle-runtime.test.mjs` invoca directamente el servicio de aplicación con ruta requerida vacía y tipo inválido en flag de inicialización. Ambos casos devuelven `blocked / NEXO_CHRONICLE_SESSION_INPUT_INVALID` y `dispatchAttempted=false`, antes de acceder a los stores.
+- CI SUCCESS en SHA `e8abe56f791e8460be6ae71abe723a3907bd13aa`: [Chronicle 39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), [continuity/restart 39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), [semantic validation 39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), [outcome classification 39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827).
+- Se cubren inputs, binding de payload, concurrencia, replay, outcomes inciertos y ausencia de dispatch duplicado para el vertical Chronicle. No generalizar a otras acciones; M0 INCOMPLETO.
