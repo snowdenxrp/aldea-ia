@@ -326,7 +326,7 @@ function chronicleSettlementMemory({ withCompletedAttempt = false, evidence = {
     action: "chronicle_append",
     target: { content: "hello Nexo" },
     status: "completed",
-    evidence: { verified: true, kind: "nexo-chronicle-persisted-invariant", source: "nexo-chronicle-store" },
+    evidence: { verified: true, kind: "nexo-chronicle-persisted-invariant", source: "nexo-chronicle-store", observedRevision: 1 },
     at: "2026-10-19T00:00:00.000Z"
   }] : [];
   memory.nexo.effectJournal = [{
