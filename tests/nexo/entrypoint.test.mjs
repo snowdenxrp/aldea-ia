@@ -15,6 +15,30 @@ assert.equal(chronicleSessionSource.includes("../src/nexo/core/owner-backed-runt
 for (const luminaCoupling of ["simulation-adapter.js", "../assistants/memory.js", "world.js", "simulation.js", "simulate.mjs"]) {
   assert.equal(ownerRuntimeSource.includes(luminaCoupling), false, `owner-backed runtime must not depend on ${luminaCoupling}`);
 }
+// Walk the static local-import graph from both Nexo command entrypoints.
+// This catches accidental transitive imports of the legacy Lúmina runtime/memory.
+const forbiddenImport = /(?:^|\/)(?:assistants\/memory\.js|simulation-adapter\.js|world\.js|simulation\.js|simulate\.mjs|nexo\/runtime\.js)$/;
+const auditedFiles = new Set();
+async function auditNexoImportGraph(relativePath) {
+  const absolutePath = path.resolve(process.cwd(), relativePath);
+  if (auditedFiles.has(absolutePath)) return;
+  auditedFiles.add(absolutePath);
+  const source = await fs.readFile(absolutePath, "utf8");
+  const specifiers = [...source.matchAll(/\bimport\s+(?:[^'";]*?\s+from\s+)?["']([^"']+)["']/g)]
+    .map(match => match[1]);
+  for (const specifier of specifiers) {
+    assert.equal(forbiddenImport.test(specifier), false,
+      `Nexo-only import graph must not depend on legacy module ${specifier} (from ${relativePath})`);
+    if (specifier.startsWith("./") || specifier.startsWith("../")) {
+      const dependency = path.resolve(path.dirname(absolutePath), specifier);
+      await auditNexoImportGraph(path.relative(process.cwd(), dependency));
+    }
+  }
+}
+await auditNexoImportGraph("scripts/nexo.mjs");
+await auditNexoImportGraph("scripts/nexo-chronicle-session.mjs");
+assert.equal(auditedFiles.has(path.resolve(process.cwd(), "src/nexo/runtime.js")), false,
+  "the independent Nexo entrypoints must not transitively import the compatibility runtime");
 assert.deepEqual(parseNexoEntrypointArguments([]), {
   status: "blocked", code: "NEXO_COMMAND_REQUIRED", dispatchAttempted: false
 });
