@@ -532,6 +532,46 @@ try {
   await fs.rm(unresolvedOutcomeDir, { recursive: true, force: true });
 }
 
+const planOnlyCompletedDependencyDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-plan-only-completed-dependency-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(planOnlyCompletedDependencyDir, "nexo.json"),
+    allowEmptyInitialization: true
+  });
+  const mission = {
+    missionId: "mission-plan-only-completed-dependency",
+    status: "planned",
+    objective: "dependency must be backed by a canonical outcome",
+    steps: [
+      { id: "step-1", action: "repair_agent_state", target: "alex", status: "completed", dependsOn: [] },
+      { id: "step-2", action: "repair_agent_needs", target: "alex", status: "planned", dependsOn: ["step-1"] }
+    ]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 0, mission })).status, "committed");
+  const reconstructed = await opened.owner.reconstructMission(mission.missionId);
+  assert.equal(reconstructed.mission.steps[0].status, "blocked",
+    "plan status alone must not reconstruct a mutating dependency as completed");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED");
+  const prepared = await opened.owner.recordPrepared({
+    expectedRevision: 1,
+    operation: {
+      idempotencyKey: "mission-plan-only-completed-dependency:step-2",
+      missionId: mission.missionId,
+      stepId: "step-2",
+      action: "repair_agent_needs",
+      target: "alex",
+      environmentStateRevision: 0
+    }
+  });
+  assert.equal(prepared.status, "blocked");
+  assert.equal(prepared.code, "NEXO_PREPARED_DEPENDENCIES_UNMET");
+  const current = await opened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 1);
+  assert.equal(current.snapshot.effectJournal.length, 0);
+} finally {
+  await fs.rm(planOnlyCompletedDependencyDir, { recursive: true, force: true });
+}
+
 const preparedAdmissionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-prepared-admission-"));
 try {
   const opened = await openNexoContinuityOwner({
