@@ -1,7 +1,7 @@
 import { isDeepStrictEqual } from "node:util";
 import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
 import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
-import { isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
+import { isValidNexoChronicleOutcomeEvidence, isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
 
 function ownerError(code) {
   const error = new Error(code);
@@ -181,6 +181,16 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       return {
         status: "blocked",
         code: "NEXO_CHRONICLE_SETTLEMENT_REQUIRED",
+        storeRevision: current.storeRevision,
+        journalSettled: false,
+        authorization: "NOT_EVALUATED"
+      };
+    }
+    if (chronicleSettlementReady &&
+        !isValidNexoChronicleOutcomeEvidence(stepEffects[0], outcome.evidence)) {
+      return {
+        status: "blocked",
+        code: "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH",
         storeRevision: current.storeRevision,
         journalSettled: false,
         authorization: "NOT_EVALUATED"
