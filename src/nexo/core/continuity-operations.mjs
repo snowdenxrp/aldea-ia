@@ -344,7 +344,10 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
   );
   if (unknownEffectEntries.length > 0) {
     const relevantUnknownEntries = unknownEffectEntries.filter(entry =>
-      entry?.missionId === missionId || typeof entry?.missionId !== "string" || !entry.missionId.trim()
+      entry?.missionId === missionId ||
+      typeof entry?.missionId !== "string" ||
+      !entry.missionId.trim() ||
+      !source.missions.some(plan => plan?.missionId === entry.missionId)
     );
     if (relevantUnknownEntries.length > 0) {
       for (const step of mission.steps) {
