@@ -968,7 +968,25 @@ try {
     filePath: path.join(nullChronicleEvidenceDir, "nexo.json"),
     legacyMemory: nullChronicleMemory
   });
-  const nullChronicleOutcome = await nullChronicleOpened.owner.recordOutcome({
+  const nullChronicleOwner = createNexoContinuityOwner({
+    store: nullChronicleOpened.store,
+    effectVerifiers: {
+      chronicle_append: async operation => ({
+        status: "applied",
+        idempotencyKey: operation.idempotencyKey,
+        action: operation.action,
+        target: operation.target,
+        observedRevision: 1,
+        source: "nexo-chronicle-store",
+        evidence: {
+          kind: "persisted-chronicle-entry",
+          operationKey: operation.idempotencyKey,
+          content: operation.target.content
+        }
+      })
+    }
+  });
+  const nullChronicleOutcome = await nullChronicleOwner.recordOutcome({
     expectedRevision: 0,
     outcome: {
       missionId: "mission-crash-cut",
@@ -982,6 +1000,25 @@ try {
   assert.equal(nullChronicleOutcome.code, "NEXO_CHRONICLE_SETTLEMENT_REQUIRED");
   assert.equal((await nullChronicleOpened.owner.loadCurrent()).storeRevision, 0);
   assert.equal((await nullChronicleOpened.owner.loadCurrent()).snapshot.attempts.length, 0);
+
+  // A revision mismatch must not let malformed settlement replay as already observed.
+  const nullChronicleCurrent = await nullChronicleOpened.store.loadCurrent();
+  assert.equal((await nullChronicleOpened.store.commitIfCurrent(
+    nullChronicleCurrent.storeRevision, nullChronicleCurrent.snapshot
+  )).status, "committed");
+  const nullEvidenceReplay = await nullChronicleOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "chronicle_append",
+      target: { content: "persisted chronicle content" }
+    }
+  });
+  assert.equal(nullEvidenceReplay.status, "conflict");
+  assert.equal(nullEvidenceReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+  assert.notEqual(nullEvidenceReplay.status, "already_observed");
 
   // Repair actions cannot bypass their revision-bound repair-specific
   // settlement contract through the generic observation API.
