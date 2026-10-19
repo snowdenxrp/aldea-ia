@@ -123,7 +123,21 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
   }
 
   async function initialize() {
-    const release = await acquireLock(fsModule, filePath);
+    let release;
+    try {
+      release = await acquireLock(fsModule, filePath);
+    } catch (error) {
+      // Lock acquisition happens before any Chronicle initialization write.
+      // Normalize filesystem failures at the store boundary instead of leaking
+      // raw OS codes through the public Nexo application result.
+      if (error?.code === "ENOENT") {
+        return { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" };
+      }
+      return {
+        status: "blocked",
+        code: error?.code ?? "NEXO_CHRONICLE_LOCK_ACQUISITION_FAILED"
+      };
+    }
     try {
       try {
         await fsModule.access(filePath);
