@@ -38,6 +38,24 @@ const validMemory = {
 assert.equal(assertNexoContinuityMemoryShape(null), true);
 assert.equal(assertNexoContinuityMemoryShape(validMemory), true);
 
+const duplicateStepMemory = structuredClone(validMemory);
+duplicateStepMemory.nexo.missions[0].steps.push({
+  id: "step-a", action: "repair_agent_needs", target: { agentId: "bravo" }, status: "planned", dependsOn: []
+});
+assert.throws(
+  () => assertNexoContinuityMemoryShape(duplicateStepMemory),
+  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN",
+  "persisted duplicate step identities must fail closed before reconstruction"
+);
+const duplicateMissionMemory = structuredClone(validMemory);
+duplicateMissionMemory.nexo.missions.push(structuredClone(duplicateMissionMemory.nexo.missions[0]));
+assert.throws(
+  () => assertNexoContinuityMemoryShape(duplicateMissionMemory),
+  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN",
+  "persisted duplicate mission identities must fail closed before reconstruction"
+);
+
+
 let getterCalls = 0;
 const accessorMemory = {};
 Object.defineProperty(accessorMemory, "nexo", {
