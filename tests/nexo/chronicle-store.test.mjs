@@ -127,7 +127,11 @@ if (result.status !== "committed") process.exitCode = 1;`;
     }
   };
   const ownerFailureStore = createNexoChronicleStore({ filePath: ownerFailurePath, fsModule: fsWithOwnerWriteFailure });
-  await assert.rejects(() => ownerFailureStore.initialize(), /simulated lock owner record failure/);
+  assert.deepEqual(
+    await ownerFailureStore.initialize(),
+    { status: "blocked", code: "NEXO_CHRONICLE_LOCK_ACQUISITION_FAILED" },
+    "Chronicle must normalize lock owner-record failures at its store boundary"
+  );
   await assert.rejects(() => fs.access(String(ownerFailurePath) + ".lock"), error => error?.code === "ENOENT");
 
   // A stale lock must fail closed; automatic check-then-remove reclamation is racy.
