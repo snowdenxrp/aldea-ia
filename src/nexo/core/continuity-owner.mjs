@@ -84,19 +84,7 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         !Array.isArray(mission.steps)) {
       return { status: "failed", code: "NEXO_MISSION_CONTEXT_INVALID" };
     }
-    let current;
-    try {
-      current = await store.loadCurrent();
-    } catch (error) {
-      return {
-        status: "blocked",
-        code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED",
-        preparedCommitted: false,
-        journalSettled: false,
-        uncertainty: "continuity_read_failed",
-        authorization: "NOT_EVALUATED"
-      };
-    }
+    const current = await store.loadCurrent();
     if (current.storeRevision !== expectedRevision) {
       return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
     }
@@ -483,7 +471,19 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_UNAVAILABLE", preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
 
-    const current = await store.loadCurrent();
+    let current;
+    try {
+      current = await store.loadCurrent();
+    } catch (error) {
+      return {
+        status: "blocked",
+        code: error?.code ?? "NEXO_CONTINUITY_LOAD_FAILED",
+        preparedCommitted: false,
+        journalSettled: false,
+        uncertainty: "continuity_read_failed",
+        authorization: "NOT_EVALUATED"
+      };
+    }
     if (current.storeRevision !== expectedRevision) {
       // A previous call may have committed the observation but lost its
       // response. Recover only from the exact persisted operation identity;
