@@ -699,7 +699,7 @@ try {
     }
   });
   assert.equal(blockedStatus.status, "blocked");
-  assert.equal(blockedStatus.code, "NEXO_PREPARED_STEP_NOT_RUNNABLE");
+  assert.equal(blockedStatus.code, "NEXO_PREPARED_MISSION_NOT_RUNNABLE");
   const unchanged = await opened.owner.loadCurrent();
   assert.equal(unchanged.storeRevision, 2);
   assert.equal(unchanged.snapshot.effectJournal.length, 0);
