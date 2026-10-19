@@ -1,5 +1,15 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — Chronicle terminal outcome reconstructs after response loss (validated 2026-10-19)
+
+- La prueba real de `tests/nexo/chronicle-runtime.test.mjs` simula pérdida de respuesta después del commit de `recordOutcome()`, reabre el owner y ejecuta la recuperación sin un segundo append. Se añadió una aserción directa sobre la reconstrucción canónica tras reabrir.
+- Resultado esperado/observado: la misión se reconstruye con `status: reconstructed`, el paso Chronicle queda `completed` porque hay settlement válido y outcome terminal persistidos, pero la misión global queda `awaiting_verification`; completar un paso no prueba el objetivo global. El runtime vuelve a `completed` sin despacho adicional y el contador de dispatch sigue en 1.
+- SHA test: `467cea28706a54b2f30e320485c1d7b3f57e2692`. SUCCESS: Chronicle native [39196004121](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004121), bounded admission/restart [39196004116](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004116), STEP 4 [39196004098](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004098), STEP 5 [39196004164](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004164). El cambio fue sólo de prueba; el fix funcional de admisión sigue en `3ebb037...`, y los crash cuts de continuidad siguen SUCCESS en test SHA anterior `376f2d...` [39195866266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866266).
+- Límite: esto verifica la recuperación del resultado de paso Chronicle; no afirma que el objetivo de misión general esté verificado. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** auditar si el `result/evidence` de un outcome Chronicle persistido queda ligado al settlement canónico observado o si sólo el estado completed está ligado. Reproducir una discrepancia de evidencia antes de tocar el contrato; no confundir autenticación/procedencia con etiquetas no vacías.
+
+
 ## M0 — replay de PREPARED conserva la misma obligación tras reinicio (validado 2026-10-19)
 
 - Regresión añadida en `tests/nexo/continuity-migration.test.mjs`: crear misión, persistir PREPARED para una reparación, cerrar/reabrir el owner y repetir exactamente la misma operación con la revisión actual.
