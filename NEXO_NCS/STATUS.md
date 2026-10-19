@@ -1,3 +1,15 @@
+## M0 — consulta de misión informa estado persistido y reconstruido (implementación pendiente de CI, 2026-10-19)
+
+- Cambio en `src/nexo/application/continuity-queries.mjs`: `loadNexoMissionStatus()` carga el snapshot una sola vez y deriva de esa misma revisión el estado almacenado y el reconstruido. La respuesta ahora incluye `persistedMissionStatus` y `statusDiscrepancy` junto al `missionStatus` reconstruido.
+- Si la misión no existe, la consulta responde `not_found` con la revisión leída. La ruta no escribe en el store ni añade target/content a la salida.
+- Regresión añadida en `tests/nexo/entrypoint.test.mjs`: misión almacenada `completed` con paso `planned`; comprueba que ambos estados y la discrepancia se informan, que el contenido privado no aparece y que el archivo queda byte-por-byte igual.
+- Se añadió `.github/workflows/nexo-m0-mission-status.yml` para ejecutar esa regresión al cambiar el query, operaciones de continuidad, store, test o workflow en la rama `ncs-clean-architecture`.
+- Commits secuenciales de este cambio: query `ff343a09a5678dcce18535de6901940ec274d3c5`; test `d1396cd110a01a9547209b58626a52cbc7b6bd97`; workflow `4b6423404d5ad2e901e3b3eccb5db6e2140ee492`. Los commits documentales posteriores pueden mover HEAD.
+- **Estado de validación:** código, test y workflow están en la rama; no se dispone aquí de resultado observado del nuevo run ni se ha ejecutado el test localmente. No marcar PASS hasta revisar el run real.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+---
+
 ## M0 — la consulta pública de misión oculta el estado persistido (2026-10-19)
 
 - Se completó el seguimiento de la auditoría anterior. `loadNexoMissionStatus()` llama a `owner.reconstructMission()` y devuelve `missionStatus` calculado, pero no expone el `mission.status` almacenado en el mismo snapshot.
