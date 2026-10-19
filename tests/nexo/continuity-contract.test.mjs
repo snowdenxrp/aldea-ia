@@ -422,6 +422,26 @@ const recordedMission = await owner.recordMission({ expectedRevision: 0, mission
 assert.equal(recordedMission.status, "committed");
 assert.equal(recordedMission.storeRevision, 1);
 
+const invalidOwnerMission = {
+  missionId: "owner-invalid-function-target",
+  objective: "repair_agent_state",
+  status: "planned",
+  steps: [{ id: "step-1", action: "repair_agent_state", target: () => "not-persistable", status: "planned", dependsOn: [] }]
+};
+const invalidOwnerResult = await owner.recordMission({
+  expectedRevision: 1,
+  mission: invalidOwnerMission
+});
+assert.equal(invalidOwnerResult.status, "conflict");
+assert.equal(invalidOwnerResult.code, "NEXO_MISSION_CONTEXT_INVALID");
+assert.equal(invalidOwnerResult.storeRevision, 1);
+assert.equal(
+  (await owner.loadCurrent()).storeRevision,
+  1,
+  "invalid mission admission must stop before commitIfCurrent changes the canonical revision"
+);
+
+
 const operation = {
   idempotencyKey: "owner-mission:step-1",
   missionId: "owner-mission",
