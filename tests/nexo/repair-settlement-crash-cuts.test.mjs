@@ -596,6 +596,48 @@ try {
   assert.equal(afterRecheckFailure.storeRevision, 0);
   assert.equal(afterRecheckFailure.snapshot.effectJournal[0].status, "prepared");
 
+  // The initial canonical read is also an explicit failure boundary; no
+  // verifier may run when the owner cannot establish the current journal view.
+  const initialReadDir = path.join(root, "generic-observation-initial-read-failure");
+  await fs.mkdir(initialReadDir);
+  const initialReadOpened = await openNexoContinuityOwner({
+    filePath: path.join(initialReadDir, "nexo.json"),
+    legacyMemory: genericMemory()
+  });
+  let initialReadVerifierCalls = 0;
+  const initialReadStore = {
+    loadCurrent: async () => {
+      const error = new Error("simulated initial canonical read failure");
+      error.code = "NEXO_CONTINUITY_INITIAL_READ_FAILED";
+      throw error;
+    },
+    commitIfCurrent: (...args) => initialReadOpened.store.commitIfCurrent(...args)
+  };
+  const initialReadOwner = createNexoContinuityOwner({
+    store: initialReadStore,
+    effectVerifiers: {
+      generic_write: async () => {
+        initialReadVerifierCalls++;
+        return { status: "unknown" };
+      }
+    }
+  });
+  const initialReadResult = await initialReadOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(initialReadResult.status, "blocked");
+  assert.equal(initialReadResult.code, "NEXO_CONTINUITY_INITIAL_READ_FAILED");
+  assert.equal(initialReadResult.uncertainty, "continuity_read_failed");
+  assert.equal(initialReadVerifierCalls, 0);
+  assert.equal((await initialReadOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
+
   // The verifier registry is snapshotted at owner construction: later
   // caller mutation cannot replace the configured reconciliation function.
   const frozenRegistryDir = path.join(root, "generic-owner-frozen-registry");
