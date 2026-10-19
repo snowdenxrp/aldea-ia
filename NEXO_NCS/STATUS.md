@@ -1,5 +1,16 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — reconstrucción no acepta completion de intento no ligado (validado 2026-10-19)
+
+- Hueco reproducido: `reconstructNexoMissionFromSnapshot()` agrupaba intentos por `missionId/stepId`, pero no cotejaba `action/target` con el paso canónico. Además, si no encontraba una completion verificada, el fallback podía elegir cualquier intento, incluyendo `completed` con evidencia no verificada. Resultado: un intento distinto o una afirmación terminal sin evidencia válida podía reconstruir el paso como `completed`.
+- Corrección: sólo un intento `completed` con acción/target exactamente coincidentes y evidencia `verified === true`, `kind` y `source` no vacíos puede reconstruir completion. Si existe un intento terminal `completed` pero no satisface identidad o evidencia, el paso queda `blocked` con `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH` o `NEXO_COMPLETION_EVIDENCE_UNVERIFIED`, y no se vuelve ejecutable como planned. Los intentos no terminales se filtran por identidad cuando aportan action/target; se conserva el manejo conservador de registros legacy sin esos campos.
+- Regresiones: (1) attempt con mismo missionId/stepId pero action/target diferentes; (2) attempt con identidad coincidente pero `evidence.verified === false`. Ambos bloquean sin marcar completed. El primer test se añadió antes de la corrección y CI confirmó el fallo real: reconstruía `completed` en vez de `planned` (después corregido a bloqueo explícito).
+- SHA código: `98abe80c058802f2f5ad50cd49bc2525ade6b09f`; SHA final con pruebas: `5767851584eba13298cada7bf46b162844b7d7bd`. SUCCESS en SHA final: bounded admission/restart [39194524160](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194524160), STEP 4 [39194524170](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194524170), STEP 5 [39194524126](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194524126), crash cuts [39194524193](https://github.com/snowdenxrp/aldea-ia/actions/runs/39194524193). La ejecución intermedia en el SHA de código falló porque la expectativa del test aún era planned; la prueba se ajustó al comportamiento seguro blocked y los cuatro workflows pasaron.
+- Límite: reconstrucción conservadora de intentos, no goal verifier, atribución causal ni autorización. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** revisar el contrato de reconstrucción frente a `effectJournal` con terminal outcome ausente o inválido: comprobar si un Chronicle `settled_observed` sin un intento terminal válido puede dejar el plan como ejecutable o sólo queda recuperable mediante runtime fail-closed. Añadir prueba antes de modificar.
+
+
 ## M0 — operación genérica rechaza IDs ambiguos con separador (validado 2026-10-19)
 
 - Hueco concreto: `validateOperation()` comprobaba que `idempotencyKey === missionId + ":" + stepId`, pero permitía que `missionId` o `stepId` contuvieran `:`. Así, pares distintos podían producir la misma clave (por ejemplo `a:b + c` y `a + b:c`). `recordPrepared()` ya bloqueaba una segunda identidad conflictiva, por lo que el impacto directo era ambigüedad/colisión y bloqueo, no una duplicación demostrada de efecto.
@@ -49,7 +60,7 @@
 **Siguiente frontera:** seguir dentro de M0 desde la recuperación canónica/reconstrucción del estado persistido, inspeccionando el siguiente límite concreto con sus pruebas existentes. No reabrir la discrepancia de evidencia Chronicle salvo que aparezca una regresión nueva.
 
 
-**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código validado: `442963578e2de42e6d67afd6fd85062ccea1a23e`; SHA con regresión de identidad: `ddfc6f98514ca3222a6e9424835602c40643cbea`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
+**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código validado: `98abe80c058802f2f5ad50cd49bc2525ade6b09f`; SHA con regresiones de reconstrucción: `5767851584eba13298cada7bf46b162844b7d7bd`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
 
 ## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
 
