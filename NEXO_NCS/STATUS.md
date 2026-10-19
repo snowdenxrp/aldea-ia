@@ -1846,3 +1846,13 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Evidencia de código:** `src/nexo/application/chronicle-append.mjs` preflighta ambos archivos; después abre/posiblemente inicializa Continuidad y luego inicializa Chronicle. `src/nexo/core/continuity-service.mjs` realiza la inicialización vacía cuando `allowEmptyInitialization === true`.
 - **Validación:** hallazgo por inspección del código publicado; no se ha ejecutado una prueba de fallo inducido ni CI para una regresión de este caso. **PENDING**.
 - **Estado global:** M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
+
+## M0 — regresión de recuperación tras bootstrap parcial de dos almacenes (2026-10-19)
+
+- **Contrato comprobable añadido:** [`tests/nexo/entrypoint.test.mjs`](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/tests/nexo/entrypoint.test.mjs), commit [a8c2b422b34d](https://github.com/snowdenxrp/aldea-ia/commit/a8c2b422b34d169a22877435966ce0b8b86d726a).
+- **Escenario:** Continuidad puede inicializarse y Chronicle fallar porque su directorio padre no existe. La primera invocación debe terminar `blocked`, sin dispatch ni admisión de misión; el archivo de Continuidad queda en revisión 0 con misión/journal vacíos.
+- **Recuperación:** al reintentar con el mismo archivo de Continuidad y una ruta válida de Chronicle, la operación debe completarse y dejar una única misión, un settlement y una entrada Chronicle.
+- **Interpretación:** no declara atómica la inicialización de dos archivos. Define y prueba recuperación idempotente de este corte concreto, sin rollback destructivo. Otros cortes siguen requiriendo sus propias pruebas.
+- **Validación:** regresión publicada, no ejecutada localmente; CI no observado para este SHA. **PENDING; no PASS.**
+- **Estado:** M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
