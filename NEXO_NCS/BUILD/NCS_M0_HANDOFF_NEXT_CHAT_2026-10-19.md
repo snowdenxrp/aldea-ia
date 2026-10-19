@@ -614,3 +614,10 @@ La inspección directa confirmó que el gate integrado PASS no equivale a autori
 Decisión: mantener el prototipo local acotado, no inventar un root/credential/token/epoch, y no conectar efectos externos, financieros, irreversibles o constitucionales a esta ruta. La raíz de autoridad debe provenir de una fuente independiente verificable; un constructor, un store, un dispositivo o datos caller-supplied no se validan a sí mismos.
 
 Próximo paso: sintetizar la investigación ya existente sobre raíz independiente, autorización efectiva, revocación y STOP desde las fuentes del repo y handoffs, sin reabrir auditorías cerradas. Si no existe una raíz implementada y verificable, conservar STOP y no implementar un pseudo-gate. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## Borrador de composición de autoridad agregado (2026-10-19)
+
+Archivo: `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md`.
+Commit del borrador: `5b24b106d06d22335d09b03560128eb9c9e7b24a`.
+Define capas semánticas, independencia, no-root, revocación y condiciones previas a implementación; no elige una raíz ni habilita dispatch. El STATUS ya enlaza este documento. CI funcional más reciente: run `39292887874`, PASS en SHA `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`. Efectos protegidos STOP; M0 INCOMPLETO.
