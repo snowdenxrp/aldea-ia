@@ -1,3 +1,13 @@
+## M0 — corrección de la integración con la función pura de reconstrucción (2026-10-19)
+
+- Revisión posterior al primer commit detectó una diferencia de API: `reconstructNexoMissionFromSnapshot()` devuelve la misión reconstruida directamente (o `null`), no un wrapper `{ status, mission }`. Se corrigió el consumidor en `continuity-queries.mjs` antes de declarar validada la implementación.
+- Commit correctivo: `82f1204ae4e9298163231ab7a323233ad87777b8`.
+- El workflow específico de la regresión incluye `continuity-queries.mjs` en sus paths, por lo que este commit debe activar el job. El resultado de Actions aún no se ha observado; test local tampoco ejecutado.
+- No marcar PASS hasta revisar el run real y el SHA probado.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+---
+
 ## M0 — consulta de misión informa estado persistido y reconstruido (implementación pendiente de CI, 2026-10-19)
 
 - Cambio en `src/nexo/application/continuity-queries.mjs`: `loadNexoMissionStatus()` carga el snapshot una sola vez y deriva de esa misma revisión el estado almacenado y el reconstruido. La respuesta ahora incluye `persistedMissionStatus` y `statusDiscrepancy` junto al `missionStatus` reconstruido.
