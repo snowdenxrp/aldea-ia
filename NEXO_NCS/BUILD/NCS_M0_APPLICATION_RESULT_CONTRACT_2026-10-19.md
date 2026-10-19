@@ -245,3 +245,10 @@ Este requisito sólo garantiza una estructura mínima; no autentica el origen ni
 `validateOperation()` rechaza `:` en `missionId` o `stepId` usando el código existente `NEXO_OPERATION_IDENTITY_MISMATCH`, preservando el formato actual de clave y evitando colisiones de tuplas. Se probaron ambas posiciones y la ausencia de mutación. Los seis workflows focales pasaron en SHA `442963578e2de42e6d67afd6fd85062ccea1a23e`; ver enlaces en STATUS.
 
 Esto reduce colisiones de identidad local, no autentica al propietario ni autoriza efectos. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — reconstrucción de completion con identidad exacta (2026-10-19)
+
+`reconstructNexoMissionFromSnapshot()` sólo acepta una completion histórica si action/target coinciden exactamente con el paso y la evidencia tiene `verified === true`, kind y source no vacíos. Las claims completed con identidad/evidencia inválidas bloquean el paso; no lo completan ni lo devuelven a planned. Los estados no terminales con identidad disponible se filtran por la misma operación.
+
+Regresiones de intento mismatcheado y evidence no verificada: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS en SHA `5767851584eba13298cada7bf46b162844b7d7bd`. Ver STATUS para enlaces. Esto no es goal verification ni autorización. M0 INCOMPLETO; efectos protegidos STOP.
