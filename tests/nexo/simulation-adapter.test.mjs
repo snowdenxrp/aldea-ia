@@ -137,8 +137,12 @@ const failed=await depletedAdapter.execute({
   precondition:({stateVersion})=>stateVersion===0,
   postcondition:()=>true
 });
-assert.equal(failed.status,"failed");
-assert.equal(failed.code,"LUMINA_ACTION_FAILED");
+// A handler-reported failure does not prove absence of an external/partial effect.
+ // The adapter preserves the operation as unresolved until an operation-specific
+ // verifier can settle it; a stable local revision alone is not a no-effect proof.
+assert.equal(failed.status,"blocked");
+assert.equal(failed.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(failed.uncertainty,"effect_may_or_may_not_have_occurred");
 assert.equal(depletedSimulation.nexoEffectRevision,0);
 
 console.log("Nexo: adaptador concreto de Lúmina con consecuencias reales, whitelist y evidencia OK.");
