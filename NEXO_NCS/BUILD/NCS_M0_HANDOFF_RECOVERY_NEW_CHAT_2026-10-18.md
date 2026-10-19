@@ -611,3 +611,12 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Una excepción o respuesta perdida alrededor del commit sigue siendo `unknown`; un conflicto confirmado ya no se etiqueta como desconocido.
 - CI SUCCESS en SHA `8e0d226c1df5e8c52ab802fe138d86da1a7a08d8`: [39181169917](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169917), [39181169919](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169919), [39181169938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169938), [39181169900](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169900).
 - No automatic retry ni queue; caller must re-read canonical state and decide explicitly.
+
+
+## Verified pointer — application result contract
+
+- Branch HEAD: `41374717bdc2446566f26199deea0f555c8446e2` (documentation-only).
+- Latest code/test SHA: `8e0d226c1df5e8c52ab802fe138d86da1a7a08d8`; code/test → HEAD changes only the three continuity documents.
+- CI SUCCESS: [Chronicle 39181169917](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169917), [continuity/restart 39181169919](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169919), [semantic validation 39181169938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169938), [outcome/restart 39181169900](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169900).
+- The Chronicle application API distinguishes known CAS `conflict` from `unknown` commit outcome and known `blocked` from successful completion. PREPARED conflict never dispatches; outcome conflict after settlement is replayed without append dispatch.
+- Next task: complete the result contract matrix for application callers (admission conflict, store unavailable, adapter exception, lineage conflict, reconciliation unknown, outcome response lost) and verify every result preserves truthful `dispatchAttempted`, `journalSettled`, `terminalOutcomeRecorded` and `redispatchAuthorized` fields. Then freeze the vertical contract before considering any integration surface. M0 INCOMPLETO; no generic actions; no runtime-default cutover; protected effects STOP; Nexo/Lúmina separate.
