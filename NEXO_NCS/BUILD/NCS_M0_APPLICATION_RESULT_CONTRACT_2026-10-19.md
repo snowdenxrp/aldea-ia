@@ -220,3 +220,12 @@ La observación Chronicle aplicada debe contener evidencia no nula ligada al reg
 Regresión: un settlement con status/source/revisión/timestamp válidos pero `evidence: null` no puede completar una misión ni recuperarse como `already_observed` durante replay; la regresión confirma que la revisión canónica no avanza. Pruebas y CI quedan documentados en `NEXO_NCS/STATUS.md` y en el handoff M0 del 2026-10-19.
 
 Esta evidencia demuestra coincidencia con una entrada observada del Chronicle local; no es una firma, autoridad, atribución causal, garantía de durabilidad física ni verificación general de objetivo. M0 continúa INCOMPLETO y los efectos protegidos permanecen STOP.
+
+
+## Checkpoint M0 — contrato único también en runtime recovery (2026-10-19)
+
+La ruta de recuperación de Chronicle ya no valida settlement con un subconjunto de campos. `src/nexo/core/chronicle-settlement-contract.mjs` es el contrato puro compartido por owner replay, terminal completion y runtime recovery: exige identidad no ambigua, target ligado a la entrada, status/source/revisión, evidencia no nula con kind/operationKey/content exactos y timestamp ISO canónico. Un settlement parcial se mantiene como obligación irresuelta; no se redispatcha ni se declara `journalSettled`.
+
+Regresión en `tests/nexo/chronicle-runtime.test.mjs`: evidence null en un registro settled provoca `NEXO_CHRONICLE_EXISTING_OBLIGATION_UNRESOLVED`, no invoca el writer de outcome y no despacha. El SHA de código/contrato final es `e62b65ab699c5d177c40d08f32a1393af118e4ee`; prueba runtime en `26eab01d09ab4be20c7228da8abf17e3224f5a6b`. Ver runs enlazados en STATUS.
+
+Este gate no autentica el archivo ni demuestra causalidad, autoridad, durabilidad física o goal verification. M0 sigue INCOMPLETO; efectos protegidos STOP.
