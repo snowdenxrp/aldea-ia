@@ -251,15 +251,18 @@ async function executeNexoStepWithContinuityOwnerInternal({
       preparedOperation: operation,
       context: step.context ?? context, precondition, postcondition
     }, { preparedCommit: prepared });
-  } catch (error) {
+  } catch {
     // The effect may have happened before the adapter threw. Do not redispatch.
+    // Do not expose raw adapter errors through the application result contract.
     return {
       status: "unknown",
       code: "NEXO_EFFECT_DISPATCH_OUTCOME_UNKNOWN",
       dispatchAttempted: true,
       preparedCommitted: true,
+      lineageCommitted: false,
       journalSettled: false,
-      adapterError: String(error?.message ?? error)
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false
     };
   }
 
