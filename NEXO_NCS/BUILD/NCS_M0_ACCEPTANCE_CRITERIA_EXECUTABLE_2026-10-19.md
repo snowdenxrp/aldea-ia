@@ -117,7 +117,7 @@ Los siguientes asuntos no se deben ocultar ni declarar resueltos por estas prueb
 
 La corrección del query no sólo pasó el workflow específico: el workflow Chronicle también se ejecutó en el SHA posterior `7f83195657df829d993226cf909c8f76f655d23b` y pasó store, runtime y entrypoint. Se añadió `src/nexo/application/continuity-queries.mjs` y `src/nexo/application/index.mjs` a los paths de `.github/workflows/nexo-m0-chronicle.yml` porque la regresión de entrypoint consume esos módulos; así futuras modificaciones de la consulta no dejan obsoleto el test de integración.
 
-**Cierre global aún bloqueado:** AC2, AC3 y AC5 sólo tienen PASS históricos en la matriz; se necesita una ejecución integrada de los criterios obligatorios sobre un SHA de cierre, o una política de evidencia explícita que permita fijar cada criterio a su último SHA relevante sin afirmar que es el mismo build. No mezclar ambos modelos.
+**Actualización de evidencia integrada:** la conclusión anterior quedó superada por [run 39292887874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292887874), SHA exacto `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`. El job `Nexo M0 contracts on one SHA` terminó SUCCESS y ejecutó los cinco grupos de pruebas AC2–AC5 junto con las suites de Chronicle/entrypoint que cubren AC1 y AC6. El diff entre el fix AC1 `82f1204ae4e9298163231ab7a323233ad87777b8` y `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae` confirma que el query y su test de entrypoint no cambiaron en los 28 commits posteriores. Así, **AC1–AC6 tienen PASS de regresión integrada en el SHA `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`**, con el alcance y límites descritos por criterio. Esto no cierra la raíz de autoridad constitucional, la durabilidad física, rollback/tampering global ni la admisión de efectos protegidos; M0 global sigue INCOMPLETO y efectos protegidos STOP.
 
 
 ## Resultado del gate integrado de aceptación — 2026-10-19
@@ -132,3 +132,10 @@ La corrección del query no sólo pasó el workflow específico: el workflow Chr
 Esto da evidencia integrada AC1–AC6 sobre un mismo SHA. El commit probado añadió el workflow; los cambios posteriores anotados en STATUS/handoff/documentación no alteraron código de producción ni tests. Este PASS es del conjunto de regresiones enumerado, no prueba seguridad de raíz de autoridad, durabilidad física, resistencia global a rollback/tampering ni autoriza efectos protegidos.
 
 **Decisión de estado:** el gate de regresión M0 pasa en el SHA indicado; M0 como misión completa permanece INCOMPLETO hasta cerrar explícitamente los bloqueos arquitectónicos fuera del alcance de estos tests. Efectos protegidos siguen STOP.
+
+
+## Reconciliación de la matriz integrada — 2026-10-19
+
+- La ejecución integrada posterior [39292887874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39292887874) probó SHA `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae` y terminó SUCCESS en los cinco grupos de pruebas.
+- Comparación de commits verificada: `82f1204ae4e9298163231ab7a323233ad87777b8` → `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae` = `ahead`, 28 commits, 0 detrás. El diff no incluye `src/nexo/application/continuity-queries.mjs` ni `tests/nexo/entrypoint.test.mjs`; por tanto, la regresión AC1 aprobada en el SHA integrado conserva el fix probado por el workflow específico.
+- **Estado de regresiones:** AC1–AC6 PASS en el SHA integrado citado, limitados a los contratos y suites ejecutados. **Estado de misión:** M0 global INCOMPLETO; `authorization: NOT_EVALUATED`; composición de raíz PENDING; efectos protegidos STOP. Un PASS de pruebas de continuidad no demuestra autoridad legítima.
