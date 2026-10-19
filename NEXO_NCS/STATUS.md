@@ -1786,3 +1786,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Siguiente paso exacto:** obtener un run de `nexo-m0-mission-status.yml` cuyo SHA incluya la versión actual de query + test; verificar job, paso, logs y SHA. Si PASS, fijar ese SHA en la matriz AC1–AC6. Si FAIL, corregir únicamente la causa observada. Después continuar el siguiente defecto M0 reproducible, sin repetir las auditorías ya cerradas.
 
 **Estado conservador:** M0 INCOMPLETO; AC1 PASS focal en `82f1204...` únicamente; cobertura de la versión actual respecto de un SHA vivo = UNKNOWN; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
+
+## M0 — límite de revisión segura del store de continuidad (2026-10-19)
+
+- **Defecto encontrado por inspección:** `commitIfCurrent()` incrementaba `storeRevision` sin comprobar el límite del contrato `Number.isSafeInteger`. En `Number.MAX_SAFE_INTEGER`, el store podía escribir `9007199254740992` y devolver `committed`, dejando un envelope que `loadCurrent()` rechazaría después. Esto violaba la coherencia de persistencia y la semántica de resultado.
+- **Corrección:** `src/nexo/core/continuity-store.mjs`, commit [3bc4717](https://github.com/snowdenxrp/aldea-ia/commit/3bc47179f17e63a2e64c0951859e29aee7374d73). Al alcanzar el máximo, el commit se rechaza con `NEXO_CONTINUITY_STORE_REVISION_EXHAUSTED` antes de escribir.
+- **Regresión añadida:** `tests/nexo/continuity-store.test.mjs`, commit [7c0756c](https://github.com/snowdenxrp/aldea-ia/commit/7c0756c9455fb1f6e2cc1bbbfe7d66bbb7305e57); se corrigió el fixture de newline en [65aba88](https://github.com/snowdenxrp/aldea-ia/commit/65aba88427c8059c051c5b477346b0f4fe03f527). La prueba exige rechazo fail-closed, bytes canónicos idénticos y lectura posterior válida.
+- **Validación:** código y prueba están en `ncs-clean-architecture`. No se pudo obtener por las herramientas disponibles un run de Actions asociado a estos commits ni ejecutar la prueba localmente en este entorno. **Resultado de CI: PENDING; no declarar PASS todavía.**
+- **Alcance:** esta protección cubre el store de continuidad. El límite equivalente de Chronicle no se cambia en este paso sin una revisión y prueba separadas. No afecta la decisión de raíz de autoridad; `authorization: NOT_EVALUATED` y efectos protegidos STOP permanecen.
