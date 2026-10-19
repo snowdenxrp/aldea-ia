@@ -1,5 +1,16 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — Chronicle outcome queda ligado a settlement canónico (validado 2026-10-19)
+
+- Hueco reproducido: con un `settled_observed` válido, `recordOutcome()` aceptaba metadata de outcome `verified/kind/source/observedRevision` que no coincidía con el settlement. También la reconstrucción clasificaba una claim completed con identidad distinta como si sólo faltara replay del outcome.
+- Contrato compartido nuevo en `src/nexo/core/chronicle-settlement-contract.mjs`: `isValidNexoChronicleOutcomeEvidence()` exige el tipo de evidencia Chronicle definido, `source` y `observedRevision` iguales al settlement validado. `recordOutcome()` bloquea metadata desatada con `NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH`; reconstrucción no completa el paso y clasifica aparte evidencia desatada e identidad de operación incorrecta.
+- Regresiones: (1) owner rechaza source/revision fabricados sin avanzar revisión ni añadir attempt; (2) reconstrucción de attempt con evidencia desatada bloquea y no devuelve el result; (3) attempt Chronicle con target distinto se clasifica `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`; (4) settlement y outcome canónicos coincidentes siguen reconstruyendo completed.
+- SHA funcional validado: `c9be5ee5f931d2a873cca32e2dd0b81c33010396`; SHA final de código+pruebas `9ca094242d25fced843b7d5595f9cff6e0d82ee3`. SUCCESS: bounded admission/restart [39196527692](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527692), crash cuts [39196527776](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527776), STEP 4 [39196527671](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527671), STEP 5 [39196527814](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196527814). El commit final sólo añadió la prueba positiva del evidence binding; el fix funcional ya estaba presente en `c9be5ee...`.
+- Límite: consistencia estructural de metadata, no autenticación criptográfica ni procedencia autenticada. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** verificar que la evidencia Chronicle terminal tenga un shape canónico sin claims extra no ligados al settlement. No expandir el contrato: probar primero si campos extra pueden llegar al result reconstruido y falsear detalles.
+
+
 ## M0 — Chronicle terminal outcome reconstructs after response loss (validated 2026-10-19)
 
 - La prueba real de `tests/nexo/chronicle-runtime.test.mjs` simula pérdida de respuesta después del commit de `recordOutcome()`, reabre el owner y ejecuta la recuperación sin un segundo append. Se añadió una aserción directa sobre la reconstrucción canónica tras reabrir.
@@ -7,7 +18,7 @@
 - SHA test: `467cea28706a54b2f30e320485c1d7b3f57e2692`. SUCCESS: Chronicle native [39196004121](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004121), bounded admission/restart [39196004116](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004116), STEP 4 [39196004098](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004098), STEP 5 [39196004164](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196004164). El cambio fue sólo de prueba; el fix funcional de admisión sigue en `3ebb037...`, y los crash cuts de continuidad siguen SUCCESS en test SHA anterior `376f2d...` [39195866266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866266).
 - Límite: esto verifica la recuperación del resultado de paso Chronicle; no afirma que el objetivo de misión general esté verificado. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
 
-**Siguiente frontera:** auditar si el `result/evidence` de un outcome Chronicle persistido queda ligado al settlement canónico observado o si sólo el estado completed está ligado. Reproducir una discrepancia de evidencia antes de tocar el contrato; no confundir autenticación/procedencia con etiquetas no vacías.
+**Frontera posterior:** comprobar que el evidence object Chronicle no admita claims extra ajenos al settlement canónico.
 
 
 ## M0 — replay de PREPARED conserva la misma obligación tras reinicio (validado 2026-10-19)
