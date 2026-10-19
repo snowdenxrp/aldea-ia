@@ -1,3 +1,13 @@
+## M0 — decisión de alcance del recibo PREPARED (2026-10-19)
+
+- Decisión documentada: `NEXO_NCS/BUILD/NCS_M0_PREPARED_RECEIPT_TRUST_DECISION_2026-10-19.md`, commit `a4b6a53baa9c7eb18dfc43b0c97813d7f67b7d73`.
+- Para la arquitectura actual, `executePrepared()` es una API interna de composición en una misma base de confianza; no se presenta como sandbox ni como frontera de autorización. Un objeto con campos correctos no prueba la procedencia del PREPARED.
+- Criterio M0: probar la composición owner-backed (PREPARED confirmado antes del despacho; ante conflicto/fallo/UNKNOWN, cero despachos; tras resultado ambiguo, sin redispatch automático). La prueba de recibo fabricado solo demuestra la limitación del método de bajo nivel, no un bypass de producción.
+- Si se amplía el modelo a consumidores no confiables dentro del mismo entorno, la decisión debe reabrirse y exigirá una frontera de proceso/capacidad real, no un booleano ni un callback del mismo consumidor.
+- No se modificó código de ejecución y no se ejecutaron pruebas/CI para esta nota. `authorization: NOT_EVALUATED`; raíz/autoridad PENDING; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — precisión del alcance de la ruta legacy de efectos (2026-10-19)
 
 - La auditoría de referencias encontró la definición de `executeLuminaNexoStep()` y su llamada interna a `executeNexoStep()`, además de pruebas y referencias históricas; no encontró un caller de producción actual.
