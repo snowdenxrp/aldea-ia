@@ -1,7 +1,7 @@
 ## M0 — vector integrado en `npm test`; CI de este SHA pendiente (2026-10-19)
 
 - Test añadido: [root-bootstrap-protocol.test.mjs](../tests/nexo/root-bootstrap-protocol.test.mjs) en el repositorio y conectado al script `npm test` de `package.json`.
-- Commit que integró el test y lo conectó a `npm test`: `4c0cec1833842103f21194b1f4a3ebdfe168181d`. El HEAD actual posterior es `e08c62aa94c8eaec8bd79f2438e81ad6b76a4779`; la comparación confirma que el tramo posterior sólo modifica documentación.
+- Commit que integró el test y lo conectó a `npm test`: `4c0cec1833842103f21194b1f4a3ebdfe168181d`. Los commits posteriores observados en esta sesión fueron documentales; no se ha observado CI completo para el commit que añadió el test.
 - La misma lógica de verificación del vector se ejecutó localmente con Node.js v22.16.0: caso positivo PASS; desafío modificado, firma alterada, clave distinta y firma truncada rechazados. El test del repositorio está integrado en `npm test`, pero **no hay todavía evidencia observada de CI para el commit que lo añadió**.
 - La suite completa anterior sigue siendo PASS sólo para el SHA `846f1ca5ff5b194ecd22e097f303964873184bce`, run [39340435744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340435744). Los cambios posteriores incluyen documentación más el test y su inclusión en `npm test`; la suite del HEAD actual debe confirmarse.
 - Después del CI: mantener como pendiente la provisión independiente del pin y la prueba en hardware real. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
