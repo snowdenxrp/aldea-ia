@@ -456,6 +456,48 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
 
     const current = await store.loadCurrent();
     if (current.storeRevision !== expectedRevision) {
+      // A previous call may have committed the observation but lost its
+      // response. Recover only from the exact persisted operation identity;
+      // never call the verifier again or infer causal attribution on replay.
+      const replayMatches = current.snapshot.effectJournal.filter(item => item?.idempotencyKey === operation.idempotencyKey);
+      const replayEntry = replayMatches.length === 1 ? replayMatches[0] : null;
+      const sameReplayIdentity = replayEntry &&
+        replayEntry.missionId === operation.missionId &&
+        replayEntry.stepId === operation.stepId &&
+        replayEntry.action === operation.action &&
+        isDeepStrictEqual(replayEntry.target ?? null, operation.target ?? null);
+      const genericObservation = sameReplayIdentity &&
+        replayEntry.status === "reconciled_observed" &&
+        replayEntry.reconciliation &&
+        ["applied", "not_applied"].includes(replayEntry.reconciliation.status) &&
+        Number.isSafeInteger(replayEntry.reconciliation.observedRevision) &&
+        replayEntry.reconciliation.observedRevision >= 0 &&
+        typeof replayEntry.reconciliation.source === "string" &&
+        replayEntry.reconciliation.source.trim();
+      const chronicleSettlement = sameReplayIdentity &&
+        operation.action === "chronicle_append" &&
+        replayEntry.status === "settled_observed" &&
+        replayEntry.settlement?.status === "applied" &&
+        replayEntry.settlement?.source === "nexo-chronicle-store" &&
+        Number.isSafeInteger(replayEntry.settlement?.observedRevision) &&
+        replayEntry.settlement.observedRevision >= 0;
+      if (genericObservation || chronicleSettlement) {
+        const recorded = genericObservation ? replayEntry.reconciliation : replayEntry.settlement;
+        return {
+          status: "already_observed",
+          code: "NEXO_EFFECT_OBSERVATION_ALREADY_RECORDED",
+          storeRevision: current.storeRevision,
+          observation: recorded.status,
+          observedRevision: recorded.observedRevision,
+          source: recorded.source,
+          preparedCommitted: false,
+          observationCommitted: false,
+          journalSettled: Boolean(chronicleSettlement),
+          causalAttribution: "NOT_ESTABLISHED",
+          redispatchAuthorized: false,
+          authorization: "NOT_EVALUATED"
+        };
+      }
       return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
     const matches = current.snapshot.effectJournal.filter(item => item?.idempotencyKey === operation.idempotencyKey);
