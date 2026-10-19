@@ -1,3 +1,13 @@
+## Latest verified checkpoint — default-deny mission completion (2026-10-19)
+
+- The previous guard covered known repair actions and registered `effectVerifiers`, but an unregistered effectful action could still be marked completed without PREPARED or a goal verifier.
+- Fix: `recordOutcome(status=completed)` now fails closed for every action except `chronicle_append` (exact persisted-settlement gate) and `local_analysis` (defined non-mutating action). The existing unresolved-effect/PREPARED guard retains precedence. Missing/unknown action semantics do not imply safe completion.
+- Regression: `generic_write` with no PREPARED and no registered verifier is blocked with `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`; canonical revision stays 0. Existing registered-effect and repair regressions remain.
+- Validated code/test SHA `8d8a92a0ad7ed73b0f35bc798f033be11402856c`. SUCCESS: STEP 4 [39189265872](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265872), STEP 5 [39189265904](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265904), repair crash cuts [39189265894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265894), effect/settlement contract [39189265926](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265926). Chronicle passed on code commit `a0cf6b87d479e39c3927b952869d52b3539b6c75`; the subsequent commit changed only the regression test.
+- Scope remains narrow: no goal verifier implemented, no new action enabled, no automatic mission completion, no UI or legacy-runtime cutover. M0 INCOMPLETE; protected effects STOP; Nexo/Lúmina separate.
+
+Next: audit verifier observation binding to mission/step identity and a verifiable environment revision. Do not add fields or a durable goal-observation record until a concrete gap and contract are established.
+
 ## Latest verified checkpoint — completion guard covers registered effects (2026-10-19)
 
 - Concrete gap: a repair action could be marked completed without any PREPARED/journal row if the caller supplied well-shaped `verified/source` labels. The same principle applies to any action registered in the trusted `effectVerifiers` registry; a missing PREPARED record is not proof of completion.
