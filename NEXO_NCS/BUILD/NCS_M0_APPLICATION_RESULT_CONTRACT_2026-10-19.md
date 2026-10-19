@@ -157,3 +157,12 @@ This is a fail-closed guard, not the missing goal-verification implementation. M
 Validated SHA `a8f5d06cb983a412b8187612c70a6032215518eb`: [repair crash cuts 39189472295](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472295), [effect/settlement 39189472360](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472360), [STEP 4 39189472242](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472242), [STEP 5 39189472266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472266). Chronicle passed on the underlying code SHA `ea2bc19753d82c9d79a98c100b9b9ee2dd0b3c90` ([run 39189369262](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189369262)).
 
 This is response-loss recovery, not cross-store atomicity, effect retry, or mission completion. M0 remains incomplete.
+
+
+## M0 — generic reconciliation read-failure boundary (2026-10-19)
+
+`reconcilePrepared()` now catches failures from its initial canonical continuity read and its mandatory pre-CAS re-read. Both return structured `blocked` results with explicit uncertainty and the underlying error code when available. Regression: verifier returns a valid observation, pre-CAS read throws, method does not commit, the verifier is called once, revision remains 0, and the journal remains `prepared`.
+
+Code SHA `c8b5c59cd5e2a69e11c9c8ba1263d46a5c678469`; final code/test SHA `f43c757cc7dc6ce966f797637dd5d7e2b5715827`. SUCCESS: [repair crash cuts 39189612150](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612150), [effect/settlement 39189612141](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612141), [STEP 4 39189612151](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612151), [STEP 5 39189612143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612143), [Chronicle 39189596625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596625), [continuity/restart 39189596815](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596815).
+
+No automatic retries or redispatch. M0 remains incomplete.
