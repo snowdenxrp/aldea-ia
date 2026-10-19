@@ -1,41 +1,42 @@
 # NCS M0 — matriz de regresión para confirmación PREPARED
 
 **Fecha:** 2026-10-19  
-**Estado:** matriz derivada de inspección estática; todavía no ejecutada.
+**Estado:** inspección estática; pruebas y CI no ejecutadas para este análisis.
 
-## Contrato de runtime observado
+## Contrato observado
 
 En `src/nexo/core/owner-backed-runtime.mjs`, después de `owner.recordPrepared()`, el runtime:
-- devuelve `conflict` sin despacho si la respuesta es `status: "conflict"`;
-- devuelve `unknown` sin despacho si la respuesta declara `status: "unknown"`, `preparedCommitted: "UNKNOWN"`, o la llamada lanza una excepción;
-- solo permite continuar cuando `status === "committed"` y `preparedCommitted === true`;
-- devuelve `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` para las demás respuestas.
+- devuelve `conflict` sin invocar el adaptador si la respuesta declara `status: "conflict"`;
+- devuelve `unknown` sin invocar el adaptador si declara `status: "unknown"`, `preparedCommitted: "UNKNOWN"`, o la llamada lanza una excepción;
+- antes de invocar el adaptador solo exige `status === "committed"` y `preparedCommitted === true`;
+- devuelve `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` cuando no se cumplen esas dos condiciones.
 
-La prueba existente `tests/nexo/chronicle-runtime.test.mjs` comprueba conflicto y UNKNOWN, pero la inspección de sus líneas 389–429 no encontró casos explícitos para todas las respuestas malformadas del último grupo.
+**Hallazgo adicional:** el runtime no valida `storeRevision` en esa frontera. El adaptador `src/nexo/effect-adapter.js` sí rechaza una revisión ausente/no segura/negativa con `EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED`, pero para entonces el runtime ya puso `dispatchAttempted = true` y llama después a `recordExecutionLineage()` con esa revisión. Por tanto, no es correcto afirmar que las respuestas con revisión ausente o negativa se bloquean en el runtime antes de cruzar la frontera de invocación del adaptador. Tampoco hay evidencia aquí de que el handler externo llegue a ejecutarse: eso requiere una prueba que cuente invocaciones del handler.
 
-## Matriz de casos a validar
+## Matriz de regresión requerida
 
-| Caso de respuesta de `recordPrepared()` | Resultado esperado | ¿Despacho? |
+| Respuesta de `recordPrepared()` | Resultado/propiedad que debe probarse | Invocaciones del handler |
 |---|---|---|
-| `{status:"committed", preparedCommitted:true, storeRevision:5}` | El flujo normal continúa | Sí, una vez |
-| `{status:"conflict", ...}` | `conflict` | No |
-| `{status:"unknown", ...}` | `unknown` | No |
-| Excepción / respuesta perdida | `unknown` | No |
-| `{status:"committed", storeRevision:5}` | `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` | No |
-| `{status:"committed", preparedCommitted:false, storeRevision:5}` | `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` | No |
-| `{status:"committed", preparedCommitted:true}` sin revisión | `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` | No |
-| `{status:"committed", preparedCommitted:true, storeRevision:-1}` | `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` | No |
-| `{status:"failed", preparedCommitted:true, storeRevision:5}` | `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` | No |
-| `null` u otra respuesta no objeto | `blocked / NEXO_PREPARED_COMMIT_NOT_CONFIRMED` | No |
+| `{status:"committed", preparedCommitted:true, storeRevision:5}` | Flujo normal; PREPARED precede al efecto | Exactamente 1 |
+| `{status:"conflict", ...}` | `conflict`, `dispatchAttempted:false` | 0 |
+| `{status:"unknown", ...}` | `unknown`, `redispatchAuthorized:false` | 0 |
+| La llamada lanza / respuesta perdida | `unknown`, sin despacho | 0 |
+| `{status:"committed", storeRevision:5}` | Bloqueo contractual antes de invocar el adaptador | 0 |
+| `{status:"committed", preparedCommitted:false, storeRevision:5}` | Bloqueo contractual antes de invocar el adaptador | 0 |
+| `{status:"failed", preparedCommitted:true, storeRevision:5}` | Bloqueo contractual antes de invocar el adaptador | 0 |
+| `null` | Bloqueo contractual antes de invocar el adaptador | 0 |
+| `{status:"committed", preparedCommitted:true}` | **Definir/corregir frontera:** revisión ausente; no marcar despacho ni llamar handler | 0 |
+| `{status:"committed", preparedCommitted:true, storeRevision:-1}` | **Definir/corregir frontera:** revisión inválida; no marcar despacho ni llamar handler | 0 |
+| `{status:"committed", preparedCommitted:true, storeRevision:1.5}` o revisión no segura | **Definir/corregir frontera:** revisión inválida | 0 |
 
-## Regresión posterior al despacho
+## Prueba posterior al inicio del efecto
 
-Las pruebas existentes también comprueban que, tras comenzar el despacho, una excepción o una reconciliación desconocida produce `UNKNOWN` y `redispatchAuthorized: false`. Esas garantías deben mantenerse sin alterar el contrato de recuperación.
+Conservar las garantías ya cubiertas: si el handler puede haber producido el efecto y luego lanza, o la reconciliación queda desconocida, el resultado es `UNKNOWN`, `redispatchAuthorized:false`, y el handler no se vuelve a invocar automáticamente.
 
-## Estado de evidencia
+## Evidencia y estado
 
-- Inspección estática del runtime y de las pruebas: completada para esta matriz.
-- Añadir los casos negativos como regresiones ejecutables: pendiente.
-- Ejecutar la prueba focal y la suite Nexo: pendiente.
-- Evidencia CI vinculada al SHA exacto: pendiente.
-- No se declara PASS ni se cambia el estado de autoridad. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+- Inspección estática de runtime, adaptador y prueba focal: realizada.
+- Pruebas dinámicas: no ejecutadas.
+- Añadir regresiones ejecutables y corregir el límite de validación de revisión: pendiente.
+- CI vinculado al SHA exacto: pendiente.
+- No declarar PASS. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
