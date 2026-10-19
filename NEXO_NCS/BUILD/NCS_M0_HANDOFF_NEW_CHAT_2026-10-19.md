@@ -2,6 +2,27 @@
 
 **Misión invariable: M0.** Este documento es la continuidad de trabajo para abrir un chat nuevo. Leer primero `NEXO_NCS/STATUS.md`, después este handoff y los documentos concretos enlazados aquí. No reiniciar investigación ni volver a auditar cierres sin un fallo nuevo y reproducible.
 
+## ACTUALIZACIÓN POSTERIOR — 2026-10-19 (prevalece sobre notas anteriores de CI)
+
+La incertidumbre de CI del vector ya está cerrada para el commit de integración `4c0cec1833842103f21194b1f4a3ebdfe168181d`:
+
+- Suite completa `npm test`: [run 39342543741](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543741), job `tests`, paso `Run tests` = SUCCESS.
+- M0 integrado: [run 39342543894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543894), cinco grupos SUCCESS.
+- Chronicle vertical: [run 39342543925](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543925) SUCCESS.
+- Admisión/continuidad tras reinicio: [run 39342543933](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543933) SUCCESS.
+
+La suite completa ejecutó `tests/nexo/root-bootstrap-protocol.test.mjs` porque está conectado a `npm test` en ese SHA. La rama luego avanzó a `e795a79ed7faaae6f7218a6bd3f67aacafcb6698` mediante 15 commits que, según compare de GitHub, modificaron únicamente cinco archivos Markdown; no hubo cambios de código/test posteriores a `4c0cec...`. No llamar al run un test literal del SHA documental HEAD.
+
+**Instrucción operativa nueva:** la llave física no bloquea el resto de M0. Continuar con continuidad, recuperación, no-redispatch, límites de acciones y límites de despliegue del store. Sólo fingerprint independiente y prueba de hardware esperan a la llave.
+
+Documento de carril paralelo: [NCS_M0_NON_ROOT_CONTINUATION_TRACK_2026-10-19.md](NCS_M0_NON_ROOT_CONTINUATION_TRACK_2026-10-19.md).
+
+La revisión del carril independiente confirmó que el store ya declara límites explícitos: sin afirmación de fsync/durabilidad ante pérdida de energía, sin protección anti-rollback, sin resistencia reclamada a symlink/path attacks y sin soporte de filesystem distribuido. No agregar infraestructura ni parches antes de fijar la propiedad requerida y su modelo de amenaza.
+
+Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz `PENDING/UNKNOWN`.
+
+---
+
 ## 1. Repositorio y reglas de trabajo
 
 - Repositorio: `snowdenxrp/aldea-ia`.
