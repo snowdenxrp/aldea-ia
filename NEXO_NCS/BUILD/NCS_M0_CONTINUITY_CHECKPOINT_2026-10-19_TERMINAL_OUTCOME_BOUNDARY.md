@@ -169,3 +169,16 @@ El estado constitucional sigue: M0 INCOMPLETO; authorization: NOT_EVALUATED; efe
 - **Próximo paso:** continuar al siguiente contrato M0 de continuidad solo después de identificar ruta real, invariantes y prueba. No reabrir esta consulta ni el arreglo de resultado terminal sin evidencia nueva.
 
 **No cambia:** M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima PENDING.
+
+
+## 12. Contrato mínimo de bootstrap para llave raíz única (borrador, 2026-10-19)
+
+Se añadió la sección 9 a [NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md](./NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md), con la forma mínima del protocolo sin elegir hardware ni simular una raíz:
+
+- La clave pública/fingerprint debe provisionarse mediante una fuente independiente del store de continuidad; si no se demuestra esa independencia, composición = UNKNOWN.
+- La prueba de posesión usa desafío fresco y firma separada por dominio; sólo demuestra control de la clave correspondiente al pin provisionado.
+- La prueba de bootstrap no equivale a autoridad vigente, autorización de una acción ni enforcement en el límite final.
+- Mientras no exista fuente implementada de provisión/pin, verificación de vigencia/revocación y enforcement antes del efecto, `authorization: NOT_EVALUATED` y `STOP` permanecen obligatorios.
+- No hay llave física elegida/adquirida/configurada. El texto es contrato de diseño, no implementación ni evidencia de runtime.
+
+El borrador quedó en el HEAD de documentación `174097b9b1afe8448a1761f5b5e3c2d8c5c620a2`; `npm test` terminó SUCCESS en [run 39340297296](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340297296), SHA exacto. La siguiente pregunta no es repetir comparación general de familias: es determinar qué fuente/procedimiento real de provisión independiente está disponible y si permite cumplir este contrato. Si no hay evidencia, registrar bloqueo y no implementar un verificador ficticio.
