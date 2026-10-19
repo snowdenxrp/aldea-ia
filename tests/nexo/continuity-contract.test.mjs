@@ -151,6 +151,17 @@ assert.throws(
 
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "non-string-action",
+    status: "planned",
+    steps: [{ id: "step-1", action: 42, target: "alpha", status: "planned", dependsOn: [] }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must reject non-string actions before persisting a planned step"
+);
+
+
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
     missionId: "malformed-dependency-shape",
     status: "planned",
     steps: [
@@ -440,6 +451,25 @@ assert.equal(
   1,
   "invalid mission admission must stop before commitIfCurrent changes the canonical revision"
 );
+
+const invalidActionResult = await owner.recordMission({
+  expectedRevision: 1,
+  mission: {
+    missionId: "owner-invalid-action",
+    objective: "repair_agent_state",
+    status: "planned",
+    steps: [{ id: "step-1", action: 42, target: "alex", status: "planned", dependsOn: [] }]
+  }
+});
+assert.equal(invalidActionResult.status, "conflict");
+assert.equal(invalidActionResult.code, "NEXO_MISSION_CONTEXT_INVALID");
+assert.equal(invalidActionResult.storeRevision, 1);
+assert.equal(
+  (await owner.loadCurrent()).storeRevision,
+  1,
+  "a mission with a non-string action must not advance the canonical store revision"
+);
+
 
 
 const operation = {
