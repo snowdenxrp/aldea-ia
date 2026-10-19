@@ -439,3 +439,17 @@ Estado: **M0 INCOMPLETO**. Chronicle sigue opt-in. Runtime default sin cutover. 
 2. Siguiente: retomar la frontera arquitectónica documentada en el handoff base: inspeccionar el punto de entrada real del producto e identificar el seam mínimo Nexo-only que no cargue `world.js`, `simulation.js`, `simulate.mjs` ni memoria de asistentes de Lúmina.
 3. No alojar Chronicle en `scripts/assistants.mjs`; conservar `scripts/nexo-chronicle-session.mjs` como vertical opt-in.
 4. No cambiar runtime default, no ampliar acciones y no declarar M0 completo.
+
+
+## Addendum — entrada Nexo-only validada (SHA de código `9174921f587b504f40524ae5e89f47da68e40ae2`)
+
+- Nueva entrada `scripts/nexo.mjs`, invocable con `npm run nexo -- chronicle-append ...`. Solo enruta la vertical Chronicle; comandos desconocidos fallan cerrado.
+- Se extrajo `executeNexoStepWithContinuityOwner` a `src/nexo/core/owner-backed-runtime.mjs`, sin imports estáticos de Lúmina/assistants. El CLI Chronicle importa este módulo directamente; `src/nexo/runtime.js` lo reexporta para compatibilidad.
+- Prueba del proceso real y vertical Chronicle SUCCESS: [39179321550](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179321550). Detalle: `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md`.
+- No se cambió `index.html`: sigue siendo la entrada web de Lúmina. El CLI no es todavía una app web ni el runtime general de Nexo.
+
+### Continuación exacta
+
+1. Mantener Chronicle como única acción expuesta.
+2. Siguiente gate: definir y probar la transición owner-backed para acciones explícitamente soportadas; PREPARED por CAS antes de dispatch, lineage, verificador persistido confiable, settlement y outcome. Si falta contrato de acción, bloquear antes del dispatch.
+3. No cambiar runtime default, no habilitar efectos protegidos, no ampliar acciones por inferencia. M0 permanece INCOMPLETO.
