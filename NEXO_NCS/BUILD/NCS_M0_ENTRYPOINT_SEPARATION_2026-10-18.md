@@ -126,3 +126,17 @@ See [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](NCS_M0_APPLICATION_RESULT
 - CLI wrappers and the direct application test use this module. The export-list regression prevents an implicit generic dispatcher from being added.
 - CI SUCCESS on SHA `71a01beb06d9a9d01e1cd459fe123588e1dd553b`: [39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
 - This is an integration seam, not a browser/Android app or runtime-default cutover.
+
+
+## Public API import-graph guard — re-exports included (validated 2026-10-18 local)
+
+- The static Nexo/Lúmina separation test now traverses both `import ... from` and `export ... from`. This closes a blind spot where the public application index's re-exports could hide its implementation modules from the recursive audit.
+- The test explicitly proves that `src/nexo/application/chronicle-append.mjs` and `continuity-queries.mjs` are reached from the CLI entrypoints through the public index, while `src/nexo/runtime.js` remains unreachable.
+- Code/test SHA: `0872c646db77af2e3e0bbd9e711d7f81c6cc1caa`. CI SUCCESS: [Chronicle 39187372728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372728), [STEP 4 39187372719](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372719), [STEP 5 39187372729](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372729).
+- This is a static import-graph guard, not OS isolation or UI integration. M0 remains INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
+
+## Current verified pointer — import-graph guard
+
+- Latest code/test SHA with focal CI SUCCESS: `0872c646db77af2e3e0bbd9e711d7f81c6cc1caa`.
+- The only code change since the preceding validated checkpoint is the test's import-graph traversal and its assertions; no runtime or application behavior changed.
+- Next: audit public API boundaries and recovery semantics only. Do not add a second mutating use case, connect `index.html` or the legacy runtime, or infer authority from continuity state.
