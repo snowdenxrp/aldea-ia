@@ -568,3 +568,11 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Compared SHA `140769ea...` → HEAD: only `STATUS.md`, this handoff and `NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md` changed.
 - Current application boundary: `src/nexo/core/continuity-service.mjs`; `src/nexo/application/chronicle-append.mjs`; `src/nexo/application/continuity-queries.mjs`; thin CLI wrappers under `scripts/`. The import-graph regression ensures no transitive dependency on Lúmina's world/simulation/assistant memory or `src/nexo/runtime.js`.
 - Next gate: audit the public application contract for operation identity, payload binding, concurrent admission, result uncertainty and explicit retry behavior before any new caller (web/mobile or legacy runtime) consumes it. Do not enable a second mutating action, change the default runtime, or infer authority from store contents. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separate.
+
+
+### Addendum — carrera de inicialización con stores ausentes (2026-10-19)
+
+- Dos llamadas concurrentes al caso de uso con continuidad y Chronicle ausentes, ambas con inicialización opt-in, no pueden despachar dos veces. La carrera puede bloquear a un caller en la inicialización/admisión; no se finge atomicidad cross-store.
+- Un retry explícito converge a un único append. El replay posterior devuelve `completed` con `dispatchAttempted=false`; ambos archivos quedan byte-identical durante el replay.
+- CI SUCCESS en SHA `7f4c69ef8003515c53d761677185f4668c05d5a0`: [39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
+- Sin retry automático, cola, segundo dispatch ni afirmación de transacción entre archivos. El contrato exige que el caller maneje el bloqueo/conflicto y decida si vuelve a invocar.
