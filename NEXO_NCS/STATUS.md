@@ -1114,3 +1114,11 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Dos llamadas concurrentes con la misma misión/paso no pueden despachar dos veces ni crear entradas Chronicle duplicadas. Un retry explícito posterior recupera el resultado con `dispatchAttempted=false` y no cambia ninguno de los dos archivos.
 - CI SUCCESS en SHA `140769ea651ed5cd198fd57f05530679e79f8c5d`: [Chronicle/entrypoint 39180811315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811315), [continuity/runtime 39180811308](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811308), [semantic validation 39180811234](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811234), [outcome/restart 39180811257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811257).
 - El contrato permite que el perdedor de la carrera reciba un conflicto/bloqueo y haga retry explícito; no hay reintentos automáticos, cola ni redispatch inferido. Solo Chronicle habilitado. M0 INCOMPLETO.
+
+
+## M0 — carrera de bootstrap inicial y convergencia por retry explícito (2026-10-19)
+
+- Se añadió una prueba donde dos invocaciones de `runNexoChronicleAppend()` compiten con ambos stores ausentes y flags de inicialización opt-in. El resultado de la carrera puede bloquear a un caller, pero no hay más de un dispatch.
+- Un retry explícito converge a un solo append; una reproducción final no despacha y mantiene idénticos ambos archivos. No se afirma atomicidad cross-store: se comprueba recuperación segura tras la carrera.
+- CI SUCCESS en SHA `7f4c69ef8003515c53d761677185f4668c05d5a0`: [Chronicle 39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [continuity/restart 39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [semantic validation 39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [outcome classification 39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
+- No automatic retry/queue; el caller reintenta explícitamente. Solo Chronicle muta. M0 INCOMPLETO.
