@@ -1,5 +1,15 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — evidencia Chronicle tiene forma canónica cerrada (validado 2026-10-19)
+
+- Nueva regresión: evidencia de outcome con source/revisión correctos pero un campo extra no vinculado (`authorityClaim`) se intentaba persistir y reaparecía en `step.result`. El contrato ya definía cuatro campos canónicos para outcome Chronicle; el helper compartido ahora exige exactamente `verified`, `kind`, `source`, `observedRevision`, sin claves adicionales.
+- La validación exacta se aplica tanto al writer como a la reconstrucción. Se mantiene el positivo: outcome con forma exacta y source/revisión iguales al settlement reconstruye `completed`. El test de runtime también comprueba que la evidencia producida realmente contiene sólo esas cuatro claves.
+- HEAD código+tests: `d4936c965eb926b3e61eb7ecbe3f9becf58925ca`. SUCCESS: bounded admission/restart [39196697574](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697574), Chronicle native [39196697543](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697543), STEP 4 [39196697516](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697516), STEP 5 [39196697496](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196697496). Crash cuts y continuidad también SUCCESS con el mismo código en test SHA `37b7a04096f39c3c33033655ca9472b1856412cd`: [39196672091](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196672091), [39196672112](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196672112).
+- Límite: la forma cerrada evita campos de claim no vinculados; no autentica criptográficamente la procedencia. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** integrar la regresión de lectura fallida con `executeNexoStepWithContinuityOwner()`: si `recordPrepared()` devuelve blocked por continuidad ilegible, verificar que no se invoque el adapter ni se intente retry/redispatch. Prueba aislada, sin runtime legacy.
+
+
 ## M0 — shape de evidencia terminal Chronicle queda cerrado (validado 2026-10-19)
 
 - La evidencia del outcome Chronicle ahora acepta exactamente cuatro claves: `verified`, `kind`, `source`, `observedRevision`. El tipo debe ser `nexo-chronicle-persisted-invariant`, y source/revision deben coincidir con el settlement canónico validado. Claims adicionales no ligados al settlement se rechazan con `NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH`.
