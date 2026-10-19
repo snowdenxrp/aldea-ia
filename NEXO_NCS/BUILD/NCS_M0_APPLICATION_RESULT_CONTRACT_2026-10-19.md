@@ -191,3 +191,10 @@ This handles known read-failure boundaries only. It does not add cross-store ato
 Chronicle replay previously accepted a settlement with status `applied`, source `nexo-chronicle-store`, and nonnegative revision even when the canonical record lacked evidence and `observedAt`. It now requires the evidence property and canonical ISO timestamp, matching the generic observation replay standard. A malformed partial settlement returns conflict and does not invoke the verifier.
 
 Code SHA `005338b91656e61eee3ffbef105c306e2af496b2` passed all six focal workflows. Test SHA `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72` passed all four workflows triggered by the added regression. See STATUS/handoff for exact CI links. M0 remains incomplete; this is replay-integrity validation, not authorization or goal verification.
+
+
+## Handoff de continuidad para el siguiente chat (2026-10-19)
+
+El checkpoint más reciente es el replay Chronicle incompleto. La ruta de replay ahora exige identidad exacta, estado `settled_observed`, settlement `applied`, fuente `nexo-chronicle-store`, revisión observada no negativa, `evidence` presente y `observedAt` ISO válido/canónico. Una entrada parcial no se acepta como `already_observed` y no invoca el verificador como fallback. Código `005338b91656e61eee3ffbef105c306e2af496b2`; regresión en SHA código/pruebas `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72`. Seis workflows pasaron en el SHA de código; cuatro workflows disparados por la nueva prueba pasaron en el SHA código/prueba. IDs y enlaces, además del estado de todos los hardening previos y pasos de continuidad, están en `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md`.
+
+Próximo paso: inspeccionar sólo la correspondencia entre el contrato de escritura del settlement Chronicle y el contrato de replay. Leer ambos caminos y pruebas existentes antes de cambiar código. M0 permanece INCOMPLETO; no se ha implementado el goal verifier ni autorizado el runtime real.
