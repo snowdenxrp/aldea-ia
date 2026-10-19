@@ -520,3 +520,20 @@ Se inspeccionó la frontera que el STATUS marcaba: admisión de `mission.status`
 - No se cambió código, no se añadieron tests y no se ejecutó CI para esta auditoría.
 - **Continuación obligatoria:** inspeccionar `src/nexo/application/index.mjs` y los wrappers CLI de status para ver si la discrepancia llega al operador. Luego reproducir con una regresión de lectura y decidir si la admisión debe rechazar estados no-`planned` para misiones nuevas o si la proyección debe representar la contradicción fail-closed. No alterar migración legacy sin política explícita.
 
+
+
+## 26. Checkpoint de continuidad — criterios ejecutables de M0 (2026-10-19)
+
+Se creó `NEXO_NCS/BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EXECUTABLE_2026-10-19.md`, con seis criterios que tienen setup, acción y resultados observables:
+- AC1: consulta canónica de solo lectura, discrepancia explícita y sin fuga de payload.
+- AC2: admisión de misión acotada y persistible.
+- AC3: gate de nueva ejecución fail-closed.
+- AC4: journal/settlement/replay sin duplicación.
+- AC5: crash cuts, reinicio y reconciliación conservando incertidumbre.
+- AC6: entrypoints Nexo estrechos y separación del grafo legacy auditado.
+
+El documento distingue el gate de ejecución de la legitimidad de la raíz de autoridad; también aclara que consistencia del journal no demuestra procedencia criptográfica, durabilidad ante pérdida de energía ni atomicidad con sistemas externos.
+
+**Bloqueo inmediato:** CI del cambio `mission-status` sigue UNKNOWN. La corrección de integración está en `82f1204ae4e9298163231ab7a323233ad87777b8`, pero no se observó aquí un run real que ejecute la regresión sobre un SHA que la contenga. El workflow existente permite `workflow_dispatch`; no se dispone de una acción de dispatch mediante la integración GitHub disponible en esta sesión. No declarar PASS ni afirmar que se ejecutó localmente.
+
+Próximo paso exacto: recuperar el run de `.github/workflows/nexo-m0-mission-status.yml` por la interfaz/endpoint permitido, o pedir al usuario que abra Actions sólo si la vía automatizada sigue bloqueada. Después registrar SHA, run, job y log; completar matriz AC1–AC6 usando evidencia ya disponible, sin reabrir los tests cerrados salvo cambios relevantes. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
