@@ -1856,3 +1856,10 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Interpretación:** no declara atómica la inicialización de dos archivos. Define y prueba recuperación idempotente de este corte concreto, sin rollback destructivo. Otros cortes siguen requiriendo sus propias pruebas.
 - **Validación:** regresión publicada, no ejecutada localmente; CI no observado para este SHA. **PENDING; no PASS.**
 - **Estado:** M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
+
+### Precisión adicional de la regresión de bootstrap parcial
+
+- Commit: [150eac0209a3fa40c4ba9a37f790a3fffaa612ec](https://github.com/snowdenxrp/aldea-ia/commit/150eac0209a3fa40c4ba9a37f790a3fffaa612ec).
+- La regresión ahora exige el código exacto `NEXO_CHRONICLE_INITIALIZE_OUTCOME_UNKNOWN` además de `blocked`, sin dispatch, sin redispatch y sin misión admitida. Esto evita que un fallo distinto o una clasificación demasiado genérica satisfaga accidentalmente el test.
+- La comprobación está publicada y el archivo fue releído. **Ejecución/CI de este SHA: PENDING**; no se declara PASS.
