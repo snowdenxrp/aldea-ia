@@ -4,6 +4,19 @@ import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { executeNexoStep, executeNexoStepWithContinuityOwner, executeLuminaNexoStep, replanPersistedNexoMission } from "../../src/nexo/runtime.js";
 import { createLearningMemory, recordNexoPlan } from "../../src/assistants/memory.js";
 
+function canonicalSnapshot(missions, effectJournal = []) {
+  return {
+    schema: "NEXO_OPERATIONAL_CONTINUITY",
+    schemaVersion: 1,
+    missions,
+    attempts: [],
+    doNotRepeat: [],
+    executions: [],
+    effectJournal
+  };
+}
+
+
 const mission=buildNexoMission({reports:[{assistant:"Debugger",findings:[{severity:"error",code:"AGENT_POSITION",agent:"alex",message:"posición inválida"}]}]});
 let version=1; const adapter=createEffectAdapter({getStateVersion:()=>version,handlers:{repair_agent_state:async()=>{version++;return{status:"completed",details:"position repaired"};}}});
 const result=await executeNexoStep({mission,stepId:"step-1",adapter,memory:createLearningMemory(),precondition:({stateVersion})=>stateVersion===1,postcondition:({effectResult})=>effectResult.details==="position repaired"});
@@ -395,8 +408,8 @@ const canonicalOwner = {
   supportsReconciliation: action => action === "write_file",
   loadCurrent: async () => ({
     storeRevision: 0,
-    snapshot: { effectJournal: [], missions: [{ missionId: "canonical-mission", status: "planned",
-      steps: [{ id: "step-1", action: "write_file", target: "alpha", status: "planned" }] }] }
+    snapshot: canonicalSnapshot([{ missionId: "canonical-mission", status: "planned",
+      steps: [{ id: "step-1", action: "write_file", target: "alpha", status: "planned", dependsOn: [] }] }])
   }),
   recordPrepared: async () => { genericPrepareCalls += 1; return { status: "committed", preparedCommitted: true, storeRevision: 1 }; },
   recordExecutionLineage: async () => ({ status: "committed", storeRevision: 2 }),
@@ -426,8 +439,8 @@ const noVerifierOwner = {
   supportsReconciliation: () => false,
   loadCurrent: async () => ({
     storeRevision: 0,
-    snapshot: { effectJournal: [], missions: [{ missionId: "no-verifier-mission", status: "planned",
-      steps: [{ id: "step-1", action: "chronicle_append", target: { content: "payload" }, status: "planned" }] }] }
+    snapshot: canonicalSnapshot([{ missionId: "no-verifier-mission", status: "planned",
+      steps: [{ id: "step-1", action: "chronicle_append", target: { content: "payload" }, status: "planned", dependsOn: [] }] }])
   }),
   recordPrepared: async () => { unsupportedPrepares += 1; return { status: "committed", preparedCommitted: true, storeRevision: 1 }; }
 };
@@ -449,7 +462,7 @@ let repairPrepareCalls=0;
 let repairDispatchCalls=0;
 const repairCanonicalOwner={
   ...canonicalOwner,
-  loadCurrent:async()=>({storeRevision:0,snapshot:{missions:[{missionId:"repair-canonical",status:"planned",steps:[{id:"step-1",action:"repair_agent_state",target:"alex",status:"planned"}]}]}}),
+  loadCurrent:async()=>({storeRevision:0,snapshot:canonicalSnapshot([{missionId:"repair-canonical",status:"planned",steps:[{id:"step-1",action:"repair_agent_state",target:"alex",status:"planned",dependsOn:[]}]}])}),
   supportsReconciliation:()=>true,
   recordPrepared:async()=>{repairPrepareCalls++;return {status:"committed",preparedCommitted:true,storeRevision:1};}
 };
@@ -471,7 +484,7 @@ let uncertainPrepareDispatches=0;
 const uncertainPrepareOwner={
   ...canonicalOwner,
   supportsReconciliation: action => action === "chronicle_append",
-  loadCurrent: async()=>({storeRevision:0,snapshot:{effectJournal:[],missions:[{missionId:"uncertain-prepare-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
+  loadCurrent: async()=>({storeRevision:0,snapshot:canonicalSnapshot([{missionId:"uncertain-prepare-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned",dependsOn:[]}]}])}),
   recordPrepared:async()=>{throw new Error("prepare response lost");}
 };
 const uncertainPrepareAdapter={
@@ -497,7 +510,7 @@ let adapterVerifierDispatchCalls=0;
 const noAdapterVerifierOwner={
   ...canonicalOwner,
   supportsReconciliation:()=>true,
-  loadCurrent:async()=>({storeRevision:0,snapshot:{effectJournal:[],missions:[{missionId:"no-adapter-verifier-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned"}]}]}}),
+  loadCurrent:async()=>({storeRevision:0,snapshot:canonicalSnapshot([{missionId:"no-adapter-verifier-mission",status:"planned",steps:[{id:"step-1",action:"chronicle_append",target:{content:"payload"},status:"planned",dependsOn:[]}]}])}),
   recordPrepared:async()=>{adapterVerifierPrepareCalls++;return {status:"committed",preparedCommitted:true,storeRevision:1};}
 };
 const noAdapterVerifier={
