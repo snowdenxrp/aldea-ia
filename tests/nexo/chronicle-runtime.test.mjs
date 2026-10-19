@@ -196,8 +196,8 @@ function continuitySnapshot(missions, effectJournal = []) {
 }
 
 
-// A requested successor step must not reach PREPARED or dispatch while its
-// declared predecessor remains planned in the canonical mission snapshot.
+// After capability checks, a requested successor still must not reach
+// PREPARED or dispatch while its predecessor remains planned in canonical state.
 const dependencyGateMission = {
   missionId: "dependency-gate-mission",
   status: "planned",
