@@ -233,9 +233,8 @@ assert.equal(
   0,
   "independent read proves initialize persisted before lock cleanup failed"
 );
-await assert.rejects(
+await assert.doesNotReject(
   () => fs.access(releaseInitializePath + ".lock"),
-  error => error?.code !== "ENOENT",
   "failed lock cleanup leaves the lock directory present"
 );
 await fs.rm(releaseInitializePath + ".lock", { recursive: true, force: true });
@@ -255,9 +254,8 @@ const releaseCommitObserved = await createNexoContinuityStore({ filePath: releas
 assert.equal(releaseCommitObserved.storeRevision, 1,
   "independent read proves conditional commit persisted before lock cleanup failed");
 assert.deepEqual(releaseCommitObserved.snapshot, candidateA);
-await assert.rejects(
+await assert.doesNotReject(
   () => fs.access(releaseCommitPath + ".lock"),
-  error => error?.code !== "ENOENT",
   "failed conditional-commit lock cleanup leaves the lock directory present"
 );
 await fs.rm(releaseCommitPath + ".lock", { recursive: true, force: true });
