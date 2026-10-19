@@ -1,5 +1,17 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — runtime recovery comparte el contrato canónico de settlement Chronicle (validado 2026-10-19)
+
+- Segundo hueco concreto: `owner-backed-runtime.mjs` recuperaba una entrada `settled_observed` comprobando sólo status/source/revisión. Esa ruta evitaba el validador más estricto de `continuity-owner.mjs`, podía informar `journalSettled: true` y pasar al outcome writer aun con `evidence: null` o timestamp ausente. El outcome writer real acababa bloqueando, pero el estado público intermedio afirmaba settlement válido sin satisfacer el contrato.
+- Corrección de raíz: nuevo contrato puro compartido `src/nexo/core/chronicle-settlement-contract.mjs`. Valida estado, acción, identidad exacta sin separadores ambiguos, target de contenido, status/source/revisión, evidencia ligada al operationKey y contenido exactos, y timestamp ISO canónico. Tanto replay/completion del owner como recuperación de runtime llaman al mismo validador; se elimina la divergencia entre puertas.
+- Regresión runtime: un `settled_observed` con `evidence: null` devuelve `unknown / NEXO_CHRONICLE_EXISTING_OBLIGATION_UNRESOLVED`, no llama a `recordOutcome`, no despacha, y no declara `journalSettled` ni outcome terminal. La fixture positiva de replay ahora contiene evidencia y timestamp canónicos.
+- Código compartido/owner/runtime: `e62b65ab699c5d177c40d08f32a1393af118e4ee`; prueba runtime añadida en `26eab01d09ab4be20c7228da8abf17e3224f5a6b`. Los workflows focales del SHA de test `26eab...` pasaron: Chronicle native [39193750342](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193750342), bounded admission/restart [39193750352](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193750352), STEP 4 [39193750292](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193750292), STEP 5 [39193750331](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193750331). Tras el cambio final de identidad del contrato, crash cuts [39193779321](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193779321), STEP 4 [39193779238](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193779238) y STEP 5 [39193779170](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193779170) pasaron en `e62b65a...`.
+- Una ejecución intermedia de Chronicle en SHA `a7bdce...` falló porque la fixture de replay aún no tenía la evidencia/timestamp nuevos; se corrigió la fixture y el test runtime negativo/positivo pasó en `26eab...`. No se oculta esa secuencia.
+- Límite: contrato estructural común para la evidencia local observada; no autenticación, causalidad, autorización, fsync/power-loss durability ni verificación general del objetivo. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** auditar los límites de observación genérica para determinar si el mismo hueco de evidencia nula existe fuera de Chronicle. Primero leer las pruebas y mantener el alcance separado: no endurecer el contrato genérico sin una regresión que demuestre el fallo y una evaluación de compatibilidad.
+
+
 ## M0 — evidencia Chronicle ligada a la entrada persistida (validado 2026-10-19)
 
 - Hueco concreto: `observeChronicleOperation()` verificaba que la entrada persistida coincidiera con la operación, pero devolvía la observación sin `evidence`. `reconcilePrepared()` acababa guardando `evidence: null`; las guardas anteriores sólo comprobaban que la propiedad existiera, por lo que null podía superar replay y completion.
@@ -13,7 +25,7 @@
 **Siguiente frontera:** seguir dentro de M0 desde la recuperación canónica/reconstrucción del estado persistido, inspeccionando el siguiente límite concreto con sus pruebas existentes. No reabrir la discrepancia de evidencia Chronicle salvo que aparezca una regresión nueva.
 
 
-**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código: `f3a54153d3574f559aa32f1c56d093e1152b4842`; SHA de código + regresión corregida: `b21896e893a1b739bbfa511f76c3a215298a73e6`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
+**Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código + contrato compartido: `e62b65ab699c5d177c40d08f32a1393af118e4ee`; SHA con regresión runtime: `26eab01d09ab4be20c7228da8abf17e3224f5a6b`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
 
 ## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
 
