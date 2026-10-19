@@ -130,7 +130,20 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
 
   async function initialize(snapshot) {
     assertNexoContinuitySnapshot(snapshot);
-    const releaseLock = await acquireLock(fsModule, filePath);
+    let releaseLock;
+    try {
+      releaseLock = await acquireLock(fsModule, filePath);
+    } catch (error) {
+      // Initialization has not begun writing until its lock is acquired.
+      // Keep OS filesystem codes behind the Nexo store contract.
+      if (error?.code === "ENOENT") {
+        return { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" };
+      }
+      return {
+        status: "failed",
+        code: error?.code ?? "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED"
+      };
+    }
     try {
       try {
         await fsModule.access(filePath);
