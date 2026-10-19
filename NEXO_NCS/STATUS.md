@@ -1,5 +1,18 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — evidencia Chronicle ligada a la entrada persistida (validado 2026-10-19)
+
+- Hueco concreto: `observeChronicleOperation()` verificaba que la entrada persistida coincidiera con la operación, pero devolvía la observación sin `evidence`. `reconcilePrepared()` acababa guardando `evidence: null`; las guardas anteriores sólo comprobaban que la propiedad existiera, por lo que null podía superar replay y completion.
+- Corrección: `src/nexo/adapters/chronicle-observation.mjs` devuelve evidencia estructurada `{kind: "persisted-chronicle-entry", operationKey, content}` tomada de la entrada que se leyó. `src/nexo/core/continuity-owner.mjs` exige que esa evidencia sea un objeto con kind exacto y que operationKey y content coincidan con la identidad/target del registro tanto en replay como al registrar `completed`.
+- Regresiones: `tests/nexo/chronicle-store.test.mjs` comprueba la evidencia devuelta por el verificador; `tests/nexo/repair-settlement-crash-cuts.test.mjs` comprueba que un settlement Chronicle con `evidence: null`, aun con estado/source/revisión/timestamp válidos, bloquea completion y no cambia la revisión ni los intentos.
+- Código actualizado: `b3a583038a3844b804655544097783d73bc222d2`; contrato/test del observador: `af465ba0d2d0b787dc6ac0f7c6dc4f2f18851db4`; SHA final con regresión null-evidence: `9914f45517e20fbe2764d6c023bfb0ac66295020`.
+- CI: Chronicle native vertical SUCCESS [39193460291](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193460291), bounded mission admission/restart SUCCESS [39193460351](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193460351), STEP 4 SUCCESS [39193464132](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193464132), STEP 5 SUCCESS [39193464001](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193464001), repair settlement crash cuts SUCCESS [39193464060](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193464060), effect/settlement contract regressions SUCCESS [39193464046](https://github.com/snowdenxrp/aldea-ia/actions/runs/39193464046). Chronicle/bounded runs exercised the code+observer-test SHA `af465ba...`; the remaining four focal workflows passed on final SHA `9914f...`.
+- Una ejecución intermedia falló porque el test de igualdad exacta aún esperaba el objeto antiguo sin `evidence`; el test se actualizó y pasó en `af465ba...`. No fue un fallo de la lógica de settlement. Una ejecución intermedia de Chronicle se canceló al llegar una revisión posterior; el workflow de Chronicle en el SHA de prueba actualizado terminó SUCCESS.
+- Límite: evidencia local ligada a una entrada leída; no es firma criptográfica, autenticación, atribución causal, fsync/power-loss durability, autorización ni verificación general de objetivos. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** seguir dentro de M0 desde la recuperación canónica/reconstrucción del estado persistido, inspeccionando el siguiente límite concreto con sus pruebas existentes. No reabrir la discrepancia de evidencia Chronicle salvo que aparezca una regresión nueva.
+
+
 **Continuidad para el siguiente chat:** leer primero [handoff M0 2026-10-19](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md). La misión no cambia: **M0**. Último SHA de código: `f3a54153d3574f559aa32f1c56d093e1152b4842`; SHA de código + regresión corregida: `b21896e893a1b739bbfa511f76c3a215298a73e6`. Checkpoint de documentación de cierre de settlement: ver los commits documentales posteriores en el historial de la rama. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. No reiniciar investigaciones cerradas.
 
 ## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
