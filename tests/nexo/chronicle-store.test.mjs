@@ -148,7 +148,7 @@ if (result.status !== "committed") process.exitCode = 1;`;
         const observed = JSON.parse(await fs.readFile(to, "utf8"));
         observed.storeRevision += 1;
         observed.entries.push({ operationKey: "concurrent-change", content: "not part of candidate" });
-        await fs.writeFile(to, JSON.stringify(observed, null, 2) + "\\n", "utf8");
+        await fs.writeFile(to, JSON.stringify(observed, null, 2) + "\n", "utf8");
         throw new Error("simulated competing mutation after rename");
       }
     }
