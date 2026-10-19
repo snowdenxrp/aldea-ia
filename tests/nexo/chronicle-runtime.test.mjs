@@ -811,6 +811,12 @@ try {
   const outcomeReopened = await openNexoContinuityOwner({
     filePath: lostOutcome.continuityPath, effectVerifiers: lostOutcome.contracts.verifiers
   });
+  const reconstructedOutcome = await outcomeReopened.owner.reconstructMission("chronicle-lost-outcome");
+  assert.equal(reconstructedOutcome.status, "reconstructed");
+  assert.equal(reconstructedOutcome.mission.steps[0].status, "completed",
+    "valid Chronicle settlement plus persisted terminal outcome must survive restart reconstruction");
+  assert.equal(reconstructedOutcome.mission.status, "awaiting_verification",
+    "a completed step does not imply the overall mission goal has been independently verified");
   const outcomeReplayAdapter = createEffectAdapter({
     handlers: { chronicle_append: async () => { lostOutcomeDispatches++; return { status: "completed" }; } },
     verifiers: lostOutcome.contracts.verifiers
