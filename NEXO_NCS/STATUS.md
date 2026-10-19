@@ -1053,3 +1053,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - La prueba real del entrypoint y la vertical Chronicle pasaron en SHA `9174921f587b504f40524ae5e89f47da68e40ae2`: [CI 39179321550 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179321550).
 - Detalle y límites: [NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md](BUILD/NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md).
 - Alcance: CLI Nexo-only, no UI web ni runtime general. `index.html` sigue siendo Lúmina; no se modificó. M0 INCOMPLETO, runtime default sin cutover, efectos protegidos STOP.
+
+
+## M0 — allowlist de acciones antes de dispatch (2026-10-18)
+
+- `src/nexo/core/owner-backed-runtime.mjs` permite solo `chronicle_append`; repair actions y toda otra acción bloquean antes de PREPARED/dispatch. Tests actualizados para este contrato.
+- CI focal verde: [39179449609](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179449609), [39179591854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591854), [39179591845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591845), [39179591868](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591868). Detalle: [contrato genérico de efectos](BUILD/NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md).
+- No es settlement genérico ni runtime completo. No ampliar acciones ni cambiar runtime default. M0 INCOMPLETO; efectos protegidos STOP.
