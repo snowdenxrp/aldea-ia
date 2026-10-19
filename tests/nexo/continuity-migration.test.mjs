@@ -263,6 +263,48 @@ try {
   await fs.rm(unverifiedCompletionDir, { recursive: true, force: true });
 }
 
+const blockedStepAdmissionAfterClaimDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-blocked-step-admission-after-claim-"));
+try {
+  const claimMemory = structuredClone(legacyMemory);
+  claimMemory.nexo.missions[0].status = "planned";
+  claimMemory.nexo.missions[0].steps[0].status = "planned";
+  claimMemory.nexo.attempts = [{
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    status: "completed",
+    evidence: { verified: true, kind: "caller-asserted", source: "legacy-runtime" },
+    at: "2026-10-19T00:00:00.000Z"
+  }];
+  claimMemory.nexo.effectJournal = [];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(blockedStepAdmissionAfterClaimDir, "nexo.json"),
+    legacyMemory: claimMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  const prepared = await opened.owner.recordPrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-legacy-1:step-1",
+      missionId: "mission-legacy-1",
+      stepId: "step-1",
+      action: "repair_agent_state",
+      target: "alex",
+      environmentStateRevision: 0
+    }
+  });
+  assert.equal(prepared.status, "blocked",
+    "PREPARED admission must use the reconstructed current-step status, not only the raw plan");
+  assert.equal(prepared.code, "NEXO_PREPARED_STEP_NOT_RUNNABLE");
+  const current = await opened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 0);
+  assert.equal(current.snapshot.effectJournal.length, 0);
+} finally {
+  await fs.rm(blockedStepAdmissionAfterClaimDir, { recursive: true, force: true });
+}
+
 function chronicleSettlementMemory({ withCompletedAttempt = false, evidence = {
   kind: "persisted-chronicle-entry",
   operationKey: "mission-legacy-1:step-1",
