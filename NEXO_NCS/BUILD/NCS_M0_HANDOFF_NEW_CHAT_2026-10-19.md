@@ -19,6 +19,8 @@ Documento de carril paralelo: [NCS_M0_NON_ROOT_CONTINUATION_TRACK_2026-10-19.md]
 
 La matriz preliminar de aceptación del store también quedó creada: [NCS_M0_CONTINUITY_STORE_DEPLOYMENT_ACCEPTANCE_MATRIX_DRAFT_2026-10-19.md](NCS_M0_CONTINUITY_STORE_DEPLOYMENT_ACCEPTANCE_MATRIX_DRAFT_2026-10-19.md). No es cierre de aceptación: las propiedades de despliegue no reclamadas por el store permanecen PENDING.
 
+Se registró una hipótesis separada sobre fallo de liberación del lock: [NCS_M0_LOCK_RELEASE_FAILURE_REVIEW_2026-10-19.md](NCS_M0_LOCK_RELEASE_FAILURE_REVIEW_2026-10-19.md). No es un defecto reproducido. Próximo paso: inyectar fallo de `rm` en la limpieza del `.lock` después de la persistencia, probar `initialize()` y `commitIfCurrent()`, y comparar resultado público con envelope persistido. No cambiar runtime hasta reproducir y fijar contrato; no silenciar cleanup ni degradar tests.
+
 La revisión del carril independiente confirmó que el store ya declara límites explícitos: sin afirmación de fsync/durabilidad ante pérdida de energía, sin protección anti-rollback, sin resistencia reclamada a symlink/path attacks y sin soporte de filesystem distribuido. No agregar infraestructura ni parches antes de fijar la propiedad requerida y su modelo de amenaza.
 
 Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz `PENDING/UNKNOWN`.
