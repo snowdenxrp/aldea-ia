@@ -219,6 +219,18 @@ assert.throws(
   "mission admission must reject non-finite numbers that cannot round-trip through JSON"
 );
 
+const functionContextMission = {
+  missionId: "function-context",
+  status: "planned",
+  steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [], context: { callback: () => "not-persistable" } }]
+};
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, functionContextMission),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "uncloneable values in persisted mission context must return the structured admission error"
+);
+
+
 
 const sparseDependencies = new Array(1);
 assert.throws(
