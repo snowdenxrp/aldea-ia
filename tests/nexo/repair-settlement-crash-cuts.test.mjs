@@ -947,6 +947,42 @@ try {
   assert.equal(invalidEvidenceResult.code, "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID");
   assert.equal((await invalidEvidenceOpened.owner.loadCurrent()).snapshot.effectJournal[0].status, "prepared");
 
+  // A Chronicle settlement must carry evidence bound to the persisted entry.
+  // Merely owning an evidence property whose value is null is insufficient.
+  const nullChronicleEvidenceDir = path.join(root, "chronicle-null-evidence");
+  await fs.mkdir(nullChronicleEvidenceDir);
+  const nullChronicleMemory = genericMemory();
+  nullChronicleMemory.nexo.missions[0].steps[0].action = "chronicle_append";
+  nullChronicleMemory.nexo.missions[0].steps[0].target = { content: "persisted chronicle content" };
+  nullChronicleMemory.nexo.effectJournal[0].action = "chronicle_append";
+  nullChronicleMemory.nexo.effectJournal[0].target = { content: "persisted chronicle content" };
+  nullChronicleMemory.nexo.effectJournal[0].status = "settled_observed";
+  nullChronicleMemory.nexo.effectJournal[0].settlement = {
+    status: "applied",
+    observedRevision: 1,
+    source: "nexo-chronicle-store",
+    evidence: null,
+    observedAt: "2026-10-19T00:00:00.000Z"
+  };
+  const nullChronicleOpened = await openNexoContinuityOwner({
+    filePath: path.join(nullChronicleEvidenceDir, "nexo.json"),
+    legacyMemory: nullChronicleMemory
+  });
+  const nullChronicleOutcome = await nullChronicleOpened.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "chronicle_append",
+      target: { content: "persisted chronicle content" },
+      status: "completed"
+    }
+  });
+  assert.equal(nullChronicleOutcome.status, "blocked");
+  assert.equal(nullChronicleOutcome.code, "NEXO_CHRONICLE_SETTLEMENT_REQUIRED");
+  assert.equal((await nullChronicleOpened.owner.loadCurrent()).storeRevision, 0);
+  assert.equal((await nullChronicleOpened.owner.loadCurrent()).snapshot.attempts.length, 0);
+
   // Repair actions cannot bypass their revision-bound repair-specific
   // settlement contract through the generic observation API.
   const repairContractDir = path.join(root, "generic-repair-route-rejected");
