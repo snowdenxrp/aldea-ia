@@ -504,6 +504,41 @@ try {
   assert.equal(replayVerifierCalls, 0);
   assert.equal((await reopenedAmbiguous.owner.loadCurrent()).snapshot.effectJournal[0].status, "reconciled_observed");
 
+  // Replay must not accept a partially formed observation record as canonical,
+  // and must not invoke the verifier as a fallback for a malformed replay.
+  let malformedReplayVerifierCalls = 0;
+  const malformedReplayStore = {
+    loadCurrent: async () => {
+      const current = await reopenedAmbiguous.store.loadCurrent();
+      const snapshot = structuredClone(current.snapshot);
+      delete snapshot.effectJournal[0].reconciliation.evidence;
+      return { ...current, snapshot };
+    },
+    commitIfCurrent: (...args) => reopenedAmbiguous.store.commitIfCurrent(...args)
+  };
+  const malformedReplayOwner = createNexoContinuityOwner({
+    store: malformedReplayStore,
+    effectVerifiers: {
+      generic_write: async () => {
+        malformedReplayVerifierCalls++;
+        return { status: "unknown" };
+      }
+    }
+  });
+  const malformedReplay = await malformedReplayOwner.reconcilePrepared({
+    expectedRevision: 0,
+    operation: {
+      idempotencyKey: "mission-crash-cut:step-repair",
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "generic_write",
+      target: "alpha"
+    }
+  });
+  assert.equal(malformedReplay.status, "conflict");
+  assert.equal(malformedReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+  assert.equal(malformedReplayVerifierCalls, 0);
+
   // A verifier can succeed but the canonical re-read before CAS can fail.
   // This must return structured uncertainty and leave PREPARED untouched.
   const recheckDir = path.join(root, "generic-observation-recheck-failure");
