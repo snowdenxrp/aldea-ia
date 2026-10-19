@@ -55,7 +55,7 @@ El borrador NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md s
 - el contrato mínimo de bootstrap ya define ESTABLISHED / UNKNOWN / INVALID para la afirmación exacta de composición;
 - la investigación de recuperación ya contiene AUTHORITY_UNAVAILABLE y AUTHORITY_UNRESOLVED para pérdida de raíz y raíces incompatibles;
 - AB105.078R separa STALE de REVOKED porque revocación solicitada no es revocación aplicada.
-La combinación STALE_OR_REVOKED borra una distinción contractual existente; CONFLICT como estado agregado duplica AUTHORITY_UNRESOLVED en la frontera de autoridad. Tratar la lista del borrador como **no normativa y pendiente de corrección**. No crear un segundo vocabulario ni cambiar el runtime para materializarla.
+La combinación STALE_OR_REVOKED borra una distinción contractual existente; CONFLICT como estado agregado duplica AUTHORITY_UNRESOLVED en la frontera de autoridad. La lista inicial se corrigió en el borrador el 2026-10-19 para reutilizar estos vocabularios canónicos. No crear un segundo vocabulario ni cambiar el runtime para materializar estados agregados.
 
 ## Próximo paso autorizado por la evidencia
 
