@@ -166,3 +166,12 @@ This is response-loss recovery, not cross-store atomicity, effect retry, or miss
 Code SHA `c8b5c59cd5e2a69e11c9c8ba1263d46a5c678469`; final code/test SHA `f43c757cc7dc6ce966f797637dd5d7e2b5715827`. SUCCESS: [repair crash cuts 39189612150](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612150), [effect/settlement 39189612141](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612141), [STEP 4 39189612151](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612151), [STEP 5 39189612143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612143), [Chronicle 39189596625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596625), [continuity/restart 39189596815](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596815).
 
 No automatic retries or redispatch. M0 remains incomplete.
+
+
+## M0 — generic observation replay integrity (2026-10-19)
+
+Replay of `reconciled_observed` now requires allowed status, safe nonnegative `observedRevision`, nonblank `source`, an explicit `evidence` property, and a valid canonical ISO `observedAt`. If the record is partial, the owner does not report `already_observed` and does not call the verifier again. Initial/pre-CAS read failures return structured uncertainty; the initial-read test verifies the verifier is not called, and the pre-CAS test verifies PREPARED and revision 0 remain unchanged. The commit-response-loss test verifies that a durable observation is recovered after reopen without a second verifier call.
+
+Code SHA `abd9e9d4ed64e96940155712b1dae173ba22c77e`; final code/test SHA `c2c2414edd8ffc138f6cf473f5eae2ee1bbae397`. SUCCESS: [repair crash cuts 39189827272](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827272), [effect/settlement 39189827289](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827289), [STEP 4 39189827310](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827310), [STEP 5 39189827224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189827224), [Chronicle 39189720937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189720937).
+
+This is fail-closed recovery integrity, not mission completion or cross-store atomicity. M0 remains incomplete.
