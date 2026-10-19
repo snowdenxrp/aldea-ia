@@ -1816,3 +1816,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 
 
 - **Corrección del fixture de regresión:** el archivo de prueba se releyó tras publicarse y se detectó que el JSON simulado terminaba con los caracteres literales `\\n`, no con un salto de línea. Se corrigió a un salto de línea real en el commit [f888a1005f38](https://github.com/snowdenxrp/aldea-ia/commit/f888a1005f389e3aeaae8872bd9258b5cdc5fcdd). La prueba sigue pendiente de ejecución/CI; no atribuirle PASS.
+
+
+## M0 — continuidad reconcilia el resultado ambiguo de initialize (2026-10-19)
+
+- **Defecto:** `createNexoContinuityStore().initialize()` devolvía siempre `failed` ante cualquier error de escritura, incluso si el rename ya había publicado el envelope exacto. Eso confundía un error de respuesta con una escritura no aplicada; un reintento podía encontrar un store existente pese al resultado `failed`.
+- **Corrección:** `src/nexo/core/continuity-store.mjs`, commit [6871be62fa1b](https://github.com/snowdenxrp/aldea-ia/commit/6871be62fa1b84a1f6396532e8630bc35b6682f7). Después de un error, lee el envelope: devuelve `committed` sólo si revisión y snapshot coinciden exactamente; `failed` sólo si confirma que el destino sigue ausente; otros estados permanecen `unknown`.
+- **Regresiones:** `tests/nexo/continuity-store.test.mjs`, commit [f657137de4c2](https://github.com/snowdenxrp/aldea-ia/commit/f657137de4c2c6d3f8e8df99568a0b0dff646a42). Cubre respuesta perdida después del rename y fallo antes de persistir, verificando el estado durable observado.
+- **Validación:** código y pruebas publicados en `ncs-clean-architecture`; no ejecutados localmente y CI aún no observado para estos SHA. **PENDING; no marcar PASS.**
+- **Límite:** corrige semántica de resultado de inicialización local. No demuestra autorización ni durabilidad ante pérdida de energía; efectos protegidos STOP, autoridad NOT_EVALUATED, M0 INCOMPLETO.
