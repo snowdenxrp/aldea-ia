@@ -24,6 +24,15 @@ await assert.rejects(
   "missing Nexo state must not be normalized into an empty store"
 );
 
+const unavailableParentStore = createNexoContinuityStore({
+  filePath: path.join(directory, "missing-parent", "continuity.json")
+});
+assert.deepEqual(
+  await unavailableParentStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" },
+  "a missing parent path must be a structured store failure, not a raw ENOENT"
+);
+
 const initialized = await store.initialize(emptySnapshot);
 assert.equal(initialized.status, "committed");
 assert.equal(initialized.storeRevision, 0);
