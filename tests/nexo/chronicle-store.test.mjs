@@ -135,6 +135,38 @@ if (result.status !== "committed") process.exitCode = 1;`;
     stepId: "step-1", action: "chronicle_append", target: { content: "survived" }
   })).status, "applied");
 
+  // A matching operation key alone is insufficient to prove this append committed:
+  // simulate a competing mutation after rename but before the writer's response returns.
+  const ambiguousPath = path.join(root, "ambiguous-append.json");
+  let corruptAfterRename = false;
+  const fsWithAmbiguousOutcome = {
+    ...fs,
+    rename: async (from, to) => {
+      await fs.rename(from, to);
+      if (corruptAfterRename) {
+        corruptAfterRename = false;
+        const observed = JSON.parse(await fs.readFile(to, "utf8"));
+        observed.storeRevision += 1;
+        observed.entries.push({ operationKey: "concurrent-change", content: "not part of candidate" });
+        await fs.writeFile(to, JSON.stringify(observed, null, 2) + "\\n", "utf8");
+        throw new Error("simulated competing mutation after rename");
+      }
+    }
+  };
+  const ambiguousStore = createNexoChronicleStore({ filePath: ambiguousPath, fsModule: fsWithAmbiguousOutcome });
+  assert.equal((await ambiguousStore.initialize()).status, "committed");
+  corruptAfterRename = true;
+  assert.deepEqual(
+    await ambiguousStore.append({ operationKey: "ambiguous-operation", content: "candidate content" }),
+    { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" }
+  );
+  const ambiguousObserved = await createNexoChronicleStore({ filePath: ambiguousPath }).loadCurrent();
+  assert.equal(ambiguousObserved.storeRevision, 2);
+  assert.deepEqual(ambiguousObserved.entries, [
+    { operationKey: "ambiguous-operation", content: "candidate content" },
+    { operationKey: "concurrent-change", content: "not part of candidate" }
+  ]);
+
   // The action-specific contract writes only through Chronicle and verifies through a fresh read.
   const contracts = createNexoChronicleEffectContracts({ store: reopened });
   const effectResult = await contracts.handlers.chronicle_append({
