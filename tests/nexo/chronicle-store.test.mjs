@@ -94,6 +94,21 @@ if (result.status !== "committed") process.exitCode = 1;`;
   assert.equal(crossProcessEntries.length, 2);
   assert.deepEqual(new Set(crossProcessEntries.map(entry => entry.operationKey)), new Set(["cross-process-a", "cross-process-b"]));
 
+  // Failed lock owner-record creation must clean up the directory created by this process.
+  const ownerFailurePath = path.join(root, "owner-write-failure.json");
+  const fsWithOwnerWriteFailure = {
+    ...fs,
+    writeFile: async (file, ...args) => {
+      if (String(file).endsWith(path.join("owner-write-failure.json.lock", "owner.json"))) {
+        throw new Error("simulated lock owner record failure");
+      }
+      return fs.writeFile(file, ...args);
+    }
+  };
+  const ownerFailureStore = createNexoChronicleStore({ filePath: ownerFailurePath, fsModule: fsWithOwnerWriteFailure });
+  await assert.rejects(() => ownerFailureStore.initialize(), /simulated lock owner record failure/);
+  await assert.rejects(() => fs.access(String(ownerFailurePath) + ".lock"), error => error?.code === "ENOENT");
+
   // A stale lock must fail closed; automatic check-then-remove reclamation is racy.
   const staleLockPath = path.join(root, "stale-lock.json");
   const staleLockStore = createNexoChronicleStore({ filePath: staleLockPath });
