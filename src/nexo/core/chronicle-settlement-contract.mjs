@@ -16,8 +16,8 @@ export function isValidNexoChronicleSettlementRecord(entry) {
 
   return entry?.status === "settled_observed" &&
     entry.action === "chronicle_append" &&
-    typeof entry.missionId === "string" && entry.missionId.trim() &&
-    typeof entry.stepId === "string" && entry.stepId.trim() &&
+    typeof entry.missionId === "string" && entry.missionId.trim() && !entry.missionId.includes(":") &&
+    typeof entry.stepId === "string" && entry.stepId.trim() && !entry.stepId.includes(":") &&
     entry.idempotencyKey === `${entry.missionId}:${entry.stepId}` &&
     target !== null && typeof target === "object" && !Array.isArray(target) &&
     typeof target.content === "string" && target.content.trim() &&
