@@ -149,6 +149,29 @@ assert.throws(
   "duplicate step IDs alias the missionId:stepId idempotency identity and must be rejected at admission"
 );
 
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "malformed-dependency-shape",
+    status: "planned",
+    steps: [
+      { id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: "step-2" },
+      { id: "step-2", action: "local_analysis", target: "bravo", status: "planned", dependsOn: [] }
+    ]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "a non-array dependsOn value must not be silently treated as no dependencies"
+);
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "unknown-dependency-reference",
+    status: "planned",
+    steps: [
+      { id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: ["missing-step"] }
+    ]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "dependencies must resolve to a step in the same admitted mission"
+);
 const snapshot = projectNexoContinuitySnapshot(validMemory);
 assert.equal(snapshot.schema, NEXO_CONTINUITY_SCHEMA);
 assert.equal(snapshot.schemaVersion, 1);
