@@ -9,19 +9,29 @@ function blocked(code) {
   return { status: "blocked", code, dispatchAttempted: false, redispatchAuthorized: false };
 }
 
+const PUBLIC_CHRONICLE_STATUSES = new Set([
+  "completed", "blocked", "conflict", "unknown", "observed", "invalid"
+]);
+const TRI_STATE_FIELDS = new Set([
+  "preparedCommitted", "lineageCommitted", "journalSettled",
+  "terminalOutcomeRecorded", "missionAdmissionCommitted"
+]);
+
 export function publicChronicleResult(result, missionId, stepId) {
   const safe = {
-    status: typeof result?.status === "string" ? result.status : "unknown",
+    status: PUBLIC_CHRONICLE_STATUSES.has(result?.status) ? result.status : "unknown",
     dispatchAttempted: result?.dispatchAttempted === true,
-    redispatchAuthorized: result?.redispatchAuthorized === true,
+    redispatchAuthorized: false,
     missionId,
     stepId
   };
-  for (const field of [
-    "code", "preparedCommitted", "lineageCommitted", "journalSettled",
-    "terminalOutcomeRecorded", "missionAdmissionCommitted", "storeRevision"
-  ]) {
-    if (result && Object.hasOwn(result, field)) safe[field] = result[field];
+  if (typeof result?.code === "string") safe.code = result.code;
+  for (const field of TRI_STATE_FIELDS) {
+    const value = result?.[field];
+    if (typeof value === "boolean" || value === "UNKNOWN") safe[field] = value;
+  }
+  if (Number.isSafeInteger(result?.storeRevision) && result.storeRevision >= 0) {
+    safe.storeRevision = result.storeRevision;
   }
   return safe;
 }
