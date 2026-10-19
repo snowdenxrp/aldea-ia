@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `bceabad2e1f62a23ba7586ba27b2977841d6b778` (2026-10-19; test-only update)
+Latest validated code/test checkpoint: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745` (2026-10-19; dependency shape regression)
 
 ## Scope
 
