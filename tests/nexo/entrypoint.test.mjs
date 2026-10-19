@@ -7,6 +7,13 @@ import { fileURLToPath } from "node:url";
 import { parseNexoEntrypointArguments } from "../../scripts/nexo.mjs";
 
 const entrypointPath = fileURLToPath(new URL("../../scripts/nexo.mjs", import.meta.url));
+const chronicleSessionSource = await fs.readFile(new URL("../../scripts/nexo-chronicle-session.mjs", import.meta.url), "utf8");
+const ownerRuntimeSource = await fs.readFile(new URL("../../src/nexo/core/owner-backed-runtime.mjs", import.meta.url), "utf8");
+assert.equal(chronicleSessionSource.includes("../src/nexo/runtime.js"), false);
+assert.equal(chronicleSessionSource.includes("../src/nexo/core/owner-backed-runtime.mjs"), true);
+for (const luminaCoupling of ["simulation-adapter.js", "../assistants/memory.js", "world.js", "simulation.js", "simulate.mjs"]) {
+  assert.equal(ownerRuntimeSource.includes(luminaCoupling), false, `owner-backed runtime must not depend on ${luminaCoupling}`);
+}
 assert.deepEqual(parseNexoEntrypointArguments([]), {
   status: "blocked", code: "NEXO_COMMAND_REQUIRED", dispatchAttempted: false
 });
