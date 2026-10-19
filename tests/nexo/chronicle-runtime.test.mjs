@@ -1259,4 +1259,42 @@ try {
   await fs.rm(runtimeReadFailureRoot, { recursive: true, force: true });
 }
 
+// Unexpected failures in injected capability code must not escape the public runtime boundary.
+const throwingCapabilityMission = chronicleMission();
+const throwingCapabilityOwner = {
+  loadCurrent: async () => ({
+    storeRevision: 0,
+    snapshot: continuitySnapshot([throwingCapabilityMission])
+  }),
+  recordPrepared: async () => {
+    throw new Error("must not reach PREPARED when capability check throws");
+  },
+  recordExecutionLineage: async () => ({ status: "committed", storeRevision: 2 }),
+  reconcilePrepared: async () => ({ status: "unknown" }),
+  supportsReconciliation: () => true
+};
+const throwingCapabilityResult = await executeNexoStepWithContinuityOwner({
+  missionId: throwingCapabilityMission.missionId,
+  stepId: "step-1",
+  owner: throwingCapabilityOwner,
+  adapter: {
+    supports: () => { throw new Error("private injected capability failure"); },
+    supportsReconciliation: () => true,
+    executePrepared: async () => {
+      throw new Error("dispatch must not happen");
+    }
+  }
+});
+assert.deepEqual(throwingCapabilityResult, {
+  status: "blocked",
+  code: "NEXO_RUNTIME_INTERNAL_FAILURE",
+  dispatchAttempted: false,
+  preparedCommitted: false,
+  lineageCommitted: false,
+  journalSettled: false,
+  terminalOutcomeRecorded: false,
+  redispatchAuthorized: false
+}, "unexpected pre-dispatch exceptions must become a closed public result");
+assert.equal(JSON.stringify(throwingCapabilityResult).includes("private injected"), false);
+
 console.log("Nexo Chronicle owner-backed runtime tests passed");
