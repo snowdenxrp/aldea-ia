@@ -2,8 +2,8 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA de código validado por CI: `442963578e2de42e6d67afd6fd85062ccea1a23e`
-Último SHA de código: `442963578e2de42e6d67afd6fd85062ccea1a23e`; SHA con regresión de identidad: `ddfc6f98514ca3222a6e9424835602c40643cbea`
+Último SHA de código validado por CI: `98abe80c058802f2f5ad50cd49bc2525ade6b09f`
+Último SHA de código: `98abe80c058802f2f5ad50cd49bc2525ade6b09f`; SHA con regresiones de reconstrucción: `5767851584eba13298cada7bf46b162844b7d7bd`
 
 ## 0. Instrucción principal al chat nuevo
 
@@ -194,3 +194,12 @@ Pruebas nuevas: sin evidence y `evidence: {}` bloquean sin mutar; replay legacy 
 La regresión comprueba ambas variantes y que el store permanece sin cambios. Código final `442963578e2de42e6d67afd6fd85062ccea1a23e`; test `ddfc6f98514ca3222a6e9424835602c40643cbea`. Los seis workflows focales pasaron en el SHA final; enlaces en STATUS. El primer intento de test falló por el código de error incorrecto; se corrigió la clasificación antes de aceptar el checkpoint.
 
 **Siguiente paso:** auditar si la reconstrucción de misión filtra intentos históricos por identidad completa (action/target) o sólo por missionId/stepId. Reproducir con una entrada mismatcheada antes de cambiar.
+
+
+## 13. Checkpoint — reconstrucción exige identidad y evidencia para completed
+
+Se corrigió `reconstructNexoMissionFromSnapshot()`: la completion sólo se reconstruye desde un intento con acción y target coincidentes con el paso canónico y evidencia verificada con kind/source no vacíos. Si existe una afirmación `completed` pero falla identidad o evidencia, el paso se bloquea en lugar de quedar completed o planned/executable. Los intentos no terminales con identidad disponible también se filtran por action/target; registros legacy sin ambos campos siguen siendo elegibles sólo para estados no terminales.
+
+Pruebas: intento con action/target distintos y completion con evidence no verificada. Código SHA `98abe80...`; pruebas SHA `576785...`. Bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS en el SHA de prueba final; enlaces en STATUS. La ejecución intermedia de código falló contra la expectativa antigua planned, y el test se actualizó a la condición segura blocked antes de dar por válido el checkpoint.
+
+**Siguiente paso:** auditar el caso Chronicle `settled_observed` sin outcome terminal válido y verificar que la reconstrucción no deje una operación ejecutable; no modificar runtime ni volver a abrir contratos ya cerrados sin una regresión nueva.
