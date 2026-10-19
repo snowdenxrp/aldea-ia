@@ -1033,3 +1033,15 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - Validación remota consultada para el SHA de prueba: no hay statuses/checks visibles en el conector y la consulta de runs asociadas no devolvió ejecuciones. **CI = UNKNOWN/PENDING; la prueba aún no está demostrada como ejecutada.** No declarar PASS por ausencia de fallo.
 - Próximo paso: conseguir evidencia de ejecución de la suite focal y regresiones. Después continuar la frontera arquitectónica ya fijada: entrada principal Nexo-only sin importar mundo/simulación de Lúmina. No hacer cutover del runtime default ni ampliar acciones.
 - M0 continúa **INCOMPLETO**; efectos protegidos **STOP**; Nexo/Lúmina separados.
+
+
+### Resultado de validación — replay genérico (SHA `32df994706a16167d8d92440569b5db200feeb1b`)
+
+- La primera ejecución de la nueva prueba falló antes de ejecutar tests por una declaración duplicada de `genericVerifierCalls` en el mismo scope: [39178949801 FAILURE](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178949801). Se corrigió renombrando el contador local; el fallo quedó visible y no se presentó como un fallo del runtime.
+- En el SHA `32df994706a16167d8d92440569b5db200feeb1b` quedaron **SUCCESS**:
+  - [39179028829 — repair crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179028829), incluyendo migración del owner, repair lifecycle, sesión canónica, sintaxis del puente/runtime y CLI aislada.
+  - [39179029008 — effect adapter + settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179029008).
+  - [39179028944 — semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179028944).
+  - [39179028821 — outcome classification, restart reconstruction y protected transition](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179028821).
+- Resultado limitado a estas suites/workflows; no equivale a la suite completa del repositorio ni al cutover del runtime. La recuperación genérica queda probada para el crash cut añadido; no se infiere causalidad ni se habilita redispatch.
+- Próximo frente sigue siendo la entrada principal Nexo-only sin imports de Lúmina, manteniendo Chronicle opt-in. **M0 INCOMPLETO**.
