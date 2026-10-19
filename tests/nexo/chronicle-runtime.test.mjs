@@ -184,6 +184,51 @@ function adapter(onDispatch = () => ({ status: "completed", verified: true })) {
   };
 }
 
+// A requested successor step must not reach PREPARED or dispatch while its
+// declared predecessor remains planned in the canonical mission snapshot.
+const dependencyGateMission = {
+  missionId: "dependency-gate-mission",
+  status: "planned",
+  steps: [
+    { id: "step-1", action: "chronicle_append", target: { content: "first" }, status: "planned", dependsOn: [] },
+    { id: "step-2", action: "chronicle_append", target: { content: "second" }, status: "planned", dependsOn: ["step-1"] }
+  ]
+};
+let dependencyGatePrepareCalls = 0;
+let dependencyGateDispatchCalls = 0;
+const dependencyGateOwner = {
+  loadCurrent: async () => ({
+    storeRevision: 0,
+    snapshot: { missions: [dependencyGateMission], effectJournal: [] }
+  }),
+  supportsReconciliation: () => true,
+  recordPrepared: async () => {
+    dependencyGatePrepareCalls += 1;
+    return { status: "committed", preparedCommitted: true, storeRevision: 1 };
+  },
+  recordExecutionLineage: async () => ({ status: "committed", storeRevision: 2 }),
+  reconcilePrepared: async () => ({
+    status: "observed", observation: "applied", storeRevision: 3,
+    observedRevision: 1, source: "nexo-chronicle-store", journalSettled: true
+  }),
+  recordOutcome: async () => ({ status: "committed", storeRevision: 4 })
+};
+const dependencyGateResult = await executeNexoStepWithContinuityOwner({
+  missionId: "dependency-gate-mission",
+  stepId: "step-2",
+  owner: dependencyGateOwner,
+  adapter: adapter(() => {
+    dependencyGateDispatchCalls += 1;
+    return { status: "completed", verified: true, evidence: { verified: true } };
+  })
+});
+assert.equal(dependencyGateResult.status, "blocked",
+  "the runtime must block a successor whose dependency is not completed");
+assert.equal(dependencyGateResult.dispatchAttempted, false);
+assert.equal(dependencyGatePrepareCalls, 0, "dependency gate must run before PREPARED");
+assert.equal(dependencyGateDispatchCalls, 0, "dependency gate must run before adapter dispatch");
+
+
 // First execution: PREPARED -> dispatch -> lineage -> trusted persisted observation -> terminal outcome.
 const calls = [];
 let current = { storeRevision: 0, snapshot: { missions: [chronicleMission()], effectJournal: [] } };
