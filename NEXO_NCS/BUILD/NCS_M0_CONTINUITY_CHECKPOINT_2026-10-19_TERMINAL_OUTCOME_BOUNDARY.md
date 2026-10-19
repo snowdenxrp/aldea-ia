@@ -154,3 +154,18 @@ La continuidad existente ya contiene la decisión NEXO_NCS/DECISIONS/NCS_DECISIO
 **Siguiente tarea acotada:** convertir la decisión existente en un contrato de provisión y verificación implementable, reutilizando NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md; especificar fuente de verdad externa al estado que se valida, qué afirmación prueba la llave, cómo se valida el desafío/firmado y qué queda fuera del permiso. No seleccionar hardware por intuición ni crear un root ficticio. Si la provisión independiente no se puede demostrar con la configuración actual, registrar el bloqueo y no conectar la verificación a dispatch.
 
 El estado constitucional sigue: M0 INCOMPLETO; authorization: NOT_EVALUATED; efectos protegidos STOP; raíz implementada/probada PENDING.
+
+
+## 11. M0 — cierre de validación de proyección de misión y reversión de guard no válido (2026-10-19)
+
+**SHA de código/pruebas verificado:** `f0fcf181778a61c8ad094b315289f5f43c1abe8f`.
+
+- Suite completa `npm test`: [run 39339904741](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904741), SUCCESS.
+- Bounded mission admission/restart continuity: [run 39339904645](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904645), SUCCESS; incluye `continuity-contract.test.mjs` y `continuity-migration.test.mjs`.
+- Integrated acceptance: [run 39339904658](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904658), SUCCESS. STEP 4 [39339904656](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904656) y STEP 5 [39339904735](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339904735), SUCCESS.
+- Se ensayó la regla de exigir que toda nueva misión y todos sus pasos empezaran como `planned`. Falló el workflow bounded en [run 39339816995](https://github.com/snowdenxrp/aldea-ia/actions/runs/39339816995), `continuity-migration.test.mjs:801`, porque una prueba existente admite intencionalmente una claim de paso `completed` sin outcome canónico para verificar que la reconstrucción la bloquea. La regla se revirtió; no se debilitó el test de protección. Los cambios temporales se eliminaron y la suite volvió a SUCCESS en el SHA indicado.
+- Conclusión: **admisión del plan ≠ verificación de resultado**. No rechazar de forma global claims terminales en los datos heredados/plan; no tratarlas como verdad. La reconstrucción debe resolverlas con outcome canónico y bloquear si falta evidencia. `statusDiscrepancy` de la consulta pública indica diferencia literal entre status guardado y derivado; por sí sola no es diagnóstico de corrupción.
+- La ejecución fallida anterior de mission-status [39323179028](https://github.com/snowdenxrp/aldea-ia/actions/runs/39323179028) corresponde a SHA antiguo `b97b72d...`. La suite completa e integrada del HEAD actual ejecutó la regresión CLI y pasó.
+- **Próximo paso:** continuar al siguiente contrato M0 de continuidad solo después de identificar ruta real, invariantes y prueba. No reabrir esta consulta ni el arreglo de resultado terminal sin evidencia nueva.
+
+**No cambia:** M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima PENDING.
