@@ -1,6 +1,6 @@
 # NCS — M0 Application Result Contract
 Date: 2026-10-19
-Latest validated code/test checkpoint: `d4936c965eb926b3e61eb7ecbe3f9becf58925ca` (2026-10-19)
+Latest validated code/test checkpoint: `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3` (2026-10-19)
 
 ## Scope
 
@@ -309,3 +309,8 @@ Outcome evidence debe contener exactamente `verified`, `kind`, `source`, `observ
 Los tres métodos del owner que escriben PREPARED, lineage y outcome ahora devuelven `blocked / continuity_read_failed` si falla `store.loadCurrent()`; no hacen CAS ni marcan autorización. Las regresiones de owner y runtime verifican cero escrituras y cero dispatch si la lectura falla en admisión. SHA `d200472052b3795b2b7e6ab7d1cd4fae5e71ae91`; Chronicle native, bounded admission/restart, STEP 4 y STEP 5 SUCCESS (runs 39196910123, 39196910131, 39196910145, 39196910180). La evidencia Chronicle de outcome se compara con el settlement persistido durante escritura y replay, como coherencia estructural y no como autenticación.
 
 Siguiente frontera: snapshot/replay de entradas genéricas terminales inconsistentes en `effectJournal`; M0 INCOMPLETO, efectos protegidos STOP.
+
+
+## Checkpoint M0 — identidad y effectJournal desconocido
+
+IDs de misión/paso duplicados o con `:` se rechazan en admisión; el snapshot falla cerrado ante IDs persistidos duplicados. La reconstrucción bloquea estados desconocidos de effectJournal, incluidos registros huérfanos, en vez de ignorarlos. SHA de código `33b23a87fe51b80007943cbc28cffd3883e99a19`, SHA de pruebas `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3`; bounded admission, STEP 4, STEP 5 y crash cuts SUCCESS. M0 INCOMPLETO; efectos protegidos STOP.
