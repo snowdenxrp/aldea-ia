@@ -9,6 +9,23 @@ function blocked(code) {
   return { status: "blocked", code, dispatchAttempted: false };
 }
 
+function publicChronicleResult(result, missionId, stepId) {
+  const safe = {
+    status: typeof result?.status === "string" ? result.status : "unknown",
+    dispatchAttempted: result?.dispatchAttempted === true,
+    redispatchAuthorized: result?.redispatchAuthorized === true,
+    missionId,
+    stepId
+  };
+  for (const field of [
+    "code", "preparedCommitted", "lineageCommitted", "journalSettled",
+    "terminalOutcomeRecorded", "missionAdmissionCommitted", "storeRevision"
+  ]) {
+    if (result && Object.hasOwn(result, field)) safe[field] = result[field];
+  }
+  return safe;
+}
+
 /**
  * Mission admission can persist before its response is lost. Do not let a raw
  * store exception escape or claim that admission definitely failed.
@@ -18,12 +35,12 @@ export async function recordNexoMissionSafely({ owner, expectedRevision, mission
     const result = await owner.recordMission({ expectedRevision, mission });
     if (result?.status === "unknown" || result?.missionAdmissionCommitted === "UNKNOWN") {
       return {
-        ...result,
         status: "unknown",
         code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
         missionAdmissionCommitted: "UNKNOWN",
         dispatchAttempted: false,
-        redispatchAuthorized: false
+        redispatchAuthorized: false,
+        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
       };
     }
     return result;
@@ -147,6 +164,6 @@ export async function runNexoChronicleAppend({
     missionId, stepId, owner: opened.owner, adapter,
     postcondition: contracts.postcondition
   });
-  return { ...result, missionId, stepId };
+  return publicChronicleResult(result, missionId, stepId);
 }
 
