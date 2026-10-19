@@ -291,7 +291,7 @@ try {
   assert.equal(partialBootstrap.stderr, "");
   const partialBootstrapResult = JSON.parse(partialBootstrap.stdout);
   assert.equal(partialBootstrapResult.status, "blocked");
-  assert.equal(partialBootstrapResult.code, "NEXO_CHRONICLE_INITIALIZE_OUTCOME_UNKNOWN");
+  assert.equal(partialBootstrapResult.code, "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE");
   assert.equal(partialBootstrapResult.dispatchAttempted, false);
   assert.equal(partialBootstrapResult.redispatchAuthorized, false);
   assert.equal(partialBootstrapResult.authorization, "NOT_EVALUATED");
