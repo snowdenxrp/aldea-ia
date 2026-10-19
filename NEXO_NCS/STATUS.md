@@ -1624,3 +1624,7 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 
 ### Diseño abierto — recuperación de locks locales
 Consultar `NEXO_NCS/BUILD/NCS_M0_LOCK_RECOVERY_DESIGN_NOTE_2026-10-19.md`. PR #106 se retiró sin merge al detectarse TOCTOU en la limpieza por ruta. Estado actual: fail-closed; no añadir stat-then-rm ni recuperación por antigüedad como parche. No hay fix integrado ni CI nuevo para este caso.
+
+
+### Frontera observación/verificación de objetivo — auditoría read-only (2026-10-19)
+Nota: `NEXO_NCS/BUILD/NCS_M0_GOAL_VERIFICATION_BOUNDARY_2026-10-19.md`. Se inspeccionaron `scripts/nexo-repair-settlement.mjs`, `src/nexo/adapters/persisted-repair-observation.mjs` y los loaders/persistencia de `scripts/simulate.mjs`. La evidencia solo permite registrar condición observada y revisión; no prueba causalidad, ejecución única ni atomicidad con continuidad. No se conectó un verifier ni se cambió runtime. Mantener observador diagnóstico, STOP y separación Nexo/Lúmina.
