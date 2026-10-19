@@ -466,3 +466,8 @@ Matiz importante: `scripts/assistants.mjs` conserva un puente legacy opt-in (`--
 CI note: `.github/workflows/nexo-deterministic-tests.yml` corre `npm test` en push a `main` o manualmente, no en PR. No cambiar el trigger como efecto lateral; workflow CI debe tratarse separadamente.
 
 Siguiente paso: cerrar el inventario global de importadores de `src/nexo/runtime.js`/`simulation-adapter.js` y revisar la ruta opt-in legacy contra las reglas de separación, sin cambiar runtime/UI ni activar efectos. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+
+## 13. Brecha de pruebas del puente legacy
+
+La revisión de `tests/nexo/entrypoint.test.mjs` confirma que la prueba de grafo/imports cubre los dos entrypoints Nexo independientes y su API, pero no invoca `scripts/assistants.mjs --nexo-repair-once`. El gate de bandera existe en código, aunque falta una prueba de integración específica que demuestre normal-vs-opt-in y aislamiento mediante directorios temporales. Esto es una brecha de cobertura, no evidencia de que el gate falle. Antes de retirar/rediseñar el puente, añadir una prueba mínima con esas propiedades y ejecutar la suite Node con job/commit verificable. No modificar runtime por esta observación estática.
