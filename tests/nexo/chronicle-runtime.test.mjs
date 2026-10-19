@@ -168,6 +168,53 @@ assert.equal(reconciliationUnknownResult.terminalOutcomeRecorded, false);
 assert.equal(reconciliationUnknownResult.redispatchAuthorized, false);
 assert.equal(reconciliationDispatches, 1);
 
+const adapterThrowResult = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission",
+  stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
+    recordExecutionLineage: async () => { throw new Error("must not record lineage after adapter throw"); },
+    reconcilePrepared: async () => { throw new Error("must not reconcile after adapter throw"); },
+    recordOutcome: async () => { throw new Error("must not record outcome after adapter throw"); }
+  },
+  adapter: adapter(() => { throw new Error("effect may have happened before throw"); })
+});
+assert.equal(adapterThrowResult.status, "unknown");
+assert.equal(adapterThrowResult.dispatchAttempted, true);
+assert.equal(adapterThrowResult.preparedCommitted, true);
+assert.equal(adapterThrowResult.lineageCommitted, false);
+assert.equal(adapterThrowResult.journalSettled, false);
+assert.equal(adapterThrowResult.terminalOutcomeRecorded, false);
+assert.equal(adapterThrowResult.redispatchAuthorized, false);
+
+let lineageConflictDispatches = 0;
+const lineageConflictResult = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission",
+  stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
+    recordExecutionLineage: async () => ({
+      status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: 6
+    }),
+    reconcilePrepared: async () => { throw new Error("must not reconcile after lineage conflict"); },
+    recordOutcome: async () => { throw new Error("must not record outcome after lineage conflict"); }
+  },
+  adapter: adapter(() => { lineageConflictDispatches++; return { status: "completed" }; })
+});
+assert.equal(lineageConflictResult.status, "unknown",
+  "effect outcome stays unresolved after dispatch even when lineage CAS conflict is known");
+assert.equal(lineageConflictResult.dispatchAttempted, true);
+assert.equal(lineageConflictResult.preparedCommitted, true);
+assert.equal(lineageConflictResult.lineageCommitted, false);
+assert.equal(lineageConflictResult.journalSettled, false);
+assert.equal(lineageConflictResult.terminalOutcomeRecorded, false);
+assert.equal(lineageConflictResult.redispatchAuthorized, false);
+assert.equal(lineageConflictDispatches, 1);
+
 // Restart after dispatch but before settlement: reconcile only, never dispatch again.
 let recoveryCalls = [];
 const preparedSnapshot = {
