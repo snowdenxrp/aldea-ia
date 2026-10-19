@@ -68,7 +68,7 @@ function missionRecord(mission) {
       mission.missionId.includes(":") || !Array.isArray(mission.steps) ||
       (mission.status != null &&
         (typeof mission.status !== "string" || !mission.status.trim() ||
-          !["planned", "blocked"].includes(mission.status)))) {
+          !["planned", "blocked", "executing", "needs_replan", "awaiting_verification", "awaiting_dependencies", "completed", "incomplete", "invalid"].includes(mission.status)))) {
     throw operationError("NEXO_MISSION_CONTEXT_INVALID");
   }
   const stepIds = new Set();
@@ -78,7 +78,7 @@ function missionRecord(mission) {
         typeof step.action !== "string" || !step.action.trim() ||
         (step.status != null &&
           (typeof step.status !== "string" || !step.status.trim() ||
-            !["planned", "blocked"].includes(step.status)))) {
+            !["planned", "blocked", "executing", "completed", "failed"].includes(step.status)))) {
       throw operationError("NEXO_MISSION_CONTEXT_INVALID");
     }
     stepIds.add(step.id);
