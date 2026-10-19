@@ -1,3 +1,14 @@
+## M0 — reparación no puede declararse completed sin verificación del objetivo (validado 2026-10-19)
+
+- Hueco reproducido: el owner bloqueaba outcomes mientras existía un efecto `PREPARED`/observado no resuelto, pero una acción de reparación sin entrada en `effectJournal` podía pasar por `recordOutcome(status=completed)` con etiquetas `verified/source` aportadas por el caller. La ausencia de PREPARED no demostraba que el objetivo se hubiera verificado.
+- Corrección: `createNexoContinuityOwner().recordOutcome()` ahora devuelve `blocked / NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED` para `repair_agent_state`, `repair_agent_needs` y `repair_resource_state` hasta que exista un verificador de objetivo específico conectado al owner. El guard de efecto no resuelto conserva prioridad y sigue devolviendo `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`. Los outcomes no completados y el caso no mutante `local_analysis` mantienen su contrato previo.
+- Regresión: `tests/nexo/repair-settlement-crash-cuts.test.mjs` intenta completar una reparación sin PREPARED, con evidencia solo declarada por el caller; verifica `blocked` y que la revisión canónica siga en 0.
+- Primer CI en SHA `ae805de72869f265a836f1f6fa7a4f7f82d3b620` falló por precedencia del nuevo guard: tapaba el error específico de PREPARED y afectaba un test de outcome no mutante. Se corrigió el orden y se limitó el guard a las acciones repair conocidas; no se ocultó ni reinterpretó el fallo.
+- SHA código/test validado: `bef43609defa7a57f542d1a572dde388afb90812`. CI SUCCESS: [M0 effect/settlement 39188821844](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821844), [repair crash cuts 39188821998](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821998), [bounded admission/restart 39188821789](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821789), [STEP 4 39188821769](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821769), [Chronicle 39188821790](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188821790).
+- Límite: esto no implementa el verificador de objetivo ni permite completar reparaciones; solo cierra la vía de outcome sin evidencia independiente. No cambia runtime predeterminado, no habilita efectos protegidos, no conecta UI y no mezcla Nexo con Lúmina. M0 sigue INCOMPLETO.
+
+**Siguiente corte M0:** revisar el registro de acciones/verificadores confiables y las transiciones entre observación del objetivo y una decisión de misión. No ampliar la lista de acciones ni conectar runtime/UI hasta que el contrato de verificación sea concreto, persistible y probado tras restart.
+
 ## M0 — bootstrap de Chronicle sin inicialización parcial evitable (validado 2026-10-18)
 
 - Auditoría del entrypoint encontró que inicializaba Chronicle antes de comprobar si el almacén de continuidad estaba corrupto o ausente sin permiso de inicialización. Eso podía dejar un almacén Chronicle vacío como efecto lateral aunque la sesión completa fuera bloqueada.
