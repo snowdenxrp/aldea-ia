@@ -178,11 +178,19 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
         try {
           const observed = await readDocument(fsModule, filePath);
           const matches = observed.entries.filter(entry => entry.operationKey === operationKey);
-          if (matches.length === 1 && matches[0].content === content) {
-            return { status: "committed", storeRevision: observed.storeRevision, entry: structuredClone(matches[0]), recoveredAfterWriteError: true };
+          if (observed.storeRevision === candidate.storeRevision &&
+              JSON.stringify(observed.entries) === JSON.stringify(candidate.entries)) {
+            return {
+              status: "committed",
+              storeRevision: observed.storeRevision,
+              entry: structuredClone(matches[0]),
+              recoveredAfterWriteError: true
+            };
           }
-          if (matches.length === 1) return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
-          if (matches.length === 0) return { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" };
+          if (matches.length === 1 && matches[0].content !== content) {
+            return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
+          }
+          return { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" };
         } catch {}
         return { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" };
       }
