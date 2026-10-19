@@ -29,5 +29,14 @@ export async function observeChronicleOperation({ store, idempotencyKey, mission
   if (matches[0].content !== target.content) {
     return { ...binding, status: "unknown", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
   }
-  return { ...binding, status: "applied", causalAttribution: "not_established" };
+  return {
+    ...binding,
+    status: "applied",
+    evidence: {
+      kind: "persisted-chronicle-entry",
+      operationKey: matches[0].operationKey,
+      content: matches[0].content
+    },
+    causalAttribution: "not_established"
+  };
 }
