@@ -12,6 +12,22 @@ import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-sessio
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 
+const invalidApplicationInput = await runNexoChronicleAppend({
+  continuityPath: "", chroniclePath: "/unused/chronicle.json",
+  missionId: "invalid-mission", stepId: "step-1", content: "payload",
+  initializeContinuity: true, initializeChronicle: true
+});
+assert.equal(invalidApplicationInput.status, "blocked");
+assert.equal(invalidApplicationInput.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
+assert.equal(invalidApplicationInput.dispatchAttempted, false);
+const invalidInitializationType = await runNexoChronicleAppend({
+  continuityPath: "/unused/continuity.json", chroniclePath: "/unused/chronicle.json",
+  missionId: "invalid-mission", stepId: "step-1", content: "payload",
+  initializeContinuity: "true", initializeChronicle: true
+});
+assert.equal(invalidInitializationType.status, "blocked");
+assert.equal(invalidInitializationType.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
+
 function chronicleMission() {
   return {
     missionId: "chronicle-mission",
