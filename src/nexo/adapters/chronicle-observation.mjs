@@ -24,7 +24,17 @@ export async function observeChronicleOperation({ store, idempotencyKey, mission
     return { ...binding, status: "unknown", code: "NEXO_CHRONICLE_DUPLICATE_OPERATION_KEY" };
   }
   if (matches.length === 0) {
-    return { ...binding, status: "not_applied", causalAttribution: "not_established" };
+    return {
+      ...binding,
+      status: "not_applied",
+      evidence: {
+        kind: "chronicle-operation-absence",
+        operationKey: idempotencyKey,
+        observedRevision: current.storeRevision,
+        matchCount: 0
+      },
+      causalAttribution: "not_established"
+    };
   }
   if (matches[0].content !== target.content) {
     return { ...binding, status: "unknown", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
