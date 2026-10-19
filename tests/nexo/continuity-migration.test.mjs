@@ -707,6 +707,50 @@ try {
   await fs.rm(preparedAdmissionDir, { recursive: true, force: true });
 }
 
+const singleUnresolvedPreparedDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-single-unresolved-prepared-per-mission-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(singleUnresolvedPreparedDir, "nexo.json"),
+    allowEmptyInitialization: true
+  });
+  const mission = {
+    missionId: "owner-single-unresolved-prepared",
+    status: "planned",
+    objective: "one unresolved PREPARED blocks new step admissions in this mission",
+    steps: [
+      { id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] },
+      { id: "step-2", action: "repair_agent_needs", target: "alex", status: "planned", dependsOn: [] }
+    ]
+  };
+  assert.equal((await opened.owner.recordMission({ expectedRevision: 0, mission })).status, "committed");
+  const first = await opened.owner.recordPrepared({
+    expectedRevision: 1,
+    operation: {
+      idempotencyKey: "owner-single-unresolved-prepared:step-1",
+      missionId: mission.missionId, stepId: "step-1",
+      action: "repair_agent_state", target: "alex", environmentStateRevision: 0
+    }
+  });
+  assert.equal(first.status, "committed");
+  const second = await opened.owner.recordPrepared({
+    expectedRevision: 2,
+    operation: {
+      idempotencyKey: "owner-single-unresolved-prepared:step-2",
+      missionId: mission.missionId, stepId: "step-2",
+      action: "repair_agent_needs", target: "alex", environmentStateRevision: 0
+    }
+  });
+  assert.equal(second.status, "blocked",
+    "a mission reconstructed as blocked by unresolved PREPARED must not admit a second step");
+  assert.equal(second.code, "NEXO_PREPARED_MISSION_NOT_RUNNABLE");
+  const current = await opened.owner.loadCurrent();
+  assert.equal(current.storeRevision, 2);
+  assert.equal(current.snapshot.effectJournal.length, 1);
+  assert.equal(current.snapshot.effectJournal[0].stepId, "step-1");
+} finally {
+  await fs.rm(singleUnresolvedPreparedDir, { recursive: true, force: true });
+}
+
 const missionStateAdmissionDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owner-mission-state-admission-"));
 try {
   const opened = await openNexoContinuityOwner({
