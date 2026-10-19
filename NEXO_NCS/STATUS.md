@@ -1611,3 +1611,12 @@ Decisión actual: la API pública es un seam de backend validado para Chronicle,
 - No se modificó código ni se añadieron invariantes especulativos. Comparación GitHub: `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5...ncs-clean-architecture` contiene sólo tres commits documentales; el código validado no cambió en esa comparación.
 - Frontera siguiente: aclarar el contrato de observación/verificación de objetivos sin conectar efectos de reparación al runtime. `scripts/nexo-repair-settlement.mjs` lee un snapshot mediante `loadStateStrict()` y `src/nexo/adapters/persisted-repair-observation.mjs` sólo prueba invariantes observables; ambos describen explícitamente que no prueban causalidad ni atomicidad entre el archivo de estado y la continuidad de Nexo. Mantener esa ruta diagnóstica separada; no habilitar reparaciones ni mezclar memoria/simulación de Lúmina con Nexo.
 - **M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.**
+
+
+## M0 — lock incompleto: propuesta retirada por riesgo TOCTOU (2026-10-19)
+
+- Se investigó el caso mkdir(<store>.lock) exitoso seguido de fallo al escribir owner.json. El estado resultante puede dejar un lock sin owner y provocar bloqueo/recovery manual posterior.
+- La primera solución propuesta intentó borrar el directorio por ruta en el catch. Revisión adicional detectó una carrera TOCTOU: otro proceso podría eliminar/reemplazar esa ruta antes del rm; la limpieza podría borrar un lock nuevo que no pertenece a la llamada fallida.
+- Por tanto, la propuesta NO se integra. PR #106 fue cerrado sin merge: https://github.com/snowdenxrp/aldea-ia/pull/106. La rama de la propuesta revirtió cambios de producción y tests a su contenido de base antes de cerrar. No declarar el problema resuelto.
+- Decisión actual: conservar comportamiento fail-closed y no limpiar por ruta sin una garantía de identidad/propiedad segura. Rediseñar el protocolo de adquisición/recuperación como trabajo separado si se demuestra que se puede hacer sin una carrera de reemplazo; no añadir stat seguido de rm como supuesto arreglo porque también es TOCTOU.
+- No hay nuevo CI de pruebas Node que certifique este caso. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
