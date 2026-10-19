@@ -393,6 +393,23 @@ try {
   await fs.rm(chronicleReconstructionEvidenceMismatchDir, { recursive: true, force: true });
 }
 
+const chronicleReconstructionIdentityMismatchDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-reconstruction-identity-mismatch-"));
+try {
+  const memory = chronicleSettlementMemory({ withCompletedAttempt: true });
+  memory.nexo.attempts[0].target = { content: "different content" };
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleReconstructionIdentityMismatchDir, "nexo.json"),
+    legacyMemory: memory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "blocked");
+  assert.equal(reconstructed.mission.steps[0].blockReason.code, "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH",
+    "a Chronicle attempt for a different target must not be reported as an outcome merely awaiting replay");
+  assert.equal(reconstructed.mission.steps[0].result, undefined);
+} finally {
+  await fs.rm(chronicleReconstructionIdentityMismatchDir, { recursive: true, force: true });
+}
+
 const chronicleOutcomeEvidenceMismatchDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-outcome-evidence-mismatch-"));
 try {
   const opened = await openNexoContinuityOwner({
