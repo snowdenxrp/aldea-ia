@@ -103,6 +103,27 @@ assert.equal(result.journalSettled, true);
 assert.equal(result.terminalOutcomeRecorded, true);
 assert.equal(result.redispatchAuthorized, false);
 
+const prepareConflictResult = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission",
+  stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: { missions: [chronicleMission()], effectJournal: [] } }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({
+      status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: 5
+    }),
+    recordExecutionLineage: async () => { throw new Error("lineage must not follow PREPARED conflict"); },
+    reconcilePrepared: async () => { throw new Error("reconciliation must not follow PREPARED conflict"); },
+    recordOutcome: async () => { throw new Error("outcome must not follow PREPARED conflict"); }
+  },
+  adapter: adapter(() => { throw new Error("dispatch must not follow PREPARED conflict"); })
+});
+assert.equal(prepareConflictResult.status, "conflict");
+assert.equal(prepareConflictResult.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
+assert.equal(prepareConflictResult.dispatchAttempted, false);
+assert.equal(prepareConflictResult.preparedCommitted, false);
+assert.equal(prepareConflictResult.storeRevision, 5);
+
 // Restart after dispatch but before settlement: reconcile only, never dispatch again.
 let recoveryCalls = [];
 const preparedSnapshot = {
