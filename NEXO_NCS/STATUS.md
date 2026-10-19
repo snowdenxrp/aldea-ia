@@ -1060,3 +1060,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - `src/nexo/core/owner-backed-runtime.mjs` permite solo `chronicle_append`; repair actions y toda otra acción bloquean antes de PREPARED/dispatch. Tests actualizados para este contrato.
 - CI focal verde: [39179449609](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179449609), [39179591854](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591854), [39179591845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591845), [39179591868](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179591868). Detalle: [contrato genérico de efectos](BUILD/NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md).
 - No es settlement genérico ni runtime completo. No ampliar acciones ni cambiar runtime default. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## M0 — inspección read-only de continuidad (2026-10-18)
+
+- Se añadió `npm run nexo -- status --continuity PATH`: solo lee el store canónico y devuelve revisión + contadores agregados; no expone contenido/targets ni inicializa stores ausentes.
+- Test de proceso real confirma error sin mutación para store ausente y bytes idénticos antes/después de lectura válida. CI SUCCESS en SHA `f15760571a6092235c1ff8dbb776be4a384ba2d5`: [39179823123](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823123), [39179823124](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823124), [39179823115](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179823115).
+- Es diagnóstico read-only, no una acción de efecto ni runtime general. Solo `chronicle_append` puede mutar; M0 INCOMPLETO.
