@@ -98,3 +98,11 @@ The initialization flags are opt-in and should only be used when creating genuin
 
 - Direct application-service tests reject a blank required store path and a non-boolean initialization flag before any store access, returning `blocked / NEXO_CHRONICLE_SESSION_INPUT_INVALID` with no dispatch.
 - CI SUCCESS on SHA `e8abe56f791e8460be6ae71abe723a3907bd13aa`: [39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), [39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), [39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), [39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827).
+
+
+## CAS conflict result semantics — validated (2026-10-19)
+
+- PREPARED commit conflict is returned as `conflict` with `dispatchAttempted=false`, not flattened into generic `blocked`.
+- Terminal-outcome CAS conflict after Chronicle settlement is returned as `conflict` while preserving `journalSettled=true` and `terminalOutcomeRecorded=false`; a subsequent replay writes only the outcome and never redispatches the append.
+- Unknown remains reserved for uncertain exceptions/commit outcomes. CI SUCCESS on SHA `8e0d226c1df5e8c52ab802fe138d86da1a7a08d8`: [39181169917](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169917), [39181169919](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169919), [39181169938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169938), [39181169900](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169900).
+- No automatic retry or new action was introduced.
