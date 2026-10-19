@@ -84,8 +84,9 @@ La última revisión de `STATUS.md` marca como siguiente trabajo comprobar la co
 2. El run específico anterior [39323179028](https://github.com/snowdenxrp/aldea-ia/actions/runs/39323179028) falló en un SHA anterior; no lo ocultar. La suite completa actual ejecutó la prueba de entrypoint y pasó en el HEAD indicado.
 3. La consulta compara una sola lectura canónica y expone `persistedMissionStatus`, `missionStatus` y `statusDiscrepancy`, sin filtrar `target/content` ni escribir el store. La diferencia significa desigualdad literal, no siempre corrupción: el status guardado puede ser una claim del plan y la reconstrucción depende de outcomes/journal canónicos.
 4. Se ensayó un guard de admisión que rechazaba pasos `completed` sin outcome; el workflow existente lo refutó en `continuity-migration.test.mjs:801`. Se revirtió: **no confundir admisión con verificación del resultado**. La regresión que bloquea claims terminales sin outcome se conserva.
-5. Próximo paso: seguir al siguiente contrato M0 con ruta real, invariantes y test focal; no reabrir esta consulta, el resultado terminal ni la API del reconstructor sin evidencia nueva.
-6. La brecha de autoridad permanece como bloqueo arquitectónico separado. Una raíz y un dispositivo inicial son el alcance aceptado, pero provisión, verificación y enforcement no están implementados. No convertir esto en investigación general de familias ni habilitar efectos protegidos. Mantener `authorization: NOT_EVALUATED`, M0 INCOMPLETO y STOP.
+5. El siguiente borrador de diseño ya está en la sección 9 de `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md`: define provisión independiente, desafío firmado y separación entre prueba de llave, autoridad vigente, autorización y enforcement. `npm test` pasó en SHA exacto `174097b9b1afe8448a1761f5b5e3c2d8c5c620a2`, [run 39340297296](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340297296).
+6. Próximo paso acotado: determinar qué fuente/procedimiento real puede provisionar y verificar el fingerprint de la llave de forma independiente del store. No elegir hardware ni afirmar que hay llave configurada sin evidencia. Si la fuente independiente no está disponible, documentar el bloqueo y dejar implementación en STOP; no volver a comparar familias de raíz de forma general.
+7. La brecha de autoridad sigue bloqueando activación. Mantener `authorization: NOT_EVALUATED`, M0 INCOMPLETO y efectos protegidos STOP.
 
 ## 7. No repetir / no hacer
 
@@ -101,3 +102,8 @@ La última revisión de `STATUS.md` marca como siguiente trabajo comprobar la co
 
 **M0: INCOMPLETO. Autoridad: NOT_EVALUATED/PENDING. Efectos protegidos: STOP. Nexo/Lúmina: separados.**  
 Nueva decisión de alcance guardada en DECISIONS. Próxima acción operativa: verificar CI real de mission-status/continuity-queries, luego seguir la siguiente frontera M0 con evidencia, sin reiniciar investigación.
+
+
+## Nuevo contrato de diseño para continuar
+
+La sección 9 de [NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md](./NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md) contiene el protocolo mínimo de raíz única. Es un borrador, no código ni evidencia de autoridad. El último SHA de código/documentación verificado por suite completa es `174097b9b1afe8448a1761f5b5e3c2d8c5c620a2`, run [39340297296](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340297296), SUCCESS.
