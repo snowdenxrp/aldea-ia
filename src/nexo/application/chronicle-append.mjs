@@ -151,6 +151,7 @@ export async function runNexoChronicleAppend({
       return {
         status: "conflict",
         code: recorded.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_CONFLICT",
+        authorization: "NOT_EVALUATED",
         dispatchAttempted: false,
         storeRevision: recorded.storeRevision,
         redispatchAuthorized: false
