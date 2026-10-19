@@ -7,7 +7,8 @@ import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
-import { runNexoChronicleAppend, parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
+import { runNexoChronicleAppend } from "../../src/nexo/application/chronicle-append.mjs";
+import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 
