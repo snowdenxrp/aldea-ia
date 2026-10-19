@@ -4,7 +4,7 @@ import { createNexoContinuityStore } from "../src/nexo/core/continuity-store.mjs
 import { createNexoChronicleStore } from "../src/nexo/core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts, NEXO_CHRONICLE_APPEND_ACTION } from "../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../src/nexo/effect-adapter.js";
-import { executeNexoStepWithContinuityOwner } from "../src/nexo/runtime.js";
+import { executeNexoStepWithContinuityOwner } from "../src/nexo/core/owner-backed-runtime.mjs";
 
 function blocked(code) {
   return { status: "blocked", code, dispatchAttempted: false };
