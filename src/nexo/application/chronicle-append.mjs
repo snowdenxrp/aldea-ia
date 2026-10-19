@@ -82,6 +82,15 @@ export async function runNexoChronicleAppend({
       steps: [{ id: stepId, action: NEXO_CHRONICLE_APPEND_ACTION, target, status: "planned", dependsOn: [] }]
     };
     const recorded = await opened.owner.recordMission({ expectedRevision: current.storeRevision, mission: candidate });
+    if (recorded.status === "conflict") {
+      return {
+        status: "conflict",
+        code: recorded.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_CONFLICT",
+        dispatchAttempted: false,
+        storeRevision: recorded.storeRevision,
+        redispatchAuthorized: false
+      };
+    }
     if (recorded.status !== "committed" && recorded.status !== "already_recorded") {
       return blocked(recorded.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_FAILED");
     }
