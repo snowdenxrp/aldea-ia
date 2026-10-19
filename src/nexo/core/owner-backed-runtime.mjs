@@ -1,3 +1,5 @@
+import { isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
+
 /**
  * Nexo-owned, adapter-agnostic execution slice.
  *
@@ -144,10 +146,7 @@ async function executeNexoStepWithContinuityOwnerInternal({
         return { status: "unknown", code: "NEXO_CHRONICLE_PREPARED_IDENTITY_AMBIGUOUS", dispatchAttempted: false, redispatchAuthorized: false };
       }
       const entry = existing[0];
-      if (entry.status === "settled_observed" &&
-          entry.settlement?.status === "applied" &&
-          entry.settlement?.source === "nexo-chronicle-store" &&
-          Number.isSafeInteger(entry.settlement?.observedRevision)) {
+      if (isValidNexoChronicleSettlementRecord(entry)) {
         return recordChronicleTerminalOutcome({
           owner, operation, expectedRevision: current.storeRevision,
           dispatchAttempted: false, preparedCommitted: true, lineageCommitted: true,
