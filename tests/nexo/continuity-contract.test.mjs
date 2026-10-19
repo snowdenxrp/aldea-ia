@@ -547,8 +547,34 @@ assert.equal(
 );
 
 
-
-
+// New owner-backed admission represents a fresh plan. Contradictory persisted
+// mission/step status remains observable on legacy import, but cannot be minted
+// by admitting a new mission in a terminal state.
+for (const invalidInitialMission of [
+  {
+    missionId: "owner-terminal-mission-with-planned-step",
+    status: "completed",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+  },
+  {
+    missionId: "owner-planned-mission-with-completed-step",
+    status: "planned",
+    steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "completed", dependsOn: [] }]
+  }
+]) {
+  const rejectedInitialMission = await owner.recordMission({
+    expectedRevision: 1,
+    mission: invalidInitialMission
+  });
+  assert.equal(rejectedInitialMission.status, "conflict");
+  assert.equal(rejectedInitialMission.code, "NEXO_MISSION_CONTEXT_INVALID");
+  assert.equal(rejectedInitialMission.storeRevision, 1);
+  assert.equal(
+    (await owner.loadCurrent()).storeRevision,
+    1,
+    "contradictory initial mission/step state must not advance the canonical revision"
+  );
+}
 
 const operation = {
   idempotencyKey: "owner-mission:step-1",
