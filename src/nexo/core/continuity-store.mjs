@@ -163,6 +163,11 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
       if (current.storeRevision !== expectedRevision) {
         return { status: "conflict", code: "NEXO_CONTINUITY_STORE_REVISION_CONFLICT", storeRevision: current.storeRevision };
       }
+      // The persisted envelope requires a safe integer revision. Never write a
+      // snapshot whose next revision cannot be represented by that contract.
+      if (current.storeRevision === Number.MAX_SAFE_INTEGER) {
+        return { status: "failed", code: "NEXO_CONTINUITY_STORE_REVISION_EXHAUSTED", storeRevision: current.storeRevision };
+      }
 
       const next = {
         schema: NEXO_CONTINUITY_STORE_SCHEMA,
