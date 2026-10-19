@@ -2,8 +2,8 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA de código validado por CI: `6ab75e1b59758cd33cd0a470c90e45e02f418882`
-Último SHA de código: `6ab75e1b59758cd33cd0a470c90e45e02f418882`; SHA final con regresiones genéricas: `b3a3f8fbaafb29ba913916ce989fb3a3e7196768`
+Último SHA de código validado por CI: `442963578e2de42e6d67afd6fd85062ccea1a23e`
+Último SHA de código: `442963578e2de42e6d67afd6fd85062ccea1a23e`; SHA con regresión de identidad: `ddfc6f98514ca3222a6e9424835602c40643cbea`
 
 ## 0. Instrucción principal al chat nuevo
 
@@ -185,3 +185,12 @@ Se cerró la brecha en `reconcilePrepared()`: una observación `applied/not_appl
 Pruebas nuevas: sin evidence y `evidence: {}` bloquean sin mutar; replay legacy con `evidence: null` no devuelve `already_observed`. SHA código owner `6ab75e1...`, adaptador `8920343...`; SHA de pruebas `b3a3f8...`. Chronicle native + bounded admission SUCCESS en `6ab75e...`; crash cuts, effect/settlement, STEP 4 y STEP 5 SUCCESS en `b3a3f8...`. Enlaces e IDs en STATUS.
 
 **Siguiente frontera:** revisar colisiones de identidad por separador en `validateOperation()`; no introducir formato nuevo. Reproducir si `missionId`/`stepId` con `:` permiten identidad ambigua y añadir test antes del cambio mínimo.
+
+
+## 12. Checkpoint — identidad de operación sin separadores ambiguos
+
+`validateOperation()` ahora rechaza `:` dentro de `missionId` o `stepId` con el código existente `NEXO_OPERATION_IDENTITY_MISMATCH`. Sin esta regla, pares diferentes podían serializarse a la misma clave concatenada; el comportamiento previo ya bloqueaba una segunda identidad incompatible, por lo que el riesgo demostrado era ambigüedad/colisión, no duplicación de efecto.
+
+La regresión comprueba ambas variantes y que el store permanece sin cambios. Código final `442963578e2de42e6d67afd6fd85062ccea1a23e`; test `ddfc6f98514ca3222a6e9424835602c40643cbea`. Los seis workflows focales pasaron en el SHA final; enlaces en STATUS. El primer intento de test falló por el código de error incorrecto; se corrigió la clasificación antes de aceptar el checkpoint.
+
+**Siguiente paso:** auditar si la reconstrucción de misión filtra intentos históricos por identidad completa (action/target) o sólo por missionId/stepId. Reproducir con una entrada mismatcheada antes de cambiar.
