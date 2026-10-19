@@ -375,6 +375,25 @@ try {
   await fs.rm(chronicleInvalidSettlementDir, { recursive: true, force: true });
 }
 
+const chronicleReconstructionEvidenceBoundDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-reconstruction-evidence-bound-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleReconstructionEvidenceBoundDir, "nexo.json"),
+    legacyMemory: chronicleSettlementMemory({ withCompletedAttempt: true })
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.mission.steps[0].status, "completed",
+    "a canonical Chronicle settlement and matching persisted outcome must survive reconstruction");
+  assert.deepEqual(reconstructed.mission.steps[0].result, {
+    verified: true,
+    kind: "nexo-chronicle-persisted-invariant",
+    source: "nexo-chronicle-store",
+    observedRevision: 1
+  });
+} finally {
+  await fs.rm(chronicleReconstructionEvidenceBoundDir, { recursive: true, force: true });
+}
+
 const chronicleReconstructionEvidenceMismatchDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-reconstruction-evidence-mismatch-"));
 try {
   const memory = chronicleSettlementMemory({ withCompletedAttempt: true });
