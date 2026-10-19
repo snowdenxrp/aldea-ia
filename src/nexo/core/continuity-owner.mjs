@@ -169,13 +169,14 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       };
     }
 
-    // Repair actions and actions registered as effectful need an
-    // action-specific goal-verification contract. A missing PREPARED row is
-    // not proof of completion, and caller-supplied evidence labels are not proof.
+    // Completion is fail-closed by default. Chronicle has its own exact
+    // persisted-settlement gate; local_analysis is the only currently defined
+    // non-mutating action. Every other action needs an explicit goal verifier
+    // contract before a caller may record completed, whether or not PREPARED
+    // exists and whether or not an effect verifier is registered.
     if (outcome.status === "completed" &&
-        (REPAIR_ACTIONS.has(outcome.action) ||
-         Object.hasOwn(verifierRegistry, outcome.action)) &&
-        outcome.action !== "chronicle_append") {
+        outcome.action !== "chronicle_append" &&
+        outcome.action !== "local_analysis") {
       return {
         status: "blocked",
         code: "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED",
