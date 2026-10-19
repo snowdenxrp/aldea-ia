@@ -1106,3 +1106,11 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - El primer CI del refactor detectó `ReferenceError: blocked is not defined` después de mover la función fuera del script. Se restauró el helper de resultado bloqueado en la frontera CLI y en el servicio de aplicación; no se ocultó el fallo.
 - Validación posterior SUCCESS: [Chronicle/entrypoint 39180686782](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686782), [mission admission/restart 39180686817](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180686817), SHA de código/test `8d05417d0a47b5f38fb63833c338a0f04d1499e7`.
 - Esto crea una API de aplicación Nexo reutilizable sin convertir el CLI en la lógica de dominio. No es todavía app Android/web ni cutover del runtime default. M0 INCOMPLETO.
+
+
+## M0 — contrato de aplicación: concurrencia y replay explícito (2026-10-19)
+
+- `tests/nexo/chronicle-runtime.test.mjs` ahora consume `runNexoChronicleAppend()` directamente desde `src/nexo/application/chronicle-append.mjs`, no desde el wrapper CLI. El CLI conserva su prueba de proceso independiente.
+- Dos llamadas concurrentes con la misma misión/paso no pueden despachar dos veces ni crear entradas Chronicle duplicadas. Un retry explícito posterior recupera el resultado con `dispatchAttempted=false` y no cambia ninguno de los dos archivos.
+- CI SUCCESS en SHA `140769ea651ed5cd198fd57f05530679e79f8c5d`: [Chronicle/entrypoint 39180811315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811315), [continuity/runtime 39180811308](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811308), [semantic validation 39180811234](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811234), [outcome/restart 39180811257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180811257).
+- El contrato permite que el perdedor de la carrera reciba un conflicto/bloqueo y haga retry explícito; no hay reintentos automáticos, cola ni redispatch inferido. Solo Chronicle habilitado. M0 INCOMPLETO.
