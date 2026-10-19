@@ -1,3 +1,14 @@
+## M0 — la consulta pública de misión oculta el estado persistido (2026-10-19)
+
+- Se completó el seguimiento de la auditoría anterior. `loadNexoMissionStatus()` llama a `owner.reconstructMission()` y devuelve `missionStatus` calculado, pero no expone el `mission.status` almacenado en el mismo snapshot.
+- Por eso, si una misión persistida como `completed` tiene un paso `planned` y no tiene outcome canónico que lo explique, la reconstrucción puede proyectarla como `planned`; el runtime de ejecución, en cambio, consulta el estado persistido y bloquea porque no es `planned`. La CLI no muestra la diferencia al operador.
+- Esto no demuestra que pueda ocurrir un dispatch protegido: el gate owner-backed revisado bloquea la nueva ejecución. Sí demuestra una discrepancia de observabilidad en el comando público `mission-status`.
+- **Siguiente cambio candidato:** hacer que la consulta exponga ambos valores desde una misma lectura canónica (estado persistido y estado reconstruido), con un indicador explícito cuando difieran; no usar el campo descriptivo `objective` como autoridad. Añadir regresión CLI para misión almacenada `completed` con step `planned`, y verificar que la consulta no modifica el archivo ni filtra `target/content`. Evitar doble lectura para no introducir una carrera entre estados.
+- Aún no se cambió código ni se ejecutó CI para esta observación.
+- M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+---
+
 ## M0 — auditoría de coherencia mission.status / steps / objective (2026-10-19)
 
 - Se inspeccionó `missionRecord()`, `reconstructNexoMissionFromSnapshot()`, el gate de `executeNexoStepWithContinuityOwner()`, la admisión de `runNexoChronicleAppend()` y las regresiones actuales.
