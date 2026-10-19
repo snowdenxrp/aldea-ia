@@ -73,10 +73,10 @@ No implementa ni sustituye la vigencia/revocación de autoridad, el alcance por 
 - Fuente independiente del pin y ceremonia: pendiente.
 - Hardware: candidato YubiKey 5 NFC/PIV, no seleccionado/adquirido/probado.
 - Integración Android/YubiKit: no implementada.
-- Vector de verificación software preliminar: incluido en la sección 8; automatización en test/CI y prueba física siguen pendientes.
+- Vector de verificación software preliminar: incluido en la sección 8 y automatizado en `tests/nexo/root-bootstrap-protocol.test.mjs`, conectado a `npm test`; CI del commit que lo añadió y prueba física siguen pendientes.
 - CI/hardware real: pendiente.
 
-No escribir aún el verificador de producción. El siguiente paso es cerrar el procedimiento de provisión independiente y confirmar disponibilidad física; después, congelar este perfil, crear el vector reproducible y diseñar las pruebas negativas antes de conectar el bootstrap al runtime.
+No escribir aún el verificador de producción. El siguiente paso es cerrar el procedimiento de provisión independiente y confirmar disponibilidad física; después, congelar este perfil, obtener CI del vector ya automatizado y diseñar/ejecutar las pruebas negativas de integración antes de conectar el bootstrap al runtime.
 
 
 ## 8. Vector de verificación preliminar (software; no hardware)
