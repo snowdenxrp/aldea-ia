@@ -47,6 +47,21 @@ assert.equal(lostMissionAdmissionResponse.dispatchAttempted, false);
 assert.equal(lostMissionAdmissionResponse.redispatchAuthorized, false);
 assert.equal(JSON.stringify(lostMissionAdmissionResponse).includes("private store failure detail"), false);
 
+const returnedUnknownMissionAdmission = await recordNexoMissionSafely({
+  owner: {
+    recordMission: async () => ({
+      status: "unknown",
+      code: "NEXO_TEST_MISSION_ADMISSION_UNKNOWN"
+    })
+  },
+  expectedRevision: 0,
+  mission: { missionId: "admission-unknown-return", steps: [] }
+});
+assert.equal(returnedUnknownMissionAdmission.status, "unknown");
+assert.equal(returnedUnknownMissionAdmission.missionAdmissionCommitted, "UNKNOWN");
+assert.equal(returnedUnknownMissionAdmission.dispatchAttempted, false);
+assert.equal(returnedUnknownMissionAdmission.redispatchAuthorized, false);
+
 function chronicleMission() {
   return {
     missionId: "chronicle-mission",
