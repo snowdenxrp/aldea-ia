@@ -183,6 +183,18 @@ assert.throws(
   error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
   "sparse dependency arrays must be rejected as malformed mission data, not traversed as an undefined step"
 );
+
+const sparseDependenciesWithExtraKey = new Array(1);
+sparseDependenciesWithExtraKey.extra = "not a dependency index";
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "sparse-dependency-with-extra-key",
+    status: "planned",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: sparseDependenciesWithExtraKey }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "extra array properties must not mask holes in the dependency index sequence"
+);
 for (const invalidGraph of [
   {
     missionId: "self-dependent-step",
