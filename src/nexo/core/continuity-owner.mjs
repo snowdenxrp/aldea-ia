@@ -296,10 +296,10 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     // Keep this after the existing-obligation branch: replay of an unresolved
     // PREPARED entry must remain visible as unknown, not be reclassified by
     // later mission status changes.
-    if (mission.status !== "planned") {
+    const reconstructedMission = reconstructNexoMissionFromSnapshot(current.snapshot, operation.missionId);
+    if (mission.status !== "planned" || reconstructedMission?.status !== "planned") {
       return { status: "blocked", code: "NEXO_PREPARED_MISSION_NOT_RUNNABLE", preparedCommitted: false, authorization: "NOT_EVALUATED", storeRevision: current.storeRevision };
     }
-    const reconstructedMission = reconstructNexoMissionFromSnapshot(current.snapshot, operation.missionId);
     const reconstructedStep = reconstructedMission?.steps.find(candidateStep =>
       candidateStep?.id === operation.stepId
     );
