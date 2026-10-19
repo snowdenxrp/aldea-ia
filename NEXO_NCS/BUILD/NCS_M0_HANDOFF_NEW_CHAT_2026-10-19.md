@@ -161,3 +161,11 @@ Evaluación y fuentes: [NCS_M0_ROOT_KEY_CANDIDATE_FEASIBILITY_2026-10-19.md](./N
 
 No seleccionar automáticamente el hardware, no instalar dependencias ni generar código de integración antes de confirmar disponibilidad y compatibilidad real. Android Keystore/StrongBox tampoco se presume disponible: requiere verificar attestation/nivel de seguridad en el dispositivo concreto. M0 sigue INCOMPLETO, autoridad NOT_EVALUATED y efectos protegidos STOP.
 
+
+## M0 — perfil criptográfico de bootstrap redactado, pendiente de provisión (2026-10-19)
+
+- Borrador: [NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md](./NCS_M0_ROOT_BOOTSTRAP_CRYPTO_PROTOCOL_DRAFT_2026-10-19.md).
+- Se propone un perfil preciso para revisión: P-256/ECDSA-SHA256, SPKI DER con fingerprint SHA-256, desafío CSPRNG de 32 bytes y mensaje con dominio `NEXO-ROOT-BOOTSTRAP-V1\0`. Es especificación documental, no código ni vector validado.
+- El pin/fingerprint independiente sigue sin ceremonia aceptada; hardware candidato no adquirido/probado. No escribir aún el verificador de producción ni conectar la firma a dispatch.
+- Próxima puerta: cerrar provisión del pin, confirmar disponibilidad/compatibilidad de hardware, crear vector criptográfico reproducible y pruebas negativas; después CI y prueba física. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
+
