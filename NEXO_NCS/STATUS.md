@@ -1,3 +1,13 @@
+## M0 — fallos de lectura en reconciliación genérica (validado 2026-10-19)
+
+- Hueco concreto: `reconcilePrepared()` ya devolvía incertidumbre estructurada para fallo de commit y podía recuperar una respuesta perdida, pero dos lecturas de continuidad —la lectura inicial y la relectura inmediatamente anterior a CAS— aún podían propagar excepciones crudas.
+- Corrección en `src/nexo/core/continuity-owner.mjs`: ambos límites de lectura devuelven `blocked` con el código de error existente cuando está disponible, marcadores `uncertainty: continuity_read_failed` o `continuity_recheck_failed`, y sin afirmar commit ni settlement. La relectura pre-CAS sigue siendo obligatoria; si falla, no se escribe la observación.
+- Regresión añadida: el verificador devuelve una observación válida, la segunda lectura falla, y el método devuelve bloqueo estructurado; se comprueba que el verificador solo se invoca una vez, `storeRevision` sigue en 0 y el journal permanece `prepared`.
+- SHA de código `c8b5c59cd5e2a69e11c9c8ba1263d46a5c678469`; SHA final código/pruebas `f43c757cc7dc6ce966f797637dd5d7e2b5715827`. SUCCESS: [repair crash cuts 39189612150](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612150), [effect/settlement 39189612141](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612141), [STEP 4 39189612151](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612151), [STEP 5 39189612143](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189612143). Chronicle SUCCESS en código SHA `c8b5c59cd5e2a69e11c9c8ba1263d46a5c678469`: [run 39189596625](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596625). Continuity/restart SUCCESS: [run 39189596815](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189596815).
+- Límites: no hay retry automático, no se reejecuta el verificador por un fallo de lectura, no se habilita redispatch ni se afirma atomicidad cross-store. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+**Siguiente frontera:** verificar la recuperación por replay de observaciones genéricas corruptas o parcialmente formadas. El replay debe aceptar únicamente un registro canónico con estado, identidad, revisión y fuente válidos; si falta un elemento, debe permanecer UNKNOWN/bloqueado y no invocar el verificador como atajo.
+
 ## M0 — commit de observación genérica con respuesta perdida (validado 2026-10-19)
 
 - Hueco reproducido: `reconcilePrepared()` podía dejar escapar una excepción de `store.commitIfCurrent()`. Si el store persistía `reconciled_observed` y después lanzaba una excepción antes de devolver el recibo, la API no entregaba resultado estructurado aunque el estado canónico ya hubiera avanzado.
