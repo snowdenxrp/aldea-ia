@@ -521,13 +521,20 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         replayReconciliation.source.trim() &&
         Object.hasOwn(replayReconciliation, "evidence") &&
         validReplayTimestamp;
+      const replaySettlement = replayEntry?.settlement;
+      const replaySettlementObservedAt = replaySettlement?.observedAt;
+      const validSettlementTimestamp = typeof replaySettlementObservedAt === "string" &&
+        Number.isFinite(Date.parse(replaySettlementObservedAt)) &&
+        new Date(replaySettlementObservedAt).toISOString() === replaySettlementObservedAt;
       const chronicleSettlement = sameReplayIdentity &&
         operation.action === "chronicle_append" &&
         replayEntry.status === "settled_observed" &&
-        replayEntry.settlement?.status === "applied" &&
-        replayEntry.settlement?.source === "nexo-chronicle-store" &&
-        Number.isSafeInteger(replayEntry.settlement?.observedRevision) &&
-        replayEntry.settlement.observedRevision >= 0;
+        replaySettlement?.status === "applied" &&
+        replaySettlement?.source === "nexo-chronicle-store" &&
+        Number.isSafeInteger(replaySettlement.observedRevision) &&
+        replaySettlement.observedRevision >= 0 &&
+        Object.hasOwn(replaySettlement, "evidence") &&
+        validSettlementTimestamp;
       if (genericObservation || chronicleSettlement) {
         const recorded = genericObservation ? replayEntry.reconciliation : replayEntry.settlement;
         return {
