@@ -299,7 +299,11 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     if (mission.status !== "planned") {
       return { status: "blocked", code: "NEXO_PREPARED_MISSION_NOT_RUNNABLE", preparedCommitted: false, authorization: "NOT_EVALUATED", storeRevision: current.storeRevision };
     }
-    if (step.status !== "planned") {
+    const reconstructedMission = reconstructNexoMissionFromSnapshot(current.snapshot, operation.missionId);
+    const reconstructedStep = reconstructedMission?.steps.find(candidateStep =>
+      candidateStep?.id === operation.stepId
+    );
+    if (step.status !== "planned" || reconstructedStep?.status !== "planned") {
       return {
         status: "blocked",
         code: "NEXO_PREPARED_STEP_NOT_RUNNABLE",
@@ -309,7 +313,6 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       };
     }
     const dependencies = Array.isArray(step.dependsOn) ? step.dependsOn : [];
-    const reconstructedMission = reconstructNexoMissionFromSnapshot(current.snapshot, operation.missionId);
     const dependenciesMet = dependencies.every(dependencyId =>
       reconstructedMission?.steps.some(candidateStep =>
         candidateStep?.id === dependencyId && candidateStep.status === "completed"
