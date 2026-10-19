@@ -11,6 +11,17 @@
 
 ---
 
+# Decisión de alcance aceptada — raíz única y dispositivo único inicial (2026-10-19)
+
+- Decisión guardada en `NEXO_NCS/DECISIONS/NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md`, commit `f6894c51b5a0aa1ced848ab1481ecd40ab995d5d`.
+- La primera versión se construye alrededor de una llave como raíz criptográfica de arranque y un único dispositivo. La selección física/protocolo de la llave sigue pendiente y no se finge que ya existe hardware configurado.
+- Recuperación tras pérdida irrecuperable de la única llave, coordinación multi-dispositivo y sucesión quedan fuera de la fase inicial. Se acepta que la pérdida irrecuperable pueda dejar Nexo inaccesible; no se autoriza reconstruir autoridad desde un snapshot.
+- La raíz inicia la confianza; no otorga permisos ilimitados. La evaluación de cada operación y la frontera de efecto protegido siguen siendo necesarias.
+- Esta decisión reduce alcance y NO reinicia M0. Próximo paso de construcción: revisar el CI real del cambio de `continuity-queries.mjs` y su regresión; después continuar coherencia misión persistida/pasos/reconstrucción. No reabrir una investigación general de raíces como bloqueo.
+- Evidencia funcional de autoridad no cambia: último CI Chronicle previamente observado run `39292887874` en SHA `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; autoridad runtime NOT_EVALUATED, efectos protegidos STOP, M0 INCOMPLETO.
+
+---
+
 ## M0 — verificación final de transparencia de autoridad (2026-10-19)
 
 - La revisión detectó y cerró dos omisiones en resultados públicos Chronicle: el resultado normalizado, los rechazos tempranos y el conflicto de admisión deben conservar `authorization: "NOT_EVALUATED"` mientras no exista evaluación de autoridad.
