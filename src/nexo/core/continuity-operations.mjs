@@ -179,7 +179,12 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
   // completion. Keep its step non-executable until a separate mission verifier
   // resolves the goal; never reconstruct it as planned and redispatch it.
   const observedSettlements = source.effectJournal.filter(entry =>
-    entry?.missionId === missionId && entry?.status === "settled_observed"
+    entry?.missionId === missionId &&
+    entry?.status === "settled_observed" &&
+    // Chronicle append has an operation-specific durable invariant and a
+    // terminal outcome contract. Do not misclassify it as a repair whose
+    // desired state was merely observed; other actions remain conservative.
+    entry?.action !== "chronicle_append"
   );
   if (observedSettlements.length > 0) {
     for (const entry of observedSettlements) {
