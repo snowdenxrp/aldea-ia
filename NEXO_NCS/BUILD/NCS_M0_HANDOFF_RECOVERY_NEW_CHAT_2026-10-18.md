@@ -515,3 +515,13 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Verificación fuerte: los bytes del archivo Chronicle y del store de continuidad no cambian en el replay; el sentinel del contenido no aparece en stdout. Esto comprueba idempotencia tras restart del CLI, no solo dentro del mismo proceso.
 - CI SUCCESS en SHA `3ed7860a189b6b00d0a5444eb466a4393c4a2c4c`: [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886).
 - No extrapolar a pérdida de energía/fsync ni a otras acciones. Siguiente frontera: consolidar el contrato de recuperación del vertical y decidir el seam mínimo de aplicación Nexo sin importar Lúmina; no cambiar el runtime default.
+
+
+## Current verified pointer after CLI restart regression (2026-10-19)
+
+- Branch HEAD: `2420f0828fbb9964ee0161548c4dcd475edf12be` (documentation-only).
+- Latest code/test SHA with focused CI SUCCESS: `3ed7860a189b6b00d0a5444eb466a4393c4a2c4c`.
+- Compared code/test SHA → HEAD: only `NEXO_NCS/STATUS.md`, this handoff, and `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md` changed.
+- Verified CI: Chronicle/entrypoint [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), outcome classification [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), semantic validation [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886), all SUCCESS on the code/test SHA.
+- Latest validated capabilities: Chronicle settlement/outcome reconstruction no longer misclassifies Chronicle as a repair observation; `status` reads aggregate counts; `mission-status` reconstructs canonical mission state without payload disclosure; unresolved PREPARED remains blocked; same-operation CLI replay in a fresh process does not dispatch again or change either file.
+- Next step: inspect the minimum application/runtime seam and its full transitive import graph. Do not integrate `src/nexo/runtime.js` into production or change the default runtime yet; it still has legacy compatibility coupling. No new mutating actions, no authority inference, no fsync/power-loss claims. M0 INCOMPLETO, protected effects STOP, Nexo/Lúmina separated.
