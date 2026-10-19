@@ -94,7 +94,28 @@ if (result.status !== "committed") process.exitCode = 1;`;
   assert.equal(crossProcessEntries.length, 2);
   assert.deepEqual(new Set(crossProcessEntries.map(entry => entry.operationKey)), new Set(["cross-process-a", "cross-process-b"]));
 
-  // A stale lock must fail closed; automatic check-then-remove reclamation is racy.
+  // A failed owner.json write after mkdir must not leave a poisoned lock directory.
+  const lockOwnerFailurePath = path.join(root, "lock-owner-failure.json");
+  let failLockOwnerWrite = true;
+  const fsWithLockOwnerFailure = {
+    ...fs,
+    writeFile: async (target, ...args) => {
+      if (failLockOwnerWrite && target === path.join(`${lockOwnerFailurePath}.lock`, "owner.json")) {
+        failLockOwnerWrite = false;
+        const error = new Error("simulated lock owner write failure");
+        error.code = "EIO";
+        throw error;
+      }
+      return fs.writeFile(target, ...args);
+    }
+  };
+  const lockOwnerFailureStore = createNexoChronicleStore({ filePath: lockOwnerFailurePath, fsModule: fsWithLockOwnerFailure });
+  await assert.rejects(() => lockOwnerFailureStore.initialize(), error => error?.code === "EIO");
+  await assert.rejects(() => fs.access(`${lockOwnerFailurePath}.lock`), error => error?.code === "ENOENT");
+  assert.equal((await lockOwnerFailureStore.initialize()).status, "committed",
+    "a failed lock-owner write must not poison later Chronicle operations");
+
+// A stale lock must fail closed; automatic check-then-remove reclamation is racy.
   const staleLockPath = path.join(root, "stale-lock.json");
   const staleLockStore = createNexoChronicleStore({ filePath: staleLockPath });
   assert.equal((await staleLockStore.initialize()).status, "committed");
