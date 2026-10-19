@@ -1138,3 +1138,12 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - `src/nexo/application/chronicle-append.mjs` propaga de forma explícita el conflicto de admisión de misión. Excepciones/commit-response-lost siguen siendo `unknown`; los conflictos conocidos no se presentan como incertidumbre de escritura.
 - Regresiones: conflicto PREPARED bloquea antes del adapter; conflicto de outcome deja journal settled y recupera por outcome replay solamente. CI SUCCESS en SHA `8e0d226c1df5e8c52ab802fe138d86da1a7a08d8`: [Chronicle 39181169917](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169917), [continuity/restart 39181169919](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169919), [semantic validation 39181169938](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169938), [outcome/restart 39181169900](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181169900).
 - No se añade retry automático. El caller decide cuándo reintentar después de leer el estado canónico. M0 INCOMPLETO.
+
+
+## M0 — matriz de outcomes inciertos y campos tri-state (2026-10-19)
+
+- El resultado público de `executeNexoStepWithContinuityOwner()` normaliza flags: `dispatchAttempted`, `preparedCommitted`, `lineageCommitted`, `journalSettled`, `terminalOutcomeRecorded`, `redispatchAuthorized`. Los campos de commit conservan `"UNKNOWN"` cuando una excepción pudo ocurrir después de persistir; no se convierten falsamente en `false`.
+- Cubierto por pruebas: PREPARED commit UNKNOWN → no dispatch y `preparedCommitted="UNKNOWN"`; adapter lanza → resultado UNKNOWN sin mensaje crudo; lineage commit excepción → `lineageCommitted="UNKNOWN"`; reconciliación commit respuesta perdida → `journalSettled="UNKNOWN"`; outcome commit respuesta perdida → `terminalOutcomeRecorded="UNKNOWN"`; conflicto CAS conocido → `status=conflict`.
+- El error crudo del adapter ya no sale en el objeto de resultado de aplicación. El CLI continúa emitiendo solo los campos permitidos.
+- CI SUCCESS en SHA `7f4f80f44912ac93f59b65977f728b95dc6fab2e`: [Chronicle 39181497303](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497303), [continuity/restart 39181497305](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497305), [semantic validation 39181497592](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497592), [outcome/restart 39181497309](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497309).
+- M0 INCOMPLETO; sin retries automáticos, sin acciones adicionales, sin cutover.
