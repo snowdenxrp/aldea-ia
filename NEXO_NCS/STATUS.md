@@ -1045,3 +1045,11 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
   - [39179028821 — outcome classification, restart reconstruction y protected transition](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179028821).
 - Resultado limitado a estas suites/workflows; no equivale a la suite completa del repositorio ni al cutover del runtime. La recuperación genérica queda probada para el crash cut añadido; no se infiere causalidad ni se habilita redispatch.
 - Próximo frente sigue siendo la entrada principal Nexo-only sin imports de Lúmina, manteniendo Chronicle opt-in. **M0 INCOMPLETO**.
+
+
+## M0 — entrada Nexo-only (2026-10-18)
+
+- Se añadió `scripts/nexo.mjs` como router CLI independiente; únicamente permite `chronicle-append` y rechaza comandos desconocidos. El Chronicle session ahora importa `src/nexo/core/owner-backed-runtime.mjs`, separado de los imports estáticos de Lúmina que conserva `src/nexo/runtime.js` por compatibilidad.
+- La prueba real del entrypoint y la vertical Chronicle pasaron en SHA `9174921f587b504f40524ae5e89f47da68e40ae2`: [CI 39179321550 SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179321550).
+- Detalle y límites: [NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md](BUILD/NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md).
+- Alcance: CLI Nexo-only, no UI web ni runtime general. `index.html` sigue siendo Lúmina; no se modificó. M0 INCOMPLETO, runtime default sin cutover, efectos protegidos STOP.
