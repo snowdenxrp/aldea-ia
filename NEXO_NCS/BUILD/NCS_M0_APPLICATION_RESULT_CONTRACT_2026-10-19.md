@@ -333,3 +333,8 @@ SHA código+pruebas `82826e12bfd88c07aeabda05f6a14605f85bda33`: bounded admissio
 ## Checkpoint M0 — nested mission accessor guard (2026-10-19)
 
 La prueba de `step.target` con getter confirma que `assertContractInput(mission)` rechaza accessors anidados antes de ejecutarlos. Test SHA `bceabad2e1f62a23ba7586ba27b2977841d6b778`; código `82826e12bfd88c07aeabda05f6a14605f85bda33`. SUCCESS: bounded admission/restart 39197679061, STEP 4 39197679021, STEP 5 39197678998. El cambio fue test-only.
+
+
+## Checkpoint M0 — dense dependency arrays (2026-10-19)
+
+Mission admission rejects sparse `dependsOn` arrays with `NEXO_MISSION_CONTEXT_INVALID` before graph traversal. A second regression proves extra array properties cannot mask a missing dependency index. Test SHA `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; code SHA `360b0dafbebc700477bc30879ef4175da81c904b`. Bounded admission, STEP 4 and STEP 5 SUCCESS (runs 39197992970, 39197992902, 39197992893); crash cuts SUCCESS run 39197974984. M0 INCOMPLETO; efectos protegidos STOP.
