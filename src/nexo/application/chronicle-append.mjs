@@ -9,6 +9,24 @@ function blocked(code) {
   return { status: "blocked", code, dispatchAttempted: false };
 }
 
+/**
+ * Mission admission can persist before its response is lost. Do not let a raw
+ * store exception escape or claim that admission definitely failed.
+ */
+export async function recordNexoMissionSafely({ owner, expectedRevision, mission } = {}) {
+  try {
+    return await owner.recordMission({ expectedRevision, mission });
+  } catch (error) {
+    return {
+      status: "unknown",
+      code: error?.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
+      missionAdmissionCommitted: "UNKNOWN",
+      dispatchAttempted: false,
+      redispatchAuthorized: false
+    };
+  }
+}
+
 export async function runNexoChronicleAppend({
   continuityPath, chroniclePath, missionId, stepId, content,
   initializeContinuity = false, initializeChronicle = false
@@ -81,7 +99,10 @@ export async function runNexoChronicleAppend({
       objective: NEXO_CHRONICLE_APPEND_ACTION,
       steps: [{ id: stepId, action: NEXO_CHRONICLE_APPEND_ACTION, target, status: "planned", dependsOn: [] }]
     };
-    const recorded = await opened.owner.recordMission({ expectedRevision: current.storeRevision, mission: candidate });
+    const recorded = await recordNexoMissionSafely({
+      owner: opened.owner, expectedRevision: current.storeRevision, mission: candidate
+    });
+    if (recorded.status === "unknown") return recorded;
     if (recorded.status === "conflict") {
       return {
         status: "conflict",
