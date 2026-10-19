@@ -5,6 +5,10 @@ import { createNexoChronicleEffectContracts, NEXO_CHRONICLE_APPEND_ACTION } from
 import { createEffectAdapter } from "../effect-adapter.js";
 import { executeNexoStepWithContinuityOwner } from "../core/owner-backed-runtime.mjs";
 
+function blocked(code) {
+  return { status: "blocked", code, dispatchAttempted: false };
+}
+
 export async function runNexoChronicleAppend({
   continuityPath, chroniclePath, missionId, stepId, content,
   initializeContinuity = false, initializeChronicle = false
