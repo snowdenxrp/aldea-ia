@@ -21,6 +21,14 @@ try {
     { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" },
     "append must normalize a missing parent before any Chronicle write"
   );
+  const fileAsParent = path.join(root, "not-a-directory");
+  await fs.writeFile(fileAsParent, "file blocks directory traversal", "utf8");
+  const invalidParentStore = createNexoChronicleStore({ filePath: path.join(fileAsParent, "chronicle.json") });
+  assert.deepEqual(
+    await invalidParentStore.append({ operationKey: "mission-invalid-parent:step-1", content: "must not write" }),
+    { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" },
+    "append must normalize ENOTDIR as an unavailable parent path"
+  );
   assert.equal((await store.initialize()).status, "committed");
   assert.equal((await store.initialize()).status, "conflict");
 
