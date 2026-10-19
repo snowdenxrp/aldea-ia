@@ -217,6 +217,6 @@ This closes the identified record-completeness discrepancy only. It does not est
 
 La observación Chronicle aplicada debe contener evidencia no nula ligada al registro que se leyó. `observeChronicleOperation()` produce `{kind: "persisted-chronicle-entry", operationKey, content}`; el propietario comprueba el tipo, kind y coincidencia exacta de operationKey/content tanto al recuperar settlement como antes de permitir `recordOutcome(status="completed")`. La presencia de una propiedad `evidence` con valor null ya no satisface el contrato Chronicle.
 
-Regresión: un settlement con status/source/revisión/timestamp válidos pero `evidence: null` no puede completar una misión ni modificar la revisión canónica. Pruebas y CI quedan documentados en `NEXO_NCS/STATUS.md` y en el handoff M0 del 2026-10-19.
+Regresión: un settlement con status/source/revisión/timestamp válidos pero `evidence: null` no puede completar una misión ni recuperarse como `already_observed` durante replay; la regresión confirma que la revisión canónica no avanza. Pruebas y CI quedan documentados en `NEXO_NCS/STATUS.md` y en el handoff M0 del 2026-10-19.
 
 Esta evidencia demuestra coincidencia con una entrada observada del Chronicle local; no es una firma, autoridad, atribución causal, garantía de durabilidad física ni verificación general de objetivo. M0 continúa INCOMPLETO y los efectos protegidos permanecen STOP.
