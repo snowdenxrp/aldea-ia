@@ -1,3 +1,14 @@
+## M0 — commit de observación genérica con respuesta perdida (validado 2026-10-19)
+
+- Hueco reproducido: `reconcilePrepared()` podía dejar escapar una excepción de `store.commitIfCurrent()`. Si el store persistía `reconciled_observed` y después lanzaba una excepción antes de devolver el recibo, la API no entregaba resultado estructurado aunque el estado canónico ya hubiera avanzado.
+- Corrección en `src/nexo/core/continuity-owner.mjs`: la frontera del commit genérico captura específicamente esa excepción y devuelve `blocked`, código original si existe (fallback `NEXO_EFFECT_OBSERVATION_COMMIT_OUTCOME_UNKNOWN`), `observationCommitted:false` y `uncertainty: effect_observation_commit_outcome_unknown`. No afirma que el commit falló ni que tuvo éxito; la siguiente llamada recupera la observación desde el journal canónico.
+- Regresión crash-cut: el store subyacente confirma durablemente el commit y luego lanza error. La primera llamada devuelve incertidumbre estructurada; tras reabrir el owner, replay devuelve `already_observed`, revisión 1, conserva `reconciled_observed` y no vuelve a invocar el verificador.
+- Hubo dos fallos iniciales de CI por colisión del directorio temporal de la nueva prueba con otro caso existente. Se aisló el directorio de esta regresión; el código no se alteró para ocultar ese fallo.
+- SHA final código/prueba: `a8f5d06cb983a412b8187612c70a6032215518eb`. SUCCESS: [repair crash cuts 39189472295](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472295), [effect/settlement 39189472360](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472360), [STEP 4 39189472242](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472242), [STEP 5 39189472266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472266). Chronicle SUCCESS sobre el commit de código `ea2bc19753d82c9d79a98c100b9b9ee2dd0b3c90`: [run 39189369262](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189369262); el SHA final añadió/ajustó pruebas de crash-cut y no cambió después el código de Chronicle.
+- Límite: el guard devuelve incertidumbre estructurada; no crea atomicidad entre stores, no reintenta el efecto ni invoca de nuevo el verificador cuando recupera el commit. M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+**Siguiente frontera:** terminar de revisar errores de lectura en el mismo método y validar que los replays sólo acepten observaciones canónicas con identidad y estado exactos. No ampliar a UI/runtime legacy ni crear nuevos estados.
+
 ## M0 — completion fail-closed por defecto (validado 2026-10-19)
 
 - Segundo hueco encontrado en el guard anterior: cubrir acciones repair y acciones registradas en `effectVerifiers` no protegía una acción con efecto no registrada. El owner podía aceptar `recordOutcome(status=completed)` sin PREPARED ni un verificador de objetivo si el nombre de acción no estaba en esos dos grupos.
