@@ -18,6 +18,7 @@ Validated code SHA: 9174921f587b504f40524ae5e89f47da68e40ae2
 3. Chronicle content is passed through stdin and is absent from stdout/stderr.
 4. Persisted Chronicle and continuity journal show the append settlement.
 5. The CLI imports the isolated owner-backed runtime rather than `src/nexo/runtime.js`, and that module has no static Lumina/assistant dependencies.
+6. `status` reports only revision and counts, not mission content/targets; missing stores fail without initialization and a valid status call leaves file bytes unchanged.
 
 ## CI evidence
 
