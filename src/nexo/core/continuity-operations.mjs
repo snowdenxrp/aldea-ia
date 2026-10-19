@@ -144,6 +144,34 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     },
     generatedAt: plan.at
   };
+  // A recognized journal state still needs a canonical owner and step binding.
+  // Legacy snapshots remain readable, but an orphan or mismatched effect record
+  // must not disappear from reconstruction and make a step runnable.
+  const recognizedEffectStates = ["prepared", "settled_observed", "reconciled_observed"];
+  const unownedEffectEntry = source.effectJournal.some(entry =>
+    recognizedEffectStates.includes(entry?.status) &&
+    (typeof entry?.missionId !== "string" || !entry.missionId.trim() ||
+      !source.missions.some(candidate => candidate?.missionId === entry.missionId))
+  );
+  const unboundMissionEffectEntry = source.effectJournal.some(entry => {
+    if (entry?.missionId !== missionId || !recognizedEffectStates.includes(entry?.status)) return false;
+    const boundStep = mission.steps.find(candidate => candidate?.id === entry?.stepId);
+    return !boundStep || boundStep.action !== entry.action ||
+      !isDeepStrictEqual(boundStep.target ?? null, entry.target ?? null);
+  });
+  if (unownedEffectEntry || unboundMissionEffectEntry) {
+    for (const step of mission.steps) {
+      step.status = "blocked";
+      step.blockReason = {
+        code: "NEXO_EFFECT_JOURNAL_IDENTITY_UNKNOWN",
+        next: "reconcile_effect_journal_without_redispatch"
+      };
+    }
+    mission.status = "blocked";
+    mission.uncertainty = "effect_journal_identity_unknown";
+    return mission;
+  }
+
   const attempts = source.attempts.filter(item => item?.missionId === missionId);
   const planClaimedCompletedStepIds = new Set(
     mission.steps.filter(item => item?.status === "completed").map(item => item.id)
