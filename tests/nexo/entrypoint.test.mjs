@@ -236,6 +236,40 @@ try {
   assert.equal(preparedSummary.steps[0].status, "blocked");
   assert.equal(preparedSummary.steps[0].blockCode, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
   assert.equal(await fs.readFile(preparedContinuityPath, "utf8"), preparedBytesBefore);
+  // Public status must expose persisted/reconstructed disagreement from one canonical read.
+  const contradictoryContinuityPath = path.join(root, "contradictory-continuity.json");
+  const contradictoryMemory = {
+    version: 4, runs: [], lessons: [], patterns: [],
+    nexo: {
+      missions: [{
+        missionId: "contradictory-mission", status: "completed", objective: "descriptive-only",
+        steps: [{
+          id: "step-1", action: "chronicle_append",
+          target: { content: "STATUS_PRIVATE_SENTINEL_DO_NOT_OUTPUT" },
+          status: "planned", dependsOn: []
+        }]
+      }],
+      attempts: [], doNotRepeat: [], executions: [], effectJournal: []
+    }
+  };
+  await openNexoContinuityOwner({
+    filePath: contradictoryContinuityPath,
+    legacyMemory: contradictoryMemory
+  });
+  const contradictoryBytesBefore = await fs.readFile(contradictoryContinuityPath, "utf8");
+  const contradictoryStatus = spawnSync(process.execPath, [
+    entrypointPath, "mission-status", "--continuity", contradictoryContinuityPath,
+    "--mission", "contradictory-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(contradictoryStatus.status, 0, contradictoryStatus.stderr || contradictoryStatus.stdout);
+  assert.equal(contradictoryStatus.stderr, "");
+  assert.equal(contradictoryStatus.stdout.includes("STATUS_PRIVATE_SENTINEL_DO_NOT_OUTPUT"), false);
+  const contradictorySummary = JSON.parse(contradictoryStatus.stdout);
+  assert.equal(contradictorySummary.status, "reconstructed");
+  assert.equal(contradictorySummary.persistedMissionStatus, "completed");
+  assert.equal(contradictorySummary.missionStatus, "planned");
+  assert.equal(contradictorySummary.statusDiscrepancy, true);
+  assert.equal(await fs.readFile(contradictoryContinuityPath, "utf8"), contradictoryBytesBefore);
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
