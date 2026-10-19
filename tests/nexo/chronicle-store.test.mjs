@@ -35,7 +35,13 @@ try {
   }), {
     status: "applied", idempotencyKey: "mission-1:step-1", missionId: "mission-1",
     stepId: "step-1", action: "chronicle_append", target: { content: "record" },
-    observedRevision: 1, source: "nexo-chronicle-store", causalAttribution: "not_established"
+    observedRevision: 1, source: "nexo-chronicle-store",
+    evidence: {
+      kind: "persisted-chronicle-entry",
+      operationKey: "mission-1:step-1",
+      content: "record"
+    },
+    causalAttribution: "not_established"
   });
 
 
@@ -149,6 +155,11 @@ if (result.status !== "committed") process.exitCode = 1;`;
   assert.equal(ownerObservation.action, "chronicle_append");
   assert.deepEqual(ownerObservation.target, { content: "native Nexo history" });
   assert.equal(Number.isSafeInteger(ownerObservation.observedRevision), true);
+  assert.deepEqual(ownerObservation.evidence, {
+    kind: "persisted-chronicle-entry",
+    operationKey: "mission-3:step-1",
+    content: "native Nexo history"
+  });
 
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
