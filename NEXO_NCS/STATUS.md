@@ -1,3 +1,17 @@
+# Puerta de entrada NCS — estado M0
+
+## M0 — identidad canónica y estados de journal desconocidos bloquean la reconstrucción (validado 2026-10-19)
+
+- Identidad de misión: la admisión rechaza IDs de misión/paso con separadores `:` y pasos duplicados; el contrato de snapshot también rechaza identidades persistidas de misión/paso duplicadas antes de reconstruirlas. Esto evita colisiones de la clave `missionId:stepId`.
+- Estado de journal: la reconstrucción bloquea si encuentra estados de `effectJournal` no reconocidos. También bloquea cuando una entrada desconocida está huérfana (missionId no corresponde a ninguna misión) o su identidad no se puede asociar de forma segura; no se ignora el registro para permitir que otra misión siga ejecutándose.
+- Evidencia Chronicle: el outcome acepta exactamente `verified/kind/source/observedRevision`; source/revision se ligan al settlement. Claims extra o desatadas e identidades de outcome distintas se bloquean. La forma de settlement evidence se revisó: sus campos extra no participan en decisiones ni resultados públicos; no se amplió el contrato por especulación.
+- PREPARED: la misión y el paso deben ser `planned` en la reconstrucción para admitir un nuevo PREPARED; un PREPARED pendiente bloquea nuevos pasos de la misma misión. Repetir la misma identidad después de reinicio conserva `prepared_existing / NEXO_EFFECT_OUTCOME_UNKNOWN`, una sola entrada de journal y ninguna autorización de redispatch.
+- Fallos de lectura: owner write paths y runtime bloquean ante `store.loadCurrent()` fallido, sin commit ni dispatch.
+- Código funcional más reciente: `33b23a87fe51b80007943cbc28cffd3883e99a19`; SHA final de código+pruebas: `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3`. SUCCESS en el SHA final: bounded admission/restart [39197181542](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197181542), STEP 4 [39197181545](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197181545), STEP 5 [39197181644](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197181644), crash cuts [39197181585](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197181585). Los cambios recientes de identidad y journal desconocido están cubiertos por estos runs; no afirmar que todos los workflows del repositorio se ejecutaron.
+- Límite global: M0 sigue INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina. Coherencia estructural no equivale a autenticación, causalidad ni autorización.
+
+**Siguiente frontera (auditoría antes de cambios):** inspeccionar el grafo `dependsOn` de misiones persistidas: self-dependencies, IDs inexistentes, referencias duplicadas y ciclos. Confirmar cómo se bloquean hoy y si alguna forma puede resultar ejecutable por reconstrucción; no inventar scheduler, estados o replanificación.
+
 ## M0 — fallos de lectura de continuidad bloquean escritura y despacho (2026-10-19)
 
 - Se cerró la brecha de consistencia en `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()`: los errores de `store.loadCurrent()` se normalizan a `status: "blocked"`, `uncertainty: "continuity_read_failed"`, autorización no evaluada y flags de commit/settlement falsos. No se llama `commitIfCurrent()`.
@@ -8,7 +22,6 @@
 - **Siguiente frontera:** continuar M0 en la reconstrucción canónica de estado tras recuperación; revisar si un snapshot con un `effectJournal` genérico terminalmente inconsistente puede hacer ejecutable un paso, reutilizando tests existentes. No reabrir el contrato Chronicle/read-failure sin una nueva reproducción.
 - Estado global: M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina; STEP 7 OPEN / STOP / UNKNOWN.
 
-# Puerta de entrada NCS — estado M0
 
 ## M0 — evidencia Chronicle tiene forma canónica cerrada (validado 2026-10-19)
 
