@@ -1,9 +1,9 @@
 ## Siguiente diseño M0 — inventario de claims y dominios de fallo de autoridad
 
-- Nuevo inventario: `NEXO_NCS/BUILD/NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md` (commit `194c6b8868e4632dfb909b14112ca19f10e28fe6`), con afirmaciones delimitadas C0–C8, nivel de evidencia, fallos comunes y obligaciones de frontera.
+- Nuevo inventario: `NEXO_NCS/BUILD/NCS_M0_DEPLOYMENT_CLAIM_FAILURE_DOMAIN_INVENTORY_2026-10-19.md` (commits `194c6b8868e4632dfb909b14112ca19f10e28fe6` and `5aeb504d0d324030f0db2966c54bdb59cfdda5fd`), con afirmaciones delimitadas C0–C8, nivel de evidencia, fallos comunes y obligaciones de frontera.
 - El contraste con los contratos existentes encontró que el primer borrador de composición duplicaba estados: se corrigió para reutilizar `ESTABLISHED / UNKNOWN / INVALID` del contrato bootstrap, `AUTHORITY_UNAVAILABLE / AUTHORITY_UNRESOLVED` de la investigación de recuperación y la distinción `STALE / REVOKED` de AB105.078R. No se crea un enum agregado.
 - Contrato revisado: `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_COMPOSITION_SEMANTIC_CONTRACT_DRAFT_2026-10-19.md`, corrección commit `c83a864232793e963a7a99fb88fc313f4f1a48ca`.
-- **Siguiente paso exacto:** completar sólo los hechos de despliegue aún UNKNOWN (recuperación fuera del teléfono, funcionamiento offline, control real de credenciales, garantías de plataforma y frontera final bajo control de Nexo). Después comparar las familias de reconocimiento ya enumeradas en STATUS. No escoger root ni implementar evaluator por intuición.
+- **Siguiente paso exacto:** completar sólo los hechos de despliegue aún UNKNOWN (recuperación fuera del teléfono, funcionamiento offline, control real de credenciales, garantías de plataforma y frontera final bajo control de Nexo). Contexto reportado ya fijado en el inventario: Android-first, sin PC ni impresora actualmente; teléfono no es raíz; llave hardware no adquirida/seleccionada; no se ha elegido raíz externa/custodio. Después comparar las familias de reconocimiento ya enumeradas en STATUS. No escoger root ni implementar evaluator por intuición.
 - CI funcional observado: run `39292887874`, SHA probado `8d4583d8a8074b2993e77faa3770d7abcfe7b6ae`; los commits posteriores citados aquí son documentales. M0 INCOMPLETO; efectos protegidos STOP.
 
 ---
