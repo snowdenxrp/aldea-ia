@@ -66,7 +66,9 @@ function missionRecord(mission) {
   }
   if (!mission || typeof mission.missionId !== "string" || !mission.missionId.trim() ||
       mission.missionId.includes(":") || !Array.isArray(mission.steps) ||
-      (mission.status != null && (typeof mission.status !== "string" || !mission.status.trim()))) {
+      (mission.status != null &&
+        (typeof mission.status !== "string" || !mission.status.trim() ||
+          !["planned", "blocked"].includes(mission.status)))) {
     throw operationError("NEXO_MISSION_CONTEXT_INVALID");
   }
   const stepIds = new Set();
@@ -74,7 +76,9 @@ function missionRecord(mission) {
     if (!step || typeof step !== "object" || Array.isArray(step) ||
         typeof step.id !== "string" || !step.id.trim() || step.id.includes(":") || stepIds.has(step.id) ||
         typeof step.action !== "string" || !step.action.trim() ||
-        (step.status != null && (typeof step.status !== "string" || !step.status.trim()))) {
+        (step.status != null &&
+          (typeof step.status !== "string" || !step.status.trim() ||
+            !["planned", "blocked"].includes(step.status)))) {
       throw operationError("NEXO_MISSION_CONTEXT_INVALID");
     }
     stepIds.add(step.id);
