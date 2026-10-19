@@ -1,3 +1,13 @@
+## M0 — fallos de lectura de continuidad bloquean escritura y despacho (2026-10-19)
+
+- Se cerró la brecha de consistencia en `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()`: los errores de `store.loadCurrent()` se normalizan a `status: "blocked"`, `uncertainty: "continuity_read_failed"`, autorización no evaluada y flags de commit/settlement falsos. No se llama `commitIfCurrent()`.
+- Regresión unitaria en `tests/nexo/continuity-contract.test.mjs`: las tres rutas devuelven bloqueado con el código original del error y cero escrituras.
+- Regresión de runtime en `tests/nexo/chronicle-runtime.test.mjs`: falla la segunda lectura, justo en admisión PREPARED; resultado bloqueado, `dispatchAttempted=false`, `preparedCommitted=false`, cero commits y cero llamadas al adapter. Esto prueba el límite de proceso, no solo el método del owner.
+- CI SUCCESS en el SHA actual `d200472052b3795b2b7e6ab7d1cd4fae5e71ae91`: Chronicle native [39196910123](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196910123), bounded mission admission/restart [39196910131](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196910131), STEP 4 [39196910145](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196910145), STEP 5 [39196910180](https://github.com/snowdenxrp/aldea-ia/actions/runs/39196910180). Las pruebas focales de lectura fallida están incluidas en esos workflows; no afirmar validación de todos los workflows del repositorio.
+- Se mantiene el fix previo: un resultado Chronicle terminal solo se acepta/reconstruye si su evidencia coincide con el settlement persistido; los campos estructurales comprueban coherencia, no autenticidad criptográfica ni autorización constitucional.
+- **Siguiente frontera:** continuar M0 en la reconstrucción canónica de estado tras recuperación; revisar si un snapshot con un `effectJournal` genérico terminalmente inconsistente puede hacer ejecutable un paso, reutilizando tests existentes. No reabrir el contrato Chronicle/read-failure sin una nueva reproducción.
+- Estado global: M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina; STEP 7 OPEN / STOP / UNKNOWN.
+
 # Puerta de entrada NCS — estado M0
 
 ## M0 — evidencia Chronicle tiene forma canónica cerrada (validado 2026-10-19)
