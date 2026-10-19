@@ -26,7 +26,8 @@ function validateOperation(operation) {
 const REPAIR_ACTIONS = new Set(["repair_agent_state", "repair_agent_needs", "repair_resource_state"]);
 
 function validObservationEvidence(evidence) {
-  return evidence !== null && typeof evidence === "object" && !Array.isArray(evidence);
+  return evidence !== null && typeof evidence === "object" && !Array.isArray(evidence) &&
+    Object.keys(evidence).length > 0;
 }
 
 function emptyCandidate(snapshot) {
