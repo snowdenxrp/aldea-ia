@@ -13,6 +13,14 @@ try {
   const store = createNexoChronicleStore({ filePath });
   assert.equal((await store.loadCurrent().catch(error => ({ code: error.code }))).code, "NEXO_CHRONICLE_NOT_FOUND");
   assert.equal((await store.append({ operationKey: "mission-1:step-1", content: "record" })).status, "blocked");
+  const unavailableParentStore = createNexoChronicleStore({
+    filePath: path.join(root, "missing-parent", "chronicle.json")
+  });
+  assert.deepEqual(
+    await unavailableParentStore.append({ operationKey: "mission-missing-parent:step-1", content: "must not write" }),
+    { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" },
+    "append must normalize a missing parent before any Chronicle write"
+  );
   assert.equal((await store.initialize()).status, "committed");
   assert.equal((await store.initialize()).status, "conflict");
 
