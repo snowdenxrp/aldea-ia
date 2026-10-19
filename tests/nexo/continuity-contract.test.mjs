@@ -120,6 +120,24 @@ const emptyOperationalSnapshot = {
 };
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "mission:with:colon",
+    status: "planned",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "mission admission must enforce the same delimiter-safe identity contract as PREPARED operations"
+);
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
+    missionId: "mission-safe",
+    status: "planned",
+    steps: [{ id: "step:with:colon", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
+  }),
+  error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
+  "step admission must enforce the same delimiter-safe identity contract as PREPARED operations"
+);
+assert.throws(
+  () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
     missionId: "duplicate-step-identity",
     status: "planned",
     steps: [
