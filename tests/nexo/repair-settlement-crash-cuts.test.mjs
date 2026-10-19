@@ -589,6 +589,42 @@ try {
   assert.equal(malformedSettlementReplay.code, "NEXO_CONTINUITY_STORE_REVISION_CONFLICT");
   assert.equal(malformedSettlementVerifierCalls, 0);
 
+  // Completion must apply the same complete-settlement predicate as replay.
+  // A structurally loadable settled_observed row without evidence/observedAt
+  // must not authorize a Chronicle outcome.
+  const malformedOutcomeDir = path.join(root, "malformed-chronicle-outcome");
+  await fs.mkdir(malformedOutcomeDir);
+  const malformedOutcomeMemory = genericMemory();
+  malformedOutcomeMemory.nexo.missions[0].steps[0].action = "chronicle_append";
+  malformedOutcomeMemory.nexo.effectJournal[0].action = "chronicle_append";
+  malformedOutcomeMemory.nexo.effectJournal[0].status = "settled_observed";
+  malformedOutcomeMemory.nexo.effectJournal[0].settlement = {
+    status: "applied",
+    observedRevision: 7,
+    source: "nexo-chronicle-store"
+  };
+  const malformedOutcomeOpened = await openNexoContinuityOwner({
+    filePath: path.join(malformedOutcomeDir, "nexo.json"),
+    legacyMemory: malformedOutcomeMemory
+  });
+  const malformedOutcome = await malformedOutcomeOpened.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-crash-cut",
+      stepId: "step-repair",
+      action: "chronicle_append",
+      target: "alex",
+      status: "completed",
+      evidence: { kind: "test", source: "test" }
+    }
+  });
+  assert.equal(malformedOutcome.status, "blocked");
+  assert.equal(malformedOutcome.code, "NEXO_CHRONICLE_SETTLEMENT_REQUIRED");
+  const malformedOutcomeAfter = await malformedOutcomeOpened.owner.loadCurrent();
+  assert.equal(malformedOutcomeAfter.storeRevision, 0,
+    "incomplete Chronicle settlement must not authorize or persist completion");
+  assert.equal(malformedOutcomeAfter.snapshot.attempts.length, 0);
+
   // A verifier can succeed but the canonical re-read before CAS can fail.
   // This must return structured uncertainty and leave PREPARED untouched.
   const recheckDir = path.join(root, "generic-observation-recheck-failure");
