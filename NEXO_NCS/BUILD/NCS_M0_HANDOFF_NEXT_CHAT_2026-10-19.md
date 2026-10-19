@@ -455,3 +455,14 @@ Nota nueva: `NEXO_NCS/BUILD/NCS_M0_GOAL_VERIFICATION_BOUNDARY_2026-10-19.md`. Au
 Conclusión: los módulos observan una invariante y su revisión; no prueban quién causó el estado, ejecución exactamente una vez, autoridad del escritor ni atomicidad entre el estado de simulación y el journal de Nexo. `loadStateStrict()` falla ante ausencia/JSON/esquema/revisión inválidos, pero luego normaliza campos de compatibilidad y no establece procedencia criptográfica. `persistState()` tiene su propio lock/CAS de revisión, no una transacción compartida con continuidad Nexo.
 
 Decisión: no conectar el observador al dispatch ni crear un verifier genérico desde una etiqueta caller-supplied, revisión o booleano. Mantener la ruta diagnóstica separada. Antes de implementación se necesita definir propietario canónico del estado y fuente de evidencia independiente, vinculación de identidad, semántica tri-state, concurrencia y crash cuts. No hubo cambio de runtime ni CI nuevo por esta auditoría. M0 INCOMPLETO; efectos STOP; Nexo/Lúmina separados.
+
+
+## 12. Hallazgo de entrypoints y compatibilidad legacy
+
+Nueva nota: `NEXO_NCS/BUILD/NCS_M0_ENTRYPOINT_ISOLATION_AUDIT_2026-10-19.md`. La API pública `src/nexo/application/index.mjs` solo exporta `runNexoChronicleAppend`, `loadNexoContinuityStatus` y `loadNexoMissionStatus`. `scripts/nexo.mjs` es un router CLI estrecho. `index.html` arranca Lúmina y `src/main-stable.js` no muestra conexión directa a la API Nexo. `tests/nexo/entrypoint.test.mjs` hace un recorrido de imports local desde los entrypoints Nexo independientes y prohíbe imports del runtime legacy/memoria/simulación en ese grafo.
+
+Matiz importante: `scripts/assistants.mjs` conserva un puente legacy opt-in (`--nexo-repair-once`) que elige una reparación del snapshot de continuidad pero modifica `world-state.json` mediante `scripts/nexo-repair-session.mjs` / `scripts/nexo-repair-entrypoint.mjs`. No es la API pública Nexo ni el runtime owner-backed, que bloquea reparaciones antes del dispatch; aun así, es un acoplamiento legacy real. No usarlo como camino del Nexo independiente ni declarar aislamiento total de todo el repositorio. No retirarlo a ciegas: antes de cualquier cambio, revisar su contrato y pruebas y obtener CI real. La migración legacy desde `persisted.nexoMemory` solo ocurre si la tienda de continuidad separada aún no existe; no debe convertirse en doble escritura.
+
+CI note: `.github/workflows/nexo-deterministic-tests.yml` corre `npm test` en push a `main` o manualmente, no en PR. No cambiar el trigger como efecto lateral; workflow CI debe tratarse separadamente.
+
+Siguiente paso: cerrar el inventario global de importadores de `src/nexo/runtime.js`/`simulation-adapter.js` y revisar la ruta opt-in legacy contra las reglas de separación, sin cambiar runtime/UI ni activar efectos. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
