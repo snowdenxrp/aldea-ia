@@ -1,3 +1,16 @@
+## M0 — validación de continuidad terminal y suite completa (2026-10-19)
+
+- **CI focal del resultado terminal:** SUCCESS en runtime SHA `85b47f11d82ffbdca70b3a5e327ae97b63ada6e8` y test SHA `e38556bc78487aae117b1c11085aca1731dfbb2e`; cinco workflows completados por cada SHA. El workflow bounded admission [39337387520](https://github.com/snowdenxrp/aldea-ia/actions/runs/39337387520) ejecutó `tests/nexo/chronicle-runtime.test.mjs`.
+- **Suite completa `npm test`: PASS observado** en SHA exacto `fd87dfdb2eccd6d356fd970cfa24544568b72833`, run [39338294317](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294317). Node.js 22; paso `Run tests` SUCCESS.
+- La primera ejecución completa falló por expectativas antiguas en `tests/nexo/simulation-adapter.test.mjs`: esperaban `failed` ante un resultado negativo del handler, mientras que el adaptador genérico convierte correctamente esa respuesta en `blocked / EFFECT_OUTCOME_UNKNOWN` porque no existe garantía de no-efecto específica. Se actualizaron ambas expectativas; no se relajó el runtime.
+- CI focal adicional de STEP 4 y STEP 5 en el SHA de pruebas final: [39338294321](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294321) y [39338294311](https://github.com/snowdenxrp/aldea-ia/actions/runs/39338294311); comprobar conclusión exacta si se necesita para otra afirmación.
+- Se modificó el workflow existente `.github/workflows/nexo-deterministic-tests.yml` para ejecutar `npm test` en pushes a `ncs-clean-architecture` además de `main`; commit de activación `69829e9db06f9edab8776f61916db9e34b1133e5`.
+- El HEAD `fd87dfdb...` contiene los cambios de prueba y es el SHA exacto del PASS completo. Las actualizaciones de documentación posteriores no cambian el código probado; volver a verificar HEAD al continuar.
+- **Estado constitucional sin cambio:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima del propietario PENDING. La suite completa aprobada no demuestra autoridad criptográfica ni habilita efectos protegidos.
+- **Siguiente paso:** continuar M0 desde el siguiente contrato verificable; no repetir el arreglo de expectativas, no volver a M1/STEP 7 y no reabrir auditorías cerradas sin evidencia nueva.
+
+---
+
 ## M0 — matriz de regresión para respuestas PREPARED malformadas (2026-10-19)
 
 - Matriz documentada: `NEXO_NCS/BUILD/NCS_M0_PREPARED_CONFIRMATION_REGRESSION_MATRIX_2026-10-19.md`, commit `0babe34a63d7f00e1d3e0fd64d33d3bbe17d5290`.
