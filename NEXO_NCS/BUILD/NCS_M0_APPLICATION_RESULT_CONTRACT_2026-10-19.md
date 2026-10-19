@@ -229,3 +229,12 @@ La ruta de recuperación de Chronicle ya no valida settlement con un subconjunto
 Regresión en `tests/nexo/chronicle-runtime.test.mjs`: evidence null en un registro settled provoca `NEXO_CHRONICLE_EXISTING_OBLIGATION_UNRESOLVED`, no invoca el writer de outcome y no despacha. El SHA de código/contrato final es `e62b65ab699c5d177c40d08f32a1393af118e4ee`; prueba runtime en `26eab01d09ab4be20c7228da8abf17e3224f5a6b`. Ver runs enlazados en STATUS.
 
 Este gate no autentica el archivo ni demuestra causalidad, autoridad, durabilidad física o goal verification. M0 sigue INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — observación genérica exige evidence no vacía (2026-10-19)
+
+Para `applied/not_applied`, `reconcilePrepared()` requiere `evidence` como propiedad propia, objeto no nulo, no-array y con al menos una clave enumerable. Replay aplica el mismo criterio. `unknown` continúa como incertidumbre y no necesita evidencia positiva. Chronicle aporta evidencia de ausencia ligada a operationKey y revisión cuando no existe entrada.
+
+Regresiones de ausencia, objeto vacío y replay con null: CI crash cuts/effect/settlement/STEP 4/STEP 5 en SHA `b3a3f8fbaafb29ba913916ce989fb3a3e7196768`; Chronicle native/bounded en SHA de código `6ab75e1b59758cd33cd0a470c90e45e02f418882`. Ver STATUS para enlaces.
+
+Este requisito sólo garantiza una estructura mínima; no autentica el origen ni autoriza efectos. M0 INCOMPLETO; efectos protegidos STOP.
