@@ -29,6 +29,11 @@ assert.deepEqual(parseNexoEntrypointArguments(["status", "--continuity", "contin
 });
 assert.equal(parseNexoEntrypointArguments(["status", "--continuity", "a", "--continuity", "b"]).code, "NEXO_STATUS_ARGUMENTS_INVALID");
 assert.equal(parseNexoEntrypointArguments(["status"]).code, "NEXO_STATUS_CONTINUITY_PATH_REQUIRED");
+assert.deepEqual(parseNexoEntrypointArguments(["mission-status", "--continuity", "continuity.json", "--mission", "mission-1"]), {
+  status: "mission-status", continuityPath: "continuity.json", missionId: "mission-1"
+});
+assert.equal(parseNexoEntrypointArguments(["mission-status", "--continuity", "a", "--mission", "b", "--mission", "c"]).code, "NEXO_MISSION_STATUS_ARGUMENTS_INVALID");
+assert.equal(parseNexoEntrypointArguments(["mission-status", "--continuity", "a"]).code, "NEXO_MISSION_ID_REQUIRED");
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-main-entrypoint-"));
 try {
@@ -103,6 +108,33 @@ try {
   assert.equal(statusSummary.counts.preparedObligations, 0);
   assert.equal(statusSummary.counts.observedUnsettled, 0);
   assert.equal(statusSummary.counts.settledObserved, 1);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
+
+  // Mission reconstruction reads canonical continuity after restart without
+  // printing the stored target/content payload or mutating the store.
+  const missionStatus = spawnSync(process.execPath, [
+    entrypointPath, "mission-status", "--continuity", continuityPath, "--mission", "entrypoint-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(missionStatus.status, 0, missionStatus.stderr || missionStatus.stdout);
+  assert.equal(missionStatus.stderr, "");
+  assert.equal(missionStatus.stdout.includes(privateSentinel), false);
+  const missionSummary = JSON.parse(missionStatus.stdout);
+  assert.equal(missionSummary.status, "reconstructed");
+  assert.equal(missionSummary.missionId, "entrypoint-mission");
+  assert.equal(missionSummary.steps.length, 1);
+  assert.equal(missionSummary.steps[0].stepId, "entrypoint-step");
+  assert.equal(missionSummary.steps[0].action, "chronicle_append");
+  assert.equal(missionSummary.steps[0].status, "completed");
+  assert.equal("target" in missionSummary.steps[0], false);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
+
+  const missingMission = spawnSync(process.execPath, [
+    entrypointPath, "mission-status", "--continuity", continuityPath, "--mission", "missing-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(missingMission.status, 1);
+  assert.deepEqual(JSON.parse(missingMission.stdout), {
+    status: "not_found", code: "NEXO_MISSION_NOT_FOUND", storeRevision: persistedContinuity.storeRevision
+  });
   assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
 } finally {
   await fs.rm(root, { recursive: true, force: true });
