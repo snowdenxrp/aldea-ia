@@ -185,7 +185,7 @@ assert.throws(
     steps: [{ id: "step-1", action: "local_analysis", target: "alpha", status: "planned", dependsOn: [] }]
   }),
   error => error?.code === "NEXO_MISSION_CONTEXT_INVALID",
-  "new mission admission must use a status emitted by the mission planner"
+  "new mission admission must reject runtime-only status values"
 );
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
