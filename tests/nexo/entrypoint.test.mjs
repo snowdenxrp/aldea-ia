@@ -60,7 +60,7 @@ try {
   assert.equal(persistedChronicle.entries.length, 1);
   assert.equal(persistedChronicle.entries[0].content, privateSentinel);
   const persistedContinuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
-  assert.equal(persistedContinuity.nexo.effectJournal[0].status, "settled_observed");
+  assert.equal(persistedContinuity.snapshot.effectJournal[0].status, "settled_observed");
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
