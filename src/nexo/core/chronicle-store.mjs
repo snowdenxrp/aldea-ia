@@ -157,6 +157,14 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
         return { status: "already_present", storeRevision: current.storeRevision, entry: structuredClone(existing) };
       }
 
+      if (current.storeRevision === Number.MAX_SAFE_INTEGER) {
+        return {
+          status: "blocked",
+          code: "NEXO_CHRONICLE_REVISION_EXHAUSTED",
+          storeRevision: current.storeRevision
+        };
+      }
+
       const candidate = {
         schema: NEXO_CHRONICLE_SCHEMA,
         schemaVersion: NEXO_CHRONICLE_VERSION,
