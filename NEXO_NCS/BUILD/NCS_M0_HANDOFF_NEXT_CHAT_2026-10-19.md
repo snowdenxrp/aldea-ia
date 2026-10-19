@@ -432,3 +432,12 @@ La comparación GitHub de `d4544e74e8568cf7d5221ccbc42e48daacd1e9f5...ncs-clean-
 Auditar el límite entre observación de estado y verificación del objetivo, sin habilitar acciones nuevas. `scripts/nexo-repair-settlement.mjs` consume un snapshot leído con `loadStateStrict()`; `src/nexo/adapters/persisted-repair-observation.mjs` clasifica invariantes presentes/ausentes/unknown. Esos datos son evidencia diagnóstica: no prueban causalidad, autoridad de origen ni atomicidad con el store de continuidad. Antes de conectar un goal verifier, establecer qué componente es propietario canónico del estado observado y qué contrato independiente puede respaldarlo. No integrar Lúmina, simulación, UI ni reparaciones al runtime Nexo como atajo. Si no existe fuente independiente suficiente, conservar STOP y documentar el bloqueo; no fabricar un verificador.
 
 No se hicieron cambios de código ni se ejecutaron nuevas pruebas en esta auditoría; no atribuirle un CI nuevo. M0 sigue INCOMPLETO.
+
+
+## 8. Hallazgo M0 adicional — lock incompleto tras fallo de owner.json (PR #106)
+
+Inspeccionando stores independientes, se detectó la misma secuencia en Continuity Store y Chronicle Store: `mkdir(<store>.lock)` puede funcionar y la escritura siguiente de `owner.json` puede fallar. Antes del fix, el catch trataba el error como fallo normal de adquisición y no limpiaba el directorio que la llamada acababa de crear. Ese lock sin owner podía hacer esperar a escritores posteriores y acabar como `*_LOCK_STALE_RECOVERY_REQUIRED` tras el umbral de antigüedad.
+
+Se añadieron tests con fallo `EIO` inyectado y se cambió `acquireLock()` en ambos stores para limpiar el directorio cuando la misma llamada creó el lock pero no logró establecer owner.json, conservando el error original. No se toca la política de stale-locks ni se reclama automáticamente un lock ajeno.
+
+PR #106: https://github.com/snowdenxrp/aldea-ia/pull/106 — rama `ncs-m0-lock-acquisition-cleanup`. No está integrado y no debe marcarse como cerrado hasta verificar CI. No pudimos ejecutar pruebas localmente; verificar Actions y corregir cualquier fallo antes de merge. Si las pruebas pasan, solicitar revisión del diff y luego integrar por el flujo normal. M0 sigue INCOMPLETO, efectos protegidos STOP, Nexo/Lúmina separados.
