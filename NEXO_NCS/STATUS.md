@@ -7,7 +7,9 @@
 - SHA de prueba: `376f2d984eeb969d25c2c797a40037a72a6a5c6b`. SUCCESS: bounded admission/restart [39195866238](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866238), STEP 4 [39195866236](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866236), STEP 5 [39195866226](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866226), crash cuts [39195866266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866266). Sólo prueba/documentación cambió tras el último fix funcional `3ebb037...`.
 - Límite: prueba la preservación de la obligación y el no-redispatch en esta API; no prueba despacho real ni autorización. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
 
-**Siguiente frontera:** auditar el contrato terminal Chronicle completo tras restart y respuesta perdida: settlement válido + outcome persistido deben reconstruirse como completed; settlement sin outcome debe seguir bloqueado. Reutilizar los tests de Chronicle runtime y continuity migration, sin reabrir las comprobaciones ya cerradas.
+**Comprobación de la frontera Chronicle restart/lost-response:** ya está cubierta por `tests/nexo/chronicle-runtime.test.mjs` (reinicio después de append y después de outcome commit; reconstrucción `completed` sólo con settlement y outcome válidos; replay sin redispatch) y por `tests/nexo/continuity-migration.test.mjs` (settlement sin outcome queda blocked). No añadir pruebas duplicadas ni reabrir ese contrato sin una regresión nueva.
+
+**Siguiente frontera pendiente:** auditar la política de fallo de lectura de `store.loadCurrent()` en `recordPrepared()`, `recordExecutionLineage()` y `recordOutcome()` frente a la normalización fail-closed ya presente en `recordMission()` y `reconcilePrepared()`. Primero confirmar el contrato y una prueba de lectura fallida; no cambiar si propagar excepción es intencional.
 
 
 
