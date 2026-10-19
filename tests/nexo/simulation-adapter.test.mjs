@@ -123,8 +123,11 @@ const denied=await adapter.execute({
   precondition:({stateVersion})=>stateVersion===4,
   postcondition:()=>true
 });
-assert.equal(denied.status,"failed");
-assert.equal(denied.code,"LUMINA_ACTION_NOT_ALLOWED");
+// The concrete handler rejects this action, but the generic adapter cannot
+// treat a handler-returned failure as a trusted no-effect proof after dispatch.
+assert.equal(denied.status,"blocked");
+assert.equal(denied.code,"EFFECT_OUTCOME_UNKNOWN");
+assert.equal(denied.uncertainty,"effect_may_or_may_not_have_occurred");
 
 const depletedSimulation={
   agents:[{id:"bruno",alive:true,position:{x:0,z:0},needs:{thirst:50},inventory:[],skills:[]}],
