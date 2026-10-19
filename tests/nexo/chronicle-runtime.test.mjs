@@ -439,6 +439,7 @@ const malformedPreparedResponses = [
   { label: "null response", value: null }
 ];
 for (const testCase of malformedPreparedResponses) {
+  let adapterInvocations = 0;
   let handlerInvocations = 0;
   const result = await executeNexoStepWithContinuityOwner({
     missionId: "chronicle-mission",
@@ -451,16 +452,22 @@ for (const testCase of malformedPreparedResponses) {
       reconcilePrepared: async () => { throw new Error(`reconciliation must not follow ${testCase.label}`); },
       recordOutcome: async () => { throw new Error(`outcome must not follow ${testCase.label}`); }
     },
-    adapter: adapter(() => {
-      handlerInvocations++;
-      return { status: "completed" };
-    })
+    adapter: {
+      supports: action => action === "chronicle_append",
+      supportsReconciliation: action => action === "chronicle_append",
+      executePrepared: async () => {
+        adapterInvocations++;
+        handlerInvocations++;
+        return { status: "completed" };
+      }
+    }
   });
   assert.equal(result.status, "blocked", testCase.label);
   assert.equal(result.code, "NEXO_PREPARED_COMMIT_NOT_CONFIRMED", testCase.label);
   assert.equal(result.dispatchAttempted, false, testCase.label);
   assert.equal(result.preparedCommitted, false, testCase.label);
   assert.equal(result.redispatchAuthorized, false, testCase.label);
+  assert.equal(adapterInvocations, 0, testCase.label);
   assert.equal(handlerInvocations, 0, testCase.label);
 }
 
