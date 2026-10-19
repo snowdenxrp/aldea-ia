@@ -130,6 +130,19 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       return { status: "blocked", code: "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH", storeRevision: current.storeRevision };
     }
 
+    // Chronicle has one demonstrated action-specific persisted-invariant gate.
+    // Other actions must remain non-completable until their own goal verifier
+    // is connected to this owner; caller-supplied evidence labels are not proof.
+    if (outcome.status === "completed" && outcome.action !== "chronicle_append") {
+      return {
+        status: "blocked",
+        code: "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED",
+        storeRevision: current.storeRevision,
+        journalSettled: false,
+        authorization: "NOT_EVALUATED"
+      };
+    }
+
     const stepEffects = current.snapshot.effectJournal.filter(item =>
       item?.missionId === outcome.missionId && item?.stepId === outcome.stepId
     );
