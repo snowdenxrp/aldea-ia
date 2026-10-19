@@ -1,7 +1,7 @@
 # NCS M0 — matriz de regresión para confirmación PREPARED
 
 **Fecha:** 2026-10-19  
-**Estado:** inspección estática; pruebas y CI no ejecutadas para este análisis.
+**Estado:** corrección y regresiones añadidas al repositorio; ejecución dinámica y CI siguen pendientes.
 
 ## Contrato observado
 
@@ -37,6 +37,8 @@ Conservar las garantías ya cubiertas: si el handler puede haber producido el ef
 
 - Inspección estática de runtime, adaptador y prueba focal: realizada.
 - Pruebas dinámicas: no ejecutadas.
-- Añadir regresiones ejecutables y corregir el límite de validación de revisión: pendiente.
+- Corrección runtime para validar revisión antes de la frontera de despacho: commit `dd1abc69cd867927c2fba949a4677fc7b2e51e99`.
+- Ocho regresiones negativas añadidas con contador del handler: commit `4203330689d6ea4072585d8cc6bca74b383ca461`.
+- Ejecutar prueba focal y suite Nexo: pendiente.
 - CI vinculado al SHA exacto: pendiente.
 - No declarar PASS. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
