@@ -596,7 +596,9 @@ try {
   await fs.mkdir(malformedOutcomeDir);
   const malformedOutcomeMemory = genericMemory();
   malformedOutcomeMemory.nexo.missions[0].steps[0].action = "chronicle_append";
+  malformedOutcomeMemory.nexo.missions[0].steps[0].target = "alex";
   malformedOutcomeMemory.nexo.effectJournal[0].action = "chronicle_append";
+  malformedOutcomeMemory.nexo.effectJournal[0].target = "alex";
   malformedOutcomeMemory.nexo.effectJournal[0].status = "settled_observed";
   malformedOutcomeMemory.nexo.effectJournal[0].settlement = {
     status: "applied",
