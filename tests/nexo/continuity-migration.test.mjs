@@ -205,6 +205,36 @@ try {
   await fs.rm(noPreparedDir, { recursive: true, force: true });
 }
 
+const mismatchedAttemptDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-mismatched-attempt-"));
+try {
+  const mismatchedAttemptMemory = structuredClone(legacyMemory);
+  mismatchedAttemptMemory.nexo.missions[0].status = "planned";
+  mismatchedAttemptMemory.nexo.missions[0].objective = "generic_write";
+  mismatchedAttemptMemory.nexo.missions[0].steps[0].action = "generic_write";
+  mismatchedAttemptMemory.nexo.missions[0].steps[0].target = "alpha";
+  mismatchedAttemptMemory.nexo.effectJournal = [];
+  mismatchedAttemptMemory.nexo.attempts = [{
+    missionId: "mission-legacy-1",
+    stepId: "step-1",
+    action: "different_action",
+    target: "different-target",
+    status: "completed",
+    evidence: { verified: true, kind: "unrelated-operation", source: "unrelated-reader" },
+    at: "2026-10-18T00:00:00.000Z"
+  }];
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(mismatchedAttemptDir, "nexo.json"),
+    legacyMemory: mismatchedAttemptMemory
+  });
+  const reconstructed = await opened.owner.reconstructMission("mission-legacy-1");
+  assert.equal(reconstructed.status, "reconstructed");
+  assert.equal(reconstructed.mission.steps[0].status, "planned",
+    "an attempt for a different action/target must not complete this canonical step");
+  assert.equal(reconstructed.mission.steps[0].result, undefined);
+} finally {
+  await fs.rm(mismatchedAttemptDir, { recursive: true, force: true });
+}
+
 const observedSettlementDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-observed-settlement-"));
 try {
   const observedMemory = structuredClone(legacyMemory);
