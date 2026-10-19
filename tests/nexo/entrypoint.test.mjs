@@ -24,6 +24,11 @@ assert.deepEqual(parseNexoEntrypointArguments(["chronicle-append", "--content-st
   status: "dispatch", command: "chronicle-append", args: ["--content-stdin"]
 });
 assert.equal(parseNexoEntrypointArguments([null]).code, "NEXO_COMMAND_ARGUMENTS_INVALID");
+assert.deepEqual(parseNexoEntrypointArguments(["status", "--continuity", "continuity.json"]), {
+  status: "status", continuityPath: "continuity.json"
+});
+assert.equal(parseNexoEntrypointArguments(["status", "--continuity", "a", "--continuity", "b"]).code, "NEXO_STATUS_ARGUMENTS_INVALID");
+assert.equal(parseNexoEntrypointArguments(["status"]).code, "NEXO_STATUS_CONTINUITY_PATH_REQUIRED");
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-main-entrypoint-"));
 try {
@@ -35,6 +40,17 @@ try {
   assert.deepEqual(JSON.parse(unknown.stdout), {
     status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false
   });
+
+  const missingContinuityPath = path.join(root, "missing-continuity.json");
+  const missingStatus = spawnSync(process.execPath, [entrypointPath, "status", "--continuity", missingContinuityPath], {
+    cwd: process.cwd(), encoding: "utf8"
+  });
+  assert.equal(missingStatus.status, 1);
+  assert.equal(missingStatus.stderr, "");
+  assert.deepEqual(JSON.parse(missingStatus.stdout), {
+    status: "blocked", code: "NEXO_CONTINUITY_STORE_NOT_FOUND"
+  });
+  await assert.rejects(fs.access(missingContinuityPath), { code: "ENOENT" });
 
   const continuityPath = path.join(root, "continuity.json");
   const chroniclePath = path.join(root, "chronicle.json");
@@ -68,6 +84,26 @@ try {
   assert.equal(persistedChronicle.entries[0].content, privateSentinel);
   const persistedContinuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
   assert.equal(persistedContinuity.snapshot.effectJournal[0].status, "settled_observed");
+
+  // Status is read-only and emits counts, not mission content or target payloads.
+  const continuityBytesBeforeStatus = await fs.readFile(continuityPath, "utf8");
+  const statusResult = spawnSync(process.execPath, [entrypointPath, "status", "--continuity", continuityPath], {
+    cwd: process.cwd(), encoding: "utf8"
+  });
+  assert.equal(statusResult.status, 0, statusResult.stderr || statusResult.stdout);
+  assert.equal(statusResult.stderr, "");
+  assert.equal(statusResult.stdout.includes(privateSentinel), false);
+  const statusSummary = JSON.parse(statusResult.stdout);
+  assert.equal(statusSummary.status, "loaded");
+  assert.equal(statusSummary.storeRevision, persistedContinuity.storeRevision);
+  assert.equal(statusSummary.counts.missions, 1);
+  assert.equal(statusSummary.counts.attempts, 1);
+  assert.equal(statusSummary.counts.executions, 1);
+  assert.equal(statusSummary.counts.journalEntries, 1);
+  assert.equal(statusSummary.counts.preparedObligations, 0);
+  assert.equal(statusSummary.counts.observedUnsettled, 0);
+  assert.equal(statusSummary.counts.settledObserved, 1);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
