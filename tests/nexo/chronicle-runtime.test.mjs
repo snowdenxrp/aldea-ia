@@ -775,6 +775,12 @@ try {
   const entryResult = await runNexoChronicleAppend(args);
   assert.equal(entryResult.status, "completed");
   assert.equal(entryResult.dispatchAttempted, true);
+  assert.equal(JSON.stringify(entryResult).includes(args.content), false,
+    "public application results must not expose Chronicle payloads");
+  for (const internalField of ["adapterResult", "lineage", "reconciliation", "outcome", "target", "context"]) {
+    assert.equal(Object.hasOwn(entryResult, internalField), false,
+      `public application result must not expose internal field ${internalField}`);
+  }
   const replay = await runNexoChronicleAppend(args);
   assert.equal(replay.status, "completed");
   assert.equal(replay.dispatchAttempted, false);
