@@ -2,8 +2,8 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA de código validado por CI: `dfef7209ed8af5b5fdd57b973e4b905fd821005f`
-Último SHA de código: `dfef7209ed8af5b5fdd57b973e4b905fd821005f`; SHA con regresiones Chronicle: `fe79862299cb51dd95bd39e0d227d05698c65a03`
+Último SHA de código validado por CI: `fbfda4b7be4de8cf2e3ae1b0d7903f0287cf5b6e`
+Último SHA de código: `fbfda4b7be4de8cf2e3ae1b0d7903f0287cf5b6e`; SHA final de pruebas: `ac8e4bc88c04c2f1ea257a58ecf224d867dd4b94`
 
 ## 0. Instrucción principal al chat nuevo
 
@@ -212,3 +212,12 @@ La reconstrucción consulta ahora el contrato compartido de settlement Chronicle
 Pruebas: settlement válido sin outcome y outcome completed con evidence null en el settlement. Código SHA `dfef720...`; regresiones SHA `fe798622...`. Bounded admission/restart, crash cuts, STEP 4 y STEP 5 SUCCESS en el SHA de pruebas; enlaces en STATUS. La ejecución previa de test demostró el hueco: reconstruía planned en el caso settled sin outcome.
 
 **Siguiente paso:** delimitar los intentos legacy frente a los intentos canónicos de acciones no Chronicle. El goal verifier general sigue pendiente; no afirmar que una evidencia caller-supplied autoriza completion.
+
+
+## 15. Checkpoint — reconstrucción no trata labels caller-supplied como goal verifier
+
+La reconstrucción canónica ahora permite completion sólo para `local_analysis` y `chronicle_append` (este último requiere settlement válido y outcome). Para acciones mutantes sin goal verifier, un attempt completed con `verified/kind/source` no es suficiente y queda blocked con `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`. Evidence inválida se clasifica como `NEXO_COMPLETION_EVIDENCE_UNVERIFIED`.
+
+El test de replay monotónico se acotó a `local_analysis`; no se tocó el runtime legacy `src/assistants/memory.js`. Código `fbfda4...`; test final `ac8e4...`. Bounded admission/restart, STEP 4, STEP 5 SUCCESS en `ac8e4...`; crash cuts SUCCESS en `fbfda4...`. Enlaces en STATUS. Goal verifier general sigue pendiente; no activar efectos protegidos.
+
+**Siguiente paso:** auditar la admisión de dependencias con pasos terminales declarados en el plan, y comprobar que `recordPrepared()` se guía por resultados canónicos en vez de etiquetas de estado. No cambiar si los guards existentes ya bloquean el caso.
