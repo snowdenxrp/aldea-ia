@@ -73,7 +73,35 @@ No implementa ni sustituye la vigencia/revocación de autoridad, el alcance por 
 - Fuente independiente del pin y ceremonia: pendiente.
 - Hardware: candidato YubiKey 5 NFC/PIV, no seleccionado/adquirido/probado.
 - Integración Android/YubiKit: no implementada.
-- Vector de prueba: pendiente.
+- Vector de verificación software preliminar: incluido en la sección 8; automatización en test/CI y prueba física siguen pendientes.
 - CI/hardware real: pendiente.
 
 No escribir aún el verificador de producción. El siguiente paso es cerrar el procedimiento de provisión independiente y confirmar disponibilidad física; después, congelar este perfil, crear el vector reproducible y diseñar las pruebas negativas antes de conectar el bootstrap al runtime.
+
+
+## 8. Vector de verificación preliminar (software; no hardware)
+
+Vector generado y verificado con Node.js v22.16.0 `node:crypto`. La clave privada efímera de generación no se incluye en el repositorio ni se usa en Nexo. Este vector comprueba la codificación del mensaje, el formato SPKI/DER y la verificación ECDSA/SHA-256; no prueba YubiKey ni el entorno Android.
+
+```json
+{
+  "curve": "prime256v1",
+  "signatureAlgorithm": "SHA256withECDSA",
+  "challengeHex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "domainPrefixHex": "4e45584f2d524f4f542d424f4f5453545241502d563100",
+  "messageHex": "4e45584f2d524f4f542d424f4f5453545241502d563100000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+  "messageLength": 55,
+  "publicKeySpkiDerBase64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAExYXEhw8kHwh4NUIeNOKyidxQHmWlJBXOLe5OBTlEQ2dI8Z8U38Hk4XkSrDvFPAhAKLpxpvBfTsARETqxKrxHsw==",
+  "fingerprintSha256Hex": "9b10782bbb6fb374fe1ef3f4cf8f4773b9e35e84ebde794e7a2c4f7d1c5e78dc",
+  "signatureDerBase64": "MEYCIQDpOOZbgIZU8MIsYzTUVegaGxfQ1V+Gf5zRQKcGLQ1n9wIhAIVNVSMZ34sCQdWZ34boFS4sgWEsNw3D3q7pU9BwT0ys",
+  "expectedVerification": true,
+  "negativeChecks": {
+    "oneChallengeBitChanged": false,
+    "oneSignatureBitChanged": false,
+    "differentP256PublicKey": false
+  }
+}
+```
+
+El vector fue verificado directamente: firma válida = `true`; desafío alterado, firma alterada y clave pública distinta = `false`. La comprobación debe convertirse en test automatizado y ejecutarse en CI antes de congelar el perfil. No usar esta clave de prueba como raíz real ni incorporar una clave privada de prueba al producto.
+
