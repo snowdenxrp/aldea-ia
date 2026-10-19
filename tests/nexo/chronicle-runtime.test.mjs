@@ -512,4 +512,45 @@ try {
   await fs.rm(entryRoot, { recursive: true, force: true });
 }
 
+// A supplied generic handler/verifier is not sufficient to enable an action:
+ // only Chronicle has the complete operation-specific settlement contract here.
+let unsupportedPrepareCalls = 0;
+let unsupportedDispatchCalls = 0;
+const unsupportedOwner = {
+  loadCurrent: async () => ({
+    storeRevision: 0,
+    snapshot: {
+      missions: [{
+        missionId: "generic-mission",
+        status: "planned",
+        steps: [{ id: "step-1", action: "generic_write", target: "alpha", status: "planned", dependsOn: [] }]
+      }],
+      effectJournal: []
+    }
+  }),
+  recordPrepared: async () => { unsupportedPrepareCalls += 1; return { status: "committed", preparedCommitted: true, storeRevision: 1 }; },
+  recordExecutionLineage: async () => ({ status: "committed", storeRevision: 2 }),
+  reconcilePrepared: async () => ({ status: "observed", observation: "applied", storeRevision: 3, journalSettled: false }),
+  supportsReconciliation: () => true
+};
+const unsupportedAction = await executeNexoStepWithContinuityOwner({
+  missionId: "generic-mission",
+  stepId: "step-1",
+  owner: unsupportedOwner,
+  adapter: {
+    supports: () => true,
+    supportsReconciliation: () => true,
+    executePrepared: async () => {
+      unsupportedDispatchCalls += 1;
+      return { status: "completed", verified: true, evidence: { verified: true } };
+    }
+  }
+});
+assert.equal(unsupportedAction.status, "blocked");
+assert.equal(unsupportedAction.code, "NEXO_CANONICAL_RUNTIME_ACTION_NOT_ENABLED");
+assert.equal(unsupportedAction.dispatchAttempted, false);
+assert.equal(unsupportedAction.preparedCommitted, false);
+assert.equal(unsupportedPrepareCalls, 0);
+assert.equal(unsupportedDispatchCalls, 0);
+
 console.log("Nexo Chronicle owner-backed runtime tests passed");
