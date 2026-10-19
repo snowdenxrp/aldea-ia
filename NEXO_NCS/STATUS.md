@@ -1,3 +1,14 @@
+## M0 — replay de settlement Chronicle exige registro canónico completo (validado 2026-10-19)
+
+- Hueco concreto: el replay genérico exigía `evidence` y `observedAt` ISO canónico, pero la rama `chronicle_append` sólo comprobaba estado, source y revisión. Un settlement incompleto podía devolverse como `already_observed` aunque no contuviera evidencia ni timestamp.
+- Corrección en `src/nexo/core/continuity-owner.mjs`: la rama Chronicle ahora exige `settlement.evidence` y `observedAt` ISO válido/canónico además de identidad exacta, `settled_observed`, `applied`, source `nexo-chronicle-store` y revisión no negativa.
+- Regresión: settlement parcial con estado/source/revisión correctos pero sin `evidence` ni `observedAt` no se acepta como replay; devuelve conflicto de revisión y no invoca el verificador como fallback.
+- SHA de código: `005338b91656e61eee3ffbef105c306e2af496b2`; los seis workflows focales SUCCESS: [Chronicle 39190771042](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771042), [bounded admission/restart 39190771031](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771031), [STEP 4 39190771037](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771037), [STEP 5 39190771029](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771029), [crash cuts 39190771021](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771021), [effect/settlement 39190771114](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771114).
+- SHA código+prueba: `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72`; los cuatro workflows activados por la nueva regresión SUCCESS: [crash cuts 39190786403](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786403), [effect/settlement 39190786395](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786395), [STEP 4 39190786373](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786373), [STEP 5 39190786377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786377). El SHA final añadió la regresión; el código no cambió.
+- Esto no convierte settlement en autorización ni implementa goal verification. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
+
+**Siguiente frontera:** comprobar únicamente si el registro de settlement Chronicle se valida igual en la ruta de escritura y en replay; no crear estados ni nuevas capacidades.
+
 ## M0 — lecturas canónicas fallidas devuelven incertidumbre estructurada (validado 2026-10-19)
 
 - Continuación exacta del checkpoint anterior: el replay de observación genérica ya valida identidad y forma canónica, y `reconcilePrepared()` ya devuelve incertidumbre si falla su lectura inicial o la relectura previa al CAS. No se repitió la investigación cerrada.
