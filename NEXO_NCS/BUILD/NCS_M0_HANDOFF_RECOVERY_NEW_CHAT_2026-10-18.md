@@ -749,3 +749,13 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Último SHA de código/test: `0872c646db77af2e3e0bbd9e711d7f81c6cc1caa`; workflows relevantes SUCCESS: [39187372728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372728), [39187372719](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372719), [39187372729](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187372729).
 - Comparación código/test → HEAD: únicamente `STATUS.md`, `NCS_M0_HANDOFF_RECOVERY_NEW_CHAT_2026-10-18.md` y `NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md`.
 - No se ha conectado UI ni runtime legacy. Siguiente frontera: seguir probando el contrato público y las ventanas de respuesta perdida; no ampliar la capacidad mutante más allá de Chronicle.
+
+
+
+## M0 continuation — public admission UNKNOWN now uses allowlist (2026-10-19)
+
+- Fixed the remaining public-boundary inconsistency: the mission-admission status=unknown branch now routes through publicChronicleResult() instead of returning the helper object directly.
+- The normalized public result retains missionAdmissionCommitted=UNKNOWN, dispatchAttempted=false, redispatchAuthorized=false, and request missionId/stepId. It excludes target, adapterResult, and other internal payload/execution objects.
+- Added a focused regression for allowlist + UNKNOWN preservation + private payload non-disclosure.
+- Validated code/test SHA: 3c8d14163144e6f83a6130f38f025e31302c1ac9. All four focal workflows SUCCESS: Chronicle [39187723675](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723675), bounded mission admission/restart [39187723680](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723680), STEP 4 [39187723651](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723651), STEP 5 [39187723612](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187723612).
+- Next: continue response-loss/recovery audit at the application boundary only. Do not add a mutating use case, UI/legacy runtime integration, or index.html change. No authority inference; M0 remains INCOMPLETE.
