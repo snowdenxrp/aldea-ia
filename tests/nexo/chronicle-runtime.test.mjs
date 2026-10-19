@@ -188,6 +188,8 @@ assert.equal(adapterThrowResult.lineageCommitted, false);
 assert.equal(adapterThrowResult.journalSettled, false);
 assert.equal(adapterThrowResult.terminalOutcomeRecorded, false);
 assert.equal(adapterThrowResult.redispatchAuthorized, false);
+assert.equal(JSON.stringify(adapterThrowResult).includes("effect may have happened before throw"), false,
+  "raw adapter exception text must not leak through the application result contract");
 
 let lineageConflictDispatches = 0;
 const lineageConflictResult = await executeNexoStepWithContinuityOwner({
