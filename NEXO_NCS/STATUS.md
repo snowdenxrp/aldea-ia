@@ -1,5 +1,15 @@
 # Puerta de entrada NCS — estado M0
 
+## M0 — replay de PREPARED conserva la misma obligación tras reinicio (validado 2026-10-19)
+
+- Regresión añadida en `tests/nexo/continuity-migration.test.mjs`: crear misión, persistir PREPARED para una reparación, cerrar/reabrir el owner y repetir exactamente la misma operación con la revisión actual.
+- Resultado observado: `prepared_existing / NEXO_EFFECT_OUTCOME_UNKNOWN`, `preparedCommitted: false`, autorización `NOT_EVALUATED`; revisión permanece en 2 y el diario conserva una sola entrada `prepared` con la identidad original. Esto confirma que la ruta de obligación existente precede al gate de misión bloqueada, pero no se convierte en permiso de despacho.
+- SHA de prueba: `376f2d984eeb969d25c2c797a40037a72a6a5c6b`. SUCCESS: bounded admission/restart [39195866238](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866238), STEP 4 [39195866236](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866236), STEP 5 [39195866226](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866226), crash cuts [39195866266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195866266). Sólo prueba/documentación cambió tras el último fix funcional `3ebb037...`.
+- Límite: prueba la preservación de la obligación y el no-redispatch en esta API; no prueba despacho real ni autorización. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
+
+**Siguiente frontera:** auditar el contrato terminal Chronicle completo tras restart y respuesta perdida: settlement válido + outcome persistido deben reconstruirse como completed; settlement sin outcome debe seguir bloqueado. Reutilizar los tests de Chronicle runtime y continuity migration, sin reabrir las comprobaciones ya cerradas.
+
+
 
 ## M0 — PREPARED exige misión y paso canónicos ejecutables (validado 2026-10-19)
 
@@ -11,7 +21,7 @@
 - HEAD validado de código+pruebas: `c59a825771af3376a88a9bc212e9967cf1d75f1d`; fix funcional de misión `3ebb037f53409df9681f5ed01b6458e915e36a29`. SUCCESS en SHA final: bounded admission/restart [39195662848](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195662848), STEP 4 [39195662862](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195662862), STEP 5 [39195662845](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195662845), crash cuts [39195662831](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195662831). Chronicle native vertical y effect/settlement también SUCCESS en SHA funcional `3ebb037...`: [39195543682](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195543682), [39195543685](https://github.com/snowdenxrp/aldea-ia/actions/runs/39195543685).
 - Límite: esto cierra sólo la admisión canónica frente a estado reconstruido; no implementa goal verifier ni autoriza efectos externos. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
 
-**Siguiente frontera:** auditar si la reconciliación de un PREPARED terminal actualiza de forma coherente el registro de misión/paso persistido y la reconstrucción, sin permitir que una revisión posterior lo vuelva ejecutable antes de que el resultado terminal esté validado. Inspeccionar primero `reconcilePrepared()`, `recordOutcome()` y sus crash-cut tests; no cambiar estados ni contratos sin una reproducción.
+**Frontera posterior:** verificar el contrato terminal Chronicle tras restart/respuesta perdida, con settlement y outcome persistidos; el caso settlement sin outcome ya debe seguir blocked.
 
 ## M0 — reconstrucción respeta el gate de goal verification (validado 2026-10-19)
 
