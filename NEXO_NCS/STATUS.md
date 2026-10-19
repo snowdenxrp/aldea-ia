@@ -7,6 +7,7 @@
 - **La llave física NO bloquea el resto de M0.** Continuar en paralelo con contratos de continuidad, recuperación, no-redispatch, límites de acciones y matriz de aceptación del store. Sólo la provisión/fingerprint real y la prueba de hardware requieren la llave.
 - Nueva continuidad de carril no dependiente de llave: [NCS_M0_NON_ROOT_CONTINUATION_TRACK_2026-10-19.md](BUILD/NCS_M0_NON_ROOT_CONTINUATION_TRACK_2026-10-19.md). Incluye el resultado CI, revisión del gate de acciones y los límites explícitos del store.
 - Matriz preliminar creada: [NCS_M0_CONTINUITY_STORE_DEPLOYMENT_ACCEPTANCE_MATRIX_DRAFT_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_DEPLOYMENT_ACCEPTANCE_MATRIX_DRAFT_2026-10-19.md). Separa los invariantes probados de fsync/pérdida de energía, anti-rollback, path attacks y filesystem distribuido; requisitos de despliegue permanecen PENDING.
+- Nueva hipótesis de regresión sin llave: [NCS_M0_LOCK_RELEASE_FAILURE_REVIEW_2026-10-19.md](BUILD/NCS_M0_LOCK_RELEASE_FAILURE_REVIEW_2026-10-19.md). `initialize()` y `commitIfCurrent()` liberan el lock en `finally`; el fallo de `rm` no tiene test dedicado localizado. **No es defecto confirmado**: siguiente paso es inyectar el fallo y observar el resultado público y el envelope persistido antes de cambiar runtime.
 - Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
 ## M0 — vector criptográfico preliminar verificado (2026-10-19)
