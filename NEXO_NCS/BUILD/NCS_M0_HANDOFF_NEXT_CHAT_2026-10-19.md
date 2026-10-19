@@ -2,12 +2,13 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-Último SHA funcional validado por CI: `e31547f17764c18fd0bf2fe39dab1ebfc5748686`
-HEAD código+pruebas validado: `e31547f17764c18fd0bf2fe39dab1ebfc5748686`
+HEAD de rama actual: `b171cf23c5a9b287e10f72d14b054048f7c21034` (incluye documentación)
+Último SHA código+pruebas validado por CI: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`
+Último fix funcional incluido: `360b0dafbebc700477bc30879ef4175da81c904b`
 
 ## 0. Instrucción principal al chat nuevo
 
-**Última continuidad verificada:** el gate Chronicle de evidencia exacta sigue activo; además, mission/step IDs duplicados o con `:` se rechazan, y la reconstrucción bloquea estados de effectJournal desconocidos, incluso entradas huérfanas. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde la antigua sección 15 como si fuera el estado más reciente.
+**Última continuidad verificada:** la misión sigue en M0; el gate Chronicle de evidencia exacta permanece activo; la admisión rechaza IDs de misión/paso duplicados o con `:`, reconstrucción bloquea estados de effectJournal desconocidos incluso si están huérfanos, los accessors anidados caller-supplied se rechazan antes de ejecutarse, y `dependsOn` sparse se rechaza antes del recorrido del grafo (incluidos huecos ocultos por propiedades extra). La última frontera cerrada es `dependsOn` dense. Leer primero `NEXO_NCS/STATUS.md`, que contiene SHA y runs actuales; no seguir desde una sección histórica como si fuera el estado más reciente.
 
 **La misión sigue siendo M0.** No reiniciar investigaciones ya cerradas, no volver a auditar por costumbre los mismos contratos, y no desviarse a M1, STEP 7, Lúmina, interfaz, `index.html`, runtime antiguo ni despliegue. Empezar leyendo, en este orden:
 
@@ -20,9 +21,10 @@ No reabrir research ya cerrado salvo que aparezca evidencia nueva y concreta. Co
 
 ## 1. Estado confirmado
 
-- HEAD actual al checkpoint: `376f2d984eeb969d25c2c797a40037a72a6a5c6b` (código+pruebas; HEAD de rama puede incluir commits documentales posteriores).
-- Fix funcional más reciente: `3ebb037f53409df9681f5ed01b6458e915e36a29`; cambios de documentación no alteran el código validado.
-- Últimos runs finales SUCCESS: bounded admission/restart `39195662848`, STEP 4 `39195662862`, STEP 5 `39195662845`, crash cuts `39195662831`. Chronicle native/effect-settlement SUCCESS en SHA funcional `3ebb037...`: `39195543682`, `39195543685`.
+- HEAD de rama al checkpoint actual: `b171cf23c5a9b287e10f72d14b054048f7c21034` (documentación después del código/tests).
+- SHA código+prueba más reciente validado: `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; fix funcional de densidad: `360b0dafbebc700477bc30879ef4175da81c904b`. No hubo cambios de código después de `3683e470...`; los commits siguientes son documentación.
+- SUCCESS en SHA de test `3683e470...`: bounded admission/restart `39197992970`, STEP 4 `39197992902`, STEP 5 `39197992893`. Crash cuts SUCCESS sobre código funcional `360b0daf...`: `39197974984`. La comprobación de CI se hizo desde GitHub Actions; no se ejecutó suite local.
+- No confundir con runs históricos que fallaron en iteraciones previas: hubo regresiones inicialmente mal esperadas o fixes intermedios; el checkpoint final de arriba sí tiene los runs focales SUCCESS.
 - Los puntos anteriores de esta sección y los apartados históricos siguientes conservan evidencia previa; no son el estado más reciente. Para continuar, manda siempre el estado superior de `NEXO_NCS/STATUS.md` y el checkpoint final de este handoff.
 - Estado de misión: **M0 INCOMPLETO**. Efectos protegidos en **STOP**. Ningún PASS implica que el runtime real esté autorizado o listo.
 
@@ -356,3 +358,22 @@ La regresión `dependsOn: new Array(1)` reprodujo un `TypeError` en `visitDepend
 SHA código+pruebas `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`; código `360b0dafbebc700477bc30879ef4175da81c904b`. SUCCESS: bounded admission 39197992970, STEP 4 39197992902, STEP 5 39197992893. Crash cuts SUCCESS con el código funcional 360b0daf..., run 39197974984.
 
 Siguiente paso: probar valores no persistibles dentro de mission/target sin ampliar globalmente el contrato antes de tener reproducción y evaluación de compatibilidad.
+
+## 25. Checkpoint actual — rechazar arrays sparse de dependencias (2026-10-19)
+
+### Hallazgo reproducido
+
+`missionRecord()` recorría `step.dependsOn` con `.some()`. JavaScript omite los huecos de arrays sparse: `new Array(1)` podía superar el filtro inicial y provocar un `TypeError` más tarde durante `visitDependencyGraph()`, en vez de un rechazo contractual estable. La primera defensa basada en contar todas las keys tampoco bastaba: un array sparse con propiedad extra podía enmascarar el hueco.
+
+### Fix + prueba
+
+- Fix funcional `360b0dafbebc700477bc30879ef4175da81c904b`: contar sólo claves que representan índices canónicos dentro de `dependencies.length`; comparar el número de índices reales con la longitud antes de recorrer el grafo.
+- Regresión inicial `21aafeb87dbc42d1e8144d1aad51ab60073fd190` y segunda regresión en test SHA `3683e4708e5ff97b65fb7b0fe0cd6f154a732745`: tanto `new Array(1)` como una matriz con hueco y propiedad extra deben fallar con `NEXO_MISSION_CONTEXT_INVALID`.
+- CI SUCCESS: bounded admission/restart [39197992970](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992970), STEP 4 [39197992902](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992902), STEP 5 [39197992893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197992893), crash cuts [39197974984](https://github.com/snowdenxrp/aldea-ia/actions/runs/39197974984).
+- Commits después del SHA test `3683e470...` sólo actualizaron documentación; HEAD de rama actual `b171cf23...`.
+
+### Siguiente trabajo exacto
+
+Seguir la frontera que ya registra `NEXO_NCS/STATUS.md`: investigar si valores no persistibles dentro de `mission`/`target` (funciones, símbolos, ciclos y valores numéricos no finitos) pueden superar admisión o producir una excepción no estructurada/CAS innecesario. Leer `assertContractInput()` y `missionRecord()` en `src/nexo/core/continuity-operations.mjs`, junto con `tests/nexo/continuity-contract.test.mjs` y las pruebas de bounded admission. Primero crear/reproducir un caso concreto, después determinar si el helper ya lo rechaza y sólo entonces modificar. No ampliar globalmente el helper ni duplicar los tests de getters/sparse arrays ya cerrados.
+
+**Reglas de continuación:** no reabrir Chronicle settlement/restart, read-failure handling, reconstructed mission PREPARED gate, IDs de journal, nested accessors o sparse dependencies salvo evidencia nueva. No cambiar estado/contrato por intuición. M0 INCOMPLETO; efectos protegidos STOP; Nexo separado de Lúmina.
