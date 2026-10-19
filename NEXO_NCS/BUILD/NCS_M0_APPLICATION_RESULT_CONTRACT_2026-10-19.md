@@ -75,3 +75,11 @@ Missing boolean state fields are normalized to false only where no write was att
 - Rationale: `recordMission()` delegates to a store commit; an exception may mean the commit did not happen or happened before the response was lost. The caller must not be told admission definitely failed, and no effect dispatch may follow that uncertain response.
 - Regression: `tests/nexo/chronicle-runtime.test.mjs` injects a store-response-loss error, asserts tri-state uncertainty and no dispatch/retry authorization, and confirms the raw error message is not exposed.
 - Code/test SHA: `e4562b6edb0ce4c3f0df1ccaae94cc63edf33d1f`. CI has not yet been observed for this SHA; status remains PENDING/UNKNOWN until the matching workflow runs complete.
+
+
+## Mission-admission UNKNOWN normalization — validated update (2026-10-18 local)
+
+- The safe admission helper now normalizes both thrown store errors and returned `status=unknown` results to `missionAdmissionCommitted=UNKNOWN`, `dispatchAttempted=false`, and `redispatchAuthorized=false`. A returned UNKNOWN cannot lose its tri-state marker merely because it did not throw.
+- Regression covers both exception-after-possible-commit and an explicit UNKNOWN return. Raw exception text remains hidden.
+- Validated code/test SHA: `872a67b3e6512fce134507f82052a5cbc37d495f`. CI SUCCESS: [Chronicle 39187025194](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025194), [continuity/restart 39187025178](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025178), [STEP 4 39187025188](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025188), [STEP 5 39187025187](https://github.com/snowdenxrp/aldea-ia/actions/runs/39187025187), all SUCCESS.
+- Replay policy remains explicit: no automatic retry or dispatch after UNKNOWN; next call reloads canonical continuity. M0 INCOMPLETO.
