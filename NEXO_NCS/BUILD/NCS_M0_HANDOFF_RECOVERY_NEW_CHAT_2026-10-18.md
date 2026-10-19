@@ -576,3 +576,12 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Un retry explícito converge a un único append. El replay posterior devuelve `completed` con `dispatchAttempted=false`; ambos archivos quedan byte-identical durante el replay.
 - CI SUCCESS en SHA `7f4c69ef8003515c53d761677185f4668c05d5a0`: [39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
 - Sin retry automático, cola, segundo dispatch ni afirmación de transacción entre archivos. El contrato exige que el caller maneje el bloqueo/conflicto y decida si vuelve a invocar.
+
+
+## Verified continuity pointer — concurrent bootstrap checkpoint
+
+- Branch HEAD: `3bcd5ea51accd008bd21163f15317d91fc367268` (documentation-only).
+- Last code/test SHA: `7f4c69ef8003515c53d761677185f4668c05d5a0`.
+- Compare code/test SHA → HEAD: only `STATUS.md`, this handoff, and `NCS_M0_ENTRYPOINT_SEPARATION_2026-10-18.md` changed.
+- Latest focused CI SUCCESS on code/test SHA: [Chronicle 39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [continuity/restart 39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [semantic validation 39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [outcome/restart 39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
+- Next exact task: finalize the stable application API contract: document accepted inputs/results and test invalid input, same-identity replay, payload mismatch, concurrent initial bootstrap, and unknown outcomes. Then evaluate one application integration seam without routing through legacy Lúmina memory. Do not add mutating actions or change runtime default. M0 INCOMPLETO.
