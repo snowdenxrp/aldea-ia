@@ -1795,3 +1795,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Regresión añadida:** `tests/nexo/continuity-store.test.mjs`, commit [7c0756c](https://github.com/snowdenxrp/aldea-ia/commit/7c0756c9455fb1f6e2cc1bbbfe7d66bbb7305e57); se corrigió el fixture de newline en [65aba88](https://github.com/snowdenxrp/aldea-ia/commit/65aba88427c8059c051c5b477346b0f4fe03f527). La prueba exige rechazo fail-closed, bytes canónicos idénticos y lectura posterior válida.
 - **Validación:** código y prueba están en `ncs-clean-architecture`. No se pudo obtener por las herramientas disponibles un run de Actions asociado a estos commits ni ejecutar la prueba localmente en este entorno. **Resultado de CI: PENDING; no declarar PASS todavía.**
 - **Alcance:** esta protección cubre el store de continuidad. El límite equivalente de Chronicle no se cambia en este paso sin una revisión y prueba separadas. No afecta la decisión de raíz de autoridad; `authorization: NOT_EVALUATED` y efectos protegidos STOP permanecen.
+
+
+## M0 — Chronicle no puede avanzar más allá de la revisión segura (2026-10-19)
+
+- **Defecto reproducido por inspección del código:** `createNexoChronicleStore().append()` construía `storeRevision + 1` sin proteger `Number.MAX_SAFE_INTEGER`. En el límite, podía persistir una revisión no segura y devolver `committed`, aunque la validación de la siguiente lectura rechazaría el documento.
+- **Corrección:** `src/nexo/core/chronicle-store.mjs`, commit [0802c6b8551a](https://github.com/snowdenxrp/aldea-ia/commit/0802c6b8551acca61c34efb71060fe56f8fa8e9a). En el límite, `append()` devuelve `blocked / NEXO_CHRONICLE_REVISION_EXHAUSTED` antes de escribir.
+- **Regresión:** `tests/nexo/chronicle-store.test.mjs`, commit [4c51b7ff3638](https://github.com/snowdenxrp/aldea-ia/commit/4c51b7ff3638dfdad03941d620f6e87a138e744a). Verifica resultado exacto, bytes persistidos sin cambios y lectura posterior válida al máximo seguro.
+- **Validación:** el cambio está en la rama `ncs-clean-architecture`; no se ha ejecutado localmente en este entorno ni se ha observado un run de CI para estos SHA. **CI PENDING; no declarar PASS.**
+- **Límite:** esta corrección sólo protege la revisión de Chronicle. No implica autoridad constitucional ni habilita efectos protegidos. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
