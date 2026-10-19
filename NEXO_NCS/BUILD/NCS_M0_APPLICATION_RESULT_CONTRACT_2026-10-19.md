@@ -198,3 +198,16 @@ Code SHA `005338b91656e61eee3ffbef105c306e2af496b2` passed all six focal workflo
 El checkpoint más reciente es el replay Chronicle incompleto. La ruta de replay ahora exige identidad exacta, estado `settled_observed`, settlement `applied`, fuente `nexo-chronicle-store`, revisión observada no negativa, `evidence` presente y `observedAt` ISO válido/canónico. Una entrada parcial no se acepta como `already_observed` y no invoca el verificador como fallback. Código `005338b91656e61eee3ffbef105c306e2af496b2`; regresión en SHA código/pruebas `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72`. Seis workflows pasaron en el SHA de código; cuatro workflows disparados por la nueva prueba pasaron en el SHA código/prueba. IDs y enlaces, además del estado de todos los hardening previos y pasos de continuidad, están en `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-19.md`.
 
 Próximo paso: inspeccionar sólo la correspondencia entre el contrato de escritura del settlement Chronicle y el contrato de replay. Leer ambos caminos y pruebas existentes antes de cambiar código. M0 permanece INCOMPLETO; no se ha implementado el goal verifier ni autorizado el runtime real.
+
+
+## M0 — Chronicle completion gate matches replay record completeness (2026-10-19)
+
+The completion path in `recordOutcome()` now requires the same settlement completeness fields as Chronicle replay: `evidence` must be an own property and `observedAt` must be a valid canonical ISO timestamp, in addition to the existing exact identity, `settled_observed`, `applied`, source, and nonnegative safe-integer revision checks.
+
+A malformed persisted settlement is blocked with `NEXO_CHRONICLE_SETTLEMENT_REQUIRED`; the regression verifies no attempt is appended and canonical `storeRevision` remains unchanged.
+
+Code SHA: `f3a54153d3574f559aa32f1c56d093e1152b4842`. Code + corrected regression SHA: `b21896e893a1b739bbfa511f76c3a215298a73e6`.
+
+CI SUCCESS at the code + regression SHA: [repair settlement crash cuts 39192937988](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937988), [effect and settlement contract regressions 39192937997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937997), [STEP 4 semantic validation 39192938031](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192938031), [STEP 5 outcome classification 39192937987](https://github.com/snowdenxrp/aldea-ia/actions/runs/39192937987).
+
+This closes the identified record-completeness discrepancy only. It does not establish external-effect causality, general goal verification, power-loss durability, legitimate authority, or protected-runtime readiness. M0 remains incomplete; protected effects remain STOP.
