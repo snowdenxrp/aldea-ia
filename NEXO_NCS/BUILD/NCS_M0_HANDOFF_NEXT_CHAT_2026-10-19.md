@@ -2,52 +2,41 @@
 Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
-SHA de código+pruebas verificado: `661a9594f6454ff6e3877db5218f523cbffe793c`
-Corrección funcional integrada: `eea375d9feddcfd4c074fc7a039d19470e890daa`
-Pruebas de owner integradas: `661a9594f6454ff6e3877db5218f523cbffe793c`
-Al guardar documentación el HEAD cambia; verificar el HEAD vivo de la rama al retomar.
+SHA de código+pruebas validado: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`
+Corrección funcional integrada: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`
+La actualización de STATUS/handoff crea nuevos commits documentales; verificar el HEAD vivo al retomar.
 
 ## 0. Instrucción principal al chat nuevo
 
-**La misión sigue siendo M0.** No reiniciar M0.1–M0.52 ni auditorías históricas ya cerradas, no desviarse a STEP 7, M1, Lúmina, interfaz ni despliegue. La última frontera cerrada es la admisión de datos de misión persistibles y la comprobación de que el owner no escribe cuando la misión es inválida.
+**La misión es M0.** No reiniciar M0.1–M0.52 ni las auditorías históricas cerradas; no desviarse a STEP 7, M1, Lúmina, interfaz o despliegue. El último trabajo corrigió la admisión de datos no persistibles y la validación de `step.action`.
 
-Leer en este orden:
-1. `NEXO_NCS/STATUS.md` — puerta de entrada única y checkpoint actual.
-2. Este handoff.
-3. `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`.
-4. Sólo los archivos necesarios para la siguiente frontera semántica, descrita abajo.
+Leer primero `NEXO_NCS/STATUS.md`, después este handoff y `NEXO_NCS/BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md`. Trabajar sólo en la frontera indicada abajo y consultar el HEAD vivo.
 
-No volver a buscar lo que ya está documentado salvo evidencia nueva. No tratar una prueba unitaria verde como evidencia de autoridad legítima o runtime autorizado.
+## 1. Último estado confirmado
 
-## 1. Estado confirmado más reciente
+### Hallazgos cerrados
+- La regresión inicial demostró que una función como `step.target` era aceptada. La corrección local a `missionRecord()` rechaza valores no persistibles en el registro proyectado: funciones, símbolos, bigint/undefined proyectados, números no finitos, ciclos, arrays sparse y propiedades extra de arrays.
+- Una segunda regresión demostró que `step.action: 42` podía quedar persistida como misión `planned`. La admisión ahora exige `step.action` string no vacío. No se añadió allowlist de acciones.
+- Las pruebas del owner verifican que una misión inválida devuelve `NEXO_MISSION_CONTEXT_INVALID` y no cambia la revisión canónica; la escritura condicional no se ejecuta.
+- El helper compartido `assertContractInput()` no se modificó. No se tocaron autoridad, permisos, dispatch, estados de efectos ni la separación Nexo/Lúmina.
 
-### Hallazgo y arreglo
+### CI final
+- SHA de código+tests: `6c06c2330578ffe3f47804b4cab4033b5a5c9160`.
+- SUCCESS: bounded admission/restart [39208156912](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156912), STEP 4 [39208156893](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156893), STEP 5 [39208156962](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156962), crash cuts [39208156901](https://github.com/snowdenxrp/aldea-ia/actions/runs/39208156901).
+- PRs integrados: [#99](https://github.com/snowdenxrp/aldea-ia/pull/99), [#100](https://github.com/snowdenxrp/aldea-ia/pull/100), [#101](https://github.com/snowdenxrp/aldea-ia/pull/101).
 
-- Se añadió una regresión que demostró que `recordNexoMissionInSnapshot()` aceptaba un `target` con valor función. El CI falló inicialmente con `Missing expected exception` en [run 39207382906](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207382906), reproduciendo el hueco.
-- `src/nexo/core/continuity-operations.mjs` ahora valida el registro proyectado como datos persistibles: rechaza funciones, símbolos, bigint/undefined que aparezcan en el registro, números no finitos, ciclos, arrays sparse y propiedades extra de arrays. Errores de clonación/proyección se normalizan a `NEXO_MISSION_CONTEXT_INVALID`.
-- No se modificó `assertContractInput()` global. No se cambiaron autoridad, permisos, dispatch, estados de efectos ni separación Nexo/Lúmina.
-- La regresión de owner en `tests/nexo/continuity-contract.test.mjs` usa el almacén canónico y confirma que una misión inválida devuelve `NEXO_MISSION_CONTEXT_INVALID` y deja `storeRevision=1`; no se ejecuta el commit condicional.
+### Siguiente frontera concreta
 
-### SHA y CI
+Auditar `mission.status` y `step.status` antes de modificar código:
+1. Leer el productor real de planes, consumidores que deciden qué pasos son ejecutables y la reconstrucción canónica.
+2. Identificar el conjunto de estados realmente emitido/consumido; no inferirlo sólo por nombres.
+3. Reproducir si un estado de tipo incorrecto o desconocido puede quedar persistido y crear una misión estancada o ambigua.
+4. Sólo si hay discrepancia real, añadir una regresión red/green y validar que no se escribe la misión inválida.
+5. Registrar SHA y workflows CI exactos en STATUS/handoff.
 
-- SHA código+tests: `661a9594f6454ff6e3877db5218f523cbffe793c`.
-- SUCCESS: bounded admission/restart [39207856224](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856224), STEP 4 [39207856228](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856228), STEP 5 [39207856158](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207856158).
-- Crash cuts SUCCESS sobre código funcional `eea375d9feddcfd4c074fc7a039d19470e890daa`: [39207676997](https://github.com/snowdenxrp/aldea-ia/actions/runs/39207676997).
-- PR funcional [#99](https://github.com/snowdenxrp/aldea-ia/pull/99) y PR de prueba owner [#100](https://github.com/snowdenxrp/aldea-ia/pull/100) están integrados.
+No repetir: getters/accessors anidados, IDs duplicados/con `:`, journal desconocido/huérfano, settlement/replay Chronicle, PREPARED, fallos de lectura, dependencias sparse, valores no persistibles ni acción no-string/vacía.
 
-### Siguiente paso obligatorio
-
-Auditar la validez semántica de campos de paso que son JSON válidos pero quizá operacionalmente inválidos, en particular `action` y su relación con los contratos de operación existentes.
-
-1. Leer `missionRecord()`, sus consumidores, los validadores de operación y pruebas actuales.
-2. Comprobar si una acción ausente/no-string/unknown puede quedar comprometida como misión `planned` y cómo se comporta después.
-3. Primero añadir una reproducción que demuestre una inconsistencia concreta; no crear un catálogo de acciones nuevo ni modificar contratos por intuición.
-4. Si se confirma el hueco, corregir la frontera mínima y comprobar tanto resultado estructurado como ausencia de CAS para la misión inválida.
-5. Verificar CI por SHA y actualizar STATUS/handoff con runs reales.
-
-No reabrir los casos ya cerrados: accessors anidados, IDs duplicados/con `:`, estados de journal desconocidos/huérfanos, settlement/replay Chronicle, PREPARED, fallos de lectura, dependencias sparse ni tipos de datos no persistibles.
-
-**Estado global:** M0 **INCOMPLETO**; efectos protegidos **STOP**; STEP 7 permanece **OPEN / STOP / UNKNOWN**; Nexo y Lúmina separados. El trabajo actual no demuestra autenticidad, goal verifier general, autoridad constitucional ni permiso para ejecutar efectos protegidos.
+**Estado global:** M0 **INCOMPLETO**; efectos protegidos **STOP**; STEP 7 **OPEN / STOP / UNKNOWN**; Nexo y Lúmina permanecen separados. La evidencia de CI no prueba autoridad constitucional ni autorización de runtime.
 
 
 ## 2. Último cambio concreto: replay Chronicle incompleto
