@@ -347,3 +347,51 @@ await assert.rejects(
   "missing store and missing legacy state must not silently fabricate continuity"
 );
 await fs.rm(uninitializedDirectory, { recursive: true, force: true });
+
+
+const readFailure = Object.assign(new Error("simulated continuity read failure"), {
+  code: "TEST_CONTINUITY_READ_FAILED"
+});
+let failedStoreWrites = 0;
+const readFailingStore = {
+  loadCurrent: async () => { throw readFailure; },
+  commitIfCurrent: async () => { failedStoreWrites++; return { status: "committed" }; }
+};
+const readFailingOwner = createNexoContinuityOwner({ store: readFailingStore });
+const failedOperation = {
+  idempotencyKey: "read-failure-mission:step-1",
+  missionId: "read-failure-mission",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "alex",
+  environmentStateRevision: 0
+};
+const preparedReadFailure = await readFailingOwner.recordPrepared({
+  expectedRevision: 0, operation: failedOperation
+});
+assert.equal(preparedReadFailure.status, "blocked");
+assert.equal(preparedReadFailure.code, "TEST_CONTINUITY_READ_FAILED");
+assert.equal(preparedReadFailure.uncertainty, "continuity_read_failed");
+assert.equal(preparedReadFailure.preparedCommitted, false);
+const lineageReadFailure = await readFailingOwner.recordExecutionLineage({
+  expectedRevision: 0,
+  operation: failedOperation,
+  result: { status: "completed", verified: true }
+});
+assert.equal(lineageReadFailure.status, "blocked");
+assert.equal(lineageReadFailure.code, "TEST_CONTINUITY_READ_FAILED");
+assert.equal(lineageReadFailure.lineageCommitted, false);
+const outcomeReadFailure = await readFailingOwner.recordOutcome({
+  expectedRevision: 0,
+  outcome: {
+    missionId: "read-failure-mission",
+    stepId: "step-1",
+    action: "repair_agent_state",
+    target: "alex",
+    status: "failed"
+  }
+});
+assert.equal(outcomeReadFailure.status, "blocked");
+assert.equal(outcomeReadFailure.code, "TEST_CONTINUITY_READ_FAILED");
+assert.equal(outcomeReadFailure.journalSettled, false);
+assert.equal(failedStoreWrites, 0, "read failure must not proceed to conditional commit");
