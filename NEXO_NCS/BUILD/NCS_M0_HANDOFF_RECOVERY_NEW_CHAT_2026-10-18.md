@@ -425,3 +425,17 @@ Definir el contrato de ruta y filesystem para ambos stores: canonicalización de
 4. No reabrir la investigación de locks/rutas ya documentada salvo que la prueba nueva revele un defecto. No cambiar runtime default ni ampliar acciones.
 
 Estado: **M0 INCOMPLETO**. Chronicle sigue opt-in. Runtime default sin cutover. Efectos protegidos STOP. Nexo y Lúmina deben permanecer separados.
+
+
+### Resolución del gate de validación — SHA `32df994706a16167d8d92440569b5db200feeb1b`
+
+- La primera ejecución [39178949801](https://github.com/snowdenxrp/aldea-ia/actions/runs/39178949801) falló por un error sintáctico de la prueba: contador `genericVerifierCalls` declarado dos veces. Se corrigió como `lostResponseVerifierCalls`; no fue una falla funcional del owner.
+- En el SHA `32df994706a16167d8d92440569b5db200feeb1b`, los workflows relevantes quedaron SUCCESS: [repair crash cuts 39179028829](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179028829), [effect adapter + settlement 39179029008](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179029008), [semantic validation 39179028944](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179028944) y [outcome classification/restart/protected transition 39179028821](https://github.com/snowdenxrp/aldea-ia/actions/runs/39179028821).
+- El resultado demuestra las suites específicas listadas, no toda la suite del repositorio ni integración del runtime general.
+
+### Punto operativo actual
+
+1. Replay genérico tras commit-respuesta-perdida: implementación y crash-cut test ya validados en las suites focales anteriores.
+2. Siguiente: retomar la frontera arquitectónica documentada en el handoff base: inspeccionar el punto de entrada real del producto e identificar el seam mínimo Nexo-only que no cargue `world.js`, `simulation.js`, `simulate.mjs` ni memoria de asistentes de Lúmina.
+3. No alojar Chronicle en `scripts/assistants.mjs`; conservar `scripts/nexo-chronicle-session.mjs` como vertical opt-in.
+4. No cambiar runtime default, no ampliar acciones y no declarar M0 completo.
