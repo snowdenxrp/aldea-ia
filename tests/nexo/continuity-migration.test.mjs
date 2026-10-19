@@ -429,6 +429,37 @@ try {
   await fs.rm(chronicleReconstructionIdentityMismatchDir, { recursive: true, force: true });
 }
 
+const chronicleOutcomeEvidenceExtraClaimDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-outcome-evidence-extra-claim-"));
+try {
+  const opened = await openNexoContinuityOwner({
+    filePath: path.join(chronicleOutcomeEvidenceExtraClaimDir, "nexo.json"),
+    legacyMemory: chronicleSettlementMemory()
+  });
+  const outcome = await opened.owner.recordOutcome({
+    expectedRevision: 0,
+    outcome: {
+      missionId: "mission-legacy-1",
+      stepId: "step-1",
+      action: "chronicle_append",
+      target: { content: "hello Nexo" },
+      status: "completed",
+      evidence: {
+        verified: true,
+        kind: "nexo-chronicle-persisted-invariant",
+        source: "nexo-chronicle-store",
+        observedRevision: 1,
+        content: "caller-asserted-different-content"
+      }
+    }
+  });
+  assert.equal(outcome.status, "blocked",
+    "Chronicle outcome evidence must not carry extra claims outside the canonical settlement-bound shape");
+  assert.equal(outcome.code, "NEXO_CHRONICLE_OUTCOME_EVIDENCE_MISMATCH");
+  assert.equal((await opened.owner.loadCurrent()).snapshot.attempts.length, 0);
+} finally {
+  await fs.rm(chronicleOutcomeEvidenceExtraClaimDir, { recursive: true, force: true });
+}
+
 const chronicleOutcomeEvidenceMismatchDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-outcome-evidence-mismatch-"));
 try {
   const opened = await openNexoContinuityOwner({
