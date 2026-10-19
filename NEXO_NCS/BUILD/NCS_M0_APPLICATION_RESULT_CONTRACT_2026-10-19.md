@@ -314,3 +314,10 @@ Siguiente frontera: snapshot/replay de entradas genéricas terminales inconsiste
 ## Checkpoint M0 — identidad y effectJournal desconocido
 
 IDs de misión/paso duplicados o con `:` se rechazan en admisión; el snapshot falla cerrado ante IDs persistidos duplicados. La reconstrucción bloquea estados desconocidos de effectJournal, incluidos registros huérfanos, en vez de ignorarlos. SHA de código `33b23a87fe51b80007943cbc28cffd3883e99a19`, SHA de pruebas `a2bd5ba8cdfdbb4f2129337a13c071b7d18b47d3`; bounded admission, STEP 4, STEP 5 y crash cuts SUCCESS. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — reconstrucción fail-closed de journal no reconocido/desanclado (2026-10-19)
+
+La reconstrucción no ignora estados desconocidos de `effectJournal` ni registros reconocidos que no pueden enlazarse a una misión y step canónicos con acción/target coincidentes. La prueba de settlement Chronicle huérfano reprodujo un estado planned antes del fix; ahora devuelve misión/steps blocked. Estados legacy aún pueden cargarse, pero una obligación ambigua no queda ejecutable.
+
+SHA código+tests `e31547f17764c18fd0bf2fe39dab1ebfc5748686`: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS (runs 39197251854, 39197251843, 39197251835, 39197251844). M0 INCOMPLETO; efectos protegidos STOP.
