@@ -252,3 +252,10 @@ Esto reduce colisiones de identidad local, no autentica al propietario ni autori
 `reconstructNexoMissionFromSnapshot()` sólo acepta una completion histórica si action/target coinciden exactamente con el paso y la evidencia tiene `verified === true`, kind y source no vacíos. Las claims completed con identidad/evidencia inválidas bloquean el paso; no lo completan ni lo devuelven a planned. Los estados no terminales con identidad disponible se filtran por la misma operación.
 
 Regresiones de intento mismatcheado y evidence no verificada: bounded admission/restart, STEP 4, STEP 5 y crash cuts SUCCESS en SHA `5767851584eba13298cada7bf46b162844b7d7bd`. Ver STATUS para enlaces. Esto no es goal verification ni autorización. M0 INCOMPLETO; efectos protegidos STOP.
+
+
+## Checkpoint M0 — reconstrucción Chronicle requiere ambos registros válidos (2026-10-19)
+
+Para reconstruir `chronicle_append` como completed deben existir un settlement canónico validado por `isValidNexoChronicleSettlementRecord()` y un intento terminal verificado con action/target exactos. Settlement sin outcome terminal → blocked `NEXO_CHRONICLE_OUTCOME_REPLAY_REQUIRED`; claim completed sin settlement válido → blocked `NEXO_CHRONICLE_SETTLEMENT_REQUIRED`. No vuelve a planned ni redispatcha.
+
+CI bounded admission/restart, crash cuts, STEP 4 y STEP 5 SUCCESS en SHA `fe79862299cb51dd95bd39e0d227d05698c65a03`. Ver STATUS para enlaces. M0 sigue INCOMPLETO; los efectos protegidos permanecen STOP.
