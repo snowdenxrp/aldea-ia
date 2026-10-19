@@ -1,0 +1,62 @@
+name: Nexo M0 — integrated acceptance regression
+
+on:
+  push:
+    branches:
+      - ncs-clean-architecture
+    paths:
+      - "src/nexo/application/**"
+      - "src/nexo/core/**"
+      - "scripts/nexo.mjs"
+      - "scripts/nexo-chronicle-session.mjs"
+      - "scripts/nexo-continuity.mjs"
+      - "scripts/nexo-repair-*.mjs"
+      - "tests/nexo/continuity-contract.test.mjs"
+      - "tests/nexo/continuity-store.test.mjs"
+      - "tests/nexo/restart-reconstruction.test.mjs"
+      - "tests/nexo/chronicle-store.test.mjs"
+      - "tests/nexo/chronicle-runtime.test.mjs"
+      - "tests/nexo/entrypoint.test.mjs"
+      - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
+      - "tests/nexo/continuity-migration.test.mjs"
+      - "tests/nexo/repair-owner-lifecycle.test.mjs"
+      - "tests/nexo/repair-session.test.mjs"
+      - "tests/nexo/repair-mission-verification.test.mjs"
+      - "tests/nexo/final-semantic-validator.test.mjs"
+      - "tests/nexo/outcome-classifier.test.mjs"
+      - "tests/nexo/protected-transition.test.mjs"
+      - "package.json"
+      - ".github/workflows/nexo-m0-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexo-m0-acceptance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    name: Nexo M0 contracts on one SHA
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Canonical continuity admission and store
+        run: node tests/nexo/continuity-contract.test.mjs && node tests/nexo/continuity-store.test.mjs
+      - name: Reconstruction and protected transition contracts
+        run: node tests/nexo/restart-reconstruction.test.mjs && node tests/nexo/protected-transition.test.mjs
+      - name: Chronicle store, runtime, and public entrypoints
+        run: node tests/nexo/chronicle-store.test.mjs && node tests/nexo/chronicle-runtime.test.mjs && node tests/nexo/entrypoint.test.mjs
+      - name: Crash cuts and owner recovery
+        run: node tests/nexo/repair-settlement-crash-cuts.test.mjs && node tests/nexo/continuity-migration.test.mjs && node tests/nexo/repair-owner-lifecycle.test.mjs && node tests/nexo/repair-session.test.mjs
+      - name: Goal verification and outcome classification
+        run: node tests/nexo/repair-mission-verification.test.mjs && node tests/nexo/final-semantic-validator.test.mjs && node tests/nexo/outcome-classifier.test.mjs
