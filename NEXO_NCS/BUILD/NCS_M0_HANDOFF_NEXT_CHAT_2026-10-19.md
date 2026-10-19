@@ -3,7 +3,7 @@ Fecha: 2026-10-19
 Repositorio: https://github.com/snowdenxrp/aldea-ia
 Rama: `ncs-clean-architecture`
 Último SHA de código + regresión validado por CI: `b21896e893a1b739bbfa511f76c3a215298a73e6`
-Último SHA de código: `f3a54153d3574f559aa32f1c56d093e1152b4842`; SHA de código + regresión corregida: `b21896e893a1b739bbfa511f76c3a215298a73e6`
+Último SHA de código: `e62b65ab699c5d177c40d08f32a1393af118e4ee`; SHA con regresión runtime: `26eab01d09ab4be20c7228da8abf17e3224f5a6b`
 
 ## 0. Instrucción principal al chat nuevo
 
@@ -163,3 +163,14 @@ Se encontró una brecha posterior al gate de settlement completo: el verificador
 ## 8. Próximo paso obligatorio
 
 Continuar la siguiente frontera real de M0 en recuperación/reconstrucción de continuidad canónica. Leer primero los tests relevantes antes de modificar. No repetir auditoría de settlement Chronicle; no hacer un cambio si no hay un fallo reproducible. Mantener Nexo separado de Lúmina y no activar efectos protegidos.
+
+
+## 9. Checkpoint adicional — runtime no puede saltarse el contrato de settlement
+
+La recuperación de Chronicle en `src/nexo/core/owner-backed-runtime.mjs` tenía una puerta más débil que el owner: con status `settled_observed`, source y revisión bastaba para llamar a `recordOutcome`, sin validar evidencia ni timestamp. Aunque el writer real bloqueaba el outcome inválido, el runtime podía informar settlement como válido en su estado intermedio.
+
+Se creó `src/nexo/core/chronicle-settlement-contract.mjs` para centralizar las invariantes estructurales: status/action, identidad exacta y no ambigua, target content, settlement applied/source/revisión, evidencia objeto con kind/operationKey/content ligados al target y timestamp ISO canónico. Owner replay, completion y runtime recovery usan ahora la misma función.
+
+La prueba positiva de replay incluye evidence/timestamp válidos. La negativa usa `evidence: null` y verifica que no hay redispatch, no se invoca outcome writer y el resultado no marca `journalSettled` ni terminal outcome. SHA de código/contrato final `e62b65ab699c5d177c40d08f32a1393af118e4ee`; SHA con regresión runtime `26eab01d09ab4be20c7228da8abf17e3224f5a6b`. Chronicle native, bounded admission, STEP 4 y STEP 5 pasaron en `26eab...`; crash cuts, STEP 4 y STEP 5 pasaron después del cambio final de identidad en `e62b...`. Una ejecución intermedia de Chronicle falló por fixture antigua sin evidencia; fixture corregida y ejecución posterior verde. Detalle y enlaces en `NEXO_NCS/STATUS.md`.
+
+**Siguiente paso:** revisar observación genérica y la forma de `evidence` con el mismo estándar, empezando por los tests existentes. No cambiar el contrato genérico hasta demostrar la brecha y comprobar las compatibilidades deliberadas.
