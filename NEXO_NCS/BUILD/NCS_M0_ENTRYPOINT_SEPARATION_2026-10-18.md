@@ -55,3 +55,10 @@ The initialization flags are opt-in and should only be used when creating genuin
 
 
 - Additional regression in SHA `c7ad605f1257904cb3c4ff8eae261243068cfa95`: a real store containing `prepared` reconstructs as blocked via the process CLI, with `NEXO_EFFECT_RECONCILIATION_REQUIRED`; payload sentinel is absent from output and store bytes remain unchanged. CI SUCCESS: [39180351432](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351432), [39180351413](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351413), [39180351418](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180351418).
+
+
+## Process restart replay — validated (2026-10-19)
+
+- A process-level regression runs `chronicle-append`, then launches a fresh Node process with the same operation identity and payload. The replay returns `completed` with `dispatchAttempted=false`; Chronicle and continuity files remain byte-identical, and the private sentinel is not logged.
+- CI SUCCESS on SHA `3ed7860a189b6b00d0a5444eb466a4393c4a2c4c`: [39180401874](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401874), [39180401875](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401875), [39180401886](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180401886).
+- Scope is process restart and idempotent replay for the Chronicle vertical only; no fsync/power-loss durability, authority, generic actions, or runtime-default cutover is claimed.
