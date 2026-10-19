@@ -1,3 +1,14 @@
+## M0 — frontera de confianza del recibo PREPARED canónico (2026-10-19)
+
+- Hallazgo estático documentado en `NEXO_NCS/BUILD/NCS_M0_CANONICAL_PREPARED_RECEIPT_TRUST_BOUNDARY_AUDIT_2026-10-19.md`.
+- `createEffectAdapter().executePrepared()` comprueba los campos del objeto `preparedCommit`, pero no demuestra que provenga del propietario canónico. La prueba actual construye manualmente un objeto con `status: "committed"`, `preparedCommitted: true` y una revisión, y espera que se despache el handler.
+- El runtime owner-backed sí espera la confirmación de `owner.recordPrepared()`; sin embargo, esa secuencia no impide por sí sola que un consumidor con acceso directo al adaptador invoque `executePrepared()` con un recibo fabricado.
+- No se cambió código de ejecución: antes hay que definir una frontera de confianza verificable. No resolver con otro booleano/campo descriptivo ni crear un segundo journal o una envoltura transaccional.
+- Aceptación pendiente: recibo ordinario fabricado debe fallar sin despachar; recibo válido emitido por el propietario debe conservar el flujo owner-backed; ambigüedad debe preservar UNKNOWN y no redispatch. Ejecutar tests/CI en el SHA exacto antes de PASS.
+- Estado: hallazgo confirmado por inspección estática; ejecución de la regresión de rechazo aún PENDING. `authorization: NOT_EVALUATED`; raíz/autoridad PENDING; efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 ## M0 — normalización de rutas padre no disponibles en ambos almacenes (2026-10-19)
 
 - Hallazgo: la normalización de ruta padre ausente cubría `initialize()`, pero no las operaciones mutables `Continuity.commitIfCurrent()` y `Chronicle.append()`. La adquisición del lock ocurría fuera de una captura y podía dejar escapar el error del sistema operativo.
