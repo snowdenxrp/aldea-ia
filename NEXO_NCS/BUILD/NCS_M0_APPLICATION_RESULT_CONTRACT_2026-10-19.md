@@ -148,3 +148,12 @@ The guard that covered known repairs and actions registered in `effectVerifiers`
 Validated code/test SHA `8d8a92a0ad7ed73b0f35bc798f033be11402856c`. SUCCESS: [STEP 4 39189265872](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265872), [STEP 5 39189265904](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265904), [repair crash cuts 39189265894](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265894), [effect/settlement 39189265926](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189265926). Chronicle SUCCESS on the preceding code-only SHA `a0cf6b87d479e39c3927b952869d52b3539b6c75`; the validated SHA added the regression test only.
 
 This is a fail-closed guard, not the missing goal-verification implementation. M0 remains incomplete.
+
+
+## M0 crash-cut — generic observation commit may persist before throwing (2026-10-19)
+
+`reconcilePrepared()` now catches an exception from the generic observation `commitIfCurrent()` and returns structured uncertainty (`blocked`, `observationCommitted:false`, `uncertainty: effect_observation_commit_outcome_unknown`). It does not claim commit failure or success. Regression simulates a real canonical commit followed by a thrown error, then reopens the owner: replay returns `already_observed`, the canonical journal remains `reconciled_observed`, and the verifier is not called a second time.
+
+Validated SHA `a8f5d06cb983a412b8187612c70a6032215518eb`: [repair crash cuts 39189472295](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472295), [effect/settlement 39189472360](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472360), [STEP 4 39189472242](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472242), [STEP 5 39189472266](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189472266). Chronicle passed on the underlying code SHA `ea2bc19753d82c9d79a98c100b9b9ee2dd0b3c90` ([run 39189369262](https://github.com/snowdenxrp/aldea-ia/actions/runs/39189369262)).
+
+This is response-loss recovery, not cross-store atomicity, effect retry, or mission completion. M0 remains incomplete.
