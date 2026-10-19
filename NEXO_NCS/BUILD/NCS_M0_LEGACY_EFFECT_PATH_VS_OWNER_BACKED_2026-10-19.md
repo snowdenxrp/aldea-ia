@@ -19,9 +19,15 @@
 4. El journal de `executeLuminaNexoStep()` se obtiene de `memory.nexo.effectJournal` si existe; `persistPreparedIntent` es opcional y por defecto `null`. La ruta puede ejecutar una mutación local sin que esa llamada demuestre un PREPARED duradero en el store canónico independiente.
 5. La ruta owner-backed de `executeNexoStepWithContinuityOwner()` aplica controles distintos: sólo permite `chronicle_append` actualmente; las acciones de reparación y otras acciones quedan bloqueadas antes de PREPARED/dispatch.
 
+## Precisión de alcance: API existente no equivale a ruta de producción activa
+
+La búsqueda de referencias en la rama encontró `executeLuminaNexoStep()` como definición y llamada interna a `executeNexoStep()`, además de referencias históricas y pruebas; no encontró un caller de producción actual. `scripts/assistants.mjs` planifica/persiste misiones y `scripts/simulate.mjs` mantiene la persistencia de la simulación, pero ninguno llama actualmente a `executeNexoStep()` ni a `executeLuminaNexoStep()`.
+
+Por tanto, el hallazgo demuestra que el módulo legacy puede mutar una simulación si se invoca, y que la API existe sin PREPARED durable obligatorio; **no demuestra que la aplicación actual despache efectos por esa ruta en producción**. El riesgo inmediato es de clasificación/composición futura y de exposición de API importable, no evidencia de un bypass activo en un caller de producción. Esta distinción evita sobredimensionar el hallazgo.
+
 ## Interpretación
 
-Hay dos contratos de ejecución coexistiendo:
+Hay dos contratos de ejecución coexistiendo a nivel de APIs/módulos:
 - **Legacy/simulación:** `executeNexoStep → adapter.execute → handler`, con memoria local y journal opcional.
 - **Owner-backed canónico:** `executeNexoStepWithContinuityOwner → owner.recordPrepared → adapter.executePrepared → lineage/reconciliation`, actualmente limitado a Chronicle.
 
