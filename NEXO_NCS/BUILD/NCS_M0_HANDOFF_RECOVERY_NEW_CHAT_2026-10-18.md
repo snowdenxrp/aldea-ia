@@ -670,3 +670,13 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - Documento: [NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md](NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md).
 - La API pública está lista como seam para un vertical; no hay app Android/web Nexo creada aquí. No conectar a `index.html`, servidor HTTP local ni runtime legacy hasta revisar los criterios del gate.
 - No añadir autoridad desde el store, no habilitar efectos protegidos, no introducir retry automático y no confundir observación con causalidad. M0 INCOMPLETO.
+
+
+## Current verified pointer — public API + application-surface gate
+
+- Branch HEAD: `ca05e67cd0a3aa6feb00c51246198ff84e5f430d` (documentation-only after code/test SHA).
+- Latest code/test SHA with focused CI SUCCESS: `71a01beb06d9a9d01e1cd459fe123588e1dd553b`.
+- Compare shows only continuity documents changed after that SHA; no unvalidated code change is present in HEAD.
+- CI SUCCESS: [Chronicle/entrypoint 39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [semantic validation 39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [outcome/restart 39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
+- Read before any integration: [application result contract](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md) and [application surface acceptance gate](NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md).
+- Exact next step: do not start a UI or HTTP server yet. First review the threat/authority boundary required by the acceptance gate; the present seam is CLI + Nexo application API only. Do not wire `src/nexo/runtime.js` or `index.html`, do not add actions, and do not treat store contents as authority. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separated.
