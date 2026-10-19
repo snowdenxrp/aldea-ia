@@ -169,10 +169,13 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       };
     }
 
-    // The repair actions are effectful, but no action-specific mission-goal
-    // verifier is connected to this owner yet. Even with no PREPARED record,
-    // caller-supplied evidence labels cannot complete a repair mission.
-    if (outcome.status === "completed" && REPAIR_ACTIONS.has(outcome.action)) {
+    // Repair actions and actions registered as effectful need an
+    // action-specific goal-verification contract. A missing PREPARED row is
+    // not proof of completion, and caller-supplied evidence labels are not proof.
+    if (outcome.status === "completed" &&
+        (REPAIR_ACTIONS.has(outcome.action) ||
+         Object.hasOwn(verifierRegistry, outcome.action)) &&
+        outcome.action !== "chronicle_append") {
       return {
         status: "blocked",
         code: "NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED",
