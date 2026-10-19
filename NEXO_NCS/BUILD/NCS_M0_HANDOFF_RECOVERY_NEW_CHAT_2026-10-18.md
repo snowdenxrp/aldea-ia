@@ -1,3 +1,14 @@
+## Latest verified checkpoint — Chronicle settlement replay integrity (2026-10-19)
+
+- Concrete asymmetry found: generic observation replay required an evidence property and canonical ISO `observedAt`, while `chronicle_append` replay accepted only status/source/revision. A partial settlement could therefore be returned as `already_observed`.
+- Fix in `src/nexo/core/continuity-owner.mjs`: Chronicle replay now requires exact operation identity, `settled_observed`, settlement status `applied`, source `nexo-chronicle-store`, nonnegative safe revision, an `evidence` property, and a canonical ISO timestamp.
+- Regression supplies a partial settlement with status/source/revision but no evidence/timestamp; replay returns revision conflict and does not invoke the verifier.
+- Code SHA `005338b91656e61eee3ffbef105c306e2af496b2` passed all six focal workflows: Chronicle [39190771042](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771042), bounded admission [39190771031](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771031), STEP 4 [39190771037](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771037), STEP 5 [39190771029](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771029), crash cuts [39190771021](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771021), effect/settlement [39190771114](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190771114).
+- Code/test SHA `ddf1034f4ef605dc68e0e7eb5debe4f61cecbd72` passed all four triggered workflows: crash cuts [39190786403](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786403), effect/settlement [39190786395](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786395), STEP 4 [39190786373](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786373), STEP 5 [39190786377](https://github.com/snowdenxrp/aldea-ia/actions/runs/39190786377). The final SHA only adds the regression.
+- This does not authorize effects or implement goal verification. M0 remains incomplete; protected effects STOP; Nexo/Lúmina remain separate.
+
+Next: compare Chronicle settlement validation at write time vs replay, without adding states/capabilities.
+
 ## Latest verified checkpoint — canonical read failures (2026-10-19)
 
 - Continuity replay integrity was already tightened: generic observation replay requires exact operation identity and canonical observation fields. `reconcilePrepared()` now returns structured uncertainty for both initial canonical-read failure and the canonical re-read before CAS; the verifier is not invoked if the initial read fails, and PREPARED remains untouched if the re-read fails.
