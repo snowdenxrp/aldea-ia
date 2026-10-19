@@ -565,7 +565,7 @@ try {
   assert.deepEqual(realContinuity.snapshot.effectJournal[0].settlement.evidence, {
     kind: "persisted-chronicle-entry",
     operationKey: "chronicle-real:step-1",
-    content: "real persisted Chronicle content"
+    content: "hello Nexo"
   });
   assert.equal(
     new Date(realContinuity.snapshot.effectJournal[0].settlement.observedAt).toISOString(),
