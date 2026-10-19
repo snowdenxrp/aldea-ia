@@ -1,3 +1,14 @@
+## M0 — guard de completion para acciones con efecto (validado 2026-10-19)
+
+- Hueco: `recordOutcome(status=completed)` podía registrar completion para una reparación sin `effectJournal`, si el caller aportaba campos de evidencia con forma válida. La misma protección debía cubrir cualquier acción con verificador de efecto registrado aunque faltara PREPARED canónico.
+- Corrección: `createNexoContinuityOwner().recordOutcome()` bloquea completion de las tres acciones repair conocidas y de cualquier acción registrada en `effectVerifiers`, salvo `chronicle_append`, que conserva su gate de settlement propio. Código: `NEXO_OUTCOME_GOAL_VERIFICATION_REQUIRED`. Si hay efecto PREPARED/observado sin resolver, ese bloqueo tiene prioridad y sigue devolviendo `NEXO_OUTCOME_EFFECT_RECONCILIATION_REQUIRED`. `local_analysis` no mutante conserva su comportamiento.
+- Regresiones: reparación sin PREPARED y `generic_write` registrado en `effectVerifiers` sin PREPARED; ambos outcomes caller-asserted quedan bloqueados y la revisión canónica permanece en 0.
+- Primera versión del guard falló por precedencia y alcance demasiado amplios en SHA `ae805de72869f265a836f1f6fa7a4f7f82d3b620`. Se corrigió y se añadió la cobertura del efecto genérico; no se ocultó el fallo.
+- SHA código/test validado: `f0a2472887e8bf5d46aaff2c904e50dae190345b`. CI SUCCESS: [bounded admission/restart 39188948325](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948325), [STEP 5 39188948326](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948326), [STEP 4 39188948327](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948327), [Chronicle 39188948337](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948337), [repair crash cuts 39188948338](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948338), [effect/settlement contract 39188948346](https://github.com/snowdenxrp/aldea-ia/actions/runs/39188948346).
+- Límite: esto solo cierra el bypass de completion sin PREPARED/verificación de objetivo. No implementa el goal verifier; no habilita más acciones ni efectos protegidos, no conecta UI/runtime legacy y no mezcla Nexo con Lúmina. M0 sigue INCOMPLETO.
+
+**Siguiente corte M0:** auditar la frontera entre un verificador registrado, su observación persistida y la futura decisión de misión. No conectar runtime/UI ni habilitar una acción hasta tener un contrato de objetivo confiable, con replay/restart y límites de autoridad explícitos.
+
 ## M0 — reparación no puede declararse completed sin verificación del objetivo (validado 2026-10-19)
 
 - Hueco reproducido: el owner bloqueaba outcomes mientras existía un efecto `PREPARED`/observado no resuelto, pero una acción de reparación sin entrada en `effectJournal` podía pasar por `recordOutcome(status=completed)` con etiquetas `verified/source` aportadas por el caller. La ausencia de PREPARED no demostraba que el objetivo se hubiera verificado.
