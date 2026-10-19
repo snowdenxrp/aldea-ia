@@ -2,7 +2,7 @@ name: Nexo — deterministic persistence tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, ncs-clean-architecture]
   workflow_dispatch:
 
 concurrency:
