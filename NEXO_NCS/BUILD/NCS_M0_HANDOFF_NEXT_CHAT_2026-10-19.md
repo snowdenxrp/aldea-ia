@@ -1,3 +1,9 @@
+## 10. Corrección de integración previa a CI
+
+En revisión del consumidor se detectó y corrigió antes de validación una discrepancia de API: `reconstructNexoMissionFromSnapshot()` devuelve la misión reconstruida directamente o `null`, no un objeto `{ status, mission }`. Corrección en commit `82f1204ae4e9298163231ab7a323233ad87777b8`.
+
+El workflow `.github/workflows/nexo-m0-mission-status.yml` observa `src/nexo/application/continuity-queries.mjs`, por lo que el cambio debería dispararlo. Aún no hay resultado de Actions observado ni ejecución local; verificar CI antes de afirmar que pasa. Si el test falla, revisar el log real.
+
 ## 9. Implementación de status projection — verificar CI antes de continuar
 
 Se implementó en `src/nexo/application/continuity-queries.mjs` una lectura canónica única en `loadNexoMissionStatus()`: el resultado incluye `persistedMissionStatus`, el `missionStatus` reconstruido y `statusDiscrepancy`. Así se evita comparar estados tomados de revisiones distintas y se hace visible una contradicción sin exponer target/content ni escribir en el store.
