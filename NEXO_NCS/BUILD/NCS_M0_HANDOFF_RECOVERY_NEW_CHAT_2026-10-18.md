@@ -680,3 +680,11 @@ Esto permite consultar la continuidad reconstruida, pero no significa que toda m
 - CI SUCCESS: [Chronicle/entrypoint 39181785728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785728), [semantic validation 39181785739](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785739), [outcome/restart 39181785834](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181785834).
 - Read before any integration: [application result contract](NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md) and [application surface acceptance gate](NCS_M0_APPLICATION_SURFACE_ACCEPTANCE_2026-10-19.md).
 - Exact next step: do not start a UI or HTTP server yet. First review the threat/authority boundary required by the acceptance gate; the present seam is CLI + Nexo application API only. Do not wire `src/nexo/runtime.js` or `index.html`, do not add actions, and do not treat store contents as authority. M0 INCOMPLETO; protected effects STOP; Nexo/Lúmina separated.
+
+
+### Addendum — respuesta perdida durante admisión de misión (2026-10-18 local)
+
+- Hueco: `runNexoChronicleAppend()` llamaba `owner.recordMission()` sin manejar la excepción. El commit de admisión podría haber persistido antes de perderse la respuesta; el error crudo escapaba del caso de uso aunque el efecto todavía no se había despachado.
+- Cambio: `recordNexoMissionSafely()` devuelve `unknown` y `missionAdmissionCommitted=UNKNOWN`, con `dispatchAttempted=false` y `redispatchAuthorized=false`. No continúa al efecto ni filtra el mensaje de error.
+- Regresión añadida a `tests/nexo/chronicle-runtime.test.mjs`. Código/test SHA `e4562b6edb0ce4c3f0df1ccaae94cc63edf33d1f`; CI aún no observado para este SHA. Mantener PENDING/UNKNOWN hasta consultar el run exacto.
+- Próximo paso: validar CI y después revisar las otras fronteras de persistencia del caso de uso, sin añadir otra acción ni conectar el runtime antiguo. M0 INCOMPLETO; efectos protegidos STOP; Nexo/Lúmina separados.
