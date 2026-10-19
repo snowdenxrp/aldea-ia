@@ -338,3 +338,12 @@ Se reforzó reconstrucción para no ignorar estados de journal desconocidos, hu�
 Además, `missionRecord()` valida la forma del input con `assertContractInput` antes de acceder a `mission.missionId`, rechazando getters caller-supplied sin ejecutarlos. La primera ejecución del test falló antes del guard; el fix pasó los cuatro workflows en `24e44be...`, y las pruebas de journal pasaron en `82826e...`.
 
 **Siguiente paso:** auditar si la validación de la misión también protege sus objetos anidados (`steps`, `target`, `dependsOn`) antes de leerlos y clonarlos. No duplicar la validación top-level ni ampliar contratos sin test que reproduzca ejecución de getter o ambigüedad.
+
+
+## 23. Checkpoint — getter anidado de step no se ejecuta durante admission
+
+Test SHA `bceabad2e1f62a23ba7586ba27b2977841d6b778`; código funcional `82826e12bfd88c07aeabda05f6a14605f85bda33`. La nueva regresión añade un getter en `step.target` y verifica que `recordNexoMissionInSnapshot()` lo rechaza como `NEXO_MISSION_CONTEXT_INVALID` sin invocarlo. Esto confirma que `assertContractInput(mission)` protege también propiedades anidadas antes del recorrido y clonación.
+
+SUCCESS: bounded admission/restart 39197679061, STEP 4 39197679021 y STEP 5 39197678998. Crash cuts siguen SUCCESS en código+tests previos 82826e... (39197558507); el cambio actual es sólo una prueba en continuity-contract.
+
+**Siguiente paso:** reproducir si valores no persistibles (función/símbolo/ciclo) pueden atravesar mission admission y producir un error no estructurado o CAS innecesario. No modificar el helper global sin caso reproducible y análisis de compatibilidad.
