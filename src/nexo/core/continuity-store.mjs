@@ -36,7 +36,14 @@ async function acquireLock(fsModule, filePath) {
   while (true) {
     try {
       await fsModule.mkdir(lockPath);
-      await fsModule.writeFile(path.join(lockPath, "owner.json"), JSON.stringify(owner), "utf8");
+      try {
+        await fsModule.writeFile(path.join(lockPath, "owner.json"), JSON.stringify(owner), "utf8");
+      } catch (error) {
+        // This process created the lock directory; remove its incomplete lock
+        // before propagating owner-record creation failure.
+        await fsModule.rm(lockPath, { recursive: true, force: true }).catch(() => {});
+        throw error;
+      }
       return async () => {
         const current = await readLockOwner(fsModule, lockPath);
         if (current?.token === token) await fsModule.rm(lockPath, { recursive: true, force: true });
