@@ -1,0 +1,30 @@
+name: Nexo M0 — canonical mission status projection
+
+on:
+  push:
+    branches: [ncs-clean-architecture]
+    paths:
+      - "src/nexo/application/continuity-queries.mjs"
+      - "src/nexo/core/continuity-operations.mjs"
+      - "src/nexo/core/continuity-store.mjs"
+      - "tests/nexo/entrypoint.test.mjs"
+      - ".github/workflows/nexo-m0-mission-status.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mission-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Run independent Nexo entrypoint regression
+        run: node tests/nexo/entrypoint.test.mjs
