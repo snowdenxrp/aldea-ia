@@ -94,7 +94,11 @@ const fsWithOwnerWriteFailure = {
   }
 };
 const ownerFailureStore = createNexoContinuityStore({ filePath: ownerFailurePath, fsModule: fsWithOwnerWriteFailure });
-await assert.rejects(() => ownerFailureStore.initialize(emptySnapshot), /simulated lock owner record failure/);
+assert.deepEqual(
+  await ownerFailureStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED" },
+  "Continuity must normalize lock owner-record failures at its store boundary"
+);
 await assert.rejects(() => fs.access(ownerFailurePath + ".lock"), error => error?.code === "ENOENT");
 
 // Initialization must reconcile a lost response against the exact persisted envelope.
