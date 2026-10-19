@@ -1147,3 +1147,10 @@ La inspección de la entrada real confirma por qué no se debe improvisar un ver
 - El error crudo del adapter ya no sale en el objeto de resultado de aplicación. El CLI continúa emitiendo solo los campos permitidos.
 - CI SUCCESS en SHA `7f4f80f44912ac93f59b65977f728b95dc6fab2e`: [Chronicle 39181497303](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497303), [continuity/restart 39181497305](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497305), [semantic validation 39181497592](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497592), [outcome/restart 39181497309](https://github.com/snowdenxrp/aldea-ia/actions/runs/39181497309).
 - M0 INCOMPLETO; sin retries automáticos, sin acciones adicionales, sin cutover.
+
+
+## M0 — contrato formal de resultados de aplicación
+
+Documento: [NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md](BUILD/NCS_M0_APPLICATION_RESULT_CONTRACT_2026-10-19.md).
+
+La matriz de resultados quedó consolidada en un contrato de aplicación: distingue `blocked`, `conflict`, `unknown`, `observed` y `completed`; define campos booleanos/tri-state y prohíbe convertir un commit potencialmente persistido en `false`. El contrato se valida con la matriz de crash cuts y la suite de Chronicle/continuidad. M0 INCOMPLETO; solo Chronicle habilitado.
