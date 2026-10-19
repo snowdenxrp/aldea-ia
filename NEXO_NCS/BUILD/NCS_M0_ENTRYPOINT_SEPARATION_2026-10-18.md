@@ -92,3 +92,9 @@ The initialization flags are opt-in and should only be used when creating genuin
 - Two concurrent calls against absent continuity/Chronicle stores with explicit initialization opt-in may leave one caller blocked, but they cannot dispatch the append twice. An explicit retry converges to one Chronicle entry, and the next replay does not change either file.
 - CI SUCCESS on SHA `7f4c69ef8003515c53d761677185f4668c05d5a0`: [39180909793](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909793), [39180909802](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909802), [39180909892](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909892), [39180909760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180909760).
 - This does not claim atomic initialization across the two stores. No automatic retry, queue, or second dispatch is introduced.
+
+
+## Application input contract — validated (2026-10-19)
+
+- Direct application-service tests reject a blank required store path and a non-boolean initialization flag before any store access, returning `blocked / NEXO_CHRONICLE_SESSION_INPUT_INVALID` with no dispatch.
+- CI SUCCESS on SHA `e8abe56f791e8460be6ae71abe723a3907bd13aa`: [39180992024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180992024), [39180991951](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991951), [39180991860](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991860), [39180991827](https://github.com/snowdenxrp/aldea-ia/actions/runs/39180991827).
