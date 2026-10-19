@@ -1813,3 +1813,6 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Regresión:** `tests/nexo/chronicle-store.test.mjs`, commit [3a29ac361b54](https://github.com/snowdenxrp/aldea-ia/commit/3a29ac361b54d92d8dcbc965149c2c093c8ef43a). Simula una mutación competidora después del rename: la entrada solicitada permanece presente, pero el documento ya no coincide con el candidato; el resultado debe ser `unknown`, no éxito.
 - **Validación:** los commits y archivos se publicaron en `ncs-clean-architecture`; no se ha ejecutado localmente ni se ha observado CI asociado a estos SHA. **CI PENDING.**
 - **Alcance:** endurece la clasificación de resultados ambiguos; no establece causalidad externa ni autorización del propietario. `authorization: NOT_EVALUATED`; efectos protegidos STOP; M0 INCOMPLETO.
+
+
+- **Corrección del fixture de regresión:** el archivo de prueba se releyó tras publicarse y se detectó que el JSON simulado terminaba con los caracteres literales `\\n`, no con un salto de línea. Se corrigió a un salto de línea real en el commit [f888a1005f38](https://github.com/snowdenxrp/aldea-ia/commit/f888a1005f389e3aeaae8872bd9258b5cdc5fcdd). La prueba sigue pendiente de ejecución/CI; no atribuirle PASS.
