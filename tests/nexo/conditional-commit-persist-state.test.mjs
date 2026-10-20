@@ -107,6 +107,44 @@ try {
   );
   assert.equal(persistCallsForUnsafeRevision, 0);
 
+  // Unknown persistence outcomes must never be promoted to COMMITTED.
+  const failingPersistence = createPersistStateConditionalCommit({
+    persistState: async () => {
+      const error = new Error("simulated storage failure");
+      error.code = "EIO";
+      throw error;
+    },
+    statePath,
+    clock: () => 1234567893000
+  });
+  const failed = await failingPersistence.commit({
+    state: applyState(initial),
+    expectedRevision: initial.stateRevision + 1
+  });
+  assert.equal(failed.status, COMMIT.UNKNOWN);
+  assert.equal(failed.errorCode, "EIO");
+
+  const unclassifiedPersistence = createPersistStateConditionalCommit({
+    persistState: async () => { throw {}; },
+    statePath,
+    clock: () => 1234567894000
+  });
+  const unclassified = await unclassifiedPersistence.commit({
+    state: applyState(initial),
+    expectedRevision: initial.stateRevision + 1
+  });
+  assert.equal(unclassified.status, COMMIT.UNKNOWN);
+  assert.equal(unclassified.errorCode, "PERSISTENCE_UNKNOWN");
+
+  const missingCandidateState = createPersistStateConditionalCommit({
+    persistState: async () => { throw new Error("must not be called"); },
+    statePath
+  });
+  await assert.rejects(
+    () => missingCandidateState.commit({ expectedRevision: initial.stateRevision }),
+    /candidate state is required/
+  );
+
   console.log("NEXO STEP 3C real persistState integration tests: PASS");
 } finally {
   await fs.rm(tempDir, { recursive: true, force: true });
