@@ -1,3 +1,20 @@
+## CHECKPOINT ACTUALIZADO — validación del grafo de misión persistido (2026-10-20)
+
+**Misión activa: M0. Este bloque es la continuidad inmediata más reciente.**
+
+- Cerrado el límite de confianza del recibo PREPARED como decisión de alcance en el checkpoint anterior; no reabrir ni añadir protecciones cosméticas al adaptador del mismo proceso.
+- Nuevo hallazgo reproducible: la validación del snapshot no aplicaba al grafo persistido la misma disciplina de dependencias que la admisión de misión. Dependencias no-array, referencias colgantes y ciclos podían pasar la validación estructural; una dependencia no-array podía fallar después durante reconstrucción.
+- Fix en `src/nexo/core/continuity-contract.mjs`: los pasos persistidos requieren id/acción válidos y únicos; `dependsOn` debe ser array denso de referencias existentes, únicas y no autorreferentes; los ciclos se rechazan. Error conservador: `NEXO_MEMORY_SCHEMA_UNKNOWN`.
+- Regresiones en `tests/nexo/continuity-contract.test.mjs`: no-array, referencia ausente y ciclo. Fixture de `tests/nexo/repair-session.test.mjs` actualizado para que el prerrequisito exista y permanezca `planned`; así el test verifica el gate de dependencias sin usar un snapshot malformado.
+- Commits: test inicial `43f981735843bcf544a9943cdfec695e9ac8e95b`; validación de dependencias `e450890ca304105d489519dc840367df808dd679`; cierre de ciclo `1d7c6cc997f4d3d5fb567a11a8a4cf5eae3c8eb2`; fixture válido `4dc34fb045ff47457ca6476a07d3b5f3d7550469`.
+- Red/green: run integrado [39366069315](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366069315) detectó la dependencia no-array no rechazada; [39366159595](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366159595) detectó que todavía no se rechazaban ciclos; [39366172190](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366172190) y crash-cut [39366172230](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366172230) expusieron el fixture legacy con referencia colgante. No borrar estos fallos históricos.
+- **CI SUCCESS en SHA exacto `4dc34fb045ff47457ca6476a07d3b5f3d7550469`:** suite completa `npm test` [39366255710](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255710); aceptación integrada M0 [39366255751](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255751); repair/crash cuts [39366255728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255728); STEP 4 [39366255732](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255732); STEP 5 [39366255760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255760). Todos los pasos inspeccionados SUCCESS.
+- STATUS actualizado en commit documental `e5e9fa5526a4d9b0565f0993876f938e928dcbb1`; comprobar CI del HEAD documental final antes de atribuirle ejecución propia.
+- Siguiente acción: continuar desde la siguiente brecha reproducible de coherencia de misión/reconstrucción en código y contratos. No repetir este arreglo, no reabrir el límite PREPARED ni las familias generales de raíz. El bloqueo independiente de raíz sigue registrado y no habilita efectos protegidos.
+- Estado constitucional: **M0 INCOMPLETO; authorization NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.**
+
+---
+
 ## CHECKPOINT ACTUALIZADO — límite de confianza PREPARED conciliado (2026-10-20)
 
 **Este bloque prevalece para la continuidad inmediata. Misión: M0.**
