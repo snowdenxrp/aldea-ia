@@ -1,3 +1,15 @@
+## ACTUALIZACIÓN — cinco regresiones de frontera del store pasan CI (2026-10-19)
+
+- Test modificado: `tests/nexo/continuity-store.test.mjs`, commit [`9c56d35ff84c961d3d6bb85a89201fb2ed27c172`](https://github.com/snowdenxrp/aldea-ia/commit/9c56d35ff84c961d3d6bb85a89201fb2ed27c172), blob `b05212f399c506b09f099c3cfafadaf5f842d0cf`.
+- Cinco escenarios añadidos: fallo pre-reemplazo con revisión anterior intacta; rename aplicado y respuesta perdida; estado canónico ilegible durante recuperación ⇒ UNKNOWN; error EACCES de adquisición para caracterizar diferencia initialize/commitIfCurrent; release not_owned después de persistencia confirmada.
+- CI verificado: [run 39356584277](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356584277), job `tests`, paso `Run tests`, SUCCESS para SHA exacto `9c56d35ff84c961d3d6bb85a89201fb2ed27c172`; `npm test` completó correctamente.
+- Matriz de regresiones actualizada en commit documental `ba9b7e8123c6f575e1c8fec4cedfe9f0776f72a5`. STATUS actualizado en commit `7df22955dc81159e03696112c5e7fcc523d30901`.
+- Runtime no se modificó. La API mixta de adquisición del lock queda caracterizada mediante test; no se ha decidido que sea el diseño final.
+- Próximo trabajo: inspeccionar específicamente fallo de lectura del envelope dentro de `commitIfCurrent()` y cruzar excepciones con callers restantes. No normalizar por estética. No introducir BUSY/timeouts/recovery automática ni borrar locks ajenos.
+- Estado: M0 INCOMPLETO; authorization NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — cruce de crash-cut tests
 
 - Matriz refinada en `NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md`, commit documental `39f105bdd09be39523cd796ad3e58d9a77216044`.
