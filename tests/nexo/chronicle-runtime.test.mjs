@@ -144,6 +144,62 @@ const invalidInitializationType = await runNexoChronicleAppend({
 assert.equal(invalidInitializationType.status, "blocked");
 assert.equal(invalidInitializationType.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
 
+// Application-boundary timeout from Chronicle initialization preserves phase evidence.
+const appChronicleTimeoutRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-app-chronicle-timeout-"));
+try {
+  const continuityPath = path.join(appChronicleTimeoutRoot, "continuity.json");
+  const chroniclePath = path.join(appChronicleTimeoutRoot, "chronicle.json");
+  const snapshot = {
+    schema: "NEXO_OPERATIONAL_CONTINUITY", schemaVersion: 1,
+    missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: []
+  };
+  assert.equal((await createNexoContinuityStore({ filePath: continuityPath }).initialize(snapshot)).status, "committed");
+  const chronicleLock = chroniclePath + ".lock";
+  await fs.mkdir(chronicleLock);
+  await fs.writeFile(path.join(chronicleLock, "owner.json"), JSON.stringify({
+    pid: process.pid, token: "application-timeout-owner"
+  }), "utf8");
+  const result = await runNexoChronicleAppend({
+    continuityPath, chroniclePath, missionId: "app-timeout", stepId: "step-1",
+    content: "must not initialize", initializeChronicle: true, lockWaitMs: 20
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT");
+  assert.equal(result.phase, "lock_acquisition");
+  assert.equal(result.writeStarted, false);
+  assert.equal(result.dispatchAttempted, false);
+  assert.equal(result.redispatchAuthorized, false);
+  await fs.rm(chronicleLock, { recursive: true, force: true });
+} finally {
+  await fs.rm(appChronicleTimeoutRoot, { recursive: true, force: true });
+}
+
+// Timeout while bootstrapping missing Continuity must survive the service's thrown-error boundary.
+const appContinuityTimeoutRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-app-continuity-timeout-"));
+try {
+  const continuityPath = path.join(appContinuityTimeoutRoot, "continuity.json");
+  const chroniclePath = path.join(appContinuityTimeoutRoot, "chronicle.json");
+  assert.equal((await createNexoChronicleStore({ filePath: chroniclePath }).initialize()).status, "committed");
+  const continuityLock = continuityPath + ".lock";
+  await fs.mkdir(continuityLock);
+  await fs.writeFile(path.join(continuityLock, "owner.json"), JSON.stringify({
+    pid: process.pid, token: "application-timeout-owner"
+  }), "utf8");
+  const result = await runNexoChronicleAppend({
+    continuityPath, chroniclePath, missionId: "app-timeout-continuity", stepId: "step-1",
+    content: "must not initialize", initializeContinuity: true, lockWaitMs: 20
+  });
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
+  assert.equal(result.phase, "lock_acquisition");
+  assert.equal(result.writeStarted, false);
+  assert.equal(result.dispatchAttempted, false);
+  assert.equal(result.redispatchAuthorized, false);
+  await fs.rm(continuityLock, { recursive: true, force: true });
+} finally {
+  await fs.rm(appContinuityTimeoutRoot, { recursive: true, force: true });
+}
+
 const lostMissionAdmissionResponse = await recordNexoMissionSafely({
   owner: {
     recordMission: async () => {
