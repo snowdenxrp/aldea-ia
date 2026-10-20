@@ -715,6 +715,25 @@ assert.throws(
 );
 const reconstructedCoreMission = reconstructNexoMissionFromSnapshot(operationalSnapshot, "core-mission");
 assert.equal(reconstructedCoreMission.steps[0].status, "completed", "late replay must not regress a verified completed step");
+
+// Terminal journal records can outlive their mission plan under bounded retention.
+// A known terminal record for a pruned historical mission must not block an unrelated retained mission.
+const prunedMissionTerminalSnapshot = structuredClone(operationalSnapshot);
+prunedMissionTerminalSnapshot.effectJournal.push({
+  idempotencyKey: "pruned-old-mission:step-1",
+  missionId: "pruned-old-mission",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "old-agent",
+  status: "settled_observed"
+});
+const reconstructedWithPrunedTerminal = reconstructNexoMissionFromSnapshot(
+  prunedMissionTerminalSnapshot, "core-mission"
+);
+assert.equal(reconstructedWithPrunedTerminal.steps[0].status, "completed",
+  "a terminal journal record for a pruned historical mission must not block an unrelated retained mission");
+assert.equal(reconstructedWithPrunedTerminal.status, "awaiting_verification");
+
 const conflictingOutcomeSnapshot = structuredClone(operationalSnapshot);
 conflictingOutcomeSnapshot.attempts.push({
   missionId: "core-mission", stepId: "step-1", action: "local_analysis",
