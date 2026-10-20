@@ -1,3 +1,13 @@
+## M0 — identidad discordante en intentos terminales (2026-10-20)
+
+- Segunda regresión del límite de reconstrucción: una finalización válida podía ocultar otro registro `completed` para el mismo paso con acción/objetivo distintos.
+- Runtime: `61520dbdf5c0a0693a500838b7c93b167e9222a8` bloquea la misión con `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`, incertidumbre `outcome_operation_context_mismatch`, y no redispatch.
+- Test: `876e1924292bd8c301b7e050531be9ded79ce290`, añade snapshot adversarial que combina evidencia válida y reclamo terminal con identidad discordante.
+- Validación: esta integración no expuso workflow runs/checks de push para SHA recientes. Ambos casos codificados, CI **NO VERIFICADO**; no declarar PASS.
+- M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — contradicción entre resultados terminales persistidos (2026-10-20)
 
 - Detectado caso concreto: dos intentos `completed` para misma misión/paso con identidad coincidente y evidencia marcada verificada pero evidencia distinta; reconstrucción anterior seleccionaba el primero por orden.
