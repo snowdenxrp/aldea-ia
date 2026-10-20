@@ -46,7 +46,27 @@ async function acquireLock(fsModule, filePath) {
       }
       return async () => {
         const current = await readLockOwner(fsModule, lockPath);
-        if (current?.token === token) await fsModule.rm(lockPath, { recursive: true, force: true });
+        if (current?.token !== token) return { status: "not_owned" };
+        try {
+          await fsModule.rm(lockPath, { recursive: true, force: true });
+          return { status: "released" };
+        } catch (firstError) {
+          // A transient cleanup failure must not erase the already-determined
+          // persistence result. Retry cleanup once, and expose the recovery.
+          try {
+            await fsModule.rm(lockPath, { recursive: true, force: true });
+            return {
+              status: "released_after_retry",
+              initialCode: firstError?.code ?? "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED"
+            };
+          } catch (secondError) {
+            return {
+              status: "failed",
+              code: secondError?.code ?? "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+              initialCode: firstError?.code ?? "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED"
+            };
+          }
+        }
       };
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
@@ -144,7 +164,10 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
         code: error?.code ?? "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED"
       };
     }
+    let result;
+    let lockRelease;
     try {
+      result = await (async () => {
       try {
         await fsModule.access(filePath);
         return { status: "conflict", code: "NEXO_CONTINUITY_STORE_ALREADY_EXISTS" };
@@ -179,9 +202,15 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
         }
         return { status: "unknown", code: "NEXO_CONTINUITY_STORE_INITIALIZE_OUTCOME_UNKNOWN" };
       }
+      })();
     } finally {
-      await releaseLock();
+      lockRelease = await releaseLock();
     }
+    if (lockRelease?.status === "failed" || lockRelease?.status === "not_owned") {
+      return { ...result, lockRelease };
+    }
+    if (lockRelease?.status === "released_after_retry") return { ...result, lockRelease };
+    return result;
   }
 
   async function commitIfCurrent(expectedRevision, candidate) {
@@ -200,7 +229,10 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
       }
       throw error;
     }
+    let result;
+    let lockRelease;
     try {
+      result = await (async () => {
       let current;
       try { current = await readEnvelope(fsModule, filePath); }
       catch (error) { return { status: "unknown", code: error?.code ?? "NEXO_CONTINUITY_STORE_READ_FAILED" }; }
@@ -237,9 +269,15 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
         } catch {}
         return { status: "unknown", code: "NEXO_CONTINUITY_STORE_COMMIT_OUTCOME_UNKNOWN" };
       }
+      })();
     } finally {
-      await releaseLock();
+      lockRelease = await releaseLock();
     }
+    if (lockRelease?.status === "failed" || lockRelease?.status === "not_owned") {
+      return { ...result, lockRelease };
+    }
+    if (lockRelease?.status === "released_after_retry") return { ...result, lockRelease };
+    return result;
   }
 
   return Object.freeze({ loadCurrent, initialize, commitIfCurrent });
