@@ -53,3 +53,24 @@ Esta revisión no demuestra fsync/durabilidad ante pérdida de energía, anti-ro
 No hubo cambios de runtime/tests ni nuevas ejecuciones CI en esta revisión documental.
 
 **M0 continúa INCOMPLETO.** `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## Addendum posterior — runtime actualizó el contrato de deadline (2026-10-20)
+
+Esta revisión original precede a una implementación posterior. La recomendación de mantener espera sin límite describe el estado del 2026-10-19 y **no debe tratarse como semántica vigente**.
+
+Evidencia actual observada en `ncs-clean-architecture`:
+
+- `src/nexo/core/lock-deadline.mjs`, blob `60f80eeb5f213fff539f5e4224a387898899d668`: presupuesto predeterminado de 2.000 ms, deadline monotónico local al proceso.
+- `src/nexo/core/continuity-store.mjs`, blob `9b2bf50c26a76826f40f6761e07c1537db284262`: adquisición limitada; el timeout retorna `failed / NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT`, con `phase: lock_acquisition` y `writeStarted: false`.
+- `src/nexo/core/chronicle-store.mjs`, blob `924742e0a999fb0291dafcc67c5f0b250548339b`: deadline equivalente con código de Chronicle separado.
+- `src/nexo/application/chronicle-append.mjs`, blob `ccb09c6874b9173963811073150c87b75f53bf2f`: comparte un único deadline entre ambos stores y las mutaciones anidadas. Las pruebas de `tests/nexo/chronicle-runtime.test.mjs`, blob `cb2c2397bba3dd11a1a15a81cca65ca498e385f6`, cubren la preservación del timeout en el límite público.
+- La prueba cross-process en `tests/nexo/continuity-store.test.mjs`, blob `f50382fc7d57bacd43dcc888812ceb1bf7fdce76`, elimina el lock antes de vencer el presupuesto por defecto; las pruebas explícitas de timeout usan `lockWaitMs: 25`. Se corrigió el comentario/mensaje que afirmaba que no existía resultado de adquisición acotado en commit `9bd69669208db5bbb7d4d06bce3d304590cd7d44`.
+
+La política vigente ya no es “esperar sin límite”; es “esperar cooperativamente hasta un deadline monotónico y fallar cerradamente si no se adquiere el lock”. Esto **no** interrumpe una llamada de filesystem que nunca retorna y no autoriza reclamación automática de locks stale.
+
+### Puerta que sigue abierta
+
+No rediseñar el deadline ni agregar otro estado de contención. Hacer sólo una revisión de callers actuales: para cada llamada a `initialize()`/`commitIfCurrent()` y a los métodos de owner que las envuelven, registrar si el caller trata el timeout como fallo/bloqueo/UNKNOWN, si excepciones OS no-path quedan capturadas, y si alguna rama podría permitir dispatch o redispatch tras fallo de persistencia. La asimetría de error entre `initialize()` y `commitIfCurrent()` sigue siendo observable; no uniformarla sin contraejemplo concreto.
+
+Validación de suite existente: [run 39431631088](https://github.com/snowdenxrp/aldea-ia/actions/runs/39431631088) SUCCESS en SHA `cd9c02f1596225a419a1512a7ea9b55a4953e71e`, antes del cambio de comentario del test. El commit `9bd6966` requiere CI propio; no inferir PASS a partir de un ancestro.
