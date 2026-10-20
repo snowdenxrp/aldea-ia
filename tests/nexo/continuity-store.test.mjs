@@ -367,6 +367,160 @@ await assert.rejects(
 );
 await fs.rm(persistentReleasePath + ".lock", { recursive: true, force: true });
 
+
+/* Conditional-commit write failure classification.
+ * Keep these injections at the store boundary: caller-level crash-cut tests
+ * do not exercise writeEnvelope()'s rename/re-read branch directly.
+ */
+const conditionalFailureDir = path.join(directory, "conditional-commit-write-failure");
+await fs.mkdir(conditionalFailureDir);
+const conditionalFailurePath = path.join(conditionalFailureDir, "continuity.json");
+const conditionalFailureBase = createNexoContinuityStore({ filePath: conditionalFailurePath });
+assert.equal((await conditionalFailureBase.initialize(emptySnapshot)).status, "committed");
+const conditionalBefore = await fs.readFile(conditionalFailurePath, "utf8");
+const fsWithConditionalRenameFailure = {
+  ...fs,
+  rename: async () => { throw Object.assign(new Error("simulated rename failure before replacement"), { code: "EIO" }); }
+};
+const conditionalFailureStore = createNexoContinuityStore({
+  filePath: conditionalFailurePath,
+  fsModule: fsWithConditionalRenameFailure
+});
+assert.deepEqual(
+  await conditionalFailureStore.commitIfCurrent(0, candidateA),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_WRITE_FAILED" },
+  "a failed conditional rename with the previous canonical revision still readable is a confirmed write failure"
+);
+assert.equal(await fs.readFile(conditionalFailurePath, "utf8"), conditionalBefore,
+  "a confirmed pre-replacement failure leaves the canonical bytes unchanged");
+
+const conditionalLostResponseDir = path.join(directory, "conditional-commit-lost-response");
+await fs.mkdir(conditionalLostResponseDir);
+const conditionalLostResponsePath = path.join(conditionalLostResponseDir, "continuity.json");
+const conditionalLostResponseBase = createNexoContinuityStore({ filePath: conditionalLostResponsePath });
+assert.equal((await conditionalLostResponseBase.initialize(emptySnapshot)).status, "committed");
+let loseConditionalCommitResponse = true;
+const fsWithLostConditionalCommitResponse = {
+  ...fs,
+  rename: async (from, to) => {
+    await fs.rename(from, to);
+    if (loseConditionalCommitResponse) {
+      loseConditionalCommitResponse = false;
+      throw Object.assign(new Error("simulated response lost after conditional rename"), { code: "EIO" });
+    }
+  }
+};
+const conditionalLostResponseStore = createNexoContinuityStore({
+  filePath: conditionalLostResponsePath,
+  fsModule: fsWithLostConditionalCommitResponse
+});
+assert.deepEqual(
+  await conditionalLostResponseStore.commitIfCurrent(0, candidateA),
+  { status: "committed", storeRevision: 1, snapshot: candidateA },
+  "a lost rename response is committed only when the canonical envelope exactly matches the candidate"
+);
+const conditionalLostResponseObserved = await conditionalLostResponseBase.loadCurrent();
+assert.equal(conditionalLostResponseObserved.storeRevision, 1);
+assert.deepEqual(conditionalLostResponseObserved.snapshot, candidateA);
+
+const conditionalUnknownDir = path.join(directory, "conditional-commit-outcome-unknown");
+await fs.mkdir(conditionalUnknownDir);
+const conditionalUnknownPath = path.join(conditionalUnknownDir, "continuity.json");
+const conditionalUnknownBase = createNexoContinuityStore({ filePath: conditionalUnknownPath });
+assert.equal((await conditionalUnknownBase.initialize(emptySnapshot)).status, "committed");
+let failRecoveryRead = false;
+const fsWithUnknownConditionalOutcome = {
+  ...fs,
+  readFile: async (target, ...args) => {
+    if (failRecoveryRead && String(target) === conditionalUnknownPath) {
+      failRecoveryRead = false;
+      throw Object.assign(new Error("simulated canonical re-read failure"), { code: "EIO" });
+    }
+    return fs.readFile(target, ...args);
+  },
+  rename: async () => {
+    failRecoveryRead = true;
+    throw Object.assign(new Error("simulated write failure with unreadable recovery state"), { code: "EIO" });
+  }
+};
+const conditionalUnknownStore = createNexoContinuityStore({
+  filePath: conditionalUnknownPath,
+  fsModule: fsWithUnknownConditionalOutcome
+});
+assert.deepEqual(
+  await conditionalUnknownStore.commitIfCurrent(0, candidateA),
+  { status: "unknown", code: "NEXO_CONTINUITY_STORE_COMMIT_OUTCOME_UNKNOWN" },
+  "a write failure followed by an unreadable canonical state must remain UNKNOWN"
+);
+const conditionalUnknownObserved = await conditionalUnknownBase.loadCurrent();
+assert.equal(conditionalUnknownObserved.storeRevision, 0,
+  "an independent read shows this injected pre-replacement failure left the old envelope intact");
+assert.deepEqual(conditionalUnknownObserved.snapshot, emptySnapshot);
+
+/* Characterize the intentionally mixed public lock-acquisition behavior. */
+const lockAcquireErrorDir = path.join(directory, "lock-acquisition-error");
+await fs.mkdir(lockAcquireErrorDir);
+const lockAcquireErrorPath = path.join(lockAcquireErrorDir, "continuity.json");
+const fsWithLockAcquireError = {
+  ...fs,
+  mkdir: async (target, ...args) => {
+    if (String(target) === lockAcquireErrorPath + ".lock") {
+      throw Object.assign(new Error("simulated lock acquisition permission error"), { code: "EACCES" });
+    }
+    return fs.mkdir(target, ...args);
+  }
+};
+const lockAcquireErrorStore = createNexoContinuityStore({
+  filePath: lockAcquireErrorPath,
+  fsModule: fsWithLockAcquireError
+});
+assert.deepEqual(
+  await lockAcquireErrorStore.initialize(emptySnapshot),
+  { status: "failed", code: "EACCES" },
+  "initialize currently normalizes a non-path lock-acquisition error to a structured failed result"
+);
+await assert.rejects(
+  () => lockAcquireErrorStore.commitIfCurrent(0, emptySnapshot),
+  error => error?.code === "EACCES",
+  "commitIfCurrent currently propagates the same non-path lock-acquisition error"
+);
+await assert.rejects(
+  () => fs.access(lockAcquireErrorPath),
+  error => error?.code === "ENOENT",
+  "lock acquisition failure must not create the canonical envelope"
+);
+
+const notOwnedLockDir = path.join(directory, "lock-not-owned-after-commit");
+await fs.mkdir(notOwnedLockDir);
+const notOwnedLockPath = path.join(notOwnedLockDir, "continuity.json");
+const notOwnedBase = createNexoContinuityStore({ filePath: notOwnedLockPath });
+assert.equal((await notOwnedBase.initialize(emptySnapshot)).status, "committed");
+const fsWithNotOwnedRelease = {
+  ...fs,
+  readFile: async (target, ...args) => {
+    if (String(target) === notOwnedLockPath + ".lock/owner.json") {
+      return JSON.stringify({ pid: process.pid, token: "different-owner", createdAt: Date.now() });
+    }
+    return fs.readFile(target, ...args);
+  }
+};
+const notOwnedStore = createNexoContinuityStore({ filePath: notOwnedLockPath, fsModule: fsWithNotOwnedRelease });
+assert.deepEqual(
+  await notOwnedStore.commitIfCurrent(0, candidateA),
+  {
+    status: "failed",
+    code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+    persistenceStatus: "committed",
+    storeRevision: 1,
+    lockRelease: { status: "not_owned" }
+  },
+  "a not-owned lock release must block successful handoff while preserving confirmed persistence"
+);
+const notOwnedObserved = await notOwnedBase.loadCurrent();
+assert.equal(notOwnedObserved.storeRevision, 1);
+assert.deepEqual(notOwnedObserved.snapshot, candidateA);
+await fs.rm(notOwnedLockPath + ".lock", { recursive: true, force: true });
+
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
   () => store.loadCurrent(),
