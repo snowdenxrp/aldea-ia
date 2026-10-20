@@ -432,10 +432,15 @@ await assert.doesNotReject(
   () => fs.access(persistentReleasePath + ".lock"),
   "persistent cleanup failure leaves a lock requiring explicit recovery"
 );
-await assert.rejects(
-  () => persistentReleaseStore.commitIfCurrent(0, candidateA),
-  error => error?.code === "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
-  "the same process must fail closed instead of waiting indefinitely behind a lock it failed to release"
+assert.deepEqual(
+  await persistentReleaseStore.commitIfCurrent(0, candidateA),
+  {
+    status: "failed",
+    code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+    phase: "lock_acquisition",
+    writeStarted: false
+  },
+  "the same process must return a structured fail-closed result instead of waiting behind a lock it failed to release"
 );
 await fs.rm(persistentReleasePath + ".lock", { recursive: true, force: true });
 
