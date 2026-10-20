@@ -7,29 +7,23 @@ Objetivo permanente: **avanzar M0 con cambios concretos, evidencia y CI exacto; 
 ## Instrucción inicial para el próximo chat
 Retoma este documento y `NEXO_NCS/STATUS.md` como puertas de entrada. Lee primero la sección “Prioridad inmediata”. No vuelvas a investigar desde cero AuthorityGate, raíz bootstrap, locks, Chronicle persistence ni los contratos de STEP 7 ya cerrados. No afirmes pruebas ni estado de CI sin consultar el SHA/run aplicable. No cambies runtime sin un contraejemplo concreto y una regresión dirigida.
 
-## Prioridad inmediata — coherencia de mission-status y consumidores
-La decisión aceptada el 2026-10-19 `NEXO_NCS/DECISIONS/NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md` (blob `dfb647d07cb28178b3c8a3a8289d8209943db8fd`) manda explícitamente:
-- M0 continúa sin reinicio.
-- El alcance inicial es una llave raíz y un solo dispositivo.
-- El tipo/modelo, provisión y verificación física de la llave están pendientes.
-- No se investiga de nuevo en general la familia de raíces ni se implementa bootstrap por ahora.
-- El siguiente trabajo inmediato es coherencia entre misión persistida, estados de pasos y reconstrucción/proyección.
+## Estado de continuidad actualizado — 2026-10-20
 
-La revisión `NEXO_NCS/BUILD/NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026-10-20.md` (blob `4531fc68c0d2ccf28c6b063675ad6cad9cd90d18`) documenta el cierre de la regresión selectiva de mission-status en SHA `f07840b2222f55124e200c2866789834fa6904dd`:
-- Mission status projection: [run 39429700787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700787) SUCCESS.
-- Deterministic persistence: [run 39429700840](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700840) SUCCESS.
-- M0 integrated acceptance: [run 39429700796](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700796) SUCCESS.
-- Chronicle native vertical: [run 39429700814](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700814) SUCCESS.
-- El intento anterior que bloqueaba cualquier discrepancia falló en [run 39429434598](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429434598), SHA `b2e446fbba0ca4291dc0fdc3a9a1e008d56f0352`; no contar ese run como PASS. La regla correcta distingue `planned → awaiting_verification` legítimo del sobreclaim persistido `completed` que la reconstrucción no respalda.
-- La consulta es read-only; no “arregla” el snapshot. La discrepancia terminal se presenta como bloqueada con diagnóstico acotado y sin payload/pasos privados.
+### Cerrado: revisión de consumidores de mission-status
+El informe nuevo `NEXO_NCS/BUILD/NCS_M0_MISSION_STATUS_CONSUMER_REVIEW_2026-10-20.md` está en la rama y documenta la revisión estática. La CLI `scripts/nexo.mjs` trata sólo `status === "reconstructed"` como éxito; el resto sale con código 1. `src/nexo/application/index.mjs` sólo reexporta la API. No se encontró un consumidor que ignore el bloqueo en el alcance inspeccionado. No cambiar runtime por esta hipótesis sin evidencia nueva.
 
-### Próxima tarea exacta
-Revisar los consumidores actuales de `loadNexoMissionStatus` y la CLI `scripts/nexo.mjs` con evidencia de fuente:
-1. Identificar cada consumidor directo/indirecto y qué campos lee.
-2. Comprobar si todos respetan `statusDiscrepancy` y el resultado `blocked`, o si algún consumidor convierte una proyección discrepante en estado utilizable.
-3. Inspeccionar estados persistidos de pasos y resultados/attempts sólo si hay un contraejemplo concreto; no hacer una auditoría genérica sin hipótesis.
-4. Si hay un camino que ignora la discrepancia, formular el mínimo cambio y una regresión de API/CLI que reproduzca el fallo. Mantener consultas read-only; no convertirlas en reparación implícita.
-5. Ejecutar workflow dedicado y regresiones M0 relevantes tras los cambios y registrar SHA exacto + URLs de run. Si no hay defecto, documentar evidencia y pasar al siguiente bloqueo M0 concreto.
+### Cerrado: corrección de expectativa en prueba de lock
+El runtime normaliza errores de adquisición en `initialize()` a `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED`. El test commit inicial `9fad44406e3c19bac2a20ecb830cf29f6758dae7` falló porque esperaba todavía `EACCES`; el log mostró una expectativa de test obsoleta, no evidencia de que el runtime estuviera devolviendo el código equivocado.
+- La expectativa se corrigió en `b133c8c392739a0912f7b0466650a25962ead267`; sus cinco checks publicados (tests, semantic-validation, outcome-classification, M0 contracts y mission-admission-continuity) fueron SUCCESS.
+- Se añadieron pruebas de adquisición tardía/timeout en `844afaac8e5c15138a3a4bf70fb417954923e770` y `d65aaffb6f90e73aea23ff4e9bab8abd8c2cbec5`; en `d65aaff` los checks focales pasaron, pero el job amplio `tests` fue CANCELLED. No llamar a ese job PASS.
+- La suite de persistencia determinista terminó SUCCESS en SHA exacto `cd9c02f1596225a419a1512a7ea9b55a4953e71e`, run [39431631088](https://github.com/snowdenxrp/aldea-ia/actions/runs/39431631088). `NEXO_NCS/STATUS.md` fue sincronizado con esta evidencia en commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0`.
+
+### Prioridad inmediata — contención del continuity store, reutilizando el diseño existente
+Usar `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md` (blob `8d4c8d35037eb5e6629930899f27856a13e28588`) como base. No repetir auditoría de lock ni reabrir políticas de stale-lock.
+1. Hacer sólo una inspección dirigida de la API pública/callers actuales para contestar lo que el diseño dejó abierto: qué callers reciben `initialize()`/ `commitIfCurrent()`, si exigen resultado estructurado o permiten excepciones, si hay una política superior de deadline/cancelación ya implementada y si algún error podría causar redispatch.
+2. No cambiar la espera sin límite ni introducir `BUSY`, timeout, cancelación, lease o reclamación automática en esta inspección.
+3. Si el caller inventory no demuestra que el contrato actual rompe una garantía de M0, documentar la limitación de progreso y mantener la semántica actual. Si aparece un contraejemplo concreto, especificar contrato y regresión antes de tocar runtime.
+4. Después, volver a la frontera M0 de autorización sólo cuando esta puerta de progreso/contención quede resuelta o formalmente marcada como requisito abierto.
 
 ## Trabajo documental hecho en esta sesión
 ### A. Inventario del claim Chronicle append
@@ -52,7 +46,7 @@ Archivo `NEXO_NCS/BUILD/NCS_M0_CURRENT_AUTHORITY_BOUNDARIES_2026-10-20.md`, blob
 Archivo `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10-20.md`, blob `d346e809985c0337f3f68d9262e673c9f56a7185`.
 - La fuente normativa conceptual es el propietario humano expresado en la Constitución.
 - La decisión aceptada limita primera fase a llave raíz única/dispositivo único; selección y provisión física no están implementadas.
-- Esta nota quedó expresamente subordinada a la prioridad inmediata de coherencia mission-status. No continuar ahora una búsqueda general de raíces ni inspeccionar el objeto constitucional como sustituto de M0.
+- La prioridad inmediata de coherencia mission-status quedó revisada y documentada. No continuar ahora una búsqueda general de raíces ni inspeccionar el objeto constitucional como sustituto de M0.
 
 ### D. Handoff anterior ampliado
 `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_OUTCOME_RECONSTRUCTION.md`, blob verificado `a7184ad39e2ce62b6d49aa267bd3e037519c0507`. Contiene historial anterior de M0, evidencia de CI y los documentos AuthorityGate/Chronicle.
@@ -77,12 +71,13 @@ Archivo `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10
 - Mantener la decisión de una llave/dispositivo inicial; no escoger hardware/proveedor sin diseño técnico comprobable.
 
 ## Estado global al checkpoint
+- Último checkpoint documental: commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0` actualizó `NEXO_NCS/STATUS.md`; commit `cd9c02f1596225a419a1512a7ea9b55a4953e71e` añadió el informe de consumidores. Confirmar HEAD antes de asumir que no hay commits posteriores.
 - M0: `INCOMPLETO`.
 - `authorization: NOT_EVALUATED`.
 - Efectos protegidos: `STOP`.
 - Raíz legítima en runtime: `PENDING/UNKNOWN`.
 - No se cambió runtime ni se ejecutó CI durante esta sesión documental.
-- `NEXO_NCS/STATUS.md` se consultó (blob en lectura `59a4f9778c56f237f45cad8927758171aa989665`, longitud 390,174) pero no se actualizó en este checkpoint. No afirmar que está sincronizado con los documentos recientes.
+- `NEXO_NCS/STATUS.md` sí fue actualizado en commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0` para registrar los logs fallidos por expectativa obsoleta, el arreglo y la suite de persistencia determinista SUCCESS en SHA `cd9c02f1596225a419a1512a7ea9b55a4953e71e`.
 
 ## Primera instrucción para continuar
-Empieza por inspeccionar `src/nexo/application/continuity-queries.mjs`, `scripts/nexo.mjs`, pruebas de entrypoint y todos los consumidores encontrados por búsqueda de símbolo `loadNexoMissionStatus`. Produce primero una tabla corta consumidor → campo leído → tratamiento de `blocked/statusDiscrepancy` → prueba. Cambia código sólo si aparece un camino real que ignore el bloqueo; después añade regresión y verifica CI en el SHA nuevo.
+No repetir la revisión de `mission-status`. Sigue el punto 1 de la prioridad de contención: inventario dirigido de la API pública/callers actuales según el documento `NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`. Antes de modificar código, producir una tabla caller → método → tratamiento de resultado/excepción → deadline/cancelación existente → riesgo de redispatch. No cambiar semántica de lock sin contraejemplo y contrato explícito.
