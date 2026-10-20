@@ -71,3 +71,17 @@ The next valid architecture step is to make that requirement explicit and then d
 - `authorization: NOT_EVALUATED`.
 - Protected effects: `STOP`.
 - Legitimate root: `PENDING/UNKNOWN`.
+
+
+## 5.1 Proposed contract direction (recommendation, not yet adopted)
+
+For Nexo's interactive runtime, I recommend **bounded lock waiting**, but not an arbitrary constant buried inside either store:
+
+1. The application/runtime entry point owns a single lock-acquisition budget and passes the same absolute monotonic deadline through all nested Continuity/Chronicle mutations in that request. Do not reset the budget on each retry or nested store call.
+2. The deadline applies only to waiting to acquire the lock. It must not abort an in-flight rename/write after ownership is obtained, because that could make persistence ambiguous. Filesystem calls themselves are not proven interruptible by this design.
+3. Expiry before lock ownership must produce an explicit, structured domain result stating acquisition timed out and the protected write phase did not start. Use store-domain codes for Continuity and Chronicle; do not map it to stale-lock, generic IO failure, or persistence UNKNOWN.
+4. Acquisition errors should stop escaping as unclassified raw OS exceptions from public store mutations. Preserve known internal recovery codes and distinguish timeout, stale recovery required, lock state unknown, and parent path unavailable. This is a deliberate API contract change requiring caller/test updates, not a formatting cleanup.
+5. A timeout after a prior PREPARED or external dispatch does not authorize retry/redispatch. The caller must reload canonical state and reconcile the existing operation. A timeout while trying to persist PREPARED must prevent dispatch because PREPARED was not confirmed.
+6. Tests must cover lock held by a live process past deadline, release just before/after deadline, stale/unknown locks, two same-revision writers, acquisition timeout before PREPARED, timeout during later settlement/outcome persistence, and confirmation that no timeout path creates a second dispatch. Preserve existing commit/lock-release ambiguity receipts.
+
+This is the recommended architecture, **not an implementation decision or a claim of bounded runtime today**. The budget value and whether bounded response is a first-version requirement remain open; neither may be guessed in a code patch. Until the requirement is accepted, current behavior stays unchanged and documented.
