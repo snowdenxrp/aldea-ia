@@ -61,3 +61,32 @@ No son equivalentes. Un hash puede identificar bytes; no prueba por sí mismo qu
 ## Instrucción para la siguiente sesión
 
 Presentar al propietario el borrador y esta lista en su orden. No convertir ninguna opción en decisión automáticamente. Si el propietario sólo resuelve algunos puntos, registrar el resto OPEN y continuar únicamente con trabajo que no dependa de esas decisiones. Una vez que el contenido constitucional esté estable y revisado, retomar el contrato de reconocimiento de la llave raíz dentro del scope inicial ya aceptado.
+
+
+## Cruce directo con el borrador — guía de lectura sin decisiones inferidas (2026-10-20)
+
+Este cruce se añade para evitar que el propietario tenga que buscar cada decisión a lo largo del documento. No introduce reglas nuevas ni sustituye la revisión íntegra.
+
+| Punto de revisión | Sección del borrador | Qué ya expresa el texto | Qué sigue sin decidirse |
+|---|---|---|---|
+| Identidad canónica/renderizado | Encabezado; §7.1; §8.1; §10 | El texto declara que no está congelado y que canonicalización/renderizado deben ser exactos | ID/revisión canónica, bytes y renderizador deterministas, vínculo contenido-presentación |
+| Scope inicial | §2.4; §4.3; §8.2 | La revisión debe declarar scope; el scope no puede ampliarse por el caller | Dominios/transiciones iniciales exactos y exclusiones explícitas |
+| Enmiendas/dual control | §7.1; §8.3 | Dual control para cambios constitucionales se conserva como invariante de diseño | Roles, independencia real, umbral, activación y retiro de la revisión anterior |
+| Currentness/revocación/rollback | §3.4; §8.4 | La validez histórica o la recencia no determinan la Constitución vigente | Dueño del estado canónico y mecanismo exigible de currentness |
+| Recuperación/sucesión | §6.2–§6.3; §8.5–§8.6 | No hay recuperación autoautorizada ni sucesión inferida; la hija no tiene autoridad actual | Mantener fuera del scope inicial la pérdida irrecuperable de la llave única; cualquier régimen futuro requiere decisión propia |
+| Contención de emergencia | §6.4; §8.7 | La contención no puede convertirse en gobierno general | Triggers, poderes permitidos, duración, auditoría y salida |
+| Verificador | §5.3; §8.8 | Deben declararse identidad, dependencias, independencia y limitaciones | Fuente externa de confianza del verificador y evidencia de que el verificador esperado se ejecuta |
+| Sink protegido | §5.1–§5.2; §8.9 | Cada efecto necesita enforcement en el último límite y las ambigüedades no son éxito | Target real, rutas de efecto en scope y evidencia de bypass closure |
+| Base Genesis | §2.1–§2.3; §8.10 | La llave/Constitución no pueden legitimarse a sí mismas | Base preexistente de legitimidad y camino protegido de reconocimiento |
+| Constitución→Policy | §4.1–§4.3; §8.11 | Policy no puede autoautorizarse ni venir legitimada por campos del caller | Integración Core desde un contexto constitucional ya reconocido |
+| Aceptación adversarial | §7.2; §8.12 | PASS requiere evidencia trazable; los ausentes permanecen UNKNOWN | Matriz ligada a la implementación/sink real y CI observado; no declarar tests por estar enumerados |
+
+### Orden recomendado para leer y decidir
+
+1. Leer §§1–6 como principios propuestos para el primer régimen, sin interpretarlos como controles ya implementados.
+2. Leer §7 para entender qué garantías de cambio y evidencia aún faltan.
+3. Leer §8 completa: cada entrada OPEN es una decisión o dependencia, no una autorización implícita.
+4. Leer §9 y distinguir extensiones propuestas de principios recuperados.
+5. Sólo entonces decidir si el texto debe reformularse. La aprobación de una revisión exacta y la autorización de una transición concreta siguen siendo actos separados.
+
+**No se ha marcado ningún punto como ACEPTO/RECHAZO por el propietario.** La tabla es un índice de revisión; no canoniza el texto, no resuelve los OPEN, no crea digest/firma y no autoriza implementación ni commissioning.
