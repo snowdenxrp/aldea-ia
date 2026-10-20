@@ -1,3 +1,15 @@
+## M0 — regresiones de frontera del continuity store añadidas y CI PASS (2026-10-19)
+
+- Se añadieron cinco escenarios a `tests/nexo/continuity-store.test.mjs`: fallo confirmado antes de reemplazo; rename aplicado con respuesta perdida; estado canónico indeterminable después de fallo; caracterización del error de adquisición del lock; liberación `not_owned` con persistencia confirmada.
+- Commit de test: [`9c56d35ff84c961d3d6bb85a89201fb2ed27c172`](https://github.com/snowdenxrp/aldea-ia/commit/9c56d35ff84c961d3d6bb85a89201fb2ed27c172). Blob de test `b05212f399c506b09f099c3cfafadaf5f842d0cf`.
+- CI: [run 39356584277](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356584277), workflow `Nexo — deterministic persistence tests`, job `tests`, paso `Run tests` = SUCCESS en el SHA exacto `9c56d35...`. Ejecutó `npm test`.
+- Matriz actualizada: [NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md), commit documental `ba9b7e8123c6f575e1c8fec4cedfe9f0776f72a5`.
+- Alcance: las regresiones de frontera listadas pasan en la suite. La asimetría de lock ahora está caracterizada, pero no significa que la API mixta esté aprobada como arquitectura final. Runtime sin cambios; no hay afirmación de durabilidad ante pérdida de energía ni de autoridad constitucional.
+- Próximo paso: inspeccionar la lectura fallida del envelope dentro del commit y cruzar la API mixta con callers restantes antes de decidir cualquier cambio de runtime.
+- Estado invariable: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — cobertura crash-cut afinada (2026-10-19)
 
 - Matriz actualizada: [NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md), commit documental `39f105bdd09be39523cd796ad3e58d9a77216044`.
