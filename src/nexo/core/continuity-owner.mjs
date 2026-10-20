@@ -379,6 +379,9 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
       // The outer status remains failed, so this receipt cannot authorize dispatch.
       return { ...committed, prepared: true, preparedCommitted: true, authorization: "NOT_EVALUATED" };
     }
+    if (committed.status === "unknown" || committed.persistenceStatus === "unknown") {
+      return { ...committed, prepared: false, preparedCommitted: "UNKNOWN", authorization: "NOT_EVALUATED" };
+    }
     return { ...committed, prepared: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
@@ -721,14 +724,29 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
         code: error?.code ?? "NEXO_EFFECT_OBSERVATION_COMMIT_OUTCOME_UNKNOWN",
         storeRevision: expectedRevision,
         preparedCommitted: false,
-        observationCommitted: false,
-        journalSettled: false,
+        observationCommitted: "UNKNOWN",
+        journalSettled: "UNKNOWN",
         uncertainty: "effect_observation_commit_outcome_unknown",
         authorization: "NOT_EVALUATED"
       };
     }
     if (committed.status !== "committed") {
-      return { ...committed, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+      const observationCommitted = committed.persistenceStatus === "committed";
+      const observationUnknown = committed.status === "unknown" || committed.persistenceStatus === "unknown";
+      return {
+        ...committed,
+        preparedCommitted: false,
+        observationCommitted: observationCommitted ? true : observationUnknown ? "UNKNOWN" : false,
+        journalSettled: observationCommitted && chronicleApplied ? true : observationUnknown ? "UNKNOWN" : false,
+        ...(observationCommitted ? {
+          observation: observation.status,
+          observedRevision: observation.observedRevision,
+          source: observation.source,
+          causalAttribution: "NOT_ESTABLISHED",
+          redispatchAuthorized: false
+        } : {}),
+        authorization: "NOT_EVALUATED"
+      };
     }
     return {
       ...committed,
