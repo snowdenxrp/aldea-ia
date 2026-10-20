@@ -29,3 +29,13 @@ Añadir pruebas adversariales de reconstrucción sobre snapshots sintéticos con
 ## Estado M0
 
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No se ejecutaron pruebas ni se declara CI nuevo por este informe.
+
+
+## Seguimiento con regresión dirigida — 2026-10-20
+
+La revisión estática anterior se afinó con un caso concreto: dos registros `completed` para la misma misión/paso, ambos con identidad coincidente y `evidence.verified === true`, pero con evidencia distinta. Antes, la reconstrucción usaba `find()` y elegía el primero, dependiendo del orden persistido.
+
+- Runtime: commit [ef26ae0512cbe215704b0034de62973961002072](https://github.com/snowdenxrp/aldea-ia/commit/ef26ae0512cbe215704b0034de62973961002072). La reconstrucción ahora detecta evidencia terminal verificada contradictoria y bloquea la misión con `NEXO_OUTCOME_EVIDENCE_CONFLICT`, sin redispatch; no trata la etiqueta de evidencia como autenticación.
+- Regresión: commit [724ad3e800b09d01abef6aacaa9ddd8e1017fd3c](https://github.com/snowdenxrp/aldea-ia/commit/724ad3e800b09d01abef6aacaa9ddd8e1017fd3c), en `tests/nexo/continuity-contract.test.mjs`. Asegura que el caso contradictorio queda bloqueado y no se resuelve por orden del array.
+- Verificación: consulta de checks para el SHA de test devolvió cero estados. Por ahora la regresión está **añadida pero CI NO VERIFICADO**; no declarar PASS hasta obtener run/checks del SHA que contiene runtime y test.
+- El comportamiento de intentos `failed` tardíos después de una finalización verificada sigue cubierto por el contrato existente y no debe bloquearse por sí solo. El nuevo bloqueo es solo para múltiples evidencias terminales verificadas que discrepan.
