@@ -18,12 +18,13 @@ El runtime normaliza errores de adquisición en `initialize()` a `NEXO_CONTINUIT
 - Se añadieron pruebas de adquisición tardía/timeout en `844afaac8e5c15138a3a4bf70fb417954923e770` y `d65aaffb6f90e73aea23ff4e9bab8abd8c2cbec5`; en `d65aaff` los checks focales pasaron, pero el job amplio `tests` fue CANCELLED. No llamar a ese job PASS.
 - La suite de persistencia determinista terminó SUCCESS en SHA exacto `cd9c02f1596225a419a1512a7ea9b55a4953e71e`, run [39431631088](https://github.com/snowdenxrp/aldea-ia/actions/runs/39431631088). `NEXO_NCS/STATUS.md` fue sincronizado con esta evidencia en commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0`.
 
-### Prioridad inmediata — contención del continuity store, reutilizando el diseño existente
-Usar `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md` (blob `8d4c8d35037eb5e6629930899f27856a13e28588`) como base. No repetir auditoría de lock ni reabrir políticas de stale-lock.
-1. Hacer sólo una inspección dirigida de la API pública/callers actuales para contestar lo que el diseño dejó abierto: qué callers reciben `initialize()`/ `commitIfCurrent()`, si exigen resultado estructurado o permiten excepciones, si hay una política superior de deadline/cancelación ya implementada y si algún error podría causar redispatch.
-2. No cambiar la espera sin límite ni introducir `BUSY`, timeout, cancelación, lease o reclamación automática en esta inspección.
-3. Si el caller inventory no demuestra que el contrato actual rompe una garantía de M0, documentar la limitación de progreso y mantener la semántica actual. Si aparece un contraejemplo concreto, especificar contrato y regresión antes de tocar runtime.
-4. Después, volver a la frontera M0 de autorización sólo cuando esta puerta de progreso/contención quede resuelta o formalmente marcada como requisito abierto.
+### Prioridad inmediata — revisar callers contra el deadline que ya está implementado
+Usar `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md` junto con su addendum 2026-10-20. La recomendación histórica de espera ilimitada quedó supersedida por commits `52d200b`, `04a8c5f` y `df28b22`: el store ya tiene deadline monotónico predeterminado de 2.000 ms; Chronicle comparte un único deadline a través de ambos stores y mutaciones anidadas. No repetir la auditoría de stale-lock ni rediseñar timeout.
+1. Completar una inspección dirigida de la API/callers actuales: método llamado, tratamiento de `failed / *_LOCK_ACQUISITION_TIMEOUT`, captura de excepciones OS no-path, resultado UNKNOWN y cualquier condición para dispatch/redispatch.
+2. Reutilizar `src/nexo/application/chronicle-append.mjs` y sus pruebas existentes; `recordNexoMissionSafely()` captura excepciones y devuelve UNKNOWN con `dispatchAttempted: false` y `redispatchAuthorized: false`. Verificar el resto de métodos de owner/orquestación antes de generalizar esta garantía.
+3. La API de store sigue siendo asimétrica: `initialize()` normaliza errores OS de adquisición a resultado `failed`; `commitIfCurrent()` normaliza timeout y errores de ruta, pero puede propagar otros errores OS. No uniformar sin caller real y regresión dirigida.
+4. La prueba de contención cross-process ahora describe correctamente que el lock se libera antes del presupuesto por defecto; comentario corregido en commit `9bd69669208db5bbb7d4d06bce3d304590cd7d44`. El CI de ese cambio debe verificarse en el SHA correspondiente. La suite determinista previa SUCCESS [run 39431631088](https://github.com/snowdenxrp/aldea-ia/actions/runs/39431631088) corresponde a ancestro `cd9c02f`, no al test editado.
+5. Si el inventario no demuestra una violación de M0, documentar el resultado y mantener runtime. Si aparece un contraejemplo concreto, especificar el contrato y la regresión antes de tocar runtime. Después volver a la frontera M0 de autorización sin reabrir investigación general de raíces.
 
 ## Trabajo documental hecho en esta sesión
 ### A. Inventario del claim Chronicle append
@@ -71,7 +72,7 @@ Archivo `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10
 - Mantener la decisión de una llave/dispositivo inicial; no escoger hardware/proveedor sin diseño técnico comprobable.
 
 ## Estado global al checkpoint
-- Último checkpoint documental: commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0` actualizó `NEXO_NCS/STATUS.md`; commit `cd9c02f1596225a419a1512a7ea9b55a4953e71e` añadió el informe de consumidores. Confirmar HEAD antes de asumir que no hay commits posteriores.
+- Últimos commits documentales/test: `9bd69669208db5bbb7d4d06bce3d304590cd7d44` corrige la caracterización cross-process; `313c7c70e79da3e69eb67015eb20d6c34425b129` actualiza STATUS con el deadline real; `da05e50da0c73e65daf8d66266318aeaec298440` agrega addendum a la revisión de contención. `ef9978b44a1b83f0fa1c03b29a9ad7be33580b90` actualiza este handoff. Confirmar HEAD y CI antes de asumir que no hay commits posteriores.
 - M0: `INCOMPLETO`.
 - `authorization: NOT_EVALUATED`.
 - Efectos protegidos: `STOP`.
@@ -80,4 +81,4 @@ Archivo `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10
 - `NEXO_NCS/STATUS.md` sí fue actualizado en commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0` para registrar los logs fallidos por expectativa obsoleta, el arreglo y la suite de persistencia determinista SUCCESS en SHA `cd9c02f1596225a419a1512a7ea9b55a4953e71e`.
 
 ## Primera instrucción para continuar
-No repetir la revisión de `mission-status`. Sigue el punto 1 de la prioridad de contención: inventario dirigido de la API pública/callers actuales según el documento `NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`. Antes de modificar código, producir una tabla caller → método → tratamiento de resultado/excepción → deadline/cancelación existente → riesgo de redispatch. No cambiar semántica de lock sin contraejemplo y contrato explícito.
+No repetir la revisión de `mission-status`. Sigue la prioridad de contención actualizada: inventario dirigido de la API pública/callers frente al deadline monotónico ya implementado. Antes de modificar código, producir una tabla caller → método → tratamiento de timeout/excepción/UNKNOWN → deadline compartido o independiente → riesgo de dispatch/redispatch. No cambiar runtime sin contraejemplo y contrato explícito.
