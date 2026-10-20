@@ -180,6 +180,17 @@ if (result.status !== "committed") process.exitCode = 1;`;
     "Chronicle must preserve the lock when owner identity cannot be established");
   await assert.rejects(() => fs.access(malformedOwnerPath), error => error?.code === "ENOENT",
     "Chronicle must not initialize when lock ownership is unknown");
+  // Syntactically valid JSON with an invalid owner schema is equally UNKNOWN.
+  await fs.writeFile(path.join(malformedOwnerLock, "owner.json"), "42", "utf8");
+  assert.deepEqual(
+    await malformedOwnerStore.initialize(),
+    { status: "blocked", code: "NEXO_CHRONICLE_LOCK_STATE_UNKNOWN" },
+    "Chronicle must reject valid JSON that lacks a positive PID and non-empty token"
+  );
+  await assert.doesNotReject(() => fs.access(malformedOwnerLock),
+    "Chronicle must preserve the lock when its owner schema is invalid");
+  await assert.rejects(() => fs.access(malformedOwnerPath), error => error?.code === "ENOENT",
+    "Chronicle must not initialize under an invalid owner schema");
   await fs.rm(malformedOwnerLock, { recursive: true, force: true });
 
   // A stale lock must fail closed; automatic check-then-remove reclamation is racy.
