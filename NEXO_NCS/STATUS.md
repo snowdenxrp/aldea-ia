@@ -2374,3 +2374,22 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Caso de adquisición tardía documentado: si la llamada retorna después del deadline, no empezar escritura; liberar sólo lock cuya propiedad se demuestre; si la liberación falla, preservar ambos resultados.
 - No se cambió runtime/tests ni se ejecutó CI. Presupuesto inicial recomendado: 2.000 ms configurable, aún no aceptado por el usuario; no fijarlo como constante ni habilitar implementación hasta resolverlo.
 - Estado sigue M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## M0 — deadline monotónico de locks implementado inicialmente (2026-10-20)
+
+- Decisión confirmada por el usuario: **2.000 ms iniciales configurables**. No es una garantía de tiempo de pared; el filesystem puede no retornar a tiempo.
+- Helper nuevo: src/nexo/core/lock-deadline.mjs; performance.now() es el reloj monotónico. El presupuesto por defecto está centralizado, no duplicado por store.
+- Continuity y Chronicle ahora acotan la espera cooperativa de adquisición y devuelven resultados explícitos de timeout con phase:"lock_acquisition" y writeStarted:false. Si el lock se obtiene tras vencer el deadline, no comienza la fase protegida y se conserva el resultado de liberación.
+- La operación compuesta runNexoChronicleAppend comparte un único deadline entre stores y mutaciones anidadas. Fuera de esa frontera, las mutaciones aisladas reciben un presupuesto por llamada.
+- Pruebas añadidas: timeout con lock vivo en Continuity initialize/commitIfCurrent y Chronicle initialize/append, sin alterar el estado canónico.
+- SHA exacto de runtime/tests validado por seis workflows: cf62bd858232a8c0c71f21ace6469c2a62f48448.
+  - [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455204)
+  - [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455208)
+  - [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455212)
+  - [Mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455161)
+  - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455195)
+  - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455201)
+- Evidencia cruda de logs verificada: jobs 118472464797, 118472464632, 118472468527; reportan los tests de Continuity/Chronicle y suite general sin fallos.
+- Siguiente frontera M0: añadir pruebas deterministas de adquisición tardía y fallo de liberación tras adquisición tardía; auditar que todas las entrypoints/callers preservan timeout y no redispatch. No reabrir auditorías cerradas.
+- Estado no cambia: M0 INCOMPLETO; authorization: NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
