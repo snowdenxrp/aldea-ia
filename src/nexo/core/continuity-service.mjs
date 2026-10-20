@@ -1,4 +1,5 @@
 import { createNexoContinuityStore } from "./continuity-store.mjs";
+import { NEXO_DEFAULT_LOCK_WAIT_MS } from "./lock-deadline.mjs";
 import { createNexoContinuityOwner } from "./continuity-owner.mjs";
 import {
   NEXO_CONTINUITY_SCHEMA,
@@ -30,9 +31,11 @@ export async function openNexoContinuityOwner({
   filePath,
   legacyMemory = null,
   allowEmptyInitialization = false,
-  effectVerifiers = {}
+  effectVerifiers = {},
+  lockDeadline = null,
+  lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS
 } = {}) {
-  const store = createNexoContinuityStore({ filePath });
+  const store = createNexoContinuityStore({ filePath, lockDeadline, lockWaitMs });
   let current;
 
   try {
