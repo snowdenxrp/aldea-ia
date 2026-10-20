@@ -87,7 +87,12 @@ async function acquireLock(fsModule, filePath) {
       const current = await readLockOwner(fsModule, lockPath);
       let age;
       try { age = Date.now() - (await fsModule.stat(lockPath)).mtimeMs; }
-      catch { throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN"); }
+      catch (error) {
+        // The owner may have released the lock after mkdir returned EEXIST.
+        // Retry that race; other inspection errors make lock state unknown.
+        if (error?.code === "ENOENT") continue;
+        throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN");
+      }
       const stale = current
         ? age > LOCK_STALE_MS && !processIsAlive(Number(current.pid))
         : age > LOCK_STALE_MS;
