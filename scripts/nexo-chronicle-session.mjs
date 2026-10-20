@@ -68,7 +68,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     dispatchAttempted: result.dispatchAttempted ?? false,
     terminalOutcomeRecorded: result.terminalOutcomeRecorded ?? false,
     redispatchAuthorized: result.redispatchAuthorized ?? false,
-    authorization: result.authorization ?? "NOT_EVALUATED"
+    authorization: result.authorization ?? "NOT_EVALUATED",
+    phase: result.phase ?? null,
+    writeStarted: typeof result.writeStarted === "boolean" ? result.writeStarted : null,
+    lockRelease: result.lockRelease ?? null,
+    lockAcquisitionCode: result.lockAcquisitionCode ?? null
   }));
   if (result.status !== "completed") process.exitCode = 1;
 }
