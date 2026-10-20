@@ -2419,3 +2419,11 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - SHA de código/tests: 12efac26d0948b91c59706612edec7df9e78c4f5. Seis workflows consultados pasaron: M0 integrated acceptance (39376332936), Chronicle native vertical (39376332981), deterministic persistence (39376333167), STEP 5 (39376332991), STEP 4 (39376333035) y repair settlement crash cuts (39376333016). No se afirma un run de mission-admission/restart para este SHA porque no apareció en la consulta.
 - Logs verificados: jobs 118475197653, 118475197877, 118475199164.
 - Próximo paso M0: auditoría final de otros entrypoints/consumidores que construyen stores u owners fuera de runNexoChronicleAppend; comprobar que mutaciones aisladas quedan acotadas y que los resultados no se aplanan ni autorizan redispatch.
+
+
+### Resultado de auditoría de entrypoints (2026-10-20)
+
+- API estable de aplicación: sólo Chronicle append es mutante; su ruta comparte un deadline. Las consultas de Continuity son read-only y el CLI Chronicle delega en la API pública con metadata de timeout preservada.
+- La ruta de reparación separada recibe owner/store inyectados; no es la ruta interactiva Chronicle y el runtime canónico actual bloquea acciones de reparación antes de PREPARED. No activarla como operación interactiva hasta definir y probar un deadline compartido para esa ruta.
+- Conclusión provisional: para el alcance interactivo actualmente soportado, el deadline compuesto está propagado; stores usados individualmente están acotados por mutación. La ruta de reparación inyectada permanece fuera del alcance activo.
+- Próxima frontera M0: revisar si la política de activación de la ruta de reparación debe quedar explícitamente bloqueada o si requiere su propio deadline compartido antes de habilitarse. No tocar otras arquitecturas ni reabrir auditorías cerradas.
