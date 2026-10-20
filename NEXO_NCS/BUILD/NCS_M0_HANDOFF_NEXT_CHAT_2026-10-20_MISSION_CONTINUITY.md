@@ -218,3 +218,14 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - CI del SHA `c0adce68129c6b7bfd78260b761208653fee3054` encontró una tercera assertion heredada que esperaba una excepción para lock-release persistente, cuando el registro local de fallo de liberación hace que la siguiente adquisición retorne ahora `{ status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED", phase: "lock_acquisition", writeStarted: false }`.
 - Corregida en `e7f04397658e405acb478f1fe5ac9b49a55b886d`. No cambiar runtime adicional sólo para conservar un test que codificaba la vieja excepción: ambas operaciones deben compartir el resultado estructurado. Mantener el lock en disco hasta la recuperación explícita; no borrar automáticamente.
 - Los CI de `4e1037dc` y `c0adce68` fallaron por esas expectativas obsoletas. La suite determinista pasó en `c0adce68`, pero los workflows de continuidad/aceptación fallaron en el test del store. El run del SHA final documental todavía debe verificarse; no afirmar PASS hasta revisar resultados exactos.
+
+
+## Nuevo checkpoint M0 — PolicyContext no puede absorber autoridad declarada por caller (2026-10-20)
+
+- Se revisó el bloqueo conocido de integración Constitución→Policy sin reabrir la búsqueda histórica: `createPolicyContext()` en `src/nexo/core/contracts.mjs` proyecta sólo los cinco campos de Policy y no establece una Constitución gobernante autenticada.
+- Se añadió una regresión adversarial en `tests/nexo/protected-transition.test.mjs`, commit `29e97fab41261fdd6505f5e02d8ce4791852e981`: el caller aporta `constitutionRef`, `governingConstitution`, `rootProof` y `authorization: AUTHORIZED`; la prueba exige que no entren al PolicyContext proyectado.
+- CI SUCCESS en el SHA exacto: runs `39446572258`, `39446572376`, `39446574300`, `39446572342`, `39446572371`, `39446572419`. Informe: [NCS_M0_POLICY_CONTEXT_CALLER_AUTHORITY_PROJECTION_REGRESSION_2026-10-20.md](NCS_M0_POLICY_CONTEXT_CALLER_AUTHORITY_PROJECTION_REGRESSION_2026-10-20.md).
+- La prueba sólo preserva la frontera de proyección anti-self-attestation; no demuestra root recognition ni sustituye la integración autenticada que falta. No hubo cambios runtime.
+- El informe y STATUS se actualizaron después del SHA de prueba. Verificar CI del HEAD documental más reciente antes de afirmar que ese HEAD también tiene CI SUCCESS.
+- Próximo trabajo: confirmar la ejecución del HEAD; después, avanzar sólo en brechas técnicas independientes de decisiones constitucionales OPEN. La revisión/aprobación del propietario no puede inferirse de “continúa”.
+- Estado M0: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
