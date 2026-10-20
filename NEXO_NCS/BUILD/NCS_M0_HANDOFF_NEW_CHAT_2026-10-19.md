@@ -1,5 +1,43 @@
 # NCS — HANDOFF COMPLETO PARA CHAT NUEVO (2026-10-19)
 
+## CHECKPOINT FINAL PARA EL SIGUIENTE CHAT — prevalece sobre notas anteriores (2026-10-19)
+
+**Misión única: M0.** No reiniciar investigación; no cambiar a M1 ni STEP 7 como trabajo principal.
+
+### HEAD y estado de evidencia
+- HEAD observado al preparar este checkpoint: `2cf14a2d8b68f441da2c4b76d1170fb319ef9d2f`, mensaje `docs(ncs): extend caller review through dispatch gates`.
+- Ese commit modifica únicamente `NEXO_NCS/BUILD/NCS_M0_CONTINUITY_STORE_CALLER_ERROR_PROPAGATION_REVIEW_2026-10-19.md`; es documental. Los tests y cinco workflows SUCCESS del vector cross-process siguen vinculados a SHA `6f0499142781e24c55d1adf137170323c8d1afbf`, no al HEAD documental.
+- Evidencia CI: persistencia [39347061453](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061453), M0 integrado [39347061416](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061416), admisión/continuidad [39347061419](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061419), STEP 4 [39347061426](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061426), STEP 5 [39347061501](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061501): SUCCESS en el SHA de test indicado. No afirmar que se ejecutó CI nuevo para los commits documentales.
+
+### Resultado más reciente de revisión estática
+- `acquireLock()` puede esperar sin resultado acotado cuando el lock existe y el PID propietario sigue vivo.
+- El test de concurrencia existente depende de la serialización: dos commits con la misma revisión esperada producen un `committed` y un `conflict`. No introducir `BUSY` inmediato sin contrato explícito y pruebas de callers.
+- Se revisaron los cinco call sites ejecutables de `store.commitIfCurrent()` en `continuity-owner.mjs`, el servicio de apertura y rutas superiores en `owner-backed-runtime.mjs`, `chronicle-append.mjs` y `continuity-queries.mjs`.
+- Evidencia positiva de fail-closed en las rutas revisadas: una excepción de `recordPrepared()` produce `unknown`, `preparedCommitted: UNKNOWN` y `dispatchAttempted: false`; fallos de persistencia posteriores al dispatch se traducen en `unknown` con `redispatchAuthorized: false`; fallos de admisión segura bloquean dispatch; errores de consulta quedan `blocked` sin mutación.
+- Importante: **no se observó un bypass de redispatch en las rutas revisadas**. El riesgo de introducir un nuevo resultado `BUSY` o cambiar excepciones por objetos de resultado es contractual: callers que comparan `status` podrían tratarlo distinto. La inspección es estática y parcial, no una prueba exhaustiva de todas las entradas.
+
+### Archivos que el siguiente chat debe leer primero
+1. `NEXO_NCS/STATUS.md` — puerta oficial de entrada; leerlo, pero notar que su checkpoint visible aún antecede a las dos revisiones de contrato/callers.
+2. Este handoff: `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEW_CHAT_2026-10-19.md` — este bloque es el checkpoint más reciente.
+3. `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`.
+4. `NEXO_NCS/BUILD/NCS_M0_CONTINUITY_STORE_CALLER_ERROR_PROPAGATION_REVIEW_2026-10-19.md`.
+5. `NEXO_NCS/BUILD/NCS_M0_LOCK_RELEASE_FAILURE_REVIEW_2026-10-19.md`.
+6. Sólo si se necesita ampliar una ruta concreta: inspeccionar código y tests actuales en la rama; no volver a buscar familias de autoridad ni repetir auditorías cerradas.
+
+### Instrucciones operativas para el siguiente chat
+1. Abrir con el keyword exacto `NCS` y continuar desde este handoff.
+2. Confirmar branch HEAD y que los archivos citados existen; no dar por hecho que un SHA de CI es el HEAD actual.
+3. Continuar el mapa estático de entrypoints/callers de continuidad y de cada resultado de persistencia; centrarse en contrato de error, tratamiento de UNKNOWN y gate de dispatch. No cambiar runtime hasta que el mapa permita definir una política coherente.
+4. No añadir timeout arbitrario, `BUSY`, cancelación, lease, heartbeat, takeover ni eliminación automática de lock. Primero determinar si ya existe un deadline/cancelación de nivel superior y cuáles son los requisitos de progreso; si no existen, documentarlo como requisito abierto.
+5. Si se propone un cambio, describir la semántica pública exacta y diseñar tests para cada caller antes de implementarlo. Preservar: PREPARED confirmado antes de dispatch; UNKNOWN no autoriza redispatch; persistencia y liberación de lock son resultados distintos; lock ajeno no se elimina.
+6. Tras cualquier cambio de runtime/tests, ejecutar CI y registrar SHA exacto → runs → jobs/resultados → interpretación. Después actualizar STATUS y handoff; si sólo cambian docs, decirlo explícitamente.
+7. No reabrir cierres históricos sin un fallo nuevo y reproducible; no exigir PC/compra/instalación; no mezclar Nexo con Lúmina.
+
+### Estado constitucional invariable
+`M0 = INCOMPLETO`; `authorization = NOT_EVALUATED`; efectos protegidos = `STOP`; raíz legítima = `PENDING/UNKNOWN`. La llave física no bloquea el trabajo restante de M0.
+ 
+---
+
 ## ACTUALIZACIÓN — propagación de errores revisada parcialmente (2026-10-19)
 
 Documento: [NCS_M0_CONTINUITY_STORE_CALLER_ERROR_PROPAGATION_REVIEW_2026-10-19.md](NCS_M0_CONTINUITY_STORE_CALLER_ERROR_PROPAGATION_REVIEW_2026-10-19.md), revisión estática sin cambios de runtime/tests.
