@@ -49,3 +49,8 @@ La revisión del nuevo bloque de reconstrucción encontró otro caso en el mismo
 - Regresión: [`876e1924292bd8c301b7e050531be9ded79ce290`](https://github.com/snowdenxrp/aldea-ia/commit/876e1924292bd8c301b7e050531be9ded79ce290) agrega un snapshot adversarial con una finalización válida y otra con acción/objetivo discordantes.
 - Estado de validación: la consulta de workflow runs/checks accesible por esta integración no expuso runs/checks de push para los SHA recientes. Por tanto ambos casos están codificados como regresiones pero **CI sigue NO VERIFICADO**. No declarar PASS ni inferir que las pruebas ejecutaron.
 - Alcance sigue limitado a reconstrucción de outcomes persistidos; no autentica `evidence.source`, no establece raíz/autoridad y no habilita efectos protegidos.
+
+
+## Nota de verificabilidad CI (2026-10-20)
+
+El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workflow_dispatch`, pero las acciones GitHub disponibles en esta sesión no incluyen una operación para despachar un workflow. La acción de consulta de runs disponible está documentada como filtrada a ejecuciones asociadas a pull requests; para los SHA de regresión, el endpoint de estados devolvió `statuses: []`. Por tanto, estos resultados **no prueban que no se haya ejecutado ningún workflow**; solo significan que esta sesión no pudo obtener evidencia CI atribuible a los SHA exactos. La validación de las regresiones permanece `CI_NOT_VERIFIED`. Próxima acción de verificación: ejecutar manualmente el workflow determinista desde GitHub Actions con la rama `ncs-clean-architecture` actual y conservar el run ID, el SHA exacto ejecutado y el resultado del job `tests` antes de declarar PASS.
