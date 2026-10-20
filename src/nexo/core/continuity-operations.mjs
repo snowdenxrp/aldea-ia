@@ -269,6 +269,19 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     const stepAttempts = attempts.filter(item => item?.stepId === step.id);
     const matchesStepIdentity = item => item?.action === step.action &&
       isDeepStrictEqual(item?.target ?? null, step.target ?? null);
+    const mismatchedCompletedAttempt = stepAttempts.find(item =>
+      item?.status === "completed" && !matchesStepIdentity(item)
+    );
+    if (mismatchedCompletedAttempt) {
+      step.status = "blocked";
+      step.blockReason = {
+        code: "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH",
+        next: "verify_mission_goal_without_redispatch"
+      };
+      mission.status = "blocked";
+      mission.uncertainty = "outcome_operation_context_mismatch";
+      return mission;
+    }
     const stepEffects = source.effectJournal.filter(item =>
       item?.missionId === missionId && item?.stepId === step.id
     );
