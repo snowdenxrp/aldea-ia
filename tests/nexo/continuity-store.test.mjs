@@ -548,6 +548,38 @@ assert.equal(notOwnedObserved.storeRevision, 1);
 assert.deepEqual(notOwnedObserved.snapshot, candidateA);
 await fs.rm(notOwnedLockPath + ".lock", { recursive: true, force: true });
 
+const lockStatFailureDir = path.join(directory, "lock-stat-failure");
+await fs.mkdir(lockStatFailureDir);
+const lockStatFailurePath = path.join(lockStatFailureDir, "continuity.json");
+const lockStatFailureLock = lockStatFailurePath + ".lock";
+await fs.mkdir(lockStatFailureLock);
+await fs.writeFile(path.join(lockStatFailureLock, "owner.json"), JSON.stringify({
+  pid: process.pid, token: "known-owner", createdAt: Date.now()
+}), "utf8");
+const fsWithLockStatFailure = {
+  ...fs,
+  stat: async (target, ...args) => {
+    if (String(target) === lockStatFailureLock) {
+      throw Object.assign(new Error("simulated inability to inspect lock age"), { code: "EACCES" });
+    }
+    return fs.stat(target, ...args);
+  }
+};
+const lockStatFailureStore = createNexoContinuityStore({
+  filePath: lockStatFailurePath,
+  fsModule: fsWithLockStatFailure
+});
+assert.deepEqual(
+  await lockStatFailureStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN" },
+  "if lock age cannot be inspected, acquisition must fail closed instead of retrying indefinitely"
+);
+await assert.doesNotReject(() => fs.access(lockStatFailureLock),
+  "uncertain lock must be preserved for explicit recovery");
+await assert.rejects(() => fs.access(lockStatFailurePath), error => error?.code === "ENOENT",
+  "lock inspection uncertainty must not initialize the canonical store");
+await fs.rm(lockStatFailureLock, { recursive: true, force: true });
+
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
   () => store.loadCurrent(),
