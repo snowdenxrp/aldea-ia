@@ -24,3 +24,17 @@ Alcance: revisión estática focal de `src/nexo/core/continuity-contract.mjs`, `
 
 ## Estado global
 M0 sigue `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Este análisis no autentica autoridad ni habilita efectos.
+
+## Resolución posterior — contrato endurecido (2026-10-20)
+
+Tras comprobar que el importador de memoria histórica pasa por la misma proyección y validación estructural, se aplicó un cambio mínimo fail-closed:
+- Cada registro persistido de misión debe ser un objeto con `missionId` no vacío, sin `:`, y `steps` array.
+- La identidad debe cumplir la misma restricción de delimitador que la admisión nueva.
+- No se transforma silenciosamente un registro malformado en misión vacía.
+- Se añadieron regresiones para identidad ausente, `steps` ausente, ID con delimitador y reconstrucción con argumento `undefined` frente a registro sin identidad.
+
+Cambios:
+- Runtime contract commit `9fbb96a7d0949d1441fd280f5f6d82101606af11`.
+- Test commit `04d54049f19938685bd877653d23c9d69e775145`.
+
+Limitación: no hay ejecución de CI visible para el SHA de tests en las consultas de estado/workflow disponibles. El cambio está guardado, pero la suite queda **NO VERIFICADA** hasta que exista run o ejecución reproducible. Si aparece incompatibilidad real con una fixture legacy, no se debe relajar el contrato sin definir explícitamente la forma/versionado legacy y sus equivalencias semánticas.
