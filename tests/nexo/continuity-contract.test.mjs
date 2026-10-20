@@ -55,6 +55,28 @@ assert.throws(
   "persisted duplicate mission identities must fail closed before reconstruction"
 );
 
+function assertPersistedMissionGraphRejected(steps, label) {
+  const malformed = structuredClone(validMemory);
+  malformed.nexo.missions[0].steps = steps;
+  assert.throws(
+    () => assertNexoContinuityMemoryShape(malformed),
+    error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN",
+    label
+  );
+}
+assertPersistedMissionGraphRejected(
+  [{ id: "step-a", action: "repair_agent_state", target: { agentId: "alex" }, status: "planned", dependsOn: "step-b" }],
+  "persisted non-array dependencies must be rejected before reconstruction"
+);
+assertPersistedMissionGraphRejected(
+  [{ id: "step-a", action: "repair_agent_state", target: { agentId: "alex" }, status: "planned", dependsOn: ["missing-step"] }],
+  "persisted dangling dependency references must be rejected before reconstruction"
+);
+assertPersistedMissionGraphRejected([
+  { id: "step-a", action: "repair_agent_state", target: { agentId: "alex" }, status: "planned", dependsOn: ["step-b"] },
+  { id: "step-b", action: "local_analysis", target: "alex", status: "planned", dependsOn: ["step-a"] }
+], "persisted cyclic dependency graphs must be rejected before reconstruction");
+
 
 let getterCalls = 0;
 const accessorMemory = {};
