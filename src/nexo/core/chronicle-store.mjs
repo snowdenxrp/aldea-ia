@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { NEXO_DEFAULT_LOCK_WAIT_MS, resolveNexoLockDeadline, remainingNexoLockWaitMs, nexoLockDeadlineExpired } from "./lock-deadline.mjs";
 
 export const NEXO_CHRONICLE_SCHEMA = "NEXO_CHRONICLE";
 export const NEXO_CHRONICLE_VERSION = 1;
@@ -48,10 +49,11 @@ async function readLockOwner(fsModule, lock) {
   catch { return null; }
 }
 
-async function acquireLock(fsModule, filePath) {
+async function acquireLock(fsModule, filePath, deadlineAt, timeoutCode) {
   const lock = lockPath(filePath);
   const token = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   while (true) {
+    if (nexoLockDeadlineExpired(deadlineAt)) throw fail(timeoutCode);
     try {
       await fsModule.mkdir(lock);
       try {
@@ -62,7 +64,7 @@ async function acquireLock(fsModule, filePath) {
         await fsModule.rm(lock, { recursive: true, force: true }).catch(() => {});
         throw error;
       }
-      return async () => {
+      const release = async () => {
         const owner = await readLockOwner(fsModule, lock);
         if (owner?.token !== token) return { status: "not_owned" };
         try {
@@ -75,6 +77,12 @@ async function acquireLock(fsModule, filePath) {
           };
         }
       };
+      if (nexoLockDeadlineExpired(deadlineAt)) {
+        const timeout = fail(timeoutCode);
+        timeout.lockRelease = await release();
+        throw timeout;
+      }
+      return release;
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
       let owner = await readLockOwner(fsModule, lock);
@@ -109,7 +117,9 @@ async function acquireLock(fsModule, filePath) {
         // explicit operator recovery rather than deleting a possibly new lock.
         throw fail("NEXO_CHRONICLE_LOCK_STALE_RECOVERY_REQUIRED");
       }
-      await new Promise(resolve => setTimeout(resolve, LOCK_RETRY_MS));
+      const remainingMs = remainingNexoLockWaitMs(deadlineAt);
+      if (remainingMs <= 0) throw fail(timeoutCode);
+      await new Promise(resolve => setTimeout(resolve, Math.min(LOCK_RETRY_MS, remainingMs)));
     }
   }
 }
@@ -145,8 +155,11 @@ async function writeDocument(fsModule, filePath, document) {
  * trusted local directory and prevent untrusted processes from mutating paths or
  * lock entries. Symlink/path-attack resistance is not claimed.
  */
-export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
+export function createNexoChronicleStore({ filePath, fsModule = fs, lockDeadline = null, lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS } = {}) {
   if (typeof filePath !== "string" || !filePath.trim()) throw fail("NEXO_CHRONICLE_PATH_REQUIRED");
+  if (lockDeadline == null && (typeof lockWaitMs !== "number" || !Number.isFinite(lockWaitMs) || lockWaitMs <= 0)) {
+    throw fail("NEXO_LOCK_WAIT_BUDGET_INVALID");
+  }
 
   async function loadCurrent() {
     const document = await readDocument(fsModule, filePath);
@@ -154,10 +167,14 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
   }
 
   async function initialize() {
+    const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
     let release;
     try {
-      release = await acquireLock(fsModule, filePath);
+      release = await acquireLock(fsModule, filePath, deadlineAt, "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT");
     } catch (error) {
+      if (error?.code === "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT") {
+        return { status: "blocked", code: error.code, phase: "lock_acquisition", writeStarted: false, ...(error.lockRelease ? { lockRelease: error.lockRelease } : {}) };
+      }
       // Lock acquisition happens before any Chronicle initialization write.
       // Normalize filesystem failures at the store boundary instead of leaking
       // raw OS codes through the public Nexo application result.
@@ -211,10 +228,14 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
         typeof content !== "string" || !content.trim()) {
       return { status: "blocked", code: "NEXO_CHRONICLE_ENTRY_INVALID" };
     }
+    const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
     let release;
     try {
-      release = await acquireLock(fsModule, filePath);
+      release = await acquireLock(fsModule, filePath, deadlineAt, "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT");
     } catch (error) {
+      if (error?.code === "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT") {
+        return { status: "blocked", code: error.code, phase: "lock_acquisition", writeStarted: false, ...(error.lockRelease ? { lockRelease: error.lockRelease } : {}) };
+      }
       if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "blocked", code: "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE" };
       }
