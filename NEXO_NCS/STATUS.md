@@ -2393,3 +2393,18 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Evidencia cruda de logs verificada: jobs 118472464797, 118472464632, 118472468527; reportan los tests de Continuity/Chronicle y suite general sin fallos.
 - Siguiente frontera M0: añadir pruebas deterministas de adquisición tardía y fallo de liberación tras adquisición tardía; auditar que todas las entrypoints/callers preservan timeout y no redispatch. No reabrir auditorías cerradas.
 - Estado no cambia: M0 INCOMPLETO; authorization: NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
+
+
+### M0 — adquisición tardía y fallo de liberación probados (2026-10-20)
+
+- Se añadieron pruebas deterministas para ambos stores: la llamada de adquisición resuelve después del deadline; no se inicia escritura, se libera sólo el lock propio y el archivo canónico permanece ausente.
+- Se añadieron pruebas donde falla la liberación del lock adquirido tarde; el resultado conserva timeout + fallo de liberación, sin fingir que el lock se liberó.
+- Código/tests validados en SHA exacto: 15415580788c4e823f03371b566e29106268b67d.
+- Seis workflows en verde en ese SHA:
+  - [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730407)
+  - [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730358)
+  - [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730428)
+  - [Mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730355)
+  - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730370)
+  - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730363)
+- Siguiente tarea M0: auditoría dirigida de callers/entrypoints para preservar el timeout como causa diferenciada y confirmar no-redispatch tras PREPARED o posible dispatch. No reabrir auditorías cerradas.
