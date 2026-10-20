@@ -1,3 +1,13 @@
+## M0 — checkpoint contractual: matriz pública de errores del continuity store (2026-10-19)
+
+- Nuevo documento de diseño: [NCS_M0_CONTINUITY_STORE_PUBLIC_ERROR_CONTRACT_MATRIX_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_PUBLIC_ERROR_CONTRACT_MATRIX_2026-10-19.md), commit documental `3df670e5e5ebb1d2a78b23a5331c7a78b6134085`.
+- Define la asimetría observada entre `initialize()` y `commitIfCurrent()`, el significado mínimo de persistencia/contención/UNKNOWN y las invariantes que los callers deben conservar. No cambia runtime ni tests.
+- Siguiente paso: completar inventario concreto de callers y sus ramas de excepción/resultado antes de decidir si uniformar la API. No introducir `BUSY`, timeout, cancelación ni recuperación automática por anticipado.
+- No hubo CI nuevo para este cambio documental. No atribuir los runs previos a este commit.
+- Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — checkpoint más reciente: lock cross-process caracterizado (2026-10-19)
 
 - HEAD documental actual observado: `26a93b5b62d3cacc0cb471395a4c6fec92c4e780`.
