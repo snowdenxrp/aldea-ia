@@ -17,12 +17,17 @@ La política de retención recién verificada conserva los estados desconocidos 
 - Se preservó el código público existente `NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN` tras una ejecución inicial detectar que una variante nueva `NEXO_EFFECT_JOURNAL_STATE_UNKNOWN` contradecía el test de migración existente. Esa ejecución fallida se registra como red/green, no como PASS.
 - Test-code alignment: `a132d878129d5db2916da453bd21531a567f9537`.
 
-## Verificación
+## Verificación CI final — 2026-10-20
 
-- CI del SHA `7708a44a03cba3d7ccf4bf062c96de1c9338832c`:
-  - Persistencia determinista [run 39463648068](https://github.com/snowdenxrp/aldea-ia/actions/runs/39463648068) SUCCESS.
-  - La admisión/continuidad [run 39463648167](https://github.com/snowdenxrp/aldea-ia/actions/runs/39463648167), crash cuts [run 39463648078](https://github.com/snowdenxrp/aldea-ia/actions/runs/39463648078) y aceptación integrada [run 39463648222](https://github.com/snowdenxrp/aldea-ia/actions/runs/39463648222) fallaron por el desacuerdo del código de error, no por una aserción de la nueva semántica de bloqueo.
-- El SHA `a132d878129d5db2916da453bd21531a567f9537` tiene nuevos workflows en cola/en ejecución al redactar este documento. **No declarar la corrección validada hasta revisar jobs finales SUCCESS en el SHA exacto**, incluyendo el job `tests` de persistencia determinista y las suites focales relevantes.
+En SHA exacto `dd30b70e1204750fc09fac683f30b6e7e129bfe6`, tras corregir el código de error y alinear las regresiones con el contrato legacy, los cinco workflows siguientes terminaron `completed / success`:
+
+- Persistencia determinista, job `tests`: [run 39464052770](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052770).
+- Admisión acotada y continuidad de reinicio, job `mission-admission-continuity`: [run 39464053282](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053282).
+- Aceptación integrada M0, job `Nexo M0 contracts on one SHA`: [run 39464053079](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053079).
+- STEP 4 semantic validation: [run 39464052881](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052881).
+- STEP 5 outcome classification: [run 39464052959](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052959).
+
+Los fallos anteriores se conservan como evidencia red/green y no se presentan como éxitos. La corrección actual queda verificada en el SHA exacto indicado, dentro del alcance de esos cinco workflows.
 
 ## Límites
 
