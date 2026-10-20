@@ -259,9 +259,15 @@ await fs.mkdir(staleLockDir);
 await fs.writeFile(path.join(staleLockDir, "owner.json"), JSON.stringify({ pid: 2147483647, token: "dead-owner" }), "utf8");
 const staleTime = new Date(Date.now() - 120_000);
 await fs.utimes(staleLockDir, staleTime, staleTime);
-await assert.rejects(
-  () => staleStore.commitIfCurrent(0, emptySnapshot),
-  error => error?.code === "NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED"
+assert.deepEqual(
+  await staleStore.commitIfCurrent(0, emptySnapshot),
+  {
+    status: "failed",
+    code: "NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED",
+    phase: "lock_acquisition",
+    writeStarted: false
+  },
+  "stale lock recovery must remain fail-closed under the shared structured result contract"
 );
 assert.equal((await staleStore.loadCurrent()).storeRevision, 0);
 assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
@@ -572,10 +578,15 @@ assert.deepEqual(
   { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED" },
   "initialize normalizes a non-path lock-acquisition error to the Nexo store contract"
 );
-await assert.rejects(
-  () => lockAcquireErrorStore.commitIfCurrent(0, emptySnapshot),
-  error => error?.code === "EACCES",
-  "commitIfCurrent currently propagates the same non-path lock-acquisition error"
+assert.deepEqual(
+  await lockAcquireErrorStore.commitIfCurrent(0, emptySnapshot),
+  {
+    status: "failed",
+    code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED",
+    phase: "lock_acquisition",
+    writeStarted: false
+  },
+  "commitIfCurrent normalizes a non-path lock-acquisition error to the Nexo store contract"
 );
 await assert.rejects(
   () => fs.access(lockAcquireErrorPath),
