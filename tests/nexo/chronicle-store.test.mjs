@@ -219,6 +219,44 @@ if (result.status !== "committed") process.exitCode = 1;`;
     "Chronicle must not delete a lock whose owner token does not match");
   await fs.rm(notOwnedReleaseLock, { recursive: true, force: true });
 
+  // Persistent cleanup failure must preserve the commit fact but block the public handoff.
+  const releaseFailurePath = path.join(root, "release-failure.json");
+  const releaseFailureBase = createNexoChronicleStore({ filePath: releaseFailurePath });
+  assert.equal((await releaseFailureBase.initialize()).status, "committed");
+  const releaseFailureLock = String(releaseFailurePath) + ".lock";
+  const fsWithReleaseFailure = {
+    ...fs,
+    rm: async (target, ...args) => {
+      if (String(target) === releaseFailureLock) {
+        throw Object.assign(new Error("simulated lock cleanup permission error"), { code: "EACCES" });
+      }
+      return fs.rm(target, ...args);
+    }
+  };
+  const releaseFailureStore = createNexoChronicleStore({
+    filePath: releaseFailurePath,
+    fsModule: fsWithReleaseFailure
+  });
+  assert.deepEqual(
+    await releaseFailureStore.append({ operationKey: "release-failure:1", content: "persist despite cleanup failure" }),
+    {
+      status: "blocked",
+      code: "NEXO_CHRONICLE_LOCK_RELEASE_FAILED",
+      persistenceStatus: "committed",
+      storeRevision: 1,
+      lockRelease: { status: "failed", code: "EACCES" }
+    },
+    "a lock cleanup error must not be mistaken for successful transaction handoff"
+  );
+  const releaseFailureObserved = await releaseFailureBase.loadCurrent();
+  assert.equal(releaseFailureObserved.storeRevision, 1);
+  assert.deepEqual(releaseFailureObserved.entries, [
+    { operationKey: "release-failure:1", content: "persist despite cleanup failure" }
+  ]);
+  await assert.doesNotReject(() => fs.access(releaseFailureLock),
+    "failed cleanup leaves the lock for explicit recovery");
+  await fs.rm(releaseFailureLock, { recursive: true, force: true });
+
   // Simulate a lost writer response after the atomic rename already changed persisted state.
   const lostPath = path.join(root, "lost-response.json");
   let loseNextRename = false;
