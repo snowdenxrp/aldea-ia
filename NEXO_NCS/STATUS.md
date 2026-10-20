@@ -1,3 +1,13 @@
+## M0 — contradicción entre resultados terminales persistidos (2026-10-20)
+
+- Detectado caso concreto: dos intentos `completed` para misma misión/paso con identidad coincidente y evidencia marcada verificada pero evidencia distinta; reconstrucción anterior seleccionaba el primero por orden.
+- Runtime: `ef26ae0512cbe215704b0034de62973961002072` bloquea la reconstrucción con `NEXO_OUTCOME_EVIDENCE_CONFLICT` cuando discrepan varias evidencias terminales verificadas.
+- Test: `724ad3e800b09d01abef6aacaa9ddd8e1017fd3c`, `tests/nexo/continuity-contract.test.mjs`, cubre el caso. Los intentos fallidos tardíos por sí solos no se bloquean; ya existe contrato de no regresión de finalización verificada.
+- Checks del SHA de test consultados: cero estados. Regresión añadida, **CI NO VERIFICADO**. No afirmar PASS.
+- M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — frontera de intentos persistidos y reconstrucción (2026-10-20)
 
 - Informe: [NCS_M0_PERSISTED_ATTEMPT_RECONSTRUCTION_BOUNDARY_2026-10-20.md](BUILD/NCS_M0_PERSISTED_ATTEMPT_RECONSTRUCTION_BOUNDARY_2026-10-20.md).
