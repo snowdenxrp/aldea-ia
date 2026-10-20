@@ -150,3 +150,12 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - [CI run 39441463747](https://github.com/snowdenxrp/aldea-ia/actions/runs/39441463747) terminó `completed / success` en el SHA exacto; el paso `Run tests` fue SUCCESS.
 - Informe: [NCS_M0_MEMORY_SNAPSHOT_DETACHMENT_REGRESSION_2026-10-20.md](NCS_M0_MEMORY_SNAPSHOT_DETACHMENT_REGRESSION_2026-10-20.md).
 - Alcance acotado: sólo `createLearningMemory()` en los campos probados. No declarar aislamiento global, raíz legítima ni autorización. Estado M0 sigue INCOMPLETO / NOT_EVALUATED / PENDING-UNKNOWN / STOP.
+
+
+## Checkpoint posterior — STATUS reconciliado con evidencia CI (2026-10-20)
+
+- Se actualizó la cabecera de `NEXO_NCS/STATUS.md` en commit `5c293aba52405ecfa8aa3f67a7aebb76847049c2` para poner la evidencia vigente al frente y explicar que las anotaciones `NO VERIFICADO` más abajo son históricas, no estado actual.
+- La actualización conserva el resto del archivo histórico; no se hizo una reescritura global. STATUS vigente: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/STATUS.md
+- CI corroborado directamente por metadatos de GitHub: run `39441463747`, workflow `Nexo — deterministic persistence tests`, `completed / success`, head SHA exacto `04fcc08081f81b3c385d4d8e9217a7744545d164`.
+- Próxima tarea segura: escoger una brecha M0 con contraejemplo concreto y test dirigido. La coexistencia legacy/owner-backed ya está clasificada en `NCS_M0_LEGACY_EFFECT_PATH_VS_OWNER_BACKED_2026-10-19.md`; el informe indica que no se halló caller de producción actual y prohíbe tratar la API legacy como efecto protegido. No migrar ni habilitar acciones sin autoridad y dueño canónico.
+- No se cambia el estado constitucional: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
