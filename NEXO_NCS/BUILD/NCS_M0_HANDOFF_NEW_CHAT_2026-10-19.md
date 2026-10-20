@@ -1,3 +1,19 @@
+## CHECKPOINT ACTUALIZADO — límite de confianza PREPARED conciliado (2026-10-20)
+
+**Este bloque prevalece para la continuidad inmediata. Misión: M0.**
+
+- Punto de reanudación confirmado: “documentar el límite de confianza” de `preparedCommit`.
+- La decisión ya existía en [NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md](../DECISIONS/NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md): en el prototipo actual, el adaptador y el consumidor son parte de la misma base de confianza. `executePrepared()` no es sandbox contra código arbitrario del mismo proceso. El objeto PREPARED acredita forma, no procedencia.
+- Se detectó que la sección antigua de `STATUS.md` aún decía que la decisión estaba pendiente. Se corrigió para reflejar la decisión aceptada y enlazar la auditoría del recibo y la auditoría terminal.
+- Commit que concilió la sección de STATUS: `3231c7b38c3316dde4b22feda8bb729c62cd86a8`; commit posterior preservó explícitamente el separador entre secciones: `46a1b68286f3de1881964dcf855231f02178d349`.
+- Auditoría terminal registrada sin cambios de runtime: [NCS_M0_TERMINAL_OUTCOME_REVISION_AUDIT_2026-10-19.md](NCS_M0_TERMINAL_OUTCOME_REVISION_AUDIT_2026-10-19.md), commit `644a398b196071661d3e21cbe21f39ec44db13c9`.
+- No añadir un booleano/campo cosmético, callback auto-verificador, segundo journal ni wrapper transaccional. Si se admiten consumidores no confiables, detener y diseñar frontera real de proceso/capacidad antes de ampliar el modelo.
+- No se cambió runtime ni tests en este checkpoint. No afirmar CI nuevo para los commits documentales; el estado de checks observado para estos commits no presenta status checks, por lo que el PASS histórico sólo se atribuye a los SHAs y runs indicados en STATUS.
+- Próxima acción tras este checkpoint: continuar M0 desde la siguiente frontera abierta sin repetir esta decisión; priorizar el bloqueo de provisión independiente de la raíz y no elegir hardware ni implementar verificador sin procedimiento independiente verificable.
+- Estado invariable: **M0 INCOMPLETO; authorization NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.**
+
+---
+
 ## ACTUALIZACIÓN — validación de esquema de owner.json
 
 - Detectado borde: JSON sintácticamente válido pero no objeto (ej. `42`) podía saltarse el manejo de JSON malformado. Ambos stores exigen ahora objeto, `pid` entero seguro positivo y `token` string no vacío.
