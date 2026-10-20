@@ -82,3 +82,13 @@ The latest pass did **not** establish a new reproducible defect, did not change 
 ## Start-next-chat instruction
 
 Begin by acknowledging the keyword `NCS`, reading STATUS and this handoff, verifying current HEAD/CI, then continuing the narrow M0 audit above. Do not ask the user to repeat already preserved context. The mission remains M0.
+
+
+## Addendum — response-loss / outcome-reconstruction audit (2026-10-20)
+
+Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
+
+- Existing tests already cover lost conditional-commit response, UNKNOWN when canonical reread is unavailable, confirmed write failure, repair-settlement replay after a lost response, contradictory late outcome replay, and Chronicle's no-redispatch recovery path.
+- No new reproducible defect was established; no code/test changes and no new CI run in this pass. Do not duplicate these regressions or treat stale-revision conflict as proof of persistence.
+- Next: audit actual call sites and the public result boundary for the canonical owner-backed runtime versus legacy `src/assistants/memory.js`. No runtime cutover or repair-effect enablement without concrete call-site evidence and crash-cut coverage.
+- M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
