@@ -92,3 +92,12 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - No new reproducible defect was established; no code/test changes and no new CI run in this pass. Do not duplicate these regressions or treat stale-revision conflict as proof of persistence.
 - Next: audit actual call sites and the public result boundary for the canonical owner-backed runtime versus legacy `src/assistants/memory.js`. No runtime cutover or repair-effect enablement without concrete call-site evidence and crash-cut coverage.
 - M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
+
+
+## Addendum — mission-admission persistence receipt fix (2026-10-20)
+
+- Follow-on audit found that a lock-release failure after a confirmed store commit returned `status: failed, persistenceStatus: committed`; the Chronicle public boundary dropped the committed-admission fact.
+- Fixed in `src/nexo/application/chronicle-append.mjs`: public result now remains blocked, `missionAdmissionCommitted: true`, `dispatchAttempted: false`, and `redispatchAuthorized: false`. Unknown persistence remains UNKNOWN. Regression added to `tests/nexo/chronicle-runtime.test.mjs`.
+- Final code/test SHA: `52eb4f9bdb959c577c6532ab30f1294f542ef4db`. Exact-SHA CI SUCCESS: integrated M0 `39368731996`; Chronicle `39368732138`; deterministic persistence `39368732251`; mission admission/restart `39368731963`; STEP 4 `39368731975`; STEP 5 `39368732135`.
+- Full audit: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
+- This is a result-contract correction only. M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
