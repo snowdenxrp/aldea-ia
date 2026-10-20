@@ -1,3 +1,20 @@
+## ACTUALIZACIÓN POSTERIOR — matriz de regresiones del store (2026-10-19)
+
+Documento: [NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md](NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md), commit documental `7441784ba216c4c269652f9453e8834dbcf348d2`. También actualizado [STATUS.md](../STATUS.md).
+
+Cruce adicional de tests:
+- `tests/nexo/chronicle-runtime.test.mjs` blob `873d38bf7fd19b8c90ec5e48c9fbfec87ffe0777`: cubre PREPARED UNKNOWN sin adapter y varias rutas de no-redispatch tras dispatch.
+- `tests/nexo/continuity-contract.test.mjs` blob `5b8f7e9a5fe7084a850fb0bb0d26263e573ca33b`: incluye persistencia PREPARED confirmada y errores de lectura de preparación.
+- `tests/nexo/continuity-store.test.mjs` blob `b61df0f7490e7d70ab821300febd680d0e7ed806`: prueba de store inspeccionada.
+
+Pendiente de localizar en la suite completa, sin afirmar que estén ausentes globalmente: commit condicional que falla antes del reemplazo; rename aplicado y respuesta perdida; estado canónico indeterminable tras fallo de escritura; excepción de adquisición no normalizada; error de lectura dentro del commit; liberación `not_owned`. Antes de añadir pruebas, comprobar tests de runtime/contrato/migración para evitar duplicados.
+
+No normalizar todavía la API mixta ni modificar runtime. No introducir timeout/BUSY ni recuperación automática por conveniencia. No se editaron runtime/tests y no se ejecutó CI nuevo para este checkpoint documental. No atribuir los workflows históricos al HEAD documental actual.
+
+Estado invariable: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 # NCS — HANDOFF COMPLETO PARA CHAT NUEVO (2026-10-19)
 
 ## CHECKPOINT FINAL PARA EL SIGUIENTE CHAT — prevalece sobre notas anteriores (2026-10-19)
