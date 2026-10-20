@@ -111,3 +111,13 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Final code/test SHA: `5aef07d4fb933d8c0be4ee4cbc325e7e8c4f85a7`; all six focal workflows SUCCESS: M0 integrated `39369199068`, repair crash cuts `39369199071`, effect/settlement `39369199064`, deterministic persistence `39369199083`, STEP 4 `39369199069`, STEP 5 `39369199073`.
 - Full record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
 - State remains M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN. Next: resume from the next unresolved M0 item in STATUS without reopening these receipt contracts or cutting over the legacy runtime.
+
+
+## Addendum — owner-backed public boundary and next M0 frontier (2026-10-20)
+
+- Re-read current branch runtime boundary, Chronicle application wrapper, and `tests/nexo/chronicle-runtime.test.mjs`. The capability-check exception regression is present; before dispatch, unexpected exception becomes `blocked / NEXO_RUNTIME_INTERNAL_FAILURE`, with no PREPARED or dispatch and no exception-message leakage.
+- The test commit `55d2c1b11b3bbda1abf42677636d279ebce84187` is an ancestor of final code/test SHA `5aef07d4fb933d8c0be4ee4cbc325e7e8c4f85a7`. Existing six focal workflows on that exact code/test SHA remain the evidence: integrated M0 `39369199068`, crash cuts `39369199071`, effect/settlement `39369199064`, deterministic persistence `39369199083`, STEP 4 `39369199069`, STEP 5 `39369199073`. No new CI was run in this audit.
+- Legacy APIs remain importable but are not evidenced as active production callers by the existing `NCS_M0_LEGACY_EFFECT_PATH_VS_OWNER_BACKED_2026-10-19.md`; `scripts/simulate.mjs` does not import those APIs. Do not cut over legacy runtime or describe it as protected execution.
+- Next unresolved M0 frontier: lock contention/progress contract and deployment assumptions. Current store waits without a bound while the lock owner remains alive. The existing `NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md` explicitly recommends no arbitrary timeout/BUSY/cancellation/lease/stale-lock reclamation before the caller contract is chosen. Decide/record whether first-version requirements accept local cooperative writers plus unbounded waiting, or require bounded acquisition; if bounded, define the public error/status and every caller's handling before code changes.
+- Do not reopen cross-stage persistence receipts, repeat the status/steps/objective audit, switch to M1/STEP 7, or enable protected effects.
+- Global state unchanged: M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
