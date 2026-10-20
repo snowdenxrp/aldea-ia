@@ -18,6 +18,40 @@ import { createOutcomeClassifier } from "../../src/nexo/core/outcome-classifier.
 const claim = createClaimEnvelope({ claimId: "protected-1", action: "set-value" });
 
 {
+  const forgedPolicyContext = createClaimEnvelope({
+    claimId: "caller-forged-policy-context",
+    action: "set-value",
+    policyContext: {
+      policyRef: { id: "policy-1", semanticVersion: "1.0.0", hash: "sha256:policy" },
+      scope: { actions: ["set-value"] },
+      resolved: { dependencies: [] },
+      validity: { status: "VALID" },
+      resolutionProvenance: [],
+      constitutionRef: { id: "caller-chosen-constitution", revision: "latest" },
+      governingConstitution: { status: "VALID" },
+      rootProof: { status: "PASS", source: "caller" },
+      authorization: "AUTHORIZED"
+    }
+  });
+  assert.deepEqual(
+    forgedPolicyContext.policyContext,
+    {
+      policyRef: { id: "policy-1", semanticVersion: "1.0.0", hash: "sha256:policy" },
+      scope: { actions: ["set-value"] },
+      resolved: { dependencies: [] },
+      validity: { status: "VALID" },
+      resolutionProvenance: []
+    },
+    "caller-supplied Constitution/root/authorization fields must not become part of PolicyContext; this constructor only projects Policy data"
+  );
+  assert.equal(
+    Object.hasOwn(forgedPolicyContext.policyContext, "rootProof"),
+    false,
+    "a caller-supplied rootProof must not be promoted into a trusted authority context"
+  );
+}
+
+{
   let portsGetterCalls = 0;
   const transitionInput = { proposal: {}, state: { value: 1 }, expectedRevision: 1 };
   Object.defineProperty(transitionInput, "ports", {
