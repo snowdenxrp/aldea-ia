@@ -81,3 +81,12 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Además, el HEAD documental `b429a0f606a2fe62c045eabf4757a490778bcad9` ejecutó [persistencia determinista 39451824503](https://github.com/snowdenxrp/aldea-ia/actions/runs/39451824503), job `tests` SUCCESS. Este SHA contiene runtime + regresión y los documentos de continuidad vigentes.
 - Conclusión acotada: la regresión de journal terminal huérfano no bloqueante para una misión retenida pasó en la suite y workflows listados. No se ha validado toda autoridad M0 ni se habilitan efectos protegidos.
 - Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0 — estados de journal desconocidos preservados por retención (2026-10-20)
+
+- Hallazgo y contrato: [NCS_M0_UNKNOWN_EFFECT_JOURNAL_RETENTION_2026-10-20.md](BUILD/NCS_M0_UNKNOWN_EFFECT_JOURNAL_RETENTION_2026-10-20.md).
+- Runtime `25ac7eab1a221dbceeb1226a9b793ea274b6422e`: solo `settled_observed` y `reconciled_observed` son descartables por retención; `prepared` y estados desconocidos se preservan, junto con el plan asociado si hay `missionId` válido.
+- CI descubrió fixture obsoleto: un test llamaba `completed` estado terminal del journal, pero el contrato operativo no lo reconoce. Run fallido documentado: [39452369889](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452369889), assertion `201 !== 200`. Fixture corregido a `settled_observed` en `419546c10552ae88fe98e3dbf89d7a865dd48e56`; no se relajó la preservación de estados desconocidos.
+- En el SHA exacto de corrección `419546c10552ae88fe98e3dbf89d7a865dd48e56`, SUCCESS: [persistencia determinista 39452539513](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539513), [admisión/continuidad 39452539695](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539695), [validación semántica 39452539536](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539536), [clasificación de outcomes 39452539530](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539530).
+- M0 sigue `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
