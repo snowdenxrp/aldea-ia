@@ -2340,3 +2340,16 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Resultado de timeout previo a adquisición debe ser estructurado y afirmar que la fase de escritura no comenzó. Si la operación ya tenía PREPARED/dispatch previo, cualquier reintento exige leer/reconciliar el estado canónico; nunca redispatch ciego.
 - Informe ampliado: [NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md](BUILD/NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md), sección 5.1.
 - La propuesta no está implementada ni adoptada: falta definir si el primer despliegue requiere respuesta acotada y el presupuesto correspondiente. No se cambió runtime/tests.
+
+
+## M0 — requisito de espera acotada aceptado; contrato compartido especificado (2026-10-20)
+
+- Decisión del usuario: **A — espera acotada para adquirir locks**, recomendada para el runtime interactivo. Esto reemplaza la propuesta anterior de dejar abierta la elección entre espera ilimitada y acotada.
+- Especificación: [NCS_M0_BOUNDED_LOCK_WAIT_CONTRACT_2026-10-20.md](BUILD/NCS_M0_BOUNDED_LOCK_WAIT_CONTRACT_2026-10-20.md).
+- La decisión no equivale a implementación. El runtime aún espera sin deadline; no afirmar que la garantía ya exista.
+- Contrato de diseño: un solo deadline monotónico absoluto propiedad del caller, propagado entre operaciones anidadas Continuity/Chronicle; el vencimiento limita sólo la espera de adquisición. No cancelar escritura/rename en curso, no reiniciar el presupuesto en cada store, no reclamar locks ajenos y no convertir timeout en autorización ni en persistencia UNKNOWN cuando la fase de escritura no comenzó.
+- Códigos propuestos sujetos a verificar contra las convenciones y consumidores: `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT` y `NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT`. La superficie exacta por método público debe decidirse después de mapear sus firmas y consumidores.
+- **Presupuesto numérico/configuración sigue abierto**; no inventarlo. Además, deadline cooperativo no garantiza tiempo de pared estricto si una llamada de filesystem queda bloqueada.
+- Próxima fase: mapear firmas y pruebas actuales; diseñar abstracción mínima compartida de deadline; acordar forma pública del timeout y tratamiento de adquisición tardía; después implementar stores, propagar desde callers y añadir pruebas de no-dispatch/no-redispatch antes de correr CI. Si el contrato requiere una reestructuración, detenerse y explicar la causa raíz en vez de añadir parches.
+- No se hicieron cambios de runtime/tests ni se ejecutó CI para este contrato. Último SHA de código/test validado sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`, con cinco workflows SUCCESS registrados arriba; ese CI previo no valida este requisito ni futura implementación.
+- Estado constitucional no cambia: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
