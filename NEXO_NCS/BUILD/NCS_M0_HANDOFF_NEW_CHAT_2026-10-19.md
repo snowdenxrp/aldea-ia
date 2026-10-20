@@ -1,3 +1,14 @@
+## ACTUALIZACIÓN — callers de errores de lock inspeccionados
+
+- Matriz ampliada en `cbd36bfbf6e9bd138a1f1d3a80caa5214db35c32`; STATUS actualizado en `4973172a9d0719c08f87e229b114bb17b2705145`.
+- Crosswalk estático de cinco operaciones: `recordMission` → aplicación bloqueada; `recordPrepared` → UNKNOWN sin dispatch; `recordOutcome` → incertidumbre conservada; `recordExecutionLineage` → UNKNOWN post-dispatch con redispatch falso; `reconcilePrepared` → bloqueado si falla el commit de observación.
+- No se observó conversión de un error de adquisición en PREPARED confirmado ni en permiso de redispatch. No normalizar la API mixta sólo por simetría; decisión uniforme requeriría contrato explícito y tests de callers.
+- El fix compartido de lock no inspeccionable está en Continuity y Chronicle; CI SUCCESS en código SHA `c5ffff237b6c9933030a12308aab066aa968cb32` (runs enlazados en STATUS/matriz). Commits de documentación posteriores no cambian runtime/tests.
+- Siguiente paso: inspeccionar el manejo de errores de lectura del owner record en la ruta de liberación y confirmar si la incertidumbre queda como fallo conservador sin borrar lock; no ampliar el alcance sin una causa reproducible.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — lock no inspeccionable corregido en ambos stores; CI SUCCESS
 
 - Causa raíz: en Continuity y Chronicle, un error de `stat(lockPath)` se ignoraba; `age=0` y el ciclo de adquisición podía esperar indefinidamente.
