@@ -223,7 +223,7 @@ const childScript = [
   'const snapshot = JSON.parse(process.env.NEXO_STORE_SNAPSHOT);',
   'const result = await store.commitIfCurrent(0, snapshot);',
   'process.stdout.write(JSON.stringify(result) + "\\n");'
-].join("\\n");
+].join("\n");
 const child = spawn(process.execPath, ["--input-type=module", "-e", childScript], {
   env: {
     ...process.env,
@@ -250,7 +250,7 @@ const childExit = new Promise((resolve, reject) => {
 const childStarted = new Promise((resolve, reject) => {
   const deadline = setTimeout(() => reject(new Error("cross-process lock contender did not start")), 5_000);
   const inspect = () => {
-    if (childStdout.includes("attempting\\n")) {
+    if (childStdout.includes("attempting\n")) {
       clearTimeout(deadline);
       resolve();
     } else if (childExited) {
@@ -266,10 +266,12 @@ await new Promise(resolve => setTimeout(resolve, 100));
 assert.equal(childExited, false,
   "a different process waits while the lock owner PID is alive; no bounded acquisition outcome exists");
 await fs.rm(crossProcessLock, { recursive: true, force: true });
-const crossProcessExit = await Promise.race([
-  childExit,
-  new Promise((_, reject) => setTimeout(() => reject(new Error("cross-process contender did not resume after lock removal")), 5_000))
-]);
+const crossProcessTimeout = setTimeout(() => {
+  child.kill("SIGKILL");
+}, 5_000);
+crossProcessTimeout.unref();
+const crossProcessExit = await childExit;
+clearTimeout(crossProcessTimeout);
 assert.deepEqual(crossProcessExit, { code: 0, signal: null }, `cross-process contender should resume after explicit lock removal: ${childStderr}`);
 assert.equal((await crossProcessStore.loadCurrent()).storeRevision, 1,
   "the cross-process contender commits only after the existing lock disappears");
