@@ -2511,3 +2511,13 @@ Estado sin cambio: borrador DRAFT / NOT FROZEN / NOT COMMISSIONED; M0 `INCOMPLET
 - La suite `tests/nexo/continuity-contract.test.mjs` aparece como paso explícito exitoso en el workflow de admisión/reconstrucción y ahora también forma parte de `npm test`.
 - Alcance: evidencia de tests solamente; no cambia el estado de autoridad constitucional ni permite commissioning.
 - Estado M0: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0 — regresión contra autoridad constitucional suministrada por caller (2026-10-20)
+
+- Test commit: `29e97fab41261fdd6505f5e02d8ce4791852e981`, `tests/nexo/protected-transition.test.mjs`.
+- Caso adversarial: el caller suministra `constitutionRef`, `governingConstitution`, `rootProof` y `authorization: AUTHORIZED` junto a PolicyContext válido. La proyección resultante conserva sólo `policyRef`, `scope`, `resolved`, `validity` y `resolutionProvenance`; el `rootProof` no se incorpora.
+- CI SUCCESS en el SHA exacto: [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446572258), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446572376), [M0 non-authority core contracts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446574300), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446572342), [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446572371), [STEP 3A/3B/3C](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446572419).
+- Informe: [NCS_M0_POLICY_CONTEXT_CALLER_AUTHORITY_PROJECTION_REGRESSION_2026-10-20.md](BUILD/NCS_M0_POLICY_CONTEXT_CALLER_AUTHORITY_PROJECTION_REGRESSION_2026-10-20.md), commit documental `4fde94466789ead9b747335674023211e1d0f4c6`.
+- Alcance limitado: protege contra futura promoción accidental de metadatos caller-controlled. No crea ni autentica un contexto constitucional y no prueba raíz ni autoriza efectos. Sin cambios de runtime.
+- Estado M0 sin cambio: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
