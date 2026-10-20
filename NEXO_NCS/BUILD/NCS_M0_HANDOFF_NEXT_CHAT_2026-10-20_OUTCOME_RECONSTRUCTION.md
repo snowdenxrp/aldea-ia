@@ -101,3 +101,13 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Final code/test SHA: `52eb4f9bdb959c577c6532ab30f1294f542ef4db`. Exact-SHA CI SUCCESS: integrated M0 `39368731996`; Chronicle `39368732138`; deterministic persistence `39368732251`; mission admission/restart `39368731963`; STEP 4 `39368731975`; STEP 5 `39368732135`.
 - Full audit: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
 - This is a result-contract correction only. M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
+
+
+## Addendum — cross-stage persistence receipt correction (2026-10-20)
+
+- Corrected persistence-result reporting across mission admission, PREPARED, execution lineage, Chronicle observation/settlement, and terminal outcome. Confirmed `persistenceStatus: committed` is preserved as a factual receipt while unsafe handoff blocks progression; unknown outcomes stay `UNKNOWN`. No dispatch or retry is authorized by these receipts.
+- Updated `src/nexo/core/continuity-owner.mjs`, `src/nexo/core/owner-backed-runtime.mjs`, `src/nexo/application/chronicle-append.mjs`; regressions in `tests/nexo/chronicle-runtime.test.mjs` and `tests/nexo/repair-settlement-crash-cuts.test.mjs`.
+- Red history retained: `3aed78b9788c9ffe25bc0077b02793a1ca6f75c0` and `0bf505d483cd56345fe7a7c9240545c86616bc2d` failed an outdated assertion that a thrown commit response proves non-persistence. The assertion now expects UNKNOWN.
+- Final code/test SHA: `5aef07d4fb933d8c0be4ee4cbc325e7e8c4f85a7`; all six focal workflows SUCCESS: M0 integrated `39369199068`, repair crash cuts `39369199071`, effect/settlement `39369199064`, deterministic persistence `39369199083`, STEP 4 `39369199069`, STEP 5 `39369199073`.
+- Full record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
+- State remains M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN. Next: resume from the next unresolved M0 item in STATUS without reopening these receipt contracts or cutting over the legacy runtime.
