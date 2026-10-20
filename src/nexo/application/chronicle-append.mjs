@@ -4,6 +4,7 @@ import { createNexoChronicleStore } from "../core/chronicle-store.mjs";
 import { createNexoChronicleEffectContracts, NEXO_CHRONICLE_APPEND_ACTION } from "../adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../effect-adapter.js";
 import { executeNexoStepWithContinuityOwner } from "../core/owner-backed-runtime.mjs";
+import { NEXO_DEFAULT_LOCK_WAIT_MS, createNexoLockDeadline } from "../core/lock-deadline.mjs";
 
 function blocked(code) {
   return {
@@ -87,14 +88,16 @@ export async function recordNexoMissionSafely({ owner, expectedRevision, mission
 
 export async function runNexoChronicleAppend({
   continuityPath, chroniclePath, missionId, stepId, content,
-  initializeContinuity = false, initializeChronicle = false
+  initializeContinuity = false, initializeChronicle = false,
+  lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS
 } = {}) {
   if (typeof continuityPath !== "string" || !continuityPath.trim() ||
       typeof chroniclePath !== "string" || !chroniclePath.trim() ||
       typeof missionId !== "string" || !missionId.trim() ||
       typeof stepId !== "string" || !stepId.trim() ||
       typeof content !== "string" || !content.trim() ||
-      typeof initializeContinuity !== "boolean" || typeof initializeChronicle !== "boolean") {
+      typeof initializeContinuity !== "boolean" || typeof initializeChronicle !== "boolean" ||
+      typeof lockWaitMs !== "number" || !Number.isFinite(lockWaitMs) || lockWaitMs <= 0) {
     return blocked("NEXO_CHRONICLE_SESSION_INPUT_INVALID");
   }
 
@@ -105,8 +108,11 @@ export async function runNexoChronicleAppend({
     return blocked("NEXO_CHRONICLE_ID_INVALID");
   }
 
-  const chronicleStore = createNexoChronicleStore({ filePath: chroniclePath });
-  const continuityStore = createNexoContinuityStore({ filePath: continuityPath });
+  // One monotonic deadline is shared by both stores and every nested mutation
+  // in this interactive operation; the budget is never reset at each layer.
+  const lockDeadline = createNexoLockDeadline(lockWaitMs);
+  const chronicleStore = createNexoChronicleStore({ filePath: chroniclePath, lockDeadline });
+  const continuityStore = createNexoContinuityStore({ filePath: continuityPath, lockDeadline });
   let chronicleMissing = false;
   let continuityMissing = false;
 
@@ -131,7 +137,8 @@ export async function runNexoChronicleAppend({
     opened = await openNexoContinuityOwner({
       filePath: continuityPath,
       allowEmptyInitialization: initializeContinuity,
-      effectVerifiers: contracts.verifiers
+      effectVerifiers: contracts.verifiers,
+      lockDeadline, lockWaitMs
     });
   } catch (error) {
     return blocked(error?.code ?? "NEXO_CONTINUITY_STORE_UNAVAILABLE");
