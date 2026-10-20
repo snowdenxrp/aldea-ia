@@ -63,3 +63,12 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - El SHA contiene las regresiones de reconstrucción de outcomes persistidos `NEXO_OUTCOME_EVIDENCE_CONFLICT` y `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`, además de la validación fail-closed de forma de misión persistida y sus pruebas.
 - Esta evidencia supersede el estado anterior `CI_NOT_VERIFIED` **para la suite determinista y ese SHA exacto**. No acredita otros workflows no incluidos, no demuestra autenticación de `evidence.source`, no establece raíz legítima y no autoriza efectos protegidos.
 - M0 sigue `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0 — terminal journal histórico no debe bloquear misiones retenidas (2026-10-20)
+
+- Contraejemplo reproducible: la retención de planes limita misiones históricas, mientras que el journal puede conservar registros terminales hasta su propio límite. La reconstrucción global trataba cualquier registro `settled_observed`/`reconciled_observed` cuyo plan ya no existía como `unownedEffectEntry` y bloqueaba incluso una misión retenida no relacionada.
+- Runtime commit `5a1bbd77270941d24ce5801408d32cf4d05646a6`: un journal terminal con `missionId` válido pero plan histórico ya podado deja de bloquear misiones no relacionadas. La comprobación global sigue cerrando ante identidad `missionId` ausente/inválida y ante `prepared` sin plan; los registros del journal que sí corresponden a la misión actual siguen sujetos a validación de identidad.
+- Regresión commit `4c1555ec56f5c7ec357ec0884eec03807539cb95`, `tests/nexo/continuity-contract.test.mjs`: añade terminal `settled_observed` de misión histórica podada y exige que no bloquee la misión retenida con finalización verificada.
+- CI del SHA de regresión todavía pendiente de consultar; no declarar PASS hasta revisar el run/job `tests` en SHA exacto.
+- Estado M0 permanece `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
