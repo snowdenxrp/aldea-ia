@@ -240,7 +240,8 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
   const unownedEffectEntry = source.effectJournal.some(entry =>
     recognizedEffectStates.includes(entry?.status) &&
     (typeof entry?.missionId !== "string" || !entry.missionId.trim() ||
-      !source.missions.some(candidate => candidate?.missionId === entry.missionId))
+      (entry.status === "prepared" &&
+        !source.missions.some(candidate => candidate?.missionId === entry.missionId)))
   );
   const unboundMissionEffectEntry = source.effectJournal.some(entry => {
     if (entry?.missionId !== missionId || !recognizedEffectStates.includes(entry?.status)) return false;
