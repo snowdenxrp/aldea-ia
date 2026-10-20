@@ -642,6 +642,44 @@ await assert.rejects(() => fs.access(lockStatFailurePath), error => error?.code 
   "lock inspection uncertainty must not initialize the canonical store");
 await fs.rm(lockStatFailureLock, { recursive: true, force: true });
 
+// A valid lock held by this live process must time out without initializing or writing.
+const timeoutInitPath = path.join(directory, "timeout-initialize", "continuity.json");
+await fs.mkdir(path.dirname(timeoutInitPath), { recursive: true });
+const timeoutInitLock = timeoutInitPath + ".lock";
+await fs.mkdir(timeoutInitLock);
+await fs.writeFile(path.join(timeoutInitLock, "owner.json"), JSON.stringify({
+  pid: process.pid, token: "timeout-test-owner", createdAt: Date.now()
+}), "utf8");
+const timeoutInitStore = createNexoContinuityStore({ filePath: timeoutInitPath, lockWaitMs: 25 });
+assert.deepEqual(await timeoutInitStore.initialize(emptySnapshot), {
+  status: "failed",
+  code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+  phase: "lock_acquisition",
+  writeStarted: false
+});
+await assert.rejects(() => fs.access(timeoutInitPath), error => error?.code === "ENOENT");
+await fs.rm(timeoutInitLock, { recursive: true, force: true });
+
+// A timeout while conditionally committing preserves the existing canonical revision.
+const timeoutCommitPath = path.join(directory, "timeout-commit", "continuity.json");
+await fs.mkdir(path.dirname(timeoutCommitPath), { recursive: true });
+const timeoutCommitBase = createNexoContinuityStore({ filePath: timeoutCommitPath });
+assert.equal((await timeoutCommitBase.initialize(emptySnapshot)).status, "committed");
+const timeoutCommitLock = timeoutCommitPath + ".lock";
+await fs.mkdir(timeoutCommitLock);
+await fs.writeFile(path.join(timeoutCommitLock, "owner.json"), JSON.stringify({
+  pid: process.pid, token: "timeout-test-owner", createdAt: Date.now()
+}), "utf8");
+const timeoutCommitStore = createNexoContinuityStore({ filePath: timeoutCommitPath, lockWaitMs: 25 });
+assert.deepEqual(await timeoutCommitStore.commitIfCurrent(0, emptySnapshot), {
+  status: "failed",
+  code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+  phase: "lock_acquisition",
+  writeStarted: false
+});
+assert.equal((await timeoutCommitBase.loadCurrent()).storeRevision, 0);
+await fs.rm(timeoutCommitLock, { recursive: true, force: true });
+
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
   () => store.loadCurrent(),
