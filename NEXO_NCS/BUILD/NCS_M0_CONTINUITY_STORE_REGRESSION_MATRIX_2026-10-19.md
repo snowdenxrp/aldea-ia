@@ -11,13 +11,13 @@ Estado: revisión estática. No se modificó runtime/tests ni se ejecutó CI en 
 ## Cobertura ya localizada
 El test del store cubre estado ausente, padre no disponible, conflicto concurrente, respuesta perdida de initialize, fallo confirmado de initialize, revisión agotada, lock stale, contención cross-process, fallo transitorio/persistente de liberación, JSON corrupto y rechazo de campos desconocidos.
 
-El test de runtime ya cubre PREPARED UNKNOWN sin invocar adapter y bloquea redispatch en varias rutas post-dispatch. No duplicar estas pruebas sin comprobar el caso específico.
+Los tests de runtime cubren PREPARED UNKNOWN sin invocar adapter y bloquean redispatch en varias rutas post-dispatch. Además, `repair-settlement-crash-cuts.test.mjs` blob `60e2486698cee7a029902aa9ee09df90707fe0eb` cubre respuesta perdida a nivel caller: el commit real se completa, el wrapper devuelve UNKNOWN/lanza y el replay recupera el registro sin volver a invocar el verifier. Eso no equivale a inyectar una excepción en el rename interno de `writeEnvelope()`; no duplicar las pruebas de caller.
 
 ## Gaps a localizar en la suite completa
 | Caso | Expectativa | Estado |
 |---|---|---|
 | commit condicional falla antes del reemplazo y lectura confirma revisión anterior | failed confirmado; estado anterior intacto | No localizado en test de store |
-| rename de commit condicional aplica candidato y después lanza | committed solo si lectura canónica exacta confirma revisión y snapshot | No localizado en test de store |
+| rename de commit condicional aplica candidato y después lanza dentro de `writeEnvelope()` | Store devuelve committed solo si lectura canónica exacta confirma revisión y snapshot | No localizado en test de store; el caso interno de rename sigue pendiente |
 | commit falla y no se puede leer el estado canónico | UNKNOWN; no asumir rollback ni commit | No localizado en test de store |
 | error no normalizado al adquirir lock | fijar y probar diferencia entre initialize y commitIfCurrent | Diferencia estática observada |
 | lectura del envelope falla dentro de commit | no sobrescribir; conservar incertidumbre | Parcialmente cubierto fuera de commit |
