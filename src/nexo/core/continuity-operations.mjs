@@ -244,6 +244,12 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     (unresolvedEffectEntry(entry) &&
       !source.missions.some(candidate => candidate?.missionId === entry.missionId))
   );
+  const unownedUnknownEffectEntry = source.effectJournal.some(entry =>
+    unresolvedEffectEntry(entry) &&
+    !recognizedEffectStates.includes(entry?.status) &&
+    (typeof entry?.missionId !== "string" || !entry.missionId.trim() ||
+      !source.missions.some(candidate => candidate?.missionId === entry.missionId))
+  );
   const unboundMissionEffectEntry = source.effectJournal.some(entry => {
     if (entry?.missionId !== missionId ||
         !(recognizedEffectStates.includes(entry?.status) || unresolvedEffectEntry(entry))) return false;
@@ -252,15 +258,20 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       !isDeepStrictEqual(boundStep.target ?? null, entry.target ?? null);
   });
   if (unownedEffectEntry || unboundMissionEffectEntry) {
+    const unknownStatus = unownedUnknownEffectEntry;
     for (const step of mission.steps) {
       step.status = "blocked";
       step.blockReason = {
-        code: "NEXO_EFFECT_JOURNAL_IDENTITY_UNKNOWN",
+        code: unknownStatus
+          ? "NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN"
+          : "NEXO_EFFECT_JOURNAL_IDENTITY_UNKNOWN",
         next: "reconcile_effect_journal_without_redispatch"
       };
     }
     mission.status = "blocked";
-    mission.uncertainty = "effect_journal_identity_unknown";
+    mission.uncertainty = unknownStatus
+      ? "effect_journal_status_unknown"
+      : "effect_journal_identity_unknown";
     return mission;
   }
 
