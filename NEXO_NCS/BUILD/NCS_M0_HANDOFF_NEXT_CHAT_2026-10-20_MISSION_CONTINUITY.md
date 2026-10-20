@@ -177,3 +177,13 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - CI confirmado en el SHA exacto `72cc1b1d55f72d29ee8b9f17b0ada76ac41c6d24`: runs [39443509056](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509056), [39443509170](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509170), [39443509438](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509438) y [39443509057](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509057) finalizaron `completed / success`.
 - STATUS actualizado para enlazar el informe y los runs. No cambió runtime ni se modificó el estado constitucional.
 - Próxima continuidad: encontrar otra brecha M0 con contraejemplo concreto, o respetar el bloqueo que requiere revisión explícita del artefacto constitucional antes de definir reconocimiento de raíz. No repetir auditorías cerradas.
+
+
+## Nuevo límite de aseguramiento — CI no equivale a merge gate (2026-10-20)
+
+- Informe: [NCS_M0_CI_ENFORCEMENT_BOUNDARY_2026-10-20.md](NCS_M0_CI_ENFORCEMENT_BOUNDARY_2026-10-20.md).
+- Metadatos de la rama observados: `protected: false`; required status checks `off`. El endpoint específico de branch protection devolvió HTTP 403 al conector; no inferir configuración adicional no visible.
+- Run de persistencia determinista en el SHA del checkpoint documental `a2e141c522b09bd8ac6d3904a50224e943783d59`: [39443704746](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443704746), `completed / success`.
+- Interpretación: CI PASS es evidencia por SHA; no demuestra que GitHub impida integrar cambios si CI falla. No se modificaron ajustes administrativos, ni se afirma que haya branch protection habilitada.
+- Siguiente paso futuro, sólo con permisos de administración y cuando corresponda: configurar required checks y verificar la regla resultante. Hasta entonces registrar SHA + runs y no describir CI como gate obligatorio.
+- Estado M0 inalterado: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
