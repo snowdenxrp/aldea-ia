@@ -8,7 +8,7 @@ Misión: M0.
 
 Se adopta la opción A: la primera versión interactiva de Nexo requiere espera acotada para adquirir locks de Continuity y Chronicle. No se acepta espera indefinida como comportamiento normal.
 
-Esto no autoriza todavía un valor numérico de timeout ni una modificación de runtime. El presupuesto concreto queda abierto y no debe inventarse ni incrustarse como constante local en cada store. El siguiente trabajo define el contrato común y su integración; el presupuesto debe resolverse como configuración/requisito antes de activar el comportamiento en runtime.
+Se acepta un presupuesto inicial de **2.000 ms**, configurable desde la frontera de aplicación/runtime. Es un presupuesto de espera cooperativa de adquisición, no una garantía de tiempo de pared. No debe duplicarse como constantes independientes en cada store.
 
 ## 2. Alcance exacto del deadline
 
@@ -76,7 +76,7 @@ Reglas obligatorias:
 
 ## 7. Decisiones que permanecen abiertas
 
-- **Presupuesto numérico / configuración del deadline:** abierto; no adivinar.
+- **Presupuesto numérico inicial:** decidido: 2.000 ms configurable. La validación de pruebas puede justificar cambiarlo, pero no cambiarlo silenciosamente ni convertirlo en una constante por store.
 - **Comportamiento de API por cada método público:** debe mapearse en la fase 1, respetando las diferencias existentes entre resultados estructurados y excepciones.
 - **Respuesta estricta de pared:** no se promete, porque las operaciones del filesystem no están demostradas como interruptibles. El requisito aceptado es acotar la espera cooperativa de adquisición, no cancelar operaciones de filesystem.
 - **Política de retry/reconciliación:** no se inventa; permanece subordinada a la evidencia canónica y a las invariantes ya existentes.
