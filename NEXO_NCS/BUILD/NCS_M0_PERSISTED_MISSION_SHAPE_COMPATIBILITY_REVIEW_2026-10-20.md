@@ -38,3 +38,16 @@ Cambios:
 - Test commit `04d54049f19938685bd877653d23c9d69e775145`.
 
 Limitación: no hay ejecución de CI visible para el SHA de tests en las consultas de estado/workflow disponibles. El cambio está guardado, pero la suite queda **NO VERIFICADA** hasta que exista run o ejecución reproducible. Si aparece incompatibilidad real con una fixture legacy, no se debe relajar el contrato sin definir explícitamente la forma/versionado legacy y sus equivalencias semánticas.
+
+
+## Verificación CI posterior — 2026-10-20
+
+Se detectó que `tests/nexo/continuity-contract.test.mjs` no estaba incluido en el script `npm test`. Se incorporó al final del script en el commit `6594f27a0e28e6ce5f53446228be11841626cfc3` (`package.json`, blob `614a2c233fda1bdf4fc7f2d21c3981fa6e596a61`). El cambio activa CI por push.
+
+Ejecuciones observadas en el mismo SHA, todas `completed / success`:
+- [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665444): ahora incluye el test de continuidad en `npm test`.
+- [Bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665452): el paso explícito `node tests/nexo/continuity-contract.test.mjs` concluyó `success`.
+- [M0 integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665518): todos los pasos concluyeron `success`.
+- [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665626): todos los pasos concluyeron `success`.
+
+Conclusión limitada: la regresión focal y las puertas CI listadas pasaron en el SHA indicado. Esto no demuestra raíz legítima de autoridad ni autoriza efectos protegidos; M0 sigue sujeto a sus demás gates y evidencia.
