@@ -49,7 +49,21 @@ export function publicChronicleResult(result, missionId, stepId) {
 export async function recordNexoMissionSafely({ owner, expectedRevision, mission } = {}) {
   try {
     const result = await owner.recordMission({ expectedRevision, mission });
-    if (result?.status === "unknown" || result?.missionAdmissionCommitted === "UNKNOWN") {
+    // The store may confirm the envelope was committed but fail to hand off the
+    // transaction because lock release failed. Preserve that durable fact while
+    // blocking dispatch; do not collapse it into an unqualified failure.
+    if (result?.persistenceStatus === "committed") {
+      return {
+        status: "blocked",
+        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_HANDOFF_UNSAFE",
+        missionAdmissionCommitted: true,
+        dispatchAttempted: false,
+        redispatchAuthorized: false,
+        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
+      };
+    }
+    if (result?.status === "unknown" || result?.missionAdmissionCommitted === "UNKNOWN" ||
+        result?.persistenceStatus === "unknown") {
       return {
         status: "unknown",
         code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
@@ -156,6 +170,10 @@ export async function runNexoChronicleAppend({
         storeRevision: recorded.storeRevision,
         redispatchAuthorized: false
       };
+    }
+    if (recorded.missionAdmissionCommitted === true) {
+      // Admission is durably known, but an unsafe lock handoff forbids continuing.
+      return publicChronicleResult(recorded, missionId, stepId);
     }
     if (recorded.status !== "committed" && recorded.status !== "already_recorded") {
       return blocked(recorded.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_FAILED");
