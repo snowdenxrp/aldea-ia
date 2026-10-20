@@ -41,7 +41,10 @@ export function createNexoChronicleEffectContracts({ store } = {}) {
       status: "blocked",
       code: result.code ?? "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN",
       verified: false,
-      uncertainty: result.status === "conflict" ? "operation_content_conflict" : "chronicle_write_not_confirmed"
+      uncertainty: result.status === "conflict" ? "operation_content_conflict" : "chronicle_write_not_confirmed",
+      ...(typeof result.phase === "string" ? { phase: result.phase } : {}),
+      ...(typeof result.writeStarted === "boolean" ? { writeStarted: result.writeStarted } : {}),
+      ...(result.lockRelease && typeof result.lockRelease === "object" ? { lockRelease: result.lockRelease } : {})
     };
   }
 
