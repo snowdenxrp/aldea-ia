@@ -237,14 +237,16 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
   // Legacy snapshots remain readable, but an orphan or mismatched effect record
   // must not disappear from reconstruction and make a step runnable.
   const recognizedEffectStates = ["prepared", "settled_observed", "reconciled_observed"];
+  const terminalEffectStates = ["settled_observed", "reconciled_observed"];
+  const unresolvedEffectEntry = entry => !terminalEffectStates.includes(entry?.status);
   const unownedEffectEntry = source.effectJournal.some(entry =>
-    recognizedEffectStates.includes(entry?.status) &&
+    unresolvedEffectEntry(entry) &&
     (typeof entry?.missionId !== "string" || !entry.missionId.trim() ||
-      (entry.status === "prepared" &&
-        !source.missions.some(candidate => candidate?.missionId === entry.missionId)))
+      !source.missions.some(candidate => candidate?.missionId === entry.missionId))
   );
   const unboundMissionEffectEntry = source.effectJournal.some(entry => {
-    if (entry?.missionId !== missionId || !recognizedEffectStates.includes(entry?.status)) return false;
+    if (entry?.missionId !== missionId ||
+        !(recognizedEffectStates.includes(entry?.status) || unresolvedEffectEntry(entry))) return false;
     const boundStep = mission.steps.find(candidate => candidate?.id === entry?.stepId);
     return !boundStep || boundStep.action !== entry.action ||
       !isDeepStrictEqual(boundStep.target ?? null, entry.target ?? null);
@@ -259,6 +261,28 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     }
     mission.status = "blocked";
     mission.uncertainty = "effect_journal_identity_unknown";
+    return mission;
+  }
+
+  // Unknown/nonterminal journal states are not disposable metadata. They may
+  // describe an effect whose outcome is not understood; preserve the binding
+  // and require reconciliation instead of reconstructing the step as runnable.
+  const unknownStateMissionEffect = source.effectJournal.find(entry =>
+    entry?.missionId === missionId &&
+    unresolvedEffectEntry(entry) &&
+    entry?.status !== "prepared"
+  );
+  if (unknownStateMissionEffect) {
+    const step = mission.steps.find(candidate => candidate.id === unknownStateMissionEffect.stepId);
+    if (step) {
+      step.status = "blocked";
+      step.blockReason = {
+        code: "NEXO_EFFECT_JOURNAL_STATE_UNKNOWN",
+        next: "reconcile_effect_journal_without_redispatch"
+      };
+    }
+    mission.status = "blocked";
+    mission.uncertainty = "effect_journal_state_unknown";
     return mission;
   }
 
