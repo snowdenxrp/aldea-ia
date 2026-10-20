@@ -1,3 +1,13 @@
+## M0 — frontera de compatibilidad de misión persistida (2026-10-20)
+
+- Revisión focal guardada: [NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md](BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md), commit `84ebe145adca3d38d4454b9da9556eb4b724bf63`.
+- Hallazgo estático: el validador tolera registros legacy sin `steps`; reconstrucción los representa como `steps: []`. La admisión de misiones nuevas sí exige array `steps`. Un registro PREPARED que necesite un paso inexistente se rechaza.
+- Clasificación: contrato de compatibilidad ambiguo, no vulnerabilidad confirmada. No se cambió runtime ni se congeló la tolerancia mediante un test, porque falta evidencia del contrato de migración/versionado.
+- Siguiente paso: rastrear productores/migradores y fixtures históricos de misión antes de proponer un cambio mínimo de contrato. CI del SHA `594cee05c61617b38cc6481698643215e9da9ae2` sigue sin verificación confirmada en este checkpoint.
+- Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — cobertura adicional de dependencias persistidas (2026-10-20)
 
 - Se añadieron tres regresiones focales a `tests/nexo/continuity-contract.test.mjs` para ramas que el validador ya implementaba, pero que no estaban afirmadas directamente en los tests localizados: array `dependsOn` disperso (sparse), referencia de dependencia duplicada y autorreferencia.
