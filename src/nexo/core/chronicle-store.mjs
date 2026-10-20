@@ -69,8 +69,9 @@ async function acquireLock(fsModule, filePath) {
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
       const owner = await readLockOwner(fsModule, lock);
-      let age = 0;
-      try { age = Date.now() - (await fsModule.stat(lock)).mtimeMs; } catch {}
+      let age;
+      try { age = Date.now() - (await fsModule.stat(lock)).mtimeMs; }
+      catch { throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN"); }
       const stale = age > LOCK_STALE_MS && (!owner || !processIsAlive(Number(owner.pid)));
       if (stale) {
         // Reclaiming by check-then-rm is racy: another process may replace the
