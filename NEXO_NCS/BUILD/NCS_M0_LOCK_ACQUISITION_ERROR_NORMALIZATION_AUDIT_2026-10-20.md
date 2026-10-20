@@ -1,6 +1,6 @@
 # NCS M0 — normalización del error de adquisición de lock en initialize() (2026-10-20)
 
-**Estado inicial:** corrección estrecha de contrato implementada; CI del nuevo SHA pendiente de observación.  
+**Estado final:** corrección estrecha de contrato y regresión validadas por cinco workflows SUCCESS en el SHA exacto `b133c8c392739a0912f7b0466650a25962ead267`.  
 **Rama:** `ncs-clean-architecture`  
 **Misión:** M0. No modifica autoridad, despacho, política de espera ni recuperación de locks.
 
@@ -35,7 +35,9 @@ Blobs después de los cambios:
 
 ## 4. CI y límites de evidencia
 
-En la primera consulta tras el commit de pruebas, el combined status de `9fad44406e3c19bac2a20ecb830cf29f6758dae7` no mostraba todavía checks y la consulta de workflow runs no devolvía ejecuciones. Por tanto, **no se afirma PASS de CI todavía**. El checkpoint se debe actualizar sólo cuando se observe un resultado asociado al SHA exacto.
+El primer SHA de código/prueba `9fad44406e3c19bac2a20ecb830cf29f6758dae7` sí generó cinco workflows. Dos fallaron por una aserción obsoleta en la prueba: esperaba `EACCES` en `initialize()`, pero el runtime devolvía el nuevo código de dominio como se requería. Red conservado: aceptación integrada [39372027172](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027172) y admisión/reinicio [39372027076](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027076). STEP 4 [39372027142](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027142), STEP 5 [39372027131](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027131) y persistencia determinista [39372027145](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027145) fueron SUCCESS.
+
+La expectativa se corrigió sólo en el test, commit `b133c8c392739a0912f7b0466650a25962ead267`, blob `ee9327c706f8b34a7c2a7c632f48cb81776df098`. La aserción que mantiene el contrato de `commitIfCurrent()` (propagar `EACCES`) no se modificó. **Cinco workflows son SUCCESS en el SHA exacto corregido**: M0 integrado [39372728077](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728077), admisión/reinicio [39372728055](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728055), persistencia determinista [39372728046](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728046), STEP 4 [39372728141](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728141), STEP 5 [39372728127](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728127).
 
 La regresión es un test de software con fallo inyectado. No prueba permisos de filesystem de un dispositivo real, durabilidad ante pérdida de energía, seguridad ante host local comprometido ni autoridad legítima.
 
@@ -45,4 +47,4 @@ La regresión es un test de software con fallo inyectado. No prueba permisos de 
 - `authorization: NOT_EVALUATED`.
 - Efectos protegidos: `STOP`.
 - Raíz legítima: `PENDING/UNKNOWN`.
-- Siguiente paso inmediato: observar CI del SHA exacto `9fad44406e3c19bac2a20ecb830cf29f6758dae7`. No modificar otra frontera hasta saber si esta regresión pasa.
+- Siguiente paso: continuar la revisión contractual acotada de contención de locks, callers públicos y requisitos de progreso. No introducir timeout/BUSY/cancelación/lease/recuperación automática sin fijar primero el contrato. No ampliar el alcance ni reabrir auditorías cerradas.
