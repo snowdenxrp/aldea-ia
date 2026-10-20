@@ -37,3 +37,22 @@ Queda una decisión de contrato M0 que debe resolverse desde el comportamiento e
 
 ## Estado global
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`. Esta nota no afirma que la discrepancia esté cerrada; establece evidencia existente y el siguiente límite concreto.
+
+
+## Cierre de la regresión selectiva — implementación y CI (2026-10-20)
+
+Se revisó `scripts/nexo.mjs`: la CLI asigna exit code 1 cuando el resultado no es `reconstructed`; antes ignoraba `statusDiscrepancy` si la consulta regresaba `reconstructed`. El primer cambio tentativo que bloqueaba **toda** diferencia falló porque una misión persistida como `planned` puede reconstruirse legítimamente como `awaiting_verification`. Esa ejecución fallida se conserva como evidencia del límite de la regla, no como PASS: [run 39429434598](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429434598), SHA `b2e446fbba0ca4291dc0fdc3a9a1e008d56f0352).
+
+La regla se afinó en `src/nexo/application/continuity-queries.mjs` (blob `432a53038d1527ada0d1be9bb77769aaaf2df9ee`): el estado `planned` es metadata persistida/histórica y puede diferir de la reconstrucción; una afirmación persistida `completed` sí queda bloqueada si la vista canónica reconstruida no es `completed`. El resultado bloqueado conserva sólo diagnóstico acotado (`missionId`, revisión, ambos estados y código `NEXO_MISSION_STATUS_DISCREPANCY`), no pasos que parezcan una proyección utilizable ni payload privado. La consulta sigue siendo read-only.
+
+### Evidencia CI exacta del cambio afinado
+SHA: `f07840b2222f55124e200c2866789834fa6904dd`.
+- [Mission status projection — run 39429700787](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700787): success; el paso `Run independent Nexo entrypoint regression` pasó.
+- [Deterministic persistence — run 39429700840](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700840): success.
+- [M0 integrated acceptance — run 39429700796](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700796): success; los pasos de continuidad, reconstrucción/transición y entrypoints pasaron.
+- [Chronicle native vertical — run 39429700814](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700814): success.
+
+La prueba de contradicción de `tests/nexo/entrypoint.test.mjs` exige ahora exit code 1, `status: blocked`, código `NEXO_MISSION_STATUS_DISCREPANCY`, estados persistido/reconstruido visibles y ausencia de pasos/payload. El caso legítimo `planned → awaiting_verification` conserva respuesta `reconstructed`; no se convierte cualquier diferencia en bloqueo. No se muta la misión persistida para “arreglar” la consulta.
+
+### Interpretación
+La regresión selectiva está cerrada para este contrato en el SHA indicado. Esto no demuestra coherencia global de cada consumidor externo ni autoriza efectos protegidos. No hubo cambio de autoridad ni de Chronicle runtime. M0 sigue `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`.
