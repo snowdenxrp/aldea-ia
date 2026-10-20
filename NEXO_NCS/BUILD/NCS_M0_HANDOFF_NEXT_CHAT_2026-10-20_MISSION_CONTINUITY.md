@@ -294,3 +294,16 @@ CI para la suite determinista está verificada en el SHA indicado arriba. Contin
 ### Próxima acción tras el cambio
 
 Consultar CI del HEAD que incluya el runtime y la regresión de journal terminal huérfano. Si pasa, continuar con otra frontera concreta de reconstrucción/retención sólo si hay un contraejemplo reproducible. No reabrir AuthorityGate, locks o Chronicle sin evidencia nueva.
+
+
+## Verificación CI confirmada — aislamiento de journal terminal histórico (2026-10-20)
+
+- Runtime fix: `5a1bbd77270941d24ce5801408d32cf4d05646a6`; regresión: `4c1555ec56f5c7ec357ec0884eec03807539cb95`.
+- En el SHA exacto de regresión `4c1555ec56f5c7ec357ec0884eec03807539cb95`, terminaron SUCCESS: [persistencia determinista 39451734619](https://github.com/snowdenxrp/aldea-ia/actions/runs/39451734619), [aceptación integrada M0 39451734664](https://github.com/snowdenxrp/aldea-ia/actions/runs/39451734664), [admisión/continuidad 39451734557](https://github.com/snowdenxrp/aldea-ia/actions/runs/39451734557), [validación semántica 39451734719](https://github.com/snowdenxrp/aldea-ia/actions/runs/39451734719) y [clasificación de outcomes 39451734698](https://github.com/snowdenxrp/aldea-ia/actions/runs/39451734698).
+- Además, el HEAD documental `b429a0f606a2fe62c045eabf4757a490778bcad9` ejecutó [persistencia determinista 39451824503](https://github.com/snowdenxrp/aldea-ia/actions/runs/39451824503), job `tests` SUCCESS. Este SHA contiene runtime + regresión y los documentos de continuidad vigentes.
+- Conclusión acotada: la regresión de journal terminal huérfano no bloqueante para una misión retenida pasó en la suite y workflows listados. No se ha validado toda autoridad M0 ni se habilitan efectos protegidos.
+- Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+### Siguiente paso
+
+La regresión de journal terminal de una misión podada está verificada por CI. Seguir con una frontera nueva sólo ante evidencia concreta; no expandir el cambio a registros desconocidos o a la política de autoridad sin contrato y contraejemplo. Mantener M0 incompleto y los efectos protegidos en STOP.
