@@ -1,3 +1,13 @@
+## M0 — validación estricta de identidad y forma de misión persistida (2026-10-20)
+
+- Cambio runtime: `src/nexo/core/continuity-contract.mjs`, commit `9fbb96a7d0949d1441fd280f5f6d82101606af11`. Los registros persistidos ahora requieren objeto de misión, `missionId` no vacío y sin `:`, y array `steps`; ya no se salta validación ni se permite que un ID ausente se convierta en misión reconstruida por búsqueda `undefined`.
+- Regresiones: `tests/nexo/continuity-contract.test.mjs`, commit `04d54049f19938685bd877653d23c9d69e775145`: identidad ausente, steps ausente, ID con delimitador y reconstrucción contra misión sin identidad.
+- Informe actualizado: [NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md](BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md), commit `9fa783664de7ad74a422ccc26c0965225bfad042`.
+- CI: consultas para el SHA de tests no devolvieron checks ni workflow runs. **NO VERIFICADO**; no afirmar PASS. Siguiente acción: conseguir evidencia de ejecución de la suite focal y resolver cualquier fixture legacy fallida bajo contrato versionado, sin reintroducir defaults silenciosos.
+- Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — frontera de compatibilidad de misión persistida (2026-10-20)
 
 - Revisión focal guardada: [NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md](BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md), commit `84ebe145adca3d38d4454b9da9556eb4b724bf63`.
