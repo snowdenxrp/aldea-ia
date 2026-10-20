@@ -85,8 +85,9 @@ async function acquireLock(fsModule, filePath) {
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
       const current = await readLockOwner(fsModule, lockPath);
-      let age = 0;
-      try { age = Date.now() - (await fsModule.stat(lockPath)).mtimeMs; } catch {}
+      let age;
+      try { age = Date.now() - (await fsModule.stat(lockPath)).mtimeMs; }
+      catch { throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN"); }
       const stale = current
         ? age > LOCK_STALE_MS && !processIsAlive(Number(current.pid))
         : age > LOCK_STALE_MS;
