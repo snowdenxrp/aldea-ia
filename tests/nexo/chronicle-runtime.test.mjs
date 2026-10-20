@@ -476,6 +476,30 @@ assert.equal(preparedUnknownResult.journalSettled, false);
 assert.equal(preparedUnknownResult.terminalOutcomeRecorded, false);
 assert.equal(preparedUnknownResult.redispatchAuthorized, false);
 
+// A confirmed PREPARED write with failed lock handoff remains blocked, but the
+// public result must preserve the fact that the journal entry was persisted.
+let unsafePreparedDispatches = 0;
+const unsafePreparedHandoff = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission", stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({
+      status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+      persistenceStatus: "committed", preparedCommitted: true, storeRevision: 5
+    }),
+    recordExecutionLineage: async () => { throw new Error("unsafe PREPARED handoff must stop before lineage"); },
+    reconcilePrepared: async () => { throw new Error("unsafe PREPARED handoff must stop before reconciliation"); },
+    recordOutcome: async () => { throw new Error("unsafe PREPARED handoff must stop before outcome"); }
+  },
+  adapter: adapter(() => { unsafePreparedDispatches++; return { status: "completed" }; })
+});
+assert.equal(unsafePreparedHandoff.status, "blocked");
+assert.equal(unsafePreparedHandoff.preparedCommitted, true);
+assert.equal(unsafePreparedHandoff.dispatchAttempted, false);
+assert.equal(unsafePreparedHandoff.redispatchAuthorized, false);
+assert.equal(unsafePreparedDispatches, 0);
+
 const malformedPreparedResponses = [
   { label: "missing confirmation flag", value: { status: "committed", storeRevision: 5 } },
   { label: "false confirmation flag", value: { status: "committed", preparedCommitted: false, storeRevision: 5 } },
@@ -554,6 +578,33 @@ for (const malformedLineage of [
   assert.equal(reconciliations, 0);
 }
 
+// A lineage commit whose lock handoff fails is known persisted, but it cannot
+// be used as a confirmed CAS handoff to reconciliation.
+let unsafeLineageDispatches = 0;
+let unsafeLineageReconciliations = 0;
+const unsafeLineageHandoff = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission", stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
+    recordExecutionLineage: async () => ({
+      status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+      persistenceStatus: "committed", storeRevision: 6
+    }),
+    reconcilePrepared: async () => { unsafeLineageReconciliations++; throw new Error("must not reconcile after unsafe lineage handoff"); },
+    recordOutcome: async () => { throw new Error("must not record outcome after unsafe lineage handoff"); }
+  },
+  adapter: adapter(() => { unsafeLineageDispatches++; return { status: "completed" }; })
+});
+assert.equal(unsafeLineageHandoff.status, "unknown");
+assert.equal(unsafeLineageHandoff.dispatchAttempted, true);
+assert.equal(unsafeLineageHandoff.lineageCommitted, true);
+assert.equal(unsafeLineageHandoff.journalSettled, false);
+assert.equal(unsafeLineageHandoff.redispatchAuthorized, false);
+assert.equal(unsafeLineageDispatches, 1);
+assert.equal(unsafeLineageReconciliations, 0);
+
 let reconciliationDispatches = 0;
 const reconciliationUnknownResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
@@ -576,6 +627,37 @@ assert.equal(reconciliationUnknownResult.journalSettled, "UNKNOWN");
 assert.equal(reconciliationUnknownResult.terminalOutcomeRecorded, false);
 assert.equal(reconciliationUnknownResult.redispatchAuthorized, false);
 assert.equal(reconciliationDispatches, 1);
+
+// A Chronicle settlement whose commit is confirmed but whose lock handoff fails
+// must remain non-terminal at the mission-outcome layer while preserving the
+// durable journal-settlement fact. Replay may record the outcome only.
+let unsafeReconcileDispatches = 0;
+let unsafeReconcileOutcomeCalls = 0;
+const unsafeReconcileHandoff = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission", stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
+    recordExecutionLineage: async () => ({ status: "committed", storeRevision: 6 }),
+    reconcilePrepared: async () => ({
+      status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+      persistenceStatus: "committed", storeRevision: 7,
+      observationCommitted: true, observation: "applied", observedRevision: 1,
+      source: "nexo-chronicle-store", journalSettled: true
+    }),
+    recordOutcome: async () => { unsafeReconcileOutcomeCalls++; throw new Error("must wait for a confirmed reconciliation handoff"); }
+  },
+  adapter: adapter(() => { unsafeReconcileDispatches++; return { status: "completed" }; })
+});
+assert.equal(unsafeReconcileHandoff.status, "unknown");
+assert.equal(unsafeReconcileHandoff.dispatchAttempted, true);
+assert.equal(unsafeReconcileHandoff.lineageCommitted, true);
+assert.equal(unsafeReconcileHandoff.journalSettled, true);
+assert.equal(unsafeReconcileHandoff.terminalOutcomeRecorded, false);
+assert.equal(unsafeReconcileHandoff.redispatchAuthorized, false);
+assert.equal(unsafeReconcileDispatches, 1);
+assert.equal(unsafeReconcileOutcomeCalls, 0);
 
 const adapterThrowResult = await executeNexoStepWithContinuityOwner({
   missionId: "chronicle-mission",
@@ -960,6 +1042,65 @@ try {
     assert.equal(malformedOutcomeCurrent.snapshot.effectJournal[0].status, "settled_observed", testCase.label);
     assert.equal(malformedOutcomeCurrent.snapshot.attempts.length, 0, testCase.label);
   }
+
+  // If the terminal outcome was committed but lock release failed, preserve
+  // the known outcome receipt without upgrading the overall response to success.
+  const outcomeLockFailure = await setup("chronicle-outcome-lock-release-failed");
+  let outcomeLockFailureDispatches = 0;
+  const ownerWithOutcomeLockFailure = Object.freeze({
+    ...outcomeLockFailure.opened.owner,
+    recordOutcome: async args => {
+      const committed = await outcomeLockFailure.opened.owner.recordOutcome(args);
+      return {
+        ...committed,
+        status: "failed",
+        code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+        persistenceStatus: "committed"
+      };
+    }
+  });
+  const outcomeLockFailureResult = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-outcome-lock-release-failed", stepId: "step-1",
+    owner: ownerWithOutcomeLockFailure,
+    adapter: createEffectAdapter({
+      handlers: { chronicle_append: async request => {
+        outcomeLockFailureDispatches++;
+        return outcomeLockFailure.contracts.handlers.chronicle_append(request);
+      } },
+      verifiers: outcomeLockFailure.contracts.verifiers
+    }),
+    postcondition: outcomeLockFailure.contracts.postcondition
+  });
+  assert.equal(outcomeLockFailureResult.status, "blocked");
+  assert.equal(outcomeLockFailureResult.terminalOutcomeRecorded, true);
+  assert.equal(outcomeLockFailureResult.journalSettled, true);
+  assert.equal(outcomeLockFailureResult.redispatchAuthorized, false);
+  assert.equal(outcomeLockFailureDispatches, 1);
+  assert.equal((await outcomeLockFailure.opened.owner.loadCurrent()).snapshot.attempts[0].status, "completed");
+
+  // Unknown outcome persistence must not be collapsed to a definite failure.
+  const outcomePersistenceUnknown = await executeNexoStepWithContinuityOwner({
+    missionId: "chronicle-mission", stepId: "step-1",
+    owner: {
+      loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
+      supportsReconciliation: () => true,
+      recordPrepared: async () => ({ status: "committed", preparedCommitted: true, storeRevision: 5 }),
+      recordExecutionLineage: async () => ({ status: "committed", storeRevision: 6 }),
+      reconcilePrepared: async () => ({
+        status: "observed", observation: "applied", storeRevision: 7,
+        observedRevision: 1, source: "nexo-chronicle-store", journalSettled: true
+      }),
+      recordOutcome: async () => ({
+        status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+        persistenceStatus: "unknown"
+      })
+    },
+    adapter: adapter(() => ({ status: "completed" }))
+  });
+  assert.equal(outcomePersistenceUnknown.status, "unknown");
+  assert.equal(outcomePersistenceUnknown.terminalOutcomeRecorded, "UNKNOWN");
+  assert.equal(outcomePersistenceUnknown.journalSettled, true);
+  assert.equal(outcomePersistenceUnknown.redispatchAuthorized, false);
 
   // Two callers racing on an already-admitted operation must not duplicate the
   // append. A loser may report conflict/unknown; an explicit retry recovers the
