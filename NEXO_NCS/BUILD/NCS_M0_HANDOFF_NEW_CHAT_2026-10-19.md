@@ -1,3 +1,15 @@
+## ACTUALIZACIÓN — owner.json malformado, UNKNOWN inmediato y carrera preservada
+
+- Se encontró que `readLockOwner()` convertía fallos de lectura/parseo en `null`, haciendo indistinguible el owner ausente del registro ilegible.
+- Fix Chronicle `dfe05ad3f0ded03253c4186a45b6d48f15c53787`; Continuity `8b1c5f725ba85b71dfc9ccdd6064219d1c67feb0`. Regresiones malformadas `dfd4b5a75172a1c66e082347e61d331b4326a161` y `74d8057d6259e54a232e090547394b3d3faf4f22`.
+- La primera revisión falló: run `39360972580`, por clasificar un owner válido de segunda lectura como UNKNOWN. Fix de carrera Chronicle `439bb8a720d0021c76a20ca4ca9f330bc98db7ae`; Continuity `e04f761bb656034ac500fbf370fca37e9988b41f`.
+- CI SUCCESS en SHA final exacto `e04f761bb656034ac500fbf370fca37e9988b41f`: persistencia `39361042107`, STEP 4 `39361042101`, STEP 5 `39361042218`, admission/restart `39361042217`, crash cuts `39361042215`, integrated M0 `39361042247`. Chronicle native `39361035687` SUCCESS en SHA inmediatamente anterior; los tests de persistencia e integración prueban ambos cambios combinados en el SHA final.
+- Matriz actualizada `968c54dccc2e28f3d9b5521b9b5ab0b966593952`; STATUS actualizado `03a3975d205173c2482c3396c7012aaf3f4a70dd`.
+- Contrato actual: owner.json ENOENT → reintentar carrera; owner presente pero malformado/ilegible o error de lectura distinto de ENOENT → LOCK_STATE_UNKNOWN, lock preservado, ninguna inicialización/escritura. Sin timeout, BUSY ni recuperación/borrado automático.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — Chronicle release fail-closed + carrera EEXIST/stat resuelta
 
 - Defecto: Chronicle ignoraba token de owner mismatch y el resultado de release; podía devolver `committed` mientras quedaba lock sin liberar.
