@@ -54,3 +54,15 @@ Clasificación: brecha de caracterización del lock, no permiso para reclamar/bo
 - CI para SHA exacto `c5ffff237b6c9933030a12308aab066aa968cb32`: persistencia [run 39357200273](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200273) SUCCESS, job `tests`, paso `Run tests`; Chronicle native vertical [39357200274](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200274) SUCCESS; integrated M0 acceptance [39357200292](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200292) SUCCESS; STEP 4 [39357200316](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200316) SUCCESS; STEP 5 [39357200276](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200276) SUCCESS; bounded mission admission/restart [39357200280](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200280) SUCCESS.
 - No se añade timeout/BUSY ni se borra un lock que no pertenece a esta operación. El error explícito detiene la adquisición cuando la edad no puede conocerse; el comportamiento público sigue sujeto a los contratos existentes de cada store.
 - Límite: no es una prueba de durabilidad ante pérdida de energía, ni de autoridad constitucional. M0 continúa INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+## Crosswalk de errores de adquisición hacia callers (inspección estática, 2026-10-19)
+
+| Operación del owner | El store lanza error de adquisición | Contención del caller observada | Riesgo de redispatch observado |
+|---|---|---|---|
+| `recordMission()` | Propaga `commitIfCurrent()` | `runNexoChronicleAppend()` captura y devuelve resultado bloqueado | No dispatch; `dispatchAttempted:false`, `redispatchAuthorized:false` |
+| `recordPrepared()` | Propaga | `runNexoOwnerBackedRuntime()` captura y devuelve `unknown` con `preparedCommitted:UNKNOWN` | No dispatch sin confirmación explícita de PREPARED |
+| `recordOutcome()` | Propaga | Runtime captura y clasifica el resultado terminal como incierto | No habilita redispatch |
+| `recordExecutionLineage()` | Propaga | Runtime captura como incertidumbre post-dispatch | `dispatchAttempted:true`, `redispatchAuthorized:false` |
+| `reconcilePrepared()` | Captura localmente | Devuelve `blocked` con incertidumbre de commit de observación | No redispatch |
+
+Conclusión: la asimetría pública existe y es real, pero los callers inspeccionados contienen los errores de modo conservador; no se observó una ruta que convierta un error de adquisición en confirmación de PREPARED o permiso de redispatch. Por tanto, **no normalizar la API sólo por simetría estética**. La decisión pendiente es si el contrato de cada store debe ser uniforme en una revisión arquitectónica explícita; cualquier cambio debe mantener estas invariantes y añadir regresiones de caller.
