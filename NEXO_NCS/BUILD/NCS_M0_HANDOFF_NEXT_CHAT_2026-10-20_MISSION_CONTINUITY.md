@@ -159,3 +159,10 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - CI corroborado directamente por metadatos de GitHub: run `39441463747`, workflow `Nexo — deterministic persistence tests`, `completed / success`, head SHA exacto `04fcc08081f81b3c385d4d8e9217a7744545d164`.
 - Próxima tarea segura: escoger una brecha M0 con contraejemplo concreto y test dirigido. La coexistencia legacy/owner-backed ya está clasificada en `NCS_M0_LEGACY_EFFECT_PATH_VS_OWNER_BACKED_2026-10-19.md`; el informe indica que no se halló caller de producción actual y prohíbe tratar la API legacy como efecto protegido. No migrar ni habilitar acciones sin autoridad y dueño canónico.
 - No se cambia el estado constitucional: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Ajuste final del checkpoint de continuidad (2026-10-20)
+
+- STATUS recibió una segunda corrección documental en commit `d20d2780b7da888ae8ca65f4b0b58f04cb4236d2`: la antigua nota de compatibilidad de `steps` ahora está etiquetada explícitamente como supersedida por el contrato runtime posterior. Se conserva como historial para no borrar el razonamiento anterior.
+- Esto evita que el siguiente chat confunda la revisión histórica de compatibilidad con la regla actual de fail-closed. No se modificó runtime ni se abrió una auditoría nueva.
+- URL de entrada vigente: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/STATUS.md
