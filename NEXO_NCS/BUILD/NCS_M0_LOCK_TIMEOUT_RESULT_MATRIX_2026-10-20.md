@@ -1,6 +1,6 @@
 # NCS M0 — matriz de resultados para timeout de adquisición
 Fecha: 2026-10-20
-Estado: **propuesta de contrato por API; pendiente de implementación y validación**.
+Estado: **implementación inicial y pruebas base presentes; matriz de integración todavía parcialmente pendiente**.
 Base: fuentes inspeccionadas en el mapa `NCS_M0_LOCK_DEADLINE_CALLER_MAP_2026-10-20.md`.
 
 ## 1. Principio común
@@ -58,14 +58,15 @@ El timeout no reemplaza ni reescribe una recepción de persistencia ya obtenida.
 - Timeout al persistir lineage/outcome → preservar UNKNOWN cuando la fase de persistencia realmente pudo comenzar.
 - Concurrencia de misma revisión y todos los recibos actuales de write/rename y lock release siguen pasando.
 
-## 6. Pendientes que bloquean implementación completa
+## 6. Estado y pendientes de integración
 
-1. Confirmar el presupuesto finito inicial configurable. Recomendación de arquitectura: **2.000 ms iniciales, configurable**, como hipótesis para pruebas, no garantía de tiempo de pared. Aún no es una decisión aceptada.
-2. Confirmar o refinar la forma exacta de resultado (`phase`/`writeStarted`) tras revisar convenciones existentes.
-3. Implementar helper monotónico mínimo y propagar un único deadline desde la frontera de aplicación, no desde cada store.
-4. Implementar tests antes de considerar cualquier estado cerrado; ejecutar CI M0 sobre un SHA exacto.
+1. Presupuesto aceptado: **2.000 ms configurable**, sin promesa de límite de pared estricto.
+2. Helper monotónico y propagación de deadline compartido implementados en la ruta `runNexoChronicleAppend`.
+3. Pruebas base para los cuatro métodos de store y seis workflows relevantes en verde sobre SHA `cf62bd858232a8c0c71f21ace6469c2a62f48448`.
+4. Pendiente: test determinista de adquisición tardía (la llamada a mkdir resuelve después del deadline) y de fallo de liberación en ese caso.
+5. Pendiente: verificar cómo se propaga el resultado a través de todos los callers/entrypoints; no declarar cerrado hasta que la matriz completa sea cubierta por tests.
 
 ## 7. Estado de seguridad
 
-Diseño solamente: no hay cambios de runtime/tests ni CI nuevo por esta matriz.
+Implementación inicial de runtime/tests sí existe en SHA `cf62bd858232a8c0c71f21ace6469c2a62f48448`; la matriz describe resultados observados/propuestos y sus pendientes, no cierre de M0.
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
