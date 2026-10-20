@@ -16,7 +16,7 @@ Runtime commit: `9b018d36699a4c75b0251610f77fc310d79b6c26`.
 
 `commitIfCurrent()` now normalizes a non-path lock-acquisition exception into a structured failure. Recognized `NEXO_CONTINUITY_STORE_*` codes are preserved; other codes are mapped to `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED`. The result includes `phase: "lock_acquisition"` and `writeStarted: false`. The catch applies only to lock acquisition, before the store transaction's write path; it does not convert later commit/write uncertainty into a definite failure.
 
-Regression test commit: `0f072bd54c5a58f8bef918303acca8372a083438`. The EACCES test now asserts the structured failure and `writeStarted: false`. A comment-only follow-up commit `4e1037dc8d172440e237d479af3982fcaa01277b` clarifies that both public operations share the structured result contract.
+Regression test commits: `0f072bd54c5a58f8bef918303acca8372a083438`, `4e1037dc8d172440e237d479af3982fcaa01277b`, and `c0adce68129c6b7bfd78260b761208653fee3054`. CI on `4e1037dc` exposed two remaining assertions that still expected raw exceptions for stale-lock and `EACCES` acquisition cases. Those assertions were updated to require structured fail-closed results; stale-lock code remains preserved as `NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED`.
 
 ## Scope and non-claims
 
@@ -26,7 +26,7 @@ Regression test commit: `0f072bd54c5a58f8bef918303acca8372a083438`. The EACCES t
 
 ## Validation status
 
-The change must be judged by CI for the exact resulting SHA. A run on an earlier SHA does not validate this change. Record the exact run and conclusion in STATUS once completed.
+Initial CI on `4e1037dc8d172440e237d479af3982fcaa01277b` failed in `tests/nexo/continuity-store.test.mjs` because stale-lock and EACCES assertions still expected thrown exceptions after the contract was normalized. This was a test-contract mismatch, not a runtime test pass. The assertions were corrected in `c0adce68129c6b7bfd78260b761208653fee3054`. CI for the current final SHA must complete before this fix is considered validated; a run on an earlier SHA does not validate it.
 
 ## M0 remains
 
