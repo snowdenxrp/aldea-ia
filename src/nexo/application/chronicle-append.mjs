@@ -43,18 +43,19 @@ export function publicChronicleResult(result, missionId, stepId) {
   if (Number.isSafeInteger(result?.storeRevision) && result.storeRevision >= 0) {
     safe.storeRevision = result.storeRevision;
   }
-  const timeoutSource = [result, result?.prepared, result?.lineage, result?.reconciliation,
-    result?.outcome, result?.adapterResult].find(value =>
-      value && (value.phase === "lock_acquisition" ||
-        (typeof value.code === "string" && value.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"))));
+  const timeoutSources = [result, result?.prepared, result?.lineage, result?.reconciliation,
+    result?.outcome, result?.adapterResult];
+  const timeoutSource = timeoutSources.find(value => value &&
+    (value.phase === "lock_acquisition" || typeof value.writeStarted === "boolean" || value.lockRelease));
+  const timeoutCodeSource = timeoutSources.find(value =>
+    typeof value?.code === "string" && value.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"));
   if (timeoutSource) {
     if (typeof timeoutSource.phase === "string") safe.phase = timeoutSource.phase;
     if (typeof timeoutSource.writeStarted === "boolean") safe.writeStarted = timeoutSource.writeStarted;
     if (timeoutSource.lockRelease && typeof timeoutSource.lockRelease === "object") safe.lockRelease = timeoutSource.lockRelease;
-    if (typeof timeoutSource.code === "string" && timeoutSource.code.endsWith("_LOCK_ACQUISITION_TIMEOUT") &&
-        !(typeof result?.code === "string" && result.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"))) {
-      safe.lockAcquisitionCode = timeoutSource.code;
-    }
+  }
+  if (timeoutCodeSource && !(typeof result?.code === "string" && result.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"))) {
+    safe.lockAcquisitionCode = timeoutCodeSource.code;
   }
   return safe;
 }
