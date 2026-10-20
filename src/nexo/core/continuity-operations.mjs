@@ -277,7 +277,7 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
     if (step) {
       step.status = "blocked";
       step.blockReason = {
-        code: "NEXO_EFFECT_JOURNAL_STATE_UNKNOWN",
+        code: "NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN",
         next: "reconcile_effect_journal_without_redispatch"
       };
     }
