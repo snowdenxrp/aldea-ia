@@ -245,3 +245,12 @@ No volver a auditar el trabajo de lock error normalization que ya está cerrado;
 - Application tests: timeout while initializing missing Chronicle and while bootstrapping missing Continuity preserve timeout code, phase, and writeStarted:false.
 - Current code/tests SHA: 12efac26d0948b91c59706612edec7df9e78c4f5. Six returned workflows succeeded: 39376332936, 39376332981, 39376333167, 39376332991, 39376333035, 39376333016. Logs checked: 118475197653, 118475197877, 118475199164. No mission-admission/restart run was returned for this SHA; don't claim it passed on this exact SHA.
 - Remaining: final caller/entrypoint audit outside runNexoChronicleAppend; confirm isolated mutations use bounded per-call defaults and no public surface drops timeout or enables redispatch.
+
+
+### Caller inventory conclusion
+
+- The stable application API has one mutating use case: runNexoChronicleAppend; it creates and shares one absolute monotonic deadline. Continuity queries use loadCurrent only.
+- The Chronicle CLI delegates to the application API and now emits sanitized timeout metadata.
+- The separate repair-session/repair-entrypoint path receives owner/store objects by injection; it is not the supported interactive Chronicle route. Canonical owner-backed runtime currently rejects repair actions before PREPARED. Do not activate this repair path as an interactive operation until it has its own shared-deadline propagation and tests.
+- No second public stable application boundary composing Continuity + Chronicle stores was found in the inspected source tree. Standalone store mutations remain bounded per call.
+- Next M0 decision/work item: explicitly keep the injected repair path outside the active interactive contract, or design/propagate a shared deadline before enabling it. Keep M0 INCOMPLETO, authorization NOT_EVALUATED, protected effects STOP, legitimate root PENDING/UNKNOWN.
