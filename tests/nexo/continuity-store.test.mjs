@@ -457,6 +457,33 @@ assert.equal(conditionalUnknownObserved.storeRevision, 0,
   "an independent read shows this injected pre-replacement failure left the old envelope intact");
 assert.deepEqual(conditionalUnknownObserved.snapshot, emptySnapshot);
 
+const conditionalReadFailureDir = path.join(directory, "conditional-commit-read-failure");
+await fs.mkdir(conditionalReadFailureDir);
+const conditionalReadFailurePath = path.join(conditionalReadFailureDir, "continuity.json");
+const conditionalReadFailureBase = createNexoContinuityStore({ filePath: conditionalReadFailurePath });
+assert.equal((await conditionalReadFailureBase.initialize(emptySnapshot)).status, "committed");
+const conditionalReadFailureBefore = await fs.readFile(conditionalReadFailurePath, "utf8");
+const fsWithConditionalReadFailure = {
+  ...fs,
+  readFile: async (target, ...args) => {
+    if (String(target) === conditionalReadFailurePath) {
+      throw Object.assign(new Error("simulated canonical envelope read failure inside commit"), { code: "EACCES" });
+    }
+    return fs.readFile(target, ...args);
+  }
+};
+const conditionalReadFailureStore = createNexoContinuityStore({
+  filePath: conditionalReadFailurePath,
+  fsModule: fsWithConditionalReadFailure
+});
+assert.deepEqual(
+  await conditionalReadFailureStore.commitIfCurrent(0, candidateA),
+  { status: "unknown", code: "NEXO_CONTINUITY_STORE_READ_FAILED" },
+  "a canonical envelope read failure under lock must return UNKNOWN before attempting a write"
+);
+assert.equal(await fs.readFile(conditionalReadFailurePath, "utf8"), conditionalReadFailureBefore,
+  "a failed canonical read must not alter the envelope");
+
 /* Characterize the intentionally mixed public lock-acquisition behavior. */
 const lockAcquireErrorDir = path.join(directory, "lock-acquisition-error");
 await fs.mkdir(lockAcquireErrorDir);
