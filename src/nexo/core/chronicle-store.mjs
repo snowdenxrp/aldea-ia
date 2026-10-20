@@ -80,7 +80,12 @@ async function acquireLock(fsModule, filePath) {
       const owner = await readLockOwner(fsModule, lock);
       let age;
       try { age = Date.now() - (await fsModule.stat(lock)).mtimeMs; }
-      catch { throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN"); }
+      catch (error) {
+        // The owner may have released the lock after mkdir returned EEXIST.
+        // Retry that race; other inspection errors make lock state unknown.
+        if (error?.code === "ENOENT") continue;
+        throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN");
+      }
       const stale = age > LOCK_STALE_MS && (!owner || !processIsAlive(Number(owner.pid)));
       if (stale) {
         // Reclaiming by check-then-rm is racy: another process may replace the
