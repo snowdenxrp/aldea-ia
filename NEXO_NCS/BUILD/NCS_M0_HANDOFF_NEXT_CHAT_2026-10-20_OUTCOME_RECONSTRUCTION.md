@@ -172,3 +172,15 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Presupuesto/configuración sigue abierto; no fijar una cifra arbitraria. La garantía no es un timeout estricto de pared si una llamada filesystem no retorna. No agregar framework genérico de cancelación, watchdogs, leases, heartbeats ni reclaim automático como side quest.
 - CI previo: SHA código/test `b133c8c392739a0912f7b0466650a25962ead267` y cinco workflows SUCCESS citados en STATUS. No presentarlos como validación de este nuevo contrato.
 - Mantener M0 `INCOMPLETO`, `authorization: NOT_EVALUATED`, efectos protegidos `STOP`, raíz legítima `PENDING/UNKNOWN`. No reabrir auditorías cerradas de recibos/reconstrucción, no cambiar a M1/STEP 7.
+
+
+## Addendum — mapa de propagación de deadline (2026-10-20)
+
+- Auditoría: `NEXO_NCS/BUILD/NCS_M0_LOCK_DEADLINE_CALLER_MAP_2026-10-20.md`.
+- Mapeadas las firmas públicas de Continuity y Chronicle, la cadena de aplicación `runNexoChronicleAppend`, `openNexoContinuityOwner`, owner mutations, `executeNexoStepWithContinuityOwner`, Chronicle handler y wrapper CLI. No hay deadline monotónico ni configuración de presupuesto existente en las rutas inspeccionadas.
+- No basta con añadir un parámetro a los stores: el deadline debe atravesar PREPARED, lineage, reconciliation y terminal outcome, y ser compartido por Continuity y Chronicle dentro de una operación. No usar presupuestos relativos independientes por cada capa.
+- Tests actuales cubren espera cross-process, concurrencia de misma revisión, stale/unknown, write/rename ambiguos y fallos de lock release; el test de espera cross-process deberá modificarse para la política acotada, y se requieren pruebas de integración de no-dispatch/no-redispatch.
+- **Bloqueo de diseño antes de implementación:** fijar fuente y valor/política de un presupuesto finito para la primera versión. No existe un valor en los fuentes inspeccionados; no inventarlo y no usar fallback ilimitado, porque contradice la decisión A. Recomendación: la configuración del host/aplicación crea un único deadline monotónico absoluto y los stores reciben ese deadline.
+- Siguiente paso: resolver configuración del presupuesto; después, helper mínimo monotónico + matriz de resultado por método; luego implementación y CI exacto. No tocar otras arquitecturas ni reabrir auditorías cerradas.
+- Sin cambios de runtime/tests y sin CI nuevo por este mapa. El último SHA código/test con cinco workflows SUCCESS sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`; no valida este diseño.
+- Estado: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
