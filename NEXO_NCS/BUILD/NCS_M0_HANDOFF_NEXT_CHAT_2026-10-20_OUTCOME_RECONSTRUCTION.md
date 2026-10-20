@@ -225,3 +225,12 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 5. Mantener M0 INCOMPLETO; authorization NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
 
 No volver a auditar el trabajo de lock error normalization que ya está cerrado; no reabrir persistencia-receipt/reconstruction audit; no cambiar a M1 ni STEP 7. La misión sigue siendo M0.
+
+
+### Follow-up — adquisición tardía cubierta
+
+- Pruebas nuevas para Continuity y Chronicle hacen que mkdir se resuelva después del deadline.
+- Verificado: no se inicia escritura; se libera el lock propio; el archivo canónico no aparece.
+- También se simula fallo EACCES de liberación en ambos stores; el resultado mantiene timeout y detalle de lockRelease.failed.
+- SHA exacto de código/tests: 15415580788c4e823f03371b566e29106268b67d. Seis workflows M0 relevantes terminaron success: 39375730407, 39375730358, 39375730428, 39375730355, 39375730370, 39375730363. Logs de jobs 118473315380, 118473315369 y 118473336472 inspeccionados.
+- El siguiente frente es una auditoría dirigida de callers/entrypoints: verificar que los códigos/metadata de timeout no se aplanan y que un timeout posterior a PREPARED/posible dispatch no habilita redispatch. No volver a investigar lock acquisition internals ya cubiertos.
