@@ -1,5 +1,13 @@
 # NCS — HANDOFF COMPLETO PARA CHAT NUEVO (2026-10-19)
 
+## ACTUALIZACIÓN — propagación de errores revisada parcialmente (2026-10-19)
+
+Documento: [NCS_M0_CONTINUITY_STORE_CALLER_ERROR_PROPAGATION_REVIEW_2026-10-19.md](NCS_M0_CONTINUITY_STORE_CALLER_ERROR_PROPAGATION_REVIEW_2026-10-19.md), revisión estática sin cambios de runtime/tests.
+
+Hallazgos: los cinco call sites ejecutables de `store.commitIfCurrent()` en `continuity-owner.mjs` no comparten una única política de errores: cuatro devuelven/proyectan resultados sin catch local; la ruta de observación/reconciliación captura excepciones y devuelve `blocked` con incertidumbre. `openNexoContinuityOwner()` convierte resultados no aceptables de `initialize()` en error de apertura. Por tanto, normalizar o añadir `BUSY` sólo dentro del store puede cambiar contratos aguas arriba y el tratamiento de incertidumbre.
+
+Siguiente paso: completar el mapa de entrypoints/callers superiores y definir el contrato público de errores antes de cambiar adquisición. La revisión de lock sigue recomendando no introducir timeout arbitrario ni reclamación automática. CI de runtime continúa anclado al SHA `6f0499142781e24c55d1adf137170323c8d1afbf`; estas revisiones son documentales.
+
 ## ACTUALIZACIÓN — revisión del contrato de contención del lock (2026-10-19)
 
 Documento nuevo: [NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md](NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md), commit documental `3f7ab36bae416d770fe4bf28210ad50847242c50`.
