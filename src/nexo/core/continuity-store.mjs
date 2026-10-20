@@ -95,9 +95,11 @@ async function acquireLock(fsModule, filePath) {
         }
         try { current = JSON.parse(rawOwner); }
         catch { throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN"); }
-        if (!current || typeof current !== "object" || Array.isArray(current)) {
-          throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN");
-        }
+      }
+      if (!current || typeof current !== "object" || Array.isArray(current) ||
+          !Number.isSafeInteger(current.pid) || current.pid <= 0 ||
+          typeof current.token !== "string" || !current.token.trim()) {
+        throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN");
       }
       let age;
       try { age = Date.now() - (await fsModule.stat(lockPath)).mtimeMs; }
