@@ -1,3 +1,14 @@
+## M0 — actualización vigente: estado desconocido de effect journal (2026-10-20)
+
+- Handoff actual: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_UNKNOWN_EFFECT_RECONSTRUCTION.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_UNKNOWN_EFFECT_RECONSTRUCTION.md).
+- Informe: [NCS_M0_UNKNOWN_EFFECT_RECONSTRUCTION_FAIL_CLOSED_2026-10-20.md](BUILD/NCS_M0_UNKNOWN_EFFECT_RECONSTRUCTION_FAIL_CLOSED_2026-10-20.md).
+- Fix y regresiones CI-verificados en SHA exacto `dd30b70e1204750fc09fac683f30b6e7e129bfe6`: estados de journal desconocidos bloquean reconstrucción; estados unknown sin plan propietario retenido no se ignoran.
+- SUCCESS: persistencia determinista [39464052770](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052770), admisión/continuidad [39464053282](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053282), aceptación integrada [39464053079](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053079), STEP 4 [39464052881](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052881), STEP 5 [39464052959](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052959).
+- Esto supersede las notas históricas previas de CI pendiente para esta regresión específica; no extrapolar fuera de los workflows enumerados.
+- Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — identidad discordante en intentos terminales (2026-10-20)
 
 - Segunda regresión del límite de reconstrucción: una finalización válida podía ocultar otro registro `completed` para el mismo paso con acción/objetivo distintos.
