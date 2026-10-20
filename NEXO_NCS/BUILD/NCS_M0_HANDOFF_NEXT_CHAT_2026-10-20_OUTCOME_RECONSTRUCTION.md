@@ -184,3 +184,14 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Siguiente paso: resolver configuración del presupuesto; después, helper mínimo monotónico + matriz de resultado por método; luego implementación y CI exacto. No tocar otras arquitecturas ni reabrir auditorías cerradas.
 - Sin cambios de runtime/tests y sin CI nuevo por este mapa. El último SHA código/test con cinco workflows SUCCESS sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`; no valida este diseño.
 - Estado: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## Addendum — matriz de resultados de timeout por API (2026-10-20)
+
+- Leer `NEXO_NCS/BUILD/NCS_M0_LOCK_TIMEOUT_RESULT_MATRIX_2026-10-20.md`.
+- Matriz propuesta para las cuatro APIs mutables, handler Chronicle y runtime público. Timeout significa que no empezó la fase de escritura en esa llamada; mantener distinto de stale/unknown/IO/conflict/persistencia ambigua.
+- Forma de resultado `phase`/`writeStarted` es sólo propuesta, requiere validación contra convenciones existentes antes de implementarse.
+- Adquisición tardía: nunca empezar escritura después del deadline; liberar sólo lock propio demostrado; fallo de liberación debe preservarse separado del timeout.
+- La recomendación para presupuesto inicial es 2.000 ms configurable, pero el usuario todavía no ha aceptado explícitamente la cifra. No tratarla como requisito cerrado ni hardcodearla. No prometer tiempo de pared estricto.
+- No runtime/tests modificados ni CI nuevo. El siguiente trabajo puede seguir refinando el contrato sin depender del número; implementación completa espera a que se decida la configuración finita.
+- M0 sigue `INCOMPLETO`, `authorization: NOT_EVALUATED`, efectos protegidos `STOP`, raíz legítima `PENDING/UNKNOWN`.
