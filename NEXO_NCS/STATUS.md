@@ -2331,3 +2331,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Recomendación: resolver como requisito de despliegue/API si M0 acepta writers cooperativos en filesystem local con espera sin límite o requiere respuesta acotada. Si requiere límite, especificar un contrato compartido antes de cambiar código, distinguiendo contención, stale, error IO y persistencia UNKNOWN; todo reintento exige reconciliación canónica y nunca redispatch ciego.
 - No hubo cambios de runtime/tests ni nuevas ejecuciones CI en esta revisión. El último SHA de código/prueba validado sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`, con cinco workflows SUCCESS registrados arriba.
 - Estado global: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+### Propuesta de contrato para la siguiente decisión (no adoptada)
+
+- Recomendación arquitectónica: para el runtime interactivo, preferir espera de lock acotada con presupuesto/deadline monotónico propiedad del caller y propagado por la operación completa; no fijar un timeout arbitrario dentro de cada store ni reiniciar el presupuesto en cada llamada.
+- La expiración sólo puede clasificar una espera que aún no adquirió el lock; no debe cancelar una escritura/rename ya iniciada ni convertir un estado de persistencia ambiguo en fallo seguro.
+- Resultado de timeout previo a adquisición debe ser estructurado y afirmar que la fase de escritura no comenzó. Si la operación ya tenía PREPARED/dispatch previo, cualquier reintento exige leer/reconciliar el estado canónico; nunca redispatch ciego.
+- Informe ampliado: [NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md](BUILD/NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md), sección 5.1.
+- La propuesta no está implementada ni adoptada: falta definir si el primer despliegue requiere respuesta acotada y el presupuesto correspondiente. No se cambió runtime/tests.
