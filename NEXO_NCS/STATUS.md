@@ -1,3 +1,14 @@
+## M0 — matriz inicial de aceptación finita (2026-10-20)
+
+- Matriz contrato → pruebas → evidencia → estado → brecha: [NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md).
+- La suite determinista ejecutó `npm test` con SUCCESS en el HEAD previo `2690d89e197ccadd3e280ff7542f790955d6ce42`: [run 39490757350](https://github.com/snowdenxrp/aldea-ia/actions/runs/39490757350), job `tests` SUCCESS. Este resultado es específico de ese SHA; no lo atribuir a commits posteriores.
+- La matriz inicial deja los criterios M0-A…M0-E en PENDING para cierre formal porque falta congelar el mínimo de aceptación y vincular cada criterio a sus assertions concretas. B/C/D tienen suites existentes y CI actual previo exitoso; no reinvestigar esas regresiones sin evidencia nueva.
+- **Brecha bloqueante sustantiva: M0-E.** La inspección estática confirma que `protected-transition.mjs` consume el resultado del puerto inyectado `authorityGate.check` y llega a `conditionalCommit.commit(candidate)` sin invocar `effectBoundary.prepare`, aunque `ownership.mjs` expone ese puerto. Los fixtures `AUTHORIZED` no demuestran raíz legítima. Esto demuestra una brecha de integración, no un bypass activo.
+- Próxima acción: revisión explícita del objeto constitucional exacto por el propietario; después derivar el contrato mínimo de procedencia/raíz y vincularlo al límite real de efectos. No modificar runtime para simular raíz, no provisionar llave, firmar/digeste Constitución ni commissioning antes de esa revisión.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — continuidad para siguiente chat (2026-10-20, prioridad máxima)
 
 - Handoff con línea de meta finita: [NCS_M0_NEXT_CHAT_HANDOFF_2026-10-20_FINITE_EXIT_CRITERIA.md](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_2026-10-20_FINITE_EXIT_CRITERIA.md).
