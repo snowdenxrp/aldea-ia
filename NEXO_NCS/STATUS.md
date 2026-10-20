@@ -307,6 +307,7 @@ No seleccionar automáticamente el hardware, no instalar dependencias ni generar
 - Esta actualización corrige el estado anterior de este bloque: la decisión de alcance ya está tomada; no debe quedar marcada como corrección de runtime pendiente. No se atribuye CI nuevo a estos commits documentales.
 - **Estado constitucional invariable:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN. La provisión independiente de la raíz continúa siendo un bloqueo separado.
 
+---
 
 ## M0 — normalización de rutas padre no disponibles en ambos almacenes (2026-10-19)
 
