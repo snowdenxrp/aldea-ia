@@ -55,3 +55,10 @@ Realizar una revisión acotada de los artefactos constitucionales existentes par
 - Procedimiento técnico de reconocimiento/provenance/currentness: `PENDING/UNKNOWN`.
 - Efectos protegidos: `STOP`.
 - No hubo cambio de runtime ni ejecución nueva de CI.
+
+
+## Precedencia posterior — decisión de alcance 2026-10-19
+
+Esta nota distingue correctamente la fuente normativa de la base técnica, pero su sección “Siguiente acción M0” **no es la prioridad operativa inmediata**. La decisión más reciente `NEXO_NCS/DECISIONS/NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md` ya limita el alcance inicial a una llave raíz y un dispositivo, deja la selección física/provisión/verificación pendientes y ordena continuar M0 por la coherencia entre misión persistida, estados de pasos y reconstrucción/proyección.
+
+Por tanto, no continuar ahora una investigación general de raíz ni revisar el objeto constitucional como sustituto del trabajo M0. La raíz/bootstrap queda como restricción arquitectónica documentada; la próxima tarea es la revisión de consumidores y del contrato de discrepancia de mission-status, registrada en `NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026-10-20.md`. Esta precedencia no convierte la raíz física en implementada ni altera STOP/UNKNOWN.
