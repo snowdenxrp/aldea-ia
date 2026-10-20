@@ -2353,3 +2353,14 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Próxima fase: mapear firmas y pruebas actuales; diseñar abstracción mínima compartida de deadline; acordar forma pública del timeout y tratamiento de adquisición tardía; después implementar stores, propagar desde callers y añadir pruebas de no-dispatch/no-redispatch antes de correr CI. Si el contrato requiere una reestructuración, detenerse y explicar la causa raíz en vez de añadir parches.
 - No se hicieron cambios de runtime/tests ni se ejecutó CI para este contrato. Último SHA de código/test validado sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`, con cinco workflows SUCCESS registrados arriba; ese CI previo no valida este requisito ni futura implementación.
 - Estado constitucional no cambia: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## M0 — mapa de APIs/callers para deadline compartido (2026-10-20)
+
+- Auditoría estática: [NCS_M0_LOCK_DEADLINE_CALLER_MAP_2026-10-20.md](BUILD/NCS_M0_LOCK_DEADLINE_CALLER_MAP_2026-10-20.md).
+- Confirmado: el deadline debe atravesar la cadena `runNexoChronicleAppend` → stores/owner → `executeNexoStepWithContinuityOwner` → PREPARED/lineage/reconciliation/outcome y handler Chronicle → `append`. No existe parámetro deadline en la entrada de aplicación, servicio de continuidad, owner, runtime ni handler.
+- Los stores tienen firmas mutables distintas: Continuity `initialize(snapshot)` / `commitIfCurrent(expectedRevision, candidate)`; Chronicle `initialize()` / `append({ operationKey, content })`. Los métodos tienen contratos de error no uniformes; no unificarlos sin mapear los consumidores.
+- Tests existentes cubren concurrencia, espera cross-process, stale/unknown, resultados de escritura ambiguos y fallos de liberación; no fijan espera acotada. El test cross-process actual es una caracterización de la semántica anterior, deberá cambiar explícitamente.
+- No se encontró deadline/monotonic helper existente en los fuentes revisados. El presupuesto finito y su fuente/configuración siguen abiertos. No implementar un fallback sin límite ni adivinar un valor.
+- Próximo bloqueo de diseño: definir dónde se configura un presupuesto finito de primera versión (recomendación: host/configuración de aplicación; stores reciben sólo deadline absoluto monotónico de operación). Luego diseñar helper mínimo y tabla de resultados por método; sólo después implementar y probar.
+- Sin cambios de runtime/tests ni CI nuevo en esta auditoría documental. M0 continúa `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
