@@ -39,3 +39,13 @@ La revisión estática anterior se afinó con un caso concreto: dos registros `c
 - Regresión: commit [724ad3e800b09d01abef6aacaa9ddd8e1017fd3c](https://github.com/snowdenxrp/aldea-ia/commit/724ad3e800b09d01abef6aacaa9ddd8e1017fd3c), en `tests/nexo/continuity-contract.test.mjs`. Asegura que el caso contradictorio queda bloqueado y no se resuelve por orden del array.
 - Verificación: consulta de checks para el SHA de test devolvió cero estados. Por ahora la regresión está **añadida pero CI NO VERIFICADO**; no declarar PASS hasta obtener run/checks del SHA que contiene runtime y test.
 - El comportamiento de intentos `failed` tardíos después de una finalización verificada sigue cubierto por el contrato existente y no debe bloquearse por sí solo. El nuevo bloqueo es solo para múltiples evidencias terminales verificadas que discrepan.
+
+
+## Segunda regresión dirigida — identidad de operación contradictoria (2026-10-20)
+
+La revisión del nuevo bloque de reconstrucción encontró otro caso en el mismo límite: una finalización válida y coincidente podía ocultar otro registro `completed` para el mismo `missionId + stepId` pero con acción/objetivo diferentes, porque el primer `verifiedCompletion` provocaba `continue` antes de inspeccionar ese reclamo discordante.
+
+- Runtime: [`61520dbdf5c0a0693a500838b7c93b167e9222a8`](https://github.com/snowdenxrp/aldea-ia/commit/61520dbdf5c0a0693a500838b7c93b167e9222a8) ahora bloquea ante cualquier intento `completed` del paso que no coincida exactamente con acción/objetivo, con `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`; misión `blocked`, incertidumbre `outcome_operation_context_mismatch`, sin redispatch.
+- Regresión: [`876e1924292bd8c301b7e050531be9ded79ce290`](https://github.com/snowdenxrp/aldea-ia/commit/876e1924292bd8c301b7e050531be9ded79ce290) agrega un snapshot adversarial con una finalización válida y otra con acción/objetivo discordantes.
+- Estado de validación: la consulta de workflow runs/checks accesible por esta integración no expuso runs/checks de push para los SHA recientes. Por tanto ambos casos están codificados como regresiones pero **CI sigue NO VERIFICADO**. No declarar PASS ni inferir que las pruebas ejecutaron.
+- Alcance sigue limitado a reconstrucción de outcomes persistidos; no autentica `evidence.source`, no establece raíz/autoridad y no habilita efectos protegidos.
