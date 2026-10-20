@@ -50,7 +50,7 @@ The store deliberately returns `status: failed` with `persistenceStatus: committ
 
 ## Next action
 
-The public mission-admission result gap is closed and the call-site audit confirms `src/nexo/application/chronicle-append.mjs` uses the owner-backed runtime; the generic legacy APIs remain separately present in `src/nexo/runtime.js`, with no production caller established by this pass. Continue from the next unresolved M0 item in STATUS, not by reopening this result contract. Do not perform runtime cutover, add a generic transaction wrapper, enable repair effects, or infer authorization from successful tests.
+The public result-receipt gaps found in this audit are corrected and tested. The call-site audit confirms `src/nexo/application/chronicle-append.mjs` uses the owner-backed runtime; the generic legacy APIs remain separately present in `src/nexo/runtime.js`, with no production caller established by this pass. Continue from the next unresolved M0 item in STATUS, not by reopening these closed receipt contracts. Do not perform runtime cutover, add a generic transaction wrapper, enable repair effects, or infer authorization from successful tests.
 
 ## Constitutional state (unchanged)
 
@@ -66,3 +66,36 @@ The public mission-admission result gap is closed and the call-site audit confir
 - Current application blob SHA: `e5ff6c385f3160dfb78982a36c73a15d2d51887d`.
 - Current regression-test blob SHA: `c39bf1142447321d9d6968bfa30a7d9772f35a81`.
 - Final code/test branch HEAD at the time of CI verification: `52eb4f9bdb959c577c6532ab30f1294f542ef4db`.
+
+
+## Follow-on finding — persistence receipts across PREPARED, lineage, observation, and outcome
+
+The same contract mismatch appeared in the owner-backed execution stages: a lock-release failure may be returned as `status: failed, persistenceStatus: committed`, while an exception during the observation commit leaves persistence unknown. Some consumers were flattening those cases into `false`, even though the durable state could be committed or unknown.
+
+**Coherent correction:**
+- `continuity-owner.mjs`: PREPARED reports `preparedCommitted: UNKNOWN` when the commit result is unknown; observation-write exceptions now report `observationCommitted: UNKNOWN` and `journalSettled: UNKNOWN`. A confirmed committed observation preserves `observationCommitted: true` and marks Chronicle journal settlement only for the canonical Chronicle-applied case.
+- `owner-backed-runtime.mjs`: does not dispatch after unsafe PREPARED handoff; preserves confirmed PREPARED/lineage/terminal-outcome receipts while keeping the overall response blocked or UNKNOWN as appropriate; it does not proceed from an unsafe lineage receipt into reconciliation; and it preserves a known Chronicle journal settlement without falsely claiming the terminal outcome was recorded.
+- `chronicle-append.mjs`: preserves confirmed mission admission through unsafe lock handoff as `blocked + missionAdmissionCommitted: true`; unknown persistence remains `UNKNOWN`.
+- Regressions: `tests/nexo/chronicle-runtime.test.mjs` and `tests/nexo/repair-settlement-crash-cuts.test.mjs`.
+
+### Red/green record
+
+- Intermediate runtime SHA `3aed78b9788c9ffe25bc0077b02793a1ca6f75c0` and following test SHA `0bf505d483cd56345fe7a7c9240545c86616bc2d` failed the repair crash-cut assertion because the old test expected `observationCommitted: false` after a thrown commit response. That expectation contradicted the explicit unknown-outcome contract and was changed to `UNKNOWN`; the failed runs are retained as red history, not erased.
+- Final code/test SHA `5aef07d4fb933d8c0be4ee4cbc325e7e8c4f85a7`: all six focal workflows SUCCESS on this exact SHA:
+  - [M0 integrated acceptance 39369199068](https://github.com/snowdenxrp/aldea-ia/actions/runs/39369199068)
+  - [repair settlement crash cuts 39369199071](https://github.com/snowdenxrp/aldea-ia/actions/runs/39369199071)
+  - [effect and settlement contracts 39369199064](https://github.com/snowdenxrp/aldea-ia/actions/runs/39369199064)
+  - [deterministic persistence 39369199083](https://github.com/snowdenxrp/aldea-ia/actions/runs/39369199083)
+  - [STEP 4 semantic validation 39369199069](https://github.com/snowdenxrp/aldea-ia/actions/runs/39369199069)
+  - [STEP 5 outcome classification 39369199073](https://github.com/snowdenxrp/aldea-ia/actions/runs/39369199073)
+
+This corrects persistence-result reporting and maintains fail-closed dispatch. It does not prove owner authority, general repair settlement, power-loss durability, or full runtime migration.
+
+
+## Final source/test blob pointers at code/test SHA `5aef07d4fb933d8c0be4ee4cbc325e7e8c4f85a7`
+
+- `continuity-owner.mjs`: `81db34308e3881e3fa900653751a325952eeceb9`
+- `owner-backed-runtime.mjs`: `8397fc41c533a7c5d1ca424ad90c4bd95f8dffa6`
+- `chronicle-append.mjs`: `e5ff6c385f3160dfb78982a36c73a15d2d51887d`
+- `chronicle-runtime.test.mjs`: `8532700c63414ebc7a163ff6853958d85f8b93e4`
+- `repair-settlement-crash-cuts.test.mjs`: `dc65d462cdbd3a3dc1bf370c60af0b92eb7dbb55`
