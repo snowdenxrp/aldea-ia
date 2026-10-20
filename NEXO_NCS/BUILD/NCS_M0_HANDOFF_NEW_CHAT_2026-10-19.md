@@ -1,3 +1,16 @@
+## ACTUALIZACIÓN — Chronicle release fail-closed + carrera EEXIST/stat resuelta
+
+- Defecto: Chronicle ignoraba token de owner mismatch y el resultado de release; podía devolver `committed` mientras quedaba lock sin liberar.
+- Fix `8b1449b27c8569a39d9d97c9cf400c979f3b6e10`: release entrega `released/not_owned/failed`; resultado público `blocked / NEXO_CHRONICLE_LOCK_RELEASE_FAILED` con `persistenceStatus`, revisión y resultado de release preservados.
+- Regresiones: `56550161e23efef3803924081a010aafde52c5d9` not_owned; `9d0da479b390bc66e4072f752705cc8b05dff884` cleanup EACCES.
+- Red/green conservado: run integrated acceptance `39357529773` falló en `56550161...` por carrera real: lock desaparece entre EEXIST y stat, por lo que stat devuelve ENOENT.
+- Corrección en Continuity `e986e3bd49f59c50f7bb3cb0b8a31f043186eb56` y Chronicle `5502ea6a7a29b8e85f9fd9d8ded105cc3b786d05`: ENOENT durante stat → reintentar el ciclo; cualquier otro error → LOCK_STATE_UNKNOWN.
+- CI SUCCESS en SHA `5502ea6a7a29b8e85f9fd9d8ded105cc3b786d05`: persistencia `39357619819`; Chronicle native `39357619856`; STEP 5 `39357619906`; STEP 4 `39357619967`; admission/restart `39357620002`; integrated M0 `39357619948`; crash cuts `39357619896`.
+- Matriz actualizada en `68edb8a51f4d1dd40d474957f1b039be300b1f5d`; STATUS actualizado en `e47781e3646800871fb52307ac286069a657948a`.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN. No hay prueba de durabilidad ante pérdida de energía ni autoridad constitucional.
+
+---
+
 ## ACTUALIZACIÓN — callers de errores de lock inspeccionados
 
 - Matriz ampliada en `cbd36bfbf6e9bd138a1f1d3a80caa5214db35c32`; STATUS actualizado en `4973172a9d0719c08f87e229b114bb17b2705145`.
