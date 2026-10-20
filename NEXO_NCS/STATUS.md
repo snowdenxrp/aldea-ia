@@ -1,3 +1,13 @@
+## M0 — cobertura adicional de dependencias persistidas (2026-10-20)
+
+- Se añadieron tres regresiones focales a `tests/nexo/continuity-contract.test.mjs` para ramas que el validador ya implementaba, pero que no estaban afirmadas directamente en los tests localizados: array `dependsOn` disperso (sparse), referencia de dependencia duplicada y autorreferencia.
+- Commit de tests: [594cee05c61617b38cc6481698643215e9da9ae2](https://github.com/snowdenxrp/aldea-ia/commit/594cee05c61617b38cc6481698643215e9da9ae2). Blob actualizado: `f14cdf07459b3da1a6df66920e89f0f85685b9ca`.
+- Alcance: sólo tests; sin cambios de runtime ni del contrato. Las tres pruebas esperan `NEXO_MEMORY_SCHEMA_UNKNOWN` antes de reconstrucción.
+- **CI para este SHA: PENDING/NOT VERIFIED in this checkpoint.** No declarar PASS hasta obtener el resultado de la suite y asociarlo al SHA exacto.
+- Estado global invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — lock acquisition error normalization: regression corrected and CI re-observed (2026-10-20)
 
 - Hallazgo: `initialize()` exponía códigos OS de adquisición del lock para errores distintos de `ENOENT/ENOTDIR`; el contrato Nexo requería normalizarlos.
