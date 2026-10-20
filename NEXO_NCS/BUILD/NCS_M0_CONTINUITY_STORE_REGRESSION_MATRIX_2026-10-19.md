@@ -1,3 +1,11 @@
+
+## Lock owner schema validation (2026-10-19)
+
+- Follow-up inspection found that syntactically valid JSON primitives such as `42` could bypass the malformed-JSON fallback. Both stores now require a plain object with a positive safe-integer `pid` and a non-empty string `token` before treating a competing lock as inspectable.
+- Chronicle code commit `fa2f475e73b5fc63dc4a1281ff3f4bda6ea26907`; Continuity code commit `802f4a3885fb94c080162169e27ddbd268dce8a9`. Tests for valid-but-invalid-schema owner JSON: Chronicle `a111b96a0673e39e1f9e7c3b14bbf1cf69a5a15b`; Continuity `464edd9b95340c95ef6d534a33906f242329ad56`.
+- CI SUCCESS on final code SHA `464edd9b95340c95ef6d534a33906f242329ad56`: persistence tests [39361652104](https://github.com/snowdenxrp/aldea-ia/actions/runs/39361652104); integrated M0 acceptance [39361652042](https://github.com/snowdenxrp/aldea-ia/actions/runs/39361652042); STEP 4 [39361651989](https://github.com/snowdenxrp/aldea-ia/actions/runs/39361651989); STEP 5 [39361652043](https://github.com/snowdenxrp/aldea-ia/actions/runs/39361652043); bounded admission/restart [39361652089](https://github.com/snowdenxrp/aldea-ia/actions/runs/39361652089). All SUCCESS. Chronicle native run on this exact SHA is not claimed here because no completed matching run was confirmed in this check.
+- Regression asserts invalid-schema owner → `LOCK_STATE_UNKNOWN`, lock preserved, canonical store not initialized. No auto-recovery, timeout, or lock deletion was introduced.
+- Constitutional state remains M0 INCOMPLETE / authorization NOT_EVALUATED / protected effects STOP / root PENDING-UNKNOWN.
 # NCS M0 — continuidad de regresiones del store (2026-10-19)
 
 Estado: seis regresiones de frontera añadidas a `tests/nexo/continuity-store.test.mjs`; suite determinista e integración M0/STEP 4/STEP 5/continuidad de misión CI SUCCESS en commit `24d1879192a6227013b805a069585c298760019f`. M0 permanece INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
