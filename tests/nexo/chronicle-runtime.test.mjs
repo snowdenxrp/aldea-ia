@@ -115,6 +115,54 @@ assert.equal(returnedUnknownMissionAdmission.missionAdmissionCommitted, "UNKNOWN
 assert.equal(returnedUnknownMissionAdmission.dispatchAttempted, false);
 assert.equal(returnedUnknownMissionAdmission.redispatchAuthorized, false);
 
+// Lock cleanup can fail after the canonical envelope has already been committed.
+// Preserve that known persistence fact in the public result, but never dispatch.
+const committedAdmissionWithUnsafeHandoff = await recordNexoMissionSafely({
+  owner: {
+    recordMission: async () => ({
+      status: "failed",
+      code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+      persistenceStatus: "committed",
+      storeRevision: 1
+    })
+  },
+  expectedRevision: 0,
+  mission: { missionId: "admission-committed-handoff-unsafe", steps: [] }
+});
+assert.equal(committedAdmissionWithUnsafeHandoff.status, "blocked");
+assert.equal(committedAdmissionWithUnsafeHandoff.code, "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED");
+assert.equal(committedAdmissionWithUnsafeHandoff.missionAdmissionCommitted, true);
+assert.equal(committedAdmissionWithUnsafeHandoff.storeRevision, 1);
+assert.equal(committedAdmissionWithUnsafeHandoff.dispatchAttempted, false);
+assert.equal(committedAdmissionWithUnsafeHandoff.redispatchAuthorized, false);
+const publicCommittedAdmission = publicChronicleResult(
+  committedAdmissionWithUnsafeHandoff,
+  "admission-committed-handoff-unsafe",
+  "step-1"
+);
+assert.equal(publicCommittedAdmission.status, "blocked");
+assert.equal(publicCommittedAdmission.missionAdmissionCommitted, true);
+assert.equal(publicCommittedAdmission.storeRevision, 1);
+assert.equal(publicCommittedAdmission.dispatchAttempted, false);
+assert.equal(publicCommittedAdmission.redispatchAuthorized, false);
+
+// An unsafe handoff whose persistence status is unknown must remain UNKNOWN.
+const unknownPersistenceAdmission = await recordNexoMissionSafely({
+  owner: {
+    recordMission: async () => ({
+      status: "failed",
+      code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+      persistenceStatus: "unknown"
+    })
+  },
+  expectedRevision: 0,
+  mission: { missionId: "admission-persistence-unknown", steps: [] }
+});
+assert.equal(unknownPersistenceAdmission.status, "unknown");
+assert.equal(unknownPersistenceAdmission.missionAdmissionCommitted, "UNKNOWN");
+assert.equal(unknownPersistenceAdmission.dispatchAttempted, false);
+assert.equal(unknownPersistenceAdmission.redispatchAuthorized, false);
+
 // Simulate the actual crash cut: the canonical store commits mission admission,
 // then the caller loses the response. UNKNOWN is returned while the persisted
 // mission remains recoverable on the next canonical read.
