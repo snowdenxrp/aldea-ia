@@ -1,3 +1,14 @@
+## ACTUALIZACIÓN — borde del lock con owner record ilegible
+
+- Matriz ampliada en commit documental `b1d9580185f8daaab1aa1de80cc098443a25aa4e`; STATUS actualizado en `5825737c23de24d914fa8d2fd015f61e767597b6`.
+- Hallazgo por inspección: `readLockOwner()` captura error de lectura/parsing y devuelve null. Si `stat(lockPath)` también falla, `age` permanece 0 y `acquireLock()` puede continuar esperando indefinidamente; si el lock se confirma stale, el sistema exige recuperación explícita y no lo borra.
+- Esto no fue reproducido en test ni CI; se clasifica como brecha estática de caracterización. No añadir timeout/BUSY ni recuperación automática sin contrato; no borrar locks ajenos.
+- CI de test sigue PASS en SHA de código `24d1879192a6227013b805a069585c298760019f`, runs de persistencia/STEP4/STEP5/admission/integrated acceptance referidos en el STATUS. No atribuirlos a commits documentales posteriores.
+- Próximo paso: decidir contrato del owner record ilegible (errores distinguibles vs espera actual), diseñar regresión aislada y sólo después decidir si runtime requiere un cambio estructural.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — seis regresiones de frontera + workflows M0 integrados SUCCESS
 
 - Test final: `tests/nexo/continuity-store.test.mjs`, commit [`24d1879192a6227013b805a069585c298760019f`](https://github.com/snowdenxrp/aldea-ia/commit/24d1879192a6227013b805a069585c298760019f), blob `9fc3f5412d248c986104673aaae9ce7b771d44ee`.
