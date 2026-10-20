@@ -55,6 +55,32 @@ assert.throws(
   "persisted duplicate mission identities must fail closed before reconstruction"
 );
 
+function assertPersistedMissionShapeRejected(mission, label) {
+  const malformed = structuredClone(validMemory);
+  malformed.nexo.missions = [mission];
+  assert.throws(
+    () => assertNexoContinuityMemoryShape(malformed),
+    error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN",
+    label
+  );
+}
+const missionWithoutIdentity = structuredClone(plan);
+delete missionWithoutIdentity.missionId;
+assertPersistedMissionShapeRejected(
+  missionWithoutIdentity,
+  "persisted mission records without an identity must be rejected before reconstruction"
+);
+const missionWithoutSteps = structuredClone(plan);
+delete missionWithoutSteps.steps;
+assertPersistedMissionShapeRejected(
+  missionWithoutSteps,
+  "persisted mission records without a steps array must be rejected instead of defaulting to an empty mission"
+);
+assertPersistedMissionShapeRejected(
+  { ...structuredClone(plan), missionId: "mission:ambiguous" },
+  "persisted mission IDs must obey the delimiter-safe identity contract used at admission"
+);
+
 function assertPersistedMissionGraphRejected(steps, label) {
   const malformed = structuredClone(validMemory);
   malformed.nexo.missions[0].steps = steps;
@@ -163,6 +189,15 @@ const emptyOperationalSnapshot = {
   executions: [],
   effectJournal: []
 };
+
+assert.throws(
+  () => reconstructNexoMissionFromSnapshot({
+    ...emptyOperationalSnapshot,
+    missions: [{ steps: [] }]
+  }, undefined),
+  error => error?.code === "NEXO_MEMORY_SCHEMA_UNKNOWN",
+  "reconstruction must reject malformed persisted records rather than selecting an identity-less mission for undefined"
+);
 assert.throws(
   () => recordNexoMissionInSnapshot(emptyOperationalSnapshot, {
     missionId: "mission:with:colon",
