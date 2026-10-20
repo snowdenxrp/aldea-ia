@@ -16,6 +16,14 @@ HEAD observado al preparar este handoff: `b3d39bfd1803429594e1defc69d3acb961ce5c
 
 ---
 
+## M0-E — precisión posterior: bootstrap vector no equivale a raíz runtime
+
+Informe focal: [NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md](NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md). El test de bootstrap es un vector criptográfico de software con clave/firma fixture; no es la raíz Nexo. No se encontró un módulo runtime root/bootstrap bajo `src/nexo`, ni pin independiente conectado al gate/sink. Mantener esta distinción: test vector PASS no significa raíz legítima, commissioning ni autorización de efectos.
+
+La matriz y STATUS actuales incorporan esta precisión. Verificar el HEAD y el run de CI de los commits documentales posteriores; el último SUCCESS anterior a estos cambios es sólo para SHA `bb57725f8cd1f0faa9528df82ed76a0fa0b5eba6`.
+
+---
+
 ## Misión invariable
 
 La misión es **M0**. No reiniciar Step 7, no volver a M1 y no repetir auditorías cerradas sin evidencia nueva.
