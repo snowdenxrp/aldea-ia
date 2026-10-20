@@ -1,18 +1,29 @@
+const RECOGNIZED_TERMINAL_EFFECT_STATUSES = new Set([
+  "settled_observed",
+  "reconciled_observed"
+]);
+
 function retainEffectJournal(entries, limit = 200) {
-  // A prepared record is an unresolved external-effect obligation, not disposable history.
-  // Detach records, prune terminal entries first, and let unresolved obligations exceed the soft cap.
+  // Only recognized terminal states are disposable history. PREPARED and unknown
+  // states may represent unresolved external effects, so preserve them even above
+  // the soft cap instead of silently dropping uncertainty.
   const journal = Array.isArray(entries) ? structuredClone(entries) : [];
   while (journal.length > limit) {
-    const terminalIndex = journal.findIndex(entry => entry?.status !== "prepared");
+    const terminalIndex = journal.findIndex(entry =>
+      RECOGNIZED_TERMINAL_EFFECT_STATUSES.has(entry?.status)
+    );
     if (terminalIndex < 0) break;
     journal.splice(terminalIndex, 1);
   }
   return journal;
 }
 
-function unresolvedPreparedMissionIds(effectJournal) {
+function unresolvedEffectMissionIds(effectJournal) {
   return new Set(effectJournal
-    .filter(entry => entry?.status === "prepared" && typeof entry.missionId === "string")
+    .filter(entry =>
+      !RECOGNIZED_TERMINAL_EFFECT_STATUSES.has(entry?.status) &&
+      typeof entry.missionId === "string" && entry.missionId.trim()
+    )
     .map(entry => entry.missionId));
 }
 
@@ -30,7 +41,7 @@ function retainMissionRecords(entries, unresolvedMissionIds, limit) {
 }
 
 function retainNexoMissions(entries, effectJournal, limit = 50) {
-  return retainMissionRecords(entries, unresolvedPreparedMissionIds(effectJournal), limit);
+  return retainMissionRecords(entries, unresolvedEffectMissionIds(effectJournal), limit);
 }
 
 function missionIdsWithRetainedPlans(missions) {
