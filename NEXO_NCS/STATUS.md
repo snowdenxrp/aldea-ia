@@ -1,3 +1,13 @@
+## M0 — verificación CI del handoff y matriz (2026-10-20)
+
+- La rama alcanzó HEAD `1a309a19dd1e3d2c300776c2e3dd240203eac78f` al guardar el handoff actualizado.
+- Workflow determinista [39491101839](https://github.com/snowdenxrp/aldea-ia/actions/runs/39491101839), SHA exacto `1a309a19dd1e3d2c300776c2e3dd240203eac78f`, job `tests`: `completed / success`.
+- Alcance: `npm test` del SHA citado, incluyendo las suites Nexo listadas en `package.json`. No demuestra raíz legítima ni cierre M0-E. Un commit posterior requiere comprobar su propio run antes de atribuirle CI.
+- Matriz y handoff vigentes enlazados arriba. Siguiente bloqueo sigue M0-E; no repetir B/C/D sin evidencia nueva.
+- Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — matriz inicial de aceptación finita (2026-10-20)
 
 - Matriz contrato → pruebas → evidencia → estado → brecha: [NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md).
