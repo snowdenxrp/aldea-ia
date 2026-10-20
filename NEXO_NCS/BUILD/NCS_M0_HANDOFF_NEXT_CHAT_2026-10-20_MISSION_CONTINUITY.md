@@ -166,3 +166,14 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - STATUS recibió una segunda corrección documental en commit `d20d2780b7da888ae8ca65f4b0b58f04cb4236d2`: la antigua nota de compatibilidad de `steps` ahora está etiquetada explícitamente como supersedida por el contrato runtime posterior. Se conserva como historial para no borrar el razonamiento anterior.
 - Esto evita que el siguiente chat confunda la revisión histórica de compatibilidad con la regla actual de fail-closed. No se modificó runtime ni se abrió una auditoría nueva.
 - URL de entrada vigente: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/STATUS.md
+
+
+## Avance nuevo — ConditionalCommit incluido en la suite principal (2026-10-20)
+
+- Hallazgo: `tests/nexo/conditional-commit-persist-state.test.mjs` cubría persistencia real/conflicto de revisión, pero no formaba parte de `npm test`.
+- Test commit `92201f7b353bf1408d88863267316379d6d0b228`: regresiones para error de persistencia con `EIO`, error sin código (`PERSISTENCE_UNKNOWN`) y candidate sin state. Los errores de persistencia se deben clasificar como `COMMIT.UNKNOWN`, nunca como committed.
+- Commit de integración `72cc1b1d55f72d29ee8b9f17b0ada76ac41c6d24`: la prueba se añadió a `npm test`.
+- Informe: [NCS_M0_CONDITIONAL_COMMIT_RESULT_CONTRACT_COVERAGE_2026-10-20.md](NCS_M0_CONDITIONAL_COMMIT_RESULT_CONTRACT_COVERAGE_2026-10-20.md).
+- CI confirmado en el SHA exacto `72cc1b1d55f72d29ee8b9f17b0ada76ac41c6d24`: runs [39443509056](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509056), [39443509170](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509170), [39443509438](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509438) y [39443509057](https://github.com/snowdenxrp/aldea-ia/actions/runs/39443509057) finalizaron `completed / success`.
+- STATUS actualizado para enlazar el informe y los runs. No cambió runtime ni se modificó el estado constitucional.
+- Próxima continuidad: encontrar otra brecha M0 con contraejemplo concreto, o respetar el bloqueo que requiere revisión explícita del artefacto constitucional antes de definir reconocimiento de raíz. No repetir auditorías cerradas.
