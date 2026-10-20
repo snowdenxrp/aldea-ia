@@ -81,3 +81,18 @@ Siguiente paso acotado: verificar, reutilizando los contratos existentes de STEP
 - `src/nexo/application/continuity-queries.mjs`, blob `557b97e5338258dfe3b7755f9a22221e4b114994`.
 
 Inspección estática dirigida; no es una auditoría completa del repositorio ni evidencia de ejecución nueva de CI.
+
+
+## Continuidad de la búsqueda de fuente constitucional — resultado reutilizado (2026-10-20)
+
+Se comprobó si el hueco podía cerrarse reutilizando contratos existentes, sin abrir una nueva auditoría general:
+
+- `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md`, blob observado en esta rama `e81abbfb35048dcb2cf29f8827db7e67d239adf9`, ya está marcado **CLOSED — NO IMPLEMENTED CURRENT CONSTITUTION-AUTHORITY PATH FOUND**. Concluye que `createAuthorityResult()` es un constructor de forma y `ClaimEnvelope.policyContext` un portador de datos; ninguno establece autoridad constitucional.
+- `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_FUTURE_COUNTEREFFECTS_GATE_2026-10-08.md`, blob `d5ebabcb05566593e32f3e1f9bf1047f6b99e0c0`, mantiene explícitamente **STOP BEFORE CODE** hasta que exista una Trust Foundation reconocida; advierte contra raíz ficticia, autorrecursión de confianza, resurrección desde snapshot, confusión de epoch, captura por proveedor, TOCTOU y common-mode failure.
+- La búsqueda del índice de GitHub mostró un resultado llamado `STEP_7_TRUST_FOUNDATION_ROOT_CONTRACT_AND_RECOGNITION_GATE_2026-10-08.md`, pero la lectura directa en la rama objetivo devolvió 404. Por tanto, no se considera presente ni evidencia de esta rama sin un fetch verificable. El resultado de búsqueda del índice por sí solo no basta para afirmar integración.
+
+### Resultado de la puerta
+
+No se encontró una fuente constitucional implementada que cierre el claim. Esta conclusión ya estaba registrada en una auditoría cerrada; no debe repetirse como investigación nueva en próximos chats. El bloqueo real ya no es “falta escribir otro contrato”: es que la raíz inicial y su reconocimiento independiente continúan sin resolución/implementación demostrable.
+
+No crear ahora `createConstitutionAuthorityContext`, un Trust Foundation runtime, ni una raíz genérica. Mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, autoridad raíz `PENDING/UNKNOWN` y efectos protegidos `STOP`. El siguiente avance válido requiere resolver con la arquitectura existente cómo se reconoce la raíz inicial y qué evidencia de provisión/currentness/revocación la hace verificable; hasta entonces, documentar el bloqueo es más correcto que simular cierre.
