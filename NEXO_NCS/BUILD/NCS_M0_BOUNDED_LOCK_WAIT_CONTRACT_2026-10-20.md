@@ -137,11 +137,11 @@ Referencias previas:
 - Timeout metadata is preserved through the Chronicle application boundary, Chronicle effect handler, public result projection, and CLI JSON output.
 - Added tests prove a PREPARED lock-acquisition timeout remains blocked with `dispatchAttempted:false`; no adapter dispatch occurs.
 - Added app integration tests for Chronicle initialization timeout and Continuity bootstrap timeout; both retain the distinct timeout code, phase, and no-write evidence.
-- Code/tests SHA `12efac26d0948b91c59706612edec7df9e78c4f5`; all six relevant workflows succeeded:
+- Code/tests SHA `12efac26d0948b91c59706612edec7df9e78c4f5`; all six returned workflows succeeded (five core M0/Chronicle validations plus repair crash-cut coverage):
   - [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332936)
   - [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332981)
   - [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376333167)
-  - [Mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332955)
+  - Mission admission/restart continuity: no run was present in the queried run set for this SHA; do not count it as validated.
   - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332991)
   - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376333035)
   - [Repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376333016)
