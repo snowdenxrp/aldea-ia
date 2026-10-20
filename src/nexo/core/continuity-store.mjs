@@ -85,6 +85,18 @@ async function acquireLock(fsModule, filePath) {
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
       const current = await readLockOwner(fsModule, lockPath);
+      if (!current) {
+        try {
+          const rawOwner = await fsModule.readFile(path.join(lockPath, "owner.json"), "utf8");
+          try { JSON.parse(rawOwner); }
+          catch { throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN"); }
+        } catch (error) {
+          if (error?.code === "ENOENT") continue;
+          if (error?.code === "NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN") throw error;
+          throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN");
+        }
+        throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN");
+      }
       let age;
       try { age = Date.now() - (await fsModule.stat(lockPath)).mtimeMs; }
       catch (error) {
