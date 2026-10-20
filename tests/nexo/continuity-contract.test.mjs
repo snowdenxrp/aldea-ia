@@ -715,6 +715,18 @@ assert.throws(
 );
 const reconstructedCoreMission = reconstructNexoMissionFromSnapshot(operationalSnapshot, "core-mission");
 assert.equal(reconstructedCoreMission.steps[0].status, "completed", "late replay must not regress a verified completed step");
+const conflictingOutcomeSnapshot = structuredClone(operationalSnapshot);
+conflictingOutcomeSnapshot.attempts.push({
+  missionId: "core-mission", stepId: "step-1", action: "local_analysis",
+  target: "alex", status: "completed",
+  evidence: { verified: true, kind: "effect-postcondition", source: "different-postcondition" }
+});
+const conflictingOutcomeMission = reconstructNexoMissionFromSnapshot(conflictingOutcomeSnapshot, "core-mission");
+assert.equal(conflictingOutcomeMission.status, "blocked",
+  "conflicting verified terminal evidence must block reconstruction instead of selecting by array order");
+assert.equal(conflictingOutcomeMission.steps[0].status, "blocked");
+assert.equal(conflictingOutcomeMission.steps[0].blockReason.code, "NEXO_OUTCOME_EVIDENCE_CONFLICT");
+assert.equal(conflictingOutcomeMission.uncertainty, "outcome_evidence_conflict");
 assert.equal(reconstructedCoreMission.objective, "verify_mission_outcome");
 assert.equal("patterns" in reconstructedCoreMission.operationalSignals, false);
 assert.equal(reconstructNexoMissionFromSnapshot(operationalSnapshot, "missing-mission"), null);
