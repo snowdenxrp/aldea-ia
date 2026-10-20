@@ -2551,3 +2551,8 @@ Estado sin cambio: borrador DRAFT / NOT FROZEN / NOT COMMISSIONED; M0 `INCOMPLET
 - Informe: [NCS_M0_POLICY_CONTEXT_CALLER_AUTHORITY_PROJECTION_REGRESSION_2026-10-20.md](BUILD/NCS_M0_POLICY_CONTEXT_CALLER_AUTHORITY_PROJECTION_REGRESSION_2026-10-20.md), commit documental `4fde94466789ead9b747335674023211e1d0f4c6`.
 - Alcance limitado: protege contra futura promoción accidental de metadatos caller-controlled. No crea ni autentica un contexto constitucional y no prueba raíz ni autoriza efectos. Sin cambios de runtime.
 - Estado M0 sin cambio: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Nota de verificabilidad CI (2026-10-20)
+
+El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workflow_dispatch`, pero las acciones GitHub disponibles en esta sesión no incluyen una operación para despachar un workflow. La acción de consulta de runs disponible está documentada como filtrada a ejecuciones asociadas a pull requests; para los SHA de regresión, el endpoint de estados devolvió `statuses: []`. Por tanto, estos resultados **no prueban que no se haya ejecutado ningún workflow**; solo significan que esta sesión no pudo obtener evidencia CI atribuible a los SHA exactos. La validación de las regresiones permanece `CI_NOT_VERIFIED`. Próxima acción de verificación: ejecutar manualmente el workflow determinista desde GitHub Actions con la rama `ncs-clean-architecture` actual y conservar el run ID, el SHA exacto ejecutado y el resultado del job `tests` antes de declarar PASS.
