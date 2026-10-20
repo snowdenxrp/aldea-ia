@@ -352,3 +352,11 @@ Documento ampliado y verificado: [NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026
 La discrepancia terminal de mission-status tiene una regresión dedicada y cuatro workflows verdes en el SHA exacto. Siguiente paso: revisar si la reconstrucción/proyección trata coherentemente los estados persistidos de pasos y los resultados/attempts, sólo donde haya un contraejemplo concreto; no reabrir locks ni raíz bootstrap. La decisión de alcance 2026-10-19 de llave única/dispositivo único se conserva; no se seleccionó modelo físico ni se implementó bootstrap.
 
 Estado: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`. `NEXO_NCS/STATUS.md` no fue actualizado.
+
+
+## Punto de entrada prioritario para el siguiente chat (checkpoint 2026-10-20)
+Se creó un handoff específico más reciente que resuelve la precedencia y evita que la investigación AuthorityGate desplace la misión M0:
+- `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_MISSION_CONTINUITY.md`
+- Commit de creación: `7462bc23a710e8947b5d79340750696b8c5bca06`.
+
+**Leer primero ese handoff.** La prioridad inmediata es revisar los consumidores de `loadNexoMissionStatus`, `scripts/nexo.mjs` y las pruebas de entrypoint para comprobar si respetan `statusDiscrepancy`/resultado `blocked`. Sólo cambiar código si aparece un consumidor real que ignore el bloqueo; luego añadir regresión y verificar CI en el SHA nuevo. No volver a abrir locks ni la investigación general de raíz. Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; raíz en runtime `PENDING/UNKNOWN`. `NEXO_NCS/STATUS.md` no se actualizó en este checkpoint.
