@@ -1,3 +1,13 @@
+## ACTUALIZACIÓN — validación de esquema de owner.json
+
+- Detectado borde: JSON sintácticamente válido pero no objeto (ej. `42`) podía saltarse el manejo de JSON malformado. Ambos stores exigen ahora objeto, `pid` entero seguro positivo y `token` string no vacío.
+- Chronicle code `fa2f475e73b5fc63dc4a1281ff3f4bda6ea26907`; Continuity y SHA final probado `464edd9b95340c95ef6d534a33906f242329ad56`. Tests Chronicle `a111b96a0673e39e1f9e7c3b14bbf1cf69a5a15b`; Continuity `464edd9b95340c95ef6d534a33906f242329ad56`.
+- CI SUCCESS sobre el SHA final exacto `464edd9b95340c95ef6d534a33906f242329ad56`: persistencia `39361652104`, aceptación integrada M0 `39361652042`, STEP 4 `39361651989`, STEP 5 `39361652043`, bounded admission/restart `39361652089`.
+- Test: esquema inválido → UNKNOWN, lock preservado, store canónico no creado. Sin timeout ni recuperación/borrado automático.
+- Estado constitucional sin cambios: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — owner.json malformado, UNKNOWN inmediato y carrera preservada
 
 - Se encontró que `readLockOwner()` convertía fallos de lectura/parseo en `null`, haciendo indistinguible el owner ausente del registro ilegible.
