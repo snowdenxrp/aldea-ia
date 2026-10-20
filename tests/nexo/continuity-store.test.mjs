@@ -263,8 +263,8 @@ assert.equal((await staleStore.loadCurrent()).storeRevision, 0);
 assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
 
 // Cross-process characterization: a live lock owner makes another process wait
-// until the lock disappears. This test deliberately does not impose a new timeout
-// policy; it records the existing contract gap without changing runtime behavior.
+// while the lock is present, then the contender resumes when the lock is explicitly
+// removed before the default acquisition budget expires. Timeout behavior is tested below.
 const crossProcessDir = path.join(directory, "cross-process-live-owner");
 await fs.mkdir(crossProcessDir);
 const crossProcessPath = path.join(crossProcessDir, "continuity.json");
@@ -326,7 +326,7 @@ const childStarted = new Promise((resolve, reject) => {
 await childStarted;
 await new Promise(resolve => setTimeout(resolve, 100));
 assert.equal(childExited, false,
-  "a different process waits while the lock owner PID is alive; no bounded acquisition outcome exists");
+  "a different process waits while the lock exists and before the default acquisition budget expires");
 await fs.rm(crossProcessLock, { recursive: true, force: true });
 const crossProcessTimeout = setTimeout(() => {
   child.kill("SIGKILL");
