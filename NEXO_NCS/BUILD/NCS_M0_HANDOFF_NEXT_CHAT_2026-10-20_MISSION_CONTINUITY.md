@@ -235,3 +235,11 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 
 - Run `39446775325` [`npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446775325) terminó `completed / success` en SHA `1f4f6cfb5d674e7c3124c93311c7c40c57ca54a7`, que contiene el test de proyección anti-self-attestation y las actualizaciones documentales previas.
 - STATUS registra el resultado. El registro documental nuevo produce un SHA posterior; no afirmar que ese SHA posterior tiene CI SUCCESS a menos que se compruebe su propio run.
+
+
+## Nuevo límite M0 — intentos persistidos y reconstrucción (2026-10-20)
+
+- Informe: `NEXO_NCS/BUILD/NCS_M0_PERSISTED_ATTEMPT_RECONSTRUCTION_BOUNDARY_2026-10-20.md`.
+- Hallazgo estático acotado: `attempts` se valida como array denso pero no se validan identidad/forma de cada registro; la escritura normal evita duplicar resultados por `missionId + stepId`, mientras que reconstrucción consume esos registros para determinar estado de paso. Ambigüedad potencial en datos importados/corruptos; no bypass confirmado.
+- Próximo paso: pruebas adversariales para intentos terminales contradictorios duplicados, referencias huérfanas y acción/objetivo discrepantes. Definir contrato legacy antes de tocar runtime.
+- Sin cambio runtime ni pruebas ejecutadas en este checkpoint. CI nuevo no verificado. M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
