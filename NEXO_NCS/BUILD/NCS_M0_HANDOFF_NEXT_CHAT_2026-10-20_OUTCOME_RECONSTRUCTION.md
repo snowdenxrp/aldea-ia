@@ -268,3 +268,20 @@ No volver a auditar el trabajo de lock error normalization que ya está cerrado;
 - La ruta de reparación por scripts/owner-store inyectados queda fuera del contrato interactivo Chronicle. No afirmar que tiene deadline compartido ni activarla como ruta interactiva hasta diseñar y probar su contrato de deadline/settlement/no-redispatch. Nota de frontera: `NEXO_NCS/BUILD/NCS_M0_REPAIR_ROUTE_DEADLINE_BOUNDARY_2026-10-20.md`.
 - **Siguiente acción:** continuar el siguiente bloqueo M0 desde `NEXO_NCS/STATUS.md`; no volver a investigar los locks ya cubiertos. No hacer cambios de runtime por la ruta de reparación salvo que exista una necesidad explícita y el contrato esté especificado.
 - Estado global permanece M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## Continuación añadida — frontera AuthorityGate (2026-10-20)
+
+Tras el trabajo documental posterior al último checkpoint:
+
+- Nota de frontera de composición: [NCS_M0_AUTHORITY_GATE_IMPLEMENTATION_BOUNDARY_2026-10-20.md](NCS_M0_AUTHORITY_GATE_IMPLEMENTATION_BOUNDARY_2026-10-20.md).
+- Reutilización de contratos previos y siguiente puerta: [NCS_M0_AUTHORITY_GATE_PRIOR_CONTRACT_REUSE_AND_NEXT_GATE_2026-10-20.md](NCS_M0_AUTHORITY_GATE_PRIOR_CONTRACT_REUSE_AND_NEXT_GATE_2026-10-20.md).
+- Inventario actual de límites de autoridad: [NCS_M0_CURRENT_AUTHORITY_BOUNDARIES_2026-10-20.md](NCS_M0_CURRENT_AUTHORITY_BOUNDARIES_2026-10-20.md).
+
+Hallazgo: el Core protected-transition recibe `authorityGate.check` por inyección; el pipeline valida forma y detiene STOP/UNKNOWN, pero los fixtures AUTHORIZED no prueban autoridad legítima. La API pública mutante sigue limitada a Chronicle append y expone `authorization: NOT_EVALUATED`; consultas de Continuity son read-only. Repair permanece bloqueado antes de PREPARED por el contrato de settlement pendiente; otras acciones nuevas no están habilitadas.
+
+Se reutilizaron —no se repitieron— los contratos ya guardados de Constitution-to-Policy binding, su ataque y Trust Function / Root Role Map. El siguiente paso registrado por esos documentos es un inventario relativo a un claim y efecto concreto: frontera final, regla constitucional, fuente protegida, currentness/revocación/sucesión, dependencias/failure domains y pruebas negativas. No crear una raíz genérica ni implementar el Constitution Authority Context mientras falte una base legítima demostrable.
+
+No hubo cambio de runtime ni ejecución nueva de tests/CI. M0 sigue `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+Nota operativa: el intento de integrar este checkpoint directamente en `NEXO_NCS/STATUS.md` no se completó. No afirmar que STATUS esté actualizado; los tres documentos BUILD enlazados arriba sí se guardaron y verificaron.
