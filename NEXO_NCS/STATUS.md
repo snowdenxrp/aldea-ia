@@ -2408,3 +2408,14 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
   - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730370)
   - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730363)
 - Siguiente tarea M0: auditoría dirigida de callers/entrypoints para preservar el timeout como causa diferenciada y confirmar no-redispatch tras PREPARED o posible dispatch. No reabrir auditorías cerradas.
+
+
+### M0 — timeout propagado hasta la superficie pública (2026-10-20)
+
+- La aplicación Chronicle conserva phase/writeStarted/lockRelease para timeout al inicializar Chronicle o al abrir Continuity.
+- El handler de append y la proyección pública conservan la evidencia de timeout, incluso si aparece dentro de la respuesta de adapter/lineage/outcome; la CLI incluye los campos sanitizados.
+- Test de runtime confirma que timeout al persistir PREPARED mantiene blocked, dispatchAttempted:false y redispatchAuthorized:false; no se invoca el adapter.
+- Integración probada para timeout de inicialización de Chronicle y de bootstrap de Continuity.
+- SHA de código/tests: 12efac26d0948b91c59706612edec7df9e78c4f5. Seis workflows consultados pasaron: M0 integrated acceptance (39376332936), Chronicle native vertical (39376332981), deterministic persistence (39376333167), STEP 5 (39376332991), STEP 4 (39376333035) y repair settlement crash cuts (39376333016). No se afirma un run de mission-admission/restart para este SHA porque no apareció en la consulta.
+- Logs verificados: jobs 118475197653, 118475197877, 118475199164.
+- Próximo paso M0: auditoría final de otros entrypoints/consumidores que construyen stores u owners fuera de runNexoChronicleAppend; comprobar que mutaciones aisladas quedan acotadas y que los resultados no se aplanan ni autorizan redispatch.
