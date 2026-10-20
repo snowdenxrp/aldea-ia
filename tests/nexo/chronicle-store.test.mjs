@@ -165,6 +165,23 @@ if (result.status !== "committed") process.exitCode = 1;`;
     "Chronicle must not initialize when lock state is unknown");
   await fs.rm(lockStatFailureLock, { recursive: true, force: true });
 
+  // A present but malformed owner record is not the same as a not-yet-created owner.
+  const malformedOwnerPath = path.join(root, "malformed-owner.json");
+  const malformedOwnerLock = String(malformedOwnerPath) + ".lock";
+  await fs.mkdir(malformedOwnerLock);
+  await fs.writeFile(path.join(malformedOwnerLock, "owner.json"), "{broken", "utf8");
+  const malformedOwnerStore = createNexoChronicleStore({ filePath: malformedOwnerPath });
+  assert.deepEqual(
+    await malformedOwnerStore.initialize(),
+    { status: "blocked", code: "NEXO_CHRONICLE_LOCK_STATE_UNKNOWN" },
+    "Chronicle must stop immediately on an unreadable owner record instead of waiting on ambiguous lock state"
+  );
+  await assert.doesNotReject(() => fs.access(malformedOwnerLock),
+    "Chronicle must preserve the lock when owner identity cannot be established");
+  await assert.rejects(() => fs.access(malformedOwnerPath), error => error?.code === "ENOENT",
+    "Chronicle must not initialize when lock ownership is unknown");
+  await fs.rm(malformedOwnerLock, { recursive: true, force: true });
+
   // A stale lock must fail closed; automatic check-then-remove reclamation is racy.
   const staleLockPath = path.join(root, "stale-lock.json");
   const staleLockStore = createNexoChronicleStore({ filePath: staleLockPath });
