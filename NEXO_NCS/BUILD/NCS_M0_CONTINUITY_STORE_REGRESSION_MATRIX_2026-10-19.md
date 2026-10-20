@@ -38,3 +38,9 @@ No normalizar todavía la API mixta. Primero localizar estos escenarios en runti
 
 ## Próxima acción
 Cruzar los gaps con todos los tests relevantes y workflows; ejecutar solo después de identificar la cobertura faltante y registrar SHA, run/job y logs. Este documento es una revisión, no evidencia de ejecución.
+
+## Hallazgo estático adicional — owner record ilegible
+
+`readLockOwner()` captura cualquier error de lectura/parsing de `owner.json` y devuelve `null`. `acquireLock()` entonces decide con la edad del directorio: si puede confirmar que el lock es stale, devuelve `NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED` sin borrarlo; si no puede obtener una edad válida porque `stat()` falla, `age` permanece en cero y el bucle puede seguir esperando. No se cambió esta semántica ni se añadió timeout/BUSY, porque no existe contrato acordado para ese caso. Requiere una prueba específica y una decisión de contrato antes de tocar runtime.
+
+Clasificación: brecha de caracterización del lock, no permiso para reclamar/borrar locks ajenos. La API mixta de adquisición continúa explícitamente caracterizada, sin aprobación de diseño final.
