@@ -1,3 +1,12 @@
+## ACTUALIZACIÓN — cruce de crash-cut tests
+
+- Matriz refinada en `NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md`, commit documental `39f105bdd09be39523cd796ad3e58d9a77216044`.
+- `tests/nexo/repair-settlement-crash-cuts.test.mjs` blob `60e2486698cee7a029902aa9ee09df90707fe0eb` cubre pérdida de respuesta a nivel caller después de commit y replay sin repetir verifier. No prueba una excepción de rename dentro de `writeEnvelope()`; mantener separados esos niveles de prueba.
+- CI de persistencia run `39356230949` SUCCESS en SHA `147d9f6092353143496757c9de3cdf03a8ab44ff`; el SHA probado es anterior a los siguientes commits documentales.
+- No se editaron runtime/tests. Próximo paso: localizar sólo las regresiones de frontera del store aún pendientes, sin duplicar crash-cut de caller. M0 INCOMPLETO; autorización NOT_EVALUATED; efectos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — resultado CI del checkpoint de regresiones
 
 - Workflow de persistencia [39356168972](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356168972), job `tests`, paso `Run tests`: SUCCESS para SHA exacto `5ad2ea38645f83eeefbc75e341bb5cdc7702a8e5`.
