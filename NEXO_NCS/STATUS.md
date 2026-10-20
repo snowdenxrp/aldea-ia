@@ -1,13 +1,14 @@
-## M0 — error OS de adquisición de lock normalizado en initialize(); CI pendiente (2026-10-20)
+## M0 — lock acquisition error normalization: regression corrected and CI re-observed (2026-10-20)
 
-- Hallazgo reproducible: el catch de `initialize()` decía ocultar códigos OS detrás del contrato Nexo, pero devolvía `error.code` sin normalizar para errores distintos de `ENOENT/ENOTDIR`. Un `mkdir(lockPath)` que devuelve `EACCES` podía filtrar `code: EACCES`.
-- Corrección acotada en `src/nexo/core/continuity-store.mjs`: preserva códigos internos `NEXO_CONTINUITY_STORE_*`, conserva `NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE` para `ENOENT/ENOTDIR` y normaliza otros fallos de adquisición a `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED`.
-- Regresión añadida a `tests/nexo/continuity-store.test.mjs`: inyecta `EACCES` y exige resultado estructurado Nexo en `initialize()`. También deja explícito que `commitIfCurrent()` conserva por ahora su contrato distinto de propagar errores de adquisición no relacionados con la ruta.
-- SHA runtime commit `995871f4500b4dee5e164c2d83a59cb0e6207bf8`; SHA test commit `9fad44406e3c19bac2a20ecb830cf29f6758dae7`. Blobs actuales runtime `ecf982a028dcd4e9208eb236e27538eb5b508863`, test `f3c9eeb3d0e28926511dcc5ed5051ac567ece130`.
-- Informe: [NCS_M0_LOCK_ACQUISITION_ERROR_NORMALIZATION_AUDIT_2026-10-20.md](BUILD/NCS_M0_LOCK_ACQUISITION_ERROR_NORMALIZATION_AUDIT_2026-10-20.md).
-- **CI del SHA exacto aún PENDING:** combined status sin checks y consulta de workflow runs vacía al verificar. No declarar PASS ni hacer otro cambio de código hasta confirmar la ejecución. No se modificó la espera ilimitada ni la política de stale lock.
+- Hallazgo: `initialize()` exponía códigos OS de adquisición del lock para errores distintos de `ENOENT/ENOTDIR`; el contrato Nexo requería normalizarlos.
+- Runtime fix: `src/nexo/core/continuity-store.mjs`, commit `995871f4500b4dee5e164c2d83a59cb0e6207bf8`; normaliza a `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED` preservando códigos internos Nexo y el error específico de ruta.
+- Primera regresión: commit de prueba `9fad44406e3c19bac2a20ecb830cf29f6758dae7` falló porque su expectativa todavía exigía `code: EACCES`; los logs de [contracts run 39372027172](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027172) y [mission-admission run 39372027076](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027076) muestran la misma aserción antigua en `tests/nexo/continuity-store.test.mjs`. No era evidencia de fallo del runtime fix: la prueba contradecía el contrato que debía comprobar.
+- Corrección de expectativa: commit `b133c8c392739a0912f7b0466650a25962ead267`; tests, semantic-validation, outcome-classification, M0 contracts on one SHA y mission-admission-continuity SUCCESS. Ejemplos: [tests 39372728046](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728046), [M0 contracts 39372728077](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728077), [mission admission 39372728055](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728055).
+- Se añadieron después pruebas de adquisición tardía/timeout en commits `844afaac8e5c15138a3a4bf70fb417954923e770` y `d65aaffb6f90e73aea23ff4e9bab8abd8c2cbec5`. En `d65aaff`, M0 contracts, mission-admission, semantic-validation y outcome-classification SUCCESS; el job amplio `tests` quedó CANCELLED, por lo que ese SHA no se declara suite completa PASS.
+- Validación posterior: el workflow [Nexo — deterministic persistence tests, run 39431631088](https://github.com/snowdenxrp/aldea-ia/actions/runs/39431631088) terminó SUCCESS en el SHA exacto `cd9c02f1596225a419a1512a7ea9b55a4953e71e`, que incluye los tests actuales de `continuity-store`. Esto acredita esa suite en ese SHA; no convierte automáticamente los checks anteriores en PASS.
+- Blob actual de `tests/nexo/continuity-store.test.mjs`: `f50382fc7d57bacd43dcc888812ceb1bf7fdce76`; la aserción en líneas 566–574 exige el código normalizado de `initialize()` y conserva explícitamente el contrato diferente de `commitIfCurrent()`.
+- **Decisión de cierre:** error de expectativa corregido; no hacer otra modificación de runtime por este resultado. No se cambió timeout/espera ilimitada ni política de stale lock en este trabajo.
 - Estado global sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
-
 ---
 ## M0 — frontera pública owner-backed verificada; contención sigue como decisión abierta (2026-10-20)
 
