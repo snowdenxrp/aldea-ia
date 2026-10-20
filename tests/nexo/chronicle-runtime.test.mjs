@@ -496,6 +496,7 @@ const unsafePreparedHandoff = await executeNexoStepWithContinuityOwner({
 });
 assert.equal(unsafePreparedHandoff.status, "blocked");
 assert.equal(unsafePreparedHandoff.preparedCommitted, true);
+assert.equal(unsafePreparedHandoff.storeRevision, 5);
 assert.equal(unsafePreparedHandoff.dispatchAttempted, false);
 assert.equal(unsafePreparedHandoff.redispatchAuthorized, false);
 assert.equal(unsafePreparedDispatches, 0);
