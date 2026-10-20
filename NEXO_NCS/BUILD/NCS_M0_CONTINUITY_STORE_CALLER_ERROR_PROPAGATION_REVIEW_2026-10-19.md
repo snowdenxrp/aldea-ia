@@ -21,6 +21,18 @@ La política de errores del store es observable en capas superiores y no puede c
 - Introducir `BUSY` exige definir su propagación en cada capa y probar que no se convierte en reintento/redispatch de un efecto.
 - La ruta de reconciliación ya distingue una excepción de commit como incertidumbre, pero eso no significa que todas las otras operaciones compartan la misma estrategia.
 
+
+## Rutas superiores inspeccionadas después de la primera revisión
+
+Se inspeccionaron también `src/nexo/core/owner-backed-runtime.mjs`, `src/nexo/application/chronicle-append.mjs` y `src/nexo/application/continuity-queries.mjs`:
+
+- En `executeNexoStepWithContinuityOwnerInternal()`, una excepción de `recordPrepared()` produce `status: "unknown"`, `preparedCommitted: "UNKNOWN"` y `dispatchAttempted: false`. El adapter no se invoca sin confirmación explícita de PREPARED.
+- Las excepciones de persistencia posteriores al dispatch, como lineage/reconciliation/outcome, se convierten en resultados `unknown` y declaran `redispatchAuthorized: false`. Esto es evidencia de manejo fail-closed en esas rutas inspeccionadas, no una prueba de todos los entrypoints.
+- `recordNexoMissionSafely()` captura excepción de admisión como `unknown`, `dispatchAttempted: false`, `redispatchAuthorized: false`; el caller bloquea ante ese resultado.
+- Las consultas de continuidad traducen errores de lectura a `blocked`; no mutan el store.
+
+Por tanto, el riesgo de añadir una política nueva no debe describirse como un redispatch demostrado: **no se observó tal bypass en las rutas revisadas**. El riesgo es contractual y de interoperabilidad: una nueva clase de resultado como BUSY, o cambiar excepción por resultado, puede no seguir la rama correcta en callers que comparan explícitamente `status`. Antes de cambiar runtime, probar cada rama de resultado nuevo y verificar que el gate de dispatch siga exigiendo PREPARED explícitamente committed.
+
 ## Límite y siguiente paso
 
 Esto es revisión estática parcial, no una búsqueda exhaustiva de todos los callers superiores ni prueba dinámica de cada resultado. Antes de alterar el contrato, completar el mapa de rutas de entrada y definir si la API de store devuelve exclusivamente resultados estructurados o también permite excepciones de infraestructura. Mantener runtime sin cambios hasta cerrar ese contrato.
