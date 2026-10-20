@@ -300,3 +300,14 @@ La nota separa garantías locales existentes de pruebas pendientes sobre raíz/p
 No hubo cambios de runtime ni ejecución nueva de CI. No se actualizó `NEXO_NCS/STATUS.md` en este paso; no afirmar lo contrario. Estado M0: `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
 Siguiente paso: seguir los contratos STEP 7 existentes para identificar una fuente constitucional ya definida y verificable vinculable a un claim concreto; si no existe, registrar el bloqueo y conservar STOP, sin inventar una raíz nueva ni endurecer de nuevo contratos de forma ya validados.
+
+
+## Continuación añadida — reuso del cierre Authority Context (2026-10-20)
+
+Se consultó el índice de GitHub sólo para localizar contratos existentes y se leyó en la rama objetivo la auditoría ya cerrada `STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md` (blob `e81abbfb35048dcb2cf29f8827db7e67d239adf9`) y la puerta `STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_FUTURE_COUNTEREFFECTS_GATE_2026-10-08.md` (blob `d5ebabcb05566593e32f3e1f9bf1047f6b99e0c0`).
+
+Resultado: la auditoría existente ya concluye que no hay una ruta actual implementada de autoridad constitucional; la puerta de implementación dice STOP BEFORE CODE hasta que exista una Trust Foundation reconocida. El índice encontró el nombre `STEP_7_TRUST_FOUNDATION_ROOT_CONTRACT_AND_RECOGNITION_GATE_2026-10-08.md`, pero el fetch directo en `ncs-clean-architecture` devolvió 404; no tratarlo como archivo presente en esta rama. No repetir la auditoría cerrada ni crear otro contrato genérico.
+
+Se añadió esta precisión a `NCS_M0_CLAIM_RELATIVE_CHRONICLE_APPEND_INVENTORY_2026-10-20.md` (blob nuevo `591d5bfbd4a218adb4501afa9c9570298998b547`, commit `46ade86dc5846f2468be710ce1142d31485a110a`).
+
+**Siguiente bloqueo real:** la raíz inicial y su reconocimiento independiente siguen sin resolución/implementación demostrable. Antes de implementar `createConstitutionAuthorityContext` o un verificador de raíz, hace falta definir y poder verificar cómo se reconoce la raíz inicial y qué evidencia de provisión, currentness y revocación la sostiene. No escoger una raíz por intuición ni dar por resuelta la decisión. Estado no cambia: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`. `NEXO_NCS/STATUS.md` no fue actualizado.
