@@ -734,6 +734,56 @@ assert.equal(reconstructedWithPrunedTerminal.steps[0].status, "completed",
   "a terminal journal record for a pruned historical mission must not block an unrelated retained mission");
 assert.equal(reconstructedWithPrunedTerminal.status, "awaiting_verification");
 
+// An unrecognized effect-journal state may represent an effect with unknown outcome.
+// It must not reconstruct a planned step as executable or be treated as terminal history.
+const unknownEffectStateSnapshot = recordNexoMissionInSnapshot(emptySnapshot, {
+  missionId: "unknown-effect-state",
+  status: "planned",
+  steps: [{
+    id: "step-1", action: "repair_agent_state", target: "alex",
+    status: "planned", dependsOn: []
+  }]
+});
+unknownEffectStateSnapshot.effectJournal.push({
+  idempotencyKey: "unknown-effect-state:step-1",
+  missionId: "unknown-effect-state",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "alex",
+  status: "future_state_v9"
+});
+const reconstructedUnknownEffectState = reconstructNexoMissionFromSnapshot(
+  unknownEffectStateSnapshot, "unknown-effect-state"
+);
+assert.equal(reconstructedUnknownEffectState.status, "blocked",
+  "an unrecognized effect state must block reconstruction instead of leaving the step runnable");
+assert.equal(reconstructedUnknownEffectState.steps[0].status, "blocked");
+assert.equal(reconstructedUnknownEffectState.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_STATE_UNKNOWN");
+assert.equal(reconstructedUnknownEffectState.uncertainty, "effect_journal_state_unknown");
+
+const orphanUnknownEffectSnapshot = recordNexoMissionInSnapshot(emptySnapshot, {
+  missionId: "unrelated-retained-mission",
+  status: "planned",
+  steps: [{
+    id: "step-1", action: "local_analysis", target: "bravo",
+    status: "planned", dependsOn: []
+  }]
+});
+orphanUnknownEffectSnapshot.effectJournal.push({
+  idempotencyKey: "pruned-mission:step-1",
+  missionId: "pruned-mission",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "old-agent",
+  status: "future_state_v9"
+});
+const reconstructedWithOrphanUnknownEffect = reconstructNexoMissionFromSnapshot(
+  orphanUnknownEffectSnapshot, "unrelated-retained-mission"
+);
+assert.equal(reconstructedWithOrphanUnknownEffect.status, "blocked",
+  "an unknown unresolved effect without a retained owner plan must fail closed globally");
+assert.equal(reconstructedWithOrphanUnknownEffect.uncertainty, "effect_journal_identity_unknown");
+
 const conflictingOutcomeSnapshot = structuredClone(operationalSnapshot);
 conflictingOutcomeSnapshot.attempts.push({
   missionId: "core-mission", stepId: "step-1", action: "local_analysis",
