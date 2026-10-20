@@ -392,6 +392,47 @@ if (result.status !== "committed") process.exitCode = 1;`;
   assert.equal(exhaustedRead.storeRevision, Number.MAX_SAFE_INTEGER);
   assert.deepEqual(exhaustedRead.entries, maxRevisionDocument.entries);
 
+  // A live lock beyond the configured budget blocks initialization before any write.
+  const timeoutInitPath = path.join(root, "timeout-initialize.json");
+  const timeoutInitLock = timeoutInitPath + ".lock";
+  await fs.mkdir(timeoutInitLock);
+  await fs.writeFile(path.join(timeoutInitLock, "owner.json"), JSON.stringify({
+    pid: process.pid, token: "timeout-test-owner"
+  }), "utf8");
+  const timeoutInitStore = createNexoChronicleStore({ filePath: timeoutInitPath, lockWaitMs: 25 });
+  assert.deepEqual(await timeoutInitStore.initialize(), {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT",
+    phase: "lock_acquisition",
+    writeStarted: false
+  });
+  await assert.rejects(() => fs.access(timeoutInitPath), error => error?.code === "ENOENT");
+  await fs.rm(timeoutInitLock, { recursive: true, force: true });
+
+  // Append timeout must not mutate the canonical document or claim an append.
+  const timeoutAppendPath = path.join(root, "timeout-append.json");
+  const timeoutAppendBase = createNexoChronicleStore({ filePath: timeoutAppendPath });
+  assert.equal((await timeoutAppendBase.initialize()).status, "committed");
+  const timeoutAppendLock = timeoutAppendPath + ".lock";
+  await fs.mkdir(timeoutAppendLock);
+  await fs.writeFile(path.join(timeoutAppendLock, "owner.json"), JSON.stringify({
+    pid: process.pid, token: "timeout-test-owner"
+  }), "utf8");
+  const timeoutAppendStore = createNexoChronicleStore({ filePath: timeoutAppendPath, lockWaitMs: 25 });
+  assert.deepEqual(await timeoutAppendStore.append({
+    operationKey: "timeout-operation",
+    content: "must not be appended"
+  }), {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT",
+    phase: "lock_acquisition",
+    writeStarted: false
+  });
+  const timeoutAppendObserved = await timeoutAppendBase.loadCurrent();
+  assert.equal(timeoutAppendObserved.storeRevision, 0);
+  assert.deepEqual(timeoutAppendObserved.entries, []);
+  await fs.rm(timeoutAppendLock, { recursive: true, force: true });
+
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
   assert.equal((await observeChronicleOperation({
