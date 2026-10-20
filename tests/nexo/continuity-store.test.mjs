@@ -128,10 +128,15 @@ assert.deepEqual(
   { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED" },
   "initialize must normalize OS lock-acquisition codes behind the Nexo store contract"
 );
-await assert.rejects(
-  () => lockAcquisitionFailureStore.commitIfCurrent(0, emptySnapshot),
-  error => error?.code === "EACCES",
-  "commitIfCurrent retains its current exception contract for non-path lock-acquisition errors"
+assert.deepEqual(
+  await lockAcquisitionFailureStore.commitIfCurrent(0, emptySnapshot),
+  {
+    status: "failed",
+    code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED",
+    phase: "lock_acquisition",
+    writeStarted: false
+  },
+  "commitIfCurrent must normalize OS lock-acquisition errors like initialize() and confirm no write started"
 );
 
 // Initialization must reconcile a lost response against the exact persisted envelope.
