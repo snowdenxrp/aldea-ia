@@ -58,9 +58,20 @@ export function assertNexoContinuityMemoryShape(memory) {
     if (!Array.isArray(mission?.steps)) continue;
     const stepIds = new Set();
     for (const step of mission.steps) {
-      if (typeof step?.id !== "string" || !step.id.trim()) continue;
-      if (stepIds.has(step.id)) throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+      if (!step || typeof step !== "object" || Array.isArray(step) ||
+          typeof step.id !== "string" || !step.id.trim() || step.id.includes(":") ||
+          typeof step.action !== "string" || !step.action.trim() || stepIds.has(step.id)) {
+        throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+      }
       stepIds.add(step.id);
+    }
+    for (const step of mission.steps) {
+      const dependencies = step.dependsOn ?? [];
+      if (!Array.isArray(dependencies)) throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+      assertDenseArray(dependencies);
+      if (dependencies.some(id => typeof id !== "string" || !id.trim() || !stepIds.has(id) || id === step.id) || new Set(dependencies).size !== dependencies.length) {
+        throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+      }
     }
   }
 
