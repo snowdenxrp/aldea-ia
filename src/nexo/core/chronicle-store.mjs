@@ -77,18 +77,20 @@ async function acquireLock(fsModule, filePath) {
       };
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
-      const owner = await readLockOwner(fsModule, lock);
+      let owner = await readLockOwner(fsModule, lock);
       if (!owner) {
-        try {
-          const rawOwner = await fsModule.readFile(path.join(lock, "owner.json"), "utf8");
-          try { JSON.parse(rawOwner); }
-          catch { throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN"); }
-        } catch (error) {
+        let rawOwner;
+        try { rawOwner = await fsModule.readFile(path.join(lock, "owner.json"), "utf8"); }
+        catch (error) {
+          // A lock creator may still be writing owner.json; retry only when absent.
           if (error?.code === "ENOENT") continue;
-          if (error?.code === "NEXO_CHRONICLE_LOCK_STATE_UNKNOWN") throw error;
           throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN");
         }
-        throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN");
+        try { owner = JSON.parse(rawOwner); }
+        catch { throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN"); }
+        if (!owner || typeof owner !== "object" || Array.isArray(owner)) {
+          throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN");
+        }
       }
       let age;
       try { age = Date.now() - (await fsModule.stat(lock)).mtimeMs; }
