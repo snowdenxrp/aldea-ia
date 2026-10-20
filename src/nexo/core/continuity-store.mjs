@@ -197,7 +197,9 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
       }
       return {
         status: "failed",
-        code: error?.code ?? "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED"
+        code: typeof error?.code === "string" && error.code.startsWith("NEXO_CONTINUITY_STORE_")
+          ? error.code
+          : "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED"
       };
     }
     let result;
