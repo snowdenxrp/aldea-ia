@@ -103,3 +103,13 @@ Related:
 - Se añadieron pruebas sintéticas de proyección pública, handler y runtime PREPARED timeout, además de pruebas de integración de timeout durante inicialización de ambos stores.
 - Código/tests validado en SHA `12efac26d0948b91c59706612edec7df9e78c4f5`; seis workflows relevantes en success (runs 39376332936, 39376332981, 39376333167, 39376332991, 39376333035, 39376333016). Logs de jobs 118475197653, 118475197877 y 118475199164 inspeccionados.
 - Queda por hacer auditoría final de otras entrypoints que construyen stores/owners fuera de la ruta Chronicle compuesta; las mutaciones aisladas ya están acotadas por llamada por el default del store, pero sólo esta operación compuesta tiene deadline compartido explícito.
+
+
+### Resultado de auditoría adicional de entrypoints
+
+- `src/nexo/application/index.mjs` declara una sola operación mutante estable: `runNexoChronicleAppend`; esta ruta comparte un deadline absoluto.
+- `src/nexo/application/continuity-queries.mjs` usa `loadCurrent()` solamente; no adquiere lock de escritura.
+- `scripts/nexo-chronicle-session.mjs` delega en la operación pública Chronicle; su salida CLI ya conserva los campos de timeout sanitizados.
+- `scripts/nexo-repair-session.mjs` y `scripts/nexo-repair-entrypoint.mjs` reciben owner/store inyectados y son una ruta de reparación separada; no crean los stores de Chronicle interactivo. El runtime canónico actual bloquea acciones de reparación antes de PREPARED. **No activar esa ruta como operación interactiva hasta definir/propagar un deadline compartido propio y probar sus resultados.**
+- `src/nexo/runtime.js` legacy usa memoria/adapter y no construye estos stores en el flujo inspeccionado.
+- Conclusión: no se encontró otra frontera pública estable que construya ambos stores para una operación compuesta. La única ruta compuesta actualmente soportada por la API de aplicación es Chronicle; el resto de mutaciones directas recibe presupuesto por mutación, y la ruta de reparación inyectada permanece fuera del alcance activo y no debe considerarse lista para activación.
