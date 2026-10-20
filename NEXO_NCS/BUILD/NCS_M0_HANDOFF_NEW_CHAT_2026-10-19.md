@@ -5,8 +5,7 @@
 **Misión única: M0.** No reiniciar investigación; no cambiar a M1 ni STEP 7 como trabajo principal.
 
 ### HEAD y estado de evidencia
-- HEAD observado al preparar este checkpoint: `2cf14a2d8b68f441da2c4b76d1170fb319ef9d2f`, mensaje `docs(ncs): extend caller review through dispatch gates`.
-- Ese commit modifica únicamente `NEXO_NCS/BUILD/NCS_M0_CONTINUITY_STORE_CALLER_ERROR_PROPAGATION_REVIEW_2026-10-19.md`; es documental. Los tests y cinco workflows SUCCESS del vector cross-process siguen vinculados a SHA `6f0499142781e24c55d1adf137170323c8d1afbf`, no al HEAD documental.
+- HEAD documental actual verificado tras guardar este handoff: `679832d86d965d92dc48e1851cdb964a408488a1`, mensaje `docs(ncs): finalize next-chat M0 checkpoint`. Los commits `2cf14a2d8b68f441da2c4b76d1170fb319ef9d2f` y `679832d86d965d92dc48e1851cdb964a408488a1` son documentales; no modifican runtime/tests. El primero amplió la revisión de callers a las puertas de dispatch; el segundo guarda este checkpoint. Los tests y cinco workflows SUCCESS del vector cross-process siguen vinculados a SHA `6f0499142781e24c55d1adf137170323c8d1afbf`, no al HEAD documental.
 - Evidencia CI: persistencia [39347061453](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061453), M0 integrado [39347061416](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061416), admisión/continuidad [39347061419](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061419), STEP 4 [39347061426](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061426), STEP 5 [39347061501](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061501): SUCCESS en el SHA de test indicado. No afirmar que se ejecutó CI nuevo para los commits documentales.
 
 ### Resultado más reciente de revisión estática
