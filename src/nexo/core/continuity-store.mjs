@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { NEXO_DEFAULT_LOCK_WAIT_MS, resolveNexoLockDeadline, remainingNexoLockWaitMs, nexoLockDeadlineExpired } from "./lock-deadline.mjs";
 import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
 
 export const NEXO_CONTINUITY_STORE_SCHEMA = "NEXO_CONTINUITY_STORE";
@@ -30,7 +31,7 @@ async function readLockOwner(fsModule, lockPath) {
   catch { return null; }
 }
 
-async function acquireLock(fsModule, filePath) {
+async function acquireLock(fsModule, filePath, deadlineAt, timeoutCode) {
   const lockPath = lockPathFor(filePath);
   if (lockReleaseFailures.has(lockPath)) {
     try {
@@ -45,6 +46,7 @@ async function acquireLock(fsModule, filePath) {
   const token = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const owner = { pid: process.pid, token, createdAt: Date.now() };
   while (true) {
+    if (nexoLockDeadlineExpired(deadlineAt)) throw storeError(timeoutCode);
     try {
       await fsModule.mkdir(lockPath);
       try {
@@ -55,7 +57,7 @@ async function acquireLock(fsModule, filePath) {
         await fsModule.rm(lockPath, { recursive: true, force: true }).catch(() => {});
         throw error;
       }
-      return async () => {
+      const release = async () => {
         const current = await readLockOwner(fsModule, lockPath);
         if (current?.token !== token) return { status: "not_owned" };
         try {
@@ -82,6 +84,12 @@ async function acquireLock(fsModule, filePath) {
           }
         }
       };
+      if (nexoLockDeadlineExpired(deadlineAt)) {
+        const timeout = storeError(timeoutCode);
+        timeout.lockRelease = await release();
+        throw timeout;
+      }
+      return release;
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
       let current = await readLockOwner(fsModule, lockPath);
@@ -117,7 +125,9 @@ async function acquireLock(fsModule, filePath) {
         // Do not reclaim automatically; fail closed for explicit recovery.
         throw storeError("NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED");
       }
-      await new Promise(resolve => setTimeout(resolve, LOCK_RETRY_MS));
+      const remainingMs = remainingNexoLockWaitMs(deadlineAt);
+      if (remainingMs <= 0) throw storeError(timeoutCode);
+      await new Promise(resolve => setTimeout(resolve, Math.min(LOCK_RETRY_MS, remainingMs)));
     }
   }
 }
@@ -170,9 +180,12 @@ async function writeEnvelope(fsModule, filePath, envelope) {
  * trusted local directory and prevent untrusted processes from mutating paths or
  * lock entries. Symlink/path-attack resistance is not claimed.
  */
-export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
+export function createNexoContinuityStore({ filePath, fsModule = fs, lockDeadline = null, lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS } = {}) {
   if (typeof filePath !== "string" || !filePath.trim()) {
     throw storeError("NEXO_CONTINUITY_STORE_PATH_REQUIRED");
+  }
+  if (lockDeadline == null && (typeof lockWaitMs !== "number" || !Number.isFinite(lockWaitMs) || lockWaitMs <= 0)) {
+    throw storeError("NEXO_LOCK_WAIT_BUDGET_INVALID");
   }
 
   async function loadCurrent() {
@@ -186,12 +199,16 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
 
   async function initialize(snapshot) {
     assertNexoContinuitySnapshot(snapshot);
+    const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
     let releaseLock;
     try {
-      releaseLock = await acquireLock(fsModule, filePath);
+      releaseLock = await acquireLock(fsModule, filePath, deadlineAt, "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
     } catch (error) {
       // Initialization has not begun writing until its lock is acquired.
       // Keep OS filesystem codes behind the Nexo store contract.
+      if (error?.code === "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT") {
+        return { status: "failed", code: error.code, phase: "lock_acquisition", writeStarted: false, ...(error.lockRelease ? { lockRelease: error.lockRelease } : {}) };
+      }
       if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" };
       }
@@ -267,10 +284,14 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
     try { assertNexoContinuitySnapshot(candidate); }
     catch (error) { return { status: "failed", code: error?.code ?? "NEXO_CONTINUITY_SNAPSHOT_INVALID" }; }
 
+    const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
     let releaseLock;
     try {
-      releaseLock = await acquireLock(fsModule, filePath);
+      releaseLock = await acquireLock(fsModule, filePath, deadlineAt, "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
     } catch (error) {
+      if (error?.code === "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT") {
+        return { status: "failed", code: error.code, phase: "lock_acquisition", writeStarted: false, ...(error.lockRelease ? { lockRelease: error.lockRelease } : {}) };
+      }
       if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" };
       }
