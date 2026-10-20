@@ -102,6 +102,38 @@ assert.deepEqual(
 );
 await assert.rejects(() => fs.access(ownerFailurePath + ".lock"), error => error?.code === "ENOENT");
 
+// OS-level lock acquisition failures must not leak through initialize()'s
+// structured store-result contract. commitIfCurrent() intentionally retains
+// its separately documented exception surface for non-path acquisition errors.
+const lockAcquisitionFailureDir = path.join(directory, "lock-acquisition-eacces");
+await fs.mkdir(lockAcquisitionFailureDir);
+const lockAcquisitionFailurePath = path.join(lockAcquisitionFailureDir, "continuity.json");
+const fsWithLockAcquisitionFailure = {
+  ...fs,
+  mkdir: async (target, ...args) => {
+    if (String(target) === lockAcquisitionFailurePath + ".lock") {
+      const error = new Error("simulated OS lock acquisition denial");
+      error.code = "EACCES";
+      throw error;
+    }
+    return fs.mkdir(target, ...args);
+  }
+};
+const lockAcquisitionFailureStore = createNexoContinuityStore({
+  filePath: lockAcquisitionFailurePath,
+  fsModule: fsWithLockAcquisitionFailure
+});
+assert.deepEqual(
+  await lockAcquisitionFailureStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED" },
+  "initialize must normalize OS lock-acquisition codes behind the Nexo store contract"
+);
+await assert.rejects(
+  () => lockAcquisitionFailureStore.commitIfCurrent(0, emptySnapshot),
+  error => error?.code === "EACCES",
+  "commitIfCurrent retains its current exception contract for non-path lock-acquisition errors"
+);
+
 // Initialization must reconcile a lost response against the exact persisted envelope.
 const initializeLostDirectory = path.join(directory, "initialize-lost-response");
 await fs.mkdir(initializeLostDirectory);
