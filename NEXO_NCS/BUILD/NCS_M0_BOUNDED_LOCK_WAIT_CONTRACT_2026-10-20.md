@@ -130,3 +130,19 @@ Referencias previas:
   - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730370)
   - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730363)
 - Raw logs inspected for jobs `118473315380`, `118473315369`, and `118473336472`; no failures reported.
+
+
+### Follow-up verification — public propagation and PREPARED gate
+
+- Timeout metadata is preserved through the Chronicle application boundary, Chronicle effect handler, public result projection, and CLI JSON output.
+- Added tests prove a PREPARED lock-acquisition timeout remains blocked with `dispatchAttempted:false`; no adapter dispatch occurs.
+- Added app integration tests for Chronicle initialization timeout and Continuity bootstrap timeout; both retain the distinct timeout code, phase, and no-write evidence.
+- Code/tests SHA `12efac26d0948b91c59706612edec7df9e78c4f5`; all six relevant workflows succeeded:
+  - [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332936)
+  - [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332981)
+  - [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376333167)
+  - [Mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332955)
+  - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376332991)
+  - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376333035)
+  - [Repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39376333016)
+- Note: the mission admission/restart run ID above must be the exact workflow run associated with this SHA; if it cannot be confirmed, treat it as pending and verify from the run API before using as evidence.
