@@ -594,6 +594,33 @@ assert.equal(preparedUnknownResult.journalSettled, false);
 assert.equal(preparedUnknownResult.terminalOutcomeRecorded, false);
 assert.equal(preparedUnknownResult.redispatchAuthorized, false);
 
+const preparedTimeoutResult = await executeNexoStepWithContinuityOwner({
+  missionId: "chronicle-mission",
+  stepId: "step-1",
+  owner: {
+    loadCurrent: async () => ({ storeRevision: 4, snapshot: continuitySnapshot([chronicleMission()]) }),
+    supportsReconciliation: () => true,
+    recordPrepared: async () => ({
+      status: "failed",
+      code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+      phase: "lock_acquisition",
+      writeStarted: false,
+      lockRelease: { status: "failed", code: "EACCES" }
+    }),
+    recordExecutionLineage: async () => { throw new Error("lineage must not follow PREPARED timeout"); },
+    reconcilePrepared: async () => { throw new Error("reconcile must not follow PREPARED timeout"); },
+    recordOutcome: async () => { throw new Error("outcome must not follow PREPARED timeout"); }
+  },
+  adapter: adapter(() => { throw new Error("dispatch must not follow PREPARED timeout"); })
+});
+assert.equal(preparedTimeoutResult.status, "blocked");
+assert.equal(preparedTimeoutResult.code, "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
+assert.equal(preparedTimeoutResult.phase, "lock_acquisition");
+assert.equal(preparedTimeoutResult.writeStarted, false);
+assert.equal(preparedTimeoutResult.dispatchAttempted, false);
+assert.equal(preparedTimeoutResult.redispatchAuthorized, false);
+assert.deepEqual(preparedTimeoutResult.prepared.lockRelease, { status: "failed", code: "EACCES" });
+
 // A confirmed PREPARED write with failed lock handoff remains blocked, but the
 // public result must preserve the fact that the journal entry was persisted.
 let unsafePreparedDispatches = 0;
