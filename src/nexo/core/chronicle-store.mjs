@@ -64,7 +64,16 @@ async function acquireLock(fsModule, filePath) {
       }
       return async () => {
         const owner = await readLockOwner(fsModule, lock);
-        if (owner?.token === token) await fsModule.rm(lock, { recursive: true, force: true });
+        if (owner?.token !== token) return { status: "not_owned" };
+        try {
+          await fsModule.rm(lock, { recursive: true, force: true });
+          return { status: "released" };
+        } catch (error) {
+          return {
+            status: "failed",
+            code: error?.code ?? "NEXO_CHRONICLE_LOCK_RELEASE_FAILED"
+          };
+        }
       };
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
@@ -139,27 +148,41 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
         code: error?.code ?? "NEXO_CHRONICLE_LOCK_ACQUISITION_FAILED"
       };
     }
+    let result;
+    let lockRelease;
     try {
-      try {
-        await fsModule.access(filePath);
-        return { status: "conflict", code: "NEXO_CHRONICLE_ALREADY_EXISTS" };
-      } catch (error) {
-        if (error?.code !== "ENOENT") return { status: "unknown", code: "NEXO_CHRONICLE_ACCESS_UNKNOWN" };
-      }
-      const document = { schema: NEXO_CHRONICLE_SCHEMA, schemaVersion: NEXO_CHRONICLE_VERSION, storeRevision: 0, entries: [] };
-      try {
-        await writeDocument(fsModule, filePath, document);
-        return { status: "committed", storeRevision: 0, entries: [] };
-      } catch {
+      result = await (async () => {
         try {
-          const observed = await readDocument(fsModule, filePath);
-          if (observed.storeRevision === 0 && observed.entries.length === 0) return { status: "committed", storeRevision: 0, entries: [] };
-        } catch {}
-        return { status: "unknown", code: "NEXO_CHRONICLE_INITIALIZE_OUTCOME_UNKNOWN" };
-      }
+          await fsModule.access(filePath);
+          return { status: "conflict", code: "NEXO_CHRONICLE_ALREADY_EXISTS" };
+        } catch (error) {
+          if (error?.code !== "ENOENT") return { status: "unknown", code: "NEXO_CHRONICLE_ACCESS_UNKNOWN" };
+        }
+        const document = { schema: NEXO_CHRONICLE_SCHEMA, schemaVersion: NEXO_CHRONICLE_VERSION, storeRevision: 0, entries: [] };
+        try {
+          await writeDocument(fsModule, filePath, document);
+          return { status: "committed", storeRevision: 0, entries: [] };
+        } catch {
+          try {
+            const observed = await readDocument(fsModule, filePath);
+            if (observed.storeRevision === 0 && observed.entries.length === 0) return { status: "committed", storeRevision: 0, entries: [] };
+          } catch {}
+          return { status: "unknown", code: "NEXO_CHRONICLE_INITIALIZE_OUTCOME_UNKNOWN" };
+        }
+      })();
     } finally {
-      await release();
+      lockRelease = await release();
     }
+    if (lockRelease?.status === "failed" || lockRelease?.status === "not_owned") {
+      return {
+        status: "blocked",
+        code: "NEXO_CHRONICLE_LOCK_RELEASE_FAILED",
+        persistenceStatus: result?.status ?? "unknown",
+        ...(Number.isSafeInteger(result?.storeRevision) ? { storeRevision: result.storeRevision } : {}),
+        lockRelease
+      };
+    }
+    return result;
   }
 
   async function append({ operationKey, content } = {}) {
@@ -176,57 +199,71 @@ export function createNexoChronicleStore({ filePath, fsModule = fs } = {}) {
       }
       throw error;
     }
+    let result;
+    let lockRelease;
     try {
-      let current;
-      try { current = await readDocument(fsModule, filePath); }
-      catch (error) { return { status: "blocked", code: error?.code ?? "NEXO_CHRONICLE_READ_FAILED" }; }
+      result = await (async () => {
+        let current;
+        try { current = await readDocument(fsModule, filePath); }
+        catch (error) { return { status: "blocked", code: error?.code ?? "NEXO_CHRONICLE_READ_FAILED" }; }
 
-      const existing = current.entries.find(entry => entry.operationKey === operationKey);
-      if (existing) {
-        if (existing.content !== content) return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
-        return { status: "already_present", storeRevision: current.storeRevision, entry: structuredClone(existing) };
-      }
+        const existing = current.entries.find(entry => entry.operationKey === operationKey);
+        if (existing) {
+          if (existing.content !== content) return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
+          return { status: "already_present", storeRevision: current.storeRevision, entry: structuredClone(existing) };
+        }
 
-      if (current.storeRevision === Number.MAX_SAFE_INTEGER) {
-        return {
-          status: "blocked",
-          code: "NEXO_CHRONICLE_REVISION_EXHAUSTED",
-          storeRevision: current.storeRevision
+        if (current.storeRevision === Number.MAX_SAFE_INTEGER) {
+          return {
+            status: "blocked",
+            code: "NEXO_CHRONICLE_REVISION_EXHAUSTED",
+            storeRevision: current.storeRevision
+          };
+        }
+
+        const candidate = {
+          schema: NEXO_CHRONICLE_SCHEMA,
+          schemaVersion: NEXO_CHRONICLE_VERSION,
+          storeRevision: current.storeRevision + 1,
+          entries: [...current.entries, { operationKey, content }]
         };
-      }
-
-      const candidate = {
-        schema: NEXO_CHRONICLE_SCHEMA,
-        schemaVersion: NEXO_CHRONICLE_VERSION,
-        storeRevision: current.storeRevision + 1,
-        entries: [...current.entries, { operationKey, content }]
-      };
-      try {
-        await writeDocument(fsModule, filePath, candidate);
-        return { status: "committed", storeRevision: candidate.storeRevision, entry: { operationKey, content } };
-      } catch {
         try {
-          const observed = await readDocument(fsModule, filePath);
-          const matches = observed.entries.filter(entry => entry.operationKey === operationKey);
-          if (observed.storeRevision === candidate.storeRevision &&
-              JSON.stringify(observed.entries) === JSON.stringify(candidate.entries)) {
-            return {
-              status: "committed",
-              storeRevision: observed.storeRevision,
-              entry: structuredClone(matches[0]),
-              recoveredAfterWriteError: true
-            };
-          }
-          if (matches.length === 1 && matches[0].content !== content) {
-            return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
-          }
+          await writeDocument(fsModule, filePath, candidate);
+          return { status: "committed", storeRevision: candidate.storeRevision, entry: { operationKey, content } };
+        } catch {
+          try {
+            const observed = await readDocument(fsModule, filePath);
+            const matches = observed.entries.filter(entry => entry.operationKey === operationKey);
+            if (observed.storeRevision === candidate.storeRevision &&
+                JSON.stringify(observed.entries) === JSON.stringify(candidate.entries)) {
+              return {
+                status: "committed",
+                storeRevision: observed.storeRevision,
+                entry: structuredClone(matches[0]),
+                recoveredAfterWriteError: true
+              };
+            }
+            if (matches.length === 1 && matches[0].content !== content) {
+              return { status: "conflict", code: "NEXO_CHRONICLE_OPERATION_CONTENT_CONFLICT" };
+            }
+            return { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" };
+          } catch {}
           return { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" };
-        } catch {}
-        return { status: "unknown", code: "NEXO_CHRONICLE_APPEND_OUTCOME_UNKNOWN" };
-      }
+        }
+      })();
     } finally {
-      await release();
+      lockRelease = await release();
     }
+    if (lockRelease?.status === "failed" || lockRelease?.status === "not_owned") {
+      return {
+        status: "blocked",
+        code: "NEXO_CHRONICLE_LOCK_RELEASE_FAILED",
+        persistenceStatus: result?.status ?? "unknown",
+        ...(Number.isSafeInteger(result?.storeRevision) ? { storeRevision: result.storeRevision } : {}),
+        lockRelease
+      };
+    }
+    return result;
   }
 
   return Object.freeze({ initialize, loadCurrent, append });
