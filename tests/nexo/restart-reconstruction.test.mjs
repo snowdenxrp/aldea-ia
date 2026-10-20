@@ -171,6 +171,42 @@ const postRetentionPlan = recordNexoPlan(retentionMemory, {
 assert.ok(postRetentionPlan.nexo.missions.some(item => item.missionId === "retention-mission-00"));
 assert.ok(reconstructNexoMission(postRetentionPlan, "retention-mission-00"));
 
+// An unrecognized effect state is not a recognized terminal outcome. It must
+// survive the journal soft cap and retain its mission plan so reconstruction
+// can surface uncertainty for that mission instead of silently erasing it.
+const unknownEffectStatus = {
+  idempotencyKey: "retention-mission-00:unknown-step",
+  missionId: "retention-mission-00",
+  stepId: "step-1",
+  action: "repair_agent_state",
+  target: "agent-0",
+  status: "future_unrecognized_state"
+};
+const unknownEffectRetentionMemory = createLearningMemory({
+  nexo: {
+    missions: retainedMissionPlans,
+    effectJournal: [
+      unknownEffectStatus,
+      ...Array.from({length: 200}, (_, index) => ({
+        idempotencyKey: `historical-terminal-${index}`,
+        missionId: `historical-mission-${index}`,
+        stepId: "step-1",
+        action: "repair_agent_state",
+        target: `historical-agent-${index}`,
+        status: "settled_observed"
+      }))
+    ]
+  }
+});
+assert.equal(unknownEffectRetentionMemory.nexo.effectJournal.length, 200);
+assert.ok(unknownEffectRetentionMemory.nexo.effectJournal.some(
+  entry => entry.status === "future_unrecognized_state" &&
+    entry.missionId === "retention-mission-00"
+), "unknown effect states must survive retention even when terminal records are pruned");
+assert.ok(unknownEffectRetentionMemory.nexo.missions.some(
+  item => item.missionId === "retention-mission-00"
+), "the plan explaining an unknown effect state must survive retention");
+
 // Prepared-operation recovery also depends on prior step attempts: truncating an
 // old completed dependency could reconstruct it as planned after restart.
 const longMissionId = "long-prepared-mission";
