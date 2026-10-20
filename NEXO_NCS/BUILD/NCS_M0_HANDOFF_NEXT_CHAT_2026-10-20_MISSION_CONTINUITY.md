@@ -229,3 +229,9 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - El informe y STATUS se actualizaron después del SHA de prueba. Verificar CI del HEAD documental más reciente antes de afirmar que ese HEAD también tiene CI SUCCESS.
 - Próximo trabajo: confirmar la ejecución del HEAD; después, avanzar sólo en brechas técnicas independientes de decisiones constitucionales OPEN. La revisión/aprobación del propietario no puede inferirse de “continúa”.
 - Estado M0: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Verificación posterior confirmada
+
+- Run `39446775325` [`npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39446775325) terminó `completed / success` en SHA `1f4f6cfb5d674e7c3124c93311c7c40c57ca54a7`, que contiene el test de proyección anti-self-attestation y las actualizaciones documentales previas.
+- STATUS registra el resultado. El registro documental nuevo produce un SHA posterior; no afirmar que ese SHA posterior tiene CI SUCCESS a menos que se compruebe su propio run.
