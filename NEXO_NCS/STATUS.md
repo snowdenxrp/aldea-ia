@@ -1,3 +1,12 @@
+## M0 — CI del checkpoint documental de regresiones (2026-10-19)
+
+- El workflow de persistencia [run 39356168972](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356168972), job `tests`, paso `Run tests` = SUCCESS para SHA `5ad2ea38645f83eeefbc75e341bb5cdc7702a8e5`.
+- Ese SHA contiene sólo documentación de la matriz de regresiones y el handoff; no se editaron runtime/tests en este checkpoint. Este run demuestra que la suite de persistencia pasó en ese SHA, pero no valida nuevos escenarios de regresión: no se añadieron tests.
+- El siguiente cambio debe localizar las seis ramas pendientes contra la suite completa antes de editar código o duplicar pruebas.
+- Estado invariable: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — matriz de regresiones del continuity store (2026-10-19)
 
 - Documento añadido: [NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md), commit documental `7441784ba216c4c269652f9453e8834dbcf348d2`.
