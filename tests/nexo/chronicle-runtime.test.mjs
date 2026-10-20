@@ -63,6 +63,68 @@ assert.equal(malformedPublicResult.missionAdmissionCommitted, "UNKNOWN");
 assert.equal(malformedPublicResult.storeRevision, undefined);
 assert.equal(JSON.stringify(malformedPublicResult).includes("PRIVATE"), false);
 
+const publicPreparedTimeout = publicChronicleResult({
+  status: "blocked",
+  code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+  dispatchAttempted: false,
+  redispatchAuthorized: false,
+  prepared: {
+    status: "failed",
+    code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+    phase: "lock_acquisition",
+    writeStarted: false,
+    lockRelease: { status: "failed", code: "EACCES" }
+  }
+}, "public-timeout-mission", "step-1");
+assert.equal(publicPreparedTimeout.code, "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
+assert.equal(publicPreparedTimeout.phase, "lock_acquisition");
+assert.equal(publicPreparedTimeout.writeStarted, false);
+assert.deepEqual(publicPreparedTimeout.lockRelease, { status: "failed", code: "EACCES" });
+assert.equal(publicPreparedTimeout.dispatchAttempted, false);
+assert.equal(publicPreparedTimeout.redispatchAuthorized, false);
+
+const publicPostDispatchTimeout = publicChronicleResult({
+  status: "unknown",
+  code: "NEXO_EXECUTION_LINEAGE_COMMIT_NOT_CONFIRMED",
+  dispatchAttempted: true,
+  redispatchAuthorized: false,
+  adapterResult: {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT",
+    phase: "lock_acquisition",
+    writeStarted: false
+  }
+}, "public-timeout-after-dispatch", "step-1");
+assert.equal(publicPostDispatchTimeout.lockAcquisitionCode, "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT");
+assert.equal(publicPostDispatchTimeout.phase, "lock_acquisition");
+assert.equal(publicPostDispatchTimeout.writeStarted, false);
+assert.equal(publicPostDispatchTimeout.dispatchAttempted, true);
+assert.equal(publicPostDispatchTimeout.redispatchAuthorized, false);
+
+const timeoutHandlerContracts = createNexoChronicleEffectContracts({
+  store: {
+    loadCurrent: async () => ({ status: "loaded", storeRevision: 0, entries: [] }),
+    append: async () => ({
+      status: "blocked",
+      code: "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT",
+      phase: "lock_acquisition",
+      writeStarted: false,
+      lockRelease: { status: "failed", code: "EACCES" }
+    })
+  }
+});
+const timeoutHandlerResult = await timeoutHandlerContracts.handlers.chronicle_append({
+  missionId: "timeout-mission",
+  stepId: "step-1",
+  action: "chronicle_append",
+  target: { content: "must not be written" }
+});
+assert.equal(timeoutHandlerResult.status, "blocked");
+assert.equal(timeoutHandlerResult.code, "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT");
+assert.equal(timeoutHandlerResult.phase, "lock_acquisition");
+assert.equal(timeoutHandlerResult.writeStarted, false);
+assert.deepEqual(timeoutHandlerResult.lockRelease, { status: "failed", code: "EACCES" });
+
 const invalidApplicationInput = await runNexoChronicleAppend({
   continuityPath: "", chroniclePath: "/unused/chronicle.json",
   missionId: "invalid-mission", stepId: "step-1", content: "payload",
