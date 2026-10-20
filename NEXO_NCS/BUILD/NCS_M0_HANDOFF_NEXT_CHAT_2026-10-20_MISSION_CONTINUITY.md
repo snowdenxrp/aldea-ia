@@ -94,3 +94,12 @@ Se amplió el inventario claim-relative existente (sin crear otro informe duplic
 Esto es un **gap de integración confirmado por inspección estática**, no un bypass de autorización demostrado ni permiso para añadir campos de caller. Los fixtures `AUTHORIZED` de `protected-transition.test.mjs` no prueban raíz real. No modificar runtime: aceptar `constitutionRef` desde el caller sería metadata autocertificada y no cumpliría el contrato.
 
 Mantener el orden de dependencias: revisión explícita del artefacto constitucional por el propietario → fuente/procedencia independiente de raíz demostrable → contexto constitucional actual protegido → vínculo Constitución→Policy → evaluación de autorización ligada al claim y enforcement en el sink. No saltar pasos ni marcar la Constitución aprobada por “continúa”. M0 sigue `INCOMPLETO`, `authorization: NOT_EVALUATED`, efectos `STOP`, raíz `PENDING/UNKNOWN`. Este cambio documental no ejecuta pruebas ni genera evidencia CI.
+
+
+## Continuidad adicional — guía constitucional indexada (2026-10-20)
+
+La guía existente `NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md` ahora incluye un cruce por cada decisión OPEN hacia las secciones exactas del borrador constitucional, con distinción entre contenido ya expresado y decisión/evidencia pendiente. Reutilizar esa guía; no crear una segunda matriz ni repetir el análisis del contrato Constitución→Policy.
+
+Commit guía: `194f38819bbfaaf7f650c8e824b06fc9552139aa`. Fue un cambio documental; no hay CI ni tests nuevos asociados.
+
+Siguiente trabajo: el propietario debe revisar el borrador completo y decidir explícitamente los puntos que quiera resolver. Mientras tanto, continuar sólo en gaps M0 que puedan probarse y cerrarse sin asumir una Constitución aprobada, una raíz reconocida o un sink autorizado. Mantener M0 `INCOMPLETO`, `authorization: NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos `STOP`.
