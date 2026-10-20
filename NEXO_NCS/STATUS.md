@@ -1,3 +1,14 @@
+## M0 — handoff de reconstrucción de continuidad guardado (2026-10-20)
+
+- Handoff nuevo para el siguiente chat: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_CONTINUITY_RECONSTRUCTION.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_CONTINUITY_RECONSTRUCTION.md), commit `6db1bde25332a378bed94114e005a3cf566987eb`.
+- HEAD observado al preparar el handoff: `ef5b6524c62343dd56507c907e70c9a0c21b6288`; workflow determinista [39464330230](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464330230) SUCCESS en ese SHA. La escritura del handoff genera un commit posterior, por lo que este run no valida el commit documental nuevo.
+- Reconstrucción terminal: `NEXO_OUTCOME_EVIDENCE_CONFLICT` bloquea evidencia terminal verificada contradictoria; `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH` bloquea intentos `completed` con acción/objetivo discordantes. SHA `876e1924292bd8c301b7e050531be9ded79ce290`: acceptance M0, bounded admission/continuity, STEP 4 y STEP 5 SUCCESS; workflow determinista CANCELLED, no llamarlo suite completa PASS.
+- Journal desconocido: SHA `dd30b70e1204750fc09fac683f30b6e7e129bfe6` tiene SUCCESS en persistencia determinista, admisión/continuidad, aceptación integrada M0, STEP 4 y STEP 5.
+- No extrapolar resultados CI entre SHA. Consultar el handoff para enlaces, alcance y continuidad.
+- Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — actualización vigente: estado desconocido de effect journal (2026-10-20)
 
 - Handoff actual: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_UNKNOWN_EFFECT_RECONSTRUCTION.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_UNKNOWN_EFFECT_RECONSTRUCTION.md).
