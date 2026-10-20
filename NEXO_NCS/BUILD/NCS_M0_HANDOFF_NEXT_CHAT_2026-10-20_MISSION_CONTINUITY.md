@@ -1,3 +1,12 @@
+## Trabajo más reciente — cobertura adicional del grafo persistido (2026-10-20)
+
+- Añadidas tres pruebas en `tests/nexo/continuity-contract.test.mjs`: dependencia dispersa, referencia duplicada y autorreferencia. Commit: `594cee05c61617b38cc6481698643215e9da9ae2`.
+- El código de validación ya rechazaba esas formas; el cambio cierra huecos de aserción concretos, no introduce una regla nueva ni modifica runtime.
+- **No asumir CI PASS**: el checkpoint actual no ha verificado un run asociado al SHA del test. Próximo paso técnico: consultar/esperar la ejecución de la suite para el SHA exacto y revisar el log si falla. Si el workflow no se dispara, no simular evidencia; determinar el mecanismo real de ejecución.
+- No repetir la auditoría de autoridad, el deadline de locks ni el contrato PREPARED. Mantener M0 `INCOMPLETO`, `authorization: NOT_EVALUATED`, raíz `PENDING/UNKNOWN` y efectos protegidos `STOP`.
+
+---
+
 # NCS — HANDOFF PARA EL SIGUIENTE CHAT
 Fecha: 2026-10-20
 Repositorio: `snowdenxrp/aldea-ia`
