@@ -102,9 +102,8 @@ assert.deepEqual(
 );
 await assert.rejects(() => fs.access(ownerFailurePath + ".lock"), error => error?.code === "ENOENT");
 
-// OS-level lock acquisition failures must not leak through initialize()'s
-// structured store-result contract. commitIfCurrent() intentionally retains
-// its separately documented exception surface for non-path acquisition errors.
+// OS-level lock acquisition failures must not leak through either public
+// operation: initialize() and commitIfCurrent() share a structured result contract.
 const lockAcquisitionFailureDir = path.join(directory, "lock-acquisition-eacces");
 await fs.mkdir(lockAcquisitionFailureDir);
 const lockAcquisitionFailurePath = path.join(lockAcquisitionFailureDir, "continuity.json");
