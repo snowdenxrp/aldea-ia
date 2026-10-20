@@ -193,3 +193,13 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 
 - El workflow `npm test` [run 39444000362](https://github.com/snowdenxrp/aldea-ia/actions/runs/39444000362) terminó `completed / success` para SHA `c9c3d8bf78233f324eef257dea71b704b3f19d00`, que contenía informe, STATUS y handoff del límite de enforcement CI.
 - El registro del resultado en STATUS produjo el commit documental posterior `198ae4971c61b081bac308f89816dde03a9e9924`; el run anterior no prueba por sí solo ese SHA posterior. Consultar el run del nuevo HEAD antes de afirmar verificación en él.
+
+
+## Nuevo arreglo M0 — contrato de errores de adquisición del lock (2026-10-20)
+
+- Hallazgo en revisión del informe de caller contract: `initialize()` normalizaba errores OS de adquisición del lock; `commitIfCurrent()` re-lanzaba errores no-path como `EACCES`. La asimetría estaba documentada y caracterizada por la prueba existente, así que no se asumió que fuera un bypass.
+- Runtime: `9b018d36699a4c75b0251610f77fc310d79b6c26`. Ahora `commitIfCurrent()` devuelve un resultado estructurado, preserva códigos `NEXO_CONTINUITY_STORE_*` reconocidos y normaliza los demás como `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED`, con `phase: lock_acquisition`, `writeStarted: false`.
+- Regresión: `0f072bd54c5a58f8bef918303acca8372a083438`; comentario aclaratorio: `4e1037dc8d172440e237d479af3982fcaa01277b`.
+- Informe: [NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md](NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md).
+- El cambio sólo cubre errores durante adquisición del lock, antes de escritura. No cambia el algoritmo de lock ni demuestra un bypass de autoridad. No atribuir CI PASS hasta que un workflow termine SUCCESS en el SHA que contiene el cambio.
+- M0 permanece `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
