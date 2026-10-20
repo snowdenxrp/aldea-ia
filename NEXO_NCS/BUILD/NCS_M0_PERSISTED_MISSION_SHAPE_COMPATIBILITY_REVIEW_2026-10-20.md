@@ -51,3 +51,11 @@ Ejecuciones observadas en el mismo SHA, todas `completed / success`:
 - [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665626): todos los pasos concluyeron `success`.
 
 Conclusión limitada: la regresión focal y las puertas CI listadas pasaron en el SHA indicado. Esto no demuestra raíz legítima de autoridad ni autoriza efectos protegidos; M0 sigue sujeto a sus demás gates y evidencia.
+
+
+## Verificación CI posterior — cobertura vigente de forma persistida (2026-10-20)
+
+- El workflow de persistencia determinista se ejecutó por push en el SHA exacto `709afc161cdfc8a0aef9ab076f6e66b64db49d99`: [run 39449973775](https://github.com/snowdenxrp/aldea-ia/actions/runs/39449973775), job `tests` `completed / success`.
+- Ese SHA contiene el contrato fail-closed de misión persistida y sus regresiones (identidad ausente, `steps` ausente, delimitador `:` y reconstrucción sin identidad). Por ello, las notas históricas anteriores de CI no visible para los SHA iniciales quedan supersedidas **para esa suite y ese SHA**.
+- Esto no establece compatibilidad universal con todo dato legacy fuera de los fixtures cubiertos, ni autentica autoridad ni habilita efectos protegidos. Si aparece un snapshot histórico real incompatible, preservar el fallo cerrado hasta definir su versión/contrato; no introducir defaults silenciosos.
+- M0 permanece `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
