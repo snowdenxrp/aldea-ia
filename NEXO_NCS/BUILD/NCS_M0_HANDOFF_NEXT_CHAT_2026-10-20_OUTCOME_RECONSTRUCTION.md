@@ -254,3 +254,17 @@ No volver a auditar el trabajo de lock error normalization que ya está cerrado;
 - The separate repair-session/repair-entrypoint path receives owner/store objects by injection; it is not the supported interactive Chronicle route. Canonical owner-backed runtime currently rejects repair actions before PREPARED. Do not activate this repair path as an interactive operation until it has its own shared-deadline propagation and tests.
 - No second public stable application boundary composing Continuity + Chronicle stores was found in the inspected source tree. Standalone store mutations remain bounded per call.
 - Next M0 decision/work item: explicitly keep the injected repair path outside the active interactive contract, or design/propagate a shared deadline before enabling it. Keep M0 INCOMPLETO, authorization NOT_EVALUATED, protected effects STOP, legitimate root PENDING/UNKNOWN.
+
+
+
+
+## Estado vigente al cierre de auditoría de callers (2026-10-20)
+
+- Rama: `ncs-clean-architecture`. Último head documental previo a esta actualización: `41df13384fe2b30c5d1f9cbbf0a2e806d8d1b58d`; SHA de runtime/tests para timeout público: `12efac26d0948b91c59706612edec7df9e78c4f5`.
+- Decisión ya aceptada: deadline inicial configurable de 2.000 ms, monotónico; no garantiza límite estricto de pared.
+- Adquisición normal, adquisición tardía y fallo de liberación están cubiertos en ambos stores. La propagación pública, timeout previo a PREPARED y no-dispatch están cubiertos en la ruta Chronicle.
+- Seis workflows exactos pasaron en SHA `12efac26d0948b91c59706612edec7df9e78c4f5`: M0 integrated acceptance (39376332936), Chronicle native vertical (39376332981), deterministic persistence (39376333167), repair settlement crash cuts (39376333016), STEP 5 (39376332991), STEP 4 (39376333035). No apareció mission-admission/restart para ese SHA; no contarlo.
+- Inventario de callers concluido: la API estable sólo expone Chronicle append mutante y consultas Continuity read-only. CLI delega en Chronicle API.
+- La ruta de reparación por scripts/owner-store inyectados queda fuera del contrato interactivo Chronicle. No afirmar que tiene deadline compartido ni activarla como ruta interactiva hasta diseñar y probar su contrato de deadline/settlement/no-redispatch. Nota de frontera: `NEXO_NCS/BUILD/NCS_M0_REPAIR_ROUTE_DEADLINE_BOUNDARY_2026-10-20.md`.
+- **Siguiente acción:** continuar el siguiente bloqueo M0 desde `NEXO_NCS/STATUS.md`; no volver a investigar los locks ya cubiertos. No hacer cambios de runtime por la ruta de reparación salvo que exista una necesidad explícita y el contrato esté especificado.
+- Estado global permanece M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
