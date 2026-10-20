@@ -1,3 +1,12 @@
+## M0 — cobertura crash-cut afinada (2026-10-19)
+
+- Matriz actualizada: [NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md), commit documental `39f105bdd09be39523cd796ad3e58d9a77216044`.
+- `repair-settlement-crash-cuts.test.mjs` blob `60e2486698cee7a029902aa9ee09df90707fe0eb` cubre respuesta perdida a nivel caller después de commit real y replay sin repetir verifier; no cubre una excepción inyectada en el rename interno de `writeEnvelope()`.
+- CI de persistencia run [39356230949](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356230949) = SUCCESS, job `tests`, paso `Run tests`, SHA probado `147d9f6092353143496757c9de3cdf03a8ab44ff`. Es anterior a los nuevos commits documentales; no atribuirlo a ellos.
+- No se editaron runtime/tests. M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; raíz `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — CI del checkpoint documental de regresiones (2026-10-19)
 
 - El workflow de persistencia [run 39356168972](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356168972), job `tests`, paso `Run tests` = SUCCESS para SHA `5ad2ea38645f83eeefbc75e341bb5cdc7702a8e5`.
