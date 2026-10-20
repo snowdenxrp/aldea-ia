@@ -1,3 +1,15 @@
+## ACTUALIZACIÓN — seis regresiones de frontera + workflows M0 integrados SUCCESS
+
+- Test final: `tests/nexo/continuity-store.test.mjs`, commit [`24d1879192a6227013b805a069585c298760019f`](https://github.com/snowdenxrp/aldea-ia/commit/24d1879192a6227013b805a069585c298760019f), blob `9fc3f5412d248c986104673aaae9ce7b771d44ee`.
+- Seis escenarios de frontera: fallo antes del reemplazo; rename aplicado y respuesta perdida; estado canónico indeterminable tras fallo de escritura; error no normalizado al adquirir lock (API mixta caracterizada); liberación `not_owned` después de commit; lectura canónica fallida dentro de commit sin escritura.
+- CI en SHA exacto `24d1879...`: persistencia run `39356703078` SUCCESS; STEP 4 `39356703039` SUCCESS; STEP 5 `39356703075` SUCCESS; bounded mission admission/restart continuity `39356703048` SUCCESS; integrated M0 acceptance `39356703042` SUCCESS.
+- Matriz de regresiones actualizada en commit documental `d6ffbddee5ea983b1b7d54d6ccebbec4477f01d7`. STATUS actualizado en commit `f04cdd2de2c57a7c44560a1332f8e3203d0a77d9`.
+- Runtime sin cambios. No se ha decidido normalizar la API mixta; los tests fijan el comportamiento actual. No introducir timeouts/BUSY ni recuperación automática/borrado de locks ajenos.
+- Próxima acción: revisar el manejo de `owner.json` ilegible y cruzar excepciones de acquisition con los callers restantes. No tocar runtime sin causa raíz reproducible y contrato definido.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — cinco regresiones de frontera del store pasan CI (2026-10-19)
 
 - Test modificado: `tests/nexo/continuity-store.test.mjs`, commit [`9c56d35ff84c961d3d6bb85a89201fb2ed27c172`](https://github.com/snowdenxrp/aldea-ia/commit/9c56d35ff84c961d3d6bb85a89201fb2ed27c172), blob `b05212f399c506b09f099c3cfafadaf5f842d0cf`.
