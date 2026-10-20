@@ -4,6 +4,14 @@ Rama: `ncs-clean-architecture`
 HEAD comprobado antes de esta matriz: `2690d89e197ccadd3e280ff7542f790955d6ce42`
 CI en ese SHA: workflow `Nexo — deterministic persistence tests`, run [39490757350](https://github.com/snowdenxrp/aldea-ia/actions/runs/39490757350), job `tests` = `completed / success`.
 
+## Evidencia adicional M0-E: el vector bootstrap no es una raíz runtime
+
+Informe focal: [NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md](NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md).
+
+La suite `npm test` sí ejecuta `tests/nexo/root-bootstrap-protocol.test.mjs`, pero esa prueba usa una clave/firma fija declarada expresamente como vector de software, no la raíz de Nexo. El árbol inspeccionado no contiene un módulo de runtime de raíz/bootstrap bajo `src/nexo`; no hay evidencia de pin independiente provisionado ni de integración del verificador con `authorityGate` y el límite de efecto. La prueba criptográfica está cubierta; el reconocimiento real de raíz y la ruta end-to-end siguen **NO DEMOSTRADOS**. Esto precisa el alcance de M0-E, no abre una investigación general de bootstrap ni prueba un bypass de producción.
+
+---
+
 ## Cómo leer esta matriz
 
 - **Evidencia observada** describe lo que el test o CI sí demuestra, con alcance limitado.
