@@ -1,3 +1,15 @@
+## M0-E — vector bootstrap frente a reconocimiento real de raíz (2026-10-20)
+
+- Informe focal: [NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md](BUILD/NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md).
+- La suite incluye `tests/nexo/root-bootstrap-protocol.test.mjs`, pero es un vector criptográfico fijo de software; el propio test declara que la clave/firma no son la raíz de Nexo. El árbol inspeccionado no contiene módulo de runtime root/bootstrap bajo `src/nexo` ni evidencia de pin raíz independiente conectado a `authorityGate`.
+- Clasificación: vector de prueba cubierto; reconocimiento real de raíz y ruta raíz→Constitución/Policy→claim→sink protegido NO DEMOSTRADOS. No se ha demostrado un bypass activo.
+- La matriz de aceptación incorpora esta precisión: [NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md).
+- Próxima dependencia: revisión/aprobación explícita del objeto constitucional exacto por el propietario. No inferir aprobación de «continúa»; no crear verificador, pin, firma/digest ni commissioning antes de esa revisión.
+- CI de referencia para el HEAD previo: [39491191357](https://github.com/snowdenxrp/aldea-ia/actions/runs/39491191357), SUCCESS en `bb57725f8cd1f0faa9528df82ed76a0fa0b5eba6`. Los commits documentales posteriores requieren su propia verificación CI.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — verificación CI del handoff y matriz (2026-10-20)
 
 - La rama alcanzó HEAD `1a309a19dd1e3d2c300776c2e3dd240203eac78f` al guardar el handoff actualizado.
