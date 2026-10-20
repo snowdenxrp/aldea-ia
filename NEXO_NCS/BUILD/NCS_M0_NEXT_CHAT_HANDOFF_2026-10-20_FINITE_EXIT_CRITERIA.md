@@ -4,6 +4,18 @@ Repositorio: `snowdenxrp/aldea-ia`
 Rama: `ncs-clean-architecture`
 HEAD observado al preparar este handoff: `b3d39bfd1803429594e1defc69d3acb961ce5cb9` (commit de STATUS que registra los criterios finitos; volver a verificar HEAD al comenzar).
 
+## Actualización verificada: matriz inicial de aceptación (2026-10-20)
+
+- Matriz nueva: [NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md](NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md) en el directorio `BUILD`.
+- STATUS actualizado: [NEXO_NCS/STATUS.md](../STATUS.md).
+- El HEAD observado durante el cruce fue `2690d89e197ccadd3e280ff7542f790955d6ce42`; run determinista [39490757350](https://github.com/snowdenxrp/aldea-ia/actions/runs/39490757350), job `tests` SUCCESS en ese SHA. Nuevos commits documentales posteriores deben verificarse por separado.
+- La matriz deja los criterios finales en PENDING hasta congelar la lista mínima y sus assertions, pero demuestra que suites Nexo de continuidad, protected transition, root bootstrap y reconstrucción están en `npm test`.
+- Bloqueo sustantivo identificado en M0-E: `protected-transition.mjs` consume el resultado del puerto inyectado `authorityGate.check` y llama `conditionalCommit.commit(candidate)` sin llamar `effectBoundary.prepare`; los fixtures AUTHORIZED no acreditan raíz. Esto es brecha de integración estática, no prueba de bypass de producción.
+- Dependencia de decisión: [guía de revisión constitucional del propietario](NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md). La guía declara que “continúa” no es aprobación y enumera decisiones OPEN. No asumirlas ni inventar un bootstrap.
+- Próximo paso: confirmar HEAD y CI actuales; luego continuar desde la brecha M0-E y la revisión explícita del objeto constitucional exacto. No repetir B/C/D sin evidencia nueva; no provisionar llave ni hacer commissioning.
+
+---
+
 ## Misión invariable
 
 La misión es **M0**. No reiniciar Step 7, no volver a M1 y no repetir auditorías cerradas sin evidencia nueva.
