@@ -84,3 +84,12 @@ Related:
 - `initialize`/`commitIfCurrent`/`append` devuelven resultado estructurado para timeout de adquisición, con `phase:"lock_acquisition"` y `writeStarted:false`; Chronicle handler ya propaga el código de bloqueo del store.
 - Pruebas añadidas para lock vivo retenido en las cuatro APIs. Los seis workflows M0 relevantes pasaron en el SHA de código/tests `cf62bd858232a8c0c71f21ace6469c2a62f48448`.
 - Pendiente: adquisición tardía tras deadline y liberación fallida, más comprobación de propagación por otras fronteras/entrypoints. No afirmar límite de pared estricto.
+
+
+### Adquisición tardía verificada
+
+- Pruebas en ambos stores inyectan un `mkdir` que resuelve tras el deadline.
+- Resultado verificado: timeout con `writeStarted:false`, archivo canónico ausente y liberación del lock propio.
+- Pruebas adicionales hacen fallar `rm` del lock tardío; el timeout conserva `lockRelease.status:"failed"` y el código EACCES, sin afirmar limpieza.
+- SHA código/tests: `15415580788c4e823f03371b566e29106268b67d`; seis workflows relevantes pasan (runs 39375730407, 39375730358, 39375730428, 39375730355, 39375730370, 39375730363).
+- El punto de auditoría pendiente ya no es el comportamiento interno de adquisición tardía; es la preservación del timeout a través de los callers/entrypoints y las garantías de no-redispatch en el runtime completo.
