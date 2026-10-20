@@ -53,7 +53,10 @@ export async function loadNexoMissionStatus(continuityPath, missionId) {
       };
     }
     const persistedMissionStatus = persistedMission.status ?? "planned";
-    if (persistedMissionStatus !== mission.status) {
+    // Admission status is historical metadata and may legitimately lag reconstruction.
+    // A persisted terminal claim is different: never report a mission as successfully
+    // reconstructed when "completed" is not supported by the canonical current view.
+    if (persistedMissionStatus === "completed" && mission.status !== "completed") {
       return {
         status: "blocked",
         code: "NEXO_MISSION_STATUS_DISCREPANCY",
