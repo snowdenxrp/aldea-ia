@@ -23,3 +23,12 @@ CI exitoso demuestra ejecución de esa suite en ese SHA; no demuestra autenticid
 ## Continuidad
 
 Leer `NEXO_NCS/STATUS.md` y el handoff `NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_MISSION_CONTINUITY.md`, teniendo en cuenta este checkpoint más reciente para el estado CI. Continuar M0 con revisión estática focal de reconstrucción/retención, sin reabrir auditorías cerradas y sin cambios runtime especulativos. Cada nuevo defecto requiere contraejemplo, regresión mínima y CI asociado al SHA exacto.
+
+## Actualización posterior — estado desconocido del effect journal
+
+- Hallazgo nuevo: la retención preservaba estados de journal desconocidos, pero la reconstrucción podía dejar un paso `planned` como ejecutable al no reconocer esos estados.
+- Fix y tests quedan contenidos en SHA exacto `dd30b70e1204750fc09fac683f30b6e7e129bfe6`.
+- Cinco workflows SUCCESS en ese SHA: determinista [39464052770](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052770), admisión/continuidad [39464053282](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053282), aceptación M0 [39464053079](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053079), STEP 4 [39464052881](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052881), STEP 5 [39464052959](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052959). Jobs relevantes confirmados SUCCESS.
+- El contrato usa `NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN` para estado no reconocido; un estado no terminal sin plan propietario retenido falla cerrado como identidad desconocida o status desconocido según el caso. No se ignora ni se convierte en estado terminal.
+- Informe detallado: `NEXO_NCS/BUILD/NCS_M0_UNKNOWN_EFFECT_RECONSTRUCTION_FAIL_CLOSED_2026-10-20.md`.
+- Estado global sigue M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
