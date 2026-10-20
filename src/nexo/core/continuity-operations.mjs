@@ -279,7 +279,7 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       isValidNexoChronicleSettlementRecord(stepEffects[0]);
     const completionContractAvailable = step.action === "local_analysis" ||
       (step.action === "chronicle_append" && validChronicleSettlement);
-    const verifiedCompletion = stepAttempts.find(item =>
+    const verifiedCompletions = stepAttempts.filter(item =>
       item?.status === "completed" && matchesStepIdentity(item) &&
       completionContractAvailable &&
       (step.action !== "chronicle_append" ||
@@ -288,6 +288,22 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
       typeof item?.evidence?.kind === "string" && item.evidence.kind.trim() &&
       typeof item?.evidence?.source === "string" && item.evidence.source.trim()
     );
+    const conflictingVerifiedCompletions = verifiedCompletions.some((item, index) =>
+      verifiedCompletions.slice(0, index).some(previous =>
+        !isDeepStrictEqual(previous.evidence, item.evidence)
+      )
+    );
+    if (conflictingVerifiedCompletions) {
+      step.status = "blocked";
+      step.blockReason = {
+        code: "NEXO_OUTCOME_EVIDENCE_CONFLICT",
+        next: "reconcile_outcome_evidence_without_redispatch"
+      };
+      mission.status = "blocked";
+      mission.uncertainty = "outcome_evidence_conflict";
+      return mission;
+    }
+    const verifiedCompletion = verifiedCompletions[0];
     if (verifiedCompletion) {
       step.status = "completed";
       step.result = structuredClone(verifiedCompletion.evidence);
