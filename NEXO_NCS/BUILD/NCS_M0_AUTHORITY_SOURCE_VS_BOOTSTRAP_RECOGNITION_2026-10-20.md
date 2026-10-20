@@ -62,3 +62,21 @@ Realizar una revisión acotada de los artefactos constitucionales existentes par
 Esta nota distingue correctamente la fuente normativa de la base técnica, pero su sección “Siguiente acción M0” **no es la prioridad operativa inmediata**. La decisión más reciente `NEXO_NCS/DECISIONS/NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md` ya limita el alcance inicial a una llave raíz y un dispositivo, deja la selección física/provisión/verificación pendientes y ordena continuar M0 por la coherencia entre misión persistida, estados de pasos y reconstrucción/proyección.
 
 Por tanto, no continuar ahora una investigación general de raíz ni revisar el objeto constitucional como sustituto del trabajo M0. La raíz/bootstrap queda como restricción arquitectónica documentada; la próxima tarea es la revisión de consumidores y del contrato de discrepancia de mission-status, registrada en `NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026-10-20.md`. Esta precedencia no convierte la raíz física en implementada ni altera STOP/UNKNOWN.
+
+
+## Precedencia actualizada después de cerrar las puertas intermedias — 2026-10-20
+
+Las prioridades que esta nota registró antes ya fueron atendidas: coherencia de `mission-status` y revisión de callers del deadline del continuity store. No repetirlas.
+
+La revisión existente `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_ARTIFACT_READINESS_AUDIT_2026-10-14.md` (blob `e9347096c9b5810eda6fde1148f8b9cb721e76cc`) y el borrador `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_HUMAN_READABLE_DRAFT_2026-10-14.md` (blob `33f70d1d2936cc077e0630b15991aa7603bb04ed`) ya resuelven la comprobación documental de existencia: **no hay evidencia de un artefacto constitucional canónico, congelado y listo para commissioning**. El borrador no tiene ID/revisión canónica aprobada, reglas finales de bytes/renderizado, scope inicial aprobado, proceso de enmienda/currentness resuelto ni aprobación del propietario. La baseline de contenido también se declara propuesta, no Constitución vigente. No repetir una búsqueda general de archivos ni generar digest/firma.
+
+### Siguiente puerta, en el orden correcto
+
+Antes de fijar el contrato técnico de reconocimiento de la llave raíz, el propietario debe revisar el contenido constitucional completo y resolver o explícitamente aplazar los elementos OPEN del borrador. La revisión debe distinguir:
+- revisar/recibir el contenido;
+- aprobar esa revisión exacta como Constitución gobernante;
+- autorizar una transición concreta y acotada.
+
+No son acciones equivalentes. La aceptación anterior del alcance “una llave raíz + un dispositivo inicial” no congela el contenido constitucional ni selecciona/provisiona la llave. El asistente puede preparar trazabilidad y señalar contradicciones, pero no declarar el borrador aprobado ni rellenar decisiones de gobernanza por inferencia.
+
+Hasta que exista una revisión humana explícita del artefacto y sus decisiones abiertas, el contrato técnico de reconocimiento de raíz queda bloqueado por el objeto exacto que debe reconocer. Estado: `PENDING/UNKNOWN`; commissioning y efectos protegidos: `STOP`.
