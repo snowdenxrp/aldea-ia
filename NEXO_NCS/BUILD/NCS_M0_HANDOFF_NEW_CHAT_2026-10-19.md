@@ -1,3 +1,13 @@
+## ACTUALIZACIÓN — resultado CI del checkpoint de regresiones
+
+- Workflow de persistencia [39356168972](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356168972), job `tests`, paso `Run tests`: SUCCESS para SHA exacto `5ad2ea38645f83eeefbc75e341bb5cdc7702a8e5`.
+- Ese SHA incluía los documentos de matriz/handoff y no cambió runtime/tests. La suite pasó, pero no se añadieron ni ejecutaron regresiones nuevas específicas para los gaps enumerados.
+- El STATUS fue actualizado después para registrar esta evidencia. No presentar el SHA de CI como si fuera el nuevo HEAD documental tras esa actualización; consultar la rama para el HEAD actual.
+- Siguiente acción: localizar las seis ramas pendientes en la suite completa y workflows antes de decidir si hace falta añadir tests. No tocar runtime hasta cerrar esa revisión.
+- Estado invariable: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN POSTERIOR — matriz de regresiones del store (2026-10-19)
 
 Documento: [NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md](NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md), commit documental `7441784ba216c4c269652f9453e8834dbcf348d2`. También actualizado [STATUS.md](../STATUS.md).
