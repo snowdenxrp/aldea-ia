@@ -53,6 +53,17 @@ export async function loadNexoMissionStatus(continuityPath, missionId) {
       };
     }
     const persistedMissionStatus = persistedMission.status ?? "planned";
+    if (persistedMissionStatus !== mission.status) {
+      return {
+        status: "blocked",
+        code: "NEXO_MISSION_STATUS_DISCREPANCY",
+        storeRevision: current.storeRevision,
+        missionId: mission.missionId,
+        persistedMissionStatus,
+        missionStatus: mission.status,
+        statusDiscrepancy: true
+      };
+    }
     return {
       status: "reconstructed",
       code: null,
@@ -60,7 +71,7 @@ export async function loadNexoMissionStatus(continuityPath, missionId) {
       missionId: mission.missionId,
       persistedMissionStatus,
       missionStatus: mission.status,
-      statusDiscrepancy: persistedMissionStatus !== mission.status,
+      statusDiscrepancy: false,
       objective: mission.objective,
       uncertainty: mission.uncertainty,
       steps: mission.steps.map(step => ({

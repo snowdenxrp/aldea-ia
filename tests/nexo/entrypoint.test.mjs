@@ -261,14 +261,16 @@ try {
     entrypointPath, "mission-status", "--continuity", contradictoryContinuityPath,
     "--mission", "contradictory-mission"
   ], { cwd: process.cwd(), encoding: "utf8" });
-  assert.equal(contradictoryStatus.status, 0, contradictoryStatus.stderr || contradictoryStatus.stdout);
+  assert.equal(contradictoryStatus.status, 1, contradictoryStatus.stderr || contradictoryStatus.stdout);
   assert.equal(contradictoryStatus.stderr, "");
   assert.equal(contradictoryStatus.stdout.includes("STATUS_PRIVATE_SENTINEL_DO_NOT_OUTPUT"), false);
   const contradictorySummary = JSON.parse(contradictoryStatus.stdout);
-  assert.equal(contradictorySummary.status, "reconstructed");
+  assert.equal(contradictorySummary.status, "blocked");
+  assert.equal(contradictorySummary.code, "NEXO_MISSION_STATUS_DISCREPANCY");
   assert.equal(contradictorySummary.persistedMissionStatus, "completed");
   assert.equal(contradictorySummary.missionStatus, "planned");
   assert.equal(contradictorySummary.statusDiscrepancy, true);
+  assert.equal("steps" in contradictorySummary, false, "contradictory state must not be projected as a usable mission");
   assert.equal(await fs.readFile(contradictoryContinuityPath, "utf8"), contradictoryBytesBefore);
   // Coordinated bootstrap is not atomic across the two independent files.
   // If Continuity initializes but Chronicle's parent directory is unavailable,
