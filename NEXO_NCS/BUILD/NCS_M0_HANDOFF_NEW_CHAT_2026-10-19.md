@@ -1,5 +1,17 @@
 # NCS — HANDOFF COMPLETO PARA CHAT NUEVO (2026-10-19)
 
+## ACTUALIZACIÓN — revisión del contrato de contención del lock (2026-10-19)
+
+Documento nuevo: [NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md](NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md), commit documental `3f7ab36bae416d770fe4bf28210ad50847242c50`.
+
+Hallazgos del código revisado:
+- `acquireLock()` espera en bucle si hay un lock no stale. La prueba cross-process observó la espera y la reanudación tras la retirada explícita del lock.
+- La regresión `Promise.all` de dos commits con la misma revisión espera que la serialización produzca un `committed` y un `conflict`. Por eso cambiar a fallo inmediato BUSY alteraría el contrato observable y no es un cambio inocuo.
+- Hay una asimetría: `initialize()` normaliza errores generales de adquisición a `status: failed`, mientras `commitIfCurrent()` normaliza ENOENT/ENOTDIR y puede propagar otros errores de infraestructura. Esto queda como cuestión contractual; no se corrigió por intuición.
+- Recomendación actual: no cambiar runtime todavía. No añadir timeout arbitrario, BUSY, cancelación, lease, heartbeat ni recuperación automática hasta revisar callers/deadlines y el riesgo de redispatch. El bloqueo de progreso permanece explícito.
+
+La revisión fue documental; no cambió runtime/tests y no generó nuevos resultados CI. Los cinco workflows SUCCESS citados siguen ligados al SHA de test `6f0499142781e24c55d1adf137170323c8d1afbf`, no al HEAD documental.
+
 **Misión invariable: M0.** Este documento es la continuidad de trabajo para abrir un chat nuevo. Leer primero `NEXO_NCS/STATUS.md`, después este handoff y los documentos concretos enlazados aquí. No reiniciar investigación ni volver a auditar cierres sin un fallo nuevo y reproducible.
 
 ## ACTUALIZACIÓN POSTERIOR — 2026-10-19 (prevalece sobre notas anteriores de CI)
