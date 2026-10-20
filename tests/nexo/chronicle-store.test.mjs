@@ -181,6 +181,44 @@ if (result.status !== "committed") process.exitCode = 1;`;
   assert.equal((await staleLockStore.loadCurrent()).entries.length, 0);
   assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
 
+  // A committed append must not be reported as a successful handoff if this process no longer owns the lock.
+  const notOwnedReleasePath = path.join(root, "not-owned-release.json");
+  const notOwnedReleaseBase = createNexoChronicleStore({ filePath: notOwnedReleasePath });
+  assert.equal((await notOwnedReleaseBase.initialize()).status, "committed");
+  const notOwnedReleaseLock = String(notOwnedReleasePath) + ".lock";
+  const fsWithNotOwnedRelease = {
+    ...fs,
+    readFile: async (target, ...args) => {
+      if (String(target) === path.join(notOwnedReleaseLock, "owner.json")) {
+        return JSON.stringify({ pid: process.pid, token: "different-owner" });
+      }
+      return fs.readFile(target, ...args);
+    }
+  };
+  const notOwnedReleaseStore = createNexoChronicleStore({
+    filePath: notOwnedReleasePath,
+    fsModule: fsWithNotOwnedRelease
+  });
+  assert.deepEqual(
+    await notOwnedReleaseStore.append({ operationKey: "not-owned-release:1", content: "persist but block handoff" }),
+    {
+      status: "blocked",
+      code: "NEXO_CHRONICLE_LOCK_RELEASE_FAILED",
+      persistenceStatus: "committed",
+      storeRevision: 1,
+      lockRelease: { status: "not_owned" }
+    },
+    "Chronicle must disclose confirmed persistence while blocking handoff when lock ownership cannot be confirmed"
+  );
+  const notOwnedReleaseObserved = await notOwnedReleaseBase.loadCurrent();
+  assert.equal(notOwnedReleaseObserved.storeRevision, 1);
+  assert.deepEqual(notOwnedReleaseObserved.entries, [
+    { operationKey: "not-owned-release:1", content: "persist but block handoff" }
+  ]);
+  await assert.doesNotReject(() => fs.access(notOwnedReleaseLock),
+    "Chronicle must not delete a lock whose owner token does not match");
+  await fs.rm(notOwnedReleaseLock, { recursive: true, force: true });
+
   // Simulate a lost writer response after the atomic rename already changed persisted state.
   const lostPath = path.join(root, "lost-response.json");
   let loseNextRename = false;
