@@ -29,7 +29,17 @@ These are file blob SHAs, not claims about the current branch HEAD. No new CI wa
 
 ## Audit result
 
-**No new reproducible defect was established. No source or test changes are justified by this pass.** The investigated response-loss and reconstruction cases already have explicit regression coverage. Do not add a new idempotency mechanism or move the outcome lookup ahead of CAS solely to make stale-revision calls appear successful: that would change the current compare-and-swap contract without a demonstrated caller requirement.
+**The first store/outcome replay pass found no new defect; the follow-on public application-boundary audit found and corrected one result-contract gap.** Do not add a new idempotency mechanism or move the outcome lookup ahead of CAS solely to make stale-revision calls appear successful: that would change the current compare-and-swap contract without a demonstrated caller requirement.
+
+## Follow-on finding — confirmed mission admission hidden by unsafe lock handoff
+
+The store deliberately returns `status: failed` with `persistenceStatus: committed` when the canonical envelope was written but lock release fails. `recordNexoMissionSafely()` previously returned that object unchanged, and `runNexoChronicleAppend()` then reduced it to a generic blocked result, discarding the confirmed admission fact. This was a public-result transparency gap, not an unsafe dispatch path: dispatch was already stopped.
+
+**Correction:** `src/nexo/application/chronicle-append.mjs` now normalizes `persistenceStatus: committed` to a blocked public result with `missionAdmissionCommitted: true`, preserving safe `storeRevision` and code; `persistenceStatus: unknown` remains `status: unknown` with `missionAdmissionCommitted: UNKNOWN`. The caller returns the allowlisted public result and never dispatches after unsafe lock handoff. Regression coverage was added to `tests/nexo/chronicle-runtime.test.mjs` for committed-but-unsafe handoff and unknown persistence.
+
+- Code commit: `8e8a9aeca94a9261f3e20ee5571e8f5963a13893`.
+- Final code + test SHA: `52eb4f9bdb959c577c6532ab30f1294f542ef4db`.
+- Exact-SHA CI SUCCESS: [M0 integrated acceptance 39368731996](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731996); [Chronicle native vertical 39368732138](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732138); [deterministic persistence 39368732251](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732251); [mission admission/restart continuity 39368731963](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731963); [STEP 4 39368731975](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731975); [STEP 5 39368732135](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732135). All six jobs completed SUCCESS on the same final SHA.
 
 ## Remaining M0 boundary
 
@@ -40,7 +50,7 @@ These are file blob SHAs, not claims about the current branch HEAD. No new CI wa
 
 ## Next action
 
-Continue with a narrow static call-site and public-result audit of the canonical owner-backed runtime boundary. Establish which entrypoints are actually used and whether any current caller can dispatch through the legacy path while treating its in-memory result as canonical continuity. Reuse existing import-graph and runtime tests. Do not perform runtime cutover, add a generic transaction wrapper, enable repair effects, or infer authorization from successful tests. If no concrete caller-level discrepancy is reproducible, record that and continue to the next unresolved M0 dependency.
+The public mission-admission result gap is closed and the call-site audit confirms `src/nexo/application/chronicle-append.mjs` uses the owner-backed runtime; the generic legacy APIs remain separately present in `src/nexo/runtime.js`, with no production caller established by this pass. Continue from the next unresolved M0 item in STATUS, not by reopening this result contract. Do not perform runtime cutover, add a generic transaction wrapper, enable repair effects, or infer authorization from successful tests.
 
 ## Constitutional state (unchanged)
 
@@ -49,3 +59,10 @@ Continue with a narrow static call-site and public-result audit of the canonical
 - Protected effects: **STOP**
 - Legitimate root / constitutional owner proof: **PENDING / UNKNOWN**
 - STEP 7: **OPEN / STOP / UNKNOWN**, not the active workstream.
+
+
+## Verification pointers
+
+- Current application blob SHA: `e5ff6c385f3160dfb78982a36c73a15d2d51887d`.
+- Current regression-test blob SHA: `c39bf1142447321d9d6968bfa30a7d9772f35a81`.
+- Final code/test branch HEAD at the time of CI verification: `52eb4f9bdb959c577c6532ab30f1294f542ef4db`.
