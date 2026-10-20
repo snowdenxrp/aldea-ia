@@ -2427,3 +2427,15 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - La ruta de reparación separada recibe owner/store inyectados; no es la ruta interactiva Chronicle y el runtime canónico actual bloquea acciones de reparación antes de PREPARED. No activarla como operación interactiva hasta definir y probar un deadline compartido para esa ruta.
 - Conclusión provisional: para el alcance interactivo actualmente soportado, el deadline compuesto está propagado; stores usados individualmente están acotados por mutación. La ruta de reparación inyectada permanece fuera del alcance activo.
 - Próxima frontera M0: revisar si la política de activación de la ruta de reparación debe quedar explícitamente bloqueada o si requiere su propio deadline compartido antes de habilitarse. No tocar otras arquitecturas ni reabrir auditorías cerradas.
+
+
+### Cierre de inventario de callers — frontera de reparación (2026-10-20)
+
+- Auditoría detallada: [NCS_M0_REPAIR_ROUTE_DEADLINE_BOUNDARY_2026-10-20.md](BUILD/NCS_M0_REPAIR_ROUTE_DEADLINE_BOUNDARY_2026-10-20.md).
+- La API pública estable mantiene una única mutación compuesta: Chronicle append, con deadline compartido. Consultas de Continuity son read-only; CLI Chronicle delega en esa API y preserva metadata sanitizada de timeout.
+- La ruta `scripts/nexo-repair-session.mjs` / `scripts/nexo-repair-entrypoint.mjs` es separada y recibe owner/store por inyección. No está cubierta por el deadline compartido de Chronicle y no debe considerarse habilitada por esta implementación.
+- El runtime canónico bloquea acciones de reparación antes de PREPARED; los tests de repair settlement también mantienen bloqueado el cierre si falta el contrato de settlement. Esto no equivale a demostrar que toda función de reparación independiente esté globalmente inhabilitada.
+- Regla operativa fail-closed: mantener la ruta de reparación fuera de la API interactiva estable. No habilitarla hasta especificar deadline monotónico único para toda la operación y probar PREPARED/dispatch/lineage/settlement/no-redispatch. No se cambió runtime para esta frontera.
+- CI de código/tests SHA `12efac26d0948b91c59706612edec7df9e78c4f5`: M0 integrated acceptance, Chronicle native vertical, deterministic persistence, repair settlement crash cuts, STEP 5 y STEP 4 pasaron. No afirmar mission-admission/restart para ese SHA: no apareció en la consulta exacta.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+- Próximo trabajo: continuar con el siguiente bloqueo M0 registrado, sin volver a auditar adquisición tardía ni reabrir auditorías cerradas.
