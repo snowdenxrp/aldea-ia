@@ -141,3 +141,12 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - Evidencia: CI [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665444), [bounded mission admission](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665452), [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665518) y [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665626) terminaron `completed / success` sobre el mismo SHA. El workflow de bounded mission confirma explícitamente que `node tests/nexo/continuity-contract.test.mjs` pasó.
 - No sobreinterpretar: esto verifica pruebas de contratos; no prueba autoridad raíz legítima, commissioning ni permiso para efectos protegidos.
 - Próximo paso M0: continuar desde gates de integración pendientes, usando los contratos existentes y la evidencia del SHA actual; no repetir auditorías cerradas ni relajar el fallo cerrado de snapshots.
+
+
+## Actualización posterior — aislamiento de snapshot de memoria fijado por regresión (2026-10-20)
+
+- Añadida prueba en `tests/assistants.test.mjs`, commit `04fcc08081f81b3c385d4d8e9217a7744545d164`. Comprueba separación de objetos anidados para misiones, intentos, ejecuciones y effectJournal al llamar `createLearningMemory()`, incluida la no propagación de mutaciones a la fuente.
+- Runtime no modificado: las rutas de retención actuales ya usan `structuredClone`; el cambio fija ese contrato con una regresión.
+- [CI run 39441463747](https://github.com/snowdenxrp/aldea-ia/actions/runs/39441463747) terminó `completed / success` en el SHA exacto; el paso `Run tests` fue SUCCESS.
+- Informe: [NCS_M0_MEMORY_SNAPSHOT_DETACHMENT_REGRESSION_2026-10-20.md](NCS_M0_MEMORY_SNAPSHOT_DETACHMENT_REGRESSION_2026-10-20.md).
+- Alcance acotado: sólo `createLearningMemory()` en los campos probados. No declarar aislamiento global, raíz legítima ni autorización. Estado M0 sigue INCOMPLETO / NOT_EVALUATED / PENDING-UNKNOWN / STOP.
