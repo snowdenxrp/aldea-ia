@@ -50,6 +50,26 @@ async function recordChronicleTerminalOutcome({
       adapterResult, lineage, reconciliation
     };
   }
+  if (outcome?.persistenceStatus === "committed") {
+    return {
+      status: "blocked",
+      code: outcome.code ?? "NEXO_CHRONICLE_OUTCOME_HANDOFF_UNSAFE",
+      dispatchAttempted, preparedCommitted, lineageCommitted,
+      journalSettled: reconciliation?.journalSettled === true,
+      terminalOutcomeRecorded: true, redispatchAuthorized: false,
+      adapterResult, lineage, reconciliation, outcome
+    };
+  }
+  if (outcome?.persistenceStatus === "unknown") {
+    return {
+      status: "unknown",
+      code: outcome.code ?? "NEXO_CHRONICLE_OUTCOME_COMMIT_UNKNOWN",
+      dispatchAttempted, preparedCommitted, lineageCommitted,
+      journalSettled: reconciliation?.journalSettled === true ? true : "UNKNOWN",
+      terminalOutcomeRecorded: "UNKNOWN", redispatchAuthorized: false,
+      adapterResult, lineage, reconciliation, outcome
+    };
+  }
   if (outcome?.status === "conflict") {
     return {
       status: "conflict", code: outcome.code ?? "NEXO_CHRONICLE_OUTCOME_COMMIT_CONFLICT",
@@ -286,7 +306,8 @@ async function executeNexoStepWithContinuityOwnerInternal({
       prepared
     };
   }
-  if (prepared?.status === "unknown" || prepared?.preparedCommitted === "UNKNOWN") {
+  if (prepared?.status === "unknown" || prepared?.preparedCommitted === "UNKNOWN" ||
+      prepared?.persistenceStatus === "unknown") {
     return {
       status: "unknown",
       code: prepared.code ?? "NEXO_PREPARED_COMMIT_OUTCOME_UNKNOWN",
@@ -307,10 +328,11 @@ async function executeNexoStepWithContinuityOwnerInternal({
       status: "blocked",
       code: prepared?.code ?? "NEXO_PREPARED_COMMIT_NOT_CONFIRMED",
       dispatchAttempted: false,
-      preparedCommitted: false,
+      preparedCommitted: prepared?.persistenceStatus === "committed",
       journalSettled: false,
       terminalOutcomeRecorded: false,
       redispatchAuthorized: false,
+      ...(Number.isSafeInteger(prepared?.storeRevision) ? { storeRevision: prepared.storeRevision } : {}),
       prepared
     };
   }
@@ -369,7 +391,9 @@ async function executeNexoStepWithContinuityOwnerInternal({
       code: lineage?.code ?? "NEXO_EXECUTION_LINEAGE_COMMIT_NOT_CONFIRMED",
       dispatchAttempted: true,
       preparedCommitted: true,
-      lineageCommitted: lineage?.status === "unknown" ? "UNKNOWN" : false,
+      lineageCommitted: lineage?.status === "unknown" || lineage?.persistenceStatus === "unknown"
+        ? "UNKNOWN"
+        : lineage?.persistenceStatus === "committed",
       journalSettled: false,
       terminalOutcomeRecorded: false,
       redispatchAuthorized: false,
@@ -435,7 +459,9 @@ async function executeNexoStepWithContinuityOwnerInternal({
     dispatchAttempted: true,
     preparedCommitted: true,
     lineageCommitted: true,
-    journalSettled: reconciled?.status === "unknown" ? "UNKNOWN" : false,
+    journalSettled: reconciled?.journalSettled === true ? true :
+      reconciled?.journalSettled === "UNKNOWN" || reconciled?.status === "unknown" ||
+      reconciled?.persistenceStatus === "unknown" ? "UNKNOWN" : false,
     terminalOutcomeRecorded: false,
     redispatchAuthorized: false,
     adapterResult,
