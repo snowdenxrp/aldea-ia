@@ -307,3 +307,16 @@ Consultar CI del HEAD que incluya el runtime y la regresión de journal terminal
 ### Siguiente paso
 
 La regresión de journal terminal de una misión podada está verificada por CI. Seguir con una frontera nueva sólo ante evidencia concreta; no expandir el cambio a registros desconocidos o a la política de autoridad sin contrato y contraejemplo. Mantener M0 incompleto y los efectos protegidos en STOP.
+
+
+## M0 — estados de journal desconocidos preservados por retención (2026-10-20)
+
+- Hallazgo y contrato: [NCS_M0_UNKNOWN_EFFECT_JOURNAL_RETENTION_2026-10-20.md](BUILD/NCS_M0_UNKNOWN_EFFECT_JOURNAL_RETENTION_2026-10-20.md).
+- Runtime `25ac7eab1a221dbceeb1226a9b793ea274b6422e`: solo `settled_observed` y `reconciled_observed` son descartables por retención; `prepared` y estados desconocidos se preservan, junto con el plan asociado si hay `missionId` válido.
+- CI descubrió fixture obsoleto: un test llamaba `completed` estado terminal del journal, pero el contrato operativo no lo reconoce. Run fallido documentado: [39452369889](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452369889), assertion `201 !== 200`. Fixture corregido a `settled_observed` en `419546c10552ae88fe98e3dbf89d7a865dd48e56`; no se relajó la preservación de estados desconocidos.
+- En el SHA exacto de corrección `419546c10552ae88fe98e3dbf89d7a865dd48e56`, SUCCESS: [persistencia determinista 39452539513](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539513), [admisión/continuidad 39452539695](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539695), [validación semántica 39452539536](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539536), [clasificación de outcomes 39452539530](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539530).
+- M0 sigue `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+### Continuación
+
+El contrato de retención de estados desconocidos está implementado y las cuatro suites focales pasaron en el SHA indicado. No volver a tocar retención sin un contraejemplo nuevo. Próxima revisión M0: continuar sobre reconstrucción de continuidad con cambios mínimos y CI exacto; mantener autoridad y efectos protegidos detenidos.
