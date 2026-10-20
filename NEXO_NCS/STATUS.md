@@ -1,3 +1,15 @@
+## M0 — sexta regresión de frontera y workflows integrados PASS (2026-10-19)
+
+- Se añadió la sexta regresión a `tests/nexo/continuity-store.test.mjs`: si falla la lectura del envelope canónico dentro de `commitIfCurrent()`, devuelve `unknown / NEXO_CONTINUITY_STORE_READ_FAILED` antes de escribir y conserva los bytes canónicos.
+- Commit con esa regresión: [`24d1879192a6227013b805a069585c298760019f`](https://github.com/snowdenxrp/aldea-ia/commit/24d1879192a6227013b805a069585c298760019f); blob de test `9fc3f5412d248c986104673aaae9ce7b771d44ee`.
+- CI en SHA exacto `24d1879...`: persistencia [run 39356703078](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356703078) SUCCESS; STEP 4 [39356703039](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356703039) SUCCESS; STEP 5 [39356703075](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356703075) SUCCESS; bounded mission admission/restart continuity [39356703048](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356703048) SUCCESS; integrated M0 acceptance [39356703042](https://github.com/snowdenxrp/aldea-ia/actions/runs/39356703042) SUCCESS.
+- Matriz de regresiones actualizada: commit documental `d6ffbddee5ea983b1b7d54d6ccebbec4477f01d7`. Handoff pendiente de reflejar este sexto caso y el conjunto de runs.
+- Alcance: seis escenarios de frontera añadidos/caracterizados; runtime sin cambios. Verde de CI no es autoridad constitucional ni prueba de durabilidad ante pérdida de energía.
+- Próximo paso: inspeccionar la asimetría de excepciones en contexto de todos los callers y el comportamiento cuando no se puede leer `owner.json`; mantener la API como está hasta decidir con evidencia.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — regresiones de frontera del continuity store añadidas y CI PASS (2026-10-19)
 
 - Se añadieron cinco escenarios a `tests/nexo/continuity-store.test.mjs`: fallo confirmado antes de reemplazo; rename aplicado con respuesta perdida; estado canónico indeterminable después de fallo; caracterización del error de adquisición del lock; liberación `not_owned` con persistencia confirmada.
