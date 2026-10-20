@@ -1,3 +1,13 @@
+## M0 — checkpoint más reciente: inventario de callers del continuity store (2026-10-19)
+
+- Inventario estático añadido: [NCS_M0_CONTINUITY_STORE_CALLER_INVENTORY_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_CALLER_INVENTORY_2026-10-19.md), commit documental `5ebf2b081660d16ca026163728185bad2fc21f7a`.
+- Identifica cinco call sites ejecutables de `store.commitIfCurrent()` en el owner y documenta manejo de excepciones, apertura/bootstrap, consultas y gate de dispatch.
+- Hallazgo acotado: API mixta; algunos call sites propagan excepciones, mientras reconciliación y capas superiores las traducen a UNKNOWN/BLOCKED. No se observó bypass de redispatch en las rutas revisadas; revisión estática, no exhaustiva.
+- Siguiente paso: decidir el contrato público de errores sólo después de añadir regresiones para cada rama que se cambie. Mantener runtime/tests sin cambios hasta esa decisión. Sin nuevos resultados de CI para estos commits documentales.
+- Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — checkpoint contractual: matriz pública de errores del continuity store (2026-10-19)
 
 - Nuevo documento de diseño: [NCS_M0_CONTINUITY_STORE_PUBLIC_ERROR_CONTRACT_MATRIX_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_PUBLIC_ERROR_CONTRACT_MATRIX_2026-10-19.md), commit documental `3df670e5e5ebb1d2a78b23a5331c7a78b6134085`.
