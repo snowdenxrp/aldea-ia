@@ -680,6 +680,64 @@ assert.deepEqual(await timeoutCommitStore.commitIfCurrent(0, emptySnapshot), {
 assert.equal((await timeoutCommitBase.loadCurrent()).storeRevision, 0);
 await fs.rm(timeoutCommitLock, { recursive: true, force: true });
 
+// If mkdir resolves after the deadline, the store must release its own late lock and never write.
+const lateAcquirePath = path.join(directory, "late-acquire", "continuity.json");
+await fs.mkdir(path.dirname(lateAcquirePath), { recursive: true });
+const lateAcquireLock = lateAcquirePath + ".lock";
+const fsWithLateLockAcquire = {
+  ...fs,
+  mkdir: async (target, ...args) => {
+    if (String(target) === lateAcquireLock) await new Promise(resolve => setTimeout(resolve, 40));
+    return fs.mkdir(target, ...args);
+  }
+};
+const lateAcquireStore = createNexoContinuityStore({
+  filePath: lateAcquirePath, fsModule: fsWithLateLockAcquire, lockWaitMs: 20
+});
+assert.deepEqual(await lateAcquireStore.initialize(emptySnapshot), {
+  status: "failed",
+  code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+  phase: "lock_acquisition",
+  writeStarted: false,
+  lockRelease: { status: "released" }
+});
+await assert.rejects(() => fs.access(lateAcquirePath), error => error?.code === "ENOENT");
+await assert.rejects(() => fs.access(lateAcquireLock), error => error?.code === "ENOENT");
+
+// A late-acquired lock that cannot be released must report both facts, not claim cleanup.
+const lateReleaseFailurePath = path.join(directory, "late-release-failure", "continuity.json");
+await fs.mkdir(path.dirname(lateReleaseFailurePath), { recursive: true });
+const lateReleaseFailureLock = lateReleaseFailurePath + ".lock";
+const fsWithLateAcquireReleaseFailure = {
+  ...fs,
+  mkdir: async (target, ...args) => {
+    if (String(target) === lateReleaseFailureLock) await new Promise(resolve => setTimeout(resolve, 40));
+    return fs.mkdir(target, ...args);
+  },
+  rm: async (target, ...args) => {
+    if (String(target) === lateReleaseFailureLock) {
+      throw Object.assign(new Error("simulated late-lock release failure"), { code: "EACCES" });
+    }
+    return fs.rm(target, ...args);
+  }
+};
+const lateReleaseFailureStore = createNexoContinuityStore({
+  filePath: lateReleaseFailurePath, fsModule: fsWithLateAcquireReleaseFailure, lockWaitMs: 20
+});
+assert.deepEqual(await lateReleaseFailureStore.initialize(emptySnapshot), {
+  status: "failed",
+  code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+  phase: "lock_acquisition",
+  writeStarted: false,
+  lockRelease: {
+    status: "failed",
+    code: "EACCES",
+    initialCode: "EACCES"
+  }
+});
+await assert.rejects(() => fs.access(lateReleaseFailurePath), error => error?.code === "ENOENT");
+await fs.rm(lateReleaseFailureLock, { recursive: true, force: true });
+
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
   () => store.loadCurrent(),
