@@ -121,3 +121,12 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Next unresolved M0 frontier: lock contention/progress contract and deployment assumptions. Current store waits without a bound while the lock owner remains alive. The existing `NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md` explicitly recommends no arbitrary timeout/BUSY/cancellation/lease/stale-lock reclamation before the caller contract is chosen. Decide/record whether first-version requirements accept local cooperative writers plus unbounded waiting, or require bounded acquisition; if bounded, define the public error/status and every caller's handling before code changes.
 - Do not reopen cross-stage persistence receipts, repeat the status/steps/objective audit, switch to M1/STEP 7, or enable protected effects.
 - Global state unchanged: M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
+
+## Addendum — lock acquisition error normalization (2026-10-20; CI pending)
+
+- Found and fixed a mismatch in `initialize()`: comment promised OS error codes would stay behind the Nexo store contract, but arbitrary `error.code` such as `EACCES` could leak in the structured result.
+- `src/nexo/core/continuity-store.mjs` now preserves internal `NEXO_CONTINUITY_STORE_*` codes, keeps `ENOENT/ENOTDIR` as `NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE`, and maps other acquisition failures to `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED`.
+- `tests/nexo/continuity-store.test.mjs` injects `EACCES` to assert normalization. It also explicitly asserts the existing mixed contract: `commitIfCurrent()` still throws non-path acquisition errors. This audit did not unify that contract or change lock waiting/stale-lock policy.
+- Runtime commit `995871f4500b4dee5e164c2d83a59cb0e6207bf8`; test commit / exact code-test SHA `9fad44406e3c19bac2a20ecb830cf29f6758dae7`; blobs runtime `ecf982a028dcd4e9208eb236e27538eb5b508863`, test `f3c9eeb3d0e28926511dcc5ed5051ac567ece130`. Audit: `NCS_M0_LOCK_ACQUISITION_ERROR_NORMALIZATION_AUDIT_2026-10-20.md`.
+- At last check, combined status had no checks and the workflow-run lookup returned no runs. CI is PENDING; do not report PASS or make further runtime changes until the exact SHA result is verified.
+- M0 remains INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
