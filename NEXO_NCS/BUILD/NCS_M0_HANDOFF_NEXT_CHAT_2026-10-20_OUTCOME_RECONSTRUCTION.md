@@ -168,7 +168,7 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Aún no hay cambio de runtime/tests ni CI para el contrato. El código continúa con espera sin deadline hasta completar la implementación y validación.
 - No inventar el presupuesto numérico. Contrato objetivo: deadline monotónico absoluto único propiedad del caller, compartido por mutaciones anidadas Continuity/Chronicle. Vence sólo la espera de adquisición; nunca cancelar escritura/rename en curso. La expiración previa a lock debe decir explícitamente que no comenzó la fase de escritura; adquisición tardía debe liberar únicamente lock propio y no escribir. Los resultados de liberación y persistencia siguen separados.
 - No se autoriza dispatch sin PREPARED confirmado ni redispatch por timeout después de PREPARED/efecto posible. En ese caso, recargar estado canónico y reconciliar.
-- **Siguiente trabajo obligatorio, en orden:** (1) revisar firmas públicas y pruebas actuales de ambos stores y enumerar callers/consumidores; (2) determinar la abstracción mínima de reloj monotónico/deadline que pueda compartirse sin reiniciar presupuesto; (3) definir el contrato de resultados de cada método, conservando diferencias API existentes salvo que el mapa de consumidores justifique un cambio explícito; (4) sólo entonces implementar stores/callers y regresiones; (5) CI de todos los workflows M0 relevantes sobre un SHA exacto.
+- HISTÓRICO SUPERADO por los addenda posteriores: deadline monotónico, contrato por API, implementación inicial y pruebas ya están presentes. Próxima tarea vigente: auditoría final de callers/entrypoints fuera de runNexoChronicleAppend.
 - Presupuesto/configuración sigue abierto; no fijar una cifra arbitraria. La garantía no es un timeout estricto de pared si una llamada filesystem no retorna. No agregar framework genérico de cancelación, watchdogs, leases, heartbeats ni reclaim automático como side quest.
 - CI previo: SHA código/test `b133c8c392739a0912f7b0466650a25962ead267` y cinco workflows SUCCESS citados en STATUS. No presentarlos como validación de este nuevo contrato.
 - Mantener M0 `INCOMPLETO`, `authorization: NOT_EVALUATED`, efectos protegidos `STOP`, raíz legítima `PENDING/UNKNOWN`. No reabrir auditorías cerradas de recibos/reconstrucción, no cambiar a M1/STEP 7.
@@ -181,7 +181,7 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - No basta con añadir un parámetro a los stores: el deadline debe atravesar PREPARED, lineage, reconciliation y terminal outcome, y ser compartido por Continuity y Chronicle dentro de una operación. No usar presupuestos relativos independientes por cada capa.
 - Tests actuales cubren espera cross-process, concurrencia de misma revisión, stale/unknown, write/rename ambiguos y fallos de lock release; el test de espera cross-process deberá modificarse para la política acotada, y se requieren pruebas de integración de no-dispatch/no-redispatch.
 - **Bloqueo de diseño antes de implementación:** fijar fuente y valor/política de un presupuesto finito para la primera versión. No existe un valor en los fuentes inspeccionados; no inventarlo y no usar fallback ilimitado, porque contradice la decisión A. Recomendación: la configuración del host/aplicación crea un único deadline monotónico absoluto y los stores reciben ese deadline.
-- Siguiente paso: resolver configuración del presupuesto; después, helper mínimo monotónico + matriz de resultado por método; luego implementación y CI exacto. No tocar otras arquitecturas ni reabrir auditorías cerradas.
+- HISTÓRICO SUPERADO: presupuesto aceptado (2.000 ms configurable), helper, matriz, implementación y CI exacto ya están registrados abajo.
 - Sin cambios de runtime/tests y sin CI nuevo por este mapa. El último SHA código/test con cinco workflows SUCCESS sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`; no valida este diseño.
 - Estado: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
@@ -192,8 +192,8 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Matriz propuesta para las cuatro APIs mutables, handler Chronicle y runtime público. Timeout significa que no empezó la fase de escritura en esa llamada; mantener distinto de stale/unknown/IO/conflict/persistencia ambigua.
 - Forma de resultado `phase`/`writeStarted` es sólo propuesta, requiere validación contra convenciones existentes antes de implementarse.
 - Adquisición tardía: nunca empezar escritura después del deadline; liberar sólo lock propio demostrado; fallo de liberación debe preservarse separado del timeout.
-- La recomendación para presupuesto inicial es 2.000 ms configurable, pero el usuario todavía no ha aceptado explícitamente la cifra. No tratarla como requisito cerrado ni hardcodearla. No prometer tiempo de pared estricto.
-- No runtime/tests modificados ni CI nuevo. El siguiente trabajo puede seguir refinando el contrato sin depender del número; implementación completa espera a que se decida la configuración finita.
+- HISTÓRICO SUPERADO: el usuario aceptó explícitamente 2.000 ms configurables; no es un límite de tiempo de pared estricto.
+- HISTÓRICO SUPERADO: runtime/tests fueron modificados y los workflows M0 relevantes pasaron en los SHA indicados en los addenda posteriores.
 - M0 sigue `INCOMPLETO`, `authorization: NOT_EVALUATED`, efectos protegidos `STOP`, raíz legítima `PENDING/UNKNOWN`.
 
 
