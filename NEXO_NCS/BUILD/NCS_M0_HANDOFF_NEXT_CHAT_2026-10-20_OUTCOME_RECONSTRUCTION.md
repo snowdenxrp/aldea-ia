@@ -234,3 +234,14 @@ No volver a auditar el trabajo de lock error normalization que ya está cerrado;
 - También se simula fallo EACCES de liberación en ambos stores; el resultado mantiene timeout y detalle de lockRelease.failed.
 - SHA exacto de código/tests: 15415580788c4e823f03371b566e29106268b67d. Seis workflows M0 relevantes terminaron success: 39375730407, 39375730358, 39375730428, 39375730355, 39375730370, 39375730363. Logs de jobs 118473315380, 118473315369 y 118473336472 inspeccionados.
 - El siguiente frente es una auditoría dirigida de callers/entrypoints: verificar que los códigos/metadata de timeout no se aplanan y que un timeout posterior a PREPARED/posible dispatch no habilita redispatch. No volver a investigar lock acquisition internals ya cubiertos.
+
+
+### Follow-up — timeout reaches public boundary; PREPARED remains fail-closed
+
+- The Chronicle handler forwards phase/writeStarted/lockRelease from store timeout results.
+- publicChronicleResult preserves timeout evidence nested in prepared/lineage/reconciliation/outcome/adapterResult, without exposing target payloads. CLI JSON emits the sanitized timeout metadata.
+- Continuity bootstrap propagates lock-timeout metadata through its thrown-error boundary; application helper preserves the fields.
+- Runtime regression test: PREPARED acquisition timeout stays blocked, dispatchAttempted false, redispatchAuthorized false; adapter is not invoked.
+- Application tests: timeout while initializing missing Chronicle and while bootstrapping missing Continuity preserve timeout code, phase, and writeStarted:false.
+- Current code/tests SHA: 12efac26d0948b91c59706612edec7df9e78c4f5. Six returned workflows succeeded: 39376332936, 39376332981, 39376333167, 39376332991, 39376333035, 39376333016. Logs checked: 118475197653, 118475197877, 118475199164. No mission-admission/restart run was returned for this SHA; don't claim it passed on this exact SHA.
+- Remaining: final caller/entrypoint audit outside runNexoChronicleAppend; confirm isolated mutations use bounded per-call defaults and no public surface drops timeout or enables redispatch.
