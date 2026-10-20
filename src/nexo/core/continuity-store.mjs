@@ -8,6 +8,7 @@ export const NEXO_CONTINUITY_STORE_VERSION = 1;
 const LOCK_RETRY_MS = 10;
 const LOCK_STALE_MS = 60_000;
 let tempSequence = 0;
+const lockReleaseFailures = new Set();
 
 function storeError(code) {
   const error = new Error(code);
@@ -31,6 +32,16 @@ async function readLockOwner(fsModule, lockPath) {
 
 async function acquireLock(fsModule, filePath) {
   const lockPath = lockPathFor(filePath);
+  if (lockReleaseFailures.has(lockPath)) {
+    try {
+      await fsModule.access(lockPath);
+      throw storeError("NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED");
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+      // Explicit external cleanup removed the previously failed lock.
+      lockReleaseFailures.delete(lockPath);
+    }
+  }
   const token = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const owner = { pid: process.pid, token, createdAt: Date.now() };
   while (true) {
@@ -49,17 +60,20 @@ async function acquireLock(fsModule, filePath) {
         if (current?.token !== token) return { status: "not_owned" };
         try {
           await fsModule.rm(lockPath, { recursive: true, force: true });
+          lockReleaseFailures.delete(lockPath);
           return { status: "released" };
         } catch (firstError) {
           // A transient cleanup failure must not erase the already-determined
           // persistence result. Retry cleanup once, and expose the recovery.
           try {
             await fsModule.rm(lockPath, { recursive: true, force: true });
+            lockReleaseFailures.delete(lockPath);
             return {
               status: "released_after_retry",
               initialCode: firstError?.code ?? "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED"
             };
           } catch (secondError) {
+            lockReleaseFailures.add(lockPath);
             return {
               status: "failed",
               code: secondError?.code ?? "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
