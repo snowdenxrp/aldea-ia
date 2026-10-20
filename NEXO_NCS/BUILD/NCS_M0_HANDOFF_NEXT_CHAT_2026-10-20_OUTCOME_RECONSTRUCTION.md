@@ -285,3 +285,18 @@ Se reutilizaron —no se repitieron— los contratos ya guardados de Constitutio
 No hubo cambio de runtime ni ejecución nueva de tests/CI. M0 sigue `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
 Nota operativa: el intento de integrar este checkpoint directamente en `NEXO_NCS/STATUS.md` no se completó. No afirmar que STATUS esté actualizado; los tres documentos BUILD enlazados arriba sí se guardaron y verificaron.
+
+
+## Continuación añadida — inventario relativo al claim Chronicle append (2026-10-20)
+
+Nuevo documento creado en la rama y commit:
+- [NCS_M0_CLAIM_RELATIVE_CHRONICLE_APPEND_INVENTORY_2026-10-20.md](NCS_M0_CLAIM_RELATIVE_CHRONICLE_APPEND_INVENTORY_2026-10-20.md)
+- Commit que añadió el inventario: `70b0b7f103fd470207796a146f157ace07ab71d9`.
+
+Resultado estático: se trazó la operación mutadora de la API pública estable desde `runNexoChronicleAppend` hasta el handler local, observación/reconciliación y asentamiento terminal. Es una ruta de persistencia local con controles de continuidad; no prueba por sí misma autorización constitucional ni propietario legítimo. No se observó un AuthorityGate conectado a una fuente de raíz legítima antes de esa escritura en los archivos inspeccionados. Esto no se etiqueta como bypass confirmado.
+
+La nota separa garantías locales existentes de pruebas pendientes sobre raíz/procedencia, scope del claim, currentness/epoch, revocación, sucesión, pérdida de dispositivos y fallos/contradicciones. Especifica pruebas negativas necesarias sin afirmar que estén implementadas ni ejecutadas.
+
+No hubo cambios de runtime ni ejecución nueva de CI. No se actualizó `NEXO_NCS/STATUS.md` en este paso; no afirmar lo contrario. Estado M0: `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+Siguiente paso: seguir los contratos STEP 7 existentes para identificar una fuente constitucional ya definida y verificable vinculable a un claim concreto; si no existe, registrar el bloqueo y conservar STOP, sin inventar una raíz nueva ni endurecer de nuevo contratos de forma ya validados.
