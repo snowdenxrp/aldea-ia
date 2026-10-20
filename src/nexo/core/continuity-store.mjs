@@ -295,7 +295,16 @@ export function createNexoContinuityStore({ filePath, fsModule = fs, lockDeadlin
       if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
         return { status: "failed", code: "NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE" };
       }
-      throw error;
+      // Keep the store's public result contract consistent with initialize():
+      // do not leak OS-specific lock-acquisition exceptions to callers.
+      return {
+        status: "failed",
+        code: typeof error?.code === "string" && error.code.startsWith("NEXO_CONTINUITY_STORE_")
+          ? error.code
+          : "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED",
+        phase: "lock_acquisition",
+        writeStarted: false
+      };
     }
     let result;
     let lockRelease;
