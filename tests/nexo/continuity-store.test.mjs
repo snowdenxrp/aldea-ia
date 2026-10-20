@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -198,6 +199,80 @@ await assert.rejects(
 );
 assert.equal((await staleStore.loadCurrent()).storeRevision, 0);
 assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
+
+// Cross-process characterization: a live lock owner makes another process wait
+// until the lock disappears. This test deliberately does not impose a new timeout
+// policy; it records the existing contract gap without changing runtime behavior.
+const crossProcessDir = path.join(directory, "cross-process-live-owner");
+await fs.mkdir(crossProcessDir);
+const crossProcessPath = path.join(crossProcessDir, "continuity.json");
+const crossProcessStore = createNexoContinuityStore({ filePath: crossProcessPath });
+assert.equal((await crossProcessStore.initialize(emptySnapshot)).status, "committed");
+const crossProcessLock = `${crossProcessPath}.lock`;
+await fs.mkdir(crossProcessLock);
+await fs.writeFile(path.join(crossProcessLock, "owner.json"), JSON.stringify({
+  pid: process.pid,
+  token: "test-live-owner",
+  createdAt: Date.now()
+}), "utf8");
+
+const childScript = [
+  'import { createNexoContinuityStore } from process.env.NEXO_STORE_MODULE_URL;',
+  'process.stdout.write("attempting\\n");',
+  'const store = createNexoContinuityStore({ filePath: process.env.NEXO_STORE_FILE });',
+  'const snapshot = JSON.parse(process.env.NEXO_STORE_SNAPSHOT);',
+  'const result = await store.commitIfCurrent(0, snapshot);',
+  'process.stdout.write(JSON.stringify(result) + "\\n");'
+].join("\\n");
+const child = spawn(process.execPath, ["--input-type=module", "-e", childScript], {
+  env: {
+    ...process.env,
+    NEXO_STORE_MODULE_URL: new URL("../../src/nexo/core/continuity-store.mjs", import.meta.url).href,
+    NEXO_STORE_FILE: crossProcessPath,
+    NEXO_STORE_SNAPSHOT: JSON.stringify(candidateA)
+  },
+  stdio: ["ignore", "pipe", "pipe"]
+});
+let childStdout = "";
+let childStderr = "";
+child.stdout.setEncoding("utf8");
+child.stderr.setEncoding("utf8");
+child.stdout.on("data", chunk => { childStdout += chunk; });
+child.stderr.on("data", chunk => { childStderr += chunk; });
+let childExited = false;
+const childExit = new Promise((resolve, reject) => {
+  child.once("error", reject);
+  child.once("exit", (code, signal) => {
+    childExited = true;
+    resolve({ code, signal });
+  });
+});
+const childStarted = new Promise((resolve, reject) => {
+  const deadline = setTimeout(() => reject(new Error("cross-process lock contender did not start")), 5_000);
+  const inspect = () => {
+    if (childStdout.includes("attempting\\n")) {
+      clearTimeout(deadline);
+      resolve();
+    } else if (childExited) {
+      clearTimeout(deadline);
+      reject(new Error(`cross-process contender exited early: ${childStderr}`));
+    }
+  };
+  child.stdout.on("data", inspect);
+  child.once("exit", inspect);
+});
+await childStarted;
+await new Promise(resolve => setTimeout(resolve, 100));
+assert.equal(childExited, false,
+  "a different process waits while the lock owner PID is alive; no bounded acquisition outcome exists");
+await fs.rm(crossProcessLock, { recursive: true, force: true });
+const crossProcessExit = await Promise.race([
+  childExit,
+  new Promise((_, reject) => setTimeout(() => reject(new Error("cross-process contender did not resume after lock removal")), 5_000))
+]);
+assert.deepEqual(crossProcessExit, { code: 0, signal: null }, `cross-process contender should resume after explicit lock removal: ${childStderr}`);
+assert.equal((await crossProcessStore.loadCurrent()).storeRevision, 1,
+  "the cross-process contender commits only after the existing lock disappears");
 
 // Characterize lock-release failure separately from persistence outcome.
 // The injected rm failure is restricted to the lock directory; canonical file reads
