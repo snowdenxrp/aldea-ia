@@ -2556,3 +2556,12 @@ Estado sin cambio: borrador DRAFT / NOT FROZEN / NOT COMMISSIONED; M0 `INCOMPLET
 ## Nota de verificabilidad CI (2026-10-20)
 
 El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workflow_dispatch`, pero las acciones GitHub disponibles en esta sesión no incluyen una operación para despachar un workflow. La acción de consulta de runs disponible está documentada como filtrada a ejecuciones asociadas a pull requests; para los SHA de regresión, el endpoint de estados devolvió `statuses: []`. Por tanto, estos resultados **no prueban que no se haya ejecutado ningún workflow**; solo significan que esta sesión no pudo obtener evidencia CI atribuible a los SHA exactos. La validación de las regresiones permanece `CI_NOT_VERIFIED`. Próxima acción de verificación: ejecutar manualmente el workflow determinista desde GitHub Actions con la rama `ncs-clean-architecture` actual y conservar el run ID, el SHA exacto ejecutado y el resultado del job `tests` antes de declarar PASS.
+
+
+## Verificación CI posterior — persistencia determinista (2026-10-20)
+
+- La consulta directa de GitHub Actions por rama encontró el workflow de push que no aparecía en la consulta de runs filtrada a pull requests.
+- Run [39449973775](https://github.com/snowdenxrp/aldea-ia/actions/runs/39449973775), workflow `.github/workflows/nexo-deterministic-tests.yml`, terminó `completed / success` con SHA exacto `709afc161cdfc8a0aef9ab076f6e66b64db49d99`; el job `tests` concluyó `success`.
+- El SHA contiene las regresiones de reconstrucción de outcomes persistidos `NEXO_OUTCOME_EVIDENCE_CONFLICT` y `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`, además de la validación fail-closed de forma de misión persistida y sus pruebas.
+- Esta evidencia supersede el estado anterior `CI_NOT_VERIFIED` **para la suite determinista y ese SHA exacto**. No acredita otros workflows no incluidos, no demuestra autenticación de `evidence.source`, no establece raíz legítima y no autoriza efectos protegidos.
+- M0 sigue `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
