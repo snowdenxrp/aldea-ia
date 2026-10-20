@@ -115,3 +115,18 @@ Referencias previas:
   - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455195) — success
   - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455201) — success
 - Limitación no resuelta: las llamadas filesystem pueden exceder el presupuesto si ellas mismas no retornan; no se afirma límite estricto de pared. Faltan pruebas específicas de adquisición que retorna tarde y falla de liberación en ese caso, además de revisión de propagación por otras fronteras de aplicación.
+
+
+### Follow-up verification — late acquisition (2026-10-20)
+
+- Added deterministic injected-filesystem tests where `mkdir` returns only after the deadline for both stores.
+- Both stores verify that the late-acquired lock is released and no canonical file is initialized.
+- Added release-failure tests for late-acquired locks in both stores. Continuity preserves `status:"failed", code:...TIMEOUT` plus `lockRelease:{status:"failed", code:"EACCES", initialCode:"EACCES"}`; Chronicle preserves timeout plus `lockRelease:{status:"failed", code:"EACCES"}`. Neither reports a successful release.
+- All six relevant workflows passed against code/test SHA `15415580788c4e823f03371b566e29106268b67d`:
+  - [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730407)
+  - [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730358)
+  - [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730428)
+  - [Mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730355)
+  - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730370)
+  - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730363)
+- Raw logs inspected for jobs `118473315380`, `118473315369`, and `118473336472`; no failures reported.
