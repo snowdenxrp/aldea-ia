@@ -1,10 +1,12 @@
-## M0 — validación estricta de identidad y forma de misión persistida (2026-10-20)
+## M0 — estado vigente de continuidad (2026-10-20)
 
-- Cambio runtime: `src/nexo/core/continuity-contract.mjs`, commit `9fbb96a7d0949d1441fd280f5f6d82101606af11`. Los registros persistidos ahora requieren objeto de misión, `missionId` no vacío y sin `:`, y array `steps`; ya no se salta validación ni se permite que un ID ausente se convierta en misión reconstruida por búsqueda `undefined`.
-- Regresiones: `tests/nexo/continuity-contract.test.mjs`, commit `04d54049f19938685bd877653d23c9d69e775145`: identidad ausente, steps ausente, ID con delimitador y reconstrucción contra misión sin identidad.
-- Informe actualizado: [NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md](BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md), commit `9fa783664de7ad74a422ccc26c0965225bfad042`.
-- CI: consultas para el SHA de tests no devolvieron checks ni workflow runs. **NO VERIFICADO**; no afirmar PASS. Siguiente acción: conseguir evidencia de ejecución de la suite focal y resolver cualquier fixture legacy fallida bajo contrato versionado, sin reintroducir defaults silenciosos.
-- Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- **Objetivo:** avanzar M0 con cambios concretos, pruebas y evidencia asociada al SHA exacto. No reiniciar Step 7 ni reabrir auditorías cerradas sin evidencia nueva.
+- **Estado global:** M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Ninguna prueba de CI equivale a autoridad raíz ni habilita efectos protegidos.
+- **Contrato de misión persistida:** commit runtime `9fbb96a7d0949d1441fd280f5f6d82101606af11`; regresiones `04d54049f19938685bd877653d23c9d69e775145`. El validador rechaza registros malformados, identidad ausente/ambigua y falta de `steps`; la suite de continuidad se incorporó a `npm test` en `6594f27a0e28e6ce5f53446228be11841626cfc3`.
+- **Evidencia CI de continuidad:** workflows en SHA `6594f27a0e28e6ce5f53446228be11841626cfc3`: [deterministic persistence 39438665444](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665444), [mission admission 39438665452](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665452), [M0 integrated acceptance 39438665518](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665518) y [Chronicle native vertical 39438665626](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665626) completaron SUCCESS.
+- **Regresión más reciente:** [aislamiento de snapshot de memoria](BUILD/NCS_M0_MEMORY_SNAPSHOT_DETACHMENT_REGRESSION_2026-10-20.md), test SHA `04fcc08081f81b3c385d4d8e9217a7744545d164`; [CI run 39441463747](https://github.com/snowdenxrp/aldea-ia/actions/runs/39441463747) terminó `completed / success` en ese SHA exacto. Alcance: `createLearningMemory()` para missions, attempts, executions y effectJournal; no demuestra aislamiento global.
+- **Handoff operativo:** [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_MISSION_CONTINUITY.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_MISSION_CONTINUITY.md). Continuar desde sus prioridades; no repetir auditorías de authority/locks ni declarar PASS fuera del alcance probado.
+- **Nota de precisión:** entradas históricas más abajo pueden decir `NO VERIFICADO`/PENDING porque describen el estado en la fecha de aquella entrada. No describen el estado actual cuando existe evidencia posterior enlazada arriba.
 
 ---
 
