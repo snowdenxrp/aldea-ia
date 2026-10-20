@@ -2304,3 +2304,18 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Red/green preserved: intermediate SHAs `3aed78b9788c9ffe25bc0077b02793a1ca6f75c0` and `0bf505d483cd56345fe7a7c9240545c86616bc2d` failed because a prior test expected false where a thrown commit response must remain UNKNOWN. Test corrected; final code/test SHA `5aef07d4fb933d8c0be4ee4cbc325e7e8c4f85a7` has all six focal workflows SUCCESS: M0 integrated `39369199068`; repair crash cuts `39369199071`; effect/settlement `39369199064`; deterministic persistence `39369199083`; STEP 4 `39369199069`; STEP 5 `39369199073`.
 - Full audit: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](BUILD/NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
 - Scope remains limited: result-contract truthfulness only; M0 INCOMPLETO, authorization NOT_EVALUATED, protected effects STOP, legitimate root PENDING/UNKNOWN.
+
+
+## M0 — normalización de error de lock: test-first rojo corregido y cinco workflows SUCCESS (2026-10-20)
+
+- **Evidencia roja conservada:** en el SHA de código/prueba `9fad44406e3c19bac2a20ecb830cf29f6758dae7`, la aceptación integrada [39372027172](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027172) y la continuidad de admisión [39372027076](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372027076) fallaron en la misma aserción obsoleta de `tests/nexo/continuity-store.test.mjs:566): esperaba `EACCES` de `initialize()`, aunque el contrato nuevo correctamente devuelve `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED`. STEP 4 `39372027142`, STEP 5 `39372027131` y persistencia determinista `39372027145` sí pasaron en ese SHA.
+- **Corrección sólo de test:** commit [b133c8c392739a0912f7b0466650a25962ead267](https://github.com/snowdenxrp/aldea-ia/commit/b133c8c392739a0912f7b0466650a25962ead267), blob de test `ee9327c706f8b34a7c2a7c632f48cb81776df098`. La expectativa ahora coincide con el contrato normalizado; la aserción de que `commitIfCurrent()` propaga `EACCES` se mantiene. No hubo otro cambio de runtime.
+- **CI SUCCESS en el SHA exacto corregido `b133c8c392739a0912f7b0466650a25962ead267`:**
+  - M0 aceptación integrada [39372728077](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728077)
+  - Admisión/reinicio [39372728055](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728055)
+  - Persistencia determinista [39372728046](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728046)
+  - STEP 4 [39372728141](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728141)
+  - STEP 5 [39372728127](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728127)
+- Interpretación: se valida la normalización del contrato de error y las regresiones ejecutadas por esos cinco workflows; no prueba filesystem físico, pérdida de energía, host local comprometido ni autoridad legítima.
+- Siguiente frontera M0: revisar la API pública/callers de adquisición de lock y decidir/documentar la semántica de progreso (espera ilimitada actual versus requisito de límite), sin inventar timeout/BUSY/cancelación ni cambiar runtime hasta fijar el contrato. Reutilizar la revisión `NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
