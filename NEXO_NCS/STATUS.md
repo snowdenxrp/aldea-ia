@@ -1,3 +1,14 @@
+## M0 — checkpoint más reciente: lock cross-process caracterizado (2026-10-19)
+
+- HEAD documental actual observado: `26a93b5b62d3cacc0cb471395a4c6fec92c4e780`.
+- SHA exacto con prueba nueva y cinco workflows SUCCESS: `6f0499142781e24c55d1adf137170323c8d1afbf`. La comparación GitHub confirma que los tres commits posteriores sólo modifican `NEXO_NCS/STATUS.md`, el handoff y la revisión del lock; no cambian runtime ni tests.
+- Prueba cross-process: un proceso hijo intenta escribir mientras existe un lock cuyo PID propietario sigue vivo. El hijo permanece pendiente mientras el lock existe y completa el commit cuando se retira explícitamente. CI: persistencia [39347061453](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061453), M0 integrado [39347061416](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061416), admisión/continuidad [39347061419](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061419), STEP 4 [39347061426](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061426), STEP 5 [39347061501](https://github.com/snowdenxrp/aldea-ia/actions/runs/39347061501): todos SUCCESS.
+- Interpretación: el bucle de adquisición no ofrece resultado acotado si el PID del propietario sigue vivo y el lock no desaparece. No se cambió runtime ni se añadió timeout arbitrario. Definir el contrato de contención antes de implementar; nunca convertir timeout/BUSY/UNKNOWN en permiso de redispatch ni borrar automáticamente un lock ajeno.
+- Handoff: [NCS_M0_HANDOFF_NEW_CHAT_2026-10-19.md](BUILD/NCS_M0_HANDOFF_NEW_CHAT_2026-10-19.md). Análisis: [NCS_M0_LOCK_RELEASE_FAILURE_REVIEW_2026-10-19.md](BUILD/NCS_M0_LOCK_RELEASE_FAILURE_REVIEW_2026-10-19.md).
+- Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — CI del vector de bootstrap confirmado; continuación sin llave (2026-10-19)
 
 - **Corrección del checkpoint anterior:** sí existe CI completo observado para el commit que integró `tests/nexo/root-bootstrap-protocol.test.mjs` en `npm test`: [run 39342543741](https://github.com/snowdenxrp/aldea-ia/actions/runs/39342543741), SHA exacto `4c0cec1833842103f21194b1f4a3ebdfe168181d`, job `tests`, paso `Run tests` = SUCCESS.
