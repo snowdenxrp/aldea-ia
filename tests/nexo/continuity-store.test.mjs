@@ -217,7 +217,7 @@ await fs.writeFile(path.join(crossProcessLock, "owner.json"), JSON.stringify({
 }), "utf8");
 
 const childScript = [
-  'import { createNexoContinuityStore } from process.env.NEXO_STORE_MODULE_URL;',
+  'const { createNexoContinuityStore } = await import(process.env.NEXO_STORE_MODULE_URL);',
   'process.stdout.write("attempting\\n");',
   'const store = createNexoContinuityStore({ filePath: process.env.NEXO_STORE_FILE });',
   'const snapshot = JSON.parse(process.env.NEXO_STORE_SNAPSHOT);',
