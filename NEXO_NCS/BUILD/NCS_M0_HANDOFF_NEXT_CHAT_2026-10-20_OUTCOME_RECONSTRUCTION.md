@@ -311,3 +311,23 @@ Resultado: la auditoría existente ya concluye que no hay una ruta actual implem
 Se añadió esta precisión a `NCS_M0_CLAIM_RELATIVE_CHRONICLE_APPEND_INVENTORY_2026-10-20.md` (blob nuevo `591d5bfbd4a218adb4501afa9c9570298998b547`, commit `46ade86dc5846f2468be710ce1142d31485a110a`).
 
 **Siguiente bloqueo real:** la raíz inicial y su reconocimiento independiente siguen sin resolución/implementación demostrable. Antes de implementar `createConstitutionAuthorityContext` o un verificador de raíz, hace falta definir y poder verificar cómo se reconoce la raíz inicial y qué evidencia de provisión, currentness y revocación la sostiene. No escoger una raíz por intuición ni dar por resuelta la decisión. Estado no cambia: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`. `NEXO_NCS/STATUS.md` no fue actualizado.
+
+
+## Corrección de prioridad M0 — decisión de alcance 2026-10-19 + CI mission-status (2026-10-20)
+
+Se recuperó y leyó la decisión existente `NEXO_NCS/DECISIONS/NCS_DECISION_SINGLE_ROOT_KEY_SINGLE_DEVICE_INITIAL_SCOPE_2026-10-19.md` (blob `dfb647d07cb28178b3c8a3a8289d8209943db8fd`). Es una decisión aceptada de alcance arquitectónico: raíz criptográfica única y un dispositivo inicial; selección física/provisión/verificación de llave pendientes; pérdida irrecuperable de la llave fuera de alcance inicial; la llave no da permiso ilimitado. La misma decisión fija que **la misión inmediata sigue siendo M0: coherencia entre misión persistida, estados de pasos y reconstrucción/proyección**, revisando CI de `continuity-queries.mjs` y su regresión. No reabrir comparación general de raíces ni reiniciar M0.
+
+Se verificó el workflow dedicado:
+- [Nexo M0 — canonical mission status projection, run 39375282715](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375282715), SHA `04a8c5fd417b0a52e2cea2976cf71448f4811e3c`, job y paso de regresión de entrypoint `success`.
+- En el test de entrypoint, la misión persistida `completed` con paso `planned` produce `persistedMissionStatus: completed`, `missionStatus: planned`, `statusDiscrepancy: true`; la consulta es read-only y no filtra payload. PREPARED pendiente reconstruye misión/paso como `blocked` y no modifica el snapshot.
+- Compare del SHA de ese run con el HEAD documental actual no muestra cambios en `continuity-queries.mjs`, `continuity-operations.mjs`, `tests/nexo/entrypoint.test.mjs` ni el workflow dedicado. Por eso el run aplica a esos bytes; no decir que fue ejecutado sobre el HEAD actual.
+- [Deterministic persistence run 39428590480](https://github.com/snowdenxrp/aldea-ia/actions/runs/39428590480) pasó en HEAD documental `d78be9a21fc1cad7d2d19a6ba527ff282be73a38`; no sustituye la regresión dedicada.
+
+Se creó y verificó:
+- [NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026-10-20.md](NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026-10-20.md), commit `831f98d414f4d991ddde4d1e6ae716bfc8e9d7bf`.
+- La nota `NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10-20.md` se actualizó para indicar que su propuesta de revisar el objeto constitucional no reemplaza la prioridad inmediata M0; blob `d346e809985c0337f3f68d9262e673c9f56a7185`, commit `c721d0b46379e57258663ff51b77e0453c535866`.
+
+### Próxima tarea obligatoria
+Revisar consumidores de `loadNexoMissionStatus` y CLI `mission-status` para saber si pueden ignorar `statusDiscrepancy` mientras ven `status: reconstructed`. Decidir desde evidencia del consumidor si la discrepancia informada es suficiente o si debe producir una salida fail-closed `blocked`. No mutar snapshot desde una consulta read-only. Si se cambia contrato, añadir regresión dirigida y ejecutar workflow dedicado + regresiones M0 en el SHA exacto. No tocar llave física/bootstrap en este paso.
+
+Estado sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima/implementada sigue sin prueba. `NEXO_NCS/STATUS.md` no se actualizó.
