@@ -51,11 +51,16 @@ export function assertNexoContinuityMemoryShape(memory) {
   // (missionId:stepId). Duplicate identities make reconstruction ambiguous.
   const missionIds = new Set();
   for (const mission of memory.nexo.missions) {
-    if (typeof mission?.missionId === "string" && mission.missionId.trim()) {
-      if (missionIds.has(mission.missionId)) throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
-      missionIds.add(mission.missionId);
+    // Persisted mission records must satisfy the same identity/steps minimum
+    // as newly admitted missions. Do not silently reinterpret malformed legacy
+    // records as empty missions during snapshot projection or reconstruction.
+    if (!mission || typeof mission !== "object" || Array.isArray(mission) ||
+        typeof mission.missionId !== "string" || !mission.missionId.trim() ||
+        mission.missionId.includes(":") || !Array.isArray(mission.steps)) {
+      throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
     }
-    if (!Array.isArray(mission?.steps)) continue;
+    if (missionIds.has(mission.missionId)) throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+    missionIds.add(mission.missionId);
     const stepIds = new Set();
     for (const step of mission.steps) {
       if (!step || typeof step !== "object" || Array.isArray(step) ||
