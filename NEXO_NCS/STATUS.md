@@ -1,3 +1,12 @@
+## M0 — frontera de intentos persistidos y reconstrucción (2026-10-20)
+
+- Informe: [NCS_M0_PERSISTED_ATTEMPT_RECONSTRUCTION_BOUNDARY_2026-10-20.md](BUILD/NCS_M0_PERSISTED_ATTEMPT_RECONSTRUCTION_BOUNDARY_2026-10-20.md).
+- Revisión estática: `attempts` se exige como array denso pero sus registros no tienen validación específica de identidad; reconstrucción consume los intentos para determinar estados. La escritura normal deduplica por `missionId + stepId`. Riesgo de ambigüedad potencial en snapshots importados/corruptos, no bypass confirmado.
+- Siguiente paso: regresiones para intentos contradictorios duplicados, referencias huérfanas y acción/objetivo discrepantes; fijar contrato legacy antes de endurecer runtime.
+- Sin cambio runtime ni pruebas ejecutadas; CI nuevo no verificado. M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — estado vigente de continuidad (2026-10-20)
 
 - **Objetivo:** avanzar M0 con cambios concretos, pruebas y evidencia asociada al SHA exacto. No reiniciar Step 7 ni reabrir auditorías cerradas sin evidencia nueva.
