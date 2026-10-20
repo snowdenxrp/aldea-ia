@@ -471,7 +471,8 @@ try {
   });
   assert.equal(ambiguousFirst.status, "blocked");
   assert.equal(ambiguousFirst.uncertainty, "effect_observation_commit_outcome_unknown");
-  assert.equal(ambiguousFirst.observationCommitted, false);
+  assert.equal(ambiguousFirst.observationCommitted, "UNKNOWN",
+    "a thrown commit response cannot prove the observation was not persisted");
   assert.equal(ambiguousVerifierCalls, 1);
 
   const reopenedAmbiguous = await openNexoContinuityOwner({
