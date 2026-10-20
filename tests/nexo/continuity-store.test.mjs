@@ -565,8 +565,8 @@ const lockAcquireErrorStore = createNexoContinuityStore({
 });
 assert.deepEqual(
   await lockAcquireErrorStore.initialize(emptySnapshot),
-  { status: "failed", code: "EACCES" },
-  "initialize currently normalizes a non-path lock-acquisition error to a structured failed result"
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED" },
+  "initialize normalizes a non-path lock-acquisition error to the Nexo store contract"
 );
 await assert.rejects(
   () => lockAcquireErrorStore.commitIfCurrent(0, emptySnapshot),
