@@ -1,3 +1,14 @@
+## M0 — error OS de adquisición de lock normalizado en initialize(); CI pendiente (2026-10-20)
+
+- Hallazgo reproducible: el catch de `initialize()` decía ocultar códigos OS detrás del contrato Nexo, pero devolvía `error.code` sin normalizar para errores distintos de `ENOENT/ENOTDIR`. Un `mkdir(lockPath)` que devuelve `EACCES` podía filtrar `code: EACCES`.
+- Corrección acotada en `src/nexo/core/continuity-store.mjs`: preserva códigos internos `NEXO_CONTINUITY_STORE_*`, conserva `NEXO_CONTINUITY_STORE_PARENT_PATH_UNAVAILABLE` para `ENOENT/ENOTDIR` y normaliza otros fallos de adquisición a `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_FAILED`.
+- Regresión añadida a `tests/nexo/continuity-store.test.mjs`: inyecta `EACCES` y exige resultado estructurado Nexo en `initialize()`. También deja explícito que `commitIfCurrent()` conserva por ahora su contrato distinto de propagar errores de adquisición no relacionados con la ruta.
+- SHA runtime commit `995871f4500b4dee5e164c2d83a59cb0e6207bf8`; SHA test commit `9fad44406e3c19bac2a20ecb830cf29f6758dae7`. Blobs actuales runtime `ecf982a028dcd4e9208eb236e27538eb5b508863`, test `f3c9eeb3d0e28926511dcc5ed5051ac567ece130`.
+- Informe: [NCS_M0_LOCK_ACQUISITION_ERROR_NORMALIZATION_AUDIT_2026-10-20.md](BUILD/NCS_M0_LOCK_ACQUISITION_ERROR_NORMALIZATION_AUDIT_2026-10-20.md).
+- **CI del SHA exacto aún PENDING:** combined status sin checks y consulta de workflow runs vacía al verificar. No declarar PASS ni hacer otro cambio de código hasta confirmar la ejecución. No se modificó la espera ilimitada ni la política de stale lock.
+- Estado global sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
 ## M0 — frontera pública owner-backed verificada; contención sigue como decisión abierta (2026-10-20)
 
 - Relectura de la frontera actual: `src/nexo/core/owner-backed-runtime.mjs` blob `8397fc41c533a7c5d1ca424ad90c4bd95f8dffa6`; `src/nexo/application/chronicle-append.mjs` blob `e5ff6c385f3160dfb78982a36c73a15d2d51887d`; `tests/nexo/chronicle-runtime.test.mjs` blob `8532700c63414ebc7a163ff6853958d85f8b93e4`.
