@@ -2317,7 +2317,7 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
   - STEP 4 [39372728141](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728141)
   - STEP 5 [39372728127](https://github.com/snowdenxrp/aldea-ia/actions/runs/39372728127)
 - Interpretación: se valida la normalización del contrato de error y las regresiones ejecutadas por esos cinco workflows; no prueba filesystem físico, pérdida de energía, host local comprometido ni autoridad legítima.
-- Siguiente frontera M0: revisar la API pública/callers de adquisición de lock y decidir/documentar la semántica de progreso (espera ilimitada actual versus requisito de límite), sin inventar timeout/BUSY/cancelación ni cambiar runtime hasta fijar el contrato. Reutilizar la revisión `NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`.
+- HISTÓRICO SUPERADO 2026-10-20: la decisión de espera acotada ya está adoptada e implementada inicialmente; ver sección posterior de deadline monotónico y SHA `12efac26d0948b91c59706612edec7df9e78c4f5`.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
 
@@ -2333,7 +2333,7 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Estado global: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
 
-### Propuesta de contrato para la siguiente decisión (no adoptada)
+### Propuesta histórica de contrato (SUPERADA 2026-10-20; ver implementación y decisión aceptada abajo)
 
 - Recomendación arquitectónica: para el runtime interactivo, preferir espera de lock acotada con presupuesto/deadline monotónico propiedad del caller y propagado por la operación completa; no fijar un timeout arbitrario dentro de cada store ni reiniciar el presupuesto en cada llamada.
 - La expiración sólo puede clasificar una espera que aún no adquirió el lock; no debe cancelar una escritura/rename ya iniciada ni convertir un estado de persistencia ambiguo en fallo seguro.
@@ -2348,7 +2348,7 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Especificación: [NCS_M0_BOUNDED_LOCK_WAIT_CONTRACT_2026-10-20.md](BUILD/NCS_M0_BOUNDED_LOCK_WAIT_CONTRACT_2026-10-20.md).
 - La decisión no equivale a implementación. El runtime aún espera sin deadline; no afirmar que la garantía ya exista.
 - Contrato de diseño: un solo deadline monotónico absoluto propiedad del caller, propagado entre operaciones anidadas Continuity/Chronicle; el vencimiento limita sólo la espera de adquisición. No cancelar escritura/rename en curso, no reiniciar el presupuesto en cada store, no reclamar locks ajenos y no convertir timeout en autorización ni en persistencia UNKNOWN cuando la fase de escritura no comenzó.
-- Códigos propuestos sujetos a verificar contra las convenciones y consumidores: `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT` y `NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT`. La superficie exacta por método público debe decidirse después de mapear sus firmas y consumidores.
+- Los códigos de timeout indicados abajo ya están implementados; la auditoría de propagación pública continúa abierta, no la decisión de nombres.
 - **Presupuesto numérico/configuración sigue abierto**; no inventarlo. Además, deadline cooperativo no garantiza tiempo de pared estricto si una llamada de filesystem queda bloqueada.
 - Próxima fase: mapear firmas y pruebas actuales; diseñar abstracción mínima compartida de deadline; acordar forma pública del timeout y tratamiento de adquisición tardía; después implementar stores, propagar desde callers y añadir pruebas de no-dispatch/no-redispatch antes de correr CI. Si el contrato requiere una reestructuración, detenerse y explicar la causa raíz en vez de añadir parches.
 - No se hicieron cambios de runtime/tests ni se ejecutó CI para este contrato. Último SHA de código/test validado sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`, con cinco workflows SUCCESS registrados arriba; ese CI previo no valida este requisito ni futura implementación.
@@ -2362,8 +2362,8 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Los stores tienen firmas mutables distintas: Continuity `initialize(snapshot)` / `commitIfCurrent(expectedRevision, candidate)`; Chronicle `initialize()` / `append({ operationKey, content })`. Los métodos tienen contratos de error no uniformes; no unificarlos sin mapear los consumidores.
 - Tests existentes cubren concurrencia, espera cross-process, stale/unknown, resultados de escritura ambiguos y fallos de liberación; no fijan espera acotada. El test cross-process actual es una caracterización de la semántica anterior, deberá cambiar explícitamente.
 - No se encontró deadline/monotonic helper existente en los fuentes revisados. El presupuesto finito y su fuente/configuración siguen abiertos. No implementar un fallback sin límite ni adivinar un valor.
-- Próximo bloqueo de diseño: definir dónde se configura un presupuesto finito de primera versión (recomendación: host/configuración de aplicación; stores reciben sólo deadline absoluto monotónico de operación). Luego diseñar helper mínimo y tabla de resultados por método; sólo después implementar y probar.
-- Sin cambios de runtime/tests ni CI nuevo en esta auditoría documental. M0 continúa `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+- HISTÓRICO SUPERADO 2026-10-20: el presupuesto 2.000 ms configurable, helper monotónico y matriz por método ya se implementaron; continuar desde auditoría de callers/entrypoints.
+- HISTÓRICO SUPERADO 2026-10-20: sí hay cambios de runtime/tests y CI posterior; la evidencia vigente está en la sección de deadline monotónico más reciente.
 
 
 ## M0 — matriz propuesta de resultados de timeout por API (2026-10-20)
@@ -2372,7 +2372,7 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Mapea Continuity `initialize`/`commitIfCurrent`, Chronicle `initialize`/`append`, Chronicle handler, owner/runtime y la superficie pública de aplicación.
 - Propuesta central: timeout de adquisición devuelve un resultado de dominio diferenciado y explícito de que la fase de escritura no comenzó; no convertirlo en persistencia UNKNOWN ni en éxito. La forma exacta `phase`/`writeStarted` aún está propuesta, no implementada.
 - Caso de adquisición tardía documentado: si la llamada retorna después del deadline, no empezar escritura; liberar sólo lock cuya propiedad se demuestre; si la liberación falla, preservar ambos resultados.
-- No se cambió runtime/tests ni se ejecutó CI. Presupuesto inicial recomendado: 2.000 ms configurable, aún no aceptado por el usuario; no fijarlo como constante ni habilitar implementación hasta resolverlo.
+- HISTÓRICO SUPERADO 2026-10-20: el usuario aceptó 2.000 ms configurables y el runtime/tests fueron implementados y validados; no volver a tratar la decisión como pendiente.
 - Estado sigue M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 
 
@@ -2391,7 +2391,7 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
   - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455195)
   - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455201)
 - Evidencia cruda de logs verificada: jobs 118472464797, 118472464632, 118472468527; reportan los tests de Continuity/Chronicle y suite general sin fallos.
-- Siguiente frontera M0: añadir pruebas deterministas de adquisición tardía y fallo de liberación tras adquisición tardía; auditar que todas las entrypoints/callers preservan timeout y no redispatch. No reabrir auditorías cerradas.
+- HISTÓRICO PARCIALMENTE SUPERADO: pruebas de adquisición tardía y fallo de liberación ya pasaron; sigue abierta la auditoría final de callers/entrypoints y no-redispatch.
 - Estado no cambia: M0 INCOMPLETO; authorization: NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
 
 
@@ -2407,7 +2407,7 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
   - [Mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730355)
   - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730370)
   - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730363)
-- Siguiente tarea M0: auditoría dirigida de callers/entrypoints para preservar el timeout como causa diferenciada y confirmar no-redispatch tras PREPARED o posible dispatch. No reabrir auditorías cerradas.
+- La auditoría de callers/entrypoints sigue siendo la próxima tarea; el trabajo de preservación pública y no-dispatch de PREPARED ya tiene pruebas iniciales en SHA `12efac26d0948b91c59706612edec7df9e78c4f5`.
 
 
 ### M0 — timeout propagado hasta la superficie pública (2026-10-20)
