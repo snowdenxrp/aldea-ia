@@ -433,6 +433,58 @@ if (result.status !== "committed") process.exitCode = 1;`;
   assert.deepEqual(timeoutAppendObserved.entries, []);
   await fs.rm(timeoutAppendLock, { recursive: true, force: true });
 
+  // If mkdir resolves after the deadline, release only the newly acquired lock and do not initialize.
+  const lateAcquirePath = path.join(root, "late-acquire.json");
+  const lateAcquireLock = lateAcquirePath + ".lock";
+  const fsWithLateLockAcquire = {
+    ...fs,
+    mkdir: async (target, ...args) => {
+      if (String(target) === lateAcquireLock) await new Promise(resolve => setTimeout(resolve, 40));
+      return fs.mkdir(target, ...args);
+    }
+  };
+  const lateAcquireStore = createNexoChronicleStore({
+    filePath: lateAcquirePath, fsModule: fsWithLateLockAcquire, lockWaitMs: 20
+  });
+  assert.deepEqual(await lateAcquireStore.initialize(), {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT",
+    phase: "lock_acquisition",
+    writeStarted: false,
+    lockRelease: { status: "released" }
+  });
+  await assert.rejects(() => fs.access(lateAcquirePath), error => error?.code === "ENOENT");
+  await assert.rejects(() => fs.access(lateAcquireLock), error => error?.code === "ENOENT");
+
+  // If releasing a late-acquired lock fails, preserve that uncertainty alongside timeout.
+  const lateReleaseFailurePath = path.join(root, "late-release-failure.json");
+  const lateReleaseFailureLock = lateReleaseFailurePath + ".lock";
+  const fsWithLateAcquireReleaseFailure = {
+    ...fs,
+    mkdir: async (target, ...args) => {
+      if (String(target) === lateReleaseFailureLock) await new Promise(resolve => setTimeout(resolve, 40));
+      return fs.mkdir(target, ...args);
+    },
+    rm: async (target, ...args) => {
+      if (String(target) === lateReleaseFailureLock) {
+        throw Object.assign(new Error("simulated late-lock release failure"), { code: "EACCES" });
+      }
+      return fs.rm(target, ...args);
+    }
+  };
+  const lateReleaseFailureStore = createNexoChronicleStore({
+    filePath: lateReleaseFailurePath, fsModule: fsWithLateAcquireReleaseFailure, lockWaitMs: 20
+  });
+  assert.deepEqual(await lateReleaseFailureStore.initialize(), {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT",
+    phase: "lock_acquisition",
+    writeStarted: false,
+    lockRelease: { status: "failed", code: "EACCES" }
+  });
+  await assert.rejects(() => fs.access(lateReleaseFailurePath), error => error?.code === "ENOENT");
+  await fs.rm(lateReleaseFailureLock, { recursive: true, force: true });
+
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
   assert.equal((await observeChronicleOperation({
