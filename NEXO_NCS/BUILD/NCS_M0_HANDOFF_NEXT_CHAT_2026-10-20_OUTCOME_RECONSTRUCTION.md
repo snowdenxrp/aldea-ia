@@ -139,3 +139,13 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Audit report: `NCS_M0_LOCK_ACQUISITION_ERROR_NORMALIZATION_AUDIT_2026-10-20.md`; STATUS was updated with the same evidence. The documentation commits do not change the validated code/test SHA.
 - Next: continue M0 with the open lock-contention/progress contract. Review public API callers and deployment assumptions; do not add arbitrary timeout/BUSY/cancellation/lease/stale-lock recovery without a chosen contract. Do not reopen closed persistence receipt audits or activate protected effects.
 - State remains M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
+
+
+## Addendum — lock contention caller audit (2026-10-20)
+
+- Report: `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md`.
+- Confirmed both Continuity and Chronicle stores wait in a 10 ms retry loop without a deadline while a valid lock persists and its owner PID remains alive. The 60-second stale threshold is not a timeout; stale recovery remains explicit and no automatic deletion was added.
+- Caller inspection found no public store deadline/cancellation parameter. The inspected canonical paths fail closed after an acquisition error and do not authorize dispatch when PREPARED is unconfirmed, but they cannot return a bounded response while acquisition is still waiting. Error result/exception contracts remain non-uniform across store APIs.
+- No runtime/test change and no new CI run in this review. Latest exact code/test SHA remains `b133c8c392739a0912f7b0466650a25962ead267`, with five workflows SUCCESS listed in STATUS.
+- Next architecture action: settle the deployment/API requirement—(a) explicitly accept cooperative local writers and unbounded waiting as a first-version limitation, or (b) require bounded acquisition and specify one shared public outcome plus caller handling/reconciliation before implementation. Do not invent a timeout/BUSY/cancellation/lease/heartbeat/reclaim patch. Any deadline protocol must distinguish lock contention from stale/IO errors and persistence UNKNOWN, and must never enable blind redispatch after PREPARED.
+- Do not reopen already closed receipt/reconstruction audits. M0 remains INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
