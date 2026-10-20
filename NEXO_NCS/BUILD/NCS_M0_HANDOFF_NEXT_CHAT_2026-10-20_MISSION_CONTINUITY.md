@@ -211,3 +211,10 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - No se ocultó ni se clasificó como PASS. Las assertions se actualizaron en `c0adce68129c6b7bfd78260b761208653fee3054` para comprobar `status: failed`, el código tipado y `writeStarted: false`; el código específico de lock stale se conserva.
 - Informe actualizado: [NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md](NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md).
 - Antes de continuar a otro cambio, consultar el run del HEAD final y leer su log si falla. No considerar validado el arreglo hasta CI SUCCESS en un SHA que incluya runtime + assertions corregidas.
+
+
+### Segundo hallazgo de CI sobre la misma normalización (2026-10-20)
+
+- CI del SHA `c0adce68129c6b7bfd78260b761208653fee3054` encontró una tercera assertion heredada que esperaba una excepción para lock-release persistente, cuando el registro local de fallo de liberación hace que la siguiente adquisición retorne ahora `{ status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED", phase: "lock_acquisition", writeStarted: false }`.
+- Corregida en `e7f04397658e405acb478f1fe5ac9b49a55b886d`. No cambiar runtime adicional sólo para conservar un test que codificaba la vieja excepción: ambas operaciones deben compartir el resultado estructurado. Mantener el lock en disco hasta la recuperación explícita; no borrar automáticamente.
+- Los CI de `4e1037dc` y `c0adce68` fallaron por esas expectativas obsoletas. La suite determinista pasó en `c0adce68`, pero los workflows de continuidad/aceptación fallaron en el test del store. El run del SHA final documental todavía debe verificarse; no afirmar PASS hasta revisar resultados exactos.
