@@ -1,3 +1,13 @@
+## M0 — hallazgo estático de lock con owner record ilegible (2026-10-19)
+
+- La matriz de regresiones se amplió en commit documental `b1d9580185f8daaab1aa1de80cc098443a25aa4e`.
+- `readLockOwner()` devuelve `null` para errores de lectura/parsing de `owner.json`. Si también falla `stat(lockPath)`, la edad queda en cero y `acquireLock()` puede seguir esperando sin límite; si la edad confirma stale, el resultado es `LOCK_STALE_RECOVERY_REQUIRED` y no borra el lock.
+- Este es un hallazgo estático, no un fallo reproducido ni una regresión ejecutada. No se cambió runtime ni se añadió timeout/BUSY; falta definir contrato y prueba antes de tocarlo.
+- CI de persistencia ya SUCCESS para el test SHA `24d1879192a6227013b805a069585c298760019f` (run `39356703078`); los cambios posteriores aquí son documentales. No atribuir ese run al commit documental actual.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## M0 — sexta regresión de frontera y workflows integrados PASS (2026-10-19)
 
 - Se añadió la sexta regresión a `tests/nexo/continuity-store.test.mjs`: si falla la lectura del envelope canónico dentro de `commitIfCurrent()`, devuelve `unknown / NEXO_CONTINUITY_STORE_READ_FAILED` antes de escribir y conserva los bytes canónicos.
