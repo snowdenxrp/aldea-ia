@@ -1,3 +1,13 @@
+## M0 — valid JSON with invalid lock-owner schema (2026-10-19)
+
+- Both stores now reject owner records unless the record is an object with a positive safe-integer `pid` and non-empty string `token`. This closes the case where valid JSON such as `42` bypassed the malformed-JSON path.
+- Chronicle code `fa2f475e73b5fc63dc4a1281ff3f4bda6ea26907`; Continuity code and final tested SHA `464edd9b95340c95ef6d534a33906f242329ad56`. Regressions Chronicle `a111b96a0673e39e1f9e7c3b14bbf1cf69a5a15b`; Continuity `464edd9b95340c95ef6d534a33906f242329ad56`.
+- CI SUCCESS on final code SHA `464edd9b95340c95ef6d534a33906f242329ad56`: persistence `39361652104`; integrated acceptance `39361652042`; STEP 4 `39361651989`; STEP 5 `39361652043`; bounded admission/restart `39361652089`.
+- Behavior remains fail-closed: invalid owner schema → LOCK_STATE_UNKNOWN, lock preserved, no store initialization. No automatic cleanup or stale-lock reclamation.
+- M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
+
+---
+
 ## M0 — owner.json malformado: fail-closed con carrera de creación preservada (2026-10-19)
 
 - Hallazgo: `readLockOwner()` colapsaba JSON malformado y error de lectura en `null`; en locks recientes podía esperar sin distinguir propietario ausente de registro ilegible.
