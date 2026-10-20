@@ -2262,3 +2262,13 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Result: no new reproducible defect; no code/test changes and no new CI run in this pass. Stale expected revision remains a CAS conflict; recovery is canonical reload/reconstruction, not inferred success.
 - Next narrow frontier: audit actual call sites and public-result boundary for owner-backed runtime versus legacy `src/assistants/memory.js`. Do not cut over runtime or enable repair effects without concrete call-site evidence and crash-cut coverage.
 - State unchanged: M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
+
+
+## M0 — public mission-admission persistence receipt corrected (2026-10-20)
+
+- **Reproducible contract gap:** conditional commit may be durably committed while lock release fails; store reports `status: failed, persistenceStatus: committed`. The Chronicle admission boundary previously collapsed this to generic blocked and lost the confirmed `missionAdmissionCommitted` fact.
+- **Correction:** `src/nexo/application/chronicle-append.mjs` now preserves known commit as `status: blocked, missionAdmissionCommitted: true`, with dispatch false; unknown persistence remains `status: unknown, missionAdmissionCommitted: UNKNOWN`. It never converts the lock handoff failure into permission to continue.
+- Regression: `tests/nexo/chronicle-runtime.test.mjs`; exact final code/test SHA `52eb4f9bdb959c577c6532ab30f1294f542ef4db`.
+- **CI SUCCESS on the exact same SHA:** integrated M0 acceptance [39368731996](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731996); Chronicle native [39368732138](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732138); deterministic persistence [39368732251](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732251); mission admission/restart continuity [39368731963](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731963); STEP 4 [39368731975](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731975); STEP 5 [39368732135](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732135). All six workflows completed SUCCESS.
+- Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](BUILD/NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
+- Remaining boundary: M0 is incomplete; this fixes public result truthfulness only, not owner authority or general runtime migration.
