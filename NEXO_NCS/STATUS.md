@@ -2445,3 +2445,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - CI de código/tests SHA `12efac26d0948b91c59706612edec7df9e78c4f5`: M0 integrated acceptance, Chronicle native vertical, deterministic persistence, repair settlement crash cuts, STEP 5 y STEP 4 pasaron. No afirmar mission-admission/restart para ese SHA: no apareció en la consulta exacta.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
 - Próximo trabajo: continuar con el siguiente bloqueo M0 registrado, sin volver a auditar adquisición tardía ni reabrir auditorías cerradas.
+
+
+## M0 — precisión de integración Constitución→Policy (2026-10-20)
+
+La revisión estática de `src/nexo/core/contracts.mjs` confirma que `createPolicyContext()` sólo conserva `policyRef`, `scope`, `resolved`, `validity` y `resolutionProvenance`; no establece ni conserva un contexto constitucional autenticado. El contrato existente Constitución→Policy requiere identidad constitucional gobernante, identidad de Policy, dominio/aplicabilidad, vigencia, dependencias y procedencia protegida. La auditoría de reutilización ya había documentado que no hay un camino Core implementado que establezca el contexto constitucional actual.
+
+Esto confirma un gap de integración estático; **no prueba un bypass** y no justifica añadir `constitutionRef` desde el caller. Los fixtures `AUTHORIZED` de `protected-transition.test.mjs` no demuestran reconocimiento de raíz. Detalle integrado en `BUILD/NCS_M0_CLAIM_RELATIVE_AUTHORITY_ENFORCEMENT_INVENTORY_2026-10-20.md` y handoff.
+
+Próxima dependencia: revisión explícita del borrador constitucional por el propietario; después, y sólo con fuente/procedencia de raíz demostrable, definir el contexto protegido y su vínculo con Policy. Sin cambios de runtime ni CI en esta revisión documental. Estado sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos `STOP`; raíz `PENDING/UNKNOWN`.
