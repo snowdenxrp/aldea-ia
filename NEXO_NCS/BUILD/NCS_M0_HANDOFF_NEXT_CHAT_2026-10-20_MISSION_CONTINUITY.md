@@ -1,3 +1,14 @@
+## Último avance M0 — misión persistida malformada ya falla cerrada (2026-10-20)
+
+- Runtime commit `9fbb96a7d0949d1441fd280f5f6d82101606af11`: `assertNexoContinuityMemoryShape` rechaza cada registro misión que no sea objeto, carezca de `missionId` no vacío, tenga `:` en el ID o no tenga `steps` array. No convierte el registro a misión vacía.
+- Test commit `04d54049f19938685bd877653d23c9d69e775145`: regresiones de ID ausente, steps ausente, delimitador y reconstrucción de registro sin identidad con `missionId=undefined`.
+- Informe ampliado: `NEXO_NCS/BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md`, commit `9fa783664de7ad74a422ccc26c0965225bfad042`.
+- CI para el SHA de tests: consultas disponibles devolvieron cero status checks y cero workflow runs; suite **NO VERIFICADA**. No afirmar PASS. Próximo paso: obtener evidencia de ejecución focal y revisar fixtures históricas si fallan. No aflojar validación con defaults silenciosos.
+- STATUS.md actualizado en commit `a46ab7379f41f59592efcfb858d550e0ebb3e131`.
+- No reabrir auditorías de authority/locks cerradas. M0 sigue `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
+
+---
+
 ## Último avance — compatibilidad de forma de misión persistida (2026-10-20)
 
 - Informe: `NEXO_NCS/BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md`; commit `84ebe145adca3d38d4454b9da9556eb4b724bf63`.
