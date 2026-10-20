@@ -1,0 +1,96 @@
+# NCS M0 — contrato compartido de espera acotada de locks (decisión A)
+Fecha: 2026-10-20
+Estado: **REQUISITO ACEPTADO; CONTRATO EN DISEÑO; NO IMPLEMENTADO**.
+Rama de trabajo: `ncs-clean-architecture`.
+Misión: M0.
+
+## 1. Decisión adoptada
+
+Se adopta la opción A: la primera versión interactiva de Nexo requiere espera acotada para adquirir locks de Continuity y Chronicle. No se acepta espera indefinida como comportamiento normal.
+
+Esto no autoriza todavía un valor numérico de timeout ni una modificación de runtime. El presupuesto concreto queda abierto y no debe inventarse ni incrustarse como constante local en cada store. El siguiente trabajo define el contrato común y su integración; el presupuesto debe resolverse como configuración/requisito antes de activar el comportamiento en runtime.
+
+## 2. Alcance exacto del deadline
+
+- Un caller de aplicación/runtime que inicia una operación interactiva establece un único deadline monotónico absoluto.
+- Ese mismo deadline se propaga por las mutaciones de Continuity y Chronicle que formen parte de la operación. No se reinicia el presupuesto al entrar a otro store ni en cada iteración de espera.
+- El deadline sólo limita la espera para adquirir el lock. No se usa para cancelar una escritura, un rename, la reconciliación de un resultado incierto ni la liberación de un lock ya adquirido.
+- Las operaciones del filesystem no se consideran interruptibles. Por tanto, el contrato garantiza que la lógica de espera no seguirá iniciando intentos después de detectar el vencimiento; no garantiza por sí solo un límite de tiempo de pared estricto si una llamada de filesystem queda bloqueada.
+- La fuente monotónica, la unidad, la validación del deadline y la forma de pasarlo a stores deben ser únicas y explícitas en el runtime. No usar `Date.now()` como reloj para medir duración; el reloj de pared actual se mantiene únicamente para la comprobación de antigüedad del lock existente.
+
+## 3. Semántica de expiración y resultados
+
+La expiración antes de obtener propiedad del lock devuelve un resultado de dominio inequívoco, distinto de lock stale, estado del lock desconocido, error de filesystem, conflicto de revisión y resultado de persistencia desconocido.
+
+Nombres de códigos propuestos para el contrato (a validar contra convenciones existentes antes de implementar):
+- Continuity: `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT`
+- Chronicle: `NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT`
+
+Reglas obligatorias:
+1. El timeout de adquisición sólo significa que la fase protegida de escritura no empezó en esa llamada. No se representa como `committed`, `conflict`, ni `persistence UNKNOWN`.
+2. Si una llamada de `mkdir` termina adquiriendo el lock después de que el deadline haya vencido, no debe entrar a la fase de escritura; debe liberar únicamente el lock que pueda demostrar que posee y devolver timeout. Si la liberación falla, conservar explícitamente ambos hechos (timeout de adquisición y resultado de liberación) sin fingir que el lock quedó liberado.
+3. El timeout no puede borrar ni reclamar locks ajenos, convertir stale en timeout si el stale ya se detectó, ni ocultar errores/estado desconocido de la inspección del lock.
+4. Los contratos públicos de `initialize`, `commitIfCurrent` y `append` deben documentar cómo exponen timeout. No filtrar una excepción OS sin clasificar desde un camino que el contrato define como resultado estructurado; no normalizar otras superficies por conveniencia sin inventariar sus consumidores.
+5. La liberación de lock y el resultado de persistencia continúan siendo hechos independientes. No sobrescribir una recepción de persistencia ya determinada con un estado de timeout posterior.
+
+## 4. Regla de seguridad de callers y efectos
+
+- Si el timeout sucede antes de confirmar PREPARED, no se despacha el efecto.
+- Si ya existía PREPARED, o pudo haberse despachado un efecto externo, el timeout no autoriza redispatch ni reintento ciego. Se debe recargar el estado canónico y reconciliar la operación existente.
+- Si el timeout ocurre al intentar persistir una liquidación/outcome, el caller mantiene el resultado sin resolver según la evidencia disponible; no lo convierte en fallo definitivo ni en éxito por el solo hecho del timeout.
+- Un timeout nunca es autorización. Se mantienen `authorization: NOT_EVALUATED` y efectos protegidos `STOP`.
+
+## 5. Pruebas obligatorias antes de cerrar el cambio
+
+### Adquisición
+- lock válido retenido por proceso vivo más allá del deadline;
+- liberación del lock justo antes y justo después del deadline, sin resultados no deterministas en el contrato;
+- deadline ya vencido antes de iniciar adquisición;
+- `mkdir` que falla por error de filesystem;
+- owner ausente/incompleto, owner corrupto, lock stale y lock state unknown;
+- lock adquirido por una llamada que se resuelve después del deadline: no se permite escritura y se comprueba liberación propia;
+- fallo al liberar tras vencer el deadline, preservando el estado de liberación.
+
+### Concurrencia y persistencia
+- dos escritores con la misma revisión esperada: como máximo uno `committed`; el otro conflicto o timeout según el orden observado;
+- conservar resultados de escritura/rename y recibos de liberación ambiguos ya cubiertos;
+- no convertir expiración de adquisición en persistencia desconocida cuando ninguna escritura comenzó;
+- verificar el comportamiento de Continuity y Chronicle bajo la misma semántica de deadline.
+
+### Integración M0
+- timeout al persistir PREPARED impide dispatch;
+- timeout durante settlement/outcome no produce segundo dispatch;
+- reinicio y reconciliación usan el envelope canónico;
+- todos los workflows relevantes corren contra un único SHA exacto que incluya runtime, pruebas y documentos;
+- prueba de que el deadline no se reinicia entre mutaciones anidadas.
+
+## 6. Orden de implementación — sin saltos
+
+1. Inventariar firmas públicas, todos los callers y los estados de resultado existentes para Continuity y Chronicle. El inventario de callers del 2026-10-20 es punto de partida, no sustituto de revisar firmas y pruebas actuales.
+2. Definir una única abstracción mínima de deadline monotónico compartida; no introducir un framework general de cancelación, timers de watchdog, lease, heartbeat ni reclamación automática.
+3. Definir y probar el contrato de expiración de ambos stores, incluidos los resultados cuando se vence antes de lock y cuando la llamada de adquisición devuelve tardíamente.
+4. Propagar el mismo deadline desde las fronteras de aplicación/runtime que orquestan operaciones compuestas.
+5. Añadir pruebas de integración de PREPARED/settlement/restart que prueben no-dispatch y no-redispatch.
+6. Ejecutar la matriz CI M0 pertinente sobre un SHA exacto, revisar resultados y registrar evidencia cruda antes de marcar cualquier estado.
+7. Si una fase revela que el contrato existente no puede sostenerse sin rediseño, detenerse y explicar la causa raíz antes de añadir parches.
+
+## 7. Decisiones que permanecen abiertas
+
+- **Presupuesto numérico / configuración del deadline:** abierto; no adivinar.
+- **Comportamiento de API por cada método público:** debe mapearse en la fase 1, respetando las diferencias existentes entre resultados estructurados y excepciones.
+- **Respuesta estricta de pared:** no se promete, porque las operaciones del filesystem no están demostradas como interruptibles. El requisito aceptado es acotar la espera cooperativa de adquisición, no cancelar operaciones de filesystem.
+- **Política de retry/reconciliación:** no se inventa; permanece subordinada a la evidencia canónica y a las invariantes ya existentes.
+
+## 8. Estado de seguridad y evidencia
+
+Esta decisión es un requisito de progreso, no evidencia de implementación. Hasta que runtime, tests y CI estén completos:
+- M0: `INCOMPLETO`.
+- `authorization: NOT_EVALUATED`.
+- Efectos protegidos: `STOP`.
+- Raíz legítima: `PENDING/UNKNOWN`.
+- No hay afirmación nueva sobre durabilidad ante pérdida de energía, resistencia a procesos locales hostiles ni autoridad legítima del propietario.
+
+Referencias previas:
+- `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`
+- `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md`
+- CI de código/pruebas previo a este diseño (no valida este contrato ni cambios futuros): SHA `b133c8c392739a0912f7b0466650a25962ead267`; runs 39372728077, 39372728055, 39372728046, 39372728141, 39372728127.
