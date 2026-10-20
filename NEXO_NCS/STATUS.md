@@ -298,14 +298,15 @@ No seleccionar automáticamente el hardware, no instalar dependencias ni generar
 
 ## M0 — frontera de confianza del recibo PREPARED canónico (2026-10-19)
 
-- Hallazgo estático documentado en `NEXO_NCS/BUILD/NCS_M0_CANONICAL_PREPARED_RECEIPT_TRUST_BOUNDARY_AUDIT_2026-10-19.md`.
-- `createEffectAdapter().executePrepared()` comprueba los campos del objeto `preparedCommit`, pero no demuestra que provenga del propietario canónico. La prueba actual construye manualmente un objeto con `status: "committed"`, `preparedCommitted: true` y una revisión, y espera que se despache el handler.
-- El runtime owner-backed sí espera la confirmación de `owner.recordPrepared()`; sin embargo, esa secuencia no impide por sí sola que un consumidor con acceso directo al adaptador invoque `executePrepared()` con un recibo fabricado.
-- No se cambió código de ejecución: antes hay que definir una frontera de confianza verificable. No resolver con otro booleano/campo descriptivo ni crear un segundo journal o una envoltura transaccional.
-- Aceptación pendiente: recibo ordinario fabricado debe fallar sin despachar; recibo válido emitido por el propietario debe conservar el flujo owner-backed; ambigüedad debe preservar UNKNOWN y no redispatch. Ejecutar tests/CI en el SHA exacto antes de PASS.
-- Estado: hallazgo confirmado por inspección estática; ejecución de la regresión de rechazo aún PENDING. `authorization: NOT_EVALUATED`; raíz/autoridad PENDING; efectos protegidos STOP; M0 INCOMPLETO.
+- **Decisión de alcance aceptada y documentada:** [NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md](DECISIONS/NCS_DECISION_PREPARED_RECEIPT_SAME_PROCESS_TRUST_BOUNDARY_2026-10-19.md).
+- El hallazgo estático original sigue siendo cierto: `createEffectAdapter().executePrepared()` valida campos ordinarios de `preparedCommit`, pero esos campos no demuestran procedencia canónica. La prueba de bajo nivel que fabrica un recibo no debe describirse como una vulnerabilidad remota ni como una elusión de autorización constitucional.
+- Para el prototipo actual, el adaptador y su consumidor pertenecen a la misma base de confianza. Esa API **no es una sandbox** contra código JavaScript arbitrario con acceso al adaptador/proceso; impedir sólo el recibo fabricado no crearía una frontera real porque el consumidor puede acceder a otras operaciones del adaptador.
+- **Disposición:** no añadir otro booleano/campo de autenticidad, callback auto-verificador, segundo journal ni envoltura transaccional cosmética. No cambiar runtime por este hallazgo. Si se introduce código consumidor no confiable, detener expansión y diseñar una frontera real de proceso/capacidad con nuevo modelo de amenazas.
+- La composición owner-backed sigue siendo el contrato que debe verificarse: reconstrucción canónica → PREPARED confirmado por owner → dispatch → lineage/reconciliación/settlement → outcome terminal. Sus tests no demuestran raíz legítima ni autorización constitucional.
+- Auditoría: [NCS_M0_CANONICAL_PREPARED_RECEIPT_TRUST_BOUNDARY_AUDIT_2026-10-19.md](BUILD/NCS_M0_CANONICAL_PREPARED_RECEIPT_TRUST_BOUNDARY_AUDIT_2026-10-19.md). Revisión complementaria de settlement: [NCS_M0_TERMINAL_OUTCOME_REVISION_AUDIT_2026-10-19.md](BUILD/NCS_M0_TERMINAL_OUTCOME_REVISION_AUDIT_2026-10-19.md).
+- Esta actualización corrige el estado anterior de este bloque: la decisión de alcance ya está tomada; no debe quedar marcada como corrección de runtime pendiente. No se atribuye CI nuevo a estos commits documentales.
+- **Estado constitucional invariable:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN. La provisión independiente de la raíz continúa siendo un bloqueo separado.
 
----
 
 ## M0 — normalización de rutas padre no disponibles en ambos almacenes (2026-10-19)
 
