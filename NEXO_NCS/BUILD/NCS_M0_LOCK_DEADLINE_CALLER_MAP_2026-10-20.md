@@ -1,6 +1,6 @@
 # NCS M0 — mapa de APIs y propagación de deadline de lock
 Fecha: 2026-10-20
-Estado: **FASE 1 DE DISEÑO; auditoría estática de firmas y callers; sin cambios de runtime/tests y sin CI nuevo**.
+Estado: **mapa de callers actualizado tras implementación inicial; integración global aún pendiente**.
 Rama: `ncs-clean-architecture`.
 
 ## 1. Fuentes verificadas
@@ -74,3 +74,13 @@ This is static API/caller mapping, not runtime proof. No runtime/tests changed a
 Related:
 - `NEXO_NCS/BUILD/NCS_M0_BOUNDED_LOCK_WAIT_CONTRACT_2026-10-20.md`
 - `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md`
+
+
+## 6. Actualización tras implementar deadline inicial (2026-10-20)
+
+- `src/nexo/core/lock-deadline.mjs` centraliza reloj monotónico y default configurable de 2.000 ms.
+- `createNexoContinuityStore` y `createNexoChronicleStore` aceptan `lockDeadline` (deadline absoluto compartido) y `lockWaitMs` (presupuesto por mutación cuando no hay deadline compartido).
+- `runNexoChronicleAppend` crea un deadline único al inicio de la operación validada y lo pasa a ambos stores y a `openNexoContinuityOwner`; el owner usa el store configurado con ese deadline para todas sus mutaciones.
+- `initialize`/`commitIfCurrent`/`append` devuelven resultado estructurado para timeout de adquisición, con `phase:"lock_acquisition"` y `writeStarted:false`; Chronicle handler ya propaga el código de bloqueo del store.
+- Pruebas añadidas para lock vivo retenido en las cuatro APIs. Los seis workflows M0 relevantes pasaron en el SHA de código/tests `cf62bd858232a8c0c71f21ace6469c2a62f48448`.
+- Pendiente: adquisición tardía tras deadline y liberación fallida, más comprobación de propagación por otras fronteras/entrypoints. No afirmar límite de pared estricto.
