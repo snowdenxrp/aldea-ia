@@ -1,3 +1,16 @@
+## M0 — Chronicle no oculta fallo de liberación; carrera ENOENT diferenciada; CI SUCCESS (2026-10-19)
+
+- **Defecto Chronicle:** release ignoraba owner token mismatch y el resultado de limpieza; podía devolver éxito de append con el lock aún presente.
+- Fix [`8b1449b27c85`](https://github.com/snowdenxrp/aldea-ia/commit/8b1449b27c8569a39d9d97c9cf400c979f3b6e10): release devuelve `released/not_owned/failed`; fallo o no propiedad produce `blocked / NEXO_CHRONICLE_LOCK_RELEASE_FAILED`, preservando `persistenceStatus`, `storeRevision` y `lockRelease`.
+- Regresiones: `56550161...` (not_owned) y `9d0da479...` (cleanup EACCES).
+- **Fallo red registrado:** integrated acceptance [run 39357529773](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357529773) falló en `56550161...` porque `stat()` puede devolver ENOENT si el owner ya quitó el lock tras EEXIST.
+- Fix de carrera: Continuity `e986e3bd49f59c50f7bb3cb0b8a31f043186eb56` y Chronicle `5502ea6a7a29b8e85f9fd9d8ded105cc3b786d05` reintentan sólo en ENOENT; otros errores de stat resultan en LOCK_STATE_UNKNOWN.
+- **CI SUCCESS** en SHA exacto `5502ea6a7a29b8e85f9fd9d8ded105cc3b786d05`: persistencia run `39357619819`; Chronicle native `39357619856`; STEP 5 `39357619906`; STEP 4 `39357619967`; bounded admission/restart `39357620002`; integrated M0 `39357619948`; repair settlement crash cuts `39357619896`.
+- Matriz ampliada en commit documental `68edb8a51f4d1dd40d474957f1b039be300b1f5d`. Commits documentales posteriores no cambian el código probado.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## M0 — callers de errores de adquisición cruzados (2026-10-19)
 
 - La matriz se amplió en commit documental `cbd36bfbf6e9bd138a1f1d3a80caa5214db35c32`.
