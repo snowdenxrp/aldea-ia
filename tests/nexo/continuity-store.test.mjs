@@ -266,13 +266,17 @@ await fs.mkdir(persistentReleaseDir);
 const persistentReleasePath = path.join(persistentReleaseDir, "continuity.json");
 const persistentReleaseStore = await makeLockReleaseFailureStore(persistentReleasePath, true);
 const persistentReleaseResult = await persistentReleaseStore.initialize(emptySnapshot);
-assert.equal(persistentReleaseResult.status, "committed",
-  "persistence remains truthfully reported when cleanup repeatedly fails");
-assert.deepEqual(persistentReleaseResult.lockRelease, {
+assert.deepEqual(persistentReleaseResult, {
   status: "failed",
-  code: "EACCES",
-  initialCode: "EACCES"
-}, "persistent cleanup failure must remain explicit in the public result");
+  code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+  persistenceStatus: "committed",
+  storeRevision: 0,
+  lockRelease: {
+    status: "failed",
+    code: "EACCES",
+    initialCode: "EACCES"
+  }
+}, "persistent cleanup failure must expose persisted state but block successful handoff");
 assert.equal((await createNexoContinuityStore({ filePath: persistentReleasePath }).loadCurrent()).storeRevision, 0,
   "independent read confirms canonical persistence despite persistent cleanup failure");
 await assert.doesNotReject(
