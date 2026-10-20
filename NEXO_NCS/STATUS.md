@@ -2319,3 +2319,15 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - Interpretación: se valida la normalización del contrato de error y las regresiones ejecutadas por esos cinco workflows; no prueba filesystem físico, pérdida de energía, host local comprometido ni autoridad legítima.
 - Siguiente frontera M0: revisar la API pública/callers de adquisición de lock y decidir/documentar la semántica de progreso (espera ilimitada actual versus requisito de límite), sin inventar timeout/BUSY/cancelación ni cambiar runtime hasta fijar el contrato. Reutilizar la revisión `NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## M0 — revisión de callers y progreso del lock: no introducir timeout sin contrato (2026-10-20)
+
+- Informe: [NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md](BUILD/NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md).
+- Revisión de blobs publicados: Continuity store `ecf982a028dcd4e9208eb236e27538eb5b508863`; Chronicle store `f441dc538313dd85935b5679547dd69ad242d2a3`; owner `81db34308e3881e3fa900653751a325952eeceb9`; service `9f19377f67103bf0d22f68cab9266c2accacc768`; Chronicle application `e5ff6c385f3160dfb78982a36c73a15d2d51887d`; Chronicle adapter `b29c26d84c19afa34769f06cedd7d0131e873075`; effect adapter `efe00f7f0bd3586266209fb17e2eb725a6522463`.
+- Hallazgo: ambos stores esperan sin deadline cuando un lock válido sigue presente y su PID permanece vivo. El umbral de 60 s sólo clasifica stale con PID no vivo; no es timeout. Ninguna API pública del store acepta deadline/cancelación.
+- Los callers canónicos inspeccionados bloquean o clasifican incertidumbre ante errores de adquisición, y no convierten el fallo de PREPARED en permiso para dispatch. Sin embargo, si el lock sigue retenido y la espera no retorna, tampoco pueden devolver resultado acotado.
+- Contratos de error siguen asimétricos entre `initialize()` y métodos mutables y entre Continuity/Chronicle. No se unifican por estética ni se añade timeout/BUSY/lease/heartbeat/reclaim sin definir el contrato de callers y recuperación tras expiry.
+- Recomendación: resolver como requisito de despliegue/API si M0 acepta writers cooperativos en filesystem local con espera sin límite o requiere respuesta acotada. Si requiere límite, especificar un contrato compartido antes de cambiar código, distinguiendo contención, stale, error IO y persistencia UNKNOWN; todo reintento exige reconciliación canónica y nunca redispatch ciego.
+- No hubo cambios de runtime/tests ni nuevas ejecuciones CI en esta revisión. El último SHA de código/prueba validado sigue siendo `b133c8c392739a0912f7b0466650a25962ead267`, con cinco workflows SUCCESS registrados arriba.
+- Estado global: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
