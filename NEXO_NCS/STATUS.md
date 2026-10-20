@@ -2253,3 +2253,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - No se encontró una nueva discrepancia reproducible en esta pasada. **No hubo cambio de código ni nueva ejecución de CI** en esta auditoría final; no atribuir PASS nuevo a esta sesión.
 - Siguiente frontera: revisar consistencia entre persistencia/commit, respuesta perdida o ambigua, replay de misma revisión y proyección reconstruida; reutilizar pruebas existentes y cambiar código solo con regresión reproducible.
 - Estado global sin cambio: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
+
+
+## M0 — response-loss / outcome-reconstruction audit (2026-10-20)
+
+- Audit note: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](BUILD/NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
+- Reused existing store tests for lost rename response, confirmed write failure, and UNKNOWN when canonical reread fails; reused repair-settlement crash-cut proof for a committed observation whose response is lost; reviewed owner outcome replay and canonical Chronicle restart handling.
+- Result: no new reproducible defect; no code/test changes and no new CI run in this pass. Stale expected revision remains a CAS conflict; recovery is canonical reload/reconstruction, not inferred success.
+- Next narrow frontier: audit actual call sites and public-result boundary for owner-backed runtime versus legacy `src/assistants/memory.js`. Do not cut over runtime or enable repair effects without concrete call-site evidence and crash-cut coverage.
+- State unchanged: M0 INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
