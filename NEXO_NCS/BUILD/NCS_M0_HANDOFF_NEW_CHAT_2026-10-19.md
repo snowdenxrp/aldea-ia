@@ -1,3 +1,16 @@
+## ACTUALIZACIÓN — lock no inspeccionable corregido en ambos stores; CI SUCCESS
+
+- Causa raíz: en Continuity y Chronicle, un error de `stat(lockPath)` se ignoraba; `age=0` y el ciclo de adquisición podía esperar indefinidamente.
+- Continuity fix `838f9032dcaf4ca4eed7c13c61735604099d8d03`, regresión `140238c6d43d9a4da8b9cf3f3427b021fa5cedf5`; código `NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN`.
+- Chronicle fix `5b349cf847932f79ff94a751f7494f0eecdf7862`, regresión `c5ffff237b6c9933030a12308aab066aa968cb32`; código `NEXO_CHRONICLE_LOCK_STATE_UNKNOWN`.
+- CI exacto en SHA `c5ffff237b6c9933030a12308aab066aa968cb32`: persistencia run `39357200273` SUCCESS; Chronicle native `39357200274` SUCCESS; integrated M0 acceptance `39357200292` SUCCESS; STEP 4 `39357200316` SUCCESS; STEP 5 `39357200276` SUCCESS; bounded mission admission/restart `39357200280` SUCCESS.
+- Matriz actualizada en `01aed1de940b5e4228acbfa598baff5593e522bb`; STATUS actualizado en `3f179ddf35537fbb5835a961d27559955cbb8d55`.
+- No se introdujo timeout/BUSY ni se borran locks ajenos. La prueba comprueba error explícito, lock preservado y ausencia de inicialización cuando la edad no puede verificarse.
+- Próximo paso: revisar los callers y la semántica pública de los errores de adquisición para evitar que una API convierta incertidumbre en retry/dispatch; no normalizar la API mixta sin definir contrato.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## ACTUALIZACIÓN — borde del lock con owner record ilegible
 
 - Matriz ampliada en commit documental `b1d9580185f8daaab1aa1de80cc098443a25aa4e`; STATUS actualizado en `5825737c23de24d914fa8d2fd015f61e767597b6`.
