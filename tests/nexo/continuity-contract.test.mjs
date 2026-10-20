@@ -758,7 +758,7 @@ const reconstructedUnknownEffectState = reconstructNexoMissionFromSnapshot(
 assert.equal(reconstructedUnknownEffectState.status, "blocked",
   "an unrecognized effect state must block reconstruction instead of leaving the step runnable");
 assert.equal(reconstructedUnknownEffectState.steps[0].status, "blocked");
-assert.equal(reconstructedUnknownEffectState.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_STATE_UNKNOWN");
+assert.equal(reconstructedUnknownEffectState.steps[0].blockReason.code, "NEXO_EFFECT_JOURNAL_STATUS_UNKNOWN");
 assert.equal(reconstructedUnknownEffectState.uncertainty, "effect_journal_state_unknown");
 
 const orphanUnknownEffectSnapshot = recordNexoMissionInSnapshot(emptySnapshot, {
