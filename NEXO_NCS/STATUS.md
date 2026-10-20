@@ -1,3 +1,14 @@
+## M0 — matriz de regresiones del continuity store (2026-10-19)
+
+- Documento añadido: [NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_REGRESSION_MATRIX_2026-10-19.md), commit documental `7441784ba216c4c269652f9453e8834dbcf348d2`.
+- Cruce de `continuity-store.test.mjs` con `chronicle-runtime.test.mjs` y `continuity-contract.test.mjs`: los gates PREPARED UNKNOWN/no dispatch y la prevención de redispatch tienen cobertura en runtime; no duplicar esas pruebas sin un caso distinto.
+- Regresiones por localizar en la suite completa: commit condicional que falla antes del reemplazo; rename aplicado seguido de respuesta perdida; escritura fallida con estado canónico indeterminable; error de adquisición no normalizado; lectura fallida dentro de commit; liberación `not_owned`.
+- “No localizada” se limita al archivo de test de store inspeccionado; no significa ausencia en toda la suite. No cambiar API/runtime hasta cruzar estos escenarios con los tests restantes.
+- Solo documentación: no se editaron runtime/tests y no se ejecutó CI nuevo. Los hashes documentados son blobs inspeccionados, no una ejecución.
+- Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+---
+
 ## M0 — checkpoint más reciente: inventario de callers del continuity store (2026-10-19)
 
 - Inventario estático añadido: [NCS_M0_CONTINUITY_STORE_CALLER_INVENTORY_2026-10-19.md](BUILD/NCS_M0_CONTINUITY_STORE_CALLER_INVENTORY_2026-10-19.md), commit documental `5ebf2b081660d16ca026163728185bad2fc21f7a`.
