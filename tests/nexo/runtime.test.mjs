@@ -192,7 +192,7 @@ assert.equal(chainedFailureSimulation.world.resources.water.amount,10,
 
 
 const terminalEffectEntries=Array.from({length:200},(_,i)=>({
-  idempotencyKey:`terminal-normalization:${i}`,status:"completed",
+  idempotencyKey:`terminal-normalization:${i}`,status:"settled_observed",
   result:{status:"completed",evidence:{kind:"test"}}
 }));
 const unresolvedPreparedEntry={
