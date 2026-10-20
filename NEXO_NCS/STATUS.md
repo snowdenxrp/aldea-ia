@@ -2364,3 +2364,13 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - No se encontró deadline/monotonic helper existente en los fuentes revisados. El presupuesto finito y su fuente/configuración siguen abiertos. No implementar un fallback sin límite ni adivinar un valor.
 - Próximo bloqueo de diseño: definir dónde se configura un presupuesto finito de primera versión (recomendación: host/configuración de aplicación; stores reciben sólo deadline absoluto monotónico de operación). Luego diseñar helper mínimo y tabla de resultados por método; sólo después implementar y probar.
 - Sin cambios de runtime/tests ni CI nuevo en esta auditoría documental. M0 continúa `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## M0 — matriz propuesta de resultados de timeout por API (2026-10-20)
+
+- Documento: [NCS_M0_LOCK_TIMEOUT_RESULT_MATRIX_2026-10-20.md](BUILD/NCS_M0_LOCK_TIMEOUT_RESULT_MATRIX_2026-10-20.md).
+- Mapea Continuity `initialize`/`commitIfCurrent`, Chronicle `initialize`/`append`, Chronicle handler, owner/runtime y la superficie pública de aplicación.
+- Propuesta central: timeout de adquisición devuelve un resultado de dominio diferenciado y explícito de que la fase de escritura no comenzó; no convertirlo en persistencia UNKNOWN ni en éxito. La forma exacta `phase`/`writeStarted` aún está propuesta, no implementada.
+- Caso de adquisición tardía documentado: si la llamada retorna después del deadline, no empezar escritura; liberar sólo lock cuya propiedad se demuestre; si la liberación falla, preservar ambos resultados.
+- No se cambió runtime/tests ni se ejecutó CI. Presupuesto inicial recomendado: 2.000 ms configurable, aún no aceptado por el usuario; no fijarlo como constante ni habilitar implementación hasta resolverlo.
+- Estado sigue M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
