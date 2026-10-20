@@ -78,6 +78,29 @@ assertPersistedMissionGraphRejected([
 ], "persisted cyclic dependency graphs must be rejected before reconstruction");
 
 
+// Additional persisted-graph edge cases: the validator already rejects these
+// shapes; keep the fail-closed contract explicit at the reconstruction boundary.
+const sparseDependencySteps = [
+  { id: "step-a", action: "repair_agent_state", target: "alpha", status: "planned", dependsOn: [] },
+  { id: "step-b", action: "local_analysis", target: "beta", status: "planned", dependsOn: new Array(1) }
+];
+assertPersistedMissionGraphRejected(
+  sparseDependencySteps,
+  "sparse persisted dependency arrays must be rejected before reconstruction"
+);
+assertPersistedMissionGraphRejected(
+  [
+    { id: "step-a", action: "repair_agent_state", target: "alpha", status: "planned", dependsOn: ["step-b", "step-b"] },
+    { id: "step-b", action: "local_analysis", target: "beta", status: "planned", dependsOn: [] }
+  ],
+  "duplicate persisted dependency references must be rejected before reconstruction"
+);
+assertPersistedMissionGraphRejected(
+  [{ id: "step-a", action: "repair_agent_state", target: "alpha", status: "planned", dependsOn: ["step-a"] }],
+  "self-referential persisted dependencies must be rejected before reconstruction"
+);
+
+
 let getterCalls = 0;
 const accessorMemory = {};
 Object.defineProperty(accessorMemory, "nexo", {
