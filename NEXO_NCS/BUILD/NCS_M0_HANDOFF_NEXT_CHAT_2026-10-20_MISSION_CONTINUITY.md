@@ -187,3 +187,9 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - Interpretación: CI PASS es evidencia por SHA; no demuestra que GitHub impida integrar cambios si CI falla. No se modificaron ajustes administrativos, ni se afirma que haya branch protection habilitada.
 - Siguiente paso futuro, sólo con permisos de administración y cuando corresponda: configurar required checks y verificar la regla resultante. Hasta entonces registrar SHA + runs y no describir CI como gate obligatorio.
 - Estado M0 inalterado: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### CI de verificación del checkpoint documental (2026-10-20)
+
+- El workflow `npm test` [run 39444000362](https://github.com/snowdenxrp/aldea-ia/actions/runs/39444000362) terminó `completed / success` para SHA `c9c3d8bf78233f324eef257dea71b704b3f19d00`, que contenía informe, STATUS y handoff del límite de enforcement CI.
+- El registro del resultado en STATUS produjo el commit documental posterior `198ae4971c61b081bac308f89816dde03a9e9924`; el run anterior no prueba por sí solo ese SHA posterior. Consultar el run del nuevo HEAD antes de afirmar verificación en él.
