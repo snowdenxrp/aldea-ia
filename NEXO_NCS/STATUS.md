@@ -2244,3 +2244,12 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **Implementación:** Chronicle [`a8cc1e0a932e`](https://github.com/snowdenxrp/aldea-ia/commit/a8cc1e0a932e3d362ea0ec2ac120db74fa9b1a63); Continuidad [`b97b72d20e76`](https://github.com/snowdenxrp/aldea-ia/commit/b97b72d20e762a1ac9d14335120bbe67b72981ba).
 - **Validación:** archivos actualizados; pruebas locales y CI no ejecutadas/observadas en esta sesión. **PENDING; no PASS.**
 - **Estado global:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP.
+
+
+## M0 — handoff continuidad outcome/reconstruction (2026-10-20)
+
+- Handoff detallado para el siguiente chat: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_OUTCOME_RECONSTRUCTION.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_OUTCOME_RECONSTRUCTION.md).
+- Esta sesión revisó la reconstrucción de outcomes terminales y las regresiones existentes. Se confirmó cobertura ya presente para mismatch de action/target, evidencia no verificada, completion de acciones mutables sin goal verifier, excepción no mutante `local_analysis`, replay contradictorio y efectos PREPARED/observados sin resolver.
+- No se encontró una nueva discrepancia reproducible en esta pasada. **No hubo cambio de código ni nueva ejecución de CI** en esta auditoría final; no atribuir PASS nuevo a esta sesión.
+- Siguiente frontera: revisar consistencia entre persistencia/commit, respuesta perdida o ambigua, replay de misma revisión y proyección reconstruida; reutilizar pruebas existentes y cambiar código solo con regresión reproducible.
+- Estado global sin cambio: M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
