@@ -2493,3 +2493,12 @@ Se añadió a la guía existente un cruce directo entre las secciones del borrad
 Guía actualizada: [NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md](BUILD/NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md), commit `194f38819bbfaaf7f650c8e824b06fc9552139aa`.
 
 Estado sin cambio: borrador DRAFT / NOT FROZEN / NOT COMMISSIONED; M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`. Cambio documental solamente; no runtime, tests ni CI.
+
+
+## Última verificación M0 — CI de continuidad y aceptación (2026-10-20)
+
+- Commit actual verificado: `6594f27a0e28e6ce5f53446228be11841626cfc3` (añade `tests/nexo/continuity-contract.test.mjs` a `npm test`).
+- CI `completed / success`: [persistencia determinista](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665444), [admisión y reconstrucción](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665452), [aceptación integrada M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665518), [vertical Chronicle](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665626).
+- La suite `tests/nexo/continuity-contract.test.mjs` aparece como paso explícito exitoso en el workflow de admisión/reconstrucción y ahora también forma parte de `npm test`.
+- Alcance: evidencia de tests solamente; no cambia el estado de autoridad constitucional ni permite commissioning.
+- Estado M0: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
