@@ -9,7 +9,28 @@ import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-pr
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
 
-function legacyMemory(action = "repair_agent_state", { stepStatus = "planned", dependsOn = [] } = {}) {
+function legacyMemory(action = "repair_agent_state", {
+  stepStatus = "planned",
+  dependsOn = [],
+  includePrerequisite = false
+} = {}) {
+  const steps = [];
+  if (includePrerequisite) {
+    steps.push({
+      id: "prerequisite-step",
+      action: "local_analysis",
+      target: "alex",
+      status: "planned",
+      dependsOn: []
+    });
+  }
+  steps.push({
+    id: "step-session",
+    action,
+    target: "alex",
+    status: stepStatus,
+    dependsOn
+  });
   return {
     version: 4,
     runs: [],
@@ -20,13 +41,7 @@ function legacyMemory(action = "repair_agent_state", { stepStatus = "planned", d
         missionId: "mission-session",
         status: "planned",
         objective: "repair persisted agent state",
-        steps: [{
-          id: "step-session",
-          action,
-          target: "alex",
-          status: stepStatus,
-          dependsOn
-        }]
+        steps
       }],
       attempts: [],
       doNotRepeat: [],
@@ -97,7 +112,7 @@ try {
   try {
     const dependency = await openNexoContinuityOwner({
       filePath: path.join(dependencyRoot, "nexo-continuity.json"),
-      legacyMemory: legacyMemory("repair_agent_state", { dependsOn: ["prerequisite-step"] })
+      legacyMemory: legacyMemory("repair_agent_state", { dependsOn: ["prerequisite-step"], includePrerequisite: true })
     });
     const dependencyStatePath = path.join(dependencyRoot, "world-state.json");
     await fs.writeFile(dependencyStatePath, JSON.stringify(environment(65)), "utf8");
