@@ -88,9 +88,11 @@ async function acquireLock(fsModule, filePath) {
         }
         try { owner = JSON.parse(rawOwner); }
         catch { throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN"); }
-        if (!owner || typeof owner !== "object" || Array.isArray(owner)) {
-          throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN");
-        }
+      }
+      if (!owner || typeof owner !== "object" || Array.isArray(owner) ||
+          !Number.isSafeInteger(owner.pid) || owner.pid <= 0 ||
+          typeof owner.token !== "string" || !owner.token.trim()) {
+        throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN");
       }
       let age;
       try { age = Date.now() - (await fsModule.stat(lock)).mtimeMs; }
