@@ -2454,3 +2454,12 @@ La revisión estática de `src/nexo/core/contracts.mjs` confirma que `createPoli
 Esto confirma un gap de integración estático; **no prueba un bypass** y no justifica añadir `constitutionRef` desde el caller. Los fixtures `AUTHORIZED` de `protected-transition.test.mjs` no demuestran reconocimiento de raíz. Detalle integrado en `BUILD/NCS_M0_CLAIM_RELATIVE_AUTHORITY_ENFORCEMENT_INVENTORY_2026-10-20.md` y handoff.
 
 Próxima dependencia: revisión explícita del borrador constitucional por el propietario; después, y sólo con fuente/procedencia de raíz demostrable, definir el contexto protegido y su vínculo con Policy. Sin cambios de runtime ni CI en esta revisión documental. Estado sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos `STOP`; raíz `PENDING/UNKNOWN`.
+
+
+## M0 — índice directo para revisión constitucional del propietario (2026-10-20)
+
+Se añadió a la guía existente un cruce directo entre las secciones del borrador (§§2–10) y las 11 decisiones/dependencias OPEN. El cruce separa lo que el borrador ya declara de lo que todavía necesita decisión o evidencia. No crea reglas nuevas, no repite investigación, no registra aprobación y no autoriza commissioning.
+
+Guía actualizada: [NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md](BUILD/NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md), commit `194f38819bbfaaf7f650c8e824b06fc9552139aa`.
+
+Estado sin cambio: borrador DRAFT / NOT FROZEN / NOT COMMISSIONED; M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`. Cambio documental solamente; no runtime, tests ni CI.
