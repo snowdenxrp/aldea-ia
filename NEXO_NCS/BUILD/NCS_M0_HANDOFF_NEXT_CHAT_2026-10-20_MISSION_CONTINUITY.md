@@ -18,14 +18,17 @@ El runtime normaliza errores de adquisición en `initialize()` a `NEXO_CONTINUIT
 - Se añadieron pruebas de adquisición tardía/timeout en `844afaac8e5c15138a3a4bf70fb417954923e770` y `d65aaffb6f90e73aea23ff4e9bab8abd8c2cbec5`; en `d65aaff` los checks focales pasaron, pero el job amplio `tests` fue CANCELLED. No llamar a ese job PASS.
 - La suite de persistencia determinista terminó SUCCESS en SHA exacto `cd9c02f1596225a419a1512a7ea9b55a4953e71e`, run [39431631088](https://github.com/snowdenxrp/aldea-ia/actions/runs/39431631088). `NEXO_NCS/STATUS.md` fue sincronizado con esta evidencia en commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0`.
 
-### Prioridad inmediata — revisar callers contra el deadline que ya está implementado
-Usar `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md` junto con su addendum 2026-10-20. La recomendación histórica de espera ilimitada quedó supersedida por commits `52d200b`, `04a8c5f` y `df28b22`: el store ya tiene deadline monotónico predeterminado de 2.000 ms; Chronicle comparte un único deadline a través de ambos stores y mutaciones anidadas. No repetir la auditoría de stale-lock ni rediseñar timeout.
-1. Completar una inspección dirigida de la API/callers actuales: método llamado, tratamiento de `failed / *_LOCK_ACQUISITION_TIMEOUT`, captura de excepciones OS no-path, resultado UNKNOWN y cualquier condición para dispatch/redispatch.
-2. Reutilizar `src/nexo/application/chronicle-append.mjs` y sus pruebas existentes; `recordNexoMissionSafely()` captura excepciones y devuelve UNKNOWN con `dispatchAttempted: false` y `redispatchAuthorized: false`. Verificar el resto de métodos de owner/orquestación antes de generalizar esta garantía.
-3. La API de store sigue siendo asimétrica: `initialize()` normaliza errores OS de adquisición a resultado `failed`; `commitIfCurrent()` normaliza timeout y errores de ruta, pero puede propagar otros errores OS. No uniformar sin caller real y regresión dirigida.
-4. La prueba de contención cross-process ahora describe correctamente que el lock se libera antes del presupuesto por defecto; comentario corregido en commit `9bd69669208db5bbb7d4d06bce3d304590cd7d44`. El CI de ese cambio debe verificarse en el SHA correspondiente. La suite determinista previa SUCCESS [run 39431631088](https://github.com/snowdenxrp/aldea-ia/actions/runs/39431631088) corresponde a ancestro `cd9c02f`, no al test editado.
-5. Si el inventario no demuestra una violación de M0, documentar el resultado y mantener runtime. Si aparece un contraejemplo concreto, especificar el contrato y la regresión antes de tocar runtime. Después volver a la frontera M0 de autorización sin reabrir investigación general de raíces.
+### Puerta de contención revisada; siguiente frontera es AuthorityGate por claims concretos
+La revisión `NEXO_NCS/BUILD/NCS_M0_LOCK_DEADLINE_CALLER_CONTRACT_REVIEW_2026-10-20.md` concluye que, en las rutas inspeccionadas, timeout y excepciones no se convierten en éxito ni autorizan redispatch:
+- Default `NEXO_DEFAULT_LOCK_WAIT_MS = 2_000`, deadline monotónico.
+- Chronicle comparte un deadline entre sus stores y mutaciones anidadas.
+- `openNexoContinuityOwner()` no devuelve owner si la inicialización no se confirma.
+- `recordNexoMissionSafely()` convierte excepción en UNKNOWN con `dispatchAttempted: false` y `redispatchAuthorized: false`.
+- `executeNexoStepWithContinuityOwner()` exige confirmación exacta de PREPARED antes de dispatch y bloquea/UNKNOWN ante fallos posteriores.
+- La asimetría sigue documentada: `initialize()` normaliza errores OS no-path, `commitIfCurrent()` puede propagarlos; los callers críticos revisados los capturan. No se halló un contraejemplo que justifique modificar el store.
+- La prueba cross-process fue corregida sólo en su comentario/mensaje; los workflows focales de ese SHA son SUCCESS: suite determinista [39432367696](https://github.com/snowdenxrp/aldea-ia/actions/runs/39432367696) y aceptación integrada [39432367852](https://github.com/snowdenxrp/aldea-ia/actions/runs/39432367852), SHA `9bd69669208db5bbb7d4d06bce3d304590cd7d44`.
 
+No volver a diseñar deadlines, no reabrir stale-lock y no uniformar la API de store sin contraejemplo. El siguiente paso M0 es el que ya figura en `NCS_M0_AUTHORITY_GATE_PRIOR_CONTRACT_REUSE_AND_NEXT_GATE_2026-10-20.md`: un inventario pequeño, claim-relative, de capacidades/efectos protegidos en alcance. Por cada claim: propiedad protegida y alcance; último límite de enforcement; fuente/procedencia de raíz reconocida; dependencias de actualidad, revocación, sucesión y recuperación; dominios de fallo comunes; evidencia de runtime/tests/CI vs diseño; resultado STOP si cualquier premisa es UNKNOWN. No volver a investigar raíces en general, no escoger hardware ni implementar un trust registry por intuición.
 ## Trabajo documental hecho en esta sesión
 ### A. Inventario del claim Chronicle append
 Archivo `NEXO_NCS/BUILD/NCS_M0_CLAIM_RELATIVE_CHRONICLE_APPEND_INVENTORY_2026-10-20.md`, blob actual `591d5bfbd4a218adb4501afa9c9570298998b547`.
@@ -72,7 +75,7 @@ Archivo `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10
 - Mantener la decisión de una llave/dispositivo inicial; no escoger hardware/proveedor sin diseño técnico comprobable.
 
 ## Estado global al checkpoint
-- Últimos commits documentales/test: `9bd69669208db5bbb7d4d06bce3d304590cd7d44` corrige la caracterización cross-process; `313c7c70e79da3e69eb67015eb20d6c34425b129` actualiza STATUS con el deadline real; `da05e50da0c73e65daf8d66266318aeaec298440` agrega addendum a la revisión de contención. `ef9978b44a1b83f0fa1c03b29a9ad7be33580b90` actualiza este handoff. Confirmar HEAD y CI antes de asumir que no hay commits posteriores.
+- Últimos commits documentales/test: `9bd69669208db5bbb7d4d06bce3d304590cd7d44` corrige la caracterización cross-process (CI focal SUCCESS); `313c7c70e79da3e69eb67015eb20d6c34425b129` y `8763f9f5ba031914029a681a00a7c45251daae93` actualizan STATUS; `da05e50da0c73e65daf8d66266318aeaec298440` agrega addendum de deadlines; `b4c50acd876b7ca9f6d1e427aa9c0e5c86738b42` registra callers; este handoff se actualiza en un commit posterior. Confirmar HEAD y CI antes de asumir que no hay commits posteriores.
 - M0: `INCOMPLETO`.
 - `authorization: NOT_EVALUATED`.
 - Efectos protegidos: `STOP`.
@@ -81,4 +84,4 @@ Archivo `NEXO_NCS/BUILD/NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10
 - `NEXO_NCS/STATUS.md` sí fue actualizado en commit `a0e47fbd6728dfcb312a9de425dbe064217c88d0` para registrar los logs fallidos por expectativa obsoleta, el arreglo y la suite de persistencia determinista SUCCESS en SHA `cd9c02f1596225a419a1512a7ea9b55a4953e71e`.
 
 ## Primera instrucción para continuar
-No repetir la revisión de `mission-status`. Sigue la prioridad de contención actualizada: inventario dirigido de la API pública/callers frente al deadline monotónico ya implementado. Antes de modificar código, producir una tabla caller → método → tratamiento de timeout/excepción/UNKNOWN → deadline compartido o independiente → riesgo de dispatch/redispatch. No cambiar runtime sin contraejemplo y contrato explícito.
+No repetir la revisión de `mission-status` ni la revisión de callers del deadline. Lee primero el inventario claim-relative de AuthorityGate ya existente y determina qué clases de claim/capacidad concretas deben entrar en el nuevo inventario mínimo. Documenta evidencia existente; no inventes datos ni habilites efectos.
