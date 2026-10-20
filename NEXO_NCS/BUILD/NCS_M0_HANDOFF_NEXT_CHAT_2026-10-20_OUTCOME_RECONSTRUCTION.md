@@ -195,3 +195,33 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - La recomendación para presupuesto inicial es 2.000 ms configurable, pero el usuario todavía no ha aceptado explícitamente la cifra. No tratarla como requisito cerrado ni hardcodearla. No prometer tiempo de pared estricto.
 - No runtime/tests modificados ni CI nuevo. El siguiente trabajo puede seguir refinando el contrato sin depender del número; implementación completa espera a que se decida la configuración finita.
 - M0 sigue `INCOMPLETO`, `authorization: NOT_EVALUATED`, efectos protegidos `STOP`, raíz legítima `PENDING/UNKNOWN`.
+
+
+## Addendum — decisión aprobada e implementación inicial de deadline (2026-10-20)
+
+### Decisión del usuario
+- El usuario aceptó explícitamente la recomendación: **2.000 ms como presupuesto inicial configurable**.
+- Interpretación: espera cooperativa de adquisición; no es garantía de que toda llamada filesystem o toda operación Nexo termine en 2 segundos.
+
+### Runtime y pruebas cambiados
+- Nuevo helper: src/nexo/core/lock-deadline.mjs, basado en performance.now().
+- Continuity y Chronicle tienen adquisición acotada con códigos de timeout distintos y resultados estructurados phase:"lock_acquisition", writeStarted:false.
+- Una operación compuesta runNexoChronicleAppend crea un deadline único y lo comparte entre ambos stores y el owner.
+- Se añadieron pruebas de lock vivo retenido para Continuity initialize/commitIfCurrent y Chronicle initialize/append; las pruebas confirman que no se inicia escritura y que el estado canónico no cambia.
+- Código/tests en SHA cf62bd858232a8c0c71f21ace6469c2a62f48448; los seis workflows relevantes pasaron:
+  - https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455204
+  - https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455208
+  - https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455212
+  - https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455161
+  - https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455195
+  - https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455201
+- Logs de jobs consultados: 118472464797, 118472464632, 118472468527.
+
+### Pendiente inmediato
+1. Añadir pruebas deterministas donde mkdir/acquisition resuelva después del deadline; comprobar que no se escribe y sólo se intenta liberar el lock propio.
+2. Añadir prueba de fallo de liberación después de adquisición tardía; conservar timeout + lockRelease sin afirmar que el lock se liberó.
+3. Revisar todos los callers/entrypoints para asegurar que los resultados de timeout no se aplanan ni provocan redispatch.
+4. Ejecutar de nuevo workflows M0 sobre el SHA que incluya esos cambios; registrar los resultados exactos.
+5. Mantener M0 INCOMPLETO; authorization NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
+
+No volver a auditar el trabajo de lock error normalization que ya está cerrado; no reabrir persistencia-receipt/reconstruction audit; no cambiar a M1 ni STEP 7. La misión sigue siendo M0.
