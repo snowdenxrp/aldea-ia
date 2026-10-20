@@ -283,3 +283,14 @@ No seleccionar automáticamente el hardware, no instalar dependencias ni generar
 - No normalizar todavía la API ni introducir `BUSY`, timeouts, cancelación o recuperación automática. Elegir sólo después del mapa de callers y las regresiones requeridas.
 - Los runs CI previos pertenecen a sus SHAs documentados; no se atribuyen a estos commits documentales.
 - Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+## Addendum 2 — inventario de callers completado de forma acotada (2026-10-19)
+
+- Documento: [NCS_M0_CONTINUITY_STORE_CALLER_INVENTORY_2026-10-19.md](NCS_M0_CONTINUITY_STORE_CALLER_INVENTORY_2026-10-19.md), commit `5ebf2b081660d16ca026163728185bad2fc21f7a`.
+- `STATUS.md` ahora pone este checkpoint en la parte superior; commit documental `1a58dace9c81544c06683573a2eda9f470fbd7ef`.
+- La revisión identifica cinco llamadas ejecutables a `store.commitIfCurrent()` en `continuity-owner.mjs`; distingue las que propagan excepción de `reconcilePrepared()`, que captura y devuelve incertidumbre. Documenta también apertura/bootstrap, preflight Chronicle, consultas read-only y gates de dispatch.
+- No se observó bypass de redispatch en las rutas revisadas. El alcance sigue siendo estático y acotado, no un inventario universal del repositorio.
+- Próxima acción: diseñar la matriz de regresiones para la política elegida de errores y de contención. No cambiar runtime hasta definir el contrato observable. No añadir `BUSY`, timeout, cancelación ni recuperación automática sin decisión y pruebas específicas.
+- No hay CI nuevo para estos commits documentales. Los runs previos siguen vinculados a sus SHAs originales.
+- Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz `PENDING/UNKNOWN`.
