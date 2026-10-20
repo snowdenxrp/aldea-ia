@@ -113,3 +113,13 @@ Related:
 - `scripts/nexo-repair-session.mjs` y `scripts/nexo-repair-entrypoint.mjs` reciben owner/store inyectados y son una ruta de reparación separada; no crean los stores de Chronicle interactivo. El runtime canónico actual bloquea acciones de reparación antes de PREPARED. **No activar esa ruta como operación interactiva hasta definir/propagar un deadline compartido propio y probar sus resultados.**
 - `src/nexo/runtime.js` legacy usa memoria/adapter y no construye estos stores en el flujo inspeccionado.
 - Conclusión: no se encontró otra frontera pública estable que construya ambos stores para una operación compuesta. La única ruta compuesta actualmente soportada por la API de aplicación es Chronicle; el resto de mutaciones directas recibe presupuesto por mutación, y la ruta de reparación inyectada permanece fuera del alcance activo y no debe considerarse lista para activación.
+
+
+### Frontera operativa final de reparación (2026-10-20)
+
+La auditoría de callers de la API estable queda completada. Ver [NCS_M0_REPAIR_ROUTE_DEADLINE_BOUNDARY_2026-10-20.md](NCS_M0_REPAIR_ROUTE_DEADLINE_BOUNDARY_2026-10-20.md).
+
+- Sólo `runNexoChronicleAppend` es la operación mutante compuesta exportada por la API pública actual; comparte deadline.
+- La ruta de reparación inyectada no pertenece a ese contrato ni hereda su deadline. El runtime canónico bloquea repair antes de PREPARED; los scripts de reparación separados no deben describirse como globalmente inhabilitados ni como cubiertos por deadline.
+- Límite operativo: no añadir la ruta de reparación a la API interactiva ni activarla hasta diseñar deadline único y probar toda la secuencia PREPARED/dispatch/lineage/settlement/no-redispatch.
+- Esta es una frontera fail-closed basada en el código actual, no una decisión de habilitar la reparación.
