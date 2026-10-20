@@ -35,3 +35,17 @@ Si no puede describirse una fuente de raíz verificable sin autocertificación, 
 ## Estado
 
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima en runtime `PENDING/UNKNOWN`. No se modificó runtime, no se ejecutaron pruebas y no se declara CI nuevo para este inventario.
+
+
+## Precisión adicional — forma de PolicyContext frente al contrato Constitución→Policy (2026-10-20)
+
+Revisión estática acotada de los contratos existentes en la rama:
+
+- `src/nexo/core/contracts.mjs`, blob `ec811ffd24d178c294345d9e6f65a9e3bfd82ea1`: `createPolicyContext()` valida y reconstruye únicamente `policyRef`, `scope`, `resolved`, `validity` y `resolutionProvenance`. No acepta ni conserva un `constitutionRef`, autoridad constitucional vigente o procedencia protegida del contexto constitucional.
+- `NEXO_NCS/BUILD/STEP_7_MINIMUM_CONSTITUTION_TO_POLICY_AUTHORITY_BINDING_CONTRACT_2026-10-08.md`, blob `34a4a8ecef267bb1d27cb50e927b613d0ff0f499`, exige que el vínculo establezca identidad de Constitución, identidad de Policy, dominio de autoridad, aplicabilidad, vigencia, dependencias y procedencia de establecimiento por el camino protegido.
+- `NEXO_NCS/BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md`, blob `e81abbfb35048dcb2cf29f8827db7e67d239adf9`, ya declara cerrado el resultado de búsqueda: no se encontró un camino Core implementado que establezca el contexto constitucional actual. Esta precisión confirma ese límite; no abre una nueva investigación ni contradice el contrato semántico.
+- `tests/nexo/protected-transition.test.mjs` usa fixtures que devuelven `AUTHORIZED`; esas pruebas ejercitan la composición de la transición y no demuestran vínculo Constitución→Policy ni reconocimiento de raíz.
+
+**Conclusión acotada:** el objeto `policyContext` actual es un portador de datos de Policy, no un contexto constitucional autenticado. No se debe “arreglar” agregando campos de Constitución al input del caller: eso trasladaría metadatos no autenticados, no resolvería la procedencia y violaría el contrato anti-self-attestation. No se encontró evidencia que justifique un cambio de runtime en esta revisión.
+
+**Siguiente dependencia real:** primero debe estabilizarse y recibir revisión explícita el artefacto constitucional, según la guía del propietario; después puede definirse cómo el límite protegido obtiene un contexto constitucional desde una base raíz reconocida. Hasta entonces: raíz `PENDING/UNKNOWN`, `authorization: NOT_EVALUATED`, efectos protegidos `STOP`, M0 `INCOMPLETO`. No se declara CI nuevo por este análisis documental.
