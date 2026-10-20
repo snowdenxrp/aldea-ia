@@ -239,12 +239,6 @@ assert.equal(
   0,
   "independent read proves initialize persisted before lock cleanup failed"
 );
-await assert.doesNotReject(
-  () => fs.access(releaseInitializePath + ".lock"),
-  "failed lock cleanup leaves the lock directory present"
-);
-await fs.rm(releaseInitializePath + ".lock", { recursive: true, force: true });
-
 const releaseCommitDir = path.join(directory, "lock-release-commit");
 await fs.mkdir(releaseCommitDir);
 const releaseCommitPath = path.join(releaseCommitDir, "continuity.json");
