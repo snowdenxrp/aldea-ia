@@ -182,6 +182,25 @@ assert.equal(await fs.readFile(exhaustedFilePath, "utf8"), exhaustedBytesBefore,
 assert.equal((await exhaustedStore.loadCurrent()).storeRevision, Number.MAX_SAFE_INTEGER,
   "the existing envelope must remain readable after rejected revision exhaustion");
 
+// A present but malformed owner record is not the same as a not-yet-created owner.
+const malformedOwnerDir = path.join(directory, "malformed-owner-case");
+await fs.mkdir(malformedOwnerDir);
+const malformedOwnerPath = path.join(malformedOwnerDir, "continuity.json");
+const malformedOwnerLock = malformedOwnerPath + ".lock";
+await fs.mkdir(malformedOwnerLock);
+await fs.writeFile(path.join(malformedOwnerLock, "owner.json"), "{broken", "utf8");
+const malformedOwnerStore = createNexoContinuityStore({ filePath: malformedOwnerPath });
+assert.deepEqual(
+  await malformedOwnerStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN" },
+  "Continuity must stop immediately on an unreadable owner record instead of waiting on ambiguous lock state"
+);
+await assert.doesNotReject(() => fs.access(malformedOwnerLock),
+  "Continuity must preserve the lock when owner identity cannot be established");
+await assert.rejects(() => fs.access(malformedOwnerPath), error => error?.code === "ENOENT",
+  "Continuity must not initialize when lock ownership is unknown");
+await fs.rm(malformedOwnerLock, { recursive: true, force: true });
+
 // A stale lock must not be reclaimed through a racy check-then-remove sequence.
 const staleDirectory = path.join(directory, "stale-lock-case");
 await fs.mkdir(staleDirectory);
