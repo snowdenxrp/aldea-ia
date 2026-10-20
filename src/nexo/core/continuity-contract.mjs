@@ -73,6 +73,18 @@ export function assertNexoContinuityMemoryShape(memory) {
         throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
       }
     }
+    const dependenciesByStep = new Map(mission.steps.map(step => [step.id, step.dependsOn ?? []]));
+    const visiting = new Set();
+    const visited = new Set();
+    const visitDependency = id => {
+      if (visiting.has(id)) throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
+      if (visited.has(id)) return;
+      visiting.add(id);
+      for (const dependency of dependenciesByStep.get(id)) visitDependency(dependency);
+      visiting.delete(id);
+      visited.add(id);
+    };
+    for (const id of stepIds) visitDependency(id);
   }
 
   for (const entry of memory.nexo.effectJournal) {
