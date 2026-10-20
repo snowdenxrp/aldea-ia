@@ -1,3 +1,15 @@
+## M0 — persisted mission dependency graph fail-closed (2026-10-20)
+
+- **Hallazgo reproducible:** el contrato de snapshot rechazaba identidades duplicadas y validaba PREPARED, pero no aplicaba al grafo de pasos persistido la validación de dependencias que ya aplica `missionRecord()`. Una dependencia no-array podía llegar a reconstrucción; referencias inexistentes/ciclos también podían sobrevivir a la validación de snapshot.
+- **Corrección:** `src/nexo/core/continuity-contract.mjs` valida que los pasos persistidos tengan identidad/acción válida y única, que `dependsOn` sea un array denso de referencias únicas existentes y no autorreferentes, y que el grafo no tenga ciclos. Entrada malformada → `NEXO_MEMORY_SCHEMA_UNKNOWN` antes de que el estado llegue a reconstrucción/dispatch.
+- **Regresiones:** `tests/nexo/continuity-contract.test.mjs` cubre dependencia no-array, referencia ausente y ciclo. `tests/nexo/repair-session.test.mjs` ahora modela un prerrequisito real todavía `planned`, en vez de usar una referencia colgante, para seguir probando el gate de ejecución con un plan estructuralmente válido.
+- **Red/green conservado:** run integrado [39366172190](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366172190) falló en crash-cut/repair-session porque el fixture heredado contenía una dependencia colgante; run [39366159595](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366159595) falló en la regresión nueva antes del fix de código.
+- **CI SUCCESS en SHA exacto `4dc34fb045ff47457ca6476a07d3b5f3d7550469`:** aceptación integrada M0 [39366255751](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255751) (todos los pasos SUCCESS); crash cuts/repair lifecycle [39366255728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255728) (todos los pasos SUCCESS); suite completa `npm test` [39366255710](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255710) SUCCESS; STEP 4 [39366255732](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255732) SUCCESS; STEP 5 [39366255760](https://github.com/snowdenxrp/aldea-ia/actions/runs/39366255760) SUCCESS.
+- **Alcance:** se cierra la validación estructural del grafo persistido, no la autenticidad del plan ni la autoridad del propietario. No se cambió dispatch, settlement ni el estado de autorización.
+- **Estado constitucional invariable:** M0 INCOMPLETO; `authorization: NOT_EVALUATED`; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
+
+---
+
 ## M0 — valid JSON with invalid lock-owner schema (2026-10-19)
 
 - Both stores now reject owner records unless the record is an object with a positive safe-integer `pid` and non-empty string `token`. This closes the case where valid JSON such as `42` bypassed the malformed-JSON path.
