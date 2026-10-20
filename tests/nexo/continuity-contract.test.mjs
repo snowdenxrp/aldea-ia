@@ -727,6 +727,18 @@ assert.equal(conflictingOutcomeMission.status, "blocked",
 assert.equal(conflictingOutcomeMission.steps[0].status, "blocked");
 assert.equal(conflictingOutcomeMission.steps[0].blockReason.code, "NEXO_OUTCOME_EVIDENCE_CONFLICT");
 assert.equal(conflictingOutcomeMission.uncertainty, "outcome_evidence_conflict");
+const mismatchedOutcomeSnapshot = structuredClone(operationalSnapshot);
+mismatchedOutcomeSnapshot.attempts.push({
+  missionId: "core-mission", stepId: "step-1", action: "repair_agent_needs",
+  target: "different-target", status: "completed",
+  evidence: { verified: true, kind: "effect-postcondition", source: "mismatched-operation" }
+});
+const mismatchedOutcomeMission = reconstructNexoMissionFromSnapshot(mismatchedOutcomeSnapshot, "core-mission");
+assert.equal(mismatchedOutcomeMission.status, "blocked",
+  "a verified completion must not mask another completed claim with a different operation identity");
+assert.equal(mismatchedOutcomeMission.steps[0].status, "blocked");
+assert.equal(mismatchedOutcomeMission.steps[0].blockReason.code, "NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH");
+assert.equal(mismatchedOutcomeMission.uncertainty, "outcome_operation_context_mismatch");
 assert.equal(reconstructedCoreMission.objective, "verify_mission_outcome");
 assert.equal("patterns" in reconstructedCoreMission.operationalSignals, false);
 assert.equal(reconstructNexoMissionFromSnapshot(operationalSnapshot, "missing-mission"), null);
