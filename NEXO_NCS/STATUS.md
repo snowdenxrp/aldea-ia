@@ -1,3 +1,15 @@
+## M0 — lock no inspeccionable: fix compartido + CI SUCCESS (2026-10-19)
+
+- Causa raíz corregida en ambos almacenes: un fallo de `stat(lockPath)` se tragaba, `age` quedaba en cero y el bucle podía esperar indefinidamente.
+- Continuity fix [`838f9032dcaf`](https://github.com/snowdenxrp/aldea-ia/commit/838f9032dcaf4ca4eed7c13c61735604099d8d03), test [`140238c6d43d`](https://github.com/snowdenxrp/aldea-ia/commit/140238c6d43d9a4da8b9cf3f3427b021fa5cedf5). Error: `NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN`.
+- Chronicle fix [`5b349cf84793`](https://github.com/snowdenxrp/aldea-ia/commit/5b349cf847932f79ff94a751f7494f0eecdf7862), test [`c5ffff237b6c`](https://github.com/snowdenxrp/aldea-ia/commit/c5ffff237b6c9933030a12308aab066aa968cb32). Error: `NEXO_CHRONICLE_LOCK_STATE_UNKNOWN`.
+- SHA exacto probado: `c5ffff237b6c9933030a12308aab066aa968cb32`. Persistencia [run 39357200273](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200273) SUCCESS, job `tests`, paso `Run tests`; Chronicle native [39357200274](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200274), integrated M0 [39357200292](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200292), STEP 4 [39357200316](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200316), STEP 5 [39357200276](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200276), admission/restart [39357200280](https://github.com/snowdenxrp/aldea-ia/actions/runs/39357200280): todos SUCCESS.
+- Matriz actualizada en commit documental `01aed1de940b5e4228acbfa598baff5593e522bb`.
+- No timeout/BUSY, recuperación automática ni borrado de locks ajenos. Cuando no se puede inspeccionar la edad, el store falla cerrado y no escribe.
+- Estado conservador sin cambio: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz legítima PENDING/UNKNOWN.
+
+---
+
 ## M0 — hallazgo estático de lock con owner record ilegible (2026-10-19)
 
 - La matriz de regresiones se amplió en commit documental `b1d9580185f8daaab1aa1de80cc098443a25aa4e`.
