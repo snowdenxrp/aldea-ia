@@ -6,10 +6,13 @@ import { createEffectAdapter } from "../effect-adapter.js";
 import { executeNexoStepWithContinuityOwner } from "../core/owner-backed-runtime.mjs";
 import { NEXO_DEFAULT_LOCK_WAIT_MS, createNexoLockDeadline } from "../core/lock-deadline.mjs";
 
-function blocked(code) {
+function blocked(code, details = null) {
   return {
     status: "blocked", code, authorization: "NOT_EVALUATED",
-    dispatchAttempted: false, redispatchAuthorized: false
+    dispatchAttempted: false, redispatchAuthorized: false,
+    ...(typeof details?.phase === "string" ? { phase: details.phase } : {}),
+    ...(typeof details?.writeStarted === "boolean" ? { writeStarted: details.writeStarted } : {}),
+    ...(details?.lockRelease && typeof details.lockRelease === "object" ? { lockRelease: details.lockRelease } : {})
   };
 }
 
@@ -39,6 +42,19 @@ export function publicChronicleResult(result, missionId, stepId) {
   }
   if (Number.isSafeInteger(result?.storeRevision) && result.storeRevision >= 0) {
     safe.storeRevision = result.storeRevision;
+  }
+  const timeoutSource = [result, result?.prepared, result?.lineage, result?.reconciliation,
+    result?.outcome, result?.adapterResult].find(value =>
+      value && (value.phase === "lock_acquisition" ||
+        (typeof value.code === "string" && value.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"))));
+  if (timeoutSource) {
+    if (typeof timeoutSource.phase === "string") safe.phase = timeoutSource.phase;
+    if (typeof timeoutSource.writeStarted === "boolean") safe.writeStarted = timeoutSource.writeStarted;
+    if (timeoutSource.lockRelease && typeof timeoutSource.lockRelease === "object") safe.lockRelease = timeoutSource.lockRelease;
+    if (typeof timeoutSource.code === "string" && timeoutSource.code.endsWith("_LOCK_ACQUISITION_TIMEOUT") &&
+        !(typeof result?.code === "string" && result.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"))) {
+      safe.lockAcquisitionCode = timeoutSource.code;
+    }
   }
   return safe;
 }
@@ -141,13 +157,13 @@ export async function runNexoChronicleAppend({
       lockDeadline, lockWaitMs
     });
   } catch (error) {
-    return blocked(error?.code ?? "NEXO_CONTINUITY_STORE_UNAVAILABLE");
+    return blocked(error?.code ?? "NEXO_CONTINUITY_STORE_UNAVAILABLE", error);
   }
   if (chronicleMissing) {
     try {
       const initialized = await chronicleStore.initialize();
       if (initialized.status !== "committed") {
-        return blocked(initialized.code ?? "NEXO_CHRONICLE_INITIALIZE_FAILED");
+        return blocked(initialized.code ?? "NEXO_CHRONICLE_INITIALIZE_FAILED", initialized);
       }
     } catch (error) {
       return blocked(error?.code ?? "NEXO_CHRONICLE_INITIALIZE_FAILED");
@@ -183,7 +199,7 @@ export async function runNexoChronicleAppend({
       return publicChronicleResult(recorded, missionId, stepId);
     }
     if (recorded.status !== "committed" && recorded.status !== "already_recorded") {
-      return blocked(recorded.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_FAILED");
+      return blocked(recorded.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_FAILED", recorded);
     }
     try { current = await opened.owner.loadCurrent(); }
     catch (error) { return blocked(error?.code ?? "NEXO_CHRONICLE_MISSION_RELOAD_FAILED"); }
