@@ -157,3 +157,18 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - Deadline expiry before ownership must be a structured result that states the write phase did not start. Never interrupt an in-flight write/rename to force a timeout. A prior PREPARED/external dispatch still requires canonical reconciliation before any retry.
 - The deadline budget and whether bounded response is required for the first supported deployment are unresolved product/architecture requirements. Do not implement until they are decided; current code remains unchanged.
 - Audit: `NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md`, sections 5 and 5.1. STATUS contains the same recommendation.
+
+
+## Addendum — decisión A aceptada y siguiente contrato de lock (2026-10-20)
+
+**Decisión del usuario: A — requerir espera acotada para adquisición de lock.** La elección anterior entre espera ilimitada/acotada queda resuelta. No interpretar “sin límite” como aceptación de espera de lock ilimitada: el usuario eligió explícitamente A.
+
+- Especificación de contrato: `NEXO_NCS/BUILD/NCS_M0_BOUNDED_LOCK_WAIT_CONTRACT_2026-10-20.md`.
+- STATUS actualizado con decisión, límites y secuencia.
+- Aún no hay cambio de runtime/tests ni CI para el contrato. El código continúa con espera sin deadline hasta completar la implementación y validación.
+- No inventar el presupuesto numérico. Contrato objetivo: deadline monotónico absoluto único propiedad del caller, compartido por mutaciones anidadas Continuity/Chronicle. Vence sólo la espera de adquisición; nunca cancelar escritura/rename en curso. La expiración previa a lock debe decir explícitamente que no comenzó la fase de escritura; adquisición tardía debe liberar únicamente lock propio y no escribir. Los resultados de liberación y persistencia siguen separados.
+- No se autoriza dispatch sin PREPARED confirmado ni redispatch por timeout después de PREPARED/efecto posible. En ese caso, recargar estado canónico y reconciliar.
+- **Siguiente trabajo obligatorio, en orden:** (1) revisar firmas públicas y pruebas actuales de ambos stores y enumerar callers/consumidores; (2) determinar la abstracción mínima de reloj monotónico/deadline que pueda compartirse sin reiniciar presupuesto; (3) definir el contrato de resultados de cada método, conservando diferencias API existentes salvo que el mapa de consumidores justifique un cambio explícito; (4) sólo entonces implementar stores/callers y regresiones; (5) CI de todos los workflows M0 relevantes sobre un SHA exacto.
+- Presupuesto/configuración sigue abierto; no fijar una cifra arbitraria. La garantía no es un timeout estricto de pared si una llamada filesystem no retorna. No agregar framework genérico de cancelación, watchdogs, leases, heartbeats ni reclaim automático como side quest.
+- CI previo: SHA código/test `b133c8c392739a0912f7b0466650a25962ead267` y cinco workflows SUCCESS citados en STATUS. No presentarlos como validación de este nuevo contrato.
+- Mantener M0 `INCOMPLETO`, `authorization: NOT_EVALUATED`, efectos protegidos `STOP`, raíz legítima `PENDING/UNKNOWN`. No reabrir auditorías cerradas de recibos/reconstrucción, no cambiar a M1/STEP 7.
