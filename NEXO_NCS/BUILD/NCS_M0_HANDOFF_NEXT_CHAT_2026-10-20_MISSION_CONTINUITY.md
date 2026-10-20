@@ -203,3 +203,11 @@ Siguiente trabajo: el propietario debe revisar el borrador completo y decidir ex
 - Informe: [NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md](NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md).
 - El cambio sólo cubre errores durante adquisición del lock, antes de escritura. No cambia el algoritmo de lock ni demuestra un bypass de autoridad. No atribuir CI PASS hasta que un workflow termine SUCCESS en el SHA que contiene el cambio.
 - M0 permanece `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Corrección por evidencia CI — assertions de lock acquisition (2026-10-20)
+
+- CI del SHA `4e1037dc8d172440e237d479af3982fcaa01277b` falló en `tests/nexo/continuity-store.test.mjs`: dos assertions seguían esperando excepciones (lock stale y `EACCES`) después de normalizar el contrato público a resultados estructurados.
+- No se ocultó ni se clasificó como PASS. Las assertions se actualizaron en `c0adce68129c6b7bfd78260b761208653fee3054` para comprobar `status: failed`, el código tipado y `writeStarted: false`; el código específico de lock stale se conserva.
+- Informe actualizado: [NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md](NCS_M0_CONTINUITY_STORE_LOCK_FAILURE_CONTRACT_2026-10-20.md).
+- Antes de continuar a otro cambio, consultar el run del HEAD final y leer su log si falla. No considerar validado el arreglo hasta CI SUCCESS en un SHA que incluya runtime + assertions corregidas.
