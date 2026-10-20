@@ -221,7 +221,16 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
       lockRelease = await releaseLock();
     }
     if (lockRelease?.status === "failed" || lockRelease?.status === "not_owned") {
-      return { ...result, lockRelease };
+      // Persistence may have committed, but the store transaction is not safe
+      // to hand off as a successful operation while its lock remains unresolved.
+      // Keep the persisted fact explicit while forcing callers to stop dispatch.
+      return {
+        status: "failed",
+        code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+        persistenceStatus: result?.status ?? "unknown",
+        ...(Number.isSafeInteger(result?.storeRevision) ? { storeRevision: result.storeRevision } : {}),
+        lockRelease
+      };
     }
     if (lockRelease?.status === "released_after_retry") return { ...result, lockRelease };
     return result;
@@ -288,7 +297,16 @@ export function createNexoContinuityStore({ filePath, fsModule = fs } = {}) {
       lockRelease = await releaseLock();
     }
     if (lockRelease?.status === "failed" || lockRelease?.status === "not_owned") {
-      return { ...result, lockRelease };
+      // Persistence may have committed, but the store transaction is not safe
+      // to hand off as a successful operation while its lock remains unresolved.
+      // Keep the persisted fact explicit while forcing callers to stop dispatch.
+      return {
+        status: "failed",
+        code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
+        persistenceStatus: result?.status ?? "unknown",
+        ...(Number.isSafeInteger(result?.storeRevision) ? { storeRevision: result.storeRevision } : {}),
+        lockRelease
+      };
     }
     if (lockRelease?.status === "released_after_retry") return { ...result, lockRelease };
     return result;
