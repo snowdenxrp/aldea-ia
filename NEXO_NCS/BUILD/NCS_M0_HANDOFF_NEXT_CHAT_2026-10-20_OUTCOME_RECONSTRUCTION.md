@@ -149,3 +149,11 @@ Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](
 - No runtime/test change and no new CI run in this review. Latest exact code/test SHA remains `b133c8c392739a0912f7b0466650a25962ead267`, with five workflows SUCCESS listed in STATUS.
 - Next architecture action: settle the deployment/API requirement—(a) explicitly accept cooperative local writers and unbounded waiting as a first-version limitation, or (b) require bounded acquisition and specify one shared public outcome plus caller handling/reconciliation before implementation. Do not invent a timeout/BUSY/cancellation/lease/heartbeat/reclaim patch. Any deadline protocol must distinguish lock contention from stale/IO errors and persistence UNKNOWN, and must never enable blind redispatch after PREPARED.
 - Do not reopen already closed receipt/reconstruction audits. M0 remains INCOMPLETO; authorization NOT_EVALUATED; protected effects STOP; legitimate root PENDING/UNKNOWN.
+
+
+### Proposed direction for lock progress (not adopted)
+
+- Recommendation in the caller audit: bounded lock waiting for the interactive runtime, using one caller-owned monotonic deadline/budget propagated across nested Continuity/Chronicle operations—not an arbitrary store-local timeout.
+- Deadline expiry before ownership must be a structured result that states the write phase did not start. Never interrupt an in-flight write/rename to force a timeout. A prior PREPARED/external dispatch still requires canonical reconciliation before any retry.
+- The deadline budget and whether bounded response is required for the first supported deployment are unresolved product/architecture requirements. Do not implement until they are decided; current code remains unchanged.
+- Audit: `NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md`, sections 5 and 5.1. STATUS contains the same recommendation.
