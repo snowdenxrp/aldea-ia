@@ -270,3 +270,16 @@ No seleccionar automáticamente el hardware, no instalar dependencias ni generar
 - La suite completa anterior sigue siendo PASS sólo para el SHA `846f1ca5ff5b194ecd22e097f303964873184bce`, run [39340435744](https://github.com/snowdenxrp/aldea-ia/actions/runs/39340435744). Los cambios posteriores incluyen documentación más el test y su inclusión en `npm test`; la suite del HEAD actual debe confirmarse.
 - Después del CI: mantener como pendiente la provisión independiente del pin y la prueba en hardware real. M0 INCOMPLETO; autoridad NOT_EVALUATED; efectos protegidos STOP.
 
+
+
+---
+
+## Addendum — matriz del contrato público de errores (2026-10-19)
+
+- Documento nuevo: [NCS_M0_CONTINUITY_STORE_PUBLIC_ERROR_CONTRACT_MATRIX_2026-10-19.md](NCS_M0_CONTINUITY_STORE_PUBLIC_ERROR_CONTRACT_MATRIX_2026-10-19.md), commit `3df670e5e5ebb1d2a78b23a5331c7a78b6134085`.
+- `STATUS.md` actualizado para que este checkpoint sea la puerta visible más reciente; commit documental `5280ce4f8f86a1e3d8971802b0a2d7a3b4f77113`.
+- El documento define semántica mínima para persistencia confirmada, conflicto, fallo conocido, incertidumbre, contención, lock stale y persistencia confirmada con fallo de liberación. No modifica runtime/tests ni afirma CI nuevo.
+- Siguiente paso: completar inventario de callers y sus ramas exactas de excepción/resultado. La revisión previa es parcial y estática; no se observó bypass de redispatch en las rutas inspeccionadas. No convertir ese alcance en una garantía exhaustiva.
+- No normalizar todavía la API ni introducir `BUSY`, timeouts, cancelación o recuperación automática. Elegir sólo después del mapa de callers y las regresiones requeridas.
+- Los runs CI previos pertenecen a sus SHAs documentados; no se atribuyen a estos commits documentales.
+- Estado invariable: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
