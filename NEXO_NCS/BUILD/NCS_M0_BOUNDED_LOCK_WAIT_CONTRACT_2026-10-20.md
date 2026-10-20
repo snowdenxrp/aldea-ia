@@ -1,6 +1,6 @@
 # NCS M0 — contrato compartido de espera acotada de locks (decisión A)
 Fecha: 2026-10-20
-Estado: **REQUISITO ACEPTADO; CONTRATO EN DISEÑO; NO IMPLEMENTADO**.
+Estado: **PRESUPUESTO ACEPTADO; IMPLEMENTACIÓN INICIAL Y PRUEBAS EN CI PASS; INTEGRACIÓN/REVISIÓN AÚN ABIERTAS**.
 Rama de trabajo: `ncs-clean-architecture`.
 Misión: M0.
 
@@ -83,7 +83,7 @@ Reglas obligatorias:
 
 ## 8. Estado de seguridad y evidencia
 
-Esta decisión es un requisito de progreso, no evidencia de implementación. Hasta que runtime, tests y CI estén completos:
+La implementación inicial y los tests están en el SHA `cf62bd858232a8c0c71f21ace6469c2a62f48448`; seis workflows M0 relevantes terminaron `success` en ese SHA. Esto no cierra M0 ni prueba autoridad legítima. La revisión de integración/propagación y los escenarios de adquisición tardía siguen abiertos:
 - M0: `INCOMPLETO`.
 - `authorization: NOT_EVALUATED`.
 - Efectos protegidos: `STOP`.
@@ -94,3 +94,24 @@ Referencias previas:
 - `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_CONTRACT_DESIGN_REVIEW_2026-10-19.md`
 - `NEXO_NCS/BUILD/NCS_M0_LOCK_CONTENTION_PUBLIC_CALLER_AUDIT_2026-10-20.md`
 - CI de código/pruebas previo a este diseño (no valida este contrato ni cambios futuros): SHA `b133c8c392739a0912f7b0466650a25962ead267`; runs 39372728077, 39372728055, 39372728046, 39372728141, 39372728127.
+
+
+## 9. Implementación inicial registrada (2026-10-20)
+
+- Nuevo helper `src/nexo/core/lock-deadline.mjs`: reloj monotónico `performance.now()`, presupuesto inicial `NEXO_DEFAULT_LOCK_WAIT_MS = 2_000`, creación/resolución de deadline y consulta de tiempo restante.
+- Ambos stores comprueban el deadline antes de iniciar otra adquisición y limitan el sueño de reintento al tiempo restante.
+- Si `mkdir` obtiene el lock después de expirar el deadline, no empieza lectura/escritura protegida; intenta liberar el lock usando el token de propiedad de la llamada y adjunta el resultado de liberación al timeout.
+- Resultados públicos iniciales:
+  - Continuity: `status:"failed"`, código `NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT`, `phase:"lock_acquisition"`, `writeStarted:false`.
+  - Chronicle: `status:"blocked"`, código `NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT`, `phase:"lock_acquisition"`, `writeStarted:false`.
+  - Si la adquisición tardía no puede liberar el lock, el resultado conserva `lockRelease`; no se afirma liberación exitosa.
+- `runNexoChronicleAppend` crea un único deadline monotónico y lo comparte entre los stores Continuity/Chronicle y el owner; el parámetro configurable `lockWaitMs` tiene default 2.000 ms. Stores utilizados por separado obtienen un presupuesto por mutación si no reciben deadline compartido.
+- Añadidas pruebas de lock vivo retenido: timeout de Continuity initialize/commit y Chronicle initialize/append, comprobando que no se escribe y que la revisión/archivo canónico no cambia.
+- CI observado en SHA exacto `cf62bd858232a8c0c71f21ace6469c2a62f48448`:
+  - [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455204) — success
+  - [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455208) — success
+  - [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455212) — success
+  - [Mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455161) — success
+  - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455195) — success
+  - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375455201) — success
+- Limitación no resuelta: las llamadas filesystem pueden exceder el presupuesto si ellas mismas no retornan; no se afirma límite estricto de pared. Faltan pruebas específicas de adquisición que retorna tarde y falla de liberación en ese caso, además de revisión de propagación por otras fronteras de aplicación.
