@@ -2272,3 +2272,13 @@ Decisión: no inventar un pseudo-root ni añadir una función que convierta inpu
 - **CI SUCCESS on the exact same SHA:** integrated M0 acceptance [39368731996](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731996); Chronicle native [39368732138](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732138); deterministic persistence [39368732251](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732251); mission admission/restart continuity [39368731963](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731963); STEP 4 [39368731975](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368731975); STEP 5 [39368732135](https://github.com/snowdenxrp/aldea-ia/actions/runs/39368732135). All six workflows completed SUCCESS.
 - Audit record: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](BUILD/NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
 - Remaining boundary: M0 is incomplete; this fixes public result truthfulness only, not owner authority or general runtime migration.
+
+
+## M0 — persistence receipts preserved across runtime stages (2026-10-20)
+
+- Extended the mission-admission result fix to PREPARED, execution lineage, Chronicle observation/settlement, and terminal outcome. Known `persistenceStatus: committed` is no longer flattened into a false persistence flag; unknown commit/exception outcomes remain `UNKNOWN`. Unsafe lock handoff still blocks progression and never authorizes dispatch.
+- Owner changes: `src/nexo/core/continuity-owner.mjs`; runtime changes: `src/nexo/core/owner-backed-runtime.mjs`; application change: `src/nexo/application/chronicle-append.mjs`.
+- Regression paths: `tests/nexo/chronicle-runtime.test.mjs`, `tests/nexo/repair-settlement-crash-cuts.test.mjs`.
+- Red/green preserved: intermediate SHAs `3aed78b9788c9ffe25bc0077b02793a1ca6f75c0` and `0bf505d483cd56345fe7a7c9240545c86616bc2d` failed because a prior test expected false where a thrown commit response must remain UNKNOWN. Test corrected; final code/test SHA `5aef07d4fb933d8c0be4ee4cbc325e7e8c4f85a7` has all six focal workflows SUCCESS: M0 integrated `39369199068`; repair crash cuts `39369199071`; effect/settlement `39369199064`; deterministic persistence `39369199083`; STEP 4 `39369199069`; STEP 5 `39369199073`.
+- Full audit: [NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md](BUILD/NCS_M0_RESPONSE_LOSS_OUTCOME_RECONSTRUCTION_AUDIT_2026-10-20.md).
+- Scope remains limited: result-contract truthfulness only; M0 INCOMPLETO, authorization NOT_EVALUATED, protected effects STOP, legitimate root PENDING/UNKNOWN.
