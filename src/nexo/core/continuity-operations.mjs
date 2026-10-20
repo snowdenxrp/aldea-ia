@@ -240,8 +240,8 @@ export function reconstructNexoMissionFromSnapshot(snapshot, missionId) {
   const terminalEffectStates = ["settled_observed", "reconciled_observed"];
   const unresolvedEffectEntry = entry => !terminalEffectStates.includes(entry?.status);
   const unownedEffectEntry = source.effectJournal.some(entry =>
-    unresolvedEffectEntry(entry) &&
-    (typeof entry?.missionId !== "string" || !entry.missionId.trim() ||
+    typeof entry?.missionId !== "string" || !entry.missionId.trim() ||
+    (unresolvedEffectEntry(entry) &&
       !source.missions.some(candidate => candidate?.missionId === entry.missionId))
   );
   const unboundMissionEffectEntry = source.effectJournal.some(entry => {
