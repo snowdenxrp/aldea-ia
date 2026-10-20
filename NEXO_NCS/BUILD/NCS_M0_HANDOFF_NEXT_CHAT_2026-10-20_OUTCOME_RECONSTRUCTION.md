@@ -331,3 +331,24 @@ Se creó y verificó:
 Revisar consumidores de `loadNexoMissionStatus` y CLI `mission-status` para saber si pueden ignorar `statusDiscrepancy` mientras ven `status: reconstructed`. Decidir desde evidencia del consumidor si la discrepancia informada es suficiente o si debe producir una salida fail-closed `blocked`. No mutar snapshot desde una consulta read-only. Si se cambia contrato, añadir regresión dirigida y ejecutar workflow dedicado + regresiones M0 en el SHA exacto. No tocar llave física/bootstrap en este paso.
 
 Estado sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima/implementada sigue sin prueba. `NEXO_NCS/STATUS.md` no se actualizó.
+
+
+## Continuación M0 — discrepancia de mission-status endurecida selectivamente y CI verde (2026-10-20)
+
+Tras revisar consumidores, se confirmó que `scripts/nexo.mjs` terminaba con exit code 0 si la consulta devolvía `reconstructed`, aunque `statusDiscrepancy` fuera true. Se cambió `src/nexo/application/continuity-queries.mjs` para que una afirmación persistida `completed` no se exponga como proyección utilizable cuando la reconstrucción canónica no confirma `completed`. La respuesta se bloquea con `NEXO_MISSION_STATUS_DISCREPANCY` y conserva diagnóstico mínimo; no incluye pasos ni payload, no modifica el store y la CLI sale con código 1.
+
+**No bloquear toda diferencia:** el primer intento hizo STOP ante cualquier discrepancia y falló la regresión porque una misión persistida como `planned` puede reconstruirse legítimamente como `awaiting_verification`. Evidencia de ese fallo (no PASS): [run 39429434598](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429434598), SHA `b2e446fbba0ca4291dc0fdc3a9a1e008d56f0352`. La regla se afinó para bloquear sólo el sobreclaim terminal persistido `completed` que la reconstrucción no respalda.
+
+Código/tests de la corrección final: SHA `f07840b2222f55124e200c2866789834fa6904dd`.
+- [Mission status projection](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700787): SUCCESS.
+- [Deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700840): SUCCESS.
+- [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700796): SUCCESS.
+- [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39429700814): SUCCESS.
+Se inspeccionaron jobs: la regresión independiente de entrypoint y los pasos M0 de continuidad/reconstrucción/entrypoint terminaron success.
+
+Documento ampliado y verificado: [NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026-10-20.md](NCS_M0_MISSION_STATUS_COHERENCE_CI_REVIEW_2026-10-20.md), blob `4531fc68c0d2ccf28c6b063675ad6cad9cd90d18`, commit `64be5fbe8ed9d6fe9d3a9876060ae6f08ea42481`.
+
+### Prioridad a partir de aquí
+La discrepancia terminal de mission-status tiene una regresión dedicada y cuatro workflows verdes en el SHA exacto. Siguiente paso: revisar si la reconstrucción/proyección trata coherentemente los estados persistidos de pasos y los resultados/attempts, sólo donde haya un contraejemplo concreto; no reabrir locks ni raíz bootstrap. La decisión de alcance 2026-10-19 de llave única/dispositivo único se conserva; no se seleccionó modelo físico ni se implementó bootstrap.
+
+Estado: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`. `NEXO_NCS/STATUS.md` no fue actualizado.
