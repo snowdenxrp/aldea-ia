@@ -57,6 +57,9 @@ export async function openNexoContinuityOwner({
     if (initialized.status !== "committed" && initialized.status !== "conflict") {
       const blocked = new Error(initialized.code ?? "NEXO_CONTINUITY_INITIALIZATION_FAILED");
       blocked.code = initialized.code ?? "NEXO_CONTINUITY_INITIALIZATION_FAILED";
+      if (typeof initialized.phase === "string") blocked.phase = initialized.phase;
+      if (typeof initialized.writeStarted === "boolean") blocked.writeStarted = initialized.writeStarted;
+      if (initialized.lockRelease && typeof initialized.lockRelease === "object") blocked.lockRelease = initialized.lockRelease;
       throw blocked;
     }
     current = await store.loadCurrent();
