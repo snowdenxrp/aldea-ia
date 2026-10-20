@@ -134,6 +134,37 @@ if (result.status !== "committed") process.exitCode = 1;`;
   );
   await assert.rejects(() => fs.access(String(ownerFailurePath) + ".lock"), error => error?.code === "ENOENT");
 
+  // If the existing lock's age cannot be inspected, fail closed rather than wait forever.
+  const lockStatFailurePath = path.join(root, "lock-stat-failure.json");
+  const lockStatFailureLock = String(lockStatFailurePath) + ".lock";
+  await fs.mkdir(lockStatFailureLock);
+  await fs.writeFile(path.join(lockStatFailureLock, "owner.json"), JSON.stringify({
+    pid: process.pid, token: "known-owner"
+  }), "utf8");
+  const fsWithLockStatFailure = {
+    ...fs,
+    stat: async (target, ...args) => {
+      if (String(target) === lockStatFailureLock) {
+        throw Object.assign(new Error("simulated inability to inspect lock age"), { code: "EACCES" });
+      }
+      return fs.stat(target, ...args);
+    }
+  };
+  const lockStatFailureStore = createNexoChronicleStore({
+    filePath: lockStatFailurePath,
+    fsModule: fsWithLockStatFailure
+  });
+  assert.deepEqual(
+    await lockStatFailureStore.initialize(),
+    { status: "blocked", code: "NEXO_CHRONICLE_LOCK_STATE_UNKNOWN" },
+    "Chronicle must fail closed when it cannot inspect an existing lock"
+  );
+  await assert.doesNotReject(() => fs.access(lockStatFailureLock),
+    "Chronicle must preserve an uninspectable lock for explicit recovery");
+  await assert.rejects(() => fs.access(lockStatFailurePath), error => error?.code === "ENOENT",
+    "Chronicle must not initialize when lock state is unknown");
+  await fs.rm(lockStatFailureLock, { recursive: true, force: true });
+
   // A stale lock must fail closed; automatic check-then-remove reclamation is racy.
   const staleLockPath = path.join(root, "stale-lock.json");
   const staleLockStore = createNexoChronicleStore({ filePath: staleLockPath });
