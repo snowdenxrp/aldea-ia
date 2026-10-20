@@ -63,10 +63,15 @@ El timeout no reemplaza ni reescribe una recepción de persistencia ya obtenida.
 1. Presupuesto aceptado: **2.000 ms configurable**, sin promesa de límite de pared estricto.
 2. Helper monotónico y propagación de deadline compartido implementados en la ruta `runNexoChronicleAppend`.
 3. Pruebas base para los cuatro métodos de store y seis workflows relevantes en verde sobre SHA `cf62bd858232a8c0c71f21ace6469c2a62f48448`.
-4. Pendiente: test determinista de adquisición tardía (la llamada a mkdir resuelve después del deadline) y de fallo de liberación en ese caso.
+4. Cubierto en pruebas: adquisición tardía donde mkdir resuelve después del deadline, no se escribe, se libera sólo el lock propio y el fallo de liberación se preserva junto al timeout en ambos stores.
 5. Pendiente: verificar cómo se propaga el resultado a través de todos los callers/entrypoints; no declarar cerrado hasta que la matriz completa sea cubierta por tests.
 
 ## 7. Estado de seguridad
 
 Implementación inicial de runtime/tests sí existe en SHA `cf62bd858232a8c0c71f21ace6469c2a62f48448`; la matriz describe resultados observados/propuestos y sus pendientes, no cierre de M0.
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`; raíz legítima `PENDING/UNKNOWN`.
+
+
+### Evidencia posterior de adquisición tardía
+
+La prueba determinista de adquisición tardía y fallo de liberación pasó en el SHA de código/tests `15415580788c4e823f03371b566e29106268b67d`, junto con seis workflows M0. Ver los runs integrados: [M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730407), [Chronicle](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730358), [persistencia determinista](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730428), [admisión/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730355), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730370), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39375730363).
