@@ -1,3 +1,13 @@
+## M0 — callers de errores de adquisición cruzados (2026-10-19)
+
+- La matriz se amplió en commit documental `cbd36bfbf6e9bd138a1f1d3a80caa5214db35c32`.
+- Inspección de cinco rutas del owner: `recordMission` propaga y `runNexoChronicleAppend` bloquea; `recordPrepared` propaga y el runtime devuelve UNKNOWN sin dispatch; `recordOutcome` propaga y el runtime conserva incertidumbre; `recordExecutionLineage` propaga y el runtime bloquea redispatch después del dispatch; `reconcilePrepared` captura localmente como blocked/unknown.
+- No se observó ruta que convierta error de adquisición en PREPARED confirmado ni en permiso de redispatch. Decisión provisional: no normalizar la API mixta sólo por simetría estética; si se decide uniformidad, debe ser una decisión arquitectónica explícita con regresiones de callers.
+- Evidencia de CI de código permanece anclada al SHA `c5ffff237b6c9933030a12308aab066aa968cb32` y los runs registrados arriba. Los commits de documentación posteriores no modifican runtime ni tests.
+- Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; efectos protegidos STOP; raíz PENDING/UNKNOWN.
+
+---
+
 ## M0 — lock no inspeccionable: fix compartido + CI SUCCESS (2026-10-19)
 
 - Causa raíz corregida en ambos almacenes: un fallo de `stat(lockPath)` se tragaba, `age` quedaba en cero y el bucle podía esperar indefinidamente.
