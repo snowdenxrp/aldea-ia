@@ -12,6 +12,8 @@
 
 ## M0 — frontera de compatibilidad de misión persistida (2026-10-20)
 
+> **Supersedido por evidencia posterior:** la ambigüedad histórica descrita en esta entrada ya no es el contrato vigente. El runtime posterior exige `steps` como array para cada misión persistida y falla cerrado si falta; ver la cabecera de estado vigente y `NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md`. Se conserva abajo el análisis antiguo como historial, no como instrucción pendiente actual.
+
 - Revisión focal guardada: [NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md](BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md), commit `84ebe145adca3d38d4454b9da9556eb4b724bf63`.
 - Hallazgo estático: el validador tolera registros legacy sin `steps`; reconstrucción los representa como `steps: []`. La admisión de misiones nuevas sí exige array `steps`. Un registro PREPARED que necesite un paso inexistente se rechaza.
 - Clasificación: contrato de compatibilidad ambiguo, no vulnerabilidad confirmada. No se cambió runtime ni se congeló la tolerancia mediante un test, porque falta evidencia del contrato de migración/versionado.
