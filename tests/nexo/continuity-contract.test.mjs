@@ -782,7 +782,7 @@ const reconstructedWithOrphanUnknownEffect = reconstructNexoMissionFromSnapshot(
 );
 assert.equal(reconstructedWithOrphanUnknownEffect.status, "blocked",
   "an unknown unresolved effect without a retained owner plan must fail closed globally");
-assert.equal(reconstructedWithOrphanUnknownEffect.uncertainty, "effect_journal_identity_unknown");
+assert.equal(reconstructedWithOrphanUnknownEffect.uncertainty, "effect_journal_status_unknown");
 
 const conflictingOutcomeSnapshot = structuredClone(operationalSnapshot);
 conflictingOutcomeSnapshot.attempts.push({
