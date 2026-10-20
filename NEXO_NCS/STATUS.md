@@ -1,3 +1,17 @@
+## M0 — línea de meta finita y criterio de cierre (2026-10-20)
+
+**Regla de continuidad:** M0 no puede quedar abierto indefinidamente. «No declarar resuelto lo no demostrado» es una regla de evidencia, no una línea de meta. El cierre requiere un conjunto finito de criterios de aceptación acordados, pruebas reproducibles y evidencia atribuible al SHA evaluado. M0 cerrado NO significa que Nexo como sistema completo esté terminado.
+
+- Criterio y plan de aceptación: [NCS_M0_ACCEPTANCE_EXIT_CRITERIA_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_EXIT_CRITERIA_2026-10-20.md).
+- Borrador de cinco criterios, pendiente de mapear a pruebas existentes y congelar: (A) aceptación reproducible; (B) continuidad/admisión/persistencia; (C) reconstrucción terminal; (D) diario de efectos/recuperación; (E) autoridad legítima conectada a la frontera real de efectos protegidos.
+- **No declarar que los cinco criterios están aprobados o pasados.** Primero construir la matriz finita contrato → prueba → CI/run/job/SHA → estado → brecha. Reutilizar evidencia existente cuando corresponda; no repetir auditorías cerradas ni crear alcance nuevo sin justificación.
+- Regla de cierre: M0 solo se declara cerrado cuando todos los criterios finales congelados pasan con evidencia trazable en el estado de rama evaluado. CANCELLED, ejecución ausente, checks vacíos, UNKNOWN o CI de otro SHA no son PASS. Si hay bloqueos, nombrar solo los criterios incumplidos y corregir la brecha concreta.
+- Próxima acción: verificar HEAD real de la rama, leer este criterio y el handoff vigente, mapear las pruebas existentes y trabajar en la brecha bloqueante de mayor prioridad.
+- Continuidad obligatoria: `STATUS.md → criterio de salida → handoff vigente → HEAD actual → CI del SHA → matriz de aceptación → brecha bloqueante`.
+- Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No reiniciar Step 7 ni M1.
+
+---
+
 ## M0 — handoff de reconstrucción de continuidad guardado (2026-10-20)
 
 - Handoff nuevo para el siguiente chat: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_CONTINUITY_RECONSTRUCTION.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_CONTINUITY_RECONSTRUCTION.md), commit `6db1bde25332a378bed94114e005a3cf566987eb`.
