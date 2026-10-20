@@ -1,3 +1,12 @@
+## Último avance — compatibilidad de forma de misión persistida (2026-10-20)
+
+- Informe: `NEXO_NCS/BUILD/NCS_M0_PERSISTED_MISSION_SHAPE_COMPATIBILITY_REVIEW_2026-10-20.md`; commit `84ebe145adca3d38d4454b9da9556eb4b724bf63`.
+- No cambiar runtime todavía: falta localizar el contrato de migración/versionado de misiones históricas. Validador tolera `steps` ausente en datos persistidos; reconstrucción proyecta lista vacía; admisión nueva exige `steps`; PREPARED con paso ausente sí se rechaza.
+- Próximo paso concreto: rastrear productores/migradores y fixtures legacy para decidir si la tolerancia está especificada. No reabrir las auditorías de autoridad/locks ya cerradas. CI del commit de tests `594cee05c61617b38cc6481698643215e9da9ae2` aún no verificada por estados disponibles.
+- M0 permanece `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## Trabajo más reciente — cobertura adicional del grafo persistido (2026-10-20)
 
 - Añadidas tres pruebas en `tests/nexo/continuity-contract.test.mjs`: dependencia dispersa, referencia duplicada y autorreferencia. Commit: `594cee05c61617b38cc6481698643215e9da9ae2`.
