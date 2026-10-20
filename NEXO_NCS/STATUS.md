@@ -1,3 +1,13 @@
+## M0 — continuidad para siguiente chat (2026-10-20, prioridad máxima)
+
+- Handoff con línea de meta finita: [NCS_M0_NEXT_CHAT_HANDOFF_2026-10-20_FINITE_EXIT_CRITERIA.md](BUILD/NCS_M0_NEXT_CHAT_HANDOFF_2026-10-20_FINITE_EXIT_CRITERIA.md).
+- Criterios de salida: [NCS_M0_ACCEPTANCE_EXIT_CRITERIA_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_EXIT_CRITERIA_2026-10-20.md).
+- Esta sección y esos documentos fijan el orden de continuidad: STATUS → criterio de salida → handoff vigente → HEAD actual → CI atribuible al SHA → matriz finita de aceptación → brecha bloqueante.
+- La lista de aceptación es propuesta pendiente de cruce con contratos/tests existentes; no declarar criterios congelados ni aprobados sin ese cruce. M0 no debe quedar abierto indefinidamente: cerrar cuando los criterios finales congelados pasen con evidencia trazable; no ampliar alcance por hallazgos no bloqueantes.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — línea de meta finita y criterio de cierre (2026-10-20)
 
 **Regla de continuidad:** M0 no puede quedar abierto indefinidamente. «No declarar resuelto lo no demostrado» es una regla de evidencia, no una línea de meta. El cierre requiere un conjunto finito de criterios de aceptación acordados, pruebas reproducibles y evidencia atribuible al SHA evaluado. M0 cerrado NO significa que Nexo como sistema completo esté terminado.
