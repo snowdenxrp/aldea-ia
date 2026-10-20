@@ -132,3 +132,12 @@ La guía existente `NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md` ahora 
 Commit guía: `194f38819bbfaaf7f650c8e824b06fc9552139aa`. Fue un cambio documental; no hay CI ni tests nuevos asociados.
 
 Siguiente trabajo: el propietario debe revisar el borrador completo y decidir explícitamente los puntos que quiera resolver. Mientras tanto, continuar sólo en gaps M0 que puedan probarse y cerrarse sin asumir una Constitución aprobada, una raíz reconocida o un sink autorizado. Mantener M0 `INCOMPLETO`, `authorization: NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos `STOP`.
+
+
+## Actualización posterior — CI M0 verificado (2026-10-20)
+
+- Se encontró una omisión real: `npm test` no ejecutaba `tests/nexo/continuity-contract.test.mjs`.
+- Corregido en `6594f27a0e28e6ce5f53446228be11841626cfc3`: el script ahora incluye la suite de continuidad al final.
+- Evidencia: CI [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665444), [bounded mission admission](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665452), [M0 integrated acceptance](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665518) y [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39438665626) terminaron `completed / success` sobre el mismo SHA. El workflow de bounded mission confirma explícitamente que `node tests/nexo/continuity-contract.test.mjs` pasó.
+- No sobreinterpretar: esto verifica pruebas de contratos; no prueba autoridad raíz legítima, commissioning ni permiso para efectos protegidos.
+- Próximo paso M0: continuar desde gates de integración pendientes, usando los contratos existentes y la evidencia del SHA actual; no repetir auditorías cerradas ni relajar el fallo cerrado de snapshots.
