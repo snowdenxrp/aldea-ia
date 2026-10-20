@@ -374,7 +374,11 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     });
     assertNexoContinuitySnapshot(candidate);
     const committed = await store.commitIfCurrent(expectedRevision, candidate);
-    if (committed.status === "committed") return { ...committed, prepared: true, preparedCommitted: true, authorization: "NOT_EVALUATED" };
+    if (committed.status === "committed" || committed.persistenceStatus === "committed") {
+      // Persistence is confirmed even if lock release blocks the public handoff.
+      // The outer status remains failed, so this receipt cannot authorize dispatch.
+      return { ...committed, prepared: true, preparedCommitted: true, authorization: "NOT_EVALUATED" };
+    }
     return { ...committed, prepared: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
   }
 
