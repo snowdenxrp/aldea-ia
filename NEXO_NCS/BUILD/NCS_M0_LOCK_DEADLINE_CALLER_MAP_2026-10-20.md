@@ -93,3 +93,13 @@ Related:
 - Pruebas adicionales hacen fallar `rm` del lock tardío; el timeout conserva `lockRelease.status:"failed"` y el código EACCES, sin afirmar limpieza.
 - SHA código/tests: `15415580788c4e823f03371b566e29106268b67d`; seis workflows relevantes pasan (runs 39375730407, 39375730358, 39375730428, 39375730355, 39375730370, 39375730363).
 - El punto de auditoría pendiente ya no es el comportamiento interno de adquisición tardía; es la preservación del timeout a través de los callers/entrypoints y las garantías de no-redispatch en el runtime completo.
+
+
+### Propagación pública y no-dispatch verificados (2026-10-20)
+
+- La aplicación pública conserva phase/writeStarted/lockRelease para timeouts de inicialización y admisión.
+- El handler Chronicle propaga metadata de timeout de append; el runtime owner-backed mantiene `dispatchAttempted:false` y no invoca el adapter cuando PREPARED no queda confirmado.
+- La proyección pública puede conservar el código del timeout incluso cuando está anidado en lineage/outcome/adapter result; la CLI Chronicle ahora emite phase, writeStarted, lockRelease y lockAcquisitionCode sin exponer rutas ni payloads.
+- Se añadieron pruebas sintéticas de proyección pública, handler y runtime PREPARED timeout, además de pruebas de integración de timeout durante inicialización de ambos stores.
+- Código/tests validado en SHA `12efac26d0948b91c59706612edec7df9e78c4f5`; seis workflows relevantes en success (runs 39376332936, 39376332981, 39376333167, 39376332991, 39376333035, 39376333016). Logs de jobs 118475197653, 118475197877 y 118475199164 inspeccionados.
+- Queda por hacer auditoría final de otras entrypoints que construyen stores/owners fuera de la ruta Chronicle compuesta; las mutaciones aisladas ya están acotadas por llamada por el default del store, pero sólo esta operación compuesta tiene deadline compartido explícito.
