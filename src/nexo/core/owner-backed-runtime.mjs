@@ -332,6 +332,9 @@ async function executeNexoStepWithContinuityOwnerInternal({
       journalSettled: false,
       terminalOutcomeRecorded: false,
       redispatchAuthorized: false,
+      ...(typeof prepared?.phase === "string" ? { phase: prepared.phase } : {}),
+      ...(typeof prepared?.writeStarted === "boolean" ? { writeStarted: prepared.writeStarted } : {}),
+      ...(prepared?.lockRelease && typeof prepared.lockRelease === "object" ? { lockRelease: prepared.lockRelease } : {}),
       ...(Number.isSafeInteger(prepared?.storeRevision) ? { storeRevision: prepared.storeRevision } : {}),
       prepared
     };
