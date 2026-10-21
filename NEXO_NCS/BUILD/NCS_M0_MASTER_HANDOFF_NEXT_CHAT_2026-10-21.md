@@ -221,3 +221,12 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - La decisión no es aprobación constitucional completa, firma, congelación, commissioning, autorización de efectos protegidos ni elección de raíz/autoridad canónica/sucesor.
 - Próximo: mapear la matriz operación → entry point → efecto → sink → enforcement → prueba negativa; reutilizar auditorías AB104/P112 cerradas y no repetirlas sin evidencia nueva. Después ejecutar CI en el SHA final y registrar run/job.
 - Estados obligatorios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Matriz de operaciones/enforcement de la opción A (2026-10-21)
+
+- Matriz nueva: [NCS_M0_E_OPTION_A_OPERATION_EFFECT_ENFORCEMENT_MATRIX_2026-10-21.md](NCS_M0_E_OPTION_A_OPERATION_EFFECT_ENFORCEMENT_MATRIX_2026-10-21.md), commit `e5e0ee4a635f57671febb3d0b6f7a207fedc2e0a`; STATUS la enlaza en commit `4ce741e271cb48665b9b962ce80a13bcffa93996`.
+- Categoriza status/mission-status, chronicle-append, owner-backed runtime, protected transition y adaptadores Lúmina por efecto y control actual. Es inventario inicial, no prueba de exhaustividad.
+- Próximo paso concreto: inspeccionar las implementaciones de loadNexoContinuityStatus/loadNexoMissionStatus y agregar una prueba de no-escritura que demuestre que no crean ni modifican archivos; reutilizar las pruebas owner-backed ya existentes para gates de acciones excluidas.
+- No modificar runtime hasta que la prueba descubra un contraejemplo real. No repetir AB104/P112 cerrados sin evidencia nueva.
+- Opción A aceptada como alcance inicial provisional; no es aprobación constitucional completa ni autorización de efectos protegidos. Estados: M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
