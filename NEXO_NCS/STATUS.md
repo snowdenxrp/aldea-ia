@@ -2815,3 +2815,13 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Limitación de verificación: las herramientas usadas no expusieron el SHA actual de `refs/heads/ncs-clean-architecture` de forma inequívoca. No atribuir CI al estado actual hasta obtener el SHA de ref y run/job/SHA coincidentes.
 - Próximo paso: resolver el SHA exacto, revisar solo cambios M0-E desde los blobs anotados y preparar una prueba adversarial de la frontera real; no tocar runtime para simular raíz.
 - Estado conservador: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0-E — alcance y frontera de mutación de Chronicle Append (2026-10-21)
+
+- Informe nuevo: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](BUILD/NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md).
+- Chronicle Append es una **mutación persistente local**, no evidencia de autorización constitucional ni un sink externo demostrado. La ruta inspeccionada incluye CLI independiente, export de API, escritura Chronicle y mutaciones del store de continuidad (admisión/PREPARED/lineage/outcome).
+- El store declara límites explícitos: no fsync/power-loss durability, no rollback protection, ni resistencia a symlink/path attacks; la ruta es configuración confiable y no sandbox.
+- La observación relee el store, pero declara que no prueba atribución causal; el resultado público conserva `authorization: NOT_EVALUATED`.
+- Este hallazgo no elige la opción A/B/C, no cambia runtime y no amplía el scope constitucional. No demuestra que las rutas alternativas sean alcanzables en producción.
+- Estado conservador: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
