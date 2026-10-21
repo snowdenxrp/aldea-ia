@@ -10,6 +10,7 @@ import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mj
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { runNexoChronicleAppend } from "../../src/nexo/application/index.mjs";
+import { loadNexoContinuityStatus, loadNexoMissionStatus } from "../../src/nexo/application/continuity-queries.mjs";
 import { publicChronicleResult, recordNexoMissionSafely } from "../../src/nexo/application/chronicle-append.mjs";
 import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
@@ -1812,5 +1813,39 @@ assert.deepEqual(throwingCapabilityResult, {
   redispatchAuthorized: false
 }, "unexpected pre-dispatch exceptions must become a closed public result");
 assert.equal(JSON.stringify(throwingCapabilityResult).includes("private injected"), false);
+
+
+const readOnlyQueryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-read-only-query-"));
+try {
+  const existingPath = path.join(readOnlyQueryRoot, "continuity.json");
+  const missingPath = path.join(readOnlyQueryRoot, "missing-continuity.json");
+  const snapshot = continuitySnapshot([{
+    missionId: "read-only-query-mission",
+    status: "planned",
+    steps: [{ id: "step-1", action: "chronicle_append", target: { content: "read-only" }, status: "planned", dependsOn: [] }]
+  }]);
+  assert.equal((await createNexoContinuityStore({ filePath: existingPath }).initialize(snapshot)).status, "committed");
+  const beforeBytes = await fs.readFile(existingPath);
+  const beforeStat = await fs.stat(existingPath);
+
+  const status = await loadNexoContinuityStatus(existingPath);
+  assert.equal(status.status, "loaded");
+  const mission = await loadNexoMissionStatus(existingPath, "read-only-query-mission");
+  assert.equal(mission.status, "reconstructed");
+  const absentMission = await loadNexoMissionStatus(existingPath, "not-present");
+  assert.equal(absentMission.status, "not_found");
+
+  const afterBytes = await fs.readFile(existingPath);
+  const afterStat = await fs.stat(existingPath);
+  assert.deepEqual(afterBytes, beforeBytes, "status queries must not alter persisted Continuity bytes");
+  assert.equal(afterStat.mtimeMs, beforeStat.mtimeMs, "status queries must not rewrite the Continuity file");
+  await assert.rejects(fs.access(missingPath), { code: "ENOENT" });
+  assert.equal((await loadNexoContinuityStatus(missingPath)).status, "blocked");
+  assert.equal((await loadNexoMissionStatus(missingPath, "not-present")).status, "blocked");
+  await assert.rejects(fs.access(missingPath), { code: "ENOENT" },
+    "read-only status queries must not initialize a missing store");
+} finally {
+  await fs.rm(readOnlyQueryRoot, { recursive: true, force: true });
+}
 
 console.log("Nexo Chronicle owner-backed runtime tests passed");
