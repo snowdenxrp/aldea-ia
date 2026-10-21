@@ -192,3 +192,13 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - `openNexoContinuityOwner` puede inicializar Continuity primero; si después falla `chronicleStore.initialize()`, puede quedar un store creado y el otro ausente. La suite inspeccionada no demuestra el comportamiento crash-cut de este caso.
 - Tratar como brecha de contrato de bootstrap/recuperación multi-store, no como exploit confirmado. No añadir borrado compensatorio/rollback sin diseñar propiedad del archivo, estado canónico y recuperación.
 - Próxima unidad: definir si el primer scope requiere bootstrap multi-store atómico o admite estado parcial recuperable; derivar pruebas de crash-cut concretas antes de modificar implementación. Mantener la autoridad no evaluada y todos los efectos protegidos en STOP.
+
+
+## Prueba nueva de bootstrap parcial y recuperación (2026-10-21)
+
+- Test en `tests/nexo/chronicle-runtime.test.mjs`, commit `8deabb5ca0b314ecd6a699a4b7a8bcb3f470c767`.
+- Escenario: directorio padre de Chronicle ausente, Continuity con ruta válida, ambos flags de inicialización explícitos. Se espera `blocked`, `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, Continuity vacío y Chronicle ausente; luego crear el directorio y reintentar con `initializeContinuity: false`, `initializeChronicle: true`, sin reinicializar Continuity.
+- Interpretación: contrato de recuperación para ese fallo concreto, no atomicidad multi-store. No se cambió runtime ni se hizo rollback compensatorio.
+- Informe actualizado en commit `1ae34ea5c592908ba72eb8a24a1c40363f754a40`; STATUS se actualizó después del test.
+- CI para el HEAD final de esta unidad sigue pendiente de confirmación; no declarar PASS sin run/job completed-success en el SHA exacto.
+- Próximo: comprobar estado de CI del HEAD actual; corregir solo si el test produce un fallo reproducible. Mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
