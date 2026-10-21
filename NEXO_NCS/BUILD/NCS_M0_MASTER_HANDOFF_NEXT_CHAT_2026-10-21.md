@@ -282,3 +282,9 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - Mantener en mente el límite: módulos de bajo nivel siguen importables por código interno; esto no es una frontera contra código arbitrario en el mismo proceso. No conectarlos a otra entrada de producto sin decisión explícita y enforcement.
 - Próximo: confirmar CI para el SHA final; si pasa, seguir el mapa de entradas de producto restantes sin repetir tests ya cerrados. M0-E raíz legítima → Constitución exacta/Policy/contexto → sink real continúa abierto.
 - Estados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## CI final confirmado para gate de reparación opción A (2026-10-21)
+
+- SHA `7396bfcec3d54d2e2d0b1371e3188d29c9b9461a`: [workflow 39695419937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937), [job tests 119551490108](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937/job/119551490108), `completed/success`, paso `Run tests` SUCCESS.
+- Este SHA contiene la integración bloqueada, las pruebas actualizadas y los documentos de hallazgo/matriz. El siguiente commit documental que registra este resultado necesitará su propio CI por SHA exacto.
