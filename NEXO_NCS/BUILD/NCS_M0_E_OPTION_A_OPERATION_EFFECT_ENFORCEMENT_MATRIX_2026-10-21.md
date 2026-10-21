@@ -46,3 +46,14 @@ Añadir o ajustar pruebas negativas solo para las entradas permitidas y excluida
 ## Estado
 
 M0 INCOMPLETO; autorización NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP. La opción A es alcance inicial provisional, no commissioning ni autorización de efectos protegidos.
+
+
+## Resultado de prueba focal de solo lectura (2026-10-21)
+
+En `tests/nexo/chronicle-runtime.test.mjs` se añadió una prueba que:
+- inicializa un fixture de Continuity con una misión;
+- ejecuta `loadNexoContinuityStatus`, reconstrucción de misión y consulta de misión ausente;
+- compara los bytes y mtime del store antes/después;
+- confirma que las consultas contra una ruta ausente devuelven bloqueado y no crean el archivo.
+
+Esto valida el comportamiento observado de las funciones de consulta para el caso probado; no acredita resistencia del filesystem a un proceso externo ni seguridad de la ruta configurada. Test commit: `fbc0abbe89d07f19cd428e35072043a88ba2961f`. CI del SHA final aún pendiente de confirmar.
