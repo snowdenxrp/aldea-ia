@@ -1,3 +1,14 @@
+## M0-E — reconciliación de scope y fronteras (2026-10-21)
+
+- Informe nuevo: [NCS_M0_E_SCOPE_AND_EXECUTION_BOUNDARY_RECONCILIATION_2026-10-21.md](BUILD/NCS_M0_E_SCOPE_AND_EXECUTION_BOUNDARY_RECONCILIATION_2026-10-21.md), commit `dcc35c1c3e9a04af753b54c466be9f471ad9504a`.
+- Aclara una dependencia que no debe resolverse por inferencia: la decisión arquitectónica de una raíz/un dispositivo no selecciona el scope de efectos protegidos. El borrador sigue marcando el scope exacto como OPEN; aceptar los puntos 1–7 como base no lo aprueba definitivamente.
+- Owner-backed runtime: bloquea repair y otras acciones antes de PREPARED/dispatch; `chronicle_append` es persistencia local y la respuesta conserva `authorization: NOT_EVALUATED`. No equivale a efecto externo autorizado.
+- Core protected-transition usa `authorityGate` inyectado y puede llamar `conditionalCommit.commit`; no se demostró que ese commit sea el sink externo, y el camino no llama `effectBoundary.prepare`.
+- Legacy/simulation adapter contiene handlers que mutan la simulación; no se demuestra alcance constitucional ni reachability de producción. Próximo paso: mapear callers y proponer scope mínimo explícito para decisión del propietario; sin esa definición, no crear tests que asuman un sink arbitrario.
+- No se cambió runtime ni se ha declarado CI para el informe nuevo. Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — CI del checkpoint de documentación y plan (2026-10-21)
 
 - HEAD del checkpoint verificado antes de este registro: `a53fc8801f2558d63d0ef7b8af50e162b91ad70b`.
