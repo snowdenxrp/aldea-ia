@@ -46,3 +46,42 @@ La prueba `tests/nexo/protected-transition.test.mjs` prueba composición con pue
 ## Estado
 
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No hay cierre de M0 todavía.
+
+
+---
+
+## Inventario finito de assertions existentes — continuidad de M0 (2026-10-21)
+
+Esta sección reduce la brecha de definición sin declarar aceptación ni cambiar los estados de la matriz. Las pruebas citadas existen en la rama consultada y `package.json` las incluye en `npm test`; no se afirma que hayan sido ejecutadas en el HEAD documental actual.
+
+### M0-A — puerta de ejecución
+- Puerta mínima candidata: workflow `.github/workflows/nexo-deterministic-tests.yml`, job `tests`, ejecutando el script `npm test` definido en `package.json`.
+- Evidencia de aceptación requerida: run `completed / success` cuyo SHA sea exactamente el SHA final evaluado; conservar run ID, job y SHA.
+- Los workflows focales históricos se conservan como evidencia de diagnóstico, pero no se exige repetirlos todos si el workflow determinista incluye las suites relevantes. Esta propuesta no declara M0-A PASS hasta observar CI en el SHA final.
+
+### M0-B — continuidad, admisión y persistencia
+Reutilizar al menos las assertions existentes de:
+- `tests/nexo/continuity-contract.test.mjs`: forma persistida inválida, identidad ausente/duplicada, dependencias inválidas y grafo cíclico deben rechazarse antes de reconstrucción.
+- `tests/nexo/conditional-commit-persist-state.test.mjs`: revisión obsoleta produce conflicto sin sobrescribir el estado actual; fallo de persistencia o resultado no clasificable permanece `UNKNOWN`; entrada de revisión insegura no debe iniciar persistencia.
+- `tests/nexo/restart-reconstruction.test.mjs`: una ejecución aislada sin outcome no se convierte en finalización y un resultado obsoleto no revierte una finalización verificada.
+- Estado: **PENDING** hasta fijar la puerta final y obtener CI atribuible al SHA evaluado.
+
+### M0-C — reconstrucción terminal
+Reutilizar los casos ya presentes en `tests/nexo/continuity-contract.test.mjs` y `tests/nexo/restart-reconstruction.test.mjs`, además de las regresiones históricas referidas en STATUS:
+- conflicto de evidencia o discordancia de contexto no se resuelve por inferencia;
+- resultado obsoleto no degrada un resultado terminal verificado;
+- registro de ejecución sin outcome persistido no completa el paso ni la misión.
+- Estado: **PENDING** hasta enlazar los casos focales exactos con la evidencia CI final. No repetir la auditoría salvo contraejemplo nuevo.
+
+### M0-D — journal, recuperación y reconciliación
+Reutilizar las suites ya incluidas en `npm test`:
+- `tests/nexo/effect-intent-persistence.test.mjs`: el intent `prepared` debe persistirse antes de invocar el handler; si falla la persistencia, el handler no se ejecuta y la entrada permanece `prepared`.
+- `tests/nexo/continuity-contract.test.mjs` y la regresión fail-closed registrada en el handoff: estado desconocido del journal asociado a una misión bloquea; estado desconocido sin propietario resoluble no se ignora; los terminales aceptados conservan su semántica.
+- `tests/nexo/repair-settlement-crash-cuts.test.mjs`: no se acepta finalización basada solo en `verified` aportado por el caller ni se cierra sin verificación de objetivo soportada.
+- Estado: **PENDING** hasta enlazar casos/runs focales con CI final. No confundir un journal terminal local con prueba de efecto externo observado.
+
+### M0-E — dependencia no sustituible por CI
+Permanece **PENDING / BLOQUEANTE**. La prueba `tests/nexo/protected-transition.test.mjs` incluye una regresión contra campos de Constitución/raíz/autoridad aportados por el caller, pero sus fixtures de autoridad siguen siendo simulados. No existe evidencia en esta matriz de procedencia de raíz legítima integrada hasta el sink real. El registro de aceptación de puntos constitucionales 1–6 como base no equivale a aprobación del objeto exacto ni resuelve el punto 7, la fuente de confianza independiente o la integración del límite de efecto.
+
+### Límite de esta actualización
+Es un inventario documental de assertions ya existentes, no una nueva suite, no un cambio de runtime y no un PASS. No se ejecutó CI durante esta actualización. Estados conservadores sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
