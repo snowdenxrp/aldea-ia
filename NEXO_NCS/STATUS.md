@@ -2825,3 +2825,10 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - La observación relee el store, pero declara que no prueba atribución causal; el resultado público conserva `authorization: NOT_EVALUATED`.
 - Este hallazgo no elige la opción A/B/C, no cambia runtime y no amplía el scope constitucional. No demuestra que las rutas alternativas sean alcanzables en producción.
 - Estado conservador: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Matiz de bootstrap multi-store (2026-10-21)
+
+- El preflight de Chronicle y Continuity evita escribir cuando el store compañero ya se detectó corrupto, pero no crea una transacción atómica entre ambos archivos.
+- En el flujo actual, `openNexoContinuityOwner` puede inicializar Continuity antes de que `chronicleStore.initialize()` falle. La suite inspeccionada no contiene una aserción focal de ese crash/fallo del segundo bootstrap tras confirmar el primero.
+- Registrado como brecha de atomicidad/recuperación a evaluar, no como exploit demostrado. No introducir rollback compensatorio improvisado ni alterar runtime sin contrato estructural y prueba reproducible.
