@@ -184,3 +184,11 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - Ninguno de esos resultados implica autorización: el resultado público mantiene `authorization: NOT_EVALUATED`. No elegir opción A/B/C por inferencia y no cambiar runtime.
 - Próxima tarea: inventariar los puntos de escritura local (Chronicle y continuidad), política de inicialización y exposición a rutas configurables; determinar si existe un contraejemplo nuevo antes de añadir pruebas. No repetir auditorías históricas ni declarar M0-E cerrado.
 - Estados obligatorios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Brecha adicional de inicialización conjunta (2026-10-21)
+
+- El preflight evita efectos cuando detecta de antemano un store compañero corrupto, pero no hace atómica la creación de Chronicle + Continuity.
+- `openNexoContinuityOwner` puede inicializar Continuity primero; si después falla `chronicleStore.initialize()`, puede quedar un store creado y el otro ausente. La suite inspeccionada no demuestra el comportamiento crash-cut de este caso.
+- Tratar como brecha de contrato de bootstrap/recuperación multi-store, no como exploit confirmado. No añadir borrado compensatorio/rollback sin diseñar propiedad del archivo, estado canónico y recuperación.
+- Próxima unidad: definir si el primer scope requiere bootstrap multi-store atómico o admite estado parcial recuperable; derivar pruebas de crash-cut concretas antes de modificar implementación. Mantener la autoridad no evaluada y todos los efectos protegidos en STOP.
