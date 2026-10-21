@@ -35,3 +35,16 @@ Para cada punto 1–6, decisión: **ACEPTAR COMO BASE DEL BORRADOR**. Observacio
 ## Siguiente paso
 
 Mantener este registro y la guía de revisión sincronizados. Después continuar con el cierre finito de criterios M0 y la brecha M0-E: procedencia de raíz demostrable y conexión hasta el límite real de efecto protegido. La aceptación documental no sustituye esa evidencia.
+
+
+---
+
+## Punto 7 — Policy, contexto y evaluación de operaciones (decisión del propietario)
+
+Fecha: 2026-10-21.
+Decisión explícita del propietario: **ACEPTAR COMO BASE DEL BORRADOR**.
+Observaciones adicionales: no especificadas.
+
+Base aceptada: cada operación debe evaluarse frente a la Constitución vigente, la Policy aplicable, el contexto y la evidencia pertinente. La insuficiencia, contradicción, obsolescencia o imposibilidad de verificar información crítica debe producir `UNKNOWN/STOP`, no autorización por defecto.
+
+Límites: registrar únicamente la aceptación de este punto como base. No inferir aprobación constitucional completa, firma, congelación, commissioning ni autorización de efectos protegidos. Esta decisión no demuestra que el evaluador esté implementado o conectado al límite real de efectos protegidos.
