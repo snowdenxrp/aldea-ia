@@ -1,3 +1,14 @@
+## M0-E — frontera de autoridad del owner-backed runtime (2026-10-21)
+
+- Nuevo análisis de código: [NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md](BUILD/NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md), commit `db08ac35f2bb31b071da8c3dca550dd67ae579b0`.
+- Hallazgo principal: el owner-backed runtime restringe acciones por allowlist y rechaza reparaciones/acciones no admitidas antes de dispatch; esto no demuestra que evalúe raíz constitucional, Constitución vigente y Policy/contexto. Su `owner` es el propietario técnico de persistencia/continuidad, no prueba de legitimidad humana.
+- `executeProtectedTransition` sí consulta un `authorityGate` inyectado, pero su resultado `AUTHORIZED` no tiene procedencia legítima demostrada; además, `conditionalCommit.commit` no se ha probado como sink real ni se ha demostrado que gobierne Lúmina.
+- La ruta legacy de simulación puede mutar el objeto de simulación; se reutilizan AB104.150/P112 para el caller de producción no encontrado, sin repetir la auditoría ni declarar inalcanzabilidad total.
+- No se declara vulnerabilidad de producción ni se cambia runtime. Siguiente: decidir scope, trazar entradas → sink por cada efecto incluido, y probar dispatch cero para todos los estados negativos.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0-E — reconciliación de decisiones y opciones de scope (2026-10-21)
 
 - Corrección documental: el registro canónico ahora es coherente con la decisión del propietario: puntos 1–7 **ACEPTADOS COMO BASE DEL BORRADOR**, no aprobación constitucional completa. Commit del registro: `54f7c69fbc740882d19b9c66dce7003118e6b6df`; la guía de revisión se sincronizó en `f3582f3090b2e1042b698d88892a8f2d744b27e4`.
