@@ -2900,3 +2900,10 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Revisión de `tests/nexo/entrypoint.test.mjs` y `tests/nexo/chronicle-runtime.test.mjs`: ya hay evidencia para grafo de imports aislado de Lúmina, órdenes desconocidas bloqueadas, persistencia Chronicle local, replay sin redispatch, consultas sin escritura y acciones genéricas bloqueadas antes de PREPARED/dispatch.
 - Se evita añadir pruebas redundantes. Próximo punto: definir cómo se invocará la CLI en el producto y quién controla las rutas de almacenamiento; si la invoca el runtime o contenido no confiable, rediseñar ese límite antes de habilitarlo.
 - No hubo cambio de runtime. Estados conservados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### CI de evidencia de entry points (2026-10-21)
+
+- SHA validado: `50a55a16b39706456bbb7059d50d37a94e07e775`.
+- Workflow: [run 39694023840](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840), job [tests 119546914897](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840/job/119546914897): `completed/success`; paso `Run tests`: SUCCESS. Sin artefactos publicados.
+- El run valida la suite `npm test` del SHA exacto, incluido el test de entrypoint y runtime. No cierra M0-E ni prueba autoridad constitucional. La actualización de este registro documental requiere comprobar su propio SHA si se necesita afirmar CI para el HEAD actual.
