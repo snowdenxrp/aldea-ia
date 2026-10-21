@@ -43,6 +43,17 @@ https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUIL
 
 No editar automáticamente el borrador constitucional fuente para convertir las aceptaciones de base en una Constitución final. No generar digest/firma, provisionar raíz ni iniciar commissioning antes de la aprobación explícita del objeto exacto.
 
+## Plan adversarial M0-E agregado (2026-10-21)
+
+Plan: [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md)
+https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md
+
+- Se especificaron diez escenarios adversariales; los negativos deben demostrar tanto `UNKNOWN/STOP` como cero invocaciones del sink real.
+- No asumir que `conditionalCommit.commit` es el sink externo hasta inspeccionar implementación y callers.
+- No hay cambio runtime ni CI atribuible al nuevo documento por el mero hecho de crearlo.
+- Próximo paso: identificar sink y rutas, mapear suites existentes a los casos y evitar duplicar M0-B/C/D. No implementar raíz/verificador ficticio; no firmar, congelar ni commissionar Constitución. Los puntos 1–7 siguen aceptados solo como base del borrador.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
 ## M0 — estado técnico y criterios finitos
 
 Estados conservadores que deben permanecer:
