@@ -1,3 +1,15 @@
+## M0 — HEAD exacto y CI verificado (2026-10-21)
+
+- Referencia consultada directamente: `refs/heads/ncs-clean-architecture`; HEAD observado: `4e841d3115a43eefe60266346140d948dcae2052`.
+- Workflow determinista [39683852574](https://github.com/snowdenxrp/aldea-ia/actions/runs/39683852574), job [tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39683852574/job/119512816023): `completed / success` en ese SHA exacto. Paso `Run tests`: SUCCESS.
+- Esto confirma ejecución de `npm test` definida por el workflow en ese checkpoint; no prueba por sí solo raíz legítima, autorización, commissioning ni cierre de M0-E.
+- Inspección focal actual: `ownership.mjs` expone `effectBoundary.prepare` con fallback `NOT_IMPLEMENTED`; `protected-transition.mjs` continúa desde `authorityGate.check` y, tras validación semántica, llama `conditionalCommit.commit(candidate)` sin llamar a `effectBoundary.prepare`. M0-E sigue siendo brecha de integración, no bypass activo demostrado.
+- El registro constitucional vigente recoge puntos 1–7 aceptados solo como base del borrador; objeto constitucional exacto no aprobado/fijado, raíz independiente no provisionada y commissioning no autorizado.
+- Próximo paso: no reabrir A–D sin evidencia nueva. Mantener el bloqueo M0-E y definir la prueba adversarial integrada después de que exista aprobación explícita del objeto constitucional exacto y contrato de raíz/procedencia verificable.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0-E — vector bootstrap frente a reconocimiento real de raíz (2026-10-20)
 
 - Informe focal: [NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md](BUILD/NCS_M0_ROOT_BOOTSTRAP_TEST_SCOPE_AND_RUNTIME_GAP_2026-10-20.md).
