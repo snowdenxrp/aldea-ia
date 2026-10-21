@@ -1,3 +1,12 @@
+## M0 — CI del checkpoint de documentación y plan (2026-10-21)
+
+- HEAD del checkpoint verificado antes de este registro: `a53fc8801f2558d63d0ef7b8af50e162b91ad70b`.
+- Workflow determinista [39684885160](https://github.com/snowdenxrp/aldea-ia/actions/runs/39684885160), job [tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39684885160/job/119516324277): `completed / success`; paso `Run tests`: SUCCESS. Ejecutó el `npm test` configurado en ese SHA, incluidos los tests Nexo enumerados en `package.json`.
+- Alcance: valida el checkpoint citado, no demuestra raíz legítima, aprobación constitucional exacta, ausencia de todas las rutas alternativas ni cierre M0-E. Los commits posteriores requieren verificación por su propio SHA.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0-E — tests existentes mapeados y CI del checkpoint (2026-10-21)
 
 - El plan [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](BUILD/NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md) mapea cobertura ya existente: `tests/nexo/chronicle-runtime.test.mjs` conserva `authorization: NOT_EVALUATED`; `tests/nexo/effect-adapter.test.mjs` cubre precondiciones, handler, postcondición, PREPARED y recibo canónico; el vector bootstrap sigue siendo solo vector.
