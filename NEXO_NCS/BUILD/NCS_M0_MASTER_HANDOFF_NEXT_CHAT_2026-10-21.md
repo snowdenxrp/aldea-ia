@@ -265,3 +265,9 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - No repetir tests: `tests/nexo/entrypoint.test.mjs` ya cubre API pública estrecha, import graph sin Lúmina, CLI local, replay desde segundo proceso sin redispatch, consultas sin escritura y no exponer payload. `tests/nexo/chronicle-runtime.test.mjs` ya cubre acción genérica bloqueada antes de PREPARED/dispatch y fallo de lectura pre-dispatch.
 - La brecha útil siguiente es definir el modelo de invocación de CLI en el producto Nexo: operador local confiable frente a invocación por runtime/contenido no confiable. No añadir hardening parcial del filesystem hasta que el modelo de amenaza esté definido.
 - M0-E permanece abierto por ausencia de raíz legítima verificable conectada a la frontera de efectos protegidos. Estados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## CI confirmado para evidencia de entry points (2026-10-21)
+
+- SHA `50a55a16b39706456bbb7059d50d37a94e07e775`: workflow [39694023840](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840), job [tests 119546914897](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840/job/119546914897), `completed/success`, paso `Run tests` SUCCESS, sin artefactos.
+- Esta validación cubre la suite definida por `npm test` en ese SHA. No cierra M0-E ni habilita efectos protegidos. El commit que añade este registro debe tener su CI comprobado por SHA exacto antes de llamarlo validado.
