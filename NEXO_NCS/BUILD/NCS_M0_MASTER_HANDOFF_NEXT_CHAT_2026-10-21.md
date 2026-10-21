@@ -163,3 +163,12 @@ Nuevo análisis: [NCS_M0_E_MINIMUM_INTEGRATION_CONTRACT_ANALYSIS_2026-10-21.md](
 **Importante sobre HEAD/CI:** la búsqueda de commits recientes devuelve commits globales de otras líneas de trabajo (incluida Lúmina) y la comparación de hashes se mostró divergente; no usar esos commits como HEAD de `ncs-clean-architecture`. El conector disponible no devolvió el SHA de `refs/heads/ncs-clean-architecture` directamente. Por tanto, el HEAD exacto y el CI atribuible a él quedan **PENDING de verificación**. Resolverlo antes de cualquier cambio runtime o declaración de CI PASS.
 
 Próximo paso: verificar el SHA exacto de la ref; si no hay cambios en M0-E desde los blobs anotados en el análisis, avanzar con el contrato mínimo y una prueba adversarial del sink real. No reabrir B/C/D, no implementar una raíz ficticia, no inferir autorización de las aceptaciones de base.
+
+
+## Última ampliación M0-E — frontera de autoridad (2026-10-21)
+
+- Hallazgo documentado: [NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md](NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md).
+- El owner-backed runtime bloquea reparaciones y acciones no admitidas antes de dispatch, pero no se observó un gate de raíz/Constitución/Policy en esa ruta. Su `owner` es el dueño técnico de persistencia, no la prueba del propietario humano.
+- Core `executeProtectedTransition` consulta un gate inyectado; la legitimidad del resultado no está demostrada y `conditionalCommit.commit` no se ha probado como sink real. La ruta legacy Lúmina conserva handlers mutadores y no se ha demostrado el cierre de todas las entradas.
+- Esto es brecha de integración, no vulnerabilidad de producción probada. No cambiar runtime ni repetir AB104.150/P112 sin evidencia nueva.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
