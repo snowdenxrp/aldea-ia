@@ -1,3 +1,13 @@
+## M0-E — inventario preliminar de rutas y sinks (2026-10-21)
+
+- El plan adversarial ahora distingue rutas que no deben confundirse: (1) Core `protected-transition → conditionalCommit.commit`, cuya condición de sink externo no está demostrada; (2) ruta Lúmina `executeLuminaNexoStep → executeNexoStep → effect adapter → handler`, con mutación de simulación en handlers; (3) ruta owner-backed canónica, que bloquea acciones distintas de `chronicle_append` en el punto inspeccionado.
+- Fuentes actuales: [effect-adapter.js](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/src/nexo/effect-adapter.js), [simulation-adapter.js](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/src/nexo/simulation-adapter.js), [runtime.js](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/src/nexo/runtime.js), [owner-backed-runtime.mjs](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/src/nexo/core/owner-backed-runtime.mjs).
+- No se concluye que todas las rutas estén alcanzables en producción ni que exista un bypass activo. El scope constitucional inicial debe determinar cuáles rutas/efectos están dentro de M0-E antes de llamar a un sink “real”.
+- Próximo paso: mapear entry points y callers por efecto protegido; identificar la última mutación posible y probar que toda ruta en scope cruza el mismo enforcement. No inferir que el commit del Core es sink externo ni ampliar a todos los efectos Lúmina sin base del alcance.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0-E — plan adversarial de aceptación (2026-10-21)
 
 - Plan nuevo: [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](BUILD/NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md), commit inicial `961087046d6b9e452422581f1eb387460cc1c0ba`.
