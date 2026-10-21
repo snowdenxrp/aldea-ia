@@ -43,6 +43,18 @@ La aplicación hace preflight de ambos archivos antes de escribir, lo cual evita
 
 Las pruebas existentes verifican el rechazo de stores compañeros corruptos durante preflight y la carrera de bootstrap concurrente; no encontré en la suite inspeccionada una aserción específica de recuperación/estado tras fallo del segundo bootstrap después de que el primero se haya confirmado. Esto identifica una **brecha de atomicidad/recuperación multi-store que debe evaluarse**, no una prueba de exploit ni una razón para agregar un rollback improvisado. La solución, si se requiere atomicidad, debe diseñarse como contrato estructural de bootstrap y recuperación, no como borrado compensatorio sin prueba de propiedad del archivo.
 
+### 6. Prueba focal añadida: fallo del segundo store y recuperación explícita
+
+En `tests/nexo/chronicle-runtime.test.mjs` se añadió un escenario reproducible:
+
+- Continuity usa una ruta válida; Chronicle usa un directorio padre que no existe.
+- Se solicita explícitamente inicializar ambos. Continuity se inicializa, pero la inicialización de Chronicle devuelve `NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE`.
+- La prueba afirma que el resultado es `blocked`, `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, Continuity queda vacío, y Chronicle sigue ausente.
+- Después de crear el directorio faltante, se reintenta con `initializeContinuity: false` y `initializeChronicle: true`. La prueba exige que la operación complete sin reinicializar Continuity, con una misión y una entrada Chronicle.
+
+Esto valida un contrato de **fallo explícito y recuperación por reintento**, no atomicidad entre archivos. El código runtime no se cambió. El test se ha guardado en commit `8deabb5ca0b314ecd6a699a4b7a8bcb3f470c767`; hasta consultar CI del SHA final, su ejecución debe considerarse pendiente.
+
+
 ### 4. Qué no queda demostrado
 - No se demuestra que la escritura Chronicle sea un sink externo, una acción irreversible fuera del dispositivo o una mutación Lúmina.
 - Tampoco se demuestra que la configuración de rutas, los permisos del proceso o el filesystem sean una frontera de seguridad contra otro código/proceso local.
