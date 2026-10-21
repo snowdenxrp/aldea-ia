@@ -2849,3 +2849,12 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Se añadió a `tests/nexo/chronicle-store.test.mjs` una prueba que simula el error de respuesta después de que `rename` ya haya persistido el envelope vacío de inicialización. La implementación debe releer el envelope y devolver `committed` solo si coincide exactamente.
 - Test commit: `d245fa7bb2f497a87a5972b4313bd9f5de490c54`. No cambia runtime; complementa la prueba de recuperación multi-store, sin afirmar atomicidad entre stores.
 - CI del SHA que contiene esta nueva prueba y de la actualización documental final: pendiente de consulta. No extrapolar el SUCCESS anterior del SHA `f410ab92dd113a4b3188232575098e8b02fb1371`.
+
+
+## Decisión del propietario — alcance inicial M0-E (2026-10-21)
+
+- El propietario eligió **opción A: arranque sin efectos protegidos**, registrada en [NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md](DECISIONS/NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md), commit inicial `d62abfdaadfff7e6f29a0377983b4499f078c637`.
+- Es alcance inicial de trabajo provisional. No es aprobación constitucional completa, firma, congelación, commissioning ni autorización de efectos protegidos.
+- Permitido sujeto a verificación: lectura, planificación, diagnóstico y persistencia interna acotada. La clasificación depende del efecto real, no del nombre de la operación.
+- Reparaciones, mutaciones de Lúmina/simulación, efectos externos y rutas de sink no verificadas siguen excluidos/bloqueados. Ante incertidumbre: `UNKNOWN/STOP`.
+- Siguiente: matriz de operaciones → entry points → efectos/sinks → enforcement/pruebas negativas; mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
