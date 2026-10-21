@@ -72,6 +72,13 @@ Plan actualizado: [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](NCS_
 - La ruta owner-backed canónica permite `chronicle_append` y bloquea otras acciones en ese entry point; la ruta de simulación tiene handlers capaces de mutar estado. No inferir que son alcanzables o inalcanzables en producción sin rastrear callers.
 - Próximo paso: derivar el alcance inicial del borrador y mapear los entry points de cada efecto protegido; luego añadir solo tests que cubran autoridad/Constitución exactas antes del dispatch y ausencia de dispatch en negativos. Mantener sin cambios los estados conservadores.
 
+## CI confirmado del checkpoint documental M0-E (2026-10-21)
+
+- SHA evaluado: `a53fc8801f2558d63d0ef7b8af50e162b91ad70b`.
+- Workflow determinista [39684885160](https://github.com/snowdenxrp/aldea-ia/actions/runs/39684885160), job [tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39684885160/job/119516324277): `completed/success`; `Run tests`: SUCCESS.
+- Alcance: el `npm test` configurado en ese SHA, incluidas las suites Nexo enumeradas en `package.json`. No acredita la raíz, aprobación de la Constitución exacta, el cierre M0-E ni commits posteriores.
+- No volver a repetir tests de precondición/PREPARED/postcondición ya cubiertos sin contraejemplo. Enfocar trabajo nuevo en autoridad/Constitución confiables aplicadas antes del dispatch y prueba de cero dispatch en negativos.
+
 ## M0 — estado técnico y criterios finitos
 
 Estados conservadores que deben permanecer:
