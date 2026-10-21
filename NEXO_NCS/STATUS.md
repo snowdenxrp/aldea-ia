@@ -2858,3 +2858,13 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Permitido sujeto a verificación: lectura, planificación, diagnóstico y persistencia interna acotada. La clasificación depende del efecto real, no del nombre de la operación.
 - Reparaciones, mutaciones de Lúmina/simulación, efectos externos y rutas de sink no verificadas siguen excluidos/bloqueados. Ante incertidumbre: `UNKNOWN/STOP`.
 - Siguiente: matriz de operaciones → entry points → efectos/sinks → enforcement/pruebas negativas; mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
+
+
+## Matriz de enforcement del alcance A (2026-10-21)
+
+- Nueva matriz: [NCS_M0_E_OPTION_A_OPERATION_EFFECT_ENFORCEMENT_MATRIX_2026-10-21.md](BUILD/NCS_M0_E_OPTION_A_OPERATION_EFFECT_ENFORCEMENT_MATRIX_2026-10-21.md), commit `e5e0ee4a635f57671febb3d0b6f7a207fedc2e0a`.
+- Distingue lectura de stores, persistencia Chronicle, owner-backed runtime, protected transition y adaptadores de simulación/Lúmina por efecto y enforcement observado.
+- No se cambió runtime. La matriz es inventario inicial, no certificación exhaustiva de todos los entry points.
+- Próxima prueba de mayor valor: demostrar que status y mission-status son solo lectura y no crean/modifican stores. Después reutilizar pruebas existentes del owner-backed gate para acciones excluidas.
+- Decisión A registrada por el propietario sigue siendo provisional; no implica aprobación constitucional completa ni habilitación de efectos protegidos.
+- Estado conservador: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
