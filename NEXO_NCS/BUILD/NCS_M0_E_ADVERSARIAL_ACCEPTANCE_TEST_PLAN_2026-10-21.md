@@ -77,3 +77,15 @@ Inspection of current branch files adds an important distinction; it does **not*
 Before calling any one of these the M0-E sink, map the exact initial protected-effect scope from the accepted Constitution draft and the actual supported entry points. For every in-scope effect, identify the last mutation-capable handler and all callers/alternate paths. Do not broaden scope to all Lúmina simulation effects by inference, and do not declare the Core transition's commit to be an external sink without evidence.
 
 The test matrix E-01…E-10 remains valid as a contract-level checklist, but concrete tests must be bound to the selected path(s). Until that mapping is documented, E-08 (no alternate route) and the positive path cannot be marked PASS.
+
+
+## Existing test coverage mapped to the path inventory (2026-10-21)
+
+- `tests/nexo/chronicle-runtime.test.mjs` (blob `cb2c2397bba3dd11a1a15a81cca65ca498e385f6`) tests the owner-backed Chronicle execution slice and explicitly asserts public results retain `authorization: NOT_EVALUATED` when authority has not been evaluated. This is correct conservative signaling; it is not a root verifier or constitutional authorization test.
+- `tests/nexo/effect-adapter.test.mjs` (blob `602a220cafc31888892a04d31a06d256bf49b455`) exercises handler invocation, precondition rejection, postcondition failure, PREPARED obligations, and canonical prepare receipts. It proves adapter lifecycle properties in its fixtures; it does not show a Constitution/root authority gate connected to every registered handler.
+- `src/nexo/core/owner-backed-runtime.mjs` currently allows the canonical owner-backed path only for `chronicle_append`; it rejects other non-repair actions before dispatch and rejects repair actions under a separate missing settlement contract. This is useful fail-closed scope reduction for that entry point, not proof that other entry points are unreachable.
+- `.github/workflows/nexo-deterministic-tests.yml` runs `npm test`; the `package.json` test script does include Nexo suites including `effect-adapter.test.mjs`, `chronicle-runtime.test.mjs`, `root-bootstrap-protocol.test.mjs`, `protected-transition.test.mjs`, and persistence/reconstruction suites.
+
+### Consequence
+
+Do not write duplicate tests for the already-covered lifecycle semantics. The new M0-E acceptance tests should target the missing predicate: **a legitimate, current owner/Constitution decision must be derived from trusted sources and enforced before the canonical dispatch/mutation point**, while all untrusted/missing/stale/conflicting cases demonstrate no dispatch. In parallel, determine whether the legacy Lúmina simulation mutation path is excluded from initial M0 scope or must receive the same enforcement; do not infer reachability or exclusion from module separation alone.
