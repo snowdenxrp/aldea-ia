@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
-import { runNexoRuntimeRepairSession } from "../../scripts/nexo-runtime-session.mjs";
+import { runNexoRepairSession } from "../../scripts/nexo-repair-session.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
 import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
 
@@ -67,10 +67,14 @@ try {
   });
   await fs.writeFile(statePath, JSON.stringify(environment(100)), "utf8");
 
-  const settled = await runNexoRuntimeRepairSession({
-    continuity: opened,
+  // Isolated protocol test only: Option A blocks this repair through the
+  // product-runtime integration; this lower-level test exercises settlement.
+  const settled = await runNexoRepairSession({
+    owner: opened.owner,
+    store: opened.store,
     statePath,
-    missionId: "mission-verification"
+    missionId: "mission-verification",
+    stepId: "step-verification"
   });
   assert.equal(settled.status, "settled_observed");
   assert.equal(settled.missionCompleted, false);
