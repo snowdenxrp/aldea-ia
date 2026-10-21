@@ -1,3 +1,13 @@
+## M0-E — reconciliación de decisiones y opciones de scope (2026-10-21)
+
+- Corrección documental: el registro canónico ahora es coherente con la decisión del propietario: puntos 1–7 **ACEPTADOS COMO BASE DEL BORRADOR**, no aprobación constitucional completa. Commit del registro: `54f7c69fbc740882d19b9c66dce7003118e6b6df`; la guía de revisión se sincronizó en `f3582f3090b2e1042b698d88892a8f2d744b27e4`.
+- Propuesta nueva, aún no aceptada: [NCS_M0_E_INITIAL_SCOPE_OPTIONS_FOR_OWNER_2026-10-21.md](BUILD/NCS_M0_E_INITIAL_SCOPE_OPTIONS_FOR_OWNER_2026-10-21.md), commit `2584958a6de3e2d50026019ac4f44f5a17b2a600`. Compara (A) arranque sin efectos protegidos, (B) un efecto local acotado y (C) efectos de simulación Lúmina; recomienda A solo como postura provisional fail-closed, no como decisión constitucional inferida.
+- Reutilizar los informes históricos AB104.150/P112: no se encontró caller de producción que invoque `executeLuminaNexoStep()` y proporcione callback de persistencia canónica. No repetir esa auditoría sin cambio de código; la ausencia de caller hallado no prueba que todas las rutas alternativas sean inalcanzables.
+- Scope exacto sigue OPEN. No implementar raíz/verificador ni habilitar handlers antes de la decisión explícita y el enforcement verificable.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0-E — reconciliación de scope y fronteras (2026-10-21)
 
 - Informe nuevo: [NCS_M0_E_SCOPE_AND_EXECUTION_BOUNDARY_RECONCILIATION_2026-10-21.md](BUILD/NCS_M0_E_SCOPE_AND_EXECUTION_BOUNDARY_RECONCILIATION_2026-10-21.md), commit `dcc35c1c3e9a04af753b54c466be9f471ad9504a`.
