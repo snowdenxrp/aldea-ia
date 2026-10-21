@@ -2868,3 +2868,11 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Próxima prueba de mayor valor: demostrar que status y mission-status son solo lectura y no crean/modifican stores. Después reutilizar pruebas existentes del owner-backed gate para acciones excluidas.
 - Decisión A registrada por el propietario sigue siendo provisional; no implica aprobación constitucional completa ni habilitación de efectos protegidos.
 - Estado conservador: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Prueba focal de consultas de Continuity sin escritura (2026-10-21)
+
+- Se añadió en `tests/nexo/chronicle-runtime.test.mjs` una prueba de `loadNexoContinuityStatus` y `loadNexoMissionStatus`: compara bytes/mtime de un store existente antes y después; además, verifica que consultar una ruta ausente no crea el archivo y devuelve `blocked`.
+- Test commit: `fbc0abbe89d07f19cd428e35072043a88ba2961f`. Informe de matriz actualizado en `d356ecd8435f02d208e5450082559ad5c3d431b2`.
+- CI del SHA documental final sigue pendiente; el CI anterior no se extrapola a este cambio.
+- No se modificó runtime. La prueba cubre estas funciones/casos, no filesystem adversarial externo ni todas las rutas posibles.
