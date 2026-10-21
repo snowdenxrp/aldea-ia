@@ -230,3 +230,12 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - Próximo paso concreto: inspeccionar las implementaciones de loadNexoContinuityStatus/loadNexoMissionStatus y agregar una prueba de no-escritura que demuestre que no crean ni modifican archivos; reutilizar las pruebas owner-backed ya existentes para gates de acciones excluidas.
 - No modificar runtime hasta que la prueba descubra un contraejemplo real. No repetir AB104/P112 cerrados sin evidencia nueva.
 - Opción A aceptada como alcance inicial provisional; no es aprobación constitucional completa ni autorización de efectos protegidos. Estados: M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
+
+
+## Prueba focal de solo lectura para queries de Continuity (2026-10-21)
+
+- Test en `tests/nexo/chronicle-runtime.test.mjs`, commit `fbc0abbe89d07f19cd428e35072043a88ba2961f`.
+- Ejecuta `loadNexoContinuityStatus`, `loadNexoMissionStatus` para misión existente/ausente, compara bytes y mtime del store antes/después y prueba que consultas sobre ruta ausente no crean el archivo.
+- Informe de matriz: commit `d356ecd8435f02d208e5450082559ad5c3d431b2`; STATUS: commit `0e223c132d2f5b4463d1f592843eb47952c4e77e`.
+- CI del HEAD final debe verificarse por SHA exacto. No declarar PASS hasta obtener workflow completed/success y job tests success.
+- Si pasa, no expandir la suite de lectura sin una nueva superficie de efecto. Continuar con M0-E: raíz legítima verificable → Constitución exacta/Policy/contexto → enforcement en el sink real; mantener A como alcance provisional sin efectos protegidos.
