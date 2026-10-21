@@ -79,6 +79,17 @@ Plan actualizado: [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](NCS_
 - Alcance: el `npm test` configurado en ese SHA, incluidas las suites Nexo enumeradas en `package.json`. No acredita la raíz, aprobación de la Constitución exacta, el cierre M0-E ni commits posteriores.
 - No volver a repetir tests de precondición/PREPARED/postcondición ya cubiertos sin contraejemplo. Enfocar trabajo nuevo en autoridad/Constitución confiables aplicadas antes del dispatch y prueba de cero dispatch en negativos.
 
+## Reconciliación nueva: scope y fronteras de ejecución M0-E
+
+Informe: [NCS_M0_E_SCOPE_AND_EXECUTION_BOUNDARY_RECONCILIATION_2026-10-21.md](NCS_M0_E_SCOPE_AND_EXECUTION_BOUNDARY_RECONCILIATION_2026-10-21.md)
+
+- Una llave raíz/un dispositivo inicial ya fue aceptado como alcance arquitectónico, pero el borrador constitucional marca el scope exacto de efectos como OPEN. La aceptación de puntos 1–7 solo como base del borrador no permite resolver ese scope por inferencia.
+- Owner-backed runtime bloquea repair y acciones distintas de `chronicle_append`; Chronicle es persistencia local y sigue `authorization: NOT_EVALUATED`, no una operación constitucionalmente autorizada.
+- Core `protected-transition → conditionalCommit.commit`: no se ha demostrado que sea el sink externo; el camino inspeccionado no invoca `effectBoundary.prepare`.
+- Legacy/simulation handlers mutan la simulación, pero no se ha demostrado qué entry points/callers son alcanzables en producción ni si pertenecen al scope inicial.
+- Siguiente paso: inventariar callers/exported entry points y preparar propuesta de scope mínima explícita para decisión del propietario. No cambiar runtime ni añadir pruebas que asuman un sink hasta identificarlo. Sin CI PASS para documentos posteriores al SHA probado.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
 ## M0 — estado técnico y criterios finitos
 
 Estados conservadores que deben permanecer:
