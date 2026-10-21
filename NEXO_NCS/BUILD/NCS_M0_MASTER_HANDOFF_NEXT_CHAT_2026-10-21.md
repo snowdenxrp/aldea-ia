@@ -239,3 +239,13 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - Informe de matriz: commit `d356ecd8435f02d208e5450082559ad5c3d431b2`; STATUS: commit `0e223c132d2f5b4463d1f592843eb47952c4e77e`.
 - CI del HEAD final debe verificarse por SHA exacto. No declarar PASS hasta obtener workflow completed/success y job tests success.
 - Si pasa, no expandir la suite de lectura sin una nueva superficie de efecto. Continuar con M0-E: raíz legítima verificable → Constitución exacta/Policy/contexto → enforcement en el sink real; mantener A como alcance provisional sin efectos protegidos.
+
+
+## Opción A — auditoría del límite de confianza de filesystem (2026-10-21)
+
+- Informe: [NCS_M0_E_OPTION_A_FILESYSTEM_TRUST_BOUNDARY_AUDIT_2026-10-21.md](NCS_M0_E_OPTION_A_FILESYSTEM_TRUST_BOUNDARY_AUDIT_2026-10-21.md), commit `63d76400b8e12cf2954796145a355f11dffb2bbd`; STATUS enlazado en commit `1ec27903684b3abd543cd4bc9c6f3f42f6ce6c37`.
+- Los stores reciben `filePath` como configuración confiable. `--continuity` no define por sí mismo directorio permitido ni controles de symlink/permisos. No se cambió runtime.
+- Bajo opción A, tratar las rutas como configuración confiable del prototipo; no recibirlas desde misiones/claims/contenido no confiable. Si actores locales externos entran en el modelo de amenaza, definirlo antes de diseñar un control integral de filesystem.
+- CI del informe y del handoff final debe comprobarse para el SHA exacto. No extrapolar los SUCCESS anteriores.
+- Continuar desde este punto: confirmar CI; luego inspeccionar bootstrap real que fija las rutas. No ampliar pruebas de filesystem sin decisión de modelo de amenaza. M0-E sigue abierto: raíz legítima → Constitución exacta/Policy/contexto → enforcement en sink real.
+- Estados obligatorios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
