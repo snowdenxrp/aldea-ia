@@ -271,3 +271,14 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 
 - SHA `50a55a16b39706456bbb7059d50d37a94e07e775`: workflow [39694023840](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840), job [tests 119546914897](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840/job/119546914897), `completed/success`, paso `Run tests` SUCCESS, sin artefactos.
 - Esta validación cubre la suite definida por `npm test` en ese SHA. No cierra M0-E ni habilita efectos protegidos. El commit que añade este registro debe tener su CI comprobado por SHA exacto antes de llamarlo validado.
+
+
+## Hallazgo y corrección: integración alternativa de reparación bajo opción A (2026-10-21)
+
+- Informe: [NCS_M0_E_OPTION_A_REPAIR_RUNTIME_GATE_FINDING_2026-10-21.md](NCS_M0_E_OPTION_A_REPAIR_RUNTIME_GATE_FINDING_2026-10-21.md), commit `612ea1fe3e9f681cf3f28848b33223ddbde9bc1c`.
+- Se encontró una ruta concreta fuera del owner-backed runtime: `scripts/assistants.mjs --nexo-repair-once` → `runNexoRuntimeRepairSession` → `runNexoRepairSession` → `runNexoRepairOnce` → `dispatchPreparedRepair` → handler Lúmina → `persistState`.
+- Esto contradice el scope A (reparaciones excluidas), aunque no prueba efecto externo ni ejecución automática. `scripts/nexo-runtime-session.mjs` ahora devuelve inmediatamente `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`.
+- Las pruebas `repair-session.test.mjs` y `repair-mission-verification.test.mjs` separan el gate de runtime de las pruebas aisladas del protocolo interno. CI exacto aún pendiente.
+- Mantener en mente el límite: módulos de bajo nivel siguen importables por código interno; esto no es una frontera contra código arbitrario en el mismo proceso. No conectarlos a otra entrada de producto sin decisión explícita y enforcement.
+- Próximo: confirmar CI para el SHA final; si pasa, seguir el mapa de entradas de producto restantes sin repetir tests ya cerrados. M0-E raíz legítima → Constitución exacta/Policy/contexto → sink real continúa abierto.
+- Estados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
