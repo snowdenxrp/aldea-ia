@@ -288,3 +288,6 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 
 - SHA `7396bfcec3d54d2e2d0b1371e3188d29c9b9461a`: [workflow 39695419937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937), [job tests 119551490108](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937/job/119551490108), `completed/success`, paso `Run tests` SUCCESS.
 - Este SHA contiene la integración bloqueada, las pruebas actualizadas y los documentos de hallazgo/matriz. El siguiente commit documental que registra este resultado necesitará su propio CI por SHA exacto.
+
+
+- El registro del checkpoint previo `e736e59e03374cf0eaaf7b89e1f6ca2a86abf3d1` pasó CI: [run 39695510462](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695510462), [job tests 119551825257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695510462/job/119551825257), `completed/success`. El siguiente HEAD generado por este registro debe verificarse por SHA exacto.
