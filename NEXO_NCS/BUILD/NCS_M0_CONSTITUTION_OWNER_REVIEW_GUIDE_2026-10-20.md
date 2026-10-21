@@ -90,3 +90,17 @@ Este cruce se añade para evitar que el propietario tenga que buscar cada decisi
 5. Sólo entonces decidir si el texto debe reformularse. La aprobación de una revisión exacta y la autorización de una transición concreta siguen siendo actos separados.
 
 **No se ha marcado ningún punto como ACEPTO/RECHAZO por el propietario.** La tabla es un índice de revisión; no canoniza el texto, no resuelve los OPEN, no crea digest/firma y no autoriza implementación ni commissioning.
+
+
+---
+
+## Registro de decisiones del propietario — 2026-10-21
+
+El registro explícito del propietario está en [NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md](../DECISIONS/NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md). Ese registro prevalece sobre las tablas de trabajo anteriores cuando éstas muestran los puntos 1–6 como OPEN: el propietario **aceptó los puntos 1–6 como base del borrador**, sin observaciones adicionales. Esta aceptación no equivale a aprobación constitucional completa ni congela o activa el borrador.
+
+- Puntos 1–6: **ACEPTADOS COMO BASE DEL BORRADOR**; los mecanismos concretos que el registro identifica expresamente como pendientes permanecen pendientes.
+- Punto 7 (Policy, contexto y evaluación de operaciones): **OPEN / NO ACEPTADO**.
+- No inferir firma, congelación, commissioning ni autorización de efectos protegidos.
+- Estado: borrador DRAFT / NOT FROZEN / NOT COMMISSIONED; M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+Este añadido corrige el estado de las decisiones humanas; no modifica el borrador constitucional fuente ni demuestra implementación/runtime.
