@@ -2707,3 +2707,15 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - La aceptación no constituye aprobación constitucional completa, firma, congelación, commissioning ni autorización de efectos protegidos.
 - El punto 7 aceptado en papel no demuestra un evaluador integrado al sink real; M0-E continúa bloqueante.
 - No se ejecutó CI como resultado de esta actualización documental.
+
+
+---
+
+## NCS M0 — handoff maestro de continuidad (2026-10-21)
+
+- Handoff para abrir el siguiente chat: [NCS_M0_MASTER_HANDOFF_NEXT_CHAT_2026-10-21.md](BUILD/NCS_M0_MASTER_HANDOFF_NEXT_CHAT_2026-10-21.md).
+- Commit del handoff: `d26ba5e8e3a98047c0eb80eb55b45201412892c5`.
+- Decisiones del propietario de los puntos constitucionales 1–7: `ACEPTAR COMO BASE DEL BORRADOR`; no equivalen a aprobación completa, firma, congelación, commissioning ni autorización de efectos protegidos.
+- No se modificó el borrador constitucional fuente ni se cambió runtime en este paso.
+- Continuidad obligatoria: verificar HEAD real de `ncs-clean-architecture` y CI atribuible a ese SHA; no extrapolar los runs históricos de la matriz. Después continuar desde M0-E, sin repetir B/C/D salvo evidencia nueva.
+- Estado conservador sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
