@@ -1,3 +1,14 @@
+## M0-E — plan adversarial de aceptación (2026-10-21)
+
+- Plan nuevo: [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](BUILD/NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md), commit inicial `961087046d6b9e452422581f1eb387460cc1c0ba`.
+- Define diez escenarios focales (raíz/procedencia ausente, autoridad autodeclarada, firma/clave inválida, Constitución no exacta, revocación/rollback/conflicto, Policy/contexto no confiable, verificador no disponible, rutas alternativas, fallo/resultado incierto del sink y camino positivo legítimo).
+- Cada caso negativo exige comprobar a la vez el resultado fail-closed y que el sink real se invocó cero veces. El plan advierte que `conditionalCommit.commit` no debe asumirse automáticamente como sink de efectos externos sin inspeccionar su implementación y callers.
+- Especificación solamente: no cambia runtime, no implementa raíz, no aprueba ni congela la Constitución, no provisiona clave y no autoriza commissioning.
+- Próximo trabajo: identificar el sink real y sus callers dentro del alcance, mapear tests existentes a E-01…E-10 y solo después implementar tras resolver fuente independiente de raíz y aprobación del objeto constitucional exacto.
+- Estado conservador: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0 — HEAD exacto y CI verificado (2026-10-21)
 
 - Referencia consultada directamente: `refs/heads/ncs-clean-architecture`; HEAD observado: `4e841d3115a43eefe60266346140d948dcae2052`.
