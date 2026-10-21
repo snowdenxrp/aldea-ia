@@ -2876,3 +2876,12 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Test commit: `fbc0abbe89d07f19cd428e35072043a88ba2961f`. Informe de matriz actualizado en `d356ecd8435f02d208e5450082559ad5c3d431b2`.
 - CI del SHA documental final sigue pendiente; el CI anterior no se extrapola a este cambio.
 - No se modificó runtime. La prueba cubre estas funciones/casos, no filesystem adversarial externo ni todas las rutas posibles.
+
+
+## Opción A — límite de confianza de filesystem (2026-10-21)
+
+- Auditoría nueva: [NCS_M0_E_OPTION_A_FILESYSTEM_TRUST_BOUNDARY_AUDIT_2026-10-21.md](BUILD/NCS_M0_E_OPTION_A_FILESYSTEM_TRUST_BOUNDARY_AUDIT_2026-10-21.md), commit `63d76400b8e12cf2954796145a355f11dffb2bbd`.
+- Hallazgo: los stores de Continuity y Chronicle reciben rutas como configuración confiable; el parseo de `--continuity` no define por sí mismo un directorio permitido ni prueba controles de symlink/permisos. Las pruebas de solo lectura no certifican seguridad general del filesystem.
+- Decisión técnica provisional: no modificar runtime sin un modelo de amenaza definido. Documentar el control de la ruta de almacenamiento; no aceptar paths desde misiones/claims ni contenido no confiable. “Local” no es raíz de autoridad.
+- El informe nuevo requiere CI en su SHA final.
+- Estados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
