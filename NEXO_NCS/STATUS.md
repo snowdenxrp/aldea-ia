@@ -2671,3 +2671,16 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - CI descubrió fixture obsoleto: un test llamaba `completed` estado terminal del journal, pero el contrato operativo no lo reconoce. Run fallido documentado: [39452369889](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452369889), assertion `201 !== 200`. Fixture corregido a `settled_observed` en `419546c10552ae88fe98e3dbf89d7a865dd48e56`; no se relajó la preservación de estados desconocidos.
 - En el SHA exacto de corrección `419546c10552ae88fe98e3dbf89d7a865dd48e56`, SUCCESS: [persistencia determinista 39452539513](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539513), [admisión/continuidad 39452539695](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539695), [validación semántica 39452539536](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539536), [clasificación de outcomes 39452539530](https://github.com/snowdenxrp/aldea-ia/actions/runs/39452539530).
 - M0 sigue `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## NCS M0 — registro de decisiones constitucionales del propietario (2026-10-21)
+
+- Registro creado: [NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md](DECISIONS/NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md), commit `19ee8d0d323d53cefccf2c65d6c45a034c9240a4`.
+- Guía sincronizada: [NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md](BUILD/NCS_M0_CONSTITUTION_OWNER_REVIEW_GUIDE_2026-10-20.md), commit `304563bf12b90bc3422ee72b0264c85a4d0a5253`.
+- Puntos 1–6: `ACEPTAR COMO BASE DEL BORRADOR`, sin observaciones adicionales. Punto 7: `OPEN / NO ACEPTADO`.
+- No se modificó el borrador constitucional fuente; no se infieren aprobación completa, congelación, firma, commissioning ni autorización de efectos.
+- Estos son commits documentales; no se atribuye CI a ellos hasta comprobar un run con SHA exacto. La suite no se ha vuelto a ejecutar como parte de esta actualización documental.
+- Próximo trabajo M0: verificar el HEAD y evidencia CI atribuible a la rama; luego continuar con la matriz finita M0-A…M0-E y el bloqueo M0-E (procedencia de raíz y límite real de efecto protegido), sin repetir auditorías B/C/D que no tengan evidencia nueva.
+- Estado conservador: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
