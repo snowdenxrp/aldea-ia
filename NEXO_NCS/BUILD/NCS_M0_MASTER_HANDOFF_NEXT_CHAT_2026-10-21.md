@@ -211,3 +211,13 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - No cambia runtime. Complementa el test de fallo del segundo store y recuperación explícita; no prueba atomicidad entre dos archivos.
 - La actualización documental que registra este test requiere CI para el HEAD final exacto; el SUCCESS anterior solo cubre `f410ab92dd113a4b3188232575098e8b02fb1371`.
 - Mantener el enfoque finito: esperar CI del HEAD final; si pasa, no ampliar crash-cut por mera exhaustividad. M0-E sigue bloqueante y los estados constitucionales no cambian.
+
+
+## Decisión del propietario registrada: opción A (2026-10-21)
+
+- Decisión: el propietario eligió opción A, arranque inicial sin efectos protegidos. Registro: [NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md](../DECISIONS/NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md), commit `d62abfdaadfff7e6f29a0377983b4499f078c637`; STATUS enlazado en commit `f74a7b47abd4da610bd3783e5e3dab8e07645ab0`.
+- Lectura, planificación, diagnóstico y persistencia interna acotada solo entran si el efecto real no muta estado protegido ni produce efecto externo indirecto. No confiar en nombres de acciones.
+- Reparaciones, mutaciones Lúmina/simulación, efectos externos y sinks no verificados permanecen bloqueados. Ante incertidumbre: `UNKNOWN/STOP`.
+- La decisión no es aprobación constitucional completa, firma, congelación, commissioning, autorización de efectos protegidos ni elección de raíz/autoridad canónica/sucesor.
+- Próximo: mapear la matriz operación → entry point → efecto → sink → enforcement → prueba negativa; reutilizar auditorías AB104/P112 cerradas y no repetirlas sin evidencia nueva. Después ejecutar CI en el SHA final y registrar run/job.
+- Estados obligatorios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
