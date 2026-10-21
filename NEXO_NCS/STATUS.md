@@ -2719,3 +2719,15 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - No se modificó el borrador constitucional fuente ni se cambió runtime en este paso.
 - Continuidad obligatoria: verificar HEAD real de `ncs-clean-architecture` y CI atribuible a ese SHA; no extrapolar los runs históricos de la matriz. Después continuar desde M0-E, sin repetir B/C/D salvo evidencia nueva.
 - Estado conservador sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## M0-E — contrato mínimo de integración (2026-10-21)
+
+- Nuevo análisis focal: [NCS_M0_E_MINIMUM_INTEGRATION_CONTRACT_ANALYSIS_2026-10-21.md](BUILD/NCS_M0_E_MINIMUM_INTEGRATION_CONTRACT_ANALYSIS_2026-10-21.md).
+- Confirmado en los blobs leídos: `protected-transition.mjs` consume `authorityGate.check(claim)` y llega a `conditionalCommit.commit(candidate)` sin llamar a `effectBoundary.prepare`; el vector bootstrap sigue siendo de software, no raíz provisionada.
+- Esto delimita una brecha de contrato/integración; no prueba por sí solo un bypass productivo.
+- Limitación de verificación: las herramientas usadas no expusieron el SHA actual de `refs/heads/ncs-clean-architecture` de forma inequívoca. No atribuir CI al estado actual hasta obtener el SHA de ref y run/job/SHA coincidentes.
+- Próximo paso: resolver el SHA exacto, revisar solo cambios M0-E desde los blobs anotados y preparar una prueba adversarial de la frontera real; no tocar runtime para simular raíz.
+- Estado conservador: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
