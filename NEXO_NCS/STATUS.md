@@ -2892,3 +2892,11 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - El checkpoint `c2e87970403ea279f8b8a97fc45b2bd3b02c709b` pasó CI: [run 39693348248](https://github.com/snowdenxrp/aldea-ia/actions/runs/39693348248), job [tests 119544693350](https://github.com/snowdenxrp/aldea-ia/actions/runs/39693348248/job/119544693350), `completed/success`, paso `Run tests`: SUCCESS.
 - Después se amplió el informe para aclarar que la CLI `nexo-chronicle-session` recibe `--continuity` y `--chronicle` como configuración de ruta confiable, no como interfaz para paths elegidos por contenido de misión. Informe actualizado en commit `cacaaa18c83ed29e5b4d7dbbb6c3a5c9331bc722`; CI del HEAD posterior debe comprobarse por su SHA exacto.
 - No hubo cambio de runtime. La opción A solo puede considerar confiable la persistencia si la configuración de ruta también está bajo control confiable.
+
+
+## Evidencia de entry points para opción A (2026-10-21)
+
+- Nuevo informe: [NCS_M0_E_OPTION_A_ENTRYPOINT_ENFORCEMENT_EVIDENCE_2026-10-21.md](BUILD/NCS_M0_E_OPTION_A_ENTRYPOINT_ENFORCEMENT_EVIDENCE_2026-10-21.md), commit `f782aa9ad938ba6fbc31e77e76d5b8c5f87b520a`.
+- Revisión de `tests/nexo/entrypoint.test.mjs` y `tests/nexo/chronicle-runtime.test.mjs`: ya hay evidencia para grafo de imports aislado de Lúmina, órdenes desconocidas bloqueadas, persistencia Chronicle local, replay sin redispatch, consultas sin escritura y acciones genéricas bloqueadas antes de PREPARED/dispatch.
+- Se evita añadir pruebas redundantes. Próximo punto: definir cómo se invocará la CLI en el producto y quién controla las rutas de almacenamiento; si la invoca el runtime o contenido no confiable, rediseñar ese límite antes de habilitarlo.
+- No hubo cambio de runtime. Estados conservados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
