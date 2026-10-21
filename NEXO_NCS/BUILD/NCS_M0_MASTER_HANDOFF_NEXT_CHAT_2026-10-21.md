@@ -172,3 +172,15 @@ Próximo paso: verificar el SHA exacto de la ref; si no hay cambios en M0-E desd
 - Core `executeProtectedTransition` consulta un gate inyectado; la legitimidad del resultado no está demostrada y `conditionalCommit.commit` no se ha probado como sink real. La ruta legacy Lúmina conserva handlers mutadores y no se ha demostrado el cierre de todas las entradas.
 - Esto es brecha de integración, no vulnerabilidad de producción probada. No cambiar runtime ni repetir AB104.150/P112 sin evidencia nueva.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Hallazgo añadido: alcance real de Chronicle Append (2026-10-21)
+
+Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md)
+
+- La API soportada incluye CLI `scripts/nexo.mjs chronicle-append`, CLI de sesión `scripts/nexo-chronicle-session.mjs` y export de `runNexoChronicleAppend` desde `src/nexo/application/index.mjs`.
+- La mutación final de Chronicle es persistencia local en el archivo configurado; el flujo también muta el store de continuidad mediante admisión/PREPARED/lineage/outcome. No es un efecto externo demostrado, pero sí tiene consecuencias persistentes.
+- El store Chronicle no reclama fsync/durabilidad ante pérdida eléctrica, anti-rollback ni defensa contra symlink/path attacks; la ruta se trata como configuración confiable. La observación persistida no establece atribución causal.
+- Ninguno de esos resultados implica autorización: el resultado público mantiene `authorization: NOT_EVALUATED`. No elegir opción A/B/C por inferencia y no cambiar runtime.
+- Próxima tarea: inventariar los puntos de escritura local (Chronicle y continuidad), política de inicialización y exposición a rutas configurables; determinar si existe un contraejemplo nuevo antes de añadir pruebas. No repetir auditorías históricas ni declarar M0-E cerrado.
+- Estados obligatorios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
