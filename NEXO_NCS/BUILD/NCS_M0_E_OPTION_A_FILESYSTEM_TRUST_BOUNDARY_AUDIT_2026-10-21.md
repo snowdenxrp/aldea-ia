@@ -12,6 +12,7 @@ La persistencia local de Continuity/Chronicle depende de rutas que el caller con
 - `src/nexo/core/chronicle-store.mjs`: aplica el mismo patrón para Chronicle.
 - `src/nexo/application/continuity-queries.mjs`: las consultas cargan la ruta recibida y devuelven `blocked` si la lectura falla.
 - `scripts/nexo.mjs`: acepta `--continuity`; la validación del argumento no define un directorio permitido ni demuestra controles de symlink, permisos o sustitución externa.
+- `scripts/nexo-chronicle-session.mjs`: acepta `--continuity` y `--chronicle` como valores de ruta y los entrega a `runNexoChronicleAppend`. El parser comprueba duplicados/forma básica, no resuelve ni restringe rutas. Esto es compatible con una herramienta CLI operada por un usuario local confiable; no debe tratarse como una interfaz segura para que contenido de misión/claims elija sus propios archivos.
 
 ## Interpretación
 
