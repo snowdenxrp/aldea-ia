@@ -64,6 +64,14 @@ Plan actualizado: [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](NCS_
 - No se declara exploit activo ni alcance de todos los efectos Lúmina. Siguiente tarea: derivar del alcance inicial del borrador qué efectos están en scope, enumerar callers/entry points y localizar el último punto de mutación para cada efecto protegido.
 - La matriz E-01…E-10 es diseño; no se han implementado tests nuevos ni existe CI PASS por estos documentos.
 
+## Cobertura existente y CI del checkpoint más reciente (2026-10-21)
+
+- Run determinista [39684700476](https://github.com/snowdenxrp/aldea-ia/actions/runs/39684700476) terminó SUCCESS para SHA exacto `4ba3a124249dccb8fe8009907cf4112ff73bc01e`. El commit `5859eace8254fcb94f08fa82e149f7ef560d62a6` y las actualizaciones documentales posteriores requieren su propia comprobación CI.
+- `tests/nexo/chronicle-runtime.test.mjs` afirma que los resultados públicos mantienen `authorization: NOT_EVALUATED` cuando no se evaluó autoridad. Esto es conservador, pero no demuestra una raíz legítima.
+- `tests/nexo/effect-adapter.test.mjs` ya cubre precondition, handler, postcondition, PREPARED y recibo canónico. No duplicar esos casos salvo contraejemplo nuevo.
+- La ruta owner-backed canónica permite `chronicle_append` y bloquea otras acciones en ese entry point; la ruta de simulación tiene handlers capaces de mutar estado. No inferir que son alcanzables o inalcanzables en producción sin rastrear callers.
+- Próximo paso: derivar el alcance inicial del borrador y mapear los entry points de cada efecto protegido; luego añadir solo tests que cubran autoridad/Constitución exactas antes del dispatch y ausencia de dispatch en negativos. Mantener sin cambios los estados conservadores.
+
 ## M0 — estado técnico y criterios finitos
 
 Estados conservadores que deben permanecer:
