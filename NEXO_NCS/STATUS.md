@@ -2696,3 +2696,14 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - M0-E sigue bloqueante: fixtures `AUTHORIZED` no demuestran raíz legítima ni enforcement en el sink real.
 - Actualización documental de matriz: commit `8988b9a73c317db7f61e05d2b44bbcbc7cf5608b`. No se ejecutó CI por esta actualización.
 - Estado: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## Decisión constitucional del propietario — punto 7 (2026-10-21)
+
+- Decisión: punto 7, Policy/contexto/evaluación de operaciones, **ACEPTADO COMO BASE DEL BORRADOR**; observaciones adicionales no especificadas.
+- Registro actualizado: [NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md](DECISIONS/NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md).
+- La aceptación no constituye aprobación constitucional completa, firma, congelación, commissioning ni autorización de efectos protegidos.
+- El punto 7 aceptado en papel no demuestra un evaluador integrado al sink real; M0-E continúa bloqueante.
+- No se ejecutó CI como resultado de esta actualización documental.
