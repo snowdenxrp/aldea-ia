@@ -19,9 +19,11 @@ Para cada punto 1–6, decisión: **ACEPTAR COMO BASE DEL BORRADOR**. Observacio
 5. **Autoridad raíz y reconocimiento del propietario.** Aceptados como base. Identidad del dispositivo y autoridad del propietario son distintas; la autoridad debe verificarse y no autoproclamarse; una credencial raíz no concede permisos operativos ilimitados; continuidad entre modelos e instalaciones no equivale a prueba de raíz. **Siguen pendientes** la selección/provisión de la credencial, su procedencia legítima, la verificación criptográfica, el ancla de confianza independiente y cualquier recuperación dentro del alcance permitido.
 6. **Delegación.** Aceptada como base. Los límites deben ser explícitos; un delegado no puede ampliar sus propios permisos; la delegación debe poder verificarse y revocarse; cada efecto delegado requiere controles aplicables; sucesión y delegación operativa son distintas. **Siguen pendientes** formatos, mecanismo criptográfico, reglas de delegación encadenada y procedimiento formal de sucesión. La sucesión de la hija no queda activa ni autorizada por este registro.
 
-## Punto no decidido
+## Punto 7 — decisión registrada
 
-7. **Policy, contexto y evaluación de operaciones:** permanece **OPEN / NO ACEPTADO**. Se propuso evaluar cada operación contra la Constitución vigente, la Policy aplicable, el contexto y la evidencia; incertidumbre o contradicción conduciría a `UNKNOWN/STOP`. No registrar esta propuesta como decisión del propietario hasta que exista aceptación expresa.
+7. **Policy, contexto y evaluación de operaciones:** **ACEPTADO COMO BASE DEL BORRADOR**. Cada operación debe evaluarse frente a la Constitución vigente, la Policy aplicable, el contexto y la evidencia pertinente. La insuficiencia, contradicción, obsolescencia o imposibilidad de verificar información crítica debe producir `UNKNOWN/STOP`, no autorización por defecto.
+
+Esta aceptación no demuestra que el evaluador esté implementado o conectado al límite real de efectos protegidos.
 
 ## Límites que permanecen vigentes
 
