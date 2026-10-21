@@ -65,3 +65,11 @@ Esto valida el comportamiento observado de las funciones de consulta para el cas
 - La suite existente `tests/nexo/entrypoint.test.mjs` ya cubre CLI, grafo de imports, persistencia local, replay en segundo proceso, salida sin payload y consultas sin escritura.
 - `tests/nexo/chronicle-runtime.test.mjs` ya prueba bloqueo de acciones genéricas antes de PREPARED/dispatch y fallo de lectura antes de dispatch. No añadir duplicados sin un contraejemplo.
 - El gap principal ahora es de despliegue y confianza de rutas: quién invoca la CLI y quién controla `--continuity`/`--chronicle`; además, M0-E aún no conecta raíz legítima a un sink protegido.
+
+
+## Corrección de ruta alternativa de reparación (2026-10-21)
+
+- Hallazgo y cambio: [NCS_M0_E_OPTION_A_REPAIR_RUNTIME_GATE_FINDING_2026-10-21.md](NCS_M0_E_OPTION_A_REPAIR_RUNTIME_GATE_FINDING_2026-10-21.md), commit `612ea1fe3e9f681cf3f28848b33223ddbde9bc1c`.
+- La decisión A excluye reparaciones, pero `scripts/assistants.mjs --nexo-repair-once` tenía una integración separada que llegaba a `dispatchPreparedRepair` y mutaba/persistía Lúmina. El bloqueo del owner-backed runtime no cubría esa ruta.
+- `scripts/nexo-runtime-session.mjs` ahora bloquea esa integración con `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`. Se mantiene la prueba aislada de los protocolos internos de reparación, sin habilitarlos en el runtime de producto.
+- CI aún debe confirmarse para un SHA que contenga el código, las pruebas y el registro final.
