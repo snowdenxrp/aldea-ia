@@ -249,3 +249,11 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - CI del informe y del handoff final debe comprobarse para el SHA exacto. No extrapolar los SUCCESS anteriores.
 - Continuar desde este punto: confirmar CI; luego inspeccionar bootstrap real que fija las rutas. No ampliar pruebas de filesystem sin decisión de modelo de amenaza. M0-E sigue abierto: raíz legítima → Constitución exacta/Policy/contexto → enforcement en sink real.
 - Estados obligatorios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## CI y ampliación del límite CLI/filesystem (2026-10-21)
+
+- CI pasó para checkpoint `c2e87970403ea279f8b8a97fc45b2bd3b02c709b`: [run 39693348248](https://github.com/snowdenxrp/aldea-ia/actions/runs/39693348248), job [tests 119544693350](https://github.com/snowdenxrp/aldea-ia/actions/runs/39693348248/job/119544693350), completed/success. Esto valida el audit de filesystem y documentación en ese SHA.
+- Informe ampliado después en `cacaaa18c83ed29e5b4d7dbbb6c3a5c9331bc722`: la CLI `nexo-chronicle-session` recibe `--continuity` y `--chronicle` como rutas de configuración confiable; no deben provenir de contenido de misión/claims. No se cambió runtime.
+- STATUS registra el resultado en commit `bce6914803e6e12841e3d64420dab74f1fd2c453`. CI para el HEAD final de este handoff actualizado aún requiere confirmación por SHA exacto.
+- Siguiente: confirmar CI final. Luego inspeccionar cómo se invoca la CLI en el arranque real; no construir defensas parciales de filesystem sin decidir si actores locales fuera del proceso entran en el modelo de amenaza. M0-E sigue abierto y los efectos protegidos continúan STOP.
