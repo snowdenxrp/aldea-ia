@@ -1,3 +1,13 @@
+## M0-E — tests existentes mapeados y CI del checkpoint (2026-10-21)
+
+- El plan [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](BUILD/NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md) mapea cobertura ya existente: `tests/nexo/chronicle-runtime.test.mjs` conserva `authorization: NOT_EVALUATED`; `tests/nexo/effect-adapter.test.mjs` cubre precondiciones, handler, postcondición, PREPARED y recibo canónico; el vector bootstrap sigue siendo solo vector.
+- `src/nexo/core/owner-backed-runtime.mjs` permite actualmente `chronicle_append` en la ruta canónica y bloquea otras acciones en esa ruta; no demuestra que las rutas de simulación sean inalcanzables ni que exista autoridad constitucional integrada.
+- CI confirmado en checkpoint `4ba3a124249dccb8fe8009907cf4112ff73bc01e`: [run 39684700476](https://github.com/snowdenxrp/aldea-ia/actions/runs/39684700476), workflow determinista, job tests SUCCESS. Este run precede el plan de mapeo actualizado; no atribuirlo a commits posteriores.
+- No duplicar tests de ciclo de vida ya cubiertos. La brecha que falta probar es que la autoridad/Constitución exactas se derivan de fuentes confiables y se aplican antes del dispatch/mutación; cada caso negativo debe afirmar cero dispatch.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0-E — inventario preliminar de rutas y sinks (2026-10-21)
 
 - El plan adversarial ahora distingue rutas que no deben confundirse: (1) Core `protected-transition → conditionalCommit.commit`, cuya condición de sink externo no está demostrada; (2) ruta Lúmina `executeLuminaNexoStep → executeNexoStep → effect adapter → handler`, con mutación de simulación en handlers; (3) ruta owner-backed canónica, que bloquea acciones distintas de `chronicle_append` en el punto inspeccionado.
