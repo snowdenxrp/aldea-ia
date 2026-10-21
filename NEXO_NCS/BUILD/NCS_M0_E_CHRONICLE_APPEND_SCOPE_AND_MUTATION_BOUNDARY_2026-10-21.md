@@ -32,6 +32,17 @@ La exportación de una API demuestra que la ruta está disponible para consumido
 - El propio módulo advierte que la observación no demuestra atribución causal.
 - El handler retorna `verified: false`; el resultado público fija `authorization: NOT_EVALUATED`. No hay raíz constitucional legítima ni evaluación de autoridad conectada en esta ruta.
 
+
+### 5. Inicialización de los dos stores: no es una transacción conjunta
+
+La aplicación hace preflight de ambos archivos antes de escribir, lo cual evita inicializar el otro store cuando ya se detectó que el compañero está corrupto. Sin embargo, el flujo posterior no es atómico entre ambos archivos:
+
+1. `openNexoContinuityOwner(... allowEmptyInitialization: initializeContinuity)` puede crear primero Continuity.
+2. Después, si Chronicle faltaba, la aplicación llama `chronicleStore.initialize()`.
+3. Si la inicialización de Chronicle falla por una condición que aparece después del preflight (por ejemplo, el directorio padre no está disponible para la escritura), la operación puede devolver `blocked` dejando Continuity ya creado.
+
+Las pruebas existentes verifican el rechazo de stores compañeros corruptos durante preflight y la carrera de bootstrap concurrente; no encontré en la suite inspeccionada una aserción específica de recuperación/estado tras fallo del segundo bootstrap después de que el primero se haya confirmado. Esto identifica una **brecha de atomicidad/recuperación multi-store que debe evaluarse**, no una prueba de exploit ni una razón para agregar un rollback improvisado. La solución, si se requiere atomicidad, debe diseñarse como contrato estructural de bootstrap y recuperación, no como borrado compensatorio sin prueba de propiedad del archivo.
+
 ### 4. Qué no queda demostrado
 - No se demuestra que la escritura Chronicle sea un sink externo, una acción irreversible fuera del dispositivo o una mutación Lúmina.
 - Tampoco se demuestra que la configuración de rutas, los permisos del proceso o el filesystem sean una frontera de seguridad contra otro código/proceso local.
