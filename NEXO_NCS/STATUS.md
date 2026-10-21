@@ -2832,3 +2832,13 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - El preflight de Chronicle y Continuity evita escribir cuando el store compañero ya se detectó corrupto, pero no crea una transacción atómica entre ambos archivos.
 - En el flujo actual, `openNexoContinuityOwner` puede inicializar Continuity antes de que `chronicleStore.initialize()` falle. La suite inspeccionada no contiene una aserción focal de ese crash/fallo del segundo bootstrap tras confirmar el primero.
 - Registrado como brecha de atomicidad/recuperación a evaluar, no como exploit demostrado. No introducir rollback compensatorio improvisado ni alterar runtime sin contrato estructural y prueba reproducible.
+
+
+## M0 — prueba focal de bootstrap parcial y recuperación (2026-10-21)
+
+- Se añadió en `tests/nexo/chronicle-runtime.test.mjs` un escenario donde Continuity se inicializa correctamente y Chronicle falla porque su directorio padre no existe.
+- El caso exige `blocked`, `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, Continuity sin misiones y Chronicle ausente; luego crea el directorio y demuestra recuperación con reintento explícito sin reinicializar Continuity.
+- Esto no hace atómico el bootstrap multi-store: prueba un contrato de fallo explícito y recuperación de este caso concreto. No se cambió runtime.
+- Test commit: `8deabb5ca0b314ecd6a699a4b7a8bcb3f470c767`; documentación del test: `1ae34ea5c592908ba72eb8a24a1c40363f754a40`. El CI para el SHA final de esta unidad sigue pendiente de confirmación.
+- Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](BUILD/NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md).
+- Estado M0 conservador sin cambios: `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
