@@ -57,3 +57,11 @@ En `tests/nexo/chronicle-runtime.test.mjs` se añadió una prueba que:
 - confirma que las consultas contra una ruta ausente devuelven bloqueado y no crean el archivo.
 
 Esto valida el comportamiento observado de las funciones de consulta para el caso probado; no acredita resistencia del filesystem a un proceso externo ni seguridad de la ruta configurada. Test commit: `fbc0abbe89d07f19cd428e35072043a88ba2961f`. CI del SHA final aún pendiente de confirmar.
+
+
+## Evidencia de entry points revisada (2026-10-21)
+
+- Informe: [NCS_M0_E_OPTION_A_ENTRYPOINT_ENFORCEMENT_EVIDENCE_2026-10-21.md](NCS_M0_E_OPTION_A_ENTRYPOINT_ENFORCEMENT_EVIDENCE_2026-10-21.md), commit `f782aa9ad938ba6fbc31e77e76d5b8c5f87b520a`.
+- La suite existente `tests/nexo/entrypoint.test.mjs` ya cubre CLI, grafo de imports, persistencia local, replay en segundo proceso, salida sin payload y consultas sin escritura.
+- `tests/nexo/chronicle-runtime.test.mjs` ya prueba bloqueo de acciones genéricas antes de PREPARED/dispatch y fallo de lectura antes de dispatch. No añadir duplicados sin un contraejemplo.
+- El gap principal ahora es de despliegue y confianza de rutas: quién invoca la CLI y quién controla `--continuity`/`--chronicle`; además, M0-E aún no conecta raíz legítima a un sink protegido.
