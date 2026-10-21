@@ -1612,7 +1612,53 @@ try {
   assert.equal(preflightChronicle.status, "blocked");
   assert.equal(await fs.readFile(corruptChroniclePath2, "utf8"), "{broken");
   await assert.rejects(fs.access(missingContinuityPath), { code: "ENOENT" });
-} finally {
+
+  // If the second store's parent becomes unavailable at initialization time,
+  // the first store may already have been committed. The partial state must be
+  // explicit and recoverable: no mission/Chronicle append is dispatched, and a
+  // later explicit retry can initialize the missing companion without resetting
+  // the existing Continuity store.
+  const partialBootstrapContinuityPath = path.join(entryRoot, "partial-bootstrap-continuity.json");
+  const lateChronicleParent = path.join(entryRoot, "late-chronicle-parent");
+  const partialBootstrapChroniclePath = path.join(lateChronicleParent, "chronicle.json");
+  const partialBootstrapArgs = {
+    ...args,
+    continuityPath: partialBootstrapContinuityPath,
+    chroniclePath: partialBootstrapChroniclePath,
+    missionId: "partial-bootstrap-recovery",
+    stepId: "step-1",
+    initializeContinuity: true,
+    initializeChronicle: true
+  };
+  const partialBootstrap = await runNexoChronicleAppend(partialBootstrapArgs);
+  assert.equal(partialBootstrap.status, "blocked");
+  assert.equal(partialBootstrap.authorization, "NOT_EVALUATED");
+  assert.equal(partialBootstrap.dispatchAttempted, false);
+  assert.equal(partialBootstrap.code, "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE");
+  const partialContinuity = await createNexoContinuityStore({
+    filePath: partialBootstrapContinuityPath
+  }).loadCurrent();
+  assert.equal(partialContinuity.status, "loaded");
+  assert.equal(partialContinuity.snapshot.missions.length, 0,
+    "failed second-store bootstrap must not admit a mission or append Chronicle");
+  await assert.rejects(fs.access(partialBootstrapChroniclePath), { code: "ENOENT" });
+
+  await fs.mkdir(lateChronicleParent);
+  const recoveredBootstrap = await runNexoChronicleAppend({
+    ...partialBootstrapArgs,
+    initializeContinuity: false,
+    initializeChronicle: true
+  });
+  assert.equal(recoveredBootstrap.status, "completed");
+  assert.equal(recoveredBootstrap.authorization, "NOT_EVALUATED");
+  assert.equal(recoveredBootstrap.dispatchAttempted, true);
+  assert.equal((await createNexoContinuityStore({
+    filePath: partialBootstrapContinuityPath
+  }).loadCurrent()).snapshot.missions.length, 1);
+  assert.equal((await createNexoChronicleStore({
+    filePath: partialBootstrapChroniclePath
+  }).loadCurrent()).entries.length, 1);
+ } finally {
   await fs.rm(entryRoot, { recursive: true, force: true });
 }
 
