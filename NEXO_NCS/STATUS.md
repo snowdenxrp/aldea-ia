@@ -2684,3 +2684,15 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Estos son commits documentales; no se atribuye CI a ellos hasta comprobar un run con SHA exacto. La suite no se ha vuelto a ejecutar como parte de esta actualización documental.
 - Próximo trabajo M0: verificar el HEAD y evidencia CI atribuible a la rama; luego continuar con la matriz finita M0-A…M0-E y el bloqueo M0-E (procedencia de raíz y límite real de efecto protegido), sin repetir auditorías B/C/D que no tengan evidencia nueva.
 - Estado conservador: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## M0 — inventario finito de assertions reutilizables (2026-10-21)
+
+- La matriz [NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md) ahora contiene un inventario finito de assertions ya existentes para M0-A…M0-E.
+- Se mapean B/C/D a suites incluidas en `npm test`; no se reabrieron sus auditorías ni se añadieron pruebas/runtime en esta actualización.
+- La puerta candidata mínima para A es el workflow determinista `.github/workflows/nexo-deterministic-tests.yml`, job `tests`, en el SHA final exacto. No hay PASS sin un run observado en ese SHA.
+- M0-E sigue bloqueante: fixtures `AUTHORIZED` no demuestran raíz legítima ni enforcement en el sink real.
+- Actualización documental de matriz: commit `8988b9a73c317db7f61e05d2b44bbcbc7cf5608b`. No se ejecutó CI por esta actualización.
+- Estado: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
