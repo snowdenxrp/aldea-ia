@@ -2907,3 +2907,13 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - SHA validado: `50a55a16b39706456bbb7059d50d37a94e07e775`.
 - Workflow: [run 39694023840](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840), job [tests 119546914897](https://github.com/snowdenxrp/aldea-ia/actions/runs/39694023840/job/119546914897): `completed/success`; paso `Run tests`: SUCCESS. Sin artefactos publicados.
 - El run valida la suite `npm test` del SHA exacto, incluido el test de entrypoint y runtime. No cierra M0-E ni prueba autoridad constitucional. La actualización de este registro documental requiere comprobar su propio SHA si se necesita afirmar CI para el HEAD actual.
+
+
+## M0-E — ruta alternativa de reparación bloqueada bajo opción A (2026-10-21)
+
+- Informe: [NCS_M0_E_OPTION_A_REPAIR_RUNTIME_GATE_FINDING_2026-10-21.md](BUILD/NCS_M0_E_OPTION_A_REPAIR_RUNTIME_GATE_FINDING_2026-10-21.md), commit `612ea1fe3e9f681cf3f28848b33223ddbde9bc1c`.
+- Hallazgo: `scripts/assistants.mjs --nexo-repair-once` llamaba una integración separada que podía llegar a mutación y persistencia local de Lúmina, fuera del bloqueo del owner-backed runtime.
+- Corrección: `scripts/nexo-runtime-session.mjs` bloquea la integración de producto con `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, sin persistencia ni dispatch. Las pruebas de protocolo de bajo nivel siguen siendo aisladas y no habilitan la ruta de producto.
+- Se ajustaron `tests/nexo/repair-session.test.mjs` y `tests/nexo/repair-mission-verification.test.mjs` para separar el gate de runtime del protocolo de reparación. CI del SHA final sigue pendiente.
+- No se afirma que todas las APIs internas sean una frontera contra código arbitrario; no conectar estas primitivas a otro entry point sin decisión de alcance y prueba de enforcement.
+- Estados conservados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
