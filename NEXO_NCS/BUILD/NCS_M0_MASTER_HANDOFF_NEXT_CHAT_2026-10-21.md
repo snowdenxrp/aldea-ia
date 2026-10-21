@@ -257,3 +257,11 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - Informe ampliado después en `cacaaa18c83ed29e5b4d7dbbb6c3a5c9331bc722`: la CLI `nexo-chronicle-session` recibe `--continuity` y `--chronicle` como rutas de configuración confiable; no deben provenir de contenido de misión/claims. No se cambió runtime.
 - STATUS registra el resultado en commit `bce6914803e6e12841e3d64420dab74f1fd2c453`. CI para el HEAD final de este handoff actualizado aún requiere confirmación por SHA exacto.
 - Siguiente: confirmar CI final. Luego inspeccionar cómo se invoca la CLI en el arranque real; no construir defensas parciales de filesystem sin decidir si actores locales fuera del proceso entran en el modelo de amenaza. M0-E sigue abierto y los efectos protegidos continúan STOP.
+
+
+## Entry points y enforcement bajo opción A (2026-10-21)
+
+- Informe: [NCS_M0_E_OPTION_A_ENTRYPOINT_ENFORCEMENT_EVIDENCE_2026-10-21.md](NCS_M0_E_OPTION_A_ENTRYPOINT_ENFORCEMENT_EVIDENCE_2026-10-21.md), commit `f782aa9ad938ba6fbc31e77e76d5b8c5f87b520a`.
+- No repetir tests: `tests/nexo/entrypoint.test.mjs` ya cubre API pública estrecha, import graph sin Lúmina, CLI local, replay desde segundo proceso sin redispatch, consultas sin escritura y no exponer payload. `tests/nexo/chronicle-runtime.test.mjs` ya cubre acción genérica bloqueada antes de PREPARED/dispatch y fallo de lectura pre-dispatch.
+- La brecha útil siguiente es definir el modelo de invocación de CLI en el producto Nexo: operador local confiable frente a invocación por runtime/contenido no confiable. No añadir hardening parcial del filesystem hasta que el modelo de amenaza esté definido.
+- M0-E permanece abierto por ausencia de raíz legítima verificable conectada a la frontera de efectos protegidos. Estados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
