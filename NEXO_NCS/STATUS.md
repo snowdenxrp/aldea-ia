@@ -2924,3 +2924,6 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - SHA validado: `7396bfcec3d54d2e2d0b1371e3188d29c9b9461a`.
 - Workflow [39695419937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937), job [tests 119551490108](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937/job/119551490108): `completed/success`; paso `Run tests`: SUCCESS.
 - Esto valida el conjunto de código, pruebas y documentos del SHA citado, incluida la ruta de reparación bloqueada bajo opción A. No certifica todas las APIs internas como frontera de seguridad, no cierra M0-E y no habilita efectos protegidos.
+
+
+- CI del HEAD documental actual `e736e59e03374cf0eaaf7b89e1f6ca2a86abf3d1`: [run 39695510462](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695510462), job [tests 119551825257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695510462/job/119551825257), `completed/success`; `Run tests`: SUCCESS. Este resultado cubre ese SHA exacto; el siguiente commit de registro requiere su propia comprobación.
