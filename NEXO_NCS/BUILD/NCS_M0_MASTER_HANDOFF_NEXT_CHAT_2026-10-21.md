@@ -99,3 +99,12 @@ Próximo trabajo correcto:
 - Si aparece una deficiencia estructural, demostrarla con contraejemplo y corregir la raíz, sin esconderla con un parche.
 - No tomar “continúa” como aprobación de decisiones técnicas/constitucionales pendientes.
 - Mantener el alcance finito: cerrar M0 con los criterios acordados y evidencia; no convertir la cautela en investigación infinita.
+
+
+## Actualización técnica adicional — M0-E (2026-10-21)
+
+Nuevo análisis: [NCS_M0_E_MINIMUM_INTEGRATION_CONTRACT_ANALYSIS_2026-10-21.md](NCS_M0_E_MINIMUM_INTEGRATION_CONTRACT_ANALYSIS_2026-10-21.md). Se inspeccionaron los blobs actuales de `ownership.mjs`, `protected-transition.mjs`, `contracts.mjs` y el test del vector bootstrap. La transición sigue sin invocar `effectBoundary.prepare` antes de `conditionalCommit.commit`; el vector bootstrap es software-only. Esto confirma la brecha de integración ya registrada, no un bypass productivo demostrado.
+
+**Importante sobre HEAD/CI:** la búsqueda de commits recientes devuelve commits globales de otras líneas de trabajo (incluida Lúmina) y la comparación de hashes se mostró divergente; no usar esos commits como HEAD de `ncs-clean-architecture`. El conector disponible no devolvió el SHA de `refs/heads/ncs-clean-architecture` directamente. Por tanto, el HEAD exacto y el CI atribuible a él quedan **PENDING de verificación**. Resolverlo antes de cualquier cambio runtime o declaración de CI PASS.
+
+Próximo paso: verificar el SHA exacto de la ref; si no hay cambios en M0-E desde los blobs anotados en el análisis, avanzar con el contrato mínimo y una prueba adversarial del sink real. No reabrir B/C/D, no implementar una raíz ficticia, no inferir autorización de las aceptaciones de base.
