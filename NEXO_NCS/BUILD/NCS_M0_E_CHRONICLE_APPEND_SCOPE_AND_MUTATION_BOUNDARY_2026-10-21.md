@@ -52,7 +52,7 @@ En `tests/nexo/chronicle-runtime.test.mjs` se añadió un escenario reproducible
 - La prueba afirma que el resultado es `blocked`, `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, Continuity queda vacío, y Chronicle sigue ausente.
 - Después de crear el directorio faltante, se reintenta con `initializeContinuity: false` y `initializeChronicle: true`. La prueba exige que la operación complete sin reinicializar Continuity, con una misión y una entrada Chronicle.
 
-Esto valida un contrato de **fallo explícito y recuperación por reintento**, no atomicidad entre archivos. El código runtime no se cambió. El test se ha guardado en commit `8deabb5ca0b314ecd6a699a4b7a8bcb3f470c767`; hasta consultar CI del SHA final, su ejecución debe considerarse pendiente.
+Esto valida un contrato de **fallo explícito y recuperación por reintento**, no atomicidad entre archivos. El código runtime no se cambió. El test se guardó en commit `8deabb5ca0b314ecd6a699a4b7a8bcb3f470c767`. CI confirmado para el SHA final `f410ab92dd113a4b3188232575098e8b02fb1371`: Run determinista [39691648024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39691648024), job [tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39691648024/job/119539048110): `completed/success`; `Run tests`: SUCCESS. SHA evaluado: `f410ab92dd113a4b3188232575098e8b02fb1371`.
 
 
 ### 4. Qué no queda demostrado
