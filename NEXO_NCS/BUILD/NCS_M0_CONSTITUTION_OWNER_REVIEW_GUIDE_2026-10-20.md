@@ -104,3 +104,10 @@ El registro explícito del propietario está en [NCS_M0_CONSTITUTION_OWNER_DECIS
 - Estado: borrador DRAFT / NOT FROZEN / NOT COMMISSIONED; M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 Este añadido corrige el estado de las decisiones humanas; no modifica el borrador constitucional fuente ni demuestra implementación/runtime.
+
+
+### Actualización de decisión — punto 7 (2026-10-21)
+
+El propietario aceptó el punto 7, Policy, contexto y evaluación de operaciones, **como base del borrador**, sin observaciones adicionales especificadas. El registro canónico de esta decisión está en [NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md](../DECISIONS/NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md).
+
+La aceptación no equivale a aprobación constitucional completa, firma, congelación, commissioning ni autorización de efectos protegidos. La implementación y su conexión al sink real siguen sin demostrarse. No editar automáticamente el borrador constitucional fuente.
