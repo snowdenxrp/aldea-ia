@@ -54,6 +54,16 @@ https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUIL
 - Próximo paso: identificar sink y rutas, mapear suites existentes a los casos y evitar duplicar M0-B/C/D. No implementar raíz/verificador ficticio; no firmar, congelar ni commissionar Constitución. Los puntos 1–7 siguen aceptados solo como base del borrador.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
+## Hallazgo nuevo: distinguir rutas de ejecución/sinks M0-E
+
+Plan actualizado: [NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md](NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md)
+
+- Core `protected-transition → conditionalCommit.commit`: no asumir que es el sink externo real.
+- Ruta Lúmina `executeLuminaNexoStep → executeNexoStep → effect-adapter → registered handler`: los handlers de simulación pueden mutar `simulation` antes de la comprobación postcondition; el código inspeccionado no demuestra que la autoridad constitucional de NCS gobierne ese punto.
+- Ruta owner-backed canónica `src/nexo/core/owner-backed-runtime.mjs`: bloquea acciones distintas de `chronicle_append` en la ruta inspeccionada; eso no demuestra que todas las rutas alternativas sean inalcanzables.
+- No se declara exploit activo ni alcance de todos los efectos Lúmina. Siguiente tarea: derivar del alcance inicial del borrador qué efectos están en scope, enumerar callers/entry points y localizar el último punto de mutación para cada efecto protegido.
+- La matriz E-01…E-10 es diseño; no se han implementado tests nuevos ni existe CI PASS por estos documentos.
+
 ## M0 — estado técnico y criterios finitos
 
 Estados conservadores que deben permanecer:
