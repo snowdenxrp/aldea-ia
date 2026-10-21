@@ -285,6 +285,37 @@ if (result.status !== "committed") process.exitCode = 1;`;
     "failed cleanup leaves the lock for explicit recovery");
   await fs.rm(releaseFailureLock, { recursive: true, force: true });
 
+  // Initialization can also lose its response after the atomic rename. Re-read the
+  // exact persisted empty envelope before deciding whether bootstrap failed.
+  const lostInitializePath = path.join(root, "lost-initialize-response.json");
+  let loseInitializeRename = true;
+  const fsWithLostInitializeResponse = {
+    ...fs,
+    rename: async (from, to) => {
+      await fs.rename(from, to);
+      if (loseInitializeRename) {
+        loseInitializeRename = false;
+        throw new Error("simulated initialization response lost after rename");
+      }
+    }
+  };
+  const lostInitializer = createNexoChronicleStore({
+    filePath: lostInitializePath,
+    fsModule: fsWithLostInitializeResponse
+  });
+  assert.deepEqual(await lostInitializer.initialize(), {
+    status: "committed",
+    storeRevision: 0,
+    entries: []
+  }, "a matching persisted Chronicle envelope confirms initialization despite a lost response");
+  assert.deepEqual(await createNexoChronicleStore({
+    filePath: lostInitializePath
+  }).loadCurrent(), {
+    status: "loaded",
+    storeRevision: 0,
+    entries: []
+  });
+
   // Simulate a lost writer response after the atomic rename already changed persisted state.
   const lostPath = path.join(root, "lost-response.json");
   let loseNextRename = false;
