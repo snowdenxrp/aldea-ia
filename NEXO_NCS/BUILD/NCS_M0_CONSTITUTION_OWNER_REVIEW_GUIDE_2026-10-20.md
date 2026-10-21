@@ -89,7 +89,7 @@ Este cruce se añade para evitar que el propietario tenga que buscar cada decisi
 4. Leer §9 y distinguir extensiones propuestas de principios recuperados.
 5. Sólo entonces decidir si el texto debe reformularse. La aprobación de una revisión exacta y la autorización de una transición concreta siguen siendo actos separados.
 
-**No se ha marcado ningún punto como ACEPTO/RECHAZO por el propietario.** La tabla es un índice de revisión; no canoniza el texto, no resuelve los OPEN, no crea digest/firma y no autoriza implementación ni commissioning.
+**Nota de sincronización (2026-10-21):** la frase histórica anterior describía el estado antes de la revisión conversacional. El registro canónico `NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md` ahora registra los puntos 1–7 como **ACEPTADOS COMO BASE DEL BORRADOR**. Esto no equivale a aprobación constitucional completa ni resuelve los mecanismos/scope que el registro mantiene pendientes. La tabla sigue siendo un índice de revisión; no canoniza el texto, no crea digest/firma y no autoriza commissioning.
 
 
 ---
