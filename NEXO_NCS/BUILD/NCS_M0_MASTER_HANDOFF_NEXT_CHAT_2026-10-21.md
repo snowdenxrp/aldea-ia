@@ -90,6 +90,14 @@ Informe: [NCS_M0_E_SCOPE_AND_EXECUTION_BOUNDARY_RECONCILIATION_2026-10-21.md](NC
 - Siguiente paso: inventariar callers/exported entry points y preparar propuesta de scope mínima explícita para decisión del propietario. No cambiar runtime ni añadir pruebas que asuman un sink hasta identificarlo. Sin CI PASS para documentos posteriores al SHA probado.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
+## Actualización final de continuidad (2026-10-21)
+
+- Registro canónico corregido: puntos 1–7 aceptados únicamente como base del borrador; commits `54f7c69fbc740882d19b9c66dce7003118e6b6df` y guía sincronizada `f3582f3090b2e1042b698d88892a8f2d744b27e4`.
+- Propuesta de scope no aceptada: `NCS_M0_E_INITIAL_SCOPE_OPTIONS_FOR_OWNER_2026-10-21.md`. Opción A recomienda provisionalmente iniciar sin efectos protegidos; no es decisión del propietario.
+- Hallazgos históricos AB104.150/P112 sobre ausencia de caller productivo de `executeLuminaNexoStep()` se reutilizan; no repetir auditoría sin cambio nuevo.
+- HEAD `bfaac22fd91744f103cbce08d90c00208009c2ed`; CI [run 39685667728](https://github.com/snowdenxrp/aldea-ia/actions/runs/39685667728), job `tests`, completed/success. Solo prueba el código/tests de ese SHA; no cierra M0-E.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
 ## M0 — estado técnico y criterios finitos
 
 Estados conservadores que deben permanecer:
