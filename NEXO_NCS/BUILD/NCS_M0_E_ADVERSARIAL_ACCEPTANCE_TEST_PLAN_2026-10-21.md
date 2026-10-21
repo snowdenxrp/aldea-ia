@@ -61,3 +61,19 @@ Una suite verde sin esta integración no cierra M0-E.
 ## Estado conservador
 
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Actual execution-path inventory — preliminary finding (2026-10-21)
+
+Inspection of current branch files adds an important distinction; it does **not** yet select the protected-effect scope:
+
+1. **Core transition path:** `src/nexo/core/protected-transition.mjs` calls `conditionalCommit.commit(candidate)` after the injected `authorityGate` and semantic validation. This is a state-transition/commit port. Its implementation must be inspected before treating it as the final sink for external effects. The Core exposes `effectBoundary.prepare` but this path does not call it.
+2. **Simulation effect path:** `src/nexo/runtime.js` exports `executeLuminaNexoStep()`, which creates a Lúmina effect adapter and routes into `executeNexoStep()`. `src/nexo/simulation-adapter.js` registers handlers such as `execute_lumina_action` that call `executeAction(simulation, agent, action)` and mutate simulation before postcondition verification. The inspected path does not show the constitutional root/Policy authority gate being applied at that mutation boundary. Treat this as a separate execution path requiring scope determination, not proof of a production exploit.
+3. **Canonical owner-backed path:** `src/nexo/core/owner-backed-runtime.mjs` has an explicit action allowlist and currently blocks actions other than `chronicle_append` (with separate repair rejection). That is concrete fail-closed behavior for this entry point, but does not prove all legacy or simulation paths are unreachable.
+4. **Effect-adapter internals:** `src/nexo/effect-adapter.js` owns the registered handler invocation after intent/precondition checks. The handlers supplied at trusted construction are therefore candidate mutation sinks for that adapter path; caller-supplied reconciliation callbacks are explicitly not trusted. This adapter is distinct from the NCS Core's `conditionalCommit` port.
+
+### Required next decision/design step
+
+Before calling any one of these the M0-E sink, map the exact initial protected-effect scope from the accepted Constitution draft and the actual supported entry points. For every in-scope effect, identify the last mutation-capable handler and all callers/alternate paths. Do not broaden scope to all Lúmina simulation effects by inference, and do not declare the Core transition's commit to be an external sink without evidence.
+
+The test matrix E-01…E-10 remains valid as a contract-level checklist, but concrete tests must be bound to the selected path(s). Until that mapping is documented, E-08 (no alternate route) and the positive path cannot be marked PASS.
