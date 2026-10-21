@@ -84,10 +84,26 @@ try {
   });
   await fs.writeFile(statePath, JSON.stringify(environment(60)), "utf8");
 
-  const result = await runNexoRuntimeRepairSession({
+  const scopedResult = await runNexoRuntimeRepairSession({
     continuity: opened,
     statePath,
     missionId: "mission-session"
+  });
+  assert.equal(scopedResult.status, "blocked");
+  assert.equal(scopedResult.code, "NEXO_M0_OPTION_A_EFFECT_EXCLUDED");
+  assert.equal(scopedResult.dispatchAttempted, false);
+  assert.equal(scopedResult.persisted, false);
+  assert.equal((await opened.owner.loadCurrent()).snapshot.effectJournal.length, 0);
+  assert.equal((await loadStateStrict(statePath)).stateRevision, 60);
+
+  // Exercise the lower-level repair protocol in isolation; it is not wired
+  // through the current Option A product-runtime entrypoint.
+  const result = await runNexoRepairSession({
+    owner: opened.owner,
+    store: opened.store,
+    statePath,
+    missionId: "mission-session",
+    stepId: "step-session"
   });
 
   assert.equal(result.status, "settled_observed");
