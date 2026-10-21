@@ -202,3 +202,12 @@ Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](N
 - Informe actualizado en commit `1ae34ea5c592908ba72eb8a24a1c40363f754a40`; STATUS se actualizó después del test.
 - CI confirmado para SHA exacto `f410ab92dd113a4b3188232575098e8b02fb1371`: [run 39691648024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39691648024), job [tests 119539048110](https://github.com/snowdenxrp/aldea-ia/actions/runs/39691648024/job/119539048110), `completed/success`; paso `Run tests`: SUCCESS. El run valida ese SHA, no commits posteriores. Al terminar las actualizaciones documentales posteriores, verificar de nuevo el SHA final y su CI.
 - Próximo: comprobar estado de CI del HEAD actual; corregir solo si el test produce un fallo reproducible. Mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
+
+
+## Prueba adicional: respuesta perdida al inicializar Chronicle (2026-10-21)
+
+- Test añadido en `tests/nexo/chronicle-store.test.mjs`, commit `d245fa7bb2f497a87a5972b4313bd9f5de490c54`.
+- Simula `rename` exitoso seguido de error de respuesta durante `initialize()`. Se exige que el store relea el archivo y devuelva `committed` solo al observar el envelope vacío exacto de Chronicle; luego un store nuevo debe leer revisión 0 y entries vacías.
+- No cambia runtime. Complementa el test de fallo del segundo store y recuperación explícita; no prueba atomicidad entre dos archivos.
+- La actualización documental que registra este test requiere CI para el HEAD final exacto; el SUCCESS anterior solo cubre `f410ab92dd113a4b3188232575098e8b02fb1371`.
+- Mantener el enfoque finito: esperar CI del HEAD final; si pasa, no ampliar crash-cut por mera exhaustividad. M0-E sigue bloqueante y los estados constitucionales no cambian.
