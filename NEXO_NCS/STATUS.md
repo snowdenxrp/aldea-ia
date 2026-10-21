@@ -2885,3 +2885,10 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Decisión técnica provisional: no modificar runtime sin un modelo de amenaza definido. Documentar el control de la ruta de almacenamiento; no aceptar paths desde misiones/claims ni contenido no confiable. “Local” no es raíz de autoridad.
 - El informe nuevo requiere CI en su SHA final.
 - Estados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### CI del audit de límite de filesystem y ampliación de frontera CLI (2026-10-21)
+
+- El checkpoint `c2e87970403ea279f8b8a97fc45b2bd3b02c709b` pasó CI: [run 39693348248](https://github.com/snowdenxrp/aldea-ia/actions/runs/39693348248), job [tests 119544693350](https://github.com/snowdenxrp/aldea-ia/actions/runs/39693348248/job/119544693350), `completed/success`, paso `Run tests`: SUCCESS.
+- Después se amplió el informe para aclarar que la CLI `nexo-chronicle-session` recibe `--continuity` y `--chronicle` como configuración de ruta confiable, no como interfaz para paths elegidos por contenido de misión. Informe actualizado en commit `cacaaa18c83ed29e5b4d7dbbb6c3a5c9331bc722`; CI del HEAD posterior debe comprobarse por su SHA exacto.
+- No hubo cambio de runtime. La opción A solo puede considerar confiable la persistencia si la configuración de ruta también está bajo control confiable.
