@@ -2842,3 +2842,10 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Test commit: `8deabb5ca0b314ecd6a699a4b7a8bcb3f470c767`; documentación del test: `1ae34ea5c592908ba72eb8a24a1c40363f754a40`. CI confirmado para SHA exacto `f410ab92dd113a4b3188232575098e8b02fb1371`: [run 39691648024](https://github.com/snowdenxrp/aldea-ia/actions/runs/39691648024), job [tests 119539048110](https://github.com/snowdenxrp/aldea-ia/actions/runs/39691648024/job/119539048110), completed/success; paso `Run tests`: SUCCESS. Este run valida ese SHA, no commits posteriores.
 - Informe: [NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md](BUILD/NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md).
 - Estado M0 conservador sin cambios: `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Prueba adicional de inicialización Chronicle con respuesta perdida (2026-10-21)
+
+- Se añadió a `tests/nexo/chronicle-store.test.mjs` una prueba que simula el error de respuesta después de que `rename` ya haya persistido el envelope vacío de inicialización. La implementación debe releer el envelope y devolver `committed` solo si coincide exactamente.
+- Test commit: `d245fa7bb2f497a87a5972b4313bd9f5de490c54`. No cambia runtime; complementa la prueba de recuperación multi-store, sin afirmar atomicidad entre stores.
+- CI del SHA que contiene esta nueva prueba y de la actualización documental final: pendiente de consulta. No extrapolar el SUCCESS anterior del SHA `f410ab92dd113a4b3188232575098e8b02fb1371`.
