@@ -2917,3 +2917,10 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Se ajustaron `tests/nexo/repair-session.test.mjs` y `tests/nexo/repair-mission-verification.test.mjs` para separar el gate de runtime del protocolo de reparación. CI del SHA final sigue pendiente.
 - No se afirma que todas las APIs internas sean una frontera contra código arbitrario; no conectar estas primitivas a otro entry point sin decisión de alcance y prueba de enforcement.
 - Estados conservados: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### CI confirmado — gate de reparación opción A (2026-10-21)
+
+- SHA validado: `7396bfcec3d54d2e2d0b1371e3188d29c9b9461a`.
+- Workflow [39695419937](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937), job [tests 119551490108](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695419937/job/119551490108): `completed/success`; paso `Run tests`: SUCCESS.
+- Esto valida el conjunto de código, pruebas y documentos del SHA citado, incluida la ruta de reparación bloqueada bajo opción A. No certifica todas las APIs internas como frontera de seguridad, no cierra M0-E y no habilita efectos protegidos.
