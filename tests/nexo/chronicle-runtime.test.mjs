@@ -1519,6 +1519,27 @@ try {
   const persistedCliChronicle = JSON.parse(await fs.readFile(path.join(cliRoot, "valid-chronicle.json"), "utf8"));
   assert.equal(persistedCliChronicle.entries[0].content, privateContent);
 
+  const exactStdinContinuity = path.join(cliRoot, "exact-stdin-continuity.json");
+  const exactStdinChronicle = path.join(cliRoot, "exact-stdin-chronicle.json");
+  const exactStdin = spawnSync(process.execPath, [
+    "scripts/nexo-chronicle-session.mjs",
+    "--continuity", exactStdinContinuity,
+    "--chronicle", exactStdinChronicle,
+    "--mission", "exact-stdin-mission",
+    "--step", "exact-stdin-step",
+    "--content-stdin",
+    "--initialize-continuity",
+    "--initialize-chronicle"
+  ], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    input: "z".repeat(NEXO_RESOURCE_LIMITS.stdinBytes)
+  });
+  assert.equal(exactStdin.status, 0, JSON.stringify({ stdout: exactStdin.stdout, stderr: exactStdin.stderr }));
+  assert.equal(JSON.parse(exactStdin.stdout.trim()).status, "completed");
+  assert.equal(JSON.parse(await fs.readFile(exactStdinChronicle, "utf8")).entries[0].content.length,
+    NEXO_RESOURCE_LIMITS.stdinBytes, "stdin at the exact byte limit is accepted");
+
   // Oversized stdin is rejected during accumulation; no store is created and no payload is echoed.
   const oversizedStdinContinuity = path.join(cliRoot, "oversized-stdin-continuity.json");
   const oversizedStdinChronicle = path.join(cliRoot, "oversized-stdin-chronicle.json");
