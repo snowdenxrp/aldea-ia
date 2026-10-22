@@ -3021,3 +3021,10 @@ El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `suc
 
 - La propuesta de presupuesto enlaza explícitamente la regla ya investigada en AB104.397/AB104.398: un límite de recursos no equivale a completitud; prohibido truncar silenciosamente o declarar éxito/completitud ante límite alcanzado.
 - No se repite la investigación histórica ni se asume que `RESOURCE_LIMIT_REACHED` sea un outcome runtime ya implementado. Quedan pendientes los máximos operativos concretos y su enforcement en CLI/caso de uso/store.
+
+
+### Mapa de enforcement para el presupuesto (sin cambio de runtime)
+
+- La propuesta ahora mapea stdin a `scripts/nexo-chronicle-session.mjs`; admisión a `runNexoChronicleAppend`; presupuesto Chronicle a `validateDocument/writeDocument/append`; presupuesto Continuity a `assertNexoContinuitySnapshot/commitIfCurrent/writeEnvelope`.
+- Tests existentes para ampliar: `tests/nexo/chronicle-runtime.test.mjs` (incluye ejecución CLI con `spawnSync` y stdin válido, no exceso de tamaño) y `tests/nexo/continuity-contract.test.mjs` más los tests del store.
+- Esto identifica puntos concretos de implementación sin introducir límites, outcomes ni runtime changes antes de la decisión contractual.
