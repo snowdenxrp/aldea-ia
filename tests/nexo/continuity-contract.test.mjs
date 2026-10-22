@@ -864,7 +864,7 @@ const verifierOperation = {
   action: "local_analysis",
   target: "alex"
 };
-assert.equal((await verifierOwner.recordPrepared({ expectedRevision: 1, operation })).status, "committed");
+assert.equal((await verifierOwner.recordPrepared({ expectedRevision: 1, operation: verifierOperation })).status, "committed");
 const invalidVerifierObservation = await verifierOwner.reconcilePrepared({
   expectedRevision: 2,
   operation: verifierOperation
