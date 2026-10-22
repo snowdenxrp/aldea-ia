@@ -57,3 +57,31 @@ El siguiente paso de mayor valor no es otra prueba duplicada: es determinar cóm
 ## Estado
 
 M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No commissioning ni autorización implícita.
+
+
+## Seguimiento acotado — invocación CLI y control de rutas (2026-10-21)
+
+**Pregunta registrada que se resuelve aquí:** cómo se invoca la CLI dentro del repositorio actual y quién controla las rutas que recibe. Esta revisión reutiliza la matriz y pruebas de este mismo informe; no repite el audit de filesystem ni la auditoría de imports.
+
+### Evidencia observada
+
+- `package.json` expone el comando `nexo: node scripts/nexo.mjs`; no define un servicio, daemon o integración de producto que arranque la sesión automáticamente.
+- `scripts/nexo.mjs` es el router de entrada. Para `chronicle-append`, construye la ruta fija al wrapper `scripts/nexo-chronicle-session.mjs` y lo ejecuta con `spawnSync(process.execPath, ...)`; no pasa por un shell.
+- El wrapper toma `--continuity` y `--chronicle` de argumentos CLI y los entrega como `continuityPath`/`chroniclePath` a `runNexoChronicleAppend`. El servicio crea los stores con esas rutas. No se observó en esta cadena una ruta de misión/claim que seleccione esos paths.
+- La búsqueda de referencias de invocación no aportó evidencia de un caller automático de producto distinto de la CLI expuesta. Esto es un resultado limitado al árbol/rama consultados, no prueba que no exista integración externa o futura.
+
+### Interpretación y límite
+
+En el código actual, el supuesto compatible con la opción A es **herramienta local invocada explícitamente por un operador que controla los argumentos y las rutas**. La implementación no demuestra sandboxing contra otro proceso local hostil, protección frente a symlinks/permisos, ni que el runtime de un producto real sea quien configura y custodia esos paths.
+
+Por tanto:
+- no endurecer el filesystem con un parche parcial sin modelo de amenaza;
+- no aceptar rutas desde misión, claim o contenido no confiable;
+- no tratar un store local como raíz o autoridad;
+- si se introduce una invocación automática desde un runtime, esa integración debe establecer y verificar la configuración de rutas antes de habilitar persistencia.
+
+### Siguiente trabajo, sin duplicar auditorías
+
+La incertidumbre de invocación queda acotada para el prototipo CLI. El bloqueo sustantivo sigue siendo M0-E: contrato de reconocimiento de raíz legítima, Constitución exacta y Policy/contexto vigentes, y su enforcement en un límite real. Los contratos Genesis y Constitución→Policy existentes siguen siendo las fuentes; no crear un contrato paralelo ni inferir que el borrador ya está aprobado.
+
+No se cambió runtime ni se añadieron pruebas en este seguimiento. Estado conservador: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
