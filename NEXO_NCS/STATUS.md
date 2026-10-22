@@ -1,3 +1,14 @@
+# CHECKPOINT NUEVO — 2026-10-22 — ADMISIÓN REPRESENTATIVA DE MISIÓN
+
+- Commit de código/prueba: [390d3a39faf802c22c3687102ce675b9362e1381](https://github.com/snowdenxrp/aldea-ia/commit/390d3a39faf802c22c3687102ce675b9362e1381).
+- Cambio limitado a `tests/nexo/continuity-contract.test.mjs`: prueba de integración que pasa una misión de 12 pasos con dependencias, targets estructurados y contexto anidado por `recordNexoMissionInSnapshot`; comprueba que los 12 pasos y el contexto sobreviven íntegros.
+- CI exacto para SHA `390d3a39faf802c22c3687102ce675b9362e1381`: deterministic persistence tests SUCCESS (https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342109); STEP 4 semantic validation SUCCESS (https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342118); STEP 5 outcome classification SUCCESS (https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342204); integrated acceptance regression SUCCESS (https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342245); bounded mission admission and restart continuity SUCCESS (https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342249).
+- Alcance de la evidencia: es una prueba de contrato representativa, no un fixture de producción ni una medición de capacidad de heap. La adecuación general del perfil v1 sigue abierta.
+- Siguiente paso: revisar otras formas legítimas de misión ya presentes en los contratos/tests, sin repetir pruebas de frontera. Si no existen fixtures independientes, registrar esa limitación y no inventar una conclusión de capacidad. Después escoger una sola brecha de recursos con alcance claro.
+- No se modificó runtime ni se habilitaron efectos. Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # PUERTA DE ENTRADA PARA EL SIGUIENTE CHAT NCS — 2026-10-22
 
 El usuario iniciará el chat escribiendo exactamente `NCS`.
