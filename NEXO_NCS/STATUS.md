@@ -3065,3 +3065,14 @@ Inspección de `src/nexo/core/chronicle-store.mjs` y `src/nexo/core/continuity-s
 Acción: ampliado el contrato de recursos y el perfil candidato para exigir un máximo también al leer, antes de decodificar/parsear; el exceso debe bloquearse sin modificar ni truncar el estado. Añadir pruebas de archivos existentes sobredimensionados, preservación exacta de bytes/revisión, frontera inclusiva y separación entre exceso conocido y `UNKNOWN`.
 
 No se modificó runtime y no se aceptaron los valores numéricos. Esta es una brecha de cobertura del plan de implementación, no evidencia de exploit ni de impacto en producción. El estado global de M0 no cambia: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+### Baseline de tests del presupuesto (2026-10-22)
+
+La inspección separó cobertura existente de la pendiente: Chronicle ya prueba idempotencia, concurrencia y estados del lock; Continuity ya prueba store ausente/corrupto, schema, revisión y conflicto. Ninguna de esas garantías equivale a medir bytes crudos antes de parsear ni a probar los límites numéricos candidatos.
+
+Tests que deberán ampliarse cuando el perfil sea aceptado:
+- `tests/nexo/chronicle-store.test.mjs`: archivo Chronicle preexistente sobredimensionado y preservación exacta.
+- `tests/nexo/chronicle-runtime.test.mjs`: stdin sobredimensionado, rechazo temprano y cero admisión/escritura.
+- `tests/nexo/continuity-contract.test.mjs`: envelope existente sobredimensionado, cardinalidad/bytes candidatos y revisión sin avance.
+
+No se cambió runtime. No interpretar CI verde actual como prueba de estos casos nuevos; M0 permanece `INCOMPLETO`.
