@@ -1,3 +1,15 @@
+# CHECKPOINT NUEVO — 2026-10-22 — CHRONICLE PUBLIC SESSION OPTIONS GUARD
+
+- Hallazgo concreto: `runNexoChronicleAppend({ ... } = {})` leía sus ocho opciones por destructuring antes de validar. Un getter en cualquier campo podía ejecutarse antes del primer control de entrada y antes de que la función devolviera un resultado seguro.
+- Corrección runtime: el punto de entrada ahora extrae opciones mediante descriptores propios de datos enumerables en objetos planos/prototipo nulo; aplica defaults solo después de la lectura segura y devuelve `blocked / NEXO_CHRONICLE_SESSION_INPUT_INVALID` si la envoltura es inválida.
+- Regresión nueva: `tests/nexo/chronicle-session-input-guard.test.mjs` proporciona un getter centinela que lanzaría si se ejecutara; exige bloqueo, `authorization: NOT_EVALUATED`, `dispatchAttempted: false` y cero llamadas al getter. Integrada en `npm test`.
+- Commits: runtime `214a96c0e866b7039e89f18ad2741f272b46ed68`; test `65e3f74181df88a158460d05197e5061beefb568`; integración `356990bcea66f5156e5094b203bb5f6a3babd211`.
+- CI de la corrección anterior (Chronicle effect) en SHA `f53ac99015d6eef9faf99222de3c4a2655e8d6b8`: [bounded mission admission/restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39864266094) y [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39864266027) terminaron `success`; la persistencia determinista estaba en curso cuando se consultó. Para esta nueva integración, comprobar los workflows del SHA exacto antes de declarar validación.
+- Límites: los guards no neutralizan todos los Proxy traps ni establecen confianza del store. No prueban interpretación de intención, autoridad legítima, ni autorización para ejecutar efectos protegidos.
+- Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — CHRONICLE EFFECT INPUT GUARD
 
 - Hallazgo concreto: `createNexoChronicleEffectContracts({ store })` y el handler de Chronicle leían opciones/operación por destructuring. Un getter en `store`, `missionId` o `target.content` podía ejecutarse antes de validación y, en el handler, antes de decidir si se llamaba a `store.append`.
