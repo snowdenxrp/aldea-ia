@@ -156,3 +156,20 @@ Pruebas adicionales obligatorias:
 5. El caso de exceso conocido permanece separado de fallos de lectura o resultados ambiguos.
 
 Esto amplía el punto de enforcement del contrato; no cambia los valores candidatos ni implica que hayan sido aceptados. No se modificó runtime.
+
+## Baseline de cobertura existente (inspección de código/tests, 2026-10-22)
+
+Esta tabla separa las garantías ya cubiertas por tests de las que aún faltan; evita repetir la suite general como si ya demostrara el nuevo presupuesto.
+
+| Área | Cobertura que ya existe | Cobertura que falta para el presupuesto |
+|---|---|---|
+| Chronicle store (`tests/nexo/chronicle-store.test.mjs`) | store ausente, inicialización/conflicto, append idempotente, lectores reabiertos, concurrencia intra/interproceso, estados ambiguos del lock | límite por bytes de documento preexistente antes de `JSON.parse`; máximo inclusivo/exclusivo; preservación de bytes ante exceso |
+| Chronicle CLI/use case (`tests/nexo/chronicle-runtime.test.mjs`) | entrada válida por stdin, errores de entrada, bloqueo de operaciones y outcomes de escritura/lock | flujo por encima del máximo sin acumulación ilimitada; cero admisión/initialización/escritura; contenido UTF-8 multibyte medido por bytes |
+| Continuity store (`tests/nexo/continuity-contract.test.mjs`) | archivo ausente, JSON corrupto, schema inválido, revisión condicional y conflicto de escritores | límite crudo de archivo existente antes de `JSON.parse`; límites de colecciones/snapshot antes de `writeEnvelope`; bytes/revisión previos intactos |
+| Resultado ambiguo | varias pruebas existentes distinguen persistencia confirmada, bloqueos y `UNKNOWN` | demostrar que un exceso conocido no se confunde con lectura fallida, corrupción o escritura ambigua |
+
+Puntos de código observados en el HEAD revisado:
+- Chronicle: `readDocument` (líneas 127–136 del blob inspeccionado) materializa texto completo y parsea; `writeDocument` (139–145) serializa y escribe.
+- Continuity: `readEnvelope` (147–157) materializa texto completo y parsea; `writeEnvelope` (159–168) serializa y escribe.
+
+Los números de línea son orientativos para el blob inspeccionado y pueden cambiar con nuevos commits; los nombres de función y archivos son el ancla estable. Este baseline no afirma que las pruebas existentes fallen ni que exista un exploit; define la cobertura adicional requerida. No se modificó runtime y los límites numéricos continúan sin aceptación.
