@@ -46,8 +46,14 @@ function processIsAlive(pid) {
 }
 
 async function readLockOwner(fsModule, lock) {
-  try { return JSON.parse(await fsModule.readFile(path.join(lock, "owner.json"), "utf8")); }
-  catch { return null; }
+  try {
+    return JSON.parse(await readUtf8FileBounded(
+      fsModule,
+      path.join(lock, "owner.json"),
+      NEXO_RESOURCE_LIMITS.lockOwnerBytes,
+      "NEXO_CHRONICLE_LOCK_STATE_UNKNOWN"
+    ));
+  } catch { return null; }
 }
 
 async function acquireLock(fsModule, filePath, deadlineAt, timeoutCode) {
@@ -89,8 +95,14 @@ async function acquireLock(fsModule, filePath, deadlineAt, timeoutCode) {
       let owner = await readLockOwner(fsModule, lock);
       if (!owner) {
         let rawOwner;
-        try { rawOwner = await fsModule.readFile(path.join(lock, "owner.json"), "utf8"); }
-        catch (error) {
+        try {
+          rawOwner = await readUtf8FileBounded(
+            fsModule,
+            path.join(lock, "owner.json"),
+            NEXO_RESOURCE_LIMITS.lockOwnerBytes,
+            "NEXO_CHRONICLE_LOCK_STATE_UNKNOWN"
+          );
+        } catch (error) {
           // A lock creator may still be writing owner.json; retry only when absent.
           if (error?.code === "ENOENT") continue;
           throw fail("NEXO_CHRONICLE_LOCK_STATE_UNKNOWN");
