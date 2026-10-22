@@ -92,9 +92,8 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
   }
 
   const mission = requestIntent ? input.missionDraft : input;
-  if (requestIntent &&
-      (typeof input.intent !== "string" ||
-       Buffer.byteLength(input.intent, "utf8") > NEXO_MISSION_ADMISSION_LIMITS.requestIntentUtf8Bytes)) {
+  if (requestIntent && typeof input.intent === "string" &&
+      Buffer.byteLength(input.intent, "utf8") > NEXO_MISSION_ADMISSION_LIMITS.requestIntentUtf8Bytes) {
     throw admissionError("NEXO_MISSION_REQUEST_INTENT_RESOURCE_LIMIT_EXCEEDED");
   }
   if (mission && typeof mission === "object" && !Array.isArray(mission) &&
