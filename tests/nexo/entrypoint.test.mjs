@@ -9,7 +9,7 @@ import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import * as nexoApplication from "../../src/nexo/application/index.mjs";
 
 assert.deepEqual(Object.keys(nexoApplication).sort(), [
-  "loadNexoContinuityStatus", "loadNexoMissionPlan", "loadNexoMissionStatus", "runNexoChronicleAppend"
+  "loadNexoContinuityStatus", "loadNexoMissionPlan", "loadNexoMissionStatus", "previewNexoMissionDraft", "runNexoChronicleAppend"
 ].sort(), "public Nexo application API must remain narrow and must not expose a generic dispatcher");
 for (const exportedUseCase of Object.values(nexoApplication)) assert.equal(typeof exportedUseCase, "function");
 
@@ -86,6 +86,10 @@ assert.deepEqual(parseNexoEntrypointArguments(["mission-plan", "--continuity", "
   status: "mission-plan", continuityPath: "continuity.json", missionId: "mission-1"
 });
 assert.equal(parseNexoEntrypointArguments(["mission-plan", "--continuity", "a"]).code, "NEXO_MISSION_ID_REQUIRED");
+assert.deepEqual(parseNexoEntrypointArguments(["mission-draft-preview", "--continuity", "continuity.json", "--draft", "draft.json"]), {
+  status: "mission-draft-preview", continuityPath: "continuity.json", draftPath: "draft.json"
+});
+assert.equal(parseNexoEntrypointArguments(["mission-draft-preview", "--continuity", "a"]).code, "NEXO_MISSION_DRAFT_PATH_REQUIRED");
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-main-entrypoint-"));
 try {
@@ -203,6 +207,72 @@ try {
   assert.equal(missionPlanSummary.dispatchAttempted, false);
   assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
 
+  // A proposed mission draft is validated through the existing mission contract,
+  // topologically ordered, and never persisted or dispatched.
+  const draftPath = path.join(root, "mission-draft.json");
+  const draftPrivate = "PRIVATE_DRAFT_TARGET_SHOULD_NEVER_BE_OUTPUT";
+  const draft = {
+    missionId: "new-preview-mission",
+    objective: "local_analysis",
+    status: "planned",
+    steps: [
+      { id: "second", action: "local_analysis", target: draftPrivate, status: "planned", dependsOn: ["first"] },
+      { id: "first", action: "local_analysis", target: "PRIVATE_FIRST_DRAFT_TARGET", status: "planned", dependsOn: [] }
+    ]
+  };
+  await fs.writeFile(draftPath, JSON.stringify(draft), "utf8");
+  const draftPreview = spawnSync(process.execPath, [
+    entrypointPath, "mission-draft-preview", "--continuity", continuityPath, "--draft", draftPath
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(draftPreview.status, 0, draftPreview.stderr || draftPreview.stdout);
+  assert.equal(draftPreview.stderr, "");
+  assert.equal(draftPreview.stdout.includes(draftPrivate), false);
+  assert.equal(draftPreview.stdout.includes("PRIVATE_FIRST_DRAFT_TARGET"), false);
+  const draftSummary = JSON.parse(draftPreview.stdout);
+  assert.equal(draftSummary.status, "validated");
+  assert.equal(draftSummary.missionId, "new-preview-mission");
+  assert.equal(draftSummary.stepCount, 2);
+  assert.deepEqual(draftSummary.steps.map(step => step.stepId), ["first", "second"]);
+  assert.equal(draftSummary.steps[1].dependsOn[0], "first");
+  assert.equal(draftSummary.authorization, "NOT_EVALUATED");
+  assert.equal(draftSummary.dispatchAttempted, false);
+  assert.equal(draftSummary.persisted, false);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
+
+  const invalidDraftPath = path.join(root, "invalid-mission-draft.json");
+  await fs.writeFile(invalidDraftPath, JSON.stringify({
+    missionId: "invalid-cycle-draft",
+    objective: "local_analysis",
+    steps: [
+      { id: "cycle-a", action: "local_analysis", dependsOn: ["cycle-b"] },
+      { id: "cycle-b", action: "local_analysis", dependsOn: ["cycle-a"] }
+    ]
+  }), "utf8");
+  const invalidDraftPreview = spawnSync(process.execPath, [
+    entrypointPath, "mission-draft-preview", "--continuity", continuityPath, "--draft", invalidDraftPath
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(invalidDraftPreview.status, 1);
+  assert.equal(invalidDraftPreview.stderr, "");
+  const invalidDraftSummary = JSON.parse(invalidDraftPreview.stdout);
+  assert.equal(invalidDraftSummary.status, "blocked");
+  assert.equal(invalidDraftSummary.code, "NEXO_MISSION_CONTEXT_INVALID");
+  assert.equal(invalidDraftSummary.authorization, "NOT_EVALUATED");
+  assert.equal(invalidDraftSummary.dispatchAttempted, false);
+  assert.equal(invalidDraftSummary.persisted, false);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
+
+  const duplicateDraftPath = path.join(root, "duplicate-mission-draft.json");
+  await fs.writeFile(duplicateDraftPath, JSON.stringify({
+    missionId: "entrypoint-mission", objective: "local_analysis",
+    steps: [{ id: "different-step", action: "local_analysis", dependsOn: [] }]
+  }), "utf8");
+  const duplicateDraftPreview = spawnSync(process.execPath, [
+    entrypointPath, "mission-draft-preview", "--continuity", continuityPath, "--draft", duplicateDraftPath
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(duplicateDraftPreview.status, 1);
+  assert.equal(duplicateDraftPreview.stderr, "");
+  assert.equal(JSON.parse(duplicateDraftPreview.stdout).code, "NEXO_MISSION_ID_ALREADY_BOUND");
+  assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
 
   // Mission reconstruction reads canonical continuity after restart without
   // printing the stored target/content payload or mutating the store.
