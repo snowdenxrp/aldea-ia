@@ -1,3 +1,16 @@
+# CHECKPOINT MÁS RECIENTE — 2026-10-22 — REPARACIÓN DE CONCURRENCIA DEL CI DE PERSISTENCIA
+
+Se identificó una causa operativa de la falta de evidencia completa: `.github/workflows/nexo-deterministic-tests.yml` usaba un grupo de concurrencia global y cancelaba la ejecución en curso en cada push (`cancel-in-progress: true`). Por eso las ejecuciones para SHAs anteriores acababan CANCELLED, lo cual no prueba que los tests pasaran o fallaran.
+
+- Corrección del workflow: commit `3ff6e3f52f5e0fce0d3f9373d6ce1655fec551b0`.
+- Ahora el grupo incluye `github.ref` y `cancel-in-progress: false`; las ejecuciones de ramas distintas quedan aisladas y las pruebas completas de persistencia se encolan en vez de cancelarse por cada commit.
+- Al último chequeo, el run https://github.com/snowdenxrp/aldea-ia/actions/runs/39851124108 (SHA documental previo `0ccffaed`) seguía PENDING sin job asignado. Un run más antiguo continuaba IN_PROGRESS sin conclusión. No declarar CI verde hasta confirmar el resultado de un run relevante.
+- En SHA de código/pruebas `c105f9098faf5bf45531b5c91731499c319070ac`, los workflows de aceptación integrada, STEP 4, STEP 5 y admisión acotada fueron SUCCESS. La prueba determinista de persistencia fue CANCELLED, no PASS.
+- Próximo paso: comprobar que el nuevo grupo de concurrencia se aplique y que la suite completa termine en el HEAD actual. Evitar commits adicionales mientras corre para preservar evidencia.
+- No se alteró runtime, límites de admisión, autorización ni ejecución de efectos. Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT MÁS RECIENTE — 2026-10-22 — LÍMITE PERSISTIDO DE MISIÓN
 
 Este checkpoint registra una brecha estructural confirmada: la admisión de misión nueva imponía 256 pasos, pero la validación común de un snapshot persistido no aplicaba por sí misma ese techo.
