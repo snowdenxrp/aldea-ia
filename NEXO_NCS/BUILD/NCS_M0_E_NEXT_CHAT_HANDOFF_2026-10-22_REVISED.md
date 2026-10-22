@@ -106,3 +106,15 @@ La siguiente tarea es inspección dirigida de callers/sinks y cruce de tests exi
 - No se modificó runtime/tests y no se ejecutó CI nuevo. El chequeo de status del SHA documental no devolvió status checks; no declarar PASS.
 - Scope exacto sigue OPEN; opción A sigue siendo propuesta provisional, no decisión aceptada. Mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
 - Próxima tarea: una vez confirmado HEAD actual, cruzar tests existentes por propiedad y límite observado; resolver scope explícito antes de concretar pruebas de sink o un camino positivo. `STATUS.md` no fue actualizado en esta operación; este handoff y el informe se verificaron directamente.
+
+
+## Actualización de continuidad — matriz de tests y STATUS (2026-10-22)
+
+- HEAD de rama confirmado tras las escrituras: `b83ebf1048277ea3782c7b6eda36b323499b32a6`.
+- `STATUS.md` se actualizó para enlazar los dos informes nuevos; blob actual observado después del commit: `9ce54e0e9af55fc3e9eacfd5831370b3a0dd2da5`.
+- Matriz nueva: [NCS_M0_E_EXISTING_TESTS_TO_REAL_MUTATION_BOUNDARY_MATRIX_2026-10-22.md](NCS_M0_E_EXISTING_TESTS_TO_REAL_MUTATION_BOUNDARY_MATRIX_2026-10-22.md), blob `0cf2fa33ff53b4a6dbcfca839dab0a4e02ce8015`.
+- La matriz distingue cobertura reutilizable y brechas: transición Core/fixtures AUTHORIZED; persistencia real con revisión; vector criptográfico de prueba; lifecycle Chronicle; lifecycle de efectos e idempotencia; allowlist owner-backed. Ninguna suite demuestra el recorrido raíz legítima→Constitución exacta aprobada→Policy/contexto verificados→decisión claim-específica→sink real.
+- El commit `b83ebf1048277ea3782c7b6eda36b323499b32a6` disparó workflow `Nexo — deterministic persistence tests`, run `39726077797`, evento push, SHA exacto `b83ebf1048277ea3782c7b6eda36b323499b32a6`. En la última consulta estaba `pending`; no declarar PASS hasta recuperar estado terminal y jobs.
+- Scope A/B/C continúa sin decisión explícita. No activar efectos protegidos ni crear camino positivo ficticio.
+- Próxima acción: consultar el run y sus jobs; si termina, registrar el resultado exacto. Luego continuar con una unidad de implementación acotada a la opción de scope que el propietario elija; no cambiar scope por inferencia.
+- Estado conservado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
