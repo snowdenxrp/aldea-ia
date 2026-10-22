@@ -94,3 +94,18 @@ Esta nota no repite la auditoría del grafo de imports de la CLI independiente n
 - Decisión técnica pendiente para el diseño, no para la autoridad constitucional: definir si `scripts/assistants.mjs` se conserva como compatibilidad heredada fuera de Nexo o si se elimina gradualmente el puente, preservando la CLI independiente. Hasta entonces, no afirmar aislamiento global completo.
 
 Estados sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## Seguimiento acotado — adapter de commit real y alcance del sink (2026-10-22)
+
+Se inspeccionó el adapter concreto para no tratar todos los commits como un sink genérico:
+
+- `src/nexo/adapters/conditional-commit-persist-state.mjs` recibe una función `persistState` y un `statePath`; llama a `persistState(statePath, candidate.state, clock(), { expectedRevision, stateRevision })` y convierte conflictos/fallos en `CONDITIONAL_CONFLICT` o `UNKNOWN`.
+- `tests/nexo/conditional-commit-persist-state.test.mjs` conecta ese adapter a `scripts/simulate.mjs` (`persistState`, `loadState`, `applyState`) y ejecuta `executeProtectedTransition` con un `authorityGate.check` que devuelve `AUTHORIZED` desde una fixture. El test verifica persistencia de un estado de simulación y conflicto de revisión.
+- Esto demuestra una composición de prueba capaz de persistir estado local de simulación; **no** demuestra un sink externo ni una ruta de producción autorizada. Tampoco es prueba de raíz legítima: la autoridad sigue inyectada por el test.
+- Bajo Opción A, cualquier mutación de estado canónico/simulado de Lúmina está excluida. El test de adapter debe interpretarse como regresión de la primitiva de persistencia/commit, no como autorización de que Nexo ejecute esa mutación en su runtime de producto.
+- No se cambia runtime: introducir un `effectBoundary.prepare` sin definir su contrato autorizado y sin demostrar el sink del producto solo trasladaría el problema a otro puerto.
+
+Conclusión de este seguimiento: el destino observado de este adapter es persistencia local de estado de simulación, no evidencia de un efecto externo. El bloqueo M0-E sigue siendo la falta de procedencia de autoridad y de enforcement probado en las fronteras reales del alcance. Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
