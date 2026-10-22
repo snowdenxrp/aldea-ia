@@ -3050,3 +3050,10 @@ El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `suc
 - Perfil inicial candidato: stdin y contenido por entrada 256 KiB; documento Chronicle 32 MiB; snapshot Continuity 16 MiB; límites de cardinalidad por colección. Todos los valores están **NO ACEPTADOS / NO IMPLEMENTADOS** y no son benchmarks.
 - La matriz y el contrato de recursos enlazan la propuesta. No se modificó runtime.
 - Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Cross-check de presupuesto agregado
+
+- Se reutilizó `docs/nexo/NEXO_SCOPE_ENVELOPE_CARDINALITY_FANOUT_AGGREGATE_SAFETY_RESEARCH_V1_2026-09-24.md`, sin repetir la investigación.
+- Los máximos por store propuestos son límites locales; no prueban presupuesto combinado de disco, pico de heap, throughput ni seguridad agregada. El candidato marca esta distinción y deja presupuesto agregado como **OPEN**, especialmente antes de sesiones concurrentes o servicio multiusuario.
+- No se inventa una cuota agregada ni una capa de reserva sin baseline de capacidad y contrato de asignación.
