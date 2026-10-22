@@ -106,7 +106,13 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
   async function recordMission({ expectedRevision, mission } = {}) {
     try { assertNexoMissionAdmission(mission); }
     catch (error) {
-      return { status: "conflict", code: error?.code ?? "NEXO_MISSION_CONTEXT_INVALID" };
+      let storeRevision;
+      try { storeRevision = (await store.loadCurrent()).storeRevision; } catch {}
+      return {
+        status: "conflict",
+        code: error?.code ?? "NEXO_MISSION_CONTEXT_INVALID",
+        ...(storeRevision === undefined ? {} : { storeRevision })
+      };
     }
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0 ||
         !mission || typeof mission.missionId !== "string" || !mission.missionId.trim() ||
