@@ -1,3 +1,15 @@
+# CHECKPOINT NUEVO — 2026-10-22 — CHRONICLE EFFECT INPUT GUARD
+
+- Hallazgo concreto: `createNexoChronicleEffectContracts({ store })` y el handler de Chronicle leían opciones/operación por destructuring. Un getter en `store`, `missionId` o `target.content` podía ejecutarse antes de validación y, en el handler, antes de decidir si se llamaba a `store.append`.
+- Corrección runtime: extracción de campos de datos propios enumerables desde objetos planos/prototipo nulo; el handler rechaza opciones inválidas sin ejecutar getters y extrae `target.content` como descriptor de datos. La fábrica también exige métodos `append` y `loadCurrent` como propiedades propias de datos, evitando evaluar accesores del store.
+- Regresión nueva: `tests/nexo/chronicle-effect-input-guard.test.mjs` verifica getter del constructor, getter de `missionId`, getter de `target.content` y que no se llame `append` en los casos inválidos. Integrada en `npm test`.
+- Commits: runtime `f53ac99015d6eef9faf99222de3c4a2655e8d6b8`; test `de23714fb27d66ab492f04095ec37298e3f6a3e6`; integración `fa5497c78e8347b5959f5e056282908c2574d4ee`.
+- CI: pendiente para el SHA integrado; no declarar PASS hasta leer conclusiones de workflows asociados al SHA exacto.
+- Límite: no neutraliza todos los Proxy traps; no demuestra que el store inyectado sea confiable; no autoriza el efecto Chronicle ni cambia la frontera constitucional.
+- Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — CONDITIONAL COMMIT ADAPTER OPTIONS GUARD
 
 - Hallazgo concreto: `createPersistStateConditionalCommit({ ... } = {})` leía `persistState`, `statePath` y `clock` mediante destructuring de opciones antes de validar. Un getter ordinario podía ejecutarse al construir el adaptador.
