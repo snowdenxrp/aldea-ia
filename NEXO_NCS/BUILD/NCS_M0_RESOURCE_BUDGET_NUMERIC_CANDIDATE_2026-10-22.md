@@ -89,3 +89,9 @@ El máximo de documento completo debe proteger ambos sentidos del ciclo de persi
 Antes de aceptar el perfil, añadir pruebas para Chronicle y Continuity que carguen un archivo preexistente por encima del máximo y demuestren rechazo fail-closed, sin parseo completo, sin admisión ni escritura y con bytes/revisión preservados. La medición debe hacerse sobre bytes crudos antes de materializar el texto completo; no basta con `raw.length` después de `readFile(..., "utf8")`.
 
 Este requisito no cambia los topes propuestos y no representa implementación. Los valores siguen **NO ACEPTADOS / NO IMPLEMENTADOS**.
+
+## Aclaración de implementación para lectura acotada
+
+No basta con cargar el documento entero en un `Buffer` y medir su longitud: el consumo máximo ya ocurrió. El store debe leer de forma acotada, contar bytes crudos durante la lectura y detenerse al detectar más que el máximo, antes de decodificar y parsear. `stat` puede anticipar un rechazo pero no es el control definitivo, ya que no evita carreras entre la inspección y la lectura. Los tests deben probar límite de bytes consumidos, cancelación, ausencia de `JSON.parse` al exceder y preservación de bytes/revisión.
+
+Los valores numéricos siguen **NO ACEPTADOS / NO IMPLEMENTADOS**.
