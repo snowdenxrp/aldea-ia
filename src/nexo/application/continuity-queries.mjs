@@ -150,7 +150,7 @@ export async function loadNexoMissionPlan(continuityPath, missionId) {
           : "waiting";
       const planningState = step.status === "completed"
         ? "completed"
-        : step.status === "blocked" || step.status === "failed" || dependencyBlocked
+        : step.status === "blocked" || step.status === "failed" || dependencyBlocked || mission.status === "blocked"
           ? "blocked"
           : step.status !== "planned"
             ? "not_plannable"
