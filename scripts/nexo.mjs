@@ -1,6 +1,7 @@
 import { pathToFileURL, fileURLToPath } from "node:url";
 import fs from "node:fs/promises";
 import { spawnSync } from "node:child_process";
+import { NEXO_RESOURCE_LIMITS, readUtf8FileBounded } from "../src/nexo/core/resource-limits.mjs";
 import { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan, previewNexoMissionDraft, previewNexoMissionRequest } from "../src/nexo/application/index.mjs";
 
 /**
@@ -140,9 +141,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     let draft;
     let draftReadFailed = false;
     try {
-      draft = JSON.parse(await fs.readFile(parsed.draftPath, "utf8"));
+      draft = JSON.parse(await readUtf8FileBounded(fs, parsed.draftPath, NEXO_RESOURCE_LIMITS.missionPreviewInputBytes, "NEXO_MISSION_DRAFT_INPUT_RESOURCE_LIMIT_EXCEEDED"));
     } catch (error) {
-      const code = error?.code === "ENOENT" ? "NEXO_MISSION_DRAFT_FILE_UNAVAILABLE" : "NEXO_MISSION_DRAFT_JSON_INVALID";
+      const code = error?.code === "ENOENT" ? "NEXO_MISSION_DRAFT_FILE_UNAVAILABLE" : error?.code === "NEXO_MISSION_DRAFT_INPUT_RESOURCE_LIMIT_EXCEEDED" ? error.code : "NEXO_MISSION_DRAFT_JSON_INVALID";
       console.log(JSON.stringify({ status: "blocked", code, authorization: "NOT_EVALUATED", dispatchAttempted: false, persisted: false }));
       process.exitCode = 1;
       draftReadFailed = true;
@@ -156,9 +157,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     let requestEnvelope;
     let requestReadFailed = false;
     try {
-      requestEnvelope = JSON.parse(await fs.readFile(parsed.requestPath, "utf8"));
+      requestEnvelope = JSON.parse(await readUtf8FileBounded(fs, parsed.requestPath, NEXO_RESOURCE_LIMITS.missionPreviewInputBytes, "NEXO_MISSION_REQUEST_INPUT_RESOURCE_LIMIT_EXCEEDED"));
     } catch (error) {
-      const code = error?.code === "ENOENT" ? "NEXO_MISSION_REQUEST_FILE_UNAVAILABLE" : "NEXO_MISSION_REQUEST_JSON_INVALID";
+      const code = error?.code === "ENOENT" ? "NEXO_MISSION_REQUEST_FILE_UNAVAILABLE" : error?.code === "NEXO_MISSION_REQUEST_INPUT_RESOURCE_LIMIT_EXCEEDED" ? error.code : "NEXO_MISSION_REQUEST_JSON_INVALID";
       console.log(JSON.stringify({
         status: "blocked", code, requestInterpretation: "NOT_PERFORMED",
         intentDraftAlignment: "NOT_EVALUATED", authorization: "NOT_EVALUATED",
