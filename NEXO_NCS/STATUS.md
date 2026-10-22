@@ -3006,3 +3006,12 @@ En `scripts/nexo-chronicle-session.mjs`, la ruta `--content-stdin` acumula todos
 La matriz de aceptación registra el criterio de cierre: definir un máximo de bytes, limitar la lectura antes de acumular memoria sin límite, rechazar de forma explícita al excederlo y probar que no se admite misión ni se escribe en Chronicle/Continuity. La política debe ser coherente en CLI, caso de uso y store; no se inventa un número ni se modifica runtime hasta fijar el contrato.
 
 El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `success` (run `39699402969`), pero no valida este nuevo commit. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0 — propuesta de contrato de presupuesto de recursos (2026-10-22)
+
+- Propuesta: [NCS_M0_RESOURCE_BUDGET_CONTRACT_PROPOSAL_2026-10-22.md](BUILD/NCS_M0_RESOURCE_BUDGET_CONTRACT_PROPOSAL_2026-10-22.md), vinculada también desde la [matriz finita de aceptación](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md).
+- Define las dimensiones que requieren límite: bytes de stdin, bytes por entrada, número de entradas, bytes del documento Chronicle, cardinalidad de colecciones Continuity y bytes del snapshot. También define la decisión pendiente sobre presupuesto combinado y política de agotamiento.
+- Estado estricto: **PROPUESTA / NO ACEPTADA / NO IMPLEMENTADA**. No se inventan cifras ni nuevos outcome IDs. La propuesta conservadora rechaza escrituras nuevas antes de mutar y preserva datos existentes; cualquier rotación/compactación queda fuera hasta decisión explícita.
+- No se cambió runtime. No se reabrieron auditorías cerradas.
+- Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
