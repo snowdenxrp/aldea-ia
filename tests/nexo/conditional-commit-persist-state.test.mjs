@@ -19,6 +19,18 @@ import { createCorePorts } from "../../src/nexo/core/ownership.mjs";
 import { executeProtectedTransition } from "../../src/nexo/core/protected-transition.mjs";
 import { createPersistStateConditionalCommit } from "../../src/nexo/adapters/conditional-commit-persist-state.mjs";
 
+let optionGetterCalls = 0;
+const invalidConstructorOptions = {};
+Object.defineProperty(invalidConstructorOptions, "persistState", {
+  enumerable: true,
+  get() { optionGetterCalls += 1; return async () => {}; }
+});
+assert.throws(
+  () => createPersistStateConditionalCommit(invalidConstructorOptions),
+  /conditional commit options are invalid/
+);
+assert.equal(optionGetterCalls, 0, "constructor option accessors must not execute");
+
 const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-3c-"));
 const statePath = path.join(tempDir, "world-state.json");
 
