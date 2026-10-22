@@ -20,6 +20,21 @@ const emptySnapshot = {
   effectJournal: []
 };
 
+// Serialized envelope budget is enforced separately from collection cardinality.
+const nearLimitContinuity = {
+  ...emptySnapshot,
+  missions: Array.from({ length: 63 }, () => ({ payload: "x".repeat(256 * 1024) }))
+};
+assert.doesNotThrow(() => assertContinuityResourceLimits(nearLimitContinuity, 0),
+  "candidate below the serialized Continuity limit remains admissible");
+const overLimitContinuity = {
+  ...emptySnapshot,
+  missions: Array.from({ length: 64 }, () => ({ payload: "x".repeat(256 * 1024) }))
+};
+assert.throws(() => assertContinuityResourceLimits(overLimitContinuity, 0), {
+  code: "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED"
+}, "candidate above the serialized Continuity limit is rejected");
+
 // Each accepted Continuity collection maximum is inclusive; one additional item fails closed.
 for (const [collection, maximum] of Object.entries(NEXO_RESOURCE_LIMITS.continuityCollections)) {
   const atLimit = { ...emptySnapshot, [collection]: Array.from({ length: maximum }, () => null) };
