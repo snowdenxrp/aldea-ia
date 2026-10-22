@@ -3082,3 +3082,9 @@ No se cambió runtime. No interpretar CI verde actual como prueba de estos casos
 Se añadió al contrato una precisión de seguridad: leer un archivo entero en `Buffer` y medir después su longitud no limita la memoria. La futura implementación debe hacer lectura acotada, detenerse al superar el máximo antes de parsear y no confiar únicamente en `stat` por posibles cambios entre inspección y lectura. Los tests deben verificar bytes efectivamente consumidos, parada/cancelación y cero parseo/admisión/escritura en exceso.
 
 Esto refina el contrato; no es un cambio de runtime ni evidencia de explotación. Perfil numérico sin aceptación; M0 continúa incompleto.
+
+### Confirmación acotada de frontera Opción A — 2026-10-22
+
+La revisión del HEAD `554c2b6933c3f54b4966f3bf1a0f7de66b86074d` confirmó que la CLI Nexo mantiene un grafo de imports separado del runtime Lúmina y que el owner-backed runtime bloquea reparaciones y acciones no-`chronicle_append` antes del dispatch. A la vez, `src/nexo/runtime.js` conserva la API `executeLuminaNexoStep` y `src/nexo/simulation-adapter.js` conserva handlers capaces de mutar el objeto de simulación. No se encontró un caller de producción nuevo; no se infiere inalcanzabilidad universal.
+
+Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamiento global de todos los posibles callers no demostrado. Bajo Opción A, no cablear ni habilitar la ruta Lúmina. No se cambió runtime ni se reabrieron auditorías AB104/P112. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
