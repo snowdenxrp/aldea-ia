@@ -3105,3 +3105,15 @@ Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamient
 - Incluye estado canónico, SHA/blob de evidencia, contratos Genesis y Constitución→Policy a reutilizar, límites de lo demostrado por tests, criterios de la futura prueba integrada y pasos concretos para continuar sin repetir auditorías ni inventar una raíz.
 - Este handoff es documentación; no modifica runtime ni tests y no cierra M0-E. Antes de trabajar en el próximo chat, comprobar el HEAD actual de `ncs-clean-architecture` y leer `STATUS.md` más el handoff.
 - Estado canónico intacto: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`. Presupuesto numérico de recursos continúa no aceptado/no implementado.
+
+
+## M0-E — rol real de conditionalCommit y matriz de tests existente (2026-10-22)
+
+- Se añadió [NCS_M0_E_CONDITIONAL_COMMIT_SINK_ROLE_AND_ROUTE_MAP_2026-10-22.md](BUILD/NCS_M0_E_CONDITIONAL_COMMIT_SINK_ROLE_AND_ROUTE_MAP_2026-10-22.md), commit `c250c3edd9c191683b799c0d46a3640556aa4960`, blob `9ba6fda8e62900ef53f173d738edf4ca04400c74`.
+- Se añadió [NCS_M0_E_EXISTING_TESTS_TO_REAL_MUTATION_BOUNDARY_MATRIX_2026-10-22.md](BUILD/NCS_M0_E_EXISTING_TESTS_TO_REAL_MUTATION_BOUNDARY_MATRIX_2026-10-22.md), commit `8cabfd63abb619c7a1b0a667fa86dc3eae5145b1`. Mapea las suites existentes por propiedad probada y límite observado; no duplica tests de forma/STOP ni confunde un fixture `AUTHORIZED` con procedencia legítima.
+- Se actualizó [NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22_REVISED.md](BUILD/NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22_REVISED.md), commit `5193894043aebd58a7a1a72307686a259f9dca04`.
+- La revisión directa de la implementación confirma que `conditionalCommit.commit` adapta `persistState` con control de revisión; no está demostrado como sink externo protegido. Las rutas Core, simulación Lúmina y owner-backed se mantienen distintas.
+- Tests existentes reutilizables: `protected-transition` cubre validación/fail-closed y snapshot con AUTHORIZED inyectado; `conditional-commit-persist-state` cubre persistencia/revisión/UNKNOWN; `root-bootstrap-protocol` cubre vector criptográfico de prueba, no raíz; `chronicle-runtime` cubre lifecycle/dispatch/reconciliación con autoridad aún NOT_EVALUATED; `effect-adapter` cubre pre/postcondición, idempotencia y resultados inciertos del handler. No demuestran el camino raíz legítima→Constitución exacta→Policy/contexto→decisión→sink real.
+- La propuesta de scope A/B/C sigue sin aceptación explícita. No asumir A por inferencia; si el propietario selecciona A, la primera unidad sería hacer cumplir ausencia de efectos protegidos en todos los entry points soportados, sin crear camino positivo de autoridad.
+- No se modificó runtime/tests y no se ejecutó CI nuevo en estos cambios. El status check del commit documental consultado devolvió lista vacía; no declarar PASS.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
