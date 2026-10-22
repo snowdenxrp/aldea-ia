@@ -128,4 +128,15 @@ Decidir y documentar el modo operativo inicial de M0 y el ámbito del presupuest
 
 Leer [NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md](NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md). El inventario identifica la ruta CLI Chronicle, la capa de aplicación, las consultas Continuity, apertura del propietario, runtime owner-backed y acceso directo al store. Los límites son por entrada/documento/store; no hay cuota compartida de lectores, heap o disco entre procesos.
 
-Siguiente tarea: cotejar este inventario con el perfil numérico aceptado y separar formalmente (a) subcriterio por-store y garantías probadas de commit, (b) presupuesto agregado de heap/disco, que permanece OPEN. No repetir pruebas Continuity ya verificadas ni añadir un mecanismo global parcial.
+Resultado ya registrado en [NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md](NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md): límites locales por entrada/documento/store y garantías de commit por-store validados dentro del alcance acotado. El presupuesto agregado de heap/disco permanece OPEN; no se garantiza exclusión multiproceso. No repetir pruebas Continuity ya verificadas ni añadir un mecanismo global parcial.
+
+
+## Reanudación tras inspección de callers — 2026-10-22
+
+La revisión de `continuity-queries.mjs`, `continuity-service.mjs`, `owner-backed-runtime.mjs`, `chronicle-append.mjs`, `continuity-store.mjs`, `chronicle-store.mjs` y `resource-limits.mjs` no reveló una ruta alternativa que justifique repetir las pruebas por-store. Las consultas y el owner-backed runtime cargan Continuity mediante el store; la capa de aplicación Chronicle crea ambos stores y hace preflight; el CLI limita stdin antes de formar el texto. Los stores aplican límites propios al documento, colecciones y escritura.
+
+Esta conclusión está limitada a las rutas revisadas y a directorios locales de confianza. No demuestra un límite de memoria agregada ni bloquea varios procesos CLI. No se hicieron cambios de runtime ni se ejecutaron tests en esta inspección.
+
+### Próximo trabajo de Nexo
+
+Continuar con la frontera entre interpretar una petición y producir una vista previa de borrador de misión, reutilizando `previewNexoMissionDraft` y el contrato de misión existente. Antes de conectar un modelo, definir entradas no confiables, validación del objetivo/evidencia y restricción de acciones admitidas. Mantener la vista previa sin persistencia ni dispatch, y `authorization: NOT_EVALUATED`. No reabrir el presupuesto agregado salvo que se pretenda soportar concurrencia de servicio o exista una contradicción nueva.
