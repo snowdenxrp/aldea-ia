@@ -873,6 +873,48 @@ await assert.rejects(
 assert.equal((await fs.stat(oversizedContinuityPath)).size, oversizedContinuityBefore.size,
   "oversized Continuity bytes remain unchanged");
 
+// A structurally valid candidate that exceeds the serialized snapshot budget must be
+// rejected before lock acquisition or persistence, preserving the exact prior envelope.
+const oversizedValidSnapshotPath = path.join(directory, "oversized-valid-candidate.json");
+const oversizedValidSnapshotStore = createNexoContinuityStore({ filePath: oversizedValidSnapshotPath });
+assert.deepEqual(
+  await oversizedValidSnapshotStore.initialize(emptySnapshot),
+  { status: "committed", storeRevision: 0, snapshot: emptySnapshot }
+);
+const oversizedValidBytesBefore = await fs.readFile(oversizedValidSnapshotPath);
+const oversizedValidCandidate = {
+  ...emptySnapshot,
+  missions: [{
+    missionId: "oversized-valid-mission",
+    steps: [{ id: "step-1", action: "noop", payload: "x".repeat(NEXO_RESOURCE_LIMITS.continuityDocumentBytes) }]
+  }]
+};
+assert.doesNotThrow(
+  () => assertNexoContinuitySnapshot(oversizedValidCandidate),
+  "oversized candidate must be structurally valid so this test exercises the resource boundary"
+);
+const oversizedValidResult = await oversizedValidSnapshotStore.commitIfCurrent(0, oversizedValidCandidate);
+assert.deepEqual(
+  oversizedValidResult,
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED" },
+  "a structurally valid candidate above the serialized Continuity budget must be rejected"
+);
+assert.deepEqual(
+  await fs.readFile(oversizedValidSnapshotPath),
+  oversizedValidBytesBefore,
+  "rejected oversized candidate must preserve the existing envelope byte-for-byte"
+);
+assert.equal(
+  (await oversizedValidSnapshotStore.loadCurrent()).storeRevision,
+  0,
+  "rejected oversized candidate must not advance the canonical revision"
+);
+await assert.rejects(
+  () => fs.access(oversizedValidSnapshotPath + ".lock"),
+  error => error?.code === "ENOENT",
+  "known resource excess must be rejected before creating a lock"
+);
+
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
   () => store.loadCurrent(),
