@@ -60,8 +60,8 @@ function cloneSnapshot(snapshot) {
 }
 
 function missionRecord(mission) {
+  assertNexoMissionAdmission(mission);
   try {
-    assertNexoMissionAdmission(mission);
     assertContractInput(mission, "Nexo mission");
   } catch {
     throw operationError("NEXO_MISSION_CONTEXT_INVALID");
