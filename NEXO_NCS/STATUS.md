@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — CONSTRUCTORES DE STORES SIN LECTURA PREMATURA DE OPCIONES
+
+- Hallazgo: `createNexoContinuityStore()` y `createNexoChronicleStore()` usaban destructuring de opciones en la firma. Getters en `filePath`, `fsModule`, `lockDeadline` o `lockWaitMs` podían ejecutarse antes de validar la configuración.
+- Corrección: ambos constructores inspeccionan prototipo y descriptores propios de los cuatro campos consumidos; rechazan accessors y campos no enumerables, y aplican defaults tras extracción segura. La validación de ruta y presupuesto de lock sigue vigente.
+- Regresiones: getter en `filePath` para cada store; se exige que el getter no se ejecute y que se produzca el código de configuración inválida esperado.
+- Commits runtime/test: [continuity runtime](https://github.com/snowdenxrp/aldea-ia/commit/27be3d92cee91d7b9135a80ebe1fba6e4b61b765), [Chronicle runtime](https://github.com/snowdenxrp/aldea-ia/commit/b9c247a84178d7b288761c526c0d12d70d266902), [continuity regression](https://github.com/snowdenxrp/aldea-ia/commit/823f1f91c1117cc9a2e15cc6a69a9570c3e0f089), [Chronicle regression / SHA combinado](https://github.com/snowdenxrp/aldea-ia/commit/b5a67903510b4319624d33ebfa723c938a3c59d3).
+- CI exacto SHA `b5a67903510b4319624d33ebfa723c938a3c59d3`: 6/6 workflows disparados SUCCESS — [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39862188829), [admisión/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39862188828), [Chronicle](https://github.com/snowdenxrp/aldea-ia/actions/runs/39862188968), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39862189087), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39862188812), [persistencia](https://github.com/snowdenxrp/aldea-ia/actions/runs/39862189002). No se afirma que todos los workflows del repo corrieran.
+- Informe: [NCS_M0_STORE_CONSTRUCTOR_OPTIONS_INPUT_GUARD_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_STORE_CONSTRUCTOR_OPTIONS_INPUT_GUARD_2026-10-22.md).
+- Alcance: endurece extracción de configuración. No crea sandbox de filesystem, no neutraliza todos los Proxy traps ni procesos locales hostiles, no cambia la autoridad ni habilita efectos.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — OPCIONES DE LLAMADA DEL OWNER VALIDAS ANTES DE DESTRUCTURING
 
 - Hallazgo reproducible: los métodos públicos `recordMission`, `recordOutcome`, `recordPrepared`, `recordExecutionLineage` y `reconcilePrepared` recibían opciones con destructuring de parámetros. Un getter en las opciones se evaluaba antes de entrar al cuerpo y antes de cualquier guard.
