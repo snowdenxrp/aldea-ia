@@ -1,3 +1,15 @@
+## CI FINAL — ADMISIÓN DE OPCIONES — 2026-10-22
+
+Los cuatro workflows asociados al SHA exacto `285464c8c04d027a19268f442f3942bde9d99450` terminaron en `success`:
+- [Bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052143)
+- [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052297)
+- [Deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052261)
+- [Integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052375)
+
+Este resultado verifica esos workflows para ese SHA. El checkpoint documental se agregó después, en `6c9603c35ab88372c14fc3c80bc1734e0f2daa06`; no debe confundirse con el SHA de runtime/test validado.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — OPCIONES DEL CONTRATO DE ADMISIÓN SIN LECTURA PREMATURA
 
 - Hallazgo concreto: la función exportada `assertNexoMissionAdmission(input, { requestIntent = false } = {})` leía `requestIntent` mediante destructuring antes de validar el registro de opciones. Un getter ordinario en ese campo podía ejecutarse al entrar al contrato.
