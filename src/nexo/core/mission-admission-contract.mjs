@@ -86,22 +86,22 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
     }
   }
 
-  if (requestIntent) {
-    if (typeof input.intent !== "string" ||
-        Buffer.byteLength(input.intent, "utf8") > NEXO_MISSION_ADMISSION_LIMITS.requestIntentUtf8Bytes) {
-      throw admissionError("NEXO_MISSION_REQUEST_INTENT_RESOURCE_LIMIT_EXCEEDED");
-    }
-  } else {
-    if (!Array.isArray(input.steps) ||
-        input.steps.length > NEXO_MISSION_ADMISSION_LIMITS.missionSteps) {
+  const mission = requestIntent ? input.missionDraft : input;
+  if (requestIntent &&
+      (typeof input.intent !== "string" ||
+       Buffer.byteLength(input.intent, "utf8") > NEXO_MISSION_ADMISSION_LIMITS.requestIntentUtf8Bytes)) {
+    throw admissionError("NEXO_MISSION_REQUEST_INTENT_RESOURCE_LIMIT_EXCEEDED");
+  }
+  if (!mission || typeof mission !== "object" || Array.isArray(mission) ||
+      !Array.isArray(mission.steps) ||
+      mission.steps.length > NEXO_MISSION_ADMISSION_LIMITS.missionSteps) {
+    throw admissionError("NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
+  }
+  for (const step of mission.steps) {
+    const dependencies = step && typeof step === "object" ? (step.dependsOn ?? []) : [];
+    if (!Array.isArray(dependencies) ||
+        dependencies.length > NEXO_MISSION_ADMISSION_LIMITS.dependenciesPerStep) {
       throw admissionError("NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
-    }
-    for (const step of input.steps) {
-      const dependencies = step && typeof step === "object" ? (step.dependsOn ?? []) : [];
-      if (!Array.isArray(dependencies) ||
-          dependencies.length > NEXO_MISSION_ADMISSION_LIMITS.dependenciesPerStep) {
-        throw admissionError("NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
-      }
     }
   }
 
