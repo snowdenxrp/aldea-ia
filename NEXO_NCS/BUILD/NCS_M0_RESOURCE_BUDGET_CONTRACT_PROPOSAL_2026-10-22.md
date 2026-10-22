@@ -185,3 +185,10 @@ Requisito de implementación: lectura acotada en streaming (o API equivalente qu
 Una comprobación previa con `stat` puede ser optimización, pero no reemplaza el límite durante la lectura porque el archivo puede cambiar entre inspección y lectura. La lectura acotada debe definir el comportamiento ante error/cancelación: fallo de lectura o estado incompleto no se reclasifica como exceso conocido y mantiene el bloqueo/UNKNOWN existente. Este requisito aplica a Chronicle y Continuity, tanto en `loadCurrent` como en relecturas posteriores a una escritura ambigua.
 
 Pruebas necesarias además de las ya enumeradas: un lector instrumentado debe demostrar que no consume más del máximo más la unidad mínima de detección, no ejecuta `JSON.parse` al exceder y cierra/detiene la fuente; el camino dentro del máximo debe reconstruir exactamente el mismo JSON válido. No se modifica el perfil numérico ni se afirma implementación.
+
+
+## Actualización de cobertura posterior (2026-10-22)
+
+La tabla de baseline anterior es histórica, no describe el estado actual tras la implementación. El código vigente contiene lectura cruda acotada y validación por-store; `tests/nexo/continuity-store.test.mjs` cubre rechazo de snapshot estructuralmente válido sobre 16 MiB sin mutar bytes/revisión y dos candidatos concurrentes cerca del límite con comprobación de bytes canónicos. Cinco workflows terminaron SUCCESS en SHA `20b3e1b51616c93862a2cad2e502c143c35b77ef` (registrados en STATUS).
+
+El presupuesto agregado de heap/disco continúa OPEN: el límite de bytes serializados no mide el pico de memoria de concat/decode/parse/clone, y no existe cuota compartida entre consultas, stores o procesos. No declarar cerrado el subcriterio agregado ni servicio multiusuario.
