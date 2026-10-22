@@ -83,3 +83,16 @@ La ruta existente ya permite ubicar el enforcement futuro sin volver a investiga
 | resultado y recuperación | contratos públicos de Chronicle/Continuity existentes; no crear outcome nuevo antes de comprobar si alguno expresa exactamente el límite | afirmar resultado no exitoso, ausencia de mutación y preservación de conflicto/UNKNOWN ya definidos |
 
 Precisión: los tests CLI existentes verifican argumentos y un caso válido de contenido por stdin; eso no es evidencia de límite máximo ni de rechazo temprano. Los stores ya serializan el documento/snapshot en los puntos indicados, por lo que el presupuesto de bytes debe calcularse de forma determinista antes de iniciar la escritura. No se modifica código hasta que se decidan los máximos y el contrato de exceso.
+
+
+## Compatibilidad con los contratos de resultado actuales (inspección del código)
+
+La inspección del HEAD actual aclara cómo expresar el rechazo sin añadir un estado global nuevo:
+
+- `publicChronicleResult` ya permite los estados públicos `blocked`, `invalid`, `conflict`, `unknown`, `observed` y `completed`, y conserva el campo `code`.
+- `runNexoChronicleAppend` ya devuelve `blocked` para entradas inválidas antes de abrir/mutar los stores.
+- Chronicle ya tiene resultados `blocked` con códigos específicos y `committed` / `unknown` para append; Continuity usa `failed` / `conflict` / `unknown` / `committed`.
+
+**Conclusión acotada:** no se justifica introducir un nuevo estado público general para límite de recursos. La implementación debería reutilizar el estado no exitoso que corresponda a cada capa y añadir un código específico solo si el inventario de códigos existente confirma que no hay uno semánticamente equivalente. No se eligió ni añadió ningún código en esta propuesta.
+
+El rechazo debe ocurrir antes de `recordNexoMissionSafely` cuando el contenido de stdin o el presupuesto de la operación ya sea inválido; para los límites de store, debe ocurrir antes de `writeDocument`/`writeEnvelope`. Los errores de escritura posteriores conservan la semántica existente de `UNKNOWN` y reconciliación; nunca deben reinterpretarse como límite conocido ni como éxito.
