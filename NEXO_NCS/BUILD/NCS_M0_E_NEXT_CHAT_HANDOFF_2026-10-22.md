@@ -1,3 +1,24 @@
+# CHECKPOINT MÁS RECIENTE — 2026-10-22 — LÍMITE PERSISTIDO DE MISIÓN
+
+Este checkpoint registra una brecha estructural confirmada: la admisión de misión nueva imponía 256 pasos, pero la validación común de un snapshot persistido no aplicaba por sí misma ese techo.
+
+- Contrato: commit `df0ea917f38e02afb4dba97c5cec4e13b57a7e72`, en `src/nexo/core/continuity-contract.mjs`, incorpora la admisión compartida a la validación de cada misión persistida.
+- Compatibilidad de errores: commit `16406ed67a05a68924289e0c215bd66be84210bc` mantiene los errores históricos de schema para formas inválidas y propaga el código específico sólo ante exceso de recursos.
+- Regresión de 257 pasos: commit `17d03d4bab51498dee4293c0d924ab632cf4cf48`.
+- Fixture del presupuesto agregado: commit `c105f9098faf5bf45531b5c91731499c319070ac` usa 65 misiones válidas y acotadas individualmente para que la prueba mida el límite de 16 MiB del documento y no choque con el límite por misión.
+- CI del SHA `c105f9098faf5bf45531b5c91731499c319070ac`:
+  - integrated acceptance regression SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39850946153
+  - STEP 4 semantic validation SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39850946210
+  - STEP 5 outcome classification SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39850946069
+  - bounded mission admission and restart continuity SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39850946071
+  - deterministic persistence tests PENDING: https://github.com/snowdenxrp/aldea-ia/actions/runs/39850946294
+- Estado exacto al documentar: 4 SUCCESS / 1 PENDING. No declarar verde total antes de revisar el workflow pendiente.
+- Las ejecuciones intermedias anteriores fallaron en pruebas existentes; el mapeo de errores se ajustó y el fixture de documento grande se reconstruyó para aislar el presupuesto agregado. La aceptación integrada del SHA `c105f90` pasa.
+- No se alteró runtime ni se habilitó dispatch/efectos. El nuevo guard refuerza validación persistida; no demuestra autorización ni suficiencia de recursos de producción.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT MÁS RECIENTE — 2026-10-22 — SEGUNDA FORMA DE MISIÓN ADMITIDA
 
 Este checkpoint amplía el anterior fixture de cadena con un grafo ramificado. No cierra la adecuación general del perfil de recursos.
