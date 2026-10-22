@@ -2995,3 +2995,14 @@ La inspección posterior de `src/nexo/core/continuity-snapshot.mjs` encontró va
 - Los nuevos negativos deben verificar resultado fail-closed y cero invocaciones al punto de mutación. E-08 requiere completar el inventario de callers/rutas legacy dentro del alcance Opción A.
 - El presupuesto cuantitativo de Chronicle y Continuity sigue pendiente por separado. No se duplica el trabajo cerrado de reconciliación/UNKNOWN y no se cambia runtime en ausencia de contrato exacto.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+### Nuevo hallazgo acotado — Chronicle stdin sin límite de bytes (2026-10-22)
+
+En `scripts/nexo-chronicle-session.mjs`, la ruta `--content-stdin` acumula todos los chunks de stdin, los concatena y convierte a UTF-8 antes de llamar al caso de uso. No se encontró límite explícito previo a esa acumulación. Es una brecha de control de recursos en el ingreso, no un exploit confirmado.
+
+La matriz de aceptación registra el criterio de cierre: definir un máximo de bytes, limitar la lectura antes de acumular memoria sin límite, rechazar de forma explícita al excederlo y probar que no se admite misión ni se escribe en Chronicle/Continuity. La política debe ser coherente en CLI, caso de uso y store; no se inventa un número ni se modifica runtime hasta fijar el contrato.
+
+El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `success` (run `39699402969`), pero no valida este nuevo commit. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
