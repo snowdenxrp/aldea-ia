@@ -960,6 +960,45 @@ assert.equal(reconstructedCoreMission.objective, "verify_mission_outcome");
 assert.equal("patterns" in reconstructedCoreMission.operationalSignals, false);
 assert.equal(reconstructNexoMissionFromSnapshot(operationalSnapshot, "missing-mission"), null);
 
+// Low-level continuity operations must validate the entire caller record before destructuring fields.
+let executionResultGetterInvoked = false;
+const accessorExecutionInput = {
+  idempotencyKey: "core-mission:accessor-result",
+  missionId: "core-mission",
+  stepId: "step-1",
+  action: "local_analysis",
+  target: "alex",
+  get result() {
+    executionResultGetterInvoked = true;
+    return { status: "completed", verified: true };
+  }
+};
+assert.throws(
+  () => recordNexoExecutionInSnapshot(operationalSnapshot, accessorExecutionInput),
+  error => error?.code === "NEXO_EXECUTION_CONTEXT_INVALID",
+  "execution lineage must reject accessor-backed input records before field access"
+);
+assert.equal(executionResultGetterInvoked, false, "execution lineage must not execute caller getters");
+
+let outcomeEvidenceGetterInvoked = false;
+const accessorOutcomeInput = {
+  missionId: "core-mission",
+  stepId: "step-1",
+  action: "local_analysis",
+  target: "alex",
+  status: "failed",
+  get evidence() {
+    outcomeEvidenceGetterInvoked = true;
+    return { source: "untrusted" };
+  }
+};
+assert.throws(
+  () => recordNexoOutcomeInSnapshot(operationalSnapshot, accessorOutcomeInput),
+  error => error?.code === "NEXO_OUTCOME_CONTEXT_INVALID",
+  "outcome records must reject accessor-backed fields before field access"
+);
+assert.equal(outcomeEvidenceGetterInvoked, false, "outcome recording must not execute caller getters");
+
 let executionSnapshot = recordNexoExecutionInSnapshot(operationalSnapshot, {
   idempotencyKey: "core-mission:step-1",
   missionId: "core-mission",
