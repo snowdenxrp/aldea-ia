@@ -3273,3 +3273,12 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Alcance exacto: el cambio acota los temporales cooperantes por store y limpia residuos de nombres heredados cuando una escritura alcanza esta ruta. No constituye una cota total de disco: quedan fuera otros archivos/logs, residuos que no coincidan con el contrato de nombres, múltiples rutas de store, fallos del sistema de archivos y procesos que no respeten el lock.
 - Presupuesto agregado de heap sigue OPEN: los límites de serialización no limitan por sí solos el heap V8 ni las copias concurrentes. No se declara seguridad multiusuario.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0-E — frontera del presupuesto agregado de recursos (2026-10-22)
+
+- Hallazgo nuevo: [NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md).
+- Los topes existentes son por entrada/documento/store; serializedUtf8Bytes mide JSON serializado, no heap V8 ni memoria transitoria máxima. Lecturas, decodificación, JSON.parse y structuredClone añaden buffers/objetos; los lectores no quedan limitados por el lock de escritura. El CLI limita stdin por invocación, no el número de procesos simultáneos.
+- No se demuestra una cota agregada de heap o disco ni capacidad multiusuario. No se eligió un número agregado, no se añadió un semáforo/cola/wrapper, y no se ejecutaron tests para este análisis documental.
+- Siguiente bloqueo concreto: definir el modo operativo inicial (CLI aislado, proceso único persistente o servicio concurrente), delimitar a qué ámbito aplica el presupuesto y solo entonces diseñar enforcement verificable. No declarar agregado cerrado ni servicio concurrente listo antes de eso.
+- Estado canónico sin cambios: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
