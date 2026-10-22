@@ -18,11 +18,62 @@ function snapshotError(code) {
   return error;
 }
 
+const MAX_CONTINUITY_SNAPSHOT_DEPTH = 32;
+
+/**
+ * Iterative preflight before the generic recursive contract guard. Persisted
+ * JSON is byte-bounded, but nesting depth must be checked before recursive
+ * validation so malformed snapshots cannot exhaust the JS call stack first.
+ */
+function assertSnapshotGraphBounded(snapshot) {
+  const active = new WeakSet();
+  const stack = [{ value: snapshot, depth: 0, exit: false }];
+  while (stack.length) {
+    const { value, depth, exit } = stack.pop();
+    if (value === null || typeof value !== "object") continue;
+    if (exit) {
+      active.delete(value);
+      continue;
+    }
+    if (depth > MAX_CONTINUITY_SNAPSHOT_DEPTH) {
+      throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_RESOURCE_LIMIT_EXCEEDED");
+    }
+    if (active.has(value)) throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_INVALID");
+    const array = Array.isArray(value);
+    const prototype = Object.getPrototypeOf(value);
+    if ((!array && prototype !== Object.prototype && prototype !== null) ||
+        (array && prototype !== Array.prototype)) {
+      throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_INVALID");
+    }
+    active.add(value);
+    stack.push({ value, depth, exit: true });
+    const keys = Reflect.ownKeys(value);
+    if (keys.some(key => typeof key !== "string")) {
+      throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_INVALID");
+    }
+    if (array && (keys.length !== value.length + 1 ||
+        keys.some(key => key !== "length" &&
+          (!Number.isSafeInteger(Number(key)) || String(Number(key)) !== key ||
+           Number(key) < 0 || Number(key) >= value.length)))) {
+      throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_INVALID");
+    }
+    for (const key of keys) {
+      if (array && key === "length") continue;
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+        throw snapshotError("NEXO_CONTINUITY_SNAPSHOT_INVALID");
+      }
+      stack.push({ value: descriptor.value, depth: depth + 1, exit: false });
+    }
+  }
+}
+
 /**
  * Validate a standalone Nexo operational-continuity snapshot.
  * No learning analytics, environment state, or authority is represented here.
  */
 export function assertNexoContinuitySnapshot(snapshot) {
+  assertSnapshotGraphBounded(snapshot);
   try {
     assertContractInput(snapshot, "Nexo continuity snapshot");
   } catch {
