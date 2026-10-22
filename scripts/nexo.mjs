@@ -1,6 +1,7 @@
 import { pathToFileURL, fileURLToPath } from "node:url";
+import fs from "node:fs/promises";
 import { spawnSync } from "node:child_process";
-import { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan } from "../src/nexo/application/index.mjs";
+import { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan, previewNexoMissionDraft } from "../src/nexo/application/index.mjs";
 
 /**
  * Nexo's independent command entrypoint.
@@ -77,6 +78,28 @@ export function parseNexoEntrypointArguments(argv) {
     if (typeof missionId !== "string") return { status: "blocked", code: "NEXO_MISSION_ID_REQUIRED", dispatchAttempted: false };
     return { status: "mission-plan", continuityPath, missionId };
   }
+  if (argv[0] === "mission-draft-preview") {
+    let continuityPath;
+    let draftPath;
+    for (let index = 1; index < argv.length; index += 1) {
+      const option = argv[index];
+      if ((option !== "--continuity" && option !== "--draft") ||
+          index + 1 >= argv.length || !argv[index + 1].trim() || argv[index + 1].startsWith("--")) {
+        return { status: "blocked", code: "NEXO_MISSION_DRAFT_ARGUMENTS_INVALID", dispatchAttempted: false };
+      }
+      const value = argv[++index];
+      if (option === "--continuity") {
+        if (continuityPath !== undefined) return { status: "blocked", code: "NEXO_MISSION_DRAFT_ARGUMENTS_INVALID", dispatchAttempted: false };
+        continuityPath = value;
+      } else {
+        if (draftPath !== undefined) return { status: "blocked", code: "NEXO_MISSION_DRAFT_ARGUMENTS_INVALID", dispatchAttempted: false };
+        draftPath = value;
+      }
+    }
+    if (typeof continuityPath !== "string") return { status: "blocked", code: "NEXO_STATUS_CONTINUITY_PATH_REQUIRED", dispatchAttempted: false };
+    if (typeof draftPath !== "string") return { status: "blocked", code: "NEXO_MISSION_DRAFT_PATH_REQUIRED", dispatchAttempted: false };
+    return { status: "mission-draft-preview", continuityPath, draftPath };
+  }
   return { status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false };
 }
 
@@ -91,6 +114,21 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const result = await loadNexoMissionStatus(parsed.continuityPath, parsed.missionId);
     console.log(JSON.stringify(result));
     if (result.status !== "reconstructed") process.exitCode = 1;
+  } else if (parsed.status === "mission-draft-preview") {
+    let draft;
+    try {
+      draft = JSON.parse(await fs.readFile(parsed.draftPath, "utf8"));
+    } catch (error) {
+      const code = error?.code === "ENOENT" ? "NEXO_MISSION_DRAFT_FILE_UNAVAILABLE" : "NEXO_MISSION_DRAFT_JSON_INVALID";
+      console.log(JSON.stringify({ status: "blocked", code, authorization: "NOT_EVALUATED", dispatchAttempted: false, persisted: false }));
+      process.exitCode = 1;
+      draft = null;
+    }
+    if (draft !== null) {
+      const result = await previewNexoMissionDraft(parsed.continuityPath, draft);
+      console.log(JSON.stringify(result));
+      if (result.status !== "validated") process.exitCode = 1;
+    }
   } else if (parsed.status === "mission-plan") {
     const result = await loadNexoMissionPlan(parsed.continuityPath, parsed.missionId);
     console.log(JSON.stringify(result));
