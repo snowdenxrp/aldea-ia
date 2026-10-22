@@ -508,6 +508,13 @@ assert.equal((await conditionalUnknownBase.initialize(emptySnapshot)).status, "c
 let failRecoveryRead = false;
 const fsWithUnknownConditionalOutcome = {
   ...fs,
+  open: async (target, ...args) => {
+    if (failRecoveryRead && String(target) === conditionalUnknownPath) {
+      failRecoveryRead = false;
+      throw Object.assign(new Error("simulated canonical re-read failure"), { code: "EIO" });
+    }
+    return fs.open(target, ...args);
+  },
   readFile: async (target, ...args) => {
     if (failRecoveryRead && String(target) === conditionalUnknownPath) {
       failRecoveryRead = false;
@@ -542,6 +549,12 @@ assert.equal((await conditionalReadFailureBase.initialize(emptySnapshot)).status
 const conditionalReadFailureBefore = await fs.readFile(conditionalReadFailurePath, "utf8");
 const fsWithConditionalReadFailure = {
   ...fs,
+  open: async (target, ...args) => {
+    if (String(target) === conditionalReadFailurePath) {
+      throw Object.assign(new Error("simulated canonical envelope read failure inside commit"), { code: "EACCES" });
+    }
+    return fs.open(target, ...args);
+  },
   readFile: async (target, ...args) => {
     if (String(target) === conditionalReadFailurePath) {
       throw Object.assign(new Error("simulated canonical envelope read failure inside commit"), { code: "EACCES" });
