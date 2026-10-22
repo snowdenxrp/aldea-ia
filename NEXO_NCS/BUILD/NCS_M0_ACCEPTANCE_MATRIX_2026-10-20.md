@@ -136,3 +136,39 @@ Este bloque reutiliza runs ya registrados en `STATUS.md` y en los informes focal
 - M0-B/C/D siguen **PENDING** hasta cerrar el conjunto finito de assertions/workflows requerido, aunque las regresiones citadas tengan CI focalizado SUCCESS.
 - M0-E sigue siendo el bloqueo sustantivo: raíz legítima y procedencia constitucional conectadas al límite real de efecto no demostradas.
 - Estado global sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## Ensamblaje canónico M0 — precedencia y puerta finita (2026-10-22)
+
+### Precedencia de decisiones
+
+Las notas históricas se interpretan junto con los registros específicos del propietario:
+
+- `DECISIONS/NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md`: Opción A **aceptada como alcance inicial provisional**. Arranque sin efectos protegidos; lectura, planificación/diagnóstico sin ejecutar y persistencia interna acotada bajo sus límites. Reparaciones, mutaciones Lúmina/simulación, efectos externos/irreversibles y operaciones no clasificables siguen excluidos.
+- `DECISIONS/NCS_M0_CONSTITUTION_OWNER_DECISIONS_2026-10-21.md`: puntos 1–7 **aceptados como base del borrador**. El punto 7 no está pendiente de decisión de base; sí siguen pendientes el texto exacto aprobado, la raíz/procedencia, el estado canónico y el enforcement real.
+- La Constitución sigue `DRAFT / NOT FROZEN / NOT COMMISSIONED`. Ninguna de estas decisiones autoriza firma, congelación, commissioning ni efectos protegidos.
+
+### Puerta finita candidata de aceptación M0
+
+| Gate | Evidencia reutilizada | PASS exige | Estado |
+|---|---|---|---|
+| A — reproducibilidad | `.github/workflows/nexo-deterministic-tests.yml`, job `tests`, `npm test` | Workflow completo `completed/success` en el SHA candidato exacto | PENDING para HEAD actual |
+| B — continuidad | `continuity-contract.test.mjs`, `conditional-commit-persist-state.test.mjs`, `restart-reconstruction.test.mjs` | Rechazo de entradas inválidas/obsoletas y no convertir incertidumbre en éxito | Evidencia focal existente; falta cierre atribuible al SHA candidato |
+| C — terminales | Casos existentes `NEXO_OUTCOME_EVIDENCE_CONFLICT`, `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH` y ausencia de outcome | Conflicto/contexto discordante bloquea; sin finalización ni redispatch inferidos | Evidencia focal existente; falta cierre atribuible al SHA candidato |
+| D — journal | `effect-intent-persistence.test.mjs`, `repair-settlement-crash-cuts.test.mjs` y regresión UNKNOWN registrada | Intención antes del handler; UNKNOWN/fallo bloquea; no aceptar verificación autodeclarada | Evidencia focal existente; falta cierre atribuible al SHA candidato |
+| E — Opción A y autoridad | Matriz Option A, gate de reparación y plan adversarial E-01…E-10 | Exclusiones bloqueadas antes de dispatch/mutación; autoridad solo si se prueba procedencia en el límite real | BLOQUEANTE: raíz/Constitución/contexto no integrados |
+
+A–D se evalúan con una puerta reproducible común y las assertions existentes; no se repiten las investigaciones cerradas ni se exigen todos los workflows históricos si la puerta común cubre los contratos. Los runs focales históricos son evidencia de regresión, no sustituyen el run final sobre el SHA candidato.
+
+E no pasa con `npm test` por sí solo. Bajo Opción A, no hay que habilitar efectos protegidos para el arranque restringido, pero sí demostrar que las operaciones excluidas no son alcanzables desde las entradas en alcance. Chronicle/Continuity local no equivale a autorización ni a prueba de efecto externo.
+
+### Orden de ejecución
+
+1. Reutilizar esta lista como puerta de trabajo candidata; no declarar congelada la Constitución.
+2. Revisar solo huecos de cobertura concretos en las pruebas de exclusión Opción A y las entradas ya inventariadas.
+3. Ejecutar la puerta determinista en el SHA candidato y registrar run/job/conclusión/SHA exactos.
+4. Mantener M0 incompleto mientras E siga sin evidencia suficiente. No fabricar root verifier, pin o firma de prueba para simular el caso positivo.
+
+Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
