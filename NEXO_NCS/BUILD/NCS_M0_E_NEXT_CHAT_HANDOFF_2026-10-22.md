@@ -8,8 +8,8 @@ En el chat nuevo, escribe exactamente `NCS` y pega o referencia este handoff. Le
 
 Repositorio: `github.com/snowdenxrp/aldea-ia`  
 Rama: `ncs-clean-architecture`  
-HEAD verificado en esta sesión: `7875878dd41b06c95fee4f8edea3f7d7c0253488`  
-STATUS blob: `7802aeab7e331be4985354f1ebc43b7fa08ff654`
+HEAD de base inspeccionado antes de guardar el handoff: `7875878dd41b06c95fee4f8edea3f7d7c0253488`. Después se guardó este handoff y se enlazó desde STATUS; el HEAD final de la sesión debe verificarse en GitHub antes de continuar.  
+STATUS blob anterior a este handoff: `7802aeab7e331be4985354f1ebc43b7fa08ff654`
 
 ## Estado canónico — no reinterpretar
 
