@@ -1,3 +1,15 @@
+# CHECKPOINT NUEVO — 2026-10-22 — MISSION DRAFT PREVIEW INPUT GUARD
+
+- Hallazgo concreto: `previewNexoMissionDraft(continuityPath, missionDraft)` leía `missionDraft.missionId` antes de validar el draft completo. Un getter podía ejecutarse incluso antes de cargar el store; la operación canónica validaba más tarde, demasiado tarde para esta lectura.
+- Corrección runtime: se ejecuta `assertNexoMissionAdmission(missionDraft)` antes de leer `missionId` y antes de abrir el store. La guardia existente valida descriptores propios de datos, límites estructurales y forma JSON-like.
+- Regresión nueva: `tests/nexo/mission-draft-preview-input-guard.test.mjs` instala un getter centinela y verifica bloqueo, `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `persisted: false` y cero ejecución del getter. Integrada en `npm test`.
+- Commits: runtime `e34e3f1f8cda735c7926cf5dcf593991c6940492`; test `e60f06d7217f8c7eb5a90a62e43f07a03b6fa263`; integración `ed9a4885900d0f04487fb3d7554d8c56ed556f91`.
+- CI: pendiente de consultar para el SHA integrado exacto.
+- Límite: los Proxy traps siguen fuera de la garantía de esta guardia; validar la forma del draft no demuestra que intención y draft estén alineados, no persiste la misión y no evalúa autoridad.
+- Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — CHRONICLE PUBLIC SESSION OPTIONS GUARD
 
 - Hallazgo concreto: `runNexoChronicleAppend({ ... } = {})` leía sus ocho opciones por destructuring antes de validar. Un getter en cualquier campo podía ejecutarse antes del primer control de entrada y antes de que la función devolviera un resultado seguro.
