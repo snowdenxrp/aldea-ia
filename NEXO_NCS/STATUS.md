@@ -24,7 +24,7 @@ El usuario iniciará el chat escribiendo exactamente `NCS`.
 - La restricción de concurrencia multi-proceso es alcance declarado, **no enforcement**: no se ha probado un guardián global que impida varios CLI simultáneos ni un presupuesto compartido entre procesos.
 - Se mantienen OPEN el presupuesto agregado de heap/disco y la capacidad multi-proceso. No introducir un lock, contador, semáforo o wrapper global improvisado.
 - Nota: [NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md](BUILD/NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md).
-- Siguiente tarea concreta: obtener decisión del propietario sobre la propuesta de 256 KiB por archivo JSON de `mission-draft-preview` y `mission-request-preview` (o un máximo alternativo); solo después implementar lectura acotada, pruebas de frontera y CI. Mantener estas vistas previas sin persistencia/dispatch y `authorization: NOT_EVALUATED`.
+- **SUPERADO por el checkpoint posterior de admission control v1 más abajo:** la decisión de perfil ya fue aceptada y el contrato compartido/lectura de 4 MiB están implementados y probados. No volver a solicitar esa decisión ni tratar este paso histórico como pendiente. Ver handoff actual: [NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22.md](BUILD/NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22.md).
 - Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 ---
