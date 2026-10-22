@@ -5,7 +5,7 @@ export const NEXO_MISSION_ADMISSION_LIMITS = Object.freeze({
   dependenciesPerStep: 64,
   jsonNodes: 20_000,
   jsonDepth: 32,
-  stringUtf8Bytes: 16 * 1024,
+  stringUtf8Bytes: 256 * 1024,
   requestIntentUtf8Bytes: 16 * 1024
 });
 
