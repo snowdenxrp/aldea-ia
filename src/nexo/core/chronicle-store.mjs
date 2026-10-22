@@ -7,7 +7,6 @@ export const NEXO_CHRONICLE_SCHEMA = "NEXO_CHRONICLE";
 export const NEXO_CHRONICLE_VERSION = 1;
 const LOCK_RETRY_MS = 10;
 const LOCK_STALE_MS = 60_000;
-let tempSequence = 0;
 
 function fail(code) {
   const error = new Error(code);
