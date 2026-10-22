@@ -909,10 +909,18 @@ assert.deepEqual(
 const oversizedValidBytesBefore = await fs.readFile(oversizedValidSnapshotPath);
 const oversizedValidCandidate = {
   ...emptySnapshot,
-  missions: [{
-    missionId: "oversized-valid-mission",
-    steps: [{ id: "step-1", action: "noop", payload: "x".repeat(NEXO_RESOURCE_LIMITS.continuityDocumentBytes) }]
-  }]
+  // Each mission stays inside the per-mission admission budget; the collection
+  // collectively exceeds the serialized store budget. This isolates the store
+  // envelope ceiling from the mission admission ceiling.
+  missions: Array.from({ length: 65 }, (_, missionIndex) => ({
+    missionId: `oversized-valid-mission-${missionIndex}`,
+    steps: [{
+      id: "step-1",
+      action: "noop",
+      context: "x".repeat(256 * 1024),
+      dependsOn: []
+    }]
+  }))
 };
 assert.doesNotThrow(
   () => assertNexoContinuitySnapshot(oversizedValidCandidate),
