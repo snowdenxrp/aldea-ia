@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — OPCIONES DE LLAMADA DEL OWNER VALIDAS ANTES DE DESTRUCTURING
+
+- Hallazgo reproducible: los métodos públicos `recordMission`, `recordOutcome`, `recordPrepared`, `recordExecutionLineage` y `reconcilePrepared` recibían opciones con destructuring de parámetros. Un getter en las opciones se evaluaba antes de entrar al cuerpo y antes de cualquier guard.
+- Corrección: helper compartido `readOwnerInputFields()` inspecciona descriptores propios de los campos consumidos y solo extrae propiedades de datos enumerables de objetos planos o de prototipo nulo. Accessors, campos no enumerables, prototipos no permitidos y fallos de reflexión se rechazan antes de entrar en la lógica de store.
+- Regresión: cinco métodos públicos se prueban con getter centinela en `expectedRevision`; ningún getter se ejecuta y cada método devuelve `failed`.
+- Commits runtime/test: [1c553ac541d3c98f8c36c17047e9a5e750c0ef31](https://github.com/snowdenxrp/aldea-ia/commit/1c553ac541d3c98f8c36c17047e9a5e750c0ef31), [57a7dc4093b371ef69ff7f0dfb2c8e9929ffc09e](https://github.com/snowdenxrp/aldea-ia/commit/57a7dc4093b371ef69ff7f0dfb2c8e9929ffc09e).
+- CI exacto SHA `57a7dc4093b371ef69ff7f0dfb2c8e9929ffc09e`: 5/5 workflows disparados SUCCESS — [admisión/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861949525), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861949462), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861949470), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861949564), [persistencia](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861949623). No se afirma que todos los workflows del repo corrieran.
+- Informe: [NCS_M0_OWNER_CALL_OPTIONS_INPUT_GUARD_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_OWNER_CALL_OPTIONS_INPUT_GUARD_2026-10-22.md).
+- Alcance: validación de opciones de llamada in-process; no neutraliza todos los Proxy traps, no autentica evidencia/verificadores, no establece autoridad legítima ni habilita efectos.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — OPCIONES DEL CONSTRUCTOR SIN ACCESO A GETTERS
 
 - Revisión del hallazgo de registro: además del getter dentro de `effectVerifiers`, el destructuring de parámetros de `createNexoContinuityOwner()` podía evaluar un getter en el objeto de opciones exterior antes de ejecutar las validaciones.
