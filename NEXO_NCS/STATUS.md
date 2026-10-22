@@ -3015,3 +3015,9 @@ El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `suc
 - Estado estricto: **PROPUESTA / NO ACEPTADA / NO IMPLEMENTADA**. No se inventan cifras ni nuevos outcome IDs. La propuesta conservadora rechaza escrituras nuevas antes de mutar y preserva datos existentes; cualquier rotación/compactación queda fuera hasta decisión explícita.
 - No se cambió runtime. No se reabrieron auditorías cerradas.
 - Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Reutilización de investigación previa — límites de recursos
+
+- La propuesta de presupuesto enlaza explícitamente la regla ya investigada en AB104.397/AB104.398: un límite de recursos no equivale a completitud; prohibido truncar silenciosamente o declarar éxito/completitud ante límite alcanzado.
+- No se repite la investigación histórica ni se asume que `RESOURCE_LIMIT_REACHED` sea un outcome runtime ya implementado. Quedan pendientes los máximos operativos concretos y su enforcement en CLI/caso de uso/store.
