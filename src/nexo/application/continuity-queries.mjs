@@ -89,3 +89,100 @@ export async function loadNexoMissionStatus(continuityPath, missionId) {
     return { status: "blocked", code: error?.code ?? "NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE" };
   }
 }
+
+/**
+ * Produce a read-only dependency plan from one canonical continuity revision.
+ * "dependencies_satisfied" is planning information only; it never authorizes
+ * dispatch or claims that a step is safe to execute.
+ */
+export async function loadNexoMissionPlan(continuityPath, missionId) {
+  if (typeof continuityPath !== "string" || !continuityPath.trim()) {
+    return { status: "blocked", code: "NEXO_STATUS_CONTINUITY_PATH_REQUIRED", authorization: "NOT_EVALUATED", dispatchAttempted: false };
+  }
+  if (typeof missionId !== "string" || !missionId.trim()) {
+    return { status: "blocked", code: "NEXO_MISSION_ID_REQUIRED", authorization: "NOT_EVALUATED", dispatchAttempted: false };
+  }
+  try {
+    const store = createNexoContinuityStore({ filePath: continuityPath });
+    const current = await store.loadCurrent();
+    const persistedMission = current.snapshot.missions.find(item => item?.missionId === missionId);
+    if (!persistedMission) {
+      return {
+        status: "not_found", code: "NEXO_MISSION_NOT_FOUND",
+        storeRevision: current.storeRevision, authorization: "NOT_EVALUATED", dispatchAttempted: false
+      };
+    }
+    const mission = reconstructNexoMissionFromSnapshot(current.snapshot, missionId);
+    if (!mission) {
+      return {
+        status: "blocked", code: "NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE",
+        storeRevision: current.storeRevision, authorization: "NOT_EVALUATED", dispatchAttempted: false
+      };
+    }
+    const persistedMissionStatus = persistedMission.status ?? "planned";
+    if (persistedMissionStatus === "completed" && mission.status !== "completed") {
+      return {
+        status: "blocked", code: "NEXO_MISSION_STATUS_DISCREPANCY",
+        storeRevision: current.storeRevision, missionId: mission.missionId,
+        persistedMissionStatus, missionStatus: mission.status, statusDiscrepancy: true,
+        authorization: "NOT_EVALUATED", dispatchAttempted: false
+      };
+    }
+
+    const stepsById = new Map(mission.steps.map(step => [step.id, step]));
+    const steps = mission.steps.map(step => {
+      const dependencies = Array.isArray(step.dependsOn) ? step.dependsOn : [];
+      const dependencyStatuses = dependencies.map(dependencyId => {
+        const dependency = stepsById.get(dependencyId);
+        return {
+          stepId: dependencyId,
+          status: dependency?.status ?? "unknown"
+        };
+      });
+      const dependencyBlocked = dependencyStatuses.some(item =>
+        item.status === "blocked" || item.status === "failed" || item.status === "unknown"
+      );
+      const dependenciesSatisfied = dependencyStatuses.every(item => item.status === "completed");
+      const dependencyState = dependencyBlocked
+        ? "blocked"
+        : dependenciesSatisfied
+          ? "satisfied"
+          : "waiting";
+      const planningState = step.status === "completed"
+        ? "completed"
+        : step.status === "blocked" || step.status === "failed" || dependencyBlocked
+          ? "blocked"
+          : dependenciesSatisfied
+            ? "dependencies_satisfied"
+            : "waiting_for_dependencies";
+      return {
+        stepId: step.id,
+        action: step.action,
+        status: step.status,
+        dependsOn: [...dependencies],
+        dependencyStatuses,
+        dependencyState,
+        planningState,
+        ...(typeof step.blockReason?.code === "string" ? { blockCode: step.blockReason.code } : {})
+      };
+    });
+    return {
+      status: "planned",
+      code: null,
+      storeRevision: current.storeRevision,
+      missionId: mission.missionId,
+      missionStatus: mission.status,
+      objective: mission.objective,
+      uncertainty: mission.uncertainty,
+      steps,
+      authorization: "NOT_EVALUATED",
+      dispatchAttempted: false
+    };
+  } catch (error) {
+    return {
+      status: "blocked", code: error?.code ?? "NEXO_MISSION_PLAN_UNAVAILABLE",
+      authorization: "NOT_EVALUATED", dispatchAttempted: false
+    };
+  }
+}
+
