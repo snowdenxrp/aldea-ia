@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { parseNexoEntrypointArguments } from "../../scripts/nexo.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { previewNexoMissionRequest } from "../../src/nexo/application/mission-request-preview.mjs";
+import { assertNexoMissionAdmission, NEXO_MISSION_ADMISSION_LIMITS } from "../../src/nexo/core/mission-admission-contract.mjs";
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-mission-request-preview-"));
 try {
@@ -161,6 +162,114 @@ try {
     assert.equal(JSON.stringify(oversizedSummary).includes("local analysis"), false);
     assert.equal(await fs.readFile(continuityPath, "utf8"), before);
   }
+
+  // Exact maximums and maximum+1 for the shared structural contract.
+  const makeSteps = count => ({
+    missionId: "admission-step-boundary",
+    objective: "local_analysis",
+    status: "planned",
+    steps: Array.from({ length: count }, (_, index) => ({
+      id: `step-${index}`, action: "local_analysis", status: "planned", dependsOn: []
+    }))
+  });
+  assert.equal(assertNexoMissionAdmission(makeSteps(NEXO_MISSION_ADMISSION_LIMITS.missionSteps)), true);
+  assert.throws(
+    () => assertNexoMissionAdmission(makeSteps(NEXO_MISSION_ADMISSION_LIMITS.missionSteps + 1)),
+    error => error.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED"
+  );
+
+  const dependencyBoundary = {
+    missionId: "admission-dependency-boundary",
+    objective: "local_analysis",
+    status: "planned",
+    steps: Array.from({ length: 65 }, (_, index) => ({
+      id: `dep-step-${index}`,
+      action: "local_analysis",
+      status: "planned",
+      dependsOn: index === 0 ? Array.from({ length: 64 }, (_, dependency) => `dep-step-${dependency + 1}`) : []
+    }))
+  };
+  assert.equal(assertNexoMissionAdmission(dependencyBoundary), true);
+  dependencyBoundary.steps[0].dependsOn.push("overflow-dependency");
+  assert.throws(
+    () => assertNexoMissionAdmission(dependencyBoundary),
+    error => error.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED"
+  );
+
+  const makeDepthMission = childEdges => {
+    const mission = { missionId: "depth", objective: "x", status: "planned", steps: [] };
+    let node = {};
+    mission.context = node;
+    for (let index = 0; index < childEdges; index += 1) {
+      node.child = {};
+      node = node.child;
+    }
+    return mission;
+  };
+  assert.equal(assertNexoMissionAdmission(makeDepthMission(31)), true);
+  assert.throws(
+    () => assertNexoMissionAdmission(makeDepthMission(32)),
+    error => error.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED"
+  );
+
+  const makeNodeMission = nullCount => ({
+    missionId: "nodes",
+    objective: "x",
+    status: "planned",
+    steps: [],
+    padding: Array.from({ length: nullCount }, () => null)
+  });
+  // root + three string values + steps array + padding array = six nodes.
+  assert.equal(assertNexoMissionAdmission(makeNodeMission(NEXO_MISSION_ADMISSION_LIMITS.jsonNodes - 6)), true);
+  assert.throws(
+    () => assertNexoMissionAdmission(makeNodeMission(NEXO_MISSION_ADMISSION_LIMITS.jsonNodes - 5)),
+    error => error.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED"
+  );
+
+  const measureUtf8StringsAndKeys = value => {
+    if (typeof value === "string") return Buffer.byteLength(value, "utf8");
+    if (value === null || typeof value !== "object") return 0;
+    let total = 0;
+    for (const key of Reflect.ownKeys(value)) {
+      if (Array.isArray(value) && key === "length") continue;
+      total += Buffer.byteLength(String(key), "utf8");
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (descriptor && "value" in descriptor) total += measureUtf8StringsAndKeys(descriptor.value);
+    }
+    return total;
+  };
+  const aggregateBase = {
+    missionId: "aggregate",
+    objective: "x",
+    status: "planned",
+    steps: [],
+    padding: Array.from({ length: 16 }, () => "")
+  };
+  const fixedAggregateBytes = measureUtf8StringsAndKeys(aggregateBase);
+  const lastPaddingBytes = NEXO_MISSION_ADMISSION_LIMITS.aggregateUtf8StringBytes - fixedAggregateBytes;
+  assert.ok(lastPaddingBytes > 0 && lastPaddingBytes <= NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes);
+  aggregateBase.padding[15] = "x".repeat(lastPaddingBytes);
+  assert.equal(measureUtf8StringsAndKeys(aggregateBase), NEXO_MISSION_ADMISSION_LIMITS.aggregateUtf8StringBytes);
+  assert.equal(assertNexoMissionAdmission(aggregateBase), true);
+  aggregateBase.padding[15] += "x";
+  assert.throws(
+    () => assertNexoMissionAdmission(aggregateBase),
+    error => error.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED"
+  );
+
+  const stringBoundary = {
+    missionId: "string",
+    objective: "x",
+    status: "planned",
+    steps: [],
+    context: "x".repeat(NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes)
+  };
+  assert.equal(assertNexoMissionAdmission(stringBoundary), true);
+  stringBoundary.context += "x";
+  assert.throws(
+    () => assertNexoMissionAdmission(stringBoundary),
+    error => error.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED"
+  );
 
   // Shared structural admission contract: reject complexity before recursive
   // contract validation/cloning, without dispatch or persistence.
