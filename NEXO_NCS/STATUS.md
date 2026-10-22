@@ -13,10 +13,10 @@
 
 # Current checkpoint — 2026-10-22 — verifier registry input guard
 
-- Runtime fix: `d65245bdbcc20cdee7ebf315d6a65f162bcb894d`; regression test: `796219c48fda52dd51e9eec4fa696cb48ec88096`.
-- Finding: owner construction used `Object.entries(effectVerifiers)`, which can invoke accessor getters while registering caller-supplied verifier configuration. The owner now validates own-key descriptors and rejects accessors/symbol keys without reading accessor values.
+- Registry runtime/test: `d65245bdbcc20cdee7ebf315d6a65f162bcb894d` / `796219c48fda52dd51e9eec4fa696cb48ec88096`. Outer constructor-options guard/test: `eb0249e332d450e7b533ebd7309f721f19f43230` / `c192a9b21cef925ac303644a8f3e6a6d8489dcd7`.
+- Finding: owner construction used `Object.entries(effectVerifiers)`, which can invoke accessor getters while registering caller-supplied verifier configuration. The owner now validates own-key descriptors and rejects accessors/symbol keys without reading accessor values. A follow-up also replaced parameter destructuring with descriptor inspection of the outer options object, so `options.effectVerifiers` and `options.store` accessors are rejected before evaluation.
 - Regression proves the getter is not invoked and the registry is rejected with `NEXO_EFFECT_VERIFIER_REGISTRY_INVALID`.
-- CI: all 7 listed workflows on runtime SHA `d65245b...` succeeded; all 5 workflows triggered on regression SHA `796219c...` succeeded. Exact run evidence is in `NEXO_NCS/BUILD/NCS_M0_VERIFIER_REGISTRY_ACCESSOR_GUARD_2026-10-22.md`.
+- CI: 7/7 listed workflows succeeded on registry runtime SHA `d65245b...`; 5/5 workflows succeeded on registry test SHA `796219c...`; 5/5 workflows succeeded on latest combined constructor regression SHA `c192a9b...`. Exact current evidence is in `NEXO_NCS/BUILD/NCS_M0_VERIFIER_REGISTRY_INPUT_GUARD_2026-10-22.md`.
 - Scope: constructor/configuration boundary only; not authorization, legitimate-owner proof, hostile-Proxy isolation, or effect enablement.
 - Canonical gate unchanged: M0 incomplete; authorization `NOT_EVALUATED`; root proof `PENDING/UNKNOWN`; protected effects `STOP`.
 - Next: inspect only concrete public-boundary read-before-validation/resource issues, with regression and exact-SHA CI evidence. No arbitrary quotas or invented mechanisms.
