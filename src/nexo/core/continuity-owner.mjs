@@ -68,7 +68,30 @@ function emptyCandidate(snapshot) {
  * dispatched. It intentionally cannot settle a prepared effect: no independent
  * operation-specific reconciliation/verifier is wired into this owner yet.
  */
-export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) {
+export function createNexoContinuityOwner(options = {}) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
+  }
+  let optionsPrototype;
+  let storeDescriptor;
+  let effectVerifiersDescriptor;
+  try {
+    optionsPrototype = Object.getPrototypeOf(options);
+    storeDescriptor = Object.getOwnPropertyDescriptor(options, "store");
+    effectVerifiersDescriptor = Object.getOwnPropertyDescriptor(options, "effectVerifiers");
+  } catch {
+    throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
+  }
+  if ((optionsPrototype !== Object.prototype && optionsPrototype !== null) ||
+      !storeDescriptor || !storeDescriptor.enumerable || !("value" in storeDescriptor)) {
+    throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
+  }
+  if (effectVerifiersDescriptor &&
+      (!effectVerifiersDescriptor.enumerable || !("value" in effectVerifiersDescriptor))) {
+    throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+  }
+  const store = storeDescriptor.value;
+  const effectVerifiers = effectVerifiersDescriptor ? effectVerifiersDescriptor.value : {};
   if (!store || typeof store.loadCurrent !== "function" ||
       typeof store.commitIfCurrent !== "function") {
     throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
