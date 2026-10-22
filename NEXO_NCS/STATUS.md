@@ -3323,3 +3323,13 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - No se cambia runtime ni se declaran pruebas/CI nuevos. No elevar automáticamente el límite a 16 MiB ni presentar 4 MiB como capacidad demostrada.
 - Próximo paso: especificar límites estructurales de misión e intención, derivar máximos de bytes para cada envelope y agregar pruebas de frontera para ambos comandos; después verificar CI en el SHA exacto. El presupuesto agregado de heap/disco y la concurrencia multiproceso permanecen abiertos.
 - Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0-E — diseño de admisión para previews de misión (2026-10-22)
+
+- Diseño propuesto: [NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md](BUILD/NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md), commit documental `9691f52b9c1194ee9df0f5c32c81d692f876a5cb`.
+- Se conserva 4 MiB por archivo como límite operativo inicial existente; no se aumenta a 16 MiB por analogía con el documento Continuity ni se afirma que sea una capacidad medida.
+- La misión de Core carece de máximos estructurales explícitos en la ruta inspeccionada. El límite histórico de ocho pasos pertenece al orquestador legado y tiene semántica abierta para candidatos omitidos; no se traslada silenciosamente al contrato de preview.
+- El diseño requiere definir límites estructurales compartidos de misión y un máximo independiente de `intent`, con pruebas de frontera, rechazo sin truncamiento, preservación del store y verificación CI en SHA exacto.
+- Este es un artefacto de diseño; no modifica runtime ni añade evidencia de pruebas/CI. Heap agregado, disco agregado y concurrencia multiproceso siguen OPEN.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
