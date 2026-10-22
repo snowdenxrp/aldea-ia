@@ -1,6 +1,6 @@
 # NCS M0 — candidato numérico inicial para presupuesto de recursos
 Fecha: 2026-10-22
-Estado: **PERFIL ACEPTADO; LÍMITES LOCALES POR ENTRADA/DOCUMENTO/STORE VALIDADOS EN EL ALCANCE ACOTADO; PRESUPUESTO AGREGADO OPEN**
+Estado: **PERFIL ACEPTADO; LÍMITES POR DOCUMENTO/STORE Y STDIN CHRONICLE VERIFICADOS EN SUS RUTAS; DOS ENTRADAS JSON DE VISTA PREVIA SIGUEN SIN LÍMITE; PRESUPUESTO AGREGADO OPEN**
 
 Decisión del propietario: `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`. Los números son límites operativos iniciales aceptados como base, no capacidades medidas ni garantías de rendimiento.
 
@@ -96,7 +96,7 @@ Este requisito no cambia los topes aceptados como base. La implementación y val
 
 No basta con cargar el documento entero en un `Buffer` y medir su longitud: el consumo máximo ya ocurrió. El store debe leer de forma acotada, contar bytes crudos durante la lectura y detenerse al detectar más que el máximo, antes de decodificar y parsear. `stat` puede anticipar un rechazo pero no es el control definitivo, ya que no evita carreras entre la inspección y la lectura. Los tests deben probar límite de bytes consumidos, cancelación, ausencia de `JSON.parse` al exceder y preservación de bytes/revisión.
 
-Nota de estado vigente (2026-10-22): la implementación y las pruebas de límites locales ya están presentes; el resultado acotado se registra en [NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md](NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md). Los párrafos anteriores de esta sección describen requisitos/baseline previos y no deben leerse como tareas todavía pendientes. El presupuesto agregado de heap/disco y la concurrencia multiproceso siguen OPEN.
+Nota de estado vigente (2026-10-22): los límites por documento/store y stdin Chronicle cuentan con implementación y evidencia acotada; ver [resultado del gate local](NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md). No se cierra el límite de todas las entradas: `scripts/nexo.mjs` lee los archivos de `mission-draft-preview` y `mission-request-preview` sin tope previo; ver [hallazgo de entrada JSON](NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md). El máximo para esos archivos y el presupuesto agregado de heap/disco siguen OPEN; no inferir que el tope de stdin Chronicle se aplique a ellos.
 
 
 ## Actualización de evidencia 2026-10-22
