@@ -194,3 +194,13 @@ Se añadió `previewNexoMissionRequest(continuityPath, requestEnvelope)` y `test
 - Tests añadidos para `mission-request-preview` y `mission-draft-preview`: JSON `null` debe producir `blocked`, código de salida 1, sin dispatch/persistencia y sin modificar Continuity.
 - SHA de código `bb1fe0e33362df36e8145c0e947882717d25328c`; los cinco workflows pasaron en ese SHA: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798045), [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798037), [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798067), [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798051), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798113).
 - El cambio no habilita interpretación semántica, persistencia de borradores, ni efectos protegidos. Estado canónico sin cambios.
+
+
+## Continuity resource-boundary follow-up (2026-10-22)
+
+- Follow-up implementation commit: `7ef9550df703be902baa7ce7f608a59ac72f2449`.
+- Added a store-level test with a structurally valid mission snapshot whose serialized envelope exceeds 16 MiB. Expected outcome: resource-limit failure before lock acquisition; canonical bytes and revision unchanged.
+- The current `tests/nexo/continuity-store.test.mjs` already includes the near-limit concurrent commit test. It checks two individually admissible 14 MiB candidates against revision 0, exactly one commit and one conflict, revision 1, and a final serialized envelope within the accepted cap. Do not duplicate this test.
+- Existing oversized raw-file test checks bounded read/rejection of an on-disk document larger than the limit. The new test is different: it checks an oversized **valid candidate** at the write boundary and no mutation.
+- CI for commit `7ef9550df703be902baa7ce7f608a59ac72f2449` must be checked before claiming the new test passes. Documentation-only commits after it must not be confused with its code/test SHA.
+- Aggregate heap/disk budget remains OPEN. Do not declare total resource safety or multi-user/concurrent service readiness based only on per-store limits.
