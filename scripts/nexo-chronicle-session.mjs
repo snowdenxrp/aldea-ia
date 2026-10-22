@@ -1,5 +1,6 @@
 import { pathToFileURL } from "node:url";
 import { runNexoChronicleAppend } from "../src/nexo/application/index.mjs";
+import { NEXO_RESOURCE_LIMITS } from "../src/nexo/core/resource-limits.mjs";
 
 export { runNexoChronicleAppend };
 
@@ -53,8 +54,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       throw error;
     }
     const chunks = [];
-    for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
-    const content = Buffer.concat(chunks).toString("utf8");
+    let totalBytes = 0;
+    for await (const chunk of process.stdin) {
+      const bytes = Buffer.from(chunk);
+      totalBytes += bytes.length;
+      if (totalBytes > NEXO_RESOURCE_LIMITS.stdinBytes) {
+        const error = new Error("NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED");
+        error.code = "NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED";
+        throw error;
+      }
+      chunks.push(bytes);
+    }
+    const content = Buffer.concat(chunks, totalBytes).toString("utf8");
     result = await runNexoChronicleAppend({ ...args, content });
   } catch (error) {
     result = blocked(error?.code ?? "NEXO_CHRONICLE_SESSION_FAILED");
