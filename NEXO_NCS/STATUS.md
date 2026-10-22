@@ -3236,3 +3236,13 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Corrección importante: el preview actual no persiste ni devuelve el texto de intención; por tanto, no debe afirmarse que la intención queda conservada como evidencia durable. Cualquier retención futura requiere definir referencia, procedencia, privacidad y vigencia con los contratos existentes.
 - El documento de correspondencia se actualizó para reflejar estas condiciones. Es un cambio documental; no hay cambio de runtime ni CI nuevo asociado.
 - Próximo paso: definir la representación de una **propuesta de interpretación no confiable** reutilizando PG-009, y el límite de evidencia que permitiría verificar correspondencia sin fingir que un chequeo estructural demuestra significado. Mantener autorización `NOT_EVALUATED` y efectos protegidos `STOP`.
+
+
+## M0-E — prueba de snapshot Continuity estructuralmente válido sobre el límite (2026-10-22)
+
+- Se añadió a `tests/nexo/continuity-store.test.mjs` un caso de rechazo de candidato que **sí pasa la validación estructural**, pero excede el límite de 16 MiB al serializar el envelope.
+- El caso exige rechazo con `NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED`, bytes canónicos idénticos, revisión sin cambios y ausencia de lock: el exceso conocido debe detenerse antes de persistencia y antes de adquirir exclusión.
+- La misma versión del test ya contiene la prueba de dos commits concurrentes cerca del límite: ambos candidatos caben individualmente, solo uno puede confirmar contra la misma revisión, el otro obtiene conflicto y el envelope final permanece dentro del máximo. No se repitió ni duplicó ese caso.
+- Commit de código/pruebas: `7ef9550df703be902baa7ce7f608a59ac72f2449`. **CI todavía no verificado para este SHA** al registrar esta nota.
+- Sigue OPEN el presupuesto agregado de heap/disco. Los límites por store no justifican servicio concurrente/multiusuario sin un presupuesto agregado y su estrategia de enforcement.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
