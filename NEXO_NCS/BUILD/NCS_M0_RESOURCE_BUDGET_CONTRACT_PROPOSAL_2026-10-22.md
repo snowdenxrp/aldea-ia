@@ -132,3 +132,8 @@ Esta secuencia evita que un límite de una capa se use como sustituto de los lí
 6. Si un test revela incompatibilidad con datos existentes, detenerse y reportar el caso; no truncar ni migrar silenciosamente datos existentes.
 
 No se modifica runtime hasta que los máximos y la política de agotamiento sean decisiones contractuales explícitas.
+
+
+## Perfil numérico candidato separado (2026-10-22)
+
+Se añadió [NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md](NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md). Propone topes iniciales explícitos para stdin, contenido individual, Chronicle y Continuity. El perfil está **NO ACEPTADO / NO IMPLEMENTADO** y no representa una capacidad medida. Requiere fixtures de frontera, preservación del estado previo, concurrencia y CI en el SHA de implementación. El perfil inicial rechaza nuevas escrituras al alcanzar capacidad y no incluye rotación, borrado o compactación.
