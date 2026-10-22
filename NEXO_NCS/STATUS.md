@@ -3122,3 +3122,13 @@ Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamient
 - Handoff revisado nuevamente: [NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22_REVISED.md](BUILD/NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22_REVISED.md), commit `a4b2b0506ce5ae9e4b97bf416ef4bc34d5fd022a`, blob `73f1eb28ec0faf98b53fee1cfc82f632a876087f`.
 - CI posterior a la matriz: run [39726077797](https://github.com/snowdenxrp/aldea-ia/actions/runs/39726077797), SHA `b83ebf1048277ea3782c7b6eda36b323499b32a6). Job `tests`: paso `Run tests` completado con `success`, pero al consultar el job todavía estaba en progreso durante limpieza; no declarar aún el workflow completo `completed/success`.
 - El handoff posterior disparó run [39726101702](https://github.com/snowdenxrp/aldea-ia/actions/runs/39726101702), SHA `a4b2b0506ce5ae9e4b97bf416ef4bc34d5fd022a); en la última consulta permanecía `pending`. No atribuir el resultado de un run al otro SHA.
+
+
+## Decisión vigente — alcance inicial M0-E (2026-10-22)
+
+- El propietario aceptó explícitamente la opción A. Registro: [NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md](DECISIONS/NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md), commit `c0b3d984606892a985d23d0b6375f73a26d9ef9d`.
+- A delimita el núcleo inicial; no equivale a aprobación constitucional completa ni autoriza efectos protegidos.
+- Se reforzó `tests/nexo/entrypoint.test.mjs` en commit `39ee2f5996fd0586ce4c666a448a290371601de4`: rechaza comandos genéricos/efectuales antes de dispatch y prohíbe que el grafo público de Nexo importe `effect-adapter.js`.
+- El CI debe comprobarse para el HEAD final después de estas escrituras. No reutilizar el resultado de otro SHA ni declarar PASS anticipadamente.
+- Siguiente: validar CI y, si pasa, construir una capacidad real del alcance A dentro de la API pública estrecha; no reabrir investigación cerrada ni habilitar efectos protegidos.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
