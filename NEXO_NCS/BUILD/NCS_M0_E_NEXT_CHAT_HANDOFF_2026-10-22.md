@@ -1,3 +1,32 @@
+# CHECKPOINT MÁS RECIENTE — 2026-10-22 — PREFLIGHT COMPARTIDO, CI VERDE Y OPTION A
+
+La validación de continuidad ahora comparte un preflight iterativo antes de entrar en validadores recursivos:
+
+- Nuevo módulo `src/nexo/core/continuity-data-guard.mjs`.
+- `continuity-snapshot.mjs` lo usa antes de validar snapshots.
+- `continuity-contract.mjs` lo usa antes de validar/proyectar memoria legacy.
+- Profundidad global del grafo de continuidad: 35, para preservar los 32 niveles de admisión por misión después de los contenedores que añaden niveles. Esto es un límite de profundidad estructural, no un presupuesto de heap.
+- Regresiones: snapshots profundos, memoria legacy profunda y proyección legacy profunda deben fallar antes de alcanzar validación/clonación recursiva.
+
+Option A fue reconciliada en el test CLI, no en el runtime:
+- Commit de test `3850889d7f127c7415d429bc3512d78171573291`.
+- La ruta opt-in exige `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`, journal de efectos vacío y revisión del entorno sin incremento adicional por reparación.
+- La misión de planificación puede persistir, pero la operación de reparación protegida no se despacha. `scripts/nexo-runtime-session.mjs` permanece como gate bloqueado.
+
+CI para el SHA de código/pruebas `3e98103aa6ea65a4de4d74b68300ee89a1321e36`:
+- deterministic persistence tests SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39852246643
+- integrated acceptance regression SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39852246786
+- STEP 4 semantic validation SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39852246618
+- STEP 5 outcome classification SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39852246778
+- repair settlement crash cuts SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39852246635
+- El workflow bounded mission admission/restart continuity disponible en la lista anterior corresponde a SHA `d63cf5b`, no debe atribuirse al SHA `3e98103`.
+
+Siguiente trabajo: confirmar HEAD después de los commits de documentación; revisar si los perfiles de admisión por misión y el preflight común de continuidad están descritos como un solo contrato versionado; continuar con el inventario de rutas de store sólo si aparece un camino que no aplique ambos límites. No ampliar cuotas ni modificar runtime por especulación.
+
+Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT MÁS RECIENTE — 2026-10-22 — PROFUNDIDAD DE SNAPSHOT Y REGRESIÓN VERIFICADA
 
 Se cerró una brecha de orden de validación: la validación genérica recursiva corría antes de los guardas iterativos de admisión de misión. Un snapshot podía contener datos muy profundamente anidados fuera de `missions` y alcanzar la recursión genérica antes de que se aplicaran los límites del documento.
