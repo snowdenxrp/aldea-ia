@@ -94,3 +94,15 @@ Usar el plan E-01…E-10 existente, ligado a la ruta/sink seleccionados. Debe de
 ## Estado final a conservar
 M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 La siguiente tarea es inspección dirigida de callers/sinks y cruce de tests existentes, no implementación especulativa.
+
+
+## Actualización posterior — conditionalCommit y rutas M0-E (2026-10-22)
+
+- Informe nuevo guardado y verificado: [NCS_M0_E_CONDITIONAL_COMMIT_SINK_ROLE_AND_ROUTE_MAP_2026-10-22.md](NCS_M0_E_CONDITIONAL_COMMIT_SINK_ROLE_AND_ROUTE_MAP_2026-10-22.md), commit `c250c3edd9c191683b799c0d46a3640556aa4960`, blob `9ba6fda8e62900ef53f173d738edf4ca04400c74`.
+- Hallazgo decisivo: el adaptador real `createPersistStateConditionalCommit()` solo llama a `persistState` con control de revisión. Por tanto, `conditionalCommit.commit` es persistencia de estado canónico en esta implementación; no está demostrado como sink externo protegido.
+- Las rutas deben mantenerse separadas: Core→persistState; simulación Lúmina→`executeAction(simulation, agent, action)`; runtime owner-backed→allowlist que solo admite `chronicle_append` y bloquea otras acciones antes del nuevo dispatch.
+- La ruta Lúmina tiene mutación local en el handler, pero el caller productivo canónico sigue sin demostrarse; reutilizar AB104.150/P112 y no inferir alcanzabilidad ni inalcanzabilidad universal.
+- No conectar `effectBoundary.prepare` al adaptador de persistencia como arreglo cosmético. Eso no demostraría enforcement en la mutación protegida real.
+- No se modificó runtime/tests y no se ejecutó CI nuevo. El chequeo de status del SHA documental no devolvió status checks; no declarar PASS.
+- Scope exacto sigue OPEN; opción A sigue siendo propuesta provisional, no decisión aceptada. Mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
+- Próxima tarea: una vez confirmado HEAD actual, cruzar tests existentes por propiedad y límite observado; resolver scope explícito antes de concretar pruebas de sink o un camino positivo. `STATUS.md` no fue actualizado en esta operación; este handoff y el informe se verificaron directamente.
