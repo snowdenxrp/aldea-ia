@@ -1,6 +1,6 @@
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { loadNexoContinuityStatus, loadNexoMissionStatus } from "../src/nexo/application/index.mjs";
+import { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan } from "../src/nexo/application/index.mjs";
 
 /**
  * Nexo's independent command entrypoint.
@@ -55,6 +55,28 @@ export function parseNexoEntrypointArguments(argv) {
     if (typeof missionId !== "string") return { status: "blocked", code: "NEXO_MISSION_ID_REQUIRED", dispatchAttempted: false };
     return { status: "mission-status", continuityPath, missionId };
   }
+  if (argv[0] === "mission-plan") {
+    let continuityPath;
+    let missionId;
+    for (let index = 1; index < argv.length; index += 1) {
+      const option = argv[index];
+      if ((option !== "--continuity" && option !== "--mission") ||
+          index + 1 >= argv.length || !argv[index + 1].trim() || argv[index + 1].startsWith("--")) {
+        return { status: "blocked", code: "NEXO_MISSION_PLAN_ARGUMENTS_INVALID", dispatchAttempted: false };
+      }
+      const value = argv[++index];
+      if (option === "--continuity") {
+        if (continuityPath !== undefined) return { status: "blocked", code: "NEXO_MISSION_PLAN_ARGUMENTS_INVALID", dispatchAttempted: false };
+        continuityPath = value;
+      } else {
+        if (missionId !== undefined) return { status: "blocked", code: "NEXO_MISSION_PLAN_ARGUMENTS_INVALID", dispatchAttempted: false };
+        missionId = value;
+      }
+    }
+    if (typeof continuityPath !== "string") return { status: "blocked", code: "NEXO_STATUS_CONTINUITY_PATH_REQUIRED", dispatchAttempted: false };
+    if (typeof missionId !== "string") return { status: "blocked", code: "NEXO_MISSION_ID_REQUIRED", dispatchAttempted: false };
+    return { status: "mission-plan", continuityPath, missionId };
+  }
   return { status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false };
 }
 
@@ -69,6 +91,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const result = await loadNexoMissionStatus(parsed.continuityPath, parsed.missionId);
     console.log(JSON.stringify(result));
     if (result.status !== "reconstructed") process.exitCode = 1;
+  } else if (parsed.status === "mission-plan") {
+    const result = await loadNexoMissionPlan(parsed.continuityPath, parsed.missionId);
+    console.log(JSON.stringify(result));
+    if (result.status !== "planned") process.exitCode = 1;
   } else if (parsed.status !== "dispatch") {
     console.log(JSON.stringify({
       status: parsed.status,
