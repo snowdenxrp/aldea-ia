@@ -1563,6 +1563,24 @@ try {
   assert.equal(oversizedStdin.stderr, "");
   await assert.rejects(fs.access(oversizedStdinContinuity), { code: "ENOENT" });
   await assert.rejects(fs.access(oversizedStdinChronicle), { code: "ENOENT" });
+
+  const directOversizeContinuity = path.join(cliRoot, "direct-oversize-continuity.json");
+  const directOversizeChronicle = path.join(cliRoot, "direct-oversize-chronicle.json");
+  const directOversize = await runNexoChronicleAppend({
+    continuityPath: directOversizeContinuity,
+    chroniclePath: directOversizeChronicle,
+    missionId: "direct-oversize-mission",
+    stepId: "direct-oversize-step",
+    content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2) + 1),
+    initializeContinuity: true,
+    initializeChronicle: true
+  });
+  assert.equal(directOversize.status, "blocked");
+  assert.equal(directOversize.code, "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED");
+  await assert.rejects(fs.access(directOversizeContinuity), { code: "ENOENT" },
+    "oversized direct application input must not admit a mission");
+  await assert.rejects(fs.access(directOversizeChronicle), { code: "ENOENT" },
+    "oversized direct application input must not initialize Chronicle");
 } finally {
   await fs.rm(cliRoot, { recursive: true, force: true });
 }
