@@ -25,6 +25,35 @@ function validateCallerRecord(value, invalidCode) {
   }
 }
 
+function readOwnerInputFields(input, fields, invalidCode) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw ownerError(invalidCode);
+  }
+  let prototype;
+  try {
+    prototype = Object.getPrototypeOf(input);
+  } catch {
+    throw ownerError(invalidCode);
+  }
+  if (prototype !== Object.prototype && prototype !== null) throw ownerError(invalidCode);
+  const values = {};
+  for (const field of fields) {
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(input, field);
+    } catch {
+      throw ownerError(invalidCode);
+    }
+    if (!descriptor) {
+      values[field] = undefined;
+      continue;
+    }
+    if (!descriptor.enumerable || !("value" in descriptor)) throw ownerError(invalidCode);
+    values[field] = descriptor.value;
+  }
+  return values;
+}
+
 function validateOperation(operation) {
   if (!operation || typeof operation !== "object" ||
       typeof operation.idempotencyKey !== "string" || !operation.idempotencyKey.trim() ||
@@ -161,7 +190,10 @@ export function createNexoContinuityOwner(options = {}) {
     return { status: "reconstructed", mission, storeRevision: current.storeRevision };
   }
 
-  async function recordMission({ expectedRevision, mission } = {}) {
+  async function recordMission(input = {}) {
+    let expectedRevision, mission;
+    try { ({ expectedRevision, mission } = readOwnerInputFields(input, ["expectedRevision", "mission"], "NEXO_MISSION_CONTEXT_INVALID")); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_MISSION_CONTEXT_INVALID" }; }
     try { assertNexoMissionAdmission(mission); }
     catch (error) {
       let storeRevision;
@@ -210,7 +242,10 @@ export function createNexoContinuityOwner(options = {}) {
    * Persist a mission-step outcome in Nexo's own store.
    * This records an outcome claim; it never settles effectJournal or authorizes effects.
    */
-  async function recordOutcome({ expectedRevision, outcome } = {}) {
+  async function recordOutcome(input = {}) {
+    let expectedRevision, outcome;
+    try { ({ expectedRevision, outcome } = readOwnerInputFields(input, ["expectedRevision", "outcome"], "NEXO_OUTCOME_CONTEXT_INVALID")); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OUTCOME_CONTEXT_INVALID" }; }
     try { validateCallerRecord(outcome, "NEXO_OUTCOME_CONTEXT_INVALID"); }
     catch (error) {
       return { status: "failed", code: error?.code ?? "NEXO_OUTCOME_CONTEXT_INVALID" };
@@ -358,7 +393,10 @@ export function createNexoContinuityOwner(options = {}) {
     return { ...committed, journalSettled: false, authorization: "NOT_EVALUATED" };
   }
 
-  async function recordPrepared({ expectedRevision, operation } = {}) {
+  async function recordPrepared(input = {}) {
+    let expectedRevision, operation;
+    try { ({ expectedRevision, operation } = readOwnerInputFields(input, ["expectedRevision", "operation"], "NEXO_OPERATION_CONTEXT_INVALID")); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID" }; }
     try {
       validateCallerRecord(operation, "NEXO_OPERATION_CONTEXT_INVALID");
       validateOperation(operation);
@@ -482,7 +520,10 @@ export function createNexoContinuityOwner(options = {}) {
    * PREPARED remains an unresolved obligation until an independent,
    * operation-specific reconciliation contract exists.
    */
-  async function recordExecutionLineage({ expectedRevision, operation, result } = {}) {
+  async function recordExecutionLineage(input = {}) {
+    let expectedRevision, operation, result;
+    try { ({ expectedRevision, operation, result } = readOwnerInputFields(input, ["expectedRevision", "operation", "result"], "NEXO_OPERATION_CONTEXT_INVALID")); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID" }; }
     try {
       validateCallerRecord(operation, "NEXO_OPERATION_CONTEXT_INVALID");
       validateOperation(operation);
@@ -621,7 +662,10 @@ export function createNexoContinuityOwner(options = {}) {
    * This is an observation record, not causal attribution, authorization, or
    * permission to redispatch. UNKNOWN and invalid evidence leave PREPARED open.
    */
-  async function reconcilePrepared({ expectedRevision, operation } = {}) {
+  async function reconcilePrepared(input = {}) {
+    let expectedRevision, operation;
+    try { ({ expectedRevision, operation } = readOwnerInputFields(input, ["expectedRevision", "operation"], "NEXO_OPERATION_CONTEXT_INVALID")); }
+    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" }; }
     // Legacy/caller-supplied observations are not a trusted verifier contract.
     // Preserve the fail-closed API when no canonical operation context is supplied.
     if (!operation) {
