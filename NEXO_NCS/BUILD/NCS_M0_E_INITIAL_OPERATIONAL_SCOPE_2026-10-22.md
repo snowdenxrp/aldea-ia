@@ -28,11 +28,9 @@ Esta decisión no significa que el repositorio impida técnicamente que se lance
 
 No añadir un contador global, semáforo, cola, wrapper o lock de proceso improvisado: eso sería una nueva arquitectura y podría crear una falsa garantía si no cubre todas las entradas y todos los procesos.
 
-El siguiente paso de implementación sigue siendo cerrar las dos brechas concretas de Continuity indicadas en el handoff:
-1. Rechazo de un snapshot estructuralmente válido cuyo documento serializado exceda 16 MiB, con preservación byte por byte del archivo previo y de su revisión.
-2. Dos commits concurrentes de Continuity cerca de la frontera de capacidad, comprobando revisión/bytes confirmados y ausencia de sobre-admisión o pérdida/duplicación.
+Las dos brechas concretas de Continuity ya tienen pruebas en `tests/nexo/continuity-store.test.mjs`; el refuerzo de la comprobación de bytes canónicos pasó cinco workflows CI en el SHA `20b3e1b51616c93862a2cad2e502c143c35b77ef` (ver STATUS y el handoff vigente). No repetir esa tarea sin una contradicción nueva.
 
-Después de esa evidencia, decidir si los límites por-store bastan para el uso local declarado. El presupuesto agregado de heap/disco permanece **OPEN** hasta que exista un mecanismo global verificable y una forma de medir/limitar el recurso real.
+El siguiente paso es una evaluación de suficiencia por capas: (1) inventariar qué rutas de entrada llegan a los stores y si todas pasan por los validadores actuales; (2) confirmar qué archivos y operaciones quedan cubiertos por los topes por-store y qué no; (3) dejar explícito si el perfil local aceptado requiere límites por operación/store o si hay una exigencia adicional de presupuesto total. No declarar que el límite por-store protege el heap o disco agregado. El presupuesto agregado de heap/disco permanece **OPEN** hasta que exista una unidad de admisión verificable y una forma de medir/limitar el recurso real.
 
 ## Estado canónico
 
