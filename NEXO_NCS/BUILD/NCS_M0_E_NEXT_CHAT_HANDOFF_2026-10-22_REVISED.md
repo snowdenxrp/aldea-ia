@@ -221,3 +221,13 @@ Se añadió `previewNexoMissionRequest(continuityPath, requestEnvelope)` y `test
 - Esta medida acota temporales producidos por escrituras cooperantes por store, pero **no** cierra el presupuesto total de disco ni el de heap.
 - Próximo bloqueo: definir el presupuesto operativo agregado de heap y el modo de ejecución soportado. No sumar tamaños serializados como si fueran heap y no declarar multiusuario seguro sin una cota demostrada.
 - Estado constitucional sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Continuidad posterior — presupuesto agregado M0-E (2026-10-22)
+
+Nuevo hallazgo: [NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md).
+
+- Se verificó por lectura de código que los límites por documento y la serialización JSON no constituyen una cota de heap V8. La lectura acumula chunks, concatena, decodifica y parsea; los stores también clonan datos. loadCurrent no usa el lock de escritura, y el CLI solo limita stdin de cada invocación.
+- Por ello, heap agregado, disco agregado y capacidad multiusuario siguen OPEN. No se introdujo un límite arbitrario ni una nueva cola/semaforo. No se ejecutaron tests ni se modificó runtime en este análisis.
+- Próximo paso: fijar explícitamente el modo operativo de M0 que se soportará primero y el ámbito del presupuesto; diseñar enforcement solo después de conocer esa unidad. No sumar tamaños serializados como si fueran heap.
+- Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
