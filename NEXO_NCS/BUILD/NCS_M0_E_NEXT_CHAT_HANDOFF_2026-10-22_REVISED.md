@@ -118,3 +118,14 @@ La siguiente tarea es inspección dirigida de callers/sinks y cruce de tests exi
 - Scope A/B/C continúa sin decisión explícita. No activar efectos protegidos ni crear camino positivo ficticio.
 - Próxima acción: consultar el run y sus jobs; si termina, registrar el resultado exacto. Luego continuar con una unidad de implementación acotada a la opción de scope que el propietario elija; no cambiar scope por inferencia.
 - Estado conservado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Continuidad vigente — propietario aceptó alcance A (2026-10-22)
+
+- **Decisión ya tomada:** el propietario aceptó opción A como alcance inicial de M0-E. No volver a preguntar por esta selección salvo que él mismo reabra la decisión.
+- Registro de decisión: [NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md](../DECISIONS/NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md), commit `c0b3d984606892a985d23d0b6375f73a26d9ef9d`.
+- El test `tests/nexo/entrypoint.test.mjs` se actualizó en commit `39ee2f5996fd0586ce4c666a448a290371601de4` para rechazar comandos genéricos/efectuales antes de dispatch y excluir `effect-adapter.js` del grafo público de importaciones.
+- `STATUS.md` registra la decisión en commit `128bc1a0ec6b662a8d3269656684008b1923f40e`.
+- HEAD conocido al añadir esta nota: `128bc1a0ec6b662a8d3269656684008b1923f40e`; comprobar el HEAD actual y CI antes de afirmar estado de ejecución.
+- Próxima tarea: confirmar el workflow completo del SHA final y el job/paso `Run tests`. Si pasa, construir una capacidad real dentro del alcance A, reutilizando los contratos y consultas existentes. No repetir auditorías AB/P cerradas ni recrear la matriz de tests.
+- Estado no alterado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`. La decisión A no es aprobación constitucional ni permiso para efectos protegidos.
