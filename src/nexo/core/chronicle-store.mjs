@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { NEXO_RESOURCE_LIMITS, readUtf8FileBounded, serializedUtf8Bytes, assertUtf8ByteLimit, assertChronicleResourceLimits } from "./resource-limits.mjs";
 import { NEXO_DEFAULT_LOCK_WAIT_MS, resolveNexoLockDeadline, remainingNexoLockWaitMs, nexoLockDeadlineExpired } from "./lock-deadline.mjs";
 
 export const NEXO_CHRONICLE_SCHEMA = "NEXO_CHRONICLE";
@@ -33,6 +34,7 @@ function validateDocument(document) {
     if (keys.has(entry.operationKey)) throw fail("NEXO_CHRONICLE_DUPLICATE_OPERATION_KEY");
     keys.add(entry.operationKey);
   }
+  assertChronicleResourceLimits(document);
   return document;
 }
 
@@ -126,9 +128,9 @@ async function acquireLock(fsModule, filePath, deadlineAt, timeoutCode) {
 
 async function readDocument(fsModule, filePath) {
   let raw;
-  try { raw = await fsModule.readFile(filePath, "utf8"); }
+  try { raw = await readUtf8FileBounded(fsModule, filePath, NEXO_RESOURCE_LIMITS.chronicleDocumentBytes, "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"); }
   catch (error) {
-    throw fail(error?.code === "ENOENT" ? "NEXO_CHRONICLE_NOT_FOUND" : "NEXO_CHRONICLE_READ_FAILED");
+    throw fail(error?.code === "ENOENT" ? "NEXO_CHRONICLE_NOT_FOUND" : error?.code === "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED" ? error.code : "NEXO_CHRONICLE_READ_FAILED");
   }
   let parsed;
   try { parsed = JSON.parse(raw); }
@@ -137,6 +139,10 @@ async function readDocument(fsModule, filePath) {
 }
 
 async function writeDocument(fsModule, filePath, document) {
+  assertChronicleResourceLimits(document);
+  if (serializedUtf8Bytes(document) > NEXO_RESOURCE_LIMITS.chronicleDocumentBytes) {
+    throw fail("NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED");
+  }
   const temp = `${filePath}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
   try {
     await fsModule.writeFile(temp, JSON.stringify(document, null, 2) + "\n", "utf8");
@@ -228,6 +234,8 @@ export function createNexoChronicleStore({ filePath, fsModule = fs, lockDeadline
         typeof content !== "string" || !content.trim()) {
       return { status: "blocked", code: "NEXO_CHRONICLE_ENTRY_INVALID" };
     }
+    try { assertUtf8ByteLimit(content, NEXO_RESOURCE_LIMITS.chronicleEntryBytes, "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"); }
+    catch (error) { return { status: "blocked", code: error?.code ?? "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED" }; }
     const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
     let release;
     try {
@@ -270,6 +278,10 @@ export function createNexoChronicleStore({ filePath, fsModule = fs, lockDeadline
           entries: [...current.entries, { operationKey, content }]
         };
         try {
+          assertChronicleResourceLimits(candidate);
+          if (serializedUtf8Bytes(candidate) > NEXO_RESOURCE_LIMITS.chronicleDocumentBytes) {
+            return { status: "blocked", code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED", storeRevision: current.storeRevision };
+          }
           await writeDocument(fsModule, filePath, candidate);
           return { status: "committed", storeRevision: candidate.storeRevision, entry: { operationKey, content } };
         } catch {
