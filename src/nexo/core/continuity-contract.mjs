@@ -1,5 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { assertContractInput } from "./contracts.mjs";
+import { assertNexoMissionAdmission } from "./mission-admission-contract.mjs";
 
 const REQUIRED_COLLECTIONS = Object.freeze([
   "missions",
@@ -51,6 +52,9 @@ export function assertNexoContinuityMemoryShape(memory) {
   // (missionId:stepId). Duplicate identities make reconstruction ambiguous.
   const missionIds = new Set();
   for (const mission of memory.nexo.missions) {
+    // Apply the same v1 admission ceilings to persisted snapshots and legacy-memory projections,
+    // not only to new mission-record operations. This is the common persistence boundary.
+    assertNexoMissionAdmission(mission);
     // Persisted mission records must satisfy the same identity/steps minimum
     // as newly admitted missions. Do not silently reinterpret malformed legacy
     // records as empty missions during snapshot projection or reconstruction.
