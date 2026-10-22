@@ -5,9 +5,12 @@ on:
     branches: [main, ncs-clean-architecture]
   workflow_dispatch:
 
+# Keep evidence-producing full-suite runs queued rather than cancelling the
+# previous run on every commit. Isolate branches so unrelated refs do not cancel
+# one another's persistence evidence.
 concurrency:
-  group: nexo-deterministic-tests
-  cancel-in-progress: true
+  group: nexo-deterministic-tests-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   tests:
