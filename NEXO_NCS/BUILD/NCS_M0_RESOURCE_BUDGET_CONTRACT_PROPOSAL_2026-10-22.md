@@ -96,3 +96,39 @@ La inspección del HEAD actual aclara cómo expresar el rechazo sin añadir un e
 **Conclusión acotada:** no se justifica introducir un nuevo estado público general para límite de recursos. La implementación debería reutilizar el estado no exitoso que corresponda a cada capa y añadir un código específico solo si el inventario de códigos existente confirma que no hay uno semánticamente equivalente. No se eligió ni añadió ningún código en esta propuesta.
 
 El rechazo debe ocurrir antes de `recordNexoMissionSafely` cuando el contenido de stdin o el presupuesto de la operación ya sea inválido; para los límites de store, debe ocurrir antes de `writeDocument`/`writeEnvelope`. Los errores de escritura posteriores conservan la semántica existente de `UNKNOWN` y reconciliación; nunca deben reinterpretarse como límite conocido ni como éxito.
+
+
+## Orden de enforcement recomendado (preparación para implementación)
+
+Esta secuencia evita que un límite de una capa se use como sustituto de los límites de las otras capas:
+
+1. **CLI/stdin — antes de formar el string completo.** Contar bytes del flujo UTF-8 crudo mientras llegan los chunks. Al observar el primer byte que excede el máximo, detener la admisión y devolver el resultado terminal de entrada demasiado grande; no ejecutar `Buffer.concat` sobre el flujo completo ni invocar el caso de uso. La implementación debe evitar carreras de callbacks y cerrar/consumir el flujo de forma determinista para que no quede una lectura colgada.
+2. **Caso de uso — antes de admitir misión.** Validar tamaño de contenido en bytes UTF-8 una vez más, porque el caso de uso puede ser invocado sin CLI. Si excede el máximo, no llamar a `recordNexoMissionSafely` ni inicializar Chronicle/Continuity.
+3. **Chronicle — dentro de la sección protegida por lock.** Cargar/validar el documento actual; comprobar bytes de contenido, cardinalidad resultante y tamaño serializado exacto del documento candidato antes de llamar a `writeDocument`. La decisión debe usar el mismo contenido serializado que finalmente se escribe, incluida la política de formato/newline, para evitar que medir una representación y escribir otra.
+4. **Continuity — antes de writeEnvelope.** Validar cardinalidad por colección y tamaño serializado del envelope/snapshot candidato en la misma sección que comprueba la revisión actual. No escribir un envelope parcialmente validado.
+5. **Resultado público.** Traducir el exceso a un estado no exitoso existente y un código específico solo si el inventario confirma que hace falta. No exponer el payload ni detalles internos. No transformar un error de escritura o resultado ambiguo en un exceso de límite conocido.
+6. **Reconciliación.** Si el exceso se detecta antes de cualquier escritura, el resultado debe declarar cero mutación. Si la escritura ya comenzó y el resultado es incierto, se conserva el protocolo actual de conflicto/UNKNOWN y reconciliación; no se puede etiquetar retrospectivamente como rechazo limpio.
+
+## Pruebas de contrato que previenen falsos positivos
+
+- **UTF-8:** usar contenido ASCII y multibyte; verificar límites por bytes, no por `string.length`.
+- **Límite exacto:** definir expresamente si el máximo es inclusivo; la propuesta recomienda aceptar `bytes <= max` y rechazar `bytes > max`.
+- **Sin admisión:** espiar o inyectar el puerto de admisión y verificar cero llamadas en stdin sobredimensionado.
+- **Sin inicialización:** verificar que una entrada sobredimensionada no crea store, lock, directorio ni misión.
+- **Sin escritura:** inyectar/contar llamadas a `writeDocument` y `writeEnvelope`; el exceso previo a la escritura debe producir cero llamadas.
+- **Preservación:** comparar bytes/revisión del archivo previo antes y después del rechazo.
+- **Concurrencia:** ejecutar dos appends cerca del límite y verificar que la comprobación del tamaño total se hace bajo el mismo lock/revisión que decide la escritura; ambos no pueden aprobar contra una misma versión obsoleta.
+- **Reapertura:** reabrir stores después del rechazo y demostrar que el estado sigue válido y legible.
+- **UNKNOWN separado:** mantener pruebas de escritura ambigua existentes; un límite detectado antes de escribir no debe confundirse con UNKNOWN y un UNKNOWN no debe disfrazarse de límite.
+- **No duplicar contratos:** extender las suites existentes; no crear un nuevo framework de pruebas o un conjunto paralelo de outcomes.
+
+## Secuencia de cambios cuando se acepte el contrato
+
+1. Implementar primero el lector acotado de stdin y sus tests CLI.
+2. Añadir validación de bytes en el caso de uso para callers no CLI.
+3. Añadir enforcement de entry count/content/document bytes en Chronicle.
+4. Añadir enforcement de cardinalidad y bytes serializados en Continuity.
+5. Ejecutar tests focalizados y luego el workflow completo; registrar cada SHA/run y verificar el HEAD final.
+6. Si un test revela incompatibilidad con datos existentes, detenerse y reportar el caso; no truncar ni migrar silenciosamente datos existentes.
+
+No se modifica runtime hasta que los máximos y la política de agotamiento sean decisiones contractuales explícitas.
