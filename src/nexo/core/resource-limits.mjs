@@ -14,7 +14,9 @@ export const NEXO_RESOURCE_LIMITS = Object.freeze({
   continuityDocumentBytes: 16 * 1024 * 1024,
   stdinBytes: 256 * 1024,
   missionPreviewInputBytes: 4 * 1024 * 1024,
-  lockOwnerBytes: 4 * 1024
+  lockOwnerBytes: 4 * 1024,
+  temporaryDirectoryEntries: 10_000,
+  staleTemporaryFiles: 4_096
 });
 
 function limitError(code) {
