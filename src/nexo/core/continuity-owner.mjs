@@ -92,10 +92,25 @@ export function createNexoContinuityOwner(options = {}) {
   }
   const store = storeDescriptor.value;
   const effectVerifiers = effectVerifiersDescriptor ? effectVerifiersDescriptor.value : {};
-  if (!store || typeof store.loadCurrent !== "function" ||
-      typeof store.commitIfCurrent !== "function") {
+  if (!store || typeof store !== "object" || Array.isArray(store)) {
     throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
   }
+  let loadCurrentDescriptor;
+  let commitIfCurrentDescriptor;
+  try {
+    loadCurrentDescriptor = Object.getOwnPropertyDescriptor(store, "loadCurrent");
+    commitIfCurrentDescriptor = Object.getOwnPropertyDescriptor(store, "commitIfCurrent");
+  } catch {
+    throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
+  }
+  if (!loadCurrentDescriptor || !("value" in loadCurrentDescriptor) ||
+      typeof loadCurrentDescriptor.value !== "function" ||
+      !commitIfCurrentDescriptor || !("value" in commitIfCurrentDescriptor) ||
+      typeof commitIfCurrentDescriptor.value !== "function") {
+    throw ownerError("NEXO_CONTINUITY_STORE_REQUIRED");
+  }
+  const loadStoreCurrent = (...args) => loadCurrentDescriptor.value.apply(store, args);
+  const commitStoreIfCurrent = (...args) => commitIfCurrentDescriptor.value.apply(store, args);
   if (!effectVerifiers || typeof effectVerifiers !== "object" || Array.isArray(effectVerifiers)) {
     throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
   }
@@ -131,14 +146,14 @@ export function createNexoContinuityOwner(options = {}) {
   }
 
   async function loadCurrent() {
-    return store.loadCurrent();
+    return loadStoreCurrent();
   }
 
   async function reconstructMission(missionId) {
     if (typeof missionId !== "string" || !missionId.trim()) {
       return { status: "failed", code: "NEXO_MISSION_ID_INVALID" };
     }
-    const current = await store.loadCurrent();
+    const current = await loadStoreCurrent();
     const mission = reconstructNexoMissionFromSnapshot(current.snapshot, missionId);
     if (!mission) {
       return { status: "not_found", mission: null, storeRevision: current.storeRevision };
@@ -150,7 +165,7 @@ export function createNexoContinuityOwner(options = {}) {
     try { assertNexoMissionAdmission(mission); }
     catch (error) {
       let storeRevision;
-      try { storeRevision = (await store.loadCurrent()).storeRevision; } catch {}
+      try { storeRevision = (await loadStoreCurrent()).storeRevision; } catch {}
       return {
         status: "conflict",
         code: error?.code ?? "NEXO_MISSION_CONTEXT_INVALID",
@@ -164,7 +179,7 @@ export function createNexoContinuityOwner(options = {}) {
     }
     let current;
     try {
-      current = await store.loadCurrent();
+      current = await loadStoreCurrent();
     } catch (error) {
       return {
         status: "blocked",
@@ -188,7 +203,7 @@ export function createNexoContinuityOwner(options = {}) {
       return { status: "already_recorded", storeRevision: current.storeRevision, authorization: "NOT_EVALUATED" };
     }
     assertNexoContinuitySnapshot(next);
-    return store.commitIfCurrent(expectedRevision, next);
+    return commitStoreIfCurrent(expectedRevision, next);
   }
 
   /**
@@ -213,7 +228,7 @@ export function createNexoContinuityOwner(options = {}) {
 
     let current;
     try {
-      current = await store.loadCurrent();
+      current = await loadStoreCurrent();
     } catch (error) {
       return {
         status: "blocked",
@@ -339,7 +354,7 @@ export function createNexoContinuityOwner(options = {}) {
       return { status: "failed", code: error?.code ?? "NEXO_OUTCOME_CONTEXT_INVALID", storeRevision: current.storeRevision };
     }
 
-    const committed = await store.commitIfCurrent(expectedRevision, candidate);
+    const committed = await commitStoreIfCurrent(expectedRevision, candidate);
     return { ...committed, journalSettled: false, authorization: "NOT_EVALUATED" };
   }
 
@@ -360,7 +375,7 @@ export function createNexoContinuityOwner(options = {}) {
 
     let current;
     try {
-      current = await store.loadCurrent();
+      current = await loadStoreCurrent();
     } catch (error) {
       return {
         status: "blocked",
@@ -449,7 +464,7 @@ export function createNexoContinuityOwner(options = {}) {
       at: operation.at ?? new Date().toISOString()
     });
     assertNexoContinuitySnapshot(candidate);
-    const committed = await store.commitIfCurrent(expectedRevision, candidate);
+    const committed = await commitStoreIfCurrent(expectedRevision, candidate);
     if (committed.status === "committed" || committed.persistenceStatus === "committed") {
       // Persistence is confirmed even if lock release blocks the public handoff.
       // The outer status remains failed, so this receipt cannot authorize dispatch.
@@ -483,7 +498,7 @@ export function createNexoContinuityOwner(options = {}) {
 
     let current;
     try {
-      current = await store.loadCurrent();
+      current = await loadStoreCurrent();
     } catch (error) {
       return {
         status: "blocked",
@@ -597,7 +612,7 @@ export function createNexoContinuityOwner(options = {}) {
     }
     // This deliberately records lineage only. In particular, it does not alter
     // effectJournal even if result.status says "completed" or "failed".
-    const committed = await store.commitIfCurrent(expectedRevision, candidate);
+    const committed = await commitStoreIfCurrent(expectedRevision, candidate);
     return { ...committed, journalSettled: false, authorization: "NOT_EVALUATED" };
   }
 
@@ -631,7 +646,7 @@ export function createNexoContinuityOwner(options = {}) {
 
     let current;
     try {
-      current = await store.loadCurrent();
+      current = await loadStoreCurrent();
     } catch (error) {
       return {
         status: "blocked",
@@ -744,7 +759,7 @@ export function createNexoContinuityOwner(options = {}) {
     // an observation against a stale snapshot or overwrite a concurrent change.
     let latest;
     try {
-      latest = await store.loadCurrent();
+      latest = await loadStoreCurrent();
     } catch (error) {
       return {
         status: "blocked",
@@ -800,7 +815,7 @@ export function createNexoContinuityOwner(options = {}) {
     }
     let committed;
     try {
-      committed = await store.commitIfCurrent(expectedRevision, candidate);
+      committed = await commitStoreIfCurrent(expectedRevision, candidate);
     } catch (error) {
       // A store may throw after the durable replacement. Do not leak an
       // exception or guess whether the observation committed; the next call
