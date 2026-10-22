@@ -263,6 +263,33 @@ try {
   assert.equal(preparedSummary.steps[0].status, "blocked");
   assert.equal(preparedSummary.steps[0].blockCode, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
   assert.equal(await fs.readFile(preparedContinuityPath, "utf8"), preparedBytesBefore);
+
+  const blockedMissionPlan = spawnSync(process.execPath, [
+    entrypointPath, "mission-plan", "--continuity", preparedContinuityPath, "--mission", "prepared-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(blockedMissionPlan.status, 0, blockedMissionPlan.stderr || blockedMissionPlan.stdout);
+  assert.equal(blockedMissionPlan.stderr, "");
+  assert.equal(blockedMissionPlan.stdout.includes(preparedPayload), false);
+  const blockedPlanSummary = JSON.parse(blockedMissionPlan.stdout);
+  assert.equal(blockedPlanSummary.status, "planned");
+  assert.equal(blockedPlanSummary.missionStatus, "blocked");
+  assert.equal(blockedPlanSummary.steps[0].planningState, "blocked");
+  assert.equal(blockedPlanSummary.steps[0].blockCode, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
+  assert.equal(blockedPlanSummary.authorization, "NOT_EVALUATED");
+  assert.equal(blockedPlanSummary.dispatchAttempted, false);
+  assert.equal(await fs.readFile(preparedContinuityPath, "utf8"), preparedBytesBefore);
+
+  const missingMissionPlan = spawnSync(process.execPath, [
+    entrypointPath, "mission-plan", "--continuity", preparedContinuityPath, "--mission", "missing-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(missingMissionPlan.status, 1);
+  assert.equal(missingMissionPlan.stderr, "");
+  assert.deepEqual(JSON.parse(missingMissionPlan.stdout), {
+    status: "not_found", code: "NEXO_MISSION_NOT_FOUND",
+    storeRevision: JSON.parse(preparedBytesBefore).storeRevision,
+    authorization: "NOT_EVALUATED", dispatchAttempted: false
+  });
+  assert.equal(await fs.readFile(preparedContinuityPath, "utf8"), preparedBytesBefore);
   // Public status must expose persisted/reconstructed disagreement from one canonical read.
   const contradictoryContinuityPath = path.join(root, "contradictory-continuity.json");
   const contradictoryMemory = {
