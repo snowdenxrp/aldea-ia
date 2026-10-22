@@ -75,6 +75,35 @@ try {
   assert.equal(cliSummary.persisted, false);
   assert.equal(await fs.readFile(continuityPath, "utf8"), before);
 
+  // Valid JSON null must be validated as an invalid envelope, not mistaken for a read failure.
+  await fs.writeFile(requestPath, "null", "utf8");
+  const nullRequestCli = spawnSync(process.execPath, [
+    fileURLToPath(new URL("../../scripts/nexo.mjs", import.meta.url)),
+    "mission-request-preview", "--continuity", continuityPath, "--request", requestPath
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(nullRequestCli.status, 1);
+  assert.equal(nullRequestCli.stderr, "");
+  const nullRequestResult = JSON.parse(nullRequestCli.stdout);
+  assert.equal(nullRequestResult.status, "blocked");
+  assert.equal(nullRequestResult.code, "NEXO_MISSION_REQUEST_INVALID");
+  assert.equal(nullRequestResult.dispatchAttempted, false);
+  assert.equal(nullRequestResult.persisted, false);
+
+  const draftPath = path.join(root, "mission-draft.json");
+  await fs.writeFile(draftPath, "null", "utf8");
+  const nullDraftCli = spawnSync(process.execPath, [
+    fileURLToPath(new URL("../../scripts/nexo.mjs", import.meta.url)),
+    "mission-draft-preview", "--continuity", continuityPath, "--draft", draftPath
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(nullDraftCli.status, 1);
+  assert.equal(nullDraftCli.stderr, "");
+  const nullDraftResult = JSON.parse(nullDraftCli.stdout);
+  assert.equal(nullDraftResult.status, "blocked");
+  assert.equal(nullDraftResult.code, "NEXO_MISSION_CONTEXT_INVALID");
+  assert.equal(nullDraftResult.dispatchAttempted, false);
+  assert.equal(nullDraftResult.persisted, false);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), before);
+
   for (const requestEnvelope of [
     null,
     {},

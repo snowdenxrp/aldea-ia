@@ -138,21 +138,23 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (result.status !== "reconstructed") process.exitCode = 1;
   } else if (parsed.status === "mission-draft-preview") {
     let draft;
+    let draftReadFailed = false;
     try {
       draft = JSON.parse(await fs.readFile(parsed.draftPath, "utf8"));
     } catch (error) {
       const code = error?.code === "ENOENT" ? "NEXO_MISSION_DRAFT_FILE_UNAVAILABLE" : "NEXO_MISSION_DRAFT_JSON_INVALID";
       console.log(JSON.stringify({ status: "blocked", code, authorization: "NOT_EVALUATED", dispatchAttempted: false, persisted: false }));
       process.exitCode = 1;
-      draft = null;
+      draftReadFailed = true;
     }
-    if (draft !== null) {
+    if (!draftReadFailed) {
       const result = await previewNexoMissionDraft(parsed.continuityPath, draft);
       console.log(JSON.stringify(result));
       if (result.status !== "validated") process.exitCode = 1;
     }
   } else if (parsed.status === "mission-request-preview") {
     let requestEnvelope;
+    let requestReadFailed = false;
     try {
       requestEnvelope = JSON.parse(await fs.readFile(parsed.requestPath, "utf8"));
     } catch (error) {
@@ -163,9 +165,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
         dispatchAttempted: false, persisted: false
       }));
       process.exitCode = 1;
-      requestEnvelope = null;
+      requestReadFailed = true;
     }
-    if (requestEnvelope !== null) {
+    if (!requestReadFailed) {
       const result = await previewNexoMissionRequest(parsed.continuityPath, requestEnvelope);
       console.log(JSON.stringify(result));
       if (result.status !== "validated") process.exitCode = 1;
