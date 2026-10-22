@@ -3076,3 +3076,9 @@ Tests que deberán ampliarse cuando el perfil sea aceptado:
 - `tests/nexo/continuity-contract.test.mjs`: envelope existente sobredimensionado, cardinalidad/bytes candidatos y revisión sin avance.
 
 No se cambió runtime. No interpretar CI verde actual como prueba de estos casos nuevos; M0 permanece `INCOMPLETO`.
+
+### Refinamiento técnico del límite de lectura (2026-10-22)
+
+Se añadió al contrato una precisión de seguridad: leer un archivo entero en `Buffer` y medir después su longitud no limita la memoria. La futura implementación debe hacer lectura acotada, detenerse al superar el máximo antes de parsear y no confiar únicamente en `stat` por posibles cambios entre inspección y lectura. Los tests deben verificar bytes efectivamente consumidos, parada/cancelación y cero parseo/admisión/escritura en exceso.
+
+Esto refina el contrato; no es un cambio de runtime ni evidencia de explotación. Perfil numérico sin aceptación; M0 continúa incompleto.
