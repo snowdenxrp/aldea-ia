@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — OPCIONES DEL CONTRATO DE ADMISIÓN SIN LECTURA PREMATURA
+
+- Hallazgo concreto: la función exportada `assertNexoMissionAdmission(input, { requestIntent = false } = {})` leía `requestIntent` mediante destructuring antes de validar el registro de opciones. Un getter ordinario en ese campo podía ejecutarse al entrar al contrato.
+- Corrección runtime: `src/nexo/core/mission-admission-contract.mjs` ahora recibe `options` sin destructuring y extrae `requestIntent` mediante descriptor propio; rechaza accessors, campos no enumerables, valores no booleanos y prototipos no permitidos con `NEXO_MISSION_CONTEXT_INVALID`. Las opciones omitidas y los registros válidos mantienen el comportamiento previsto.
+- Regresión nueva: `tests/nexo/mission-admission-options-input-guard.test.mjs`; integrada en `npm test`.
+- Commits: runtime `ca209fd3857acdc14c7fbb427240165048760a43`; test `ec0109e6e2abef21b92adac31642729de15e7edf`; integración del test en `package.json` y SHA combinado de CI `285464c8c04d027a19268f442f3942bde9d99450`.
+- CI sobre SHA exacto `285464c8c04d027a19268f442f3942bde9d99450`: 4 workflows disparados y observados inicialmente en curso/pendientes — [admisión y continuidad tras reinicio](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052143), [Chronicle](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052297), [persistencia determinista](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052261), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863052375). Aún no se declara PASS: falta comprobar las conclusiones finales.
+- Alcance: cierra el acceso prematuro a getter ordinario en las opciones de este contrato. No neutraliza Proxy traps hostiles, no autentica evidencia, no resuelve autoridad legítima y no habilita efectos protegidos.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: verificar conclusiones de esos cuatro workflows sobre el SHA exacto. Después continuar auditoría de frontera pública solo con defectos reproducibles; no repetir la auditoría ya cerrada de opciones de owner/store/registro.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — CONSTRUCTORES DE STORES SIN LECTURA PREMATURA DE OPCIONES
 
 - Hallazgo: `createNexoContinuityStore()` y `createNexoChronicleStore()` usaban destructuring de opciones en la firma. Getters en `filePath`, `fsModule`, `lockDeadline` o `lockWaitMs` podían ejecutarse antes de validar la configuración.
