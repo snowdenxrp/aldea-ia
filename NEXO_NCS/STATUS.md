@@ -3035,3 +3035,10 @@ El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `suc
 - Inspección del código: Chronicle ya expone `blocked`/otros estados terminales públicos con `code`; Continuity distingue `failed`, `conflict`, `unknown` y `committed`.
 - La propuesta registra que no se justifica crear un estado público general nuevo para límites. Se reutilizará el estado no exitoso de cada capa y solo se elegirá un código específico tras comprobar que no existe uno equivalente.
 - Sin cambios de runtime; no se ha añadido un código ni se ha alterado la semántica de UNKNOWN.
+
+
+### Preparación de implementación del presupuesto (orden y no-mutation tests)
+
+- La propuesta ahora define el orden de enforcement por capa: lector de stdin antes de acumular, caso de uso antes de admitir misión, Chronicle bajo lock antes de `writeDocument`, Continuity antes de `writeEnvelope`, y semántica de resultado/reconciliación.
+- Añadió criterios de pruebas para bytes UTF-8, frontera inclusiva, cero admisión/inicialización/escrituras, preservación de archivo/revisión, concurrencia y separación entre límite conocido y UNKNOWN.
+- La secuencia de implementación queda preparada, pero runtime sigue intacto hasta que se decidan los máximos y la política de agotamiento.
