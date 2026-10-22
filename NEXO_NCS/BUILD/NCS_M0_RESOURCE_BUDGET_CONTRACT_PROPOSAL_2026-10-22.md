@@ -137,3 +137,22 @@ No se modifica runtime hasta que los máximos y la política de agotamiento sean
 ## Perfil numérico candidato separado (2026-10-22)
 
 Se añadió [NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md](NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md). Propone topes iniciales explícitos para stdin, contenido individual, Chronicle y Continuity. El perfil está **NO ACEPTADO / NO IMPLEMENTADO** y no representa una capacidad medida. Requiere fixtures de frontera, preservación del estado previo, concurrencia y CI en el SHA de implementación. El perfil inicial rechaza nuevas escrituras al alcanzar capacidad y no incluye rotación, borrado o compactación.
+
+## Brecha adicional: límite de lectura antes de parsear el estado existente
+
+Inspección del runtime actual encontró una condición necesaria que debe cubrir el contrato antes de implementar el presupuesto:
+
+- `src/nexo/core/chronicle-store.mjs` (`readDocument`) hace `readFile(filePath, "utf8")` y después `JSON.parse(raw)` sin comprobar primero los bytes crudos.
+- `src/nexo/core/continuity-store.mjs` (`readEnvelope`) sigue el mismo patrón: carga el archivo completo como texto antes de parsearlo, sin máximo previo de bytes.
+- Por tanto, comprobar únicamente el tamaño serializado del candidato antes de `writeDocument`/`writeEnvelope` no acota el coste de leer y parsear un archivo existente que ya exceda el máximo. La lectura del estado actual ocurre antes de construir el candidato.
+
+Requisito: el máximo de documento debe aplicarse también al archivo leído, comprobando el tamaño en bytes de los datos crudos antes de decodificar/parsear JSON. Para evitar que la propia API `readFile(..., "utf8")` materialice una cadena completa antes de comprobarla, la implementación deberá medir bytes desde un buffer o usar lectura acotada equivalente. El archivo excesivo debe resultar no exitoso y fail-closed; no repararlo, truncarlo, reemplazarlo ni reinterpretarlo como store vacío. Si no se puede determinar con seguridad el estado, conservar `UNKNOWN`/bloqueo según el contrato existente.
+
+Pruebas adicionales obligatorias:
+1. Chronicle existente mayor que el máximo: rechazar antes de `JSON.parse`/admisión/escritura.
+2. Continuity existente mayor que el máximo: mismo comportamiento.
+3. El rechazo conserva exactamente los bytes originales y no aumenta la revisión.
+4. Un archivo válido en el máximo inclusivo sigue cargando.
+5. El caso de exceso conocido permanece separado de fallos de lectura o resultados ambiguos.
+
+Esto amplía el punto de enforcement del contrato; no cambia los valores candidatos ni implica que hayan sido aceptados. No se modificó runtime.
