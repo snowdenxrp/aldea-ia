@@ -3197,3 +3197,12 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Regresión en `tests/nexo/mission-request-preview.test.mjs`: comprueba JSON `null` tanto para petición como para borrador; ambos deben emitir respuesta JSON `blocked`, código específico y ningún dispatch/persistencia. Continuity permanece idéntica.
 - Código verificado en SHA `bb1fe0e33362df36e8145c0e947882717d25328c`. Cinco workflows SUCCESS sobre el mismo SHA: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798045), [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798037), [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798067), [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798051), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798113).
 - Este arreglo no agrega interpretación de lenguaje natural ni cambia el límite de autoridad. Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0-E — contrato documental de correspondencia intención→borrador (2026-10-22)
+
+- Se añadió `NEXO_NCS/BUILD/NCS_M0_INTENT_DRAFT_CORRESPONDENCE_CONTRACT_2026-10-22.md` para definir la brecha ya registrada por `mission-request-preview`: separar validez estructural, interpretación propuesta, correspondencia semántica y autorización.
+- Especifica trazabilidad por paso/efecto, tratamiento fail-closed de ambigüedad y cambios de entrada, y prohíbe persistencia, dispatch o autorización como resultado de esta evaluación.
+- Reutiliza el contrato de intención existente; no introduce un segundo esquema ni declara que se haya conectado un modelo generativo.
+- **Solo documentación de diseño:** no se modificó runtime, no se ejecutaron pruebas y no hay CI atribuible a este artefacto. Antes de implementar, contrastar el documento con los tipos/contratos reales existentes para evitar duplicados o nombres incompatibles.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
