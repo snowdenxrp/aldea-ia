@@ -1,3 +1,18 @@
+# CHECKPOINT MÁS RECIENTE — 2026-10-22 — PROFUNDIDAD DE SNAPSHOT Y REGRESIÓN VERIFICADA
+
+Se cerró una brecha de orden de validación: la validación genérica recursiva corría antes de los guardas iterativos de admisión de misión. Un snapshot podía contener datos muy profundamente anidados fuera de `missions` y alcanzar la recursión genérica antes de que se aplicaran los límites del documento.
+
+- Fix: commit `2b617e2843a7de0c4b9d900ea4f13dbee0e4f191`; `assertNexoContinuitySnapshot` ahora ejecuta primero un preflight iterativo.
+- Regresión: commit `4c8763a52cea5c481e1291d6d1aaafd1a5aac79c`; anidamiento de profundidad 40 en `attempts` se rechaza con `NEXO_CONTINUITY_SNAPSHOT_RESOURCE_LIMIT_EXCEEDED`.
+- CI para el SHA `4c8763a52cea5c481e1291d6d1aaafd1a5aac79c`: deterministic persistence tests SUCCESS https://github.com/snowdenxrp/aldea-ia/actions/runs/39851743391; integrated acceptance regression SUCCESS https://github.com/snowdenxrp/aldea-ia/actions/runs/39851743415.
+- CI adicional para el SHA `2b617e2`: STEP 4 SUCCESS https://github.com/snowdenxrp/aldea-ia/actions/runs/39851724112; STEP 5 SUCCESS https://github.com/snowdenxrp/aldea-ia/actions/runs/39851724169; bounded mission admission/restart continuity SUCCESS https://github.com/snowdenxrp/aldea-ia/actions/runs/39851724204.
+- Límite estructural añadido: profundidad máxima 32 en todo el snapshot, comprobada iterativamente antes del guard recursivo. Esto previene desbordamiento de pila durante validación; no equivale a límite de heap ni prueba capacidad de producción.
+- Sigue abierto y separado: `Nexo M0 — repair settlement crash cuts` falló en `tests/nexo/assistants-runtime-cli.test.mjs:74` porque la prueba espera `effectJournal[0]` mientras Option A excluye el efecto. Run https://github.com/snowdenxrp/aldea-ia/actions/runs/39851724226. No habilitar el efecto ni cambiar runtime para forzar verde; requiere reconciliar el contrato de prueba con Option A en tarea propia.
+- No se modificó autoridad, dispatch, ni ejecución de efectos protegidos.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT MÁS RECIENTE — 2026-10-22 — REPARACIÓN DE CONCURRENCIA DEL CI DE PERSISTENCIA
 
 Se identificó una causa operativa de la falta de evidencia completa: `.github/workflows/nexo-deterministic-tests.yml` usaba un grupo de concurrencia global y cancelaba la ejecución en curso en cada push (`cancel-in-progress: true`). Por eso las ejecuciones para SHAs anteriores acababan CANCELLED, lo cual no prueba que los tests pasaran o fallaran.
