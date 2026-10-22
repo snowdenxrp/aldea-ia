@@ -1,8 +1,14 @@
-# M0-E — presupuesto de recursos aceptado como base (2026-10-22)
+# M0-E — presupuesto de recursos: perfil aceptado, implementación inicial verificada (2026-10-22)
 
 - **Decisión del propietario registrada:** acepta el perfil numérico inicial como base de implementación. Ver `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`.
-- Esto sustituye el estado previo de «no aceptado» como estado de decisión actual; no afirma que el runtime esté implementado ni validado. La implementación y las pruebas de fronteras siguen pendientes.
-- Prioridad técnica: lectura acotada de documentos preexistentes antes de parseo; topes de contenido/cardinalidad/tamaño aplicados antes de mutación; preservar bytes/revisión en rechazo. No se acepta presupuesto agregado de heap/disco.
+- **Implementación inicial presente:** `src/nexo/core/resource-limits.mjs`, `src/nexo/core/continuity-store.mjs`, `src/nexo/core/chronicle-store.mjs`, `src/nexo/application/chronicle-append.mjs` y `scripts/nexo-chronicle-session.mjs`.
+- **Enforcement añadido:** lectura acotada de bytes crudos antes de decodificar/parsear; límite UTF-8 de entrada antes de admisión de misión; límites de cardinalidad y tamaño serializado antes de escribir; rechazo sin truncamiento ni purga.
+- **Regresión de fronteras añadida:** stdin exacto/sobre límite; contenido Chronicle UTF-8 bajo/exacto/sobre límite; archivos preexistentes Chronicle/Continuity sobre límite; máximos inclusivos por colección; documentos serializados por debajo/encima de los topes.
+- **Evidencia de CI del SHA de código/pruebas `08410e606d9598a95fd51bed77a6ddc50d8a5bfd`:** [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39783373195) SUCCESS; [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39783373165) SUCCESS; [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39783373185) SUCCESS; [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39783373271) SUCCESS; [bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39783373181) SUCCESS. Todos apuntan al SHA `08410e606d9598a95fd51bed77a6ddc50d8a5bfd`.
+- **Chronicle native vertical** pasó en el SHA de código `b9a6e5904b77e376a6efebac4f6037789b1f877d`: [run](https://github.com/snowdenxrp/aldea-ia/actions/runs/39783041223). Ese run no se atribuye al SHA posterior de pruebas.
+- **No cerrar aún el subcriterio:** falta una prueba concurrente específica cerca de los límites que demuestre que el cálculo y el commit quedan bajo la misma exclusión mutua. No se ha definido ni probado un presupuesto agregado de disco/heap; sigue OPEN.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
 
 ## M0-E — planificación de misión y validación de borradores (2026-10-22)
 
