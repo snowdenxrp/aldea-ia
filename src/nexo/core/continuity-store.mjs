@@ -27,8 +27,14 @@ function processIsAlive(pid) {
 }
 
 async function readLockOwner(fsModule, lockPath) {
-  try { return JSON.parse(await fsModule.readFile(path.join(lockPath, "owner.json"), "utf8")); }
-  catch { return null; }
+  try {
+    return JSON.parse(await readUtf8FileBounded(
+      fsModule,
+      path.join(lockPath, "owner.json"),
+      NEXO_RESOURCE_LIMITS.lockOwnerBytes,
+      "NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN"
+    ));
+  } catch { return null; }
 }
 
 async function acquireLock(fsModule, filePath, deadlineAt, timeoutCode) {
@@ -95,8 +101,14 @@ async function acquireLock(fsModule, filePath, deadlineAt, timeoutCode) {
       let current = await readLockOwner(fsModule, lockPath);
       if (!current) {
         let rawOwner;
-        try { rawOwner = await fsModule.readFile(path.join(lockPath, "owner.json"), "utf8"); }
-        catch (error) {
+        try {
+          rawOwner = await readUtf8FileBounded(
+            fsModule,
+            path.join(lockPath, "owner.json"),
+            NEXO_RESOURCE_LIMITS.lockOwnerBytes,
+            "NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN"
+          );
+        } catch (error) {
           // A lock creator may still be writing owner.json; retry only when absent.
           if (error?.code === "ENOENT") continue;
           throw storeError("NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN");
