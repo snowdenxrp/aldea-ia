@@ -48,3 +48,16 @@ No introducir ahora un semáforo, contador global, cola, wrapper o lock adiciona
 - Efectos protegidos: `STOP`.
 
 Este inventario no cierra el presupuesto agregado de heap/disco ni autoriza commissioning o efectos protegidos.
+
+
+## Corrección posterior — vistas previas de misión (2026-10-22)
+
+La inspección adicional de `scripts/nexo.mjs` encontró dos entradas de archivo JSON que no estaban en la tabla inicial:
+- `mission-draft-preview --draft <archivo.json>`
+- `mission-request-preview --request <archivo.json>`
+
+Ambas usan `fs.readFile(..., "utf8")` seguido de `JSON.parse`, sin máximo de bytes antes de materializar y parsear el documento. La vista previa no persiste ni despacha, pero sí procesa en memoria el borrador completo y puede clonar datos de misión.
+
+Hallazgo completo: [NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md).
+
+**Impacto en la conclusión:** la evidencia por-store y la entrada stdin Chronicle siguen siendo válidas dentro de sus rutas. No debe decirse que todas las entradas locales estén acotadas ni cerrar el subcriterio de límite por entrada global hasta definir y probar un máximo para estos dos archivos. No reutilizar automáticamente 256 KiB: el perfil aceptado lo asigna a `--content-stdin` de Chronicle y no decidió el tamaño de borradores/solicitudes. Presupuesto agregado de heap/disco y concurrencia multiproceso siguen OPEN.
