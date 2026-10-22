@@ -124,7 +124,7 @@ La siguiente tarea es inspección dirigida de callers/sinks y cruce de tests exi
 
 - **Decisión ya tomada:** el propietario aceptó opción A como alcance inicial de M0-E. No volver a preguntar por esta selección salvo que él mismo reabra la decisión.
 - Registro de decisión: [NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md](../DECISIONS/NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md), commit `c0b3d984606892a985d23d0b6375f73a26d9ef9d`.
-- El test `tests/nexo/entrypoint.test.mjs` se actualizó en commit `39ee2f5996fd0586ce4c666a448a290371601de4` para rechazar comandos genéricos/efectuales antes de dispatch y excluir `effect-adapter.js` del grafo público de importaciones.
+- El test `tests/nexo/entrypoint.test.mjs` se actualizó en commit `39ee2f5996fd0586ce4c666a448a290371601de4` para rechazar comandos genéricos/efectuales antes de dispatch. El adaptador `effect-adapter.js` se usa internamente en el caso Chronicle, no se exporta en la API pública y el runtime owner-backed limita el dispatch a `chronicle_append`; el guard que lo prohibía en todo el grafo era demasiado amplio y se corrigió en `9d2e6f41a59c46eec6cd019d9c32211b8426f523`.
 - `STATUS.md` registra la decisión en commit `128bc1a0ec6b662a8d3269656684008b1923f40e`.
 - HEAD conocido al añadir esta nota: `128bc1a0ec6b662a8d3269656684008b1923f40e`; comprobar el HEAD actual y CI antes de afirmar estado de ejecución.
 - Próxima tarea: confirmar el workflow completo del SHA final y el job/paso `Run tests`. Si pasa, construir una capacidad real dentro del alcance A, reutilizando los contratos y consultas existentes. No repetir auditorías AB/P cerradas ni recrear la matriz de tests.
