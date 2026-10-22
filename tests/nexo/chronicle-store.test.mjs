@@ -702,3 +702,20 @@ if (result.status !== "committed") process.exitCode = 1;`;
   await fs.rm(root, { recursive: true, force: true });
 }
 console.log("Nexo Chronicle store contract tests passed");
+
+
+ // Store constructor must reject accessor-backed configuration without invoking it.
+ let constructorPathGetterInvoked = false;
+ const accessorStoreOptions = {};
+ Object.defineProperty(accessorStoreOptions, "filePath", {
+   enumerable: true,
+   get() {
+     constructorPathGetterInvoked = true;
+     return path.join(root, "accessor-chronicle.json");
+   }
+ });
+ assert.throws(
+   () => createNexoChronicleStore(accessorStoreOptions),
+   error => error?.code === "NEXO_CHRONICLE_PATH_REQUIRED"
+ );
+ assert.equal(constructorPathGetterInvoked, false, "Chronicle store constructor must not execute option getters");
