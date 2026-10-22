@@ -62,24 +62,28 @@ async function runIsolated({ repair }) {
     const continuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
     let replay = null;
     if (repair) {
-      // The first invocation was a real child process. Reopen the persisted
-      // owner from disk and try the same canonical mission again after restart.
+      // Option A excludes runtime repair effects in M0. Reopen the persisted
+      // owner and confirm the same runtime gate still blocks without dispatch,
+      // journal creation, or a second environment write.
       const reopened = await openNexoContinuityOwner({
         filePath: continuityPath,
         legacyMemory: null
       });
       replay = await runNexoRuntimeRepairSession({
         continuity: reopened,
-        statePath,
-        missionId: continuity.snapshot.effectJournal[0].missionId
+        statePath
       });
       const afterReplayState = JSON.parse(await fs.readFile(statePath, "utf8"));
       const afterReplayContinuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
       assert.equal(afterReplayState.stateRevision, state.stateRevision,
-        "replay after restart must not write the environment again");
+        "excluded runtime repair must not write the environment again");
       assert.equal(afterReplayContinuity.snapshot.effectJournal.length, continuity.snapshot.effectJournal.length,
-        "replay after restart must not create a second effect obligation");
-      assert.equal(afterReplayContinuity.snapshot.effectJournal[0].status, "settled_observed");
+        "excluded runtime repair must not create an effect obligation");
+      assert.equal(afterReplayContinuity.snapshot.effectJournal.length, 0);
+      assert.equal(replay.status, "blocked");
+      assert.equal(replay.code, "NEXO_M0_OPTION_A_EFFECT_EXCLUDED");
+      assert.equal(replay.persisted, false);
+      assert.equal(replay.dispatchAttempted, false);
     }
     return { report, state, continuity, replay };
   } finally {
@@ -93,15 +97,19 @@ assert.equal(defaultRun.state.stateRevision, 1);
 assert.equal(defaultRun.continuity.snapshot.effectJournal.length, 0);
 
 const optInRun = await runIsolated({ repair: true });
-assert.ok(optInRun.report.nexoRuntimeSession, "opt-in run must report the runtime session");
-assert.equal(optInRun.report.nexoRuntimeSession.status, "settled_observed",
+assert.ok(optInRun.report.nexoRuntimeSession, "opt-in run must report the runtime session gate");
+assert.equal(optInRun.report.nexoRuntimeSession.status, "blocked",
   JSON.stringify(optInRun.report.nexoRuntimeSession));
+assert.equal(optInRun.report.nexoRuntimeSession.code, "NEXO_M0_OPTION_A_EFFECT_EXCLUDED");
+assert.equal(optInRun.report.nexoRuntimeSession.persisted, false);
+assert.equal(optInRun.report.nexoRuntimeSession.dispatchAttempted, false);
 assert.equal(optInRun.report.stateRevision, optInRun.state.stateRevision);
-assert.equal(optInRun.state.stateRevision, 2);
-assert.equal(optInRun.continuity.snapshot.effectJournal.length, 1);
-assert.equal(optInRun.continuity.snapshot.effectJournal[0].status, "settled_observed");
+assert.equal(optInRun.state.stateRevision, 1);
+assert.equal(optInRun.continuity.snapshot.effectJournal.length, 0);
+assert.equal(optInRun.continuity.snapshot.missions.length, 1,
+  "mission planning may persist while the protected repair effect remains excluded");
 assert.equal("nexoMemory" in optInRun.state, false);
 assert.equal(optInRun.replay.status, "blocked", JSON.stringify(optInRun.replay));
-assert.equal(typeof optInRun.replay.code, "string");
+assert.equal(optInRun.replay.code, "NEXO_M0_OPTION_A_EFFECT_EXCLUDED");
 
-console.log("Nexo assistants CLI: default mode does not dispatch; opt-in repair persists and settles; reopened owner replay fails closed without redispatch or rewriting state.");
+console.log("Nexo assistants CLI: default mode does not dispatch; Option A opt-in remains blocked, creates no effect obligation, and does not rewrite the environment.");
