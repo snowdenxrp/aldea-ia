@@ -290,6 +290,42 @@ try {
     authorization: "NOT_EVALUATED", dispatchAttempted: false
   });
   assert.equal(await fs.readFile(preparedContinuityPath, "utf8"), preparedBytesBefore);
+  const dependencyContinuityPath = path.join(root, "dependency-continuity.json");
+  await openNexoContinuityOwner({
+    filePath: dependencyContinuityPath,
+    legacyMemory: {
+      version: 4, runs: [], lessons: [], patterns: [],
+      nexo: {
+        missions: [{
+          missionId: "dependency-mission",
+          status: "planned",
+          objective: "local_analysis",
+          steps: [
+            { id: "first", action: "local_analysis", target: "PRIVATE_FIRST_TARGET", status: "planned", dependsOn: [] },
+            { id: "second", action: "local_analysis", target: "PRIVATE_SECOND_TARGET", status: "planned", dependsOn: ["first"] }
+          ]
+        }],
+        attempts: [], doNotRepeat: [], executions: [], effectJournal: []
+      }
+    }
+  });
+  const dependencyBytesBefore = await fs.readFile(dependencyContinuityPath, "utf8");
+  const dependencyPlan = spawnSync(process.execPath, [
+    entrypointPath, "mission-plan", "--continuity", dependencyContinuityPath, "--mission", "dependency-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(dependencyPlan.status, 0, dependencyPlan.stderr || dependencyPlan.stdout);
+  assert.equal(dependencyPlan.stderr, "");
+  assert.equal(dependencyPlan.stdout.includes("PRIVATE_FIRST_TARGET"), false);
+  assert.equal(dependencyPlan.stdout.includes("PRIVATE_SECOND_TARGET"), false);
+  const dependencySummary = JSON.parse(dependencyPlan.stdout);
+  assert.equal(dependencySummary.steps[0].planningState, "dependencies_satisfied");
+  assert.equal(dependencySummary.steps[1].dependencyState, "waiting");
+  assert.equal(dependencySummary.steps[1].planningState, "waiting_for_dependencies");
+  assert.deepEqual(dependencySummary.steps[1].dependencyStatuses, [{ stepId: "first", status: "planned" }]);
+  assert.equal(dependencySummary.authorization, "NOT_EVALUATED");
+  assert.equal(dependencySummary.dispatchAttempted, false);
+  assert.equal(await fs.readFile(dependencyContinuityPath, "utf8"), dependencyBytesBefore);
+
   // Public status must expose persisted/reconstructed disagreement from one canonical read.
   const contradictoryContinuityPath = path.join(root, "contradictory-continuity.json");
   const contradictoryMemory = {
