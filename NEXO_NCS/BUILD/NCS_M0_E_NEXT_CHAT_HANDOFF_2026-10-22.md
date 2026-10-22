@@ -1,3 +1,29 @@
+# CHECKPOINT MÁS RECIENTE — 2026-10-22 — LOCK OWNER READS ACOTADAS Y CI VERDE
+
+Inventario de los stores encontró que los documentos principales tenían lecturas acotadas, pero los archivos auxiliares `*.lock/owner.json` se leían sin límite explícito.
+
+- Añadido `NEXO_RESOURCE_LIMITS.lockOwnerBytes = 4096`.
+- `continuity-store.mjs` y `chronicle-store.mjs` usan `readUtf8FileBounded` para leer los owner records, tanto en la inspección normal como en el fallback de adquisición.
+- Owner record mayor de 4096 bytes, malformado o no inspeccionable => `LOCK_STATE_UNKNOWN`; no borrar lock ni empezar escritura.
+- Tests escriben un owner record de 4097 bytes y verifican el bloqueo fail-closed, preservación del lock y ausencia de documento canónico.
+- Los tests que simulan pérdida de propiedad del lock se adaptaron para simular el handle `open/read`, sin debilitar la lectura acotada en producción.
+- Se conserva el requisito explícito: rutas y directorios son configuración local confiable; no se declara defensa frente a procesos hostiles con control del directorio, symlinks ni durabilidad ante pérdida de energía.
+
+HEAD de código/pruebas: `1d822786d972616ffbb03e25abd43084076f10e4`.
+CI SUCCESS en ese SHA:
+- STEP 4: https://github.com/snowdenxrp/aldea-ia/actions/runs/39853027492
+- STEP 5: https://github.com/snowdenxrp/aldea-ia/actions/runs/39853027483
+- bounded mission admission/restart continuity: https://github.com/snowdenxrp/aldea-ia/actions/runs/39853027449
+- Chronicle native vertical: https://github.com/snowdenxrp/aldea-ia/actions/runs/39853027473
+- integrated acceptance regression: https://github.com/snowdenxrp/aldea-ia/actions/runs/39853027551
+- deterministic persistence suite: https://github.com/snowdenxrp/aldea-ia/actions/runs/39853027546
+
+Siguiente: verificar CI para HEAD documental nuevo y continuar el inventario de fronteras auxiliares de almacenamiento sin crear nuevas abstracciones salvo que exista una omisión demostrable. No reabrir formas de misión ya cubiertas. No cambiar autoridad ni activar efectos protegidos.
+
+Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT MÁS RECIENTE — 2026-10-22 — PREFLIGHT COMPARTIDO, CI VERDE Y OPTION A
 
 La validación de continuidad ahora comparte un preflight iterativo antes de entrar en validadores recursivos:
