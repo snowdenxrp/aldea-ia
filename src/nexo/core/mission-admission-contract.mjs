@@ -6,6 +6,7 @@ export const NEXO_MISSION_ADMISSION_LIMITS = Object.freeze({
   jsonNodes: 20_000,
   jsonDepth: 32,
   stringUtf8Bytes: 256 * 1024,
+  aggregateUtf8StringBytes: 4 * 1024 * 1024,
   requestIntentUtf8Bytes: 16 * 1024
 });
 
@@ -28,6 +29,7 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
   const active = new WeakSet();
   const stack = [{ value: input, depth: 0, exit: false }];
   let nodes = 0;
+  let aggregateUtf8StringBytes = 0;
 
   while (stack.length > 0) {
     const { value, depth, exit } = stack.pop();
@@ -42,7 +44,10 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
     }
 
     if (typeof value === "string") {
-      if (Buffer.byteLength(value, "utf8") > NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes) {
+      const bytes = Buffer.byteLength(value, "utf8");
+      aggregateUtf8StringBytes += bytes;
+      if (bytes > NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes ||
+          aggregateUtf8StringBytes > NEXO_MISSION_ADMISSION_LIMITS.aggregateUtf8StringBytes) {
         throw admissionError("NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
       }
       continue;
@@ -84,7 +89,10 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
       if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
         throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
       }
-      if (Buffer.byteLength(key, "utf8") > NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes) {
+      const keyBytes = Buffer.byteLength(key, "utf8");
+      aggregateUtf8StringBytes += keyBytes;
+      if (keyBytes > NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes ||
+          aggregateUtf8StringBytes > NEXO_MISSION_ADMISSION_LIMITS.aggregateUtf8StringBytes) {
         throw admissionError("NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
       }
       stack.push({ value: descriptor.value, depth: depth + 1, exit: false });
