@@ -541,6 +541,57 @@ if (result.status !== "committed") process.exitCode = 1;`;
     code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"
   }, "candidate above the serialized Chronicle limit is rejected");
 
+  // Two concurrent appends at the serialized-document frontier cannot both overcommit capacity.
+  const concurrentLimitPath = path.join(root, "concurrent-document-limit.json");
+  const nearLimitPersistedDocument = {
+    schema: "NEXO_CHRONICLE",
+    schemaVersion: 1,
+    storeRevision: 126,
+    entries: Array.from({ length: 126 }, (_, index) => ({
+      operationKey: `concurrent-budget-base-${index}`,
+      content: "x".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+    }))
+  };
+  assert.doesNotThrow(() => assertChronicleResourceLimits(nearLimitPersistedDocument));
+  await fs.writeFile(concurrentLimitPath, JSON.stringify(nearLimitPersistedDocument, null, 2) + "\n", "utf8");
+  const concurrentLimitStore = createNexoChronicleStore({ filePath: concurrentLimitPath });
+  const concurrentLimitResults = await Promise.all([
+    concurrentLimitStore.append({
+      operationKey: "concurrent-budget-a",
+      content: "a".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+    }),
+    concurrentLimitStore.append({
+      operationKey: "concurrent-budget-b",
+      content: "b".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+    })
+  ]);
+  assert.equal(concurrentLimitResults.filter(result => result.status === "committed").length, 1,
+    "only one concurrent append may commit below the document cap");
+  assert.equal(concurrentLimitResults.filter(result =>
+    result.status === "blocked" && result.code === "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED").length, 1,
+  "the append that would exceed the document cap must be rejected explicitly");
+  const concurrentLimitObserved = await concurrentLimitStore.loadCurrent();
+  assert.equal(concurrentLimitObserved.entries.length, 127);
+  assert.equal(concurrentLimitObserved.storeRevision, 127);
+  const rejectedOperationKey = concurrentLimitResults.find(result => result.status === "blocked")
+    ? (await fs.readFile(concurrentLimitPath, "utf8")).includes('"operationKey": "concurrent-budget-a"')
+      ? "concurrent-budget-b" : "concurrent-budget-a"
+    : null;
+  assert.ok(rejectedOperationKey);
+  const afterSingleCommitBytes = await fs.readFile(concurrentLimitPath);
+  assert.deepEqual(await concurrentLimitStore.append({
+    operationKey: rejectedOperationKey,
+    content: rejectedOperationKey.endsWith("-a")
+      ? "a".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+      : "b".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+  }), {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED",
+    storeRevision: 127
+  });
+  assert.deepEqual(await fs.readFile(concurrentLimitPath), afterSingleCommitBytes,
+    "the rejected over-limit append must not mutate bytes or revision");
+
   // An oversized existing Chronicle file is rejected before JSON parsing and left untouched.
   const oversizedChroniclePath = path.join(root, "oversized-existing-chronicle.json");
   await fs.writeFile(oversizedChroniclePath, Buffer.alloc(NEXO_RESOURCE_LIMITS.chronicleDocumentBytes + 1, 0x20));
