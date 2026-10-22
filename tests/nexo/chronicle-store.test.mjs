@@ -237,11 +237,19 @@ if (result.status !== "committed") process.exitCode = 1;`;
   const notOwnedReleaseLock = String(notOwnedReleasePath) + ".lock";
   const fsWithNotOwnedRelease = {
     ...fs,
-    readFile: async (target, ...args) => {
-      if (String(target) === path.join(notOwnedReleaseLock, "owner.json")) {
-        return JSON.stringify({ pid: process.pid, token: "different-owner" });
-      }
-      return fs.readFile(target, ...args);
+    open: async (target, ...args) => {
+      if (String(target) !== path.join(notOwnedReleaseLock, "owner.json")) return fs.open(target, ...args);
+      const bytes = Buffer.from(JSON.stringify({ pid: process.pid, token: "different-owner" }));
+      let offset = 0;
+      return {
+        read: async (buffer, bufferOffset, length) => {
+          const bytesRead = Math.min(length, bytes.length - offset);
+          if (bytesRead > 0) bytes.copy(buffer, bufferOffset, offset, offset + bytesRead);
+          offset += bytesRead;
+          return { bytesRead };
+        },
+        close: async () => {}
+      };
     }
   };
   const notOwnedReleaseStore = createNexoChronicleStore({
