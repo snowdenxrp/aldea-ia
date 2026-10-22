@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
+import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
 import { NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
 
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owned-continuity-"));
@@ -770,6 +771,17 @@ assert.deepEqual(await lateReleaseFailureStore.initialize(emptySnapshot), {
 });
 await assert.rejects(() => fs.access(lateReleaseFailurePath), error => error?.code === "ENOENT");
 await fs.rm(lateReleaseFailureLock, { recursive: true, force: true });
+
+const oversizedContinuityPath = path.join(directory, "oversized-existing-continuity.json");
+await fs.writeFile(oversizedContinuityPath, Buffer.alloc(NEXO_RESOURCE_LIMITS.continuityDocumentBytes + 1, 0x20));
+const oversizedContinuityBefore = await fs.stat(oversizedContinuityPath);
+await assert.rejects(
+  () => createNexoContinuityStore({ filePath: oversizedContinuityPath }).loadCurrent(),
+  error => error?.code === "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED",
+  "Continuity must reject oversized raw bytes before attempting JSON.parse"
+);
+assert.equal((await fs.stat(oversizedContinuityPath)).size, oversizedContinuityBefore.size,
+  "oversized Continuity bytes remain unchanged");
 
 await fs.writeFile(filePath, "{broken", "utf8");
 await assert.rejects(
