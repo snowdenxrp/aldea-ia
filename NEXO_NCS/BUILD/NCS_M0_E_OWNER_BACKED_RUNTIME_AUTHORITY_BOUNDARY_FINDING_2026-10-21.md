@@ -109,3 +109,32 @@ Se inspeccionó el adapter concreto para no tratar todos los commits como un sin
 - No se cambia runtime: introducir un `effectBoundary.prepare` sin definir su contrato autorizado y sin demostrar el sink del producto solo trasladaría el problema a otro puerto.
 
 Conclusión de este seguimiento: el destino observado de este adapter es persistencia local de estado de simulación, no evidencia de un efecto externo. El bloqueo M0-E sigue siendo la falta de procedencia de autoridad y de enforcement probado en las fronteras reales del alcance. Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+## Revisión de alcance M0-E — rutas de mutación de Lúmina frente a Opción A (2026-10-22)
+
+Esta revisión se limita a confirmar el estado actual de la ruta de mutación ya identificada; no reabre AB104/P112 ni intenta demostrar ausencia universal de callers.
+
+### Evidencia actual de código
+
+- `src/nexo/core/owner-backed-runtime.mjs` (blob actual `8c697ea2944e19cce90bf7833f4ba392fee83818`) declara no depender de Lúmina/simulación, bloquea `repair_agent_state`, `repair_agent_needs` y `repair_resource_state` antes de PREPARED/dispatch, y bloquea acciones no-`chronicle_append` con `dispatchAttempted:false`. Esto demuestra contención en ese entrypoint concreto, no en todo el repositorio.
+- `src/nexo/runtime.js` (blob actual `f9dfcd461705471546a1676b738c0547ad118f7e`) todavía exporta `executeLuminaNexoStep`; esta función crea `createLuminaEffectAdapter` sobre el objeto `simulation` recibido y llama `executeNexoStep`.
+- `src/nexo/simulation-adapter.js` (blob actual `369e988c1f4617ce2eb079640511eb94c4e9e798`) registra cuatro handlers capaces de mutar el estado simulado: tres de reparación y `execute_lumina_action`, que llama a `executeAction(simulation, agent, action)`. Las mutaciones son directas sobre el objeto recibido; `nexoEffectRevision` es una revisión local en memoria, no una fence constitucional/durable.
+- `tests/nexo/entrypoint.test.mjs` (blob actual `644ddec437606ccd9ed0651ccf631e8b95ac4801`) recorre el grafo de imports de la CLI independiente y comprueba que no importe `src/nexo/runtime.js`, `simulation-adapter.js`, `simulate.mjs` ni módulos de simulación prohibidos. Esta prueba respalda el aislamiento del entrypoint de Nexo, no la imposibilidad de que otro caller importe directamente el módulo de runtime.
+- La búsqueda de referencias del repositorio volvió a encontrar la definición, las pruebas y la evidencia histórica de que no se identificó caller de producción para `executeLuminaNexoStep` ni propietario que suministre `persistPreparedIntent`. No se encontró evidencia nueva que justifique reabrir esa investigación histórica; tampoco se debe convertir “no se encontró caller” en “inalcanzable”.
+
+### Clasificación bajo la decisión de Opción A
+
+| Superficie | Conclusión válida | Conclusión no válida |
+|---|---|---|
+| CLI pública de Nexo | El grafo de imports excluye el runtime de mutación Lúmina; se conserva `chronicle_append` como única acción owner-backed admitida | La CLI demuestra autoridad constitucional o todos los entrypoints del repositorio están cerrados |
+| `executeLuminaNexoStep` + adapter | Ruta de mutación local disponible como API de módulo y usada en pruebas/legacy; permanece fuera del alcance de Opción A | Que sea un sink externo protegido, que exista caller de producción actual, o que esté universalmente inalcanzable |
+| Handlers `repair_*` / `execute_lumina_action` | Mutación de estado simulado observable; excluida de Opción A | Que persistencia posterior o postcondición equivalgan a autorización constitucional |
+
+### Consecuencia y siguiente paso
+
+1. No conectar `executeLuminaNexoStep` al owner-backed runtime de Opción A.
+2. Conservar el test de grafo de imports y ampliarlo únicamente si una nueva ruta pública aparece o si el grafo cambia; no duplicar las pruebas actuales.
+3. Si se pretende promover en el futuro la ejecución de Lúmina, requiere decisión de alcance separada y contrato de owner/sink/autoridad; no forma parte del trabajo actual de M0.
+4. Para el alcance inicial actual, la próxima evidencia de valor debe cerrar el contrato de presupuesto local de Chronicle/Continuity o una dependencia de legitimidad explícita; esta revisión por sí sola no cierra M0-E.
+
+Estados conservadores sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
