@@ -178,9 +178,9 @@ Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`;
 
 ## Hallazgo de ensamblaje — persistencia interna aún sin presupuesto de recursos (2026-10-22)
 
-La Opción A permite persistencia interna acotada de Chronicle/Continuity, pero el límite operativo cuantitativo de esa persistencia todavía no está definido. La inspección de `src/nexo/application/chronicle-append.mjs`, `src/nexo/adapters/chronicle-effect.mjs` y `src/nexo/core/chronicle-store.mjs` encontró validación de tipo/no vacío e identidad de operación, pero no encontró un límite explícito de bytes por entrada, número total de entradas o tamaño total del documento Chronicle.
+La Opción A permite persistencia interna acotada de Chronicle/Continuity, pero el límite operativo cuantitativo de esa persistencia todavía no está definido. La inspección de `src/nexo/application/chronicle-append.mjs`, `src/nexo/adapters/chronicle-effect.mjs` y `src/nexo/core/chronicle-store.mjs` encontró validación de tipo/no vacío e identidad de operación, pero no encontró un límite explícito de bytes por entrada, número total de entradas o tamaño total del documento Chronicle. La inspección de `src/nexo/core/continuity-snapshot.mjs` encontró validación estructural de las colecciones `missions`, `attempts`, `doNotRepeat`, `executions` y `effectJournal`, pero no un máximo cuantitativo de cardinalidad/tamaño en ese contrato.
 
-Esto no prueba un exploit ni invalida los controles de idempotencia, locking o revisión. Sí impide afirmar que la persistencia está completamente acotada frente a consumo acumulativo de recursos.
+Esto no prueba un exploit ni invalida los controles de idempotencia, locking o revisión. Sí impide afirmar que la persistencia está completamente acotada frente a consumo acumulativo de recursos, tanto en Chronicle como en las colecciones de Continuity inspeccionadas.
 
 - El entrypoint `chronicle-append` puede crear una misión de una sola etapa y almacenar contenido provisto por el llamador.
 - `authorization` se informa deliberadamente como `NOT_EVALUATED`; el append local no debe presentarse como autorización constitucional.
