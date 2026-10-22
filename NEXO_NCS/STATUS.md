@@ -2968,3 +2968,13 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - E permanece bloqueante: exclusiones Opción A y rutas en alcance deben quedar bloqueadas antes de dispatch/mutación; raíz/Constitución/contexto legítimos aún no están integrados hasta el sink real. No crear autoridad ficticia ni habilitar efectos protegidos.
 - CI para la matriz nueva se está ejecutando en el momento de esta nota; consultar el run del SHA exacto antes de afirmar PASS.
 - Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## M0 — límite operativo pendiente para Chronicle interno (2026-10-22)
+
+- Hallazgo registrado en [matriz de aceptación M0](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md): el append interno de Chronicle valida tipo/no vacío e identidad, pero no se encontró un presupuesto cuantitativo explícito para bytes por entrada, número total de entradas o tamaño total del documento.
+- Esto no es evidencia de exploit. Es una brecha contractual: la Opción A permite persistencia interna acotada, pero su presupuesto y comportamiento al agotarse aún no están definidos.
+- No se introduce un límite arbitrario en runtime. El contrato debe definir capacidad/rotación y respuesta al agotamiento; después se añaden pruebas de rechazo antes de escribir y preservación de datos existentes.
+- Estado de ese subcriterio E: `PENDING`. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
