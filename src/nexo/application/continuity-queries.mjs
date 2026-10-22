@@ -1,5 +1,6 @@
 import { createNexoContinuityStore } from "../core/continuity-store.mjs";
 import { reconstructNexoMissionFromSnapshot, recordNexoMissionInSnapshot } from "../core/continuity-operations.mjs";
+import { assertNexoMissionAdmission } from "../core/mission-admission-contract.mjs";
 
 export async function loadNexoContinuityStatus(continuityPath) {
   if (typeof continuityPath !== "string" || !continuityPath.trim()) {
@@ -204,10 +205,13 @@ export async function previewNexoMissionDraft(continuityPath, missionDraft) {
   if (!missionDraft || typeof missionDraft !== "object" || Array.isArray(missionDraft)) {
     return fail("NEXO_MISSION_CONTEXT_INVALID");
   }
-  if (typeof missionDraft.missionId !== "string" || !missionDraft.missionId.trim()) {
-    return fail("NEXO_MISSION_CONTEXT_INVALID");
-  }
   try {
+    // Validate the entire draft's own data descriptors before reading missionId
+    // or passing it into the canonical snapshot operation.
+    assertNexoMissionAdmission(missionDraft);
+    if (typeof missionDraft.missionId !== "string" || !missionDraft.missionId.trim()) {
+      return fail("NEXO_MISSION_CONTEXT_INVALID");
+    }
     const current = await createNexoContinuityStore({ filePath: continuityPath }).loadCurrent();
     if (current.snapshot.missions.some(item => item?.missionId === missionDraft.missionId)) {
       return fail("NEXO_MISSION_ID_ALREADY_BOUND", { storeRevision: current.storeRevision });
