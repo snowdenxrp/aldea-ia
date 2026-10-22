@@ -65,16 +65,22 @@ Se añadieron pruebas para:
 
 Importante: esos runs apuntan al SHA `7ce3e517...`, no al HEAD documental posterior. Verificar CI del SHA exacto si se modifica runtime/tests; no atribuir resultados a otro SHA.
 
-## Siguiente tarea concreta — continuar M0-E, sin desviarse
+## Siguiente tarea concreta — evaluación posterior a la frontera Continuity
 
-Orden:
-1. Inspeccionar únicamente el código/tests actuales de `continuity-store.mjs`, `resource-limits.mjs` y `tests/nexo/continuity-store.test.mjs`.
-2. Añadir una prueba de store real que intente persistir un snapshot válido estructuralmente pero cuyo tamaño serializado exceda 16 MiB. Verificar resultado explícito de rechazo y que el archivo anterior se conserva byte por byte y con la misma revisión. No basta con probar el helper aislado.
-3. Añadir una prueba de dos escrituras concurrentes de Continuity cerca de su frontera de capacidad. Verificar que no se admitan ambas si juntas exceden el tope, que no haya pérdida/duplicación, y que bytes y revisión observados correspondan al resultado confirmado. Usa los contratos de concurrencia/revisión existentes; no inventes mutex, colas, reintentos ni wrappers nuevos. Si el store no ofrece una frontera atómica que permita garantizarlo, documentar el fallo y parar para corregir la causa raíz.
-4. Ejecutar las suites pertinentes; luego comprobar las seis suites principales en el SHA exacto que contiene el código/tests final. Registrar run IDs, SHA y resultados en STATUS.
-5. Actualizar STATUS y este handoff al terminar, dejando el siguiente paso concreto. No marcar M0-E cerrado si faltan pruebas o si el CI no corresponde al SHA final.
+Las dos brechas de prueba indicadas en el handoff original ya están cubiertas por `tests/nexo/continuity-store.test.mjs`:
+1. Snapshot estructuralmente válido sobre el límite serializado: rechazo explícito antes del lock; archivo previo idéntico byte por byte y revisión sin avance.
+2. Dos candidatos de tamaño cercano al límite contra la misma revisión: un commit y un conflicto; resultado de commit cotejado con la revisión/snapshot recargados y bytes crudos exactos del envelope canónico.
 
-Después de esas pruebas, revisar si el contrato existente permite declarar límites por-store suficientes para el uso actual. El presupuesto agregado de disco/heap sigue OPEN; no elegir valores por intuición ni convertirlo en una investigación de arquitectura extensa antes de cerrar las dos brechas concretas.
+La prueba de bytes fue reforzada en commit `20b3e1b51616c93862a2cad2e502c143c35b77ef`. Los cinco workflows disparados para ese SHA pasaron:
+- [Integrated acceptance regression — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39811971051)
+- [Deterministic persistence tests — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39811971089)
+- [STEP 5 outcome classification — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39811971053)
+- [STEP 4 semantic validation — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39811971086)
+- [Bounded mission admission and restart continuity — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39811971113)
+
+No declarar que los seis workflows posibles corrieron en ese SHA: el resultado verificado es cinco de cinco workflows disparados. Tampoco ejecutar de nuevo esas pruebas solo para repetirlas.
+
+Leer `NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md` antes de seguir: el alcance inicial es CLI local con límites por entrada/documento/operación; varios procesos simultáneos no están bloqueados globalmente. Siguiente paso: revisar si los límites por-store son suficientes para ese alcance declarado y registrar exactamente qué propiedad de recursos falta para el siguiente nivel. Mantener el presupuesto agregado de heap/disco OPEN; no inventar cuotas ni añadir semáforos, locks globales o wrappers sin diseñar la unidad de admisión y demostrar que cubre todas las rutas.
 
 ## Estado canónico — no modificar por inferencia
 
