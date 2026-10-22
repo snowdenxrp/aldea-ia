@@ -119,7 +119,7 @@ Decidir y documentar el modo operativo inicial de M0 y el ámbito del presupuest
 
 ## Continuidad — ajuste acotado de stdin (2026-10-22)
 
-- Commit de código/prueba: `26eb412ed84fef1c10779b7a1046f97fe5275282`.
+- Commit de código/prueba: `094314aa3284d1b4a5d7957badafb1ecc6588ced`.
 - El lector CLI conserva los chunks Buffer ya entregados por Node en vez de duplicarlos antes del chequeo de bytes. La prueba de integración agrega stdin 256 KiB + 1 y verifica rechazo sin crear los stores.
 - Esto reduce una copia transitoria, pero no limita la asignación del chunk original de Node ni el heap agregado. CI para este SHA no está confirmado; no afirmar tests pasados.
 - Presupuesto agregado OPEN; modo concurrente/multiusuario no aprobado. Estado M0 INCOMPLETO; autorización NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
