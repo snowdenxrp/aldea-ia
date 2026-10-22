@@ -1,3 +1,87 @@
+# CHECKPOINT ACTUAL — 2026-10-22 — M0-E MISSION PREVIEW ADMISSION
+
+> **Esta sección y el STATUS actualizan/superan las instrucciones de siguiente trabajo más antiguas que aparecen en el resto de este handoff.** El contexto histórico de autoridad/Step 7 se conserva como referencia, pero el siguiente trabajo activo es M0-E; no reiniciar la investigación de autoridad ni Step 7.
+
+## Entrada del siguiente chat
+
+El usuario inicia el chat nuevo escribiendo exactamente `NCS`. Leer primero `NEXO_NCS/STATUS.md`, luego esta sección y el diseño de admission limits. Continuar desde el HEAD actual, no desde un SHA histórico. No repetir auditorías, investigaciones ni pruebas cerradas; no volver a pedir decisiones ya aceptadas.
+
+- Repo: `github.com/snowdenxrp/aldea-ia`
+- Rama: `ncs-clean-architecture`
+- HEAD verificado: `7ba84fdb0ef0d0330122a5a9d916205c06a132a7`
+- Commit HEAD: actualización documental de STATUS.
+- CI en HEAD documental: [deterministic persistence tests SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39828330129).
+- Código/pruebas del contrato de admisión verificados en SHA `9f97f61a5517f0b591a677f91607a9ef05696c9e`; los tres workflows listados abajo son los que validan ese SHA de código/pruebas, no el commit documental posterior.
+
+## Trabajo completado en esta puerta
+
+### Implementación compartida
+
+- Nuevo `src/nexo/core/mission-admission-contract.mjs`: guard estructural iterativo antes de validación/clonado recursivos. Cuenta nodos/profundidad, limita volumen de cadenas/claves y cardinalidad de misión, rechaza formas de objeto no ordinarias y ciclos.
+- `src/nexo/core/continuity-operations.mjs`: `missionRecord` aplica el guard antes de la validación canónica.
+- `src/nexo/application/mission-request-preview.mjs`: aplica el mismo guard al envelope; mantiene límite específico de `intent`; preserva los códigos de exceso de recursos en vez de degradarlos a error genérico.
+- `scripts/nexo.mjs`: ambos comandos de preview usan lectura acotada de bytes crudos antes de decodificación/JSON.parse.
+- `tests/nexo/mission-request-preview.test.mjs`: cobertura de límites estructurales y de los dos entrypoints CLI.
+
+### Límites v1 actualmente en el código
+
+| Dimensión | Límite inclusivo |
+|---|---:|
+| Archivo de entrada de CLI preview | 4 MiB = 4,194,304 bytes |
+| Pasos por misión | 256 |
+| Dependencias por paso | 64 |
+| Nodos JSON visitados | 20,000 |
+| Profundidad JSON | 32 |
+| Cadena o clave UTF-8 individual | 256 KiB |
+| Suma UTF-8 de cadenas y claves | 4 MiB |
+| Campo `intent` del envelope de petición | 16 KiB |
+
+Son presupuestos de admisión v1, no mediciones de heap ni capacidades de producción. No afirmar que eliminan todos los fallos de memoria. Buffers, parseado, clones y snapshots pueden coexistir. No subir/bajar los números sin evidencia de fixtures válidos y una razón explícita.
+
+### CI exacto de la implementación
+
+- SHA: `9f97f61a5517f0b591a677f91607a9ef05696c9e`
+- [Deterministic persistence tests — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39828236600)
+- [STEP 4 semantic validation — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909056)
+- [STEP 5 outcome classification — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909080)
+
+La cobertura incluye máximo exacto y máximo+1 para pasos, dependencias, profundidad, nodos, cadena individual y suma agregada; exceso de `intent`; ambos CLI en 4 MiB y 4 MiB + 1 byte; preservación de Continuity; ausencia de persistencia/dispatch; rechazo sin revelar el contenido de entrada.
+
+### Documentación que ya existe — no duplicar
+
+- [Diseño de admission limits](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md)
+- [Evidencia de frontera raw bytes](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_E_MISSION_PREVIEW_BYTE_BOUNDARY_TEST_EVIDENCE_2026-10-22.md)
+- [STATUS actual](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/STATUS.md)
+
+## Brechas abiertas — no afirmar que están resueltas
+
+1. Heap agregado por operación/proceso: no medido ni acotado con evidencia.
+2. Concurrencia multiproceso: no hay enforcement de una cuota global entre invocaciones CLI. Pruebas de revisión/commit de un store no demuestran cuota global.
+3. Disco agregado: presupuesto aún abierto.
+4. Adecuación del perfil v1: revisar fixtures representativos y verificar que no se rechacen misiones legítimas.
+5. Failure de workflow separado para Option A (ver abajo).
+
+No añadir locks, colas, semáforos o contadores globales improvisados. Primero establecer unidad de ejecución y alcance operativo; si el modo es CLI local explícito, documentar con precisión qué queda fuera.
+
+## Workflow FAILURE separado y conocido
+
+[Nexo M0 — repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827598938) terminó FAILURE en SHA `5485f7d9180918b5dc110dc4d9ed8ffc87569789`. `tests/nexo/assistants-runtime-cli.test.mjs` espera `effectJournal[0]` tras una ruta repair; pero `scripts/nexo-runtime-session.mjs` devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, con `persisted: false` y `dispatchAttempted: false`. No activar el efecto ni cambiar runtime para forzar el verde. En una tarea separada, reconciliar el test/workflow con la decisión de alcance Option A y verificar CI en el SHA exacto. No contar este workflow como SUCCESS.
+
+## Siguiente trabajo exacto
+
+1. Confirmar HEAD y comprobar solo si existe trabajo posterior a este checkpoint.
+2. Revisar fixtures de misiones representativas existentes frente al perfil v1; no volver a repetir las pruebas de frontera ya aprobadas. Añadir únicamente casos representativos que cubran una brecha concreta.
+3. Documentar si el perfil v1 rechaza una misión legítima; cualquier cambio de límites debe tener fundamento y pruebas de frontera.
+4. Luego elegir una sola brecha real: heap/disco agregados o definición de concurrencia en el alcance local. No pretender que la cuota entre procesos está implementada si no lo está.
+5. En paralelo o como tarea delimitada aparte, resolver el FAILURE de Option A sin habilitar efectos excluidos.
+6. Cada cambio de código debe tener CI para SHA exacto; distinguir CI PASS, fallo, pendiente y documentación únicamente. Actualizar STATUS y este handoff al cerrar el checkpoint.
+
+## Estado canónico
+
+M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. `intent` sigue sin interpretación semántica, y las vistas previas no autorizan, despachan ni persisten.
+
+---
+
 # NCS — handoff de continuidad M0-E (2026-10-22)
 
 **Propósito:** continuar el trabajo de Nexo/M0 en un chat nuevo sin repetir auditorías, sin confundir documentos con implementación y sin cambiar el estado constitucional.
