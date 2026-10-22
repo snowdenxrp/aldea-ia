@@ -86,6 +86,11 @@ assert.equal(initialized.storeRevision, 0);
 assert.equal((await store.loadCurrent()).storeRevision, 0);
 assert.equal((await store.initialize(emptySnapshot)).status, "conflict");
 
+// Reconcile abandoned temporary files under the existing store lock before
+// reusing the one stable temporary path.
+await fs.writeFile(filePath + ".tmp-old-process-1", "abandoned", "utf8");
+await fs.writeFile(filePath + ".tmp", "abandoned stable temp", "utf8");
+
 const candidateA = { ...emptySnapshot, doNotRepeat: [{ action: "repair_agent_state", target: "alex" }] };
 const candidateB = { ...emptySnapshot, doNotRepeat: [{ action: "repair_agent_needs", target: "bruno" }] };
 const outcomes = await Promise.all([
@@ -94,6 +99,11 @@ const outcomes = await Promise.all([
 ]);
 assert.equal(outcomes.filter(result => result.status === "committed").length, 1);
 assert.equal(outcomes.filter(result => result.status === "conflict").length, 1);
+assert.deepEqual(
+  (await fs.readdir(directory)).filter(name => name.startsWith("nexo-continuity.json.tmp")),
+  [],
+  "successful Continuity write must not leave stable or legacy temporary files"
+);
 assert.equal((await store.loadCurrent()).storeRevision, 1);
 
 const loaded = await store.loadCurrent();
