@@ -328,3 +328,88 @@ Los valores de Chronicle/Continuity propuestos el 2026-10-22 (stdin/content 256 
 ## Estado al cerrar este handoff
 
 Esta entrega es **documentación de continuidad**. No contiene cambios de runtime ni afirma que se haya añadido o ejecutado una prueba nueva. El próximo chat debe continuar desde M0-E con el estado canónico conservador arriba indicado, comprobar el HEAD actual antes de escribir y avanzar solo donde exista un enforcement real demostrable.
+
+
+---
+
+# CONTINUIDAD ADICIONAL — M0-E MISSION PREVIEW ADMISSION (2026-10-22)
+
+## Punto de entrada del siguiente chat
+
+El usuario escribirá exactamente **`NCS`**. Continuar desde `NEXO_NCS/STATUS.md` y este documento. No reiniciar Step 7, M1 ni auditorías históricas AB/P cerradas; no volver a investigar desde cero el límite de entrada de mission preview. La prioridad actual es M0-E, el contrato compartido de admisión.
+
+## Estado canónico — no inferir avances
+
+- M0: `INCOMPLETO`
+- Autorización: `NOT_EVALUATED`
+- Raíz/autoridad legítima: `PENDING/UNKNOWN`
+- Efectos protegidos: `STOP`
+
+El trabajo de preview no interpreta semánticamente `intent`, no autoriza, no despacha y no persiste. No significa commissioning ni aprobación constitucional.
+
+## Trabajo realizado: admission control estructural compartido
+
+Archivos relevantes en `ncs-clean-architecture`:
+
+- `src/nexo/core/mission-admission-contract.mjs`: contrato de admisión estructural iterativo.
+- `src/nexo/core/continuity-operations.mjs`: `missionRecord` aplica la admisión antes de la validación recursiva y la reconstrucción/clonado.
+- `src/nexo/application/mission-request-preview.mjs`: aplica el contrato al envelope de solicitud y conserva códigos específicos de exceso de recursos.
+- `scripts/nexo.mjs`: ambos comandos de preview conservan lectura limitada a 4 MiB + 1 byte antes de parsear.
+- `tests/nexo/mission-request-preview.test.mjs`: pruebas de fronteras de admisión y protección de estado.
+- Diseño detallado: [NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md).
+- Evidencia del límite raw-byte: [NCS_M0_E_MISSION_PREVIEW_BYTE_BOUNDARY_TEST_EVIDENCE_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_BYTE_BOUNDARY_TEST_EVIDENCE_2026-10-22.md).
+- Estado canónico: [STATUS.md](../STATUS.md).
+
+### Límites v1 explícitos
+
+| Dimensión | Máximo |
+|---|---:|
+| Archivo CLI de preview | 4 MiB = 4,194,304 bytes |
+| Pasos por misión | 256 |
+| Dependencias por paso | 64 |
+| Nodos JSON visitados | 20,000 |
+| Profundidad JSON | 32 |
+| Cadena/clave individual UTF-8 | 256 KiB |
+| Suma UTF-8 de cadenas y claves | 4 MiB |
+| `intent` del request envelope | 16 KiB |
+
+Estos valores son presupuestos de admisión v1 explícitos, no mediciones de heap ni garantías de capacidad de producción. Buffers, parseo, objetos, clones y snapshots pueden coexistir y multiplicar memoria. Validar con fixtures representativos antes de llamarlos capacidad de producto. Rechazar explícitamente; no truncar silenciosamente.
+
+El límite histórico de ocho pasos de P112 pertenece al diseño heredado acotado. No trasladarlo automáticamente al contrato Core nuevo. La semántica de reclamaciones omitidas permanece abierta.
+
+## CI verificado y alcance de la afirmación
+
+- SHA de código/pruebas de admisión documentado en el diseño: `9f97f61a5517f0b591a677f91607a9ef05696c9e`.
+- [Deterministic persistence tests — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39828236600).
+- [STEP 4 semantic validation — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909056).
+- [STEP 5 outcome classification — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909080).
+- HEAD documental verificado al checkpoint: `7ba84fdb0ef0d0330122a5a9d916205c06a132a7`; [deterministic persistence tests — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39828330129).
+
+La cobertura documentada incluye límites exactos y máximo+1 para pasos, dependencias, profundidad, nodos JSON, cadena individual y suma agregada; intent demasiado grande; ambos entrypoints CLI con 4 MiB y 4 MiB + 1 byte; y comprobaciones de ausencia de persistencia/dispatch y preservación de Continuity. Para afirmaciones posteriores, volver a comprobar la rama y el SHA exacto: no atribuir al HEAD documental pruebas ejecutadas en un SHA de código anterior.
+
+## FAILURE separado pendiente — Option A
+
+Workflow [Nexo M0 — repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827598938) terminó FAILURE en SHA `5485f7d9180918b5dc110dc4d9ed8ffc87569789`. El test `tests/nexo/assistants-runtime-cli.test.mjs` esperaba `effectJournal[0]` en una ruta repair, pero `scripts/nexo-runtime-session.mjs` devuelve explícitamente `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, sin dispatch ni persistencia. No habilitar el efecto excluido para hacer pasar CI. Resolver por separado si el test/workflow contradice el alcance de Option A y corregir la expectativa solo cuando la evidencia lo justifique. No reportar ese workflow como SUCCESS.
+
+## Brechas todavía abiertas
+
+1. **Heap agregado:** no existe medición o cota demostrada del heap por operación.
+2. **Concurrencia multiproceso:** no hay presupuesto global aplicado entre procesos CLI.
+3. **Disco agregado:** presupuesto agregado no definido/probado.
+4. **Adecuación de límites v1:** comprobar fixtures reales válidos y evitar subir límites sin evidencia.
+5. **Failure Option A:** reconciliar test/workflow con la decisión de alcance sin activar efectos.
+
+No añadir locks, colas, semáforos ni wrappers globales improvisados. Antes de diseñar enforcement de recursos agregados, definir unidad de ejecución y alcance operativo real.
+
+## Orden de continuidad
+
+1. Leer `NEXO_NCS/STATUS.md`, el diseño de admission limits y este handoff; comprobar HEAD para detectar cambios posteriores, no para reiniciar la investigación.
+2. Revisar fixtures existentes y añadir pruebas únicamente para casos válidos/límites que sigan sin cubrirse. No repetir pruebas de frontera que ya tienen CI verde.
+3. Priorizar una sola brecha concreta: adecuación de los límites con fixtures representativos, o investigar el fallo Option A en una tarea separada.
+4. Mantener explícita la distinción entre implementado, probado, documentado, pendiente y no evaluado. Si solo se editaron archivos vía API, no afirmar que hubo ejecución local.
+5. Cada cambio de código debe tener CI verificado en SHA exacto; registrar run ID, resultado y cualquier workflow fallido.
+6. Actualizar `STATUS.md` y el handoff al cerrar el checkpoint, sin repetir documentos innecesarios.
+
+## Instrucciones para trabajar con el usuario
+
+“Continúa sin límites” significa autonomía para avanzar técnicamente dentro de las restricciones del proyecto; no autoriza cambios constitucionales, commissioning ni activación de efectos protegidos. No pedir que el usuario repita el contexto ya recuperado. No inventar cifras ni ocultar fallos. Si aparece una brecha estructural, investigar causa raíz antes de añadir mecanismos.
