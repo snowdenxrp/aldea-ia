@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
 import { NEXO_RESOURCE_LIMITS, assertContinuityResourceLimits } from "../../src/nexo/core/resource-limits.mjs";
-import { NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
+import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "../../src/nexo/core/continuity-snapshot.mjs";
 
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owned-continuity-"));
 const filePath = path.join(directory, "nexo-continuity.json");
