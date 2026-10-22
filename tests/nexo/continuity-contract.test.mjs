@@ -232,6 +232,37 @@ assert.deepEqual(
   "admission must preserve nested context data"
 );
 
+// Independent valid graph shape: a fork followed by a join, with compact
+// string targets, omitted defaults, and the other documented optional fields.
+// This checks graph topology and accepted-field variety, not resource ceilings.
+const branchedMission = {
+  missionId: "representative-branched-analysis",
+  steps: [
+    { id: "root", action: "inspect_input", target: "local-input", dependsOn: [] },
+    { id: "left", action: "analyze_structure", target: "local-input", dependsOn: ["root"], reason: "structural pass", source: "user_supplied", reversible: true, requiresEvidence: true },
+    { id: "right", action: "analyze_constraints", target: "local-input", dependsOn: ["root"], reason: "constraint pass", source: "user_supplied", reversible: true, requiresEvidence: true },
+    { id: "join", action: "summarize_findings", target: "local-report", dependsOn: ["left", "right"] }
+  ]
+};
+const branchedSnapshot = recordNexoMissionInSnapshot(emptyOperationalSnapshot, branchedMission);
+assert.equal(branchedSnapshot.missions.length, 1);
+assert.deepEqual(
+  branchedSnapshot.missions[0].steps.map(step => ({ id: step.id, dependsOn: step.dependsOn })),
+  [
+    { id: "root", dependsOn: [] },
+    { id: "left", dependsOn: ["root"] },
+    { id: "right", dependsOn: ["root"] },
+    { id: "join", dependsOn: ["left", "right"] }
+  ],
+  "admission must preserve a valid fork/join dependency graph without rewriting its topology"
+);
+assert.equal(branchedSnapshot.missions[0].status, "planned", "omitted mission status must use the documented default");
+assert.equal(branchedSnapshot.missions[0].steps[0].status, "planned", "omitted step status must use the documented default");
+assert.equal(branchedSnapshot.missions[0].steps[1].reason, "structural pass");
+assert.equal(branchedSnapshot.missions[0].steps[1].source, "user_supplied");
+assert.equal(branchedSnapshot.missions[0].steps[1].reversible, true);
+assert.equal(branchedSnapshot.missions[0].steps[1].requiresEvidence, true);
+
 assert.throws(
   () => reconstructNexoMissionFromSnapshot({
     ...emptyOperationalSnapshot,
