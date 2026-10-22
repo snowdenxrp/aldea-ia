@@ -1,42 +1,59 @@
-# NCS M0-E — diseño de admisión y límites para vistas previas de misión
+# NCS M0-E — contrato de admisión y límites para vistas previas de misión
 
-Fecha: 2026-10-22
-Estado: **DISEÑO PROPUESTO; NO IMPLEMENTADO NI VALIDADO POR CI**
+Fecha: 2026-10-22  
+Estado: **IMPLEMENTADO EN CORE Y PROBADO POR CI EN EL SHA INDICADO; VALIDACIÓN DE CAPACIDAD AGREGADA DEL PROCESO SIGUE ABIERTA**
 
-## Decisión de diseño
+## Decisión y límites v1
 
-Mantener el límite de lectura actual de 4 MiB por archivo como límite operativo inicial del CLI, sin afirmar que es una capacidad medida o una garantía contra fallos. No aumentarlo a 16 MiB por analogía con Continuity: los presupuestos tienen unidades distintas.
+El límite de archivo del CLI se mantiene en 4 MiB (4,194,304 bytes), inclusivo; la lectura limitada rechaza al detectar el byte 4,194,305. Además, Core aplica una admisión estructural iterativa antes de la validación recursiva o de los clones.
 
-Antes de cerrar este criterio, hacer que el contrato de preview defina explícitamente qué entradas caben dentro de esa frontera. El límite de bytes es una defensa de lectura; no reemplaza los límites estructurales ni demuestra una cota agregada de heap.
+Contrato v1 explícito en `src/nexo/core/mission-admission-contract.mjs`:
 
-## Hallazgo que cambia la decisión
+| Dimensión | Límite | Motivo y alcance |
+|---|---:|---|
+| Archivo CLI | 4 MiB | Frontera raw-byte ya existente y probada para los dos comandos |
+| Pasos por misión | 256 | Presupuesto estructural v1 para el grafo de preview; no deriva del límite histórico de ocho pasos |
+| Dependencias por paso | 64 | Limita el tamaño local del grafo de dependencias |
+| Nodos JSON visitados | 20,000 | Cota de trabajo de la validación iterativa |
+| Profundidad JSON | 32 | Evita que la validación/clonación recursiva reciba grafos profundamente anidados |
+| Cadena/clave individual UTF-8 | 256 KiB | Alinea el máximo individual con el presupuesto de entrada existente de Chronicle; no significa que cada campo deba usar ese tamaño |
+| Suma UTF-8 de cadenas y claves | 4 MiB | Cota estructural adicional para llamadas directas al contrato que no pasan por el límite de archivo |
+| `intent` de petición | 16 KiB | Reserva un máximo separado para la intención no interpretada dentro del envelope total |
 
-La investigación histórica de P112 recupera un límite intencional de ocho pasos en el orquestador heredado, pero también documenta que el límite, el grafo previo al corte y la disposición de candidatos omitidos tienen semántica abierta. No se debe trasladar silenciosamente ese límite desde el planificador legado al contrato de preview de Core. La preview recibe un borrador independiente y hoy el validador de persistencia acepta arrays de pasos sin un máximo explícito.
+Los máximos estructurales son **presupuestos de admisión v1 explícitos**, no mediciones de heap ni límites derivados de un perfil de producción. Deben revisarse con fixtures representativos antes de declararlos capacidades de producto. Se prefieren rechazo explícito y grafo íntegro a truncamiento silencioso.
 
-Por ello, este documento **no fija ocho pasos como límite nuevo**. La decisión de máximo de pasos debe tomarse dentro del contrato de misión de Core, considerando si una misión mayor se rechaza explícitamente o si existe una semántica de admisión/continuación verificable. No se debe truncar una misión en la frontera de preview.
+## Enforcement
 
-## Requisitos mínimos del contrato
+- `mission-draft-preview` y `mission-request-preview` siguen leyendo como máximo 4 MiB + 1 byte antes de decodificar/parsear.
+- `assertNexoMissionAdmission` usa recorrido iterativo, detecta ciclos, restringe prototipos/propiedades no ordinarias, cuenta nodos/profundidad, limita pasos/dependencias y aplica presupuestos de cadenas.
+- `missionRecord` aplica el contrato antes de `assertContractInput` y de la reconstrucción/clonación, protegiendo el límite canónico compartido de registro de misión.
+- El envelope de petición conserva un límite propio de `intent`. Una intención inválida/blanca sigue clasificándose como entrada inválida; una intención demasiado grande se rechaza como límite de recursos.
+- Las respuestas de preview mantienen `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `persisted: false`. No se interpreta intención ni se autorizan efectos.
+- La validación conserva los códigos de límite específicos en la respuesta, en vez de degradarlos a error genérico.
 
-1. Límite de bytes crudos por archivo antes de UTF-8 y JSON.parse: 4 MiB como valor operativo inicial actual; inclusivo; rechazo al demostrar 4 MiB + 1 byte.
-2. El envelope `mission-request-preview` tiene un presupuesto total de 4 MiB, que incluye tanto `intent` como `missionDraft`. El hecho de que el envelope quepa no implica que sus componentes individuales estén dentro de sus propios límites.
-3. Definir por separado una longitud máxima para `intent`, para impedir que consuma todo el envelope y deje sin capacidad útil al borrador. El número requiere decisión de producto/contrato y fixture representativo; no se inventa en este hallazgo.
-4. Definir límites estructurales de misión en Core: pasos, dependencias por paso, longitud UTF-8 de identificadores/cadenas y profundidad/cantidad de nodos de `target`, `context` y demás datos JSON admitidos.
-5. Aplicar el mismo contrato estructural al preview directo, al envelope de petición y a cualquier futura ruta de admisión que comparta este contrato; no mantener validadores divergentes.
-6. Rechazar de forma cerrada con código estable y salida sanitizada. Nunca truncar silenciosamente, alterar el grafo o afirmar que los pasos omitidos fueron resueltos.
-7. Conservar invariantes de preview: `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `persisted: false`; la preview no autoriza efectos protegidos.
+## Pruebas y CI
 
-## Estrategia de pruebas
+Código y pruebas de admisión en SHA exacto:
 
-- Helper de lectura: 4 MiB − 1, exactamente 4 MiB y 4 MiB + 1 byte; incluir UTF-8 multibyte y verificar lectura limitada al byte centinela.
-- CLI de borrador: archivo válido en el límite, archivo sobre el límite, JSON inválido, estructura inválida; comprobar que no se persiste ni se despacha y que la salida no repite datos privados.
-- CLI de petición: envelope válido cerca del límite, `intent` sobre su límite específico, envelope sobre 4 MiB, JSON inválido; comprobar que la intención no se interpreta ni se alinea automáticamente con el borrador.
-- Contrato estructural: máximo y máximo + 1 para pasos/dependencias, profundidad/nodos, cadenas UTF-8; grafo inválido no debe truncarse ni reconstruirse como válido.
-- Probar preservación exacta de bytes y revisión de Continuity tras todos los rechazos.
-- Ejecutar tests en el SHA exacto que contenga el código; registrar runs/jobs/artefactos. No se declara CI hasta verificar resultados terminales.
+`b51cdc7998f671371a9e80b8b75e5294bdadea86`
 
-## Límites de lo que esto demuestra
+- [Nexo — deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909146) — SUCCESS.
+- [Nexo — STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909056) — SUCCESS.
+- [Nexo — STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909080) — SUCCESS.
 
-Incluso con estas medidas, 4 MiB por proceso no equivale a un límite de 4 MiB de heap: buffers, cadenas, objetos del parseo, validación, snapshots y clones pueden coexistir. Tampoco limita la cantidad de procesos simultáneos. Heap agregado, disco agregado y modo multiusuario permanecen OPEN hasta que exista una unidad de admisión y evidencia separada.
+Las pruebas agregadas cubren los dos entrypoints CLI en 4 MiB y 4 MiB + 1 byte; límites excedidos de intención, pasos, dependencias, profundidad y volumen agregado de cadenas; y preservación de Continuity, ausencia de dispatch/persistencia y salida sanitizada.
+
+## Límite importante de la evidencia
+
+Los límites de admission control reducen la complejidad aceptada, pero no prueban una cota exacta de heap: buffers, objetos parseados, clones y snapshots pueden coexistir. Tampoco resuelven presupuesto agregado de procesos, concurrencia multiproceso ni disco agregado. Esos temas siguen OPEN.
+
+## Límite histórico de ocho pasos
+
+P112 confirma que el límite histórico de ocho pasos pertenecía al diseño acotado heredado, pero no define completamente la disposición de reclamaciones omitidas ni resuelve todas las semánticas del grafo previo/posterior al corte. No se traslada ese límite a Core preview ni se truncan misiones.
+
+## Hallazgo de CI separado — no ocultar
+
+El workflow [Nexo M0 — repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827598938) terminó FAILURE en SHA `5485f7d9180918b5dc110dc4d9ed8ffc87569789`. El job falla en `tests/nexo/assistants-runtime-cli.test.mjs`: la prueba espera un `effectJournal[0]` después de la opción repair, mientras `scripts/nexo-runtime-session.mjs` devuelve explícitamente `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` y no despacha ni persiste. No se cambia el runtime para hacer pasar la prueba; se requiere reconciliar la prueba/workflow con la decisión de alcance Option A. Ese workflow no está contado como SUCCESS del SHA de admisión.
 
 ## Estado canónico
 
