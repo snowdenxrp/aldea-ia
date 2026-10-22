@@ -655,7 +655,7 @@ if (result.status !== "committed") process.exitCode = 1;`;
   const oversizedContentBefore = await fs.readFile(oversizedContentPath);
   const oversizedContentResult = await oversizedContentStore.append({
     operationKey: "oversized-content:step",
-    content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2) + 1)
+    content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2)) + "x"
   });
   assert.deepEqual(oversizedContentResult, {
     status: "blocked",
