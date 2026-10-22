@@ -6,7 +6,7 @@ Tipo: evaluación de código, pruebas y CI existente; no modifica runtime ni afi
 
 ## Resultado
 
-**Los límites locales por entrada/documento/store y la integridad de commit por-store están implementados y tienen evidencia de prueba suficiente para este subcriterio acotado.** Esto no cierra el presupuesto agregado de recursos ni habilita servicio concurrente/multiusuario.
+**Los límites locales por documento/store y la integridad de commit por-store están implementados y tienen evidencia de prueba suficiente en las rutas revisadas; el límite stdin de Chronicle también está implementado.** No puede cerrarse todavía el límite por entrada local en general: una revisión posterior encontró que las rutas CLI `mission-draft-preview` y `mission-request-preview` leen archivos JSON sin un límite de bytes previo. Esto no cierra el presupuesto agregado ni habilita servicio concurrente/multiusuario.
 
 ## Evidencia revisada
 
@@ -25,7 +25,7 @@ Estos workflows no se atribuyen al HEAD documental actual y no se ejecutaron de 
 
 ## Cobertura de rutas y límites de la conclusión
 
-El inventario [M0-E resource entrypoint coverage](NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md) y la inspección de callers confirman que las rutas revisadas —CLI Chronicle, capa de aplicación, consultas Continuity, apertura del owner, runtime owner-backed y acceso directo a los stores— llegan a los stores con validación local. La cobertura depende de usar estas rutas/validadores; no convierte un path local de confianza en sandbox.
+El inventario [M0-E resource entrypoint coverage](NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md) cubre CLI Chronicle, capa de aplicación, consultas Continuity, apertura del owner, runtime owner-backed y acceso directo a los stores. La revisión adicional de `scripts/nexo.mjs` encontró que `mission-draft-preview` y `mission-request-preview` usan `fs.readFile` seguido de `JSON.parse` sin un límite previo. Hallazgo: [NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md).
 
 No se demuestra:
 
@@ -38,7 +38,8 @@ Una lectura acotada aún puede concatenar buffers, decodificar, parsear JSON y c
 
 ## Disposición
 
-- Subcriterio local por entrada/documento/store: **VALIDADO EN EL ALCANCE ACOTADO DESCRITO**.
+- Límites por documento/store y stdin Chronicle: **VALIDADOS EN LAS RUTAS CUBIERTAS POR LA EVIDENCIA**.
+- Límite de entrada local completo: **PENDING** hasta acotar las dos entradas JSON de vista previa.
 - Presupuesto agregado de heap/disco: **OPEN**.
 - Concurrencia multiproceso/multiusuario: **NO DECLARADA NI GARANTIZADA**.
 - M0: `INCOMPLETO`; autorización: `NOT_EVALUATED`; raíz legítima: `PENDING/UNKNOWN`; efectos protegidos: `STOP`.
