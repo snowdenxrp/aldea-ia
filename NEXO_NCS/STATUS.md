@@ -305,3 +305,17 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 - Conclusión acotada: ya hay dos formas de misión aceptada en pruebas de integración (cadena con contexto anidado y grafo ramificado con valores por defecto/campos opcionales). Sigue sin ser evidencia de producción, medición de heap ni garantía de que se admitan todas las misiones legítimas.
 - No se modificó runtime, no hubo dispatch ni se habilitaron efectos. Siguiente paso: confirmar el workflow pendiente y después abordar una sola brecha de recursos con evidencia; no inventar cuota de memoria global ni concurrencia multiproceso.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
+# CHECKPOINT NUEVO — 2026-10-22 — GUARD DE OPCIONES EN ADMISIÓN PÚBLICA DE CHRONICLE
+
+- Hallazgo: `recordNexoMissionSafely({ owner, expectedRevision, mission } = {})` desestructuraba opciones antes de validar. Un accesor podía ejecutarse antes de entrar al `try`; no había una prueba específica de esta frontera.
+- Primer cambio de runtime: [`2a2408d9`](https://github.com/snowdenxrp/aldea-ia/commit/2a2408d9f78ded91e3566895a74ae85454bb1ced). CI falló en parseo de `chronicle-append.mjs`: se sustituyó la función sin conservar su cuerpo completo de manejo de resultados. Runs fallidos, no ocultados: [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865009176) y [persistencia determinista](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865009110). La salida del job identificó `SyntaxError: Unexpected token 'export'`.
+- Corrección del runtime: [`8a63cba5`](https://github.com/snowdenxrp/aldea-ia/commit/8a63cba5aee4f434da90aff3c1707708131b7d7d) restaura el manejo de resultados y mantiene el preflight de opciones.
+- Regresión nueva: [`eb303003`](https://github.com/snowdenxrp/aldea-ia/commit/eb303003680022cf31688e3304c439aed13f93f7), `tests/nexo/mission-admission-wrapper-input-guard.test.mjs). Comprueba getter no ejecutado, cero llamadas al propietario en entrada inválida y preservación de la ruta válida.
+- Integración de la prueba en `npm test`: [`f512e800`](https://github.com/snowdenxrp/aldea-ia/commit/f512e8007a311df141d950f7e89f7e54a6a7211a).
+- Estado CI para el SHA correctivo `8a63cba5aee4f434da90aff3c1707708131b7d7d` al registrar este checkpoint: aceptación integrada [IN_PROGRESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865107760); persistencia determinista [IN_PROGRESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865107828). El CI del SHA intermedio `f512e800` también falló por el mismo error de sintaxis; no se considera validación del guard.
+- Límite de la corrección: se valida el contenedor de opciones antes de extraer campos y se rechazan prototipos/accessors. Esto no neutraliza todos los traps posibles de Proxy ni prueba autoridad legítima. No se ejecutó dispatch deliberado durante esta corrección.
+- Siguiente paso obligatorio: esperar resultados del SHA correctivo, resolver cualquier fallo real y sólo entonces continuar auditando otra frontera.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
