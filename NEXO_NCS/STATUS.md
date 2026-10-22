@@ -3057,3 +3057,11 @@ El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `suc
 - Se reutilizó `docs/nexo/NEXO_SCOPE_ENVELOPE_CARDINALITY_FANOUT_AGGREGATE_SAFETY_RESEARCH_V1_2026-09-24.md`, sin repetir la investigación.
 - Los máximos por store propuestos son límites locales; no prueban presupuesto combinado de disco, pico de heap, throughput ni seguridad agregada. El candidato marca esta distinción y deja presupuesto agregado como **OPEN**, especialmente antes de sesiones concurrentes o servicio multiusuario.
 - No se inventa una cuota agregada ni una capa de reserva sin baseline de capacidad y contrato de asignación.
+
+### Hallazgo nuevo — presupuesto de lectura de documentos existentes (2026-10-22)
+
+Inspección de `src/nexo/core/chronicle-store.mjs` y `src/nexo/core/continuity-store.mjs` encontró que ambos caminos de lectura cargan el archivo entero como texto y ejecutan `JSON.parse` sin un límite previo de bytes crudos. Por ello, limitar solo el candidato antes de `writeDocument`/`writeEnvelope` no basta: un archivo preexistente excesivo podría consumir memoria durante lectura/parseo antes de que el control de escritura se ejecute.
+
+Acción: ampliado el contrato de recursos y el perfil candidato para exigir un máximo también al leer, antes de decodificar/parsear; el exceso debe bloquearse sin modificar ni truncar el estado. Añadir pruebas de archivos existentes sobredimensionados, preservación exacta de bytes/revisión, frontera inclusiva y separación entre exceso conocido y `UNKNOWN`.
+
+No se modificó runtime y no se aceptaron los valores numéricos. Esta es una brecha de cobertura del plan de implementación, no evidencia de exploit ni de impacto en producción. El estado global de M0 no cambia: `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
