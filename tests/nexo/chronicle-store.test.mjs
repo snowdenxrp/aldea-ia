@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
+import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
 import { observeChronicleOperation } from "../../src/nexo/adapters/chronicle-observation.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 
@@ -515,6 +516,32 @@ if (result.status !== "committed") process.exitCode = 1;`;
   });
   await assert.rejects(() => fs.access(lateReleaseFailurePath), error => error?.code === "ENOENT");
   await fs.rm(lateReleaseFailureLock, { recursive: true, force: true });
+
+  // An oversized existing Chronicle file is rejected before JSON parsing and left untouched.
+  const oversizedChroniclePath = path.join(root, "oversized-existing-chronicle.json");
+  await fs.writeFile(oversizedChroniclePath, Buffer.alloc(NEXO_RESOURCE_LIMITS.chronicleDocumentBytes + 1, 0x20));
+  const oversizedChronicleBefore = await fs.stat(oversizedChroniclePath);
+  await assert.rejects(
+    () => createNexoChronicleStore({ filePath: oversizedChroniclePath }).loadCurrent(),
+    error => error?.code === "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED",
+    "Chronicle must reject oversized raw bytes before attempting JSON.parse"
+  );
+  assert.equal((await fs.stat(oversizedChroniclePath)).size, oversizedChronicleBefore.size,
+    "oversized Chronicle bytes remain unchanged");
+  const oversizedContentPath = path.join(root, "oversized-content.json");
+  const oversizedContentStore = createNexoChronicleStore({ filePath: oversizedContentPath });
+  assert.equal((await oversizedContentStore.initialize()).status, "committed");
+  const oversizedContentBefore = await fs.readFile(oversizedContentPath);
+  const oversizedContentResult = await oversizedContentStore.append({
+    operationKey: "oversized-content:step",
+    content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2) + 1)
+  });
+  assert.deepEqual(oversizedContentResult, {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"
+  });
+  assert.deepEqual(await fs.readFile(oversizedContentPath), oversizedContentBefore,
+    "oversized entry must not mutate Chronicle bytes");
 
   // Corrupt persisted state is UNKNOWN, never silently reset.
   await fs.writeFile(filePath, "{invalid", "utf8");
