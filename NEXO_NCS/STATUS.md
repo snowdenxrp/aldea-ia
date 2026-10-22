@@ -2,7 +2,7 @@
 
 El usuario iniciará el chat escribiendo exactamente `NCS`.
 
-**Instrucción prioritaria:** no empezar por investigaciones históricas ni repetir las dos pruebas de Continuity: ambas están en `tests/nexo/continuity-store.test.mjs`, con cinco workflows CI verificados en SHA `20b3e1b51616c93862a2cad2e502c143c35b77ef`. El resultado acotado por-store ya está registrado en [NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md](BUILD/NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md); leer después el [handoff focalizado](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-22_RESOURCE_BUDGET.md). El presupuesto agregado de heap/disco y la exclusión multiproceso siguen OPEN. Próximo trabajo: definir la frontera entre interpretar una petición y producir una vista previa de borrador de misión, sin conectar aún un modelo ni habilitar persistencia/dispatch.
+**Instrucción prioritaria:** no empezar por investigaciones históricas ni repetir las pruebas Continuity ya verificadas. Los límites por-store y stdin Chronicle tienen evidencia acotada, pero apareció una brecha nueva: `scripts/nexo.mjs` lee los archivos JSON de `mission-draft-preview` y `mission-request-preview` sin un máximo previo de bytes. Leer [hallazgo de entrada JSON](BUILD/NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md), el [inventario actualizado de rutas](BUILD/NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md) y el [handoff focalizado](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-22_RESOURCE_BUDGET.md). No inferir que los 256 KiB de stdin Chronicle aplican a esos archivos. El presupuesto agregado de heap/disco y la exclusión multiproceso siguen OPEN.
 
 HEAD documental previo a este cambio: `a2d6003d355b466b9b85466a1b08f4dbf4d685b0`. La evidencia de seis suites citada más abajo corresponde al SHA de código/pruebas `7ce3e5174e26917ecde9edeafa50b3d64d4fa10b`, no a este HEAD documental ni al commit de este añadido.
 
@@ -13,7 +13,7 @@ HEAD documental previo a este cambio: `a2d6003d355b466b9b85466a1b08f4dbf4d685b0`
 - La restricción de concurrencia multi-proceso es alcance declarado, **no enforcement**: no se ha probado un guardián global que impida varios CLI simultáneos ni un presupuesto compartido entre procesos.
 - Se mantienen OPEN el presupuesto agregado de heap/disco y la capacidad multi-proceso. No introducir un lock, contador, semáforo o wrapper global improvisado.
 - Nota: [NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md](BUILD/NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md).
-- Siguiente tarea concreta: avanzar la frontera de interpretación de petición → vista previa de borrador de misión, reutilizando `previewNexoMissionDraft` y el contrato existente. Definir datos no confiables, validación del objetivo/evidencia y acciones admitidas; mantener preview sin persistencia/dispatch y `authorization: NOT_EVALUATED`. No reabrir el presupuesto agregado sin cambio de alcance o contradicción nueva.
+- Siguiente tarea concreta: decidir el máximo de bytes para los archivos JSON de `mission-draft-preview` y `mission-request-preview`; después reutilizar `readUtf8FileBounded`, añadir pruebas de frontera y verificar CI en el SHA exacto. No conectar un modelo ni habilitar persistencia/dispatch en estas vistas previas.
 - Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 ---
