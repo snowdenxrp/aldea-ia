@@ -26,3 +26,5 @@ jobs:
         run: npm install
       - name: Run tests
         run: npm test
+      - name: Bounded temporary cleanup regression
+        run: node tests/nexo/temporary-cleanup-bounds.test.mjs
