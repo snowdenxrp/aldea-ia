@@ -126,6 +126,40 @@ export async function recordNexoMissionSafely(options) {
   const { owner, expectedRevision, mission } = input;
   try {
     const result = await owner.recordMission({ expectedRevision, mission });
+    // Preserve a known durable commit while blocking an unsafe handoff.
+    if (result?.persistenceStatus === "committed") {
+      return {
+        status: "blocked",
+        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_HANDOFF_UNSAFE",
+        missionAdmissionCommitted: true,
+        dispatchAttempted: false,
+        redispatchAuthorized: false,
+        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
+      };
+    }
+    if (result?.status === "unknown" || result?.missionAdmissionCommitted === "UNKNOWN" ||
+        result?.persistenceStatus === "unknown") {
+      return {
+        status: "unknown",
+        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
+        missionAdmissionCommitted: "UNKNOWN",
+        dispatchAttempted: false,
+        redispatchAuthorized: false,
+        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
+      };
+    }
+    return result;
+  } catch (error) {
+    return {
+      status: "unknown",
+      code: error?.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
+      missionAdmissionCommitted: "UNKNOWN",
+      dispatchAttempted: false,
+      redispatchAuthorized: false
+    };
+  }
+}
+
 export async function runNexoChronicleAppend(options) {
   const input = readChronicleSessionOptions(options);
   if (!input) return blocked("NEXO_CHRONICLE_SESSION_INPUT_INVALID");
