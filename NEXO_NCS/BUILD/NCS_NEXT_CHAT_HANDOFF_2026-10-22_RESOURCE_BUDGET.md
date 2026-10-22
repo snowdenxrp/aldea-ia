@@ -122,3 +122,10 @@ La prueba de las fronteras por-store no debe confundirse con una cota agregada. 
 ### Siguiente tarea exacta
 Decidir y documentar el modo operativo inicial de M0 y el ámbito del presupuesto. Después diseñar una única frontera verificable que cubra las rutas de admisión de ese ámbito; incluir pruebas de concurrencia en esa misma unidad operativa. Mantener el presupuesto agregado OPEN hasta contar con esa evidencia.
 
+
+
+## Actualización — cobertura de límites por ruta (2026-10-22)
+
+Leer [NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md](NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md). El inventario identifica la ruta CLI Chronicle, la capa de aplicación, las consultas Continuity, apertura del propietario, runtime owner-backed y acceso directo al store. Los límites son por entrada/documento/store; no hay cuota compartida de lectores, heap o disco entre procesos.
+
+Siguiente tarea: cotejar este inventario con el perfil numérico aceptado y separar formalmente (a) subcriterio por-store y garantías probadas de commit, (b) presupuesto agregado de heap/disco, que permanece OPEN. No repetir pruebas Continuity ya verificadas ni añadir un mecanismo global parcial.
