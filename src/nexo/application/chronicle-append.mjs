@@ -20,6 +20,30 @@ function blocked(code, details = null) {
 const PUBLIC_CHRONICLE_STATUSES = new Set([
   "completed", "blocked", "conflict", "unknown", "observed", "invalid"
 ]);
+function readChronicleSessionOptions(options) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(options);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const values = Object.create(null);
+    for (const key of [
+      "continuityPath", "chroniclePath", "missionId", "stepId", "content",
+      "initializeContinuity", "initializeChronicle", "lockWaitMs"
+    ]) {
+      const descriptor = Object.getOwnPropertyDescriptor(options, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      values[key] = descriptor.value;
+    }
+    if (!Object.hasOwn(values, "initializeContinuity")) values.initializeContinuity = false;
+    if (!Object.hasOwn(values, "initializeChronicle")) values.initializeChronicle = false;
+    if (!Object.hasOwn(values, "lockWaitMs")) values.lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS;
+    return values;
+  } catch {
+    return null;
+  }
+}
+
 const TRI_STATE_FIELDS = new Set([
   "preparedCommitted", "lineageCommitted", "journalSettled",
   "terminalOutcomeRecorded", "missionAdmissionCommitted"
@@ -104,11 +128,13 @@ export async function recordNexoMissionSafely({ owner, expectedRevision, mission
   }
 }
 
-export async function runNexoChronicleAppend({
-  continuityPath, chroniclePath, missionId, stepId, content,
-  initializeContinuity = false, initializeChronicle = false,
-  lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS
-} = {}) {
+export async function runNexoChronicleAppend(options) {
+  const input = readChronicleSessionOptions(options);
+  if (!input) return blocked("NEXO_CHRONICLE_SESSION_INPUT_INVALID");
+  const {
+    continuityPath, chroniclePath, missionId, stepId, content,
+    initializeContinuity, initializeChronicle, lockWaitMs
+  } = input;
   if (typeof continuityPath !== "string" || !continuityPath.trim() ||
       typeof chroniclePath !== "string" || !chroniclePath.trim() ||
       typeof missionId !== "string" || !missionId.trim() ||
