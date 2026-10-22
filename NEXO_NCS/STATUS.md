@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — PERSISTED REPAIR OBSERVATION INPUT GUARD
+
+- Hallazgo concreto: las funciones exportadas `observePersistedRepairInvariant(options)` y `comparePersistedRepairRevision(options)` recibían opciones por destructuring. Un getter ordinario en `snapshot` o `expectedStateRevision` podía ejecutarse antes de validar el contexto.
+- Corrección runtime: `src/nexo/adapters/persisted-repair-observation.mjs` ahora extrae `snapshot/action/target` y `expectedStateRevision/currentSnapshot` mediante descriptores propios de datos enumerables, en objetos planos o de prototipo nulo. Opciones inválidas producen `UNKNOWN` sin evaluar getters.
+- Regresión nueva: `tests/nexo/persisted-repair-observation-input-guard.test.mjs` comprueba ambos getters centinela, el comportamiento normal de observación de agente y la comparación de revisiones. Integrada al final de `npm test` en `package.json`.
+- Commits: runtime `ddecd9b10eac1d01f275f3c271ee90b30735373c`; test `74b4a3708088d4033fa9289ffc04d5f35a5ea7fd`; integración `2541df081dc34410b3c0c7565c1ae559ad9de4c4`.
+- CI: los workflows para el SHA integrado están pendientes de consulta/resultado; no declarar PASS hasta comprobar conclusiones del SHA exacto.
+- Límite: esto protege la extracción de opciones ordinarias, no valida exhaustivamente snapshots con getters anidados, no neutraliza todos los Proxy traps, no establece autoridad ni habilita reintentos o efectos protegidos.
+- Estado constitucional no cambia: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: comprobar CI de esta integración y continuar solo con defectos reproducibles en las fronteras públicas restantes.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — CHRONICLE OBSERVATION INPUT GUARD
 
 - Hallazgo: `observeChronicleOperation()` recibía opciones por destructuring, que podía ejecutar getters de `store`, identidad de operación o `target` antes de la validación. También leía `store.loadCurrent` y `target.content` por acceso de propiedad.
