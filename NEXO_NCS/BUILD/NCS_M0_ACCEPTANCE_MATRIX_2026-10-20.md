@@ -172,3 +172,19 @@ E no pasa con `npm test` por sí solo. Bajo Opción A, no hay que habilitar efec
 4. Mantener M0 incompleto mientras E siga sin evidencia suficiente. No fabricar root verifier, pin o firma de prueba para simular el caso positivo.
 
 Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## Hallazgo de ensamblaje — persistencia interna aún sin presupuesto de recursos (2026-10-22)
+
+La Opción A permite persistencia interna acotada de Chronicle/Continuity, pero el límite operativo cuantitativo de esa persistencia todavía no está definido. La inspección de `src/nexo/application/chronicle-append.mjs`, `src/nexo/adapters/chronicle-effect.mjs` y `src/nexo/core/chronicle-store.mjs` encontró validación de tipo/no vacío e identidad de operación, pero no encontró un límite explícito de bytes por entrada, número total de entradas o tamaño total del documento Chronicle.
+
+Esto no prueba un exploit ni invalida los controles de idempotencia, locking o revisión. Sí impide afirmar que la persistencia está completamente acotada frente a consumo acumulativo de recursos.
+
+- El entrypoint `chronicle-append` puede crear una misión de una sola etapa y almacenar contenido provisto por el llamador.
+- `authorization` se informa deliberadamente como `NOT_EVALUATED`; el append local no debe presentarse como autorización constitucional.
+- No se fija un número arbitrario en este hallazgo. Para cerrar el límite, el contrato de alcance debe definir el presupuesto operativo (bytes por entrada, capacidad total/rotación y comportamiento al agotarse) y luego las pruebas deben verificar rechazo antes de escribir, sin pérdida de registros existentes ni éxito inferido.
+- Hasta que exista esa definición, clasificar este subcriterio de E como `PENDING`; no modificar el runtime con un límite inventado ni llamar completa a la Opción A.
+
+Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
