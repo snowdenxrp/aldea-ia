@@ -68,3 +68,18 @@ La regla semántica general ya está establecida en la investigación histórica
 - `docs/nexo/AB104.398_ADVERSARIAL_SEMANTIC_DERIVATION_2026-09-26.md`
 
 Esos documentos fundamentan el principio, pero no fijan por sí solos los máximos operativos de Chronicle/Continuity ni prueban que exista un outcome runtime integrado para este caso. Por tanto, no se repite esa investigación ni se afirma que `RESOURCE_LIMIT_REACHED` sea ya un contrato ejecutable de M0. La tarea actual es aterrizar el principio en los stores concretos, con límites aprobados y pruebas de no mutación.
+
+
+## Mapa concreto de implementación y pruebas (inspección del HEAD 2026-10-22)
+
+La ruta existente ya permite ubicar el enforcement futuro sin volver a investigar el hallazgo:
+
+| Dimensión | Punto de entrada / enforcement | Prueba existente que debe ampliarse |
+|---|---|---|
+| stdin en bytes crudos | `scripts/nexo-chronicle-session.mjs`, lectura `process.stdin` (actualmente acumula chunks y concatena) | `tests/nexo/chronicle-runtime.test.mjs` ya usa `spawnSync` y cubre stdin válido; añadir casos de frontera/exceso y verificar no admisión/no escritura |
+| admisión de misión y contenido | `src/nexo/application/chronicle-append.mjs`, `runNexoChronicleAppend` y `recordNexoMissionSafely` | `tests/nexo/chronicle-runtime.test.mjs` |
+| bytes por entrada, número de entradas y bytes serializados de Chronicle | `src/nexo/core/chronicle-store.mjs`, `validateDocument`, `writeDocument` y `append` | suite Chronicle existente; comprobar rechazo antes de `writeDocument` y preservar el documento previo |
+| cardinalidad/tamaño del snapshot Continuity | `src/nexo/core/continuity-snapshot.mjs`, `assertNexoContinuitySnapshot`/`projectNexoContinuitySnapshot`; store en `src/nexo/core/continuity-store.mjs`, `commitIfCurrent`/`writeEnvelope` | `tests/nexo/continuity-contract.test.mjs` y tests del store |
+| resultado y recuperación | contratos públicos de Chronicle/Continuity existentes; no crear outcome nuevo antes de comprobar si alguno expresa exactamente el límite | afirmar resultado no exitoso, ausencia de mutación y preservación de conflicto/UNKNOWN ya definidos |
+
+Precisión: los tests CLI existentes verifican argumentos y un caso válido de contenido por stdin; eso no es evidencia de límite máximo ni de rechazo temprano. Los stores ya serializan el documento/snapshot en los puntos indicados, por lo que el presupuesto de bytes debe calcularse de forma determinista antes de iniciar la escritura. No se modifica código hasta que se decidan los máximos y el contrato de exceso.
