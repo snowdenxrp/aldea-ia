@@ -211,3 +211,13 @@ Se añadió `previewNexoMissionRequest(continuityPath, requestEnvelope)` y `test
 - El intento `7ef9550df703be902baa7ce7f608a59ac72f2449` falló porque el test usaba `assertNexoContinuitySnapshot` sin importarlo.
 - Corrección de importación: `e7dc744b9ad71ed00c89a1f645508aad82ed3fec`.
 - Runs disparados sobre el SHA corregido: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448677), [persistencia determinista](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448457), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448564), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448356), [admisión acotada/Continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448532). Al escribir este handoff están en cola; no asumir resultados.
+
+
+## Actualización — temporales Chronicle/Continuity acotados (2026-10-22)
+
+- Código/pruebas: `41adae009f4b1e4c275f4eeac0bc1fd53ade2c29`.
+- Ambos stores reutilizan `<store>.tmp` bajo sus locks existentes y limpian antes de escribir archivos regulares que coincidan con el nombre estable o con el patrón legado `<store>.tmp-*`. No se introdujeron locks, colas ni semáforos adicionales.
+- Se añadieron pruebas de residuos estables y heredados en ambos tests de store. STEP 4, STEP 5, aceptación integrada, admisión/continuidad y Chronicle nativo completaron SUCCESS en este SHA. Para persistencia determinista, el job y el paso Run tests completaron SUCCESS; el estado superior del workflow aún aparecía in_progress al último sondeo, por lo que se conserva esa distinción.
+- Esta medida acota temporales producidos por escrituras cooperantes por store, pero **no** cierra el presupuesto total de disco ni el de heap.
+- Próximo bloqueo: definir el presupuesto operativo agregado de heap y el modo de ejecución soportado. No sumar tamaños serializados como si fueran heap y no declarar multiusuario seguro sin una cota demostrada.
+- Estado constitucional sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
