@@ -45,3 +45,12 @@ No implementar rotación, truncamiento, borrado, colas, reintentos ni wrappers t
 
 ## Estado canónico
 M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Análisis agregado posterior (2026-10-22)
+
+- Añadido [NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md](NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md).
+- Hallazgo de disco: subtotal canónico+temporal = 96 MiB en el peor instante modelado (32+32 Chronicle, 16+16 Continuity), pero no es cota total porque los temporales únicos pueden quedar huérfanos tras una terminación abrupta.
+- Hallazgo de heap: no se puede sumar 32+16 MiB; hay strings, objetos parseados, serializaciones y snapshots clonados. No hay cuota global de heap ni límite de concurrencia entre stores/procesos.
+- El análisis documental se registró en STATUS por commit `4ef935ed90f8bf0826457776fecce4eaf5b81a71`; no es cambio de runtime ni tiene CI propio.
+- Siguiente: resolver estructuralmente el protocolo acotado de temporales y definir el modo de concurrencia soportado por M0. No volver a ejecutar las pruebas ya cerradas salvo que cambie el código relevante.
