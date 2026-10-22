@@ -6,6 +6,17 @@ El usuario iniciará el chat escribiendo exactamente `NCS`.
 
 HEAD documental previo a este cambio: `a2d6003d355b466b9b85466a1b08f4dbf4d685b0`. La evidencia de seis suites citada más abajo corresponde al SHA de código/pruebas `7ce3e5174e26917ecde9edeafa50b3d64d4fa10b`, no a este HEAD documental ni al commit de este añadido.
 
+
+## M0-E — alcance operativo inicial de recursos (2026-10-22)
+
+- Alcance técnico documentado: invocaciones locales explícitas del CLI bajo directorios de confianza, con límites por entrada/documento/operación; no declarar un servicio persistente ni capacidad multiusuario.
+- La restricción de concurrencia multi-proceso es alcance declarado, **no enforcement**: no se ha probado un guardián global que impida varios CLI simultáneos ni un presupuesto compartido entre procesos.
+- Se mantienen OPEN el presupuesto agregado de heap/disco y la capacidad multi-proceso. No introducir un lock, contador, semáforo o wrapper global improvisado.
+- Nota: [NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md](BUILD/NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md).
+- Siguiente tarea concreta: prueba real del store Continuity que rechace snapshot válido de más de 16 MiB conservando archivo/revisión; luego prueba de dos commits concurrentes cerca del límite. Ejecutar suites y verificar CI en el SHA exacto final antes de afirmar éxito.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
 ---
 
 # M0-E — presupuesto de recursos: perfil aceptado, enforcement inicial verificado (2026-10-22)
