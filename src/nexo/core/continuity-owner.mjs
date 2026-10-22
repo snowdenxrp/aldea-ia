@@ -76,10 +76,30 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
   if (!effectVerifiers || typeof effectVerifiers !== "object" || Array.isArray(effectVerifiers)) {
     throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
   }
+  let registryKeys;
+  try {
+    const prototype = Object.getPrototypeOf(effectVerifiers);
+    if (prototype !== Object.prototype && prototype !== null) {
+      throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+    }
+    registryKeys = Reflect.ownKeys(effectVerifiers);
+  } catch {
+    throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+  }
   const verifierRegistry = Object.create(null);
-  for (const [action, verifier] of Object.entries(effectVerifiers)) {
-    if (!action.trim() || typeof verifier !== "function") throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
-    Object.defineProperty(verifierRegistry, action, { value: verifier, enumerable: true, writable: false, configurable: false });
+  for (const action of registryKeys) {
+    if (typeof action !== "string") throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(effectVerifiers, action);
+    } catch {
+      throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+    }
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor) ||
+        !action.trim() || typeof descriptor.value !== "function") {
+      throw ownerError("NEXO_EFFECT_VERIFIER_REGISTRY_INVALID");
+    }
+    Object.defineProperty(verifierRegistry, action, { value: descriptor.value, enumerable: true, writable: false, configurable: false });
   }
   Object.freeze(verifierRegistry);
 
