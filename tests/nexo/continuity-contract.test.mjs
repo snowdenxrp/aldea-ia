@@ -190,6 +190,48 @@ const emptyOperationalSnapshot = {
   effectJournal: []
 };
 
+
+// Representative accepted mission fixture: exercise the shared admission guard
+// through the real persistence-contract entrypoint, not only with synthetic
+// boundary objects. This is a contract fixture, not a production-capacity claim.
+const representativeMission = {
+  missionId: "representative-local-analysis",
+  status: "planned",
+  objective: "local_analysis",
+  uncertainty: { level: "bounded", reasons: ["input_requires_review"] },
+  steps: Array.from({ length: 12 }, (_, index) => ({
+    id: `analysis-step-${index + 1}`,
+    action: index === 0 ? "inspect_input" : "local_analysis",
+    target: { artifact: `local-artifact-${index + 1}`, scope: "read_only" },
+    status: "planned",
+    dependsOn: index === 0 ? [] : [`analysis-step-${index}`],
+    context: {
+      purpose: "bounded_local_review",
+      ordinal: index + 1,
+      constraints: ["no_dispatch", "no_persistence"],
+      evidence: { source: "user_supplied", confidence: "unverified" }
+    },
+    priority: index < 3 ? "high" : "normal",
+    requiresVerification: true
+  }))
+};
+const representativeSnapshot = recordNexoMissionInSnapshot(
+  emptyOperationalSnapshot,
+  representativeMission
+);
+assert.equal(representativeSnapshot.missions.length, 1);
+assert.equal(representativeSnapshot.missions[0].steps.length, 12);
+assert.deepEqual(
+  representativeSnapshot.missions[0].steps.map(step => step.id),
+  representativeMission.steps.map(step => step.id),
+  "admission must preserve all valid steps rather than truncate a mission"
+);
+assert.deepEqual(
+  representativeSnapshot.missions[0].steps[11].context,
+  representativeMission.steps[11].context,
+  "admission must preserve nested context data"
+);
+
 assert.throws(
   () => reconstructNexoMissionFromSnapshot({
     ...emptyOperationalSnapshot,
