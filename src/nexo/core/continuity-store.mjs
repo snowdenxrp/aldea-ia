@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { NEXO_DEFAULT_LOCK_WAIT_MS, resolveNexoLockDeadline, remainingNexoLockWaitMs, nexoLockDeadlineExpired } from "./lock-deadline.mjs";
 import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
+import { NEXO_RESOURCE_LIMITS, readUtf8FileBounded, serializedUtf8Bytes, assertContinuityResourceLimits } from "./resource-limits.mjs";
 
 export const NEXO_CONTINUITY_STORE_SCHEMA = "NEXO_CONTINUITY_STORE";
 export const NEXO_CONTINUITY_STORE_VERSION = 1;
@@ -141,14 +142,15 @@ function validateEnvelope(envelope) {
     throw storeError("NEXO_CONTINUITY_STORE_SCHEMA_UNKNOWN");
   }
   assertNexoContinuitySnapshot(envelope.snapshot);
+  assertContinuityResourceLimits(envelope.snapshot, envelope.storeRevision);
   return envelope;
 }
 
 async function readEnvelope(fsModule, filePath) {
   let raw;
-  try { raw = await fsModule.readFile(filePath, "utf8"); }
+  try { raw = await readUtf8FileBounded(fsModule, filePath, NEXO_RESOURCE_LIMITS.continuityDocumentBytes, "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED"); }
   catch (error) {
-    throw storeError(error?.code === "ENOENT" ? "NEXO_CONTINUITY_STORE_NOT_FOUND" : "NEXO_CONTINUITY_STORE_READ_FAILED");
+    throw storeError(error?.code === "ENOENT" ? "NEXO_CONTINUITY_STORE_NOT_FOUND" : error?.code === "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED" ? error.code : "NEXO_CONTINUITY_STORE_READ_FAILED");
   }
   let parsed;
   try { parsed = JSON.parse(raw); }
@@ -157,6 +159,10 @@ async function readEnvelope(fsModule, filePath) {
 }
 
 async function writeEnvelope(fsModule, filePath, envelope) {
+  assertContinuityResourceLimits(envelope.snapshot, envelope.storeRevision);
+  if (serializedUtf8Bytes(envelope) > NEXO_RESOURCE_LIMITS.continuityDocumentBytes) {
+    throw storeError("NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED");
+  }
   const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
   try {
     await fsModule.writeFile(tempPath, JSON.stringify(envelope, null, 2) + "\n", "utf8");
@@ -199,6 +205,7 @@ export function createNexoContinuityStore({ filePath, fsModule = fs, lockDeadlin
 
   async function initialize(snapshot) {
     assertNexoContinuitySnapshot(snapshot);
+    assertContinuityResourceLimits(snapshot, 0);
     const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
     let releaseLock;
     try {
@@ -281,8 +288,10 @@ export function createNexoContinuityStore({ filePath, fsModule = fs, lockDeadlin
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
     }
-    try { assertNexoContinuitySnapshot(candidate); }
-    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_CONTINUITY_SNAPSHOT_INVALID" }; }
+    try {
+      assertNexoContinuitySnapshot(candidate);
+      assertContinuityResourceLimits(candidate, expectedRevision + 1);
+    } catch (error) { return { status: "failed", code: error?.code ?? "NEXO_CONTINUITY_SNAPSHOT_INVALID" }; }
 
     const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
     let releaseLock;
