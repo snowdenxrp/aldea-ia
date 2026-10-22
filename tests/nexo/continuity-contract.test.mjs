@@ -81,6 +81,19 @@ assert.throws(
   "snapshot nesting must be bounded iteratively before recursive contract validation"
 );
 
+const overDepthLegacyMemory = structuredClone(validMemory);
+overDepthLegacyMemory.nexo.attempts = [{ payload: nestedRecord(40) }];
+assert.throws(
+  () => assertNexoContinuityMemoryShape(overDepthLegacyMemory),
+  error => error?.code === "NEXO_CONTINUITY_MEMORY_RESOURCE_LIMIT_EXCEEDED",
+  "legacy-memory projection must bound nesting before recursive contract validation"
+);
+assert.throws(
+  () => projectNexoContinuitySnapshot(overDepthLegacyMemory),
+  error => error?.code === "NEXO_CONTINUITY_MEMORY_RESOURCE_LIMIT_EXCEEDED",
+  "legacy-memory projection must reject excessive nesting before cloning a snapshot"
+);
+
 const duplicateStepMemory = structuredClone(validMemory);
 duplicateStepMemory.nexo.missions[0].steps.push({
   id: "step-a", action: "repair_agent_needs", target: { agentId: "bravo" }, status: "planned", dependsOn: []
