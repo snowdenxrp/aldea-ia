@@ -16,12 +16,38 @@ function admissionError(code) {
   return error;
 }
 
+function readAdmissionOptions(options) {
+  if (options === undefined) return { requestIntent: false };
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
+  }
+  let prototype;
+  let descriptor;
+  try {
+    prototype = Object.getPrototypeOf(options);
+    if (prototype !== Object.prototype && prototype !== null) {
+      throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
+    }
+    descriptor = Object.getOwnPropertyDescriptor(options, "requestIntent");
+  } catch (error) {
+    if (error?.code === "NEXO_MISSION_CONTEXT_INVALID") throw error;
+    throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
+  }
+  if (!descriptor) return { requestIntent: false };
+  if (!descriptor.enumerable || !("value" in descriptor) ||
+      typeof descriptor.value !== "boolean") {
+    throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
+  }
+  return { requestIntent: descriptor.value };
+}
+
 /**
  * Iterative structural guard for JSON-shaped mission inputs. It runs before
  * recursive contract validation/cloning so hostile nesting cannot exhaust the
  * JavaScript call stack first. Limits are v1 admission ceilings, not heap bounds.
  */
-export function assertNexoMissionAdmission(input, { requestIntent = false } = {}) {
+export function assertNexoMissionAdmission(input, options) {
+  const { requestIntent } = readAdmissionOptions(options);
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
   }
