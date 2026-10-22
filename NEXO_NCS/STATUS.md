@@ -3132,3 +3132,8 @@ Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamient
 - El CI debe comprobarse para el HEAD final después de estas escrituras. No reutilizar el resultado de otro SHA ni declarar PASS anticipadamente.
 - Siguiente: validar CI y, si pasa, construir una capacidad real del alcance A dentro de la API pública estrecha; no reabrir investigación cerrada ni habilitar efectos protegidos.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Corrección de precisión — guard de importaciones M0-E (2026-10-22)
+
+La primera versión del test intentó prohibir `effect-adapter.js` en todo el grafo importado por el entrypoint y falló: `chronicle-append.mjs` lo usa como colaborador interno. Ese guard era demasiado amplio, no evidencia de un dispatcher expuesto. El test se corrigió en `9d2e6f41a59c46eec6cd019d9c32211b8426f523`: la API pública sigue limitada a tres casos de uso y el runtime owner-backed mantiene `chronicle_append` como única acción habilitada en esa ruta. CI determinista completo: run 3271, SHA `6c1f516c067e0fd5d481b524e7e20db809e94b12`, `completed/success`.
