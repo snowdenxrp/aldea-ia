@@ -104,3 +104,35 @@ Es un inventario documental de assertions ya existentes, no una nueva suite, no 
 - La decisión de alcance inicial Opción A y las aceptaciones constitucionales como base siguen siendo límites de trabajo, no aprobación del borrador exacto ni commissioning.
 
 Estado conservador sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## Consolidación de evidencia histórica M0-B/C/D (2026-10-22)
+
+Este bloque reutiliza runs ya registrados en `STATUS.md` y en los informes focales. No reabre las investigaciones ni atribuye CI de un SHA a otro. Son evidencias de regresiones específicas, no aceptación final completa de M0.
+
+### M0-B — continuidad, admisión y persistencia
+
+- Contratos y suites fuente: `tests/nexo/continuity-contract.test.mjs`, `tests/nexo/conditional-commit-persist-state.test.mjs`, `tests/nexo/restart-reconstruction.test.mjs`.
+- La suite determinista en el SHA `2690d89e197ccadd3e280ff7542f790955d6ce42` terminó SUCCESS en [run 39490757350](https://github.com/snowdenxrp/aldea-ia/actions/runs/39490757350).
+- La suite valida los contratos configurados en ese SHA; no demuestra que todas las rutas legacy estén desactivadas ni que haya una autoridad constitucional runtime.
+
+### M0-C — resultados terminales contradictorios/contexto discordante
+
+- Informe de continuidad: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_CONTINUITY_RECONSTRUCTION.md](NCS_M0_HANDOFF_NEXT_CHAT_2026-10-20_CONTINUITY_RECONSTRUCTION.md) y las notas de regresión en `STATUS.md`.
+- SHA `876e1924292bd8c301b7e050531be9ded79ce290`: workflows focales de aceptación M0, admisión/continuidad acotada, STEP 4 y STEP 5 SUCCESS; el workflow determinista de ese SHA fue CANCELLED, no PASS. No elevar esa ejecución parcial a suite completa.
+- Los casos identificados incluyen `NEXO_OUTCOME_EVIDENCE_CONFLICT` y `NEXO_OUTCOME_OPERATION_CONTEXT_MISMATCH`. La aceptación final sigue PENDING hasta congelar las aserciones mínimas y fijar su matriz de workflows obligatorios.
+
+### M0-D — journal UNKNOWN, identidad y reconciliación
+
+- Informe: [NCS_M0_UNKNOWN_EFFECT_RECONSTRUCTION_FAIL_CLOSED_2026-10-20.md](NCS_M0_UNKNOWN_EFFECT_RECONSTRUCTION_FAIL_CLOSED_2026-10-20.md).
+- SHA exacto `dd30b70e1204750fc09fac683f30b6e7e129bfe6`: SUCCESS en persistencia determinista [39464052770](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052770), admisión/continuidad [39464053282](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053282), aceptación integrada [39464053079](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464053079), STEP 4 [39464052881](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052881) y STEP 5 [39464052959](https://github.com/snowdenxrp/aldea-ia/actions/runs/39464052959).
+- Estos resultados verifican los workflows enumerados en ese SHA para el cierre fail-closed de la regresión descrita. No demuestran observación de un efecto externo ni autorización constitucional.
+
+### Estado resultante
+
+- Esta consolidación reduce el trabajo de búsqueda repetida; no cambia los estados de aceptación.
+- M0-B/C/D siguen **PENDING** hasta cerrar el conjunto finito de assertions/workflows requerido, aunque las regresiones citadas tengan CI focalizado SUCCESS.
+- M0-E sigue siendo el bloqueo sustantivo: raíz legítima y procedencia constitucional conectadas al límite real de efecto no demostradas.
+- Estado global sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
