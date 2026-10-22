@@ -858,6 +858,21 @@ assert.equal(concurrentCapacityOutcomes.filter(result => result.status === "conf
 const concurrentCapacityFinal = await concurrentCapacityStore.loadCurrent();
 assert.equal(concurrentCapacityFinal.storeRevision, 1,
   "concurrent near-limit writes must advance the revision exactly once");
+const concurrentCapacityWinner = concurrentCapacityOutcomes.find(result => result.status === "committed");
+assert.ok(concurrentCapacityWinner, "one concurrent capacity candidate must report a committed result");
+assert.equal(concurrentCapacityWinner.storeRevision, concurrentCapacityFinal.storeRevision,
+  "the reported committed revision must match the revision reloaded from disk");
+assert.deepEqual(concurrentCapacityWinner.snapshot, concurrentCapacityFinal.snapshot,
+  "the reported committed snapshot must match the canonical snapshot reloaded from disk");
+const concurrentCapacityRaw = await fs.readFile(concurrentCapacityPath, "utf8");
+const concurrentCapacityExpectedRaw = JSON.stringify({
+  schema: "NEXO_CONTINUITY_STORE",
+  schemaVersion: 1,
+  storeRevision: concurrentCapacityFinal.storeRevision,
+  snapshot: concurrentCapacityFinal.snapshot
+}, null, 2) + "\n";
+assert.equal(concurrentCapacityRaw, concurrentCapacityExpectedRaw,
+  "persisted bytes must exactly encode the confirmed committed revision and snapshot");
 assert.ok(
   Buffer.byteLength(JSON.stringify({
     schema: "NEXO_CONTINUITY_STORE",
