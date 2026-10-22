@@ -1154,3 +1154,25 @@ assert.equal(outcomeReadFailure.status, "blocked");
 assert.equal(outcomeReadFailure.code, "TEST_CONTINUITY_READ_FAILED");
 assert.equal(outcomeReadFailure.journalSettled, false);
 assert.equal(failedStoreWrites, 0, "read failure must not proceed to conditional commit");
+
+
+// Verifier configuration is a public constructor input. Reject accessors without
+// evaluating them, so registration cannot run caller-controlled getter code.
+let verifierRegistryGetterInvoked = false;
+const accessorVerifierRegistry = {};
+Object.defineProperty(accessorVerifierRegistry, "repair_agent_state", {
+  enumerable: true,
+  get() {
+    verifierRegistryGetterInvoked = true;
+    return async () => ({ status: "verified" });
+  }
+});
+assert.throws(
+  () => createNexoContinuityOwner({
+    store: { loadCurrent: async () => ({}), commitIfCurrent: async () => ({ status: "committed" }) },
+    effectVerifiers: accessorVerifierRegistry
+  }),
+  error => error?.code === "NEXO_EFFECT_VERIFIER_REGISTRY_INVALID",
+  "verifier registry accessors must be rejected before evaluation"
+);
+assert.equal(verifierRegistryGetterInvoked, false, "verifier registry validation must not execute caller getters");
