@@ -104,6 +104,64 @@ try {
   assert.equal(nullDraftResult.persisted, false);
   assert.equal(await fs.readFile(continuityPath, "utf8"), before);
 
+  // CLI admission boundary: raw UTF-8 bytes are capped at 4 MiB before JSON.parse.
+  // JSON whitespace pads a valid envelope without changing its parsed value.
+  const maxPreviewBytes = 4 * 1024 * 1024;
+  const boundaryDraft = {
+    missionId: "cli-boundary-draft",
+    objective: "local_analysis",
+    status: "planned",
+    steps: [{ id: "boundary-step", action: "local_analysis", status: "planned", dependsOn: [] }]
+  };
+  const boundaryRequest = {
+    intent: "local analysis",
+    missionDraft: {
+      missionId: "cli-boundary-request",
+      objective: "local_analysis",
+      status: "planned",
+      steps: [{ id: "request-boundary-step", action: "local_analysis", status: "planned", dependsOn: [] }]
+    }
+  };
+  const runPreviewCli = (command, option, inputPath) => spawnSync(process.execPath, [
+    fileURLToPath(new URL("../../scripts/nexo.mjs", import.meta.url)),
+    command, "--continuity", continuityPath, option, inputPath
+  ], { cwd: process.cwd(), encoding: "utf8", maxBuffer: 1024 * 1024 });
+
+  for (const [command, option, input, limitCode] of [
+    ["mission-draft-preview", "--draft", boundaryDraft, "NEXO_MISSION_DRAFT_INPUT_RESOURCE_LIMIT_EXCEEDED"],
+    ["mission-request-preview", "--request", boundaryRequest, "NEXO_MISSION_REQUEST_INPUT_RESOURCE_LIMIT_EXCEEDED"]
+  ]) {
+    const inputPath = path.join(root, command + "-boundary.json");
+    const compact = JSON.stringify(input);
+    assert.ok(Buffer.byteLength(compact, "utf8") < maxPreviewBytes);
+    const exact = compact + " ".repeat(maxPreviewBytes - Buffer.byteLength(compact, "utf8"));
+    assert.equal(Buffer.byteLength(exact, "utf8"), maxPreviewBytes);
+    await fs.writeFile(inputPath, exact, "utf8");
+    const exactResult = runPreviewCli(command, option, inputPath);
+    assert.equal(exactResult.status, 0, exactResult.stderr || exactResult.stdout);
+    assert.equal(exactResult.stderr, "");
+    const exactSummary = JSON.parse(exactResult.stdout);
+    assert.equal(exactSummary.status, "validated");
+    assert.equal(exactSummary.authorization, "NOT_EVALUATED");
+    assert.equal(exactSummary.dispatchAttempted, false);
+    assert.equal(exactSummary.persisted, false);
+    assert.equal(await fs.readFile(continuityPath, "utf8"), before);
+
+    await fs.writeFile(inputPath, exact + " ", "utf8");
+    assert.equal((await fs.stat(inputPath)).size, maxPreviewBytes + 1);
+    const oversizedResult = runPreviewCli(command, option, inputPath);
+    assert.equal(oversizedResult.status, 1);
+    assert.equal(oversizedResult.stderr, "");
+    const oversizedSummary = JSON.parse(oversizedResult.stdout);
+    assert.equal(oversizedSummary.status, "blocked");
+    assert.equal(oversizedSummary.code, limitCode);
+    assert.equal(oversizedSummary.authorization, "NOT_EVALUATED");
+    assert.equal(oversizedSummary.dispatchAttempted, false);
+    assert.equal(oversizedSummary.persisted, false);
+    assert.equal(JSON.stringify(oversizedSummary).includes("local analysis"), false);
+    assert.equal(await fs.readFile(continuityPath, "utf8"), before);
+  }
+
   for (const requestEnvelope of [
     null,
     {},
