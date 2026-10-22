@@ -319,3 +319,15 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 - Límite de la corrección: se valida el contenedor de opciones antes de extraer campos y se rechazan prototipos/accessors. Esto no neutraliza todos los traps posibles de Proxy ni prueba autoridad legítima. No se ejecutó dispatch deliberado durante esta corrección.
 - Siguiente paso obligatorio: esperar resultados del SHA correctivo, resolver cualquier fallo real y sólo entonces continuar auditando otra frontera.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+# CHECKPOINT NUEVO — 2026-10-22 — GUARD DEL VERIFICADOR PÚBLICO DE CHRONICLE
+
+- Hallazgo: `createNexoChronicleEffectContracts()` exponía un `verifier` que llamaba a `observe(operation)`; éste construía opciones con `{ store, ...operation }`. El spread puede ejecutar getters de `operation` antes de que `observeChronicleOperation` valide sus descriptores. Las guardias previas del handler y la postcondición no cubrían este punto de entrada.
+- Corrección runtime: commit `72ebe229677b98c66401f2d74cfe398508cb99d6`. El verificador ahora lee descriptores propios de datos para `idempotencyKey`, `missionId`, `stepId`, `action` y `target`, y construye un objeto nuevo sin spread del objeto no confiable.
+- Regresión: commit `8a7b8562a9f6689c86162b82f4cadab5a1302984`. Se añadió una prueba de getter centinela para el verifier y se comprueba que la lectura del almacén no se inicia.
+- CI en comprobación: Chronicle native vertical para SHA runtime `72ebe229...` [SUCCESS, run 39865376589](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865376589). En el momento de este checkpoint siguen en curso la persistencia determinista [run 39865376604](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865376604) y admisión/continuidad [run 39865376544](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865376544). En SHA de test `8a7b8562...`, validación semántica [run 39865398271](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865398271) y clasificación de resultado [run 39865398267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865398267) están en curso; persistencia [run 39865398289](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865398289) está pendiente. No declarar matriz completa hasta revisar conclusiones finales.
+- Límite: se previene la ejecución accidental de getters normales en los campos del operation object; no se neutralizan todos los traps de Proxy y esto no acredita procedencia causal ni autoridad legítima. El verificador conserva su semántica observacional; no habilita dispatch.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
