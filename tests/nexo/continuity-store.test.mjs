@@ -975,3 +975,20 @@ await assert.rejects(
 
 await fs.rm(directory, { recursive: true, force: true });
 console.log("Nexo-owned continuity store: independent file boundary, strict load, conditional commit and stale-writer conflict OK.");
+
+
+// Store constructor must reject accessor-backed configuration without invoking it.
+let constructorPathGetterInvoked = false;
+const accessorStoreOptions = {};
+Object.defineProperty(accessorStoreOptions, "filePath", {
+  enumerable: true,
+  get() {
+    constructorPathGetterInvoked = true;
+    return path.join(directory, "accessor-continuity.json");
+  }
+});
+assert.throws(
+  () => createNexoContinuityStore(accessorStoreOptions),
+  error => error?.code === "NEXO_CONTINUITY_STORE_PATH_REQUIRED"
+);
+assert.equal(constructorPathGetterInvoked, false, "Continuity store constructor must not execute option getters");
