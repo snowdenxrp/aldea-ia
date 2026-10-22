@@ -15,13 +15,23 @@ Al comenzar:
 5. Continuar M0-E desde los hallazgos actuales. No reiniciar Step 7, M1 ni auditorías AB/P ya cerradas.
 6. No afirmar que se cambió o ejecutó código, tests o CI a menos que exista evidencia del commit/run exacto.
 
+## Checkpoint posterior — presupuesto de recursos M0-E (2026-10-22)
+
+- Decisión recuperada de esta conversación y registrada en `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`: el propietario acepta como base los límites de 256 KiB stdin, 256 KiB por entrada Chronicle, 10.000 entradas Chronicle, 32 MiB documento Chronicle, cardinalidades Continuity 10.000/20.000/20.000/10.000/20.000 y 16 MiB documento Continuity.
+- Runtime añadido en `src/nexo/core/resource-limits.mjs`, `src/nexo/core/continuity-store.mjs`, `src/nexo/core/chronicle-store.mjs`, `src/nexo/application/chronicle-append.mjs` y `scripts/nexo-chronicle-session.mjs`.
+- Enforcement: lectura acotada por bytes crudos antes de decodificar/parsear; límite UTF-8 individual antes de admisión de misión; límites de cardinalidad y serialización antes de escribir; exceso rechaza sin truncamiento ni purga.
+- Pruebas añadidas para stdin exacto y excesivo, contenido UTF-8 en límites, lectura de archivos preexistentes sobre el máximo, cardinalidades inclusivas y presupuestos serializados.
+- Último SHA de código con todas las suites principales SUCCESS antes de la última expansión de pruebas: `b9a6e5904b77e376a6efebac4f6037789b1f877d`. La expansión de pruebas está en `08410e606d9598a95fd51bed77a6ddc50d8a5bfd`; verificar sus workflows antes de atribuirle éxito. No atribuir runs del SHA anterior al más reciente.
+- No se propone ni se declara seguro un presupuesto agregado de heap/disco; sigue OPEN. Los topes por store son límites locales, no una garantía de consumo total.
+- No cerrar el subcriterio hasta confirmar CI del SHA de pruebas más reciente y revisar los resultados. M0 continúa `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
 ## Estado canónico
 - M0: `INCOMPLETO`.
 - `authorization: NOT_EVALUATED`.
 - Raíz legítima: `PENDING/UNKNOWN`.
 - Efectos protegidos: `STOP`.
 - Constitución: puntos 1–7 aceptados solo como base del borrador. No son aprobación constitucional completa, congelación, firma, commissioning ni autorización de efectos.
-- La instrucción “continúa sin límites” permite avanzar en el trabajo, pero no acepta valores candidatos ni aprueba decisiones de autoridad/Constitución por inferencia.
+- El propietario aceptó explícitamente el perfil numérico inicial de presupuesto de recursos el 2026-10-22. Esa aceptación queda limitada a los valores y semánticas del perfil; no aprueba Constitución completa, autoridad raíz, commissioning ni efectos protegidos.
 - Meta actual: crear Nexo y progresar en M0; no desviarse a M1 ni convertirlo en un chatbot.
 
 ## HEAD y evidencia observada durante esta revisión
