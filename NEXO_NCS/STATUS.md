@@ -3282,3 +3282,11 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - No se demuestra una cota agregada de heap o disco ni capacidad multiusuario. No se eligió un número agregado, no se añadió un semáforo/cola/wrapper, y no se ejecutaron tests para este análisis documental.
 - Siguiente bloqueo concreto: definir el modo operativo inicial (CLI aislado, proceso único persistente o servicio concurrente), delimitar a qué ámbito aplica el presupuesto y solo entonces diseñar enforcement verificable. No declarar agregado cerrado ni servicio concurrente listo antes de eso.
 - Estado canónico sin cambios: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## M0-E — ajuste acotado de entrada stdin (2026-10-22)
+
+- Código: [scripts/nexo-chronicle-session.mjs](https://github.com/snowdenxrp/aldea-ia/blob/26eb412ed84fef1c10779b7a1046f97fe5275282/scripts/nexo-chronicle-session.mjs) ahora reutiliza el chunk Buffer recibido por Node en lugar de copiarlo con Buffer.from antes de verificar el acumulado. Si el chunk no es Buffer, se convierte normalmente. Esto elimina una copia adicional evitable; no limita el tamaño del chunk que el runtime de Node ya haya entregado y **no** demuestra una cota agregada de heap.
+- Prueba: [tests/nexo/entrypoint.test.mjs](https://github.com/snowdenxrp/aldea-ia/blob/26eb412ed84fef1c10779b7a1046f97fe5275282/tests/nexo/entrypoint.test.mjs) envía stdin de 256 KiB + 1, espera `NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED` y verifica que los stores no se inicialicen ni se creen archivos.
+- SHA de código/prueba: `26eb412ed84fef1c10779b7a1046f97fe5275282`. Aún no se dispone de un resultado CI verificable para este SHA; no se declara la prueba ejecutada ni aprobada.
+- El presupuesto agregado de heap/disco sigue OPEN; modo de servicio concurrente/multiusuario no declarado. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
