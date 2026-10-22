@@ -799,6 +799,69 @@ assert.deepEqual(await lateReleaseFailureStore.initialize(emptySnapshot), {
 await assert.rejects(() => fs.access(lateReleaseFailurePath), error => error?.code === "ENOENT");
 await fs.rm(lateReleaseFailureLock, { recursive: true, force: true });
 
+// Oversized but structurally valid candidate must be rejected before mutation.
+const oversizedCandidateDirectory = path.join(directory, "oversized-candidate-no-mutation");
+await fs.mkdir(oversizedCandidateDirectory);
+const oversizedCandidatePath = path.join(oversizedCandidateDirectory, "continuity.json");
+const oversizedCandidateStore = createNexoContinuityStore({ filePath: oversizedCandidatePath });
+assert.equal((await oversizedCandidateStore.initialize(emptySnapshot)).status, "committed");
+const oversizedCandidateBytesBefore = await fs.readFile(oversizedCandidatePath);
+const oversizedValidSnapshot = {
+  ...emptySnapshot,
+  doNotRepeat: [{ payload: "x".repeat(NEXO_RESOURCE_LIMITS.continuityDocumentBytes) }]
+};
+const oversizedCandidateResult = await oversizedCandidateStore.commitIfCurrent(0, oversizedValidSnapshot);
+assert.deepEqual(oversizedCandidateResult, {
+  status: "failed",
+  code: "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED"
+}, "oversized valid snapshot candidate must fail with a known capacity result");
+assert.deepEqual(await fs.readFile(oversizedCandidatePath), oversizedCandidateBytesBefore,
+  "oversized candidate must preserve the canonical file byte-for-byte");
+assert.equal((await oversizedCandidateStore.loadCurrent()).storeRevision, 0,
+  "oversized candidate must not advance the canonical revision");
+
+// Two valid near-limit candidates racing on the same revision cannot both be admitted.
+const concurrentCapacityDirectory = path.join(directory, "concurrent-near-limit-capacity");
+await fs.mkdir(concurrentCapacityDirectory);
+const concurrentCapacityPath = path.join(concurrentCapacityDirectory, "continuity.json");
+const concurrentCapacityStore = createNexoContinuityStore({ filePath: concurrentCapacityPath });
+assert.equal((await concurrentCapacityStore.initialize(emptySnapshot)).status, "committed");
+const nearLimitPayloadBytes = 14 * 1024 * 1024;
+const nearLimitCandidateA = {
+  ...emptySnapshot,
+  doNotRepeat: [{ payload: "a".repeat(nearLimitPayloadBytes) }]
+};
+const nearLimitCandidateB = {
+  ...emptySnapshot,
+  doNotRepeat: [{ payload: "b".repeat(nearLimitPayloadBytes) }]
+};
+assert.doesNotThrow(() => assertContinuityResourceLimits(nearLimitCandidateA, 1));
+assert.doesNotThrow(() => assertContinuityResourceLimits(nearLimitCandidateB, 1));
+const concurrentCapacityOutcomes = await Promise.all([
+  concurrentCapacityStore.commitIfCurrent(0, nearLimitCandidateA),
+  concurrentCapacityStore.commitIfCurrent(0, nearLimitCandidateB)
+]);
+assert.equal(concurrentCapacityOutcomes.filter(result => result.status === "committed").length, 1,
+  "exactly one near-limit concurrent candidate may commit against the same revision");
+assert.equal(concurrentCapacityOutcomes.filter(result => result.status === "conflict").length, 1,
+  "the losing near-limit candidate must observe a revision conflict");
+const concurrentCapacityFinal = await concurrentCapacityStore.loadCurrent();
+assert.equal(concurrentCapacityFinal.storeRevision, 1,
+  "concurrent near-limit writes must advance the revision exactly once");
+assert.ok(
+  Buffer.byteLength(JSON.stringify({
+    schema: "NEXO_CONTINUITY_STORE",
+    schemaVersion: 1,
+    storeRevision: concurrentCapacityFinal.storeRevision,
+    snapshot: concurrentCapacityFinal.snapshot
+  }, null, 2) + "\\n", "utf8") <= NEXO_RESOURCE_LIMITS.continuityDocumentBytes,
+  "the committed envelope must remain within the serialized byte budget"
+);
+assert.ok(
+  ["a", "b"].includes(concurrentCapacityFinal.snapshot.doNotRepeat[0].payload[0]),
+  "the final snapshot must equal one complete candidate, never a merged or partial write"
+);
+
 const oversizedContinuityPath = path.join(directory, "oversized-existing-continuity.json");
 await fs.writeFile(oversizedContinuityPath, Buffer.alloc(NEXO_RESOURCE_LIMITS.continuityDocumentBytes + 1, 0x20));
 const oversizedContinuityBefore = await fs.stat(oversizedContinuityPath);
