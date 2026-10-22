@@ -30,6 +30,22 @@ A second read-before-validation existed one level earlier: destructuring `{ stor
 - an accessor-backed verifier registry, which must throw `NEXO_EFFECT_VERIFIER_REGISTRY_INVALID` without invoking its getter;
 - accessor-backed outer `effectVerifiers` constructor options, which must likewise be rejected without invoking the getter.
 
+## Follow-up: continuity-store adapter methods
+
+The owner constructor also accessed `store.loadCurrent` and `store.commitIfCurrent` directly while validating the injected store. Those property reads could invoke accessors before the store contract was rejected. It now obtains own property descriptors, requires data properties whose values are functions, captures those functions, and invokes the captured methods with the original store as `this`. A regression uses a getter-backed `loadCurrent` and proves the getter is not invoked.
+
+This guard expects the store adapter to expose its two methods as own data properties, matching `createNexoContinuityStore()` and the current test adapters. Proxy reflection traps remain outside the guarantee.
+
+- Store adapter runtime guard: [ccc10ead2f881396bf5af70c24c54a523e10201e](https://github.com/snowdenxrp/aldea-ia/commit/ccc10ead2f881396bf5af70c24c54a523e10201e)
+- Store adapter regression: [7f5bd699b50768d5e890a66a2c2cc9785c46ee1f](https://github.com/snowdenxrp/aldea-ia/commit/7f5bd699b50768d5e890a66a2c2cc9785c46ee1f)
+
+Five workflows triggered for the exact combined code/test SHA `7f5bd699b50768d5e890a66a2c2cc9785c46ee1f` completed SUCCESS:
+- [bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861527624)
+- [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861527718)
+- [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861527713)
+- [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861527614)
+- [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861527731)
+
 ## Commits and CI
 
 - Registry descriptor guard: [d65245bdbcc20cdee7ebf315d6a65f162bcb894d](https://github.com/snowdenxrp/aldea-ia/commit/d65245bdbcc20cdee7ebf315d6a65f162bcb894d)
