@@ -102,3 +102,16 @@ Después de esas pruebas, revisar si el contrato existente permite declarar lím
 - Decisión de presupuesto: [NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md)
 - Contrato de presupuesto: [NCS_M0_RESOURCE_BUDGET_CONTRACT_PROPOSAL_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_RESOURCE_BUDGET_CONTRACT_PROPOSAL_2026-10-22.md)
 - Perfil numérico: [NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md)
+
+
+## Actualización posterior — presupuesto agregado (2026-10-22)
+
+La prueba de las fronteras por-store no debe confundirse con una cota agregada. Ver [hallazgo de frontera](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md).
+
+- Los topes de JSON no equivalen a heap: la lectura acotada acumula chunks, concatena, decodifica, parsea y puede clonar objetos. Lecturas concurrentes no adquieren el lock de escritura; locks por archivo no limitan la suma entre rutas o procesos.
+- El CLI limita stdin por invocación, pero no la cantidad de procesos CLI simultáneos. No hay evidencia de presupuesto total de disco/heap ni de capacidad multiusuario.
+- No inventar un número agregado ni añadir una cola/semaforo por reflejo. Primero definir el modo operativo objetivo (CLI aislado, proceso persistente único o servicio concurrente), luego la unidad de admisión y su enforcement.
+- Este análisis fue documental: no se cambió runtime ni se ejecutaron tests. El estado M0 permanece INCOMPLETO; autorización NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
+
+### Siguiente tarea exacta
+Decidir y documentar el modo operativo inicial de M0 y el ámbito del presupuesto. Después diseñar una única frontera verificable que cubra las rutas de admisión de ese ámbito; incluir pruebas de concurrencia en esa misma unidad operativa. Mantener el presupuesto agregado OPEN hasta contar con esa evidencia.
