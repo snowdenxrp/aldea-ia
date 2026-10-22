@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
-import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
+import { NEXO_RESOURCE_LIMITS, assertChronicleResourceLimits } from "../../src/nexo/core/resource-limits.mjs";
 import { observeChronicleOperation } from "../../src/nexo/adapters/chronicle-observation.mjs";
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 
@@ -516,6 +516,30 @@ if (result.status !== "committed") process.exitCode = 1;`;
   });
   await assert.rejects(() => fs.access(lateReleaseFailurePath), error => error?.code === "ENOENT");
   await fs.rm(lateReleaseFailureLock, { recursive: true, force: true });
+
+  // Serialized-document budget rejects a candidate that crosses the cap, independently of per-entry limits.
+  const nearLimitChronicle = {
+    schema: "NEXO_CHRONICLE",
+    schemaVersion: 1,
+    storeRevision: 127,
+    entries: Array.from({ length: 127 }, (_, index) => ({
+      operationKey: `resource-budget-${index}`,
+      content: "x".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+    }))
+  };
+  assert.doesNotThrow(() => assertChronicleResourceLimits(nearLimitChronicle),
+    "candidate below the serialized Chronicle limit remains admissible");
+  const overLimitChronicle = {
+    ...nearLimitChronicle,
+    storeRevision: 128,
+    entries: [...nearLimitChronicle.entries, {
+      operationKey: "resource-budget-over-limit",
+      content: "y".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+    }]
+  };
+  assert.throws(() => assertChronicleResourceLimits(overLimitChronicle), {
+    code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"
+  }, "candidate above the serialized Chronicle limit is rejected");
 
   // An oversized existing Chronicle file is rejected before JSON parsing and left untouched.
   const oversizedChroniclePath = path.join(root, "oversized-existing-chronicle.json");
