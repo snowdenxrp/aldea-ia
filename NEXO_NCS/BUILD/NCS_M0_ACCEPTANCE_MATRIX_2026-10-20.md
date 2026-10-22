@@ -242,3 +242,10 @@ Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UN
 - Estado: **PROPUESTA / NO ACEPTADA / NO IMPLEMENTADA**. No fija números ni añade identificadores de outcome por inferencia. La política conservadora propuesta es rechazar la nueva admisión/escritura antes de mutar y preservar los datos existentes; rotación/compactación requiere decisión separada.
 - Los tests deben cubrir límites exactos en bytes, rechazo antes de acumular stdin sin límite, ausencia de admisión/escrituras en casos negativos y preservación del estado previo.
 - Este subcriterio es independiente de M0-E: cerrar recursos no demuestra raíz/Constitución/Policy conectadas al sink real.
+
+
+## Perfil numérico candidato de presupuesto (2026-10-22)
+
+- Candidato separado: [NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md](NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md).
+- Contiene valores iniciales explícitos para stdin (256 KiB), entrada Chronicle (256 KiB), documento Chronicle (32 MiB), snapshot Continuity (16 MiB) y cardinalidades de colecciones.
+- Estado: **NO ACEPTADO / NO IMPLEMENTADO**. Los valores son topes propuestos, no resultados de benchmark ni autorización para cambiar runtime. Se deben validar con fixtures y pruebas de frontera antes de aceptación.
