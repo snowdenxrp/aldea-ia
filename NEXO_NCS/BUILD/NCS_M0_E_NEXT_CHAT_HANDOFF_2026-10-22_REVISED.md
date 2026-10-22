@@ -150,3 +150,15 @@ La siguiente tarea es inspección dirigida de callers/sinks y cruce de tests exi
 - Próximo trabajo: no ampliar la superficie pública por inercia. El siguiente paso de capacidad es especificar cómo los objetivos/entradas de planificación se validan mediante contratos existentes y cómo se generan planes sin inventar otra identidad de misión ni confundir análisis con ejecución.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
+## Continuidad posterior — vista previa de borradores de misión (2026-10-22)
+
+- HEAD de código verificado con CI: `539fe0b1c8145eb63680a4fa944cfdf960b38af1`.
+- Se añadió `previewNexoMissionDraft(continuityPath, missionDraft)` a la API pública y el comando `mission-draft-preview --continuity <ruta> --draft <archivo.json>`. El borrador usa el formato de misión ya existente; no se creó otro modelo de datos.
+- La vista previa valida mediante `recordNexoMissionInSnapshot` sobre un snapshot candidato en memoria, reconstruye y devuelve orden topológico determinista basado en dependencias. No persiste, no despacha y rechaza un `missionId` que ya esté ligado.
+- La respuesta no muestra `target/context`; incluye `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `persisted: false`. Los tests cubren ordenamiento, ciclo inválido, ID duplicado, payload privado y bytes de Continuity sin cambios.
+- CI SUCCESS en el mismo SHA: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39729857071), [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39729857067), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39729857092), [canonical mission status projection](https://github.com/snowdenxrp/aldea-ia/actions/runs/39729857208).
+- Se observó un fallo intermedio en el test de API pública porque la lista de exportaciones esperadas no incluía la nueva función. Se actualizó la expectativa del test; el SHA final indicado pasó los workflows citados.
+- El registro canónico `NEXO_NCS/STATUS.md` se actualizó en commit `9de49ac614ca46000b52880342b2bde2d64bf60d`. Verificar HEAD y CI del commit documental final antes de declararlo validado.
+- Próximo trabajo: definir el contrato entre petición/objetivo no confiable y borrador de misión. No conectar todavía un modelo generativo, no permitirle elegir acciones fuera del conjunto contractual y no convertir el preview en persistencia/ejecución sin gate independiente.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
