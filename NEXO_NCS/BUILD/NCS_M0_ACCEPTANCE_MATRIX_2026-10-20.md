@@ -85,3 +85,22 @@ Permanece **PENDING / BLOQUEANTE**. La prueba `tests/nexo/protected-transition.t
 
 ### Límite de esta actualización
 Es un inventario documental de assertions ya existentes, no una nueva suite, no un cambio de runtime y no un PASS. No se ejecutó CI durante esta actualización. Estados conservadores sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Actualización de evidencia CI posterior al checkpoint CLI (2026-10-22)
+
+### Evidencia exacta más reciente observada
+
+- Rama `ncs-clean-architecture`, HEAD comprobado antes de esta actualización: `81825ee864f887b1914c3da9065cbd83df910c85`.
+- Workflow determinista: [run 39697191705](https://github.com/snowdenxrp/aldea-ia/actions/runs/39697191705), job `tests`, `completed / success`, SHA exacto `81825ee864f887b1914c3da9065cbd83df910c85`.
+- Este run acredita que `npm test` pasó en ese SHA. No se extrapola al commit de esta actualización ni a ningún SHA posterior.
+- La actualización del inventario de invocación CLI no cambió runtime ni el alcance de efectos. La prueba CI verde no crea raíz, no aprueba el borrador constitucional y no demuestra enforcement de autoridad legítima.
+
+### Lectura de estado, sin reabrir trabajo cerrado
+
+- **M0-A sigue PENDING** hasta congelar explícitamente la puerta finita de aceptación. La evidencia reciente sí confirma el workflow determinista propuesto en el SHA indicado; no resuelve por sí sola la decisión documental de congelar la puerta.
+- **M0-B/C/D siguen PENDING en esta matriz** hasta enlazar de forma compacta sus assertions existentes y evidencia histórica por SHA. No repetir las auditorías/pruebas históricas ya registradas sin contraejemplo.
+- **M0-E sigue siendo el bloqueo sustantivo**: el inventario existente ya distingue el commit de estado Core, el adapter de efectos y la ruta de simulación excluida por Opción A. No clasificar `conditionalCommit.commit` como sink externo sin prueba de su función, ni inferir que el módulo de simulación sea inalcanzable globalmente.
+- La decisión de alcance inicial Opción A y las aceptaciones constitucionales como base siguen siendo límites de trabajo, no aprobación del borrador exacto ni commissioning.
+
+Estado conservador sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
