@@ -3088,3 +3088,12 @@ Esto refina el contrato; no es un cambio de runtime ni evidencia de explotación
 La revisión del HEAD `554c2b6933c3f54b4966f3bf1a0f7de66b86074d` confirmó que la CLI Nexo mantiene un grafo de imports separado del runtime Lúmina y que el owner-backed runtime bloquea reparaciones y acciones no-`chronicle_append` antes del dispatch. A la vez, `src/nexo/runtime.js` conserva la API `executeLuminaNexoStep` y `src/nexo/simulation-adapter.js` conserva handlers capaces de mutar el objeto de simulación. No se encontró un caller de producción nuevo; no se infiere inalcanzabilidad universal.
 
 Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamiento global de todos los posibles callers no demostrado. Bajo Opción A, no cablear ni habilitar la ruta Lúmina. No se cambió runtime ni se reabrieron auditorías AB104/P112. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+## M0-E — inventario claim-relative de frontera de autoridad (2026-10-22)
+
+- Se añadió [NCS_M0_E_CLAIM_RELATIVE_AUTHORITY_BOUNDARY_INVENTORY_2026-10-22.md](BUILD/NCS_M0_E_CLAIM_RELATIVE_AUTHORITY_BOUNDARY_INVENTORY_2026-10-22.md), commit `d6585c6744aa3debd6c6c4dcf9710ba2f72454f7`.
+- El inventario reutiliza los contratos existentes Genesis y Constitución→Policy; no crea otra raíz ni un nuevo contrato genérico. Separa por clase de claim: append local de Chronicle, reparación excluida, otras acciones owner-backed, mutaciones legacy de simulación y transición protegida genérica.
+- Resultado sustantivo: ninguna clase de efecto protegido tiene todos los eslabones demostrados. `chronicle_append` es persistencia local no protegida bajo la CLI auditada, no evidencia de autorización constitucional. `executeProtectedTransition` recibe un gate inyectado y no invoca `effectBoundary.prepare`; el sink real de efectos externos no está demostrado.
+- Siguiente puerta: prueba adversarial integrada contra los límites existentes; no implementar un verificador que simule raíz hasta poder establecer provisión/reconocimiento independiente y binding constitucional exacto. La lectura acotada de Chronicle/Continuity sigue siendo una brecha separada; el presupuesto numérico continúa no aceptado/no implementado.
+- Este commit es documental; no cambia runtime ni tests. No se declara CI para este SHA hasta consultar su run exacto.
+- Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
