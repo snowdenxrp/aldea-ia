@@ -3206,3 +3206,13 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Reutiliza el contrato de intención existente; no introduce un segundo esquema ni declara que se haya conectado un modelo generativo.
 - **Solo documentación de diseño:** no se modificó runtime, no se ejecutaron pruebas y no hay CI atribuible a este artefacto. Antes de implementar, contrastar el documento con los tipos/contratos reales existentes para evitar duplicados o nombres incompatibles.
 - Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0 — Continuity: pruebas de capacidad de candidato y escrituras concurrentes (2026-10-22)
+
+- En `tests/nexo/continuity-store.test.mjs` se añadieron dos casos para las brechas pendientes del checkpoint: (1) un snapshot estructuralmente válido cuyo envelope excede el límite se rechaza con `NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED`, preservando bytes y revisión; (2) dos candidatos válidos de 14 MiB que compiten por la misma revisión no pueden sobre-admitir capacidad: se espera un único commit, un conflicto y un envelope final dentro del máximo.
+- Commit de pruebas: `cd9082d8e81bf2fe2c38f849f39de7429d300ea0`.
+- CI automático del commit: run [39788783628](https://github.com/snowdenxrp/aldea-ia/actions/runs/39788783628), workflow de persistencia determinista; al registrar este estado estaba `queued`. **No declarar PASS hasta verificar el resultado final y el paso de tests para ese SHA.**
+- No se modificó runtime en este cambio. El presupuesto agregado de heap/disco sigue OPEN; los límites individuales no demuestran seguridad agregada.
+- La tarea de correspondencia intención→borrador documentada en `BUILD/NCS_M0_INTENT_DRAFT_CORRESPONDENCE_CONTRACT_2026-10-22.md` queda posterior a este bloqueo, no lo sustituye.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
