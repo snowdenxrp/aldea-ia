@@ -27,7 +27,7 @@ for (const luminaCoupling of ["simulation-adapter.js", "../assistants/memory.js"
 }
 // Walk the static local-import graph from both Nexo command entrypoints.
 // This catches accidental transitive imports of the legacy Lúmina runtime/memory.
-const forbiddenImport = /(?:^|\/)(?:assistants\/memory\.js|simulation-adapter\.js|world\.js|simulation\.js|simulate\.mjs|nexo\/runtime\.js)$/;
+const forbiddenImport = /(?:^|\/)(?:assistants\/memory\.js|simulation-adapter\.js|effect-adapter\.js|world\.js|simulation\.js|simulate\.mjs|nexo\/runtime\.js)$/;
 const auditedFiles = new Set();
 async function auditNexoImportGraph(relativePath) {
   const absolutePath = path.resolve(process.cwd(), relativePath);
@@ -62,6 +62,11 @@ assert.deepEqual(parseNexoEntrypointArguments([]), {
 assert.deepEqual(parseNexoEntrypointArguments(["repair"]), {
   status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false
 });
+for (const unsupportedCommand of ["execute", "run", "simulate", "shell", "http", "effect", "repair"]) {
+  assert.deepEqual(parseNexoEntrypointArguments([unsupportedCommand]), {
+    status: "blocked", code: "NEXO_COMMAND_UNSUPPORTED", dispatchAttempted: false
+  }, `scope A must reject generic or effect-capable command ${unsupportedCommand} before dispatch`);
+}
 assert.deepEqual(parseNexoEntrypointArguments(["chronicle-append", "--content-stdin"]), {
   status: "dispatch", command: "chronicle-append", args: ["--content-stdin"]
 });
